@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<project basedir="." default="run">
+ 
+  <taskdef name="jscomp" classname="com.google.javascript.jscomp.ant.CompileTask" classpath="${basedir}/compiler.jar"/>
+  <taskdef resource="net/sf/antcontrib/antlib.xml">
+    <classpath>
+      <pathelement location="${basedir}/ant-contrib-1.0b3.jar"/>
+    </classpath>
+  </taskdef>
+ 
+  <target name="run">
+   
+  	 <jscomp compilationLevel="simple" debug="false" output="../bin/pixi.js">
+  	 
+
+  	 	
+      <sources dir="../src/pixi/">
+        <file name="utils/Utils.js"/>
+      	<file name="utils/EventTarget.js"/>
+		<file name="utils/gl-matrix-min.js"/>
+		<file name="renderers/WebGLShaders.js"/>
+		<file name="renderers/WebGLRenderer.js"/>
+		<file name="renderers/CanvasRenderer.js"/>
+		<file name="Point.js"/>
+      	<file name="Rectangle.js"/>
+      	<file name="DisplayObject.js"/>
+		<file name="renderers/WebGLBatch.js"/>
+		<file name="DisplayObjectContainer.js"/>
+		<file name="Stage.js"/>
+		<file name="Sprite.js"/>
+		<file name="extras/Strip.js"/>
+		<file name="extras/Rope.js"/>
+		<file name="MovieClip.js"/>
+		<file name="textures/BaseTexture.js"/>
+		<file name="textures/Texture.js"/>
+		<file name="utils/Detector.js"/>
+		<file name="loaders/SpriteSheetLoader.js"/>
+		<file name="loaders/AssetLoader.js"/>
+      </sources>
+ 
+	</jscomp>
+ 
+  </target>
+ 
+</project>
