@@ -2,54 +2,60 @@
  * @author Mat Groves http://matgroves.com/
  */
 
-var PIXI = PIXI || {};
-
 /**
- * @class The DisplayObject class is the base class for all objects that are rendered on the screen.
+ * this is the base class for all objects that are rendered on the screen.
+ * @class DisplayObject
  * @constructor
- * @return A new DisplayObject.
  */
 PIXI.DisplayObject = function()
 {
 	/**
 	 * The coordinate of the object relative to the local coordinates of the parent.
+	 * @property position
 	 * @type Point
 	 */
 	this.position = new PIXI.Point();
 	
 	/**
 	 * The scale factor of the object.
+	 * @property scale
 	 * @type Point
 	 */
 	this.scale = new PIXI.Point(1,1);//{x:1, y:1};
 	
 	/**
 	 * The rotation of the object in radians.
+	 * @property rotation
 	 * @type Number
 	 */
 	this.rotation = 0;
 	
 	/**
 	 * The opacity of the object.
+	 * @property alpha
 	 * @type Number
 	 */	
 	this.alpha = 1;
 	
 	/**
 	 * The visibility of the object.
-	 * @type Number
+	 * @property visible
+	 * @type Boolean
 	 */	
 	this.visible = true;
+	this.cacheVisible = false;
 	
 	/**
 	 * [read-only] The display object container that contains this display object.
+	 * @property parent
 	 * @type DisplayObjectContainer
 	 */	
 	this.parent = null;
 	
 	/**
 	 * [read-only] The stage the display object is connected to, or undefined if it is not connected to the stage.
-	 * @type #DisplayObjectContainer
+	 * @property stage
+	 * @type Stage
 	 */	
 	this.stage = null;
 	

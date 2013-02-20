@@ -2,7 +2,6 @@
  * https://github.com/mrdoob/eventtarget.js/
  * THankS mr DOob!
  */
-var PIXI = PIXI || {};
 
 PIXI.EventTarget = function () {
 

@@ -2,8 +2,6 @@
  * @author Mat Groves http://matgroves.com/
  */
 
-var PIXI = PIXI || {};
-
 PIXI._batchs = [];
 
 /**
@@ -42,9 +40,9 @@ PIXI._restoreBatchs = function(gl)
 }
 
 /**
- * @class A WebGLBatch Enables a group of sprites to be drawn using the same settings.
+ * A WebGLBatch Enables a group of sprites to be drawn using the same settings.
  * if a group of sprites all have the same baseTexture and blendMode then they can be grouped into a batch. All the sprites in a batch can then be drawn in one go by the GPU which is hugely efficient. ALL sprites in the webGL renderer are added to a batch even if the batch only contains one sprite. Batching is handled automatically by the webGL renderer. A good tip is: the smaller the number of batchs there are, the faster the webGL renderer will run. 
- * @augments PIXI.Sprite
+ * @class WebGLBatch
  * @param an instance of the webGL context
  * @return {PIXI.renderers.WebGLBatch} WebGLBatch {@link PIXI.renderers.WebGLBatch}
  */
@@ -99,7 +97,8 @@ PIXI.WebGLBatch.prototype.restoreLostContext = function(gl)
 
 /**
  * inits the batch's texture and blend mode based if the supplied sprite
- * @param the first sprite to be added to the batch. Only sprites with the same base texture and blend mode will be allowed to be added to this batch
+ * @method init
+ * @param sprite {Sprite} the first sprite to be added to the batch. Only sprites with the same base texture and blend mode will be allowed to be added to this batch
  */	
 PIXI.WebGLBatch.prototype.init = function(sprite)
 {
@@ -117,8 +116,9 @@ PIXI.WebGLBatch.prototype.init = function(sprite)
 
 /**
  * inserts a sprite before the specified sprite
- * @param the sprite to be added
- * @param the first sprite will be inserted before this sprite
+ * @method insertBefore
+ * @param sprite {Sprite} the sprite to be added
+ * @param nextSprite {nextSprite} the first sprite will be inserted before this sprite
  */	
 PIXI.WebGLBatch.prototype.insertBefore = function(sprite, nextSprite)
 {
@@ -144,8 +144,9 @@ PIXI.WebGLBatch.prototype.insertBefore = function(sprite, nextSprite)
 
 /**
  * inserts a sprite after the specified sprite
- * @param the sprite to be added
- * @param the first sprite will be inserted after this sprite
+ * @method insertAfter
+ * @param sprite {Sprite} the sprite to be added
+ * @param  previousSprite {Sprite} the first sprite will be inserted after this sprite
  */	
 PIXI.WebGLBatch.prototype.insertAfter = function(sprite, previousSprite)
 {
@@ -173,7 +174,8 @@ PIXI.WebGLBatch.prototype.insertAfter = function(sprite, previousSprite)
 
 /**
  * removes a sprite from the batch
- * @param the sprite to be removed
+ * @method remove
+ * @param sprite {Sprite} the sprite to be removed
  */	
 PIXI.WebGLBatch.prototype.remove = function(sprite)
 {
@@ -181,6 +183,7 @@ PIXI.WebGLBatch.prototype.remove = function(sprite)
 	
 	if(this.size == 0)
 	{
+		sprite.batch = null;
 		sprite.__prev = null;
 		sprite.__next = null;
 		return;
@@ -193,7 +196,7 @@ PIXI.WebGLBatch.prototype.remove = function(sprite)
 	else
 	{
 		this.head = sprite.__next;
-		//this.head.__prev = null;
+		this.head.__prev = null;
 	}
 	
 	if(sprite.__next)
@@ -203,7 +206,7 @@ PIXI.WebGLBatch.prototype.remove = function(sprite)
 	else
 	{
 		this.tail = sprite.__prev;
-		//this.tail.__next = null
+		this.tail.__next = null
 	}
 	
 	sprite.batch = null;
@@ -214,8 +217,9 @@ PIXI.WebGLBatch.prototype.remove = function(sprite)
 
 /**
  * Splits the batch into two with the specified sprite being the start of the new batch.
- * @param the sprite that indicates where the batch should be split
- * @return the new batch
+ * @method split
+ * @param sprite {Sprite} the sprite that indicates where the batch should be split
+ * @return {WebGLBatch} the new batch
  */
 PIXI.WebGLBatch.prototype.split = function(sprite)
 {
@@ -262,7 +266,8 @@ PIXI.WebGLBatch.prototype.split = function(sprite)
 
 /**
  * Merges two batchs together
- * @param the batch that will be merged 
+ * @method merge
+ * @param batch {WebGLBatch} the batch that will be merged 
  */
 PIXI.WebGLBatch.prototype.merge = function(batch)
 {
@@ -286,6 +291,7 @@ PIXI.WebGLBatch.prototype.merge = function(batch)
 
 /**
  * Grows the size of the batch. As the elements in the batch cannot have a dynamic size this function is used to increase the size of the batch. It also creates a little extra room so that the batch does not need to be resized every time a sprite is added
+ * @methos growBatch
  */
 PIXI.WebGLBatch.prototype.growBatch = function()
 {
@@ -338,6 +344,7 @@ PIXI.WebGLBatch.prototype.growBatch = function()
 
 /**
  * Refresh's all the data in the batch and sync's it with the webGL buffers
+ * @method refresh
  */
 PIXI.WebGLBatch.prototype.refresh = function()
 {
@@ -392,6 +399,7 @@ PIXI.WebGLBatch.prototype.refresh = function()
 
 /**
  * Updates all the relevant geometry and uploads the data to the GPU
+ * @method update
  */
 PIXI.WebGLBatch.prototype.update = function()
 {
@@ -409,9 +417,8 @@ PIXI.WebGLBatch.prototype.update = function()
 		width = displayObject.width;
 		height = displayObject.height;
 		
-		aX = displayObject.anchor.x;
-		aY = displayObject.anchor.y;
-		 
+		aX = displayObject.anchor.x - displayObject.texture.trim.x
+		aY = displayObject.anchor.y - displayObject.texture.trim.y
 		w0 = width * (1-aX);
 		w1 = width * -aX;
 		 
@@ -467,12 +474,12 @@ PIXI.WebGLBatch.prototype.update = function()
 		}
 		
 		// TODO this probably could do with some optimisation....
-		if(displayObject.cacheAlpha != displayObject.alpha)
+		if(displayObject.cacheAlpha != displayObject.worldAlpha)
 		{
-			displayObject.cacheAlpha = displayObject.alpha;
+			displayObject.cacheAlpha = displayObject.worldAlpha;
 			
 			var colorIndex = indexRun * 4;
-			this.colors[index2] = this.colors[colorIndex + 1] = this.colors[colorIndex + 2] = this.colors[colorIndex + 3] = displayObject.worldAlpha;
+			this.colors[colorIndex] = this.colors[colorIndex + 1] = this.colors[colorIndex + 2] = this.colors[colorIndex + 3] = displayObject.worldAlpha;
 			this.dirtyColors = true;
 		}
 		
@@ -483,6 +490,7 @@ PIXI.WebGLBatch.prototype.update = function()
 
 /**
  * Draws the batch to the frame buffer
+ * @method render
  */
 PIXI.WebGLBatch.prototype.render = function()
 {

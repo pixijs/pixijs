@@ -1,14 +1,14 @@
 /**
  * @author Mat Groves http://matgroves.com/
  */
-var PIXI = PIXI || {};
 
 /**
  * This helper function will automatically detect which renderer you should be using.
  * WebGL is the preferred renderer as it is a lot fastest. If webGL is not supported by the browser then this function will return a canvas renderer
- * @param the width of the renderers view
- * @param the height of the renderers view
- * @return A new Renderer
+ * @method autoDetectRenderer
+ * @static
+ * @param width {Number} the width of the renderers view
+ * @param height {Number} the height of the renderers view
  */
 PIXI.autoDetectRenderer = function(width, height)
 {

@@ -2,14 +2,12 @@
  * @author Mat Groves http://matgroves.com/
  */
 
-var PIXI = PIXI || {};
-
 /**
- * @class A Stage represents the root of the display tree. Everything connected to the stage is rendered
- * @augments PIXI.DisplayObjectContainer
- * @constructor
- * @return A new Stage.
- */
+A Stage represents the root of the display tree. Everything connected to the stage is rendered
+@class Stage
+@extends DisplayObjectContainer
+@constructor
+*/
 PIXI.Stage = function()
 {
 	PIXI.DisplayObjectContainer.call( this );
@@ -25,6 +23,9 @@ PIXI.Stage.constructor = PIXI.Stage;
 
 PIXI.Stage.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
 
+/**
+@method updateTransform
+*/
 PIXI.Stage.prototype.updateTransform = function()
 {
 	this.worldAlpha = 1;		
@@ -40,9 +41,12 @@ PIXI.Stage.prototype.setFilter = function(filters)
 	this.filters = filters;
 }*/
 
+/**
+@method __addChild
+*/
 PIXI.Stage.prototype.__addChild = function(child)
 {
-	this.__childrenAdded.push(child);
+	//this.__childrenAdded.push(child);
 
 	child.stage = this;
 	
@@ -56,6 +60,9 @@ PIXI.Stage.prototype.__addChild = function(child)
 	
 }
 
+/**
+@method __removeChild
+*/
 PIXI.Stage.prototype.__removeChild = function(child)
 {
 	this.__childrenRemoved.push(child);

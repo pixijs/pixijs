@@ -1,8 +1,6 @@
 /**
  * @author Mat Groves http://matgroves.com/
  */
-var PIXI = PIXI || {};
-
 
 PIXI.Strip = function(texture, width, height)
 {

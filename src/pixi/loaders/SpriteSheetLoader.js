@@ -1,20 +1,19 @@
 /**
  * @author Mat Groves http://matgroves.com/
  */
-var PIXI = PIXI || {};
 
 /**
- * @class The sprite sheet loader is used to load in JSON sprite sheet data
+ * The sprite sheet loader is used to load in JSON sprite sheet data
  * To generate the data you can use http://www.codeandweb.com/texturepacker and publish the "JSON" format
  * There is a free version so thats nice, although the paid version is great value for money.
  * It is highly recommended to use Sprite sheets (also know as texture atlas') as it means sprite's can be batched and drawn together for highly increased rendering speed.
  * Once the data has been loaded the frames are stored in the PIXI texture cache and can be accessed though PIXI.Texture.fromFrameId() and PIXI.Sprite.fromFromeId()
  * This loader will also load the image file that the Spritesheet points to as well as the data.
  * When loaded this class will dispatch a 'loaded' event
- * @augments PIXI.EventTarget
+ * @class SpriteSheetLoader
+ * @extends EventTarget
  * @constructor
- * @param the url of the sprite sheet JSON file
- * @return A new SpriteSheetLoader
+ * @param url {String} the url of the sprite sheet JSON file
  */
 
 PIXI.SpriteSheetLoader = function(url)
@@ -68,8 +67,16 @@ PIXI.SpriteSheetLoader.prototype.onLoaded = function()
 			for (var i in frameData) 
 			{
 				var rect = frameData[i].frame;
+				PIXI.TextureCache[i] = new PIXI.Texture(this.texture, {x:rect.x, y:rect.y, width:rect.w, height:rect.h});
+				
+				if(frameData[i].trimmed)
+				{
+					//var realSize = frameData[i].spriteSourceSize;
+					PIXI.TextureCache[i].realSize = frameData[i].spriteSourceSize;
+					PIXI.TextureCache[i].trim.x = 0// (realSize.x / rect.w)
+					// calculate the offset!
+				}
 //				this.frames[i] = ;
-				PIXI.TextureCache[i] = new PIXI.Texture(this.texture, {x:rect.x, y:rect.y, width:rect.w, height:rect.h})
    			}
 			
 			if(this.texture.hasLoaded)

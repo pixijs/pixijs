@@ -1,16 +1,17 @@
 /**
  * @author Mat Groves http://matgroves.com/
  */
-var PIXI = PIXI || {};§
 
 PIXI._defaultFrame = new PIXI.Rectangle(0,0,1,1);
 
 /**
- * @class the WebGLRenderer is draws the stage and all its content onto a webGL enabled canvas. This renderer should be used for browsers support webGL. This Render works by automatically managing webGLBatchs. So no need for Sprite Batch's or Sprite Cloud's
+ * the WebGLRenderer is draws the stage and all its content onto a webGL enabled canvas. This renderer should be used for browsers support webGL. This Render works by automatically managing webGLBatchs. So no need for Sprite Batch's or Sprite Cloud's
  * Dont forget to add the view to your DOM or you will not see anything :)
- * @param the width of the canvas view
- * @param the height of the canvas view
- * @return WebGLRenderer
+ * @class WebGLRenderer
+ * @param width {Number} the width of the canvas view
+ * @default 0
+ * @param height {Number} the height of the canvas view
+ * @default 0
  */
 PIXI.WebGLRenderer = function(width, height)
 {
@@ -101,21 +102,24 @@ PIXI.WebGLRenderer.prototype.initShaders = function()
 /**
  * @private
  */
-PIXI.WebGLRenderer.prototype.checkVisibility = function(displayObject)
+PIXI.WebGLRenderer.prototype.checkVisibility = function(displayObject, globalVisible)
 {
 	var children = displayObject.children;
+	
 	
 	for (var i=0; i < children.length; i++) 
 	{
 		var child = children[i];
 		
 		// TODO optimize... shouldt need to loop through everything all the time
+		var actualVisibility = child.visible && globalVisible;
+		
 		// everything should have a batch!
 		// time to see whats new!
 		if(child.textureChange)
 		{
 			child.textureChange = false;
-			if(child.visible)
+			if(actualVisibility)
 			{
 				this.removeDisplayObject(child)
 				this.addDisplayObject(child)
@@ -123,61 +127,36 @@ PIXI.WebGLRenderer.prototype.checkVisibility = function(displayObject)
 			// update texture!!
 		}
 		
-		if(child.cacheVisible != child.visible)
+		
+		
+		if(child.cacheVisible != actualVisibility)
 		{
-			child.cacheVisible = child.visible;
-			if(child.visible)
+			child.cacheVisible = actualVisibility;
+			
+			if(child.cacheVisible)
 			{
 				this.addDisplayObject(child);
 			}
 			else
 			{
-			 	this.removeDisplayObject(child);
+				this.removeDisplayObject(child);
 			}
-				
-			this.setGLVisible(child, child.visible);
-			continue;
-		}		
+		}
 		
 		if(child.children.length > 0)
 		{
-			this.checkVisibility(child);
+			this.checkVisibility(child, actualVisibility);
 		}
+		
+		
 	};
-}
-
-/**
- * @private
- */
-PIXI.WebGLRenderer.prototype.setGLVisible = function(displayObject, visibility)
-{
-	var children = displayObject.children;
-	
-	for (var i=0; i < children.length; i++) 
-	{
-		var child = children[i];
-		
-		if(visibility)
-		{
-			this.addDisplayObject(child);
-		}
-		else
-		{
-			this.removeDisplayObject(child);
-		}
-		
-		if(child.children.length > 0)
-		{
-			this.setGLVisible(child, visibility);
-		}
-	}
-	
 }
 
 
 /**
  * Renders the stage to its webGL view
- * @param the PIXI.Stage element to be rendered
+ * @method render
+ * @param stage {Stage} the PIXI.Stage element to be rendered
  */
 PIXI.WebGLRenderer.prototype.render = function(stage)
 {
@@ -185,9 +164,18 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	
 	// update children if need be
 	// best to remove first!
-	for (var i=0; i < stage.__childrenRemoved.length; i++) this.removeDisplayObject(stage.__childrenRemoved[i]);
+	for (var i=0; i < stage.__childrenRemoved.length; i++)
+	{
+		this.removeDisplayObject(stage.__childrenRemoved[i]);
+	//	stage.__childrenRemoved[i].cacheVisible = false;
+	}
+	/*
 	// no add all new sprites		
-	for (var i=0; i < stage.__childrenAdded.length; i++) this.addDisplayObject(stage.__childrenAdded[i]);
+	for (var i=0; i < stage.__childrenAdded.length; i++) 
+	{
+		stage.__childrenAdded[i].cacheVisible = false;
+//		this.addDisplayObject(stage.__childrenAdded[i]);
+	}*/
 	// update any textures	
 	for (var i=0; i < PIXI.texturesToUpdate.length; i++) this.updateTexture(PIXI.texturesToUpdate[i]);
 	
@@ -197,7 +185,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	PIXI.texturesToUpdate = [];
 	
 	// recursivly loop through all items!
-	this.checkVisibility(stage);
+	this.checkVisibility(stage, true);
 	
 	// update the scen graph	
 	stage.updateTransform();
@@ -206,7 +194,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	
 	gl.clear(gl.COLOR_BUFFER_BIT)
 
-	gl.clearColor(1, 1, 1, 1.0);     
+	gl.clearColor(0, 0, 0, 1.0);     
 	
 	// set the correct blend mode!
  	gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
@@ -265,12 +253,16 @@ PIXI.WebGLRenderer.prototype.updateTexture = function(texture)
  */
 PIXI.WebGLRenderer.prototype.addDisplayObject = function(displayObject)
 {
-	if(!displayObject.stage)return;
 	
-	displayObject.cacheVisible = displayObject.visible;
+	if(!displayObject.stage)return; // means it was removed 
+	if(displayObject.__inWebGL)return; //means it is already in webgL
 	
-	if(!displayObject.visible)return;
+	//displayObject.cacheVisible = displayObject.visible;
+	
+	// TODO if objects parent is not visible then dont add to stage!!!!
+	//if(!displayObject.visible)return;
 
+	
 	displayObject.batch = null;
 	
 	//displayObject.cacheVisible = true;
@@ -458,10 +450,12 @@ PIXI.WebGLRenderer.prototype.addDisplayObject = function(displayObject)
 PIXI.WebGLRenderer.prototype.removeDisplayObject = function(displayObject)
 {
 	//if(displayObject.stage)return;
-	displayObject.cacheVisible = displayObject.visible;
+	displayObject.cacheVisible = false;//displayObject.visible;
 	
 	if(!displayObject.renderable)return;
 	
+	displayObject.__inWebGL = false;
+		
 	/*
 	 * removing is a lot quicker..
 	 * 
@@ -472,9 +466,11 @@ PIXI.WebGLRenderer.prototype.removeDisplayObject = function(displayObject)
 	{
 		// should always have a batch!
 		var batch = displayObject.batch;
-		if(!batch)return; // thismeans the display list has been altered befre rendering
+		if(!batch)return; // this means the display list has been altered befre rendering
 		
 		batch.remove(displayObject);
+		
+		
 		if(batch.size==0)
 		{
 			batchToRemove = batch
@@ -528,8 +524,9 @@ PIXI.WebGLRenderer.prototype.removeDisplayObject = function(displayObject)
 
 /**
  * resizes the webGL view to the specified width and height
- * @param the new width of the webGL view
- * @param the new height of the webGL view
+ * @method resize
+ * @param width {Number} the new width of the webGL view
+ * @param height {Number} the new height of the webGL view
  */
 PIXI.WebGLRenderer.prototype.resize = function(width, height)
 {

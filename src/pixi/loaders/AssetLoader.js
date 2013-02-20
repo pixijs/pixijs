@@ -1,18 +1,15 @@
 /**
  * @author Mat Groves http://matgroves.com/
  */
-var PIXI = PIXI || {};
-
 
 /**
- * @class A Class that loads a bunch of images / sprite sheet files. Once the assets have been loaded they are added to the PIXI Texture cache and can be accessed easily through PIXI.Texture.fromFrameId(), PIXI.Texture.fromImage() and PIXI.Sprite.fromImage(), PIXI.Sprite.fromFromeId()
- * @augments PIXI.EventTarget
+ * A Class that loads a bunch of images / sprite sheet files. Once the assets have been loaded they are added to the PIXI Texture cache and can be accessed easily through PIXI.Texture.fromFrameId(), PIXI.Texture.fromImage() and PIXI.Sprite.fromImage(), PIXI.Sprite.fromFromeId()
  * When all items have been loaded this class will dispatch a 'loaded' event
  * As each individual item is loaded this class will dispatch a 'progress' event
+ * @class AssetLoader
  * @constructor
- * 
- * @param an array of image/sprite sheet urls that you would like loaded supported. Supported image formats include "jpeg", "jpg", "png", "gif". Supported sprite sheet data formats only include "JSON" at this time
- * @return A new AssetLoader
+ * @extends EventTarget
+ * @param assetURLs {Array} an array of image/sprite sheet urls that you would like loaded supported. Supported image formats include "jpeg", "jpg", "png", "gif". Supported sprite sheet data formats only include "JSON" at this time
  */
 PIXI.AssetLoader = function(assetURLs)
 {
@@ -21,6 +18,7 @@ PIXI.AssetLoader = function(assetURLs)
 	
 	/**
 	 * The array of asset URLs that are going to be loaded
+	 * @property assetURLs
 	 * @type Array
 	 */
 	this.assetURLs = assetURLs;

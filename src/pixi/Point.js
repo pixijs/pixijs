@@ -1,22 +1,33 @@
 /**
  * @author Mat Groves http://matgroves.com/
  */
-var PIXI = PIXI || {};
 
 /**
- * @class The Point object represents a location in a two-dimensional coordinate system, where x represents the horizontal axis and y represents the vertical axis.
+ * The Point object represents a location in a two-dimensional coordinate system, where x represents the horizontal axis and y represents the vertical axis.
+ * @class Point
  * @constructor 
- * @param x position of the point
- * @param y position of the point
- * @return A new Rectangle.
+ * @param x {Number} position of the point
+ * @param y {Number} position of the point
  */
 PIXI.Point = function(x, y)
 {
+	/**
+	 * @property x 
+	 * @type Number
+	 * @default 0
+	 */
 	this.x = x ? x : 0;
+	
+	/**
+	 * @property y
+	 * @type Number
+	 * @default 0
+	 */
 	this.y = y ? y : 0;
 }
 
 /** 
+ * @method clone
  * @return a copy of the point
  */
 PIXI.Point.clone = function()

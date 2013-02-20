@@ -22,18 +22,13 @@ var isAdding = false;
 var count = 0;
 var container;
 
+var detail;
+
 function onReady()
 {
-	var webgl = ( function () { try { return !! window.WebGLRenderingContext && !! document.createElement( 'canvas' ).getContext( 'experimental-webgl' ); } catch( e ) { return false; } } )()
+	detail = document.getElementById("pixi");
 	
-	if(webgl)
-	{
-		renderer = new PIXI.WebGLRenderer();
-	}
-	else
-	{
-		renderer = new PIXI.CanvasRenderer(480, 320);
-	}
+	renderer = PIXI.autoDetectRenderer();
 	
 	stage = new PIXI.Stage;
 	
@@ -46,7 +41,7 @@ function onReady()
 	stats.domElement.style.top = "0px";
 	requestAnimFrame(update);
 	
-	wabbitTexture = new PIXI.Texture("wabbit.png")
+	wabbitTexture = new PIXI.Texture.fromImage("wabbit.png")
 	
 	counter = document.createElement("div");
 	counter.className = "counter";
@@ -54,7 +49,6 @@ function onReady()
 	
 	count = startBunnyCount;
 	counter.innerHTML = count + " BUNNIES";
-	
 	
 	container = new PIXI.DisplayObjectContainer();
 	stage.addChild(container);
@@ -114,7 +108,9 @@ function resize()
 	minX = 0;
 	maxY = height;
 	minY = 0;
-
+	
+	detail.style.left = width - 204 + "px";
+	detail.style.top = height - 100 + "px";
 	renderer.resize(width, height);
 }
 
@@ -126,17 +122,17 @@ function update()
 	{
 		// add 10 at a time :)
 		
-		for (var i = 0; i < 2; i++) 
+		for (var i = 0; i < 10; i++) 
 		{
-			var bunny = new PIXI.Sprite(wabbitTexture, {x:0, y:0, width:26, height:37});
+			var bunny = new PIXI.Sprite(wabbitTexture);
 			bunny.speedX = Math.random() * 10;
 			bunny.speedY = (Math.random() * 10) - 5;
 			
 			bunny.anchor.x = 0.5;
 			bunny.anchor.y = 1;
-			bunny.alpha = 0.3 + Math.random() * 0.7;
+			//bunny.alpha = 0.3 + Math.random() * 0.7;
 			bunnys.push(bunny);
-			bunny.rotation = Math.random() - 0.5;
+			//bunny.rotation = Math.random() - 0.5;
 			container.addChild(bunny);
 			
 			count++;

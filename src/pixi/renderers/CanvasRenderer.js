@@ -1,25 +1,28 @@
 /**
  * @author Mat Groves http://matgroves.com/
  */
-var PIXI = PIXI || {};
 
 /**
- * @class the CanvasRenderer is draws the stage and all its content onto a 2d canvas. This renderer should be used for browsers that do not support webGL.
+ * the CanvasRenderer is draws the stage and all its content onto a 2d canvas. This renderer should be used for browsers that do not support webGL.
  * Dont forget to add the view to your DOM or you will not see anything :)
- * @param the width of the canvas view
- * @param the height of the canvas view
- * @return CanvasRenderer
+ * @class CanvasRenderer
+ * @param width {Number} the width of the canvas view
+ * @param height {Number} the height of the canvas view
  */
 PIXI.CanvasRenderer = function(width, height)
 {
 	/**
 	 * The width of the canvas view
+	 * @property width
 	 * @type Number
+	 * @default 800
 	 */
 	this.width = width ? width : 800;
 	/**
 	 * The height of the canvas view
+	 * @property height
 	 * @type Number
+	 * @default 600
 	 */
 	this.height = height ? height : 600;
 	
@@ -27,7 +30,8 @@ PIXI.CanvasRenderer = function(width, height)
 	
 	/**
 	 * The canvas element that the everything is drawn to
-	 * @type Number
+	 * @property view
+	 * @type Canvas
 	 */
 	this.view = document.createElement( 'canvas' ); 
 	
@@ -35,6 +39,12 @@ PIXI.CanvasRenderer = function(width, height)
 	this.view.height = this.height;  
 	this.view.background = "#FF0000";
 	this.count = 0;
+	
+	/**
+	 * The canvas context that the everything is drawn to
+	 * @property context
+	 * @type Canvas 2d Context
+	 */
 	this.context = this.view.getContext("2d");
 }
 
@@ -43,7 +53,8 @@ PIXI.CanvasRenderer.constructor = PIXI.CanvasRenderer;
 
 /**
  * Renders the stage to its canvas view
- * @param the PIXI.Stage element to be rendered
+ * @method render
+ * @param stage {Stage} the Stage element to be rendered
  */
 PIXI.CanvasRenderer.prototype.render = function(stage)
 {
@@ -113,10 +124,10 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 								   frame.y,
 								   frame.width,
 								   frame.height,
-								   (transform[2]+displayObject.anchor.x * -frame.width + 0.5) | 0,
-								   (transform[5]+displayObject.anchor.y * -frame.height + 0.5) | 0,
-								   (frame.width * transform[0]),
-								   (frame.height * transform[4]));
+								   (transform[2]+ ((displayObject.anchor.x - displayObject.texture.trim.x) * -frame.width) * transform[0]),
+								   (transform[5]+ ((displayObject.anchor.y - displayObject.texture.trim.y) * -frame.height)* transform[4]),
+								   (displayObject.width * transform[0]),
+								   (displayObject.height * transform[4]));
 				
 			}	
 			else
@@ -128,17 +139,17 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 								   frame.y,
 								   frame.width,
 								   frame.height,
-								   displayObject.anchor.x * -frame.width, 
-								   displayObject.anchor.y * -frame.height,
-								   frame.width,
-								   frame.height);
+								   (displayObject.anchor.x - displayObject.texture.trim.x) * -frame.width, 
+								   (displayObject.anchor.y - displayObject.texture.trim.y) * -frame.height,
+								   displayObject.width,
+								   displayObject.height);
 			}
 		}					   
    	}
    	else if(displayObject instanceof PIXI.Strip)
 	{
 		context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
-		this.renderStrip(displayObject)
+		this.renderStrip(displayObject);
 	}
 	
 	// render!

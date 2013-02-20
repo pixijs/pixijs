@@ -1,7 +1,6 @@
 /**
  * @author Mat Groves http://matgroves.com/
  */
-var PIXI = PIXI || {};
 
 
 PIXI.Rope = function(texture, points)
@@ -30,7 +29,7 @@ PIXI.Rope = function(texture, points)
 
 
 // constructor
-PIXI.Rope.constructor = GAME.Rope;
+PIXI.Rope.constructor = PIXI.Rope;
 PIXI.Rope.prototype = Object.create( PIXI.Strip.prototype );
 
 PIXI.Rope.prototype.refresh = function()

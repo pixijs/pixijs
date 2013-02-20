@@ -14,13 +14,12 @@ Also its fast.
 ### Current features ###
 
 - webGL renderer (with automatic smart batching allowing for REALLY fast performance)
-- canvas renderer 
+- canvas renderer
 - full scene graph
-- super easy to use API (similar to the flash display list API)
+- super easy to use API (similar to twhe flash display list API)
 - support for texture atlas's
 - asset loader / sprite sheet loader
 - auto detect which renderer should be used
-- handles device context loss
 
 ### Coming soon ###
 
@@ -48,8 +47,8 @@ Also its fast.
 	
 	var stage = new PIXI.Stage;
 
-	var bunnyTexture = new PIXI.Texture("bunny.png");
-	var bunny = new PIXI.Sprite(rabbitTexture);
+	var bunnyTexture = new PIXI.Texture.fromImage("bunny.png");
+	var bunny = new PIXI.Sprite(bunnyTexture);
 	
 	bunny.position.x = 400;
 	bunny.position.y = 300;

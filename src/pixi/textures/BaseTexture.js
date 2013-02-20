@@ -1,17 +1,16 @@
 /**
  * @author Mat Groves http://matgroves.com/
  */
-var PIXI = PIXI || {};
 
 PIXI.BaseTextureCache = {};
 PIXI.texturesToUpdate = [];
 
 /**
- * @class A texture stores the information that represents an image. All textures have a base texture
- * @augments PIXI.EventTarget
+ * A texture stores the information that represents an image. All textures have a base texture
+ * @class BaseTexture
+ * @extends EventTarget
  * @constructor
- * @param image url
- * @return A new BaseTexture
+ * @param imageUrl {String} image url
  */
 PIXI.BaseTexture = function(imageUrl)
 {
@@ -19,13 +18,15 @@ PIXI.BaseTexture = function(imageUrl)
 	
 	/**
 	 * The url of the texture
-	 * @type #BaseTexture
+	 * @property imageUrl
+	 * @type String
 	 */
 	this.imageUrl = imageUrl;
 	
 	/**
 	 * The html image that is loaded to create the texture
-	 * @type #BaseTexture
+	 * @property image
+	 * @type Image
 	 */
 	this.image = new Image();
 	
@@ -41,17 +42,19 @@ PIXI.BaseTexture = function(imageUrl)
 		scope.dispatchEvent( { type: 'loaded', content: scope } );
 	}
 		
-		$.proxy(this.onImageLoaded, this);
+	$.proxy(this.onImageLoaded, this);
 	this.image.src = imageUrl;
 	
 	/**
 	 * [read only] The width of the base texture set when the image has loaded
-	 * @type #BaseTexture
+	 * @property width
+	 * @type Number
 	 */
 	this.width = 100;
 	/**
 	 * [read only] The height of the base texture set when the image has loaded
-	 * @type #BaseTexture
+	 * @property height
+	 * @type Number
 	 */
 	this.height = 100;
 	

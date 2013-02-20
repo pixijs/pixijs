@@ -1,18 +1,17 @@
 /**
  * @author Mat Groves http://matgroves.com/
  */
-var PIXI = PIXI || {};
 
 PIXI.TextureCache = {};
 PIXI.FrameCache = {};
 
 /**
- * @class A texture stores the information that represents an image or part of an image. It cannot be added to the display list directly. To do this use PIXI.Sprite. If no frame is provided then the whole image is used
- * @augments PIXI.EventTarget
+ * A texture stores the information that represents an image or part of an image. It cannot be added to the display list directly. To do this use PIXI.Sprite. If no frame is provided then the whole image is used
+ * @class Texture
+ * @extends EventTarget
  * @constructor
- * @param {PIXI.textures.BaseTexture} base texture {@link PIXI.textures.BaseTexture}
- * @param {PIXI.Rectangle} frame {@link PIXI.Rectangle}
- * @return A new Texture.
+ * @param baseTexture {BaseTexture}
+ * @param frmae {Rectangle}
  */
 PIXI.Texture = function(baseTexture, frame)
 {
@@ -24,9 +23,12 @@ PIXI.Texture = function(baseTexture, frame)
 		frame = new PIXI.Rectangle(0,0,1,1);
 	}
 	
+	this.trim = new PIXI.Point();
+	
 	/**
 	 * The base texture of this texture
-	 * @type #BaseTexture
+	 * @property baseTexture
+	 * @type BaseTexture
 	 */
 	this.baseTexture = baseTexture;
 	
@@ -34,6 +36,7 @@ PIXI.Texture = function(baseTexture, frame)
 	
 	/**
 	 * The frame specifies the region of the base texture that this texture uses
+	 * @property frame
 	 * @type #Rectangle
 	 */
 	this.frame = frame;
@@ -71,8 +74,8 @@ PIXI.Texture.prototype.onBaseTextureLoaded = function(event)
 
 /**
  * Specifies the rectangle region of the baseTexture
- * @param {PIXI.Rectangle} frame {@link PIXI.Rectangle}
- * @return A new Texture.
+ * @method setFrame
+ * @param frame {Rectangle}
  */
 PIXI.Texture.prototype.setFrame = function(frame)
 {
@@ -86,8 +89,10 @@ PIXI.Texture.prototype.setFrame = function(frame)
  * 
  * Helper function that returns a texture based on an image url
  * If the image is not in the texture cache it will be  created and loaded
- * @param The image url of the texture
- * @return {PIXI.textures.Texture} texture {@link PIXI.textures.Texture}
+ * @static
+ * @method fromImage
+ * @param imageUrl {String} The image url of the texture
+ * @return Texture
  */
 PIXI.Texture.fromImage = function(imageUrl)
 {
@@ -108,21 +113,23 @@ PIXI.Texture.fromImage = function(imageUrl)
  * 
  * Helper function that returns a texture based on a frame id
  * If the frame id is not in the texture cache an error will be thrown
- * @param The frame id of the texture
- * @return {PIXI.textures.Texture} texture {@link PIXI.textures.Texture}
+ * @method fromFrameId
+ * @param frameId {String} The frame id of the texture
+ * @return Texture
  */
 PIXI.Texture.fromFrameId = function(frameId)
 {
 	var texture = PIXI.TextureCache[frameId];
-	if(!texture)throw new Error("The frameId '"+ frameId +"' does not exist in the texture cache" + this);
+	if(!texture)throw new Error("The frameId '"+ frameId +"' does not exist in the texture cache " + this);
 	return texture;
 }
 
 /**
  * 
  * Adds a texture to the textureCache. 
- * @param {PIXI.textures.Texture} texture {@link PIXI.textures.Texture}
- * @param the id that the texture will be stored against.
+ * @method addTextureToCache
+ * @param texture {Texture}
+ * @param id {String} the id that the texture will be stored against.
  */
 PIXI.Texture.addTextureToCache = function(texture, id)
 {
@@ -132,9 +139,10 @@ PIXI.Texture.addTextureToCache = function(texture, id)
 /**
  * 
  * Remove a texture from the textureCache. 
- * @param the id of the texture to be removed
+ * @method removeTextureFromCache
+ * @param id {String} the id of the texture to be removed
  */
-PIXI.Texture.addTextureToCache = function(id)
+PIXI.Texture.removeTextureFromCache = function(id)
 {
 	PIXI.TextureCache[id] = texture;
 }
