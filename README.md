@@ -70,6 +70,6 @@ Also its fast.
 	}
 ```
 
-This content is released under the (Link Goes Here) MIT License.
+This content is released under the (http://opensource.org/licenses/MIT) MIT License.
 
 
