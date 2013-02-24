@@ -1,5 +1,5 @@
 /**
- * @author Mat Groves http://matgroves.com/
+ * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
 /**
@@ -7,15 +7,19 @@ A Stage represents the root of the display tree. Everything connected to the sta
 @class Stage
 @extends DisplayObjectContainer
 @constructor
+@param backgroundColor {Number} the background color of the stage
 */
-PIXI.Stage = function()
+PIXI.Stage = function(backgroundColor)
 {
+	
 	PIXI.DisplayObjectContainer.call( this );
 	this.worldTransform = mat3.identity();
 	this.__childrenAdded = [];
 	this.__childrenRemoved = [];
 	this.childIndex = 0;
 	this.stage=  this;
+	
+	this.setBackgroundColor(backgroundColor);
 }
 
 // constructor
@@ -25,6 +29,7 @@ PIXI.Stage.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
 
 /**
 @method updateTransform
+@internal
 */
 PIXI.Stage.prototype.updateTransform = function()
 {
@@ -35,15 +40,18 @@ PIXI.Stage.prototype.updateTransform = function()
 		this.children[i].updateTransform();	
 	}
 }
-/*
-PIXI.Stage.prototype.setFilter = function(filters)
-{
-	this.filters = filters;
-}*/
 
 /**
-@method __addChild
-*/
+ * @method setBackgroundColor
+ * @param backgroundColor {Number}
+ */
+PIXI.Stage.prototype.setBackgroundColor = function(backgroundColor)
+{
+	this.backgroundColor = backgroundColor ? backgroundColor : 0x000000;
+	this.backgroundColorSplit = HEXtoRGB(this.backgroundColor);
+	this.backgroundColorString =  "#" + this.backgroundColor.toString(16);
+}
+
 PIXI.Stage.prototype.__addChild = function(child)
 {
 	//this.__childrenAdded.push(child);
@@ -60,9 +68,7 @@ PIXI.Stage.prototype.__addChild = function(child)
 	
 }
 
-/**
-@method __removeChild
-*/
+
 PIXI.Stage.prototype.__removeChild = function(child)
 {
 	this.__childrenRemoved.push(child);

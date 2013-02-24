@@ -1,9 +1,9 @@
 /**
- * @author Mat Groves http://matgroves.com/
+ * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
 /**
- * A Class that loads a bunch of images / sprite sheet files. Once the assets have been loaded they are added to the PIXI Texture cache and can be accessed easily through PIXI.Texture.fromFrameId(), PIXI.Texture.fromImage() and PIXI.Sprite.fromImage(), PIXI.Sprite.fromFromeId()
+ * A Class that loads a bunch of images / sprite sheet files. Once the assets have been loaded they are added to the PIXI Texture cache and can be accessed easily through PIXI.Texture.fromFrame(), PIXI.Texture.fromImage() and PIXI.Sprite.fromImage(), PIXI.Sprite.fromFromeId()
  * When all items have been loaded this class will dispatch a 'loaded' event
  * As each individual item is loaded this class will dispatch a 'progress' event
  * @class AssetLoader
@@ -15,7 +15,6 @@ PIXI.AssetLoader = function(assetURLs)
 {
 	PIXI.EventTarget.call( this );
 	
-	
 	/**
 	 * The array of asset URLs that are going to be loaded
 	 * @property assetURLs
@@ -25,6 +24,16 @@ PIXI.AssetLoader = function(assetURLs)
 	
 	this.assets = [];
 }
+
+/**
+Fired when an item has loaded
+@event onProgress
+**/
+
+/**
+Fired when all the assets have loaded
+@event onComplete 
+**/
 
 // constructor
 PIXI.AssetLoader.constructor = PIXI.AssetLoader;
@@ -44,7 +53,7 @@ PIXI.AssetLoader.prototype.load = function()
 		var filename = this.assetURLs[i];
 		var fileType = filename.split('.').pop().toLowerCase();
 		// what are we loading?
-		var type;
+		var type = null;
 		
 		for (var j=0; j < imageTypes.length; j++) 
 		{
@@ -55,7 +64,7 @@ PIXI.AssetLoader.prototype.load = function()
 			}
 		}
 		
-		if(!type)
+		if(type != "img")
 		{
 			for (var j=0; j < spriteSheetTypes.length; j++) 
 			{
@@ -69,6 +78,7 @@ PIXI.AssetLoader.prototype.load = function()
 		
 		if(type == "img")
 		{
+			
 			var texture = PIXI.Texture.fromImage(filename);
 			if(!texture.hasLoaded)
 			{
@@ -116,11 +126,13 @@ PIXI.AssetLoader.prototype.load = function()
 PIXI.AssetLoader.prototype.onAssetLoaded = function()
 {
 	this.loadCount--;
-	this.dispatchEvent( { type: 'progress', content: this } );
+	this.dispatchEvent( { type: 'onProgress', content: this } );
+	if(this.onProgress)this.onProgress();
 	
 	if(this.loadCount == 0)
 	{
-		this.dispatchEvent( { type: 'loaded', content: this } );
+		this.dispatchEvent( { type: 'onComplete', content: this } );
+		if(this.onComplete)this.onComplete();
 	}
 }
 

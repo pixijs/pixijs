@@ -1,10 +1,11 @@
 /**
- * @author Mat Groves http://matgroves.com/
+ * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
 /**
  * A MovieClip is a simple way to display an animation depicted by a list of textures.
  * @class MovieClip
+ * @extends Sprite
  * @constructor
  * @param textures {Array} an array of {Texture} objects that make up the animation
  */

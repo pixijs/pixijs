@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>pixi&#x2F;loaders&#x2F;AssetLoader.js - The Foo API</title>
+    <title>pixi&#x2F;loaders&#x2F;AssetLoader.js - Pixi.js API</title>
     <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0pr2&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
@@ -15,11 +15,11 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
             
-                <h1><img src="..&#x2F;assets/css/logo.png" title="The Foo API"></h1>
+                <h1><img src="..&#x2F;logo_small.png" title="Pixi.js API"></h1>
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.2.1</em>
+            <em>API Docs for: 0.9</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -115,11 +115,11 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 &#x2F;**
- * @author Mat Groves http:&#x2F;&#x2F;matgroves.com&#x2F;
+ * @author Mat Groves http:&#x2F;&#x2F;matgroves.com&#x2F; @Doormat23
  *&#x2F;
 
 &#x2F;**
- * A Class that loads a bunch of images &#x2F; sprite sheet files. Once the assets have been loaded they are added to the PIXI Texture cache and can be accessed easily through PIXI.Texture.fromFrameId(), PIXI.Texture.fromImage() and PIXI.Sprite.fromImage(), PIXI.Sprite.fromFromeId()
+ * A Class that loads a bunch of images &#x2F; sprite sheet files. Once the assets have been loaded they are added to the PIXI Texture cache and can be accessed easily through PIXI.Texture.fromFrame(), PIXI.Texture.fromImage() and PIXI.Sprite.fromImage(), PIXI.Sprite.fromFromeId()
  * When all items have been loaded this class will dispatch a &#x27;loaded&#x27; event
  * As each individual item is loaded this class will dispatch a &#x27;progress&#x27; event
  * @class AssetLoader
@@ -131,7 +131,6 @@ PIXI.AssetLoader = function(assetURLs)
 {
 	PIXI.EventTarget.call( this );
 	
-	
 	&#x2F;**
 	 * The array of asset URLs that are going to be loaded
 	 * @property assetURLs
@@ -141,6 +140,16 @@ PIXI.AssetLoader = function(assetURLs)
 	
 	this.assets = [];
 }
+
+&#x2F;**
+Fired when an item has loaded
+@event onProgress
+**&#x2F;
+
+&#x2F;**
+Fired when all the assets have loaded
+@event onComplete 
+**&#x2F;
 
 &#x2F;&#x2F; constructor
 PIXI.AssetLoader.constructor = PIXI.AssetLoader;
@@ -160,7 +169,7 @@ PIXI.AssetLoader.prototype.load = function()
 		var filename = this.assetURLs[i];
 		var fileType = filename.split(&#x27;.&#x27;).pop().toLowerCase();
 		&#x2F;&#x2F; what are we loading?
-		var type;
+		var type = null;
 		
 		for (var j=0; j &lt; imageTypes.length; j++) 
 		{
@@ -171,7 +180,7 @@ PIXI.AssetLoader.prototype.load = function()
 			}
 		}
 		
-		if(!type)
+		if(type != &quot;img&quot;)
 		{
 			for (var j=0; j &lt; spriteSheetTypes.length; j++) 
 			{
@@ -185,6 +194,7 @@ PIXI.AssetLoader.prototype.load = function()
 		
 		if(type == &quot;img&quot;)
 		{
+			
 			var texture = PIXI.Texture.fromImage(filename);
 			if(!texture.hasLoaded)
 			{
@@ -232,11 +242,13 @@ PIXI.AssetLoader.prototype.load = function()
 PIXI.AssetLoader.prototype.onAssetLoaded = function()
 {
 	this.loadCount--;
-	this.dispatchEvent( { type: &#x27;progress&#x27;, content: this } );
+	this.dispatchEvent( { type: &#x27;onProgress&#x27;, content: this } );
+	if(this.onProgress)this.onProgress();
 	
 	if(this.loadCount == 0)
 	{
-		this.dispatchEvent( { type: &#x27;loaded&#x27;, content: this } );
+		this.dispatchEvent( { type: &#x27;onComplete&#x27;, content: this } );
+		if(this.onComplete)this.onComplete();
 	}
 }
 

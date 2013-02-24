@@ -1,5 +1,5 @@
 /**
- * @author Mat Groves http://matgroves.com/
+ * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
 PIXI.TextureCache = {};
@@ -113,11 +113,11 @@ PIXI.Texture.fromImage = function(imageUrl)
  * 
  * Helper function that returns a texture based on a frame id
  * If the frame id is not in the texture cache an error will be thrown
- * @method fromFrameId
+ * @method fromFrame
  * @param frameId {String} The frame id of the texture
  * @return Texture
  */
-PIXI.Texture.fromFrameId = function(frameId)
+PIXI.Texture.fromFrame = function(frameId)
 {
 	var texture = PIXI.TextureCache[frameId];
 	if(!texture)throw new Error("The frameId '"+ frameId +"' does not exist in the texture cache " + this);

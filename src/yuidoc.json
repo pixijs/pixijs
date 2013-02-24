@@ -1,9 +1,10 @@
 {
-    "name": "The Foo API",
+    "name": "Pixi.js API",
+    "logo": "../logo_small.png",
     "description": "The Foo API: a library for doing X, Y, and Z",
-    "version": "1.2.1",
-    "url": "http://example.com/",
+    "version": "0.9",
+    "url": "http://goodboydigital.com/",
     "options": {
-        "outdir": "../build/apidocs"
+        "outdir": "../docs"
     }
 }

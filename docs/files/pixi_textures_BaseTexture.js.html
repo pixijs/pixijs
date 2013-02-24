@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>pixi&#x2F;textures&#x2F;BaseTexture.js - The Foo API</title>
+    <title>pixi&#x2F;textures&#x2F;BaseTexture.js - Pixi.js API</title>
     <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0pr2&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
@@ -15,11 +15,11 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
             
-                <h1><img src="..&#x2F;assets/css/logo.png" title="The Foo API"></h1>
+                <h1><img src="..&#x2F;logo_small.png" title="Pixi.js API"></h1>
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.2.1</em>
+            <em>API Docs for: 0.9</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -115,7 +115,7 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 &#x2F;**
- * @author Mat Groves http:&#x2F;&#x2F;matgroves.com&#x2F;
+ * @author Mat Groves http:&#x2F;&#x2F;matgroves.com&#x2F; @Doormat23
  *&#x2F;
 
 PIXI.BaseTextureCache = {};
@@ -158,7 +158,7 @@ PIXI.BaseTexture = function(imageUrl)
 		scope.dispatchEvent( { type: &#x27;loaded&#x27;, content: scope } );
 	}
 		
-	$.proxy(this.onImageLoaded, this);
+	&#x2F;&#x2F;$.proxy(this.onImageLoaded, this);
 	this.image.src = imageUrl;
 	
 	&#x2F;**

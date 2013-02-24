@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>MovieClip - The Foo API</title>
+    <title>MovieClip - Pixi.js API</title>
     <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0pr2&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
@@ -15,11 +15,11 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
             
-                <h1><img src="..&#x2F;assets/css/logo.png" title="The Foo API"></h1>
+                <h1><img src="..&#x2F;logo_small.png" title="Pixi.js API"></h1>
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.2.1</em>
+            <em>API Docs for: 0.9</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -114,6 +114,10 @@
 <div class="box meta">
     
 
+    
+        <div class="extends">
+            Extends <a href="../classes/Sprite.html" class="crosslink">Sprite</a>
+        </div>
     
 
     
@@ -251,7 +255,21 @@
                 <div class="index-section methods">
                     <h3>Methods</h3>
 
-                    <ul class="index-list methods">
+                    <ul class="index-list methods extends">
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_addChild">addChild</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_addChildAt">addChildAt</a>
+
+                                
+                                
+                            </li>
                         
                             <li class="index-item method">
                                 <a href="#method_gotoAndPlay">gotoAndPlay</a>
@@ -274,6 +292,20 @@
                                 
                             </li>
                         
+                            <li class="index-item method inherited">
+                                <a href="#method_removeChild">removeChild</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_setTexture">setTexture</a>
+
+                                
+                                
+                            </li>
+                        
                             <li class="index-item method">
                                 <a href="#method_stop">stop</a>
 
@@ -289,10 +321,38 @@
                 <div class="index-section properties">
                     <h3>Properties</h3>
 
-                    <ul class="index-list properties">
+                    <ul class="index-list properties extends">
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_alpha">alpha</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_anchor">anchor</a>
+
+                                
+                                
+                            </li>
                         
                             <li class="index-item property">
                                 <a href="#property_animationSpeed">animationSpeed</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_blendMode">blendMode</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_children">children</a>
 
                                 
                                 
@@ -305,6 +365,20 @@
                                 
                             </li>
                         
+                            <li class="index-item property inherited">
+                                <a href="#property_height">height</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_parent">parent</a>
+
+                                
+                                
+                            </li>
+                        
                             <li class="index-item property">
                                 <a href="#property_playing">playing</a>
 
@@ -312,8 +386,57 @@
                                 
                             </li>
                         
+                            <li class="index-item property inherited">
+                                <a href="#property_position">position</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_rotation">rotation</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_scale">scale</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_stage">stage</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_texture">texture</a>
+
+                                
+                                
+                            </li>
+                        
                             <li class="index-item property">
                                 <a href="#property_textures">textures</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_visible">visible</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_width">width</a>
 
                                 
                                 
@@ -331,6 +454,195 @@
         
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
+
+                
+                    <div id="method_addChild" class="method item inherited">
+    <h3 class="name"><code>addChild</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>DisplayObject</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObjectContainer.html#method_addChild">DisplayObjectContainer</a>:
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;pixi_DisplayObjectContainer.js.html#l29"><code>pixi&#x2F;DisplayObjectContainer.js:29</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Adds a child to the container.</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">DisplayObject</code>
+                        <span class="type"><a href="../classes/DisplayObject.html" class="crosslink">DisplayObject</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_addChildAt" class="method item inherited">
+    <h3 class="name"><code>addChildAt</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>DisplayObject</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>index</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObjectContainer.html#method_addChildAt">DisplayObjectContainer</a>:
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;pixi_DisplayObjectContainer.js.html#l51"><code>pixi&#x2F;DisplayObjectContainer.js:51</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Adds a child to the container at a specified index. If the index is out of bounds an error will be thrown</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">DisplayObject</code>
+                        <span class="type"><a href="../classes/DisplayObject.html" class="crosslink">DisplayObject</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">index</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
 
                 
                     <div id="method_gotoAndPlay" class="method item">
@@ -375,7 +687,7 @@
             
         
         
-        <a href="..&#x2F;files&#x2F;pixi_MovieClip.js.html#l79"><code>pixi&#x2F;MovieClip.js:79</code></a>
+        <a href="..&#x2F;files&#x2F;pixi_MovieClip.js.html#l80"><code>pixi&#x2F;MovieClip.js:80</code></a>
         
         </p>
 
@@ -462,7 +774,7 @@
             
         
         
-        <a href="..&#x2F;files&#x2F;pixi_MovieClip.js.html#l66"><code>pixi&#x2F;MovieClip.js:66</code></a>
+        <a href="..&#x2F;files&#x2F;pixi_MovieClip.js.html#l67"><code>pixi&#x2F;MovieClip.js:67</code></a>
         
         </p>
 
@@ -539,7 +851,7 @@
             
         
         
-        <a href="..&#x2F;files&#x2F;pixi_MovieClip.js.html#l57"><code>pixi&#x2F;MovieClip.js:57</code></a>
+        <a href="..&#x2F;files&#x2F;pixi_MovieClip.js.html#l58"><code>pixi&#x2F;MovieClip.js:58</code></a>
         
         </p>
 
@@ -553,6 +865,174 @@
         <p>Plays the MovieClip</p>
     </div>
 
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_removeChild" class="method item inherited">
+    <h3 class="name"><code>removeChild</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>DisplayObject</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObjectContainer.html#method_removeChild">DisplayObjectContainer</a>:
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;pixi_DisplayObjectContainer.js.html#l97"><code>pixi&#x2F;DisplayObjectContainer.js:97</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Removes a child from the container.</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">DisplayObject</code>
+                        <span class="type"><a href="../classes/DisplayObject.html" class="crosslink">DisplayObject</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_setTexture" class="method item inherited">
+    <h3 class="name"><code>setTexture</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>texture</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;Sprite.html#method_setTexture">Sprite</a>:
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;pixi_Sprite.js.html#l79"><code>pixi&#x2F;Sprite.js:79</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">texture</code>
+                        <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The PIXI texture that is displayed by the sprite</p>
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
     
 
     
@@ -593,7 +1073,7 @@
             
         
         
-        <a href="..&#x2F;files&#x2F;pixi_MovieClip.js.html#l48"><code>pixi&#x2F;MovieClip.js:48</code></a>
+        <a href="..&#x2F;files&#x2F;pixi_MovieClip.js.html#l49"><code>pixi&#x2F;MovieClip.js:49</code></a>
         
         </p>
 
@@ -623,6 +1103,91 @@
                 <h2 class="off-left">Properties</h2>
 
                 
+                    <div id="property_alpha" class="property item inherited">
+    <h3 class="name"><code>alpha</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObject.html#property_alpha">DisplayObject</a>:
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;pixi_DisplayObject.js.html#l33"><code>pixi&#x2F;DisplayObject.js:33</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The opacity of the object.</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_anchor" class="property item inherited">
+    <h3 class="name"><code>anchor</code></h3>
+    <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;Sprite.html#property_anchor">Sprite</a>:
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;pixi_Sprite.js.html#l21"><code>pixi&#x2F;Sprite.js:21</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The anchor sets the origin point of the texture.
+The default is 0,0 this means the textures origin is the top left 
+Setting than anchor to 0.5,0.5 means the textures origin is centered
+Setting the anchor to 1,1 would mean the textures origin points will be the bottom right</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
                     <div id="property_animationSpeed" class="property item">
     <h3 class="name"><code>animationSpeed</code></h3>
     <span class="type">Number</span>
@@ -646,7 +1211,7 @@
             
         
         
-        <a href="..&#x2F;files&#x2F;pixi_MovieClip.js.html#l29"><code>pixi&#x2F;MovieClip.js:29</code></a>
+        <a href="..&#x2F;files&#x2F;pixi_MovieClip.js.html#l30"><code>pixi&#x2F;MovieClip.js:30</code></a>
         
         </p>
 
@@ -657,6 +1222,89 @@
 
     <div class="description">
         <p>The speed that the MovieClip will play at. Higher is faster, lower is slower</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_blendMode" class="property item inherited">
+    <h3 class="name"><code>blendMode</code></h3>
+    <span class="type">Uint</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;Sprite.html#property_blendMode">Sprite</a>:
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;pixi_Sprite.js.html#l38"><code>pixi&#x2F;Sprite.js:38</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The blend mode of sprite.
+currently supports PIXI.blendModes.NORMAL and PIXI.blendModes.SCREEN</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_children" class="property item inherited">
+    <h3 class="name"><code>children</code></h3>
+    <span class="type">Array</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObjectContainer.html#property_children">DisplayObjectContainer</a>:
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;pixi_DisplayObjectContainer.js.html#l16"><code>pixi&#x2F;DisplayObjectContainer.js:16</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>[read-only] The of children of this container.</p>
     </div>
 
     
@@ -690,7 +1338,7 @@
             
         
         
-        <a href="..&#x2F;files&#x2F;pixi_MovieClip.js.html#l22"><code>pixi&#x2F;MovieClip.js:22</code></a>
+        <a href="..&#x2F;files&#x2F;pixi_MovieClip.js.html#l23"><code>pixi&#x2F;MovieClip.js:23</code></a>
         
         </p>
 
@@ -701,6 +1349,88 @@
 
     <div class="description">
         <p>[read only] The index MovieClips current frame (this may not have to be a whole number)</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_height" class="property item inherited">
+    <h3 class="name"><code>height</code></h3>
+    <span class="type">#Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;Sprite.html#property_height">Sprite</a>:
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;pixi_Sprite.js.html#l53"><code>pixi&#x2F;Sprite.js:53</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The height of the sprite (this is initially set by the texture)</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_parent" class="property item inherited">
+    <h3 class="name"><code>parent</code></h3>
+    <span class="type"><a href="../classes/DisplayObjectContainer.html" class="crosslink">DisplayObjectContainer</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObject.html#property_parent">DisplayObject</a>:
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;pixi_DisplayObject.js.html#l48"><code>pixi&#x2F;DisplayObject.js:48</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>[read-only] The display object container that contains this display object.</p>
     </div>
 
     
@@ -734,7 +1464,7 @@
             
         
         
-        <a href="..&#x2F;files&#x2F;pixi_MovieClip.js.html#l36"><code>pixi&#x2F;MovieClip.js:36</code></a>
+        <a href="..&#x2F;files&#x2F;pixi_MovieClip.js.html#l37"><code>pixi&#x2F;MovieClip.js:37</code></a>
         
         </p>
 
@@ -745,6 +1475,211 @@
 
     <div class="description">
         <p>[read only] indicates if the MovieClip is currently playing</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_position" class="property item inherited">
+    <h3 class="name"><code>position</code></h3>
+    <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObject.html#property_position">DisplayObject</a>:
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;pixi_DisplayObject.js.html#l12"><code>pixi&#x2F;DisplayObject.js:12</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The coordinate of the object relative to the local coordinates of the parent.</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_rotation" class="property item inherited">
+    <h3 class="name"><code>rotation</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObject.html#property_rotation">DisplayObject</a>:
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;pixi_DisplayObject.js.html#l26"><code>pixi&#x2F;DisplayObject.js:26</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The rotation of the object in radians.</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_scale" class="property item inherited">
+    <h3 class="name"><code>scale</code></h3>
+    <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObject.html#property_scale">DisplayObject</a>:
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;pixi_DisplayObject.js.html#l19"><code>pixi&#x2F;DisplayObject.js:19</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The scale factor of the object.</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_stage" class="property item inherited">
+    <h3 class="name"><code>stage</code></h3>
+    <span class="type"><a href="../classes/Stage.html" class="crosslink">Stage</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObject.html#property_stage">DisplayObject</a>:
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;pixi_DisplayObject.js.html#l55"><code>pixi&#x2F;DisplayObject.js:55</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>[read-only] The stage the display object is connected to, or undefined if it is not connected to the stage.</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_texture" class="property item inherited">
+    <h3 class="name"><code>texture</code></h3>
+    <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;Sprite.html#property_texture">Sprite</a>:
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;pixi_Sprite.js.html#l31"><code>pixi&#x2F;Sprite.js:31</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The texture that the sprite is using</p>
     </div>
 
     
@@ -778,7 +1713,7 @@
             
         
         
-        <a href="..&#x2F;files&#x2F;pixi_MovieClip.js.html#l15"><code>pixi&#x2F;MovieClip.js:15</code></a>
+        <a href="..&#x2F;files&#x2F;pixi_MovieClip.js.html#l16"><code>pixi&#x2F;MovieClip.js:16</code></a>
         
         </p>
 
@@ -789,6 +1724,88 @@
 
     <div class="description">
         <p>The array of textures that make up the animation</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_visible" class="property item inherited">
+    <h3 class="name"><code>visible</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObject.html#property_visible">DisplayObject</a>:
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;pixi_DisplayObject.js.html#l40"><code>pixi&#x2F;DisplayObject.js:40</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The visibility of the object.</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_width" class="property item inherited">
+    <h3 class="name"><code>width</code></h3>
+    <span class="type">#Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;Sprite.html#property_width">Sprite</a>:
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;pixi_Sprite.js.html#l46"><code>pixi&#x2F;Sprite.js:46</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The width of the sprite (this is initially set by the texture)</p>
     </div>
 
     

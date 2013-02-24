@@ -1,6 +1,6 @@
 
 /**
- * @author Mat Groves http://matgroves.com/
+ * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 	
 PIXI.shaderFragmentSrc = [	"precision mediump float;",

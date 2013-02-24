@@ -1,5 +1,5 @@
 /**
- * @author Mat Groves http://matgroves.com/
+ * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
 PIXI._defaultFrame = new PIXI.Rectangle(0,0,1,1);
@@ -8,6 +8,7 @@ PIXI._defaultFrame = new PIXI.Rectangle(0,0,1,1);
  * the WebGLRenderer is draws the stage and all its content onto a webGL enabled canvas. This renderer should be used for browsers support webGL. This Render works by automatically managing webGLBatchs. So no need for Sprite Batch's or Sprite Cloud's
  * Dont forget to add the view to your DOM or you will not see anything :)
  * @class WebGLRenderer
+ * @constructor
  * @param width {Number} the width of the canvas view
  * @default 0
  * @param height {Number} the height of the canvas view
@@ -194,7 +195,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	
 	gl.clear(gl.COLOR_BUFFER_BIT)
 
-	gl.clearColor(0, 0, 0, 1.0);     
+	gl.clearColor(stage.backgroundColorSplit[0], stage.backgroundColorSplit[1], stage.backgroundColorSplit[2], 1.0);     
 	
 	// set the correct blend mode!
  	gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
@@ -502,7 +503,7 @@ PIXI.WebGLRenderer.prototype.removeDisplayObject = function(displayObject)
 		
 		if(this.batchs[index-1] instanceof PIXI.WebGLBatch && this.batchs[index+1] instanceof PIXI.WebGLBatch)
 		{
-			if(this.batchs[index-1].texture == this.batchs[index+1].texture)
+			if(this.batchs[index-1].texture == this.batchs[index+1].texture && this.batchs[index-1].blendMode == this.batchs[index+1].blendMode)
 			{
 				//console.log("MERGE")
 				this.batchs[index-1].merge(this.batchs[index+1]);

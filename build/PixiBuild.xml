@@ -10,11 +10,13 @@
  
   <target name="run">
    
-  	 <jscomp compilationLevel="simple" debug="false" output="../../Flash vs HTML/js/pixi.js">
-  	 
-
+  	<jscomp compilationLevel="simple" debug="false" output="../../Flash vs HTML/js/pixi.js"> 
+  <!-- 	 <jscomp compilationLevel="simple" debug="false" output="../../Run Pixie Run/js/pixi.js"> -->
+ 
         
       <sources dir="../src/pixi/">
+        <file name="Pixi.js"/>
+          
         <file name="Point.js"/>
       	<file name="Rectangle.js"/>
         <file name="utils/Utils.js"/>

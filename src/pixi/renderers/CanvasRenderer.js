@@ -1,9 +1,9 @@
 /**
- * @author Mat Groves http://matgroves.com/
+ * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
 /**
- * the CanvasRenderer is draws the stage and all its content onto a 2d canvas. This renderer should be used for browsers that do not support webGL.
+ * the CanvasRenderer draws the stage and all its content onto a 2d canvas. This renderer should be used for browsers that do not support webGL.
  * Dont forget to add the view to your DOM or you will not see anything :)
  * @class CanvasRenderer
  * @param width {Number} the width of the canvas view
@@ -37,7 +37,6 @@ PIXI.CanvasRenderer = function(width, height)
 	
     this.view.width = this.width;
 	this.view.height = this.height;  
-	this.view.background = "#FF0000";
 	this.count = 0;
 	
 	/**
@@ -71,6 +70,10 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 	stage.updateTransform();
 	  
 	this.context.setTransform(1,0,0,1,0,0); 
+	
+	// update the background color
+	if(this.view.style.backgroundColor!=stage.backgroundColorString)this.view.style.backgroundColor = stage.backgroundColorString;
+
 	this.context.clearRect(0, 0, this.width, this.height)
     this.renderDisplayObject(stage);
 }

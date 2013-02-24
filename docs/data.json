@@ -1,9 +1,10 @@
 {
     "project": {
-        "name": "The Foo API",
+        "name": "Pixi.js API",
+        "logo": "../logo_small.png",
         "description": "The Foo API: a library for doing X, Y, and Z",
-        "version": "1.2.1",
-        "url": "http://example.com/"
+        "version": "0.9",
+        "url": "http://goodboydigital.com/"
     },
     "files": {
         "pixi/extras/Rope.js": {
@@ -223,7 +224,7 @@
             "module": "PIXI",
             "file": "pixi/loaders/AssetLoader.js",
             "line": 5,
-            "description": "A Class that loads a bunch of images / sprite sheet files. Once the assets have been loaded they are added to the PIXI Texture cache and can be accessed easily through PIXI.Texture.fromFrameId(), PIXI.Texture.fromImage() and PIXI.Sprite.fromImage(), PIXI.Sprite.fromFromeId()\nWhen all items have been loaded this class will dispatch a 'loaded' event\nAs each individual item is loaded this class will dispatch a 'progress' event",
+            "description": "A Class that loads a bunch of images / sprite sheet files. Once the assets have been loaded they are added to the PIXI Texture cache and can be accessed easily through PIXI.Texture.fromFrame(), PIXI.Texture.fromImage() and PIXI.Sprite.fromImage(), PIXI.Sprite.fromFromeId()\nWhen all items have been loaded this class will dispatch a 'loaded' event\nAs each individual item is loaded this class will dispatch a 'progress' event",
             "is_constructor": 1,
             "extends": "EventTarget",
             "params": [
@@ -267,7 +268,7 @@
             "module": "PIXI",
             "file": "pixi/renderers/CanvasRenderer.js",
             "line": 5,
-            "description": "the CanvasRenderer is draws the stage and all its content onto a 2d canvas. This renderer should be used for browsers that do not support webGL.\nDont forget to add the view to your DOM or you will not see anything :)",
+            "description": "the CanvasRenderer draws the stage and all its content onto a 2d canvas. This renderer should be used for browsers that do not support webGL.\nDont forget to add the view to your DOM or you will not see anything :)",
             "params": [
                 {
                     "name": "width",
@@ -316,6 +317,7 @@
             "file": "pixi/renderers/WebGLRenderer.js",
             "line": 7,
             "description": "the WebGLRenderer is draws the stage and all its content onto a webGL enabled canvas. This renderer should be used for browsers support webGL. This Render works by automatically managing webGLBatchs. So no need for Sprite Batch's or Sprite Cloud's\nDont forget to add the view to your DOM or you will not see anything :)",
+            "is_constructor": 1,
             "params": [
                 {
                     "name": "width",
@@ -420,6 +422,7 @@
             "file": "pixi/MovieClip.js",
             "line": 5,
             "description": "A MovieClip is a simple way to display an animation depicted by a list of textures.",
+            "extends": "Sprite",
             "is_constructor": 1,
             "params": [
                 {
@@ -530,7 +533,14 @@
             "line": 5,
             "description": "A Stage represents the root of the display tree. Everything connected to the stage is rendered",
             "extends": "DisplayObjectContainer",
-            "is_constructor": 1
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "backgroundColor",
+                    "description": "the background color of the stage",
+                    "type": "Number"
+                }
+            ]
         }
     },
     "classitems": [
@@ -549,12 +559,12 @@
         {
             "file": "pixi/loaders/AssetLoader.js",
             "line": 1,
-            "author": "Mat Groves http://matgroves.com/",
+            "author": "Mat Groves http://matgroves.com/ @Doormat23",
             "class": "AssetLoader"
         },
         {
             "file": "pixi/loaders/AssetLoader.js",
-            "line": 19,
+            "line": 18,
             "description": "The array of asset URLs that are going to be loaded",
             "itemtype": "property",
             "name": "assetURLs",
@@ -563,14 +573,30 @@
         },
         {
             "file": "pixi/loaders/AssetLoader.js",
-            "line": 32,
+            "line": 28,
+            "description": "Fired when an item has loaded",
+            "itemtype": "event",
+            "name": "onProgress",
+            "class": "AssetLoader"
+        },
+        {
+            "file": "pixi/loaders/AssetLoader.js",
+            "line": 33,
+            "description": "Fired when all the assets have loaded",
+            "itemtype": "event",
+            "name": "onComplete",
+            "class": "AssetLoader"
+        },
+        {
+            "file": "pixi/loaders/AssetLoader.js",
+            "line": 41,
             "description": "This will begin loading the assets sequentially",
             "class": "AssetLoader"
         },
         {
             "file": "pixi/loaders/SpriteSheetLoader.js",
             "line": 1,
-            "author": "Mat Groves http://matgroves.com/",
+            "author": "Mat Groves http://matgroves.com/ @Doormat23",
             "class": "SpriteSheetLoader"
         },
         {
@@ -582,7 +608,7 @@
         {
             "file": "pixi/renderers/CanvasRenderer.js",
             "line": 1,
-            "author": "Mat Groves http://matgroves.com/",
+            "author": "Mat Groves http://matgroves.com/ @Doormat23",
             "class": "CanvasRenderer"
         },
         {
@@ -616,7 +642,7 @@
         },
         {
             "file": "pixi/renderers/CanvasRenderer.js",
-            "line": 43,
+            "line": 42,
             "description": "The canvas context that the everything is drawn to",
             "itemtype": "property",
             "name": "context",
@@ -625,7 +651,7 @@
         },
         {
             "file": "pixi/renderers/CanvasRenderer.js",
-            "line": 54,
+            "line": 53,
             "description": "Renders the stage to its canvas view",
             "itemtype": "method",
             "name": "render",
@@ -640,7 +666,7 @@
         },
         {
             "file": "pixi/renderers/CanvasRenderer.js",
-            "line": 78,
+            "line": 81,
             "description": "resizes the canvas view to the specified width and height",
             "params": [
                 {
@@ -656,21 +682,21 @@
         },
         {
             "file": "pixi/renderers/CanvasRenderer.js",
-            "line": 92,
+            "line": 95,
             "access": "private",
             "tagname": "",
             "class": "CanvasRenderer"
         },
         {
             "file": "pixi/renderers/CanvasRenderer.js",
-            "line": 162,
+            "line": 165,
             "access": "private",
             "tagname": "",
             "class": "CanvasRenderer"
         },
         {
             "file": "pixi/renderers/CanvasRenderer.js",
-            "line": 197,
+            "line": 200,
             "access": "private",
             "tagname": "",
             "class": "CanvasRenderer"
@@ -678,7 +704,7 @@
         {
             "file": "pixi/renderers/WebGLBatch.js",
             "line": 1,
-            "author": "Mat Groves http://matgroves.com/",
+            "author": "Mat Groves http://matgroves.com/ @Doormat23",
             "class": "WebGLBatch"
         },
         {
@@ -846,26 +872,26 @@
         {
             "file": "pixi/renderers/WebGLRenderer.js",
             "line": 1,
-            "author": "Mat Groves http://matgroves.com/",
+            "author": "Mat Groves http://matgroves.com/ @Doormat23",
             "class": "WebGLRenderer"
         },
         {
             "file": "pixi/renderers/WebGLRenderer.js",
-            "line": 63,
+            "line": 64,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "pixi/renderers/WebGLRenderer.js",
-            "line": 102,
+            "line": 103,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "pixi/renderers/WebGLRenderer.js",
-            "line": 156,
+            "line": 157,
             "description": "Renders the stage to its webGL view",
             "itemtype": "method",
             "name": "render",
@@ -880,28 +906,28 @@
         },
         {
             "file": "pixi/renderers/WebGLRenderer.js",
-            "line": 222,
+            "line": 223,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "pixi/renderers/WebGLRenderer.js",
-            "line": 251,
+            "line": 252,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "pixi/renderers/WebGLRenderer.js",
-            "line": 447,
+            "line": 448,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "pixi/renderers/WebGLRenderer.js",
-            "line": 525,
+            "line": 526,
             "description": "resizes the webGL view to the specified width and height",
             "itemtype": "method",
             "name": "resize",
@@ -921,28 +947,28 @@
         },
         {
             "file": "pixi/renderers/WebGLRenderer.js",
-            "line": 546,
+            "line": 547,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "pixi/renderers/WebGLRenderer.js",
-            "line": 574,
+            "line": 575,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "pixi/renderers/WebGLRenderer.js",
-            "line": 652,
+            "line": 653,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "pixi/renderers/WebGLRenderer.js",
-            "line": 661,
+            "line": 662,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
@@ -950,13 +976,13 @@
         {
             "file": "pixi/renderers/WebGLShaders.js",
             "line": 2,
-            "author": "Mat Groves http://matgroves.com/",
+            "author": "Mat Groves http://matgroves.com/ @Doormat23",
             "class": "BaseTexture"
         },
         {
             "file": "pixi/textures/BaseTexture.js",
             "line": 1,
-            "author": "Mat Groves http://matgroves.com/",
+            "author": "Mat Groves http://matgroves.com/ @Doormat23",
             "class": "BaseTexture"
         },
         {
@@ -998,7 +1024,7 @@
         {
             "file": "pixi/textures/Texture.js",
             "line": 1,
-            "author": "Mat Groves http://matgroves.com/",
+            "author": "Mat Groves http://matgroves.com/ @Doormat23",
             "class": "Texture"
         },
         {
@@ -1058,7 +1084,7 @@
             "line": 112,
             "description": "Helper function that returns a texture based on a frame id\n If the frame id is not in the texture cache an error will be thrown",
             "itemtype": "method",
-            "name": "fromFrameId",
+            "name": "fromFrame",
             "params": [
                 {
                     "name": "frameId",
@@ -1109,7 +1135,7 @@
         {
             "file": "pixi/utils/Detector.js",
             "line": 1,
-            "author": "Mat Groves http://matgroves.com/",
+            "author": "Mat Groves http://matgroves.com/ @Doormat23",
             "class": "DisplayObject"
         },
         {
@@ -1148,7 +1174,7 @@
         {
             "file": "pixi/DisplayObject.js",
             "line": 1,
-            "author": "Mat Groves http://matgroves.com/",
+            "author": "Mat Groves http://matgroves.com/ @Doormat23",
             "class": "DisplayObject"
         },
         {
@@ -1224,7 +1250,7 @@
         {
             "file": "pixi/DisplayObjectContainer.js",
             "line": 1,
-            "author": "Mat Groves http://matgroves.com/",
+            "author": "Mat Groves http://matgroves.com/ @Doormat23",
             "class": "DisplayObjectContainer"
         },
         {
@@ -1296,12 +1322,12 @@
         {
             "file": "pixi/MovieClip.js",
             "line": 1,
-            "author": "Mat Groves http://matgroves.com/",
+            "author": "Mat Groves http://matgroves.com/ @Doormat23",
             "class": "MovieClip"
         },
         {
             "file": "pixi/MovieClip.js",
-            "line": 15,
+            "line": 16,
             "description": "The array of textures that make up the animation",
             "itemtype": "property",
             "name": "textures",
@@ -1310,7 +1336,7 @@
         },
         {
             "file": "pixi/MovieClip.js",
-            "line": 22,
+            "line": 23,
             "description": "[read only] The index MovieClips current frame (this may not have to be a whole number)",
             "itemtype": "property",
             "name": "currentFrame",
@@ -1319,7 +1345,7 @@
         },
         {
             "file": "pixi/MovieClip.js",
-            "line": 29,
+            "line": 30,
             "description": "The speed that the MovieClip will play at. Higher is faster, lower is slower",
             "itemtype": "property",
             "name": "animationSpeed",
@@ -1328,7 +1354,7 @@
         },
         {
             "file": "pixi/MovieClip.js",
-            "line": 36,
+            "line": 37,
             "description": "[read only] indicates if the MovieClip is currently playing",
             "itemtype": "property",
             "name": "playing",
@@ -1337,7 +1363,7 @@
         },
         {
             "file": "pixi/MovieClip.js",
-            "line": 48,
+            "line": 49,
             "description": "Stops the MovieClip",
             "itemtype": "method",
             "name": "stop",
@@ -1345,7 +1371,7 @@
         },
         {
             "file": "pixi/MovieClip.js",
-            "line": 57,
+            "line": 58,
             "description": "Plays the MovieClip",
             "itemtype": "method",
             "name": "play",
@@ -1353,7 +1379,7 @@
         },
         {
             "file": "pixi/MovieClip.js",
-            "line": 66,
+            "line": 67,
             "description": "Stops the MovieClip and goes to a specific frame",
             "itemtype": "method",
             "name": "gotoAndStop",
@@ -1368,7 +1394,7 @@
         },
         {
             "file": "pixi/MovieClip.js",
-            "line": 79,
+            "line": 80,
             "description": "Goes to a specific frame and begins playing the MovieClip",
             "itemtype": "method",
             "name": "gotoAndPlay",
@@ -1384,13 +1410,13 @@
         {
             "file": "pixi/Pixi.js",
             "line": 1,
-            "author": "Mat Groves http://matgroves.com/",
+            "author": "Mat Groves http://matgroves.com/ @Doormat23",
             "class": "Point"
         },
         {
             "file": "pixi/Point.js",
             "line": 1,
-            "author": "Mat Groves http://matgroves.com/",
+            "author": "Mat Groves http://matgroves.com/ @Doormat23",
             "class": "Point",
             "module": "PIXI"
         },
@@ -1486,7 +1512,7 @@
         {
             "file": "pixi/Sprite.js",
             "line": 1,
-            "author": "Mat Groves http://matgroves.com/",
+            "author": "Mat Groves http://matgroves.com/ @Doormat23",
             "class": "Sprite",
             "module": "PIXI"
         },
@@ -1607,15 +1633,16 @@
         {
             "file": "pixi/Stage.js",
             "line": 1,
-            "author": "Mat Groves http://matgroves.com/",
+            "author": "Mat Groves http://matgroves.com/ @Doormat23",
             "class": "Stage",
             "module": "PIXI"
         },
         {
             "file": "pixi/Stage.js",
-            "line": 26,
+            "line": 30,
             "itemtype": "method",
             "name": "updateTransform",
+            "internal": "",
             "class": "Stage",
             "module": "PIXI"
         },
@@ -1623,15 +1650,14 @@
             "file": "pixi/Stage.js",
             "line": 44,
             "itemtype": "method",
-            "name": "__addChild",
-            "class": "Stage",
-            "module": "PIXI"
-        },
-        {
-            "file": "pixi/Stage.js",
-            "line": 63,
-            "itemtype": "method",
-            "name": "__removeChild",
+            "name": "setBackgroundColor",
+            "params": [
+                {
+                    "name": "backgroundColor",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
             "class": "Stage",
             "module": "PIXI"
         }
@@ -1640,6 +1666,10 @@
         {
             "message": "unknown tag: methos",
             "line": " pixi/renderers/WebGLBatch.js:292"
+        },
+        {
+            "message": "unknown tag: internal",
+            "line": " pixi/Stage.js:30"
         },
         {
             "message": "Missing item type",
@@ -1655,7 +1685,7 @@
         },
         {
             "message": "Missing item type\nThis will begin loading the assets sequentially",
-            "line": " pixi/loaders/AssetLoader.js:32"
+            "line": " pixi/loaders/AssetLoader.js:41"
         },
         {
             "message": "Missing item type",
@@ -1671,19 +1701,19 @@
         },
         {
             "message": "Missing item type\nresizes the canvas view to the specified width and height",
-            "line": " pixi/renderers/CanvasRenderer.js:78"
+            "line": " pixi/renderers/CanvasRenderer.js:81"
         },
         {
             "message": "Missing item type",
-            "line": " pixi/renderers/CanvasRenderer.js:92"
+            "line": " pixi/renderers/CanvasRenderer.js:95"
         },
         {
             "message": "Missing item type",
-            "line": " pixi/renderers/CanvasRenderer.js:162"
+            "line": " pixi/renderers/CanvasRenderer.js:165"
         },
         {
             "message": "Missing item type",
-            "line": " pixi/renderers/CanvasRenderer.js:197"
+            "line": " pixi/renderers/CanvasRenderer.js:200"
         },
         {
             "message": "Missing item type",
@@ -1715,39 +1745,39 @@
         },
         {
             "message": "Missing item type",
-            "line": " pixi/renderers/WebGLRenderer.js:63"
+            "line": " pixi/renderers/WebGLRenderer.js:64"
         },
         {
             "message": "Missing item type",
-            "line": " pixi/renderers/WebGLRenderer.js:102"
+            "line": " pixi/renderers/WebGLRenderer.js:103"
         },
         {
             "message": "Missing item type",
-            "line": " pixi/renderers/WebGLRenderer.js:222"
+            "line": " pixi/renderers/WebGLRenderer.js:223"
         },
         {
             "message": "Missing item type",
-            "line": " pixi/renderers/WebGLRenderer.js:251"
+            "line": " pixi/renderers/WebGLRenderer.js:252"
         },
         {
             "message": "Missing item type",
-            "line": " pixi/renderers/WebGLRenderer.js:447"
+            "line": " pixi/renderers/WebGLRenderer.js:448"
         },
         {
             "message": "Missing item type",
-            "line": " pixi/renderers/WebGLRenderer.js:546"
+            "line": " pixi/renderers/WebGLRenderer.js:547"
         },
         {
             "message": "Missing item type",
-            "line": " pixi/renderers/WebGLRenderer.js:574"
+            "line": " pixi/renderers/WebGLRenderer.js:575"
         },
         {
             "message": "Missing item type",
-            "line": " pixi/renderers/WebGLRenderer.js:652"
+            "line": " pixi/renderers/WebGLRenderer.js:653"
         },
         {
             "message": "Missing item type",
-            "line": " pixi/renderers/WebGLRenderer.js:661"
+            "line": " pixi/renderers/WebGLRenderer.js:662"
         },
         {
             "message": "Missing item type",

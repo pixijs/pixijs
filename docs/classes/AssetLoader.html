@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>AssetLoader - The Foo API</title>
+    <title>AssetLoader - Pixi.js API</title>
     <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0pr2&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
@@ -15,11 +15,11 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
             
-                <h1><img src="..&#x2F;assets/css/logo.png" title="The Foo API"></h1>
+                <h1><img src="..&#x2F;logo_small.png" title="Pixi.js API"></h1>
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.2.1</em>
+            <em>API Docs for: 0.9</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -138,7 +138,7 @@
 
 
 <div class="box intro">
-    <p>A Class that loads a bunch of images / sprite sheet files. Once the assets have been loaded they are added to the PIXI Texture cache and can be accessed easily through PIXI.Texture.fromFrameId(), PIXI.Texture.fromImage() and PIXI.Sprite.fromImage(), PIXI.Sprite.fromFromeId()
+    <p>A Class that loads a bunch of images / sprite sheet files. Once the assets have been loaded they are added to the PIXI Texture cache and can be accessed easily through PIXI.Texture.fromFrame(), PIXI.Texture.fromImage() and PIXI.Sprite.fromImage(), PIXI.Sprite.fromFromeId()
 When all items have been loaded this class will dispatch a 'loaded' event
 As each individual item is loaded this class will dispatch a 'progress' event</p>
 </div>
@@ -245,6 +245,8 @@ As each individual item is loaded this class will dispatch a 'progress' event</p
         
         
         
+            <li class="api-class-tab events"><a href="#events">Events</a></li>
+        
     </ul>
 
     <div>
@@ -272,6 +274,28 @@ As each individual item is loaded this class will dispatch a 'progress' event</p
 
             
 
+            
+                <div class="index-section events">
+                    <h3>Events</h3>
+
+                    <ul class="index-list events extends">
+                        
+                            <li class="index-item event">
+                                <a href="#event_onComplete">onComplete</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item event">
+                                <a href="#event_onProgress">onProgress</a>
+
+                                
+                                
+                            </li>
+                        
+                    </ul>
+                </div>
             
         </div>
 
@@ -305,7 +329,7 @@ As each individual item is loaded this class will dispatch a 'progress' event</p
             
         
         
-        <a href="..&#x2F;files&#x2F;pixi_loaders_AssetLoader.js.html#l19"><code>pixi&#x2F;loaders&#x2F;AssetLoader.js:19</code></a>
+        <a href="..&#x2F;files&#x2F;pixi_loaders_AssetLoader.js.html#l18"><code>pixi&#x2F;loaders&#x2F;AssetLoader.js:18</code></a>
         
         </p>
 
@@ -331,6 +355,98 @@ As each individual item is loaded this class will dispatch a 'progress' event</p
 
         
 
+        
+            <div id="events" class="api-class-tabpanel">
+                <h2 class="off-left">Events</h2>
+
+                
+                    <div id="event_onComplete" class="events item">
+    <h3 class="name"><code>onComplete</code></h3>
+    <span class="type"></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;pixi_loaders_AssetLoader.js.html#l33"><code>pixi&#x2F;loaders&#x2F;AssetLoader.js:33</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Fired when all the assets have loaded</p>
+    </div>
+
+    
+
+
+    
+</div>
+
+                
+                    <div id="event_onProgress" class="events item">
+    <h3 class="name"><code>onProgress</code></h3>
+    <span class="type"></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;pixi_loaders_AssetLoader.js.html#l28"><code>pixi&#x2F;loaders&#x2F;AssetLoader.js:28</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Fired when an item has loaded</p>
+    </div>
+
+    
+
+
+    
+</div>
+
+                
+            </div>
         
     </div>
 </div>

@@ -1,5 +1,5 @@
 /**
- * @author Mat Groves http://matgroves.com/
+ * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
 PIXI.BaseTextureCache = {};
@@ -42,7 +42,7 @@ PIXI.BaseTexture = function(imageUrl)
 		scope.dispatchEvent( { type: 'loaded', content: scope } );
 	}
 		
-	$.proxy(this.onImageLoaded, this);
+	//$.proxy(this.onImageLoaded, this);
 	this.image.src = imageUrl;
 	
 	/**
