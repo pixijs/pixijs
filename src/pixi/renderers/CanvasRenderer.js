@@ -118,7 +118,7 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 			 * meaning we dont need to do a transform and also we
 			 * can round to the nearest round number for a little extra speed!
 			 */
-			if(displayObject.rotation == 0)
+			/*if(displayObject.rotation == 0)
 			{
 				if(!blit)this.context.setTransform(1,0,0,1,0,0); 
 				blit = true;
@@ -134,7 +134,7 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 				
 			}	
 			else
-			{
+			{*/
 				blit = false;
 				context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
 				context.drawImage(displayObject.texture.baseTexture.image, 
@@ -146,7 +146,7 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 								   (displayObject.anchor.y - displayObject.texture.trim.y) * -frame.height,
 								   displayObject.width,
 								   displayObject.height);
-			}
+			//}
 		}					   
    	}
    	else if(displayObject instanceof PIXI.Strip)

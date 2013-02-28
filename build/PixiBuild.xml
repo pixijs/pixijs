@@ -10,10 +10,8 @@
  
   <target name="run">
    
-  	<jscomp compilationLevel="simple" debug="false" output="../../Flash vs HTML/js/pixi.js"> 
-  <!-- 	 <jscomp compilationLevel="simple" debug="false" output="../../Run Pixie Run/js/pixi.js"> -->
- 
-        
+  	<jscomp compilationLevel="simple" debug="false" output="../bin/pixi.js">
+   	    
       <sources dir="../src/pixi/">
         <file name="Pixi.js"/>
           

@@ -7,6 +7,8 @@ The aim of this project is to provide a fast lightweight 2D library that works a
 The Pixi renderer allows everyone to enjoy the power of hardware acceleration without prior knowledge of webGL.
 Also its fast.
 
+@Doormat23
+
 ### Demo ###
 
 [Check out the Bunny Demo here](http://matgroves.com/pixijs/)
@@ -27,7 +29,6 @@ Also its fast.
 - Render Texture
 - Text
 - Interactivity
-- Documentation
 
 
 ### Coming later ###
