@@ -10,7 +10,7 @@ hardware acceleration without prior knowledge of webGL. Also its fast.
 If you’re interested in pixi.js then feel free to follow me on twitter
 (@doormat23) and I will keep you posted!  And of course check back on our
 [site](<http://www.goodboydigital.com/blog/>) as any breakthroughs will be
-posted up here too!
+posted up there too!
 
 ### Demos ###
 
