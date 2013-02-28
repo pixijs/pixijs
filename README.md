@@ -17,7 +17,7 @@ And of course check back on our [site](http://www.goodboydigital.com/blog/) as a
 
 -
 
-[Bunny Demo](http://matgroves.com/pixijs/)
+[Bunny Demo](www.goodboydigital.com/pixijs/bunnymark)
 
 ### Current features ###
 
