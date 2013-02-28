@@ -36,19 +36,40 @@ posted up here too!
 
 ### Usage ###
 
-\`\`\`javascript 	 	/* 		you can use either PIXI.WebGLRenderer or
-PIXI.CanvasRenderer 	*/ 	var renderer = new PIXI.WebGLRenderer(800, 600);
+```javascript
+	
+	/*
+		you can use either PIXI.WebGLRenderer or PIXI.CanvasRenderer
+	*/
+	var renderer = new PIXI.WebGLRenderer(800, 600); 
 
-document.body.appendChild(renderer.view); 	 	var stage = new PIXI.Stage;
+	document.body.appendChild(renderer.view);
+	
+	var stage = new PIXI.Stage;
 
-var bunnyTexture = new PIXI.Texture.fromImage("bunny.png"); 	var bunny = new
-PIXI.Sprite(bunnyTexture); 	 	bunny.position.x = 400; 	bunny.position.y = 300;
-bunny.scale.x = 2; 	bunny.scale.y = 2; 	 	stage.addChild(bunny);
-requestAnimationFrame( animate ); 	 	function animate() {
-requestAnimationFrame( animate ); 		 		bunny.rotation += 0.01;
-renderer.render(stage); 	} \`\`\`
+	var bunnyTexture = new PIXI.Texture.fromImage("bunny.png");
+	var bunny = new PIXI.Sprite(bunnyTexture);
+	
+	bunny.position.x = 400;
+	bunny.position.y = 300;
+	
+	bunny.scale.x = 2;
+	bunny.scale.y = 2;
+	
+	stage.addChild(bunny);
+	
+	requestAnimationFrame( animate );
+	
+	function animate() {
+		
+		requestAnimationFrame( animate );
+		
+		bunny.rotation += 0.01;
+		
+		renderer.render(stage);
+	}
+```
 
-This content is released under the (http://opensource.org/licenses/MIT) MIT
-License.
+This content is released under the (http://opensource.org/licenses/MIT) MIT License.
 
 
