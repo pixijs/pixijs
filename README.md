@@ -7,11 +7,14 @@ The aim of this project is to provide a fast lightweight 2D library that works a
 The Pixi renderer allows everyone to enjoy the power of hardware acceleration without prior knowledge of webGL.
 Also its fast.
 
-@Doormat23
+If you’re interested in pixi.js then feel free to follow me on twitter (@doormat23) and I will keep you posted! 
+And of course check back on our [site](http://www.goodboydigital.com/blog/) as any breakthroughs will be posted up here too!
+
 
 ### Demo ###
 
-[Check out the Bunny Demo here](http://matgroves.com/pixijs/)
+[Game demo Run pixi run](http://www.goodboydigital.com/runpixierun/)
+[Bunny Demo](http://matgroves.com/pixijs/)
 
 ### Current features ###
 
