@@ -20,15 +20,20 @@ posted up there too!
 
 ### Current features ###
 
--   webGL renderer (with automatic smart batching allowing for REALLY fast
-    performance) - canvas renderer - full scene graph - super easy to use API
-    (similar to the flash display list API) - support for texture atlas's -
-    asset loader / sprite sheet loader - auto detect which renderer should be
-    used
+- WebGL renderer (with automatic smart batching allowing for REALLY fast performance) 
+- Canvas renderer 
+- Full scene graph 
+- Super easy to use API (similar to the flash display list API) 
+- Support for texture atlas's 
+- Asset loader / sprite sheet loader 
+- Auto detect which renderer should be used
 
 ### Coming soon ###
 
--   Filters - Render Texture - Text - Interactivity
+- Filters 
+- Render Texture 
+- Text 
+- Interactivity
 
 ### Coming later ###
 
