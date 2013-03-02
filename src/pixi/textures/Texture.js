@@ -41,13 +41,13 @@ PIXI.Texture = function(baseTexture, frame)
 	 */
 	this.frame = frame;
 	
-	
-	
 	this.scope = this;
 	
 	if(baseTexture.hasLoaded)
 	{
-		if(!frame)frame = new PIXI.Rectangle(0,0, baseTexture.width, baseTexture.height);
+		if(this.noFrame)frame = new PIXI.Rectangle(0,0, baseTexture.width, baseTexture.height);
+		//console.log(frame)
+		
 		this.setFrame(frame);
 	}
 	else
@@ -101,9 +101,20 @@ PIXI.Texture.fromImage = function(imageUrl)
 	if(!texture)
 	{
 		var baseTexture = PIXI.BaseTextureCache[imageUrl];
-		if(!baseTexture) baseTexture = new PIXI.BaseTexture(imageUrl);
+		if(!baseTexture) 
+		{
+			var image = new Image();//new Image();
+			image.src = imageUrl;
+			
+			baseTexture = new PIXI.BaseTexture(image);
+			PIXI.BaseTextureCache[imageUrl] = baseTexture;
+		}
 		texture = new PIXI.Texture(baseTexture);
+		
+		
 		PIXI.TextureCache[imageUrl] = texture;
+		
+		
 	}
 	
 	return texture;
@@ -123,6 +134,37 @@ PIXI.Texture.fromFrame = function(frameId)
 	if(!texture)throw new Error("The frameId '"+ frameId +"' does not exist in the texture cache " + this);
 	return texture;
 }
+
+/**
+ * 
+ * Helper function that returns a texture based on a canvas element
+ * If the canvas is not in the texture cache it will be  created and loaded
+ * @static
+ * @method fromCanvas
+ * @param canvas {Canvas} The canvas element source of the texture
+ * @return Texture
+ */
+PIXI.Texture.fromCanvas = function(canvas)
+{
+	// create a canvas id??
+	var texture = PIXI.TextureCache[canvas];
+	
+	if(!texture)
+	{
+		var baseTexture = PIXI.BaseTextureCache[canvas];
+		if(!baseTexture) 
+		{
+			baseTexture = new PIXI.BaseTexture(canvas);
+			PIXI.BaseTextureCache[canvas] = baseTexture;
+		}
+		texture = new PIXI.Texture(baseTexture);
+		
+		PIXI.TextureCache[canvas] = texture;
+	}
+	
+	return texture;
+}
+
 
 /**
  * 

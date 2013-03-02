@@ -151,6 +151,9 @@ PIXI.CanvasRenderer = function(width, height)
 	 *&#x2F;
 	this.view = document.createElement( &#x27;canvas&#x27; ); 
 	
+	&#x2F;&#x2F; hack to enable some hardware acceleration!
+	&#x2F;&#x2F;this.view.style[&quot;transform&quot;] = &quot;translatez(0)&quot;;
+	
     this.view.width = this.width;
 	this.view.height = this.height;  
 	this.count = 0;
@@ -180,7 +183,6 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 	
 	&#x2F;&#x2F; update textures if need be
 	PIXI.texturesToUpdate = [];
-	
 	
 	this.context.setTransform(1,0,0,1,0,0); 
 	stage.updateTransform();
@@ -234,7 +236,7 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 			 * meaning we dont need to do a transform and also we
 			 * can round to the nearest round number for a little extra speed!
 			 *&#x2F;
-			if(displayObject.rotation == 0)
+			&#x2F;*if(displayObject.rotation == 0)
 			{
 				if(!blit)this.context.setTransform(1,0,0,1,0,0); 
 				blit = true;
@@ -250,10 +252,10 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 				
 			}	
 			else
-			{
+			{*&#x2F;
 				blit = false;
 				context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
-				context.drawImage(displayObject.texture.baseTexture.image, 
+				context.drawImage(displayObject.texture.baseTexture.source, 
 								   frame.x,
 								   frame.y,
 								   frame.width,
@@ -262,7 +264,7 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 								   (displayObject.anchor.y - displayObject.texture.trim.y) * -frame.height,
 								   displayObject.width,
 								   displayObject.height);
-			}
+			&#x2F;&#x2F;}
 		}					   
    	}
    	else if(displayObject instanceof PIXI.Strip)
@@ -367,7 +369,7 @@ PIXI.CanvasRenderer.prototype.renderStrip = function(strip)
                       delta_b&#x2F;delta, delta_e&#x2F;delta,
                       delta_c&#x2F;delta, delta_f&#x2F;delta);
                  
-		context.drawImage(strip.texture.baseTexture.image, 0, 0);
+		context.drawImage(strip.texture.baseTexture.source, 0, 0);
 	  	context.restore();
 	};
 	

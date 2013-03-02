@@ -1,0 +1,34 @@
+body {
+	margin: 0;
+	padding: 0;
+	background-color: #000000;
+}
+
+#rnd {
+	position: absolute;
+	top: 16px;
+	left: 16px;
+}
+
+#photonstorm {
+	position: absolute;
+	bottom: 16px;
+	right: 16px;
+}
+
+#pixi {
+	position: absolute;
+	bottom: 16px;
+	left: 16px;
+}
+
+#sx {
+	position: absolute;
+	top: 16px;
+	right: 16px;
+	width: 200px;
+	height: 48px;
+	font-size: 12px;
+	font-family: Arial;
+	color: rgba(255,255,255,0.8);
+}

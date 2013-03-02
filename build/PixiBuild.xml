@@ -17,6 +17,7 @@
           
         <file name="Point.js"/>
       	<file name="Rectangle.js"/>
+      	
         <file name="utils/Utils.js"/>
       	<file name="utils/EventTarget.js"/>
 		<file name="utils/gl-matrix-min.js"/>
@@ -26,7 +27,6 @@
 		<file name="renderers/WebGLBatch.js"/>
 		
 		<file name="renderers/CanvasRenderer.js"/>
-		
 		
       	<file name="DisplayObject.js"/>
 		<file name="DisplayObjectContainer.js"/>
@@ -42,7 +42,6 @@
 		<file name="utils/Detector.js"/>
 		<file name="loaders/SpriteSheetLoader.js"/>
 		<file name="loaders/AssetLoader.js"/>
-		
 	
       </sources>
  

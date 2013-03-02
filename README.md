@@ -18,6 +18,11 @@ posted up there too!
 
 -[Bunny Demo](<www.goodboydigital.com/pixijs/bunnymark>)
 
+-[Balls Demo](<http://gametest.mobi/pixi/balls/>) (made by @photonstorm)
+
+-[Morph Demo](<http://gametest.mobi/pixi/morph/>) (made by @photonstorm)
+
+
 ### Current features ###
 
 - WebGL renderer (with automatic smart batching allowing for REALLY fast performance) 

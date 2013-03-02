@@ -46,7 +46,7 @@ PIXI.Rectangle = function(x, y, width, height)
  * @method clone
  * @return a copy of the rectangle
  */
-PIXI.Point.clone = function()
+PIXI.Rectangle.clone = function()
 {
 	return new PIXI.Rectangle(this.x, this.y, this.width, this.height);
 }

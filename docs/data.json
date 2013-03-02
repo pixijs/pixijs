@@ -348,8 +348,8 @@
             "is_constructor": 1,
             "params": [
                 {
-                    "name": "imageUrl",
-                    "description": "image url",
+                    "name": "source",
+                    "description": "the source object (image or canvas)",
                     "type": "String"
                 }
             ]
@@ -642,7 +642,7 @@
         },
         {
             "file": "pixi/renderers/CanvasRenderer.js",
-            "line": 42,
+            "line": 45,
             "description": "The canvas context that the everything is drawn to",
             "itemtype": "property",
             "name": "context",
@@ -651,7 +651,7 @@
         },
         {
             "file": "pixi/renderers/CanvasRenderer.js",
-            "line": 53,
+            "line": 56,
             "description": "Renders the stage to its canvas view",
             "itemtype": "method",
             "name": "render",
@@ -666,7 +666,7 @@
         },
         {
             "file": "pixi/renderers/CanvasRenderer.js",
-            "line": 81,
+            "line": 83,
             "description": "resizes the canvas view to the specified width and height",
             "params": [
                 {
@@ -682,21 +682,21 @@
         },
         {
             "file": "pixi/renderers/CanvasRenderer.js",
-            "line": 95,
+            "line": 97,
             "access": "private",
             "tagname": "",
             "class": "CanvasRenderer"
         },
         {
             "file": "pixi/renderers/CanvasRenderer.js",
-            "line": 165,
+            "line": 167,
             "access": "private",
             "tagname": "",
             "class": "CanvasRenderer"
         },
         {
             "file": "pixi/renderers/CanvasRenderer.js",
-            "line": 200,
+            "line": 202,
             "access": "private",
             "tagname": "",
             "class": "CanvasRenderer"
@@ -987,25 +987,7 @@
         },
         {
             "file": "pixi/textures/BaseTexture.js",
-            "line": 19,
-            "description": "The url of the texture",
-            "itemtype": "property",
-            "name": "imageUrl",
-            "type": "String",
-            "class": "BaseTexture"
-        },
-        {
-            "file": "pixi/textures/BaseTexture.js",
             "line": 26,
-            "description": "The html image that is loaded to create the texture",
-            "itemtype": "property",
-            "name": "image",
-            "type": "Image",
-            "class": "BaseTexture"
-        },
-        {
-            "file": "pixi/textures/BaseTexture.js",
-            "line": 48,
             "description": "[read only] The width of the base texture set when the image has loaded",
             "itemtype": "property",
             "name": "width",
@@ -1014,11 +996,20 @@
         },
         {
             "file": "pixi/textures/BaseTexture.js",
-            "line": 54,
+            "line": 32,
             "description": "[read only] The height of the base texture set when the image has loaded",
             "itemtype": "property",
             "name": "height",
             "type": "Number",
+            "class": "BaseTexture"
+        },
+        {
+            "file": "pixi/textures/BaseTexture.js",
+            "line": 39,
+            "description": "The source that is loaded to create the texture",
+            "itemtype": "property",
+            "name": "source",
+            "type": "Image",
             "class": "BaseTexture"
         },
         {
@@ -1081,7 +1072,7 @@
         },
         {
             "file": "pixi/textures/Texture.js",
-            "line": 112,
+            "line": 123,
             "description": "Helper function that returns a texture based on a frame id\n If the frame id is not in the texture cache an error will be thrown",
             "itemtype": "method",
             "name": "fromFrame",
@@ -1099,7 +1090,26 @@
         },
         {
             "file": "pixi/textures/Texture.js",
-            "line": 127,
+            "line": 138,
+            "description": "Helper function that returns a texture based on a canvas element\n If the canvas is not in the texture cache it will be  created and loaded",
+            "static": 1,
+            "itemtype": "method",
+            "name": "fromCanvas",
+            "params": [
+                {
+                    "name": "canvas",
+                    "description": "The canvas element source of the texture",
+                    "type": "Canvas"
+                }
+            ],
+            "return": {
+                "description": "Texture"
+            },
+            "class": "Texture"
+        },
+        {
+            "file": "pixi/textures/Texture.js",
+            "line": 169,
             "description": "Adds a texture to the textureCache.",
             "itemtype": "method",
             "name": "addTextureToCache",
@@ -1119,7 +1129,7 @@
         },
         {
             "file": "pixi/textures/Texture.js",
-            "line": 139,
+            "line": 181,
             "description": "Remove a texture from the textureCache.",
             "itemtype": "method",
             "name": "removeTextureFromCache",
@@ -1169,6 +1179,12 @@
             "file": "pixi/utils/Utils.js",
             "line": 1,
             "description": "Provides requestAnimationFrame in a cross browser way.",
+            "class": "DisplayObject"
+        },
+        {
+            "file": "pixi/utils/Utils.js",
+            "line": 19,
+            "description": "Provides bind in a cross browser way.",
             "class": "DisplayObject"
         },
         {
@@ -1701,19 +1717,19 @@
         },
         {
             "message": "Missing item type\nresizes the canvas view to the specified width and height",
-            "line": " pixi/renderers/CanvasRenderer.js:81"
+            "line": " pixi/renderers/CanvasRenderer.js:83"
         },
         {
             "message": "Missing item type",
-            "line": " pixi/renderers/CanvasRenderer.js:95"
+            "line": " pixi/renderers/CanvasRenderer.js:97"
         },
         {
             "message": "Missing item type",
-            "line": " pixi/renderers/CanvasRenderer.js:165"
+            "line": " pixi/renderers/CanvasRenderer.js:167"
         },
         {
             "message": "Missing item type",
-            "line": " pixi/renderers/CanvasRenderer.js:200"
+            "line": " pixi/renderers/CanvasRenderer.js:202"
         },
         {
             "message": "Missing item type",
@@ -1802,6 +1818,10 @@
         {
             "message": "Missing item type\nProvides requestAnimationFrame in a cross browser way.",
             "line": " pixi/utils/Utils.js:1"
+        },
+        {
+            "message": "Missing item type\nProvides bind in a cross browser way.",
+            "line": " pixi/utils/Utils.js:19"
         },
         {
             "message": "Missing item type",

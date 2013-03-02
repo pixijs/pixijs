@@ -35,6 +35,9 @@ PIXI.CanvasRenderer = function(width, height)
 	 */
 	this.view = document.createElement( 'canvas' ); 
 	
+	// hack to enable some hardware acceleration!
+	//this.view.style["transform"] = "translatez(0)";
+	
     this.view.width = this.width;
 	this.view.height = this.height;  
 	this.count = 0;
@@ -64,7 +67,6 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 	
 	// update textures if need be
 	PIXI.texturesToUpdate = [];
-	
 	
 	this.context.setTransform(1,0,0,1,0,0); 
 	stage.updateTransform();
@@ -137,7 +139,7 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 			{*/
 				blit = false;
 				context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
-				context.drawImage(displayObject.texture.baseTexture.image, 
+				context.drawImage(displayObject.texture.baseTexture.source, 
 								   frame.x,
 								   frame.y,
 								   frame.width,
@@ -251,7 +253,7 @@ PIXI.CanvasRenderer.prototype.renderStrip = function(strip)
                       delta_b/delta, delta_e/delta,
                       delta_c/delta, delta_f/delta);
                  
-		context.drawImage(strip.texture.baseTexture.image, 0, 0);
+		context.drawImage(strip.texture.baseTexture.source, 0, 0);
 	  	context.restore();
 	};
 	

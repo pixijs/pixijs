@@ -1,0 +1,17 @@
+body {
+	margin: 0;
+	padding: 0;
+	background-color: #000000;
+}
+
+#photonstorm {
+	position: absolute;
+	bottom: 16px;
+	right: 16px;
+}
+
+#pixi {
+	position: absolute;
+	bottom: 16px;
+	left: 16px;
+}

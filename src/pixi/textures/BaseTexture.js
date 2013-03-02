@@ -10,40 +10,18 @@ PIXI.texturesToUpdate = [];
  * @class BaseTexture
  * @extends EventTarget
  * @constructor
- * @param imageUrl {String} image url
+ * @param source {String} the source object (image or canvas)
  */
-PIXI.BaseTexture = function(imageUrl)
+PIXI.BaseTexture = function(source)
 {
 	PIXI.EventTarget.call( this );
 	
-	/**
+	/*
 	 * The url of the texture
 	 * @property imageUrl
 	 * @type String
 	 */
-	this.imageUrl = imageUrl;
-	
-	/**
-	 * The html image that is loaded to create the texture
-	 * @property image
-	 * @type Image
-	 */
-	this.image = new Image();
-	
-	var scope = this
-	this.image.onload = function(){
-		
-		scope.hasLoaded = true;
-		scope.width = scope.image.width;
-		scope.height = scope.image.height;
-	
-		// add it to somewhere...
-		PIXI.texturesToUpdate.push(scope);
-		scope.dispatchEvent( { type: 'loaded', content: scope } );
-	}
-		
-	//$.proxy(this.onImageLoaded, this);
-	this.image.src = imageUrl;
+	//this.imageUrl = source.src;
 	
 	/**
 	 * [read only] The width of the base texture set when the image has loaded
@@ -58,13 +36,57 @@ PIXI.BaseTexture = function(imageUrl)
 	 */
 	this.height = 100;
 	
+	/**
+	 * The source that is loaded to create the texture
+	 * @property source
+	 * @type Image
+	 */
+	this.source = source//new Image();
 	
-	PIXI.BaseTextureCache[imageUrl] = this;
+	if(this.source instanceof Image)
+	{
+		if(this.source.complete)
+		{
+			this.hasLoaded = true;
+			this.width = this.source.width;
+			this.height = this.source.height;
+			
+			PIXI.texturesToUpdate.push(this);
+		}
+		else
+		{
+			
+			var scope = this;
+			this.source.onload = function(){
+				
+				scope.hasLoaded = true;
+				scope.width = scope.source.width;
+				scope.height = scope.source.height;
+			
+				// add it to somewhere...
+				PIXI.texturesToUpdate.push(scope);
+				scope.dispatchEvent( { type: 'loaded', content: scope } );
+			}
+			//	this.image.src = imageUrl;
+		}
+	}
+	else
+	{
+		this.hasLoaded = true;
+		this.width = this.source.width;
+		this.height = this.source.height;
+			
+		//console.log(">!!",this.width)
+		PIXI.texturesToUpdate.push(this);
+	}
+	
+	
+	
 }
 
 PIXI.BaseTexture.constructor = PIXI.BaseTexture;
-/*
-PIXI.BaseTexture.prototype.onImageLoaded = function(image)
+
+PIXI.BaseTexture.prototype.fromImage = function(imageUrl)
 {
 
-}*/
+}
