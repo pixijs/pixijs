@@ -9,7 +9,7 @@
 			background-color: #000000;
 		}
 	</style>
-	<script src="../../../pixi.js/bin/pixi.js"></script>
+	<script src="pixi.js"></script>
 </head>
 <body>
 	<script>
@@ -25,32 +25,10 @@
 	
 	requestAnimFrame( animate );
 	
-	// canvas
-	canvas = document.createElement( 'canvas' ); 
-	canvas.width =300;
-	canvas.height = 200;  
-	
-	var context = canvas.getContext("2d");
-	
-	context.fillRect(0,0, 300,200);
-	 
-	context.font = '30pt Calibri';
-	context.textAlign = 'center';
-	context.fillStyle = 'blue';
-	context.fillText('Hello World!', 100, 100);
-      
-	this.count = 0;
-	document.body.appendChild(canvas);
 	// create a texture from an image path
-	var texture = PIXI.Texture.fromCanvas(canvas)//Image("bunny.png");
+	var texture = PIXI.Texture.fromImage("bunny.png");
 	// create a new Sprite using the texture
 	var bunny = new PIXI.Sprite(texture);
-	
-	var texture2 = PIXI.Texture.fromCanvas(canvas)//Image("bunny.png");
-	// create a new Sprite using the texture
-	var bunny2 = new PIXI.Sprite(texture2);
-	
-	stage.addChild(bunny2);
 	
 	// center the sprites anchor point
 	bunny.anchor.x = 0.5;

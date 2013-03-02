@@ -1,6 +1,8 @@
 Pixi Renderer
 =============
 
+![pixi.js logo](http://www.goodboydigital.com/pixijs/logo_small.png)
+
 #### JavaScript 2D Renderer ####
 
 The aim of this project is to provide a fast lightweight 2D library that works
