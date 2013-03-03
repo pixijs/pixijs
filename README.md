@@ -10,7 +10,7 @@ across all devices. The Pixi renderer allows everyone to enjoy the power of
 hardware acceleration without prior knowledge of webGL. Also its fast.
 
 If you’re interested in pixi.js then feel free to follow me on twitter
-(@doormat23) and I will keep you posted!  And of course check back on our
+([@doormat23](https://twitter.com/doormat23)) and I will keep you posted!  And of course check back on our
 [site](<http://www.goodboydigital.com/blog/>) as any breakthroughs will be
 posted up there too!
 
@@ -20,10 +20,12 @@ posted up there too!
 
 -[Bunny Demo](<www.goodboydigital.com/pixijs/bunnymark>)
 
--[Balls Demo](<http://gametest.mobi/pixi/balls/>) (made by @photonstorm)
 
--[Morph Demo](<http://gametest.mobi/pixi/morph/>) (made by @photonstorm)
+-[photonstorm Balls Demo](<http://gametest.mobi/pixi/balls/>)
 
+-[photonstorm Morph Demo](<http://gametest.mobi/pixi/morph/>)
+
+Thanks to [@photonstorm](https://twitter.com/photonstorm) for providing that last 2 examples and allowing us to share the source code :)
 
 ### Current features ###
 
@@ -59,7 +61,7 @@ posted up there too!
 	
 	var stage = new PIXI.Stage;
 
-	var bunnyTexture = new PIXI.Texture.fromImage("bunny.png");
+	var bunnyTexture = PIXI.Texture.fromImage("bunny.png");
 	var bunny = new PIXI.Sprite(bunnyTexture);
 	
 	bunny.position.x = 400;
