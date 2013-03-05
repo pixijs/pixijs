@@ -18,7 +18,7 @@ posted up there too!
 
 -[Run pixi run](<http://www.goodboydigital.com/runpixierun/>)
 
--[Bunny Demo](<www.goodboydigital.com/pixijs/bunnymark>)
+-[Bunny Demo](<http://www.goodboydigital.com/pixijs/bunnymark>)
 
 
 -[photonstorm Balls Demo](<http://gametest.mobi/pixi/balls/>)
