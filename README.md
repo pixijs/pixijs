@@ -27,6 +27,11 @@ posted up there too!
 
 Thanks to [@photonstorm](https://twitter.com/photonstorm) for providing that last 2 examples and allowing us to share the source code :)
 
+### Docs ###
+
+[Documentation can be found here](<http://www.goodboydigital.com/pixijs/docs/>)
+
+
 ### Current features ###
 
 - WebGL renderer (with automatic smart batching allowing for REALLY fast performance) 
