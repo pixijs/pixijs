@@ -13,13 +13,14 @@ PIXI._defaultFrame = new PIXI.Rectangle(0,0,1,1);
  * @default 0
  * @param height {Number} the height of the canvas view
  * @default 0
+ * @param view {Canvas} the canvas to use as a view, optional
  */
-PIXI.WebGLRenderer = function(width, height)
+PIXI.WebGLRenderer = function(width, height, view)
 {
 	this.width = width ? width : 800;
 	this.height = height ? height : 600;
 	
-	this.view = document.createElement( 'canvas' ); 
+	this.view = view ? view : document.createElement( 'canvas' ); 
     this.view.width = this.width;
 	this.view.height = this.height;  
 	this.view.background = "#FF0000";

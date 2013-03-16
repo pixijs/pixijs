@@ -8,8 +8,9 @@
  * @class CanvasRenderer
  * @param width {Number} the width of the canvas view
  * @param height {Number} the height of the canvas view
+ * @param view {Canvas} the canvas to use as a view, optional
  */
-PIXI.CanvasRenderer = function(width, height)
+PIXI.CanvasRenderer = function(width, height, view)
 {
 	/**
 	 * The width of the canvas view
@@ -33,7 +34,7 @@ PIXI.CanvasRenderer = function(width, height)
 	 * @property view
 	 * @type Canvas
 	 */
-	this.view = document.createElement( 'canvas' ); 
+	this.view = view ? view : document.createElement( 'canvas' ); 
 	
 	// hack to enable some hardware acceleration!
 	//this.view.style["transform"] = "translatez(0)";
