@@ -9,8 +9,9 @@
  * @static
  * @param width {Number} the width of the renderers view
  * @param height {Number} the height of the renderers view
+ * @param view {Canvas} the canvas to use as a view, optional
  */
-PIXI.autoDetectRenderer = function(width, height)
+PIXI.autoDetectRenderer = function(width, height, view)
 {
 	if(!width)width = 800;
 	if(!height)height = 600;
@@ -21,10 +22,10 @@ PIXI.autoDetectRenderer = function(width, height)
 	//console.log(webgl);
 	if( webgl )
 	{
-		return new PIXI.WebGLRenderer(width, height) 
+		return new PIXI.WebGLRenderer(width, height, view) 
 	}
 	
-	return	new PIXI.CanvasRenderer(width, height);
+	return	new PIXI.CanvasRenderer(width, height, view);
 }
 
 
