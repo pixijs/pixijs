@@ -110,7 +110,7 @@ PIXI.Sprite.prototype.onTextureUpdate = function(event)
 
 /**
  * 
- * Helper function that creates a sprite that will contain a texture from the TextureCache based on tjhe frameId
+ * Helper function that creates a sprite that will contain a texture from the TextureCache based on the frameId
  * The frame ids are created when a Texture packer file has been loaded
  * @method fromFrame
  * @static
