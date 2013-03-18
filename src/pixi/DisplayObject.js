@@ -84,7 +84,7 @@ PIXI.DisplayObject.prototype.updateTransform = function()
 	// TODO OPTIMIZE THIS!! with dirty
 	if(this.rotation != this.rotationCache)
 	{
-		this.rotationCach = this.rotation;
+		this.rotationCache = this.rotation;
 		this._sr =  Math.sin(this.rotation);
 		this._cr =  Math.cos(this.rotation);
 	}	
