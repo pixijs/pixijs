@@ -20,6 +20,8 @@ any breakthroughs will be posted up there too!
 
 - [Bunny Demo](<http://www.goodboydigital.com/pixijs/bunnymark>)
 
+- [Interaction Demo](<http://www.goodboydigital.com/pixijs/examples/6/>)
+
 - [photonstorm Balls Demo](<http://gametest.mobi/pixi/balls/>)
 
 - [photonstorm Morph Demo](<http://gametest.mobi/pixi/morph/>)
