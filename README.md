@@ -41,13 +41,13 @@ last 2 examples and allowing us to share the source code :)
 - Support for texture atlases 
 - Asset loader / sprite sheet loader 
 - Auto-detect which renderer should be used
+- Mouse and Multi-touch Interaction
 
 ### Coming soon ###
 
 - Filters 
 - Render Texture 
 - Text 
-- Interactivity
 
 ### Coming later ###
 
