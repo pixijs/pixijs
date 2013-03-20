@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Point - Pixi.js API</title>
+    <title>InteractionData - Pixi.js API</title>
     <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0pr2&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
@@ -114,7 +114,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>Point Class</h1>
+                        <h1>InteractionData Class</h1>
 <div class="box meta">
     
 
@@ -122,7 +122,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="..&#x2F;files&#x2F;pixi_Point.js.html#l5"><code>pixi&#x2F;Point.js:5</code></a>
+            Defined in: <a href="..&#x2F;files&#x2F;pixi_InteractionManager.js.html#l319"><code>pixi&#x2F;InteractionManager.js:319</code></a>
         </div>
     
 
@@ -138,33 +138,17 @@
 
 
 <div class="box intro">
-    <p>The Point object represents a location in a two-dimensional coordinate system, where x represents the horizontal axis and y represents the vertical axis.</p>
+    
 </div>
 
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_Point" class="method item">
-    <h3 class="name"><code>Point</code></h3>
+        <div id="method_InteractionData" class="method item">
+    <h3 class="name"><code>InteractionData</code></h3>
 
     
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>x</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>y</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
+        <span class="paren">()</span>
     
 
     
@@ -192,7 +176,7 @@
             
         
         
-        <a href="..&#x2F;files&#x2F;pixi_Point.js.html#l5"><code>pixi&#x2F;Point.js:5</code></a>
+        <a href="..&#x2F;files&#x2F;pixi_InteractionManager.js.html#l319"><code>pixi&#x2F;InteractionManager.js:319</code></a>
         
         </p>
 
@@ -206,44 +190,6 @@
         
     </div>
 
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">x</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>position of the point</p>
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">y</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>position of the point</p>
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
     
 
     
@@ -259,8 +205,6 @@
         <li class="api-class-tab index"><a href="#index">Index</a></li>
 
         
-            <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
-        
         
             <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
         
@@ -273,21 +217,6 @@
             <h2 class="off-left">Item Index</h2>
 
             
-                <div class="index-section methods">
-                    <h3>Methods</h3>
-
-                    <ul class="index-list methods">
-                        
-                            <li class="index-item method">
-                                <a href="#method_clone">clone</a>
-
-                                
-                                
-                            </li>
-                        
-                    </ul>
-                </div>
-            
 
             
                 <div class="index-section properties">
@@ -296,14 +225,14 @@
                     <ul class="index-list properties">
                         
                             <li class="index-item property">
-                                <a href="#property_x">x</a>
+                                <a href="#property_global">global</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_y">y</a>
+                                <a href="#property_local">local</a>
 
                                 
                                 
@@ -319,90 +248,15 @@
         </div>
 
         
-            <div id="methods" class="api-class-tabpanel">
-                <h2 class="off-left">Methods</h2>
-
-                
-                    <div id="method_clone" class="method item">
-    <h3 class="name"><code>clone</code></h3>
-
-    
-        <span class="paren">()</span>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="..&#x2F;files&#x2F;pixi_Point.js.html#l29"><code>pixi&#x2F;Point.js:29</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                    a copy of the point
-                
-            </div>
-        </div>
-    
-
-    
-</div>
-
-                
-            </div>
-        
 
         
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
                 
-                    <div id="property_x" class="property item">
-    <h3 class="name"><code>x</code></h3>
-    <span class="type">Number</span>
+                    <div id="property_global" class="property item">
+    <h3 class="name"><code>global</code></h3>
+    <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>
 
     
 
@@ -423,7 +277,7 @@
             
         
         
-        <a href="..&#x2F;files&#x2F;pixi_Point.js.html#l14"><code>pixi&#x2F;Point.js:14</code></a>
+        <a href="..&#x2F;files&#x2F;pixi_InteractionManager.js.html#l325"><code>pixi&#x2F;InteractionManager.js:325</code></a>
         
         </p>
 
@@ -433,11 +287,9 @@
     </div>
 
     <div class="description">
-        
+        <p>This point stores the global coords of where the touch/mouse event happened</p>
     </div>
 
-    
-        <p><strong>Default:</strong> 0</p>
     
 
     
@@ -446,9 +298,9 @@
 </div>
 
                 
-                    <div id="property_y" class="property item">
-    <h3 class="name"><code>y</code></h3>
-    <span class="type">Number</span>
+                    <div id="property_local" class="property item">
+    <h3 class="name"><code>local</code></h3>
+    <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>
 
     
 
@@ -469,7 +321,7 @@
             
         
         
-        <a href="..&#x2F;files&#x2F;pixi_Point.js.html#l21"><code>pixi&#x2F;Point.js:21</code></a>
+        <a href="..&#x2F;files&#x2F;pixi_InteractionManager.js.html#l332"><code>pixi&#x2F;InteractionManager.js:332</code></a>
         
         </p>
 
@@ -479,11 +331,9 @@
     </div>
 
     <div class="description">
-        
+        <p>This point stores the local coords of where the touch/mouse event happened</p>
     </div>
 
-    
-        <p><strong>Default:</strong> 0</p>
     
 
     

@@ -35,7 +35,7 @@
 		<file name="extras/Strip.js"/>
 		<file name="extras/Rope.js"/>
 		<file name="MovieClip.js"/>
-		
+	 	<file name="InteractionManager.js"/>
 		<file name="textures/BaseTexture.js"/>
 		<file name="textures/Texture.js"/>
 		

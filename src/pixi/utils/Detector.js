@@ -22,7 +22,11 @@ PIXI.autoDetectRenderer = function(width, height, view)
 	//console.log(webgl);
 	if( webgl )
 	{
+<<<<<<< HEAD
 		return new PIXI.WebGLRenderer(width, height, view) 
+=======
+		return new PIXI.WebGLRenderer(width, height, view)  
+>>>>>>> Interactivity Added
 	}
 	
 	return	new PIXI.CanvasRenderer(width, height, view);

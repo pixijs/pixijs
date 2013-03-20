@@ -86,4 +86,8 @@ last 2 examples and allowing us to share the source code :)
 	}
 ```
 
+<<<<<<< HEAD
 This content is released under the (http://opensource.org/licenses/MIT) MIT License.
+=======
+This content is released under the (http://opensource.org/licenses/MIT) MIT License.
+>>>>>>> Interactivity Added

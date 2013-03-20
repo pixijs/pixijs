@@ -18,7 +18,7 @@ PIXI.DisplayObjectContainer = function()
 	 * @property children {Array}
 	 */	
 	this.children = [];
-	
+	//s
 	this.renderable = false;
 }
 
@@ -131,7 +131,7 @@ PIXI.DisplayObjectContainer.prototype.updateTransform = function()
 	if(!this.visible)return;
 	
 	PIXI.DisplayObject.prototype.updateTransform.call( this );
-
+	
 	for(var i=0,j=this.children.length; i<j; i++)
 	{
 		this.children[i].updateTransform();	

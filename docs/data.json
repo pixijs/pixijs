@@ -1,9 +1,9 @@
 {
     "project": {
         "name": "Pixi.js API",
-        "logo": "../logo_small.png",
-        "description": "The Foo API: a library for doing X, Y, and Z",
-        "version": "0.9",
+        "logo": "http://www.goodboydigital.com/pixijs/logo_small.png",
+        "description": "Pixi.js is a fast lightweight 2D library that works across all devices.",
+        "version": "1.0",
         "url": "http://goodboydigital.com/"
     },
     "files": {
@@ -130,6 +130,16 @@
             "fors": {},
             "namespaces": {}
         },
+        "pixi/InteractionManager.js": {
+            "name": "pixi/InteractionManager.js",
+            "modules": {},
+            "classes": {
+                "InteractionManager": 1,
+                "InteractionData": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "pixi/MovieClip.js": {
             "name": "pixi/MovieClip.js",
             "modules": {},
@@ -199,6 +209,8 @@
                 "Texture": 1,
                 "DisplayObject": 1,
                 "DisplayObjectContainer": 1,
+                "InteractionManager": 1,
+                "InteractionData": 1,
                 "MovieClip": 1,
                 "Point": 1,
                 "Rectangle": 1,
@@ -279,6 +291,11 @@
                     "name": "height",
                     "description": "the height of the canvas view",
                     "type": "Number"
+                },
+                {
+                    "name": "view",
+                    "description": "the canvas to use as a view, optional",
+                    "type": "Canvas"
                 }
             ]
         },
@@ -328,6 +345,11 @@
                     "name": "height",
                     "description": "the height of the canvas view",
                     "type": "Number"
+                },
+                {
+                    "name": "view",
+                    "description": "the canvas to use as a view, optional",
+                    "type": "Canvas"
                 }
             ],
             "default": "0"
@@ -408,6 +430,41 @@
             "line": 6,
             "description": "A DisplayObjectContainer represents a collection of display objects. It is the base class of all display objects that act as a container for other objects.",
             "extends": "DisplayObject",
+            "is_constructor": 1
+        },
+        "InteractionManager": {
+            "name": "InteractionManager",
+            "shortname": "InteractionManager",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "PIXI",
+            "file": "pixi/InteractionManager.js",
+            "line": 7,
+            "description": "The interaction manager deals with mouse and touch events. At this moment only Sprite's can be interactive.\nThis manager also supports multitouch.",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "stage",
+                    "description": "",
+                    "type": "Stage"
+                }
+            ],
+            "type": "Stage"
+        },
+        "InteractionData": {
+            "name": "InteractionData",
+            "shortname": "InteractionData",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "PIXI",
+            "file": "pixi/InteractionManager.js",
+            "line": 319,
             "is_constructor": 1
         },
         "MovieClip": {
@@ -539,6 +596,11 @@
                     "name": "backgroundColor",
                     "description": "the background color of the stage",
                     "type": "Number"
+                },
+                {
+                    "name": "interactive",
+                    "description": "enable / disable interaction (default is false)",
+                    "type": "Boolean"
                 }
             ]
         }
@@ -613,7 +675,7 @@
         },
         {
             "file": "pixi/renderers/CanvasRenderer.js",
-            "line": 14,
+            "line": 15,
             "description": "The width of the canvas view",
             "itemtype": "property",
             "name": "width",
@@ -623,7 +685,7 @@
         },
         {
             "file": "pixi/renderers/CanvasRenderer.js",
-            "line": 21,
+            "line": 22,
             "description": "The height of the canvas view",
             "itemtype": "property",
             "name": "height",
@@ -633,7 +695,7 @@
         },
         {
             "file": "pixi/renderers/CanvasRenderer.js",
-            "line": 31,
+            "line": 32,
             "description": "The canvas element that the everything is drawn to",
             "itemtype": "property",
             "name": "view",
@@ -642,7 +704,7 @@
         },
         {
             "file": "pixi/renderers/CanvasRenderer.js",
-            "line": 45,
+            "line": 46,
             "description": "The canvas context that the everything is drawn to",
             "itemtype": "property",
             "name": "context",
@@ -651,7 +713,7 @@
         },
         {
             "file": "pixi/renderers/CanvasRenderer.js",
-            "line": 56,
+            "line": 57,
             "description": "Renders the stage to its canvas view",
             "itemtype": "method",
             "name": "render",
@@ -666,7 +728,7 @@
         },
         {
             "file": "pixi/renderers/CanvasRenderer.js",
-            "line": 83,
+            "line": 96,
             "description": "resizes the canvas view to the specified width and height",
             "params": [
                 {
@@ -682,21 +744,21 @@
         },
         {
             "file": "pixi/renderers/CanvasRenderer.js",
-            "line": 97,
+            "line": 110,
             "access": "private",
             "tagname": "",
             "class": "CanvasRenderer"
         },
         {
             "file": "pixi/renderers/CanvasRenderer.js",
-            "line": 167,
+            "line": 180,
             "access": "private",
             "tagname": "",
             "class": "CanvasRenderer"
         },
         {
             "file": "pixi/renderers/CanvasRenderer.js",
-            "line": 202,
+            "line": 215,
             "access": "private",
             "tagname": "",
             "class": "CanvasRenderer"
@@ -877,21 +939,21 @@
         },
         {
             "file": "pixi/renderers/WebGLRenderer.js",
-            "line": 64,
+            "line": 65,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "pixi/renderers/WebGLRenderer.js",
-            "line": 103,
+            "line": 104,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "pixi/renderers/WebGLRenderer.js",
-            "line": 157,
+            "line": 158,
             "description": "Renders the stage to its webGL view",
             "itemtype": "method",
             "name": "render",
@@ -906,28 +968,28 @@
         },
         {
             "file": "pixi/renderers/WebGLRenderer.js",
-            "line": 223,
+            "line": 235,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "pixi/renderers/WebGLRenderer.js",
-            "line": 252,
+            "line": 264,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "pixi/renderers/WebGLRenderer.js",
-            "line": 448,
+            "line": 460,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "pixi/renderers/WebGLRenderer.js",
-            "line": 526,
+            "line": 538,
             "description": "resizes the webGL view to the specified width and height",
             "itemtype": "method",
             "name": "resize",
@@ -947,28 +1009,28 @@
         },
         {
             "file": "pixi/renderers/WebGLRenderer.js",
-            "line": 547,
+            "line": 559,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "pixi/renderers/WebGLRenderer.js",
-            "line": 575,
+            "line": 587,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "pixi/renderers/WebGLRenderer.js",
-            "line": 653,
+            "line": 665,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "pixi/renderers/WebGLRenderer.js",
-            "line": 662,
+            "line": 674,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
@@ -1140,6 +1202,10 @@
                     "type": "String"
                 }
             ],
+            "return": {
+                "description": "the texture that was removed",
+                "type": "Texture"
+            },
             "class": "Texture"
         },
         {
@@ -1165,6 +1231,11 @@
                     "name": "height",
                     "description": "the height of the renderers view",
                     "type": "Number"
+                },
+                {
+                    "name": "view",
+                    "description": "the canvas to use as a view, optional",
+                    "type": "Canvas"
                 }
             ],
             "class": "DisplayObject"
@@ -1258,7 +1329,7 @@
         },
         {
             "file": "pixi/DisplayObject.js",
-            "line": 79,
+            "line": 82,
             "access": "private",
             "tagname": "",
             "class": "DisplayObject"
@@ -1334,6 +1405,73 @@
             "access": "private",
             "tagname": "",
             "class": "DisplayObjectContainer"
+        },
+        {
+            "file": "pixi/InteractionManager.js",
+            "line": 1,
+            "author": "Mat Groves http://matgroves.com/ @Doormat23",
+            "class": "InteractionManager"
+        },
+        {
+            "file": "pixi/InteractionManager.js",
+            "line": 17,
+            "description": "a refference to the stage",
+            "itemtype": "property",
+            "name": "stage",
+            "type": "Stage",
+            "class": "InteractionManager"
+        },
+        {
+            "file": "pixi/InteractionManager.js",
+            "line": 30,
+            "description": "the mouse data",
+            "itemtype": "property",
+            "name": "mouse",
+            "type": "InteractionData",
+            "class": "InteractionManager"
+        },
+        {
+            "file": "pixi/InteractionManager.js",
+            "line": 37,
+            "description": "an object that stores current touches (InteractionData) by id reference",
+            "itemtype": "property",
+            "name": "touchs",
+            "type": "Object",
+            "class": "InteractionManager"
+        },
+        {
+            "file": "pixi/InteractionManager.js",
+            "line": 53,
+            "description": "This method will disable rollover/rollout for ALL interactive items\nYou may wish to use this an optimization if your app does not require rollover/rollout funcitonality",
+            "itemtype": "method",
+            "name": "disableMouseOver",
+            "class": "InteractionManager"
+        },
+        {
+            "file": "pixi/InteractionManager.js",
+            "line": 66,
+            "description": "This method will enable rollover/rollout for ALL interactive items\nIt is enabled by default",
+            "itemtype": "method",
+            "name": "enableMouseOver",
+            "class": "InteractionManager"
+        },
+        {
+            "file": "pixi/InteractionManager.js",
+            "line": 325,
+            "description": "This point stores the global coords of where the touch/mouse event happened",
+            "itemtype": "property",
+            "name": "global",
+            "type": "Point",
+            "class": "InteractionData"
+        },
+        {
+            "file": "pixi/InteractionManager.js",
+            "line": 332,
+            "description": "This point stores the local coords of where the touch/mouse event happened",
+            "itemtype": "property",
+            "name": "local",
+            "type": "Point",
+            "class": "InteractionData"
         },
         {
             "file": "pixi/MovieClip.js",
@@ -1584,7 +1722,135 @@
         },
         {
             "file": "pixi/Sprite.js",
-            "line": 79,
+            "line": 86,
+            "description": "A callback that is used when the users clicks on the sprite with thier mouse",
+            "itemtype": "method",
+            "name": "click",
+            "params": [
+                {
+                    "name": "interactionData",
+                    "description": "",
+                    "type": "InteractionData"
+                }
+            ],
+            "class": "Sprite",
+            "module": "PIXI"
+        },
+        {
+            "file": "pixi/Sprite.js",
+            "line": 92,
+            "description": "A callback that is used when the user clicks the mouse down over the sprite",
+            "itemtype": "method",
+            "name": "mousedown",
+            "params": [
+                {
+                    "name": "interactionData",
+                    "description": "",
+                    "type": "InteractionData"
+                }
+            ],
+            "class": "Sprite",
+            "module": "PIXI"
+        },
+        {
+            "file": "pixi/Sprite.js",
+            "line": 98,
+            "description": "A callback that is used when the user releases the mouse that was over the sprite\nfor this callback to be fired the mouse must have been pressed down over the sprite",
+            "itemtype": "method",
+            "name": "mouseup",
+            "params": [
+                {
+                    "name": "interactionData",
+                    "description": "",
+                    "type": "InteractionData"
+                }
+            ],
+            "class": "Sprite",
+            "module": "PIXI"
+        },
+        {
+            "file": "pixi/Sprite.js",
+            "line": 105,
+            "description": "A callback that is used when the users mouse rolls over the sprite",
+            "itemtype": "method",
+            "name": "mouseover",
+            "params": [
+                {
+                    "name": "interactionData",
+                    "description": "",
+                    "type": "InteractionData"
+                }
+            ],
+            "class": "Sprite",
+            "module": "PIXI"
+        },
+        {
+            "file": "pixi/Sprite.js",
+            "line": 111,
+            "description": "A callback that is used when the users mouse leaves the sprite",
+            "itemtype": "method",
+            "name": "mouseout",
+            "params": [
+                {
+                    "name": "interactionData",
+                    "description": "",
+                    "type": "InteractionData"
+                }
+            ],
+            "class": "Sprite",
+            "module": "PIXI"
+        },
+        {
+            "file": "pixi/Sprite.js",
+            "line": 121,
+            "description": "A callback that is used when the users taps on the sprite with thier finger\nbasically a touch version of click",
+            "itemtype": "method",
+            "name": "tap",
+            "params": [
+                {
+                    "name": "interactionData",
+                    "description": "",
+                    "type": "InteractionData"
+                }
+            ],
+            "class": "Sprite",
+            "module": "PIXI"
+        },
+        {
+            "file": "pixi/Sprite.js",
+            "line": 128,
+            "description": "A callback that is used when the user touch's over the sprite",
+            "itemtype": "method",
+            "name": "touchstart",
+            "params": [
+                {
+                    "name": "interactionData",
+                    "description": "",
+                    "type": "InteractionData"
+                }
+            ],
+            "class": "Sprite",
+            "module": "PIXI"
+        },
+        {
+            "file": "pixi/Sprite.js",
+            "line": 134,
+            "description": "A callback that is used when the user releases the touch that was over the sprite\nfor this callback to be fired. The touch must have started over the sprite",
+            "itemtype": "method",
+            "name": "touchend",
+            "params": [
+                {
+                    "name": "interactionData",
+                    "description": "",
+                    "type": "InteractionData"
+                }
+            ],
+            "class": "Sprite",
+            "module": "PIXI"
+        },
+        {
+            "file": "pixi/Sprite.js",
+            "line": 146,
             "itemtype": "method",
             "name": "setTexture",
             "params": [
@@ -1599,7 +1865,23 @@
         },
         {
             "file": "pixi/Sprite.js",
-            "line": 98,
+            "line": 164,
+            "description": "Indicates if the sprite will have touch and mouse interactivity. It is false by default",
+            "itemtype": "method",
+            "name": "setInteractive",
+            "params": [
+                {
+                    "name": "interactive",
+                    "description": "",
+                    "type": "Boolean"
+                }
+            ],
+            "class": "Sprite",
+            "module": "PIXI"
+        },
+        {
+            "file": "pixi/Sprite.js",
+            "line": 177,
             "access": "private",
             "tagname": "",
             "class": "Sprite",
@@ -1607,8 +1889,8 @@
         },
         {
             "file": "pixi/Sprite.js",
-            "line": 111,
-            "description": "Helper function that creates a sprite that will contain a texture from the TextureCache based on tjhe frameId\n The frame ids are created when a Texture packer file has been loaded",
+            "line": 189,
+            "description": "Helper function that creates a sprite that will contain a texture from the TextureCache based on the frameId\n The frame ids are created when a Texture packer file has been loaded",
             "itemtype": "method",
             "name": "fromFrame",
             "static": 1,
@@ -1628,7 +1910,7 @@
         },
         {
             "file": "pixi/Sprite.js",
-            "line": 127,
+            "line": 205,
             "description": "Helper function that creates a sprite that will contain a texture based on an image url\n If the image is not in the texture cache it will be loaded",
             "itemtype": "method",
             "name": "fromImage",
@@ -1655,7 +1937,7 @@
         },
         {
             "file": "pixi/Stage.js",
-            "line": 30,
+            "line": 35,
             "itemtype": "method",
             "name": "updateTransform",
             "internal": "",
@@ -1664,7 +1946,7 @@
         },
         {
             "file": "pixi/Stage.js",
-            "line": 44,
+            "line": 59,
             "itemtype": "method",
             "name": "setBackgroundColor",
             "params": [
@@ -1685,7 +1967,7 @@
         },
         {
             "message": "unknown tag: internal",
-            "line": " pixi/Stage.js:30"
+            "line": " pixi/Stage.js:35"
         },
         {
             "message": "Missing item type",
@@ -1717,19 +1999,19 @@
         },
         {
             "message": "Missing item type\nresizes the canvas view to the specified width and height",
-            "line": " pixi/renderers/CanvasRenderer.js:83"
+            "line": " pixi/renderers/CanvasRenderer.js:96"
         },
         {
             "message": "Missing item type",
-            "line": " pixi/renderers/CanvasRenderer.js:97"
+            "line": " pixi/renderers/CanvasRenderer.js:110"
         },
         {
             "message": "Missing item type",
-            "line": " pixi/renderers/CanvasRenderer.js:167"
+            "line": " pixi/renderers/CanvasRenderer.js:180"
         },
         {
             "message": "Missing item type",
-            "line": " pixi/renderers/CanvasRenderer.js:202"
+            "line": " pixi/renderers/CanvasRenderer.js:215"
         },
         {
             "message": "Missing item type",
@@ -1761,39 +2043,39 @@
         },
         {
             "message": "Missing item type",
-            "line": " pixi/renderers/WebGLRenderer.js:64"
+            "line": " pixi/renderers/WebGLRenderer.js:65"
         },
         {
             "message": "Missing item type",
-            "line": " pixi/renderers/WebGLRenderer.js:103"
+            "line": " pixi/renderers/WebGLRenderer.js:104"
         },
         {
             "message": "Missing item type",
-            "line": " pixi/renderers/WebGLRenderer.js:223"
+            "line": " pixi/renderers/WebGLRenderer.js:235"
         },
         {
             "message": "Missing item type",
-            "line": " pixi/renderers/WebGLRenderer.js:252"
+            "line": " pixi/renderers/WebGLRenderer.js:264"
         },
         {
             "message": "Missing item type",
-            "line": " pixi/renderers/WebGLRenderer.js:448"
+            "line": " pixi/renderers/WebGLRenderer.js:460"
         },
         {
             "message": "Missing item type",
-            "line": " pixi/renderers/WebGLRenderer.js:547"
+            "line": " pixi/renderers/WebGLRenderer.js:559"
         },
         {
             "message": "Missing item type",
-            "line": " pixi/renderers/WebGLRenderer.js:575"
+            "line": " pixi/renderers/WebGLRenderer.js:587"
         },
         {
             "message": "Missing item type",
-            "line": " pixi/renderers/WebGLRenderer.js:653"
+            "line": " pixi/renderers/WebGLRenderer.js:665"
         },
         {
             "message": "Missing item type",
-            "line": " pixi/renderers/WebGLRenderer.js:662"
+            "line": " pixi/renderers/WebGLRenderer.js:674"
         },
         {
             "message": "Missing item type",
@@ -1829,7 +2111,7 @@
         },
         {
             "message": "Missing item type",
-            "line": " pixi/DisplayObject.js:79"
+            "line": " pixi/DisplayObject.js:82"
         },
         {
             "message": "Missing item type",
@@ -1838,6 +2120,10 @@
         {
             "message": "Missing item type",
             "line": " pixi/DisplayObjectContainer.js:126"
+        },
+        {
+            "message": "Missing item type",
+            "line": " pixi/InteractionManager.js:1"
         },
         {
             "message": "Missing item type",
@@ -1861,7 +2147,7 @@
         },
         {
             "message": "Missing item type",
-            "line": " pixi/Sprite.js:98"
+            "line": " pixi/Sprite.js:177"
         },
         {
             "message": "Missing item type",

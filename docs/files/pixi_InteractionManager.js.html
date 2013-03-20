@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>pixi&#x2F;InteractionManager.js - Pixi.js API</title>
+    <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0pr2&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
+    <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="..&#x2F;assets/favicon.png">
+    <script src="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;combo?3.8.0pr2&#x2F;build&#x2F;yui&#x2F;yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="http:&#x2F;&#x2F;www.goodboydigital.com&#x2F;pixijs&#x2F;logo_small.png" title="Pixi.js API"></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 1.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="..&#x2F;classes/AssetLoader.html">AssetLoader</a></li>
+            
+                <li><a href="..&#x2F;classes/BaseTexture.html">BaseTexture</a></li>
+            
+                <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
+            
+                <li><a href="..&#x2F;classes/DisplayObject.html">DisplayObject</a></li>
+            
+                <li><a href="..&#x2F;classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
+            
+                <li><a href="..&#x2F;classes/InteractionData.html">InteractionData</a></li>
+            
+                <li><a href="..&#x2F;classes/InteractionManager.html">InteractionManager</a></li>
+            
+                <li><a href="..&#x2F;classes/MovieClip.html">MovieClip</a></li>
+            
+                <li><a href="..&#x2F;classes/Point.html">Point</a></li>
+            
+                <li><a href="..&#x2F;classes/Rectangle.html">Rectangle</a></li>
+            
+                <li><a href="..&#x2F;classes/Sprite.html">Sprite</a></li>
+            
+                <li><a href="..&#x2F;classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
+            
+                <li><a href="..&#x2F;classes/Stage.html">Stage</a></li>
+            
+                <li><a href="..&#x2F;classes/Texture.html">Texture</a></li>
+            
+                <li><a href="..&#x2F;classes/WebGLBatch.html">WebGLBatch</a></li>
+            
+                <li><a href="..&#x2F;classes/WebGLRenderer.html">WebGLRenderer</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="..&#x2F;modules/PIXI.html">PIXI</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: pixi&#x2F;InteractionManager.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+&#x2F;**
+ * @author Mat Groves http:&#x2F;&#x2F;matgroves.com&#x2F; @Doormat23
+ *&#x2F;
+
+
+
+&#x2F;**
+The interaction manager deals with mouse and touch events. At this moment only Sprite&#x27;s can be interactive.
+This manager also supports multitouch.
+@class InteractionManager
+@constructor
+@param stage {Stage}
+@type Stage
+*&#x2F;
+PIXI.InteractionManager = function(stage)
+{
+	&#x2F;**
+	 * a refference to the stage
+	 * @property stage
+	 * @type Stage
+	 *&#x2F;
+	this.stage = stage;
+
+	&#x2F;&#x2F; helpers
+	this.tempPoint = new PIXI.Point();
+	this.tempMatrix =  mat3.create();
+	
+	this.mouseoverEnabled = true;
+	
+	&#x2F;**
+	 * the mouse data 
+	 * @property mouse
+	 * @type InteractionData
+	 *&#x2F;
+	this.mouse = new PIXI.InteractionData();
+	
+	&#x2F;**
+	 * an object that stores current touches (InteractionData) by id reference 
+	 * @property touchs
+	 * @type Object
+	 *&#x2F;
+	this.touchs = {};
+	
+	&#x2F;&#x2F;tiny little interactiveData pool!
+	this.pool = [];
+	
+	this.interactiveItems = [];
+}
+
+&#x2F;&#x2F; constructor
+PIXI.InteractionManager.constructor = PIXI.InteractionManager;
+
+&#x2F;**
+ * This method will disable rollover&#x2F;rollout for ALL interactive items
+ * You may wish to use this an optimization if your app does not require rollover&#x2F;rollout funcitonality
+ * @method disableMouseOver
+ *&#x2F;
+PIXI.InteractionManager.prototype.disableMouseOver = function()
+{
+	if(!this.mouseoverEnabled)return;
+	
+	this.mouseoverEnabled = false;
+	if(this.target)this.target.view.removeEventListener(&#x27;mousemove&#x27;,  this.onMouseMove.bind(this));
+}
+
+&#x2F;**
+ * This method will enable rollover&#x2F;rollout for ALL interactive items
+ * It is enabled by default
+ * @method enableMouseOver
+ *&#x2F;
+PIXI.InteractionManager.prototype.enableMouseOver = function()
+{
+	if(this.mouseoverEnabled)return;
+	
+	this.mouseoverEnabled = false;
+	if(this.target)this.target.view.addEventListener(&#x27;mousemove&#x27;,  this.onMouseMove.bind(this));
+}
+
+PIXI.InteractionManager.prototype.collectInteractiveSprite = function(displayObject)
+{
+	var children = displayObject.children;
+	var length = children.length;
+	
+	for (var i = length - 1; i &gt;= 0; i--)
+	{
+		var child = children[i];
+		
+		&#x2F;&#x2F; only sprite&#x27;s right now...
+		if(child instanceof PIXI.Sprite)
+		{
+			if(child.interactive)this.interactiveItems.push(child);
+		}
+		else
+		{
+			&#x2F;&#x2F; use this to optimize..
+			if(!child.interactive)continue;
+		}
+		
+		if(child.children.length &gt; 0)
+		{
+			this.collectInteractiveSprite(child);
+		}
+	}
+}
+
+PIXI.InteractionManager.prototype.setTarget = function(target)
+{
+	this.target = target;
+	if(this.mouseoverEnabled)target.view.addEventListener(&#x27;mousemove&#x27;,  this.onMouseMove.bind(this), true);
+	target.view.addEventListener(&#x27;mousedown&#x27;,  this.onMouseDown.bind(this), true);
+ 	target.view.addEventListener(&#x27;mouseup&#x27;, 	this.onMouseUp.bind(this), true);
+ 	target.view.addEventListener(&#x27;mouseout&#x27;, 	this.onMouseUp.bind(this), true);
+	
+	&#x2F;&#x2F; aint no multi touch just yet!
+	target.view.addEventListener(&quot;touchstart&quot;, this.onTouchStart.bind(this), true);
+	target.view.addEventListener(&quot;touchend&quot;, this.onTouchEnd.bind(this), true);
+	target.view.addEventListener(&quot;touchmove&quot;, this.onTouchMove.bind(this), true);
+}
+
+PIXI.InteractionManager.prototype.hitTest = function(interactionData)
+{
+	if(this.dirty)
+	{
+		this.dirty = false;
+		this.interactiveItems = [];
+		&#x2F;&#x2F; go through and collect all the objects that are interactive..
+		this.collectInteractiveSprite(this.stage);
+	}
+	
+	var tempPoint = this.tempPoint;
+	var tempMatrix = this.tempMatrix;
+	var global = interactionData.global;
+	
+	var length = this.interactiveItems.length;
+	
+	for (var i = 0; i &lt; length; i++)
+	{
+		var item = this.interactiveItems[i];
+		if(!item.visible)continue;
+		
+		&#x2F;&#x2F; TODO this could do with some optimizing!
+		&#x2F;&#x2F; maybe store the inverse?
+		&#x2F;&#x2F; or do a lazy check first?
+		&#x2F;&#x2F;mat3.inverse(item.worldTransform, tempMatrix);
+		&#x2F;&#x2F;tempPoint.x = tempMatrix[0] * global.x + tempMatrix[1] * global.y + tempMatrix[2]; 
+		&#x2F;&#x2F;tempPoint.y = tempMatrix[4] * global.y + tempMatrix[3] * global.x + tempMatrix[5];
+	
+		&#x2F;&#x2F; OPTIMIZED! assuming the matrix transform is affine.. which it totally shold be!
+		
+		var worldTransform = item.worldTransform;
+		
+		var a00 = worldTransform[0], a01 = worldTransform[1], a02 = worldTransform[2],
+            a10 = worldTransform[3], a11 = worldTransform[4], a12 = worldTransform[5],
+            id = 1 &#x2F; (a00 * a11 + a01 * -a10);
+		
+		tempPoint.x = a11 * id * global.x + -a01 * id * global.y + (a12 * a01 - a02 * a11) * id; 
+		tempPoint.y = a00 * id * global.y + -a10 * id * global.x + (-a12 * a00 + a02 * a10) * id;
+		
+			
+		var x1 = -item.width * item.anchor.x
+		
+		if(tempPoint.x &gt; x1 &amp;&amp; tempPoint.x &lt; x1 + item.width)
+		{
+			var y1 = -item.height * item.anchor.y;
+			
+			if(tempPoint.y &gt; y1 &amp;&amp; tempPoint.y &lt; y1 + item.height)
+			{
+				interactionData.local.x = tempPoint.x;
+				interactionData.local.y = tempPoint.y;
+				
+				return item;
+			}
+		}
+	}
+		
+	return null;	
+}
+
+PIXI.InteractionManager.prototype.onMouseMove = function(event)
+{
+	event.preventDefault();
+	
+	&#x2F;&#x2F; TODO optimize by not check EVERY TIME! maybe half as often? &#x2F;&#x2F;
+	var rect = this.target.view.getBoundingClientRect();
+	
+	this.mouse.global.x = (event.clientX - rect.left) * (this.target.width &#x2F; rect.width);
+	this.mouse.global.y = (event.clientY - rect.top) * ( this.target.height &#x2F; rect.height);
+	
+	var item = this.hitTest(this.mouse);
+	
+	if(this.currentOver != item)
+	{
+		if(this.currentOver)
+		{
+			if(this.currentOver.mouseout)this.currentOver.mouseout(this.mouse);
+			this.currentOver = null;
+		}
+		
+		this.target.view.style.cursor = &quot;default&quot;;
+	}
+		
+	if(item)
+	{
+		
+		if(this.currentOver == item)return;
+		
+		this.currentOver = item;
+		this.target.view.style.cursor = &quot;pointer&quot;;
+		
+		if(item.mouseover)item.mouseover(this.mouse);
+	}
+}
+
+PIXI.InteractionManager.prototype.onMouseDown = function(event)
+{
+	var rect = this.target.view.getBoundingClientRect();
+	this.mouse.global.x = (event.clientX - rect.left) * (this.target.width &#x2F; rect.width);
+	this.mouse.global.y = (event.clientY - rect.top) * (this.target.height &#x2F; rect.height);
+	
+	var item = this.hitTest(this.mouse);
+	if(item)
+	{
+		this.currentDown = item;
+		if(item.mousedown)item.mousedown(this.mouse);
+	}
+}
+
+PIXI.InteractionManager.prototype.onMouseUp = function(event)
+{
+	if(this.currentDown)
+	{
+		if(this.currentDown.mouseup)this.currentDown.mouseup(this.mouse);	
+		
+		if(this.currentOver == this.currentDown)if(this.currentDown.click)this.currentDown.click(this.mouse);	
+		this.currentDown = null;
+	}
+}
+
+
+PIXI.InteractionManager.prototype.onTouchMove = function(event)
+{
+	event.preventDefault();
+	
+	var rect = this.target.view.getBoundingClientRect();
+	var changedTouches = event.changedTouches;
+	
+	for (var i=0; i &lt; changedTouches.length; i++) 
+	{
+		var touchEvent = changedTouches[i];
+		
+		var touchData = this.touchs[touchEvent.identifier];
+		
+		&#x2F;&#x2F; update the touch position
+		touchData.global.x = (touchEvent.clientX - rect.left) * (this.target.width &#x2F; rect.width);
+		touchData.global.y = (touchEvent.clientY - rect.top)  * (this.target.height &#x2F; rect.height);
+	}
+}
+
+PIXI.InteractionManager.prototype.onTouchStart = function(event)
+{
+	event.preventDefault();
+	var rect = this.target.view.getBoundingClientRect();
+	var changedTouches = event.changedTouches;
+	
+	for (var i=0; i &lt; changedTouches.length; i++) 
+	{
+		var touchEvent = changedTouches[i];
+		
+		var touchData = this.pool.pop();
+		if(!touchData)touchData = new PIXI.InteractionData();
+		
+		this.touchs[touchEvent.identifier] = touchData;
+		
+		touchData.global.x = (touchEvent.clientX - rect.left) * (this.target.width &#x2F; rect.width);
+		touchData.global.y = (touchEvent.clientY - rect.top)  * (this.target.height &#x2F; rect.height);
+		
+		var item = this.hitTest(touchData);
+		if(item)
+		{
+			touchData.currentDown = item;
+			if(item.touchstart)item.touchstart(touchData);
+		}
+	}
+}
+
+PIXI.InteractionManager.prototype.onTouchEnd = function(event)
+{
+	event.preventDefault();
+	
+	var rect = this.target.view.getBoundingClientRect();
+	var changedTouches = event.changedTouches;
+	
+	for (var i=0; i &lt; changedTouches.length; i++) 
+	{
+		var touchEvent = changedTouches[i];
+		var touchData = this.touchs[touchEvent.identifier];
+		
+		touchData.global.x = (touchEvent.clientX - rect.left) * (this.target.width &#x2F; rect.width);
+		touchData.global.y = (touchEvent.clientY - rect.top)  * (this.target.height &#x2F; rect.height);
+		
+		if(touchData.currentDown)
+		{
+			if(touchData.currentDown.touchend)touchData.currentDown.touchend(touchData);
+			
+			var item = this.hitTest(touchData);
+			if(item == touchData.currentDown)
+			{
+				if(touchData.currentDown.tap)touchData.currentDown.tap(touchData);	
+			}
+			touchData.currentDown = null;
+		}
+		
+		&#x2F;&#x2F; remove the touch..
+		this.pool.push(touchData);
+		this.touchs[touchEvent.identifier] = null;
+	}
+}
+
+&#x2F;**
+@class InteractionData
+@constructor
+*&#x2F;
+PIXI.InteractionData = function()
+{
+	&#x2F;**
+	 * This point stores the global coords of where the touch&#x2F;mouse event happened
+	 * @property global 
+	 * @type Point
+	 *&#x2F;
+	this.global = new PIXI.Point();
+	
+	&#x2F;**
+	 * This point stores the local coords of where the touch&#x2F;mouse event happened
+	 * @property local 
+	 * @type Point
+	 *&#x2F;
+	this.local = new PIXI.Point();
+}
+
+&#x2F;&#x2F; constructor
+PIXI.InteractionData.constructor = PIXI.InteractionData;
+
+
+
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="..&#x2F;assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="..&#x2F;assets/js/yui-prettify.js"></script>
+<script src="..&#x2F;assets/../api.js"></script>
+<script src="..&#x2F;assets/js/api-filter.js"></script>
+<script src="..&#x2F;assets/js/api-list.js"></script>
+<script src="..&#x2F;assets/js/api-search.js"></script>
+<script src="..&#x2F;assets/js/apidocs.js"></script>
+</body>
+</html>

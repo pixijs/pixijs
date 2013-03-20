@@ -169,7 +169,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	for (var i=0; i < stage.__childrenRemoved.length; i++)
 	{
 		this.removeDisplayObject(stage.__childrenRemoved[i]);
-	//	stage.__childrenRemoved[i].cacheVisible = false;
+		//	stage.__childrenRemoved[i].cacheVisible = false;
 	}
 	/*
 	// no add all new sprites		
@@ -219,6 +219,17 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 		}
 	}
 	
+	// interaction
+	// run interaction!
+	if(stage.interactive)
+	{
+		//need to add some events!
+		if(!stage._interactiveEventsAdded)
+		{
+			stage._interactiveEventsAdded = true;
+			stage.interactionManager.setTarget(this);
+		}
+	}
 }
 
 /**

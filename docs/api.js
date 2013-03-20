@@ -6,6 +6,8 @@ YUI.add("yuidoc-meta", function(Y) {
         "CanvasRenderer",
         "DisplayObject",
         "DisplayObjectContainer",
+        "InteractionData",
+        "InteractionManager",
         "MovieClip",
         "Point",
         "Rectangle",

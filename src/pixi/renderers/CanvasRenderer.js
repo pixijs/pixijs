@@ -79,6 +79,18 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 
 	this.context.clearRect(0, 0, this.width, this.height)
     this.renderDisplayObject(stage);
+    //as
+   
+    // run interaction!
+	if(stage.interactive)
+	{
+		//need to add some events!
+		if(!stage._interactiveEventsAdded)
+		{
+			stage._interactiveEventsAdded = true;
+			stage.interactionManager.setTarget(this);
+		}
+	}
 }
 
 /**

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Point - Pixi.js API</title>
+    <title>InteractionManager - Pixi.js API</title>
     <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0pr2&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
@@ -114,7 +114,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>Point Class</h1>
+                        <h1>InteractionManager Class</h1>
 <div class="box meta">
     
 
@@ -122,7 +122,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="..&#x2F;files&#x2F;pixi_Point.js.html#l5"><code>pixi&#x2F;Point.js:5</code></a>
+            Defined in: <a href="..&#x2F;files&#x2F;pixi_InteractionManager.js.html#l7"><code>pixi&#x2F;InteractionManager.js:7</code></a>
         </div>
     
 
@@ -138,14 +138,15 @@
 
 
 <div class="box intro">
-    <p>The Point object represents a location in a two-dimensional coordinate system, where x represents the horizontal axis and y represents the vertical axis.</p>
+    <p>The interaction manager deals with mouse and touch events. At this moment only Sprite's can be interactive.
+This manager also supports multitouch.</p>
 </div>
 
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_Point" class="method item">
-    <h3 class="name"><code>Point</code></h3>
+        <div id="method_InteractionManager" class="method item">
+    <h3 class="name"><code>InteractionManager</code></h3>
 
     
         <div class="args">
@@ -153,13 +154,7 @@
             
                 <li class="arg">
                     
-                        <code>x</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>y</code>
+                        <code>stage</code>
                     
                 </li>
             
@@ -192,7 +187,7 @@
             
         
         
-        <a href="..&#x2F;files&#x2F;pixi_Point.js.html#l5"><code>pixi&#x2F;Point.js:5</code></a>
+        <a href="..&#x2F;files&#x2F;pixi_InteractionManager.js.html#l7"><code>pixi&#x2F;InteractionManager.js:7</code></a>
         
         </p>
 
@@ -214,29 +209,14 @@
             
                 <li class="param">
                     
-                        <code class="param-name">x</code>
-                        <span class="type">Number</span>
+                        <code class="param-name">stage</code>
+                        <span class="type"><a href="../classes/Stage.html" class="crosslink">Stage</a></span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>position of the point</p>
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">y</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>position of the point</p>
+                         
                     </div>
 
                     
@@ -279,7 +259,14 @@
                     <ul class="index-list methods">
                         
                             <li class="index-item method">
-                                <a href="#method_clone">clone</a>
+                                <a href="#method_disableMouseOver">disableMouseOver</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_enableMouseOver">enableMouseOver</a>
 
                                 
                                 
@@ -296,14 +283,21 @@
                     <ul class="index-list properties">
                         
                             <li class="index-item property">
-                                <a href="#property_x">x</a>
+                                <a href="#property_mouse">mouse</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_y">y</a>
+                                <a href="#property_stage">stage</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_touchs">touchs</a>
 
                                 
                                 
@@ -323,17 +317,13 @@
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_clone" class="method item">
-    <h3 class="name"><code>clone</code></h3>
+                    <div id="method_disableMouseOver" class="method item">
+    <h3 class="name"><code>disableMouseOver</code></h3>
 
     
         <span class="paren">()</span>
     
 
-    
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
     
 
     
@@ -359,7 +349,7 @@
             
         
         
-        <a href="..&#x2F;files&#x2F;pixi_Point.js.html#l29"><code>pixi&#x2F;Point.js:29</code></a>
+        <a href="..&#x2F;files&#x2F;pixi_InteractionManager.js.html#l53"><code>pixi&#x2F;InteractionManager.js:53</code></a>
         
         </p>
 
@@ -370,22 +360,67 @@
     </div>
 
     <div class="description">
-        
+        <p>This method will disable rollover/rollout for ALL interactive items
+You may wish to use this an optimization if your app does not require rollover/rollout funcitonality</p>
     </div>
 
     
 
     
-        <div class="returns">
-            <h4>Returns:</h4>
 
-            <div class="returns-description">
+    
+</div>
+
                 
-                    
-                    a copy of the point
+                    <div id="method_enableMouseOver" class="method item">
+    <h3 class="name"><code>enableMouseOver</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
                 
-            </div>
-        </div>
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;pixi_InteractionManager.js.html#l66"><code>pixi&#x2F;InteractionManager.js:66</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This method will enable rollover/rollout for ALL interactive items
+It is enabled by default</p>
+    </div>
+
+    
+
     
 
     
@@ -400,9 +435,9 @@
                 <h2 class="off-left">Properties</h2>
 
                 
-                    <div id="property_x" class="property item">
-    <h3 class="name"><code>x</code></h3>
-    <span class="type">Number</span>
+                    <div id="property_mouse" class="property item">
+    <h3 class="name"><code>mouse</code></h3>
+    <span class="type"><a href="../classes/InteractionData.html" class="crosslink">InteractionData</a></span>
 
     
 
@@ -423,7 +458,7 @@
             
         
         
-        <a href="..&#x2F;files&#x2F;pixi_Point.js.html#l14"><code>pixi&#x2F;Point.js:14</code></a>
+        <a href="..&#x2F;files&#x2F;pixi_InteractionManager.js.html#l30"><code>pixi&#x2F;InteractionManager.js:30</code></a>
         
         </p>
 
@@ -433,11 +468,9 @@
     </div>
 
     <div class="description">
-        
+        <p>the mouse data</p>
     </div>
 
-    
-        <p><strong>Default:</strong> 0</p>
     
 
     
@@ -446,9 +479,9 @@
 </div>
 
                 
-                    <div id="property_y" class="property item">
-    <h3 class="name"><code>y</code></h3>
-    <span class="type">Number</span>
+                    <div id="property_stage" class="property item">
+    <h3 class="name"><code>stage</code></h3>
+    <span class="type"><a href="../classes/Stage.html" class="crosslink">Stage</a></span>
 
     
 
@@ -469,7 +502,7 @@
             
         
         
-        <a href="..&#x2F;files&#x2F;pixi_Point.js.html#l21"><code>pixi&#x2F;Point.js:21</code></a>
+        <a href="..&#x2F;files&#x2F;pixi_InteractionManager.js.html#l17"><code>pixi&#x2F;InteractionManager.js:17</code></a>
         
         </p>
 
@@ -479,11 +512,53 @@
     </div>
 
     <div class="description">
-        
+        <p>a refference to the stage</p>
     </div>
 
     
-        <p><strong>Default:</strong> 0</p>
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_touchs" class="property item">
+    <h3 class="name"><code>touchs</code></h3>
+    <span class="type">Object</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;pixi_InteractionManager.js.html#l37"><code>pixi&#x2F;InteractionManager.js:37</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>an object that stores current touches (InteractionData) by id reference</p>
+    </div>
+
     
 
     

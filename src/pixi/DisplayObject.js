@@ -71,6 +71,9 @@ PIXI.DisplayObject = function()
 	this._cr = 1;
 	
 	this.renderable = false;
+	
+	// NOT YET :/ This only applies to children within the container..
+	this.interactive = true;
 }
 
 // constructor

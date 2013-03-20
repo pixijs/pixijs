@@ -183,9 +183,12 @@ PIXI.Texture.addTextureToCache = function(texture, id)
  * Remove a texture from the textureCache. 
  * @method removeTextureFromCache
  * @param id {String} the id of the texture to be removed
+ * @return {Texture} the texture that was removed
  */
 PIXI.Texture.removeTextureFromCache = function(id)
 {
-	PIXI.TextureCache[id] = texture;
+	var texture = PIXI.TextureCache[id]
+	PIXI.TextureCache[id] = null;
+	return texture;
 }
 

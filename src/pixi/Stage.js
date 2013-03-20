@@ -8,8 +8,9 @@ A Stage represents the root of the display tree. Everything connected to the sta
 @extends DisplayObjectContainer
 @constructor
 @param backgroundColor {Number} the background color of the stage
+@param interactive {Boolean} enable / disable interaction (default is false)
 */
-PIXI.Stage = function(backgroundColor)
+PIXI.Stage = function(backgroundColor, interactive)
 {
 	
 	PIXI.DisplayObjectContainer.call( this );
@@ -18,6 +19,10 @@ PIXI.Stage = function(backgroundColor)
 	this.__childrenRemoved = [];
 	this.childIndex = 0;
 	this.stage=  this;
+	
+	// interaction!
+	this.interactive = interactive ? true : false;
+	this.interactionManager = new PIXI.InteractionManager(this);
 	
 	this.setBackgroundColor(backgroundColor);
 }
@@ -34,10 +39,20 @@ PIXI.Stage.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
 PIXI.Stage.prototype.updateTransform = function()
 {
 	this.worldAlpha = 1;		
-
+	
 	for(var i=0,j=this.children.length; i<j; i++)
 	{
 		this.children[i].updateTransform();	
+	}
+	
+	if(this.dirty)
+	{
+		this.dirty = false;
+		
+		// update interactive!
+		this.interactionManager.dirty = true;
+		
+		
 	}
 }
 
@@ -54,8 +69,8 @@ PIXI.Stage.prototype.setBackgroundColor = function(backgroundColor)
 
 PIXI.Stage.prototype.__addChild = function(child)
 {
-	//this.__childrenAdded.push(child);
-
+	if(child.interactive)this.dirty = true;
+	
 	child.stage = this;
 	
 	if(child.children)
@@ -71,6 +86,8 @@ PIXI.Stage.prototype.__addChild = function(child)
 
 PIXI.Stage.prototype.__removeChild = function(child)
 {
+	if(child.interactive)this.dirty = true;
+	
 	this.__childrenRemoved.push(child);
 
 	child.stage = undefined;
