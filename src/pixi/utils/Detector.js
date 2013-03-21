@@ -15,21 +15,17 @@ PIXI.autoDetectRenderer = function(width, height, view)
 {
 	if(!width)width = 800;
 	if(!height)height = 600;
-	
+
 	// BORROWED from Mr Doob (mrdoob.com)
-	var webgl = ( function () { try { return !! window.WebGLRenderingContext && !! document.createElement( 'canvas' ).getContext( 'experimental-webgl' ); } catch( e ) { return false; } } )()
-	
+	var webgl = ( function () { try { return !! window.WebGLRenderingContext && !! document.createElement( 'canvas' ).getContext( 'experimental-webgl' ); } catch( e ) { return false; } } )();
+
 	//console.log(webgl);
 	if( webgl )
 	{
-<<<<<<< HEAD
-		return new PIXI.WebGLRenderer(width, height, view) 
-=======
-		return new PIXI.WebGLRenderer(width, height, view)  
->>>>>>> Interactivity Added
+		return new PIXI.WebGLRenderer(width, height, view);
 	}
-	
+
 	return	new PIXI.CanvasRenderer(width, height, view);
-}
+};
 
 
