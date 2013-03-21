@@ -46,6 +46,7 @@ PIXI.SpriteSheetLoader.prototype.load = function()
 	}
 		
 	this.ajaxRequest.open("GET", this.url, true)
+	if (this.ajaxRequest.overrideMimeType) this.ajaxRequest.overrideMimeType("application/json");
 	this.ajaxRequest.send(null)
 }
 
