@@ -464,7 +464,7 @@
             "extension_for": [],
             "module": "PIXI",
             "file": "pixi/InteractionManager.js",
-            "line": 319,
+            "line": 323,
             "is_constructor": 1
         },
         "MovieClip": {
@@ -1457,7 +1457,7 @@
         },
         {
             "file": "pixi/InteractionManager.js",
-            "line": 325,
+            "line": 329,
             "description": "This point stores the global coords of where the touch/mouse event happened",
             "itemtype": "property",
             "name": "global",
@@ -1466,11 +1466,20 @@
         },
         {
             "file": "pixi/InteractionManager.js",
-            "line": 332,
+            "line": 336,
             "description": "This point stores the local coords of where the touch/mouse event happened",
             "itemtype": "property",
             "name": "local",
             "type": "Point",
+            "class": "InteractionData"
+        },
+        {
+            "file": "pixi/InteractionManager.js",
+            "line": 343,
+            "description": "The target Sprite that was interacted with",
+            "itemtype": "property",
+            "name": "target",
+            "type": "Sprite",
             "class": "InteractionData"
         },
         {

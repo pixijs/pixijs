@@ -135,18 +135,18 @@ PIXI.autoDetectRenderer = function(width, height, view)
 {
 	if(!width)width = 800;
 	if(!height)height = 600;
-	
+
 	&#x2F;&#x2F; BORROWED from Mr Doob (mrdoob.com)
-	var webgl = ( function () { try { return !! window.WebGLRenderingContext &amp;&amp; !! document.createElement( &#x27;canvas&#x27; ).getContext( &#x27;experimental-webgl&#x27; ); } catch( e ) { return false; } } )()
-	
+	var webgl = ( function () { try { return !! window.WebGLRenderingContext &amp;&amp; !! document.createElement( &#x27;canvas&#x27; ).getContext( &#x27;experimental-webgl&#x27; ); } catch( e ) { return false; } } )();
+
 	&#x2F;&#x2F;console.log(webgl);
 	if( webgl )
 	{
-		return new PIXI.WebGLRenderer(width, height, view)  
+		return new PIXI.WebGLRenderer(width, height, view);
 	}
-	
+
 	return	new PIXI.CanvasRenderer(width, height, view);
-}
+};
 
 
 

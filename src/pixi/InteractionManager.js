@@ -192,6 +192,7 @@ PIXI.InteractionManager.prototype.onMouseMove = function(event)
 	{
 		if(this.currentOver)
 		{
+			this.mouse.target = this.currentOver;
 			if(this.currentOver.mouseout)this.currentOver.mouseout(this.mouse);
 			this.currentOver = null;
 		}
@@ -206,7 +207,7 @@ PIXI.InteractionManager.prototype.onMouseMove = function(event)
 		
 		this.currentOver = item;
 		this.target.view.style.cursor = "pointer";
-		
+		this.mouse.target = item;
 		if(item.mouseover)item.mouseover(this.mouse);
 	}
 }
@@ -221,6 +222,7 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
 	if(item)
 	{
 		this.currentDown = item;
+		this.mouse.target = item;
 		if(item.mousedown)item.mousedown(this.mouse);
 	}
 }
@@ -229,6 +231,7 @@ PIXI.InteractionManager.prototype.onMouseUp = function(event)
 {
 	if(this.currentDown)
 	{
+		this.mouse.target = this.currentDown;
 		if(this.currentDown.mouseup)this.currentDown.mouseup(this.mouse);	
 		
 		if(this.currentOver == this.currentDown)if(this.currentDown.click)this.currentDown.click(this.mouse);	
@@ -278,6 +281,7 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
 		if(item)
 		{
 			touchData.currentDown = item;
+			touchData.target = item;
 			if(item.touchstart)item.touchstart(touchData);
 		}
 	}
@@ -335,6 +339,13 @@ PIXI.InteractionData = function()
 	 * @type Point
 	 */
 	this.local = new PIXI.Point();
+
+	/**
+	 * The target Sprite that was interacted with
+	 * @property target
+	 * @type Sprite
+	 */
+	this.target;
 }
 
 // constructor
