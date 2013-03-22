@@ -18,28 +18,28 @@ PIXI.Rectangle = function(x, y, width, height)
 	 * @type Number
 	 * @default 0
 	 */
-	this.x = x ? x : 0;
+	this.x = x || 0;
 	
 	/**
 	 * @property y
 	 * @type Number
 	 * @default 0
 	 */
-	this.y = y ? y : 0;
+	this.y = y || 0;
 	
 	/**
 	 * @property width
 	 * @type Number
 	 * @default 0
 	 */
-	this.width = width ? width : 0;
+	this.width = width || 0;
 	
 	/**
 	 * @property height
 	 * @type Number
 	 * @default 0
 	 */
-	this.height = height ? height : 0;
+	this.height = height || 0;
 }
 
 /** 

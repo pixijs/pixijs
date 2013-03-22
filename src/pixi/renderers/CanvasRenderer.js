@@ -18,14 +18,14 @@ PIXI.CanvasRenderer = function(width, height, view)
 	 * @type Number
 	 * @default 800
 	 */
-	this.width = width ? width : 800;
+	this.width = width || 800;
 	/**
 	 * The height of the canvas view
 	 * @property height
 	 * @type Number
 	 * @default 600
 	 */
-	this.height = height ? height : 600;
+	this.height = height || 600;
 	
 	this.refresh = true;
 	
@@ -34,7 +34,7 @@ PIXI.CanvasRenderer = function(width, height, view)
 	 * @property view
 	 * @type Canvas
 	 */
-	this.view = view ? view : document.createElement( 'canvas' ); 
+	this.view = view || document.createElement( 'canvas' ); 
 	
 	// hack to enable some hardware acceleration!
 	//this.view.style["transform"] = "translatez(0)";
