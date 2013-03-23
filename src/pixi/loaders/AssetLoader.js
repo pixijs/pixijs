@@ -23,6 +23,8 @@ PIXI.AssetLoader = function(assetURLs)
 	this.assetURLs = assetURLs;
 	
 	this.assets = [];
+
+	this.crossorigin = false;
 }
 
 /**
@@ -79,7 +81,7 @@ PIXI.AssetLoader.prototype.load = function()
 		if(type == "img")
 		{
 			
-			var texture = PIXI.Texture.fromImage(filename);
+			var texture = PIXI.Texture.fromImage(filename, this.crossorigin);
 			if(!texture.hasLoaded)
 			{
 				
@@ -102,6 +104,7 @@ PIXI.AssetLoader.prototype.load = function()
 		else if(type == "atlas")
 		{
 			var spriteSheetLoader = new PIXI.SpriteSheetLoader(filename);
+			spriteSheetLoader.crossorigin = this.crossorigin;
 			this.assets.push(spriteSheetLoader);
 			
 			var scope = this;

@@ -27,7 +27,8 @@ PIXI.SpriteSheetLoader = function(url)
 	this.url = url;
 	this.baseUrl = url.replace(/[^\/]*$/, '');
 	this.texture;
-	this.frames = {};	
+	this.frames = {};
+	this.crossorigin = false;
 }
 
 // constructor
@@ -60,7 +61,7 @@ PIXI.SpriteSheetLoader.prototype.onLoaded = function()
 			
 			var textureUrl = this.baseUrl + jsondata.meta.image;
 			
-			this.texture = PIXI.Texture.fromImage(textureUrl).baseTexture;
+			this.texture = PIXI.Texture.fromImage(textureUrl, this.crossorigin).baseTexture;
 			
 		//	if(!this.texture)this.texture = new PIXI.Texture(textureUrl);
 			
