@@ -94,7 +94,7 @@ PIXI.Texture.prototype.setFrame = function(frame)
  * @param imageUrl {String} The image url of the texture
  * @return Texture
  */
-PIXI.Texture.fromImage = function(imageUrl)
+PIXI.Texture.fromImage = function(imageUrl, crossorigin)
 {
 	var texture = PIXI.TextureCache[imageUrl];
 	
@@ -104,6 +104,10 @@ PIXI.Texture.fromImage = function(imageUrl)
 		if(!baseTexture) 
 		{
 			var image = new Image();//new Image();
+			if (crossorigin)
+			{
+				image.crossOrigin = '';
+			}
 			image.src = imageUrl;
 			
 			baseTexture = new PIXI.BaseTexture(image);
