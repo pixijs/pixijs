@@ -21,7 +21,7 @@ PIXI.Stage = function(backgroundColor, interactive)
 	this.stage=  this;
 	
 	// interaction!
-	this.interactive = interactive ? true : false;
+	this.interactive = !!interactive;
 	this.interactionManager = new PIXI.InteractionManager(this);
 	
 	this.setBackgroundColor(backgroundColor);
@@ -62,7 +62,7 @@ PIXI.Stage.prototype.updateTransform = function()
  */
 PIXI.Stage.prototype.setBackgroundColor = function(backgroundColor)
 {
-	this.backgroundColor = backgroundColor ? backgroundColor : 0x000000;
+	this.backgroundColor = backgroundColor || 0x000000;
 	this.backgroundColorSplit = HEXtoRGB(this.backgroundColor);
 	this.backgroundColorString =  "#" + this.backgroundColor.toString(16);
 }
