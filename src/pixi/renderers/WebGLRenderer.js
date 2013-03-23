@@ -129,8 +129,6 @@ PIXI.WebGLRenderer.prototype.checkVisibility = function(displayObject, globalVis
 			// update texture!!
 		}
 		
-		
-		
 		if(child.cacheVisible != actualVisibility)
 		{
 			child.cacheVisible = actualVisibility;
@@ -149,8 +147,6 @@ PIXI.WebGLRenderer.prototype.checkVisibility = function(displayObject, globalVis
 		{
 			this.checkVisibility(child, actualVisibility);
 		}
-		
-		
 	};
 }
 
@@ -169,15 +165,9 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	for (var i=0; i < stage.__childrenRemoved.length; i++)
 	{
 		this.removeDisplayObject(stage.__childrenRemoved[i]);
-		//	stage.__childrenRemoved[i].cacheVisible = false;
 	}
-	/*
-	// no add all new sprites		
-	for (var i=0; i < stage.__childrenAdded.length; i++) 
-	{
-		stage.__childrenAdded[i].cacheVisible = false;
-//		this.addDisplayObject(stage.__childrenAdded[i]);
-	}*/
+
+
 	// update any textures	
 	for (var i=0; i < PIXI.texturesToUpdate.length; i++) this.updateTexture(PIXI.texturesToUpdate[i]);
 	
@@ -189,7 +179,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	// recursivly loop through all items!
 	this.checkVisibility(stage, true);
 	
-	// update the scen graph	
+	// update the scene graph	
 	stage.updateTransform();
 	
 	var gl = this.gl;

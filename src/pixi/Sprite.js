@@ -171,7 +171,7 @@ PIXI.Sprite.prototype.setInteractive = function(interactive)
 	this.interactive = interactive;
 	// TODO more to be done here..
 	// need to sort out a re-crawl!
-	if(stage)stage.dirty = true;
+	if(this.stage)this.stage.dirty = true;
 }
 
 /**
