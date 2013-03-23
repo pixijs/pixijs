@@ -33,6 +33,14 @@ last 2 examples and allowing us to share the source code :)
 
 [Documentation can be found here](<http://www.goodboydigital.com/pixijs/docs/>)
 
+### How to build ###
+
+```
+cd build
+ant -f PixiBuild.xml
+```
+
+This will create a minified version at bin/pixi.js and a non-minified version at bin/pixi.dev.js
 
 ### Current features ###
 
