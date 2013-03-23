@@ -16,14 +16,14 @@ PIXI.Point = function(x, y)
 	 * @type Number
 	 * @default 0
 	 */
-	this.x = x ? x : 0;
+	this.x = x || 0;
 	
 	/**
 	 * @property y
 	 * @type Number
 	 * @default 0
 	 */
-	this.y = y ? y : 0;
+	this.y = y || 0;
 }
 
 /** 
