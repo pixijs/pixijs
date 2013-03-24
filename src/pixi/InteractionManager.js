@@ -229,12 +229,19 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
 
 PIXI.InteractionManager.prototype.onMouseUp = function(event)
 {
+	if(this.currentOver)
+	{
+		this.mouse.target = this.currentOver;
+		if(this.currentOver.mouseup)this.currentOver.mouseup(this.mouse);	
+	}
+	
 	if(this.currentDown)
 	{
 		this.mouse.target = this.currentDown;
-		if(this.currentDown.mouseup)this.currentDown.mouseup(this.mouse);	
+		// click!
+		if(this.currentOver == this.currentDown)if(this.currentDown.click)this.currentDown.click(this.mouse);
 		
-		if(this.currentOver == this.currentDown)if(this.currentDown.click)this.currentDown.click(this.mouse);	
+	
 		this.currentDown = null;
 	}
 }
