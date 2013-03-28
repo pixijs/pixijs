@@ -82,6 +82,11 @@ PIXI.Texture.prototype.setFrame = function(frame)
 	this.frame = frame;
 	this.width = frame.width;
 	this.height = frame.height;
+	
+	if(frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height)
+	{
+		throw new Error("Texture Error: frame does not fit inside the base Texture dimensions " + this);
+	}
 	//this.updateFrame = true;
 }
 
@@ -109,7 +114,6 @@ PIXI.Texture.fromImage = function(imageUrl, crossorigin)
 				image.crossOrigin = '';
 			}
 			image.src = imageUrl;
-			
 			baseTexture = new PIXI.BaseTexture(image);
 			PIXI.BaseTextureCache[imageUrl] = baseTexture;
 		}

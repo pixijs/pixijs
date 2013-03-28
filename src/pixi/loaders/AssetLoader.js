@@ -82,7 +82,7 @@ PIXI.AssetLoader.prototype.load = function()
 		{
 			
 			var texture = PIXI.Texture.fromImage(filename, this.crossorigin);
-			if(!texture.hasLoaded)
+			if(!texture.baseTexture.hasLoaded)
 			{
 				
 				var scope = this;
@@ -98,6 +98,12 @@ PIXI.AssetLoader.prototype.load = function()
 				
 				// already loaded!
 				this.loadCount--;
+				// if this hits zero here.. then everything was cached!
+				if(this.loadCount == 0)
+				{
+					this.dispatchEvent( { type: 'onComplete', content: this } );
+					if(this.onComplete)this.onComplete();
+				}
 			}
 			
 		}

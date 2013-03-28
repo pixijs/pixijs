@@ -3369,6 +3369,11 @@ PIXI.Texture.prototype.setFrame = function(frame)
 	this.frame = frame;
 	this.width = frame.width;
 	this.height = frame.height;
+	
+	if(frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height)
+	{
+		throw new Error("Texture Error: frame does not fit inside the base Texture dimensions " + this);
+	}
 	//this.updateFrame = true;
 }
 
@@ -3396,7 +3401,6 @@ PIXI.Texture.fromImage = function(imageUrl, crossorigin)
 				image.crossOrigin = '';
 			}
 			image.src = imageUrl;
-			
 			baseTexture = new PIXI.BaseTexture(image);
 			PIXI.BaseTextureCache[imageUrl] = baseTexture;
 		}
@@ -3669,7 +3673,7 @@ PIXI.AssetLoader.prototype.load = function()
 		{
 			
 			var texture = PIXI.Texture.fromImage(filename, this.crossorigin);
-			if(!texture.hasLoaded)
+			if(!texture.baseTexture.hasLoaded)
 			{
 				
 				var scope = this;
@@ -3685,6 +3689,12 @@ PIXI.AssetLoader.prototype.load = function()
 				
 				// already loaded!
 				this.loadCount--;
+				// if this hits zero here.. then everything was cached!
+				if(this.loadCount == 0)
+				{
+					this.dispatchEvent( { type: 'onComplete', content: this } );
+					if(this.onComplete)this.onComplete();
+				}
 			}
 			
 		}
