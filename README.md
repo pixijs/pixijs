@@ -20,6 +20,8 @@ any breakthroughs will be posted up there too!
 
 - [Fight for Everyone](<http://www.theleisuresociety.co.uk/fightforeveryone>)
 
+- [Flash vs HTML](<http://flashvhtml.com>)
+
 - [Bunny Demo](<http://www.goodboydigital.com/pixijs/bunnymark>)
 
 - [Interaction Demo](<http://www.goodboydigital.com/pixijs/examples/6/>)
