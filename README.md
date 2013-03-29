@@ -18,6 +18,8 @@ any breakthroughs will be posted up there too!
 
 - [Run pixi run](<http://www.goodboydigital.com/runpixierun/>)
 
+- [Fight for Everyone](<http://www.theleisuresociety.co.uk/fightforeveryone>)
+
 - [Bunny Demo](<http://www.goodboydigital.com/pixijs/bunnymark>)
 
 - [Interaction Demo](<http://www.goodboydigital.com/pixijs/examples/6/>)
