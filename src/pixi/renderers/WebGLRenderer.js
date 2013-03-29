@@ -53,8 +53,7 @@ PIXI.WebGLRenderer = function(width, height, view)
     gl.enable(gl.BLEND);
     gl.colorMask(true, true, true, false); 
     
-    this.projectionMatrix =  mat4.create();
-    
+    this.projectionMatrix =  PIXI.mat4.create();
     this.resize(this.width, this.height)
     this.contextLost = false;
 }
@@ -540,10 +539,13 @@ PIXI.WebGLRenderer.prototype.resize = function(width, height)
 	this.view.height = height;
 	
 	this.gl.viewport(0, 0, this.width, this.height);	
-
-	mat4.identity(this.projectionMatrix);
-	mat4.scale(this.projectionMatrix, [2/this.width, -2/this.height, 1]);
-	mat4.translate(this.projectionMatrix, [-this.width/2, -this.height/2, 0]);	
+	
+	var projectionMatrix = this.projectionMatrix;
+	
+	projectionMatrix[0] = 2/this.width;
+	projectionMatrix[5] = -2/this.height;
+	projectionMatrix[12] = -1;
+	projectionMatrix[13] = 1;
 }
 
 /**
@@ -582,10 +584,9 @@ PIXI.WebGLRenderer.prototype.renderStrip = function(strip)
 	var gl = this.gl;
 	var shaderProgram = this.shaderProgram;
 //	mat
-	var mat4Real = mat3.toMat4(strip.worldTransform);
-	mat4.transpose(mat4Real);
-	
-	mat4.multiply(this.projectionMatrix, mat4Real, mat4Real )
+	var mat4Real = PIXI.mat3.toMat4(strip.worldTransform);
+	PIXI.mat4.transpose(mat4Real);
+	PIXI.mat4.multiply(this.projectionMatrix, mat4Real, mat4Real )
 
 	gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, mat4Real);
   

@@ -14,7 +14,7 @@
 
       <filelist dir="../src/pixi" files="Pixi.js, Point.js, Rectangle.js, DisplayObject.js, DisplayObjectContainer.js"/>
       <filelist dir="../src/pixi" files="Sprite.js, MovieClip.js, InteractionManager.js, Stage.js"/>
-      <filelist dir="../src/pixi/utils" files="Utils.js, EventTarget.js, gl-matrix-min.js, Detector.js"/>
+      <filelist dir="../src/pixi/utils" files="Utils.js, EventTarget.js, Matrix.js, Detector.js"/>
       <filelist dir="../src/pixi/renderers" files="WebGLShaders.js, WebGLRenderer.js, WebGLBatch.js, CanvasRenderer.js"/>
       <filelist dir="../src/pixi/extras" files="Strip.js, Rope.js"/>
       <filelist dir="../src/pixi/textures" files="BaseTexture.js, Texture.js"/>

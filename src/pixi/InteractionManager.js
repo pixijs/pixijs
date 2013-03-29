@@ -23,7 +23,7 @@ PIXI.InteractionManager = function(stage)
 
 	// helpers
 	this.tempPoint = new PIXI.Point();
-	this.tempMatrix =  mat3.create();
+	//this.tempMatrix =  mat3.create();
 	
 	this.mouseoverEnabled = true;
 	
