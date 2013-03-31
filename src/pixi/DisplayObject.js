@@ -107,7 +107,7 @@ PIXI.DisplayObject.prototype.updateTransform = function()
 	
     // Cache the matrix values (makes for huge speed increases!)
     var a00 = localTransform[0], a01 = localTransform[1], a02 = localTransform[2],
-        a10 = localTransform[3], a11 = localTransform[4], a12 = localTransform[5];
+        a10 = localTransform[3], a11 = localTransform[4], a12 = localTransform[5],
 
         b00 = parentTransform[0], b01 = parentTransform[1], b02 = parentTransform[2],
         b10 = parentTransform[3], b11 = parentTransform[4], b12 = parentTransform[5];
