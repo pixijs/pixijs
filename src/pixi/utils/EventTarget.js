@@ -23,7 +23,7 @@ PIXI.EventTarget = function () {
 
 	};
 
-	this.dispatchEvent = this.trigger = function ( event ) {
+	this.dispatchEvent = this.emit = function ( event ) {
 		
 		for ( var listener in listeners[ event.type ] ) {
 
