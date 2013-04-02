@@ -7,7 +7,7 @@ PIXI.EventTarget = function () {
 
 	var listeners = {};
 	
-	this.addEventListener = function ( type, listener ) {
+	this.addEventListener = this.on = function ( type, listener ) {
 		
 		
 		if ( listeners[ type ] === undefined ) {
@@ -23,7 +23,7 @@ PIXI.EventTarget = function () {
 
 	};
 
-	this.dispatchEvent = function ( event ) {
+	this.dispatchEvent = this.trigger = function ( event ) {
 		
 		for ( var listener in listeners[ event.type ] ) {
 
@@ -33,7 +33,7 @@ PIXI.EventTarget = function () {
 
 	};
 
-	this.removeEventListener = function ( type, listener ) {
+	this.removeEventListener = this.off = function ( type, listener ) {
 
 		var index = listeners[ type ].indexOf( listener );
 
