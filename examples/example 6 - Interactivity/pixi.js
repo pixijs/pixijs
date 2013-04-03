@@ -1,128 +1,3942 @@
-var PIXI=PIXI||{};PIXI.Point=function(a,c){this.x=a?a:0;this.y=c?c:0};PIXI.Point.clone=function(){return new PIXI.Point(this.x,this.y)};PIXI.Point.constructor=PIXI.Point;PIXI.Rectangle=function(a,c,f,d){this.x=a?a:0;this.y=c?c:0;this.width=f?f:0;this.height=d?d:0};PIXI.Rectangle.clone=function(){return new PIXI.Rectangle(this.x,this.y,this.width,this.height)};PIXI.Rectangle.constructor=PIXI.Rectangle;window.requestAnimFrame=function(){return window.requestAnimationFrame||window.webkitRequestAnimationFrame||window.mozRequestAnimationFrame||window.oRequestAnimationFrame||window.msRequestAnimationFrame||function(a){window.setTimeout(a,1E3/60)}}();function HEXtoRGB(a){return[(a>>16&255)/255,(a>>8&255)/255,(a&255)/255]}
-"function"!=typeof Function.prototype.bind&&(Function.prototype.bind=function(){var a=Array.prototype.slice;return function(c){function f(){var h=g.concat(a.call(arguments));d.apply(this instanceof f?this:c,h)}var d=this,g=a.call(arguments,1);if("function"!=typeof d)throw new TypeError;f.prototype=function j(a){a&&(j.prototype=a);if(!(this instanceof j))return new j}(d.prototype);return f}}());
-var AjaxRequest=function(){var a=["Msxml2.XMLHTTP","Microsoft.XMLHTTP"];if(window.ActiveXObject)for(var c=0;c<a.length;c++)try{return new ActiveXObject(a[c])}catch(f){}else return window.XMLHttpRequest?new XMLHttpRequest:!1};PIXI.EventTarget=function(){var a={};this.addEventListener=function(c,f){void 0===a[c]&&(a[c]=[]);-1===a[c].indexOf(f)&&a[c].push(f)};this.dispatchEvent=function(c){for(var f in a[c.type])a[c.type][f](c)};this.removeEventListener=function(c,f){var d=a[c].indexOf(f);-1!==d&&a[c].splice(d,1)}};(function(a,c){"object"===typeof exports?module.exports=c(global):"function"===typeof define&&define.amd?define([],function(){return c(a)}):c(a)})(this,function(a){function c(b){return j=b}function f(){return j="undefined"!==typeof Float32Array?Float32Array:Array}var d={};if("undefined"!=typeof Float32Array){var g=new Float32Array(1),h=new Int32Array(g.buffer);d.invsqrt=function(b){g[0]=b;h[0]=1597463007-(h[0]>>1);var e=g[0];return e*(1.5-0.5*b*e*e)}}else d.invsqrt=function(b){return 1/Math.sqrt(b)};
-var j=null;f();var k={create:function(b){var e=new j(3);b?(e[0]=b[0],e[1]=b[1],e[2]=b[2]):e[0]=e[1]=e[2]=0;return e},createFrom:function(b,e,a){var c=new j(3);c[0]=b;c[1]=e;c[2]=a;return c},set:function(b,e){e[0]=b[0];e[1]=b[1];e[2]=b[2];return e},equal:function(b,e){return b===e||1E-6>Math.abs(b[0]-e[0])&&1E-6>Math.abs(b[1]-e[1])&&1E-6>Math.abs(b[2]-e[2])},add:function(b,e,a){if(!a||b===a)return b[0]+=e[0],b[1]+=e[1],b[2]+=e[2],b;a[0]=b[0]+e[0];a[1]=b[1]+e[1];a[2]=b[2]+e[2];return a},subtract:function(b,
-e,a){if(!a||b===a)return b[0]-=e[0],b[1]-=e[1],b[2]-=e[2],b;a[0]=b[0]-e[0];a[1]=b[1]-e[1];a[2]=b[2]-e[2];return a},multiply:function(b,e,a){if(!a||b===a)return b[0]*=e[0],b[1]*=e[1],b[2]*=e[2],b;a[0]=b[0]*e[0];a[1]=b[1]*e[1];a[2]=b[2]*e[2];return a},negate:function(b,e){e||(e=b);e[0]=-b[0];e[1]=-b[1];e[2]=-b[2];return e},scale:function(b,e,a){if(!a||b===a)return b[0]*=e,b[1]*=e,b[2]*=e,b;a[0]=b[0]*e;a[1]=b[1]*e;a[2]=b[2]*e;return a},normalize:function(b,e){e||(e=b);var a=b[0],c=b[1],p=b[2],d=Math.sqrt(a*
-a+c*c+p*p);if(!d)return e[0]=0,e[1]=0,e[2]=0,e;if(1===d)return e[0]=a,e[1]=c,e[2]=p,e;d=1/d;e[0]=a*d;e[1]=c*d;e[2]=p*d;return e},cross:function(b,e,a){a||(a=b);var c=b[0],p=b[1];b=b[2];var d=e[0],f=e[1];e=e[2];a[0]=p*e-b*f;a[1]=b*d-c*e;a[2]=c*f-p*d;return a},length:function(b){var e=b[0],a=b[1];b=b[2];return Math.sqrt(e*e+a*a+b*b)},squaredLength:function(b){var e=b[0],a=b[1];b=b[2];return e*e+a*a+b*b},dot:function(b,e){return b[0]*e[0]+b[1]*e[1]+b[2]*e[2]},direction:function(b,e,a){a||(a=b);var c=
-b[0]-e[0],p=b[1]-e[1];b=b[2]-e[2];e=Math.sqrt(c*c+p*p+b*b);if(!e)return a[0]=0,a[1]=0,a[2]=0,a;e=1/e;a[0]=c*e;a[1]=p*e;a[2]=b*e;return a},lerp:function(b,e,a,c){c||(c=b);c[0]=b[0]+a*(e[0]-b[0]);c[1]=b[1]+a*(e[1]-b[1]);c[2]=b[2]+a*(e[2]-b[2]);return c},dist:function(b,e){var a=e[0]-b[0],c=e[1]-b[1],p=e[2]-b[2];return Math.sqrt(a*a+c*c+p*p)}},r=null,n=new j(4);k.unproject=function(b,e,a,c,p){p||(p=b);r||(r=s.create());var d=r;n[0]=2*(b[0]-c[0])/c[2]-1;n[1]=2*(b[1]-c[1])/c[3]-1;n[2]=2*b[2]-1;n[3]=1;
-s.multiply(a,e,d);if(!s.inverse(d))return null;s.multiplyVec4(d,n);if(0===n[3])return null;p[0]=n[0]/n[3];p[1]=n[1]/n[3];p[2]=n[2]/n[3];return p};var y=k.createFrom(1,0,0),C=k.createFrom(0,1,0),m=k.createFrom(0,0,1),u=k.create();k.rotationTo=function(b,e,a){a||(a=l.create());var c=k.dot(b,e);if(1<=c)l.set(E,a);else if(-0.999999>c)k.cross(y,b,u),1E-6>k.length(u)&&k.cross(C,b,u),1E-6>k.length(u)&&k.cross(m,b,u),k.normalize(u),l.fromAngleAxis(Math.PI,u,a);else{var c=Math.sqrt(2*(1+c)),p=1/c;k.cross(b,
-e,u);a[0]=u[0]*p;a[1]=u[1]*p;a[2]=u[2]*p;a[3]=0.5*c;l.normalize(a)}1<a[3]?a[3]=1:-1>a[3]&&(a[3]=-1);return a};k.str=function(b){return"["+b[0]+", "+b[1]+", "+b[2]+"]"};var x={create:function(b){var e=new j(9);b?(e[0]=b[0],e[1]=b[1],e[2]=b[2],e[3]=b[3],e[4]=b[4],e[5]=b[5],e[6]=b[6],e[7]=b[7],e[8]=b[8]):e[0]=e[1]=e[2]=e[3]=e[4]=e[5]=e[6]=e[7]=e[8]=0;return e},createFrom:function(b,e,a,c,p,d,f,g,G){var v=new j(9);v[0]=b;v[1]=e;v[2]=a;v[3]=c;v[4]=p;v[5]=d;v[6]=f;v[7]=g;v[8]=G;return v},determinant:function(b){var e=
-b[3],a=b[4],c=b[5],p=b[6],d=b[7],f=b[8];return b[0]*(f*a-c*d)+b[1]*(-f*e+c*p)+b[2]*(d*e-a*p)},inverse:function(b,e){var a=b[0],c=b[1],p=b[2],d=b[3],f=b[4],g=b[5],G=b[6],v=b[7],h=b[8],j=h*f-g*v,k=-h*d+g*G,l=v*d-f*G,q=a*j+c*k+p*l;if(!q)return null;q=1/q;e||(e=x.create());e[0]=j*q;e[1]=(-h*c+p*v)*q;e[2]=(g*c-p*f)*q;e[3]=k*q;e[4]=(h*a-p*G)*q;e[5]=(-g*a+p*d)*q;e[6]=l*q;e[7]=(-v*a+c*G)*q;e[8]=(f*a-c*d)*q;return e},multiply:function(b,e,a){a||(a=b);var c=b[0],p=b[1],d=b[2],f=b[3],g=b[4],G=b[5],v=b[6],h=
-b[7];b=b[8];var j=e[0],k=e[1],l=e[2],q=e[3],m=e[4],t=e[5],n=e[6],w=e[7];e=e[8];a[0]=j*c+k*f+l*v;a[1]=j*p+k*g+l*h;a[2]=j*d+k*G+l*b;a[3]=q*c+m*f+t*v;a[4]=q*p+m*g+t*h;a[5]=q*d+m*G+t*b;a[6]=n*c+w*f+e*v;a[7]=n*p+w*g+e*h;a[8]=n*d+w*G+e*b;return a},multiplyVec2:function(b,e,a){a||(a=e);var c=e[0];e=e[1];a[0]=c*b[0]+e*b[3]+b[6];a[1]=c*b[1]+e*b[4]+b[7];return a},multiplyVec3:function(b,e,a){a||(a=e);var c=e[0],p=e[1];e=e[2];a[0]=c*b[0]+p*b[3]+e*b[6];a[1]=c*b[1]+p*b[4]+e*b[7];a[2]=c*b[2]+p*b[5]+e*b[8];return a},
-set:function(b,e){e[0]=b[0];e[1]=b[1];e[2]=b[2];e[3]=b[3];e[4]=b[4];e[5]=b[5];e[6]=b[6];e[7]=b[7];e[8]=b[8];return e},equal:function(b,e){return b===e||1E-6>Math.abs(b[0]-e[0])&&1E-6>Math.abs(b[1]-e[1])&&1E-6>Math.abs(b[2]-e[2])&&1E-6>Math.abs(b[3]-e[3])&&1E-6>Math.abs(b[4]-e[4])&&1E-6>Math.abs(b[5]-e[5])&&1E-6>Math.abs(b[6]-e[6])&&1E-6>Math.abs(b[7]-e[7])&&1E-6>Math.abs(b[8]-e[8])},identity:function(b){b||(b=x.create());b[0]=1;b[1]=0;b[2]=0;b[3]=0;b[4]=1;b[5]=0;b[6]=0;b[7]=0;b[8]=1;return b},transpose:function(b,
-e){if(!e||b===e){var a=b[1],c=b[2],p=b[5];b[1]=b[3];b[2]=b[6];b[3]=a;b[5]=b[7];b[6]=c;b[7]=p;return b}e[0]=b[0];e[1]=b[3];e[2]=b[6];e[3]=b[1];e[4]=b[4];e[5]=b[7];e[6]=b[2];e[7]=b[5];e[8]=b[8];return e},toMat4:function(b,e){e||(e=s.create());e[15]=1;e[14]=0;e[13]=0;e[12]=0;e[11]=0;e[10]=b[8];e[9]=b[7];e[8]=b[6];e[7]=0;e[6]=b[5];e[5]=b[4];e[4]=b[3];e[3]=0;e[2]=b[2];e[1]=b[1];e[0]=b[0];return e},str:function(b){return"["+b[0]+", "+b[1]+", "+b[2]+", "+b[3]+", "+b[4]+", "+b[5]+", "+b[6]+", "+b[7]+", "+
-b[8]+"]"}},s={create:function(b){var e=new j(16);b&&(e[0]=b[0],e[1]=b[1],e[2]=b[2],e[3]=b[3],e[4]=b[4],e[5]=b[5],e[6]=b[6],e[7]=b[7],e[8]=b[8],e[9]=b[9],e[10]=b[10],e[11]=b[11],e[12]=b[12],e[13]=b[13],e[14]=b[14],e[15]=b[15]);return e},createFrom:function(b,e,a,c,p,d,f,g,h,v,N,I,k,l,q,m){var t=new j(16);t[0]=b;t[1]=e;t[2]=a;t[3]=c;t[4]=p;t[5]=d;t[6]=f;t[7]=g;t[8]=h;t[9]=v;t[10]=N;t[11]=I;t[12]=k;t[13]=l;t[14]=q;t[15]=m;return t},set:function(b,e){e[0]=b[0];e[1]=b[1];e[2]=b[2];e[3]=b[3];e[4]=b[4];
-e[5]=b[5];e[6]=b[6];e[7]=b[7];e[8]=b[8];e[9]=b[9];e[10]=b[10];e[11]=b[11];e[12]=b[12];e[13]=b[13];e[14]=b[14];e[15]=b[15];return e},equal:function(b,e){return b===e||1E-6>Math.abs(b[0]-e[0])&&1E-6>Math.abs(b[1]-e[1])&&1E-6>Math.abs(b[2]-e[2])&&1E-6>Math.abs(b[3]-e[3])&&1E-6>Math.abs(b[4]-e[4])&&1E-6>Math.abs(b[5]-e[5])&&1E-6>Math.abs(b[6]-e[6])&&1E-6>Math.abs(b[7]-e[7])&&1E-6>Math.abs(b[8]-e[8])&&1E-6>Math.abs(b[9]-e[9])&&1E-6>Math.abs(b[10]-e[10])&&1E-6>Math.abs(b[11]-e[11])&&1E-6>Math.abs(b[12]-
-e[12])&&1E-6>Math.abs(b[13]-e[13])&&1E-6>Math.abs(b[14]-e[14])&&1E-6>Math.abs(b[15]-e[15])},identity:function(b){b||(b=s.create());b[0]=1;b[1]=0;b[2]=0;b[3]=0;b[4]=0;b[5]=1;b[6]=0;b[7]=0;b[8]=0;b[9]=0;b[10]=1;b[11]=0;b[12]=0;b[13]=0;b[14]=0;b[15]=1;return b},transpose:function(b,e){if(!e||b===e){var a=b[1],c=b[2],p=b[3],d=b[6],f=b[7],g=b[11];b[1]=b[4];b[2]=b[8];b[3]=b[12];b[4]=a;b[6]=b[9];b[7]=b[13];b[8]=c;b[9]=d;b[11]=b[14];b[12]=p;b[13]=f;b[14]=g;return b}e[0]=b[0];e[1]=b[4];e[2]=b[8];e[3]=b[12];
-e[4]=b[1];e[5]=b[5];e[6]=b[9];e[7]=b[13];e[8]=b[2];e[9]=b[6];e[10]=b[10];e[11]=b[14];e[12]=b[3];e[13]=b[7];e[14]=b[11];e[15]=b[15];return e},determinant:function(b){var e=b[0],a=b[1],c=b[2],p=b[3],d=b[4],f=b[5],g=b[6],h=b[7],v=b[8],j=b[9],I=b[10],k=b[11],l=b[12],q=b[13],m=b[14];b=b[15];return l*j*g*p-v*q*g*p-l*f*I*p+d*q*I*p+v*f*m*p-d*j*m*p-l*j*c*h+v*q*c*h+l*a*I*h-e*q*I*h-v*a*m*h+e*j*m*h+l*f*c*k-d*q*c*k-l*a*g*k+e*q*g*k+d*a*m*k-e*f*m*k-v*f*c*b+d*j*c*b+v*a*g*b-e*j*g*b-d*a*I*b+e*f*I*b},inverse:function(b,
-e){e||(e=b);var a=b[0],c=b[1],p=b[2],d=b[3],f=b[4],g=b[5],h=b[6],v=b[7],j=b[8],k=b[9],l=b[10],m=b[11],q=b[12],n=b[13],t=b[14],r=b[15],w=a*g-c*f,B=a*h-p*f,z=a*v-d*f,A=c*h-p*g,s=c*v-d*g,u=p*v-d*h,x=j*n-k*q,y=j*t-l*q,C=j*r-m*q,D=k*t-l*n,E=k*r-m*n,J=l*r-m*t,F=w*J-B*E+z*D+A*C-s*y+u*x;if(!F)return null;F=1/F;e[0]=(g*J-h*E+v*D)*F;e[1]=(-c*J+p*E-d*D)*F;e[2]=(n*u-t*s+r*A)*F;e[3]=(-k*u+l*s-m*A)*F;e[4]=(-f*J+h*C-v*y)*F;e[5]=(a*J-p*C+d*y)*F;e[6]=(-q*u+t*z-r*B)*F;e[7]=(j*u-l*z+m*B)*F;e[8]=(f*E-g*C+v*x)*F;e[9]=
-(-a*E+c*C-d*x)*F;e[10]=(q*s-n*z+r*w)*F;e[11]=(-j*s+k*z-m*w)*F;e[12]=(-f*D+g*y-h*x)*F;e[13]=(a*D-c*y+p*x)*F;e[14]=(-q*A+n*B-t*w)*F;e[15]=(j*A-k*B+l*w)*F;return e},toRotationMat:function(b,e){e||(e=s.create());e[0]=b[0];e[1]=b[1];e[2]=b[2];e[3]=b[3];e[4]=b[4];e[5]=b[5];e[6]=b[6];e[7]=b[7];e[8]=b[8];e[9]=b[9];e[10]=b[10];e[11]=b[11];e[12]=0;e[13]=0;e[14]=0;e[15]=1;return e},toMat3:function(b,e){e||(e=x.create());e[0]=b[0];e[1]=b[1];e[2]=b[2];e[3]=b[4];e[4]=b[5];e[5]=b[6];e[6]=b[8];e[7]=b[9];e[8]=b[10];
-return e},toInverseMat3:function(b,e){var a=b[0],c=b[1],d=b[2],f=b[4],H=b[5],g=b[6],h=b[8],j=b[9],k=b[10],l=k*H-g*j,m=-k*f+g*h,n=j*f-H*h,q=a*l+c*m+d*n;if(!q)return null;q=1/q;e||(e=x.create());e[0]=l*q;e[1]=(-k*c+d*j)*q;e[2]=(g*c-d*H)*q;e[3]=m*q;e[4]=(k*a-d*h)*q;e[5]=(-g*a+d*f)*q;e[6]=n*q;e[7]=(-j*a+c*h)*q;e[8]=(H*a-c*f)*q;return e},multiply:function(b,e,a){a||(a=b);var c=b[0],d=b[1],f=b[2],H=b[3],g=b[4],h=b[5],j=b[6],k=b[7],l=b[8],m=b[9],n=b[10],q=b[11],r=b[12],t=b[13],s=b[14];b=b[15];var w=e[0],
-B=e[1],z=e[2],A=e[3];a[0]=w*c+B*g+z*l+A*r;a[1]=w*d+B*h+z*m+A*t;a[2]=w*f+B*j+z*n+A*s;a[3]=w*H+B*k+z*q+A*b;w=e[4];B=e[5];z=e[6];A=e[7];a[4]=w*c+B*g+z*l+A*r;a[5]=w*d+B*h+z*m+A*t;a[6]=w*f+B*j+z*n+A*s;a[7]=w*H+B*k+z*q+A*b;w=e[8];B=e[9];z=e[10];A=e[11];a[8]=w*c+B*g+z*l+A*r;a[9]=w*d+B*h+z*m+A*t;a[10]=w*f+B*j+z*n+A*s;a[11]=w*H+B*k+z*q+A*b;w=e[12];B=e[13];z=e[14];A=e[15];a[12]=w*c+B*g+z*l+A*r;a[13]=w*d+B*h+z*m+A*t;a[14]=w*f+B*j+z*n+A*s;a[15]=w*H+B*k+z*q+A*b;return a},multiplyVec3:function(b,e,a){a||(a=e);
-var c=e[0],d=e[1];e=e[2];a[0]=b[0]*c+b[4]*d+b[8]*e+b[12];a[1]=b[1]*c+b[5]*d+b[9]*e+b[13];a[2]=b[2]*c+b[6]*d+b[10]*e+b[14];return a},multiplyVec4:function(b,e,a){a||(a=e);var c=e[0],d=e[1],f=e[2];e=e[3];a[0]=b[0]*c+b[4]*d+b[8]*f+b[12]*e;a[1]=b[1]*c+b[5]*d+b[9]*f+b[13]*e;a[2]=b[2]*c+b[6]*d+b[10]*f+b[14]*e;a[3]=b[3]*c+b[7]*d+b[11]*f+b[15]*e;return a},translate:function(b,e,a){var c=e[0],d=e[1];e=e[2];var f,g,h,j,v,k,l,m,n,q,r,t;if(!a||b===a)return b[12]=b[0]*c+b[4]*d+b[8]*e+b[12],b[13]=b[1]*c+b[5]*d+
-b[9]*e+b[13],b[14]=b[2]*c+b[6]*d+b[10]*e+b[14],b[15]=b[3]*c+b[7]*d+b[11]*e+b[15],b;f=b[0];g=b[1];h=b[2];j=b[3];v=b[4];k=b[5];l=b[6];m=b[7];n=b[8];q=b[9];r=b[10];t=b[11];a[0]=f;a[1]=g;a[2]=h;a[3]=j;a[4]=v;a[5]=k;a[6]=l;a[7]=m;a[8]=n;a[9]=q;a[10]=r;a[11]=t;a[12]=f*c+v*d+n*e+b[12];a[13]=g*c+k*d+q*e+b[13];a[14]=h*c+l*d+r*e+b[14];a[15]=j*c+m*d+t*e+b[15];return a},scale:function(b,e,a){var c=e[0],d=e[1];e=e[2];if(!a||b===a)return b[0]*=c,b[1]*=c,b[2]*=c,b[3]*=c,b[4]*=d,b[5]*=d,b[6]*=d,b[7]*=d,b[8]*=e,b[9]*=
-e,b[10]*=e,b[11]*=e,b;a[0]=b[0]*c;a[1]=b[1]*c;a[2]=b[2]*c;a[3]=b[3]*c;a[4]=b[4]*d;a[5]=b[5]*d;a[6]=b[6]*d;a[7]=b[7]*d;a[8]=b[8]*e;a[9]=b[9]*e;a[10]=b[10]*e;a[11]=b[11]*e;a[12]=b[12];a[13]=b[13];a[14]=b[14];a[15]=b[15];return a},rotate:function(b,e,a,c){var d=a[0],f=a[1];a=a[2];var g=Math.sqrt(d*d+f*f+a*a),h,j,k,l,m,n,r,q,s,t,u,w,B,z,A,x,y,C,D,E;if(!g)return null;1!==g&&(g=1/g,d*=g,f*=g,a*=g);h=Math.sin(e);j=Math.cos(e);k=1-j;e=b[0];g=b[1];l=b[2];m=b[3];n=b[4];r=b[5];q=b[6];s=b[7];t=b[8];u=b[9];w=
-b[10];B=b[11];z=d*d*k+j;A=f*d*k+a*h;x=a*d*k-f*h;y=d*f*k-a*h;C=f*f*k+j;D=a*f*k+d*h;E=d*a*k+f*h;d=f*a*k-d*h;f=a*a*k+j;c?b!==c&&(c[12]=b[12],c[13]=b[13],c[14]=b[14],c[15]=b[15]):c=b;c[0]=e*z+n*A+t*x;c[1]=g*z+r*A+u*x;c[2]=l*z+q*A+w*x;c[3]=m*z+s*A+B*x;c[4]=e*y+n*C+t*D;c[5]=g*y+r*C+u*D;c[6]=l*y+q*C+w*D;c[7]=m*y+s*C+B*D;c[8]=e*E+n*d+t*f;c[9]=g*E+r*d+u*f;c[10]=l*E+q*d+w*f;c[11]=m*E+s*d+B*f;return c},rotateX:function(b,e,a){var c=Math.sin(e);e=Math.cos(e);var d=b[4],f=b[5],g=b[6],h=b[7],j=b[8],k=b[9],l=b[10],
-m=b[11];a?b!==a&&(a[0]=b[0],a[1]=b[1],a[2]=b[2],a[3]=b[3],a[12]=b[12],a[13]=b[13],a[14]=b[14],a[15]=b[15]):a=b;a[4]=d*e+j*c;a[5]=f*e+k*c;a[6]=g*e+l*c;a[7]=h*e+m*c;a[8]=d*-c+j*e;a[9]=f*-c+k*e;a[10]=g*-c+l*e;a[11]=h*-c+m*e;return a},rotateY:function(b,e,a){var c=Math.sin(e);e=Math.cos(e);var d=b[0],f=b[1],g=b[2],h=b[3],j=b[8],k=b[9],l=b[10],m=b[11];a?b!==a&&(a[4]=b[4],a[5]=b[5],a[6]=b[6],a[7]=b[7],a[12]=b[12],a[13]=b[13],a[14]=b[14],a[15]=b[15]):a=b;a[0]=d*e+j*-c;a[1]=f*e+k*-c;a[2]=g*e+l*-c;a[3]=h*
-e+m*-c;a[8]=d*c+j*e;a[9]=f*c+k*e;a[10]=g*c+l*e;a[11]=h*c+m*e;return a},rotateZ:function(b,e,a){var c=Math.sin(e);e=Math.cos(e);var d=b[0],f=b[1],g=b[2],h=b[3],j=b[4],k=b[5],l=b[6],m=b[7];a?b!==a&&(a[8]=b[8],a[9]=b[9],a[10]=b[10],a[11]=b[11],a[12]=b[12],a[13]=b[13],a[14]=b[14],a[15]=b[15]):a=b;a[0]=d*e+j*c;a[1]=f*e+k*c;a[2]=g*e+l*c;a[3]=h*e+m*c;a[4]=d*-c+j*e;a[5]=f*-c+k*e;a[6]=g*-c+l*e;a[7]=h*-c+m*e;return a},frustum:function(b,e,a,c,d,f,g){g||(g=s.create());var h=e-b,j=c-a,k=f-d;g[0]=2*d/h;g[1]=0;
-g[2]=0;g[3]=0;g[4]=0;g[5]=2*d/j;g[6]=0;g[7]=0;g[8]=(e+b)/h;g[9]=(c+a)/j;g[10]=-(f+d)/k;g[11]=-1;g[12]=0;g[13]=0;g[14]=-(2*f*d)/k;g[15]=0;return g},perspective:function(b,e,a,c,d){b=a*Math.tan(b*Math.PI/360);e*=b;return s.frustum(-e,e,-b,b,a,c,d)},ortho:function(b,a,c,d,f,g,h){h||(h=s.create());var j=a-b,k=d-c,l=g-f;h[0]=2/j;h[1]=0;h[2]=0;h[3]=0;h[4]=0;h[5]=2/k;h[6]=0;h[7]=0;h[8]=0;h[9]=0;h[10]=-2/l;h[11]=0;h[12]=-(b+a)/j;h[13]=-(d+c)/k;h[14]=-(g+f)/l;h[15]=1;return h},lookAt:function(b,a,c,d){d||
-(d=s.create());var f,g,h,j,k,l,m,n,r=b[0],u=b[1];b=b[2];h=c[0];j=c[1];g=c[2];m=a[0];c=a[1];f=a[2];if(r===m&&u===c&&b===f)return s.identity(d);a=r-m;c=u-c;m=b-f;n=1/Math.sqrt(a*a+c*c+m*m);a*=n;c*=n;m*=n;f=j*m-g*c;g=g*a-h*m;h=h*c-j*a;(n=Math.sqrt(f*f+g*g+h*h))?(n=1/n,f*=n,g*=n,h*=n):h=g=f=0;j=c*h-m*g;k=m*f-a*h;l=a*g-c*f;(n=Math.sqrt(j*j+k*k+l*l))?(n=1/n,j*=n,k*=n,l*=n):l=k=j=0;d[0]=f;d[1]=j;d[2]=a;d[3]=0;d[4]=g;d[5]=k;d[6]=c;d[7]=0;d[8]=h;d[9]=l;d[10]=m;d[11]=0;d[12]=-(f*r+g*u+h*b);d[13]=-(j*r+k*u+
-l*b);d[14]=-(a*r+c*u+m*b);d[15]=1;return d},fromRotationTranslation:function(b,a,c){c||(c=s.create());var d=b[0],f=b[1],g=b[2],h=b[3],j=d+d,k=f+f,l=g+g;b=d*j;var m=d*k,d=d*l,n=f*k,f=f*l,g=g*l,j=h*j,k=h*k,h=h*l;c[0]=1-(n+g);c[1]=m+h;c[2]=d-k;c[3]=0;c[4]=m-h;c[5]=1-(b+g);c[6]=f+j;c[7]=0;c[8]=d+k;c[9]=f-j;c[10]=1-(b+n);c[11]=0;c[12]=a[0];c[13]=a[1];c[14]=a[2];c[15]=1;return c},str:function(b){return"["+b[0]+", "+b[1]+", "+b[2]+", "+b[3]+", "+b[4]+", "+b[5]+", "+b[6]+", "+b[7]+", "+b[8]+", "+b[9]+", "+
-b[10]+", "+b[11]+", "+b[12]+", "+b[13]+", "+b[14]+", "+b[15]+"]"}},l={create:function(b){var a=new j(4);b?(a[0]=b[0],a[1]=b[1],a[2]=b[2],a[3]=b[3]):a[0]=a[1]=a[2]=a[3]=0;return a},createFrom:function(b,a,c,d){var f=new j(4);f[0]=b;f[1]=a;f[2]=c;f[3]=d;return f},set:function(b,a){a[0]=b[0];a[1]=b[1];a[2]=b[2];a[3]=b[3];return a},equal:function(b,a){return b===a||1E-6>Math.abs(b[0]-a[0])&&1E-6>Math.abs(b[1]-a[1])&&1E-6>Math.abs(b[2]-a[2])&&1E-6>Math.abs(b[3]-a[3])},identity:function(b){b||(b=l.create());
-b[0]=0;b[1]=0;b[2]=0;b[3]=1;return b}},E=l.identity();l.calculateW=function(b,a){var c=b[0],d=b[1],f=b[2];if(!a||b===a)return b[3]=-Math.sqrt(Math.abs(1-c*c-d*d-f*f)),b;a[0]=c;a[1]=d;a[2]=f;a[3]=-Math.sqrt(Math.abs(1-c*c-d*d-f*f));return a};l.dot=function(b,a){return b[0]*a[0]+b[1]*a[1]+b[2]*a[2]+b[3]*a[3]};l.inverse=function(b,a){var c=b[0],d=b[1],f=b[2],g=b[3],c=(c=c*c+d*d+f*f+g*g)?1/c:0;if(!a||b===a)return b[0]*=-c,b[1]*=-c,b[2]*=-c,b[3]*=c,b;a[0]=-b[0]*c;a[1]=-b[1]*c;a[2]=-b[2]*c;a[3]=b[3]*c;
-return a};l.conjugate=function(b,a){if(!a||b===a)return b[0]*=-1,b[1]*=-1,b[2]*=-1,b;a[0]=-b[0];a[1]=-b[1];a[2]=-b[2];a[3]=b[3];return a};l.length=function(b){var a=b[0],c=b[1],d=b[2];b=b[3];return Math.sqrt(a*a+c*c+d*d+b*b)};l.normalize=function(b,a){a||(a=b);var c=b[0],d=b[1],f=b[2],g=b[3],h=Math.sqrt(c*c+d*d+f*f+g*g);if(0===h)return a[0]=0,a[1]=0,a[2]=0,a[3]=0,a;h=1/h;a[0]=c*h;a[1]=d*h;a[2]=f*h;a[3]=g*h;return a};l.add=function(b,a,c){if(!c||b===c)return b[0]+=a[0],b[1]+=a[1],b[2]+=a[2],b[3]+=
-a[3],b;c[0]=b[0]+a[0];c[1]=b[1]+a[1];c[2]=b[2]+a[2];c[3]=b[3]+a[3];return c};l.multiply=function(b,a,c){c||(c=b);var d=b[0],f=b[1],g=b[2];b=b[3];var h=a[0],j=a[1],k=a[2];a=a[3];c[0]=d*a+b*h+f*k-g*j;c[1]=f*a+b*j+g*h-d*k;c[2]=g*a+b*k+d*j-f*h;c[3]=b*a-d*h-f*j-g*k;return c};l.multiplyVec3=function(b,a,c){c||(c=a);var d=a[0],f=a[1],g=a[2];a=b[0];var h=b[1],j=b[2];b=b[3];var k=b*d+h*g-j*f,l=b*f+j*d-a*g,m=b*g+a*f-h*d,d=-a*d-h*f-j*g;c[0]=k*b+d*-a+l*-j-m*-h;c[1]=l*b+d*-h+m*-a-k*-j;c[2]=m*b+d*-j+k*-h-l*-a;
-return c};l.scale=function(b,a,c){if(!c||b===c)return b[0]*=a,b[1]*=a,b[2]*=a,b[3]*=a,b;c[0]=b[0]*a;c[1]=b[1]*a;c[2]=b[2]*a;c[3]=b[3]*a;return c};l.toMat3=function(b,a){a||(a=x.create());var c=b[0],d=b[1],f=b[2],g=b[3],h=c+c,j=d+d,k=f+f,l=c*h,m=c*j,c=c*k,n=d*j,d=d*k,f=f*k,h=g*h,j=g*j,g=g*k;a[0]=1-(n+f);a[1]=m+g;a[2]=c-j;a[3]=m-g;a[4]=1-(l+f);a[5]=d+h;a[6]=c+j;a[7]=d-h;a[8]=1-(l+n);return a};l.toMat4=function(b,a){a||(a=s.create());var c=b[0],d=b[1],f=b[2],g=b[3],h=c+c,j=d+d,k=f+f,l=c*h,m=c*j,c=c*
-k,n=d*j,d=d*k,f=f*k,h=g*h,j=g*j,g=g*k;a[0]=1-(n+f);a[1]=m+g;a[2]=c-j;a[3]=0;a[4]=m-g;a[5]=1-(l+f);a[6]=d+h;a[7]=0;a[8]=c+j;a[9]=d-h;a[10]=1-(l+n);a[11]=0;a[12]=0;a[13]=0;a[14]=0;a[15]=1;return a};l.slerp=function(b,a,c,d){d||(d=b);var f=b[0]*a[0]+b[1]*a[1]+b[2]*a[2]+b[3]*a[3],g,h;if(1<=Math.abs(f))return d!==b&&(d[0]=b[0],d[1]=b[1],d[2]=b[2],d[3]=b[3]),d;g=Math.acos(f);h=Math.sqrt(1-f*f);if(0.0010>Math.abs(h))return d[0]=0.5*b[0]+0.5*a[0],d[1]=0.5*b[1]+0.5*a[1],d[2]=0.5*b[2]+0.5*a[2],d[3]=0.5*b[3]+
-0.5*a[3],d;f=Math.sin((1-c)*g)/h;c=Math.sin(c*g)/h;d[0]=b[0]*f+a[0]*c;d[1]=b[1]*f+a[1]*c;d[2]=b[2]*f+a[2]*c;d[3]=b[3]*f+a[3]*c;return d};l.fromRotationMatrix=function(b,a){a||(a=l.create());var c=b[0]+b[4]+b[8],d;if(0<c)d=Math.sqrt(c+1),a[3]=0.5*d,d=0.5/d,a[0]=(b[7]-b[5])*d,a[1]=(b[2]-b[6])*d,a[2]=(b[3]-b[1])*d;else{d=l.fromRotationMatrix.s_iNext=l.fromRotationMatrix.s_iNext||[1,2,0];c=0;b[4]>b[0]&&(c=1);b[8]>b[3*c+c]&&(c=2);var f=d[c],g=d[f];d=Math.sqrt(b[3*c+c]-b[3*f+f]-b[3*g+g]+1);a[c]=0.5*d;d=
-0.5/d;a[3]=(b[3*g+f]-b[3*f+g])*d;a[f]=(b[3*f+c]+b[3*c+f])*d;a[g]=(b[3*g+c]+b[3*c+g])*d}return a};x.toQuat4=l.fromRotationMatrix;var D=x.create();l.fromAxes=function(b,a,c,d){D[0]=a[0];D[3]=a[1];D[6]=a[2];D[1]=c[0];D[4]=c[1];D[7]=c[2];D[2]=b[0];D[5]=b[1];D[8]=b[2];return l.fromRotationMatrix(D,d)};l.identity=function(b){b||(b=l.create());b[0]=0;b[1]=0;b[2]=0;b[3]=1;return b};l.fromAngleAxis=function(b,a,c){c||(c=l.create());b*=0.5;var d=Math.sin(b);c[3]=Math.cos(b);c[0]=d*a[0];c[1]=d*a[1];c[2]=d*a[2];
-return c};l.toAngleAxis=function(b,a){a||(a=b);var c=b[0]*b[0]+b[1]*b[1]+b[2]*b[2];0<c?(a[3]=2*Math.acos(b[3]),c=d.invsqrt(c),a[0]=b[0]*c,a[1]=b[1]*c,a[2]=b[2]*c):(a[3]=0,a[0]=1,a[1]=0,a[2]=0);return a};l.str=function(b){return"["+b[0]+", "+b[1]+", "+b[2]+", "+b[3]+"]"};var L={create:function(b){var a=new j(2);b?(a[0]=b[0],a[1]=b[1]):(a[0]=0,a[1]=0);return a},createFrom:function(b,a){var c=new j(2);c[0]=b;c[1]=a;return c},add:function(b,a,c){c||(c=a);c[0]=b[0]+a[0];c[1]=b[1]+a[1];return c},subtract:function(b,
-a,c){c||(c=a);c[0]=b[0]-a[0];c[1]=b[1]-a[1];return c},multiply:function(b,a,c){c||(c=a);c[0]=b[0]*a[0];c[1]=b[1]*a[1];return c},divide:function(b,a,c){c||(c=a);c[0]=b[0]/a[0];c[1]=b[1]/a[1];return c},scale:function(b,a,c){c||(c=b);c[0]=b[0]*a;c[1]=b[1]*a;return c},dist:function(b,a){var c=a[0]-b[0],d=a[1]-b[1];return Math.sqrt(c*c+d*d)},set:function(b,a){a[0]=b[0];a[1]=b[1];return a},equal:function(b,a){return b===a||1E-6>Math.abs(b[0]-a[0])&&1E-6>Math.abs(b[1]-a[1])},negate:function(b,a){a||(a=b);
-a[0]=-b[0];a[1]=-b[1];return a},normalize:function(b,a){a||(a=b);var c=b[0]*b[0]+b[1]*b[1];0<c?(c=Math.sqrt(c),a[0]=b[0]/c,a[1]=b[1]/c):a[0]=a[1]=0;return a},cross:function(b,a,c){b=b[0]*a[1]-b[1]*a[0];if(!c)return b;c[0]=c[1]=0;c[2]=b;return c},length:function(b){var a=b[0];b=b[1];return Math.sqrt(a*a+b*b)},squaredLength:function(b){var a=b[0];b=b[1];return a*a+b*b},dot:function(b,a){return b[0]*a[0]+b[1]*a[1]},direction:function(b,a,c){c||(c=b);var d=b[0]-a[0];b=b[1]-a[1];a=d*d+b*b;if(!a)return c[0]=
-0,c[1]=0,c[2]=0,c;a=1/Math.sqrt(a);c[0]=d*a;c[1]=b*a;return c},lerp:function(a,c,d,f){f||(f=a);f[0]=a[0]+d*(c[0]-a[0]);f[1]=a[1]+d*(c[1]-a[1]);return f},str:function(a){return"["+a[0]+", "+a[1]+"]"}},K={create:function(a){var c=new j(4);a?(c[0]=a[0],c[1]=a[1],c[2]=a[2],c[3]=a[3]):c[0]=c[1]=c[2]=c[3]=0;return c},createFrom:function(a,c,d,f){var g=new j(4);g[0]=a;g[1]=c;g[2]=d;g[3]=f;return g},set:function(a,c){c[0]=a[0];c[1]=a[1];c[2]=a[2];c[3]=a[3];return c},equal:function(a,c){return a===c||1E-6>
-Math.abs(a[0]-c[0])&&1E-6>Math.abs(a[1]-c[1])&&1E-6>Math.abs(a[2]-c[2])&&1E-6>Math.abs(a[3]-c[3])},identity:function(a){a||(a=K.create());a[0]=1;a[1]=0;a[2]=0;a[3]=1;return a},transpose:function(a,c){if(!c||a===c){var d=a[1];a[1]=a[2];a[2]=d;return a}c[0]=a[0];c[1]=a[2];c[2]=a[1];c[3]=a[3];return c},determinant:function(a){return a[0]*a[3]-a[2]*a[1]},inverse:function(a,c){c||(c=a);var d=a[0],f=a[1],g=a[2],h=a[3],j=d*h-g*f;if(!j)return null;j=1/j;c[0]=h*j;c[1]=-f*j;c[2]=-g*j;c[3]=d*j;return c},multiply:function(a,
-c,d){d||(d=a);var f=a[0],g=a[1],h=a[2];a=a[3];d[0]=f*c[0]+g*c[2];d[1]=f*c[1]+g*c[3];d[2]=h*c[0]+a*c[2];d[3]=h*c[1]+a*c[3];return d},rotate:function(a,c,d){d||(d=a);var f=a[0],g=a[1],h=a[2];a=a[3];var j=Math.sin(c);c=Math.cos(c);d[0]=f*c+g*j;d[1]=f*-j+g*c;d[2]=h*c+a*j;d[3]=h*-j+a*c;return d},multiplyVec2:function(a,c,d){d||(d=c);var f=c[0];c=c[1];d[0]=f*a[0]+c*a[1];d[1]=f*a[2]+c*a[3];return d},scale:function(a,c,d){d||(d=a);var f=a[1],g=a[2],h=a[3],j=c[0];c=c[1];d[0]=a[0]*j;d[1]=f*c;d[2]=g*j;d[3]=
-h*c;return d},str:function(a){return"["+a[0]+", "+a[1]+", "+a[2]+", "+a[3]+"]"}},M={create:function(a){var c=new j(4);a?(c[0]=a[0],c[1]=a[1],c[2]=a[2],c[3]=a[3]):(c[0]=0,c[1]=0,c[2]=0,c[3]=0);return c},createFrom:function(a,c,d,f){var g=new j(4);g[0]=a;g[1]=c;g[2]=d;g[3]=f;return g},add:function(a,c,d){d||(d=c);d[0]=a[0]+c[0];d[1]=a[1]+c[1];d[2]=a[2]+c[2];d[3]=a[3]+c[3];return d},subtract:function(a,c,d){d||(d=c);d[0]=a[0]-c[0];d[1]=a[1]-c[1];d[2]=a[2]-c[2];d[3]=a[3]-c[3];return d},multiply:function(a,
-c,d){d||(d=c);d[0]=a[0]*c[0];d[1]=a[1]*c[1];d[2]=a[2]*c[2];d[3]=a[3]*c[3];return d},divide:function(a,c,d){d||(d=c);d[0]=a[0]/c[0];d[1]=a[1]/c[1];d[2]=a[2]/c[2];d[3]=a[3]/c[3];return d},scale:function(a,c,d){d||(d=a);d[0]=a[0]*c;d[1]=a[1]*c;d[2]=a[2]*c;d[3]=a[3]*c;return d},set:function(a,c){c[0]=a[0];c[1]=a[1];c[2]=a[2];c[3]=a[3];return c},equal:function(a,c){return a===c||1E-6>Math.abs(a[0]-c[0])&&1E-6>Math.abs(a[1]-c[1])&&1E-6>Math.abs(a[2]-c[2])&&1E-6>Math.abs(a[3]-c[3])},negate:function(a,c){c||
-(c=a);c[0]=-a[0];c[1]=-a[1];c[2]=-a[2];c[3]=-a[3];return c},length:function(a){var c=a[0],d=a[1],f=a[2];a=a[3];return Math.sqrt(c*c+d*d+f*f+a*a)},squaredLength:function(a){var c=a[0],d=a[1],f=a[2];a=a[3];return c*c+d*d+f*f+a*a},lerp:function(a,c,d,f){f||(f=a);f[0]=a[0]+d*(c[0]-a[0]);f[1]=a[1]+d*(c[1]-a[1]);f[2]=a[2]+d*(c[2]-a[2]);f[3]=a[3]+d*(c[3]-a[3]);return f},str:function(a){return"["+a[0]+", "+a[1]+", "+a[2]+", "+a[3]+"]"}};a&&(a.glMatrixArrayType=j,a.MatrixArray=j,a.setMatrixArrayType=c,a.determineMatrixArrayType=
-f,a.glMath=d,a.vec2=L,a.vec3=k,a.vec4=M,a.mat2=K,a.mat3=x,a.mat4=s,a.quat4=l);return{glMatrixArrayType:j,MatrixArray:j,setMatrixArrayType:c,determineMatrixArrayType:f,glMath:d,vec2:L,vec3:k,vec4:M,mat2:K,mat3:x,mat4:s,quat4:l}});PIXI.shaderFragmentSrc=["precision mediump float;","varying vec2 vTextureCoord;","varying float vColor;","uniform sampler2D uSampler;","void main(void) {","gl_FragColor \x3d texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y));","gl_FragColor \x3d gl_FragColor * vColor;","}"];
-PIXI.shaderVertexSrc=["attribute vec2 aVertexPosition;","attribute vec2 aTextureCoord;","attribute float aColor;","uniform mat4 uMVMatrix;","varying vec2 vTextureCoord;","varying float vColor;","void main(void) {","gl_Position \x3d uMVMatrix * vec4(aVertexPosition, 1.0, 1.0);","vTextureCoord \x3d aTextureCoord;","vColor \x3d aColor;","}"];
-PIXI.CompileVertexShader=function(a,c){for(var f="",d=0;d<c.length;d++)f+=c[d];d=a.createShader(a.VERTEX_SHADER);a.shaderSource(d,f);a.compileShader(d);return!a.getShaderParameter(d,a.COMPILE_STATUS)?(alert(a.getShaderInfoLog(d)),null):d};PIXI.CompileFragmentShader=function(a,c){for(var f="",d=0;d<c.length;d++)f+=c[d];d=a.createShader(a.FRAGMENT_SHADER);a.shaderSource(d,f);a.compileShader(d);return!a.getShaderParameter(d,a.COMPILE_STATUS)?(alert(a.getShaderInfoLog(d)),null):d};PIXI._defaultFrame=new PIXI.Rectangle(0,0,1,1);
-PIXI.WebGLRenderer=function(a,c,f){this.width=a?a:800;this.height=c?c:600;this.view=f?f:document.createElement("canvas");this.view.width=this.width;this.view.height=this.height;this.view.background="#FF0000";var d=this;this.view.addEventListener("webglcontextlost",function(a){d.handleContextLost(a)},!1);this.view.addEventListener("webglcontextrestored",function(a){d.handleContextRestored(a)},!1);this.batchs=[];try{this.gl=this.view.getContext("experimental-webgl",{alpha:!1})}catch(g){throw Error(" This browser does not support webGL. Try using the canvas renderer"+
-this);}this.initShaders();a=this.gl;this.batch=new PIXI.WebGLBatch(a);a.disable(a.DEPTH_TEST);a.enable(a.BLEND);a.colorMask(!0,!0,!0,!1);this.projectionMatrix=mat4.create();this.resize(this.width,this.height);this.contextLost=!1};PIXI.WebGLRenderer.constructor=PIXI.WebGLRenderer;
-PIXI.WebGLRenderer.prototype.initShaders=function(){var a=this.gl,c=PIXI.CompileFragmentShader(a,PIXI.shaderFragmentSrc),f=PIXI.CompileVertexShader(a,PIXI.shaderVertexSrc),d=this.shaderProgram=a.createProgram();a.attachShader(d,f);a.attachShader(d,c);a.linkProgram(d);a.getProgramParameter(d,a.LINK_STATUS)||alert("Could not initialise shaders");a.useProgram(d);d.vertexPositionAttribute=a.getAttribLocation(d,"aVertexPosition");a.enableVertexAttribArray(d.vertexPositionAttribute);d.textureCoordAttribute=
-a.getAttribLocation(d,"aTextureCoord");a.enableVertexAttribArray(d.textureCoordAttribute);d.colorAttribute=a.getAttribLocation(d,"aColor");a.enableVertexAttribArray(d.colorAttribute);d.mvMatrixUniform=a.getUniformLocation(d,"uMVMatrix");d.samplerUniform=a.getUniformLocation(d,"uSampler");PIXI.shaderProgram=this.shaderProgram};
-PIXI.WebGLRenderer.prototype.checkVisibility=function(a,c){for(var f=a.children,d=0;d<f.length;d++){var g=f[d],h=g.visible&&c;g.textureChange&&(g.textureChange=!1,h&&(this.removeDisplayObject(g),this.addDisplayObject(g)));g.cacheVisible!=h&&(g.cacheVisible=h,g.cacheVisible?this.addDisplayObject(g):this.removeDisplayObject(g));0<g.children.length&&this.checkVisibility(g,h)}};
-PIXI.WebGLRenderer.prototype.render=function(a){if(!this.contextLost){for(var c=0;c<a.__childrenRemoved.length;c++)this.removeDisplayObject(a.__childrenRemoved[c]);for(c=0;c<PIXI.texturesToUpdate.length;c++)this.updateTexture(PIXI.texturesToUpdate[c]);a.__childrenRemoved=[];a.__childrenAdded=[];PIXI.texturesToUpdate=[];this.checkVisibility(a,!0);a.updateTransform();c=this.gl;c.clear(c.COLOR_BUFFER_BIT);c.clearColor(a.backgroundColorSplit[0],a.backgroundColorSplit[1],a.backgroundColorSplit[2],1);c.blendFunc(c.ONE,
-c.ONE_MINUS_SRC_ALPHA);c.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform,!1,this.projectionMatrix);for(var f,c=0;c<this.batchs.length;c++)f=this.batchs[c],f instanceof PIXI.WebGLBatch?this.batchs[c].render():f instanceof PIXI.Strip&&f.visible&&this.renderStrip(f);a.interactive&&!a._interactiveEventsAdded&&(a._interactiveEventsAdded=!0,a.interactionManager.setTarget(this))}};
-PIXI.WebGLRenderer.prototype.updateTexture=function(a){var c=this.gl;a._glTexture||(a._glTexture=c.createTexture());a.hasLoaded&&(c.bindTexture(c.TEXTURE_2D,a._glTexture),c.pixelStorei(c.UNPACK_PREMULTIPLY_ALPHA_WEBGL,!0),c.texImage2D(c.TEXTURE_2D,0,c.RGBA,c.RGBA,c.UNSIGNED_BYTE,a.source),c.texParameteri(c.TEXTURE_2D,c.TEXTURE_MAG_FILTER,c.LINEAR),c.texParameteri(c.TEXTURE_2D,c.TEXTURE_MIN_FILTER,c.LINEAR),c.texParameteri(c.TEXTURE_2D,c.TEXTURE_WRAP_S,c.CLAMP_TO_EDGE),c.texParameteri(c.TEXTURE_2D,
-c.TEXTURE_WRAP_T,c.CLAMP_TO_EDGE),c.bindTexture(c.TEXTURE_2D,null));this.refreshBatchs=!0};
-PIXI.WebGLRenderer.prototype.addDisplayObject=function(a){if(a.stage&&!a.__inWebGL&&(a.batch=null,a.renderable)){a.__inWebGL=!0;var c=a;do{if(0==c.childIndex)c=c.parent;else for(c=c.parent.children[c.childIndex-1];0!=c.children.length;)c=c.children[c.children.length-1];if(c==a.stage)break}while(!c.renderable||!c.__inWebGL);var f=a;do{if(0==f.children.length){for(;f.childIndex==f.parent.children.length-1;)if(f=f.parent,f==a.stage){f=null;break}f&&(f=f.parent.children[f.childIndex+1])}else f=f.children[0];
-if(!f)break}while(!f.renderable||!f.__inWebGL);if(a instanceof PIXI.Sprite){var d;if(c instanceof PIXI.Sprite){if((d=c.batch)&&d.texture==a.texture.baseTexture&&d.blendMode==a.blendMode){d.insertAfter(a,c);return}}else d=c;if(f&&f instanceof PIXI.Sprite&&(c=f.batch)){if(c.texture==a.texture.baseTexture&&c.blendMode==a.blendMode){c.insertBefore(a,f);return}if(c==d){f=d.split(f);c=PIXI._getBatch(this.gl);d=this.batchs.indexOf(d);c.init(a);this.batchs.splice(d+1,0,c,f);return}}c=PIXI._getBatch(this.gl);
-c.init(a);d?(d=this.batchs.indexOf(d),this.batchs.splice(d+1,0,c)):this.batchs.push(c)}else a instanceof PIXI.Strip&&(this.initStrip(a),this.batchs.push(a));this.batchUpdate=!0}};
-PIXI.WebGLRenderer.prototype.removeDisplayObject=function(a){a.cacheVisible=!1;if(a.renderable){a.__inWebGL=!1;var c;if(a instanceof PIXI.Sprite){var f=a.batch;if(!f)return;f.remove(a);0==f.size&&(c=f)}else c=a;c&&(a=this.batchs.indexOf(c),-1!=a&&(!(0==a||a==this.batchs.length-1)&&this.batchs[a-1]instanceof PIXI.WebGLBatch&&this.batchs[a+1]instanceof PIXI.WebGLBatch&&this.batchs[a-1].texture==this.batchs[a+1].texture&&this.batchs[a-1].blendMode==this.batchs[a+1].blendMode?(this.batchs[a-1].merge(this.batchs[a+
-1]),c instanceof PIXI.WebGLBatch&&PIXI._returnBatch(c),PIXI._returnBatch(this.batchs[a+1]),this.batchs.splice(a,2)):(this.batchs.splice(a,1),c instanceof PIXI.WebGLBatch&&PIXI._returnBatch(c))))}};
-PIXI.WebGLRenderer.prototype.resize=function(a,c){this.width=a;this.height=c;this.view.width=a;this.view.height=c;this.gl.viewport(0,0,this.width,this.height);mat4.identity(this.projectionMatrix);mat4.scale(this.projectionMatrix,[2/this.width,-2/this.height,1]);mat4.translate(this.projectionMatrix,[-this.width/2,-this.height/2,0])};
-PIXI.WebGLRenderer.prototype.initStrip=function(a){var c=this.gl;a._vertexBuffer=c.createBuffer();a._indexBuffer=c.createBuffer();a._uvBuffer=c.createBuffer();a._colorBuffer=c.createBuffer();c.bindBuffer(c.ARRAY_BUFFER,a._vertexBuffer);c.bufferData(c.ARRAY_BUFFER,a.verticies,c.DYNAMIC_DRAW);c.bindBuffer(c.ARRAY_BUFFER,a._uvBuffer);c.bufferData(c.ARRAY_BUFFER,a.uvs,c.STATIC_DRAW);c.bindBuffer(c.ARRAY_BUFFER,a._colorBuffer);c.bufferData(c.ARRAY_BUFFER,a.colors,c.STATIC_DRAW);c.bindBuffer(c.ELEMENT_ARRAY_BUFFER,
-a._indexBuffer);c.bufferData(c.ELEMENT_ARRAY_BUFFER,a.indices,c.STATIC_DRAW)};
-PIXI.WebGLRenderer.prototype.renderStrip=function(a){var c=this.gl,f=this.shaderProgram,d=mat3.toMat4(a.worldTransform);mat4.transpose(d);mat4.multiply(this.projectionMatrix,d,d);c.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform,!1,d);a.blendMode==PIXI.blendModes.NORMAL?c.blendFunc(c.ONE,c.ONE_MINUS_SRC_ALPHA):c.blendFunc(c.ONE,c.ONE_MINUS_SRC_COLOR);a.dirty?(a.dirty=!1,c.bindBuffer(c.ARRAY_BUFFER,a._vertexBuffer),c.bufferData(c.ARRAY_BUFFER,a.verticies,c.STATIC_DRAW),c.vertexAttribPointer(f.vertexPositionAttribute,
-2,c.FLOAT,!1,0,0),c.bindBuffer(c.ARRAY_BUFFER,a._uvBuffer),c.bufferData(c.ARRAY_BUFFER,a.uvs,c.STATIC_DRAW),c.vertexAttribPointer(f.textureCoordAttribute,2,c.FLOAT,!1,0,0),c.activeTexture(c.TEXTURE0),c.bindTexture(c.TEXTURE_2D,a.texture.baseTexture._glTexture),c.bindBuffer(c.ARRAY_BUFFER,a._colorBuffer),c.bufferData(c.ARRAY_BUFFER,a.colors,c.STATIC_DRAW),c.vertexAttribPointer(f.colorAttribute,1,c.FLOAT,!1,0,0),c.bindBuffer(c.ELEMENT_ARRAY_BUFFER,a._indexBuffer),c.bufferData(c.ELEMENT_ARRAY_BUFFER,
-a.indices,c.STATIC_DRAW)):(c.bindBuffer(c.ARRAY_BUFFER,a._vertexBuffer),c.bufferSubData(c.ARRAY_BUFFER,0,a.verticies),c.vertexAttribPointer(f.vertexPositionAttribute,2,c.FLOAT,!1,0,0),c.bindBuffer(c.ARRAY_BUFFER,a._uvBuffer),c.vertexAttribPointer(f.textureCoordAttribute,2,c.FLOAT,!1,0,0),c.activeTexture(c.TEXTURE0),c.bindTexture(c.TEXTURE_2D,a.texture.baseTexture._glTexture),c.bindBuffer(c.ARRAY_BUFFER,a._colorBuffer),c.vertexAttribPointer(f.colorAttribute,1,c.FLOAT,!1,0,0),c.bindBuffer(c.ELEMENT_ARRAY_BUFFER,
-a._indexBuffer));c.drawElements(c.TRIANGLE_STRIP,a.indices.length,c.UNSIGNED_SHORT,0);c.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform,!1,this.projectionMatrix)};PIXI.WebGLRenderer.prototype.handleContextLost=function(a){a.preventDefault();this.contextLost=!0};
-PIXI.WebGLRenderer.prototype.handleContextRestored=function(){this.gl=this.view.getContext("experimental-webgl",{alpha:!0});this.initShaders();for(var a=0;a<PIXI.TextureCache.length;a++)this.updateTexture(PIXI.TextureCache[a]);for(a=0;a<this.batchs.length;a++)this.batchs[a].restoreLostContext(this.gl),this.batchs[a].dirty=!0;PIXI._restoreBatchs(this.gl);this.contextLost=!1};PIXI._batchs=[];PIXI._getBatch=function(a){return 0==PIXI._batchs.length?new PIXI.WebGLBatch(a):PIXI._batchs.pop()};PIXI._returnBatch=function(a){a.clean();PIXI._batchs.push(a)};PIXI._restoreBatchs=function(a){for(var c=0;c<PIXI._batchs.length;c++)PIXI._batchs[c].restoreLostContext(a)};
-PIXI.WebGLBatch=function(a){this.gl=a;this.size=0;this.vertexBuffer=a.createBuffer();this.indexBuffer=a.createBuffer();this.uvBuffer=a.createBuffer();this.colorBuffer=a.createBuffer();this.blendMode=PIXI.blendModes.NORMAL;this.dynamicSize=1};PIXI.WebGLBatch.constructor=PIXI.WebGLBatch;PIXI.WebGLBatch.prototype.clean=function(){this.verticies=[];this.uvs=[];this.indices=[];this.colors=[];this.dynamicSize=1;this.last=this.texture=null;this.size=0;this.head;this.tail};
-PIXI.WebGLBatch.prototype.restoreLostContext=function(a){this.gl=a;this.vertexBuffer=a.createBuffer();this.indexBuffer=a.createBuffer();this.uvBuffer=a.createBuffer();this.colorBuffer=a.createBuffer()};PIXI.WebGLBatch.prototype.init=function(a){a.batch=this;this.dirty=!0;this.blendMode=a.blendMode;this.texture=a.texture.baseTexture;this.tail=this.head=a;this.size=1;this.growBatch()};
-PIXI.WebGLBatch.prototype.insertBefore=function(a,c){this.size++;a.batch=this;this.dirty=!0;var f=c.__prev;c.__prev=a;a.__next=c;f?(a.__prev=f,f.__next=a):this.head=a};PIXI.WebGLBatch.prototype.insertAfter=function(a,c){this.size++;a.batch=this;this.dirty=!0;var f=c.__next;c.__next=a;a.__prev=c;f?(a.__next=f,f.__prev=a):this.tail=a};
-PIXI.WebGLBatch.prototype.remove=function(a){this.size--;0==this.size?(a.batch=null,a.__prev=null,a.__next=null):(a.__prev?a.__prev.__next=a.__next:(this.head=a.__next,this.head.__prev=null),a.__next?a.__next.__prev=a.__prev:(this.tail=a.__prev,this.tail.__next=null),a.batch=null,a.__next=null,a.__prev=null,this.dirty=!0)};
-PIXI.WebGLBatch.prototype.split=function(a){this.dirty=!0;var c=new PIXI.WebGLBatch(this.gl);c.init(a);c.tail=this.tail;this.tail=a.__prev;this.tail.__next=null;a.__prev=null;for(var f=0;a;)f++,a.batch=c,a=a.__next;c.size=f;this.size-=f;return c};PIXI.WebGLBatch.prototype.merge=function(a){this.dirty=!0;this.tail.__next=a.head;a.head.__prev=this.tail;this.size+=a.size;this.tail=a.tail;for(a=a.head;a;)a.batch=this,a=a.__next};
-PIXI.WebGLBatch.prototype.growBatch=function(){var a=this.gl;this.dynamicSize=1==this.size?1:1.5*this.size;this.verticies=new Float32Array(8*this.dynamicSize);a.bindBuffer(a.ARRAY_BUFFER,this.vertexBuffer);a.bufferData(a.ARRAY_BUFFER,this.verticies,a.DYNAMIC_DRAW);this.uvs=new Float32Array(8*this.dynamicSize);a.bindBuffer(a.ARRAY_BUFFER,this.uvBuffer);a.bufferData(a.ARRAY_BUFFER,this.uvs,a.DYNAMIC_DRAW);this.dirtyUVS=!0;this.colors=new Float32Array(4*this.dynamicSize);a.bindBuffer(a.ARRAY_BUFFER,
-this.colorBuffer);a.bufferData(a.ARRAY_BUFFER,this.colors,a.DYNAMIC_DRAW);this.dirtyColors=!0;this.indices=new Uint16Array(6*this.dynamicSize);for(var c=this.indices.length/6,f=0;f<c;f++){var d=6*f,g=4*f;this.indices[d+0]=g+0;this.indices[d+1]=g+1;this.indices[d+2]=g+2;this.indices[d+3]=g+0;this.indices[d+4]=g+2;this.indices[d+5]=g+3}a.bindBuffer(a.ELEMENT_ARRAY_BUFFER,this.indexBuffer);a.bufferData(a.ELEMENT_ARRAY_BUFFER,this.indices,a.STATIC_DRAW)};
-PIXI.WebGLBatch.prototype.refresh=function(){this.dynamicSize<this.size&&this.growBatch();for(var a=0,c,f=this.head;f;){c=8*a;var d=f.texture,g=d.frame,h=d.baseTexture.width,d=d.baseTexture.height;this.uvs[c+0]=g.x/h;this.uvs[c+1]=g.y/d;this.uvs[c+2]=(g.x+g.width)/h;this.uvs[c+3]=g.y/d;this.uvs[c+4]=(g.x+g.width)/h;this.uvs[c+5]=(g.y+g.height)/d;this.uvs[c+6]=g.x/h;this.uvs[c+7]=(g.y+g.height)/d;f.updateFrame=!1;colorIndex=4*a;this.colors[colorIndex]=this.colors[colorIndex+1]=this.colors[colorIndex+
-2]=this.colors[colorIndex+3]=f.worldAlpha;f=f.__next;a++}this.dirtyColors=this.dirtyUVS=!0};
-PIXI.WebGLBatch.prototype.update=function(){for(var a,c,f,d,g,h,j,k,r,n,y,C=0,m=this.head;m;)c=m.width,f=m.height,d=m.anchor.x-m.texture.trim.x,g=m.anchor.y-m.texture.trim.y,h=c*(1-d),c*=-d,d=f*(1-g),g=f*-g,f=8*C,a=m.worldTransform,j=a[0],k=a[3],r=a[1],n=a[4],y=a[2],a=a[5],this.verticies[f+0]=j*c+r*g+y,this.verticies[f+1]=n*g+k*c+a,this.verticies[f+2]=j*h+r*g+y,this.verticies[f+3]=n*g+k*h+a,this.verticies[f+4]=j*h+r*d+y,this.verticies[f+5]=n*d+k*h+a,this.verticies[f+6]=j*c+r*d+y,this.verticies[f+
-7]=n*d+k*c+a,m.updateFrame&&(this.dirtyUVS=!0,d=m.texture,h=d.frame,c=d.baseTexture.width,d=d.baseTexture.height,this.uvs[f+0]=h.x/c,this.uvs[f+1]=h.y/d,this.uvs[f+2]=(h.x+h.width)/c,this.uvs[f+3]=h.y/d,this.uvs[f+4]=(h.x+h.width)/c,this.uvs[f+5]=(h.y+h.height)/d,this.uvs[f+6]=h.x/c,this.uvs[f+7]=(h.y+h.height)/d,m.updateFrame=!1),m.cacheAlpha!=m.worldAlpha&&(m.cacheAlpha=m.worldAlpha,h=4*C,this.colors[h]=this.colors[h+1]=this.colors[h+2]=this.colors[h+3]=m.worldAlpha,this.dirtyColors=!0),C++,m=m.__next};
-PIXI.WebGLBatch.prototype.render=function(){this.dirty&&(this.refresh(),this.dirty=!1);if(0!=this.size){this.update();var a=this.gl;this.blendMode==PIXI.blendModes.NORMAL?a.blendFunc(a.ONE,a.ONE_MINUS_SRC_ALPHA):a.blendFunc(a.ONE,a.ONE_MINUS_SRC_COLOR);var c=PIXI.shaderProgram;a.bindBuffer(a.ARRAY_BUFFER,this.vertexBuffer);a.bufferSubData(a.ARRAY_BUFFER,0,this.verticies);a.vertexAttribPointer(c.vertexPositionAttribute,2,a.FLOAT,!1,0,0);a.bindBuffer(a.ARRAY_BUFFER,this.uvBuffer);this.dirtyUVS&&(this.dirtyUVS=
-!1,a.bufferSubData(a.ARRAY_BUFFER,0,this.uvs));a.vertexAttribPointer(c.textureCoordAttribute,2,a.FLOAT,!1,0,0);a.activeTexture(a.TEXTURE0);a.bindTexture(a.TEXTURE_2D,this.texture._glTexture);a.bindBuffer(a.ARRAY_BUFFER,this.colorBuffer);this.dirtyColors&&(this.dirtyColors=!1,a.bufferSubData(a.ARRAY_BUFFER,0,this.colors));a.vertexAttribPointer(c.colorAttribute,1,a.FLOAT,!1,0,0);a.bindBuffer(a.ELEMENT_ARRAY_BUFFER,this.indexBuffer);a.drawElements(a.TRIANGLES,6*this.size,a.UNSIGNED_SHORT,0)}};PIXI.CanvasRenderer=function(a,c,f){this.width=a?a:800;this.height=c?c:600;this.refresh=!0;this.view=f?f:document.createElement("canvas");this.view.width=this.width;this.view.height=this.height;this.count=0;this.context=this.view.getContext("2d")};PIXI.CanvasRenderer.constructor=PIXI.CanvasRenderer;
-PIXI.CanvasRenderer.prototype.render=function(a){a.__childrenAdded=[];a.__childrenRemoved=[];PIXI.texturesToUpdate=[];this.context.setTransform(1,0,0,1,0,0);a.updateTransform();this.context.setTransform(1,0,0,1,0,0);this.view.style.backgroundColor!=a.backgroundColorString&&(this.view.style.backgroundColor=a.backgroundColorString);this.context.clearRect(0,0,this.width,this.height);this.renderDisplayObject(a);a.interactive&&!a._interactiveEventsAdded&&(a._interactiveEventsAdded=!0,a.interactionManager.setTarget(this))};
-PIXI.CanvasRenderer.prototype.resize=function(a,c){this.width=a;this.height=c;this.view.width=a;this.view.height=c};
-PIXI.CanvasRenderer.prototype.renderDisplayObject=function(a){var c=a.worldTransform,f=this.context;f.globalCompositeOperation="source-over";if(a.visible){if(a instanceof PIXI.Sprite){var d=a.texture.frame;d&&(f.globalAlpha=a.worldAlpha,f.setTransform(c[0],c[3],c[1],c[4],c[2],c[5]),f.drawImage(a.texture.baseTexture.source,d.x,d.y,d.width,d.height,(a.anchor.x-a.texture.trim.x)*-d.width,(a.anchor.y-a.texture.trim.y)*-d.height,a.width,a.height))}else a instanceof PIXI.Strip&&(f.setTransform(c[0],c[3],
-c[1],c[4],c[2],c[5]),this.renderStrip(a));for(c=0;c<a.children.length;c++)this.renderDisplayObject(a.children[c])}};PIXI.CanvasRenderer.prototype.renderStripFlat=function(a){var c=this.context;a=a.verticies;var f=a.length/2;this.count++;c.beginPath();for(var d=1;d<f-2;d++){var g=2*d,h=a[g+2],j=a[g+4],k=a[g+3],r=a[g+5];c.moveTo(a[g],a[g+1]);c.lineTo(h,k);c.lineTo(j,r)}c.fillStyle="#FF0000";c.fill();c.closePath()};
-PIXI.CanvasRenderer.prototype.renderStrip=function(a){var c=this.context,f=a.verticies,d=a.uvs,g=f.length/2;this.count++;for(var h=1;h<g-2;h++){var j=2*h,k=f[j],r=f[j+2],n=f[j+4],y=f[j+1],C=f[j+3],m=f[j+5],u=d[j]*a.texture.width,x=d[j+2]*a.texture.width,s=d[j+4]*a.texture.width,l=d[j+1]*a.texture.height,E=d[j+3]*a.texture.height,j=d[j+5]*a.texture.height;c.save();c.beginPath();c.moveTo(k,y);c.lineTo(r,C);c.lineTo(n,m);c.closePath();c.clip();var D=u*E+l*s+x*j-E*s-l*x-u*j;c.transform((k*E+l*n+r*j-E*
-n-l*r-k*j)/D,(y*E+l*m+C*j-E*m-l*C-y*j)/D,(u*r+k*s+x*n-r*s-k*x-u*n)/D,(u*C+y*s+x*m-C*s-y*x-u*m)/D,(u*E*n+l*r*s+k*x*j-k*E*s-l*x*n-u*r*j)/D,(u*E*m+l*C*s+y*x*j-y*E*s-l*x*m-u*C*j)/D);c.drawImage(a.texture.baseTexture.source,0,0);c.restore()}};PIXI.DisplayObject=function(){this.position=new PIXI.Point;this.scale=new PIXI.Point(1,1);this.rotation=0;this.alpha=1;this.visible=!0;this.cacheVisible=!1;this.stage=this.parent=null;this.worldAlpha=1;this.color=[];this.worldTransform=mat3.identity();this.localTransform=mat3.identity();this.dynamic=!0;this._sr=0;this._cr=1;this.renderable=!1;this.interactive=!0};PIXI.DisplayObject.constructor=PIXI.DisplayObject;
-PIXI.DisplayObject.prototype.updateTransform=function(){this.rotation!=this.rotationCache&&(this.rotationCache=this.rotation,this._sr=Math.sin(this.rotation),this._cr=Math.cos(this.rotation));this.localTransform[0]=this._cr*this.scale.x;this.localTransform[1]=-this._sr*this.scale.y;this.localTransform[3]=this._sr*this.scale.x;this.localTransform[4]=this._cr*this.scale.y;this.localTransform[2]=this.position.x;this.localTransform[5]=this.position.y;mat3.multiply(this.localTransform,this.parent.worldTransform,
-this.worldTransform);this.worldAlpha=this.alpha*this.parent.worldAlpha};PIXI.DisplayObjectContainer=function(){PIXI.DisplayObject.call(this);this.children=[];this.renderable=!1};PIXI.DisplayObjectContainer.constructor=PIXI.DisplayObjectContainer;PIXI.DisplayObjectContainer.prototype=Object.create(PIXI.DisplayObject.prototype);PIXI.DisplayObjectContainer.prototype.addChild=function(a){void 0!=a.parent&&a.parent.removeChild(a);a.parent=this;a.childIndex=this.children.length;this.children.push(a);this.stage&&this.stage.__addChild(a)};
-PIXI.DisplayObjectContainer.prototype.addChildAt=function(a,c){if(0<=c&&c<=this.children.length){void 0!=a.parent&&a.parent.removeChild(a);c==this.children.length?this.children.push(a):this.children.splice(c,0,a);a.parent=this;a.childIndex=c;for(var f=this.children.length,d=c;d<f;d++)this.children[d].childIndex=d;this.stage&&this.stage.__addChild(a)}else throw Error(a+" The index "+c+" supplied is out of bounds "+this.children.length);};
-PIXI.DisplayObjectContainer.prototype.removeChild=function(a){var c=this.children.indexOf(a);if(-1!==c){this.stage&&this.stage.__removeChild(a);a.parent=void 0;this.children.splice(c,1);a=c;for(c=this.children.length;a<c;a++)this.children[a].childIndex-=1}else throw Error(a+" The supplied DisplayObject must be a child of the caller "+this);};
-PIXI.DisplayObjectContainer.prototype.updateTransform=function(){if(this.visible){PIXI.DisplayObject.prototype.updateTransform.call(this);for(var a=0,c=this.children.length;a<c;a++)this.children[a].updateTransform()}};PIXI.Stage=function(a,c){PIXI.DisplayObjectContainer.call(this);this.worldTransform=mat3.identity();this.__childrenAdded=[];this.__childrenRemoved=[];this.childIndex=0;this.stage=this;this.interactive=c?!0:!1;this.interactionManager=new PIXI.InteractionManager(this);this.setBackgroundColor(a)};PIXI.Stage.constructor=PIXI.Stage;PIXI.Stage.prototype=Object.create(PIXI.DisplayObjectContainer.prototype);
-PIXI.Stage.prototype.updateTransform=function(){this.worldAlpha=1;for(var a=0,c=this.children.length;a<c;a++)this.children[a].updateTransform();this.dirty&&(this.dirty=!1,this.interactionManager.dirty=!0)};PIXI.Stage.prototype.setBackgroundColor=function(a){this.backgroundColor=a?a:0;this.backgroundColorSplit=HEXtoRGB(this.backgroundColor);this.backgroundColorString="#"+this.backgroundColor.toString(16)};
-PIXI.Stage.prototype.__addChild=function(a){a.interactive&&(this.dirty=!0);a.stage=this;if(a.children)for(var c=0;c<a.children.length;c++)this.__addChild(a.children[c])};PIXI.Stage.prototype.__removeChild=function(a){a.interactive&&(this.dirty=!0);this.__childrenRemoved.push(a);a.stage=void 0;if(a.children)for(var c=0,f=a.children.length;c<f;c++)this.__removeChild(a.children[c])};PIXI.blendModes={};PIXI.blendModes.NORMAL=0;PIXI.blendModes.SCREEN=1;
-PIXI.Sprite=function(a){PIXI.DisplayObjectContainer.call(this);this.anchor=new PIXI.Point;this.texture=a;this.blendMode=PIXI.blendModes.NORMAL;this.height=this.width=1;a.baseTexture.hasLoaded?(this.width=this.texture.frame.width,this.height=this.texture.frame.height,this.updateFrame=!0):(this.onTextureUpdateBind=this.onTextureUpdate.bind(this),this.texture.addEventListener("update",this.onTextureUpdateBind));this.renderable=!0;this.interactive=!1};PIXI.Sprite.constructor=PIXI.Sprite;
-PIXI.Sprite.prototype=Object.create(PIXI.DisplayObjectContainer.prototype);PIXI.Sprite.prototype.setTexture=function(a){this.texture.baseTexture!=a.baseTexture&&(this.textureChange=!0);this.texture=a;this.width=a.frame.width;this.height=a.frame.height;this.updateFrame=!0};PIXI.Sprite.prototype.setInteractive=function(a){this.interactive=a;stage&&(stage.dirty=!0)};
-PIXI.Sprite.prototype.onTextureUpdate=function(){this.width=this.texture.frame.width;this.height=this.texture.frame.height;this.updateFrame=!0};PIXI.Sprite.fromFrame=function(a){var c=PIXI.TextureCache[a];if(!c)throw Error("The frameId '"+a+"' does not exist in the texture cache"+this);return new PIXI.Sprite(c)};PIXI.Sprite.fromImage=function(a){a=PIXI.Texture.fromImage(a);return new PIXI.Sprite(a)};PIXI.Strip=function(a,c,f){PIXI.DisplayObjectContainer.call(this);this.texture=a;this.blendMode=PIXI.blendModes.NORMAL;try{this.uvs=new Float32Array([0,1,1,1,1,0,0,1]),this.verticies=new Float32Array([0,0,0,0,0,0,0,0,0]),this.colors=new Float32Array([1,1,1,1]),this.indices=new Uint16Array([0,1,2,3])}catch(d){this.uvs=[0,1,1,1,1,0,0,1],this.verticies=[0,0,0,0,0,0,0,0,0],this.colors=[1,1,1,1],this.indices=[0,1,2,3]}this.width=c;this.height=f;a.baseTexture.hasLoaded?(this.width=this.texture.frame.width,
-this.height=this.texture.frame.height,this.updateFrame=!0):(this.onTextureUpdateBind=this.onTextureUpdate.bind(this),this.texture.addEventListener("update",this.onTextureUpdateBind));this.renderable=!0};PIXI.Strip.constructor=PIXI.Strip;PIXI.Strip.prototype=Object.create(PIXI.DisplayObjectContainer.prototype);PIXI.Strip.prototype.setTexture=function(a){this.texture=a;this.width=a.frame.width;this.height=a.frame.height;this.updateFrame=!0};
-PIXI.Strip.prototype.onTextureUpdate=function(){this.updateFrame=!0};PIXI.Rope=function(a,c){PIXI.Strip.call(this,a);this.points=c;try{this.verticies=new Float32Array(4*c.length),this.uvs=new Float32Array(4*c.length),this.colors=new Float32Array(2*c.length),this.indices=new Uint16Array(2*c.length)}catch(f){this.verticies=verticies,this.uvs=uvs,this.colors=colors,this.indices=indices}this.refresh()};PIXI.Rope.constructor=PIXI.Rope;PIXI.Rope.prototype=Object.create(PIXI.Strip.prototype);
-PIXI.Rope.prototype.refresh=function(){var a=this.points;if(!(1>a.length)){var c=this.uvs,f=this.indices,d=this.colors;this.count-=0.2;c[0]=0;c[1]=1;c[2]=0;c[3]=1;d[0]=1;d[1]=1;f[0]=0;f[1]=1;for(var a=a.length,g=1;g<a;g++){var h=4*g,j=g/(a-1);c[h]=j;c[h+1]=0;c[h+2]=j;c[h+3]=1;h=2*g;d[h]=1;d[h+1]=1;h=2*g;f[h]=h;f[h+1]=h+1}}};
-PIXI.Rope.prototype.updateTransform=function(){var a=this.points;if(!(1>a.length)){var c=this.verticies,f=a[0],d,g=d=0,h=a[0];this.count-=0.2;c[0]=h.x+d;c[1]=h.y+g;c[2]=h.x-d;c[3]=h.y-g;for(var j=a.length,k=1;k<j;k++){var h=a[k],r=4*k;d=k<a.length-1?a[k+1]:h;g=-(d.x-f.x);d=d.y-f.y;var f=Math.sqrt(d*d+g*g),n=this.texture.height/2;d/=f;g/=f;d*=n;g*=n;c[r]=h.x+d;c[r+1]=h.y+g;c[r+2]=h.x-d;c[r+3]=h.y-g;f=h}PIXI.DisplayObjectContainer.prototype.updateTransform.call(this)}};
-PIXI.Rope.prototype.setTexture=function(a){this.texture=a;this.updateFrame=!0};PIXI.MovieClip=function(a){PIXI.Sprite.call(this,a[0]);this.textures=a;this.currentFrame=0;this.animationSpeed=1};PIXI.MovieClip.constructor=PIXI.MovieClip;PIXI.MovieClip.prototype=Object.create(PIXI.Sprite.prototype);PIXI.MovieClip.prototype.stop=function(){this.playing=!1};PIXI.MovieClip.prototype.play=function(){this.playing=!0};PIXI.MovieClip.prototype.gotoAndStop=function(a){this.playing=!1;this.currentFrame=a;this.setTexture(this.textures[(this.currentFrame+0.5|0)%this.textures.length])};
-PIXI.MovieClip.prototype.gotoAndPlay=function(a){this.currentFrame=a;this.playing=!0};PIXI.MovieClip.prototype.updateTransform=function(){PIXI.Sprite.prototype.updateTransform.call(this);this.playing&&(this.currentFrame+=this.animationSpeed,this.setTexture(this.textures[(this.currentFrame+0.5|0)%this.textures.length]))};PIXI.InteractionManager=function(a){this.stage=a;this.tempPoint=new PIXI.Point;this.tempMatrix=mat3.create();this.mouseoverEnabled=!0;this.mouse=new PIXI.InteractionData;this.touchs={};this.pool=[];this.interactiveItems=[]};PIXI.InteractionManager.constructor=PIXI.InteractionManager;PIXI.InteractionManager.prototype.disableMouseOver=function(){this.mouseoverEnabled&&(this.mouseoverEnabled=!1,this.target&&this.target.view.removeEventListener("mousemove",this.onMouseMove.bind(this)))};
-PIXI.InteractionManager.prototype.enableMouseOver=function(){this.mouseoverEnabled||(this.mouseoverEnabled=!1,this.target&&this.target.view.addEventListener("mousemove",this.onMouseMove.bind(this)))};PIXI.InteractionManager.prototype.collectInteractiveSprite=function(a){a=a.children;for(var c=a.length-1;0<=c;c--){var f=a[c];if(f instanceof PIXI.Sprite)f.interactive&&this.interactiveItems.push(f);else if(!f.interactive)continue;0<f.children.length&&this.collectInteractiveSprite(f)}};
-PIXI.InteractionManager.prototype.setTarget=function(a){this.target=a;this.mouseoverEnabled&&a.view.addEventListener("mousemove",this.onMouseMove.bind(this),!0);a.view.addEventListener("mousedown",this.onMouseDown.bind(this),!0);a.view.addEventListener("mouseup",this.onMouseUp.bind(this),!0);a.view.addEventListener("mouseout",this.onMouseUp.bind(this),!0);a.view.addEventListener("touchstart",this.onTouchStart.bind(this),!0);a.view.addEventListener("touchend",this.onTouchEnd.bind(this),!0);a.view.addEventListener("touchmove",
-this.onTouchMove.bind(this),!0)};
-PIXI.InteractionManager.prototype.hitTest=function(a){this.dirty&&(this.dirty=!1,this.interactiveItems=[],this.collectInteractiveSprite(this.stage));for(var c=this.tempPoint,f=a.global,d=this.interactiveItems.length,g=0;g<d;g++){var h=this.interactiveItems[g];if(h.visible){var j=h.worldTransform,k=j[0],r=j[1],n=j[2],y=j[3],C=j[4],j=j[5],m=1/(k*C+r*-y);c.x=C*m*f.x+-r*m*f.y+(j*r-n*C)*m;c.y=k*m*f.y+-y*m*f.x+(-j*k+n*y)*m;k=-h.width*h.anchor.x;if(c.x>k&&c.x<k+h.width&&(k=-h.height*h.anchor.y,c.y>k&&c.y<
-k+h.height))return a.local.x=c.x,a.local.y=c.y,h}}return null};
-PIXI.InteractionManager.prototype.onMouseMove=function(a){a.preventDefault();var c=this.target.view.getBoundingClientRect();this.mouse.global.x=(a.clientX-c.left)*(this.target.width/c.width);this.mouse.global.y=(a.clientY-c.top)*(this.target.height/c.height);a=this.hitTest(this.mouse);this.currentOver!=a&&(this.currentOver&&(this.currentOver.mouseout&&this.currentOver.mouseout(this.mouse),this.currentOver=null),this.target.view.style.cursor="default");a&&this.currentOver!=a&&(this.currentOver=a,this.target.view.style.cursor=
-"pointer",a.mouseover&&a.mouseover(this.mouse))};PIXI.InteractionManager.prototype.onMouseDown=function(a){var c=this.target.view.getBoundingClientRect();this.mouse.global.x=(a.clientX-c.left)*(this.target.width/c.width);this.mouse.global.y=(a.clientY-c.top)*(this.target.height/c.height);if(a=this.hitTest(this.mouse))this.currentDown=a,a.mousedown&&a.mousedown(this.mouse)};
-PIXI.InteractionManager.prototype.onMouseUp=function(){this.currentDown&&(this.currentDown.mouseup&&this.currentDown.mouseup(this.mouse),this.currentOver==this.currentDown&&this.currentDown.click&&this.currentDown.click(this.mouse),this.currentDown=null)};
-PIXI.InteractionManager.prototype.onTouchMove=function(a){a.preventDefault();var c=this.target.view.getBoundingClientRect();a=a.changedTouches;for(var f=0;f<a.length;f++){var d=a[f],g=this.touchs[d.identifier];g.global.x=(d.clientX-c.left)*(this.target.width/c.width);g.global.y=(d.clientY-c.top)*(this.target.height/c.height)}};
-PIXI.InteractionManager.prototype.onTouchStart=function(a){a.preventDefault();var c=this.target.view.getBoundingClientRect();a=a.changedTouches;for(var f=0;f<a.length;f++){var d=a[f],g=this.pool.pop();g||(g=new PIXI.InteractionData);this.touchs[d.identifier]=g;g.global.x=(d.clientX-c.left)*(this.target.width/c.width);g.global.y=(d.clientY-c.top)*(this.target.height/c.height);if(d=this.hitTest(g))g.currentDown=d,d.touchstart&&d.touchstart(g)}};
-PIXI.InteractionManager.prototype.onTouchEnd=function(a){a.preventDefault();var c=this.target.view.getBoundingClientRect();a=a.changedTouches;for(var f=0;f<a.length;f++){var d=a[f],g=this.touchs[d.identifier];g.global.x=(d.clientX-c.left)*(this.target.width/c.width);g.global.y=(d.clientY-c.top)*(this.target.height/c.height);g.currentDown&&(g.currentDown.touchend&&g.currentDown.touchend(g),this.hitTest(g)==g.currentDown&&g.currentDown.tap&&g.currentDown.tap(g),g.currentDown=null);this.pool.push(g);
-this.touchs[d.identifier]=null}};PIXI.InteractionData=function(){this.global=new PIXI.Point;this.local=new PIXI.Point};PIXI.InteractionData.constructor=PIXI.InteractionData;PIXI.BaseTextureCache={};PIXI.texturesToUpdate=[];
-PIXI.BaseTexture=function(a){PIXI.EventTarget.call(this);this.height=this.width=100;this.source=a;if(this.source instanceof Image)if(this.source.complete)this.hasLoaded=!0,this.width=this.source.width,this.height=this.source.height,PIXI.texturesToUpdate.push(this);else{var c=this;this.source.onload=function(){c.hasLoaded=!0;c.width=c.source.width;c.height=c.source.height;PIXI.texturesToUpdate.push(c);c.dispatchEvent({type:"loaded",content:c})}}else this.hasLoaded=!0,this.width=this.source.width,this.height=
-this.source.height,PIXI.texturesToUpdate.push(this)};PIXI.BaseTexture.constructor=PIXI.BaseTexture;PIXI.BaseTexture.prototype.fromImage=function(){};PIXI.TextureCache={};PIXI.FrameCache={};PIXI.Texture=function(a,c){PIXI.EventTarget.call(this);c||(this.noFrame=!0,c=new PIXI.Rectangle(0,0,1,1));this.trim=new PIXI.Point;this.baseTexture=a;this.frame=c;this.scope=this;if(a.hasLoaded)this.noFrame&&(c=new PIXI.Rectangle(0,0,a.width,a.height)),this.setFrame(c);else{var f=this;a.addEventListener("loaded",function(){f.onBaseTextureLoaded()})}};PIXI.Texture.constructor=PIXI.Texture;
-PIXI.Texture.prototype.onBaseTextureLoaded=function(){var a=this.baseTexture;a.removeEventListener("loaded",this.onLoaded);this.noFrame&&(this.frame=new PIXI.Rectangle(0,0,a.width,a.height));this.noFrame=!1;this.width=this.frame.width;this.height=this.frame.height;this.scope.dispatchEvent({type:"update",content:this})};PIXI.Texture.prototype.setFrame=function(a){this.frame=a;this.width=a.width;this.height=a.height};
-PIXI.Texture.fromImage=function(a){var c=PIXI.TextureCache[a];c||(c=PIXI.BaseTextureCache[a],c||(c=new Image,c.src=a,c=new PIXI.BaseTexture(c),PIXI.BaseTextureCache[a]=c),c=new PIXI.Texture(c),PIXI.TextureCache[a]=c);return c};PIXI.Texture.fromFrame=function(a){var c=PIXI.TextureCache[a];if(!c)throw Error("The frameId '"+a+"' does not exist in the texture cache "+this);return c};
-PIXI.Texture.fromCanvas=function(a){var c=PIXI.TextureCache[a];c||(c=PIXI.BaseTextureCache[a],c||(c=new PIXI.BaseTexture(a),PIXI.BaseTextureCache[a]=c),c=new PIXI.Texture(c),PIXI.TextureCache[a]=c);return c};PIXI.Texture.addTextureToCache=function(a,c){PIXI.TextureCache[c]=a};PIXI.Texture.removeTextureFromCache=function(a){var c=PIXI.TextureCache[a];PIXI.TextureCache[a]=null;return c};PIXI.autoDetectRenderer=function(a,c,f){a||(a=800);c||(c=600);var d;try{d=!!window.WebGLRenderingContext&&!!document.createElement("canvas").getContext("experimental-webgl")}catch(g){d=!1}return d?new PIXI.WebGLRenderer(a,c,f):new PIXI.CanvasRenderer(a,c,f)};PIXI.SpriteSheetLoader=function(a){PIXI.EventTarget.call(this);this.url=a;this.baseUrl=a.replace(/[^\/]*$/,"");this.texture;this.frames={}};PIXI.SpriteSheetLoader.constructor=PIXI.SpriteSheetLoader;PIXI.SpriteSheetLoader.prototype.load=function(){this.ajaxRequest=new AjaxRequest;var a=this;this.ajaxRequest.onreadystatechange=function(){a.onLoaded()};this.ajaxRequest.open("GET",this.url,!0);this.ajaxRequest.send(null)};
-PIXI.SpriteSheetLoader.prototype.onLoaded=function(){if(4==this.ajaxRequest.readyState&&(200==this.ajaxRequest.status||-1==window.location.href.indexOf("http"))){var a=eval("("+this.ajaxRequest.responseText+")");this.texture=PIXI.Texture.fromImage(this.baseUrl+a.meta.image).baseTexture;var a=a.frames,c;for(c in a){var f=a[c].frame;PIXI.TextureCache[c]=new PIXI.Texture(this.texture,{x:f.x,y:f.y,width:f.w,height:f.h});a[c].trimmed&&(PIXI.TextureCache[c].realSize=a[c].spriteSourceSize,PIXI.TextureCache[c].trim.x=
-0)}if(this.texture.hasLoaded)this.dispatchEvent({type:"loaded",content:this});else{var d=this;this.texture.addEventListener("loaded",function(){d.dispatchEvent({type:"loaded",content:d})})}}};PIXI.AssetLoader=function(a){PIXI.EventTarget.call(this);this.assetURLs=a;this.assets=[]};PIXI.AssetLoader.constructor=PIXI.AssetLoader;
-PIXI.AssetLoader.prototype.load=function(){this.loadCount=this.assetURLs.length;for(var a=["jpeg","jpg","png","gif"],c=["json"],f=0;f<this.assetURLs.length;f++){for(var d=this.assetURLs[f],g=d.split(".").pop().toLowerCase(),h=null,j=0;j<a.length;j++)if(g==a[j]){h="img";break}if("img"!=h)for(j=0;j<c.length;j++)if(g==c[j]){h="atlas";break}if("img"==h)if(d=PIXI.Texture.fromImage(d),d.hasLoaded)this.loadCount--;else{var k=this;d.baseTexture.addEventListener("loaded",function(){k.onAssetLoaded()});this.assets.push(d)}else if("atlas"==
-h)d=new PIXI.SpriteSheetLoader(d),this.assets.push(d),k=this,d.addEventListener("loaded",function(){k.onAssetLoaded()}),d.load();else throw Error(d+" is an unsupported file type "+this);}};PIXI.AssetLoader.prototype.onAssetLoaded=function(){this.loadCount--;this.dispatchEvent({type:"onProgress",content:this});if(this.onProgress)this.onProgress();if(0==this.loadCount&&(this.dispatchEvent({type:"onComplete",content:this}),this.onComplete))this.onComplete()};
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+/**
+@module PIXI
+ */
+var PIXI = PIXI || {};
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+/**
+ * The Point object represents a location in a two-dimensional coordinate system, where x represents the horizontal axis and y represents the vertical axis.
+ * @class Point
+ * @constructor 
+ * @param x {Number} position of the point
+ * @param y {Number} position of the point
+ */
+PIXI.Point = function(x, y)
+{
+	/**
+	 * @property x 
+	 * @type Number
+	 * @default 0
+	 */
+	this.x = x || 0;
+	
+	/**
+	 * @property y
+	 * @type Number
+	 * @default 0
+	 */
+	this.y = y || 0;
+}
+
+/** 
+ * @method clone
+ * @return a copy of the point
+ */
+PIXI.Point.clone = function()
+{
+	return new PIXI.Point(this.x, this.y);
+}
+
+// constructor
+PIXI.Point.constructor = PIXI.Point;
+
+/**
+ * @author Mat Groves http://matgroves.com/
+ */
+
+/**
+ * the Rectangle object is an area defined by its position, as indicated by its top-left corner point (x, y) and by its width and its height.
+ * @class Rectangle
+ * @constructor 
+ * @param x {Number} position of the rectangle
+ * @param y {Number} position of the rectangle
+ * @param width {Number} of the rectangle
+ * @param height {Number} of the rectangle
+ */
+PIXI.Rectangle = function(x, y, width, height)
+{
+	/**
+	 * @property x
+	 * @type Number
+	 * @default 0
+	 */
+	this.x = x || 0;
+	
+	/**
+	 * @property y
+	 * @type Number
+	 * @default 0
+	 */
+	this.y = y || 0;
+	
+	/**
+	 * @property width
+	 * @type Number
+	 * @default 0
+	 */
+	this.width = width || 0;
+	
+	/**
+	 * @property height
+	 * @type Number
+	 * @default 0
+	 */
+	this.height = height || 0;
+}
+
+/** 
+ * @method clone
+ * @return a copy of the rectangle
+ */
+PIXI.Rectangle.clone = function()
+{
+	return new PIXI.Rectangle(this.x, this.y, this.width, this.height);
+}
+
+// constructor
+PIXI.Rectangle.constructor = PIXI.Rectangle;
+
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+/**
+ * this is the base class for all objects that are rendered on the screen.
+ * @class DisplayObject
+ * @constructor
+ */
+PIXI.DisplayObject = function()
+{
+	/**
+	 * The coordinate of the object relative to the local coordinates of the parent.
+	 * @property position
+	 * @type Point
+	 */
+	this.position = new PIXI.Point();
+	
+	/**
+	 * The scale factor of the object.
+	 * @property scale
+	 * @type Point
+	 */
+	this.scale = new PIXI.Point(1,1);//{x:1, y:1};
+	
+	/**
+	 * The rotation of the object in radians.
+	 * @property rotation
+	 * @type Number
+	 */
+	this.rotation = 0;
+	
+	/**
+	 * The opacity of the object.
+	 * @property alpha
+	 * @type Number
+	 */	
+	this.alpha = 1;
+	
+	/**
+	 * The visibility of the object.
+	 * @property visible
+	 * @type Boolean
+	 */	
+	this.visible = true;
+	this.cacheVisible = false;
+	
+	/**
+	 * [read-only] The display object container that contains this display object.
+	 * @property parent
+	 * @type DisplayObjectContainer
+	 */	
+	this.parent = null;
+	
+	/**
+	 * [read-only] The stage the display object is connected to, or undefined if it is not connected to the stage.
+	 * @property stage
+	 * @type Stage
+	 */	
+	this.stage = null;
+	
+	this.worldAlpha = 1;
+	this.color = [];
+	
+	this.worldTransform = PIXI.mat3.create()//mat3.identity();
+	this.localTransform = PIXI.mat3.create()//mat3.identity();
+	
+	this.dynamic = true;
+	// chach that puppy!
+	this._sr = 0;
+	this._cr = 1;
+	
+	this.renderable = false;
+	
+	// NOT YET :/ This only applies to children within the container..
+	this.interactive = true;
+}
+
+// constructor
+PIXI.DisplayObject.constructor = PIXI.DisplayObject;
+
+/**
+ * @private
+ */
+PIXI.DisplayObject.prototype.updateTransform = function()
+{
+	// TODO OPTIMIZE THIS!! with dirty
+	if(this.rotation != this.rotationCache)
+	{
+		this.rotationCache = this.rotation;
+		this._sr =  Math.sin(this.rotation);
+		this._cr =  Math.cos(this.rotation);
+	}	
+	
+	var localTransform = this.localTransform;
+	var parentTransform = this.parent.worldTransform;
+	var worldTransform = this.worldTransform;
+	//console.log(localTransform)
+	localTransform[0] = this._cr * this.scale.x;
+	localTransform[1] = -this._sr * this.scale.y
+	localTransform[3] = this._sr * this.scale.x;
+	localTransform[4] = this._cr * this.scale.y;
+	
+	///AAARR GETTER SETTTER!
+	localTransform[2] = this.position.x;
+	localTransform[5] = this.position.y;
+	
+    // Cache the matrix values (makes for huge speed increases!)
+    var a00 = localTransform[0], a01 = localTransform[1], a02 = localTransform[2],
+        a10 = localTransform[3], a11 = localTransform[4], a12 = localTransform[5],
+
+        b00 = parentTransform[0], b01 = parentTransform[1], b02 = parentTransform[2],
+        b10 = parentTransform[3], b11 = parentTransform[4], b12 = parentTransform[5];
+
+    worldTransform[0] = b00 * a00 + b01 * a10;
+    worldTransform[1] = b00 * a01 + b01 * a11;
+    worldTransform[2] = b00 * a02 + b01 * a12 + b02;
+
+    worldTransform[3] = b10 * a00 + b11 * a10;
+    worldTransform[4] = b10 * a01 + b11 * a11;
+    worldTransform[5] = b10 * a02 + b11 * a12 + b12;
+
+	// because we are using affine transformation, we can optimise the matrix concatenation process.. wooo!
+	// mat3.multiply(this.localTransform, this.parent.worldTransform, this.worldTransform);
+	this.worldAlpha = this.alpha * this.parent.worldAlpha;		
+}
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+
+/**
+ * A DisplayObjectContainer represents a collection of display objects. It is the base class of all display objects that act as a container for other objects.
+ * @class DisplayObjectContainer 
+ * @extends DisplayObject
+ * @constructor
+ */
+PIXI.DisplayObjectContainer = function()
+{
+	PIXI.DisplayObject.call( this );
+	
+	/**
+	 * [read-only] The of children of this container.
+	 * @property children {Array}
+	 */	
+	this.children = [];
+	//s
+	this.renderable = false;
+}
+
+// constructor
+PIXI.DisplayObjectContainer.constructor = PIXI.DisplayObjectContainer;
+PIXI.DisplayObjectContainer.prototype = Object.create( PIXI.DisplayObject.prototype );
+
+/**
+ * Adds a child to the container.
+ * @method addChild
+ * @param  DisplayObject {DisplayObject}
+ */
+PIXI.DisplayObjectContainer.prototype.addChild = function(child)
+{
+	if(child.parent != undefined)
+	{
+		child.parent.removeChild(child)
+	}
+	
+	child.parent = this;
+	child.childIndex = this.children.length;
+	
+	this.children.push(child);	
+	if(this.stage)
+	{
+		this.stage.__addChild(child);
+	}
+}
+
+/**
+ * Adds a child to the container at a specified index. If the index is out of bounds an error will be thrown
+ * @method addChildAt
+ * @param DisplayObject {DisplayObject}
+ * @param index {Number}
+ */
+PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
+{
+	if(index >= 0 && index <= this.children.length)
+	{
+		if(child.parent != undefined)
+		{
+			child.parent.removeChild(child);
+		}
+	
+		if (index == this.children.length)
+		{
+		  	this.children.push(child);
+		}	
+		else 
+		{
+			this.children.splice(index, 0, child);
+		}
+
+		child.parent = this;
+		child.childIndex = index;
+		
+		var length = this.children.length;
+		for (var i=index; i < length; i++) 
+		{
+		  this.children[i].childIndex = i;
+		}
+		
+		if(this.stage)
+		{
+			this.stage.__addChild(child);
+		}
+	}
+	else
+	{
+		// error!
+		
+		throw new Error(child + " The index "+ index +" supplied is out of bounds " + this.children.length);
+	}
+}
+
+/**
+ * Removes a child from the container.
+ * @method removeChild
+ * @param  DisplayObject {DisplayObject}
+ */
+PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
+{
+	var index = this.children.indexOf( child );
+
+	if ( index !== -1 ) 
+	{
+		if(this.stage)this.stage.__removeChild(child);
+		child.parent = undefined;
+		//child.childIndex = 0
+		this.children.splice( index, 1 );
+	
+		// update in dexs!
+		for(var i=index,j=this.children.length; i<j; i++)
+		{
+			this.children[i].childIndex -= 1;
+		}
+	}
+	else
+	{
+		throw new Error(child + " The supplied DisplayObject must be a child of the caller " + this);
+	}
+}
+
+
+/**
+ * @private
+ */
+PIXI.DisplayObjectContainer.prototype.updateTransform = function()
+{
+	if(!this.visible)return;
+	
+	PIXI.DisplayObject.prototype.updateTransform.call( this );
+	
+	for(var i=0,j=this.children.length; i<j; i++)
+	{
+		this.children[i].updateTransform();	
+	}
+}
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+PIXI.blendModes = {};
+PIXI.blendModes.NORMAL = 0;
+PIXI.blendModes.SCREEN = 1;
+
+
+/**
+@class Sprite
+@extends DisplayObjectContainer
+@constructor
+@param texture {Texture}
+@type String
+*/
+PIXI.Sprite = function(texture)
+{
+	PIXI.DisplayObjectContainer.call( this );
+	
+	 /**
+	 * The anchor sets the origin point of the texture.
+	 * The default is 0,0 this means the textures origin is the top left 
+	 * Setting than anchor to 0.5,0.5 means the textures origin is centered
+	 * Setting the anchor to 1,1 would mean the textures origin points will be the bottom right
+     * @property anchor
+     * @type Point
+     */
+	this.anchor = new PIXI.Point();
+	
+	/**
+	 * The texture that the sprite is using
+	 * @property texture
+	 * @type Texture
+	 */
+	this.texture = texture;
+	
+	/**
+	 * The blend mode of sprite.
+	 * currently supports PIXI.blendModes.NORMAL and PIXI.blendModes.SCREEN
+	 * @property blendMode
+	 * @type uint
+	 */
+	this.blendMode = PIXI.blendModes.NORMAL;
+	
+	/**
+	 * The width of the sprite (this is initially set by the texture)
+	 * @property width
+	 * @type #Number
+	 */
+	this.width = 1;
+	
+	/**
+	 * The height of the sprite (this is initially set by the texture)
+	 * @property height
+	 * @type #Number
+	 */
+	this.height = 1;
+	
+	if(texture.baseTexture.hasLoaded)
+	{
+		this.width   = this.texture.frame.width;
+		this.height  = this.texture.frame.height;
+		this.updateFrame = true;
+	}
+	else
+	{
+		this.onTextureUpdateBind = this.onTextureUpdate.bind(this);
+		this.texture.addEventListener( 'update', this.onTextureUpdateBind );
+	}
+	
+	this.renderable = true;
+	
+	
+	
+	// [readonly] best not to toggle directly! use setInteractive()
+	this.interactive = false;
+	
+	
+	// thi next bit is here for the docs...
+	
+	/*
+	 * MOUSE Callbacks
+	 */
+	
+	/**
+	 * A callback that is used when the users clicks on the sprite with thier mouse
+	 * @method click
+	 * @param interactionData {InteractionData}
+	 */
+	
+	/**
+	 * A callback that is used when the user clicks the mouse down over the sprite
+	 * @method mousedown
+	 * @param interactionData {InteractionData}
+	 */
+	 
+	/**
+	 * A callback that is used when the user releases the mouse that was over the sprite
+	 * for this callback to be fired the mouse must have been pressed down over the sprite
+	 * @method mouseup
+	 * @param interactionData {InteractionData}
+	 */
+	
+	/**
+	 * A callback that is used when the users mouse rolls over the sprite
+	 * @method mouseover
+	 * @param interactionData {InteractionData}
+	 */
+	
+	/**
+	 * A callback that is used when the users mouse leaves the sprite
+	 * @method mouseout
+	 * @param interactionData {InteractionData}
+	 */
+	
+	/*
+	 * TOUCH Callbacks
+	 */
+	
+	/**
+	 * A callback that is used when the users taps on the sprite with thier finger
+	 * basically a touch version of click
+	 * @method tap
+	 * @param interactionData {InteractionData}
+	 */
+	
+	/**
+	 * A callback that is used when the user touch's over the sprite
+	 * @method touchstart
+	 * @param interactionData {InteractionData}
+	 */
+	 
+	/**
+	 * A callback that is used when the user releases the touch that was over the sprite
+	 * for this callback to be fired. The touch must have started over the sprite
+	 * @method touchend
+	 * @param interactionData {InteractionData}
+	 */
+}
+
+// constructor
+PIXI.Sprite.constructor = PIXI.Sprite;
+PIXI.Sprite.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
+
+/**
+@method setTexture
+@param texture {Texture} The PIXI texture that is displayed by the sprite
+*/
+PIXI.Sprite.prototype.setTexture = function(texture)
+{
+	// stop current texture;
+	if(this.texture.baseTexture != texture.baseTexture)
+	{
+		this.textureChange = true;	
+	}
+	
+	this.texture = texture;
+	this.width   = texture.frame.width;
+	this.height  = texture.frame.height;
+	this.updateFrame = true;
+}
+
+/**
+ * Indicates if the sprite will have touch and mouse interactivity. It is false by default
+ * @method setInteractive
+ * @param interactive {Boolean}
+ */
+PIXI.Sprite.prototype.setInteractive = function(interactive)
+{
+	this.interactive = interactive;
+	// TODO more to be done here..
+	// need to sort out a re-crawl!
+	if(this.stage)this.stage.dirty = true;
+}
+
+/**
+ * @private
+ */
+PIXI.Sprite.prototype.onTextureUpdate = function(event)
+{
+	this.width   = this.texture.frame.width;
+	this.height  = this.texture.frame.height;
+	this.updateFrame = true;
+}
+
+// some helper functions..
+
+/**
+ * 
+ * Helper function that creates a sprite that will contain a texture from the TextureCache based on the frameId
+ * The frame ids are created when a Texture packer file has been loaded
+ * @method fromFrame
+ * @static
+ * @param frameId {String} The frame Id of the texture in the cache
+ * @return {Sprite} A new Sprite using a texture from the texture cache matching the frameId
+ */
+PIXI.Sprite.fromFrame = function(frameId)
+{
+	var texture = PIXI.TextureCache[frameId];
+	if(!texture)throw new Error("The frameId '"+ frameId +"' does not exist in the texture cache" + this);
+	return new PIXI.Sprite(texture);
+}
+
+/**
+ * 
+ * Helper function that creates a sprite that will contain a texture based on an image url
+ * If the image is not in the texture cache it will be loaded
+ * @method fromImage
+ * @static
+ * @param The image url of the texture
+ * @return {Sprite} A new Sprite using a texture from the texture cache matching the image id
+ */
+PIXI.Sprite.fromImage = function(imageId)
+{
+	var texture = PIXI.Texture.fromImage(imageId);
+	return new PIXI.Sprite(texture);
+}
+
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+/**
+ * A MovieClip is a simple way to display an animation depicted by a list of textures.
+ * @class MovieClip
+ * @extends Sprite
+ * @constructor
+ * @param textures {Array} an array of {Texture} objects that make up the animation
+ */
+PIXI.MovieClip = function(textures)
+{
+	PIXI.Sprite.call( this, textures[0]);
+	
+	/**
+	 * The array of textures that make up the animation
+	 * @property textures
+	 * @type Array
+	 */
+	this.textures = textures;
+	
+	/**
+	 * [read only] The index MovieClips current frame (this may not have to be a whole number)
+	 * @property currentFrame
+	 * @type Number
+	 */
+	this.currentFrame = 0; 
+	
+	/**
+	 * The speed that the MovieClip will play at. Higher is faster, lower is slower
+	 * @property animationSpeed
+	 * @type Number
+	 */
+	this.animationSpeed = 1;
+	
+	/**
+	 * [read only] indicates if the MovieClip is currently playing
+	 * @property playing
+	 * @type Boolean
+	 */
+	this.playing;
+}
+
+// constructor
+PIXI.MovieClip.constructor = PIXI.MovieClip;
+PIXI.MovieClip.prototype = Object.create( PIXI.Sprite.prototype );
+
+/**
+ * Stops the MovieClip
+ * @method stop
+ */
+PIXI.MovieClip.prototype.stop = function()
+{
+	this.playing = false;
+}
+
+/**
+ * Plays the MovieClip
+ * @method play
+ */
+PIXI.MovieClip.prototype.play = function()
+{
+	this.playing = true;
+}
+
+/**
+ * Stops the MovieClip and goes to a specific frame
+ * @method gotoAndStop
+ * @param frameNumber {Number} frame index to stop at
+ */
+PIXI.MovieClip.prototype.gotoAndStop = function(frameNumber)
+{
+	this.playing = false;
+	this.currentFrame = frameNumber;
+	var round = (this.currentFrame + 0.5) | 0;
+	this.setTexture(this.textures[round % this.textures.length]);
+}
+
+/**
+ * Goes to a specific frame and begins playing the MovieClip
+ * @method gotoAndPlay
+ * @param frameNumber {Number} frame index to start at
+ */
+PIXI.MovieClip.prototype.gotoAndPlay = function(frameNumber)
+{
+	this.currentFrame = frameNumber;
+	this.playing = true;
+}
+
+PIXI.MovieClip.prototype.updateTransform = function()
+{
+	PIXI.Sprite.prototype.updateTransform.call(this);
+	
+	if(!this.playing)return;
+	
+	this.currentFrame += this.animationSpeed;
+	var round = (this.currentFrame + 0.5) | 0;
+	this.setTexture(this.textures[round % this.textures.length]);
+}/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+
+
+/**
+The interaction manager deals with mouse and touch events. At this moment only Sprite's can be interactive.
+This manager also supports multitouch.
+@class InteractionManager
+@constructor
+@param stage {Stage}
+@type Stage
+*/
+PIXI.InteractionManager = function(stage)
+{
+	/**
+	 * a refference to the stage
+	 * @property stage
+	 * @type Stage
+	 */
+	this.stage = stage;
+
+	// helpers
+	this.tempPoint = new PIXI.Point();
+	//this.tempMatrix =  mat3.create();
+	
+	this.mouseoverEnabled = true;
+	
+	/**
+	 * the mouse data 
+	 * @property mouse
+	 * @type InteractionData
+	 */
+	this.mouse = new PIXI.InteractionData();
+	
+	/**
+	 * an object that stores current touches (InteractionData) by id reference 
+	 * @property touchs
+	 * @type Object
+	 */
+	this.touchs = {};
+	
+	//tiny little interactiveData pool!
+	this.pool = [];
+	
+	this.interactiveItems = [];
+}
+
+// constructor
+PIXI.InteractionManager.constructor = PIXI.InteractionManager;
+
+/**
+ * This method will disable rollover/rollout for ALL interactive items
+ * You may wish to use this an optimization if your app does not require rollover/rollout funcitonality
+ * @method disableMouseOver
+ */
+PIXI.InteractionManager.prototype.disableMouseOver = function()
+{
+	if(!this.mouseoverEnabled)return;
+	
+	this.mouseoverEnabled = false;
+	if(this.target)this.target.view.removeEventListener('mousemove',  this.onMouseMove.bind(this));
+}
+
+/**
+ * This method will enable rollover/rollout for ALL interactive items
+ * It is enabled by default
+ * @method enableMouseOver
+ */
+PIXI.InteractionManager.prototype.enableMouseOver = function()
+{
+	if(this.mouseoverEnabled)return;
+	
+	this.mouseoverEnabled = false;
+	if(this.target)this.target.view.addEventListener('mousemove',  this.onMouseMove.bind(this));
+}
+
+PIXI.InteractionManager.prototype.collectInteractiveSprite = function(displayObject)
+{
+	var children = displayObject.children;
+	var length = children.length;
+	
+	for (var i = length - 1; i >= 0; i--)
+	{
+		var child = children[i];
+		
+		// only sprite's right now...
+		if(child instanceof PIXI.Sprite)
+		{
+			if(child.interactive)this.interactiveItems.push(child);
+		}
+		else
+		{
+			// use this to optimize..
+			if(!child.interactive)continue;
+		}
+		
+		if(child.children.length > 0)
+		{
+			this.collectInteractiveSprite(child);
+		}
+	}
+}
+
+PIXI.InteractionManager.prototype.setTarget = function(target)
+{
+	this.target = target;
+	if(this.mouseoverEnabled)target.view.addEventListener('mousemove',  this.onMouseMove.bind(this), true);
+	target.view.addEventListener('mousedown',  this.onMouseDown.bind(this), true);
+ 	target.view.addEventListener('mouseup', 	this.onMouseUp.bind(this), true);
+ 	target.view.addEventListener('mouseout', 	this.onMouseUp.bind(this), true);
+	
+	// aint no multi touch just yet!
+	target.view.addEventListener("touchstart", this.onTouchStart.bind(this), true);
+	target.view.addEventListener("touchend", this.onTouchEnd.bind(this), true);
+	target.view.addEventListener("touchmove", this.onTouchMove.bind(this), true);
+}
+
+PIXI.InteractionManager.prototype.hitTest = function(interactionData)
+{
+	if(this.dirty)
+	{
+		this.dirty = false;
+		this.interactiveItems = [];
+		// go through and collect all the objects that are interactive..
+		this.collectInteractiveSprite(this.stage);
+	}
+	
+	var tempPoint = this.tempPoint;
+	var tempMatrix = this.tempMatrix;
+	var global = interactionData.global;
+	
+	var length = this.interactiveItems.length;
+	
+	for (var i = 0; i < length; i++)
+	{
+		var item = this.interactiveItems[i];
+		if(!item.visible)continue;
+		
+		// TODO this could do with some optimizing!
+		// maybe store the inverse?
+		// or do a lazy check first?
+		//mat3.inverse(item.worldTransform, tempMatrix);
+		//tempPoint.x = tempMatrix[0] * global.x + tempMatrix[1] * global.y + tempMatrix[2]; 
+		//tempPoint.y = tempMatrix[4] * global.y + tempMatrix[3] * global.x + tempMatrix[5];
+	
+		// OPTIMIZED! assuming the matrix transform is affine.. which it totally shold be!
+		
+		var worldTransform = item.worldTransform;
+		
+		var a00 = worldTransform[0], a01 = worldTransform[1], a02 = worldTransform[2],
+            a10 = worldTransform[3], a11 = worldTransform[4], a12 = worldTransform[5],
+            id = 1 / (a00 * a11 + a01 * -a10);
+		
+		tempPoint.x = a11 * id * global.x + -a01 * id * global.y + (a12 * a01 - a02 * a11) * id; 
+		tempPoint.y = a00 * id * global.y + -a10 * id * global.x + (-a12 * a00 + a02 * a10) * id;
+		
+			
+		var x1 = -item.width * item.anchor.x
+		
+		if(tempPoint.x > x1 && tempPoint.x < x1 + item.width)
+		{
+			var y1 = -item.height * item.anchor.y;
+			
+			if(tempPoint.y > y1 && tempPoint.y < y1 + item.height)
+			{
+				interactionData.local.x = tempPoint.x;
+				interactionData.local.y = tempPoint.y;
+				
+				return item;
+			}
+		}
+	}
+		
+	return null;	
+}
+
+PIXI.InteractionManager.prototype.onMouseMove = function(event)
+{
+	event.preventDefault();
+	
+	// TODO optimize by not check EVERY TIME! maybe half as often? //
+	var rect = this.target.view.getBoundingClientRect();
+	
+	this.mouse.global.x = (event.clientX - rect.left) * (this.target.width / rect.width);
+	this.mouse.global.y = (event.clientY - rect.top) * ( this.target.height / rect.height);
+	
+	var item = this.hitTest(this.mouse);
+	
+	if(this.currentOver != item)
+	{
+		if(this.currentOver)
+		{
+			this.mouse.target = this.currentOver;
+			if(this.currentOver.mouseout)this.currentOver.mouseout(this.mouse);
+			this.currentOver = null;
+		}
+		
+		this.target.view.style.cursor = "default";
+	}
+		
+	if(item)
+	{
+		
+		if(this.currentOver == item)return;
+		
+		this.currentOver = item;
+		this.target.view.style.cursor = "pointer";
+		this.mouse.target = item;
+		if(item.mouseover)item.mouseover(this.mouse);
+	}
+}
+
+PIXI.InteractionManager.prototype.onMouseDown = function(event)
+{
+	var rect = this.target.view.getBoundingClientRect();
+	this.mouse.global.x = (event.clientX - rect.left) * (this.target.width / rect.width);
+	this.mouse.global.y = (event.clientY - rect.top) * (this.target.height / rect.height);
+	
+	var item = this.hitTest(this.mouse);
+	if(item)
+	{
+		this.currentDown = item;
+		this.mouse.target = item;
+		if(item.mousedown)item.mousedown(this.mouse);
+	}
+}
+
+PIXI.InteractionManager.prototype.onMouseUp = function(event)
+{
+	if(this.currentOver)
+	{
+		this.mouse.target = this.currentOver;
+		if(this.currentOver.mouseup)this.currentOver.mouseup(this.mouse);	
+	}
+	
+	if(this.currentDown)
+	{
+		this.mouse.target = this.currentDown;
+		// click!
+		if(this.currentOver == this.currentDown)if(this.currentDown.click)this.currentDown.click(this.mouse);
+		
+	
+		this.currentDown = null;
+	}
+}
+
+
+PIXI.InteractionManager.prototype.onTouchMove = function(event)
+{
+	event.preventDefault();
+	
+	var rect = this.target.view.getBoundingClientRect();
+	var changedTouches = event.changedTouches;
+	
+	for (var i=0; i < changedTouches.length; i++) 
+	{
+		var touchEvent = changedTouches[i];
+		
+		var touchData = this.touchs[touchEvent.identifier];
+		
+		// update the touch position
+		touchData.global.x = (touchEvent.clientX - rect.left) * (this.target.width / rect.width);
+		touchData.global.y = (touchEvent.clientY - rect.top)  * (this.target.height / rect.height);
+	}
+}
+
+PIXI.InteractionManager.prototype.onTouchStart = function(event)
+{
+	event.preventDefault();
+	var rect = this.target.view.getBoundingClientRect();
+	var changedTouches = event.changedTouches;
+	
+	for (var i=0; i < changedTouches.length; i++) 
+	{
+		var touchEvent = changedTouches[i];
+		
+		var touchData = this.pool.pop();
+		if(!touchData)touchData = new PIXI.InteractionData();
+		
+		this.touchs[touchEvent.identifier] = touchData;
+		
+		touchData.global.x = (touchEvent.clientX - rect.left) * (this.target.width / rect.width);
+		touchData.global.y = (touchEvent.clientY - rect.top)  * (this.target.height / rect.height);
+		
+		var item = this.hitTest(touchData);
+		if(item)
+		{
+			touchData.currentDown = item;
+			touchData.target = item;
+			if(item.touchstart)item.touchstart(touchData);
+		}
+	}
+}
+
+PIXI.InteractionManager.prototype.onTouchEnd = function(event)
+{
+	event.preventDefault();
+	
+	var rect = this.target.view.getBoundingClientRect();
+	var changedTouches = event.changedTouches;
+	
+	for (var i=0; i < changedTouches.length; i++) 
+	{
+		var touchEvent = changedTouches[i];
+		var touchData = this.touchs[touchEvent.identifier];
+		
+		touchData.global.x = (touchEvent.clientX - rect.left) * (this.target.width / rect.width);
+		touchData.global.y = (touchEvent.clientY - rect.top)  * (this.target.height / rect.height);
+		
+		if(touchData.currentDown)
+		{
+			if(touchData.currentDown.touchend)touchData.currentDown.touchend(touchData);
+			
+			var item = this.hitTest(touchData);
+			if(item == touchData.currentDown)
+			{
+				if(touchData.currentDown.tap)touchData.currentDown.tap(touchData);	
+			}
+			touchData.currentDown = null;
+		}
+		
+		// remove the touch..
+		this.pool.push(touchData);
+		this.touchs[touchEvent.identifier] = null;
+	}
+}
+
+/**
+@class InteractionData
+@constructor
+*/
+PIXI.InteractionData = function()
+{
+	/**
+	 * This point stores the global coords of where the touch/mouse event happened
+	 * @property global 
+	 * @type Point
+	 */
+	this.global = new PIXI.Point();
+	
+	/**
+	 * This point stores the local coords of where the touch/mouse event happened
+	 * @property local 
+	 * @type Point
+	 */
+	this.local = new PIXI.Point();
+
+	/**
+	 * The target Sprite that was interacted with
+	 * @property target
+	 * @type Sprite
+	 */
+	this.target;
+}
+
+// constructor
+PIXI.InteractionData.constructor = PIXI.InteractionData;
+
+
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+/**
+A Stage represents the root of the display tree. Everything connected to the stage is rendered
+@class Stage
+@extends DisplayObjectContainer
+@constructor
+@param backgroundColor {Number} the background color of the stage
+@param interactive {Boolean} enable / disable interaction (default is false)
+*/
+PIXI.Stage = function(backgroundColor, interactive)
+{
+	
+	PIXI.DisplayObjectContainer.call( this );
+	this.worldTransform = PIXI.mat3.create()//.//identity();
+	this.__childrenAdded = [];
+	this.__childrenRemoved = [];
+	this.childIndex = 0;
+	this.stage=  this;
+	
+	// interaction!
+	this.interactive = !!interactive;
+	this.interactionManager = new PIXI.InteractionManager(this);
+	
+	this.setBackgroundColor(backgroundColor);
+}
+
+// constructor
+PIXI.Stage.constructor = PIXI.Stage;
+
+PIXI.Stage.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
+
+/**
+@method updateTransform
+@internal
+*/
+PIXI.Stage.prototype.updateTransform = function()
+{
+	this.worldAlpha = 1;		
+	
+	for(var i=0,j=this.children.length; i<j; i++)
+	{
+		this.children[i].updateTransform();	
+	}
+	
+	if(this.dirty)
+	{
+		this.dirty = false;
+		
+		// update interactive!
+		this.interactionManager.dirty = true;
+		
+		
+	}
+}
+
+/**
+ * @method setBackgroundColor
+ * @param backgroundColor {Number}
+ */
+PIXI.Stage.prototype.setBackgroundColor = function(backgroundColor)
+{
+	this.backgroundColor = backgroundColor || 0x000000;
+	this.backgroundColorSplit = HEXtoRGB(this.backgroundColor);
+	this.backgroundColorString =  "#" + this.backgroundColor.toString(16);
+}
+
+PIXI.Stage.prototype.__addChild = function(child)
+{
+	if(child.interactive)this.dirty = true;
+	
+	child.stage = this;
+	
+	if(child.children)
+	{
+		for (var i=0; i < child.children.length; i++) 
+		{
+		  	this.__addChild(child.children[i]);
+		};
+	}
+	
+}
+
+
+PIXI.Stage.prototype.__removeChild = function(child)
+{
+	if(child.interactive)this.dirty = true;
+	
+	this.__childrenRemoved.push(child);
+
+	child.stage = undefined;
+	
+	if(child.children)
+	{
+		for(var i=0,j=child.children.length; i<j; i++)
+		{
+		  	this.__removeChild(child.children[i])
+		}
+	}
+}
+/**
+ * Provides requestAnimationFrame in a cross browser way.
+ */
+window.requestAnimFrame = (function() {
+  return window.requestAnimationFrame ||
+         window.webkitRequestAnimationFrame ||
+         window.mozRequestAnimationFrame ||
+         window.oRequestAnimationFrame ||
+         window.msRequestAnimationFrame ||
+         function(/* function FrameRequestCallback */ callback, /* DOMElement Element */ element) {
+           window.setTimeout(callback, 1000/60);
+         };
+})();
+
+function HEXtoRGB(hex) {
+	return [(hex >> 16 & 0xFF) / 255, ( hex >> 8 & 0xFF) / 255, (hex & 0xFF)/ 255];
+}
+
+/**
+ * Provides bind in a cross browser way.
+ */
+if (typeof Function.prototype.bind != 'function') {
+  Function.prototype.bind = (function () {
+    var slice = Array.prototype.slice;
+    return function (thisArg) {
+      var target = this, boundArgs = slice.call(arguments, 1);
+ 
+      if (typeof target != 'function') throw new TypeError();
+ 
+      function bound() {
+	var args = boundArgs.concat(slice.call(arguments));
+	target.apply(this instanceof bound ? this : thisArg, args);
+      }
+ 
+      bound.prototype = (function F(proto) {
+          proto && (F.prototype = proto);
+          if (!(this instanceof F)) return new F;          
+	})(target.prototype);
+ 
+      return bound;
+    };
+  })();
+}
+
+var AjaxRequest = function()
+{
+	var activexmodes = ["Msxml2.XMLHTTP", "Microsoft.XMLHTTP"] //activeX versions to check for in IE
+	
+	if (window.ActiveXObject)
+	{ //Test for support for ActiveXObject in IE first (as XMLHttpRequest in IE7 is broken)
+		for (var i=0; i<activexmodes.length; i++)
+		{
+			try{
+				return new ActiveXObject(activexmodes[i])
+			}
+   			catch(e){
+    			//suppress error
+   			}
+		}
+	}
+	else if (window.XMLHttpRequest) // if Mozilla, Safari etc
+  	{
+  		return new XMLHttpRequest()
+ 	}
+ 	else
+ 	{
+		return false;
+ 	}
+}
+
+
+
+
+
+
+
+/**
+ * https://github.com/mrdoob/eventtarget.js/
+ * THankS mr DOob!
+ */
+
+PIXI.EventTarget = function () {
+
+	var listeners = {};
+	
+	this.addEventListener = this.on = function ( type, listener ) {
+		
+		
+		if ( listeners[ type ] === undefined ) {
+
+			listeners[ type ] = [];
+			
+		}
+
+		if ( listeners[ type ].indexOf( listener ) === - 1 ) {
+
+			listeners[ type ].push( listener );
+		}
+
+	};
+
+	this.dispatchEvent = this.emit = function ( event ) {
+		
+		for ( var listener in listeners[ event.type ] ) {
+
+			listeners[ event.type ][ listener ]( event );
+			
+		}
+
+	};
+
+	this.removeEventListener = this.off = function ( type, listener ) {
+
+		var index = listeners[ type ].indexOf( listener );
+
+		if ( index !== - 1 ) {
+
+			listeners[ type ].splice( index, 1 );
+
+		}
+
+	};
+
+};
+
+
+/*
+ * A lighter version of the rad gl-matrix created by Brandon Jones, Colin MacKenzie IV
+ * you both rock!
+ */
+
+function determineMatrixArrayType() {
+    PIXI.Matrix = (typeof Float32Array !== 'undefined') ? Float32Array : Array;
+    return PIXI.Matrix;
+}
+
+determineMatrixArrayType();
+
+PIXI.mat3 = {};
+
+PIXI.mat3.create = function()
+{
+	var matrix = new PIXI.Matrix(9);
+
+	matrix[0] = 1;
+	matrix[1] = 0;
+	matrix[2] = 0;
+	matrix[3] = 0;
+	matrix[4] = 1;
+	matrix[5] = 0;
+	matrix[6] = 0;
+	matrix[7] = 0;
+	matrix[8] = 1;
+	
+	return matrix;
+}
+
+PIXI.mat4 = {};
+
+PIXI.mat4.create = function()
+{
+	var matrix = new PIXI.Matrix(16);
+
+	matrix[0] = 1;
+	matrix[1] = 0;
+	matrix[2] = 0;
+	matrix[3] = 0;
+	matrix[4] = 0;
+	matrix[5] = 1;
+	matrix[6] = 0;
+	matrix[7] = 0;
+	matrix[8] = 0;
+	matrix[9] = 0;
+	matrix[10] = 1;
+	matrix[11] = 0;
+	matrix[12] = 0;
+	matrix[13] = 0;
+	matrix[14] = 0;
+	matrix[15] = 1;
+	
+	return matrix;
+}
+
+PIXI.mat3.multiply = function (mat, mat2, dest) 
+{
+	if (!dest) { dest = mat; }
+	
+	// Cache the matrix values (makes for huge speed increases!)
+	var a00 = mat[0], a01 = mat[1], a02 = mat[2],
+	    a10 = mat[3], a11 = mat[4], a12 = mat[5],
+	    a20 = mat[6], a21 = mat[7], a22 = mat[8],
+	
+	    b00 = mat2[0], b01 = mat2[1], b02 = mat2[2],
+	    b10 = mat2[3], b11 = mat2[4], b12 = mat2[5],
+	    b20 = mat2[6], b21 = mat2[7], b22 = mat2[8];
+	
+	dest[0] = b00 * a00 + b01 * a10 + b02 * a20;
+	dest[1] = b00 * a01 + b01 * a11 + b02 * a21;
+	dest[2] = b00 * a02 + b01 * a12 + b02 * a22;
+	
+	dest[3] = b10 * a00 + b11 * a10 + b12 * a20;
+	dest[4] = b10 * a01 + b11 * a11 + b12 * a21;
+	dest[5] = b10 * a02 + b11 * a12 + b12 * a22;
+	
+	dest[6] = b20 * a00 + b21 * a10 + b22 * a20;
+	dest[7] = b20 * a01 + b21 * a11 + b22 * a21;
+	dest[8] = b20 * a02 + b21 * a12 + b22 * a22;
+	
+	return dest;
+}
+
+
+PIXI.mat3.toMat4 = function (mat, dest) 
+{
+	if (!dest) { dest = PIXI.mat4.create(); }
+	
+	dest[15] = 1;
+	dest[14] = 0;
+	dest[13] = 0;
+	dest[12] = 0;
+	
+	dest[11] = 0;
+	dest[10] = mat[8];
+	dest[9] = mat[7];
+	dest[8] = mat[6];
+	
+	dest[7] = 0;
+	dest[6] = mat[5];
+	dest[5] = mat[4];
+	dest[4] = mat[3];
+	
+	dest[3] = 0;
+	dest[2] = mat[2];
+	dest[1] = mat[1];
+	dest[0] = mat[0];
+	
+	return dest;
+}
+
+
+/////
+
+
+PIXI.mat4.create = function()
+{
+	var matrix = new PIXI.Matrix(16);
+
+	matrix[0] = 1;
+	matrix[1] = 0;
+	matrix[2] = 0;
+	matrix[3] = 0;
+	matrix[4] = 0;
+	matrix[5] = 1;
+	matrix[6] = 0;
+	matrix[7] = 0;
+	matrix[8] = 0;
+	matrix[9] = 0;
+	matrix[10] = 1;
+	matrix[11] = 0;
+	matrix[12] = 0;
+	matrix[13] = 0;
+	matrix[14] = 0;
+	matrix[15] = 1;
+	
+	return matrix;
+}
+
+PIXI.mat4.transpose = function (mat, dest) 
+{
+	// If we are transposing ourselves we can skip a few steps but have to cache some values
+	if (!dest || mat === dest) 
+	{
+	    var a01 = mat[1], a02 = mat[2], a03 = mat[3],
+	        a12 = mat[6], a13 = mat[7],
+	        a23 = mat[11];
+	
+	    mat[1] = mat[4];
+	    mat[2] = mat[8];
+	    mat[3] = mat[12];
+	    mat[4] = a01;
+	    mat[6] = mat[9];
+	    mat[7] = mat[13];
+	    mat[8] = a02;
+	    mat[9] = a12;
+	    mat[11] = mat[14];
+	    mat[12] = a03;
+	    mat[13] = a13;
+	    mat[14] = a23;
+	    return mat;
+	}
+	
+	dest[0] = mat[0];
+	dest[1] = mat[4];
+	dest[2] = mat[8];
+	dest[3] = mat[12];
+	dest[4] = mat[1];
+	dest[5] = mat[5];
+	dest[6] = mat[9];
+	dest[7] = mat[13];
+	dest[8] = mat[2];
+	dest[9] = mat[6];
+	dest[10] = mat[10];
+	dest[11] = mat[14];
+	dest[12] = mat[3];
+	dest[13] = mat[7];
+	dest[14] = mat[11];
+	dest[15] = mat[15];
+	return dest;
+}
+
+PIXI.mat4.multiply = function (mat, mat2, dest) 
+{
+	if (!dest) { dest = mat; }
+	
+	// Cache the matrix values (makes for huge speed increases!)
+	var a00 = mat[ 0], a01 = mat[ 1], a02 = mat[ 2], a03 = mat[3];
+	var a10 = mat[ 4], a11 = mat[ 5], a12 = mat[ 6], a13 = mat[7];
+	var a20 = mat[ 8], a21 = mat[ 9], a22 = mat[10], a23 = mat[11];
+	var a30 = mat[12], a31 = mat[13], a32 = mat[14], a33 = mat[15];
+	
+	// Cache only the current line of the second matrix
+    var b0  = mat2[0], b1 = mat2[1], b2 = mat2[2], b3 = mat2[3];  
+    dest[0] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
+    dest[1] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
+    dest[2] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
+    dest[3] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
+
+    b0 = mat2[4];
+    b1 = mat2[5];
+    b2 = mat2[6];
+    b3 = mat2[7];
+    dest[4] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
+    dest[5] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
+    dest[6] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
+    dest[7] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
+
+    b0 = mat2[8];
+    b1 = mat2[9];
+    b2 = mat2[10];
+    b3 = mat2[11];
+    dest[8] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
+    dest[9] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
+    dest[10] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
+    dest[11] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
+
+    b0 = mat2[12];
+    b1 = mat2[13];
+    b2 = mat2[14];
+    b3 = mat2[15];
+    dest[12] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
+    dest[13] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
+    dest[14] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
+    dest[15] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
+
+    return dest;
+}
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+/**
+ * This helper function will automatically detect which renderer you should be using.
+ * WebGL is the preferred renderer as it is a lot fastest. If webGL is not supported by the browser then this function will return a canvas renderer
+ * @method autoDetectRenderer
+ * @static
+ * @param width {Number} the width of the renderers view
+ * @param height {Number} the height of the renderers view
+ * @param view {Canvas} the canvas to use as a view, optional
+ */
+PIXI.autoDetectRenderer = function(width, height, view)
+{
+	if(!width)width = 800;
+	if(!height)height = 600;
+
+	// BORROWED from Mr Doob (mrdoob.com)
+	var webgl = ( function () { try { return !! window.WebGLRenderingContext && !! document.createElement( 'canvas' ).getContext( 'experimental-webgl' ); } catch( e ) { return false; } } )();
+
+	//console.log(webgl);
+	if( webgl )
+	{
+		return new PIXI.WebGLRenderer(width, height, view);
+	}
+
+	return	new PIXI.CanvasRenderer(width, height, view);
+};
+
+
+
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+	
+PIXI.shaderFragmentSrc = [	"precision mediump float;",
+					  		"varying vec2 vTextureCoord;",
+					  		"varying float vColor;",
+					  		"uniform sampler2D uSampler;",
+					  		"void main(void) {",
+					  		"gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y));",
+					  		"gl_FragColor = gl_FragColor * vColor;",
+					  		"}"];
+
+PIXI.shaderVertexSrc = [	"attribute vec2 aVertexPosition;",
+	    					"attribute vec2 aTextureCoord;",
+	    					"attribute float aColor;",
+	  						"uniform mat4 uMVMatrix;",
+							"varying vec2 vTextureCoord;",
+							"varying float vColor;",
+							"void main(void) {",
+							"gl_Position = uMVMatrix * vec4(aVertexPosition, 1.0, 1.0);",
+							"vTextureCoord = aTextureCoord;",
+							"vColor = aColor;",
+	   					 	"}"]
+
+PIXI.CompileVertexShader = function(gl, shaderSrc)
+{
+	var src = "";
+	
+	for (var i=0; i < shaderSrc.length; i++) {
+	  src += shaderSrc[i];
+	};
+	
+	var shader;
+    shader = gl.createShader(gl.VERTEX_SHADER);
+       
+    gl.shaderSource(shader, src);
+    gl.compileShader(shader);
+
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        alert(gl.getShaderInfoLog(shader));
+        return null;
+    }
+    
+    return shader;
+}
+
+PIXI.CompileFragmentShader = function(gl, shaderSrc)
+{
+	var src = "";
+	
+	for (var i=0; i < shaderSrc.length; i++) {
+	  src += shaderSrc[i];
+	};
+	
+	var shader;
+    shader = gl.createShader(gl.FRAGMENT_SHADER);
+        
+    gl.shaderSource(shader, src);
+    gl.compileShader(shader);
+	
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        alert(gl.getShaderInfoLog(shader));
+        return null;
+    }
+    
+    return shader;
+}/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+PIXI._defaultFrame = new PIXI.Rectangle(0,0,1,1);
+
+/**
+ * the WebGLRenderer is draws the stage and all its content onto a webGL enabled canvas. This renderer should be used for browsers support webGL. This Render works by automatically managing webGLBatchs. So no need for Sprite Batch's or Sprite Cloud's
+ * Dont forget to add the view to your DOM or you will not see anything :)
+ * @class WebGLRenderer
+ * @constructor
+ * @param width {Number} the width of the canvas view
+ * @default 0
+ * @param height {Number} the height of the canvas view
+ * @default 0
+ * @param view {Canvas} the canvas to use as a view, optional
+ */
+PIXI.WebGLRenderer = function(width, height, view)
+{
+	this.width = width || 800;
+	this.height = height || 600;
+	
+	this.view = view || document.createElement( 'canvas' ); 
+    this.view.width = this.width;
+	this.view.height = this.height;  
+	this.view.background = "#FF0000";
+	
+	// deal with losing context..	
+    var scope = this;
+	this.view.addEventListener('webglcontextlost', function(event) { scope.handleContextLost(event); }, false)
+	this.view.addEventListener('webglcontextrestored', function(event) { scope.handleContextRestored(event); }, false)
+
+	this.batchs = [];
+	
+	try 
+ 	{
+        this.gl = this.view.getContext("experimental-webgl",  {  	
+    		 alpha: false
+        });
+    } 
+    catch (e) 
+    {
+    	throw new Error(" This browser does not support webGL. Try using the canvas renderer" + this);
+    }
+    
+    this.initShaders();
+    
+    
+    var gl = this.gl;
+    
+    this.batch = new PIXI.WebGLBatch(gl);
+   	gl.disable(gl.DEPTH_TEST);
+    gl.enable(gl.BLEND);
+    gl.colorMask(true, true, true, false); 
+    
+    this.projectionMatrix =  PIXI.mat4.create();
+    this.resize(this.width, this.height)
+    this.contextLost = false;
+}
+
+// constructor
+PIXI.WebGLRenderer.constructor = PIXI.WebGLRenderer;
+
+/**
+ * @private
+ */
+PIXI.WebGLRenderer.prototype.initShaders = function() 
+{
+	var gl = this.gl;
+	var fragmentShader = PIXI.CompileFragmentShader(gl, PIXI.shaderFragmentSrc);
+	var vertexShader = PIXI.CompileVertexShader(gl, PIXI.shaderVertexSrc);
+	
+	this.shaderProgram = gl.createProgram();
+	
+	var shaderProgram = this.shaderProgram;
+	
+    gl.attachShader(shaderProgram, vertexShader);
+    gl.attachShader(shaderProgram, fragmentShader);
+    gl.linkProgram(shaderProgram);
+
+    if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+        alert("Could not initialise shaders");
+    }
+
+    gl.useProgram(shaderProgram);
+
+    shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+    gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+
+    shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, "aTextureCoord");
+    gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
+	
+	shaderProgram.colorAttribute = gl.getAttribLocation(shaderProgram, "aColor");
+    gl.enableVertexAttribArray(shaderProgram.colorAttribute);
+
+
+    shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+    shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "uSampler");
+	
+	PIXI.shaderProgram = this.shaderProgram;
+}
+
+/**
+ * @private
+ */
+PIXI.WebGLRenderer.prototype.checkVisibility = function(displayObject, globalVisible)
+{
+	var children = displayObject.children;
+	
+	
+	for (var i=0; i < children.length; i++) 
+	{
+		var child = children[i];
+		
+		// TODO optimize... shouldt need to loop through everything all the time
+		var actualVisibility = child.visible && globalVisible;
+		
+		// everything should have a batch!
+		// time to see whats new!
+		if(child.textureChange)
+		{
+			child.textureChange = false;
+			if(actualVisibility)
+			{
+				this.removeDisplayObject(child)
+				this.addDisplayObject(child)
+			}
+			// update texture!!
+		}
+		
+		if(child.cacheVisible != actualVisibility)
+		{
+			child.cacheVisible = actualVisibility;
+			
+			if(child.cacheVisible)
+			{
+				this.addDisplayObject(child);
+			}
+			else
+			{
+				this.removeDisplayObject(child);
+			}
+		}
+		
+		if(child.children.length > 0)
+		{
+			this.checkVisibility(child, actualVisibility);
+		}
+	};
+}
+
+
+/**
+ * Renders the stage to its webGL view
+ * @method render
+ * @param stage {Stage} the PIXI.Stage element to be rendered
+ */
+PIXI.WebGLRenderer.prototype.render = function(stage)
+{
+	if(this.contextLost)return;
+	
+	// update children if need be
+	// best to remove first!
+	for (var i=0; i < stage.__childrenRemoved.length; i++)
+	{
+		this.removeDisplayObject(stage.__childrenRemoved[i]);
+	}
+
+
+	// update any textures	
+	for (var i=0; i < PIXI.texturesToUpdate.length; i++) this.updateTexture(PIXI.texturesToUpdate[i]);
+	
+	// empty out the arrays
+	stage.__childrenRemoved = [];
+	stage.__childrenAdded = [];
+	PIXI.texturesToUpdate = [];
+	
+	// recursivly loop through all items!
+	this.checkVisibility(stage, true);
+	
+	// update the scene graph	
+	stage.updateTransform();
+	
+	var gl = this.gl;
+	
+	gl.clear(gl.COLOR_BUFFER_BIT)
+
+	gl.clearColor(stage.backgroundColorSplit[0], stage.backgroundColorSplit[1], stage.backgroundColorSplit[2], 1.0);     
+	
+	// set the correct blend mode!
+ 	gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.projectionMatrix);
+   
+	// render all the batchs!	
+	
+	
+	var renderable;
+	for (var i=0; i < this.batchs.length; i++) 
+	{
+		renderable = this.batchs[i];
+		if(renderable instanceof PIXI.WebGLBatch)
+		{
+			this.batchs[i].render();
+		}
+		else if(renderable instanceof PIXI.Strip)
+		{
+			if(renderable.visible)this.renderStrip(renderable);
+		}
+	}
+	
+	// interaction
+	// run interaction!
+	if(stage.interactive)
+	{
+		//need to add some events!
+		if(!stage._interactiveEventsAdded)
+		{
+			stage._interactiveEventsAdded = true;
+			stage.interactionManager.setTarget(this);
+		}
+	}
+}
+
+/**
+ * @private
+ */
+PIXI.WebGLRenderer.prototype.updateTexture = function(texture)
+{
+	var gl = this.gl;
+	
+	if(!texture._glTexture)
+	{
+		texture._glTexture = gl.createTexture();
+	}
+	
+	if(texture.hasLoaded)
+	{
+		gl.bindTexture(gl.TEXTURE_2D, texture._glTexture);
+	 	gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.source);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+	//	gl.generateMipmap(gl.TEXTURE_2D);
+		gl.bindTexture(gl.TEXTURE_2D, null);
+	}
+	
+	this.refreshBatchs = true;
+}
+
+/**
+ * @private
+ */
+PIXI.WebGLRenderer.prototype.addDisplayObject = function(displayObject)
+{
+	
+	if(!displayObject.stage)return; // means it was removed 
+	if(displayObject.__inWebGL)return; //means it is already in webgL
+	
+	//displayObject.cacheVisible = displayObject.visible;
+	
+	// TODO if objects parent is not visible then dont add to stage!!!!
+	//if(!displayObject.visible)return;
+
+	
+	displayObject.batch = null;
+	
+	//displayObject.cacheVisible = true;
+	if(!displayObject.renderable)return;
+
+	// while looping below THE OBJECT MAY NOT HAVE BEEN ADDED
+	displayObject.__inWebGL = true;
+
+	/*
+	 *  LOOK FOR THE PREVIOUS SPRITE
+	 *  This part looks for the closest previous sprite that can go into a batch
+	 *  It keeps going back until it finds a sprite or the stage
+	 */
+	var previousSprite = displayObject;
+	do
+	{
+		if(previousSprite.childIndex == 0)
+		{
+			previousSprite = previousSprite.parent;
+			
+		}
+		else
+		{
+			previousSprite = previousSprite.parent.children[previousSprite.childIndex-1];
+			// what if the bloop has children???
+			while(previousSprite.children.length != 0)
+			{
+				// keep diggin till we get to the last child
+				previousSprite = previousSprite.children[previousSprite.children.length-1];
+			}
+		}
+		
+		if(previousSprite == displayObject.stage)break;
+	}
+	while(!previousSprite.renderable || !previousSprite.__inWebGL)
+	//while(!(previousSprite instanceof PIXI.Sprite))
+
+	/*
+	 *  LOOK FOR THE NEXT SPRITE
+	 *  This part looks for the closest next sprite that can go into a batch
+	 *  it keeps looking until it finds a sprite or gets to the end of the display
+	 *  scene graph
+	 * 
+	 *  These look a lot scarier than the actually are...
+	 */
+	var nextSprite = displayObject;
+	do
+	{
+		// moving forward!
+		// if it has no children.. 
+		if(nextSprite.children.length == 0)
+		{
+			// go along to the parent..
+			while(nextSprite.childIndex == nextSprite.parent.children.length-1)
+			{
+				nextSprite = nextSprite.parent;
+				if(nextSprite == displayObject.stage)
+				{
+					nextSprite = null
+					break;
+				}
+			}
+			
+			if(nextSprite)nextSprite = nextSprite.parent.children[nextSprite.childIndex+1];
+			
+		}
+		else
+		{
+			nextSprite = nextSprite.children[0];
+		}
+
+		if(!nextSprite)break;
+	}
+	while(!nextSprite.renderable || !nextSprite.__inWebGL)
+	
+	/*
+	 * so now we have the next renderable and the previous renderable
+	 * 
+	 */
+	
+	if(displayObject instanceof PIXI.Sprite)
+	{
+		var previousBatch
+		var nextBatch
+		
+		if(previousSprite instanceof PIXI.Sprite)
+		{
+			previousBatch = previousSprite.batch;
+			
+			if(previousBatch)
+			{
+				if(previousBatch.texture == displayObject.texture.baseTexture && previousBatch.blendMode == displayObject.blendMode)
+				{
+					previousBatch.insertAfter(displayObject, previousSprite);
+					return;
+				}
+			}
+		}
+		else
+		{
+			// TODO reword!
+			previousBatch = previousSprite;
+		}
+	
+		if(nextSprite)
+		{
+			if(nextSprite instanceof PIXI.Sprite)
+			{
+				nextBatch = nextSprite.batch;
+			
+				//batch may not exist if item was added to the display list but not to the webGL
+				if(nextBatch)
+				{
+					if(nextBatch.texture == displayObject.texture.baseTexture && nextBatch.blendMode == displayObject.blendMode)
+					{
+						nextBatch.insertBefore(displayObject, nextSprite);
+						return;
+					}
+					else
+					{
+						if(nextBatch == previousBatch)
+						{
+							// THERE IS A SPLIT IN THIS BATCH! //
+							var splitBatch = previousBatch.split(nextSprite);
+							// COOL!
+							// add it back into the array	
+							/*
+							 * OOPS!
+							 * seems the new sprite is in the middle of a batch
+							 * lets split it.. 
+							 */
+							var batch = PIXI._getBatch(this.gl);
+
+							var index = this.batchs.indexOf( previousBatch );
+							batch.init(displayObject);
+							this.batchs.splice(index+1, 0, batch, splitBatch);
+							
+							return;
+						}
+					}
+				}
+			}
+			else
+			{
+				// TODO re-word!
+				nextBatch = nextSprite;
+			}
+		}
+		
+		/*
+		 * looks like it does not belong to any batch!
+		 * but is also not intersecting one..
+		 * time to create anew one!
+		 */
+		
+		var batch = PIXI._getBatch(this.gl);
+		batch.init(displayObject);
+
+		if(previousBatch) // if this is invalid it means 
+		{
+			var index = this.batchs.indexOf( previousBatch );
+			this.batchs.splice(index+1, 0, batch);
+		}
+		else
+		{
+			this.batchs.push(batch);
+		}
+	
+	}
+	else if(displayObject instanceof PIXI.Strip)
+	{
+		// add to a batch!!
+		this.initStrip(displayObject);
+		this.batchs.push(displayObject);
+		
+	}
+
+	// if its somthing else... then custom codes!
+	this.batchUpdate = true;
+}
+
+/**
+ * @private
+ */
+PIXI.WebGLRenderer.prototype.removeDisplayObject = function(displayObject)
+{
+	//if(displayObject.stage)return;
+	displayObject.cacheVisible = false;//displayObject.visible;
+	
+	if(!displayObject.renderable)return;
+	
+	displayObject.__inWebGL = false;
+		
+	/*
+	 * removing is a lot quicker..
+	 * 
+	 */
+	var batchToRemove;
+	
+	if(displayObject instanceof PIXI.Sprite)
+	{
+		// should always have a batch!
+		var batch = displayObject.batch;
+		if(!batch)return; // this means the display list has been altered befre rendering
+		
+		batch.remove(displayObject);
+		
+		
+		if(batch.size==0)
+		{
+			batchToRemove = batch
+		}
+	}
+	else
+	{
+		batchToRemove = displayObject;
+	}
+	
+	/*
+	 * Looks like there is somthing that needs removing!
+	 */
+	if(batchToRemove)	
+	{
+		var index = this.batchs.indexOf( batchToRemove );
+		if(index == -1)return;// this means it was added then removed before rendered
+		
+		// ok so.. check to see if you adjacent batchs should be joined.
+		// TODO may optimise?
+		if(index == 0 || index == this.batchs.length-1)
+		{
+			// wha - eva! just get of the empty batch!
+			this.batchs.splice(index, 1);
+			if(batchToRemove instanceof PIXI.WebGLBatch)PIXI._returnBatch(batchToRemove);
+		
+			return;
+		}
+		
+		if(this.batchs[index-1] instanceof PIXI.WebGLBatch && this.batchs[index+1] instanceof PIXI.WebGLBatch)
+		{
+			if(this.batchs[index-1].texture == this.batchs[index+1].texture && this.batchs[index-1].blendMode == this.batchs[index+1].blendMode)
+			{
+				//console.log("MERGE")
+				this.batchs[index-1].merge(this.batchs[index+1]);
+				
+				if(batchToRemove instanceof PIXI.WebGLBatch)PIXI._returnBatch(batchToRemove);
+				PIXI._returnBatch(this.batchs[index+1]);
+				this.batchs.splice(index, 2);
+				return;
+			}
+		}
+		
+		
+		this.batchs.splice(index, 1);
+		if(batchToRemove instanceof PIXI.WebGLBatch)PIXI._returnBatch(batchToRemove);
+	}
+	
+	
+}
+
+/**
+ * resizes the webGL view to the specified width and height
+ * @method resize
+ * @param width {Number} the new width of the webGL view
+ * @param height {Number} the new height of the webGL view
+ */
+PIXI.WebGLRenderer.prototype.resize = function(width, height)
+{
+	this.width = width;
+	this.height = height;
+	
+	this.view.width = width;
+	this.view.height = height;
+	
+	this.gl.viewport(0, 0, this.width, this.height);	
+	
+	var projectionMatrix = this.projectionMatrix;
+	
+	projectionMatrix[0] = 2/this.width;
+	projectionMatrix[5] = -2/this.height;
+	projectionMatrix[12] = -1;
+	projectionMatrix[13] = 1;
+}
+
+/**
+ * @private
+ */
+PIXI.WebGLRenderer.prototype.initStrip = function(strip)
+{
+	// build the strip!
+	var gl = this.gl;
+	var shaderProgram = this.shaderProgram;
+	
+	strip._vertexBuffer = gl.createBuffer();
+	strip._indexBuffer = gl.createBuffer();
+	strip._uvBuffer = gl.createBuffer();
+	strip._colorBuffer = gl.createBuffer();
+	
+	gl.bindBuffer(gl.ARRAY_BUFFER, strip._vertexBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, strip.verticies, gl.DYNAMIC_DRAW);
+
+	gl.bindBuffer(gl.ARRAY_BUFFER, strip._uvBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER,  strip.uvs, gl.STATIC_DRAW);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, strip._colorBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, strip.colors, gl.STATIC_DRAW);
+
+	
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, strip._indexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, strip.indices, gl.STATIC_DRAW);
+}
+
+/**
+ * @private
+ */
+PIXI.WebGLRenderer.prototype.renderStrip = function(strip)
+{
+	var gl = this.gl;
+	var shaderProgram = this.shaderProgram;
+//	mat
+	var mat4Real = PIXI.mat3.toMat4(strip.worldTransform);
+	PIXI.mat4.transpose(mat4Real);
+	PIXI.mat4.multiply(this.projectionMatrix, mat4Real, mat4Real )
+
+	gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, mat4Real);
+  
+	if(strip.blendMode == PIXI.blendModes.NORMAL)
+	{
+		gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+	}
+	else
+	{
+		gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_COLOR);
+	}
+	
+	if(!strip.dirty)
+	{
+		
+		gl.bindBuffer(gl.ARRAY_BUFFER, strip._vertexBuffer);
+		gl.bufferSubData(gl.ARRAY_BUFFER, 0, strip.verticies)
+	    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 2, gl.FLOAT, false, 0, 0);
+		
+		// update the uvs
+	   	gl.bindBuffer(gl.ARRAY_BUFFER, strip._uvBuffer);
+	    gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, 2, gl.FLOAT, false, 0, 0);
+			
+	    gl.activeTexture(gl.TEXTURE0);
+	    gl.bindTexture(gl.TEXTURE_2D, strip.texture.baseTexture._glTexture);
+		
+		gl.bindBuffer(gl.ARRAY_BUFFER, strip._colorBuffer);
+	    gl.vertexAttribPointer(shaderProgram.colorAttribute, 1, gl.FLOAT, false, 0, 0);
+		
+		// dont need to upload!
+	    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, strip._indexBuffer);
+    
+	
+	}
+	else
+	{
+		strip.dirty = false;
+		gl.bindBuffer(gl.ARRAY_BUFFER, strip._vertexBuffer);
+		gl.bufferData(gl.ARRAY_BUFFER, strip.verticies, gl.STATIC_DRAW)
+	    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 2, gl.FLOAT, false, 0, 0);
+		
+		// update the uvs
+	   	gl.bindBuffer(gl.ARRAY_BUFFER, strip._uvBuffer);
+	   	gl.bufferData(gl.ARRAY_BUFFER, strip.uvs, gl.STATIC_DRAW)
+	    gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, 2, gl.FLOAT, false, 0, 0);
+			
+	    gl.activeTexture(gl.TEXTURE0);
+	    gl.bindTexture(gl.TEXTURE_2D, strip.texture.baseTexture._glTexture);
+		
+		gl.bindBuffer(gl.ARRAY_BUFFER, strip._colorBuffer);
+		gl.bufferData(gl.ARRAY_BUFFER, strip.colors, gl.STATIC_DRAW)
+	    gl.vertexAttribPointer(shaderProgram.colorAttribute, 1, gl.FLOAT, false, 0, 0);
+		
+		// dont need to upload!
+	    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, strip._indexBuffer);
+	    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, strip.indices, gl.STATIC_DRAW);
+	    
+	}
+	
+	gl.drawElements(gl.TRIANGLE_STRIP, strip.indices.length, gl.UNSIGNED_SHORT, 0);
+    
+    gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.projectionMatrix);
+  
+  //  console.log("!!!")
+}
+
+/**
+ * @private
+ */
+PIXI.WebGLRenderer.prototype.handleContextLost = function(event)
+{
+	event.preventDefault();
+	this.contextLost = true;
+}
+
+/**
+ * @private
+ */
+PIXI.WebGLRenderer.prototype.handleContextRestored = function(event)
+{
+	this.gl = this.view.getContext("experimental-webgl",  {  	
+		alpha: true
+    });
+        
+	this.initShaders();	
+	
+	for (var i=0; i < PIXI.TextureCache.length; i++) 
+	{
+		this.updateTexture(PIXI.TextureCache[i]);
+	};
+	
+	for (var i=0; i <  this.batchs.length; i++) 
+	{
+		this.batchs[i].restoreLostContext(this.gl)//
+		this.batchs[i].dirty = true;
+	};
+	
+	PIXI._restoreBatchs(this.gl);
+	
+	this.contextLost = false;
+}
+
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+PIXI._batchs = [];
+
+/**
+ * @private
+ */
+PIXI._getBatch = function(gl)
+{
+	if(PIXI._batchs.length == 0)
+	{
+		return new PIXI.WebGLBatch(gl);
+	}
+	else
+	{
+		return PIXI._batchs.pop();
+	}
+}
+
+/**
+ * @private
+ */
+PIXI._returnBatch = function(batch)
+{
+	batch.clean();	
+	PIXI._batchs.push(batch);
+}
+
+/**
+ * @private
+ */
+PIXI._restoreBatchs = function(gl)
+{
+	for (var i=0; i < PIXI._batchs.length; i++) 
+	{
+	  PIXI._batchs[i].restoreLostContext(gl);
+	};
+}
+
+/**
+ * A WebGLBatch Enables a group of sprites to be drawn using the same settings.
+ * if a group of sprites all have the same baseTexture and blendMode then they can be grouped into a batch. All the sprites in a batch can then be drawn in one go by the GPU which is hugely efficient. ALL sprites in the webGL renderer are added to a batch even if the batch only contains one sprite. Batching is handled automatically by the webGL renderer. A good tip is: the smaller the number of batchs there are, the faster the webGL renderer will run. 
+ * @class WebGLBatch
+ * @param an instance of the webGL context
+ * @return {PIXI.renderers.WebGLBatch} WebGLBatch {@link PIXI.renderers.WebGLBatch}
+ */
+PIXI.WebGLBatch = function(gl)
+{
+	this.gl = gl;
+	
+	this.size = 0;
+
+	this.vertexBuffer =  gl.createBuffer();
+	this.indexBuffer =  gl.createBuffer();
+	this.uvBuffer =  gl.createBuffer();
+	this.colorBuffer =  gl.createBuffer();
+	this.blendMode = PIXI.blendModes.NORMAL;
+	this.dynamicSize = 1;
+}
+
+
+// constructor
+PIXI.WebGLBatch.constructor = PIXI.WebGLBatch;
+
+/**
+ * Cleans the batch so that is can be returned to an object pool and reused
+ */
+PIXI.WebGLBatch.prototype.clean = function()
+{
+	this.verticies = [];
+	this.uvs = [];
+	this.indices = [];
+	this.colors = [];
+	//this.sprites = [];
+	this.dynamicSize = 1;
+	this.texture = null;
+	this.last = null;
+	this.size = 0;
+	
+	this.head;
+	this.tail;
+}
+
+/*
+ * recreates the buffers in the event of a context loss
+ */
+PIXI.WebGLBatch.prototype.restoreLostContext = function(gl)
+{
+	this.gl = gl;
+	this.vertexBuffer =  gl.createBuffer();
+	this.indexBuffer =  gl.createBuffer();
+	this.uvBuffer =  gl.createBuffer();
+	this.colorBuffer =  gl.createBuffer();
+}
+
+/**
+ * inits the batch's texture and blend mode based if the supplied sprite
+ * @method init
+ * @param sprite {Sprite} the first sprite to be added to the batch. Only sprites with the same base texture and blend mode will be allowed to be added to this batch
+ */	
+PIXI.WebGLBatch.prototype.init = function(sprite)
+{
+	sprite.batch = this;
+	this.dirty = true;
+	this.blendMode = sprite.blendMode;
+	this.texture = sprite.texture.baseTexture;
+//	this.sprites.push(sprite);
+	this.head = sprite;
+	this.tail = sprite;
+	this.size = 1;
+	
+	this.growBatch();
+}
+
+/**
+ * inserts a sprite before the specified sprite
+ * @method insertBefore
+ * @param sprite {Sprite} the sprite to be added
+ * @param nextSprite {nextSprite} the first sprite will be inserted before this sprite
+ */	
+PIXI.WebGLBatch.prototype.insertBefore = function(sprite, nextSprite)
+{
+	this.size++;
+	
+	sprite.batch = this;
+	this.dirty = true;
+	var tempPrev = nextSprite.__prev;
+	nextSprite.__prev = sprite;
+	sprite.__next = nextSprite;
+	
+	if(tempPrev)
+	{
+		sprite.__prev = tempPrev;
+		tempPrev.__next = sprite;
+	}
+	else
+	{
+		this.head = sprite;
+		//this.head.__prev = null
+	}
+}
+
+/**
+ * inserts a sprite after the specified sprite
+ * @method insertAfter
+ * @param sprite {Sprite} the sprite to be added
+ * @param  previousSprite {Sprite} the first sprite will be inserted after this sprite
+ */	
+PIXI.WebGLBatch.prototype.insertAfter = function(sprite, previousSprite)
+{
+	this.size++;
+	
+	
+	sprite.batch = this;
+	this.dirty = true;
+	
+	var tempNext = previousSprite.__next;
+	previousSprite.__next = sprite;
+	sprite.__prev = previousSprite;
+	
+	if(tempNext)
+	{
+		sprite.__next = tempNext;
+		tempNext.__prev = sprite;
+	}
+	else
+	{
+		this.tail = sprite
+	}
+	
+}
+
+/**
+ * removes a sprite from the batch
+ * @method remove
+ * @param sprite {Sprite} the sprite to be removed
+ */	
+PIXI.WebGLBatch.prototype.remove = function(sprite)
+{
+	this.size--;
+	
+	if(this.size == 0)
+	{
+		sprite.batch = null;
+		sprite.__prev = null;
+		sprite.__next = null;
+		return;
+	}
+	
+	if(sprite.__prev)
+	{
+		sprite.__prev.__next = sprite.__next;
+	}
+	else
+	{
+		this.head = sprite.__next;
+		this.head.__prev = null;
+	}
+	
+	if(sprite.__next)
+	{
+		sprite.__next.__prev = sprite.__prev;
+	}
+	else
+	{
+		this.tail = sprite.__prev;
+		this.tail.__next = null
+	}
+	
+	sprite.batch = null;
+	sprite.__next = null;
+	sprite.__prev = null;
+	this.dirty = true;
+}
+
+/**
+ * Splits the batch into two with the specified sprite being the start of the new batch.
+ * @method split
+ * @param sprite {Sprite} the sprite that indicates where the batch should be split
+ * @return {WebGLBatch} the new batch
+ */
+PIXI.WebGLBatch.prototype.split = function(sprite)
+{
+	
+	//console.log("Splitting batch :" + this.size)
+//	console.log(sprite)
+//	console.log("-------")
+	this.dirty = true;
+	
+	//var val = (this.tail == this.head)
+	//console.log(val + " SAME?");
+	var batch = new PIXI.WebGLBatch(this.gl)//PIXI._getBatch(this.gl);
+	batch.init(sprite);
+	batch.tail = this.tail;
+	//console.log("id is " +batcheee.id)
+	
+	this.tail = sprite.__prev;
+	this.tail.__next = null;
+	
+	sprite.__prev = null;
+	// return a splite batch!
+	//sprite.__prev.__next = null;
+	//sprite.__prev = null;
+	
+	
+	// TODO this size is wrong!
+	// need to recalculate :/ problem with a linked list!
+	// unless it gets calculated in the "clean"?
+	
+	// need to loop through items as there is no way to know the length on a linked list :/
+	var tempSize = 0;
+	while(sprite)
+	{
+		tempSize++;
+		sprite.batch = batch;
+		sprite = sprite.__next;
+	}
+	
+	batch.size = tempSize;
+	this.size -= tempSize;
+	
+	return batch;
+}
+
+/**
+ * Merges two batchs together
+ * @method merge
+ * @param batch {WebGLBatch} the batch that will be merged 
+ */
+PIXI.WebGLBatch.prototype.merge = function(batch)
+{
+	this.dirty = true;
+	
+	this.tail.__next = batch.head;
+	batch.head.__prev = this.tail;
+	
+	this.size += batch.size;
+			
+	this.tail = batch.tail;
+	
+	var sprite = batch.head;
+	while(sprite)
+	{
+		sprite.batch = this;
+		sprite = sprite.__next;
+	}
+	
+}
+
+/**
+ * Grows the size of the batch. As the elements in the batch cannot have a dynamic size this function is used to increase the size of the batch. It also creates a little extra room so that the batch does not need to be resized every time a sprite is added
+ * @methos growBatch
+ */
+PIXI.WebGLBatch.prototype.growBatch = function()
+{
+	var gl = this.gl;
+	if( this.size == 1)
+	{
+		this.dynamicSize = 1;
+	}
+	else
+	{
+		this.dynamicSize = this.size * 1.5
+	}
+	// grow verts
+	this.verticies = new Float32Array(this.dynamicSize * 8);
+	
+	gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER,this.verticies , gl.DYNAMIC_DRAW);
+	
+	this.uvs  = new Float32Array( this.dynamicSize * 8 )  
+	gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, this.uvs , gl.DYNAMIC_DRAW);
+	
+	this.dirtyUVS = true;
+	
+	this.colors  = new Float32Array( this.dynamicSize * 4 )  
+	gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, this.colors , gl.DYNAMIC_DRAW);
+	
+	this.dirtyColors = true;
+	
+	this.indices = new Uint16Array(this.dynamicSize * 6); 
+	var length = this.indices.length/6;
+	
+	for (var i=0; i < length; i++) 
+	{
+	    var index2 = i * 6;
+	    var index3 = i * 4;
+		this.indices[index2 + 0] = index3 + 0;
+		this.indices[index2 + 1] = index3 + 1;
+		this.indices[index2 + 2] = index3 + 2;
+		this.indices[index2 + 3] = index3 + 0;
+		this.indices[index2 + 4] = index3 + 2;
+		this.indices[index2 + 5] = index3 + 3;
+	};
+	
+	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW);
+	
+}
+
+/**
+ * Refresh's all the data in the batch and sync's it with the webGL buffers
+ * @method refresh
+ */
+PIXI.WebGLBatch.prototype.refresh = function()
+{
+	var gl = this.gl;
+	
+	if (this.dynamicSize < this.size)
+	{
+		this.growBatch();
+	}
+
+	var indexRun = 0;
+	var worldTransform, width, height, aX, aY, w0, w1, h0, h1, index
+	var a, b, c, d, tx, ty
+	
+	var displayObject = this.head
+
+	while(displayObject)
+	{
+		index = indexRun * 8;
+		
+		var texture = displayObject.texture;
+			
+		var frame = texture.frame;
+		var tw = texture.baseTexture.width;
+		var th = texture.baseTexture.height;
+		
+		this.uvs[index + 0] = frame.x / tw;
+		this.uvs[index +1] = frame.y / th;
+		
+		this.uvs[index +2] = (frame.x + frame.width) / tw;
+		this.uvs[index +3] = frame.y / th;
+		
+		this.uvs[index +4] = (frame.x + frame.width) / tw;
+		this.uvs[index +5] = (frame.y + frame.height) / th; 
+		
+		this.uvs[index +6] = frame.x / tw;
+		this.uvs[index +7] = (frame.y + frame.height) / th;
+		
+		displayObject.updateFrame = false;
+		
+		colorIndex = indexRun * 4;
+		this.colors[colorIndex] = this.colors[colorIndex + 1] = this.colors[colorIndex + 2] = this.colors[colorIndex + 3] = displayObject.worldAlpha;
+		
+		displayObject = displayObject.__next;
+		
+		indexRun ++;
+	}
+	
+	this.dirtyUVS = true;
+	this.dirtyColors = true;
+}
+
+/**
+ * Updates all the relevant geometry and uploads the data to the GPU
+ * @method update
+ */
+PIXI.WebGLBatch.prototype.update = function()
+{
+	var gl = this.gl;
+	var worldTransform, width, height, aX, aY, w0, w1, h0, h1, index, index2, index3
+	
+	var a, b, c, d, tx, ty;
+	
+	var indexRun = 0;
+	
+	var displayObject = this.head;
+	
+	while(displayObject)
+	{
+		width = displayObject.width;
+		height = displayObject.height;
+		
+		aX = displayObject.anchor.x - displayObject.texture.trim.x
+		aY = displayObject.anchor.y - displayObject.texture.trim.y
+		w0 = width * (1-aX);
+		w1 = width * -aX;
+		 
+		h0 = height * (1-aY);
+		h1 = height * -aY;
+		 
+		index = indexRun * 8;
+
+		worldTransform = displayObject.worldTransform;
+	
+		a = worldTransform[0];
+		b = worldTransform[3];
+		c = worldTransform[1];
+		d = worldTransform[4];
+		tx = worldTransform[2];
+		ty = worldTransform[5];
+		
+		this.verticies[index + 0 ] = a * w1 + c * h1 + tx; 
+		this.verticies[index + 1 ] = d * h1 + b * w1 + ty;
+		 
+		this.verticies[index + 2 ] = a * w0 + c * h1 + tx; 
+		this.verticies[index + 3 ] = d * h1 + b * w0 + ty; 
+		
+		this.verticies[index + 4 ] = a * w0 + c * h0 + tx; 
+		this.verticies[index + 5 ] = d * h0 + b * w0 + ty; 
+		
+		this.verticies[index + 6] =  a * w1 + c * h0 + tx; 
+		this.verticies[index + 7] =  d * h0 + b * w1 + ty; 
+		
+		if(displayObject.updateFrame)
+		{
+			this.dirtyUVS = true;
+			
+			var texture = displayObject.texture;
+			
+			var frame = texture.frame;
+			var tw = texture.baseTexture.width;
+			var th = texture.baseTexture.height;
+			
+			this.uvs[index + 0] = frame.x / tw;
+			this.uvs[index +1] = frame.y / th;
+			
+			this.uvs[index +2] = (frame.x + frame.width) / tw;
+			this.uvs[index +3] = frame.y / th;
+			
+			this.uvs[index +4] = (frame.x + frame.width) / tw;
+			this.uvs[index +5] = (frame.y + frame.height) / th; 
+			
+			this.uvs[index +6] = frame.x / tw;
+			this.uvs[index +7] = (frame.y + frame.height) / th;
+			
+			displayObject.updateFrame = false;
+		}
+		
+		// TODO this probably could do with some optimisation....
+		if(displayObject.cacheAlpha != displayObject.worldAlpha)
+		{
+			displayObject.cacheAlpha = displayObject.worldAlpha;
+			
+			var colorIndex = indexRun * 4;
+			this.colors[colorIndex] = this.colors[colorIndex + 1] = this.colors[colorIndex + 2] = this.colors[colorIndex + 3] = displayObject.worldAlpha;
+			this.dirtyColors = true;
+		}
+		
+		indexRun++;
+		displayObject = displayObject.__next;
+   }
+}
+
+/**
+ * Draws the batch to the frame buffer
+ * @method render
+ */
+PIXI.WebGLBatch.prototype.render = function()
+{
+	if(this.dirty)
+	{
+		this.refresh();
+		this.dirty = false;
+	}
+	
+	if (this.size == 0)return;
+	
+	this.update();
+	var gl = this.gl;
+	
+	//TODO optimize this!
+	if(this.blendMode == PIXI.blendModes.NORMAL)
+	{
+		gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+	}
+	else
+	{
+		gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_COLOR);
+	}
+	
+	var shaderProgram = PIXI.shaderProgram;
+	
+	// update the verts..
+	gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+	// ok..
+	gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.verticies)
+    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 2, gl.FLOAT, false, 0, 0);
+	
+	// update the uvs
+   	gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer);
+
+    if(this.dirtyUVS)
+    {
+    	this.dirtyUVS = false;
+    	gl.bufferSubData(gl.ARRAY_BUFFER,  0, this.uvs);
+    }
+    
+    gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, 2, gl.FLOAT, false, 0, 0);
+	
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, this.texture._glTexture);
+	
+	// update color!
+	gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
+
+	if(this.dirtyColors)
+    {
+    	this.dirtyColors = false;
+    	gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.colors);
+	}
+	
+    gl.vertexAttribPointer(shaderProgram.colorAttribute, 1, gl.FLOAT, false, 0, 0);
+	
+	// dont need to upload!
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+	    
+    // DRAW THAT this!
+    gl.drawElements(gl.TRIANGLES, this.size * 6, gl.UNSIGNED_SHORT, 0);
+}
+
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+/**
+ * the CanvasRenderer draws the stage and all its content onto a 2d canvas. This renderer should be used for browsers that do not support webGL.
+ * Dont forget to add the view to your DOM or you will not see anything :)
+ * @class CanvasRenderer
+ * @param width {Number} the width of the canvas view
+ * @param height {Number} the height of the canvas view
+ * @param view {Canvas} the canvas to use as a view, optional
+ */
+PIXI.CanvasRenderer = function(width, height, view)
+{
+	/**
+	 * The width of the canvas view
+	 * @property width
+	 * @type Number
+	 * @default 800
+	 */
+	this.width = width || 800;
+	/**
+	 * The height of the canvas view
+	 * @property height
+	 * @type Number
+	 * @default 600
+	 */
+	this.height = height || 600;
+	
+	this.refresh = true;
+	
+	/**
+	 * The canvas element that the everything is drawn to
+	 * @property view
+	 * @type Canvas
+	 */
+	this.view = view || document.createElement( 'canvas' ); 
+	
+	// hack to enable some hardware acceleration!
+	//this.view.style["transform"] = "translatez(0)";
+	
+    this.view.width = this.width;
+	this.view.height = this.height;  
+	this.count = 0;
+	
+	/**
+	 * The canvas context that the everything is drawn to
+	 * @property context
+	 * @type Canvas 2d Context
+	 */
+	this.context = this.view.getContext("2d");
+}
+
+// constructor
+PIXI.CanvasRenderer.constructor = PIXI.CanvasRenderer;
+
+/**
+ * Renders the stage to its canvas view
+ * @method render
+ * @param stage {Stage} the Stage element to be rendered
+ */
+PIXI.CanvasRenderer.prototype.render = function(stage)
+{
+	// update children if need be
+	
+	stage.__childrenAdded = [];
+	stage.__childrenRemoved = [];
+	
+	// update textures if need be
+	PIXI.texturesToUpdate = [];
+	
+	this.context.setTransform(1,0,0,1,0,0); 
+	stage.updateTransform();
+	  
+	this.context.setTransform(1,0,0,1,0,0); 
+	
+	// update the background color
+	if(this.view.style.backgroundColor!=stage.backgroundColorString)this.view.style.backgroundColor = stage.backgroundColorString;
+
+	this.context.clearRect(0, 0, this.width, this.height)
+    this.renderDisplayObject(stage);
+    //as
+   
+    // run interaction!
+	if(stage.interactive)
+	{
+		//need to add some events!
+		if(!stage._interactiveEventsAdded)
+		{
+			stage._interactiveEventsAdded = true;
+			stage.interactionManager.setTarget(this);
+		}
+	}
+}
+
+/**
+ * resizes the canvas view to the specified width and height
+ * @param the new width of the canvas view
+ * @param the new height of the canvas view
+ */
+PIXI.CanvasRenderer.prototype.resize = function(width, height)
+{
+	this.width = width;
+	this.height = height;
+	
+	this.view.width = width;
+	this.view.height = height;
+}
+
+/**
+ * @private
+ */
+PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
+{
+	var transform = displayObject.worldTransform;
+	var context = this.context;
+	context.globalCompositeOperation = "source-over"
+	var blit = false;
+	
+	if(!displayObject.visible)return;
+		
+	if(displayObject instanceof PIXI.Sprite)
+	{
+		var frame = displayObject.texture.frame;
+		
+		if(frame)
+		{
+			context.globalAlpha = displayObject.worldAlpha;
+			
+			// BLITZ!!!
+			/*
+			 * if the rotation is 0 then we can blitz it
+			 * meaning we dont need to do a transform and also we
+			 * can round to the nearest round number for a little extra speed!
+			 */
+			/*if(displayObject.rotation == 0)
+			{
+				if(!blit)this.context.setTransform(1,0,0,1,0,0); 
+				blit = true;
+				context.drawImage(displayObject.texture.baseTexture.image, 
+								   frame.x,
+								   frame.y,
+								   frame.width,
+								   frame.height,
+								   (transform[2]+ ((displayObject.anchor.x - displayObject.texture.trim.x) * -frame.width) * transform[0]),
+								   (transform[5]+ ((displayObject.anchor.y - displayObject.texture.trim.y) * -frame.height)* transform[4]),
+								   (displayObject.width * transform[0]),
+								   (displayObject.height * transform[4]));
+				
+			}	
+			else
+			{*/
+				blit = false;
+				context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
+				context.drawImage(displayObject.texture.baseTexture.source, 
+								   frame.x,
+								   frame.y,
+								   frame.width,
+								   frame.height,
+								   (displayObject.anchor.x - displayObject.texture.trim.x) * -frame.width, 
+								   (displayObject.anchor.y - displayObject.texture.trim.y) * -frame.height,
+								   displayObject.width,
+								   displayObject.height);
+			//}
+		}					   
+   	}
+   	else if(displayObject instanceof PIXI.Strip)
+	{
+		context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
+		this.renderStrip(displayObject);
+	}
+	
+	// render!
+	for (var i=0; i < displayObject.children.length; i++) 
+	{
+		this.renderDisplayObject(displayObject.children[i]);
+	}
+}
+
+/**
+ * @private
+ */
+PIXI.CanvasRenderer.prototype.renderStripFlat = function(strip)
+{
+	var context = this.context;
+	var verticies = strip.verticies;
+	var uvs = strip.uvs;
+	
+	var length = verticies.length/2;
+	this.count++;
+	
+	context.beginPath();
+	for (var i=1; i < length-2; i++) 
+	{
+		
+		// draw some triangles!
+		var index = i*2;
+		
+		 var x0 = verticies[index],   x1 = verticies[index+2], x2 = verticies[index+4];
+ 		 var y0 = verticies[index+1], y1 = verticies[index+3], y2 = verticies[index+5];
+ 		 
+		context.moveTo(x0, y0);
+		context.lineTo(x1, y1);
+		context.lineTo(x2, y2);
+		
+	};	
+	
+//	context.globalCompositeOperation = 'lighter';
+	context.fillStyle = "#FF0000";
+	context.fill();
+	context.closePath();
+	//context.globalCompositeOperation = 'source-over';	
+}
+
+/**
+ * @private
+ */
+PIXI.CanvasRenderer.prototype.renderStrip = function(strip)
+{
+	var context = this.context;
+	//context.globalCompositeOperation = 'lighter';
+	// draw triangles!!
+	var verticies = strip.verticies;
+	var uvs = strip.uvs;
+	
+	var length = verticies.length/2;
+	this.count++;
+	for (var i=1; i < length-2; i++) 
+	{
+		
+		// draw some triangles!
+		var index = i*2;
+		
+		 var x0 = verticies[index],   x1 = verticies[index+2], x2 = verticies[index+4];
+ 		 var y0 = verticies[index+1], y1 = verticies[index+3], y2 = verticies[index+5];
+ 		 
+  		 var u0 = uvs[index] * strip.texture.width,   u1 = uvs[index+2]* strip.texture.width, u2 = uvs[index+4]* strip.texture.width;
+   		 var v0 = uvs[index+1]* strip.texture.height, v1 = uvs[index+3]* strip.texture.height, v2 = uvs[index+5]* strip.texture.height;
+
+
+		context.save();
+		context.beginPath();
+		context.moveTo(x0, y0);
+		context.lineTo(x1, y1);
+		context.lineTo(x2, y2);
+		context.closePath();
+		
+	//	context.fillStyle = "white"//rgb(1, 1, 1,1));
+	//	context.fill();
+		context.clip();
+		
+		
+        // Compute matrix transform
+        var delta = u0*v1 + v0*u2 + u1*v2 - v1*u2 - v0*u1 - u0*v2;
+        var delta_a = x0*v1 + v0*x2 + x1*v2 - v1*x2 - v0*x1 - x0*v2;
+        var delta_b = u0*x1 + x0*u2 + u1*x2 - x1*u2 - x0*u1 - u0*x2;
+        var delta_c = u0*v1*x2 + v0*x1*u2 + x0*u1*v2 - x0*v1*u2 - v0*u1*x2 - u0*x1*v2;
+        var delta_d = y0*v1 + v0*y2 + y1*v2 - v1*y2 - v0*y1 - y0*v2;
+        var delta_e = u0*y1 + y0*u2 + u1*y2 - y1*u2 - y0*u1 - u0*y2;
+        var delta_f = u0*v1*y2 + v0*y1*u2 + y0*u1*v2 - y0*v1*u2 - v0*u1*y2 - u0*y1*v2;
+		
+		
+		
+		    
+        context.transform(delta_a/delta, delta_d/delta,
+                      delta_b/delta, delta_e/delta,
+                      delta_c/delta, delta_f/delta);
+                 
+		context.drawImage(strip.texture.baseTexture.source, 0, 0);
+	  	context.restore();
+	};
+	
+//	context.globalCompositeOperation = 'source-over';	
+}
+
+
+
+
+
+
+
+
+/**
+ * @author Mat Groves http://matgroves.com/
+ */
+
+PIXI.Strip = function(texture, width, height)
+{
+	PIXI.DisplayObjectContainer.call( this );
+	this.texture = texture;
+	this.blendMode = PIXI.blendModes.NORMAL;
+	
+	try
+	{
+		this.uvs = new Float32Array([0, 1,
+				1, 1,
+				1, 0, 0,1]);
+	
+		this.verticies = new Float32Array([0, 0,
+						  0,0,
+						  0,0, 0,
+						  0, 0]);
+						  
+		this.colors = new Float32Array([1, 1, 1, 1]);
+		
+		this.indices = new Uint16Array([0, 1, 2, 3]);
+	}
+	catch(error)
+	{
+		this.uvs = [0, 1,
+				1, 1,
+				1, 0, 0,1];
+	
+		this.verticies = [0, 0,
+						  0,0,
+						  0,0, 0,
+						  0, 0];
+						  
+		this.colors = [1, 1, 1, 1];
+		
+		this.indices = [0, 1, 2, 3];
+	}
+	
+	
+	/*
+	this.uvs = new Float32Array()
+	this.verticies = new Float32Array()
+	this.colors = new Float32Array()
+	this.indices = new Uint16Array()
+*/
+	this.width = width;
+	this.height = height;
+	
+	// load the texture!
+	if(texture.baseTexture.hasLoaded)
+	{
+		this.width   = this.texture.frame.width;
+		this.height  = this.texture.frame.height;
+		this.updateFrame = true;
+	}
+	else
+	{
+		this.onTextureUpdateBind = this.onTextureUpdate.bind(this);
+		this.texture.addEventListener( 'update', this.onTextureUpdateBind );
+	}
+	
+	this.renderable = true;
+}
+
+// constructor
+PIXI.Strip.constructor = PIXI.Strip;
+PIXI.Strip.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
+
+PIXI.Strip.prototype.setTexture = function(texture)
+{
+	//TODO SET THE TEXTURES
+	//TODO VISIBILITY
+	
+	// stop current texture 
+	this.texture = texture;
+	this.width   = texture.frame.width;
+	this.height  = texture.frame.height;
+	this.updateFrame = true;
+}
+
+PIXI.Strip.prototype.onTextureUpdate = function(event)
+{
+	this.updateFrame = true;
+}
+// some helper functions..
+
+/**
+ * @author Mat Groves http://matgroves.com/
+ */
+
+
+PIXI.Rope = function(texture, points)
+{
+	PIXI.Strip.call( this, texture );
+	this.points = points;
+	
+	try
+	{
+		this.verticies = new Float32Array( points.length * 4);
+		this.uvs = new Float32Array( points.length * 4);
+		this.colors = new Float32Array(  points.length * 2);
+		this.indices = new Uint16Array( points.length * 2);
+	}
+	catch(error)
+	{
+		this.verticies = verticies
+		
+		this.uvs = uvs
+		this.colors = colors
+		this.indices = indices
+	}
+	
+	this.refresh();
+}
+
+
+// constructor
+PIXI.Rope.constructor = PIXI.Rope;
+PIXI.Rope.prototype = Object.create( PIXI.Strip.prototype );
+
+PIXI.Rope.prototype.refresh = function()
+{
+	var points = this.points;
+	if(points.length < 1)return;
+	
+	var uvs = this.uvs
+	var indices = this.indices;
+	var colors = this.colors;
+	
+	var lastPoint = points[0];
+	var nextPoint;
+	var perp = {x:0, y:0};
+	var point = points[0];
+	
+	this.count-=0.2;
+	
+	
+	uvs[0] = 0
+	uvs[1] = 1
+	uvs[2] = 0
+	uvs[3] = 1
+	
+	colors[0] = 1;
+	colors[1] = 1;
+	
+	indices[0] = 0;
+	indices[1] = 1;
+	
+	var total = points.length;
+		
+	for (var i =  1; i < total; i++) 
+	{
+		
+		var point = points[i];
+		var index = i * 4;
+		// time to do some smart drawing!
+		var amount = i/(total-1)
+		
+		if(i%2)
+		{
+			uvs[index] = amount;
+			uvs[index+1] = 0;
+			
+			uvs[index+2] = amount
+			uvs[index+3] = 1
+		
+		}
+		else
+		{
+			uvs[index] = amount
+			uvs[index+1] = 0
+			
+			uvs[index+2] = amount
+			uvs[index+3] = 1
+		}
+		
+		index = i * 2;
+		colors[index] = 1;
+		colors[index+1] = 1;
+		
+		index = i * 2;
+		indices[index] = index;
+		indices[index + 1] = index + 1;
+		
+		lastPoint = point;
+	}
+}
+
+PIXI.Rope.prototype.updateTransform = function()
+{
+	
+	var points = this.points;
+	if(points.length < 1)return;
+	
+	var verticies = this.verticies 
+	
+	var lastPoint = points[0];
+	var nextPoint;
+	var perp = {x:0, y:0};
+	var point = points[0];
+	
+	this.count-=0.2;
+	
+	verticies[0] = point.x + perp.x 
+	verticies[1] = point.y + perp.y //+ 200
+	verticies[2] = point.x - perp.x 
+	verticies[3] = point.y - perp.y//+200
+	// time to do some smart drawing!
+	
+	var total = points.length;
+		
+	for (var i =  1; i < total; i++) 
+	{
+		
+		var point = points[i];
+		var index = i * 4;
+		
+		if(i < points.length-1)
+		{
+			nextPoint = points[i+1];
+		}
+		else
+		{
+			nextPoint = point
+		}
+		
+		perp.y = -(nextPoint.x - lastPoint.x);
+		perp.x = nextPoint.y - lastPoint.y;
+		
+		var ratio = (1 - (i / (total-1))) * 10;
+				if(ratio > 1)ratio = 1;
+				
+		var perpLength = Math.sqrt(perp.x * perp.x + perp.y * perp.y);
+		var num = this.texture.height/2//(20 + Math.abs(Math.sin((i + this.count) * 0.3) * 50) )* ratio;
+		perp.x /= perpLength;
+		perp.y /= perpLength;
+	
+		perp.x *= num;
+		perp.y *= num;
+		
+		verticies[index] = point.x + perp.x 
+		verticies[index+1] = point.y + perp.y
+		verticies[index+2] = point.x - perp.x 
+		verticies[index+3] = point.y - perp.y
+
+		lastPoint = point;
+	}
+	
+	PIXI.DisplayObjectContainer.prototype.updateTransform.call( this );
+}
+
+PIXI.Rope.prototype.setTexture = function(texture)
+{
+	// stop current texture 
+	this.texture = texture;
+	this.updateFrame = true;
+}
+
+
+
+
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+PIXI.BaseTextureCache = {};
+PIXI.texturesToUpdate = [];
+
+/**
+ * A texture stores the information that represents an image. All textures have a base texture
+ * @class BaseTexture
+ * @extends EventTarget
+ * @constructor
+ * @param source {String} the source object (image or canvas)
+ */
+PIXI.BaseTexture = function(source)
+{
+	PIXI.EventTarget.call( this );
+	
+	/*
+	 * The url of the texture
+	 * @property imageUrl
+	 * @type String
+	 */
+	//this.imageUrl = source.src;
+	
+	/**
+	 * [read only] The width of the base texture set when the image has loaded
+	 * @property width
+	 * @type Number
+	 */
+	this.width = 100;
+	/**
+	 * [read only] The height of the base texture set when the image has loaded
+	 * @property height
+	 * @type Number
+	 */
+	this.height = 100;
+	
+	/**
+	 * The source that is loaded to create the texture
+	 * @property source
+	 * @type Image
+	 */
+	this.source = source//new Image();
+	
+	if(this.source instanceof Image)
+	{
+		if(this.source.complete)
+		{
+			this.hasLoaded = true;
+			this.width = this.source.width;
+			this.height = this.source.height;
+			
+			PIXI.texturesToUpdate.push(this);
+		}
+		else
+		{
+			
+			var scope = this;
+			this.source.onload = function(){
+				
+				scope.hasLoaded = true;
+				scope.width = scope.source.width;
+				scope.height = scope.source.height;
+			
+				// add it to somewhere...
+				PIXI.texturesToUpdate.push(scope);
+				scope.dispatchEvent( { type: 'loaded', content: scope } );
+			}
+			//	this.image.src = imageUrl;
+		}
+	}
+	else
+	{
+		this.hasLoaded = true;
+		this.width = this.source.width;
+		this.height = this.source.height;
+			
+		//console.log(">!!",this.width)
+		PIXI.texturesToUpdate.push(this);
+	}
+	
+	
+	
+}
+
+PIXI.BaseTexture.constructor = PIXI.BaseTexture;
+
+PIXI.BaseTexture.prototype.fromImage = function(imageUrl)
+{
+
+}
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+PIXI.TextureCache = {};
+PIXI.FrameCache = {};
+
+/**
+ * A texture stores the information that represents an image or part of an image. It cannot be added to the display list directly. To do this use PIXI.Sprite. If no frame is provided then the whole image is used
+ * @class Texture
+ * @extends EventTarget
+ * @constructor
+ * @param baseTexture {BaseTexture}
+ * @param frmae {Rectangle}
+ */
+PIXI.Texture = function(baseTexture, frame)
+{
+	PIXI.EventTarget.call( this );
+	
+	if(!frame)
+	{
+		this.noFrame = true;
+		frame = new PIXI.Rectangle(0,0,1,1);
+	}
+	
+	this.trim = new PIXI.Point();
+	
+	/**
+	 * The base texture of this texture
+	 * @property baseTexture
+	 * @type BaseTexture
+	 */
+	this.baseTexture = baseTexture;
+	
+	
+	
+	/**
+	 * The frame specifies the region of the base texture that this texture uses
+	 * @property frame
+	 * @type #Rectangle
+	 */
+	this.frame = frame;
+	
+	this.scope = this;
+	
+	if(baseTexture.hasLoaded)
+	{
+		if(this.noFrame)frame = new PIXI.Rectangle(0,0, baseTexture.width, baseTexture.height);
+		//console.log(frame)
+		
+		this.setFrame(frame);
+	}
+	else
+	{
+		var scope = this;
+		baseTexture.addEventListener( 'loaded', function(){ scope.onBaseTextureLoaded()} );
+	}
+}
+
+PIXI.Texture.constructor = PIXI.Texture;
+
+PIXI.Texture.prototype.onBaseTextureLoaded = function(event)
+{
+	var baseTexture = this.baseTexture;
+	baseTexture.removeEventListener( 'loaded', this.onLoaded );
+	
+	if(this.noFrame)this.frame = new PIXI.Rectangle(0,0, baseTexture.width, baseTexture.height);
+	this.noFrame = false;
+	this.width = this.frame.width;
+	this.height = this.frame.height;
+	
+	this.scope.dispatchEvent( { type: 'update', content: this } );
+}
+
+/**
+ * Specifies the rectangle region of the baseTexture
+ * @method setFrame
+ * @param frame {Rectangle}
+ */
+PIXI.Texture.prototype.setFrame = function(frame)
+{
+	this.frame = frame;
+	this.width = frame.width;
+	this.height = frame.height;
+	
+	if(frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height)
+	{
+		throw new Error("Texture Error: frame does not fit inside the base Texture dimensions " + this);
+	}
+	//this.updateFrame = true;
+}
+
+/**
+ * 
+ * Helper function that returns a texture based on an image url
+ * If the image is not in the texture cache it will be  created and loaded
+ * @static
+ * @method fromImage
+ * @param imageUrl {String} The image url of the texture
+ * @return Texture
+ */
+PIXI.Texture.fromImage = function(imageUrl, crossorigin)
+{
+	var texture = PIXI.TextureCache[imageUrl];
+	
+	if(!texture)
+	{
+		var baseTexture = PIXI.BaseTextureCache[imageUrl];
+		if(!baseTexture) 
+		{
+			var image = new Image();//new Image();
+			if (crossorigin)
+			{
+				image.crossOrigin = '';
+			}
+			image.src = imageUrl;
+			baseTexture = new PIXI.BaseTexture(image);
+			PIXI.BaseTextureCache[imageUrl] = baseTexture;
+		}
+		texture = new PIXI.Texture(baseTexture);
+		
+		
+		PIXI.TextureCache[imageUrl] = texture;
+		
+		
+	}
+	
+	return texture;
+}
+
+/**
+ * 
+ * Helper function that returns a texture based on a frame id
+ * If the frame id is not in the texture cache an error will be thrown
+ * @method fromFrame
+ * @param frameId {String} The frame id of the texture
+ * @return Texture
+ */
+PIXI.Texture.fromFrame = function(frameId)
+{
+	var texture = PIXI.TextureCache[frameId];
+	if(!texture)throw new Error("The frameId '"+ frameId +"' does not exist in the texture cache " + this);
+	return texture;
+}
+
+/**
+ * 
+ * Helper function that returns a texture based on a canvas element
+ * If the canvas is not in the texture cache it will be  created and loaded
+ * @static
+ * @method fromCanvas
+ * @param canvas {Canvas} The canvas element source of the texture
+ * @return Texture
+ */
+PIXI.Texture.fromCanvas = function(canvas)
+{
+	// create a canvas id??
+	var texture = PIXI.TextureCache[canvas];
+	
+	if(!texture)
+	{
+		var baseTexture = PIXI.BaseTextureCache[canvas];
+		if(!baseTexture) 
+		{
+			baseTexture = new PIXI.BaseTexture(canvas);
+			PIXI.BaseTextureCache[canvas] = baseTexture;
+		}
+		texture = new PIXI.Texture(baseTexture);
+		
+		PIXI.TextureCache[canvas] = texture;
+	}
+	
+	return texture;
+}
+
+
+/**
+ * 
+ * Adds a texture to the textureCache. 
+ * @method addTextureToCache
+ * @param texture {Texture}
+ * @param id {String} the id that the texture will be stored against.
+ */
+PIXI.Texture.addTextureToCache = function(texture, id)
+{
+	PIXI.TextureCache[id] = texture;
+}
+
+/**
+ * 
+ * Remove a texture from the textureCache. 
+ * @method removeTextureFromCache
+ * @param id {String} the id of the texture to be removed
+ * @return {Texture} the texture that was removed
+ */
+PIXI.Texture.removeTextureFromCache = function(id)
+{
+	var texture = PIXI.TextureCache[id]
+	PIXI.TextureCache[id] = null;
+	return texture;
+}
+
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+/**
+ * The sprite sheet loader is used to load in JSON sprite sheet data
+ * To generate the data you can use http://www.codeandweb.com/texturepacker and publish the "JSON" format
+ * There is a free version so thats nice, although the paid version is great value for money.
+ * It is highly recommended to use Sprite sheets (also know as texture atlas') as it means sprite's can be batched and drawn together for highly increased rendering speed.
+ * Once the data has been loaded the frames are stored in the PIXI texture cache and can be accessed though PIXI.Texture.fromFrameId() and PIXI.Sprite.fromFromeId()
+ * This loader will also load the image file that the Spritesheet points to as well as the data.
+ * When loaded this class will dispatch a 'loaded' event
+ * @class SpriteSheetLoader
+ * @extends EventTarget
+ * @constructor
+ * @param url {String} the url of the sprite sheet JSON file
+ */
+
+PIXI.SpriteSheetLoader = function(url)
+{
+	/*
+	 * i use texture packer to load the assets..
+	 * http://www.codeandweb.com/texturepacker
+	 * make sure to set the format as "JSON"
+	 */
+	PIXI.EventTarget.call( this );
+	this.url = url;
+	this.baseUrl = url.replace(/[^\/]*$/, '');
+	this.texture;
+	this.frames = {};
+	this.crossorigin = false;
+}
+
+// constructor
+PIXI.SpriteSheetLoader.constructor = PIXI.SpriteSheetLoader;
+
+/**
+ * This will begin loading the JSON file
+ */
+PIXI.SpriteSheetLoader.prototype.load = function()
+{
+	this.ajaxRequest = new AjaxRequest();
+	var scope = this;
+	this.ajaxRequest.onreadystatechange=function()
+	{
+		scope.onLoaded();
+	}
+		
+	this.ajaxRequest.open("GET", this.url, true)
+	if (this.ajaxRequest.overrideMimeType) this.ajaxRequest.overrideMimeType("application/json");
+	this.ajaxRequest.send(null)
+}
+
+PIXI.SpriteSheetLoader.prototype.onLoaded = function()
+{
+	if (this.ajaxRequest.readyState==4)
+	{
+		 if (this.ajaxRequest.status==200 || window.location.href.indexOf("http")==-1)
+	 	{
+			var jsondata = eval("("+this.ajaxRequest.responseText+")");
+			
+			var textureUrl = this.baseUrl + jsondata.meta.image;
+			
+			this.texture = PIXI.Texture.fromImage(textureUrl, this.crossorigin).baseTexture;
+			
+		//	if(!this.texture)this.texture = new PIXI.Texture(textureUrl);
+			
+			var frameData = jsondata.frames;
+			for (var i in frameData) 
+			{
+				var rect = frameData[i].frame;
+				PIXI.TextureCache[i] = new PIXI.Texture(this.texture, {x:rect.x, y:rect.y, width:rect.w, height:rect.h});
+				
+				if(frameData[i].trimmed)
+				{
+					//var realSize = frameData[i].spriteSourceSize;
+					PIXI.TextureCache[i].realSize = frameData[i].spriteSourceSize;
+					PIXI.TextureCache[i].trim.x = 0// (realSize.x / rect.w)
+					// calculate the offset!
+				}
+//				this.frames[i] = ;
+   			}
+			
+			if(this.texture.hasLoaded)
+			{
+				this.dispatchEvent( { type: 'loaded', content: this } );
+			}
+			else
+			{
+				var scope = this;
+				// wait for the texture to load..
+				this.texture.addEventListener('loaded', function(){
+					
+					scope.dispatchEvent( { type: 'loaded', content: scope } );
+					
+				});
+			}
+	 	}
+	}
+	
+}
+
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+/**
+ * A Class that loads a bunch of images / sprite sheet files. Once the assets have been loaded they are added to the PIXI Texture cache and can be accessed easily through PIXI.Texture.fromFrame(), PIXI.Texture.fromImage() and PIXI.Sprite.fromImage(), PIXI.Sprite.fromFromeId()
+ * When all items have been loaded this class will dispatch a 'loaded' event
+ * As each individual item is loaded this class will dispatch a 'progress' event
+ * @class AssetLoader
+ * @constructor
+ * @extends EventTarget
+ * @param assetURLs {Array} an array of image/sprite sheet urls that you would like loaded supported. Supported image formats include "jpeg", "jpg", "png", "gif". Supported sprite sheet data formats only include "JSON" at this time
+ */
+PIXI.AssetLoader = function(assetURLs)
+{
+	PIXI.EventTarget.call( this );
+	
+	/**
+	 * The array of asset URLs that are going to be loaded
+	 * @property assetURLs
+	 * @type Array
+	 */
+	this.assetURLs = assetURLs;
+	
+	this.assets = [];
+
+	this.crossorigin = false;
+}
+
+/**
+Fired when an item has loaded
+@event onProgress
+**/
+
+/**
+Fired when all the assets have loaded
+@event onComplete 
+**/
+
+// constructor
+PIXI.AssetLoader.constructor = PIXI.AssetLoader;
+
+/**
+ * This will begin loading the assets sequentially
+ */
+PIXI.AssetLoader.prototype.load = function()
+{
+	this.loadCount = this.assetURLs.length;
+	var imageTypes = ["jpeg", "jpg", "png", "gif"];
+	
+	var spriteSheetTypes = ["json"];
+	
+	for (var i=0; i < this.assetURLs.length; i++) 
+	{
+		var filename = this.assetURLs[i];
+		var fileType = filename.split('.').pop().toLowerCase();
+		// what are we loading?
+		var type = null;
+		
+		for (var j=0; j < imageTypes.length; j++) 
+		{
+			if(fileType == imageTypes[j])
+			{
+				type = "img";
+				break;
+			}
+		}
+		
+		if(type != "img")
+		{
+			for (var j=0; j < spriteSheetTypes.length; j++) 
+			{
+				if(fileType == spriteSheetTypes[j])
+				{
+					type = "atlas";
+					break;
+				}
+			}
+		}
+		
+		if(type == "img")
+		{
+			
+			var texture = PIXI.Texture.fromImage(filename, this.crossorigin);
+			if(!texture.baseTexture.hasLoaded)
+			{
+				
+				var scope = this;
+				texture.baseTexture.addEventListener( 'loaded', function ( event ) 
+				{
+					scope.onAssetLoaded();
+				});
+	
+				this.assets.push(texture);
+			}
+			else
+			{
+				
+				// already loaded!
+				this.loadCount--;
+				// if this hits zero here.. then everything was cached!
+				if(this.loadCount == 0)
+				{
+					this.dispatchEvent( { type: 'onComplete', content: this } );
+					if(this.onComplete)this.onComplete();
+				}
+			}
+			
+		}
+		else if(type == "atlas")
+		{
+			var spriteSheetLoader = new PIXI.SpriteSheetLoader(filename);
+			spriteSheetLoader.crossorigin = this.crossorigin;
+			this.assets.push(spriteSheetLoader);
+			
+			var scope = this;
+			spriteSheetLoader.addEventListener( 'loaded', function ( event ) 
+			{
+				scope.onAssetLoaded();
+			});
+			
+			spriteSheetLoader.load();
+		}
+		else
+		{
+			// dont know what the file is! :/
+			//this.loadCount--;
+			throw new Error(filename + " is an unsupported file type " + this);
+		}
+		
+		//this.assets[i].load();
+	};
+}
+
+PIXI.AssetLoader.prototype.onAssetLoaded = function()
+{
+	this.loadCount--;
+	this.dispatchEvent( { type: 'onProgress', content: this } );
+	if(this.onProgress)this.onProgress();
+	
+	if(this.loadCount == 0)
+	{
+		this.dispatchEvent( { type: 'onComplete', content: this } );
+		if(this.onComplete)this.onComplete();
+	}
+}
+
