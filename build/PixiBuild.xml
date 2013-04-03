@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<project basedir="." default="run">
+ 
+  <taskdef name="jscomp" classname="com.google.javascript.jscomp.ant.CompileTask" classpath="${basedir}/compiler.jar"/>
+  <taskdef resource="net/sf/antcontrib/antlib.xml">
+    <classpath>
+      <pathelement location="${basedir}/ant-contrib-1.0b3.jar"/>
+    </classpath>
+  </taskdef>
+ 
+  <target name="run">
+   
+    <concat destfile="../bin/pixi.dev.js">
+
+      <filelist dir="../src/pixi" files="Pixi.js, Point.js, Rectangle.js, DisplayObject.js, DisplayObjectContainer.js"/>
+      <filelist dir="../src/pixi" files="Sprite.js, MovieClip.js, InteractionManager.js, Stage.js"/>
+      <filelist dir="../src/pixi/utils" files="Utils.js, EventTarget.js, Matrix.js, Detector.js"/>
+      <filelist dir="../src/pixi/renderers" files="WebGLShaders.js, WebGLRenderer.js, WebGLBatch.js, CanvasRenderer.js"/>
+      <filelist dir="../src/pixi/extras" files="Strip.js, Rope.js"/>
+      <filelist dir="../src/pixi/textures" files="BaseTexture.js, Texture.js"/>
+      <filelist dir="../src/pixi/loaders" files="SpriteSheetLoader.js, AssetLoader.js"/>
+
+    </concat>
+
+  	<jscomp compilationLevel="simple" debug="false" output="../bin/pixi.js">
+   	    
+      <sources dir="../bin/">
+        <file name="pixi.dev.js"/>
+      </sources>
+ 
+	</jscomp>
+
+  </target>
+ 
+</project>

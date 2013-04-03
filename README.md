@@ -61,22 +61,6 @@ This will create a minified version at bin/pixi.js and a non-minified version at
 
 It also copies the non-minified version to the examples. 
 
-### How to view examples ###
-
-There are many ways to view the examples, but one way is to install a simple http server through NPM.
-
-```
-$> npm install -g http-server
-```
-
-Then you can view each example like so: 
-
-```
-$> http-server examples/example\ 1\ -\ Basics/ -p 3030
-```
-
-Navigate to `localhost:3030` and away you go!
-
 ### Current features ###
 
 - WebGL renderer (with automatic smart batching allowing for REALLY fast performance) 
