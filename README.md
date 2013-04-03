@@ -39,12 +39,27 @@ last 2 examples and allowing us to share the source code :)
 
 ### How to build ###
 
+PixiJS is build with Grunt. If you don't already have this, go install Node and NPM then install the Grunt Command Line.
+
 ```
-cd build
-ant -f PixiBuild.xml
+$> npm install -g grunt-cli
 ```
 
-This will create a minified version at bin/pixi.js and a non-minified version at bin/pixi.dev.js
+Then, in the folder where you have downloaded the source, install the build dependencies using npm:
+
+```
+$> npm install
+```
+
+Then build:
+
+```
+$> grunt
+```
+
+This will create a minified version at bin/pixi.js and a non-minified version at bin/pixi.dev.js.
+
+It also copies the non-minified version to the examples. 
 
 ### Current features ###
 
