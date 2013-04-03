@@ -1,11 +1,29 @@
 {
-	"name" : "Pixi.JS",
-	"version" : "0.0.1",
-	"devDependencies" : {
-		"grunt" : "~0.4.x",
-		"grunt-contrib-jshint" : "~0.1.1",
-        "grunt-contrib-uglify" : "~0.2.0",
-        "grunt-contrib-connect" : "0.x",
-        "grunt-contrib-qunit" : "0.x"
-	}
+    "name": "Pixi.JS",
+    "version": "1.0.0",
+    "description": "Pixi.js is a fast lightweight 2D library that works across all devices.",
+
+    "author": "Mat Groves",
+    "logo": "http://www.goodboydigital.com/pixijs/logo_small.png",
+
+    "homepage": "http://goodboydigital.com/",
+    "bugs": "https://github.com/GoodBoyDigital/pixi.js/issues",
+    "license": "MIT",
+    "licenseUrl": "http://www.opensource.org/licenses/mit-license.php",
+
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/GoodBoyDigital/pixi.js.git"
+    },
+
+    "dependencies": {},
+    "devDependencies": {
+        "grunt": "~0.4.x",
+        "grunt-contrib-jshint": "0.3.x",
+        "grunt-contrib-uglify": "0.2.x",
+        "grunt-contrib-connect": "0.2.x",
+        "grunt-contrib-qunit": "0.2.x",
+        "grunt-contrib-yuidoc": "0.4.x",
+        "grunt-contrib-concat": "0.1.x"
+    }
 }
