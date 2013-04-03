@@ -63,7 +63,29 @@ module.exports = function(grunt){
 				"examples/example 5 - Morph",
 				"examples/example 6 - Interactivity",
 			]
-		}
+		},
+        connect: {
+            qunit: {
+                options: {
+                    port: grunt.option('port-test') | 9002,
+                    base: './'
+                }
+            },
+            test: {
+                options: {
+                    port: grunt.option('port-test') | 9002,
+                    base: './',
+                    keepalive: true
+                }
+            }
+        },
+        qunit: {
+            all: {
+                options: {
+                    urls: ['http://localhost:' + (grunt.option('port-test') || 9002) + '/test/index.html']
+                }
+            }
+        }
 
 	});
 
@@ -108,8 +130,11 @@ module.exports = function(grunt){
 
 	grunt.loadNpmTasks("grunt-contrib-jshint");
 	grunt.loadNpmTasks("grunt-contrib-uglify");
+    grunt.loadNpmTasks('grunt-contrib-connect');
+    grunt.loadNpmTasks('grunt-contrib-qunit');
 
 	//grunt.registerTask("default", ["build:*:*", "jshint", "uglify"]);
 	grunt.registerTask("default", ["build:*:*", "uglify", "distribute:*:*"])
+    grunt.registerTask('test', ['build', 'connect:qunit', 'qunit']);
 
 }
