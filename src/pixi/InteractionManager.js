@@ -157,7 +157,7 @@ PIXI.InteractionManager.prototype.hitTest = function(interactionData)
 		tempPoint.y = a00 * id * global.y + -a10 * id * global.x + (-a12 * a00 + a02 * a10) * id;
 		
 			
-		var x1 = -item.width * item.anchor.x
+		var x1 = -item.width * item.anchor.x;
 		
 		if(tempPoint.x > x1 && tempPoint.x < x1 + item.width)
 		{
