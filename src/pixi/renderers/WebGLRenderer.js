@@ -14,7 +14,7 @@ PIXI._defaultFrame = new PIXI.Rectangle(0,0,1,1);
  * @param height {Number} the height of the canvas view
  * @default 0
  * @param view {Canvas} the canvas to use as a view, optional
- * @param transparent {Boolean} the transparency of the render view
+ * @param transparent {Boolean} the transparency of the render view, default false
  * @default false
  * 
  */

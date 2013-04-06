@@ -10,7 +10,7 @@
  * @param width {Number} the width of the renderers view
  * @param height {Number} the height of the renderers view
  * @param view {Canvas} the canvas to use as a view, optional
- * @param transparent {Boolean} the transparency of the render view
+ * @param transparent {Boolean} the transparency of the render view, default false
  * @default false
  */
 PIXI.autoDetectRenderer = function(width, height, view, transparent)

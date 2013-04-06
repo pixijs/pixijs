@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>pixi&#x2F;utils&#x2F;Utils.js - Pixi.js API</title>
-    <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0pr2&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
+    <title>src&#x2F;pixi&#x2F;Rectangle.js - Pixi.JS</title>
+    <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
     <link rel="shortcut icon" type="image/png" href="..&#x2F;assets/favicon.png">
-    <script src="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;combo?3.8.0pr2&#x2F;build&#x2F;yui&#x2F;yui-min.js"></script>
+    <script src="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;combo?3.8.0&#x2F;build&#x2F;yui&#x2F;yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
 
@@ -15,11 +15,11 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
             
-                <h1><img src="http:&#x2F;&#x2F;www.goodboydigital.com&#x2F;pixijs&#x2F;logo_small.png" title="Pixi.js API"></h1>
+                <h1><img src="http:&#x2F;&#x2F;www.goodboydigital.com&#x2F;pixijs&#x2F;logo_small.png" title="Pixi.JS"></h1>
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.0</em>
+            <em>API Docs for: 1.0.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -114,85 +114,65 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: pixi&#x2F;utils&#x2F;Utils.js</h1>
+                        <h1 class="file-heading">File: src&#x2F;pixi&#x2F;Rectangle.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
 &#x2F;**
- * Provides requestAnimationFrame in a cross browser way.
+ * @author Mat Groves http:&#x2F;&#x2F;matgroves.com&#x2F;
  *&#x2F;
-window.requestAnimFrame = (function() {
-  return window.requestAnimationFrame ||
-         window.webkitRequestAnimationFrame ||
-         window.mozRequestAnimationFrame ||
-         window.oRequestAnimationFrame ||
-         window.msRequestAnimationFrame ||
-         function(&#x2F;* function FrameRequestCallback *&#x2F; callback, &#x2F;* DOMElement Element *&#x2F; element) {
-           window.setTimeout(callback, 1000&#x2F;60);
-         };
-})();
-
-function HEXtoRGB(hex) {
-	return [(hex &gt;&gt; 16 &amp; 0xFF) &#x2F; 255, ( hex &gt;&gt; 8 &amp; 0xFF) &#x2F; 255, (hex &amp; 0xFF)&#x2F; 255];
-}
 
 &#x2F;**
- * Provides bind in a cross browser way.
+ * the Rectangle object is an area defined by its position, as indicated by its top-left corner point (x, y) and by its width and its height.
+ * @class Rectangle
+ * @constructor 
+ * @param x {Number} position of the rectangle
+ * @param y {Number} position of the rectangle
+ * @param width {Number} of the rectangle
+ * @param height {Number} of the rectangle
  *&#x2F;
-if (typeof Function.prototype.bind != &#x27;function&#x27;) {
-  Function.prototype.bind = (function () {
-    var slice = Array.prototype.slice;
-    return function (thisArg) {
-      var target = this, boundArgs = slice.call(arguments, 1);
- 
-      if (typeof target != &#x27;function&#x27;) throw new TypeError();
- 
-      function bound() {
-	var args = boundArgs.concat(slice.call(arguments));
-	target.apply(this instanceof bound ? this : thisArg, args);
-      }
- 
-      bound.prototype = (function F(proto) {
-          proto &amp;&amp; (F.prototype = proto);
-          if (!(this instanceof F)) return new F;          
-	})(target.prototype);
- 
-      return bound;
-    };
-  })();
-}
-
-var AjaxRequest = function()
+PIXI.Rectangle = function(x, y, width, height)
 {
-	var activexmodes = [&quot;Msxml2.XMLHTTP&quot;, &quot;Microsoft.XMLHTTP&quot;] &#x2F;&#x2F;activeX versions to check for in IE
+	&#x2F;**
+	 * @property x
+	 * @type Number
+	 * @default 0
+	 *&#x2F;
+	this.x = x || 0;
 	
-	if (window.ActiveXObject)
-	{ &#x2F;&#x2F;Test for support for ActiveXObject in IE first (as XMLHttpRequest in IE7 is broken)
-		for (var i=0; i&lt;activexmodes.length; i++)
-		{
-			try{
-				return new ActiveXObject(activexmodes[i])
-			}
-   			catch(e){
-    			&#x2F;&#x2F;suppress error
-   			}
-		}
-	}
-	else if (window.XMLHttpRequest) &#x2F;&#x2F; if Mozilla, Safari etc
-  	{
-  		return new XMLHttpRequest()
- 	}
- 	else
- 	{
-		return false;
- 	}
+	&#x2F;**
+	 * @property y
+	 * @type Number
+	 * @default 0
+	 *&#x2F;
+	this.y = y || 0;
+	
+	&#x2F;**
+	 * @property width
+	 * @type Number
+	 * @default 0
+	 *&#x2F;
+	this.width = width || 0;
+	
+	&#x2F;**
+	 * @property height
+	 * @type Number
+	 * @default 0
+	 *&#x2F;
+	this.height = height || 0;
 }
 
+&#x2F;** 
+ * @method clone
+ * @return a copy of the rectangle
+ *&#x2F;
+PIXI.Rectangle.clone = function()
+{
+	return new PIXI.Rectangle(this.x, this.y, this.width, this.height);
+}
 
-
-
-
-
+&#x2F;&#x2F; constructor
+PIXI.Rectangle.constructor = PIXI.Rectangle;
 
 
     </pre>

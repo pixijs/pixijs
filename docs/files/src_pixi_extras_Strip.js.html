@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>pixi&#x2F;DisplayObjectContainer.js - Pixi.js API</title>
-    <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0pr2&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
+    <title>src&#x2F;pixi&#x2F;extras&#x2F;Strip.js - Pixi.JS</title>
+    <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
     <link rel="shortcut icon" type="image/png" href="..&#x2F;assets/favicon.png">
-    <script src="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;combo?3.8.0pr2&#x2F;build&#x2F;yui&#x2F;yui-min.js"></script>
+    <script src="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;combo?3.8.0&#x2F;build&#x2F;yui&#x2F;yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
 
@@ -15,11 +15,11 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
             
-                <h1><img src="http:&#x2F;&#x2F;www.goodboydigital.com&#x2F;pixijs&#x2F;logo_small.png" title="Pixi.js API"></h1>
+                <h1><img src="http:&#x2F;&#x2F;www.goodboydigital.com&#x2F;pixijs&#x2F;logo_small.png" title="Pixi.JS"></h1>
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.0</em>
+            <em>API Docs for: 1.0.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -114,149 +114,99 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: pixi&#x2F;DisplayObjectContainer.js</h1>
+                        <h1 class="file-heading">File: src&#x2F;pixi&#x2F;extras&#x2F;Strip.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
 &#x2F;**
- * @author Mat Groves http:&#x2F;&#x2F;matgroves.com&#x2F; @Doormat23
+ * @author Mat Groves http:&#x2F;&#x2F;matgroves.com&#x2F;
  *&#x2F;
 
-
-&#x2F;**
- * A DisplayObjectContainer represents a collection of display objects. It is the base class of all display objects that act as a container for other objects.
- * @class DisplayObjectContainer 
- * @extends DisplayObject
- * @constructor
- *&#x2F;
-PIXI.DisplayObjectContainer = function()
+PIXI.Strip = function(texture, width, height)
 {
-	PIXI.DisplayObject.call( this );
+	PIXI.DisplayObjectContainer.call( this );
+	this.texture = texture;
+	this.blendMode = PIXI.blendModes.NORMAL;
 	
-	&#x2F;**
-	 * [read-only] The of children of this container.
-	 * @property children {Array}
-	 *&#x2F;	
-	this.children = [];
-	&#x2F;&#x2F;s
-	this.renderable = false;
+	try
+	{
+		this.uvs = new Float32Array([0, 1,
+				1, 1,
+				1, 0, 0,1]);
+	
+		this.verticies = new Float32Array([0, 0,
+						  0,0,
+						  0,0, 0,
+						  0, 0]);
+						  
+		this.colors = new Float32Array([1, 1, 1, 1]);
+		
+		this.indices = new Uint16Array([0, 1, 2, 3]);
+	}
+	catch(error)
+	{
+		this.uvs = [0, 1,
+				1, 1,
+				1, 0, 0,1];
+	
+		this.verticies = [0, 0,
+						  0,0,
+						  0,0, 0,
+						  0, 0];
+						  
+		this.colors = [1, 1, 1, 1];
+		
+		this.indices = [0, 1, 2, 3];
+	}
+	
+	
+	&#x2F;*
+	this.uvs = new Float32Array()
+	this.verticies = new Float32Array()
+	this.colors = new Float32Array()
+	this.indices = new Uint16Array()
+*&#x2F;
+	this.width = width;
+	this.height = height;
+	
+	&#x2F;&#x2F; load the texture!
+	if(texture.baseTexture.hasLoaded)
+	{
+		this.width   = this.texture.frame.width;
+		this.height  = this.texture.frame.height;
+		this.updateFrame = true;
+	}
+	else
+	{
+		this.onTextureUpdateBind = this.onTextureUpdate.bind(this);
+		this.texture.addEventListener( &#x27;update&#x27;, this.onTextureUpdateBind );
+	}
+	
+	this.renderable = true;
 }
 
 &#x2F;&#x2F; constructor
-PIXI.DisplayObjectContainer.constructor = PIXI.DisplayObjectContainer;
-PIXI.DisplayObjectContainer.prototype = Object.create( PIXI.DisplayObject.prototype );
+PIXI.Strip.constructor = PIXI.Strip;
+PIXI.Strip.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
 
-&#x2F;**
- * Adds a child to the container.
- * @method addChild
- * @param  DisplayObject {DisplayObject}
- *&#x2F;
-PIXI.DisplayObjectContainer.prototype.addChild = function(child)
+PIXI.Strip.prototype.setTexture = function(texture)
 {
-	if(child.parent != undefined)
-	{
-		child.parent.removeChild(child)
-	}
+	&#x2F;&#x2F;TODO SET THE TEXTURES
+	&#x2F;&#x2F;TODO VISIBILITY
 	
-	child.parent = this;
-	child.childIndex = this.children.length;
-	
-	this.children.push(child);	
-	if(this.stage)
-	{
-		this.stage.__addChild(child);
-	}
+	&#x2F;&#x2F; stop current texture 
+	this.texture = texture;
+	this.width   = texture.frame.width;
+	this.height  = texture.frame.height;
+	this.updateFrame = true;
 }
 
-&#x2F;**
- * Adds a child to the container at a specified index. If the index is out of bounds an error will be thrown
- * @method addChildAt
- * @param DisplayObject {DisplayObject}
- * @param index {Number}
- *&#x2F;
-PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
+PIXI.Strip.prototype.onTextureUpdate = function(event)
 {
-	if(index &gt;= 0 &amp;&amp; index &lt;= this.children.length)
-	{
-		if(child.parent != undefined)
-		{
-			child.parent.removeChild(child);
-		}
-	
-		if (index == this.children.length)
-		{
-		  	this.children.push(child);
-		}	
-		else 
-		{
-			this.children.splice(index, 0, child);
-		}
-
-		child.parent = this;
-		child.childIndex = index;
-		
-		var length = this.children.length;
-		for (var i=index; i &lt; length; i++) 
-		{
-		  this.children[i].childIndex = i;
-		}
-		
-		if(this.stage)
-		{
-			this.stage.__addChild(child);
-		}
-	}
-	else
-	{
-		&#x2F;&#x2F; error!
-		
-		throw new Error(child + &quot; The index &quot;+ index +&quot; supplied is out of bounds &quot; + this.children.length);
-	}
+	this.updateFrame = true;
 }
+&#x2F;&#x2F; some helper functions..
 
-&#x2F;**
- * Removes a child from the container.
- * @method removeChild
- * @param  DisplayObject {DisplayObject}
- *&#x2F;
-PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
-{
-	var index = this.children.indexOf( child );
-
-	if ( index !== -1 ) 
-	{
-		if(this.stage)this.stage.__removeChild(child);
-		child.parent = undefined;
-		&#x2F;&#x2F;child.childIndex = 0
-		this.children.splice( index, 1 );
-	
-		&#x2F;&#x2F; update in dexs!
-		for(var i=index,j=this.children.length; i&lt;j; i++)
-		{
-			this.children[i].childIndex -= 1;
-		}
-	}
-	else
-	{
-		throw new Error(child + &quot; The supplied DisplayObject must be a child of the caller &quot; + this);
-	}
-}
-
-
-&#x2F;**
- * @private
- *&#x2F;
-PIXI.DisplayObjectContainer.prototype.updateTransform = function()
-{
-	if(!this.visible)return;
-	
-	PIXI.DisplayObject.prototype.updateTransform.call( this );
-	
-	for(var i=0,j=this.children.length; i&lt;j; i++)
-	{
-		this.children[i].updateTransform();	
-	}
-}
 
     </pre>
 </div>

@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>pixi&#x2F;textures&#x2F;BaseTexture.js - Pixi.js API</title>
-    <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0pr2&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
+    <title>src&#x2F;pixi&#x2F;loaders&#x2F;AssetLoader.js - Pixi.JS</title>
+    <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
     <link rel="shortcut icon" type="image/png" href="..&#x2F;assets/favicon.png">
-    <script src="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;combo?3.8.0pr2&#x2F;build&#x2F;yui&#x2F;yui-min.js"></script>
+    <script src="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;combo?3.8.0&#x2F;build&#x2F;yui&#x2F;yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
 
@@ -15,11 +15,11 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
             
-                <h1><img src="http:&#x2F;&#x2F;www.goodboydigital.com&#x2F;pixijs&#x2F;logo_small.png" title="Pixi.js API"></h1>
+                <h1><img src="http:&#x2F;&#x2F;www.goodboydigital.com&#x2F;pixijs&#x2F;logo_small.png" title="Pixi.JS"></h1>
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.0</em>
+            <em>API Docs for: 1.0.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -114,7 +114,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: pixi&#x2F;textures&#x2F;BaseTexture.js</h1>
+                        <h1 class="file-heading">File: src&#x2F;pixi&#x2F;loaders&#x2F;AssetLoader.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
@@ -122,94 +122,149 @@
  * @author Mat Groves http:&#x2F;&#x2F;matgroves.com&#x2F; @Doormat23
  *&#x2F;
 
-PIXI.BaseTextureCache = {};
-PIXI.texturesToUpdate = [];
-
 &#x2F;**
- * A texture stores the information that represents an image. All textures have a base texture
- * @class BaseTexture
- * @extends EventTarget
+ * A Class that loads a bunch of images &#x2F; sprite sheet files. Once the assets have been loaded they are added to the PIXI Texture cache and can be accessed easily through PIXI.Texture.fromFrame(), PIXI.Texture.fromImage() and PIXI.Sprite.fromImage(), PIXI.Sprite.fromFromeId()
+ * When all items have been loaded this class will dispatch a &#x27;loaded&#x27; event
+ * As each individual item is loaded this class will dispatch a &#x27;progress&#x27; event
+ * @class AssetLoader
  * @constructor
- * @param source {String} the source object (image or canvas)
+ * @extends EventTarget
+ * @param assetURLs {Array} an array of image&#x2F;sprite sheet urls that you would like loaded supported. Supported image formats include &quot;jpeg&quot;, &quot;jpg&quot;, &quot;png&quot;, &quot;gif&quot;. Supported sprite sheet data formats only include &quot;JSON&quot; at this time
  *&#x2F;
-PIXI.BaseTexture = function(source)
+PIXI.AssetLoader = function(assetURLs)
 {
 	PIXI.EventTarget.call( this );
 	
-	&#x2F;*
-	 * The url of the texture
-	 * @property imageUrl
-	 * @type String
-	 *&#x2F;
-	&#x2F;&#x2F;this.imageUrl = source.src;
-	
 	&#x2F;**
-	 * [read only] The width of the base texture set when the image has loaded
-	 * @property width
-	 * @type Number
+	 * The array of asset URLs that are going to be loaded
+	 * @property assetURLs
+	 * @type Array
 	 *&#x2F;
-	this.width = 100;
-	&#x2F;**
-	 * [read only] The height of the base texture set when the image has loaded
-	 * @property height
-	 * @type Number
-	 *&#x2F;
-	this.height = 100;
+	this.assetURLs = assetURLs;
 	
-	&#x2F;**
-	 * The source that is loaded to create the texture
-	 * @property source
-	 * @type Image
-	 *&#x2F;
-	this.source = source&#x2F;&#x2F;new Image();
+	this.assets = [];
+
+	this.crossorigin = false;
+}
+
+&#x2F;**
+Fired when an item has loaded
+@event onProgress
+**&#x2F;
+
+&#x2F;**
+Fired when all the assets have loaded
+@event onComplete 
+**&#x2F;
+
+&#x2F;&#x2F; constructor
+PIXI.AssetLoader.constructor = PIXI.AssetLoader;
+
+&#x2F;**
+ * This will begin loading the assets sequentially
+ *&#x2F;
+PIXI.AssetLoader.prototype.load = function()
+{
+	this.loadCount = this.assetURLs.length;
+	var imageTypes = [&quot;jpeg&quot;, &quot;jpg&quot;, &quot;png&quot;, &quot;gif&quot;];
 	
-	if(this.source instanceof Image)
+	var spriteSheetTypes = [&quot;json&quot;];
+	
+	for (var i=0; i &lt; this.assetURLs.length; i++) 
 	{
-		if(this.source.complete)
+		var filename = this.assetURLs[i];
+		var fileType = filename.split(&#x27;.&#x27;).pop().toLowerCase();
+		&#x2F;&#x2F; what are we loading?
+		var type = null;
+		
+		for (var j=0; j &lt; imageTypes.length; j++) 
 		{
-			this.hasLoaded = true;
-			this.width = this.source.width;
-			this.height = this.source.height;
+			if(fileType == imageTypes[j])
+			{
+				type = &quot;img&quot;;
+				break;
+			}
+		}
+		
+		if(type != &quot;img&quot;)
+		{
+			for (var j=0; j &lt; spriteSheetTypes.length; j++) 
+			{
+				if(fileType == spriteSheetTypes[j])
+				{
+					type = &quot;atlas&quot;;
+					break;
+				}
+			}
+		}
+		
+		if(type == &quot;img&quot;)
+		{
 			
-			PIXI.texturesToUpdate.push(this);
+			var texture = PIXI.Texture.fromImage(filename, this.crossorigin);
+			if(!texture.baseTexture.hasLoaded)
+			{
+				
+				var scope = this;
+				texture.baseTexture.addEventListener( &#x27;loaded&#x27;, function ( event ) 
+				{
+					scope.onAssetLoaded();
+				});
+	
+				this.assets.push(texture);
+			}
+			else
+			{
+				
+				&#x2F;&#x2F; already loaded!
+				this.loadCount--;
+				&#x2F;&#x2F; if this hits zero here.. then everything was cached!
+				if(this.loadCount == 0)
+				{
+					this.dispatchEvent( { type: &#x27;onComplete&#x27;, content: this } );
+					if(this.onComplete)this.onComplete();
+				}
+			}
+			
+		}
+		else if(type == &quot;atlas&quot;)
+		{
+			var spriteSheetLoader = new PIXI.SpriteSheetLoader(filename);
+			spriteSheetLoader.crossorigin = this.crossorigin;
+			this.assets.push(spriteSheetLoader);
+			
+			var scope = this;
+			spriteSheetLoader.addEventListener( &#x27;loaded&#x27;, function ( event ) 
+			{
+				scope.onAssetLoaded();
+			});
+			
+			spriteSheetLoader.load();
 		}
 		else
 		{
-			
-			var scope = this;
-			this.source.onload = function(){
-				
-				scope.hasLoaded = true;
-				scope.width = scope.source.width;
-				scope.height = scope.source.height;
-			
-				&#x2F;&#x2F; add it to somewhere...
-				PIXI.texturesToUpdate.push(scope);
-				scope.dispatchEvent( { type: &#x27;loaded&#x27;, content: scope } );
-			}
-			&#x2F;&#x2F;	this.image.src = imageUrl;
+			&#x2F;&#x2F; dont know what the file is! :&#x2F;
+			&#x2F;&#x2F;this.loadCount--;
+			throw new Error(filename + &quot; is an unsupported file type &quot; + this);
 		}
-	}
-	else
-	{
-		this.hasLoaded = true;
-		this.width = this.source.width;
-		this.height = this.source.height;
-			
-		&#x2F;&#x2F;console.log(&quot;&gt;!!&quot;,this.width)
-		PIXI.texturesToUpdate.push(this);
-	}
-	
-	
-	
+		
+		&#x2F;&#x2F;this.assets[i].load();
+	};
 }
 
-PIXI.BaseTexture.constructor = PIXI.BaseTexture;
-
-PIXI.BaseTexture.prototype.fromImage = function(imageUrl)
+PIXI.AssetLoader.prototype.onAssetLoaded = function()
 {
-
+	this.loadCount--;
+	this.dispatchEvent( { type: &#x27;onProgress&#x27;, content: this } );
+	if(this.onProgress)this.onProgress();
+	
+	if(this.loadCount == 0)
+	{
+		this.dispatchEvent( { type: &#x27;onComplete&#x27;, content: this } );
+		if(this.onComplete)this.onComplete();
+	}
 }
+
 
     </pre>
 </div>

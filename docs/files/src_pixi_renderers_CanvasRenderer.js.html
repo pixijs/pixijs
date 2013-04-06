@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>pixi&#x2F;renderers&#x2F;CanvasRenderer.js - Pixi.js API</title>
-    <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0pr2&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
+    <title>src&#x2F;pixi&#x2F;renderers&#x2F;CanvasRenderer.js - Pixi.JS</title>
+    <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
     <link rel="shortcut icon" type="image/png" href="..&#x2F;assets/favicon.png">
-    <script src="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;combo?3.8.0pr2&#x2F;build&#x2F;yui&#x2F;yui-min.js"></script>
+    <script src="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;combo?3.8.0&#x2F;build&#x2F;yui&#x2F;yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
 
@@ -15,11 +15,11 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
             
-                <h1><img src="http:&#x2F;&#x2F;www.goodboydigital.com&#x2F;pixijs&#x2F;logo_small.png" title="Pixi.js API"></h1>
+                <h1><img src="http:&#x2F;&#x2F;www.goodboydigital.com&#x2F;pixijs&#x2F;logo_small.png" title="Pixi.JS"></h1>
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.0</em>
+            <em>API Docs for: 1.0.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -114,7 +114,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: pixi&#x2F;renderers&#x2F;CanvasRenderer.js</h1>
+                        <h1 class="file-heading">File: src&#x2F;pixi&#x2F;renderers&#x2F;CanvasRenderer.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
@@ -122,30 +122,39 @@
  * @author Mat Groves http:&#x2F;&#x2F;matgroves.com&#x2F; @Doormat23
  *&#x2F;
 
+
 &#x2F;**
  * the CanvasRenderer draws the stage and all its content onto a 2d canvas. This renderer should be used for browsers that do not support webGL.
  * Dont forget to add the view to your DOM or you will not see anything :)
  * @class CanvasRenderer
+ * @constructor
  * @param width {Number} the width of the canvas view
+ * @default 0
  * @param height {Number} the height of the canvas view
+ * @default 0
  * @param view {Canvas} the canvas to use as a view, optional
+ * @param transparent {Boolean} the transparency of the render view, default false
+ * @default false
+ * 
  *&#x2F;
-PIXI.CanvasRenderer = function(width, height, view)
+PIXI.CanvasRenderer = function(width, height, view, transparent)
 {
+	this.transparent = transparent;
+	
 	&#x2F;**
 	 * The width of the canvas view
 	 * @property width
 	 * @type Number
 	 * @default 800
 	 *&#x2F;
-	this.width = width ? width : 800;
+	this.width = width || 800;
 	&#x2F;**
 	 * The height of the canvas view
 	 * @property height
 	 * @type Number
 	 * @default 600
 	 *&#x2F;
-	this.height = height ? height : 600;
+	this.height = height || 600;
 	
 	this.refresh = true;
 	
@@ -154,7 +163,7 @@ PIXI.CanvasRenderer = function(width, height, view)
 	 * @property view
 	 * @type Canvas
 	 *&#x2F;
-	this.view = view ? view : document.createElement( &#x27;canvas&#x27; ); 
+	this.view = view || document.createElement( &#x27;canvas&#x27; ); 
 	
 	&#x2F;&#x2F; hack to enable some hardware acceleration!
 	&#x2F;&#x2F;this.view.style[&quot;transform&quot;] = &quot;translatez(0)&quot;;
@@ -195,7 +204,7 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 	this.context.setTransform(1,0,0,1,0,0); 
 	
 	&#x2F;&#x2F; update the background color
-	if(this.view.style.backgroundColor!=stage.backgroundColorString)this.view.style.backgroundColor = stage.backgroundColorString;
+	if(this.view.style.backgroundColor!=stage.backgroundColorString &amp;&amp; !this.transparent)this.view.style.backgroundColor = stage.backgroundColorString;
 
 	this.context.clearRect(0, 0, this.width, this.height)
     this.renderDisplayObject(stage);

@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>pixi&#x2F;InteractionManager.js - Pixi.js API</title>
-    <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0pr2&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
+    <title>src&#x2F;pixi&#x2F;InteractionManager.js - Pixi.JS</title>
+    <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
     <link rel="shortcut icon" type="image/png" href="..&#x2F;assets/favicon.png">
-    <script src="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;combo?3.8.0pr2&#x2F;build&#x2F;yui&#x2F;yui-min.js"></script>
+    <script src="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;combo?3.8.0&#x2F;build&#x2F;yui&#x2F;yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
 
@@ -15,11 +15,11 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
             
-                <h1><img src="http:&#x2F;&#x2F;www.goodboydigital.com&#x2F;pixijs&#x2F;logo_small.png" title="Pixi.js API"></h1>
+                <h1><img src="http:&#x2F;&#x2F;www.goodboydigital.com&#x2F;pixijs&#x2F;logo_small.png" title="Pixi.JS"></h1>
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.0</em>
+            <em>API Docs for: 1.0.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -114,7 +114,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: pixi&#x2F;InteractionManager.js</h1>
+                        <h1 class="file-heading">File: src&#x2F;pixi&#x2F;InteractionManager.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
@@ -143,7 +143,7 @@ PIXI.InteractionManager = function(stage)
 
 	&#x2F;&#x2F; helpers
 	this.tempPoint = new PIXI.Point();
-	this.tempMatrix =  mat3.create();
+	&#x2F;&#x2F;this.tempMatrix =  mat3.create();
 	
 	this.mouseoverEnabled = true;
 	
@@ -277,7 +277,7 @@ PIXI.InteractionManager.prototype.hitTest = function(interactionData)
 		tempPoint.y = a00 * id * global.y + -a10 * id * global.x + (-a12 * a00 + a02 * a10) * id;
 		
 			
-		var x1 = -item.width * item.anchor.x
+		var x1 = -item.width * item.anchor.x;
 		
 		if(tempPoint.x &gt; x1 &amp;&amp; tempPoint.x &lt; x1 + item.width)
 		{
@@ -349,12 +349,19 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
 
 PIXI.InteractionManager.prototype.onMouseUp = function(event)
 {
+	if(this.currentOver)
+	{
+		this.mouse.target = this.currentOver;
+		if(this.currentOver.mouseup)this.currentOver.mouseup(this.mouse);	
+	}
+	
 	if(this.currentDown)
 	{
 		this.mouse.target = this.currentDown;
-		if(this.currentDown.mouseup)this.currentDown.mouseup(this.mouse);	
+		&#x2F;&#x2F; click!
+		if(this.currentOver == this.currentDown)if(this.currentDown.click)this.currentDown.click(this.mouse);
 		
-		if(this.currentOver == this.currentDown)if(this.currentDown.click)this.currentDown.click(this.mouse);	
+	
 		this.currentDown = null;
 	}
 }

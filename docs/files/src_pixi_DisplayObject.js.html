@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>pixi&#x2F;utils&#x2F;EventTarget.js - Pixi.js API</title>
-    <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0pr2&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
+    <title>src&#x2F;pixi&#x2F;DisplayObject.js - Pixi.JS</title>
+    <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
     <link rel="shortcut icon" type="image/png" href="..&#x2F;assets/favicon.png">
-    <script src="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;combo?3.8.0pr2&#x2F;build&#x2F;yui&#x2F;yui-min.js"></script>
+    <script src="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;combo?3.8.0&#x2F;build&#x2F;yui&#x2F;yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
 
@@ -15,11 +15,11 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
             
-                <h1><img src="http:&#x2F;&#x2F;www.goodboydigital.com&#x2F;pixijs&#x2F;logo_small.png" title="Pixi.js API"></h1>
+                <h1><img src="http:&#x2F;&#x2F;www.goodboydigital.com&#x2F;pixijs&#x2F;logo_small.png" title="Pixi.JS"></h1>
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.0</em>
+            <em>API Docs for: 1.0.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -114,58 +114,136 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: pixi&#x2F;utils&#x2F;EventTarget.js</h1>
+                        <h1 class="file-heading">File: src&#x2F;pixi&#x2F;DisplayObject.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
 &#x2F;**
- * https:&#x2F;&#x2F;github.com&#x2F;mrdoob&#x2F;eventtarget.js&#x2F;
- * THankS mr DOob!
+ * @author Mat Groves http:&#x2F;&#x2F;matgroves.com&#x2F; @Doormat23
  *&#x2F;
 
-PIXI.EventTarget = function () {
-
-	var listeners = {};
+&#x2F;**
+ * this is the base class for all objects that are rendered on the screen.
+ * @class DisplayObject
+ * @constructor
+ *&#x2F;
+PIXI.DisplayObject = function()
+{
+	&#x2F;**
+	 * The coordinate of the object relative to the local coordinates of the parent.
+	 * @property position
+	 * @type Point
+	 *&#x2F;
+	this.position = new PIXI.Point();
 	
-	this.addEventListener = function ( type, listener ) {
-		
-		
-		if ( listeners[ type ] === undefined ) {
+	&#x2F;**
+	 * The scale factor of the object.
+	 * @property scale
+	 * @type Point
+	 *&#x2F;
+	this.scale = new PIXI.Point(1,1);&#x2F;&#x2F;{x:1, y:1};
+	
+	&#x2F;**
+	 * The rotation of the object in radians.
+	 * @property rotation
+	 * @type Number
+	 *&#x2F;
+	this.rotation = 0;
+	
+	&#x2F;**
+	 * The opacity of the object.
+	 * @property alpha
+	 * @type Number
+	 *&#x2F;	
+	this.alpha = 1;
+	
+	&#x2F;**
+	 * The visibility of the object.
+	 * @property visible
+	 * @type Boolean
+	 *&#x2F;	
+	this.visible = true;
+	this.cacheVisible = false;
+	
+	&#x2F;**
+	 * [read-only] The display object container that contains this display object.
+	 * @property parent
+	 * @type DisplayObjectContainer
+	 *&#x2F;	
+	this.parent = null;
+	
+	&#x2F;**
+	 * [read-only] The stage the display object is connected to, or undefined if it is not connected to the stage.
+	 * @property stage
+	 * @type Stage
+	 *&#x2F;	
+	this.stage = null;
+	
+	this.worldAlpha = 1;
+	this.color = [];
+	
+	this.worldTransform = PIXI.mat3.create()&#x2F;&#x2F;mat3.identity();
+	this.localTransform = PIXI.mat3.create()&#x2F;&#x2F;mat3.identity();
+	
+	this.dynamic = true;
+	&#x2F;&#x2F; chach that puppy!
+	this._sr = 0;
+	this._cr = 1;
+	
+	this.renderable = false;
+	
+	&#x2F;&#x2F; NOT YET :&#x2F; This only applies to children within the container..
+	this.interactive = true;
+}
 
-			listeners[ type ] = [];
-			
-		}
+&#x2F;&#x2F; constructor
+PIXI.DisplayObject.constructor = PIXI.DisplayObject;
 
-		if ( listeners[ type ].indexOf( listener ) === - 1 ) {
+&#x2F;**
+ * @private
+ *&#x2F;
+PIXI.DisplayObject.prototype.updateTransform = function()
+{
+	&#x2F;&#x2F; TODO OPTIMIZE THIS!! with dirty
+	if(this.rotation != this.rotationCache)
+	{
+		this.rotationCache = this.rotation;
+		this._sr =  Math.sin(this.rotation);
+		this._cr =  Math.cos(this.rotation);
+	}	
+	
+	var localTransform = this.localTransform;
+	var parentTransform = this.parent.worldTransform;
+	var worldTransform = this.worldTransform;
+	&#x2F;&#x2F;console.log(localTransform)
+	localTransform[0] = this._cr * this.scale.x;
+	localTransform[1] = -this._sr * this.scale.y
+	localTransform[3] = this._sr * this.scale.x;
+	localTransform[4] = this._cr * this.scale.y;
+	
+	&#x2F;&#x2F;&#x2F;AAARR GETTER SETTTER!
+	localTransform[2] = this.position.x;
+	localTransform[5] = this.position.y;
+	
+    &#x2F;&#x2F; Cache the matrix values (makes for huge speed increases!)
+    var a00 = localTransform[0], a01 = localTransform[1], a02 = localTransform[2],
+        a10 = localTransform[3], a11 = localTransform[4], a12 = localTransform[5],
 
-			listeners[ type ].push( listener );
-		}
+        b00 = parentTransform[0], b01 = parentTransform[1], b02 = parentTransform[2],
+        b10 = parentTransform[3], b11 = parentTransform[4], b12 = parentTransform[5];
 
-	};
+    worldTransform[0] = b00 * a00 + b01 * a10;
+    worldTransform[1] = b00 * a01 + b01 * a11;
+    worldTransform[2] = b00 * a02 + b01 * a12 + b02;
 
-	this.dispatchEvent = function ( event ) {
-		
-		for ( var listener in listeners[ event.type ] ) {
+    worldTransform[3] = b10 * a00 + b11 * a10;
+    worldTransform[4] = b10 * a01 + b11 * a11;
+    worldTransform[5] = b10 * a02 + b11 * a12 + b12;
 
-			listeners[ event.type ][ listener ]( event );
-			
-		}
-
-	};
-
-	this.removeEventListener = function ( type, listener ) {
-
-		var index = listeners[ type ].indexOf( listener );
-
-		if ( index !== - 1 ) {
-
-			listeners[ type ].splice( index, 1 );
-
-		}
-
-	};
-
-};
+	&#x2F;&#x2F; because we are using affine transformation, we can optimise the matrix concatenation process.. wooo!
+	&#x2F;&#x2F; mat3.multiply(this.localTransform, this.parent.worldTransform, this.worldTransform);
+	this.worldAlpha = this.alpha * this.parent.worldAlpha;		
+}
 
     </pre>
 </div>

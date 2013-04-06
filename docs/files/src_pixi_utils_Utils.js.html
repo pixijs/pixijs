@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>pixi&#x2F;renderers&#x2F;WebGLShaders.js - Pixi.js API</title>
-    <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0pr2&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
+    <title>src&#x2F;pixi&#x2F;utils&#x2F;Utils.js - Pixi.JS</title>
+    <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
     <link rel="shortcut icon" type="image/png" href="..&#x2F;assets/favicon.png">
-    <script src="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;combo?3.8.0pr2&#x2F;build&#x2F;yui&#x2F;yui-min.js"></script>
+    <script src="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;combo?3.8.0&#x2F;build&#x2F;yui&#x2F;yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
 
@@ -15,11 +15,11 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
             
-                <h1><img src="http:&#x2F;&#x2F;www.goodboydigital.com&#x2F;pixijs&#x2F;logo_small.png" title="Pixi.js API"></h1>
+                <h1><img src="http:&#x2F;&#x2F;www.goodboydigital.com&#x2F;pixijs&#x2F;logo_small.png" title="Pixi.JS"></h1>
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.0</em>
+            <em>API Docs for: 1.0.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -114,79 +114,87 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: pixi&#x2F;renderers&#x2F;WebGLShaders.js</h1>
+                        <h1 class="file-heading">File: src&#x2F;pixi&#x2F;utils&#x2F;Utils.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
+&#x2F;**
+ * Provides requestAnimationFrame in a cross browser way.
+ *&#x2F;
+window.requestAnimFrame = (function() {
+  return window.requestAnimationFrame ||
+         window.webkitRequestAnimationFrame ||
+         window.mozRequestAnimationFrame ||
+         window.oRequestAnimationFrame ||
+         window.msRequestAnimationFrame ||
+         function(&#x2F;* function FrameRequestCallback *&#x2F; callback, &#x2F;* DOMElement Element *&#x2F; element) {
+           window.setTimeout(callback, 1000&#x2F;60);
+         };
+})();
+
+function HEXtoRGB(hex) {
+	return [(hex &gt;&gt; 16 &amp; 0xFF) &#x2F; 255, ( hex &gt;&gt; 8 &amp; 0xFF) &#x2F; 255, (hex &amp; 0xFF)&#x2F; 255];
+}
 
 &#x2F;**
- * @author Mat Groves http:&#x2F;&#x2F;matgroves.com&#x2F; @Doormat23
+ * Provides bind in a cross browser way.
  *&#x2F;
-	
-PIXI.shaderFragmentSrc = [	&quot;precision mediump float;&quot;,
-					  		&quot;varying vec2 vTextureCoord;&quot;,
-					  		&quot;varying float vColor;&quot;,
-					  		&quot;uniform sampler2D uSampler;&quot;,
-					  		&quot;void main(void) {&quot;,
-					  		&quot;gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y));&quot;,
-					  		&quot;gl_FragColor = gl_FragColor * vColor;&quot;,
-					  		&quot;}&quot;];
-
-PIXI.shaderVertexSrc = [	&quot;attribute vec2 aVertexPosition;&quot;,
-	    					&quot;attribute vec2 aTextureCoord;&quot;,
-	    					&quot;attribute float aColor;&quot;,
-	  						&quot;uniform mat4 uMVMatrix;&quot;,
-							&quot;varying vec2 vTextureCoord;&quot;,
-							&quot;varying float vColor;&quot;,
-							&quot;void main(void) {&quot;,
-							&quot;gl_Position = uMVMatrix * vec4(aVertexPosition, 1.0, 1.0);&quot;,
-							&quot;vTextureCoord = aTextureCoord;&quot;,
-							&quot;vColor = aColor;&quot;,
-	   					 	&quot;}&quot;]
-
-PIXI.CompileVertexShader = function(gl, shaderSrc)
-{
-	var src = &quot;&quot;;
-	
-	for (var i=0; i &lt; shaderSrc.length; i++) {
-	  src += shaderSrc[i];
-	};
-	
-	var shader;
-    shader = gl.createShader(gl.VERTEX_SHADER);
-       
-    gl.shaderSource(shader, src);
-    gl.compileShader(shader);
-
-    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        alert(gl.getShaderInfoLog(shader));
-        return null;
-    }
-    
-    return shader;
+if (typeof Function.prototype.bind != &#x27;function&#x27;) {
+  Function.prototype.bind = (function () {
+    var slice = Array.prototype.slice;
+    return function (thisArg) {
+      var target = this, boundArgs = slice.call(arguments, 1);
+ 
+      if (typeof target != &#x27;function&#x27;) throw new TypeError();
+ 
+      function bound() {
+	var args = boundArgs.concat(slice.call(arguments));
+	target.apply(this instanceof bound ? this : thisArg, args);
+      }
+ 
+      bound.prototype = (function F(proto) {
+          proto &amp;&amp; (F.prototype = proto);
+          if (!(this instanceof F)) return new F;          
+	})(target.prototype);
+ 
+      return bound;
+    };
+  })();
 }
 
-PIXI.CompileFragmentShader = function(gl, shaderSrc)
+var AjaxRequest = function()
 {
-	var src = &quot;&quot;;
+	var activexmodes = [&quot;Msxml2.XMLHTTP&quot;, &quot;Microsoft.XMLHTTP&quot;] &#x2F;&#x2F;activeX versions to check for in IE
 	
-	for (var i=0; i &lt; shaderSrc.length; i++) {
-	  src += shaderSrc[i];
-	};
-	
-	var shader;
-    shader = gl.createShader(gl.FRAGMENT_SHADER);
-        
-    gl.shaderSource(shader, src);
-    gl.compileShader(shader);
-	
-    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        alert(gl.getShaderInfoLog(shader));
-        return null;
-    }
-    
-    return shader;
+	if (window.ActiveXObject)
+	{ &#x2F;&#x2F;Test for support for ActiveXObject in IE first (as XMLHttpRequest in IE7 is broken)
+		for (var i=0; i&lt;activexmodes.length; i++)
+		{
+			try{
+				return new ActiveXObject(activexmodes[i])
+			}
+   			catch(e){
+    			&#x2F;&#x2F;suppress error
+   			}
+		}
+	}
+	else if (window.XMLHttpRequest) &#x2F;&#x2F; if Mozilla, Safari etc
+  	{
+  		return new XMLHttpRequest()
+ 	}
+ 	else
+ 	{
+		return false;
+ 	}
 }
+
+
+
+
+
+
+
+
     </pre>
 </div>
 

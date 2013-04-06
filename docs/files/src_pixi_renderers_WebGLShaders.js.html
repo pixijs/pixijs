@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>pixi&#x2F;extras&#x2F;Strip.js - Pixi.js API</title>
-    <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0pr2&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
+    <title>src&#x2F;pixi&#x2F;renderers&#x2F;WebGLShaders.js - Pixi.JS</title>
+    <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
     <link rel="shortcut icon" type="image/png" href="..&#x2F;assets/favicon.png">
-    <script src="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;combo?3.8.0pr2&#x2F;build&#x2F;yui&#x2F;yui-min.js"></script>
+    <script src="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;combo?3.8.0&#x2F;build&#x2F;yui&#x2F;yui-min.js"></script>
 </head>
 <body class="yui3-skin-sam">
 
@@ -15,11 +15,11 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
             
-                <h1><img src="http:&#x2F;&#x2F;www.goodboydigital.com&#x2F;pixijs&#x2F;logo_small.png" title="Pixi.js API"></h1>
+                <h1><img src="http:&#x2F;&#x2F;www.goodboydigital.com&#x2F;pixijs&#x2F;logo_small.png" title="Pixi.JS"></h1>
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.0</em>
+            <em>API Docs for: 1.0.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -114,100 +114,79 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: pixi&#x2F;extras&#x2F;Strip.js</h1>
+                        <h1 class="file-heading">File: src&#x2F;pixi&#x2F;renderers&#x2F;WebGLShaders.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
+
 &#x2F;**
- * @author Mat Groves http:&#x2F;&#x2F;matgroves.com&#x2F;
+ * @author Mat Groves http:&#x2F;&#x2F;matgroves.com&#x2F; @Doormat23
  *&#x2F;
+	
+PIXI.shaderFragmentSrc = [	&quot;precision mediump float;&quot;,
+					  		&quot;varying vec2 vTextureCoord;&quot;,
+					  		&quot;varying float vColor;&quot;,
+					  		&quot;uniform sampler2D uSampler;&quot;,
+					  		&quot;void main(void) {&quot;,
+					  		&quot;gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y));&quot;,
+					  		&quot;gl_FragColor = gl_FragColor * vColor;&quot;,
+					  		&quot;}&quot;];
 
-PIXI.Strip = function(texture, width, height)
+PIXI.shaderVertexSrc = [	&quot;attribute vec2 aVertexPosition;&quot;,
+	    					&quot;attribute vec2 aTextureCoord;&quot;,
+	    					&quot;attribute float aColor;&quot;,
+	  						&quot;uniform mat4 uMVMatrix;&quot;,
+							&quot;varying vec2 vTextureCoord;&quot;,
+							&quot;varying float vColor;&quot;,
+							&quot;void main(void) {&quot;,
+							&quot;gl_Position = uMVMatrix * vec4(aVertexPosition, 1.0, 1.0);&quot;,
+							&quot;vTextureCoord = aTextureCoord;&quot;,
+							&quot;vColor = aColor;&quot;,
+	   					 	&quot;}&quot;]
+
+PIXI.CompileVertexShader = function(gl, shaderSrc)
 {
-	PIXI.DisplayObjectContainer.call( this );
-	this.texture = texture;
-	this.blendMode = PIXI.blendModes.NORMAL;
+	var src = &quot;&quot;;
 	
-	try
-	{
-		this.uvs = new Float32Array([0, 1,
-				1, 1,
-				1, 0, 0,1]);
+	for (var i=0; i &lt; shaderSrc.length; i++) {
+	  src += shaderSrc[i];
+	};
 	
-		this.verticies = new Float32Array([0, 0,
-						  0,0,
-						  0,0, 0,
-						  0, 0]);
-						  
-		this.colors = new Float32Array([1, 1, 1, 1]);
-		
-		this.indices = new Uint16Array([0, 1, 2, 3]);
-	}
-	catch(error)
-	{
-		this.uvs = [0, 1,
-				1, 1,
-				1, 0, 0,1];
-	
-		this.verticies = [0, 0,
-						  0,0,
-						  0,0, 0,
-						  0, 0];
-						  
-		this.colors = [1, 1, 1, 1];
-		
-		this.indices = [0, 1, 2, 3];
-	}
-	
-	
-	&#x2F;*
-	this.uvs = new Float32Array()
-	this.verticies = new Float32Array()
-	this.colors = new Float32Array()
-	this.indices = new Uint16Array()
-*&#x2F;
-	this.width = width;
-	this.height = height;
-	
-	&#x2F;&#x2F; load the texture!
-	if(texture.baseTexture.hasLoaded)
-	{
-		this.width   = this.texture.frame.width;
-		this.height  = this.texture.frame.height;
-		this.updateFrame = true;
-	}
-	else
-	{
-		this.onTextureUpdateBind = this.onTextureUpdate.bind(this);
-		this.texture.addEventListener( &#x27;update&#x27;, this.onTextureUpdateBind );
-	}
-	
-	this.renderable = true;
+	var shader;
+    shader = gl.createShader(gl.VERTEX_SHADER);
+       
+    gl.shaderSource(shader, src);
+    gl.compileShader(shader);
+
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        alert(gl.getShaderInfoLog(shader));
+        return null;
+    }
+    
+    return shader;
 }
 
-&#x2F;&#x2F; constructor
-PIXI.Strip.constructor = PIXI.Strip;
-PIXI.Strip.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
-
-PIXI.Strip.prototype.setTexture = function(texture)
+PIXI.CompileFragmentShader = function(gl, shaderSrc)
 {
-	&#x2F;&#x2F;TODO SET THE TEXTURES
-	&#x2F;&#x2F;TODO VISIBILITY
+	var src = &quot;&quot;;
 	
-	&#x2F;&#x2F; stop current texture 
-	this.texture = texture;
-	this.width   = texture.frame.width;
-	this.height  = texture.frame.height;
-	this.updateFrame = true;
+	for (var i=0; i &lt; shaderSrc.length; i++) {
+	  src += shaderSrc[i];
+	};
+	
+	var shader;
+    shader = gl.createShader(gl.FRAGMENT_SHADER);
+        
+    gl.shaderSource(shader, src);
+    gl.compileShader(shader);
+	
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        alert(gl.getShaderInfoLog(shader));
+        return null;
+    }
+    
+    return shader;
 }
-
-PIXI.Strip.prototype.onTextureUpdate = function(event)
-{
-	this.updateFrame = true;
-}
-&#x2F;&#x2F; some helper functions..
-
-
     </pre>
 </div>
 
