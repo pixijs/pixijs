@@ -10,8 +10,10 @@
  * @param width {Number} the width of the renderers view
  * @param height {Number} the height of the renderers view
  * @param view {Canvas} the canvas to use as a view, optional
+ * @param transparent {Boolean} the transparency of the render view
+ * @default false
  */
-PIXI.autoDetectRenderer = function(width, height, view)
+PIXI.autoDetectRenderer = function(width, height, view, transparent)
 {
 	if(!width)width = 800;
 	if(!height)height = 600;
@@ -22,10 +24,10 @@ PIXI.autoDetectRenderer = function(width, height, view)
 	//console.log(webgl);
 	if( webgl )
 	{
-		return new PIXI.WebGLRenderer(width, height, view);
+		return new PIXI.WebGLRenderer(width, height, view, transparent);
 	}
 
-	return	new PIXI.CanvasRenderer(width, height, view);
+	return	new PIXI.CanvasRenderer(width, height, view, transparent);
 };
 
 

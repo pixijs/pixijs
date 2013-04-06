@@ -1,4 +1,15 @@
 /**
+ * @license
+ * Pixi.JS - v1.0.0
+ * Copyright (c) 2012, Mat Groves
+ * http://goodboydigital.com/
+ *
+ * Compiled: 2013-04-06
+ *
+ * Pixi.JS is licensed under the MIT License.
+ * http://www.opensource.org/licenses/mit-license.php
+ */
+/**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
@@ -6,6 +17,7 @@
 @module PIXI
  */
 var PIXI = PIXI || {};
+
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -45,6 +57,7 @@ PIXI.Point.clone = function()
 
 // constructor
 PIXI.Point.constructor = PIXI.Point;
+
 
 /**
  * @author Mat Groves http://matgroves.com/
@@ -101,6 +114,7 @@ PIXI.Rectangle.clone = function()
 
 // constructor
 PIXI.Rectangle.constructor = PIXI.Rectangle;
+
 
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
@@ -211,7 +225,7 @@ PIXI.DisplayObject.prototype.updateTransform = function()
 	
     // Cache the matrix values (makes for huge speed increases!)
     var a00 = localTransform[0], a01 = localTransform[1], a02 = localTransform[2],
-        a10 = localTransform[3], a11 = localTransform[4], a12 = localTransform[5];
+        a10 = localTransform[3], a11 = localTransform[4], a12 = localTransform[5],
 
         b00 = parentTransform[0], b01 = parentTransform[1], b02 = parentTransform[2],
         b10 = parentTransform[3], b11 = parentTransform[4], b12 = parentTransform[5];
@@ -228,6 +242,7 @@ PIXI.DisplayObject.prototype.updateTransform = function()
 	// mat3.multiply(this.localTransform, this.parent.worldTransform, this.worldTransform);
 	this.worldAlpha = this.alpha * this.parent.worldAlpha;		
 }
+
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -367,6 +382,7 @@ PIXI.DisplayObjectContainer.prototype.updateTransform = function()
 		this.children[i].updateTransform();	
 	}
 }
+
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -586,6 +602,7 @@ PIXI.Sprite.fromImage = function(imageId)
 	return new PIXI.Sprite(texture);
 }
 
+
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -685,7 +702,8 @@ PIXI.MovieClip.prototype.updateTransform = function()
 	this.currentFrame += this.animationSpeed;
 	var round = (this.currentFrame + 0.5) | 0;
 	this.setTexture(this.textures[round % this.textures.length]);
-}/**
+}
+/**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
@@ -844,7 +862,7 @@ PIXI.InteractionManager.prototype.hitTest = function(interactionData)
 		tempPoint.y = a00 * id * global.y + -a10 * id * global.x + (-a12 * a00 + a02 * a10) * id;
 		
 			
-		var x1 = -item.width * item.anchor.x
+		var x1 = -item.width * item.anchor.x;
 		
 		if(tempPoint.x > x1 && tempPoint.x < x1 + item.width)
 		{
@@ -1046,6 +1064,7 @@ PIXI.InteractionData = function()
 PIXI.InteractionData.constructor = PIXI.InteractionData;
 
 
+
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -1148,6 +1167,7 @@ PIXI.Stage.prototype.__removeChild = function(child)
 		}
 	}
 }
+
 /**
  * Provides requestAnimationFrame in a cross browser way.
  */
@@ -1224,6 +1244,7 @@ var AjaxRequest = function()
 
 
 
+
 /**
  * https://github.com/mrdoob/eventtarget.js/
  * THankS mr DOob!
@@ -1233,7 +1254,7 @@ PIXI.EventTarget = function () {
 
 	var listeners = {};
 	
-	this.addEventListener = function ( type, listener ) {
+	this.addEventListener = this.on = function ( type, listener ) {
 		
 		
 		if ( listeners[ type ] === undefined ) {
@@ -1249,7 +1270,7 @@ PIXI.EventTarget = function () {
 
 	};
 
-	this.dispatchEvent = function ( event ) {
+	this.dispatchEvent = this.emit = function ( event ) {
 		
 		for ( var listener in listeners[ event.type ] ) {
 
@@ -1259,7 +1280,7 @@ PIXI.EventTarget = function () {
 
 	};
 
-	this.removeEventListener = function ( type, listener ) {
+	this.removeEventListener = this.off = function ( type, listener ) {
 
 		var index = listeners[ type ].indexOf( listener );
 
@@ -1272,6 +1293,7 @@ PIXI.EventTarget = function () {
 	};
 
 };
+
 
 
 /*
@@ -1504,6 +1526,7 @@ PIXI.mat4.multiply = function (mat, mat2, dest)
 
     return dest;
 }
+
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -1516,8 +1539,10 @@ PIXI.mat4.multiply = function (mat, mat2, dest)
  * @param width {Number} the width of the renderers view
  * @param height {Number} the height of the renderers view
  * @param view {Canvas} the canvas to use as a view, optional
+ * @param transparent {Boolean} the transparency of the render view
+ * @default false
  */
-PIXI.autoDetectRenderer = function(width, height, view)
+PIXI.autoDetectRenderer = function(width, height, view, transparent)
 {
 	if(!width)width = 800;
 	if(!height)height = 600;
@@ -1528,11 +1553,12 @@ PIXI.autoDetectRenderer = function(width, height, view)
 	//console.log(webgl);
 	if( webgl )
 	{
-		return new PIXI.WebGLRenderer(width, height, view);
+		return new PIXI.WebGLRenderer(width, height, view, transparent);
 	}
 
-	return	new PIXI.CanvasRenderer(width, height, view);
+	return	new PIXI.CanvasRenderer(width, height, view, transparent);
 };
+
 
 
 
@@ -1603,7 +1629,8 @@ PIXI.CompileFragmentShader = function(gl, shaderSrc)
     }
     
     return shader;
-}/**
+}
+/**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
@@ -1619,16 +1646,21 @@ PIXI._defaultFrame = new PIXI.Rectangle(0,0,1,1);
  * @param height {Number} the height of the canvas view
  * @default 0
  * @param view {Canvas} the canvas to use as a view, optional
+ * @param transparent {Boolean} the transparency of the render view
+ * @default false
+ * 
  */
-PIXI.WebGLRenderer = function(width, height, view)
+PIXI.WebGLRenderer = function(width, height, view, transparent)
 {
+	//console.log(transparent)
+	this.transparent = !!transparent;
+	
 	this.width = width || 800;
 	this.height = height || 600;
 	
 	this.view = view || document.createElement( 'canvas' ); 
     this.view.width = this.width;
 	this.view.height = this.height;  
-	this.view.background = "#FF0000";
 	
 	// deal with losing context..	
     var scope = this;
@@ -1640,7 +1672,9 @@ PIXI.WebGLRenderer = function(width, height, view)
 	try 
  	{
         this.gl = this.view.getContext("experimental-webgl",  {  	
-    		 alpha: false
+    		 alpha: this.transparent,
+    		 antialias:false, // SPEED UP??
+    		 premultipliedAlpha:false
         });
     } 
     catch (e) 
@@ -1656,7 +1690,7 @@ PIXI.WebGLRenderer = function(width, height, view)
     this.batch = new PIXI.WebGLBatch(gl);
    	gl.disable(gl.DEPTH_TEST);
     gl.enable(gl.BLEND);
-    gl.colorMask(true, true, true, false); 
+    gl.colorMask(true, true, true, this.transparent); 
     
     this.projectionMatrix =  PIXI.mat4.create();
     this.resize(this.width, this.height)
@@ -1790,7 +1824,8 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	
 	gl.clear(gl.COLOR_BUFFER_BIT)
 
-	gl.clearColor(stage.backgroundColorSplit[0], stage.backgroundColorSplit[1], stage.backgroundColorSplit[2], 1.0);     
+	gl.clearColor(stage.backgroundColorSplit[0], stage.backgroundColorSplit[1], stage.backgroundColorSplit[2], 0);     
+	
 	
 	// set the correct blend mode!
  	gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
@@ -2293,6 +2328,7 @@ PIXI.WebGLRenderer.prototype.handleContextRestored = function(event)
 	
 	this.contextLost = false;
 }
+
 
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
@@ -2851,6 +2887,7 @@ PIXI.WebGLBatch.prototype.render = function()
     gl.drawElements(gl.TRIANGLES, this.size * 6, gl.UNSIGNED_SHORT, 0);
 }
 
+
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -2862,9 +2899,13 @@ PIXI.WebGLBatch.prototype.render = function()
  * @param width {Number} the width of the canvas view
  * @param height {Number} the height of the canvas view
  * @param view {Canvas} the canvas to use as a view, optional
+ * @param transparent {Boolean} the transparency of the render view
+ * @default false
  */
-PIXI.CanvasRenderer = function(width, height, view)
+PIXI.CanvasRenderer = function(width, height, view, transparent)
 {
+	this.transparent = transparent;
+	
 	/**
 	 * The width of the canvas view
 	 * @property width
@@ -2928,7 +2969,7 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 	this.context.setTransform(1,0,0,1,0,0); 
 	
 	// update the background color
-	if(this.view.style.backgroundColor!=stage.backgroundColorString)this.view.style.backgroundColor = stage.backgroundColorString;
+	if(this.view.style.backgroundColor!=stage.backgroundColorString && !this.transparent)this.view.style.backgroundColor = stage.backgroundColorString;
 
 	this.context.clearRect(0, 0, this.width, this.height)
     this.renderDisplayObject(stage);
@@ -3133,6 +3174,7 @@ PIXI.CanvasRenderer.prototype.renderStrip = function(strip)
 
 
 
+
 /**
  * @author Mat Groves http://matgroves.com/
  */
@@ -3221,6 +3263,7 @@ PIXI.Strip.prototype.onTextureUpdate = function(event)
 	this.updateFrame = true;
 }
 // some helper functions..
+
 
 /**
  * @author Mat Groves http://matgroves.com/
@@ -3397,6 +3440,7 @@ PIXI.Rope.prototype.setTexture = function(texture)
 
 
 
+
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -3489,6 +3533,7 @@ PIXI.BaseTexture.prototype.fromImage = function(imageUrl)
 {
 
 }
+
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -3691,6 +3736,7 @@ PIXI.Texture.removeTextureFromCache = function(id)
 	return texture;
 }
 
+
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -3792,6 +3838,7 @@ PIXI.SpriteSheetLoader.prototype.onLoaded = function()
 	}
 	
 }
+
 
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23

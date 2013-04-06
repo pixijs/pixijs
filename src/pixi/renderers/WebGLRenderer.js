@@ -14,16 +14,21 @@ PIXI._defaultFrame = new PIXI.Rectangle(0,0,1,1);
  * @param height {Number} the height of the canvas view
  * @default 0
  * @param view {Canvas} the canvas to use as a view, optional
+ * @param transparent {Boolean} the transparency of the render view
+ * @default false
+ * 
  */
-PIXI.WebGLRenderer = function(width, height, view)
+PIXI.WebGLRenderer = function(width, height, view, transparent)
 {
+	//console.log(transparent)
+	this.transparent = !!transparent;
+	
 	this.width = width || 800;
 	this.height = height || 600;
 	
 	this.view = view || document.createElement( 'canvas' ); 
     this.view.width = this.width;
 	this.view.height = this.height;  
-	this.view.background = "#FF0000";
 	
 	// deal with losing context..	
     var scope = this;
@@ -35,7 +40,9 @@ PIXI.WebGLRenderer = function(width, height, view)
 	try 
  	{
         this.gl = this.view.getContext("experimental-webgl",  {  	
-    		 alpha: false
+    		 alpha: this.transparent,
+    		 antialias:false, // SPEED UP??
+    		 premultipliedAlpha:false
         });
     } 
     catch (e) 
@@ -51,7 +58,7 @@ PIXI.WebGLRenderer = function(width, height, view)
     this.batch = new PIXI.WebGLBatch(gl);
    	gl.disable(gl.DEPTH_TEST);
     gl.enable(gl.BLEND);
-    gl.colorMask(true, true, true, false); 
+    gl.colorMask(true, true, true, this.transparent); 
     
     this.projectionMatrix =  PIXI.mat4.create();
     this.resize(this.width, this.height)
@@ -185,7 +192,8 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	
 	gl.clear(gl.COLOR_BUFFER_BIT)
 
-	gl.clearColor(stage.backgroundColorSplit[0], stage.backgroundColorSplit[1], stage.backgroundColorSplit[2], 1.0);     
+	gl.clearColor(stage.backgroundColorSplit[0], stage.backgroundColorSplit[1], stage.backgroundColorSplit[2], 0);     
+	
 	
 	// set the correct blend mode!
  	gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);

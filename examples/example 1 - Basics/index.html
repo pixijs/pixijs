@@ -10,6 +10,7 @@
 		}
 	</style>
 	<script src="pixi.js"></script>
+	<script src="../../src/pixi/renderers/WebGLRenderer.js"></script>
 </head>
 <body>
 	<script>
@@ -17,7 +18,7 @@
 	// create an new instance of a pixi stage
 	var stage = new PIXI.Stage(0x66FF99);
 	
-	// create a renderer instance.
+	// create a renderer instance
 	var renderer = PIXI.autoDetectRenderer(400, 300);
 	
 	// add the renderer view element to the DOM
