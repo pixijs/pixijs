@@ -69,16 +69,19 @@ PIXI.SpriteSheetLoader.prototype.onLoaded = function()
 			for (var i in frameData) 
 			{
 				var rect = frameData[i].frame;
-				PIXI.TextureCache[i] = new PIXI.Texture(this.texture, {x:rect.x, y:rect.y, width:rect.w, height:rect.h});
-				
-				if(frameData[i].trimmed)
+				if (rect)
 				{
-					//var realSize = frameData[i].spriteSourceSize;
-					PIXI.TextureCache[i].realSize = frameData[i].spriteSourceSize;
-					PIXI.TextureCache[i].trim.x = 0// (realSize.x / rect.w)
-					// calculate the offset!
+					PIXI.TextureCache[i] = new PIXI.Texture(this.texture, {x:rect.x, y:rect.y, width:rect.w, height:rect.h});
+					
+					if(frameData[i].trimmed)
+					{
+						//var realSize = frameData[i].spriteSourceSize;
+						PIXI.TextureCache[i].realSize = frameData[i].spriteSourceSize;
+						PIXI.TextureCache[i].trim.x = 0// (realSize.x / rect.w)
+						// calculate the offset!
+					}
+	//				this.frames[i] = ;
 				}
-//				this.frames[i] = ;
    			}
 			
 			if(this.texture.hasLoaded)
