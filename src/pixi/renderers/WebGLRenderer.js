@@ -42,7 +42,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
         this.gl = this.view.getContext("experimental-webgl",  {  	
     		 alpha: this.transparent,
     		 antialias:false, // SPEED UP??
-    		 premultipliedAlpha:false
+    		 premultipliedAlpha:true
         });
     } 
     catch (e) 
@@ -166,12 +166,20 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 {
 	if(this.contextLost)return;
 	
+<<<<<<< HEAD
 	//clear objects left behind by the previous stage
 	if(!this.__stage) this.__stage = stage
 	if(this.__stage && this.__stage !== stage)
 	{
 		this.checkVisibility(this.__stage, false)
 		this.__stage = stage
+=======
+	// if rendering a new stage clear the batchs..
+	if(this.__stage !== stage)
+	{
+		if(this.__stage)this.checkVisibility(this.__stage, false)
+		this.__stage = stage;
+>>>>>>> fix for rendering different stages
 	}
 	
 	// update children if need be

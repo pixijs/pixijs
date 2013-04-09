@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-04-06
+ * Compiled: 2013-04-09
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -1539,7 +1539,7 @@ PIXI.mat4.multiply = function (mat, mat2, dest)
  * @param width {Number} the width of the renderers view
  * @param height {Number} the height of the renderers view
  * @param view {Canvas} the canvas to use as a view, optional
- * @param transparent {Boolean} the transparency of the render view
+ * @param transparent {Boolean} the transparency of the render view, default false
  * @default false
  */
 PIXI.autoDetectRenderer = function(width, height, view, transparent)
@@ -1646,7 +1646,7 @@ PIXI._defaultFrame = new PIXI.Rectangle(0,0,1,1);
  * @param height {Number} the height of the canvas view
  * @default 0
  * @param view {Canvas} the canvas to use as a view, optional
- * @param transparent {Boolean} the transparency of the render view
+ * @param transparent {Boolean} the transparency of the render view, default false
  * @default false
  * 
  */
@@ -1674,7 +1674,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
         this.gl = this.view.getContext("experimental-webgl",  {  	
     		 alpha: this.transparent,
     		 antialias:false, // SPEED UP??
-    		 premultipliedAlpha:false
+    		 premultipliedAlpha:true
         });
     } 
     catch (e) 
@@ -1797,6 +1797,13 @@ PIXI.WebGLRenderer.prototype.checkVisibility = function(displayObject, globalVis
 PIXI.WebGLRenderer.prototype.render = function(stage)
 {
 	if(this.contextLost)return;
+	
+	// if rendering a new stage clear the batchs..
+	if(this.__stage !== stage)
+	{
+		if(this.__stage)this.checkVisibility(this.__stage, false)
+		this.__stage = stage;
+	}
 	
 	// update children if need be
 	// best to remove first!
@@ -2892,15 +2899,20 @@ PIXI.WebGLBatch.prototype.render = function()
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
+
 /**
  * the CanvasRenderer draws the stage and all its content onto a 2d canvas. This renderer should be used for browsers that do not support webGL.
  * Dont forget to add the view to your DOM or you will not see anything :)
  * @class CanvasRenderer
+ * @constructor
  * @param width {Number} the width of the canvas view
+ * @default 0
  * @param height {Number} the height of the canvas view
+ * @default 0
  * @param view {Canvas} the canvas to use as a view, optional
- * @param transparent {Boolean} the transparency of the render view
+ * @param transparent {Boolean} the transparency of the render view, default false
  * @default false
+ * 
  */
 PIXI.CanvasRenderer = function(width, height, view, transparent)
 {
@@ -3808,16 +3820,19 @@ PIXI.SpriteSheetLoader.prototype.onLoaded = function()
 			for (var i in frameData) 
 			{
 				var rect = frameData[i].frame;
-				PIXI.TextureCache[i] = new PIXI.Texture(this.texture, {x:rect.x, y:rect.y, width:rect.w, height:rect.h});
-				
-				if(frameData[i].trimmed)
+				if (rect)
 				{
-					//var realSize = frameData[i].spriteSourceSize;
-					PIXI.TextureCache[i].realSize = frameData[i].spriteSourceSize;
-					PIXI.TextureCache[i].trim.x = 0// (realSize.x / rect.w)
-					// calculate the offset!
+					PIXI.TextureCache[i] = new PIXI.Texture(this.texture, {x:rect.x, y:rect.y, width:rect.w, height:rect.h});
+					
+					if(frameData[i].trimmed)
+					{
+						//var realSize = frameData[i].spriteSourceSize;
+						PIXI.TextureCache[i].realSize = frameData[i].spriteSourceSize;
+						PIXI.TextureCache[i].trim.x = 0// (realSize.x / rect.w)
+						// calculate the offset!
+					}
+	//				this.frames[i] = ;
 				}
-//				this.frames[i] = ;
    			}
 			
 			if(this.texture.hasLoaded)
