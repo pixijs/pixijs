@@ -712,10 +712,12 @@ PIXI.MovieClip.prototype.updateTransform = function()
     if(this.loop){
         this.setTexture(this.textures[round % this.textures.length]);
     }else{
-        if (round>this.textures.length){
+        if (round>=this.textures.length){
             this.currentFrame=this.textures.length-1;
             this.setTexture(this.textures[this.textures.length-1]);
             this.stop();
+        }else{
+            this.setTexture(this.textures[round % this.textures.length]);
         }
     }
 
