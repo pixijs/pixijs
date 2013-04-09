@@ -140,8 +140,8 @@ PIXI.Sprite = function(texture)
 }
 
 // constructor
-PIXI.Sprite.constructor = PIXI.Sprite;
 PIXI.Sprite.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
+PIXI.Sprite.prototype.constructor = PIXI.Sprite;
 
 /**
 @method setTexture
