@@ -120,7 +120,7 @@ PIXI.MovieClip.prototype.updateTransform = function()
             this.stop();
             if(this.onComplete)this.onComplete();
         }else{
-            this.setTexture(this.textures[round % this.textures.length]);
+            this.setTexture(this.textures[round]);
         }
     }
 
