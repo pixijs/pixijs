@@ -166,6 +166,14 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 {
 	if(this.contextLost)return;
 	
+	//clear objects left behind by the previous stage
+	if(!this.__stage) this.__stage = stage
+	if(this.__stage && this.__stage !== stage)
+	{
+		this.checkVisibility(this.__stage, false)
+		this.__stage = stage
+	}
+	
 	// update children if need be
 	// best to remove first!
 	for (var i=0; i < stage.__childrenRemoved.length; i++)
