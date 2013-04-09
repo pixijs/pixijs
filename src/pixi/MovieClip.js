@@ -33,6 +33,14 @@ PIXI.MovieClip = function(textures)
 	 * @type Number
 	 */
 	this.animationSpeed = 1;
+
+    /**
+     * Whether or not the movie clip repeats after playing.
+     * @property loop
+     * @type Boolean
+     */
+    this.loop = true;
+
 	
 	/**
 	 * [read only] indicates if the MovieClip is currently playing
@@ -96,5 +104,14 @@ PIXI.MovieClip.prototype.updateTransform = function()
 	
 	this.currentFrame += this.animationSpeed;
 	var round = (this.currentFrame + 0.5) | 0;
-	this.setTexture(this.textures[round % this.textures.length]);
+    if(this.loop){
+        this.setTexture(this.textures[round % this.textures.length]);
+    }else{
+        if (round>this.textures.length){
+            this.currentFrame=this.textures.length-1;
+            this.setTexture(this.textures[this.textures.length-1]);
+            this.stop();
+        }
+    }
+
 }
