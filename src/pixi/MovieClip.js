@@ -118,7 +118,6 @@ PIXI.MovieClip.prototype.updateTransform = function()
             this.currentFrame=this.textures.length-1;
             this.setTexture(this.textures[this.textures.length-1]);
             this.stop();
-            this.dispatchEvent( { type: 'onComplete', content: this } );
             if(this.onComplete)this.onComplete();
         }else{
             this.setTexture(this.textures[round % this.textures.length]);
