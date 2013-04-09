@@ -41,6 +41,13 @@ PIXI.MovieClip = function(textures)
      */
     this.loop = true;
 
+    /**
+     * Function to call when a MovieClip finishes playing
+     * @property onComplete
+     * @type Function
+     */
+    this.onComplete = null;
+
 	
 	/**
 	 * [read only] indicates if the MovieClip is currently playing
@@ -111,6 +118,8 @@ PIXI.MovieClip.prototype.updateTransform = function()
             this.currentFrame=this.textures.length-1;
             this.setTexture(this.textures[this.textures.length-1]);
             this.stop();
+            this.dispatchEvent( { type: 'onComplete', content: this } );
+            if(this.onComplete)this.onComplete();
         }else{
             this.setTexture(this.textures[round % this.textures.length]);
         }
