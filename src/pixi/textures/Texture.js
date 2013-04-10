@@ -154,23 +154,8 @@ PIXI.Texture.fromFrame = function(frameId)
  */
 PIXI.Texture.fromCanvas = function(canvas)
 {
-	// create a canvas id??
-	var texture = PIXI.TextureCache[canvas];
-	
-	if(!texture)
-	{
-		var baseTexture = PIXI.BaseTextureCache[canvas];
-		if(!baseTexture) 
-		{
-			baseTexture = new PIXI.BaseTexture(canvas);
-			PIXI.BaseTextureCache[canvas] = baseTexture;
-		}
-		texture = new PIXI.Texture(baseTexture);
-		
-		PIXI.TextureCache[canvas] = texture;
-	}
-	
-	return texture;
+	var	baseTexture = new PIXI.BaseTexture(canvas);
+	return new PIXI.Texture(baseTexture);
 }
 
 
