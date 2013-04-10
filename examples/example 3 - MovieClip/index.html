@@ -60,23 +60,24 @@
 			var explosion = new PIXI.MovieClip(explosionTextures);
 			
 		
-			explosion.position.x = Math.random() * 800;
-			explosion.position.y = Math.random() * 600;
+			explosion.position.x = 400+(i*50);
+			explosion.position.y = 300;
 			explosion.anchor.x = 0.5;
 			explosion.anchor.y = 0.5;
 			
 			explosion.rotation = Math.random() * Math.PI;
-			explosion.scale.x = explosion.scale.y = 0.75 + Math.random() * 0.5
+			explosion.scale.x = explosion.scale.y = 1;
 			
-			explosion.gotoAndPlay(Math.random() * 27);
+			explosion.gotoAndStop(9);
 
 			stage.addChild(explosion);
 		}
 		
 		// start animating
 		requestAnimFrame( animate );
-		
-		
+		stage.swapChildren()
+		stage.swapChildren(stage.children[0], stage.children[1]);
+        stage.swapChildren(stage.children[2], stage.children[3]);
 	}	
 	
 	function animate() {

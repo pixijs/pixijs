@@ -247,50 +247,73 @@ PIXI.DisplayObject.prototype.updateTransform = function()
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
-
 /**
  * A DisplayObjectContainer represents a collection of display objects. It is the base class of all display objects that act as a container for other objects.
- * @class DisplayObjectContainer 
+ * @class DisplayObjectContainer
  * @extends DisplayObject
  * @constructor
  */
-PIXI.DisplayObjectContainer = function()
-{
-	PIXI.DisplayObject.call( this );
-	
-	/**
-	 * [read-only] The of children of this container.
-	 * @property children {Array}
-	 */	
-	this.children = [];
-	//s
-	this.renderable = false;
+PIXI.DisplayObjectContainer = function () {
+    PIXI.DisplayObject.call(this);
+
+    /**
+     * [read-only] The of children of this container.
+     * @property children {Array}
+     */
+    this.children = [];
+    //s
+    this.renderable = false;
 }
 
 // constructor
 PIXI.DisplayObjectContainer.constructor = PIXI.DisplayObjectContainer;
-PIXI.DisplayObjectContainer.prototype = Object.create( PIXI.DisplayObject.prototype );
+PIXI.DisplayObjectContainer.prototype = Object.create(PIXI.DisplayObject.prototype);
 
 /**
  * Adds a child to the container.
  * @method addChild
  * @param  DisplayObject {DisplayObject}
  */
-PIXI.DisplayObjectContainer.prototype.addChild = function(child)
-{
-	if(child.parent != undefined)
-	{
-		child.parent.removeChild(child)
-	}
-	
-	child.parent = this;
-	child.childIndex = this.children.length;
-	
-	this.children.push(child);	
-	if(this.stage)
-	{
-		this.stage.__addChild(child);
-	}
+PIXI.DisplayObjectContainer.prototype.addChild = function (child) {
+    if (child.parent != undefined) {
+        child.parent.removeChild(child)
+    }
+
+    child.parent = this;
+    child.childIndex = this.children.length;
+
+    this.children.push(child);
+    if (this.stage) {
+        this.stage.__addChild(child);
+    }
+}
+
+PIXI.DisplayObjectContainer.prototype.clone = function () {
+    for (var prop in this) {
+
+    }
+}
+
+/**
+ * Swaps the index of two child objects to place one if front or behind the other.
+ * @method swapChildren
+ * @param DisplayObject1 {DisplayObject}
+ * @param DisplayObject2 {DisplayObject}
+ */
+PIXI.DisplayObjectContainer.prototype.swapChildren = function (child1, child2) {
+    //do both children have parents?
+    if(!child1.parent) return;
+    if(!child2.parent) return;
+
+    //they should be the same parent
+    if(child1.parent!=child2.parent) return;
+
+    //swap their index and update the parent container
+    var temp = {childIndex: child1.childIndex};
+    child1.childIndex = child2.childIndex;
+    child2.childIndex = temp.childIndex;
+    child1.parent.children[child1.childIndex] = child1;
+    child2.parent.children[child2.childIndex] = child2;
 }
 
 /**
@@ -299,44 +322,36 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
  * @param DisplayObject {DisplayObject}
  * @param index {Number}
  */
-PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
-{
-	if(index >= 0 && index <= this.children.length)
-	{
-		if(child.parent != undefined)
-		{
-			child.parent.removeChild(child);
-		}
-	
-		if (index == this.children.length)
-		{
-		  	this.children.push(child);
-		}	
-		else 
-		{
-			this.children.splice(index, 0, child);
-		}
+PIXI.DisplayObjectContainer.prototype.addChildAt = function (child, index) {
+    if (index >= 0 && index <= this.children.length) {
+        if (child.parent != undefined) {
+            child.parent.removeChild(child);
+        }
 
-		child.parent = this;
-		child.childIndex = index;
-		
-		var length = this.children.length;
-		for (var i=index; i < length; i++) 
-		{
-		  this.children[i].childIndex = i;
-		}
-		
-		if(this.stage)
-		{
-			this.stage.__addChild(child);
-		}
-	}
-	else
-	{
-		// error!
-		
-		throw new Error(child + " The index "+ index +" supplied is out of bounds " + this.children.length);
-	}
+        if (index == this.children.length) {
+            this.children.push(child);
+        }
+        else {
+            this.children.splice(index, 0, child);
+        }
+
+        child.parent = this;
+        child.childIndex = index;
+
+        var length = this.children.length;
+        for (var i = index; i < length; i++) {
+            this.children[i].childIndex = i;
+        }
+
+        if (this.stage) {
+            this.stage.__addChild(child);
+        }
+    }
+    else {
+        // error!
+
+        throw new Error(child + " The index " + index + " supplied is out of bounds " + this.children.length);
+    }
 }
 
 /**
@@ -344,43 +359,36 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
  * @method removeChild
  * @param  DisplayObject {DisplayObject}
  */
-PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
-{
-	var index = this.children.indexOf( child );
+PIXI.DisplayObjectContainer.prototype.removeChild = function (child) {
+    var index = this.children.indexOf(child);
 
-	if ( index !== -1 ) 
-	{
-		if(this.stage)this.stage.__removeChild(child);
-		child.parent = undefined;
-		//child.childIndex = 0
-		this.children.splice( index, 1 );
-	
-		// update in dexs!
-		for(var i=index,j=this.children.length; i<j; i++)
-		{
-			this.children[i].childIndex -= 1;
-		}
-	}
-	else
-	{
-		throw new Error(child + " The supplied DisplayObject must be a child of the caller " + this);
-	}
+    if (index !== -1) {
+        if (this.stage)this.stage.__removeChild(child);
+        child.parent = undefined;
+        //child.childIndex = 0
+        this.children.splice(index, 1);
+
+        // update in dexs!
+        for (var i = index, j = this.children.length; i < j; i++) {
+            this.children[i].childIndex -= 1;
+        }
+    }
+    else {
+        throw new Error(child + " The supplied DisplayObject must be a child of the caller " + this);
+    }
 }
-
 
 /**
  * @private
  */
-PIXI.DisplayObjectContainer.prototype.updateTransform = function()
-{
-	if(!this.visible)return;
-	
-	PIXI.DisplayObject.prototype.updateTransform.call( this );
-	
-	for(var i=0,j=this.children.length; i<j; i++)
-	{
-		this.children[i].updateTransform();	
-	}
+PIXI.DisplayObjectContainer.prototype.updateTransform = function () {
+    if (!this.visible)return;
+
+    PIXI.DisplayObject.prototype.updateTransform.call(this);
+
+    for (var i = 0, j = this.children.length; i < j; i++) {
+        this.children[i].updateTransform();
+    }
 }
 
 /**
@@ -725,7 +733,7 @@ PIXI.MovieClip.prototype.updateTransform = function()
             this.stop();
             if(this.onComplete)this.onComplete();
         }else{
-            this.setTexture(this.textures[round % this.textures.length]);
+            this.setTexture(this.textures[round]);
         }
     }
 
