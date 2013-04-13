@@ -54,7 +54,7 @@
 		
 		// create a texture from an image path
 		// add a bunch of aliens
-		for (var i = 0; i < 50; i++) 
+		for (var i = 0; i < 50; i++)
 		{
 			// create an explosion MovieClip
 			var explosion = new PIXI.MovieClip(explosionTextures);
@@ -69,7 +69,7 @@
 			explosion.scale.x = explosion.scale.y = 0.75 + Math.random() * 0.5
 			
 			explosion.gotoAndPlay(Math.random() * 27);
-			
+
 			stage.addChild(explosion);
 		}
 		
