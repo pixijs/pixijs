@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-04-09
+ * Compiled: 2013-04-14
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -433,14 +433,14 @@ PIXI.Sprite = function(texture)
 	 * @property width
 	 * @type #Number
 	 */
-	this.width = 1;
+	this.width = 0;
 	
 	/**
 	 * The height of the sprite (this is initially set by the texture)
 	 * @property height
 	 * @type #Number
 	 */
-	this.height = 1;
+	this.height = 0;
 	
 	if(texture.baseTexture.hasLoaded)
 	{
@@ -564,8 +564,8 @@ PIXI.Sprite.prototype.setInteractive = function(interactive)
  */
 PIXI.Sprite.prototype.onTextureUpdate = function(event)
 {
-	this.width   = this.texture.frame.width;
-	this.height  = this.texture.frame.height;
+	this.width   = this.width || this.texture.frame.width;
+	this.height  = this.height || this.texture.frame.height;
 	this.updateFrame = true;
 }
 
@@ -1798,6 +1798,8 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 {
 	if(this.contextLost)return;
 	
+
+
 	// if rendering a new stage clear the batchs..
 	if(this.__stage !== stage)
 	{
@@ -3702,23 +3704,8 @@ PIXI.Texture.fromFrame = function(frameId)
  */
 PIXI.Texture.fromCanvas = function(canvas)
 {
-	// create a canvas id??
-	var texture = PIXI.TextureCache[canvas];
-	
-	if(!texture)
-	{
-		var baseTexture = PIXI.BaseTextureCache[canvas];
-		if(!baseTexture) 
-		{
-			baseTexture = new PIXI.BaseTexture(canvas);
-			PIXI.BaseTextureCache[canvas] = baseTexture;
-		}
-		texture = new PIXI.Texture(baseTexture);
-		
-		PIXI.TextureCache[canvas] = texture;
-	}
-	
-	return texture;
+	var	baseTexture = new PIXI.BaseTexture(canvas);
+	return new PIXI.Texture(baseTexture);
 }
 
 

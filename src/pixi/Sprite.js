@@ -48,14 +48,14 @@ PIXI.Sprite = function(texture)
 	 * @property width
 	 * @type #Number
 	 */
-	this.width = 1;
+	this.width = 0;
 	
 	/**
 	 * The height of the sprite (this is initially set by the texture)
 	 * @property height
 	 * @type #Number
 	 */
-	this.height = 1;
+	this.height = 0;
 	
 	if(texture.baseTexture.hasLoaded)
 	{
@@ -179,8 +179,8 @@ PIXI.Sprite.prototype.setInteractive = function(interactive)
  */
 PIXI.Sprite.prototype.onTextureUpdate = function(event)
 {
-	this.width   = this.texture.frame.width;
-	this.height  = this.texture.frame.height;
+	this.width   = this.width || this.texture.frame.width;
+	this.height  = this.height || this.texture.frame.height;
 	this.updateFrame = true;
 }
 
