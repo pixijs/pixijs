@@ -56,14 +56,10 @@ PIXI.DisplayObjectContainer.prototype.clone = function () {
  * @param DisplayObject2 {DisplayObject}
  */
 PIXI.DisplayObjectContainer.prototype.swapChildren = function (child1, child2) {
-    //do both children have parents?
     if(!child1.parent) return;
     if(!child2.parent) return;
 
-    //they should be the same parent
     if(child1.parent!=child2.parent) return;
-
-    //swap their index and update the parent container
     var temp = {childIndex: child1.childIndex};
     child1.childIndex = child2.childIndex;
     child2.childIndex = temp.childIndex;
