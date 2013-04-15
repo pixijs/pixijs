@@ -942,8 +942,6 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
 	
 	// while 
 	// hit test 
-	
-	
 	for (var i = 0; i < length; i++)
 	{
 		var item = this.interactiveItems[i];
@@ -1098,11 +1096,7 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
 	for (var i = 0; i < length; i++)
 	{
 		var item = this.interactiveItems[i];
-		
-		if(item.touchmove)
-		{
-			item.touchmove(touchData);
-		}
+		if(item.touchmove)item.touchmove(touchData);
 	}
 }
 
@@ -1110,8 +1104,8 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
 {
 	event.preventDefault();
 	var rect = this.target.view.getBoundingClientRect();
-	var changedTouches = event.changedTouches;
 	
+	var changedTouches = event.changedTouches;
 	for (var i=0; i < changedTouches.length; i++) 
 	{
 		var touchEvent = changedTouches[i];
@@ -1132,7 +1126,6 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
 			if(item.touchstart || item.tap)
 			{
 				item.__hit = this.hitTest(item, touchData);
-				item.__touchIdentifier = touchEvent.identifier;
 				
 				if(item.__hit)
 				{
@@ -1159,7 +1152,6 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 	{
 		var touchEvent = changedTouches[i];
 		var touchData = this.touchs[touchEvent.identifier];
-		var global = touchData.global;
 		var up = false;
 		touchData.global.x = (touchEvent.clientX - rect.left) * (this.target.width / rect.width);
 		touchData.global.y = (touchEvent.clientY - rect.top)  * (this.target.height / rect.height);
@@ -1168,9 +1160,7 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 		for (var j = 0; j < length; j++)
 		{
 			var item = this.interactiveItems[j];
-			var itemTouchData = this.touchs[item.__touchIdentifier];
 			item.__hit = this.hitTest(item, touchData);
-		
 		
 			if(itemTouchData == touchData)
 			{
@@ -1228,11 +1218,7 @@ PIXI.InteractionData = function()
 	 */
 	this.global = new PIXI.Point();
 	
-	/**
-	 * This point stores the local coords of where the touch/mouse event happened
-	 * @property local 
-	 * @type Point
-	 */
+	// this is here for legacy... but will remove
 	this.local = new PIXI.Point();
 
 	/**

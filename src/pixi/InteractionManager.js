@@ -493,11 +493,7 @@ PIXI.InteractionData = function()
 	 */
 	this.global = new PIXI.Point();
 	
-	/**
-	 * This point stores the local coords of where the touch/mouse event happened
-	 * @property local 
-	 * @type Point
-	 */
+	// this is here for legacy... but will remove
 	this.local = new PIXI.Point();
 
 	/**

@@ -476,7 +476,7 @@
             "extension_for": [],
             "module": "PIXI",
             "file": "src/pixi/InteractionManager.js",
-            "line": 330,
+            "line": 483,
             "is_constructor": 1
         },
         "MovieClip": {
@@ -980,28 +980,28 @@
         },
         {
             "file": "src/pixi/renderers/WebGLRenderer.js",
-            "line": 232,
+            "line": 241,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "src/pixi/renderers/WebGLRenderer.js",
-            "line": 261,
+            "line": 270,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "src/pixi/renderers/WebGLRenderer.js",
-            "line": 457,
+            "line": 466,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "src/pixi/renderers/WebGLRenderer.js",
-            "line": 535,
+            "line": 544,
             "description": "resizes the webGL view to the specified width and height",
             "itemtype": "method",
             "name": "resize",
@@ -1021,21 +1021,14 @@
         },
         {
             "file": "src/pixi/renderers/WebGLRenderer.js",
-            "line": 559,
+            "line": 568,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "src/pixi/renderers/WebGLRenderer.js",
-            "line": 587,
-            "access": "private",
-            "tagname": "",
-            "class": "WebGLRenderer"
-        },
-        {
-            "file": "src/pixi/renderers/WebGLRenderer.js",
-            "line": 664,
+            "line": 596,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
@@ -1043,6 +1036,13 @@
         {
             "file": "src/pixi/renderers/WebGLRenderer.js",
             "line": 673,
+            "access": "private",
+            "tagname": "",
+            "class": "WebGLRenderer"
+        },
+        {
+            "file": "src/pixi/renderers/WebGLRenderer.js",
+            "line": 682,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
@@ -1183,7 +1183,7 @@
         },
         {
             "file": "src/pixi/textures/Texture.js",
-            "line": 177,
+            "line": 162,
             "description": "Adds a texture to the textureCache.",
             "itemtype": "method",
             "name": "addTextureToCache",
@@ -1203,7 +1203,7 @@
         },
         {
             "file": "src/pixi/textures/Texture.js",
-            "line": 189,
+            "line": 174,
             "description": "Remove a texture from the textureCache.",
             "itemtype": "method",
             "name": "removeTextureFromCache",
@@ -1347,7 +1347,181 @@
         },
         {
             "file": "src/pixi/DisplayObject.js",
-            "line": 82,
+            "line": 62,
+            "description": "This is the defined area that will pick up mouse / touch events. It is null by default.\nSetting it is a neat way of optimising the hitTest function that the interactionManager will use (as it will not need to hit test all the children)",
+            "itemtype": "property",
+            "name": "hitArea",
+            "type": "Rectangle",
+            "class": "DisplayObject"
+        },
+        {
+            "file": "src/pixi/DisplayObject.js",
+            "line": 91,
+            "description": "A callback that is used when the users clicks on the displayObject with their mouse",
+            "itemtype": "method",
+            "name": "click",
+            "params": [
+                {
+                    "name": "interactionData",
+                    "description": "",
+                    "type": "InteractionData"
+                }
+            ],
+            "class": "DisplayObject"
+        },
+        {
+            "file": "src/pixi/DisplayObject.js",
+            "line": 97,
+            "description": "A callback that is used when the user clicks the mouse down over the sprite",
+            "itemtype": "method",
+            "name": "mousedown",
+            "params": [
+                {
+                    "name": "interactionData",
+                    "description": "",
+                    "type": "InteractionData"
+                }
+            ],
+            "class": "DisplayObject"
+        },
+        {
+            "file": "src/pixi/DisplayObject.js",
+            "line": 103,
+            "description": "A callback that is used when the user releases the mouse that was over the displayObject\nfor this callback to be fired the mouse must have been pressed down over the displayObject",
+            "itemtype": "method",
+            "name": "mouseup",
+            "params": [
+                {
+                    "name": "interactionData",
+                    "description": "",
+                    "type": "InteractionData"
+                }
+            ],
+            "class": "DisplayObject"
+        },
+        {
+            "file": "src/pixi/DisplayObject.js",
+            "line": 110,
+            "description": "A callback that is used when the user releases the mouse that was over the displayObject but is no longer over the displayObject\nfor this callback to be fired, The touch must have started over the displayObject",
+            "itemtype": "method",
+            "name": "mouseupoutside",
+            "params": [
+                {
+                    "name": "interactionData",
+                    "description": "",
+                    "type": "InteractionData"
+                }
+            ],
+            "class": "DisplayObject"
+        },
+        {
+            "file": "src/pixi/DisplayObject.js",
+            "line": 117,
+            "description": "A callback that is used when the users mouse rolls over the displayObject",
+            "itemtype": "method",
+            "name": "mouseover",
+            "params": [
+                {
+                    "name": "interactionData",
+                    "description": "",
+                    "type": "InteractionData"
+                }
+            ],
+            "class": "DisplayObject"
+        },
+        {
+            "file": "src/pixi/DisplayObject.js",
+            "line": 123,
+            "description": "A callback that is used when the users mouse leaves the displayObject",
+            "itemtype": "method",
+            "name": "mouseout",
+            "params": [
+                {
+                    "name": "interactionData",
+                    "description": "",
+                    "type": "InteractionData"
+                }
+            ],
+            "class": "DisplayObject"
+        },
+        {
+            "file": "src/pixi/DisplayObject.js",
+            "line": 134,
+            "description": "A callback that is used when the users taps on the sprite with their finger\nbasically a touch version of click",
+            "itemtype": "method",
+            "name": "tap",
+            "params": [
+                {
+                    "name": "interactionData",
+                    "description": "",
+                    "type": "InteractionData"
+                }
+            ],
+            "class": "DisplayObject"
+        },
+        {
+            "file": "src/pixi/DisplayObject.js",
+            "line": 141,
+            "description": "A callback that is used when the user touch's over the displayObject",
+            "itemtype": "method",
+            "name": "touchstart",
+            "params": [
+                {
+                    "name": "interactionData",
+                    "description": "",
+                    "type": "InteractionData"
+                }
+            ],
+            "class": "DisplayObject"
+        },
+        {
+            "file": "src/pixi/DisplayObject.js",
+            "line": 147,
+            "description": "A callback that is used when the user releases a touch over the displayObject",
+            "itemtype": "method",
+            "name": "touchend",
+            "params": [
+                {
+                    "name": "interactionData",
+                    "description": "",
+                    "type": "InteractionData"
+                }
+            ],
+            "class": "DisplayObject"
+        },
+        {
+            "file": "src/pixi/DisplayObject.js",
+            "line": 153,
+            "description": "A callback that is used when the user releases the touch that was over the displayObject\nfor this callback to be fired, The touch must have started over the sprite",
+            "itemtype": "method",
+            "name": "touchendoutside",
+            "params": [
+                {
+                    "name": "interactionData",
+                    "description": "",
+                    "type": "InteractionData"
+                }
+            ],
+            "class": "DisplayObject"
+        },
+        {
+            "file": "src/pixi/DisplayObject.js",
+            "line": 164,
+            "description": "Indicates if the sprite will have touch and mouse interactivity. It is false by default",
+            "itemtype": "method",
+            "name": "setInteractive",
+            "params": [
+                {
+                    "name": "interactive",
+                    "description": "",
+                    "type": "Boolean"
+                }
+            ],
+            "class": "DisplayObject"
+        },
+        {
+            "file": "src/pixi/DisplayObject.js",
+            "line": 178,
             "access": "private",
             "tagname": "",
             "class": "DisplayObject"
@@ -1459,23 +1633,7 @@
         },
         {
             "file": "src/pixi/InteractionManager.js",
-            "line": 53,
-            "description": "This method will disable rollover/rollout for ALL interactive items\nYou may wish to use this an optimization if your app does not require rollover/rollout funcitonality",
-            "itemtype": "method",
-            "name": "disableMouseOver",
-            "class": "InteractionManager"
-        },
-        {
-            "file": "src/pixi/InteractionManager.js",
-            "line": 66,
-            "description": "This method will enable rollover/rollout for ALL interactive items\nIt is enabled by default",
-            "itemtype": "method",
-            "name": "enableMouseOver",
-            "class": "InteractionManager"
-        },
-        {
-            "file": "src/pixi/InteractionManager.js",
-            "line": 336,
+            "line": 489,
             "description": "This point stores the global coords of where the touch/mouse event happened",
             "itemtype": "property",
             "name": "global",
@@ -1484,20 +1642,30 @@
         },
         {
             "file": "src/pixi/InteractionManager.js",
-            "line": 343,
-            "description": "This point stores the local coords of where the touch/mouse event happened",
-            "itemtype": "property",
-            "name": "local",
-            "type": "Point",
-            "class": "InteractionData"
-        },
-        {
-            "file": "src/pixi/InteractionManager.js",
-            "line": 350,
+            "line": 499,
             "description": "The target Sprite that was interacted with",
             "itemtype": "property",
             "name": "target",
             "type": "Sprite",
+            "class": "InteractionData"
+        },
+        {
+            "file": "src/pixi/InteractionManager.js",
+            "line": 507,
+            "description": "This will return the local coords of the specified displayObject for this InteractionData",
+            "itemtype": "method",
+            "name": "getLocalPosition",
+            "params": [
+                {
+                    "name": "displayObject",
+                    "description": "The DisplayObject that you would like the local coords off",
+                    "type": "DisplayObject"
+                }
+            ],
+            "return": {
+                "description": "A point containing the coords of the InteractionData position relative to the DisplayObject",
+                "type": "Point"
+            },
             "class": "InteractionData"
         },
         {
@@ -1749,135 +1917,7 @@
         },
         {
             "file": "src/pixi/Sprite.js",
-            "line": 86,
-            "description": "A callback that is used when the users clicks on the sprite with thier mouse",
-            "itemtype": "method",
-            "name": "click",
-            "params": [
-                {
-                    "name": "interactionData",
-                    "description": "",
-                    "type": "InteractionData"
-                }
-            ],
-            "class": "Sprite",
-            "module": "PIXI"
-        },
-        {
-            "file": "src/pixi/Sprite.js",
-            "line": 92,
-            "description": "A callback that is used when the user clicks the mouse down over the sprite",
-            "itemtype": "method",
-            "name": "mousedown",
-            "params": [
-                {
-                    "name": "interactionData",
-                    "description": "",
-                    "type": "InteractionData"
-                }
-            ],
-            "class": "Sprite",
-            "module": "PIXI"
-        },
-        {
-            "file": "src/pixi/Sprite.js",
-            "line": 98,
-            "description": "A callback that is used when the user releases the mouse that was over the sprite\nfor this callback to be fired the mouse must have been pressed down over the sprite",
-            "itemtype": "method",
-            "name": "mouseup",
-            "params": [
-                {
-                    "name": "interactionData",
-                    "description": "",
-                    "type": "InteractionData"
-                }
-            ],
-            "class": "Sprite",
-            "module": "PIXI"
-        },
-        {
-            "file": "src/pixi/Sprite.js",
-            "line": 105,
-            "description": "A callback that is used when the users mouse rolls over the sprite",
-            "itemtype": "method",
-            "name": "mouseover",
-            "params": [
-                {
-                    "name": "interactionData",
-                    "description": "",
-                    "type": "InteractionData"
-                }
-            ],
-            "class": "Sprite",
-            "module": "PIXI"
-        },
-        {
-            "file": "src/pixi/Sprite.js",
-            "line": 111,
-            "description": "A callback that is used when the users mouse leaves the sprite",
-            "itemtype": "method",
-            "name": "mouseout",
-            "params": [
-                {
-                    "name": "interactionData",
-                    "description": "",
-                    "type": "InteractionData"
-                }
-            ],
-            "class": "Sprite",
-            "module": "PIXI"
-        },
-        {
-            "file": "src/pixi/Sprite.js",
-            "line": 121,
-            "description": "A callback that is used when the users taps on the sprite with thier finger\nbasically a touch version of click",
-            "itemtype": "method",
-            "name": "tap",
-            "params": [
-                {
-                    "name": "interactionData",
-                    "description": "",
-                    "type": "InteractionData"
-                }
-            ],
-            "class": "Sprite",
-            "module": "PIXI"
-        },
-        {
-            "file": "src/pixi/Sprite.js",
-            "line": 128,
-            "description": "A callback that is used when the user touch's over the sprite",
-            "itemtype": "method",
-            "name": "touchstart",
-            "params": [
-                {
-                    "name": "interactionData",
-                    "description": "",
-                    "type": "InteractionData"
-                }
-            ],
-            "class": "Sprite",
-            "module": "PIXI"
-        },
-        {
-            "file": "src/pixi/Sprite.js",
-            "line": 134,
-            "description": "A callback that is used when the user releases the touch that was over the sprite\nfor this callback to be fired. The touch must have started over the sprite",
-            "itemtype": "method",
-            "name": "touchend",
-            "params": [
-                {
-                    "name": "interactionData",
-                    "description": "",
-                    "type": "InteractionData"
-                }
-            ],
-            "class": "Sprite",
-            "module": "PIXI"
-        },
-        {
-            "file": "src/pixi/Sprite.js",
-            "line": 146,
+            "line": 83,
             "itemtype": "method",
             "name": "setTexture",
             "params": [
@@ -1892,23 +1932,7 @@
         },
         {
             "file": "src/pixi/Sprite.js",
-            "line": 164,
-            "description": "Indicates if the sprite will have touch and mouse interactivity. It is false by default",
-            "itemtype": "method",
-            "name": "setInteractive",
-            "params": [
-                {
-                    "name": "interactive",
-                    "description": "",
-                    "type": "Boolean"
-                }
-            ],
-            "class": "Sprite",
-            "module": "PIXI"
-        },
-        {
-            "file": "src/pixi/Sprite.js",
-            "line": 177,
+            "line": 101,
             "access": "private",
             "tagname": "",
             "class": "Sprite",
@@ -1916,7 +1940,7 @@
         },
         {
             "file": "src/pixi/Sprite.js",
-            "line": 189,
+            "line": 113,
             "description": "Helper function that creates a sprite that will contain a texture from the TextureCache based on the frameId\n The frame ids are created when a Texture packer file has been loaded",
             "itemtype": "method",
             "name": "fromFrame",
@@ -1937,7 +1961,7 @@
         },
         {
             "file": "src/pixi/Sprite.js",
-            "line": 205,
+            "line": 129,
             "description": "Helper function that creates a sprite that will contain a texture based on an image url\n If the image is not in the texture cache it will be loaded",
             "itemtype": "method",
             "name": "fromImage",
@@ -1964,7 +1988,7 @@
         },
         {
             "file": "src/pixi/Stage.js",
-            "line": 35,
+            "line": 37,
             "itemtype": "method",
             "name": "updateTransform",
             "internal": "",
@@ -1973,7 +1997,7 @@
         },
         {
             "file": "src/pixi/Stage.js",
-            "line": 59,
+            "line": 60,
             "itemtype": "method",
             "name": "setBackgroundColor",
             "params": [
@@ -1994,7 +2018,7 @@
         },
         {
             "message": "unknown tag: internal",
-            "line": " src/pixi/Stage.js:35"
+            "line": " src/pixi/Stage.js:37"
         },
         {
             "message": "Missing item type",
@@ -2078,31 +2102,31 @@
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/WebGLRenderer.js:232"
+            "line": " src/pixi/renderers/WebGLRenderer.js:241"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/WebGLRenderer.js:261"
+            "line": " src/pixi/renderers/WebGLRenderer.js:270"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/WebGLRenderer.js:457"
+            "line": " src/pixi/renderers/WebGLRenderer.js:466"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/WebGLRenderer.js:559"
+            "line": " src/pixi/renderers/WebGLRenderer.js:568"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/WebGLRenderer.js:587"
-        },
-        {
-            "message": "Missing item type",
-            "line": " src/pixi/renderers/WebGLRenderer.js:664"
+            "line": " src/pixi/renderers/WebGLRenderer.js:596"
         },
         {
             "message": "Missing item type",
             "line": " src/pixi/renderers/WebGLRenderer.js:673"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/pixi/renderers/WebGLRenderer.js:682"
         },
         {
             "message": "Missing item type",
@@ -2138,7 +2162,7 @@
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/DisplayObject.js:82"
+            "line": " src/pixi/DisplayObject.js:178"
         },
         {
             "message": "Missing item type",
@@ -2174,7 +2198,7 @@
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/Sprite.js:177"
+            "line": " src/pixi/Sprite.js:101"
         },
         {
             "message": "Missing item type",
