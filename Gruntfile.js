@@ -96,6 +96,8 @@ module.exports = function(grunt) {
                 'examples/example 4 - Balls',
                 'examples/example 5 - Morph',
                 'examples/example 6 - Interactivity',
+                'examples/example 7 - Transparent Background',
+                'examples/example 8 - Dragging',
             ]
         },
         connect: {

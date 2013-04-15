@@ -48,14 +48,14 @@ PIXI.Sprite = function(texture)
 	 * @property width
 	 * @type #Number
 	 */
-	this.width = 1;
+	this.width = 0;
 	
 	/**
 	 * The height of the sprite (this is initially set by the texture)
 	 * @property height
 	 * @type #Number
 	 */
-	this.height = 1;
+	this.height = 0;
 	
 	if(texture.baseTexture.hasLoaded)
 	{
@@ -71,72 +71,9 @@ PIXI.Sprite = function(texture)
 	
 	this.renderable = true;
 	
-	
-	
-	// [readonly] best not to toggle directly! use setInteractive()
-	this.interactive = false;
-	
-	
 	// thi next bit is here for the docs...
 	
-	/*
-	 * MOUSE Callbacks
-	 */
 	
-	/**
-	 * A callback that is used when the users clicks on the sprite with thier mouse
-	 * @method click
-	 * @param interactionData {InteractionData}
-	 */
-	
-	/**
-	 * A callback that is used when the user clicks the mouse down over the sprite
-	 * @method mousedown
-	 * @param interactionData {InteractionData}
-	 */
-	 
-	/**
-	 * A callback that is used when the user releases the mouse that was over the sprite
-	 * for this callback to be fired the mouse must have been pressed down over the sprite
-	 * @method mouseup
-	 * @param interactionData {InteractionData}
-	 */
-	
-	/**
-	 * A callback that is used when the users mouse rolls over the sprite
-	 * @method mouseover
-	 * @param interactionData {InteractionData}
-	 */
-	
-	/**
-	 * A callback that is used when the users mouse leaves the sprite
-	 * @method mouseout
-	 * @param interactionData {InteractionData}
-	 */
-	
-	/*
-	 * TOUCH Callbacks
-	 */
-	
-	/**
-	 * A callback that is used when the users taps on the sprite with thier finger
-	 * basically a touch version of click
-	 * @method tap
-	 * @param interactionData {InteractionData}
-	 */
-	
-	/**
-	 * A callback that is used when the user touch's over the sprite
-	 * @method touchstart
-	 * @param interactionData {InteractionData}
-	 */
-	 
-	/**
-	 * A callback that is used when the user releases the touch that was over the sprite
-	 * for this callback to be fired. The touch must have started over the sprite
-	 * @method touchend
-	 * @param interactionData {InteractionData}
-	 */
 }
 
 // constructor
@@ -162,25 +99,12 @@ PIXI.Sprite.prototype.setTexture = function(texture)
 }
 
 /**
- * Indicates if the sprite will have touch and mouse interactivity. It is false by default
- * @method setInteractive
- * @param interactive {Boolean}
- */
-PIXI.Sprite.prototype.setInteractive = function(interactive)
-{
-	this.interactive = interactive;
-	// TODO more to be done here..
-	// need to sort out a re-crawl!
-	if(this.stage)this.stage.dirty = true;
-}
-
-/**
  * @private
  */
 PIXI.Sprite.prototype.onTextureUpdate = function(event)
 {
-	this.width   = this.texture.frame.width;
-	this.height  = this.texture.frame.height;
+	this.width   = this.width || this.texture.frame.width;
+	this.height  = this.height || this.texture.frame.height;
 	this.updateFrame = true;
 }
 
