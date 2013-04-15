@@ -18,7 +18,9 @@ PIXI.Stage = function(backgroundColor, interactive)
 	this.__childrenAdded = [];
 	this.__childrenRemoved = [];
 	this.childIndex = 0;
-	this.stage=  this;
+	this.stage= this;
+	
+	this.stage.hitArea = new PIXI.Rectangle(0,0,100000, 100000);
 	
 	// interaction!
 	this.interactive = !!interactive;
@@ -48,12 +50,11 @@ PIXI.Stage.prototype.updateTransform = function()
 	if(this.dirty)
 	{
 		this.dirty = false;
-		
 		// update interactive!
 		this.interactionManager.dirty = true;
-		
-		
 	}
+
+	if(this.interactive)this.interactionManager.update();
 }
 
 /**
