@@ -89,16 +89,32 @@ PIXI.InteractionManager.prototype.collectInteractiveSprite = function(displayObj
 
 PIXI.InteractionManager.prototype.setTarget = function(target)
 {
-	this.target = target;
-	target.view.addEventListener('mousemove',  this.onMouseMove.bind(this), true);
-	target.view.addEventListener('mousedown',  this.onMouseDown.bind(this), true);
- 	document.body.addEventListener('mouseup',  this.onMouseUp.bind(this), true);
- 	target.view.addEventListener('mouseout',   this.onMouseUp.bind(this), true);
+	if (window.navigator.msPointerEnabled) 
+	{
+		// time to remove some of that zoom in ja..
+		target.view.style["-ms-content-zooming"] = "none";
+    	target.view.style["-ms-touch-action"] = "none"
+    
+		// DO some window specific touch!
+	}
 	
-	// aint no multi touch just yet!
-	target.view.addEventListener("touchstart", this.onTouchStart.bind(this), true);
-	target.view.addEventListener("touchend", this.onTouchEnd.bind(this), true);
-	target.view.addEventListener("touchmove", this.onTouchMove.bind(this), true);
+	
+	{
+		
+		this.target = target;
+		target.view.addEventListener('mousemove',  this.onMouseMove.bind(this), true);
+		target.view.addEventListener('mousedown',  this.onMouseDown.bind(this), true);
+	 	document.body.addEventListener('mouseup',  this.onMouseUp.bind(this), true);
+	 	target.view.addEventListener('mouseout',   this.onMouseUp.bind(this), true);
+		
+		// aint no multi touch just yet!
+		target.view.addEventListener("touchstart", this.onTouchStart.bind(this), true);
+		target.view.addEventListener("touchend", this.onTouchEnd.bind(this), true);
+		target.view.addEventListener("touchmove", this.onTouchMove.bind(this), true);
+	}
+	
+	
+	
 }
 
 PIXI.InteractionManager.prototype.update = function()
@@ -407,6 +423,7 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
 					//call the function!
 					if(item.touchstart)item.touchstart(touchData);
 					item.__isDown = true;
+					item.__touchData = touchData;
 					
 					if(!item.interactiveChildren)break;
 				}
@@ -420,11 +437,13 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 {
 	event.preventDefault();
 	
+	
 	var rect = this.target.view.getBoundingClientRect();
 	var changedTouches = event.changedTouches;
 	
 	for (var i=0; i < changedTouches.length; i++) 
 	{
+		 
 		var touchEvent = changedTouches[i];
 		var touchData = this.touchs[touchEvent.identifier];
 		var up = false;
@@ -435,6 +454,7 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 		for (var j = 0; j < length; j++)
 		{
 			var item = this.interactiveItems[j];
+			var itemTouchData = item.__touchData; // <-- Here!
 			item.__hit = this.hitTest(item, touchData);
 		
 			if(itemTouchData == touchData)
@@ -466,7 +486,7 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 					item.__isDown = false;
 				}
 				
-				item.__touchIdentifier = null;
+				item.__touchData = null;
 					
 			}
 			else
