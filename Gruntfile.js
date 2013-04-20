@@ -28,6 +28,7 @@ module.exports = function(grunt) {
             '<%= dirs.src %>/renderers/CanvasRenderer.js',
             '<%= dirs.src %>/extras/Strip.js',
             '<%= dirs.src %>/extras/Rope.js',
+            '<%= dirs.src %>/extras/TilingSprite.js',
             '<%= dirs.src %>/textures/BaseTexture.js',
             '<%= dirs.src %>/textures/Texture.js',
             '<%= dirs.src %>/loaders/SpriteSheetLoader.js',
@@ -98,6 +99,7 @@ module.exports = function(grunt) {
                 'examples/example 6 - Interactivity',
                 'examples/example 7 - Transparent Background',
                 'examples/example 8 - Dragging',
+                'examples/example 9 - Tiling Texture'
             ]
         },
         connect: {

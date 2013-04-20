@@ -21,6 +21,15 @@
             "fors": {},
             "namespaces": {}
         },
+        "src/pixi/extras/TilingSprite.js": {
+            "name": "src/pixi/extras/TilingSprite.js",
+            "modules": {},
+            "classes": {
+                "TilingSprite": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "src/pixi/loaders/AssetLoader.js": {
             "name": "src/pixi/loaders/AssetLoader.js",
             "modules": {},
@@ -200,6 +209,7 @@
             "name": "PIXI",
             "submodules": {},
             "classes": {
+                "TilingSprite": 1,
                 "AssetLoader": 1,
                 "SpriteSheetLoader": 1,
                 "CanvasRenderer": 1,
@@ -225,6 +235,38 @@
         }
     },
     "classes": {
+        "TilingSprite": {
+            "name": "TilingSprite",
+            "shortname": "TilingSprite",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "PIXI",
+            "file": "src/pixi/extras/TilingSprite.js",
+            "line": 5,
+            "description": "A tiling sprite is a fast way of rendering a tiling image",
+            "extends": "DisplayObjectContainer",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "texture",
+                    "description": "the texture of the tiling sprite",
+                    "type": "Texture"
+                },
+                {
+                    "name": "width",
+                    "description": "the width of the tiling sprite",
+                    "type": "Number"
+                },
+                {
+                    "name": "height",
+                    "description": "the height of the tiling sprite",
+                    "type": "Number"
+                }
+            ]
+        },
         "AssetLoader": {
             "name": "AssetLoader",
             "shortname": "AssetLoader",
@@ -476,7 +518,7 @@
             "extension_for": [],
             "module": "PIXI",
             "file": "src/pixi/InteractionManager.js",
-            "line": 483,
+            "line": 503,
             "is_constructor": 1
         },
         "MovieClip": {
@@ -622,13 +664,37 @@
             "file": "src/pixi/extras/Rope.js",
             "line": 1,
             "author": "Mat Groves http://matgroves.com/",
-            "class": "AssetLoader"
+            "class": "TilingSprite"
         },
         {
             "file": "src/pixi/extras/Strip.js",
             "line": 1,
             "author": "Mat Groves http://matgroves.com/",
-            "class": "AssetLoader"
+            "class": "TilingSprite"
+        },
+        {
+            "file": "src/pixi/extras/TilingSprite.js",
+            "line": 1,
+            "author": "Mat Groves http://matgroves.com/",
+            "class": "TilingSprite"
+        },
+        {
+            "file": "src/pixi/extras/TilingSprite.js",
+            "line": 23,
+            "description": "The scaling of the image that is being tiled",
+            "itemtype": "property",
+            "name": "tileScale",
+            "type": "Point",
+            "class": "TilingSprite"
+        },
+        {
+            "file": "src/pixi/extras/TilingSprite.js",
+            "line": 29,
+            "description": "The offset position of the image that is being tiled",
+            "itemtype": "property",
+            "name": "tileScale",
+            "type": "Point",
+            "class": "TilingSprite"
         },
         {
             "file": "src/pixi/loaders/AssetLoader.js",
@@ -763,14 +829,21 @@
         },
         {
             "file": "src/pixi/renderers/CanvasRenderer.js",
-            "line": 189,
+            "line": 194,
             "access": "private",
             "tagname": "",
             "class": "CanvasRenderer"
         },
         {
             "file": "src/pixi/renderers/CanvasRenderer.js",
-            "line": 224,
+            "line": 229,
+            "access": "private",
+            "tagname": "",
+            "class": "CanvasRenderer"
+        },
+        {
+            "file": "src/pixi/renderers/CanvasRenderer.js",
+            "line": 256,
             "access": "private",
             "tagname": "",
             "class": "CanvasRenderer"
@@ -980,28 +1053,28 @@
         },
         {
             "file": "src/pixi/renderers/WebGLRenderer.js",
-            "line": 241,
+            "line": 245,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "src/pixi/renderers/WebGLRenderer.js",
-            "line": 270,
+            "line": 287,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "src/pixi/renderers/WebGLRenderer.js",
-            "line": 466,
+            "line": 490,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "src/pixi/renderers/WebGLRenderer.js",
-            "line": 544,
+            "line": 568,
             "description": "resizes the webGL view to the specified width and height",
             "itemtype": "method",
             "name": "resize",
@@ -1021,14 +1094,7 @@
         },
         {
             "file": "src/pixi/renderers/WebGLRenderer.js",
-            "line": 568,
-            "access": "private",
-            "tagname": "",
-            "class": "WebGLRenderer"
-        },
-        {
-            "file": "src/pixi/renderers/WebGLRenderer.js",
-            "line": 596,
+            "line": 593,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
@@ -1042,7 +1108,28 @@
         },
         {
             "file": "src/pixi/renderers/WebGLRenderer.js",
-            "line": 682,
+            "line": 713,
+            "access": "private",
+            "tagname": "",
+            "class": "WebGLRenderer"
+        },
+        {
+            "file": "src/pixi/renderers/WebGLRenderer.js",
+            "line": 741,
+            "access": "private",
+            "tagname": "",
+            "class": "WebGLRenderer"
+        },
+        {
+            "file": "src/pixi/renderers/WebGLRenderer.js",
+            "line": 818,
+            "access": "private",
+            "tagname": "",
+            "class": "WebGLRenderer"
+        },
+        {
+            "file": "src/pixi/renderers/WebGLRenderer.js",
+            "line": 827,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
@@ -1633,7 +1720,7 @@
         },
         {
             "file": "src/pixi/InteractionManager.js",
-            "line": 489,
+            "line": 509,
             "description": "This point stores the global coords of where the touch/mouse event happened",
             "itemtype": "property",
             "name": "global",
@@ -1642,7 +1729,7 @@
         },
         {
             "file": "src/pixi/InteractionManager.js",
-            "line": 499,
+            "line": 519,
             "description": "The target Sprite that was interacted with",
             "itemtype": "property",
             "name": "target",
@@ -1651,7 +1738,7 @@
         },
         {
             "file": "src/pixi/InteractionManager.js",
-            "line": 507,
+            "line": 527,
             "description": "This will return the local coords of the specified displayObject for this InteractionData",
             "itemtype": "method",
             "name": "getLocalPosition",
@@ -2030,6 +2117,10 @@
         },
         {
             "message": "Missing item type",
+            "line": " src/pixi/extras/TilingSprite.js:1"
+        },
+        {
+            "message": "Missing item type",
             "line": " src/pixi/loaders/AssetLoader.js:1"
         },
         {
@@ -2058,11 +2149,15 @@
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/CanvasRenderer.js:189"
+            "line": " src/pixi/renderers/CanvasRenderer.js:194"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/CanvasRenderer.js:224"
+            "line": " src/pixi/renderers/CanvasRenderer.js:229"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/pixi/renderers/CanvasRenderer.js:256"
         },
         {
             "message": "Missing item type",
@@ -2102,23 +2197,19 @@
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/WebGLRenderer.js:241"
+            "line": " src/pixi/renderers/WebGLRenderer.js:245"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/WebGLRenderer.js:270"
+            "line": " src/pixi/renderers/WebGLRenderer.js:287"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/WebGLRenderer.js:466"
+            "line": " src/pixi/renderers/WebGLRenderer.js:490"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/WebGLRenderer.js:568"
-        },
-        {
-            "message": "Missing item type",
-            "line": " src/pixi/renderers/WebGLRenderer.js:596"
+            "line": " src/pixi/renderers/WebGLRenderer.js:593"
         },
         {
             "message": "Missing item type",
@@ -2126,7 +2217,19 @@
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/WebGLRenderer.js:682"
+            "line": " src/pixi/renderers/WebGLRenderer.js:713"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/pixi/renderers/WebGLRenderer.js:741"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/pixi/renderers/WebGLRenderer.js:818"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/pixi/renderers/WebGLRenderer.js:827"
         },
         {
             "message": "Missing item type",

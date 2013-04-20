@@ -1,0 +1,68 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>pixi.js example 8 Dragging</title>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			background-color: #FFFFFF;
+			
+		}
+		
+		.textHolder{
+			width: 400px;
+		}
+	</style>
+	<script src="pixi.js"></script>
+</head>
+<body>
+	<script>
+	
+	// create an new instance of a pixi stage
+	var stage = new PIXI.Stage(0x97c56e, true);
+	
+	// create a renderer instance
+	var renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight, null);
+	
+	// add the renderer view element to the DOM
+	document.body.appendChild(renderer.view);
+	renderer.view.style.position = "absolute";
+	renderer.view.style.top = "0px";
+	renderer.view.style.left = "0px";
+	requestAnimFrame( animate );
+	
+	// create a texture from an image path
+	var texture = PIXI.Texture.fromImage("p2.jpeg");
+	
+	// create a tiling sprite..
+	// requires a texture, width and height
+	// to work in webGL the texture size must be a power of two
+	var tilingSprite = new PIXI.TilingSprite(texture, window.innerWidth, window.innerHeight)
+	
+	var count = 0;
+	
+	stage.addChild(tilingSprite);
+
+	function animate() {
+	
+	    requestAnimFrame( animate );
+		
+		
+		count += 0.005
+		tilingSprite.tileScale.x = 2 + Math.sin(count);
+		tilingSprite.tileScale.y = 2 + Math.cos(count);
+		
+		tilingSprite.tilePosition.x += 1;
+		tilingSprite.tilePosition.y += 1;
+		
+	    // just for fun, lets rotate mr rabbit a little
+		//stage.interactionManager.update();
+	    // render the stage   
+	    renderer.render(stage);
+	}
+
+	</script>
+
+	</body>
+</html>

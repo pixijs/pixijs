@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-04-16
+ * Compiled: 2013-04-20
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -1029,7 +1029,7 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 	var global = interactionData.global;
 	
 	if(!item.visible)return false;
-
+	
 	if(item instanceof PIXI.Sprite)
 	{
 		var worldTransform = item.worldTransform;
@@ -1081,8 +1081,8 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 	
 	for (var i = 0; i < length; i++)
 	{
-		var item = item.children[i];
-		var hit = this.hitTest(item, interactionData);
+		var tempItem = item.children[i];
+		var hit = this.hitTest(tempItem, interactionData);
 		if(hit)return true;
 	}
 		
@@ -2061,6 +2061,10 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 		{
 			this.batchs[i].render();
 		}
+		else if(renderable instanceof PIXI.TilingSprite)
+		{
+			if(renderable.visible)this.renderTilingSprite(renderable);
+		}
 		else if(renderable instanceof PIXI.Strip)
 		{
 			if(renderable.visible)this.renderStrip(renderable);
@@ -2099,9 +2103,22 @@ PIXI.WebGLRenderer.prototype.updateTexture = function(texture)
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.source);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-
+		
+		// reguler...
+		
+		//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+		//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+		if(!texture._powerOf2)
+		{
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+		}
+		else
+		{
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+		}
+		
 	//	gl.generateMipmap(gl.TEXTURE_2D);
 		gl.bindTexture(gl.TEXTURE_2D, null);
 	}
@@ -2293,6 +2310,13 @@ PIXI.WebGLRenderer.prototype.addDisplayObject = function(displayObject)
 		}
 	
 	}
+	else if(displayObject instanceof PIXI.TilingSprite)
+	{
+		// add to a batch!!
+		this.initTilingSprite(displayObject);
+		this.batchs.push(displayObject);
+		
+	}
 	else if(displayObject instanceof PIXI.Strip)
 	{
 		// add to a batch!!
@@ -2300,7 +2324,7 @@ PIXI.WebGLRenderer.prototype.addDisplayObject = function(displayObject)
 		this.batchs.push(displayObject);
 		
 	}
-
+	
 	// if its somthing else... then custom codes!
 	this.batchUpdate = true;
 }
@@ -2407,6 +2431,127 @@ PIXI.WebGLRenderer.prototype.resize = function(width, height)
 	projectionMatrix[13] = 1;
 }
 
+
+/**
+ * @private
+ */
+PIXI.WebGLRenderer.prototype.initTilingSprite = function(sprite)
+{
+	
+	
+				
+	var gl = this.gl;
+
+	// make the texture tilable..
+			
+	sprite.verticies = new Float32Array([0, 0,
+										  sprite.width, 0,
+										  sprite.width,  sprite.height,
+										 0,  sprite.height]);
+					
+	sprite.uvs = new Float32Array([0, 0,
+									1, 0,
+									1, 1,
+									0, 1]);
+				
+	sprite.colors = new Float32Array([1,1,1,1]);
+	
+	sprite.indices =  new Uint16Array([0, 1, 3,2])//, 2]);
+	
+	
+	sprite._vertexBuffer = gl.createBuffer();
+	sprite._indexBuffer = gl.createBuffer();
+	sprite._uvBuffer = gl.createBuffer();
+	sprite._colorBuffer = gl.createBuffer();
+						
+	gl.bindBuffer(gl.ARRAY_BUFFER, sprite._vertexBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, sprite.verticies, gl.STATIC_DRAW);
+
+	gl.bindBuffer(gl.ARRAY_BUFFER, sprite._uvBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER,  sprite.uvs, gl.DYNAMIC_DRAW);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, sprite._colorBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, sprite.colors, gl.STATIC_DRAW);
+
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sprite._indexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, sprite.indices, gl.STATIC_DRAW);
+    
+//    return ( (x > 0) && ((x & (x - 1)) == 0) );
+
+	if(sprite.texture.baseTexture._glTexture)
+	{
+    	gl.bindTexture(gl.TEXTURE_2D, sprite.texture.baseTexture._glTexture);
+    	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+		sprite.texture.baseTexture._powerOf2 = true;
+	}
+	else
+	{
+		sprite.texture.baseTexture._powerOf2 = true;
+	}
+	
+	/*
+	var context = this.context;
+	
+ 	if(!sprite.__tilePattern) sprite.__tilePattern = context.createPattern(sprite.texture.baseTexture.source, "repeat");
+ 	
+	context.beginPath();
+	
+	var tilePosition = sprite.tilePosition;
+	var tileScale = sprite.tileScale;
+	
+    // offset
+    context.scale(tileScale.x,tileScale.y);
+    context.translate(tilePosition.x, tilePosition.y);
+ 	
+	context.fillStyle = sprite.__tilePattern;
+	context.fillRect(-tilePosition.x,-tilePosition.y,sprite.width / tileScale.x, sprite.height / tileScale.y);
+	
+    context.translate(-tilePosition.x, -tilePosition.y);
+	context.scale(1/tileScale.x, 1/tileScale.y);
+	*/
+}
+
+/**
+ * @private
+ */
+PIXI.WebGLRenderer.prototype.renderTilingSprite = function(sprite)
+{
+	var gl = this.gl;
+	var shaderProgram = this.shaderProgram;
+	
+	var tilePosition = sprite.tilePosition;
+	var tileScale = sprite.tileScale;
+	
+	var offsetX =  tilePosition.x/sprite.texture.baseTexture.width;
+	var offsetY =  tilePosition.y/sprite.texture.baseTexture.height;
+	
+	var scaleX =  (sprite.width / sprite.texture.baseTexture.width)  / tileScale.x///sprite.texture.baseTexture.width;
+	var scaleY =  (sprite.height / sprite.texture.baseTexture.height) / tileScale.y///sprite.texture.baseTexture.height;
+	//
+	//sprite.dirty = true;
+	sprite.uvs[0] = 0 + offsetX
+	sprite.uvs[1] = 0 - offsetY;
+	
+	sprite.uvs[2] = (1 * scaleX)  +offsetX
+	sprite.uvs[3] = 0 - offsetY;
+	
+	sprite.uvs[4] = (1 *scaleX) + offsetX
+	sprite.uvs[5] = (1 *scaleY) - offsetY;
+	
+	sprite.uvs[6] = 0  + offsetX
+	sprite.uvs[7] = (1 *scaleY) - offsetY;
+	
+	
+	gl.bindBuffer(gl.ARRAY_BUFFER, sprite._uvBuffer);
+	gl.bufferSubData(gl.ARRAY_BUFFER, 0, sprite.uvs)
+	
+	this.renderStrip(sprite);
+ 
+}
+
+
+
 /**
  * @private
  */
@@ -2504,7 +2649,7 @@ PIXI.WebGLRenderer.prototype.renderStrip = function(strip)
 	    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, strip.indices, gl.STATIC_DRAW);
 	    
 	}
-	
+	//console.log(gl.TRIANGLE_STRIP)
 	gl.drawElements(gl.TRIANGLE_STRIP, strip.indices.length, gl.UNSIGNED_SHORT, 0);
     
     gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.projectionMatrix);
@@ -3287,6 +3432,11 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 		context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
 		this.renderStrip(displayObject);
 	}
+	else if(displayObject instanceof PIXI.TilingSprite)
+	{
+		context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
+		this.renderTilingSprite(displayObject);
+	}
 	
 	// render!
 	for (var i=0; i < displayObject.children.length; i++) 
@@ -3333,6 +3483,33 @@ PIXI.CanvasRenderer.prototype.renderStripFlat = function(strip)
 /**
  * @private
  */
+PIXI.CanvasRenderer.prototype.renderTilingSprite = function(sprite)
+{
+	var context = this.context;
+	
+ 	if(!sprite.__tilePattern) sprite.__tilePattern = context.createPattern(sprite.texture.baseTexture.source, "repeat");
+ 	
+	context.beginPath();
+	
+	var tilePosition = sprite.tilePosition;
+	var tileScale = sprite.tileScale;
+	
+    // offset
+    context.scale(tileScale.x,tileScale.y);
+    context.translate(tilePosition.x, tilePosition.y);
+ 	
+	context.fillStyle = sprite.__tilePattern;
+	context.fillRect(-tilePosition.x,-tilePosition.y,sprite.width / tileScale.x, sprite.height / tileScale.y);
+	
+	context.scale(1/tileScale.x, 1/tileScale.y);
+    context.translate(-tilePosition.x, -tilePosition.y);
+}
+
+
+
+/**
+ * @private
+ */
 PIXI.CanvasRenderer.prototype.renderStrip = function(strip)
 {
 	var context = this.context;
@@ -3352,8 +3529,8 @@ PIXI.CanvasRenderer.prototype.renderStrip = function(strip)
 		 var x0 = verticies[index],   x1 = verticies[index+2], x2 = verticies[index+4];
  		 var y0 = verticies[index+1], y1 = verticies[index+3], y2 = verticies[index+5];
  		 
-  		 var u0 = uvs[index] * strip.texture.width,   u1 = uvs[index+2]* strip.texture.width, u2 = uvs[index+4]* strip.texture.width;
-   		 var v0 = uvs[index+1]* strip.texture.height, v1 = uvs[index+3]* strip.texture.height, v2 = uvs[index+5]* strip.texture.height;
+  		 var u0 = uvs[index] * strip.texture.width,   u1 = uvs[index+2] * strip.texture.width, u2 = uvs[index+4]* strip.texture.width;
+   		 var v0 = uvs[index+1]* strip.texture.height, v1 = uvs[index+3] * strip.texture.height, v2 = uvs[index+5]* strip.texture.height;
 
 
 		context.save();
@@ -3666,6 +3843,65 @@ PIXI.Rope.prototype.setTexture = function(texture)
 
 
 /**
+ * @author Mat Groves http://matgroves.com/
+ */
+
+/**
+ * A tiling sprite is a fast way of rendering a tiling image
+ * @class TilingSprite
+ * @extends DisplayObjectContainer
+ * @constructor
+ * @param texture {Texture}
+ * @param width {Number}  the width of the tiling sprite
+ * @param height {Number} the height of the tiling sprite
+ */
+PIXI.TilingSprite = function(texture, width, height)
+{
+	PIXI.DisplayObjectContainer.call( this );
+	
+	this.texture = texture;
+	this.width = width;
+	this.height = height;
+	this.renderable = true;
+	
+	/**
+	 * The scaling of the image that is being tiled
+	 * @property tileScale
+	 * @type Point
+	 */	
+	this.tileScale = new PIXI.Point(2,1);
+	/**
+	 * The offset position of the image that is being tiled
+	 * @property tileScale
+	 * @type Point
+	 */	
+	this.tilePosition = new PIXI.Point(0,0);
+	
+	this.blendMode = PIXI.blendModes.NORMAL
+}
+
+// constructor
+PIXI.TilingSprite.constructor = PIXI.TilingSprite;
+PIXI.TilingSprite.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
+
+PIXI.TilingSprite.prototype.setTexture = function(texture)
+{
+	//TODO SET THE TEXTURES
+	//TODO VISIBILITY
+	
+	// stop current texture 
+	this.texture = texture;
+	this.updateFrame = true;
+}
+
+PIXI.TilingSprite.prototype.onTextureUpdate = function(event)
+{
+	this.updateFrame = true;
+}
+// some helper functions..
+
+
+/**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
@@ -3747,7 +3983,7 @@ PIXI.BaseTexture = function(source)
 		PIXI.texturesToUpdate.push(this);
 	}
 	
-	
+	this._powerOf2 = false;
 	
 }
 
