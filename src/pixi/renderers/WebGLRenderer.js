@@ -166,8 +166,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 {
 	if(this.contextLost)return;
 	
-
-
+	
 	// if rendering a new stage clear the batchs..
 	if(this.__stage !== stage)
 	{
@@ -181,6 +180,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	{
 		this.removeDisplayObject(stage.__childrenRemoved[i]);
 	}
+
 
 
 	// update any textures	

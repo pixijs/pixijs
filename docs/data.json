@@ -1666,6 +1666,41 @@
         {
             "file": "src/pixi/DisplayObjectContainer.js",
             "line": 97,
+            "description": "Swaps the depth of 2 displayObjects",
+            "itemtype": "method",
+            "name": "swapChildren",
+            "params": [
+                {
+                    "name": "DisplayObject",
+                    "description": "",
+                    "type": "DisplayObject"
+                },
+                {
+                    "name": "DisplayObject2",
+                    "description": "",
+                    "type": "DisplayObject"
+                }
+            ],
+            "class": "DisplayObjectContainer"
+        },
+        {
+            "file": "src/pixi/DisplayObjectContainer.js",
+            "line": 137,
+            "description": "Returns the Child at the specified index",
+            "itemtype": "method",
+            "name": "getChildAt",
+            "params": [
+                {
+                    "name": "index",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "class": "DisplayObjectContainer"
+        },
+        {
+            "file": "src/pixi/DisplayObjectContainer.js",
+            "line": 155,
             "description": "Removes a child from the container.",
             "itemtype": "method",
             "name": "removeChild",
@@ -1680,7 +1715,7 @@
         },
         {
             "file": "src/pixi/DisplayObjectContainer.js",
-            "line": 126,
+            "line": 184,
             "access": "private",
             "tagname": "",
             "class": "DisplayObjectContainer"
@@ -1791,6 +1826,24 @@
         {
             "file": "src/pixi/MovieClip.js",
             "line": 37,
+            "description": "Whether or not the movie clip repeats after playing.",
+            "itemtype": "property",
+            "name": "loop",
+            "type": "Boolean",
+            "class": "MovieClip"
+        },
+        {
+            "file": "src/pixi/MovieClip.js",
+            "line": 44,
+            "description": "Function to call when a MovieClip finishes playing",
+            "itemtype": "property",
+            "name": "onComplete",
+            "type": "Function",
+            "class": "MovieClip"
+        },
+        {
+            "file": "src/pixi/MovieClip.js",
+            "line": 51,
             "description": "[read only] indicates if the MovieClip is currently playing",
             "itemtype": "property",
             "name": "playing",
@@ -1799,7 +1852,7 @@
         },
         {
             "file": "src/pixi/MovieClip.js",
-            "line": 49,
+            "line": 63,
             "description": "Stops the MovieClip",
             "itemtype": "method",
             "name": "stop",
@@ -1807,7 +1860,7 @@
         },
         {
             "file": "src/pixi/MovieClip.js",
-            "line": 58,
+            "line": 72,
             "description": "Plays the MovieClip",
             "itemtype": "method",
             "name": "play",
@@ -1815,7 +1868,7 @@
         },
         {
             "file": "src/pixi/MovieClip.js",
-            "line": 67,
+            "line": 81,
             "description": "Stops the MovieClip and goes to a specific frame",
             "itemtype": "method",
             "name": "gotoAndStop",
@@ -1830,7 +1883,7 @@
         },
         {
             "file": "src/pixi/MovieClip.js",
-            "line": 80,
+            "line": 94,
             "description": "Goes to a specific frame and begins playing the MovieClip",
             "itemtype": "method",
             "name": "gotoAndPlay",
@@ -2273,7 +2326,7 @@
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/DisplayObjectContainer.js:126"
+            "line": " src/pixi/DisplayObjectContainer.js:184"
         },
         {
             "message": "Missing item type",

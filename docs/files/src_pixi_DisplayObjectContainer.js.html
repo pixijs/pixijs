@@ -217,6 +217,64 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 }
 
 &#x2F;**
+ * Swaps the depth of 2 displayObjects
+ * @method swapChildren
+ * @param  DisplayObject {DisplayObject}
+ * @param  DisplayObject2 {DisplayObject}
+ *&#x2F;
+PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
+{
+	&#x2F;&#x2F; TODO I already know this??
+	var index = this.children.indexOf( child );
+	var index2 = this.children.indexOf( child2 );
+	
+	if ( index !== -1 &amp;&amp; index2 !== -1 ) 
+	{
+		&#x2F;&#x2F; cool
+		if(this.stage)
+		{
+			&#x2F;&#x2F; this is to satisfy the webGL batching..
+			&#x2F;&#x2F; TODO sure there is a nicer way to achieve this!
+			this.stage.__removeChild(child);
+			this.stage.__removeChild(child2);
+			
+			this.stage.__addChild(child);
+			this.stage.__addChild(child2);
+		}
+		
+		&#x2F;&#x2F; swap the indexes..
+		child.childIndex = index2;
+		child2.childIndex = index;
+		&#x2F;&#x2F; swap the positions..
+		this.children[index] = child2;
+		this.children[index2] = child;
+		
+	}
+	else
+	{
+		throw new Error(child + &quot; Both the supplied DisplayObjects must be a child of the caller &quot; + this);
+	}
+}
+
+&#x2F;**
+ * Returns the Child at the specified index
+ * @method getChildAt
+ * @param  index {Number}
+ *&#x2F;
+PIXI.DisplayObjectContainer.prototype.getChildAt = function(index)
+{
+	if(index &gt;= 0 &amp;&amp; index &lt; this.children.length)
+	{
+		return this.children[index];
+	}
+	else
+	{
+		throw new Error(child + &quot; Both the supplied DisplayObjects must be a child of the caller &quot; + this);
+	
+	}
+}
+
+&#x2F;**
  * Removes a child from the container.
  * @method removeChild
  * @param  DisplayObject {DisplayObject}
