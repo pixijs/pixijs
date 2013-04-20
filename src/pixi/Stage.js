@@ -68,6 +68,16 @@ PIXI.Stage.prototype.setBackgroundColor = function(backgroundColor)
 	this.backgroundColorString =  "#" + this.backgroundColor.toString(16);
 }
 
+/**
+ * This will return the point containing global coords of the mouse.
+ * @method getMousePosition
+ * @return {Point} The point containing the coords of the global InteractionData position.
+ */
+PIXI.Stage.prototype.getMousePosition = function()
+{
+	return this.interactionManager.mouse.global;
+}
+
 PIXI.Stage.prototype.__addChild = function(child)
 {
 	if(child.interactive)this.dirty = true;
