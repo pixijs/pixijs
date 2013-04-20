@@ -80,7 +80,7 @@
 		}
 		
 		// set the mouseup and touchend callback..
-		button.mouseup = button.touchend = function(data){
+		button.mouseup = button.touchend = button.mouseupoutside = button.touchendoutside = function(data){
 			this.isdown = false;
 			
 			if(this.isOver)
