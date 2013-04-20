@@ -219,6 +219,10 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 		{
 			this.batchs[i].render();
 		}
+		else if(renderable instanceof PIXI.TilingSprite)
+		{
+			if(renderable.visible)this.renderTilingSprite(renderable);
+		}
 		else if(renderable instanceof PIXI.Strip)
 		{
 			if(renderable.visible)this.renderStrip(renderable);
@@ -257,9 +261,22 @@ PIXI.WebGLRenderer.prototype.updateTexture = function(texture)
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.source);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-
+		
+		// reguler...
+		
+		//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+		//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+		if(!texture._powerOf2)
+		{
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+		}
+		else
+		{
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+		}
+		
 	//	gl.generateMipmap(gl.TEXTURE_2D);
 		gl.bindTexture(gl.TEXTURE_2D, null);
 	}
@@ -451,6 +468,13 @@ PIXI.WebGLRenderer.prototype.addDisplayObject = function(displayObject)
 		}
 	
 	}
+	else if(displayObject instanceof PIXI.TilingSprite)
+	{
+		// add to a batch!!
+		this.initTilingSprite(displayObject);
+		this.batchs.push(displayObject);
+		
+	}
 	else if(displayObject instanceof PIXI.Strip)
 	{
 		// add to a batch!!
@@ -458,7 +482,7 @@ PIXI.WebGLRenderer.prototype.addDisplayObject = function(displayObject)
 		this.batchs.push(displayObject);
 		
 	}
-
+	
 	// if its somthing else... then custom codes!
 	this.batchUpdate = true;
 }
@@ -565,6 +589,127 @@ PIXI.WebGLRenderer.prototype.resize = function(width, height)
 	projectionMatrix[13] = 1;
 }
 
+
+/**
+ * @private
+ */
+PIXI.WebGLRenderer.prototype.initTilingSprite = function(sprite)
+{
+	
+	
+				
+	var gl = this.gl;
+
+	// make the texture tilable..
+			
+	sprite.verticies = new Float32Array([0, 0,
+										  sprite.width, 0,
+										  sprite.width,  sprite.height,
+										 0,  sprite.height]);
+					
+	sprite.uvs = new Float32Array([0, 0,
+									1, 0,
+									1, 1,
+									0, 1]);
+				
+	sprite.colors = new Float32Array([1,1,1,1]);
+	
+	sprite.indices =  new Uint16Array([0, 1, 3,2])//, 2]);
+	
+	
+	sprite._vertexBuffer = gl.createBuffer();
+	sprite._indexBuffer = gl.createBuffer();
+	sprite._uvBuffer = gl.createBuffer();
+	sprite._colorBuffer = gl.createBuffer();
+						
+	gl.bindBuffer(gl.ARRAY_BUFFER, sprite._vertexBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, sprite.verticies, gl.STATIC_DRAW);
+
+	gl.bindBuffer(gl.ARRAY_BUFFER, sprite._uvBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER,  sprite.uvs, gl.DYNAMIC_DRAW);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, sprite._colorBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, sprite.colors, gl.STATIC_DRAW);
+
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sprite._indexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, sprite.indices, gl.STATIC_DRAW);
+    
+//    return ( (x > 0) && ((x & (x - 1)) == 0) );
+
+	if(sprite.texture.baseTexture._glTexture)
+	{
+    	gl.bindTexture(gl.TEXTURE_2D, sprite.texture.baseTexture._glTexture);
+    	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+		sprite.texture.baseTexture._powerOf2 = true;
+	}
+	else
+	{
+		sprite.texture.baseTexture._powerOf2 = true;
+	}
+	
+	/*
+	var context = this.context;
+	
+ 	if(!sprite.__tilePattern) sprite.__tilePattern = context.createPattern(sprite.texture.baseTexture.source, "repeat");
+ 	
+	context.beginPath();
+	
+	var tilePosition = sprite.tilePosition;
+	var tileScale = sprite.tileScale;
+	
+    // offset
+    context.scale(tileScale.x,tileScale.y);
+    context.translate(tilePosition.x, tilePosition.y);
+ 	
+	context.fillStyle = sprite.__tilePattern;
+	context.fillRect(-tilePosition.x,-tilePosition.y,sprite.width / tileScale.x, sprite.height / tileScale.y);
+	
+    context.translate(-tilePosition.x, -tilePosition.y);
+	context.scale(1/tileScale.x, 1/tileScale.y);
+	*/
+}
+
+/**
+ * @private
+ */
+PIXI.WebGLRenderer.prototype.renderTilingSprite = function(sprite)
+{
+	var gl = this.gl;
+	var shaderProgram = this.shaderProgram;
+	
+	var tilePosition = sprite.tilePosition;
+	var tileScale = sprite.tileScale;
+	
+	var offsetX =  tilePosition.x/sprite.texture.baseTexture.width;
+	var offsetY =  tilePosition.y/sprite.texture.baseTexture.height;
+	
+	var scaleX =  (sprite.width / sprite.texture.baseTexture.width)  / tileScale.x///sprite.texture.baseTexture.width;
+	var scaleY =  (sprite.height / sprite.texture.baseTexture.height) / tileScale.y///sprite.texture.baseTexture.height;
+	//
+	//sprite.dirty = true;
+	sprite.uvs[0] = 0 + offsetX
+	sprite.uvs[1] = 0 - offsetY;
+	
+	sprite.uvs[2] = (1 * scaleX)  +offsetX
+	sprite.uvs[3] = 0 - offsetY;
+	
+	sprite.uvs[4] = (1 *scaleX) + offsetX
+	sprite.uvs[5] = (1 *scaleY) - offsetY;
+	
+	sprite.uvs[6] = 0  + offsetX
+	sprite.uvs[7] = (1 *scaleY) - offsetY;
+	
+	
+	gl.bindBuffer(gl.ARRAY_BUFFER, sprite._uvBuffer);
+	gl.bufferSubData(gl.ARRAY_BUFFER, 0, sprite.uvs)
+	
+	this.renderStrip(sprite);
+ 
+}
+
+
+
 /**
  * @private
  */
@@ -662,7 +807,7 @@ PIXI.WebGLRenderer.prototype.renderStrip = function(strip)
 	    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, strip.indices, gl.STATIC_DRAW);
 	    
 	}
-	
+	//console.log(gl.TRIANGLE_STRIP)
 	gl.drawElements(gl.TRIANGLE_STRIP, strip.indices.length, gl.UNSIGNED_SHORT, 0);
     
     gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.projectionMatrix);

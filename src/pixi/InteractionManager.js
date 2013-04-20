@@ -304,7 +304,7 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 	var global = interactionData.global;
 	
 	if(!item.visible)return false;
-
+	
 	if(item instanceof PIXI.Sprite)
 	{
 		var worldTransform = item.worldTransform;

@@ -69,6 +69,8 @@
             
                 <li><a href="..&#x2F;classes/Texture.html">Texture</a></li>
             
+                <li><a href="..&#x2F;classes/TilingSprite.html">TilingSprite</a></li>
+            
                 <li><a href="..&#x2F;classes/WebGLBatch.html">WebGLBatch</a></li>
             
                 <li><a href="..&#x2F;classes/WebGLRenderer.html">WebGLRenderer</a></li>
@@ -209,16 +211,32 @@ PIXI.InteractionManager.prototype.collectInteractiveSprite = function(displayObj
 
 PIXI.InteractionManager.prototype.setTarget = function(target)
 {
-	this.target = target;
-	target.view.addEventListener(&#x27;mousemove&#x27;,  this.onMouseMove.bind(this), true);
-	target.view.addEventListener(&#x27;mousedown&#x27;,  this.onMouseDown.bind(this), true);
- 	document.body.addEventListener(&#x27;mouseup&#x27;,  this.onMouseUp.bind(this), true);
- 	target.view.addEventListener(&#x27;mouseout&#x27;,   this.onMouseUp.bind(this), true);
+	if (window.navigator.msPointerEnabled) 
+	{
+		&#x2F;&#x2F; time to remove some of that zoom in ja..
+		target.view.style[&quot;-ms-content-zooming&quot;] = &quot;none&quot;;
+    	target.view.style[&quot;-ms-touch-action&quot;] = &quot;none&quot;
+    
+		&#x2F;&#x2F; DO some window specific touch!
+	}
 	
-	&#x2F;&#x2F; aint no multi touch just yet!
-	target.view.addEventListener(&quot;touchstart&quot;, this.onTouchStart.bind(this), true);
-	target.view.addEventListener(&quot;touchend&quot;, this.onTouchEnd.bind(this), true);
-	target.view.addEventListener(&quot;touchmove&quot;, this.onTouchMove.bind(this), true);
+	
+	{
+		
+		this.target = target;
+		target.view.addEventListener(&#x27;mousemove&#x27;,  this.onMouseMove.bind(this), true);
+		target.view.addEventListener(&#x27;mousedown&#x27;,  this.onMouseDown.bind(this), true);
+	 	document.body.addEventListener(&#x27;mouseup&#x27;,  this.onMouseUp.bind(this), true);
+	 	target.view.addEventListener(&#x27;mouseout&#x27;,   this.onMouseUp.bind(this), true);
+		
+		&#x2F;&#x2F; aint no multi touch just yet!
+		target.view.addEventListener(&quot;touchstart&quot;, this.onTouchStart.bind(this), true);
+		target.view.addEventListener(&quot;touchend&quot;, this.onTouchEnd.bind(this), true);
+		target.view.addEventListener(&quot;touchmove&quot;, this.onTouchMove.bind(this), true);
+	}
+	
+	
+	
 }
 
 PIXI.InteractionManager.prototype.update = function()
@@ -408,7 +426,7 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 	var global = interactionData.global;
 	
 	if(!item.visible)return false;
-
+	
 	if(item instanceof PIXI.Sprite)
 	{
 		var worldTransform = item.worldTransform;
@@ -460,8 +478,8 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 	
 	for (var i = 0; i &lt; length; i++)
 	{
-		var item = item.children[i];
-		var hit = this.hitTest(item, interactionData);
+		var tempItem = item.children[i];
+		var hit = this.hitTest(tempItem, interactionData);
 		if(hit)return true;
 	}
 		
@@ -527,6 +545,7 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
 					&#x2F;&#x2F;call the function!
 					if(item.touchstart)item.touchstart(touchData);
 					item.__isDown = true;
+					item.__touchData = touchData;
 					
 					if(!item.interactiveChildren)break;
 				}
@@ -540,11 +559,13 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 {
 	event.preventDefault();
 	
+	
 	var rect = this.target.view.getBoundingClientRect();
 	var changedTouches = event.changedTouches;
 	
 	for (var i=0; i &lt; changedTouches.length; i++) 
 	{
+		 
 		var touchEvent = changedTouches[i];
 		var touchData = this.touchs[touchEvent.identifier];
 		var up = false;
@@ -555,6 +576,7 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 		for (var j = 0; j &lt; length; j++)
 		{
 			var item = this.interactiveItems[j];
+			var itemTouchData = item.__touchData; &#x2F;&#x2F; &lt;-- Here!
 			item.__hit = this.hitTest(item, touchData);
 		
 			if(itemTouchData == touchData)
@@ -586,7 +608,7 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 					item.__isDown = false;
 				}
 				
-				item.__touchIdentifier = null;
+				item.__touchData = null;
 					
 			}
 			else

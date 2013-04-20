@@ -80,7 +80,7 @@ PIXI.BaseTexture = function(source)
 		PIXI.texturesToUpdate.push(this);
 	}
 	
-	
+	this._powerOf2 = false;
 	
 }
 

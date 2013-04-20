@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>DisplayObject - Pixi.JS</title>
+    <title>TilingSprite - Pixi.JS</title>
     <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
@@ -116,15 +116,19 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>DisplayObject Class</h1>
+                        <h1>TilingSprite Class</h1>
 <div class="box meta">
     
 
     
+        <div class="extends">
+            Extends <a href="../classes/DisplayObjectContainer.html" class="crosslink">DisplayObjectContainer</a>
+        </div>
+    
 
     
         <div class="foundat">
-            Defined in: <a href="..&#x2F;files&#x2F;src_pixi_DisplayObject.js.html#l5"><code>src&#x2F;pixi&#x2F;DisplayObject.js:5</code></a>
+            Defined in: <a href="..&#x2F;files&#x2F;src_pixi_extras_TilingSprite.js.html#l5"><code>src&#x2F;pixi&#x2F;extras&#x2F;TilingSprite.js:5</code></a>
         </div>
     
 
@@ -140,17 +144,39 @@
 
 
 <div class="box intro">
-    <p>this is the base class for all objects that are rendered on the screen.</p>
+    <p>A tiling sprite is a fast way of rendering a tiling image</p>
 </div>
 
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_DisplayObject" class="method item">
-    <h3 class="name"><code>DisplayObject</code></h3>
+        <div id="method_TilingSprite" class="method item">
+    <h3 class="name"><code>TilingSprite</code></h3>
 
     
-        <span class="paren">()</span>
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>texture</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>width</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>height</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
     
 
     
@@ -178,7 +204,7 @@
             
         
         
-        <a href="..&#x2F;files&#x2F;src_pixi_DisplayObject.js.html#l5"><code>src&#x2F;pixi&#x2F;DisplayObject.js:5</code></a>
+        <a href="..&#x2F;files&#x2F;src_pixi_extras_TilingSprite.js.html#l5"><code>src&#x2F;pixi&#x2F;extras&#x2F;TilingSprite.js:5</code></a>
         
         </p>
 
@@ -192,6 +218,59 @@
         
     </div>
 
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">texture</code>
+                        <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the texture of the tiling sprite</p>
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">width</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the width of the tiling sprite</p>
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">height</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the height of the tiling sprite</p>
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
     
 
     
@@ -224,88 +303,100 @@
                 <div class="index-section methods">
                     <h3>Methods</h3>
 
-                    <ul class="index-list methods">
+                    <ul class="index-list methods extends">
                         
-                            <li class="index-item method">
-                                <a href="#method_autoDetectRenderer">autoDetectRenderer</a>
+                            <li class="index-item method inherited">
+                                <a href="#method_addChild">addChild</a>
 
-                                
-                                    <span class="flag static">static</span>
                                 
                                 
                             </li>
                         
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
+                                <a href="#method_addChildAt">addChildAt</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
                                 <a href="#method_click">click</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#method_mousedown">mousedown</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#method_mouseout">mouseout</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#method_mouseover">mouseover</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#method_mouseup">mouseup</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#method_mouseupoutside">mouseupoutside</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
+                                <a href="#method_removeChild">removeChild</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
                                 <a href="#method_setInteractive">setInteractive</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#method_tap">tap</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#method_touchend">touchend</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#method_touchendoutside">touchendoutside</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#method_touchstart">touchstart</a>
 
                                 
@@ -320,51 +411,58 @@
                 <div class="index-section properties">
                     <h3>Properties</h3>
 
-                    <ul class="index-list properties">
+                    <ul class="index-list properties extends">
                         
-                            <li class="index-item property">
+                            <li class="index-item property inherited">
                                 <a href="#property_alpha">alpha</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item property">
+                            <li class="index-item property inherited">
+                                <a href="#property_children">children</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
                                 <a href="#property_hitArea">hitArea</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item property">
+                            <li class="index-item property inherited">
                                 <a href="#property_parent">parent</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item property">
+                            <li class="index-item property inherited">
                                 <a href="#property_position">position</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item property">
+                            <li class="index-item property inherited">
                                 <a href="#property_rotation">rotation</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item property">
+                            <li class="index-item property inherited">
                                 <a href="#property_scale">scale</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item property">
+                            <li class="index-item property inherited">
                                 <a href="#property_stage">stage</a>
 
                                 
@@ -372,6 +470,20 @@
                             </li>
                         
                             <li class="index-item property">
+                                <a href="#property_tileScale">tileScale</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_tileScale">tileScale</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
                                 <a href="#property_visible">visible</a>
 
                                 
@@ -392,8 +504,8 @@
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_autoDetectRenderer" class="method item">
-    <h3 class="name"><code>autoDetectRenderer</code></h3>
+                    <div id="method_addChild" class="method item inherited">
+    <h3 class="name"><code>addChild</code></h3>
 
     
         <div class="args">
@@ -401,25 +513,7 @@
             
                 <li class="arg">
                     
-                        <code>width</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>height</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>view</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>transparent</code>
+                        <code>DisplayObject</code>
                     
                 </li>
             
@@ -436,8 +530,6 @@
     
 
     
-        <span class="flag static">static</span>
-    
 
     
 
@@ -446,15 +538,12 @@
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObjectContainer.html#method_addChild">DisplayObjectContainer</a>:
             
         
         
-        <a href="..&#x2F;files&#x2F;src_pixi_utils_Detector.js.html#l5"><code>src&#x2F;pixi&#x2F;utils&#x2F;Detector.js:5</code></a>
+        <a href="..&#x2F;files&#x2F;src_pixi_DisplayObjectContainer.js.html#l29"><code>src&#x2F;pixi&#x2F;DisplayObjectContainer.js:29</code></a>
         
         </p>
 
@@ -465,8 +554,7 @@
     </div>
 
     <div class="description">
-        <p>This helper function will automatically detect which renderer you should be using.
-WebGL is the preferred renderer as it is a lot fastest. If webGL is not supported by the browser then this function will return a canvas renderer</p>
+        <p>Adds a child to the container.</p>
     </div>
 
     
@@ -477,59 +565,14 @@ WebGL is the preferred renderer as it is a lot fastest. If webGL is not supporte
             
                 <li class="param">
                     
-                        <code class="param-name">width</code>
-                        <span class="type">Number</span>
+                        <code class="param-name">DisplayObject</code>
+                        <span class="type"><a href="../classes/DisplayObject.html" class="crosslink">DisplayObject</a></span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>the width of the renderers view</p>
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">height</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>the height of the renderers view</p>
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">view</code>
-                        <span class="type">Canvas</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>the canvas to use as a view, optional</p>
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">transparent</code>
-                        <span class="type">Boolean</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>the transparency of the render view, default false</p>
+                         
                     </div>
 
                     
@@ -545,7 +588,112 @@ WebGL is the preferred renderer as it is a lot fastest. If webGL is not supporte
 </div>
 
                 
-                    <div id="method_click" class="method item">
+                    <div id="method_addChildAt" class="method item inherited">
+    <h3 class="name"><code>addChildAt</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>DisplayObject</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>index</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObjectContainer.html#method_addChildAt">DisplayObjectContainer</a>:
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;src_pixi_DisplayObjectContainer.js.html#l51"><code>src&#x2F;pixi&#x2F;DisplayObjectContainer.js:51</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Adds a child to the container at a specified index. If the index is out of bounds an error will be thrown</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">DisplayObject</code>
+                        <span class="type"><a href="../classes/DisplayObject.html" class="crosslink">DisplayObject</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">index</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_click" class="method item inherited">
     <h3 class="name"><code>click</code></h3>
 
     
@@ -579,11 +727,8 @@ WebGL is the preferred renderer as it is a lot fastest. If webGL is not supporte
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObject.html#method_click">DisplayObject</a>:
             
         
         
@@ -616,7 +761,7 @@ WebGL is the preferred renderer as it is a lot fastest. If webGL is not supporte
                     
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                     
@@ -632,7 +777,7 @@ WebGL is the preferred renderer as it is a lot fastest. If webGL is not supporte
 </div>
 
                 
-                    <div id="method_mousedown" class="method item">
+                    <div id="method_mousedown" class="method item inherited">
     <h3 class="name"><code>mousedown</code></h3>
 
     
@@ -666,11 +811,8 @@ WebGL is the preferred renderer as it is a lot fastest. If webGL is not supporte
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObject.html#method_mousedown">DisplayObject</a>:
             
         
         
@@ -703,7 +845,7 @@ WebGL is the preferred renderer as it is a lot fastest. If webGL is not supporte
                     
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                     
@@ -719,7 +861,7 @@ WebGL is the preferred renderer as it is a lot fastest. If webGL is not supporte
 </div>
 
                 
-                    <div id="method_mouseout" class="method item">
+                    <div id="method_mouseout" class="method item inherited">
     <h3 class="name"><code>mouseout</code></h3>
 
     
@@ -753,11 +895,8 @@ WebGL is the preferred renderer as it is a lot fastest. If webGL is not supporte
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObject.html#method_mouseout">DisplayObject</a>:
             
         
         
@@ -790,7 +929,7 @@ WebGL is the preferred renderer as it is a lot fastest. If webGL is not supporte
                     
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                     
@@ -806,7 +945,7 @@ WebGL is the preferred renderer as it is a lot fastest. If webGL is not supporte
 </div>
 
                 
-                    <div id="method_mouseover" class="method item">
+                    <div id="method_mouseover" class="method item inherited">
     <h3 class="name"><code>mouseover</code></h3>
 
     
@@ -840,11 +979,8 @@ WebGL is the preferred renderer as it is a lot fastest. If webGL is not supporte
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObject.html#method_mouseover">DisplayObject</a>:
             
         
         
@@ -877,7 +1013,7 @@ WebGL is the preferred renderer as it is a lot fastest. If webGL is not supporte
                     
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                     
@@ -893,7 +1029,7 @@ WebGL is the preferred renderer as it is a lot fastest. If webGL is not supporte
 </div>
 
                 
-                    <div id="method_mouseup" class="method item">
+                    <div id="method_mouseup" class="method item inherited">
     <h3 class="name"><code>mouseup</code></h3>
 
     
@@ -927,11 +1063,8 @@ WebGL is the preferred renderer as it is a lot fastest. If webGL is not supporte
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObject.html#method_mouseup">DisplayObject</a>:
             
         
         
@@ -965,7 +1098,7 @@ for this callback to be fired the mouse must have been pressed down over the dis
                     
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                     
@@ -981,7 +1114,7 @@ for this callback to be fired the mouse must have been pressed down over the dis
 </div>
 
                 
-                    <div id="method_mouseupoutside" class="method item">
+                    <div id="method_mouseupoutside" class="method item inherited">
     <h3 class="name"><code>mouseupoutside</code></h3>
 
     
@@ -1015,11 +1148,8 @@ for this callback to be fired the mouse must have been pressed down over the dis
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObject.html#method_mouseupoutside">DisplayObject</a>:
             
         
         
@@ -1053,7 +1183,7 @@ for this callback to be fired, The touch must have started over the displayObjec
                     
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                     
@@ -1069,7 +1199,91 @@ for this callback to be fired, The touch must have started over the displayObjec
 </div>
 
                 
-                    <div id="method_setInteractive" class="method item">
+                    <div id="method_removeChild" class="method item inherited">
+    <h3 class="name"><code>removeChild</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>DisplayObject</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObjectContainer.html#method_removeChild">DisplayObjectContainer</a>:
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;src_pixi_DisplayObjectContainer.js.html#l97"><code>src&#x2F;pixi&#x2F;DisplayObjectContainer.js:97</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Removes a child from the container.</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">DisplayObject</code>
+                        <span class="type"><a href="../classes/DisplayObject.html" class="crosslink">DisplayObject</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_setInteractive" class="method item inherited">
     <h3 class="name"><code>setInteractive</code></h3>
 
     
@@ -1103,11 +1317,8 @@ for this callback to be fired, The touch must have started over the displayObjec
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObject.html#method_setInteractive">DisplayObject</a>:
             
         
         
@@ -1140,7 +1351,7 @@ for this callback to be fired, The touch must have started over the displayObjec
                     
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                     
@@ -1156,7 +1367,7 @@ for this callback to be fired, The touch must have started over the displayObjec
 </div>
 
                 
-                    <div id="method_tap" class="method item">
+                    <div id="method_tap" class="method item inherited">
     <h3 class="name"><code>tap</code></h3>
 
     
@@ -1190,11 +1401,8 @@ for this callback to be fired, The touch must have started over the displayObjec
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObject.html#method_tap">DisplayObject</a>:
             
         
         
@@ -1228,7 +1436,7 @@ basically a touch version of click</p>
                     
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                     
@@ -1244,7 +1452,7 @@ basically a touch version of click</p>
 </div>
 
                 
-                    <div id="method_touchend" class="method item">
+                    <div id="method_touchend" class="method item inherited">
     <h3 class="name"><code>touchend</code></h3>
 
     
@@ -1278,11 +1486,8 @@ basically a touch version of click</p>
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObject.html#method_touchend">DisplayObject</a>:
             
         
         
@@ -1315,7 +1520,7 @@ basically a touch version of click</p>
                     
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                     
@@ -1331,7 +1536,7 @@ basically a touch version of click</p>
 </div>
 
                 
-                    <div id="method_touchendoutside" class="method item">
+                    <div id="method_touchendoutside" class="method item inherited">
     <h3 class="name"><code>touchendoutside</code></h3>
 
     
@@ -1365,11 +1570,8 @@ basically a touch version of click</p>
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObject.html#method_touchendoutside">DisplayObject</a>:
             
         
         
@@ -1403,7 +1605,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
                     
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                     
@@ -1419,7 +1621,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
 </div>
 
                 
-                    <div id="method_touchstart" class="method item">
+                    <div id="method_touchstart" class="method item inherited">
     <h3 class="name"><code>touchstart</code></h3>
 
     
@@ -1453,11 +1655,8 @@ for this callback to be fired, The touch must have started over the sprite</p>
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObject.html#method_touchstart">DisplayObject</a>:
             
         
         
@@ -1490,7 +1689,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
                     
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                     
@@ -1514,7 +1713,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
                 <h2 class="off-left">Properties</h2>
 
                 
-                    <div id="property_alpha" class="property item">
+                    <div id="property_alpha" class="property item inherited">
     <h3 class="name"><code>alpha</code></h3>
     <span class="type">Number</span>
 
@@ -1529,11 +1728,8 @@ for this callback to be fired, The touch must have started over the sprite</p>
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObject.html#property_alpha">DisplayObject</a>:
             
         
         
@@ -1558,7 +1754,48 @@ for this callback to be fired, The touch must have started over the sprite</p>
 </div>
 
                 
-                    <div id="property_hitArea" class="property item">
+                    <div id="property_children" class="property item inherited">
+    <h3 class="name"><code>children</code></h3>
+    <span class="type">Array</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObjectContainer.html#property_children">DisplayObjectContainer</a>:
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;src_pixi_DisplayObjectContainer.js.html#l16"><code>src&#x2F;pixi&#x2F;DisplayObjectContainer.js:16</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>[read-only] The of children of this container.</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_hitArea" class="property item inherited">
     <h3 class="name"><code>hitArea</code></h3>
     <span class="type"><a href="../classes/Rectangle.html" class="crosslink">Rectangle</a></span>
 
@@ -1573,11 +1810,8 @@ for this callback to be fired, The touch must have started over the sprite</p>
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObject.html#property_hitArea">DisplayObject</a>:
             
         
         
@@ -1603,7 +1837,7 @@ Setting it is a neat way of optimising the hitTest function that the interaction
 </div>
 
                 
-                    <div id="property_parent" class="property item">
+                    <div id="property_parent" class="property item inherited">
     <h3 class="name"><code>parent</code></h3>
     <span class="type"><a href="../classes/DisplayObjectContainer.html" class="crosslink">DisplayObjectContainer</a></span>
 
@@ -1618,11 +1852,8 @@ Setting it is a neat way of optimising the hitTest function that the interaction
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObject.html#property_parent">DisplayObject</a>:
             
         
         
@@ -1647,7 +1878,7 @@ Setting it is a neat way of optimising the hitTest function that the interaction
 </div>
 
                 
-                    <div id="property_position" class="property item">
+                    <div id="property_position" class="property item inherited">
     <h3 class="name"><code>position</code></h3>
     <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>
 
@@ -1662,11 +1893,8 @@ Setting it is a neat way of optimising the hitTest function that the interaction
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObject.html#property_position">DisplayObject</a>:
             
         
         
@@ -1691,7 +1919,7 @@ Setting it is a neat way of optimising the hitTest function that the interaction
 </div>
 
                 
-                    <div id="property_rotation" class="property item">
+                    <div id="property_rotation" class="property item inherited">
     <h3 class="name"><code>rotation</code></h3>
     <span class="type">Number</span>
 
@@ -1706,11 +1934,8 @@ Setting it is a neat way of optimising the hitTest function that the interaction
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObject.html#property_rotation">DisplayObject</a>:
             
         
         
@@ -1735,7 +1960,7 @@ Setting it is a neat way of optimising the hitTest function that the interaction
 </div>
 
                 
-                    <div id="property_scale" class="property item">
+                    <div id="property_scale" class="property item inherited">
     <h3 class="name"><code>scale</code></h3>
     <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>
 
@@ -1750,11 +1975,8 @@ Setting it is a neat way of optimising the hitTest function that the interaction
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObject.html#property_scale">DisplayObject</a>:
             
         
         
@@ -1779,7 +2001,7 @@ Setting it is a neat way of optimising the hitTest function that the interaction
 </div>
 
                 
-                    <div id="property_stage" class="property item">
+                    <div id="property_stage" class="property item inherited">
     <h3 class="name"><code>stage</code></h3>
     <span class="type"><a href="../classes/Stage.html" class="crosslink">Stage</a></span>
 
@@ -1794,11 +2016,8 @@ Setting it is a neat way of optimising the hitTest function that the interaction
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObject.html#property_stage">DisplayObject</a>:
             
         
         
@@ -1823,9 +2042,9 @@ Setting it is a neat way of optimising the hitTest function that the interaction
 </div>
 
                 
-                    <div id="property_visible" class="property item">
-    <h3 class="name"><code>visible</code></h3>
-    <span class="type">Boolean</span>
+                    <div id="property_tileScale" class="property item">
+    <h3 class="name"><code>tileScale</code></h3>
+    <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>
 
     
 
@@ -1843,6 +2062,91 @@ Setting it is a neat way of optimising the hitTest function that the interaction
                 
                 Defined in
                 
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;src_pixi_extras_TilingSprite.js.html#l29"><code>src&#x2F;pixi&#x2F;extras&#x2F;TilingSprite.js:29</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The offset position of the image that is being tiled</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_tileScale" class="property item">
+    <h3 class="name"><code>tileScale</code></h3>
+    <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;src_pixi_extras_TilingSprite.js.html#l23"><code>src&#x2F;pixi&#x2F;extras&#x2F;TilingSprite.js:23</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The scaling of the image that is being tiled</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_visible" class="property item inherited">
+    <h3 class="name"><code>visible</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObject.html#property_visible">DisplayObject</a>:
             
         
         
