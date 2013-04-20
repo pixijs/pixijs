@@ -64,13 +64,13 @@ It also copies the non-minified version to the examples.
 ### Current features ###
 
 - WebGL renderer (with automatic smart batching allowing for REALLY fast performance) 
-- Canvas renderer 
+- Canvas renderer (Fastest in town!)
 - Full scene graph 
 - Super easy to use API (similar to the flash display list API) 
 - Support for texture atlases 
 - Asset loader / sprite sheet loader 
 - Auto-detect which renderer should be used
-- Mouse and Multi-touch Interaction
+- Full Mouse and Multi-touch Interaction
 
 ### Coming soon ###
 
