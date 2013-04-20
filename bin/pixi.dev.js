@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-04-16
+ * Compiled: 2013-04-20
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -658,6 +658,20 @@ PIXI.MovieClip = function(textures)
 	 * @type Number
 	 */
 	this.animationSpeed = 1;
+
+	/**
+	 * Whether or not the movie clip repeats after playing.
+	 * @property loop
+	 * @type Boolean
+	 */
+	this.loop = true;
+
+	/**
+	 * Function to call when a MovieClip finishes playing
+	 * @property onComplete
+	 * @type Function
+	 */
+	this.onComplete = null;
 	
 	/**
 	 * [read only] indicates if the MovieClip is currently playing
@@ -721,7 +735,18 @@ PIXI.MovieClip.prototype.updateTransform = function()
 	
 	this.currentFrame += this.animationSpeed;
 	var round = (this.currentFrame + 0.5) | 0;
-	this.setTexture(this.textures[round % this.textures.length]);
+	if(this.loop || round < this.textures.length)
+	{
+		this.setTexture(this.textures[round % this.textures.length]);
+	}
+	else if(round >= this.textures.length)
+	{
+		this.gotoAndStop(this.textures.length - 1);
+		if(this.onComplete)
+		{
+			this.onComplete();
+		}
+	}
 }
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
@@ -1081,8 +1106,8 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 	
 	for (var i = 0; i < length; i++)
 	{
-		var item = item.children[i];
-		var hit = this.hitTest(item, interactionData);
+		var tempItem = item.children[i];
+		var hit = this.hitTest(tempItem, interactionData);
 		if(hit)return true;
 	}
 		

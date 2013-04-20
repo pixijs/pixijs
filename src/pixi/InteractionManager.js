@@ -356,8 +356,8 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 	
 	for (var i = 0; i < length; i++)
 	{
-		var item = item.children[i];
-		var hit = this.hitTest(item, interactionData);
+		var tempItem = item.children[i];
+		var hit = this.hitTest(tempItem, interactionData);
 		if(hit)return true;
 	}
 		
