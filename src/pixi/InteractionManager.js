@@ -316,13 +316,16 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 		var x = a11 * id * global.x + -a01 * id * global.y + (a12 * a01 - a02 * a11) * id; 
 		var y = a00 * id * global.y + -a10 * id * global.x + (-a12 * a00 + a02 * a10) * id;
 		
-		var x1 = -item.width * item.anchor.x;
+		var width = item.texture.frame.width;
+		var height = item.texture.frame.height;
 		
-		if(x > x1 && x < x1 + item.width)
+		var x1 = -width * item.anchor.x;
+		
+		if(x > x1 && x < x1 + width)
 		{
-			var y1 = -item.height * item.anchor.y;
+			var y1 = -height * item.anchor.y;
 			
-			if(y > y1 && y < y1 + item.height)
+			if(y > y1 && y < y1 + height)
 			{
 				return true;
 			}

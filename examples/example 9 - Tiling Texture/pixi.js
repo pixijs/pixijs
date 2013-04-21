@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-04-21
+ * Compiled: 2013-04-22
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -660,7 +660,7 @@ PIXI.Sprite.prototype.setTexture = function(texture)
  */
 PIXI.Sprite.prototype.onTextureUpdate = function(event)
 {
-	this.texture.removeEventListener( 'update', this.onTextureUpdateBind );
+	//this.texture.removeEventListener( 'update', this.onTextureUpdateBind );
 	
 	// so if _width is 0 then width was not set..
 	if(this._width)this.scale.x = this._width / this.texture.frame.width;
@@ -1146,13 +1146,16 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 		var x = a11 * id * global.x + -a01 * id * global.y + (a12 * a01 - a02 * a11) * id; 
 		var y = a00 * id * global.y + -a10 * id * global.x + (-a12 * a00 + a02 * a10) * id;
 		
-		var x1 = -item.width * item.anchor.x;
+		var width = item.texture.frame.width;
+		var height = item.texture.frame.height;
 		
-		if(x > x1 && x < x1 + item.width)
+		var x1 = -width * item.anchor.x;
+		
+		if(x > x1 && x < x1 + width)
 		{
-			var y1 = -item.height * item.anchor.y;
+			var y1 = -height * item.anchor.y;
 			
-			if(y > y1 && y < y1 + item.height)
+			if(y > y1 && y < y1 + height)
 			{
 				return true;
 			}
@@ -3270,7 +3273,7 @@ PIXI.WebGLBatch.prototype.update = function()
 		this.verticies[index + 6] =  a * w1 + c * h0 + tx; 
 		this.verticies[index + 7] =  d * h0 + b * w1 + ty; 
 		
-		if(displayObject.updateFrame || displayObject.texture.updateFrame)
+		if(displayObject.updateFrame)// || displayObject.texture.updateFrame)
 		{
 			this.dirtyUVS = true;
 			
@@ -4123,9 +4126,31 @@ PIXI.BaseTexture = function(source)
 
 PIXI.BaseTexture.constructor = PIXI.BaseTexture;
 
-PIXI.BaseTexture.prototype.fromImage = function(imageUrl)
+/**
+ * 
+ * Helper function that returns a base texture based on an image url
+ * If the image is not in the base texture cache it will be  created and loaded
+ * @static
+ * @method fromImage
+ * @param imageUrl {String} The image url of the texture
+ * @return BaseTexture
+ */
+PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin)
 {
+	var baseTexture = PIXI.BaseTextureCache[imageUrl];
+	if(!baseTexture)
+	{
+		var image = new Image();
+		if (crossorigin)
+		{
+			image.crossOrigin = '';
+		}
+		image.src = imageUrl;
+		baseTexture = new PIXI.BaseTexture(image);
+		PIXI.BaseTextureCache[imageUrl] = baseTexture;
+	}
 
+	return baseTexture;
 }
 
 /**
@@ -4154,6 +4179,9 @@ PIXI.Texture = function(baseTexture, frame)
 	}
 	
 	this.trim = new PIXI.Point();
+
+	if(baseTexture instanceof PIXI.Texture)
+		baseTexture = baseTexture.baseTexture;
 	
 	/**
 	 * The base texture of this texture
@@ -4239,24 +4267,9 @@ PIXI.Texture.fromImage = function(imageUrl, crossorigin)
 	
 	if(!texture)
 	{
-		var baseTexture = PIXI.BaseTextureCache[imageUrl];
-		if(!baseTexture) 
-		{
-			var image = new Image();//new Image();
-			if (crossorigin)
-			{
-				image.crossOrigin = '';
-			}
-			image.src = imageUrl;
-			baseTexture = new PIXI.BaseTexture(image);
-			PIXI.BaseTextureCache[imageUrl] = baseTexture;
-		}
-		texture = new PIXI.Texture(baseTexture);
-		
+		texture = new PIXI.Texture(PIXI.BaseTexture.fromImage(imageUrl, crossorigin));
 		
 		PIXI.TextureCache[imageUrl] = texture;
-		
-		
 	}
 	
 	return texture;
