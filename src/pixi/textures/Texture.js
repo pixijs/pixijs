@@ -87,7 +87,11 @@ PIXI.Texture.prototype.setFrame = function(frame)
 	{
 		throw new Error("Texture Error: frame does not fit inside the base Texture dimensions " + this);
 	}
-	//this.updateFrame = true;
+	
+	this.updateFrame = true;
+	
+	PIXI.Texture.frameUpdates.push(this);
+	//this.dispatchEvent( { type: 'update', content: this } );
 }
 
 /**
@@ -184,4 +188,7 @@ PIXI.Texture.removeTextureFromCache = function(id)
 	PIXI.TextureCache[id] = null;
 	return texture;
 }
+
+// this is more for webGL.. it contains updated frames..
+PIXI.Texture.frameUpdates = [];
 

@@ -48,19 +48,17 @@ PIXI.Sprite = function(texture)
 	 * @property width
 	 * @type #Number
 	 */
-	this.width = 0;
+	this._width = 0;
 	
 	/**
 	 * The height of the sprite (this is initially set by the texture)
 	 * @property height
 	 * @type #Number
 	 */
-	this.height = 0;
+	this._height = 0;
 	
 	if(texture.baseTexture.hasLoaded)
 	{
-		this.width   = this.texture.frame.width;
-		this.height  = this.texture.frame.height;
 		this.updateFrame = true;
 	}
 	else
@@ -80,6 +78,28 @@ PIXI.Sprite = function(texture)
 PIXI.Sprite.constructor = PIXI.Sprite;
 PIXI.Sprite.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
 
+// OOH! shiney new getters and setters for width and height
+// The width and height now modify the scale (this is what flash does, nice and tidy!)
+Object.defineProperty(PIXI.Sprite.prototype, 'width', {
+    get: function() {
+        return this.scale.x * this.texture.frame.width;
+    },
+    set: function(value) {
+    	this.scale.x = value / this.texture.frame.width
+        this._width = value;
+    }
+});
+
+Object.defineProperty(PIXI.Sprite.prototype, 'height', {
+    get: function() {
+        return  this.scale.y * this.texture.frame.height;
+    },
+    set: function(value) {
+    	this.scale.y = value / this.texture.frame.height
+        this._height = value;
+    }
+});
+ 
 /**
 @method setTexture
 @param texture {Texture} The PIXI texture that is displayed by the sprite
@@ -93,8 +113,6 @@ PIXI.Sprite.prototype.setTexture = function(texture)
 	}
 	
 	this.texture = texture;
-	this.width   = texture.frame.width;
-	this.height  = texture.frame.height;
 	this.updateFrame = true;
 }
 
@@ -103,8 +121,12 @@ PIXI.Sprite.prototype.setTexture = function(texture)
  */
 PIXI.Sprite.prototype.onTextureUpdate = function(event)
 {
-	this.width   = this.width || this.texture.frame.width;
-	this.height  = this.height || this.texture.frame.height;
+	this.texture.removeEventListener( 'update', this.onTextureUpdateBind );
+	
+	// so if _width is 0 then width was not set..
+	if(this._width)this.scale.x = this._width / this.texture.frame.width;
+	if(this._height)this.scale.y = this._height / this.texture.frame.height;
+	
 	this.updateFrame = true;
 }
 

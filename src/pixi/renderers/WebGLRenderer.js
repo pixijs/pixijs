@@ -240,6 +240,17 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 			stage.interactionManager.setTarget(this);
 		}
 	}
+	
+	// after rendering lets confirm all frames that have been uodated..
+	if(PIXI.Texture.frameUpdates.length > 0)
+	{
+		for (var i=0; i < PIXI.Texture.frameUpdates.length; i++) 
+		{
+		  	PIXI.Texture.frameUpdates[i].updateFrame = false;
+		};
+		
+		PIXI.Texture.frameUpdates = [];
+	}
 }
 
 /**

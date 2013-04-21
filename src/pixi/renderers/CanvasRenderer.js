@@ -100,6 +100,12 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 			stage.interactionManager.setTarget(this);
 		}
 	}
+	
+	// remove frame updates..
+	if(PIXI.Texture.frameUpdates.length > 0)
+	{
+		PIXI.Texture.frameUpdates = [];
+	}
 }
 
 /**
@@ -168,8 +174,8 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 								   frame.height,
 								   (displayObject.anchor.x - displayObject.texture.trim.x) * -frame.width, 
 								   (displayObject.anchor.y - displayObject.texture.trim.y) * -frame.height,
-								   displayObject.width,
-								   displayObject.height);
+								   frame.width,
+								   frame.height);
 			//}
 		}					   
    	}
@@ -189,6 +195,8 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 	{
 		this.renderDisplayObject(displayObject.children[i]);
 	}
+	
+	
 }
 
 /**

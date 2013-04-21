@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-04-20
+ * Compiled: 2013-04-21
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -587,19 +587,17 @@ PIXI.Sprite = function(texture)
 	 * @property width
 	 * @type #Number
 	 */
-	this.width = 0;
+	this._width = 0;
 	
 	/**
 	 * The height of the sprite (this is initially set by the texture)
 	 * @property height
 	 * @type #Number
 	 */
-	this.height = 0;
+	this._height = 0;
 	
 	if(texture.baseTexture.hasLoaded)
 	{
-		this.width   = this.texture.frame.width;
-		this.height  = this.texture.frame.height;
 		this.updateFrame = true;
 	}
 	else
@@ -619,6 +617,28 @@ PIXI.Sprite = function(texture)
 PIXI.Sprite.constructor = PIXI.Sprite;
 PIXI.Sprite.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
 
+// OOH! shiney new getters and setters for width and height
+// The width and height now modify the scale (this is what flash does, nice and tidy!)
+Object.defineProperty(PIXI.Sprite.prototype, 'width', {
+    get: function() {
+        return this.scale.x * this.texture.frame.width;
+    },
+    set: function(value) {
+    	this.scale.x = value / this.texture.frame.width
+        this._width = value;
+    }
+});
+
+Object.defineProperty(PIXI.Sprite.prototype, 'height', {
+    get: function() {
+        return  this.scale.y * this.texture.frame.height;
+    },
+    set: function(value) {
+    	this.scale.y = value / this.texture.frame.height
+        this._height = value;
+    }
+});
+ 
 /**
 @method setTexture
 @param texture {Texture} The PIXI texture that is displayed by the sprite
@@ -632,8 +652,6 @@ PIXI.Sprite.prototype.setTexture = function(texture)
 	}
 	
 	this.texture = texture;
-	this.width   = texture.frame.width;
-	this.height  = texture.frame.height;
 	this.updateFrame = true;
 }
 
@@ -642,8 +660,12 @@ PIXI.Sprite.prototype.setTexture = function(texture)
  */
 PIXI.Sprite.prototype.onTextureUpdate = function(event)
 {
-	this.width   = this.width || this.texture.frame.width;
-	this.height  = this.height || this.texture.frame.height;
+	this.texture.removeEventListener( 'update', this.onTextureUpdateBind );
+	
+	// so if _width is 0 then width was not set..
+	if(this._width)this.scale.x = this._width / this.texture.frame.width;
+	if(this._height)this.scale.y = this._height / this.texture.frame.height;
+	
 	this.updateFrame = true;
 }
 
@@ -1427,6 +1449,16 @@ PIXI.Stage.prototype.setBackgroundColor = function(backgroundColor)
 	this.backgroundColorString =  "#" + this.backgroundColor.toString(16);
 }
 
+/**
+ * This will return the point containing global coords of the mouse.
+ * @method getMousePosition
+ * @return {Point} The point containing the coords of the global InteractionData position.
+ */
+PIXI.Stage.prototype.getMousePosition = function()
+{
+	return this.interactionManager.mouse.global;
+}
+
 PIXI.Stage.prototype.__addChild = function(child)
 {
 	if(child.interactive)this.dirty = true;
@@ -2164,6 +2196,17 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 			stage._interactiveEventsAdded = true;
 			stage.interactionManager.setTarget(this);
 		}
+	}
+	
+	// after rendering lets confirm all frames that have been uodated..
+	if(PIXI.Texture.frameUpdates.length > 0)
+	{
+		for (var i=0; i < PIXI.Texture.frameUpdates.length; i++) 
+		{
+		  	PIXI.Texture.frameUpdates[i].updateFrame = false;
+		};
+		
+		PIXI.Texture.frameUpdates = [];
 	}
 }
 
@@ -3193,8 +3236,8 @@ PIXI.WebGLBatch.prototype.update = function()
 	
 	while(displayObject)
 	{
-		width = displayObject.width;
-		height = displayObject.height;
+		width = displayObject.texture.frame.width;
+		height = displayObject.texture.frame.height;
 		
 		aX = displayObject.anchor.x - displayObject.texture.trim.x
 		aY = displayObject.anchor.y - displayObject.texture.trim.y
@@ -3227,7 +3270,7 @@ PIXI.WebGLBatch.prototype.update = function()
 		this.verticies[index + 6] =  a * w1 + c * h0 + tx; 
 		this.verticies[index + 7] =  d * h0 + b * w1 + ty; 
 		
-		if(displayObject.updateFrame)
+		if(displayObject.updateFrame || displayObject.texture.updateFrame)
 		{
 			this.dirtyUVS = true;
 			
@@ -3437,6 +3480,12 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 			stage.interactionManager.setTarget(this);
 		}
 	}
+	
+	// remove frame updates..
+	if(PIXI.Texture.frameUpdates.length > 0)
+	{
+		PIXI.Texture.frameUpdates = [];
+	}
 }
 
 /**
@@ -3505,8 +3554,8 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 								   frame.height,
 								   (displayObject.anchor.x - displayObject.texture.trim.x) * -frame.width, 
 								   (displayObject.anchor.y - displayObject.texture.trim.y) * -frame.height,
-								   displayObject.width,
-								   displayObject.height);
+								   frame.width,
+								   frame.height);
 			//}
 		}					   
    	}
@@ -3526,6 +3575,8 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 	{
 		this.renderDisplayObject(displayObject.children[i]);
 	}
+	
+	
 }
 
 /**
@@ -4166,7 +4217,11 @@ PIXI.Texture.prototype.setFrame = function(frame)
 	{
 		throw new Error("Texture Error: frame does not fit inside the base Texture dimensions " + this);
 	}
-	//this.updateFrame = true;
+	
+	this.updateFrame = true;
+	
+	PIXI.Texture.frameUpdates.push(this);
+	//this.dispatchEvent( { type: 'update', content: this } );
 }
 
 /**
@@ -4263,6 +4318,9 @@ PIXI.Texture.removeTextureFromCache = function(id)
 	PIXI.TextureCache[id] = null;
 	return texture;
 }
+
+// this is more for webGL.. it contains updated frames..
+PIXI.Texture.frameUpdates = [];
 
 
 /**
