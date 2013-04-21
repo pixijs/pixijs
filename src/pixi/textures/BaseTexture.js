@@ -86,7 +86,29 @@ PIXI.BaseTexture = function(source)
 
 PIXI.BaseTexture.constructor = PIXI.BaseTexture;
 
-PIXI.BaseTexture.prototype.fromImage = function(imageUrl)
+/**
+ * 
+ * Helper function that returns a base texture based on an image url
+ * If the image is not in the base texture cache it will be  created and loaded
+ * @static
+ * @method fromImage
+ * @param imageUrl {String} The image url of the texture
+ * @return BaseTexture
+ */
+PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin)
 {
+	var baseTexture = PIXI.BaseTextureCache[imageUrl];
+	if(!baseTexture)
+	{
+		var image = new Image();
+		if (crossorigin)
+		{
+			image.crossOrigin = '';
+		}
+		image.src = imageUrl;
+		baseTexture = new PIXI.BaseTexture(image);
+		PIXI.BaseTextureCache[imageUrl] = baseTexture;
+	}
 
+	return baseTexture;
 }
