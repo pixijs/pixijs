@@ -37,6 +37,10 @@ last 2 examples and allowing us to share the source code :)
 
 [Documentation can be found here](<http://www.goodboydigital.com/pixijs/docs/>)
 
+### Resources ###
+
+[Tutorials and other helpful bits](<https://github.com/GoodBoyDigital/pixi.js/wiki/Resources>)
+
 ### How to build ###
 
 PixiJS is build with Grunt. If you don't already have this, go install Node and NPM then install the Grunt Command Line.
