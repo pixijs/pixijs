@@ -24,6 +24,9 @@ PIXI.Texture = function(baseTexture, frame)
 	}
 	
 	this.trim = new PIXI.Point();
+
+	if(baseTexture instanceof PIXI.Texture)
+		baseTexture = baseTexture.baseTexture;
 	
 	/**
 	 * The base texture of this texture
@@ -109,24 +112,9 @@ PIXI.Texture.fromImage = function(imageUrl, crossorigin)
 	
 	if(!texture)
 	{
-		var baseTexture = PIXI.BaseTextureCache[imageUrl];
-		if(!baseTexture) 
-		{
-			var image = new Image();//new Image();
-			if (crossorigin)
-			{
-				image.crossOrigin = '';
-			}
-			image.src = imageUrl;
-			baseTexture = new PIXI.BaseTexture(image);
-			PIXI.BaseTextureCache[imageUrl] = baseTexture;
-		}
-		texture = new PIXI.Texture(baseTexture);
-		
+		texture = new PIXI.Texture(PIXI.BaseTexture.fromImage(imageUrl, crossorigin));
 		
 		PIXI.TextureCache[imageUrl] = texture;
-		
-		
 	}
 	
 	return texture;
