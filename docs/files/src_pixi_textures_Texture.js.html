@@ -67,6 +67,8 @@
             
                 <li><a href="..&#x2F;classes/Stage.html">Stage</a></li>
             
+                <li><a href="..&#x2F;classes/Text.html">Text</a></li>
+            
                 <li><a href="..&#x2F;classes/Texture.html">Texture</a></li>
             
                 <li><a href="..&#x2F;classes/TilingSprite.html">TilingSprite</a></li>
@@ -146,6 +148,9 @@ PIXI.Texture = function(baseTexture, frame)
 	}
 	
 	this.trim = new PIXI.Point();
+
+	if(baseTexture instanceof PIXI.Texture)
+		baseTexture = baseTexture.baseTexture;
 	
 	&#x2F;**
 	 * The base texture of this texture
@@ -194,6 +199,11 @@ PIXI.Texture.prototype.onBaseTextureLoaded = function(event)
 	this.scope.dispatchEvent( { type: &#x27;update&#x27;, content: this } );
 }
 
+PIXI.Texture.prototype.destroy = function(destroyBase)
+{
+	if(destroyBase)this.baseTexture.destroy();
+}
+
 &#x2F;**
  * Specifies the rectangle region of the baseTexture
  * @method setFrame
@@ -209,7 +219,11 @@ PIXI.Texture.prototype.setFrame = function(frame)
 	{
 		throw new Error(&quot;Texture Error: frame does not fit inside the base Texture dimensions &quot; + this);
 	}
-	&#x2F;&#x2F;this.updateFrame = true;
+	
+	this.updateFrame = true;
+	
+	PIXI.Texture.frameUpdates.push(this);
+	&#x2F;&#x2F;this.dispatchEvent( { type: &#x27;update&#x27;, content: this } );
 }
 
 &#x2F;**
@@ -227,24 +241,8 @@ PIXI.Texture.fromImage = function(imageUrl, crossorigin)
 	
 	if(!texture)
 	{
-		var baseTexture = PIXI.BaseTextureCache[imageUrl];
-		if(!baseTexture) 
-		{
-			var image = new Image();&#x2F;&#x2F;new Image();
-			if (crossorigin)
-			{
-				image.crossOrigin = &#x27;&#x27;;
-			}
-			image.src = imageUrl;
-			baseTexture = new PIXI.BaseTexture(image);
-			PIXI.BaseTextureCache[imageUrl] = baseTexture;
-		}
-		texture = new PIXI.Texture(baseTexture);
-		
-		
+		texture = new PIXI.Texture(PIXI.BaseTexture.fromImage(imageUrl, crossorigin));
 		PIXI.TextureCache[imageUrl] = texture;
-		
-		
 	}
 	
 	return texture;
@@ -306,6 +304,9 @@ PIXI.Texture.removeTextureFromCache = function(id)
 	PIXI.TextureCache[id] = null;
 	return texture;
 }
+
+&#x2F;&#x2F; this is more for webGL.. it contains updated frames..
+PIXI.Texture.frameUpdates = [];
 
 
     </pre>

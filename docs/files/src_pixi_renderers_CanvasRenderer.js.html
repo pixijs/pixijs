@@ -67,6 +67,8 @@
             
                 <li><a href="..&#x2F;classes/Stage.html">Stage</a></li>
             
+                <li><a href="..&#x2F;classes/Text.html">Text</a></li>
+            
                 <li><a href="..&#x2F;classes/Texture.html">Texture</a></li>
             
                 <li><a href="..&#x2F;classes/TilingSprite.html">TilingSprite</a></li>
@@ -199,6 +201,7 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 	
 	&#x2F;&#x2F; update textures if need be
 	PIXI.texturesToUpdate = [];
+	PIXI.texturesToDestroy = [];
 	
 	this.context.setTransform(1,0,0,1,0,0); 
 	stage.updateTransform();
@@ -221,6 +224,12 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 			stage._interactiveEventsAdded = true;
 			stage.interactionManager.setTarget(this);
 		}
+	}
+	
+	&#x2F;&#x2F; remove frame updates..
+	if(PIXI.Texture.frameUpdates.length &gt; 0)
+	{
+		PIXI.Texture.frameUpdates = [];
 	}
 }
 
@@ -290,8 +299,8 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 								   frame.height,
 								   (displayObject.anchor.x - displayObject.texture.trim.x) * -frame.width, 
 								   (displayObject.anchor.y - displayObject.texture.trim.y) * -frame.height,
-								   displayObject.width,
-								   displayObject.height);
+								   frame.width,
+								   frame.height);
 			&#x2F;&#x2F;}
 		}					   
    	}
@@ -311,6 +320,8 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 	{
 		this.renderDisplayObject(displayObject.children[i]);
 	}
+	
+	
 }
 
 &#x2F;**
@@ -371,6 +382,8 @@ PIXI.CanvasRenderer.prototype.renderTilingSprite = function(sprite)
 	
 	context.scale(1&#x2F;tileScale.x, 1&#x2F;tileScale.y);
     context.translate(-tilePosition.x, -tilePosition.y);
+    
+    context.closePath();
 }
 
 

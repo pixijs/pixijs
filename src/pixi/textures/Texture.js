@@ -75,6 +75,11 @@ PIXI.Texture.prototype.onBaseTextureLoaded = function(event)
 	this.scope.dispatchEvent( { type: 'update', content: this } );
 }
 
+PIXI.Texture.prototype.destroy = function(destroyBase)
+{
+	if(destroyBase)this.baseTexture.destroy();
+}
+
 /**
  * Specifies the rectangle region of the baseTexture
  * @method setFrame
@@ -113,7 +118,6 @@ PIXI.Texture.fromImage = function(imageUrl, crossorigin)
 	if(!texture)
 	{
 		texture = new PIXI.Texture(PIXI.BaseTexture.fromImage(imageUrl, crossorigin));
-		
 		PIXI.TextureCache[imageUrl] = texture;
 	}
 	

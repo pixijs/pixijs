@@ -16,6 +16,7 @@ module.exports = function(grunt) {
             '<%= dirs.src %>/DisplayObjectContainer.js',
             '<%= dirs.src %>/Sprite.js',
             '<%= dirs.src %>/MovieClip.js',
+            '<%= dirs.src %>/Text.js',
             '<%= dirs.src %>/InteractionManager.js',
             '<%= dirs.src %>/Stage.js',
             '<%= dirs.src %>/utils/Utils.js',
@@ -99,7 +100,8 @@ module.exports = function(grunt) {
                 'examples/example 6 - Interactivity',
                 'examples/example 7 - Transparent Background',
                 'examples/example 8 - Dragging',
-                'examples/example 9 - Tiling Texture'
+                'examples/example 9 - Tiling Texture',
+                'examples/example 10 - Text'
             ]
         },
         connect: {

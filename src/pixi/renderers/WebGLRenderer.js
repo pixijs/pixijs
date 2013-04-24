@@ -20,6 +20,8 @@ PIXI._defaultFrame = new PIXI.Rectangle(0,0,1,1);
  */
 PIXI.WebGLRenderer = function(width, height, view, transparent)
 {
+	// do a catch.. only 1 webGL renderer..
+
 	//console.log(transparent)
 	this.transparent = !!transparent;
 	
@@ -67,6 +69,31 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
 
 // constructor
 PIXI.WebGLRenderer.constructor = PIXI.WebGLRenderer;
+
+/**
+ * @private 
+ */
+PIXI.WebGLRenderer.prototype.getBatch = function()
+{
+	if(PIXI._batchs.length == 0)
+	{
+		return new PIXI.WebGLBatch(this.gl);
+	}
+	else
+	{
+		return PIXI._batchs.pop();
+	}
+}
+
+/**
+ * @private
+ */
+PIXI.WebGLRenderer.prototype.returnBatch = function(batch)
+{
+	batch.clean();	
+	PIXI._batchs.push(batch);
+}
+
 
 /**
  * @private
@@ -185,12 +212,13 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 
 	// update any textures	
 	for (var i=0; i < PIXI.texturesToUpdate.length; i++) this.updateTexture(PIXI.texturesToUpdate[i]);
+	for (var i=0; i < PIXI.texturesToDestroy.length; i++) this.destroyTexture(PIXI.texturesToDestroy[i]);
 	
 	// empty out the arrays
 	stage.__childrenRemoved = [];
 	stage.__childrenAdded = [];
 	PIXI.texturesToUpdate = [];
-	
+	PIXI.texturesToDestroy = [];
 	// recursivly loop through all items!
 	this.checkVisibility(stage, true);
 	
@@ -295,12 +323,23 @@ PIXI.WebGLRenderer.prototype.updateTexture = function(texture)
 	this.refreshBatchs = true;
 }
 
+PIXI.WebGLRenderer.prototype.destroyTexture = function(texture)
+{
+	var gl = this.gl;
+	
+	if(texture._glTexture)
+	{
+		texture._glTexture = gl.createTexture();
+		gl.deleteTexture(gl.TEXTURE_2D, texture._glTexture);
+	}
+}
+
 /**
  * @private
  */
 PIXI.WebGLRenderer.prototype.addDisplayObject = function(displayObject)
 {
-	
+	var objectDetaildisplayObject
 	if(!displayObject.stage)return; // means it was removed 
 	if(displayObject.__inWebGL)return; //means it is already in webgL
 	
@@ -441,7 +480,7 @@ PIXI.WebGLRenderer.prototype.addDisplayObject = function(displayObject)
 							 * seems the new sprite is in the middle of a batch
 							 * lets split it.. 
 							 */
-							var batch = PIXI._getBatch(this.gl);
+							var batch = this.getBatch();
 
 							var index = this.batchs.indexOf( previousBatch );
 							batch.init(displayObject);
@@ -465,7 +504,7 @@ PIXI.WebGLRenderer.prototype.addDisplayObject = function(displayObject)
 		 * time to create anew one!
 		 */
 		
-		var batch = PIXI._getBatch(this.gl);
+		var batch =  this.getBatch();
 		batch.init(displayObject);
 
 		if(previousBatch) // if this is invalid it means 
@@ -524,7 +563,6 @@ PIXI.WebGLRenderer.prototype.removeDisplayObject = function(displayObject)
 		
 		batch.remove(displayObject);
 		
-		
 		if(batch.size==0)
 		{
 			batchToRemove = batch
@@ -549,7 +587,7 @@ PIXI.WebGLRenderer.prototype.removeDisplayObject = function(displayObject)
 		{
 			// wha - eva! just get of the empty batch!
 			this.batchs.splice(index, 1);
-			if(batchToRemove instanceof PIXI.WebGLBatch)PIXI._returnBatch(batchToRemove);
+			if(batchToRemove instanceof PIXI.WebGLBatch)this.returnBatch(batchToRemove);
 		
 			return;
 		}
@@ -561,8 +599,8 @@ PIXI.WebGLRenderer.prototype.removeDisplayObject = function(displayObject)
 				//console.log("MERGE")
 				this.batchs[index-1].merge(this.batchs[index+1]);
 				
-				if(batchToRemove instanceof PIXI.WebGLBatch)PIXI._returnBatch(batchToRemove);
-				PIXI._returnBatch(this.batchs[index+1]);
+				if(batchToRemove instanceof PIXI.WebGLBatch)this.returnBatch(batchToRemove);
+				this.returnBatch(this.batchs[index+1]);
 				this.batchs.splice(index, 2);
 				return;
 			}
@@ -570,7 +608,7 @@ PIXI.WebGLRenderer.prototype.removeDisplayObject = function(displayObject)
 		
 		
 		this.batchs.splice(index, 1);
-		if(batchToRemove instanceof PIXI.WebGLBatch)PIXI._returnBatch(batchToRemove);
+		if(batchToRemove instanceof PIXI.WebGLBatch)this.returnBatch(batchToRemove);
 	}
 	
 	

@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-04-22
+ * Compiled: 2013-04-24
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -828,6 +828,155 @@ PIXI.MovieClip.prototype.updateTransform = function()
 		}
 	}
 }
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+/**
+ * A Text Object will create a line of text
+ * @class Text
+ * @extends Sprite
+ * @constructor
+ * @param text {String} The copy that you would like the text to display
+ * @param fontStyle {String} the style and size of the font eg "bold 20px Arial"
+ * @param fillStyle {Object} a canvas fillstyle that will be used on the text eg "red", "#00FF00" can also be null
+ * @param strokeStyle {String} a canvas fillstyle that will be used on the text stroke eg "blue", "#FCFF00" can also be null
+ * @param strokeThickness {Number} A number that represents the thicknes of the stroke. default is 0 (no stroke)
+ */
+PIXI.Text = function(text, fontStyle, fillStyle, strokeStyle, strokeThickness)
+{
+	this.canvas = document.createElement("canvas");
+	
+	this.context = this.canvas.getContext("2d");
+	//document.body.appendChild(this.canvas);
+	this.setText(text);
+	this.setStyle(fontStyle, fillStyle, strokeStyle, strokeThickness);
+	
+	this.updateText();
+	
+	PIXI.Sprite.call( this, PIXI.Texture.fromCanvas(this.canvas));
+	
+	// need to store a canvas that can
+}
+
+// constructor
+PIXI.Text.constructor = PIXI.Text;
+PIXI.Text.prototype = Object.create( PIXI.Sprite.prototype );
+
+/**
+ * Set the copy for the text object
+ * @methos setText
+ * @param text {String} The copy that you would like the text to display
+ */
+PIXI.Text.prototype.setText = function(text)
+{
+	this.text = text || " ";
+	this.dirty = true;
+}
+
+/**
+ * Set the style of the text
+ * @method setStyle
+ * @constructor
+ * @param fontStyle {String} the style and size of the font eg "bold 20px Arial"
+ * @param fillStyle {Object} a canvas fillstyle that will be used on the text eg "red", "#00FF00" can also be null
+ * @param strokeStyle {String} a canvas fillstyle that will be used on the text stroke eg "blue", "#FCFF00" can also be null
+ * @param strokeThickness {Number} A number that represents the thicknes of the stroke. default is 0 (no stroke)
+ */
+PIXI.Text.prototype.setStyle = function(fontStyle, fillStyle, strokeStyle, strokeThickness)
+{
+	this.fontStyle = fontStyle || "bold 20pt Arial";
+	this.fillStyle = fillStyle;
+	this.strokeStyle = strokeStyle;
+	this.strokeThickness = strokeThickness || 0;
+	
+	this.dirty = true;
+}
+
+/**
+ * @private
+ */
+PIXI.Text.prototype.updateText = function()
+{
+//	console.log(this.text);
+	this.context.font = this.fontStyle;
+		
+	this.canvas.width = this.context.measureText(this.text).width + this.strokeThickness//textDimensions.width;
+	this.canvas.height = this.determineFontHeight("font: " + this.fontStyle  + ";")+ this.strokeThickness;// textDimensions.height;
+
+	this.context.fillStyle = this.fillStyle;
+	this.context.font = this.fontStyle;
+	
+    this.context.strokeStyle = this.strokeStyle;
+	this.context.lineWidth = this.strokeThickness;
+
+	this.context.textBaseline="top"; 
+
+	if(this.fillStyle)this.context.fillText(this.text,  this.strokeThickness/2, this.strokeThickness/2);
+    if(this.strokeStyle && this.strokeThickness)this.context.strokeText(this.text,  this.strokeThickness/2, this.strokeThickness/2);
+	
+	
+//	console.log("//")
+}
+
+PIXI.Text.prototype.updateTransform = function()
+{
+	if(this.dirty)
+	{
+		this.updateText();	
+		
+		// update the texture..
+		this.texture.baseTexture.width = this.canvas.width;
+		this.texture.baseTexture.height = this.canvas.height;
+		this.texture.frame.width = this.canvas.width;
+		this.texture.frame.height = this.canvas.height;
+		
+		PIXI.texturesToUpdate.push(this.texture.baseTexture);
+		this.dirty = false;
+	}
+	
+	PIXI.Sprite.prototype.updateTransform.call( this );
+}
+
+/*
+ * http://stackoverflow.com/users/34441/ellisbben
+ * great solution to the problem!
+ */
+PIXI.Text.prototype.determineFontHeight = function(fontStyle) 
+{
+	// build a little refference dictionary so if the font style has been used return a
+	// cached version...
+	var result = PIXI.Text.heightCache[fontStyle]
+	
+	if(!result)
+	{
+		var body = document.getElementsByTagName("body")[0];
+		var dummy = document.createElement("div");
+		var dummyText = document.createTextNode("M");
+		dummy.appendChild(dummyText);
+		dummy.setAttribute("style", fontStyle);
+		body.appendChild(dummy);
+		
+		result = dummy.offsetHeight;
+		PIXI.Text.heightCache[fontStyle] = result
+		
+		body.removeChild(dummy);
+	}
+	
+	return result;
+};
+
+PIXI.Text.prototype.destroy = function(destroyTexture)
+{
+	if(destroyTexture)
+	{
+		this.texture.destroy();
+	}
+		
+}
+
+PIXI.Text.heightCache = {};
+
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -1980,6 +2129,8 @@ PIXI._defaultFrame = new PIXI.Rectangle(0,0,1,1);
  */
 PIXI.WebGLRenderer = function(width, height, view, transparent)
 {
+	// do a catch.. only 1 webGL renderer..
+
 	//console.log(transparent)
 	this.transparent = !!transparent;
 	
@@ -2027,6 +2178,31 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
 
 // constructor
 PIXI.WebGLRenderer.constructor = PIXI.WebGLRenderer;
+
+/**
+ * @private 
+ */
+PIXI.WebGLRenderer.prototype.getBatch = function()
+{
+	if(PIXI._batchs.length == 0)
+	{
+		return new PIXI.WebGLBatch(this.gl);
+	}
+	else
+	{
+		return PIXI._batchs.pop();
+	}
+}
+
+/**
+ * @private
+ */
+PIXI.WebGLRenderer.prototype.returnBatch = function(batch)
+{
+	batch.clean();	
+	PIXI._batchs.push(batch);
+}
+
 
 /**
  * @private
@@ -2145,12 +2321,13 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 
 	// update any textures	
 	for (var i=0; i < PIXI.texturesToUpdate.length; i++) this.updateTexture(PIXI.texturesToUpdate[i]);
+	for (var i=0; i < PIXI.texturesToDestroy.length; i++) this.destroyTexture(PIXI.texturesToDestroy[i]);
 	
 	// empty out the arrays
 	stage.__childrenRemoved = [];
 	stage.__childrenAdded = [];
 	PIXI.texturesToUpdate = [];
-	
+	PIXI.texturesToDestroy = [];
 	// recursivly loop through all items!
 	this.checkVisibility(stage, true);
 	
@@ -2255,12 +2432,23 @@ PIXI.WebGLRenderer.prototype.updateTexture = function(texture)
 	this.refreshBatchs = true;
 }
 
+PIXI.WebGLRenderer.prototype.destroyTexture = function(texture)
+{
+	var gl = this.gl;
+	
+	if(texture._glTexture)
+	{
+		texture._glTexture = gl.createTexture();
+		gl.deleteTexture(gl.TEXTURE_2D, texture._glTexture);
+	}
+}
+
 /**
  * @private
  */
 PIXI.WebGLRenderer.prototype.addDisplayObject = function(displayObject)
 {
-	
+	var objectDetaildisplayObject
 	if(!displayObject.stage)return; // means it was removed 
 	if(displayObject.__inWebGL)return; //means it is already in webgL
 	
@@ -2401,7 +2589,7 @@ PIXI.WebGLRenderer.prototype.addDisplayObject = function(displayObject)
 							 * seems the new sprite is in the middle of a batch
 							 * lets split it.. 
 							 */
-							var batch = PIXI._getBatch(this.gl);
+							var batch = this.getBatch();
 
 							var index = this.batchs.indexOf( previousBatch );
 							batch.init(displayObject);
@@ -2425,7 +2613,7 @@ PIXI.WebGLRenderer.prototype.addDisplayObject = function(displayObject)
 		 * time to create anew one!
 		 */
 		
-		var batch = PIXI._getBatch(this.gl);
+		var batch =  this.getBatch();
 		batch.init(displayObject);
 
 		if(previousBatch) // if this is invalid it means 
@@ -2484,7 +2672,6 @@ PIXI.WebGLRenderer.prototype.removeDisplayObject = function(displayObject)
 		
 		batch.remove(displayObject);
 		
-		
 		if(batch.size==0)
 		{
 			batchToRemove = batch
@@ -2509,7 +2696,7 @@ PIXI.WebGLRenderer.prototype.removeDisplayObject = function(displayObject)
 		{
 			// wha - eva! just get of the empty batch!
 			this.batchs.splice(index, 1);
-			if(batchToRemove instanceof PIXI.WebGLBatch)PIXI._returnBatch(batchToRemove);
+			if(batchToRemove instanceof PIXI.WebGLBatch)this.returnBatch(batchToRemove);
 		
 			return;
 		}
@@ -2521,8 +2708,8 @@ PIXI.WebGLRenderer.prototype.removeDisplayObject = function(displayObject)
 				//console.log("MERGE")
 				this.batchs[index-1].merge(this.batchs[index+1]);
 				
-				if(batchToRemove instanceof PIXI.WebGLBatch)PIXI._returnBatch(batchToRemove);
-				PIXI._returnBatch(this.batchs[index+1]);
+				if(batchToRemove instanceof PIXI.WebGLBatch)this.returnBatch(batchToRemove);
+				this.returnBatch(this.batchs[index+1]);
 				this.batchs.splice(index, 2);
 				return;
 			}
@@ -2530,7 +2717,7 @@ PIXI.WebGLRenderer.prototype.removeDisplayObject = function(displayObject)
 		
 		
 		this.batchs.splice(index, 1);
-		if(batchToRemove instanceof PIXI.WebGLBatch)PIXI._returnBatch(batchToRemove);
+		if(batchToRemove instanceof PIXI.WebGLBatch)this.returnBatch(batchToRemove);
 	}
 	
 	
@@ -3460,6 +3647,7 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 	
 	// update textures if need be
 	PIXI.texturesToUpdate = [];
+	PIXI.texturesToDestroy = [];
 	
 	this.context.setTransform(1,0,0,1,0,0); 
 	stage.updateTransform();
@@ -3640,6 +3828,8 @@ PIXI.CanvasRenderer.prototype.renderTilingSprite = function(sprite)
 	
 	context.scale(1/tileScale.x, 1/tileScale.y);
     context.translate(-tilePosition.x, -tilePosition.y);
+    
+    context.closePath();
 }
 
 
@@ -4044,6 +4234,7 @@ PIXI.TilingSprite.prototype.onTextureUpdate = function(event)
 
 PIXI.BaseTextureCache = {};
 PIXI.texturesToUpdate = [];
+PIXI.texturesToDestroy = [];
 
 /**
  * A texture stores the information that represents an image. All textures have a base texture
@@ -4125,6 +4316,18 @@ PIXI.BaseTexture = function(source)
 }
 
 PIXI.BaseTexture.constructor = PIXI.BaseTexture;
+
+PIXI.BaseTexture.prototype.destroy = function()
+{
+	
+	if(this.source instanceof Image)
+	{
+		this.source.src = null;
+	}
+	this.source = null;
+	PIXI.texturesToDestroy.push(this);
+}
+
 
 /**
  * 
@@ -4230,6 +4433,11 @@ PIXI.Texture.prototype.onBaseTextureLoaded = function(event)
 	this.scope.dispatchEvent( { type: 'update', content: this } );
 }
 
+PIXI.Texture.prototype.destroy = function(destroyBase)
+{
+	if(destroyBase)this.baseTexture.destroy();
+}
+
 /**
  * Specifies the rectangle region of the baseTexture
  * @method setFrame
@@ -4268,7 +4476,6 @@ PIXI.Texture.fromImage = function(imageUrl, crossorigin)
 	if(!texture)
 	{
 		texture = new PIXI.Texture(PIXI.BaseTexture.fromImage(imageUrl, crossorigin));
-		
 		PIXI.TextureCache[imageUrl] = texture;
 	}
 	

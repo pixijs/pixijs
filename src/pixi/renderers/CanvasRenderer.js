@@ -77,6 +77,7 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 	
 	// update textures if need be
 	PIXI.texturesToUpdate = [];
+	PIXI.texturesToDestroy = [];
 	
 	this.context.setTransform(1,0,0,1,0,0); 
 	stage.updateTransform();
@@ -257,6 +258,8 @@ PIXI.CanvasRenderer.prototype.renderTilingSprite = function(sprite)
 	
 	context.scale(1/tileScale.x, 1/tileScale.y);
     context.translate(-tilePosition.x, -tilePosition.y);
+    
+    context.closePath();
 }
 
 

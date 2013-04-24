@@ -4,6 +4,7 @@
 
 PIXI.BaseTextureCache = {};
 PIXI.texturesToUpdate = [];
+PIXI.texturesToDestroy = [];
 
 /**
  * A texture stores the information that represents an image. All textures have a base texture
@@ -85,6 +86,18 @@ PIXI.BaseTexture = function(source)
 }
 
 PIXI.BaseTexture.constructor = PIXI.BaseTexture;
+
+PIXI.BaseTexture.prototype.destroy = function()
+{
+	
+	if(this.source instanceof Image)
+	{
+		this.source.src = null;
+	}
+	this.source = null;
+	PIXI.texturesToDestroy.push(this);
+}
+
 
 /**
  * 

@@ -1,0 +1,70 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<link href='http://fonts.googleapis.com/css?family=Caesar+Dressing' rel='stylesheet' type='text/css'>
+	<title>pixi.js example 10 Text</title>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			background-color: #000000;
+		}
+	</style>
+	
+	
+	<script src="pixi.js"></script>
+</head>
+<body>
+	<script>
+	
+	
+	// create an new instance of a pixi stage
+	var stage = new PIXI.Stage(0x66FF99);
+	
+	// create a renderer instance
+	var renderer = PIXI.autoDetectRenderer(620, 400);
+	// add the renderer view element to the DOM
+	document.body.appendChild(renderer.view);
+	
+	requestAnimFrame( animate );
+	
+	
+	var textSample = new PIXI.Text("Pixi.js can has text!", "50px Arial", "rgba(1,1,1,0.5)", "red", 1);
+	
+	var spinningText = new PIXI.Text("I'm fun!", "italic 30px Arial", "green");
+	
+	spinningText.anchor.x = spinningText.anchor.y = 0.5;
+	spinningText.position.x = 620/2;
+	spinningText.position.y = 400/2;
+	
+	var countingText = new PIXI.Text("Hello!", "70px Arial", "red");
+	countingText.position.x = 50;
+	countingText.position.y = 250;
+	stage.addChild(textSample);
+	stage.addChild(spinningText);
+	stage.addChild(countingText);
+	count = 0;
+	score = 0;
+	stage.addChild(bunny);
+	
+	function animate() {
+	
+	    requestAnimFrame( animate );
+		count++;
+		if(count == 50)
+		{
+			count = 0;
+			score ++
+			countingText.setText("I count: "  + score )
+		}
+	    // just for fun, lets rotate mr rabbit a little
+	    spinningText.rotation += 0.03;
+		
+	    // render the stage   
+	    renderer.render(stage);
+	}
+
+	</script>
+
+	</body>
+</html>

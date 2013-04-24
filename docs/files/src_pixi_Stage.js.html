@@ -67,6 +67,8 @@
             
                 <li><a href="..&#x2F;classes/Stage.html">Stage</a></li>
             
+                <li><a href="..&#x2F;classes/Text.html">Text</a></li>
+            
                 <li><a href="..&#x2F;classes/Texture.html">Texture</a></li>
             
                 <li><a href="..&#x2F;classes/TilingSprite.html">TilingSprite</a></li>
@@ -188,6 +190,16 @@ PIXI.Stage.prototype.setBackgroundColor = function(backgroundColor)
 	this.backgroundColor = backgroundColor || 0x000000;
 	this.backgroundColorSplit = HEXtoRGB(this.backgroundColor);
 	this.backgroundColorString =  &quot;#&quot; + this.backgroundColor.toString(16);
+}
+
+&#x2F;**
+ * This will return the point containing global coords of the mouse.
+ * @method getMousePosition
+ * @return {Point} The point containing the coords of the global InteractionData position.
+ *&#x2F;
+PIXI.Stage.prototype.getMousePosition = function()
+{
+	return this.interactionManager.mouse.global;
 }
 
 PIXI.Stage.prototype.__addChild = function(child)
