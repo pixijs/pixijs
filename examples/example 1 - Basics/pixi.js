@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-04-16
+ * Compiled: 2013-04-24
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -436,6 +436,64 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 }
 
 /**
+ * Swaps the depth of 2 displayObjects
+ * @method swapChildren
+ * @param  DisplayObject {DisplayObject}
+ * @param  DisplayObject2 {DisplayObject}
+ */
+PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
+{
+	// TODO I already know this??
+	var index = this.children.indexOf( child );
+	var index2 = this.children.indexOf( child2 );
+	
+	if ( index !== -1 && index2 !== -1 ) 
+	{
+		// cool
+		if(this.stage)
+		{
+			// this is to satisfy the webGL batching..
+			// TODO sure there is a nicer way to achieve this!
+			this.stage.__removeChild(child);
+			this.stage.__removeChild(child2);
+			
+			this.stage.__addChild(child);
+			this.stage.__addChild(child2);
+		}
+		
+		// swap the indexes..
+		child.childIndex = index2;
+		child2.childIndex = index;
+		// swap the positions..
+		this.children[index] = child2;
+		this.children[index2] = child;
+		
+	}
+	else
+	{
+		throw new Error(child + " Both the supplied DisplayObjects must be a child of the caller " + this);
+	}
+}
+
+/**
+ * Returns the Child at the specified index
+ * @method getChildAt
+ * @param  index {Number}
+ */
+PIXI.DisplayObjectContainer.prototype.getChildAt = function(index)
+{
+	if(index >= 0 && index < this.children.length)
+	{
+		return this.children[index];
+	}
+	else
+	{
+		throw new Error(child + " Both the supplied DisplayObjects must be a child of the caller " + this);
+	
+	}
+}
+
+/**
  * Removes a child from the container.
  * @method removeChild
  * @param  DisplayObject {DisplayObject}
@@ -529,19 +587,17 @@ PIXI.Sprite = function(texture)
 	 * @property width
 	 * @type #Number
 	 */
-	this.width = 0;
+	this._width = 0;
 	
 	/**
 	 * The height of the sprite (this is initially set by the texture)
 	 * @property height
 	 * @type #Number
 	 */
-	this.height = 0;
+	this._height = 0;
 	
 	if(texture.baseTexture.hasLoaded)
 	{
-		this.width   = this.texture.frame.width;
-		this.height  = this.texture.frame.height;
 		this.updateFrame = true;
 	}
 	else
@@ -561,6 +617,28 @@ PIXI.Sprite = function(texture)
 PIXI.Sprite.constructor = PIXI.Sprite;
 PIXI.Sprite.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
 
+// OOH! shiney new getters and setters for width and height
+// The width and height now modify the scale (this is what flash does, nice and tidy!)
+Object.defineProperty(PIXI.Sprite.prototype, 'width', {
+    get: function() {
+        return this.scale.x * this.texture.frame.width;
+    },
+    set: function(value) {
+    	this.scale.x = value / this.texture.frame.width
+        this._width = value;
+    }
+});
+
+Object.defineProperty(PIXI.Sprite.prototype, 'height', {
+    get: function() {
+        return  this.scale.y * this.texture.frame.height;
+    },
+    set: function(value) {
+    	this.scale.y = value / this.texture.frame.height
+        this._height = value;
+    }
+});
+ 
 /**
 @method setTexture
 @param texture {Texture} The PIXI texture that is displayed by the sprite
@@ -574,8 +652,6 @@ PIXI.Sprite.prototype.setTexture = function(texture)
 	}
 	
 	this.texture = texture;
-	this.width   = texture.frame.width;
-	this.height  = texture.frame.height;
 	this.updateFrame = true;
 }
 
@@ -584,8 +660,12 @@ PIXI.Sprite.prototype.setTexture = function(texture)
  */
 PIXI.Sprite.prototype.onTextureUpdate = function(event)
 {
-	this.width   = this.width || this.texture.frame.width;
-	this.height  = this.height || this.texture.frame.height;
+	//this.texture.removeEventListener( 'update', this.onTextureUpdateBind );
+	
+	// so if _width is 0 then width was not set..
+	if(this._width)this.scale.x = this._width / this.texture.frame.width;
+	if(this._height)this.scale.y = this._height / this.texture.frame.height;
+	
 	this.updateFrame = true;
 }
 
@@ -658,6 +738,20 @@ PIXI.MovieClip = function(textures)
 	 * @type Number
 	 */
 	this.animationSpeed = 1;
+
+	/**
+	 * Whether or not the movie clip repeats after playing.
+	 * @property loop
+	 * @type Boolean
+	 */
+	this.loop = true;
+
+	/**
+	 * Function to call when a MovieClip finishes playing
+	 * @property onComplete
+	 * @type Function
+	 */
+	this.onComplete = null;
 	
 	/**
 	 * [read only] indicates if the MovieClip is currently playing
@@ -721,8 +815,168 @@ PIXI.MovieClip.prototype.updateTransform = function()
 	
 	this.currentFrame += this.animationSpeed;
 	var round = (this.currentFrame + 0.5) | 0;
-	this.setTexture(this.textures[round % this.textures.length]);
+	if(this.loop || round < this.textures.length)
+	{
+		this.setTexture(this.textures[round % this.textures.length]);
+	}
+	else if(round >= this.textures.length)
+	{
+		this.gotoAndStop(this.textures.length - 1);
+		if(this.onComplete)
+		{
+			this.onComplete();
+		}
+	}
 }
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+/**
+ * A Text Object will create a line of text
+ * @class Text
+ * @extends Sprite
+ * @constructor
+ * @param text {String} The copy that you would like the text to display
+ * @param fontStyle {String} the style and size of the font eg "bold 20px Arial"
+ * @param fillStyle {Object} a canvas fillstyle that will be used on the text eg "red", "#00FF00" can also be null
+ * @param strokeStyle {String} a canvas fillstyle that will be used on the text stroke eg "blue", "#FCFF00" can also be null
+ * @param strokeThickness {Number} A number that represents the thicknes of the stroke. default is 0 (no stroke)
+ */
+PIXI.Text = function(text, fontStyle, fillStyle, strokeStyle, strokeThickness)
+{
+	this.canvas = document.createElement("canvas");
+	
+	this.context = this.canvas.getContext("2d");
+	//document.body.appendChild(this.canvas);
+	this.setText(text);
+	this.setStyle(fontStyle, fillStyle, strokeStyle, strokeThickness);
+	
+	this.updateText();
+	
+	PIXI.Sprite.call( this, PIXI.Texture.fromCanvas(this.canvas));
+	
+	// need to store a canvas that can
+}
+
+// constructor
+PIXI.Text.constructor = PIXI.Text;
+PIXI.Text.prototype = Object.create( PIXI.Sprite.prototype );
+
+/**
+ * Set the copy for the text object
+ * @methos setText
+ * @param text {String} The copy that you would like the text to display
+ */
+PIXI.Text.prototype.setText = function(text)
+{
+	this.text = text || " ";
+	this.dirty = true;
+}
+
+/**
+ * Set the style of the text
+ * @method setStyle
+ * @constructor
+ * @param fontStyle {String} the style and size of the font eg "bold 20px Arial"
+ * @param fillStyle {Object} a canvas fillstyle that will be used on the text eg "red", "#00FF00" can also be null
+ * @param strokeStyle {String} a canvas fillstyle that will be used on the text stroke eg "blue", "#FCFF00" can also be null
+ * @param strokeThickness {Number} A number that represents the thicknes of the stroke. default is 0 (no stroke)
+ */
+PIXI.Text.prototype.setStyle = function(fontStyle, fillStyle, strokeStyle, strokeThickness)
+{
+	this.fontStyle = fontStyle || "bold 20pt Arial";
+	this.fillStyle = fillStyle;
+	this.strokeStyle = strokeStyle;
+	this.strokeThickness = strokeThickness || 0;
+	
+	this.dirty = true;
+}
+
+/**
+ * @private
+ */
+PIXI.Text.prototype.updateText = function()
+{
+//	console.log(this.text);
+	this.context.font = this.fontStyle;
+		
+	this.canvas.width = this.context.measureText(this.text).width + this.strokeThickness//textDimensions.width;
+	this.canvas.height = this.determineFontHeight("font: " + this.fontStyle  + ";")+ this.strokeThickness;// textDimensions.height;
+
+	this.context.fillStyle = this.fillStyle;
+	this.context.font = this.fontStyle;
+	
+    this.context.strokeStyle = this.strokeStyle;
+	this.context.lineWidth = this.strokeThickness;
+
+	this.context.textBaseline="top"; 
+
+	if(this.fillStyle)this.context.fillText(this.text,  this.strokeThickness/2, this.strokeThickness/2);
+    if(this.strokeStyle && this.strokeThickness)this.context.strokeText(this.text,  this.strokeThickness/2, this.strokeThickness/2);
+	
+	
+//	console.log("//")
+}
+
+PIXI.Text.prototype.updateTransform = function()
+{
+	if(this.dirty)
+	{
+		this.updateText();	
+		
+		// update the texture..
+		this.texture.baseTexture.width = this.canvas.width;
+		this.texture.baseTexture.height = this.canvas.height;
+		this.texture.frame.width = this.canvas.width;
+		this.texture.frame.height = this.canvas.height;
+		
+		PIXI.texturesToUpdate.push(this.texture.baseTexture);
+		this.dirty = false;
+	}
+	
+	PIXI.Sprite.prototype.updateTransform.call( this );
+}
+
+/*
+ * http://stackoverflow.com/users/34441/ellisbben
+ * great solution to the problem!
+ */
+PIXI.Text.prototype.determineFontHeight = function(fontStyle) 
+{
+	// build a little refference dictionary so if the font style has been used return a
+	// cached version...
+	var result = PIXI.Text.heightCache[fontStyle]
+	
+	if(!result)
+	{
+		var body = document.getElementsByTagName("body")[0];
+		var dummy = document.createElement("div");
+		var dummyText = document.createTextNode("M");
+		dummy.appendChild(dummyText);
+		dummy.setAttribute("style", fontStyle);
+		body.appendChild(dummy);
+		
+		result = dummy.offsetHeight;
+		PIXI.Text.heightCache[fontStyle] = result
+		
+		body.removeChild(dummy);
+	}
+	
+	return result;
+};
+
+PIXI.Text.prototype.destroy = function(destroyTexture)
+{
+	if(destroyTexture)
+	{
+		this.texture.destroy();
+	}
+		
+}
+
+PIXI.Text.heightCache = {};
+
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -1029,7 +1283,7 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 	var global = interactionData.global;
 	
 	if(!item.visible)return false;
-
+	
 	if(item instanceof PIXI.Sprite)
 	{
 		var worldTransform = item.worldTransform;
@@ -1041,13 +1295,16 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 		var x = a11 * id * global.x + -a01 * id * global.y + (a12 * a01 - a02 * a11) * id; 
 		var y = a00 * id * global.y + -a10 * id * global.x + (-a12 * a00 + a02 * a10) * id;
 		
-		var x1 = -item.width * item.anchor.x;
+		var width = item.texture.frame.width;
+		var height = item.texture.frame.height;
 		
-		if(x > x1 && x < x1 + item.width)
+		var x1 = -width * item.anchor.x;
+		
+		if(x > x1 && x < x1 + width)
 		{
-			var y1 = -item.height * item.anchor.y;
+			var y1 = -height * item.anchor.y;
 			
-			if(y > y1 && y < y1 + item.height)
+			if(y > y1 && y < y1 + height)
 			{
 				return true;
 			}
@@ -1081,8 +1338,8 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 	
 	for (var i = 0; i < length; i++)
 	{
-		var item = item.children[i];
-		var hit = this.hitTest(item, interactionData);
+		var tempItem = item.children[i];
+		var hit = this.hitTest(tempItem, interactionData);
 		if(hit)return true;
 	}
 		
@@ -1342,6 +1599,16 @@ PIXI.Stage.prototype.setBackgroundColor = function(backgroundColor)
 	this.backgroundColor = backgroundColor || 0x000000;
 	this.backgroundColorSplit = HEXtoRGB(this.backgroundColor);
 	this.backgroundColorString =  "#" + this.backgroundColor.toString(16);
+}
+
+/**
+ * This will return the point containing global coords of the mouse.
+ * @method getMousePosition
+ * @return {Point} The point containing the coords of the global InteractionData position.
+ */
+PIXI.Stage.prototype.getMousePosition = function()
+{
+	return this.interactionManager.mouse.global;
 }
 
 PIXI.Stage.prototype.__addChild = function(child)
@@ -1775,71 +2042,57 @@ PIXI.autoDetectRenderer = function(width, height, view, transparent)
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
-	
-PIXI.shaderFragmentSrc = [	"precision mediump float;",
-					  		"varying vec2 vTextureCoord;",
-					  		"varying float vColor;",
-					  		"uniform sampler2D uSampler;",
-					  		"void main(void) {",
-					  		"gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y));",
-					  		"gl_FragColor = gl_FragColor * vColor;",
-					  		"}"];
 
-PIXI.shaderVertexSrc = [	"attribute vec2 aVertexPosition;",
-	    					"attribute vec2 aTextureCoord;",
-	    					"attribute float aColor;",
-	  						"uniform mat4 uMVMatrix;",
-							"varying vec2 vTextureCoord;",
-							"varying float vColor;",
-							"void main(void) {",
-							"gl_Position = uMVMatrix * vec4(aVertexPosition, 1.0, 1.0);",
-							"vTextureCoord = aTextureCoord;",
-							"vColor = aColor;",
-	   					 	"}"]
+PIXI.shaderFragmentSrc = [
+  "precision mediump float;",
+  "varying vec2 vTextureCoord;",
+  "varying float vColor;",
+  "uniform sampler2D uSampler;",
+  "void main(void) {",
+    "gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y));",
+    "gl_FragColor = gl_FragColor * vColor;",
+  "}"
+];
+
+PIXI.shaderVertexSrc = [
+  "attribute vec2 aVertexPosition;",
+  "attribute vec2 aTextureCoord;",
+  "attribute float aColor;",
+  "uniform mat4 uMVMatrix;",
+  "varying vec2 vTextureCoord;",
+  "varying float vColor;",
+  "void main(void) {",
+    "gl_Position = uMVMatrix * vec4(aVertexPosition, 1.0, 1.0);",
+    "vTextureCoord = aTextureCoord;",
+    "vColor = aColor;",
+  "}"
+];
 
 PIXI.CompileVertexShader = function(gl, shaderSrc)
 {
-	var src = "";
-	
-	for (var i=0; i < shaderSrc.length; i++) {
-	  src += shaderSrc[i];
-	};
-	
-	var shader;
-    shader = gl.createShader(gl.VERTEX_SHADER);
-       
-    gl.shaderSource(shader, src);
-    gl.compileShader(shader);
-
-    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        alert(gl.getShaderInfoLog(shader));
-        return null;
-    }
-    
-    return shader;
+  return PIXI._CompileShader(gl, shaderSrc, gl.VERTEX_SHADER);
 }
 
 PIXI.CompileFragmentShader = function(gl, shaderSrc)
 {
-	var src = "";
-	
-	for (var i=0; i < shaderSrc.length; i++) {
-	  src += shaderSrc[i];
-	};
-	
-	var shader;
-    shader = gl.createShader(gl.FRAGMENT_SHADER);
-        
-    gl.shaderSource(shader, src);
-    gl.compileShader(shader);
-	
-    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        alert(gl.getShaderInfoLog(shader));
-        return null;
-    }
-    
-    return shader;
+  return PIXI._CompileShader(gl, shaderSrc, gl.FRAGMENT_SHADER);
 }
+
+PIXI._CompileShader = function(gl, shaderSrc, shaderType)
+{
+  var src = shaderSrc.join("\n");
+  var shader = gl.createShader(shaderType);
+  gl.shaderSource(shader, src);
+  gl.compileShader(shader);
+
+  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+    alert(gl.getShaderInfoLog(shader));
+    return null;
+  }
+
+  return shader;
+}
+
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -1862,6 +2115,8 @@ PIXI._defaultFrame = new PIXI.Rectangle(0,0,1,1);
  */
 PIXI.WebGLRenderer = function(width, height, view, transparent)
 {
+	// do a catch.. only 1 webGL renderer..
+
 	//console.log(transparent)
 	this.transparent = !!transparent;
 	
@@ -1909,6 +2164,31 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
 
 // constructor
 PIXI.WebGLRenderer.constructor = PIXI.WebGLRenderer;
+
+/**
+ * @private 
+ */
+PIXI.WebGLRenderer.prototype.getBatch = function()
+{
+	if(PIXI._batchs.length == 0)
+	{
+		return new PIXI.WebGLBatch(this.gl);
+	}
+	else
+	{
+		return PIXI._batchs.pop();
+	}
+}
+
+/**
+ * @private
+ */
+PIXI.WebGLRenderer.prototype.returnBatch = function(batch)
+{
+	batch.clean();	
+	PIXI._batchs.push(batch);
+}
+
 
 /**
  * @private
@@ -2008,8 +2288,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 {
 	if(this.contextLost)return;
 	
-
-
+	
 	// if rendering a new stage clear the batchs..
 	if(this.__stage !== stage)
 	{
@@ -2025,14 +2304,16 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	}
 
 
+
 	// update any textures	
 	for (var i=0; i < PIXI.texturesToUpdate.length; i++) this.updateTexture(PIXI.texturesToUpdate[i]);
+	for (var i=0; i < PIXI.texturesToDestroy.length; i++) this.destroyTexture(PIXI.texturesToDestroy[i]);
 	
 	// empty out the arrays
 	stage.__childrenRemoved = [];
 	stage.__childrenAdded = [];
 	PIXI.texturesToUpdate = [];
-	
+	PIXI.texturesToDestroy = [];
 	// recursivly loop through all items!
 	this.checkVisibility(stage, true);
 	
@@ -2061,6 +2342,10 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 		{
 			this.batchs[i].render();
 		}
+		else if(renderable instanceof PIXI.TilingSprite)
+		{
+			if(renderable.visible)this.renderTilingSprite(renderable);
+		}
 		else if(renderable instanceof PIXI.Strip)
 		{
 			if(renderable.visible)this.renderStrip(renderable);
@@ -2077,6 +2362,17 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 			stage._interactiveEventsAdded = true;
 			stage.interactionManager.setTarget(this);
 		}
+	}
+	
+	// after rendering lets confirm all frames that have been uodated..
+	if(PIXI.Texture.frameUpdates.length > 0)
+	{
+		for (var i=0; i < PIXI.Texture.frameUpdates.length; i++) 
+		{
+		  	PIXI.Texture.frameUpdates[i].updateFrame = false;
+		};
+		
+		PIXI.Texture.frameUpdates = [];
 	}
 }
 
@@ -2099,9 +2395,22 @@ PIXI.WebGLRenderer.prototype.updateTexture = function(texture)
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.source);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-
+		
+		// reguler...
+		
+		//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+		//gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+		if(!texture._powerOf2)
+		{
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+		}
+		else
+		{
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+		}
+		
 	//	gl.generateMipmap(gl.TEXTURE_2D);
 		gl.bindTexture(gl.TEXTURE_2D, null);
 	}
@@ -2109,12 +2418,23 @@ PIXI.WebGLRenderer.prototype.updateTexture = function(texture)
 	this.refreshBatchs = true;
 }
 
+PIXI.WebGLRenderer.prototype.destroyTexture = function(texture)
+{
+	var gl = this.gl;
+	
+	if(texture._glTexture)
+	{
+		texture._glTexture = gl.createTexture();
+		gl.deleteTexture(gl.TEXTURE_2D, texture._glTexture);
+	}
+}
+
 /**
  * @private
  */
 PIXI.WebGLRenderer.prototype.addDisplayObject = function(displayObject)
 {
-	
+	var objectDetaildisplayObject
 	if(!displayObject.stage)return; // means it was removed 
 	if(displayObject.__inWebGL)return; //means it is already in webgL
 	
@@ -2255,7 +2575,7 @@ PIXI.WebGLRenderer.prototype.addDisplayObject = function(displayObject)
 							 * seems the new sprite is in the middle of a batch
 							 * lets split it.. 
 							 */
-							var batch = PIXI._getBatch(this.gl);
+							var batch = this.getBatch();
 
 							var index = this.batchs.indexOf( previousBatch );
 							batch.init(displayObject);
@@ -2279,7 +2599,7 @@ PIXI.WebGLRenderer.prototype.addDisplayObject = function(displayObject)
 		 * time to create anew one!
 		 */
 		
-		var batch = PIXI._getBatch(this.gl);
+		var batch =  this.getBatch();
 		batch.init(displayObject);
 
 		if(previousBatch) // if this is invalid it means 
@@ -2293,6 +2613,13 @@ PIXI.WebGLRenderer.prototype.addDisplayObject = function(displayObject)
 		}
 	
 	}
+	else if(displayObject instanceof PIXI.TilingSprite)
+	{
+		// add to a batch!!
+		this.initTilingSprite(displayObject);
+		this.batchs.push(displayObject);
+		
+	}
 	else if(displayObject instanceof PIXI.Strip)
 	{
 		// add to a batch!!
@@ -2300,7 +2627,7 @@ PIXI.WebGLRenderer.prototype.addDisplayObject = function(displayObject)
 		this.batchs.push(displayObject);
 		
 	}
-
+	
 	// if its somthing else... then custom codes!
 	this.batchUpdate = true;
 }
@@ -2331,7 +2658,6 @@ PIXI.WebGLRenderer.prototype.removeDisplayObject = function(displayObject)
 		
 		batch.remove(displayObject);
 		
-		
 		if(batch.size==0)
 		{
 			batchToRemove = batch
@@ -2356,7 +2682,7 @@ PIXI.WebGLRenderer.prototype.removeDisplayObject = function(displayObject)
 		{
 			// wha - eva! just get of the empty batch!
 			this.batchs.splice(index, 1);
-			if(batchToRemove instanceof PIXI.WebGLBatch)PIXI._returnBatch(batchToRemove);
+			if(batchToRemove instanceof PIXI.WebGLBatch)this.returnBatch(batchToRemove);
 		
 			return;
 		}
@@ -2368,8 +2694,8 @@ PIXI.WebGLRenderer.prototype.removeDisplayObject = function(displayObject)
 				//console.log("MERGE")
 				this.batchs[index-1].merge(this.batchs[index+1]);
 				
-				if(batchToRemove instanceof PIXI.WebGLBatch)PIXI._returnBatch(batchToRemove);
-				PIXI._returnBatch(this.batchs[index+1]);
+				if(batchToRemove instanceof PIXI.WebGLBatch)this.returnBatch(batchToRemove);
+				this.returnBatch(this.batchs[index+1]);
 				this.batchs.splice(index, 2);
 				return;
 			}
@@ -2377,7 +2703,7 @@ PIXI.WebGLRenderer.prototype.removeDisplayObject = function(displayObject)
 		
 		
 		this.batchs.splice(index, 1);
-		if(batchToRemove instanceof PIXI.WebGLBatch)PIXI._returnBatch(batchToRemove);
+		if(batchToRemove instanceof PIXI.WebGLBatch)this.returnBatch(batchToRemove);
 	}
 	
 	
@@ -2406,6 +2732,127 @@ PIXI.WebGLRenderer.prototype.resize = function(width, height)
 	projectionMatrix[12] = -1;
 	projectionMatrix[13] = 1;
 }
+
+
+/**
+ * @private
+ */
+PIXI.WebGLRenderer.prototype.initTilingSprite = function(sprite)
+{
+	
+	
+				
+	var gl = this.gl;
+
+	// make the texture tilable..
+			
+	sprite.verticies = new Float32Array([0, 0,
+										  sprite.width, 0,
+										  sprite.width,  sprite.height,
+										 0,  sprite.height]);
+					
+	sprite.uvs = new Float32Array([0, 0,
+									1, 0,
+									1, 1,
+									0, 1]);
+				
+	sprite.colors = new Float32Array([1,1,1,1]);
+	
+	sprite.indices =  new Uint16Array([0, 1, 3,2])//, 2]);
+	
+	
+	sprite._vertexBuffer = gl.createBuffer();
+	sprite._indexBuffer = gl.createBuffer();
+	sprite._uvBuffer = gl.createBuffer();
+	sprite._colorBuffer = gl.createBuffer();
+						
+	gl.bindBuffer(gl.ARRAY_BUFFER, sprite._vertexBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, sprite.verticies, gl.STATIC_DRAW);
+
+	gl.bindBuffer(gl.ARRAY_BUFFER, sprite._uvBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER,  sprite.uvs, gl.DYNAMIC_DRAW);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, sprite._colorBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, sprite.colors, gl.STATIC_DRAW);
+
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sprite._indexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, sprite.indices, gl.STATIC_DRAW);
+    
+//    return ( (x > 0) && ((x & (x - 1)) == 0) );
+
+	if(sprite.texture.baseTexture._glTexture)
+	{
+    	gl.bindTexture(gl.TEXTURE_2D, sprite.texture.baseTexture._glTexture);
+    	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+		sprite.texture.baseTexture._powerOf2 = true;
+	}
+	else
+	{
+		sprite.texture.baseTexture._powerOf2 = true;
+	}
+	
+	/*
+	var context = this.context;
+	
+ 	if(!sprite.__tilePattern) sprite.__tilePattern = context.createPattern(sprite.texture.baseTexture.source, "repeat");
+ 	
+	context.beginPath();
+	
+	var tilePosition = sprite.tilePosition;
+	var tileScale = sprite.tileScale;
+	
+    // offset
+    context.scale(tileScale.x,tileScale.y);
+    context.translate(tilePosition.x, tilePosition.y);
+ 	
+	context.fillStyle = sprite.__tilePattern;
+	context.fillRect(-tilePosition.x,-tilePosition.y,sprite.width / tileScale.x, sprite.height / tileScale.y);
+	
+    context.translate(-tilePosition.x, -tilePosition.y);
+	context.scale(1/tileScale.x, 1/tileScale.y);
+	*/
+}
+
+/**
+ * @private
+ */
+PIXI.WebGLRenderer.prototype.renderTilingSprite = function(sprite)
+{
+	var gl = this.gl;
+	var shaderProgram = this.shaderProgram;
+	
+	var tilePosition = sprite.tilePosition;
+	var tileScale = sprite.tileScale;
+	
+	var offsetX =  tilePosition.x/sprite.texture.baseTexture.width;
+	var offsetY =  tilePosition.y/sprite.texture.baseTexture.height;
+	
+	var scaleX =  (sprite.width / sprite.texture.baseTexture.width)  / tileScale.x///sprite.texture.baseTexture.width;
+	var scaleY =  (sprite.height / sprite.texture.baseTexture.height) / tileScale.y///sprite.texture.baseTexture.height;
+	//
+	//sprite.dirty = true;
+	sprite.uvs[0] = 0 + offsetX
+	sprite.uvs[1] = 0 - offsetY;
+	
+	sprite.uvs[2] = (1 * scaleX)  +offsetX
+	sprite.uvs[3] = 0 - offsetY;
+	
+	sprite.uvs[4] = (1 *scaleX) + offsetX
+	sprite.uvs[5] = (1 *scaleY) - offsetY;
+	
+	sprite.uvs[6] = 0  + offsetX
+	sprite.uvs[7] = (1 *scaleY) - offsetY;
+	
+	
+	gl.bindBuffer(gl.ARRAY_BUFFER, sprite._uvBuffer);
+	gl.bufferSubData(gl.ARRAY_BUFFER, 0, sprite.uvs)
+	
+	this.renderStrip(sprite);
+ 
+}
+
+
 
 /**
  * @private
@@ -2504,7 +2951,7 @@ PIXI.WebGLRenderer.prototype.renderStrip = function(strip)
 	    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, strip.indices, gl.STATIC_DRAW);
 	    
 	}
-	
+	//console.log(gl.TRIANGLE_STRIP)
 	gl.drawElements(gl.TRIANGLE_STRIP, strip.indices.length, gl.UNSIGNED_SHORT, 0);
     
     gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.projectionMatrix);
@@ -2965,8 +3412,8 @@ PIXI.WebGLBatch.prototype.update = function()
 	
 	while(displayObject)
 	{
-		width = displayObject.width;
-		height = displayObject.height;
+		width = displayObject.texture.frame.width;
+		height = displayObject.texture.frame.height;
 		
 		aX = displayObject.anchor.x - displayObject.texture.trim.x
 		aY = displayObject.anchor.y - displayObject.texture.trim.y
@@ -2999,7 +3446,7 @@ PIXI.WebGLBatch.prototype.update = function()
 		this.verticies[index + 6] =  a * w1 + c * h0 + tx; 
 		this.verticies[index + 7] =  d * h0 + b * w1 + ty; 
 		
-		if(displayObject.updateFrame)
+		if(displayObject.updateFrame || displayObject.texture.updateFrame)
 		{
 			this.dirtyUVS = true;
 			
@@ -3186,6 +3633,7 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 	
 	// update textures if need be
 	PIXI.texturesToUpdate = [];
+	PIXI.texturesToDestroy = [];
 	
 	this.context.setTransform(1,0,0,1,0,0); 
 	stage.updateTransform();
@@ -3208,6 +3656,12 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 			stage._interactiveEventsAdded = true;
 			stage.interactionManager.setTarget(this);
 		}
+	}
+	
+	// remove frame updates..
+	if(PIXI.Texture.frameUpdates.length > 0)
+	{
+		PIXI.Texture.frameUpdates = [];
 	}
 }
 
@@ -3277,8 +3731,8 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 								   frame.height,
 								   (displayObject.anchor.x - displayObject.texture.trim.x) * -frame.width, 
 								   (displayObject.anchor.y - displayObject.texture.trim.y) * -frame.height,
-								   displayObject.width,
-								   displayObject.height);
+								   frame.width,
+								   frame.height);
 			//}
 		}					   
    	}
@@ -3287,12 +3741,19 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 		context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
 		this.renderStrip(displayObject);
 	}
+	else if(displayObject instanceof PIXI.TilingSprite)
+	{
+		context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
+		this.renderTilingSprite(displayObject);
+	}
 	
 	// render!
 	for (var i=0; i < displayObject.children.length; i++) 
 	{
 		this.renderDisplayObject(displayObject.children[i]);
 	}
+	
+	
 }
 
 /**
@@ -3333,6 +3794,35 @@ PIXI.CanvasRenderer.prototype.renderStripFlat = function(strip)
 /**
  * @private
  */
+PIXI.CanvasRenderer.prototype.renderTilingSprite = function(sprite)
+{
+	var context = this.context;
+	
+ 	if(!sprite.__tilePattern) sprite.__tilePattern = context.createPattern(sprite.texture.baseTexture.source, "repeat");
+ 	
+	context.beginPath();
+	
+	var tilePosition = sprite.tilePosition;
+	var tileScale = sprite.tileScale;
+	
+    // offset
+    context.scale(tileScale.x,tileScale.y);
+    context.translate(tilePosition.x, tilePosition.y);
+ 	
+	context.fillStyle = sprite.__tilePattern;
+	context.fillRect(-tilePosition.x,-tilePosition.y,sprite.width / tileScale.x, sprite.height / tileScale.y);
+	
+	context.scale(1/tileScale.x, 1/tileScale.y);
+    context.translate(-tilePosition.x, -tilePosition.y);
+    
+    context.closePath();
+}
+
+
+
+/**
+ * @private
+ */
 PIXI.CanvasRenderer.prototype.renderStrip = function(strip)
 {
 	var context = this.context;
@@ -3352,8 +3842,8 @@ PIXI.CanvasRenderer.prototype.renderStrip = function(strip)
 		 var x0 = verticies[index],   x1 = verticies[index+2], x2 = verticies[index+4];
  		 var y0 = verticies[index+1], y1 = verticies[index+3], y2 = verticies[index+5];
  		 
-  		 var u0 = uvs[index] * strip.texture.width,   u1 = uvs[index+2]* strip.texture.width, u2 = uvs[index+4]* strip.texture.width;
-   		 var v0 = uvs[index+1]* strip.texture.height, v1 = uvs[index+3]* strip.texture.height, v2 = uvs[index+5]* strip.texture.height;
+  		 var u0 = uvs[index] * strip.texture.width,   u1 = uvs[index+2] * strip.texture.width, u2 = uvs[index+4]* strip.texture.width;
+   		 var v0 = uvs[index+1]* strip.texture.height, v1 = uvs[index+3] * strip.texture.height, v2 = uvs[index+5]* strip.texture.height;
 
 
 		context.save();
@@ -3666,11 +4156,71 @@ PIXI.Rope.prototype.setTexture = function(texture)
 
 
 /**
+ * @author Mat Groves http://matgroves.com/
+ */
+
+/**
+ * A tiling sprite is a fast way of rendering a tiling image
+ * @class TilingSprite
+ * @extends DisplayObjectContainer
+ * @constructor
+ * @param texture {Texture} the texture of the tiling sprite
+ * @param width {Number}  the width of the tiling sprite
+ * @param height {Number} the height of the tiling sprite
+ */
+PIXI.TilingSprite = function(texture, width, height)
+{
+	PIXI.DisplayObjectContainer.call( this );
+	
+	this.texture = texture;
+	this.width = width;
+	this.height = height;
+	this.renderable = true;
+	
+	/**
+	 * The scaling of the image that is being tiled
+	 * @property tileScale
+	 * @type Point
+	 */	
+	this.tileScale = new PIXI.Point(2,1);
+	/**
+	 * The offset position of the image that is being tiled
+	 * @property tileScale
+	 * @type Point
+	 */	
+	this.tilePosition = new PIXI.Point(0,0);
+	
+	this.blendMode = PIXI.blendModes.NORMAL
+}
+
+// constructor
+PIXI.TilingSprite.constructor = PIXI.TilingSprite;
+PIXI.TilingSprite.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
+
+PIXI.TilingSprite.prototype.setTexture = function(texture)
+{
+	//TODO SET THE TEXTURES
+	//TODO VISIBILITY
+	
+	// stop current texture 
+	this.texture = texture;
+	this.updateFrame = true;
+}
+
+PIXI.TilingSprite.prototype.onTextureUpdate = function(event)
+{
+	this.updateFrame = true;
+}
+// some helper functions..
+
+
+/**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
 PIXI.BaseTextureCache = {};
 PIXI.texturesToUpdate = [];
+PIXI.texturesToDestroy = [];
 
 /**
  * A texture stores the information that represents an image. All textures have a base texture
@@ -3747,15 +4297,49 @@ PIXI.BaseTexture = function(source)
 		PIXI.texturesToUpdate.push(this);
 	}
 	
-	
+	this._powerOf2 = false;
 	
 }
 
 PIXI.BaseTexture.constructor = PIXI.BaseTexture;
 
-PIXI.BaseTexture.prototype.fromImage = function(imageUrl)
+PIXI.BaseTexture.prototype.destroy = function()
 {
+	
+	if(this.source instanceof Image)
+	{
+		this.source.src = null;
+	}
+	this.source = null;
+	PIXI.texturesToDestroy.push(this);
+}
 
+
+/**
+ * 
+ * Helper function that returns a base texture based on an image url
+ * If the image is not in the base texture cache it will be  created and loaded
+ * @static
+ * @method fromImage
+ * @param imageUrl {String} The image url of the texture
+ * @return BaseTexture
+ */
+PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin)
+{
+	var baseTexture = PIXI.BaseTextureCache[imageUrl];
+	if(!baseTexture)
+	{
+		var image = new Image();
+		if (crossorigin)
+		{
+			image.crossOrigin = '';
+		}
+		image.src = imageUrl;
+		baseTexture = new PIXI.BaseTexture(image);
+		PIXI.BaseTextureCache[imageUrl] = baseTexture;
+	}
+
+	return baseTexture;
 }
 
 /**
@@ -3784,6 +4368,9 @@ PIXI.Texture = function(baseTexture, frame)
 	}
 	
 	this.trim = new PIXI.Point();
+
+	if(baseTexture instanceof PIXI.Texture)
+		baseTexture = baseTexture.baseTexture;
 	
 	/**
 	 * The base texture of this texture
@@ -3832,6 +4419,11 @@ PIXI.Texture.prototype.onBaseTextureLoaded = function(event)
 	this.scope.dispatchEvent( { type: 'update', content: this } );
 }
 
+PIXI.Texture.prototype.destroy = function(destroyBase)
+{
+	if(destroyBase)this.baseTexture.destroy();
+}
+
 /**
  * Specifies the rectangle region of the baseTexture
  * @method setFrame
@@ -3847,7 +4439,11 @@ PIXI.Texture.prototype.setFrame = function(frame)
 	{
 		throw new Error("Texture Error: frame does not fit inside the base Texture dimensions " + this);
 	}
-	//this.updateFrame = true;
+	
+	this.updateFrame = true;
+	
+	PIXI.Texture.frameUpdates.push(this);
+	//this.dispatchEvent( { type: 'update', content: this } );
 }
 
 /**
@@ -3865,24 +4461,8 @@ PIXI.Texture.fromImage = function(imageUrl, crossorigin)
 	
 	if(!texture)
 	{
-		var baseTexture = PIXI.BaseTextureCache[imageUrl];
-		if(!baseTexture) 
-		{
-			var image = new Image();//new Image();
-			if (crossorigin)
-			{
-				image.crossOrigin = '';
-			}
-			image.src = imageUrl;
-			baseTexture = new PIXI.BaseTexture(image);
-			PIXI.BaseTextureCache[imageUrl] = baseTexture;
-		}
-		texture = new PIXI.Texture(baseTexture);
-		
-		
+		texture = new PIXI.Texture(PIXI.BaseTexture.fromImage(imageUrl, crossorigin));
 		PIXI.TextureCache[imageUrl] = texture;
-		
-		
 	}
 	
 	return texture;
@@ -3944,6 +4524,9 @@ PIXI.Texture.removeTextureFromCache = function(id)
 	PIXI.TextureCache[id] = null;
 	return texture;
 }
+
+// this is more for webGL.. it contains updated frames..
+PIXI.Texture.frameUpdates = [];
 
 
 /**
