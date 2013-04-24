@@ -75,12 +75,14 @@ It also copies the non-minified version to the examples.
 - Asset loader / sprite sheet loader 
 - Auto-detect which renderer should be used
 - Full Mouse and Multi-touch Interaction
+- Text
 
 ### Coming soon ###
 
 - Filters 
 - Render Texture 
-- Text 
+- BitmapFont text
+- Multiline Text
 
 ### Coming later ###
 
