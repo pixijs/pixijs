@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-	<link href='http://fonts.googleapis.com/css?family=Caesar+Dressing' rel='stylesheet' type='text/css'>
+	<!--<link href='http://fonts.googleapis.com/css?family=Snippet|Arvo:700italic|Podkova' rel='stylesheet' type='text/css'>-->
 	<title>pixi.js example 10 Text</title>
 	<style>
 		body {
@@ -16,53 +16,90 @@
 </head>
 <body>
 	<script>
-	
-	// create an new instance of a pixi stage
-	var stage = new PIXI.Stage(0x66FF99);
-	
-	// create a renderer instance
-	var renderer = PIXI.autoDetectRenderer(620, 400);
-	// add the renderer view element to the DOM
-	document.body.appendChild(renderer.view);
-	
-	requestAnimFrame( animate );
-	
-	
-	var textSample = new PIXI.Text("Pixi.js can has text!", "50px Arial", "rgba(1,1,1,0.5)", "red", 1);
-	
-	var spinningText = new PIXI.Text("I'm fun!", "italic 30px Arial", "green");
-	
-	spinningText.anchor.x = spinningText.anchor.y = 0.5;
-	spinningText.position.x = 620/2;
-	spinningText.position.y = 400/2;
-	
-	var countingText = new PIXI.Text("Hello!", "70px Arial", "red");
-	countingText.position.x = 50;
-	countingText.position.y = 250;
-	stage.addChild(textSample);
-	stage.addChild(spinningText);
-	stage.addChild(countingText);
-	count = 0;
-	score = 0;
-	stage.addChild(bunny);
-	
-	function animate() {
-	
-	    requestAnimFrame( animate );
-		count++;
-		if(count == 50)
-		{
-			count = 0;
-			score ++
-			countingText.setText("I count: "  + score )
-		}
-	    // just for fun, lets rotate mr rabbit a little
-	    spinningText.rotation += 0.03;
-		
-	    // render the stage   
-	    renderer.render(stage);
-	}
 
+  	// Load them google fonts before starting...!
+	WebFontConfig = {
+	  google: {
+	    families: [ 'Snippet', 'Arvo:700italic', 'Podkova:700' ]
+	  },
+
+	  active: function() {
+	    // do something
+	    init();
+	  },
+	
+	};
+	(function() {
+        var wf = document.createElement('script');
+        wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
+            '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+        wf.type = 'text/javascript';
+        wf.async = 'true';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(wf, s);
+      })();
+     
+    function init()
+    {
+    	
+ 
+		// create an new instance of a pixi stage
+		var stage = new PIXI.Stage(0x66FF99);
+		
+		// add a shiney background..
+		var background = PIXI.Sprite.fromImage("textDemoBG.jpg");
+		stage.addChild(background);
+		
+		// create a renderer instance
+		var renderer = PIXI.autoDetectRenderer(620, 400);
+		// add the renderer view element to the DOM
+		document.body.appendChild(renderer.view);
+		
+		requestAnimFrame( animate );
+		
+		// creat some white text using the Snippet webfont
+		var textSample = new PIXI.Text("Pixi.js can has text!", "50px Snippet", "white");
+		textSample.anchor.x = 0.5;
+		textSample.position.x = 620/2;
+		textSample.position.y = 10;
+		
+		// create a text object with a nice stroke
+		var spinningText = new PIXI.Text("I'm fun!", "bold 60px Podkova", "#cc00ff", "#FFFFFF", 6);
+		// setting the anchor point to 0.5 will center align the text... great for spinning!
+		spinningText.anchor.x = spinningText.anchor.y = 0.5;
+		spinningText.position.x = 620/2;
+		spinningText.position.y = 400/2;
+		
+		// create a text object that will be updated..
+		var countingText = new PIXI.Text("COUNT 4EVAR: 0", "bold italic 60px Arvo", "#3e1707", "#a4410e", 7);
+		countingText.position.x = 620/2;
+		countingText.position.y = 320;
+		countingText.anchor.x = 0.5;
+		stage.addChild(textSample);
+		stage.addChild(spinningText);
+		stage.addChild(countingText);
+		count = 0;
+		score = 0;
+		
+		function animate() {
+		
+		    requestAnimFrame( animate );
+			count++;
+			if(count == 50)
+			{
+				count = 0;
+				score ++
+				// update the text...
+				countingText.setText("COUNT 4EVAR: "  + score )
+			}
+		    // just for fun, lets rotate the text
+		    spinningText.rotation += 0.03;
+			
+		    // render the stage   
+		    renderer.render(stage);
+		}
+	}
+	   
 	</script>
 
 	</body>

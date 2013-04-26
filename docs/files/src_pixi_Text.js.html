@@ -206,8 +206,8 @@ PIXI.Text.prototype.updateText = function()
 
 	this.context.textBaseline=&quot;top&quot;; 
 
-	if(this.fillStyle)this.context.fillText(this.text,  this.strokeThickness&#x2F;2, this.strokeThickness&#x2F;2);
     if(this.strokeStyle &amp;&amp; this.strokeThickness)this.context.strokeText(this.text,  this.strokeThickness&#x2F;2, this.strokeThickness&#x2F;2);
+	if(this.fillStyle)this.context.fillText(this.text,  this.strokeThickness&#x2F;2, this.strokeThickness&#x2F;2);
 	
 	
 &#x2F;&#x2F;	console.log(&quot;&#x2F;&#x2F;&quot;)

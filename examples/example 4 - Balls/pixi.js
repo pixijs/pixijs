@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-04-24
+ * Compiled: 2013-04-26
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -912,8 +912,8 @@ PIXI.Text.prototype.updateText = function()
 
 	this.context.textBaseline="top"; 
 
-	if(this.fillStyle)this.context.fillText(this.text,  this.strokeThickness/2, this.strokeThickness/2);
     if(this.strokeStyle && this.strokeThickness)this.context.strokeText(this.text,  this.strokeThickness/2, this.strokeThickness/2);
+	if(this.fillStyle)this.context.fillText(this.text,  this.strokeThickness/2, this.strokeThickness/2);
 	
 	
 //	console.log("//")

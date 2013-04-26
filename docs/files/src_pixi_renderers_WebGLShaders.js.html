@@ -126,71 +126,57 @@
 &#x2F;**
  * @author Mat Groves http:&#x2F;&#x2F;matgroves.com&#x2F; @Doormat23
  *&#x2F;
-	
-PIXI.shaderFragmentSrc = [	&quot;precision mediump float;&quot;,
-					  		&quot;varying vec2 vTextureCoord;&quot;,
-					  		&quot;varying float vColor;&quot;,
-					  		&quot;uniform sampler2D uSampler;&quot;,
-					  		&quot;void main(void) {&quot;,
-					  		&quot;gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y));&quot;,
-					  		&quot;gl_FragColor = gl_FragColor * vColor;&quot;,
-					  		&quot;}&quot;];
 
-PIXI.shaderVertexSrc = [	&quot;attribute vec2 aVertexPosition;&quot;,
-	    					&quot;attribute vec2 aTextureCoord;&quot;,
-	    					&quot;attribute float aColor;&quot;,
-	  						&quot;uniform mat4 uMVMatrix;&quot;,
-							&quot;varying vec2 vTextureCoord;&quot;,
-							&quot;varying float vColor;&quot;,
-							&quot;void main(void) {&quot;,
-							&quot;gl_Position = uMVMatrix * vec4(aVertexPosition, 1.0, 1.0);&quot;,
-							&quot;vTextureCoord = aTextureCoord;&quot;,
-							&quot;vColor = aColor;&quot;,
-	   					 	&quot;}&quot;]
+PIXI.shaderFragmentSrc = [
+  &quot;precision mediump float;&quot;,
+  &quot;varying vec2 vTextureCoord;&quot;,
+  &quot;varying float vColor;&quot;,
+  &quot;uniform sampler2D uSampler;&quot;,
+  &quot;void main(void) {&quot;,
+    &quot;gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y));&quot;,
+    &quot;gl_FragColor = gl_FragColor * vColor;&quot;,
+  &quot;}&quot;
+];
+
+PIXI.shaderVertexSrc = [
+  &quot;attribute vec2 aVertexPosition;&quot;,
+  &quot;attribute vec2 aTextureCoord;&quot;,
+  &quot;attribute float aColor;&quot;,
+  &quot;uniform mat4 uMVMatrix;&quot;,
+  &quot;varying vec2 vTextureCoord;&quot;,
+  &quot;varying float vColor;&quot;,
+  &quot;void main(void) {&quot;,
+    &quot;gl_Position = uMVMatrix * vec4(aVertexPosition, 1.0, 1.0);&quot;,
+    &quot;vTextureCoord = aTextureCoord;&quot;,
+    &quot;vColor = aColor;&quot;,
+  &quot;}&quot;
+];
 
 PIXI.CompileVertexShader = function(gl, shaderSrc)
 {
-	var src = &quot;&quot;;
-	
-	for (var i=0; i &lt; shaderSrc.length; i++) {
-	  src += shaderSrc[i];
-	};
-	
-	var shader;
-    shader = gl.createShader(gl.VERTEX_SHADER);
-       
-    gl.shaderSource(shader, src);
-    gl.compileShader(shader);
-
-    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        alert(gl.getShaderInfoLog(shader));
-        return null;
-    }
-    
-    return shader;
+  return PIXI._CompileShader(gl, shaderSrc, gl.VERTEX_SHADER);
 }
 
 PIXI.CompileFragmentShader = function(gl, shaderSrc)
 {
-	var src = &quot;&quot;;
-	
-	for (var i=0; i &lt; shaderSrc.length; i++) {
-	  src += shaderSrc[i];
-	};
-	
-	var shader;
-    shader = gl.createShader(gl.FRAGMENT_SHADER);
-        
-    gl.shaderSource(shader, src);
-    gl.compileShader(shader);
-	
-    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        alert(gl.getShaderInfoLog(shader));
-        return null;
-    }
-    
-    return shader;
+  return PIXI._CompileShader(gl, shaderSrc, gl.FRAGMENT_SHADER);
 }
+
+PIXI._CompileShader = function(gl, shaderSrc, shaderType)
+{
+  var src = shaderSrc.join(&quot;\n&quot;);
+  var shader = gl.createShader(shaderType);
+  gl.shaderSource(shader, src);
+  gl.compileShader(shader);
+
+  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+    alert(gl.getShaderInfoLog(shader));
+    return null;
+  }
+
+  return shader;
+}
+
     </pre>
 </div>
 
