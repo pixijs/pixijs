@@ -40,7 +40,7 @@ PIXI.Rectangle = function(x, y, width, height)
 	 * @default 0
 	 */
 	this.height = height || 0;
-}
+};
 
 /** 
  * @method clone
@@ -49,7 +49,7 @@ PIXI.Rectangle = function(x, y, width, height)
 PIXI.Rectangle.clone = function()
 {
 	return new PIXI.Rectangle(this.x, this.y, this.width, this.height);
-}
+};
 
 // constructor
 PIXI.Rectangle.constructor = PIXI.Rectangle;

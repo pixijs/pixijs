@@ -25,7 +25,7 @@ PIXI.AssetLoader = function(assetURLs)
 	this.assets = [];
 
 	this.crossorigin = false;
-}
+};
 
 /**
 Fired when an item has loaded
@@ -129,8 +129,8 @@ PIXI.AssetLoader.prototype.load = function()
 		}
 		
 		//this.assets[i].load();
-	};
-}
+	}
+};
 
 PIXI.AssetLoader.prototype.onAssetLoaded = function()
 {
@@ -143,5 +143,5 @@ PIXI.AssetLoader.prototype.onAssetLoaded = function()
 		this.dispatchEvent( { type: 'onComplete', content: this } );
 		if(this.onComplete)this.onComplete();
 	}
-}
+};
 

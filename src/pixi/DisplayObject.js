@@ -70,8 +70,8 @@ PIXI.DisplayObject = function()
 	this.worldAlpha = 1;
 	this.color = [];
 	
-	this.worldTransform = PIXI.mat3.create()//mat3.identity();
-	this.localTransform = PIXI.mat3.create()//mat3.identity();
+	this.worldTransform = PIXI.mat3.create();
+	this.localTransform = PIXI.mat3.create();
 	
 	this.dynamic = true;
 	// chach that puppy!
@@ -156,7 +156,7 @@ PIXI.DisplayObject = function()
 	 * @method touchendoutside
 	 * @param interactionData {InteractionData}
 	 */
-}
+};
 
 // constructor
 PIXI.DisplayObject.constructor = PIXI.DisplayObject;
@@ -172,7 +172,7 @@ PIXI.DisplayObject.prototype.setInteractive = function(interactive)
 	// TODO more to be done here..
 	// need to sort out a re-crawl!
 	if(this.stage)this.stage.dirty = true;
-}
+};
 
 
 /**
@@ -193,7 +193,7 @@ PIXI.DisplayObject.prototype.updateTransform = function()
 	var worldTransform = this.worldTransform;
 	//console.log(localTransform)
 	localTransform[0] = this._cr * this.scale.x;
-	localTransform[1] = -this._sr * this.scale.y
+	localTransform[1] = -this._sr * this.scale.y;
 	localTransform[3] = this._sr * this.scale.x;
 	localTransform[4] = this._cr * this.scale.y;
 	
@@ -219,4 +219,4 @@ PIXI.DisplayObject.prototype.updateTransform = function()
 	// because we are using affine transformation, we can optimise the matrix concatenation process.. wooo!
 	// mat3.multiply(this.localTransform, this.parent.worldTransform, this.worldTransform);
 	this.worldAlpha = this.alpha * this.parent.worldAlpha;		
-}
+};

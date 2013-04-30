@@ -58,7 +58,7 @@ PIXI.Texture = function(baseTexture, frame)
 		var scope = this;
 		baseTexture.addEventListener( 'loaded', function(){ scope.onBaseTextureLoaded()} );
 	}
-}
+};
 
 PIXI.Texture.constructor = PIXI.Texture;
 
@@ -73,7 +73,7 @@ PIXI.Texture.prototype.onBaseTextureLoaded = function(event)
 	this.height = this.frame.height;
 	
 	this.scope.dispatchEvent( { type: 'update', content: this } );
-}
+};
 
 /**
  * Specifies the rectangle region of the baseTexture
@@ -95,7 +95,7 @@ PIXI.Texture.prototype.setFrame = function(frame)
 	
 	PIXI.Texture.frameUpdates.push(this);
 	//this.dispatchEvent( { type: 'update', content: this } );
-}
+};
 
 /**
  * 
@@ -118,7 +118,7 @@ PIXI.Texture.fromImage = function(imageUrl, crossorigin)
 	}
 	
 	return texture;
-}
+};
 
 /**
  * 
@@ -133,7 +133,7 @@ PIXI.Texture.fromFrame = function(frameId)
 	var texture = PIXI.TextureCache[frameId];
 	if(!texture)throw new Error("The frameId '"+ frameId +"' does not exist in the texture cache " + this);
 	return texture;
-}
+};
 
 /**
  * 
@@ -148,7 +148,7 @@ PIXI.Texture.fromCanvas = function(canvas)
 {
 	var	baseTexture = new PIXI.BaseTexture(canvas);
 	return new PIXI.Texture(baseTexture);
-}
+};
 
 
 /**
@@ -161,7 +161,7 @@ PIXI.Texture.fromCanvas = function(canvas)
 PIXI.Texture.addTextureToCache = function(texture, id)
 {
 	PIXI.TextureCache[id] = texture;
-}
+};
 
 /**
  * 
@@ -172,10 +172,10 @@ PIXI.Texture.addTextureToCache = function(texture, id)
  */
 PIXI.Texture.removeTextureFromCache = function(id)
 {
-	var texture = PIXI.TextureCache[id]
+	var texture = PIXI.TextureCache[id];
 	PIXI.TextureCache[id] = null;
 	return texture;
-}
+};
 
 // this is more for webGL.. it contains updated frames..
 PIXI.Texture.frameUpdates = [];

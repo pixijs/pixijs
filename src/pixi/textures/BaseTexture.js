@@ -41,7 +41,7 @@ PIXI.BaseTexture = function(source)
 	 * @property source
 	 * @type Image
 	 */
-	this.source = source//new Image();
+	this.source = source; //new Image();
 	
 	if(this.source instanceof Image)
 	{
@@ -66,7 +66,7 @@ PIXI.BaseTexture = function(source)
 				// add it to somewhere...
 				PIXI.texturesToUpdate.push(scope);
 				scope.dispatchEvent( { type: 'loaded', content: scope } );
-			}
+			};
 			//	this.image.src = imageUrl;
 		}
 	}
@@ -82,7 +82,7 @@ PIXI.BaseTexture = function(source)
 	
 	this._powerOf2 = false;
 	
-}
+};
 
 PIXI.BaseTexture.constructor = PIXI.BaseTexture;
 
@@ -111,4 +111,4 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin)
 	}
 
 	return baseTexture;
-}
+};

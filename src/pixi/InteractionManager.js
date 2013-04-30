@@ -47,7 +47,7 @@ PIXI.InteractionManager = function(stage)
 	this.interactiveItems = [];
 
 	this.last = 0;
-}
+};
 
 // constructor
 PIXI.InteractionManager.constructor = PIXI.InteractionManager;
@@ -85,7 +85,7 @@ PIXI.InteractionManager.prototype.collectInteractiveSprite = function(displayObj
 			}
 		}
 	}
-}
+};
 
 PIXI.InteractionManager.prototype.setTarget = function(target)
 {
@@ -93,7 +93,7 @@ PIXI.InteractionManager.prototype.setTarget = function(target)
 	{
 		// time to remove some of that zoom in ja..
 		target.view.style["-ms-content-zooming"] = "none";
-    	target.view.style["-ms-touch-action"] = "none"
+    	target.view.style["-ms-touch-action"] = "none";
     
 		// DO some window specific touch!
 	}
@@ -115,7 +115,7 @@ PIXI.InteractionManager.prototype.setTarget = function(target)
 	
 	
 	
-}
+};
 
 PIXI.InteractionManager.prototype.update = function()
 {
@@ -187,7 +187,7 @@ PIXI.InteractionManager.prototype.update = function()
 		
 		// --->
 	}
-}
+};
 
 PIXI.InteractionManager.prototype.onMouseMove = function(event)
 {
@@ -213,7 +213,7 @@ PIXI.InteractionManager.prototype.onMouseMove = function(event)
 			item.mousemove(this.mouse);
 		}
 	}
-}
+};
 
 PIXI.InteractionManager.prototype.onMouseDown = function(event)
 {
@@ -253,7 +253,7 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
 			}
 		}
 	}
-}
+};
 
 PIXI.InteractionManager.prototype.onMouseUp = function(event)
 {
@@ -297,7 +297,7 @@ PIXI.InteractionManager.prototype.onMouseUp = function(event)
 			item.__isDown = false;	
 		}
 	}
-}
+};
 
 PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 {
@@ -365,7 +365,7 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 	}
 		
 	return false;	
-}
+};
 
 
 
@@ -392,7 +392,7 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
 		var item = this.interactiveItems[i];
 		if(item.touchmove)item.touchmove(touchData);
 	}
-}
+};
 
 PIXI.InteractionManager.prototype.onTouchStart = function(event)
 {
@@ -434,7 +434,7 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
 		}
 	}
 	
-}
+};
 
 PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 {
@@ -501,7 +501,7 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 		this.pool.push(touchData);
 		this.touchs[touchEvent.identifier] = null;
 	}
-}
+};
 
 /**
 @class InteractionData
@@ -525,7 +525,7 @@ PIXI.InteractionData = function()
 	 * @type Sprite
 	 */
 	this.target;
-}
+};
 
 /**
  * This will return the local coords of the specified displayObject for this InteractionData
@@ -545,7 +545,7 @@ PIXI.InteractionData.prototype.getLocalPosition = function(displayObject)
 	// set the mouse coords...
 	return new PIXI.Point(a11 * id * global.x + -a01 * id * global.y + (a12 * a01 - a02 * a11) * id,
 							   a00 * id * global.y + -a10 * id * global.x + (-a12 * a00 + a02 * a10) * id)
-}
+};
 
 // constructor
 PIXI.InteractionData.constructor = PIXI.InteractionData;

@@ -31,12 +31,12 @@ PIXI.shaderVertexSrc = [
 PIXI.CompileVertexShader = function(gl, shaderSrc)
 {
   return PIXI._CompileShader(gl, shaderSrc, gl.VERTEX_SHADER);
-}
+};
 
 PIXI.CompileFragmentShader = function(gl, shaderSrc)
 {
   return PIXI._CompileShader(gl, shaderSrc, gl.FRAGMENT_SHADER);
-}
+};
 
 PIXI._CompileShader = function(gl, shaderSrc, shaderType)
 {
@@ -51,4 +51,4 @@ PIXI._CompileShader = function(gl, shaderSrc, shaderType)
   }
 
   return shader;
-}
+};

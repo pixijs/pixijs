@@ -58,7 +58,7 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
 	 * @type Canvas 2d Context
 	 */
 	this.context = this.view.getContext("2d");
-}
+};
 
 // constructor
 PIXI.CanvasRenderer.constructor = PIXI.CanvasRenderer;
@@ -86,7 +86,7 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 	// update the background color
 	if(this.view.style.backgroundColor!=stage.backgroundColorString && !this.transparent)this.view.style.backgroundColor = stage.backgroundColorString;
 
-	this.context.clearRect(0, 0, this.width, this.height)
+	this.context.clearRect(0, 0, this.width, this.height);
     this.renderDisplayObject(stage);
     //as
    
@@ -106,7 +106,7 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 	{
 		PIXI.Texture.frameUpdates = [];
 	}
-}
+};
 
 /**
  * resizes the canvas view to the specified width and height
@@ -120,7 +120,7 @@ PIXI.CanvasRenderer.prototype.resize = function(width, height)
 	
 	this.view.width = width;
 	this.view.height = height;
-}
+};
 
 /**
  * @private
@@ -129,7 +129,7 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 {
 	var transform = displayObject.worldTransform;
 	var context = this.context;
-	context.globalCompositeOperation = "source-over"
+	context.globalCompositeOperation = "source-over";
 	var blit = false;
 	
 	if(!displayObject.visible)return;
@@ -166,7 +166,7 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 			else
 			{*/
 				blit = false;
-				context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
+				context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
 				context.drawImage(displayObject.texture.baseTexture.source, 
 								   frame.x,
 								   frame.y,
@@ -181,12 +181,12 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
    	}
    	else if(displayObject instanceof PIXI.Strip)
 	{
-		context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
+		context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
 		this.renderStrip(displayObject);
 	}
 	else if(displayObject instanceof PIXI.TilingSprite)
 	{
-		context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
+		context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
 		this.renderTilingSprite(displayObject);
 	}
 	
@@ -197,7 +197,7 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 	}
 	
 	
-}
+};
 
 /**
  * @private
@@ -225,14 +225,14 @@ PIXI.CanvasRenderer.prototype.renderStripFlat = function(strip)
 		context.lineTo(x1, y1);
 		context.lineTo(x2, y2);
 		
-	};	
+	}
 	
 //	context.globalCompositeOperation = 'lighter';
 	context.fillStyle = "#FF0000";
 	context.fill();
 	context.closePath();
 	//context.globalCompositeOperation = 'source-over';	
-}
+};
 
 /**
  * @private
@@ -257,7 +257,7 @@ PIXI.CanvasRenderer.prototype.renderTilingSprite = function(sprite)
 	
 	context.scale(1/tileScale.x, 1/tileScale.y);
     context.translate(-tilePosition.x, -tilePosition.y);
-}
+};
 
 
 
@@ -317,10 +317,10 @@ PIXI.CanvasRenderer.prototype.renderStrip = function(strip)
                  
 		context.drawImage(strip.texture.baseTexture.source, 0, 0);
 	  	context.restore();
-	};
+	}
 	
 //	context.globalCompositeOperation = 'source-over';	
-}
+};
 
 
 

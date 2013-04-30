@@ -32,8 +32,8 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
 	
 	// deal with losing context..	
     var scope = this;
-	this.view.addEventListener('webglcontextlost', function(event) { scope.handleContextLost(event); }, false)
-	this.view.addEventListener('webglcontextrestored', function(event) { scope.handleContextRestored(event); }, false)
+	this.view.addEventListener('webglcontextlost', function(event) { scope.handleContextLost(event); }, false);
+	this.view.addEventListener('webglcontextrestored', function(event) { scope.handleContextRestored(event); }, false);
 
 	this.batchs = [];
 	
@@ -61,9 +61,9 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
     gl.colorMask(true, true, true, this.transparent); 
     
     this.projectionMatrix =  PIXI.mat4.create();
-    this.resize(this.width, this.height)
+    this.resize(this.width, this.height);
     this.contextLost = false;
-}
+};
 
 // constructor
 PIXI.WebGLRenderer.constructor = PIXI.WebGLRenderer;
@@ -105,7 +105,7 @@ PIXI.WebGLRenderer.prototype.initShaders = function()
     shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "uSampler");
 	
 	PIXI.shaderProgram = this.shaderProgram;
-}
+};
 
 /**
  * @private
@@ -129,8 +129,8 @@ PIXI.WebGLRenderer.prototype.checkVisibility = function(displayObject, globalVis
 			child.textureChange = false;
 			if(actualVisibility)
 			{
-				this.removeDisplayObject(child)
-				this.addDisplayObject(child)
+				this.removeDisplayObject(child);
+				this.addDisplayObject(child);
 			}
 			// update texture!!
 		}
@@ -153,8 +153,8 @@ PIXI.WebGLRenderer.prototype.checkVisibility = function(displayObject, globalVis
 		{
 			this.checkVisibility(child, actualVisibility);
 		}
-	};
-}
+	}
+};
 
 
 /**
@@ -170,7 +170,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	// if rendering a new stage clear the batchs..
 	if(this.__stage !== stage)
 	{
-		if(this.__stage)this.checkVisibility(this.__stage, false)
+		if(this.__stage)this.checkVisibility(this.__stage, false);
 		this.__stage = stage;
 	}
 	
@@ -199,7 +199,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	
 	var gl = this.gl;
 	
-	gl.clear(gl.COLOR_BUFFER_BIT)
+	gl.clear(gl.COLOR_BUFFER_BIT);
 
 	gl.clearColor(stage.backgroundColorSplit[0], stage.backgroundColorSplit[1], stage.backgroundColorSplit[2], 0);     
 	
@@ -247,11 +247,11 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 		for (var i=0; i < PIXI.Texture.frameUpdates.length; i++) 
 		{
 		  	PIXI.Texture.frameUpdates[i].updateFrame = false;
-		};
+		}
 		
 		PIXI.Texture.frameUpdates = [];
 	}
-}
+};
 
 /**
  * @private
@@ -293,7 +293,7 @@ PIXI.WebGLRenderer.prototype.updateTexture = function(texture)
 	}
 	
 	this.refreshBatchs = true;
-}
+};
 
 /**
  * @private
@@ -344,7 +344,7 @@ PIXI.WebGLRenderer.prototype.addDisplayObject = function(displayObject)
 		
 		if(previousSprite == displayObject.stage)break;
 	}
-	while(!previousSprite.renderable || !previousSprite.__inWebGL)
+	while(!previousSprite.renderable || !previousSprite.__inWebGL);
 	//while(!(previousSprite instanceof PIXI.Sprite))
 
 	/*
@@ -368,7 +368,7 @@ PIXI.WebGLRenderer.prototype.addDisplayObject = function(displayObject)
 				nextSprite = nextSprite.parent;
 				if(nextSprite == displayObject.stage)
 				{
-					nextSprite = null
+					nextSprite = null;
 					break;
 				}
 			}
@@ -383,7 +383,7 @@ PIXI.WebGLRenderer.prototype.addDisplayObject = function(displayObject)
 
 		if(!nextSprite)break;
 	}
-	while(!nextSprite.renderable || !nextSprite.__inWebGL)
+	while(!nextSprite.renderable || !nextSprite.__inWebGL);
 	
 	/*
 	 * so now we have the next renderable and the previous renderable
@@ -392,8 +392,8 @@ PIXI.WebGLRenderer.prototype.addDisplayObject = function(displayObject)
 	
 	if(displayObject instanceof PIXI.Sprite)
 	{
-		var previousBatch
-		var nextBatch
+		var previousBatch;
+		var nextBatch;
 		
 		if(previousSprite instanceof PIXI.Sprite)
 		{
@@ -496,7 +496,7 @@ PIXI.WebGLRenderer.prototype.addDisplayObject = function(displayObject)
 	
 	// if its somthing else... then custom codes!
 	this.batchUpdate = true;
-}
+};
 
 /**
  * @private
@@ -574,7 +574,7 @@ PIXI.WebGLRenderer.prototype.removeDisplayObject = function(displayObject)
 	}
 	
 	
-}
+};
 
 /**
  * resizes the webGL view to the specified width and height
@@ -598,7 +598,7 @@ PIXI.WebGLRenderer.prototype.resize = function(width, height)
 	projectionMatrix[5] = -2/this.height;
 	projectionMatrix[12] = -1;
 	projectionMatrix[13] = 1;
-}
+};
 
 
 /**
@@ -625,7 +625,7 @@ PIXI.WebGLRenderer.prototype.initTilingSprite = function(sprite)
 				
 	sprite.colors = new Float32Array([1,1,1,1]);
 	
-	sprite.indices =  new Uint16Array([0, 1, 3,2])//, 2]);
+	sprite.indices =  new Uint16Array([0, 1, 3,2]); //, 2]);
 	
 	
 	sprite._vertexBuffer = gl.createBuffer();
@@ -679,7 +679,7 @@ PIXI.WebGLRenderer.prototype.initTilingSprite = function(sprite)
     context.translate(-tilePosition.x, -tilePosition.y);
 	context.scale(1/tileScale.x, 1/tileScale.y);
 	*/
-}
+};
 
 /**
  * @private
@@ -695,29 +695,29 @@ PIXI.WebGLRenderer.prototype.renderTilingSprite = function(sprite)
 	var offsetX =  tilePosition.x/sprite.texture.baseTexture.width;
 	var offsetY =  tilePosition.y/sprite.texture.baseTexture.height;
 	
-	var scaleX =  (sprite.width / sprite.texture.baseTexture.width)  / tileScale.x///sprite.texture.baseTexture.width;
-	var scaleY =  (sprite.height / sprite.texture.baseTexture.height) / tileScale.y///sprite.texture.baseTexture.height;
+	var scaleX =  (sprite.width / sprite.texture.baseTexture.width)  / tileScale.x; ///sprite.texture.baseTexture.width;
+	var scaleY =  (sprite.height / sprite.texture.baseTexture.height) / tileScale.y; ///sprite.texture.baseTexture.height;
 	//
 	//sprite.dirty = true;
-	sprite.uvs[0] = 0 + offsetX
+	sprite.uvs[0] = 0 + offsetX;
 	sprite.uvs[1] = 0 - offsetY;
 	
-	sprite.uvs[2] = (1 * scaleX)  +offsetX
+	sprite.uvs[2] = (1 * scaleX)  +offsetX;
 	sprite.uvs[3] = 0 - offsetY;
 	
-	sprite.uvs[4] = (1 *scaleX) + offsetX
+	sprite.uvs[4] = (1 *scaleX) + offsetX;
 	sprite.uvs[5] = (1 *scaleY) - offsetY;
 	
-	sprite.uvs[6] = 0  + offsetX
+	sprite.uvs[6] = 0  + offsetX;
 	sprite.uvs[7] = (1 *scaleY) - offsetY;
 	
 	
 	gl.bindBuffer(gl.ARRAY_BUFFER, sprite._uvBuffer);
-	gl.bufferSubData(gl.ARRAY_BUFFER, 0, sprite.uvs)
+	gl.bufferSubData(gl.ARRAY_BUFFER, 0, sprite.uvs);
 	
 	this.renderStrip(sprite);
  
-}
+};
 
 
 
@@ -747,7 +747,7 @@ PIXI.WebGLRenderer.prototype.initStrip = function(strip)
 	
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, strip._indexBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, strip.indices, gl.STATIC_DRAW);
-}
+};
 
 /**
  * @private
@@ -759,7 +759,7 @@ PIXI.WebGLRenderer.prototype.renderStrip = function(strip)
 //	mat
 	var mat4Real = PIXI.mat3.toMat4(strip.worldTransform);
 	PIXI.mat4.transpose(mat4Real);
-	PIXI.mat4.multiply(this.projectionMatrix, mat4Real, mat4Real )
+	PIXI.mat4.multiply(this.projectionMatrix, mat4Real, mat4Real );
 
 	gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, mat4Real);
   
@@ -776,7 +776,7 @@ PIXI.WebGLRenderer.prototype.renderStrip = function(strip)
 	{
 		
 		gl.bindBuffer(gl.ARRAY_BUFFER, strip._vertexBuffer);
-		gl.bufferSubData(gl.ARRAY_BUFFER, 0, strip.verticies)
+		gl.bufferSubData(gl.ARRAY_BUFFER, 0, strip.verticies);
 	    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 2, gl.FLOAT, false, 0, 0);
 		
 		// update the uvs
@@ -798,19 +798,19 @@ PIXI.WebGLRenderer.prototype.renderStrip = function(strip)
 	{
 		strip.dirty = false;
 		gl.bindBuffer(gl.ARRAY_BUFFER, strip._vertexBuffer);
-		gl.bufferData(gl.ARRAY_BUFFER, strip.verticies, gl.STATIC_DRAW)
+		gl.bufferData(gl.ARRAY_BUFFER, strip.verticies, gl.STATIC_DRAW);
 	    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 2, gl.FLOAT, false, 0, 0);
 		
 		// update the uvs
 	   	gl.bindBuffer(gl.ARRAY_BUFFER, strip._uvBuffer);
-	   	gl.bufferData(gl.ARRAY_BUFFER, strip.uvs, gl.STATIC_DRAW)
+	   	gl.bufferData(gl.ARRAY_BUFFER, strip.uvs, gl.STATIC_DRAW);
 	    gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, 2, gl.FLOAT, false, 0, 0);
 			
 	    gl.activeTexture(gl.TEXTURE0);
 	    gl.bindTexture(gl.TEXTURE_2D, strip.texture.baseTexture._glTexture);
 		
 		gl.bindBuffer(gl.ARRAY_BUFFER, strip._colorBuffer);
-		gl.bufferData(gl.ARRAY_BUFFER, strip.colors, gl.STATIC_DRAW)
+		gl.bufferData(gl.ARRAY_BUFFER, strip.colors, gl.STATIC_DRAW);
 	    gl.vertexAttribPointer(shaderProgram.colorAttribute, 1, gl.FLOAT, false, 0, 0);
 		
 		// dont need to upload!
@@ -824,7 +824,7 @@ PIXI.WebGLRenderer.prototype.renderStrip = function(strip)
     gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.projectionMatrix);
   
   //  console.log("!!!")
-}
+};
 
 /**
  * @private
@@ -833,7 +833,7 @@ PIXI.WebGLRenderer.prototype.handleContextLost = function(event)
 {
 	event.preventDefault();
 	this.contextLost = true;
-}
+};
 
 /**
  * @private
@@ -849,16 +849,16 @@ PIXI.WebGLRenderer.prototype.handleContextRestored = function(event)
 	for (var i=0; i < PIXI.TextureCache.length; i++) 
 	{
 		this.updateTexture(PIXI.TextureCache[i]);
-	};
+	}
 	
 	for (var i=0; i <  this.batchs.length; i++) 
 	{
-		this.batchs[i].restoreLostContext(this.gl)//
+		this.batchs[i].restoreLostContext(this.gl); //
 		this.batchs[i].dirty = true;
-	};
+	}
 	
 	PIXI._restoreBatchs(this.gl);
 	
 	this.contextLost = false;
-}
+};
 

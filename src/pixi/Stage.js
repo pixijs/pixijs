@@ -14,7 +14,7 @@ PIXI.Stage = function(backgroundColor, interactive)
 {
 	
 	PIXI.DisplayObjectContainer.call( this );
-	this.worldTransform = PIXI.mat3.create()//.//identity();
+	this.worldTransform = PIXI.mat3.create();
 	this.__childrenAdded = [];
 	this.__childrenRemoved = [];
 	this.childIndex = 0;
@@ -27,7 +27,7 @@ PIXI.Stage = function(backgroundColor, interactive)
 	this.interactionManager = new PIXI.InteractionManager(this);
 	
 	this.setBackgroundColor(backgroundColor);
-}
+};
 
 // constructor
 PIXI.Stage.constructor = PIXI.Stage;
@@ -55,7 +55,7 @@ PIXI.Stage.prototype.updateTransform = function()
 	}
 
 	if(this.interactive)this.interactionManager.update();
-}
+};
 
 /**
  * @method setBackgroundColor
@@ -66,7 +66,7 @@ PIXI.Stage.prototype.setBackgroundColor = function(backgroundColor)
 	this.backgroundColor = backgroundColor || 0x000000;
 	this.backgroundColorSplit = HEXtoRGB(this.backgroundColor);
 	this.backgroundColorString =  "#" + this.backgroundColor.toString(16);
-}
+};
 
 /**
  * This will return the point containing global coords of the mouse.
@@ -76,7 +76,7 @@ PIXI.Stage.prototype.setBackgroundColor = function(backgroundColor)
 PIXI.Stage.prototype.getMousePosition = function()
 {
 	return this.interactionManager.mouse.global;
-}
+};
 
 PIXI.Stage.prototype.__addChild = function(child)
 {
@@ -89,10 +89,10 @@ PIXI.Stage.prototype.__addChild = function(child)
 		for (var i=0; i < child.children.length; i++) 
 		{
 		  	this.__addChild(child.children[i]);
-		};
+		}
 	}
 	
-}
+};
 
 
 PIXI.Stage.prototype.__removeChild = function(child)
@@ -110,4 +110,4 @@ PIXI.Stage.prototype.__removeChild = function(child)
 		  	this.__removeChild(child.children[i])
 		}
 	}
-}
+};

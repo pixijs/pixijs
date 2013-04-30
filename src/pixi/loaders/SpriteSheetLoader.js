@@ -29,7 +29,7 @@ PIXI.SpriteSheetLoader = function(url)
 	this.texture;
 	this.frames = {};
 	this.crossorigin = false;
-}
+};
 
 // constructor
 PIXI.SpriteSheetLoader.constructor = PIXI.SpriteSheetLoader;
@@ -44,12 +44,12 @@ PIXI.SpriteSheetLoader.prototype.load = function()
 	this.ajaxRequest.onreadystatechange=function()
 	{
 		scope.onLoaded();
-	}
+	};
 		
-	this.ajaxRequest.open("GET", this.url, true)
+	this.ajaxRequest.open("GET", this.url, true);
 	if (this.ajaxRequest.overrideMimeType) this.ajaxRequest.overrideMimeType("application/json");
-	this.ajaxRequest.send(null)
-}
+	this.ajaxRequest.send(null);
+};
 
 PIXI.SpriteSheetLoader.prototype.onLoaded = function()
 {
@@ -77,7 +77,7 @@ PIXI.SpriteSheetLoader.prototype.onLoaded = function()
 					{
 						//var realSize = frameData[i].spriteSourceSize;
 						PIXI.TextureCache[i].realSize = frameData[i].spriteSourceSize;
-						PIXI.TextureCache[i].trim.x = 0// (realSize.x / rect.w)
+						PIXI.TextureCache[i].trim.x = 0; // (realSize.x / rect.w)
 						// calculate the offset!
 					}
 	//				this.frames[i] = ;
@@ -101,5 +101,5 @@ PIXI.SpriteSheetLoader.prototype.onLoaded = function()
 	 	}
 	}
 	
-}
+};
 

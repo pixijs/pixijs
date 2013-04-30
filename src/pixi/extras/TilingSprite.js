@@ -34,7 +34,7 @@ PIXI.TilingSprite = function(texture, width, height)
 	this.tilePosition = new PIXI.Point(0,0);
 	
 	this.blendMode = PIXI.blendModes.NORMAL
-}
+};
 
 // constructor
 PIXI.TilingSprite.constructor = PIXI.TilingSprite;
@@ -48,11 +48,11 @@ PIXI.TilingSprite.prototype.setTexture = function(texture)
 	// stop current texture 
 	this.texture = texture;
 	this.updateFrame = true;
-}
+};
 
 PIXI.TilingSprite.prototype.onTextureUpdate = function(event)
 {
 	this.updateFrame = true;
-}
+};
 // some helper functions..
 

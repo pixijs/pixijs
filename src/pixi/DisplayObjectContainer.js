@@ -20,7 +20,7 @@ PIXI.DisplayObjectContainer = function()
 	this.children = [];
 	//s
 	this.renderable = false;
-}
+};
 
 // constructor
 PIXI.DisplayObjectContainer.constructor = PIXI.DisplayObjectContainer;
@@ -46,7 +46,7 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 	{
 		this.stage.__addChild(child);
 	}
-}
+};
 
 /**
  * Adds a child to the container at a specified index. If the index is out of bounds an error will be thrown
@@ -92,7 +92,7 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 		
 		throw new Error(child + " The index "+ index +" supplied is out of bounds " + this.children.length);
 	}
-}
+};
 
 /**
  * Swaps the depth of 2 displayObjects
@@ -132,7 +132,7 @@ PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
 	{
 		throw new Error(child + " Both the supplied DisplayObjects must be a child of the caller " + this);
 	}
-}
+};
 
 /**
  * Returns the Child at the specified index
@@ -150,7 +150,7 @@ PIXI.DisplayObjectContainer.prototype.getChildAt = function(index)
 		throw new Error(child + " Both the supplied DisplayObjects must be a child of the caller " + this);
 	
 	}
-}
+};
 
 /**
  * Removes a child from the container.
@@ -178,7 +178,7 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 	{
 		throw new Error(child + " The supplied DisplayObject must be a child of the caller " + this);
 	}
-}
+};
 
 
 /**
@@ -194,4 +194,4 @@ PIXI.DisplayObjectContainer.prototype.updateTransform = function()
 	{
 		this.children[i].updateTransform();	
 	}
-}
+};

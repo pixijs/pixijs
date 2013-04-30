@@ -72,7 +72,7 @@ PIXI.Sprite = function(texture)
 	// thi next bit is here for the docs...
 	
 	
-}
+};
 
 // constructor
 PIXI.Sprite.constructor = PIXI.Sprite;
@@ -85,7 +85,7 @@ Object.defineProperty(PIXI.Sprite.prototype, 'width', {
         return this.scale.x * this.texture.frame.width;
     },
     set: function(value) {
-    	this.scale.x = value / this.texture.frame.width
+    	this.scale.x = value / this.texture.frame.width;
         this._width = value;
     }
 });
@@ -95,7 +95,7 @@ Object.defineProperty(PIXI.Sprite.prototype, 'height', {
         return  this.scale.y * this.texture.frame.height;
     },
     set: function(value) {
-    	this.scale.y = value / this.texture.frame.height
+    	this.scale.y = value / this.texture.frame.height;
         this._height = value;
     }
 });
@@ -114,7 +114,7 @@ PIXI.Sprite.prototype.setTexture = function(texture)
 	
 	this.texture = texture;
 	this.updateFrame = true;
-}
+};
 
 /**
  * @private
@@ -128,7 +128,7 @@ PIXI.Sprite.prototype.onTextureUpdate = function(event)
 	if(this._height)this.scale.y = this._height / this.texture.frame.height;
 	
 	this.updateFrame = true;
-}
+};
 
 // some helper functions..
 
@@ -146,7 +146,7 @@ PIXI.Sprite.fromFrame = function(frameId)
 	var texture = PIXI.TextureCache[frameId];
 	if(!texture)throw new Error("The frameId '"+ frameId +"' does not exist in the texture cache" + this);
 	return new PIXI.Sprite(texture);
-}
+};
 
 /**
  * 
@@ -161,5 +161,5 @@ PIXI.Sprite.fromImage = function(imageId)
 {
 	var texture = PIXI.Texture.fromImage(imageId);
 	return new PIXI.Sprite(texture);
-}
+};
 

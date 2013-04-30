@@ -63,7 +63,7 @@ PIXI.Strip = function(texture, width, height)
 	}
 	
 	this.renderable = true;
-}
+};
 
 // constructor
 PIXI.Strip.constructor = PIXI.Strip;
@@ -79,11 +79,11 @@ PIXI.Strip.prototype.setTexture = function(texture)
 	this.width   = texture.frame.width;
 	this.height  = texture.frame.height;
 	this.updateFrame = true;
-}
+};
 
 PIXI.Strip.prototype.onTextureUpdate = function(event)
 {
 	this.updateFrame = true;
-}
+};
 // some helper functions..
 
