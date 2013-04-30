@@ -137,7 +137,7 @@ PIXI.InteractionManager.prototype.update = function()
 		var len = this.interactiveItems.length;
 		
 		for (var i=0; i < this.interactiveItems.length; i++) {
-		  this.interactiveItems[i].interactiveChildren = true;
+		  this.interactiveItems[i].interactiveChildren = false;
 		}
 		
 		this.interactiveItems = [];
@@ -327,6 +327,8 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 			
 			if(y > y1 && y < y1 + height)
 			{
+				// set the target property if a hit is true!
+				interactionData.target = item
 				return true;
 			}
 		}
