@@ -44,7 +44,7 @@ PIXI.Layers.prototype.addLayerAt = function (layerName, index) {
 		throw new Error(layerName + " Suplied name already used by " + this.layers[layerName]);
 	}
 	var layer = new PIXI.DisplayObjectContainer();
-	layer.name = layerName;
+	layer.layername = layerName;
 	this.addChildAt(layer, index);
 	this[layerName] = layer;
 	return layer;
@@ -80,7 +80,19 @@ PIXI.DisplayObjectContainer.prototype.getLayerAt = function (index) {
  * @param String {LayerName}
  */
 PIXI.Layers.prototype.removeLayer = function (layerName) {
-	if (!(layerName in this.layers) || !(layerName in this.blockedNames)) return;
-	this.removeChild(this[layerName]);
+	if (!(layerName in this) || (layerName in this.blockedNames)) return;
+	PIXI.DisplayObjectContainer.prototype.removeChild.call(this, this[layerName]);
 	delete this[layerName];
+};
+
+/**
+ * Removes a child from the container.
+ * @method removeChild
+ * @param  DisplayObject {DisplayObject}
+ */
+PIXI.Layers.prototype.removeChild = function (child) {
+	if (child.layername && child.layername in this) {
+		delete this[child.layername];
+	}
+	PIXI.DisplayObjectContainer.prototype.removeChild.call(this, child);
 };
