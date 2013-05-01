@@ -82,6 +82,12 @@ PIXI.DisplayObject = function()
 	
 	// [readonly] best not to toggle directly! use setInteractive()
 	this.interactive = false;
+	
+	/**
+	 * This is used to indicate if the displayObject should display a mouse hand cursor on rollover
+	 * @property buttonMode
+	 * @type Boolean
+	 */
 	this.buttonMode = false;
 	
 	/*

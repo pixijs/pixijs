@@ -528,7 +528,7 @@
             "extension_for": [],
             "module": "PIXI",
             "file": "src/pixi/InteractionManager.js",
-            "line": 506,
+            "line": 513,
             "is_constructor": 1
         },
         "MovieClip": {
@@ -1529,7 +1529,16 @@
         },
         {
             "file": "src/pixi/DisplayObject.js",
-            "line": 91,
+            "line": 86,
+            "description": "This is used to indicate if the displayObject should display a mouse hand cursor on rollover",
+            "itemtype": "property",
+            "name": "buttonMode",
+            "type": "Boolean",
+            "class": "DisplayObject"
+        },
+        {
+            "file": "src/pixi/DisplayObject.js",
+            "line": 97,
             "description": "A callback that is used when the users clicks on the displayObject with their mouse",
             "itemtype": "method",
             "name": "click",
@@ -1544,7 +1553,7 @@
         },
         {
             "file": "src/pixi/DisplayObject.js",
-            "line": 97,
+            "line": 103,
             "description": "A callback that is used when the user clicks the mouse down over the sprite",
             "itemtype": "method",
             "name": "mousedown",
@@ -1559,7 +1568,7 @@
         },
         {
             "file": "src/pixi/DisplayObject.js",
-            "line": 103,
+            "line": 109,
             "description": "A callback that is used when the user releases the mouse that was over the displayObject\nfor this callback to be fired the mouse must have been pressed down over the displayObject",
             "itemtype": "method",
             "name": "mouseup",
@@ -1574,7 +1583,7 @@
         },
         {
             "file": "src/pixi/DisplayObject.js",
-            "line": 110,
+            "line": 116,
             "description": "A callback that is used when the user releases the mouse that was over the displayObject but is no longer over the displayObject\nfor this callback to be fired, The touch must have started over the displayObject",
             "itemtype": "method",
             "name": "mouseupoutside",
@@ -1589,7 +1598,7 @@
         },
         {
             "file": "src/pixi/DisplayObject.js",
-            "line": 117,
+            "line": 123,
             "description": "A callback that is used when the users mouse rolls over the displayObject",
             "itemtype": "method",
             "name": "mouseover",
@@ -1604,7 +1613,7 @@
         },
         {
             "file": "src/pixi/DisplayObject.js",
-            "line": 123,
+            "line": 129,
             "description": "A callback that is used when the users mouse leaves the displayObject",
             "itemtype": "method",
             "name": "mouseout",
@@ -1619,7 +1628,7 @@
         },
         {
             "file": "src/pixi/DisplayObject.js",
-            "line": 134,
+            "line": 140,
             "description": "A callback that is used when the users taps on the sprite with their finger\nbasically a touch version of click",
             "itemtype": "method",
             "name": "tap",
@@ -1634,7 +1643,7 @@
         },
         {
             "file": "src/pixi/DisplayObject.js",
-            "line": 141,
+            "line": 147,
             "description": "A callback that is used when the user touch's over the displayObject",
             "itemtype": "method",
             "name": "touchstart",
@@ -1649,7 +1658,7 @@
         },
         {
             "file": "src/pixi/DisplayObject.js",
-            "line": 147,
+            "line": 153,
             "description": "A callback that is used when the user releases a touch over the displayObject",
             "itemtype": "method",
             "name": "touchend",
@@ -1664,7 +1673,7 @@
         },
         {
             "file": "src/pixi/DisplayObject.js",
-            "line": 153,
+            "line": 159,
             "description": "A callback that is used when the user releases the touch that was over the displayObject\nfor this callback to be fired, The touch must have started over the sprite",
             "itemtype": "method",
             "name": "touchendoutside",
@@ -1679,7 +1688,7 @@
         },
         {
             "file": "src/pixi/DisplayObject.js",
-            "line": 164,
+            "line": 170,
             "description": "Indicates if the sprite will have touch and mouse interactivity. It is false by default",
             "itemtype": "method",
             "name": "setInteractive",
@@ -1694,7 +1703,7 @@
         },
         {
             "file": "src/pixi/DisplayObject.js",
-            "line": 178,
+            "line": 184,
             "access": "private",
             "tagname": "",
             "class": "DisplayObject"
@@ -1841,7 +1850,7 @@
         },
         {
             "file": "src/pixi/InteractionManager.js",
-            "line": 512,
+            "line": 519,
             "description": "This point stores the global coords of where the touch/mouse event happened",
             "itemtype": "property",
             "name": "global",
@@ -1850,7 +1859,7 @@
         },
         {
             "file": "src/pixi/InteractionManager.js",
-            "line": 522,
+            "line": 529,
             "description": "The target Sprite that was interacted with",
             "itemtype": "property",
             "name": "target",
@@ -1859,7 +1868,7 @@
         },
         {
             "file": "src/pixi/InteractionManager.js",
-            "line": 530,
+            "line": 537,
             "description": "This will return the local coords of the specified displayObject for this InteractionData",
             "itemtype": "method",
             "name": "getLocalPosition",
@@ -2491,7 +2500,7 @@
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/DisplayObject.js:178"
+            "line": " src/pixi/DisplayObject.js:184"
         },
         {
             "message": "Missing item type",

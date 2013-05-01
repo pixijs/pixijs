@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-04-30
+ * Compiled: 2013-05-01
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -200,6 +200,12 @@ PIXI.DisplayObject = function()
 	
 	// [readonly] best not to toggle directly! use setInteractive()
 	this.interactive = false;
+	
+	/**
+	 * This is used to indicate if the displayObject should display a mouse hand cursor on rollover
+	 * @property buttonMode
+	 * @type Boolean
+	 */
 	this.buttonMode = false;
 	
 	/*
@@ -1129,6 +1135,8 @@ PIXI.InteractionManager.prototype.update = function()
 	// loop through interactive objects!
 	var length = this.interactiveItems.length;
 	
+	if(this.target)this.target.view.style.cursor = "default";	
+				
 	for (var i = 0; i < length; i++)
 	{
 		var item = this.interactiveItems[i];
@@ -1137,6 +1145,8 @@ PIXI.InteractionManager.prototype.update = function()
 		// OPTIMISATION - only calculate every time if the mousemove function exists..
 		// OK so.. does the object have any other interactive functions?
 		// hit-test the clip!
+		
+		
 		if(item.mouseover || item.mouseout || item.buttonMode)
 		{
 			// ok so there are some functions so lets hit test it..
@@ -1145,9 +1155,11 @@ PIXI.InteractionManager.prototype.update = function()
 			// loks like there was a hit!
 			if(item.__hit)
 			{
+				if(item.buttonMode)this.target.view.style.cursor = "pointer";	
+				
 				if(!item.__isOver)
 				{
-					if(item.buttonMode)this.target.view.style.cursor = "pointer";	
+					
 					if(item.mouseover)item.mouseover(this.mouse);
 					item.__isOver = true;	
 				}
@@ -1157,7 +1169,6 @@ PIXI.InteractionManager.prototype.update = function()
 				if(item.__isOver)
 				{
 					// roll out!
-					if(item.buttonMode)this.target.view.style.cursor = "default";	
 					if(item.mouseout)item.mouseout(this.mouse);
 					item.__isOver = false;	
 				}
