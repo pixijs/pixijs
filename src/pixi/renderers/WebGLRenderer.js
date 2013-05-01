@@ -18,10 +18,11 @@ PIXI._defaultFrame = new PIXI.Rectangle(0,0,1,1);
  * @default false
  * 
  */
-PIXI.WebGLRenderer = function(width, height, view, transparent)
+PIXI.WebGLRenderer = function(width, height, view, transparent, preserveDrawingBuffer)
 {
 	// do a catch.. only 1 webGL renderer..
 
+	this.preserveDrawingBuffer = preserveDrawingBuffer
 	//console.log(transparent)
 	this.transparent = !!transparent;
 	
@@ -44,7 +45,8 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
         this.gl = this.view.getContext("experimental-webgl",  {  	
     		 alpha: this.transparent,
     		 antialias:false, // SPEED UP??
-    		 premultipliedAlpha:true
+    		 premultipliedAlpha:true,
+    		 preserveDrawingBuffer:preserveDrawingBuffer
         });
     } 
     catch (e) 
@@ -227,11 +229,10 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	
 	var gl = this.gl;
 	
-	gl.clear(gl.COLOR_BUFFER_BIT)
-
-	gl.clearColor(stage.backgroundColorSplit[0], stage.backgroundColorSplit[1], stage.backgroundColorSplit[2], 0);     
-	
-	
+	if (!this.preserveDrawingBuffer) {
+        	gl.clear(gl.COLOR_BUFFER_BIT);
+        	gl.clearColor(stage.backgroundColorSplit[0], stage.backgroundColorSplit[1], stage.backgroundColorSplit[2], 0);  
+    	}
 	// set the correct blend mode!
  	gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
     gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.projectionMatrix);
