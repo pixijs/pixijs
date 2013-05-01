@@ -18,8 +18,6 @@ PIXI.Layers = function () {
 	for (var argumentIndex in arguments) {
 		this.addLayer(arguments[argumentIndex]);
 	}
-
-	this.renderable = false;
 };
 
 PIXI.Layers.constructor = PIXI.Layers;
