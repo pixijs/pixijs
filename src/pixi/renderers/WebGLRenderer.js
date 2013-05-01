@@ -187,6 +187,15 @@ PIXI.WebGLRenderer.prototype.checkVisibility = function(displayObject, globalVis
 
 
 /**
+ * Clears the webGL view
+ * @method clear
+ */
+PIXI.WebGLRenderer.prototype.clear = function(stage)
+{
+	gl.clear(gl.COLOR_BUFFER_BIT);
+	gl.clearColor(stage.backgroundColorSplit[0], stage.backgroundColorSplit[1], stage.backgroundColorSplit[2], 0);
+}
+/**
  * Renders the stage to its webGL view
  * @method render
  * @param stage {Stage} the PIXI.Stage element to be rendered
@@ -209,9 +218,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	{
 		this.removeDisplayObject(stage.__childrenRemoved[i]);
 	}
-
-
-
+	
 	// update any textures	
 	for (var i=0; i < PIXI.texturesToUpdate.length; i++) this.updateTexture(PIXI.texturesToUpdate[i]);
 	for (var i=0; i < PIXI.texturesToDestroy.length; i++) this.destroyTexture(PIXI.texturesToDestroy[i]);
