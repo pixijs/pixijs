@@ -26,7 +26,7 @@ PIXI.SpriteSheetLoader = function(url)
 	PIXI.EventTarget.call( this );
 	this.url = url;
 	this.baseUrl = url.replace(/[^\/]*$/, '');
-	this.texture;
+	this.texture = null;
 	this.frames = {};
 	this.crossorigin = false;
 };

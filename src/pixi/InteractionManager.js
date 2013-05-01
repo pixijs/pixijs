@@ -136,7 +136,7 @@ PIXI.InteractionManager.prototype.update = function()
 		
 		var len = this.interactiveItems.length;
 		
-		for (var i=0; i < this.interactiveItems.length; i++) {
+		for (var i=0; i < len; i++) {
 		  this.interactiveItems[i].interactiveChildren = true;
 		}
 		
@@ -200,8 +200,6 @@ PIXI.InteractionManager.prototype.onMouseMove = function(event)
 	this.mouse.global.y = (event.clientY - rect.top) * ( this.target.height / rect.height);
 	
 	var length = this.interactiveItems.length;
-	var global = this.mouse.global;
-	
 	
 	for (var i = 0; i < length; i++)
 	{
@@ -226,10 +224,6 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
 	// --->--->--->--->
 	//stage.__i
 	var length = this.interactiveItems.length;
-	var global = this.mouse.global;
-	
-	var index = 0;
-	var parent = this.stage;
 	
 	// while 
 	// hit test 
@@ -258,8 +252,6 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
 PIXI.InteractionManager.prototype.onMouseUp = function(event)
 {
 	event.preventDefault();
-	var global = this.mouse.global;
-	
 	
 	var length = this.interactiveItems.length;
 	var up = false;

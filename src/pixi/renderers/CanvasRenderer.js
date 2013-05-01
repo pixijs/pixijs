@@ -130,7 +130,6 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 	var transform = displayObject.worldTransform;
 	var context = this.context;
 	context.globalCompositeOperation = "source-over";
-	var blit = false;
 	
 	if(!displayObject.visible)return;
 		
@@ -165,7 +164,6 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 			}	
 			else
 			{*/
-				blit = false;
 				context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
 				context.drawImage(displayObject.texture.baseTexture.source, 
 								   frame.x,
@@ -206,7 +204,6 @@ PIXI.CanvasRenderer.prototype.renderStripFlat = function(strip)
 {
 	var context = this.context;
 	var verticies = strip.verticies;
-	var uvs = strip.uvs;
 	
 	var length = verticies.length/2;
 	this.count++;

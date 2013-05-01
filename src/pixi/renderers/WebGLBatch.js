@@ -79,8 +79,8 @@ PIXI.WebGLBatch.prototype.clean = function()
 	this.last = null;
 	this.size = 0;
 	
-	this.head;
-	this.tail;
+	this.head = null;
+	this.tail = null;
 };
 
 /*
@@ -348,17 +348,14 @@ PIXI.WebGLBatch.prototype.growBatch = function()
  */
 PIXI.WebGLBatch.prototype.refresh = function()
 {
-	var gl = this.gl;
-	
 	if (this.dynamicSize < this.size)
 	{
 		this.growBatch();
 	}
 
 	var indexRun = 0;
-	var worldTransform, width, height, aX, aY, w0, w1, h0, h1, index;
-	var a, b, c, d, tx, ty;
-	
+	var index;
+
 	var displayObject = this.head;
 
 	while(displayObject)
@@ -385,7 +382,7 @@ PIXI.WebGLBatch.prototype.refresh = function()
 		
 		displayObject.updateFrame = false;
 		
-		colorIndex = indexRun * 4;
+		var colorIndex = indexRun * 4;
 		this.colors[colorIndex] = this.colors[colorIndex + 1] = this.colors[colorIndex + 2] = this.colors[colorIndex + 3] = displayObject.worldAlpha;
 		
 		displayObject = displayObject.__next;
@@ -403,8 +400,7 @@ PIXI.WebGLBatch.prototype.refresh = function()
  */
 PIXI.WebGLBatch.prototype.update = function()
 {
-	var gl = this.gl;
-	var worldTransform, width, height, aX, aY, w0, w1, h0, h1, index, index2, index3;
+	var worldTransform, width, height, aX, aY, w0, w1, h0, h1, index;
 	
 	var a, b, c, d, tx, ty;
 	

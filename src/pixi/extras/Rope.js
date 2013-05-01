@@ -42,9 +42,6 @@ PIXI.Rope.prototype.refresh = function()
 	var colors = this.colors;
 	
 	var lastPoint = points[0];
-	var nextPoint;
-	var perp = {x:0, y:0};
-	var point = points[0];
 	
 	this.count-=0.2;
 	
