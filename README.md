@@ -41,6 +41,8 @@ last 2 examples and allowing us to share the source code :)
 
 [Tutorials and other helpful bits](<https://github.com/GoodBoyDigital/pixi.js/wiki/Resources>)
 
+[Pixi.js forum](<http://www.html5gamedevs.com/forum/15-pixijs/>)
+
 ### How to build ###
 
 PixiJS is build with Grunt. If you don't already have this, go install Node and NPM then install the Grunt Command Line.
