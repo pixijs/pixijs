@@ -90,20 +90,6 @@ module.exports = function(grunt) {
                 dest: '<%= files.buildMin %>'
             }
         },
-        distribute: {
-            examples: [
-                'examples/example 1 - Basics',
-                'examples/example 2 - SpriteSheet',
-                'examples/example 3 - MovieClip',
-                'examples/example 4 - Balls',
-                'examples/example 5 - Morph',
-                'examples/example 6 - Interactivity',
-                'examples/example 7 - Transparent Background',
-                'examples/example 8 - Dragging',
-                'examples/example 9 - Tiling Texture',
-                'examples/example 10 - Text'
-            ]
-        },
         connect: {
             qunit: {
                 options: {
@@ -141,26 +127,8 @@ module.exports = function(grunt) {
         }
     });
 
-    grunt.registerMultiTask(
-        'distribute',
-        'Copy built file to examples',
-        function(){
-            var pixi = grunt.file.read( debug );
-
-            var dests = this.data;
-
-            dests.forEach(function(filepath){
-
-                grunt.file.write(filepath + '/pixi.js', pixi);
-
-            });
-
-            grunt.log.writeln('Pixi copied to examples.');
-        }
-    )
-
-    grunt.registerTask('default', ['concat', 'uglify', 'distribute']);
-    grunt.registerTask('build', ['concat', 'uglify', 'distribute']);
+    grunt.registerTask('default', ['concat', 'uglify' ]);
+    grunt.registerTask('build', ['concat', 'uglify' ]);
     grunt.registerTask('test', ['build', 'connect:qunit', 'qunit']);
     grunt.registerTask('docs', ['yuidoc']);
 
