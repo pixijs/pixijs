@@ -10,17 +10,18 @@
  * @param text {String} The copy that you would like the text to display
  * @param fontStyle {String} the style and size of the font eg "bold 20px Arial"
  * @param fillStyle {Object} a canvas fillstyle that will be used on the text eg "red", "#00FF00" can also be null
+ * @param textAlign {String} an alignment of the multiline text ("left", "center" or "right"). Default is "left", can be null
  * @param strokeStyle {String} a canvas fillstyle that will be used on the text stroke eg "blue", "#FCFF00" can also be null
  * @param strokeThickness {Number} A number that represents the thicknes of the stroke. default is 0 (no stroke)
  */
-PIXI.Text = function(text, fontStyle, fillStyle, strokeStyle, strokeThickness)
+PIXI.Text = function(text, fontStyle, fillStyle, textAlign, strokeStyle, strokeThickness)
 {
 	this.canvas = document.createElement("canvas");
 	
 	this.context = this.canvas.getContext("2d");
 	//document.body.appendChild(this.canvas);
 	this.setText(text);
-	this.setStyle(fontStyle, fillStyle, strokeStyle, strokeThickness);
+	this.setStyle(fontStyle, fillStyle, textAlign, strokeStyle, strokeThickness);
 	
 	this.updateText();
 	
@@ -50,13 +51,15 @@ PIXI.Text.prototype.setText = function(text)
  * @constructor
  * @param fontStyle {String} the style and size of the font eg "bold 20px Arial"
  * @param fillStyle {Object} a canvas fillstyle that will be used on the text eg "red", "#00FF00" can also be null
+ * @param textAlign {String} an alignment of the multiline text ("left", "center" or "right"). Default is "left", can be null
  * @param strokeStyle {String} a canvas fillstyle that will be used on the text stroke eg "blue", "#FCFF00" can also be null
  * @param strokeThickness {Number} A number that represents the thicknes of the stroke. default is 0 (no stroke)
  */
-PIXI.Text.prototype.setStyle = function(fontStyle, fillStyle, strokeStyle, strokeThickness)
+PIXI.Text.prototype.setStyle = function(fontStyle, fillStyle, textAlign, strokeStyle, strokeThickness)
 {
 	this.fontStyle = fontStyle || "bold 20pt Arial";
 	this.fillStyle = fillStyle;
+	this.textAlign = textAlign || "left";
 	this.strokeStyle = strokeStyle;
 	this.strokeThickness = strokeThickness || 0;
 	
@@ -68,12 +71,27 @@ PIXI.Text.prototype.setStyle = function(fontStyle, fillStyle, strokeStyle, strok
  */
 PIXI.Text.prototype.updateText = function()
 {
-//	console.log(this.text);
 	this.context.font = this.fontStyle;
-		
-	this.canvas.width = this.context.measureText(this.text).width + this.strokeThickness//textDimensions.width;
-	this.canvas.height = this.determineFontHeight("font: " + this.fontStyle  + ";")+ this.strokeThickness;// textDimensions.height;
 
+	//split text into lines
+	var lines = this.text.split("\n");
+
+	//calculate text width
+	var lineWidths = [];
+	var maxLineWidth = 0;
+	for (var i = 0; i < lines.length; i++)
+	{
+		var lineWidth = this.context.measureText(lines[i]).width;
+		lineWidths[i] = lineWidth;
+		maxLineWidth = Math.max(maxLineWidth, lineWidth);
+	}
+	this.canvas.width = maxLineWidth + this.strokeThickness;
+	
+	//calculate text height
+	var lineHeight = this.determineFontHeight("font: " + this.fontStyle  + ";") + this.strokeThickness;
+	this.canvas.height = lineHeight * lines.length;
+
+	//set canvas text styles
 	this.context.fillStyle = this.fillStyle;
 	this.context.font = this.fontStyle;
 	
@@ -82,11 +100,29 @@ PIXI.Text.prototype.updateText = function()
 
 	this.context.textBaseline="top"; 
 
-    if(this.strokeStyle && this.strokeThickness)this.context.strokeText(this.text,  this.strokeThickness/2, this.strokeThickness/2);
-	if(this.fillStyle)this.context.fillText(this.text,  this.strokeThickness/2, this.strokeThickness/2);
-	
-	
-//	console.log("//")
+	//draw lines line by line
+	for (var i = 0; i < lines.length; i++)
+	{
+		var linePosition = new PIXI.Point(this.strokeThickness / 2, this.strokeThickness / 2 + i * lineHeight);
+		if(this.textAlign == "right")
+		{
+			linePosition.x += maxLineWidth - lineWidths[i];
+		}
+		else if(this.textAlign == "center")
+		{
+			linePosition.x += (maxLineWidth - lineWidths[i]) / 2;
+		}
+
+		if(this.strokeStyle && this.strokeThickness)
+		{
+			this.context.strokeText(lines[i], linePosition.x, linePosition.y);
+		}
+
+		if(this.fillStyle) 
+		{
+			this.context.fillText(lines[i], linePosition.x, linePosition.y);
+		}
+	}
 }
 
 PIXI.Text.prototype.updateTransform = function()
