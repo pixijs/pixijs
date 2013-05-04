@@ -35,7 +35,7 @@ module.exports = function(grunt) {
             '<%= dirs.src %>/textures/Texture.js',
             '<%= dirs.src %>/loaders/SpriteSheetLoader.js',
             '<%= dirs.src %>/loaders/AssetLoader.js',
-            '<%= dirs.src %>/Outro.js',
+            '<%= dirs.src %>/Outro.js'
         ], banner = [
             '/**',
             ' * @license',
