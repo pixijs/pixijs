@@ -11,10 +11,34 @@
  */
 PIXI.MovieClipManager = function () {
     PIXI.DisplayObjectContainer.call(this);
+
+    /**
+     * [read-only] The map of name to MovieClip objects.
+     * @property _animations {Object}
+     */
+    this._animations = {};
+
+    /**
+     * [read-only] The current displaying animation.
+     * @property children {MovieClip}
+     */
+    this._current = undefined;
+
 };
 
 PIXI.MovieClipManager.constructor = PIXI.MovieClipManager;
 PIXI.MovieClipManager.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
+
+/**
+ * Gets movieClip with `name`
+ * @method get
+ * @param  name {String}
+ * @return MovieClip
+ */
+PIXI.MovieClipManager.prototype.get = function (name) {
+    return this._animations[name];
+};
+
 
 /**
  * Changes movieClip to another
@@ -22,7 +46,7 @@ PIXI.MovieClipManager.prototype = Object.create(PIXI.DisplayObjectContainer.prot
  * @param  name {String}
  * @return DisplayObject
  */
-PIXI.Layers.prototype.swap = function (name) {
+PIXI.MovieClipManager.prototype.set = function (name) {
     if (this._current) {
         this._current.stop();
         this.removeChild(this._current);
@@ -38,16 +62,72 @@ PIXI.Layers.prototype.swap = function (name) {
  * @param  name {String}
  * @return DisplayObject
  */
-PIXI.Layers.prototype.play = function (name) {
+PIXI.MovieClipManager.prototype.play = function (name) {
     this._current.play();
     return this;
 };
 
 /**
+ * Stops the current MovieClip and goes to a specific frame
+ * @method gotoAndStop
+ * @param frameNumber {Number} frame index to stop at
+ */
+PIXI.MovieClipManager.prototype.gotoAndStop = function (frameNumber) {
+    this._current.gotoAndStop(frameNumber);
+    return this;
+};
+
+/**
+ * Goes to a specific frame and begins playing the current MovieClip
+ * @method gotoAndPlay
+ * @param frameNumber {Number} frame index to start at
+ */
+PIXI.MovieClipManager.prototype.gotoAndPlay = function(frameNumber)
+{
+    this._current.gotoAndPlay(frameNumber);
+    return this;
+};
+
+/**
+ * Sets animationSpeed property on current MovieClip
+ * @method animationSpeed
+ * @param speed {Number}
+ */
+PIXI.MovieClipManager.prototype.animationSpeed = function(speed)
+{
+    this._current.animationSpeed = speed;
+    return this;
+};
+
+
+/**
+ * Sets loop property on current MovieClip
+ * @method loop
+ * @param isLooped {Boolean}
+ */
+PIXI.MovieClipManager.prototype.loop = function(isLooped)
+{
+    this._current.loop = isLooped;
+    return this;
+};
+
+/**
+ * Sets onComplete callback on current MovieClip
+ * @method onComplete
+ * @param frameNumber {Number} frame index to start at
+ */
+PIXI.MovieClipManager.prototype.onComplete = function(callback)
+{
+    this._current.onComplete = callback;
+    return this;
+};
+
+
+/**
  * Stops current MovieClip
  * @method stop
  */
-PIXI.Layers.prototype.stop = function () {
+PIXI.MovieClipManager.prototype.stop = function () {
     this._current.stop();
     return this;
 };
@@ -59,7 +139,7 @@ PIXI.Layers.prototype.stop = function () {
  * @param  movieClip {MovieClip}
  * @return DisplayObject
  */
-PIXI.Layers.prototype.add = function (name, movieClip) {
+PIXI.MovieClipManager.prototype.add = function (name, movieClip) {
     this._animations[name] = movieClip;
     return this;
 };
@@ -70,6 +150,10 @@ PIXI.Layers.prototype.add = function (name, movieClip) {
  * @method remove
  * @param name {String}
  */
-PIXI.Layers.prototype.remove = function (name) {
+PIXI.MovieClipManager.prototype.remove = function (name) {
+    if (this._animations[name] === this._current) {
+        this.removeChild(this._current);
+        this._current = undefined;
+    }
     delete this._animations[name];
 };
