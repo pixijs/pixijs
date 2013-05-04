@@ -4,6 +4,7 @@
 
 PIXI.BaseTextureCache = {};
 PIXI.texturesToUpdate = [];
+PIXI.texturesToDestroy = [];
 
 /**
  * A texture stores the information that represents an image. All textures have a base texture
@@ -80,13 +81,47 @@ PIXI.BaseTexture = function(source)
 		PIXI.texturesToUpdate.push(this);
 	}
 	
-	
+	this._powerOf2 = false;
 	
 }
 
 PIXI.BaseTexture.constructor = PIXI.BaseTexture;
 
-PIXI.BaseTexture.prototype.fromImage = function(imageUrl)
+PIXI.BaseTexture.prototype.destroy = function()
 {
+	
+	if(this.source instanceof Image)
+	{
+		this.source.src = null;
+	}
+	this.source = null;
+	PIXI.texturesToDestroy.push(this);
+}
 
+
+/**
+ * 
+ * Helper function that returns a base texture based on an image url
+ * If the image is not in the base texture cache it will be  created and loaded
+ * @static
+ * @method fromImage
+ * @param imageUrl {String} The image url of the texture
+ * @return BaseTexture
+ */
+PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin)
+{
+	var baseTexture = PIXI.BaseTextureCache[imageUrl];
+	if(!baseTexture)
+	{
+		var image = new Image();
+		if (crossorigin)
+		{
+			image.crossOrigin = '';
+		}
+		image.src = imageUrl;
+		baseTexture = new PIXI.BaseTexture(image);
+		PIXI.BaseTextureCache[imageUrl] = baseTexture;
+	}
+
+	return baseTexture;
 }

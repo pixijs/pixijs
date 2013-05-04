@@ -67,7 +67,11 @@
             
                 <li><a href="..&#x2F;classes/Stage.html">Stage</a></li>
             
+                <li><a href="..&#x2F;classes/Text.html">Text</a></li>
+            
                 <li><a href="..&#x2F;classes/Texture.html">Texture</a></li>
+            
+                <li><a href="..&#x2F;classes/TilingSprite.html">TilingSprite</a></li>
             
                 <li><a href="..&#x2F;classes/WebGLBatch.html">WebGLBatch</a></li>
             
@@ -122,7 +126,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="..&#x2F;files&#x2F;src_pixi_InteractionManager.js.html#l330"><code>src&#x2F;pixi&#x2F;InteractionManager.js:330</code></a>
+            Defined in: <a href="..&#x2F;files&#x2F;src_pixi_InteractionManager.js.html#l513"><code>src&#x2F;pixi&#x2F;InteractionManager.js:513</code></a>
         </div>
     
 
@@ -176,7 +180,7 @@
             
         
         
-        <a href="..&#x2F;files&#x2F;src_pixi_InteractionManager.js.html#l330"><code>src&#x2F;pixi&#x2F;InteractionManager.js:330</code></a>
+        <a href="..&#x2F;files&#x2F;src_pixi_InteractionManager.js.html#l513"><code>src&#x2F;pixi&#x2F;InteractionManager.js:513</code></a>
         
         </p>
 
@@ -205,6 +209,8 @@
         <li class="api-class-tab index"><a href="#index">Index</a></li>
 
         
+            <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
+        
         
             <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
         
@@ -217,6 +223,21 @@
             <h2 class="off-left">Item Index</h2>
 
             
+                <div class="index-section methods">
+                    <h3>Methods</h3>
+
+                    <ul class="index-list methods">
+                        
+                            <li class="index-item method">
+                                <a href="#method_getLocalPosition">getLocalPosition</a>
+
+                                
+                                
+                            </li>
+                        
+                    </ul>
+                </div>
+            
 
             
                 <div class="index-section properties">
@@ -226,13 +247,6 @@
                         
                             <li class="index-item property">
                                 <a href="#property_global">global</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_local">local</a>
 
                                 
                                 
@@ -254,6 +268,116 @@
             
         </div>
 
+        
+            <div id="methods" class="api-class-tabpanel">
+                <h2 class="off-left">Methods</h2>
+
+                
+                    <div id="method_getLocalPosition" class="method item">
+    <h3 class="name"><code>getLocalPosition</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>displayObject</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;src_pixi_InteractionManager.js.html#l537"><code>src&#x2F;pixi&#x2F;InteractionManager.js:537</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This will return the local coords of the specified displayObject for this InteractionData</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">displayObject</code>
+                        <span class="type"><a href="../classes/DisplayObject.html" class="crosslink">DisplayObject</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The DisplayObject that you would like the local coords off</p>
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>:
+                    
+                    A point containing the coords of the InteractionData position relative to the DisplayObject
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+            </div>
         
 
         
@@ -284,7 +408,7 @@
             
         
         
-        <a href="..&#x2F;files&#x2F;src_pixi_InteractionManager.js.html#l336"><code>src&#x2F;pixi&#x2F;InteractionManager.js:336</code></a>
+        <a href="..&#x2F;files&#x2F;src_pixi_InteractionManager.js.html#l519"><code>src&#x2F;pixi&#x2F;InteractionManager.js:519</code></a>
         
         </p>
 
@@ -295,50 +419,6 @@
 
     <div class="description">
         <p>This point stores the global coords of where the touch/mouse event happened</p>
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_local" class="property item">
-    <h3 class="name"><code>local</code></h3>
-    <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="..&#x2F;files&#x2F;src_pixi_InteractionManager.js.html#l343"><code>src&#x2F;pixi&#x2F;InteractionManager.js:343</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>This point stores the local coords of where the touch/mouse event happened</p>
     </div>
 
     
@@ -372,7 +452,7 @@
             
         
         
-        <a href="..&#x2F;files&#x2F;src_pixi_InteractionManager.js.html#l350"><code>src&#x2F;pixi&#x2F;InteractionManager.js:350</code></a>
+        <a href="..&#x2F;files&#x2F;src_pixi_InteractionManager.js.html#l529"><code>src&#x2F;pixi&#x2F;InteractionManager.js:529</code></a>
         
         </p>
 

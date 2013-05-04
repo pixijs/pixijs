@@ -59,6 +59,14 @@ PIXI.DisplayObject = function()
 	 */	
 	this.stage = null;
 	
+	/**
+	 * This is the defined area that will pick up mouse / touch events. It is null by default.
+	 * Setting it is a neat way of optimising the hitTest function that the interactionManager will use (as it will not need to hit test all the children)
+	 * @property hitArea
+	 * @type Rectangle
+	 */	
+	this.hitArea = null;
+	
 	this.worldAlpha = 1;
 	this.color = [];
 	
@@ -72,12 +80,106 @@ PIXI.DisplayObject = function()
 	
 	this.renderable = false;
 	
-	// NOT YET :/ This only applies to children within the container..
-	this.interactive = true;
+	// [readonly] best not to toggle directly! use setInteractive()
+	this.interactive = false;
+	
+	/**
+	 * This is used to indicate if the displayObject should display a mouse hand cursor on rollover
+	 * @property buttonMode
+	 * @type Boolean
+	 */
+	this.buttonMode = false;
+	
+	/*
+	 * MOUSE Callbacks
+	 */
+	
+	/**
+	 * A callback that is used when the users clicks on the displayObject with their mouse
+	 * @method click
+	 * @param interactionData {InteractionData}
+	 */
+	
+	/**
+	 * A callback that is used when the user clicks the mouse down over the sprite
+	 * @method mousedown
+	 * @param interactionData {InteractionData}
+	 */
+	 
+	/**
+	 * A callback that is used when the user releases the mouse that was over the displayObject
+	 * for this callback to be fired the mouse must have been pressed down over the displayObject
+	 * @method mouseup
+	 * @param interactionData {InteractionData}
+	 */
+	
+	/**
+	 * A callback that is used when the user releases the mouse that was over the displayObject but is no longer over the displayObject
+	 * for this callback to be fired, The touch must have started over the displayObject
+	 * @method mouseupoutside
+	 * @param interactionData {InteractionData}
+	 */
+	
+	/**
+	 * A callback that is used when the users mouse rolls over the displayObject
+	 * @method mouseover
+	 * @param interactionData {InteractionData}
+	 */
+	
+	/**
+	 * A callback that is used when the users mouse leaves the displayObject
+	 * @method mouseout
+	 * @param interactionData {InteractionData}
+	 */
+	
+	
+	/*
+	 * TOUCH Callbacks
+	 */
+	
+	/**
+	 * A callback that is used when the users taps on the sprite with their finger
+	 * basically a touch version of click
+	 * @method tap
+	 * @param interactionData {InteractionData}
+	 */
+	
+	/**
+	 * A callback that is used when the user touch's over the displayObject
+	 * @method touchstart
+	 * @param interactionData {InteractionData}
+	 */
+	 
+	/**
+	 * A callback that is used when the user releases a touch over the displayObject
+	 * @method touchend
+	 * @param interactionData {InteractionData}
+	 */
+	
+	/**
+	 * A callback that is used when the user releases the touch that was over the displayObject
+	 * for this callback to be fired, The touch must have started over the sprite
+	 * @method touchendoutside
+	 * @param interactionData {InteractionData}
+	 */
 }
 
 // constructor
 PIXI.DisplayObject.constructor = PIXI.DisplayObject;
+
+/**
+ * Indicates if the sprite will have touch and mouse interactivity. It is false by default
+ * @method setInteractive
+ * @param interactive {Boolean}
+ */
+PIXI.DisplayObject.prototype.setInteractive = function(interactive)
+{
+	this.interactive = interactive;
+	// TODO more to be done here..
+	// need to sort out a re-crawl!
+	if(this.stage)this.stage.dirty = true;
+}
+
 
 /**
  * @private

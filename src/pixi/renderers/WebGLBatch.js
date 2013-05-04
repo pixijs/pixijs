@@ -414,8 +414,8 @@ PIXI.WebGLBatch.prototype.update = function()
 	
 	while(displayObject)
 	{
-		width = displayObject.width;
-		height = displayObject.height;
+		width = displayObject.texture.frame.width;
+		height = displayObject.texture.frame.height;
 		
 		aX = displayObject.anchor.x - displayObject.texture.trim.x
 		aY = displayObject.anchor.y - displayObject.texture.trim.y
@@ -448,7 +448,7 @@ PIXI.WebGLBatch.prototype.update = function()
 		this.verticies[index + 6] =  a * w1 + c * h0 + tx; 
 		this.verticies[index + 7] =  d * h0 + b * w1 + ty; 
 		
-		if(displayObject.updateFrame)
+		if(displayObject.updateFrame || displayObject.texture.updateFrame)
 		{
 			this.dirtyUVS = true;
 			

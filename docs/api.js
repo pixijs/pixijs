@@ -14,7 +14,9 @@ YUI.add("yuidoc-meta", function(Y) {
         "Sprite",
         "SpriteSheetLoader",
         "Stage",
+        "Text",
         "Texture",
+        "TilingSprite",
         "WebGLBatch",
         "WebGLRenderer"
     ],
