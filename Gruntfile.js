@@ -9,6 +9,7 @@ module.exports = function(grunt) {
     var root = 'src/pixi/',
         debug = 'bin/pixi.dev.js',
         srcFiles = [
+            '<%= dirs.src %>/Intro.js',
             '<%= dirs.src %>/Pixi.js',
             '<%= dirs.src %>/Point.js',
             '<%= dirs.src %>/Rectangle.js',
@@ -33,7 +34,8 @@ module.exports = function(grunt) {
             '<%= dirs.src %>/textures/BaseTexture.js',
             '<%= dirs.src %>/textures/Texture.js',
             '<%= dirs.src %>/loaders/SpriteSheetLoader.js',
-            '<%= dirs.src %>/loaders/AssetLoader.js'
+            '<%= dirs.src %>/loaders/AssetLoader.js',
+            '<%= dirs.src %>/Outro.js',
         ], banner = [
             '/**',
             ' * @license',
