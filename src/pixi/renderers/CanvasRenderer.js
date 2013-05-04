@@ -77,6 +77,7 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 	
 	// update textures if need be
 	PIXI.texturesToUpdate = [];
+	PIXI.texturesToDestroy = [];
 	
 	this.context.setTransform(1,0,0,1,0,0); 
 	stage.updateTransform();
@@ -99,6 +100,12 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 			stage._interactiveEventsAdded = true;
 			stage.interactionManager.setTarget(this);
 		}
+	}
+	
+	// remove frame updates..
+	if(PIXI.Texture.frameUpdates.length > 0)
+	{
+		PIXI.Texture.frameUpdates = [];
 	}
 }
 
@@ -168,8 +175,8 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 								   frame.height,
 								   (displayObject.anchor.x - displayObject.texture.trim.x) * -frame.width, 
 								   (displayObject.anchor.y - displayObject.texture.trim.y) * -frame.height,
-								   displayObject.width,
-								   displayObject.height);
+								   frame.width,
+								   frame.height);
 			//}
 		}					   
    	}
@@ -178,12 +185,19 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 		context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
 		this.renderStrip(displayObject);
 	}
+	else if(displayObject instanceof PIXI.TilingSprite)
+	{
+		context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
+		this.renderTilingSprite(displayObject);
+	}
 	
 	// render!
 	for (var i=0; i < displayObject.children.length; i++) 
 	{
 		this.renderDisplayObject(displayObject.children[i]);
 	}
+	
+	
 }
 
 /**
@@ -224,6 +238,35 @@ PIXI.CanvasRenderer.prototype.renderStripFlat = function(strip)
 /**
  * @private
  */
+PIXI.CanvasRenderer.prototype.renderTilingSprite = function(sprite)
+{
+	var context = this.context;
+	
+ 	if(!sprite.__tilePattern) sprite.__tilePattern = context.createPattern(sprite.texture.baseTexture.source, "repeat");
+ 	
+	context.beginPath();
+	
+	var tilePosition = sprite.tilePosition;
+	var tileScale = sprite.tileScale;
+	
+    // offset
+    context.scale(tileScale.x,tileScale.y);
+    context.translate(tilePosition.x, tilePosition.y);
+ 	
+	context.fillStyle = sprite.__tilePattern;
+	context.fillRect(-tilePosition.x,-tilePosition.y,sprite.width / tileScale.x, sprite.height / tileScale.y);
+	
+	context.scale(1/tileScale.x, 1/tileScale.y);
+    context.translate(-tilePosition.x, -tilePosition.y);
+    
+    context.closePath();
+}
+
+
+
+/**
+ * @private
+ */
 PIXI.CanvasRenderer.prototype.renderStrip = function(strip)
 {
 	var context = this.context;
@@ -243,8 +286,8 @@ PIXI.CanvasRenderer.prototype.renderStrip = function(strip)
 		 var x0 = verticies[index],   x1 = verticies[index+2], x2 = verticies[index+4];
  		 var y0 = verticies[index+1], y1 = verticies[index+3], y2 = verticies[index+5];
  		 
-  		 var u0 = uvs[index] * strip.texture.width,   u1 = uvs[index+2]* strip.texture.width, u2 = uvs[index+4]* strip.texture.width;
-   		 var v0 = uvs[index+1]* strip.texture.height, v1 = uvs[index+3]* strip.texture.height, v2 = uvs[index+5]* strip.texture.height;
+  		 var u0 = uvs[index] * strip.texture.width,   u1 = uvs[index+2] * strip.texture.width, u2 = uvs[index+4]* strip.texture.width;
+   		 var v0 = uvs[index+1]* strip.texture.height, v1 = uvs[index+3] * strip.texture.height, v2 = uvs[index+5]* strip.texture.height;
 
 
 		context.save();

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>src&#x2F;pixi&#x2F;Text.js - Pixi.JS</title>
+    <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
+    <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="..&#x2F;assets/favicon.png">
+    <script src="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;combo?3.8.0&#x2F;build&#x2F;yui&#x2F;yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="http:&#x2F;&#x2F;www.goodboydigital.com&#x2F;pixijs&#x2F;logo_small.png" title="Pixi.JS"></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 1.0.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="..&#x2F;classes/AssetLoader.html">AssetLoader</a></li>
+            
+                <li><a href="..&#x2F;classes/BaseTexture.html">BaseTexture</a></li>
+            
+                <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
+            
+                <li><a href="..&#x2F;classes/DisplayObject.html">DisplayObject</a></li>
+            
+                <li><a href="..&#x2F;classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
+            
+                <li><a href="..&#x2F;classes/InteractionData.html">InteractionData</a></li>
+            
+                <li><a href="..&#x2F;classes/InteractionManager.html">InteractionManager</a></li>
+            
+                <li><a href="..&#x2F;classes/MovieClip.html">MovieClip</a></li>
+            
+                <li><a href="..&#x2F;classes/Point.html">Point</a></li>
+            
+                <li><a href="..&#x2F;classes/Rectangle.html">Rectangle</a></li>
+            
+                <li><a href="..&#x2F;classes/Sprite.html">Sprite</a></li>
+            
+                <li><a href="..&#x2F;classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
+            
+                <li><a href="..&#x2F;classes/Stage.html">Stage</a></li>
+            
+                <li><a href="..&#x2F;classes/Text.html">Text</a></li>
+            
+                <li><a href="..&#x2F;classes/Texture.html">Texture</a></li>
+            
+                <li><a href="..&#x2F;classes/TilingSprite.html">TilingSprite</a></li>
+            
+                <li><a href="..&#x2F;classes/WebGLBatch.html">WebGLBatch</a></li>
+            
+                <li><a href="..&#x2F;classes/WebGLRenderer.html">WebGLRenderer</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="..&#x2F;modules/PIXI.html">PIXI</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: src&#x2F;pixi&#x2F;Text.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+&#x2F;**
+ * @author Mat Groves http:&#x2F;&#x2F;matgroves.com&#x2F; @Doormat23
+ *&#x2F;
+
+&#x2F;**
+ * A Text Object will create a line of text
+ * @class Text
+ * @extends Sprite
+ * @constructor
+ * @param text {String} The copy that you would like the text to display
+ * @param fontStyle {String} the style and size of the font eg &quot;bold 20px Arial&quot;
+ * @param fillStyle {Object} a canvas fillstyle that will be used on the text eg &quot;red&quot;, &quot;#00FF00&quot; can also be null
+ * @param strokeStyle {String} a canvas fillstyle that will be used on the text stroke eg &quot;blue&quot;, &quot;#FCFF00&quot; can also be null
+ * @param strokeThickness {Number} A number that represents the thicknes of the stroke. default is 0 (no stroke)
+ *&#x2F;
+PIXI.Text = function(text, fontStyle, fillStyle, strokeStyle, strokeThickness)
+{
+	this.canvas = document.createElement(&quot;canvas&quot;);
+	
+	this.context = this.canvas.getContext(&quot;2d&quot;);
+	&#x2F;&#x2F;document.body.appendChild(this.canvas);
+	this.setText(text);
+	this.setStyle(fontStyle, fillStyle, strokeStyle, strokeThickness);
+	
+	this.updateText();
+	
+	PIXI.Sprite.call( this, PIXI.Texture.fromCanvas(this.canvas));
+	
+	&#x2F;&#x2F; need to store a canvas that can
+}
+
+&#x2F;&#x2F; constructor
+PIXI.Text.constructor = PIXI.Text;
+PIXI.Text.prototype = Object.create( PIXI.Sprite.prototype );
+
+&#x2F;**
+ * Set the copy for the text object
+ * @methos setText
+ * @param text {String} The copy that you would like the text to display
+ *&#x2F;
+PIXI.Text.prototype.setText = function(text)
+{
+	this.text = text || &quot; &quot;;
+	this.dirty = true;
+}
+
+&#x2F;**
+ * Set the style of the text
+ * @method setStyle
+ * @constructor
+ * @param fontStyle {String} the style and size of the font eg &quot;bold 20px Arial&quot;
+ * @param fillStyle {Object} a canvas fillstyle that will be used on the text eg &quot;red&quot;, &quot;#00FF00&quot; can also be null
+ * @param strokeStyle {String} a canvas fillstyle that will be used on the text stroke eg &quot;blue&quot;, &quot;#FCFF00&quot; can also be null
+ * @param strokeThickness {Number} A number that represents the thicknes of the stroke. default is 0 (no stroke)
+ *&#x2F;
+PIXI.Text.prototype.setStyle = function(fontStyle, fillStyle, strokeStyle, strokeThickness)
+{
+	this.fontStyle = fontStyle || &quot;bold 20pt Arial&quot;;
+	this.fillStyle = fillStyle;
+	this.strokeStyle = strokeStyle;
+	this.strokeThickness = strokeThickness || 0;
+	
+	this.dirty = true;
+}
+
+&#x2F;**
+ * @private
+ *&#x2F;
+PIXI.Text.prototype.updateText = function()
+{
+&#x2F;&#x2F;	console.log(this.text);
+	this.context.font = this.fontStyle;
+		
+	this.canvas.width = this.context.measureText(this.text).width + this.strokeThickness&#x2F;&#x2F;textDimensions.width;
+	this.canvas.height = this.determineFontHeight(&quot;font: &quot; + this.fontStyle  + &quot;;&quot;)+ this.strokeThickness;&#x2F;&#x2F; textDimensions.height;
+
+	this.context.fillStyle = this.fillStyle;
+	this.context.font = this.fontStyle;
+	
+    this.context.strokeStyle = this.strokeStyle;
+	this.context.lineWidth = this.strokeThickness;
+
+	this.context.textBaseline=&quot;top&quot;; 
+
+    if(this.strokeStyle &amp;&amp; this.strokeThickness)this.context.strokeText(this.text,  this.strokeThickness&#x2F;2, this.strokeThickness&#x2F;2);
+	if(this.fillStyle)this.context.fillText(this.text,  this.strokeThickness&#x2F;2, this.strokeThickness&#x2F;2);
+	
+	
+&#x2F;&#x2F;	console.log(&quot;&#x2F;&#x2F;&quot;)
+}
+
+PIXI.Text.prototype.updateTransform = function()
+{
+	if(this.dirty)
+	{
+		this.updateText();	
+		
+		&#x2F;&#x2F; update the texture..
+		this.texture.baseTexture.width = this.canvas.width;
+		this.texture.baseTexture.height = this.canvas.height;
+		this.texture.frame.width = this.canvas.width;
+		this.texture.frame.height = this.canvas.height;
+		
+		PIXI.texturesToUpdate.push(this.texture.baseTexture);
+		this.dirty = false;
+	}
+	
+	PIXI.Sprite.prototype.updateTransform.call( this );
+}
+
+&#x2F;*
+ * http:&#x2F;&#x2F;stackoverflow.com&#x2F;users&#x2F;34441&#x2F;ellisbben
+ * great solution to the problem!
+ *&#x2F;
+PIXI.Text.prototype.determineFontHeight = function(fontStyle) 
+{
+	&#x2F;&#x2F; build a little refference dictionary so if the font style has been used return a
+	&#x2F;&#x2F; cached version...
+	var result = PIXI.Text.heightCache[fontStyle]
+	
+	if(!result)
+	{
+		var body = document.getElementsByTagName(&quot;body&quot;)[0];
+		var dummy = document.createElement(&quot;div&quot;);
+		var dummyText = document.createTextNode(&quot;M&quot;);
+		dummy.appendChild(dummyText);
+		dummy.setAttribute(&quot;style&quot;, fontStyle);
+		body.appendChild(dummy);
+		
+		result = dummy.offsetHeight;
+		PIXI.Text.heightCache[fontStyle] = result
+		
+		body.removeChild(dummy);
+	}
+	
+	return result;
+};
+
+PIXI.Text.prototype.destroy = function(destroyTexture)
+{
+	if(destroyTexture)
+	{
+		this.texture.destroy();
+	}
+		
+}
+
+PIXI.Text.heightCache = {};
+
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="..&#x2F;assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="..&#x2F;assets/js/yui-prettify.js"></script>
+<script src="..&#x2F;assets/../api.js"></script>
+<script src="..&#x2F;assets/js/api-filter.js"></script>
+<script src="..&#x2F;assets/js/api-list.js"></script>
+<script src="..&#x2F;assets/js/api-search.js"></script>
+<script src="..&#x2F;assets/js/apidocs.js"></script>
+</body>
+</html>

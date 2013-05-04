@@ -18,7 +18,9 @@ PIXI.Stage = function(backgroundColor, interactive)
 	this.__childrenAdded = [];
 	this.__childrenRemoved = [];
 	this.childIndex = 0;
-	this.stage=  this;
+	this.stage= this;
+	
+	this.stage.hitArea = new PIXI.Rectangle(0,0,100000, 100000);
 	
 	// interaction!
 	this.interactive = !!interactive;
@@ -48,12 +50,11 @@ PIXI.Stage.prototype.updateTransform = function()
 	if(this.dirty)
 	{
 		this.dirty = false;
-		
 		// update interactive!
 		this.interactionManager.dirty = true;
-		
-		
 	}
+
+	if(this.interactive)this.interactionManager.update();
 }
 
 /**
@@ -65,6 +66,16 @@ PIXI.Stage.prototype.setBackgroundColor = function(backgroundColor)
 	this.backgroundColor = backgroundColor || 0x000000;
 	this.backgroundColorSplit = HEXtoRGB(this.backgroundColor);
 	this.backgroundColorString =  "#" + this.backgroundColor.toString(16);
+}
+
+/**
+ * This will return the point containing global coords of the mouse.
+ * @method getMousePosition
+ * @return {Point} The point containing the coords of the global InteractionData position.
+ */
+PIXI.Stage.prototype.getMousePosition = function()
+{
+	return this.interactionManager.mouse.global;
 }
 
 PIXI.Stage.prototype.__addChild = function(child)

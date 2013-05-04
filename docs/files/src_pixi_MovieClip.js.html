@@ -67,7 +67,11 @@
             
                 <li><a href="..&#x2F;classes/Stage.html">Stage</a></li>
             
+                <li><a href="..&#x2F;classes/Text.html">Text</a></li>
+            
                 <li><a href="..&#x2F;classes/Texture.html">Texture</a></li>
+            
+                <li><a href="..&#x2F;classes/TilingSprite.html">TilingSprite</a></li>
             
                 <li><a href="..&#x2F;classes/WebGLBatch.html">WebGLBatch</a></li>
             
@@ -153,6 +157,20 @@ PIXI.MovieClip = function(textures)
 	 * @type Number
 	 *&#x2F;
 	this.animationSpeed = 1;
+
+	&#x2F;**
+	 * Whether or not the movie clip repeats after playing.
+	 * @property loop
+	 * @type Boolean
+	 *&#x2F;
+	this.loop = true;
+
+	&#x2F;**
+	 * Function to call when a MovieClip finishes playing
+	 * @property onComplete
+	 * @type Function
+	 *&#x2F;
+	this.onComplete = null;
 	
 	&#x2F;**
 	 * [read only] indicates if the MovieClip is currently playing
@@ -216,7 +234,18 @@ PIXI.MovieClip.prototype.updateTransform = function()
 	
 	this.currentFrame += this.animationSpeed;
 	var round = (this.currentFrame + 0.5) | 0;
-	this.setTexture(this.textures[round % this.textures.length]);
+	if(this.loop || round &lt; this.textures.length)
+	{
+		this.setTexture(this.textures[round % this.textures.length]);
+	}
+	else if(round &gt;= this.textures.length)
+	{
+		this.gotoAndStop(this.textures.length - 1);
+		if(this.onComplete)
+		{
+			this.onComplete();
+		}
+	}
 }
     </pre>
 </div>

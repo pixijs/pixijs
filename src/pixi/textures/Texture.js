@@ -24,6 +24,9 @@ PIXI.Texture = function(baseTexture, frame)
 	}
 	
 	this.trim = new PIXI.Point();
+
+	if(baseTexture instanceof PIXI.Texture)
+		baseTexture = baseTexture.baseTexture;
 	
 	/**
 	 * The base texture of this texture
@@ -72,6 +75,11 @@ PIXI.Texture.prototype.onBaseTextureLoaded = function(event)
 	this.scope.dispatchEvent( { type: 'update', content: this } );
 }
 
+PIXI.Texture.prototype.destroy = function(destroyBase)
+{
+	if(destroyBase)this.baseTexture.destroy();
+}
+
 /**
  * Specifies the rectangle region of the baseTexture
  * @method setFrame
@@ -87,7 +95,11 @@ PIXI.Texture.prototype.setFrame = function(frame)
 	{
 		throw new Error("Texture Error: frame does not fit inside the base Texture dimensions " + this);
 	}
-	//this.updateFrame = true;
+	
+	this.updateFrame = true;
+	
+	PIXI.Texture.frameUpdates.push(this);
+	//this.dispatchEvent( { type: 'update', content: this } );
 }
 
 /**
@@ -105,24 +117,8 @@ PIXI.Texture.fromImage = function(imageUrl, crossorigin)
 	
 	if(!texture)
 	{
-		var baseTexture = PIXI.BaseTextureCache[imageUrl];
-		if(!baseTexture) 
-		{
-			var image = new Image();//new Image();
-			if (crossorigin)
-			{
-				image.crossOrigin = '';
-			}
-			image.src = imageUrl;
-			baseTexture = new PIXI.BaseTexture(image);
-			PIXI.BaseTextureCache[imageUrl] = baseTexture;
-		}
-		texture = new PIXI.Texture(baseTexture);
-		
-		
+		texture = new PIXI.Texture(PIXI.BaseTexture.fromImage(imageUrl, crossorigin));
 		PIXI.TextureCache[imageUrl] = texture;
-		
-		
 	}
 	
 	return texture;
@@ -184,4 +180,7 @@ PIXI.Texture.removeTextureFromCache = function(id)
 	PIXI.TextureCache[id] = null;
 	return texture;
 }
+
+// this is more for webGL.. it contains updated frames..
+PIXI.Texture.frameUpdates = [];
 
