@@ -24,6 +24,11 @@ PIXI.MovieClipManager = function () {
      */
     this._current = undefined;
 
+    for (var argumentIndex in arguments) {
+        var arg = arguments[argumentIndex];
+        this.addLayer(arg.name, arg.clip);
+    }
+
 };
 
 PIXI.MovieClipManager.constructor = PIXI.MovieClipManager;
