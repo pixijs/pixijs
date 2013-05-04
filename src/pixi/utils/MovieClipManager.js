@@ -42,7 +42,7 @@ PIXI.MovieClipManager.prototype.get = function (name) {
 
 /**
  * Changes movieClip to another
- * @method swap
+ * @method set
  * @param  name {String}
  * @return DisplayObject
  */
@@ -57,13 +57,18 @@ PIXI.MovieClipManager.prototype.set = function (name) {
 };
 
 /**
- * Plays movieClip with name `name`
+ * Plays movieClip
  * @method play
- * @param  name {String}
+ * @param  name {String} (set as undefined to play current MovieClip)
  * @return DisplayObject
  */
 PIXI.MovieClipManager.prototype.play = function (name) {
-    this._current.play();
+    if (name) {
+        this.set(name);
+    }
+    if (this._current) {
+        this._current.play();
+    }
     return this;
 };
 
@@ -128,7 +133,9 @@ PIXI.MovieClipManager.prototype.onComplete = function(callback)
  * @method stop
  */
 PIXI.MovieClipManager.prototype.stop = function () {
-    this._current.stop();
+    if (this._current) {
+        this._current.stop();
+    }
     return this;
 };
 
