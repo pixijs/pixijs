@@ -57,7 +57,9 @@ PIXI.MovieClipManager.prototype.set = function (name) {
         this.removeChild(this._current);
     }
     this._current = this._animations[name];
-    this.addChild(this._current);
+    if (this._current) {
+        this.addChild(this._current);
+    }
     return this;
 };
 
