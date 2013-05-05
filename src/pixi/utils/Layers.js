@@ -16,7 +16,15 @@ PIXI.Layers = function () {
 	this.blockedNames = Object.keys(this);
 
 	for (var argumentIndex in arguments) {
-		this.addLayer(arguments[argumentIndex]);
+		var arg = arguments[argumentIndex];
+		if (arg instanceof String) {
+			this.addLayer(arg);
+		} else if (arg instanceof Object) {
+			for (var layersGroupName in arg) {
+				this[layersGroupName] = arg[layersGroupName];
+				this.addChild(arg[layersGroupName]);
+			}
+		}
 	}
 };
 
