@@ -12,8 +12,8 @@
  */
 PIXI.SimpleGrid = function (widthPower, heightPower) {
 
-	this._width = widthPower;
-	this._height = heightPower;
+	this._width = widthPower || 10;
+	this._height = heightPower || 10;
 
 	this.cells = new PIXI.Layers();
 };
@@ -54,8 +54,9 @@ PIXI.SimpleGrid.prototype.getSurroundCells = function (displayObject) {
 	this.cells[(coords.x - 1) + "_" + (coords.y - 1)],
 	this.cells[(coords.x) + "_" + (coords.y - 1)],
 	this.cells[(coords.x + 1) + "_" + (coords.y - 1)],
-	// MIDDLE ROW (without cell containing displayObject)
+	// MIDDLE ROW
 	this.cells[(coords.x - 1) + "_" + (coords.y)],
+	this.cells[(coords.x) + "_" + (coords.y)],
 	this.cells[(coords.x + 1) + "_" + (coords.y)],
 	// BOTTOM ROW
 	this.cells[(coords.x - 1) + "_" + (coords.y - 1)],
