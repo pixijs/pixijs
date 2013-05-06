@@ -23,6 +23,16 @@ PIXI.AssetLoader = function(assetURLs)
 	this.assetURLs = assetURLs;
 
 	this.crossorigin = false;
+
+    this.loadersByType = {
+        "jpg":  PIXI.ImageLoader,
+        "jpeg": PIXI.ImageLoader,
+        "png":  PIXI.ImageLoader,
+        "gif":  PIXI.ImageLoader,
+        "json": PIXI.SpriteSheetLoader,
+        "xml":  PIXI.BitmapFontLoader,
+        "fnt":  PIXI.BitmapFontLoader
+    };
 };
 
 /**
@@ -52,7 +62,9 @@ PIXI.AssetLoader.prototype.load = function()
 		var fileName = this.assetURLs[i];
 		var fileType = fileName.split(".").pop().toLowerCase();
 
-        var loaderClass = this.getLoaderByFileType(fileType);
+        var loaderClass = this.loadersByType[fileType];
+        if(!loaderClass)
+            throw new Error(fileType + " is an unsupported file type");
 
         var loader = new loaderClass(fileName, this.crossorigin);
 
@@ -62,32 +74,6 @@ PIXI.AssetLoader.prototype.load = function()
         });
         loader.load();
 	}
-};
-
-/**
- * Factory method for getting loader class based on extension
- * @private
- * @param {String} fileType An extension of the file based on which the loader class will be returned
- * @return {Class} The loader class
- */
-PIXI.AssetLoader.prototype.getLoaderByFileType = function(fileType)
-{
-    switch (fileType)
-    {
-        case "jpeg":
-        case "jpg":
-        case "png":
-        case "gif":
-            return PIXI.ImageLoader;
-
-        case "json":
-            return PIXI.SpriteSheetLoader;
-
-        case "xml":
-        case "fnt":
-            return PIXI.XMLLoader;
-    }
-    throw new Error(fileType + " is an unsupported file type " + this);
 };
 
 /**

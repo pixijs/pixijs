@@ -17,34 +17,19 @@
  */
 PIXI.Text = function(text, style)
 {
-	this.canvas = document.createElement("canvas");
-	
-	this.context = this.canvas.getContext("2d");
-	//document.body.appendChild(this.canvas);
-	this.setText(text);
-	this.setStyle(style);
-	
-	this.updateText();
-	
-	PIXI.Sprite.call(this, PIXI.Texture.fromCanvas(this.canvas));
-	
-	// need to store a canvas that can
+    this.canvas = document.createElement("canvas");
+    this.context = this.canvas.getContext("2d");
+    PIXI.Sprite.call(this, PIXI.Texture.fromCanvas(this.canvas));
+
+    this.setText(text);
+    this.setStyle(style);
+    this.updateText();
+    this.dirty = false;
 };
 
 // constructor
 PIXI.Text.constructor = PIXI.Text;
 PIXI.Text.prototype = Object.create(PIXI.Sprite.prototype);
-
-/**
- * Set the copy for the text object
- * @methos setText
- * @param {String} text The copy that you would like the text to display
- */
-PIXI.Text.prototype.setText = function(text)
-{
-	this.text = text || " ";
-	this.dirty = true;
-};
 
 /**
  * Set the style of the text
@@ -58,18 +43,29 @@ PIXI.Text.prototype.setText = function(text)
  */
 PIXI.Text.prototype.setStyle = function(style)
 {
-	style = style || {};
-	style.font = style.font || "bold 20pt Arial";
-	style.fill = style.fill || "black";
-	style.align = style.align || "left";
-	style.strokeThickness = style.strokeThickness || 0;
+    style = style || {};
+    style.font = style.font || "bold 20pt Arial";
+    style.fill = style.fill || "black";
+    style.align = style.align || "left";
+    style.strokeThickness = style.strokeThickness || 0;
+    this.style = style;
 
-	this.style = style;
-
-	this.dirty = true;
+    this.dirty = true;
 };
 
 /**
+ * Set the copy for the text object
+ * @methos setText
+ * @param {String} text The copy that you would like the text to display
+ */
+PIXI.Sprite.prototype.setText = function(text)
+{
+    this.text = text || " ";
+    this.dirty = true;
+};
+
+/**
+ * Renders text
  * @private
  */
 PIXI.Text.prototype.updateText = function()
@@ -126,21 +122,31 @@ PIXI.Text.prototype.updateText = function()
 			this.context.fillText(lines[i], linePosition.x, linePosition.y);
 		}
 	}
+    this.updateTexture();
 };
 
+/**
+ * Updates texture size based on canvas size
+ * @private
+ */
+PIXI.Text.prototype.updateTexture = function()
+{
+
+    this.texture.baseTexture.width = this.canvas.width;
+    this.texture.baseTexture.height = this.canvas.height;
+    this.texture.frame.width = this.canvas.width;
+    this.texture.frame.height = this.canvas.height;
+    PIXI.texturesToUpdate.push(this.texture.baseTexture);
+};
+
+/**
+ * @private
+ */
 PIXI.Text.prototype.updateTransform = function()
 {
 	if(this.dirty)
 	{
 		this.updateText();	
-		
-		// update the texture..
-		this.texture.baseTexture.width = this.canvas.width;
-		this.texture.baseTexture.height = this.canvas.height;
-		this.texture.frame.width = this.canvas.width;
-		this.texture.frame.height = this.canvas.height;
-		
-		PIXI.texturesToUpdate.push(this.texture.baseTexture);
 		this.dirty = false;
 	}
 	
@@ -153,7 +159,7 @@ PIXI.Text.prototype.updateTransform = function()
  */
 PIXI.Text.prototype.determineFontHeight = function(fontStyle) 
 {
-	// build a little refference dictionary so if the font style has been used return a
+	// build a little reference dictionary so if the font style has been used return a
 	// cached version...
 	var result = PIXI.Text.heightCache[fontStyle];
 	

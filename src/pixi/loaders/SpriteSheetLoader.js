@@ -13,7 +13,7 @@
  * @class SpriteSheetLoader
  * @extends EventTarget
  * @constructor
- * @param url {String} the url of the sprite sheet JSON file
+ * @param {String} url the url of the sprite sheet JSON file
  * @param {Boolean} crossorigin
  */
 
