@@ -17,7 +17,7 @@ PIXI.Layers = function () {
 
 	for (var argumentIndex in arguments) {
 		var arg = arguments[argumentIndex];
-		if (arg instanceof String) {
+		if (typeof arg === "string") {
 			this.addLayer(arg);
 		} else if (arg instanceof Object) {
 			for (var layersGroupName in arg) {
