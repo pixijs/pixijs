@@ -54,11 +54,11 @@ PIXI.MovieClipManager.prototype.get = function (name) {
 PIXI.MovieClipManager.prototype.set = function (name) {
     if (this._current) {
         this._current.stop();
-        this.removeChild(this._current);
+        this._current.visible = false;
     }
     this._current = this._animations[name];
     if (this._current) {
-        this.addChild(this._current);
+        this._current.visible = true;
     }
     return this;
 };
@@ -155,6 +155,8 @@ PIXI.MovieClipManager.prototype.stop = function () {
  */
 PIXI.MovieClipManager.prototype.add = function (name, movieClip) {
     this._animations[name] = movieClip;
+    this.addChild(movieClip);
+    movieClip.visible = false;
     return this;
 };
 
@@ -166,7 +168,7 @@ PIXI.MovieClipManager.prototype.add = function (name, movieClip) {
  */
 PIXI.MovieClipManager.prototype.remove = function (name) {
     if (this._animations[name] === this._current) {
-        this.removeChild(this._current);
+        this._current.visible = false;
         this._current = undefined;
     }
     delete this._animations[name];
