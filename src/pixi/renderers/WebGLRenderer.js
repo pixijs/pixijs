@@ -20,6 +20,8 @@ PIXI._defaultFrame = new PIXI.Rectangle(0,0,1,1);
  */
 PIXI.WebGLRenderer = function(width, height, view, transparent)
 {
+	this.devicePixelRatio = window.devicePixelRatio || 1;
+
 	// do a catch.. only 1 webGL renderer..
 
 	//console.log(transparent)
@@ -28,14 +30,15 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
 	this.width = width || 800;
 	this.height = height || 600;
 	
-	this.view = view || document.createElement( 'canvas' ); 
-    this.view.width = this.width;
-	this.view.height = this.height;  
-	
-	// deal with losing context..	
-    var scope = this;
-	this.view.addEventListener('webglcontextlost', function(event) { scope.handleContextLost(event); }, false)
-	this.view.addEventListener('webglcontextrestored', function(event) { scope.handleContextRestored(event); }, false)
+	this.view = view || document.createElement( 'canvas' );
+
+	// deal with losing context..
+	var scope = this;
+	// Ejecta does not support this method
+	if (this.view.addEventListener) {
+		this.view.addEventListener('webglcontextlost', function(event) { scope.handleContextLost(event); }, false)
+		this.view.addEventListener('webglcontextrestored', function(event) { scope.handleContextRestored(event); }, false)
+	}
 
 	this.batchs = [];
 	
@@ -113,7 +116,7 @@ PIXI.WebGLRenderer.prototype.initShaders = function()
     gl.linkProgram(shaderProgram);
 
     if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-        alert("Could not initialise shaders");
+        throw new Error("Could not initialise shaders");
     }
 
     gl.useProgram(shaderProgram);
@@ -625,10 +628,12 @@ PIXI.WebGLRenderer.prototype.resize = function(width, height)
 	this.width = width;
 	this.height = height;
 	
-	this.view.width = width;
-	this.view.height = height;
+	this.view.width = width * this.devicePixelRatio;
+	this.view.height = height * this.devicePixelRatio;
+	this.view.style.width = width + 'px';
+	this.view.style.height = height + 'px';
 	
-	this.gl.viewport(0, 0, this.width, this.height);	
+	this.gl.viewport(0, 0, this.view.width, this.view.height);	
 	
 	var projectionMatrix = this.projectionMatrix;
 	
