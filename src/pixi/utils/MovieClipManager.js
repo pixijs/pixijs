@@ -153,8 +153,9 @@ PIXI.MovieClipManager.prototype.stop = function () {
  * @param  movieClip {MovieClip}
  * @return DisplayObject
  */
-PIXI.MovieClipManager.prototype.add = function (name, movieClip) {
+PIXI.MovieClipManager.prototype.add = function (name, movieClip, speed) {
     this._animations[name] = movieClip;
+    movieClip.animationSpeed = speed || movieClip.animationSpeed;
     this.addChild(movieClip);
     movieClip.visible = false;
     return this;
