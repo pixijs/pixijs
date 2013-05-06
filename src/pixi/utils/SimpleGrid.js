@@ -11,15 +11,14 @@
  * @constructor
  */
 PIXI.SimpleGrid = function (widthPower, heightPower) {
+	PIXI.Layers.call(this);
 
 	this._width = widthPower || 10;
 	this._height = heightPower || 10;
-
-	this.cells = new PIXI.Layers();
 };
 
 PIXI.SimpleGrid.constructor = PIXI.SimpleGrid;
-PIXI.SimpleGrid.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
+PIXI.SimpleGrid.prototype = Object.create(PIXI.Layers.prototype);
 
 
 PIXI.SimpleGrid.prototype.getCellСoordinates = function (displayObject) {
@@ -44,22 +43,22 @@ PIXI.SimpleGrid.prototype.addChild = function (displayObject) {
 	// Wrap position property of displayObject
 	// Rewrap PIXI.Point object
 
-	this.cells.get(this.getCellName(displayObject)).addChild(displayObject);
+	this.getLayer(this.getCellName(displayObject)).addChild(displayObject);
 };
 
 PIXI.SimpleGrid.prototype.getSurroundCells = function (displayObject) {
 	var coords = this.getCellСoordinates(displayObject);
 	return [
 	// TOP ROW
-	this.cells[(coords.x - 1) + "_" + (coords.y - 1)],
-	this.cells[(coords.x) + "_" + (coords.y - 1)],
-	this.cells[(coords.x + 1) + "_" + (coords.y - 1)],
+	this[(coords.x - 1) + "_" + (coords.y - 1)],
+	this[(coords.x) + "_" + (coords.y - 1)],
+	this[(coords.x + 1) + "_" + (coords.y - 1)],
 	// MIDDLE ROW
-	this.cells[(coords.x - 1) + "_" + (coords.y)],
-	this.cells[(coords.x) + "_" + (coords.y)],
-	this.cells[(coords.x + 1) + "_" + (coords.y)],
+	this[(coords.x - 1) + "_" + (coords.y)],
+	this[(coords.x) + "_" + (coords.y)],
+	this[(coords.x + 1) + "_" + (coords.y)],
 	// BOTTOM ROW
-	this.cells[(coords.x - 1) + "_" + (coords.y - 1)],
-	this.cells[(coords.x) + "_" + (coords.y - 1)],
-	this.cells[(coords.x + 1) + "_" + (coords.y - 1)]];
+	this[(coords.x - 1) + "_" + (coords.y + 1)],
+	this[(coords.x) + "_" + (coords.y + 1)],
+	this[(coords.x + 1) + "_" + (coords.y + 1)]];
 };
