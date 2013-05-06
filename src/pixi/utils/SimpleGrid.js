@@ -10,10 +10,10 @@
  * @extends DisplayObjectContainer
  * @constructor
  */
-PIXI.SimpleGrid = function (width, height) {
+PIXI.SimpleGrid = function (widthPower, heightPower) {
 
-	this._width = width;
-	this._height = height;
+	this._width = widthPower;
+	this._height = heightPower;
 
 	throw new Error("Not implemented yet!");
 };
@@ -28,5 +28,8 @@ PIXI.SimpleGrid.prototype = Object.create(PIXI.DisplayObjectContainer.prototype)
  * @return DisplayObject
  */
 PIXI.SimpleGrid.prototype.addChild = function (displayObject) {
-	throw new Error("Not implemented yet!");
+	var grid_x = displayObject.position.x >> this._width;
+	var grid_y = displayObject.position.y >> this._height;
+
+	this.cells.get(grid_x + "_" + grid_y).addChild(displayObject);
 };
