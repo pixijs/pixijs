@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src&#x2F;pixi&#x2F;Stage.js - Pixi.JS</title>
+    <title>BitmapFontLoader - Pixi.JS</title>
     <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
@@ -124,125 +124,184 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src&#x2F;pixi&#x2F;Stage.js</h1>
+                        <h1>BitmapFontLoader Class</h1>
+<div class="box meta">
+    
 
-<div class="file">
-    <pre class="code prettyprint linenums">
-&#x2F;**
- * @author Mat Groves http:&#x2F;&#x2F;matgroves.com&#x2F; @Doormat23
- *&#x2F;
+    
+        <div class="extends">
+            Extends EventTarget
+        </div>
+    
 
-&#x2F;**
-A Stage represents the root of the display tree. Everything connected to the stage is rendered
-@class Stage
-@extends DisplayObjectContainer
-@constructor
-@param backgroundColor {Number} the background color of the stage
-@param interactive {Boolean} enable &#x2F; disable interaction (default is false)
-*&#x2F;
-PIXI.Stage = function(backgroundColor, interactive)
-{
-	
-	PIXI.DisplayObjectContainer.call( this );
-	this.worldTransform = PIXI.mat3.create()&#x2F;&#x2F;.&#x2F;&#x2F;identity();
-	this.__childrenAdded = [];
-	this.__childrenRemoved = [];
-	this.childIndex = 0;
-	this.stage= this;
-	
-	this.stage.hitArea = new PIXI.Rectangle(0,0,100000, 100000);
-	
-	&#x2F;&#x2F; interaction!
-	this.interactive = !!interactive;
-	this.interactionManager = new PIXI.InteractionManager(this);
-	
-	this.setBackgroundColor(backgroundColor);
-}
+    
+        <div class="foundat">
+            Defined in: <a href="..&#x2F;files&#x2F;src_pixi_loaders_BitmapFontLoader.js.html#l5"><code>src&#x2F;pixi&#x2F;loaders&#x2F;BitmapFontLoader.js:5</code></a>
+        </div>
+    
 
-&#x2F;&#x2F; constructor
-PIXI.Stage.constructor = PIXI.Stage;
+    
+        
+            Module: <a href="../modules/PIXI.html">PIXI</a>
+        
+    
 
-PIXI.Stage.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
-
-&#x2F;**
-@method updateTransform
-@internal
-*&#x2F;
-PIXI.Stage.prototype.updateTransform = function()
-{
-	this.worldAlpha = 1;		
-	
-	for(var i=0,j=this.children.length; i&lt;j; i++)
-	{
-		this.children[i].updateTransform();	
-	}
-	
-	if(this.dirty)
-	{
-		this.dirty = false;
-		&#x2F;&#x2F; update interactive!
-		this.interactionManager.dirty = true;
-	}
-
-	if(this.interactive)this.interactionManager.update();
-}
-
-&#x2F;**
- * @method setBackgroundColor
- * @param backgroundColor {Number}
- *&#x2F;
-PIXI.Stage.prototype.setBackgroundColor = function(backgroundColor)
-{
-	this.backgroundColor = backgroundColor || 0x000000;
-	this.backgroundColorSplit = HEXtoRGB(this.backgroundColor);
-	this.backgroundColorString =  &quot;#&quot; + this.backgroundColor.toString(16);
-}
-
-&#x2F;**
- * This will return the point containing global coords of the mouse.
- * @method getMousePosition
- * @return {Point} The point containing the coords of the global InteractionData position.
- *&#x2F;
-PIXI.Stage.prototype.getMousePosition = function()
-{
-	return this.interactionManager.mouse.global;
-}
-
-PIXI.Stage.prototype.__addChild = function(child)
-{
-	if(child.interactive)this.dirty = true;
-	
-	child.stage = this;
-	
-	if(child.children)
-	{
-		for (var i=0; i &lt; child.children.length; i++) 
-		{
-		  	this.__addChild(child.children[i]);
-		};
-	}
-	
-}
+    
+</div>
 
 
-PIXI.Stage.prototype.__removeChild = function(child)
-{
-	if(child.interactive)this.dirty = true;
-	
-	this.__childrenRemoved.push(child);
 
-	child.stage = undefined;
-	
-	if(child.children)
-	{
-		for(var i=0,j=child.children.length; i&lt;j; i++)
-		{
-		  	this.__removeChild(child.children[i])
-		}
-	}
-}
+<div class="box intro">
+    <p>The xml loader is used to load in XML bitmap font data ("xml" or "fnt")
+To generate the data you can use http://www.angelcode.com/products/bmfont/
+This loader will also load the image file as the data.
+When loaded this class will dispatch a "loaded" event</p>
+</div>
 
-    </pre>
+
+    <div class="constructor">
+        <h2>Constructor</h2>
+        <div id="method_BitmapFontLoader" class="method item">
+    <h3 class="name"><code>BitmapFontLoader</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>url</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>crossorigin</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;src_pixi_loaders_BitmapFontLoader.js.html#l5"><code>src&#x2F;pixi&#x2F;loaders&#x2F;BitmapFontLoader.js:5</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">url</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the url of the sprite sheet JSON file</p>
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">crossorigin</code>
+                        <span class="type">Boolean</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+    </div>
+
+
+<div id="classdocs" class="tabview">
+    <ul class="api-class-tabs">
+        <li class="api-class-tab index"><a href="#index">Index</a></li>
+
+        
+        
+        
+        
+    </ul>
+
+    <div>
+        <div id="index" class="api-class-tabpanel index">
+            <h2 class="off-left">Item Index</h2>
+
+            
+
+            
+
+            
+
+            
+        </div>
+
+        
+
+        
+
+        
+
+        
+    </div>
 </div>
 
                     </div>

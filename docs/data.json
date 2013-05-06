@@ -39,6 +39,24 @@
             "fors": {},
             "namespaces": {}
         },
+        "src/pixi/loaders/BitmapFontLoader.js": {
+            "name": "src/pixi/loaders/BitmapFontLoader.js",
+            "modules": {},
+            "classes": {
+                "BitmapFontLoader": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/pixi/loaders/ImageLoader.js": {
+            "name": "src/pixi/loaders/ImageLoader.js",
+            "modules": {},
+            "classes": {
+                "ImageLoader": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "src/pixi/loaders/SpriteSheetLoader.js": {
             "name": "src/pixi/loaders/SpriteSheetLoader.js",
             "modules": {},
@@ -79,6 +97,24 @@
             "name": "src/pixi/renderers/WebGLShaders.js",
             "modules": {},
             "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/pixi/text/BitmapText.js": {
+            "name": "src/pixi/text/BitmapText.js",
+            "modules": {},
+            "classes": {
+                "BitmapText": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/pixi/text/Text.js": {
+            "name": "src/pixi/text/Text.js",
+            "modules": {},
+            "classes": {
+                "Text": 1
+            },
             "fors": {},
             "namespaces": {}
         },
@@ -149,12 +185,26 @@
             "fors": {},
             "namespaces": {}
         },
+        "src/pixi/Intro.js": {
+            "name": "src/pixi/Intro.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
         "src/pixi/MovieClip.js": {
             "name": "src/pixi/MovieClip.js",
             "modules": {},
             "classes": {
                 "MovieClip": 1
             },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/pixi/Outro.js": {
+            "name": "src/pixi/Outro.js",
+            "modules": {},
+            "classes": {},
             "fors": {},
             "namespaces": {}
         },
@@ -202,15 +252,6 @@
             },
             "fors": {},
             "namespaces": {}
-        },
-        "src/pixi/Text.js": {
-            "name": "src/pixi/Text.js",
-            "modules": {},
-            "classes": {
-                "Text": 1
-            },
-            "fors": {},
-            "namespaces": {}
         }
     },
     "modules": {
@@ -220,10 +261,14 @@
             "classes": {
                 "TilingSprite": 1,
                 "AssetLoader": 1,
+                "BitmapFontLoader": 1,
+                "ImageLoader": 1,
                 "SpriteSheetLoader": 1,
                 "CanvasRenderer": 1,
                 "WebGLBatch": 1,
                 "WebGLRenderer": 1,
+                "BitmapText": 1,
+                "Text": 1,
                 "BaseTexture": 1,
                 "Texture": 1,
                 "DisplayObject": 1,
@@ -234,13 +279,12 @@
                 "Point": 1,
                 "Rectangle": 1,
                 "Sprite": 1,
-                "Stage": 1,
-                "Text": 1
+                "Stage": 1
             },
             "fors": {},
             "namespaces": {},
             "tag": "module",
-            "file": "src/pixi/Text.js",
+            "file": "src/pixi/Stage.js",
             "line": 5
         }
     },
@@ -288,14 +332,68 @@
             "module": "PIXI",
             "file": "src/pixi/loaders/AssetLoader.js",
             "line": 5,
-            "description": "A Class that loads a bunch of images / sprite sheet files. Once the assets have been loaded they are added to the PIXI Texture cache and can be accessed easily through PIXI.Texture.fromFrame(), PIXI.Texture.fromImage() and PIXI.Sprite.fromImage(), PIXI.Sprite.fromFromeId()\nWhen all items have been loaded this class will dispatch a 'loaded' event\nAs each individual item is loaded this class will dispatch a 'progress' event",
+            "description": "A Class that loads a bunch of images / sprite sheet / bitmap font files. Once the assets have been loaded they are added to the PIXI Texture cache and can be accessed easily through PIXI.Texture.fromImage() and PIXI.Sprite.fromImage()\nWhen all items have been loaded this class will dispatch a \"onLoaded\" event\nAs each individual item is loaded this class will dispatch a \"onProgress\" event",
             "is_constructor": 1,
             "extends": "EventTarget",
             "params": [
                 {
                     "name": "assetURLs",
-                    "description": "an array of image/sprite sheet urls that you would like loaded supported. Supported image formats include \"jpeg\", \"jpg\", \"png\", \"gif\". Supported sprite sheet data formats only include \"JSON\" at this time",
+                    "description": "an array of image/sprite sheet urls that you would like loaded supported. Supported image formats include \"jpeg\", \"jpg\", \"png\", \"gif\". Supported sprite sheet data formats only include \"JSON\" at this time. Supported bitmap font data formats include \"xml\" and \"fnt\".",
                     "type": "Array"
+                }
+            ]
+        },
+        "BitmapFontLoader": {
+            "name": "BitmapFontLoader",
+            "shortname": "BitmapFontLoader",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "PIXI",
+            "file": "src/pixi/loaders/BitmapFontLoader.js",
+            "line": 5,
+            "description": "The xml loader is used to load in XML bitmap font data (\"xml\" or \"fnt\")\nTo generate the data you can use http://www.angelcode.com/products/bmfont/\nThis loader will also load the image file as the data.\nWhen loaded this class will dispatch a \"loaded\" event",
+            "extends": "EventTarget",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "url",
+                    "description": "the url of the sprite sheet JSON file",
+                    "type": "String"
+                },
+                {
+                    "name": "crossorigin",
+                    "description": "",
+                    "type": "Boolean"
+                }
+            ]
+        },
+        "ImageLoader": {
+            "name": "ImageLoader",
+            "shortname": "ImageLoader",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "PIXI",
+            "file": "src/pixi/loaders/ImageLoader.js",
+            "line": 5,
+            "description": "The image loader class is responsible for loading images file formats (\"jpeg\", \"jpg\", \"png\" and \"gif\")\nOnce the image has been loaded it is stored in the PIXI texture cache and can be accessed though PIXI.Texture.fromFrameId() and PIXI.Sprite.fromFromeId()\nWhen loaded this class will dispatch a 'loaded' event",
+            "extends": "EventTarget",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "url",
+                    "description": "The url of the image",
+                    "type": "String"
+                },
+                {
+                    "name": "crossorigin",
+                    "description": "",
+                    "type": "Boolean"
                 }
             ]
         },
@@ -310,7 +408,7 @@
             "module": "PIXI",
             "file": "src/pixi/loaders/SpriteSheetLoader.js",
             "line": 5,
-            "description": "The sprite sheet loader is used to load in JSON sprite sheet data\nTo generate the data you can use http://www.codeandweb.com/texturepacker and publish the \"JSON\" format\nThere is a free version so thats nice, although the paid version is great value for money.\nIt is highly recommended to use Sprite sheets (also know as texture atlas') as it means sprite's can be batched and drawn together for highly increased rendering speed.\nOnce the data has been loaded the frames are stored in the PIXI texture cache and can be accessed though PIXI.Texture.fromFrameId() and PIXI.Sprite.fromFromeId()\nThis loader will also load the image file that the Spritesheet points to as well as the data.\nWhen loaded this class will dispatch a 'loaded' event",
+            "description": "The sprite sheet loader is used to load in JSON sprite sheet data\nTo generate the data you can use http://www.codeandweb.com/texturepacker and publish the \"JSON\" format\nThere is a free version so thats nice, although the paid version is great value for money.\nIt is highly recommended to use Sprite sheets (also know as texture atlas\") as it means sprite\"s can be batched and drawn together for highly increased rendering speed.\nOnce the data has been loaded the frames are stored in the PIXI texture cache and can be accessed though PIXI.Texture.fromFrameId() and PIXI.Sprite.fromFromeId()\nThis loader will also load the image file that the Spritesheet points to as well as the data.\nWhen loaded this class will dispatch a \"loaded\" event",
             "extends": "EventTarget",
             "is_constructor": 1,
             "params": [
@@ -318,6 +416,11 @@
                     "name": "url",
                     "description": "the url of the sprite sheet JSON file",
                     "type": "String"
+                },
+                {
+                    "name": "crossorigin",
+                    "description": "",
+                    "type": "Boolean"
                 }
             ]
         },
@@ -417,6 +520,112 @@
                 }
             ],
             "default": "false"
+        },
+        "BitmapText": {
+            "name": "BitmapText",
+            "shortname": "BitmapText",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "PIXI",
+            "file": "src/pixi/text/BitmapText.js",
+            "line": 5,
+            "description": "A Text Object will create a line(s) of text using bitmap font \nYou can generate the fnt files using \nhttp://www.angelcode.com/products/bmfont/ for windows of\nhttp://www.bmglyph.com/ for mac.",
+            "extends": "DisplayObjectContainer",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "text",
+                    "description": "The copy that you would like the text to display",
+                    "type": "String"
+                },
+                {
+                    "name": "style",
+                    "description": "The style parameters",
+                    "type": "Object",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "font",
+                            "description": "default is \"20pt Arial\" The size and bitmap font id (must have loaded previously)",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "align",
+                            "description": "An alignment of the multiline text (\"left\", \"center\" or \"right\")",
+                            "type": "String",
+                            "optional": true,
+                            "optdefault": "\"left\""
+                        }
+                    ]
+                }
+            ]
+        },
+        "Text": {
+            "name": "Text",
+            "shortname": "Text",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "PIXI",
+            "file": "src/pixi/text/Text.js",
+            "line": 5,
+            "description": "A Text Object will create a line(s) of text to split a line you can use \"\\n\"",
+            "extends": "Sprite",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "text",
+                    "description": "The copy that you would like the text to display",
+                    "type": "String"
+                },
+                {
+                    "name": "style",
+                    "description": "The style parameters",
+                    "type": "Object",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "font",
+                            "description": "default \"bold 20pt Arial\" The style and size of the font",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "fill",
+                            "description": "A canvas fillstyle that will be used on the text eg \"red\", \"#00FF00\"",
+                            "type": "Object",
+                            "optional": true,
+                            "optdefault": "\"black\""
+                        },
+                        {
+                            "name": "align",
+                            "description": "An alignment of the multiline text (\"left\", \"center\" or \"right\")",
+                            "type": "String",
+                            "optional": true,
+                            "optdefault": "\"left\""
+                        },
+                        {
+                            "name": "stroke",
+                            "description": "A canvas fillstyle that will be used on the text stroke eg \"blue\", \"#FCFF00\"",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "strokeThickness",
+                            "description": "A number that represents the thickness of the stroke. Default is 0 (no stroke)",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "0"
+                        }
+                    ]
+                }
+            ]
         },
         "BaseTexture": {
             "name": "BaseTexture",
@@ -667,49 +876,6 @@
                     "type": "Boolean"
                 }
             ]
-        },
-        "Text": {
-            "name": "Text",
-            "shortname": "Text",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "PIXI",
-            "namespace": "",
-            "file": "src/pixi/Text.js",
-            "line": 5,
-            "description": "A Text Object will create a line of text",
-            "extends": "Sprite",
-            "is_constructor": 1,
-            "params": [
-                {
-                    "name": "text",
-                    "description": "The copy that you would like the text to display",
-                    "type": "String"
-                },
-                {
-                    "name": "fontStyle",
-                    "description": "the style and size of the font eg \"bold 20px Arial\"",
-                    "type": "String"
-                },
-                {
-                    "name": "fillStyle",
-                    "description": "a canvas fillstyle that will be used on the text eg \"red\", \"#00FF00\" can also be null",
-                    "type": "Object"
-                },
-                {
-                    "name": "strokeStyle",
-                    "description": "a canvas fillstyle that will be used on the text stroke eg \"blue\", \"#FCFF00\" can also be null",
-                    "type": "String"
-                },
-                {
-                    "name": "strokeThickness",
-                    "description": "A number that represents the thicknes of the stroke. default is 0 (no stroke)",
-                    "type": "Number"
-                }
-            ]
         }
     },
     "classitems": [
@@ -766,7 +932,7 @@
         },
         {
             "file": "src/pixi/loaders/AssetLoader.js",
-            "line": 30,
+            "line": 38,
             "description": "Fired when an item has loaded",
             "itemtype": "event",
             "name": "onProgress",
@@ -774,7 +940,7 @@
         },
         {
             "file": "src/pixi/loaders/AssetLoader.js",
-            "line": 35,
+            "line": 43,
             "description": "Fired when all the assets have loaded",
             "itemtype": "event",
             "name": "onComplete",
@@ -782,9 +948,65 @@
         },
         {
             "file": "src/pixi/loaders/AssetLoader.js",
-            "line": 43,
+            "line": 51,
             "description": "This will begin loading the assets sequentially",
             "class": "AssetLoader"
+        },
+        {
+            "file": "src/pixi/loaders/AssetLoader.js",
+            "line": 79,
+            "description": "Invoked after each file is loaded",
+            "access": "private",
+            "tagname": "",
+            "class": "AssetLoader"
+        },
+        {
+            "file": "src/pixi/loaders/BitmapFontLoader.js",
+            "line": 1,
+            "author": "Mat Groves http://matgroves.com/ @Doormat23",
+            "class": "BitmapFontLoader"
+        },
+        {
+            "file": "src/pixi/loaders/BitmapFontLoader.js",
+            "line": 34,
+            "description": "This will begin loading the JSON file",
+            "class": "BitmapFontLoader"
+        },
+        {
+            "file": "src/pixi/loaders/BitmapFontLoader.js",
+            "line": 51,
+            "description": "Invoked when XML file is loaded",
+            "access": "private",
+            "tagname": "",
+            "class": "BitmapFontLoader"
+        },
+        {
+            "file": "src/pixi/loaders/BitmapFontLoader.js",
+            "line": 118,
+            "description": "Invoked when all files are loaded (xml/fnt and texture)",
+            "access": "private",
+            "tagname": "",
+            "class": "BitmapFontLoader"
+        },
+        {
+            "file": "src/pixi/loaders/ImageLoader.js",
+            "line": 1,
+            "author": "Mat Groves http://matgroves.com/ @Doormat23",
+            "class": "ImageLoader"
+        },
+        {
+            "file": "src/pixi/loaders/ImageLoader.js",
+            "line": 24,
+            "description": "Loads image or takes it from cache",
+            "class": "ImageLoader"
+        },
+        {
+            "file": "src/pixi/loaders/ImageLoader.js",
+            "line": 43,
+            "description": "Invoked when image file is loaded or it is already cached and ready to use",
+            "access": "private",
+            "tagname": "",
+            "class": "ImageLoader"
         },
         {
             "file": "src/pixi/loaders/SpriteSheetLoader.js",
@@ -794,8 +1016,24 @@
         },
         {
             "file": "src/pixi/loaders/SpriteSheetLoader.js",
-            "line": 37,
+            "line": 38,
             "description": "This will begin loading the JSON file",
+            "class": "SpriteSheetLoader"
+        },
+        {
+            "file": "src/pixi/loaders/SpriteSheetLoader.js",
+            "line": 55,
+            "description": "Invoke when JSON file is loaded",
+            "access": "private",
+            "tagname": "",
+            "class": "SpriteSheetLoader"
+        },
+        {
+            "file": "src/pixi/loaders/SpriteSheetLoader.js",
+            "line": 97,
+            "description": "Invoke when all files are loaded (json and texture)",
+            "access": "private",
+            "tagname": "",
             "class": "SpriteSheetLoader"
         },
         {
@@ -1205,7 +1443,165 @@
             "file": "src/pixi/renderers/WebGLShaders.js",
             "line": 2,
             "author": "Mat Groves http://matgroves.com/ @Doormat23",
-            "class": "BaseTexture"
+            "class": "BitmapText"
+        },
+        {
+            "file": "src/pixi/text/BitmapText.js",
+            "line": 1,
+            "author": "Mat Groves http://matgroves.com/ @Doormat23",
+            "class": "BitmapText"
+        },
+        {
+            "file": "src/pixi/text/BitmapText.js",
+            "line": 34,
+            "description": "Set the copy for the text object",
+            "methos": "setText",
+            "params": [
+                {
+                    "name": "text",
+                    "description": "The copy that you would like the text to display",
+                    "type": "String"
+                }
+            ],
+            "class": "BitmapText"
+        },
+        {
+            "file": "src/pixi/text/BitmapText.js",
+            "line": 45,
+            "description": "Set the style of the text",
+            "itemtype": "method",
+            "name": "setStyle",
+            "params": [
+                {
+                    "name": "style",
+                    "description": "The style parameters",
+                    "type": "Object",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "font",
+                            "description": "The style and size of the font. If font size is not specified, it uses default bitmap font size. Font name is required",
+                            "type": "Object"
+                        },
+                        {
+                            "name": "align",
+                            "description": "An alignment of the multiline text (\"left\", \"center\" or \"right\")",
+                            "type": "String",
+                            "optional": true,
+                            "optdefault": "\"left\""
+                        }
+                    ]
+                }
+            ],
+            "class": "BitmapText"
+        },
+        {
+            "file": "src/pixi/text/BitmapText.js",
+            "line": 65,
+            "description": "Renders text",
+            "access": "private",
+            "tagname": "",
+            "class": "BitmapText"
+        },
+        {
+            "file": "src/pixi/text/BitmapText.js",
+            "line": 138,
+            "access": "private",
+            "tagname": "",
+            "class": "BitmapText"
+        },
+        {
+            "file": "src/pixi/text/Text.js",
+            "line": 1,
+            "author": "Mat Groves http://matgroves.com/ @Doormat23",
+            "class": "Text"
+        },
+        {
+            "file": "src/pixi/text/Text.js",
+            "line": 34,
+            "description": "Set the style of the text",
+            "itemtype": "method",
+            "name": "setStyle",
+            "params": [
+                {
+                    "name": "style",
+                    "description": "The style parameters",
+                    "type": "Object",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "fill",
+                            "description": "A canvas fillstyle that will be used on the text eg \"red\", \"#00FF00\"",
+                            "type": "Object",
+                            "optional": true,
+                            "optdefault": "\"black\""
+                        },
+                        {
+                            "name": "align",
+                            "description": "An alignment of the multiline text (\"left\", \"center\" or \"right\")",
+                            "type": "String",
+                            "optional": true,
+                            "optdefault": "\"left\""
+                        },
+                        {
+                            "name": "stroke",
+                            "description": "A canvas fillstyle that will be used on the text stroke eg \"blue\", \"#FCFF00\"",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "strokeThickness",
+                            "description": "A number that represents the thickness of the stroke. Default is 0 (no stroke)",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "0"
+                        }
+                    ]
+                },
+                {
+                    "name": "[style.font=\"bold",
+                    "description": "20pt Arial\"] The style and size of the font",
+                    "type": "String"
+                }
+            ],
+            "class": "Text"
+        },
+        {
+            "file": "src/pixi/text/Text.js",
+            "line": 55,
+            "description": "Set the copy for the text object. To split a line you can use \"\\n\"",
+            "methos": "setText",
+            "params": [
+                {
+                    "name": "text",
+                    "description": "The copy that you would like the text to display",
+                    "type": "String"
+                }
+            ],
+            "class": "Text"
+        },
+        {
+            "file": "src/pixi/text/Text.js",
+            "line": 66,
+            "description": "Renders text",
+            "access": "private",
+            "tagname": "",
+            "class": "Text"
+        },
+        {
+            "file": "src/pixi/text/Text.js",
+            "line": 129,
+            "description": "Updates texture size based on canvas size",
+            "access": "private",
+            "tagname": "",
+            "class": "Text"
+        },
+        {
+            "file": "src/pixi/text/Text.js",
+            "line": 143,
+            "access": "private",
+            "tagname": "",
+            "class": "Text"
         },
         {
             "file": "src/pixi/textures/BaseTexture.js",
@@ -1886,6 +2282,12 @@
             "class": "InteractionData"
         },
         {
+            "file": "src/pixi/Intro.js",
+            "line": 1,
+            "author": "Mat Groves http://matgroves.com/ @Doormat23",
+            "class": "MovieClip"
+        },
+        {
             "file": "src/pixi/MovieClip.js",
             "line": 1,
             "author": "Mat Groves http://matgroves.com/ @Doormat23",
@@ -1990,6 +2392,12 @@
                 }
             ],
             "class": "MovieClip"
+        },
+        {
+            "file": "src/pixi/Outro.js",
+            "line": 1,
+            "author": "Mat Groves http://matgroves.com/ @Doormat23",
+            "class": "Point"
         },
         {
             "file": "src/pixi/Pixi.js",
@@ -2257,68 +2665,6 @@
             },
             "class": "Stage",
             "module": "PIXI"
-        },
-        {
-            "file": "src/pixi/Text.js",
-            "line": 1,
-            "author": "Mat Groves http://matgroves.com/ @Doormat23",
-            "class": "Text",
-            "module": "PIXI"
-        },
-        {
-            "file": "src/pixi/Text.js",
-            "line": 36,
-            "description": "Set the copy for the text object",
-            "methos": "setText",
-            "params": [
-                {
-                    "name": "text",
-                    "description": "The copy that you would like the text to display",
-                    "type": "String"
-                }
-            ],
-            "class": "Text",
-            "module": "PIXI"
-        },
-        {
-            "file": "src/pixi/Text.js",
-            "line": 47,
-            "description": "Set the style of the text",
-            "itemtype": "method",
-            "name": "setStyle",
-            "is_constructor": 1,
-            "params": [
-                {
-                    "name": "fontStyle",
-                    "description": "the style and size of the font eg \"bold 20px Arial\"",
-                    "type": "String"
-                },
-                {
-                    "name": "fillStyle",
-                    "description": "a canvas fillstyle that will be used on the text eg \"red\", \"#00FF00\" can also be null",
-                    "type": "Object"
-                },
-                {
-                    "name": "strokeStyle",
-                    "description": "a canvas fillstyle that will be used on the text stroke eg \"blue\", \"#FCFF00\" can also be null",
-                    "type": "String"
-                },
-                {
-                    "name": "strokeThickness",
-                    "description": "A number that represents the thicknes of the stroke. default is 0 (no stroke)",
-                    "type": "Number"
-                }
-            ],
-            "class": "Text",
-            "module": "PIXI"
-        },
-        {
-            "file": "src/pixi/Text.js",
-            "line": 66,
-            "access": "private",
-            "tagname": "",
-            "class": "Text",
-            "module": "PIXI"
         }
     ],
     "warnings": [
@@ -2327,12 +2673,16 @@
             "line": " src/pixi/renderers/WebGLBatch.js:292"
         },
         {
-            "message": "unknown tag: internal",
-            "line": " src/pixi/Stage.js:37"
+            "message": "unknown tag: methos",
+            "line": " src/pixi/text/BitmapText.js:34"
         },
         {
             "message": "unknown tag: methos",
-            "line": " src/pixi/Text.js:36"
+            "line": " src/pixi/text/Text.js:55"
+        },
+        {
+            "message": "unknown tag: internal",
+            "line": " src/pixi/Stage.js:37"
         },
         {
             "message": "Missing item type",
@@ -2352,7 +2702,39 @@
         },
         {
             "message": "Missing item type\nThis will begin loading the assets sequentially",
-            "line": " src/pixi/loaders/AssetLoader.js:43"
+            "line": " src/pixi/loaders/AssetLoader.js:51"
+        },
+        {
+            "message": "Missing item type\nInvoked after each file is loaded",
+            "line": " src/pixi/loaders/AssetLoader.js:79"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/pixi/loaders/BitmapFontLoader.js:1"
+        },
+        {
+            "message": "Missing item type\nThis will begin loading the JSON file",
+            "line": " src/pixi/loaders/BitmapFontLoader.js:34"
+        },
+        {
+            "message": "Missing item type\nInvoked when XML file is loaded",
+            "line": " src/pixi/loaders/BitmapFontLoader.js:51"
+        },
+        {
+            "message": "Missing item type\nInvoked when all files are loaded (xml/fnt and texture)",
+            "line": " src/pixi/loaders/BitmapFontLoader.js:118"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/pixi/loaders/ImageLoader.js:1"
+        },
+        {
+            "message": "Missing item type\nLoads image or takes it from cache",
+            "line": " src/pixi/loaders/ImageLoader.js:24"
+        },
+        {
+            "message": "Missing item type\nInvoked when image file is loaded or it is already cached and ready to use",
+            "line": " src/pixi/loaders/ImageLoader.js:43"
         },
         {
             "message": "Missing item type",
@@ -2360,7 +2742,15 @@
         },
         {
             "message": "Missing item type\nThis will begin loading the JSON file",
-            "line": " src/pixi/loaders/SpriteSheetLoader.js:37"
+            "line": " src/pixi/loaders/SpriteSheetLoader.js:38"
+        },
+        {
+            "message": "Missing item type\nInvoke when JSON file is loaded",
+            "line": " src/pixi/loaders/SpriteSheetLoader.js:55"
+        },
+        {
+            "message": "Missing item type\nInvoke when all files are loaded (json and texture)",
+            "line": " src/pixi/loaders/SpriteSheetLoader.js:97"
         },
         {
             "message": "Missing item type",
@@ -2472,6 +2862,42 @@
         },
         {
             "message": "Missing item type",
+            "line": " src/pixi/text/BitmapText.js:1"
+        },
+        {
+            "message": "Missing item type\nSet the copy for the text object",
+            "line": " src/pixi/text/BitmapText.js:34"
+        },
+        {
+            "message": "Missing item type\nRenders text",
+            "line": " src/pixi/text/BitmapText.js:65"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/pixi/text/BitmapText.js:138"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/pixi/text/Text.js:1"
+        },
+        {
+            "message": "Missing item type\nSet the copy for the text object. To split a line you can use \"\\n\"",
+            "line": " src/pixi/text/Text.js:55"
+        },
+        {
+            "message": "Missing item type\nRenders text",
+            "line": " src/pixi/text/Text.js:66"
+        },
+        {
+            "message": "Missing item type\nUpdates texture size based on canvas size",
+            "line": " src/pixi/text/Text.js:129"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/pixi/text/Text.js:143"
+        },
+        {
+            "message": "Missing item type",
             "line": " src/pixi/textures/BaseTexture.js:1"
         },
         {
@@ -2516,7 +2942,15 @@
         },
         {
             "message": "Missing item type",
+            "line": " src/pixi/Intro.js:1"
+        },
+        {
+            "message": "Missing item type",
             "line": " src/pixi/MovieClip.js:1"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/pixi/Outro.js:1"
         },
         {
             "message": "Missing item type",
@@ -2541,18 +2975,6 @@
         {
             "message": "Missing item type",
             "line": " src/pixi/Stage.js:1"
-        },
-        {
-            "message": "Missing item type",
-            "line": " src/pixi/Text.js:1"
-        },
-        {
-            "message": "Missing item type\nSet the copy for the text object",
-            "line": " src/pixi/Text.js:36"
-        },
-        {
-            "message": "Missing item type",
-            "line": " src/pixi/Text.js:66"
         }
     ]
 }

@@ -45,11 +45,17 @@
             
                 <li><a href="..&#x2F;classes/BaseTexture.html">BaseTexture</a></li>
             
+                <li><a href="..&#x2F;classes/BitmapFontLoader.html">BitmapFontLoader</a></li>
+            
+                <li><a href="..&#x2F;classes/BitmapText.html">BitmapText</a></li>
+            
                 <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
+            
+                <li><a href="..&#x2F;classes/ImageLoader.html">ImageLoader</a></li>
             
                 <li><a href="..&#x2F;classes/InteractionData.html">InteractionData</a></li>
             
@@ -149,10 +155,10 @@
     <p>The sprite sheet loader is used to load in JSON sprite sheet data
 To generate the data you can use http://www.codeandweb.com/texturepacker and publish the "JSON" format
 There is a free version so thats nice, although the paid version is great value for money.
-It is highly recommended to use Sprite sheets (also know as texture atlas') as it means sprite's can be batched and drawn together for highly increased rendering speed.
+It is highly recommended to use Sprite sheets (also know as texture atlas") as it means sprite"s can be batched and drawn together for highly increased rendering speed.
 Once the data has been loaded the frames are stored in the PIXI texture cache and can be accessed though PIXI.Texture.fromFrameId() and PIXI.Sprite.fromFromeId()
 This loader will also load the image file that the Spritesheet points to as well as the data.
-When loaded this class will dispatch a 'loaded' event</p>
+When loaded this class will dispatch a "loaded" event</p>
 </div>
 
 
@@ -168,6 +174,12 @@ When loaded this class will dispatch a 'loaded' event</p>
                 <li class="arg">
                     
                         <code>url</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>crossorigin</code>
                     
                 </li>
             
@@ -230,6 +242,21 @@ When loaded this class will dispatch a 'loaded' event</p>
 
                     <div class="param-description">
                         <p>the url of the sprite sheet JSON file</p>
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">crossorigin</code>
+                        <span class="type">Boolean</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
                     </div>
 
                     

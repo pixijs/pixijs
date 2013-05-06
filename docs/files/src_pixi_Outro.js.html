@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src&#x2F;pixi&#x2F;Stage.js - Pixi.JS</title>
+    <title>src&#x2F;pixi&#x2F;Outro.js - Pixi.JS</title>
     <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
@@ -124,7 +124,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src&#x2F;pixi&#x2F;Stage.js</h1>
+                        <h1 class="file-heading">File: src&#x2F;pixi&#x2F;Outro.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
@@ -132,116 +132,17 @@
  * @author Mat Groves http:&#x2F;&#x2F;matgroves.com&#x2F; @Doormat23
  *&#x2F;
 
-&#x2F;**
-A Stage represents the root of the display tree. Everything connected to the stage is rendered
-@class Stage
-@extends DisplayObjectContainer
-@constructor
-@param backgroundColor {Number} the background color of the stage
-@param interactive {Boolean} enable &#x2F; disable interaction (default is false)
-*&#x2F;
-PIXI.Stage = function(backgroundColor, interactive)
-{
-	
-	PIXI.DisplayObjectContainer.call( this );
-	this.worldTransform = PIXI.mat3.create()&#x2F;&#x2F;.&#x2F;&#x2F;identity();
-	this.__childrenAdded = [];
-	this.__childrenRemoved = [];
-	this.childIndex = 0;
-	this.stage= this;
-	
-	this.stage.hitArea = new PIXI.Rectangle(0,0,100000, 100000);
-	
-	&#x2F;&#x2F; interaction!
-	this.interactive = !!interactive;
-	this.interactionManager = new PIXI.InteractionManager(this);
-	
-	this.setBackgroundColor(backgroundColor);
-}
-
-&#x2F;&#x2F; constructor
-PIXI.Stage.constructor = PIXI.Stage;
-
-PIXI.Stage.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
-
-&#x2F;**
-@method updateTransform
-@internal
-*&#x2F;
-PIXI.Stage.prototype.updateTransform = function()
-{
-	this.worldAlpha = 1;		
-	
-	for(var i=0,j=this.children.length; i&lt;j; i++)
-	{
-		this.children[i].updateTransform();	
-	}
-	
-	if(this.dirty)
-	{
-		this.dirty = false;
-		&#x2F;&#x2F; update interactive!
-		this.interactionManager.dirty = true;
-	}
-
-	if(this.interactive)this.interactionManager.update();
-}
-
-&#x2F;**
- * @method setBackgroundColor
- * @param backgroundColor {Number}
- *&#x2F;
-PIXI.Stage.prototype.setBackgroundColor = function(backgroundColor)
-{
-	this.backgroundColor = backgroundColor || 0x000000;
-	this.backgroundColorSplit = HEXtoRGB(this.backgroundColor);
-	this.backgroundColorString =  &quot;#&quot; + this.backgroundColor.toString(16);
-}
-
-&#x2F;**
- * This will return the point containing global coords of the mouse.
- * @method getMousePosition
- * @return {Point} The point containing the coords of the global InteractionData position.
- *&#x2F;
-PIXI.Stage.prototype.getMousePosition = function()
-{
-	return this.interactionManager.mouse.global;
-}
-
-PIXI.Stage.prototype.__addChild = function(child)
-{
-	if(child.interactive)this.dirty = true;
-	
-	child.stage = this;
-	
-	if(child.children)
-	{
-		for (var i=0; i &lt; child.children.length; i++) 
-		{
-		  	this.__addChild(child.children[i]);
-		};
-	}
-	
-}
+ if (typeof exports !== &#x27;undefined&#x27;) {
+    if (typeof module !== &#x27;undefined&#x27; &amp;&amp; module.exports) {
+      exports = module.exports = PIXI;
+    }
+    exports.PIXI = PIXI;
+  } else {
+    root.PIXI = PIXI;
+  }
 
 
-PIXI.Stage.prototype.__removeChild = function(child)
-{
-	if(child.interactive)this.dirty = true;
-	
-	this.__childrenRemoved.push(child);
-
-	child.stage = undefined;
-	
-	if(child.children)
-	{
-		for(var i=0,j=child.children.length; i&lt;j; i++)
-		{
-		  	this.__removeChild(child.children[i])
-		}
-	}
-}
-
+}).call(this);
     </pre>
 </div>
 

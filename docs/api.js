@@ -3,9 +3,12 @@ YUI.add("yuidoc-meta", function(Y) {
     "classes": [
         "AssetLoader",
         "BaseTexture",
+        "BitmapFontLoader",
+        "BitmapText",
         "CanvasRenderer",
         "DisplayObject",
         "DisplayObjectContainer",
+        "ImageLoader",
         "InteractionData",
         "InteractionManager",
         "MovieClip",

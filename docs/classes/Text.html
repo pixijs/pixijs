@@ -45,11 +45,17 @@
             
                 <li><a href="..&#x2F;classes/BaseTexture.html">BaseTexture</a></li>
             
+                <li><a href="..&#x2F;classes/BitmapFontLoader.html">BitmapFontLoader</a></li>
+            
+                <li><a href="..&#x2F;classes/BitmapText.html">BitmapText</a></li>
+            
                 <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
+            
+                <li><a href="..&#x2F;classes/ImageLoader.html">ImageLoader</a></li>
             
                 <li><a href="..&#x2F;classes/InteractionData.html">InteractionData</a></li>
             
@@ -130,7 +136,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="..&#x2F;files&#x2F;src_pixi_Text.js.html#l5"><code>src&#x2F;pixi&#x2F;Text.js:5</code></a>
+            Defined in: <a href="..&#x2F;files&#x2F;src_pixi_text_Text.js.html#l5"><code>src&#x2F;pixi&#x2F;text&#x2F;Text.js:5</code></a>
         </div>
     
 
@@ -146,7 +152,7 @@
 
 
 <div class="box intro">
-    <p>A Text Object will create a line of text</p>
+    <p>A Text Object will create a line(s) of text to split a line you can use "\n"</p>
 </div>
 
 
@@ -167,25 +173,7 @@
             
                 <li class="arg">
                     
-                        <code>fontStyle</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>fillStyle</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>strokeStyle</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>strokeThickness</code>
+                        <code class="optional">[style]</code>
                     
                 </li>
             
@@ -218,7 +206,7 @@
             
         
         
-        <a href="..&#x2F;files&#x2F;src_pixi_Text.js.html#l5"><code>src&#x2F;pixi&#x2F;Text.js:5</code></a>
+        <a href="..&#x2F;files&#x2F;src_pixi_text_Text.js.html#l5"><code>src&#x2F;pixi&#x2F;text&#x2F;Text.js:5</code></a>
         
         </p>
 
@@ -255,61 +243,91 @@
             
                 <li class="param">
                     
-                        <code class="param-name">fontStyle</code>
-                        <span class="type">String</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>the style and size of the font eg "bold 20px Arial"</p>
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">fillStyle</code>
+                        <code class="param-name optional">[style]</code>
                         <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>a canvas fillstyle that will be used on the text eg "red", "#00FF00" can also be null</p>
+                        <p>The style parameters</p>
                     </div>
 
                     
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">strokeStyle</code>
-                        <span class="type">String</span>
-                    
+                        <ul class="params-list">
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[font]</code>
+                                    <span class="type">String</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
 
-                    
+                                <div class="param-description">
+                                    <p>default "bold 20pt Arial" The style and size of the font</p>
+                                </div>
 
-                    <div class="param-description">
-                        <p>a canvas fillstyle that will be used on the text stroke eg "blue", "#FCFF00" can also be null</p>
-                    </div>
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[fill=&quot;black&quot;]</code>
+                                    <span class="type">Object</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
 
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">strokeThickness</code>
-                        <span class="type">Number</span>
-                    
+                                <div class="param-description">
+                                    <p>A canvas fillstyle that will be used on the text eg "red", "#00FF00"</p>
+                                </div>
 
-                    
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[align=&quot;left&quot;]</code>
+                                    <span class="type">String</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
 
-                    <div class="param-description">
-                        <p>A number that represents the thicknes of the stroke. default is 0 (no stroke)</p>
-                    </div>
+                                <div class="param-description">
+                                    <p>An alignment of the multiline text ("left", "center" or "right")</p>
+                                </div>
 
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[stroke]</code>
+                                    <span class="type">String</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    <p>A canvas fillstyle that will be used on the text stroke eg "blue", "#FCFF00"</p>
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[strokeThickness=0]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    <p>A number that represents the thickness of the stroke. Default is 0 (no stroke)</p>
+                                </div>
+
+                                
+                            </li>
+                            
+                        </ul>
                     
                 </li>
             
@@ -672,7 +690,7 @@
                     
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                     
@@ -762,7 +780,7 @@
                     
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                     
@@ -777,7 +795,7 @@
                     
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                     
@@ -945,7 +963,7 @@
                     
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                     
@@ -1451,7 +1469,7 @@ for this callback to be fired, The touch must have started over the displayObjec
                     
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                     
@@ -1560,25 +1578,13 @@ for this callback to be fired, The touch must have started over the displayObjec
             
                 <li class="arg">
                     
-                        <code>fontStyle</code>
+                        <code class="optional">[style]</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>fillStyle</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>strokeStyle</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>strokeThickness</code>
+                        <code>[style.font=&quot;bold</code>
                     
                 </li>
             
@@ -1611,7 +1617,7 @@ for this callback to be fired, The touch must have started over the displayObjec
             
         
         
-        <a href="..&#x2F;files&#x2F;src_pixi_Text.js.html#l47"><code>src&#x2F;pixi&#x2F;Text.js:47</code></a>
+        <a href="..&#x2F;files&#x2F;src_pixi_text_Text.js.html#l34"><code>src&#x2F;pixi&#x2F;text&#x2F;Text.js:34</code></a>
         
         </p>
 
@@ -1633,59 +1639,90 @@ for this callback to be fired, The touch must have started over the displayObjec
             
                 <li class="param">
                     
-                        <code class="param-name">fontStyle</code>
-                        <span class="type">String</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>the style and size of the font eg "bold 20px Arial"</p>
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">fillStyle</code>
+                        <code class="param-name optional">[style]</code>
                         <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>a canvas fillstyle that will be used on the text eg "red", "#00FF00" can also be null</p>
+                        <p>The style parameters</p>
                     </div>
 
+                    
+                        <ul class="params-list">
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[fill=&quot;black&quot;]</code>
+                                    <span class="type">Object</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    <p>A canvas fillstyle that will be used on the text eg "red", "#00FF00"</p>
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[align=&quot;left&quot;]</code>
+                                    <span class="type">String</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    <p>An alignment of the multiline text ("left", "center" or "right")</p>
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[stroke]</code>
+                                    <span class="type">String</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    <p>A canvas fillstyle that will be used on the text stroke eg "blue", "#FCFF00"</p>
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[strokeThickness=0]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    <p>A number that represents the thickness of the stroke. Default is 0 (no stroke)</p>
+                                </div>
+
+                                
+                            </li>
+                            
+                        </ul>
                     
                 </li>
             
                 <li class="param">
                     
-                        <code class="param-name">strokeStyle</code>
+                        <code class="param-name">[style.font=&quot;bold</code>
                         <span class="type">String</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>a canvas fillstyle that will be used on the text stroke eg "blue", "#FCFF00" can also be null</p>
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">strokeThickness</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>A number that represents the thicknes of the stroke. default is 0 (no stroke)</p>
+                        <p>20pt Arial"] The style and size of the font</p>
                     </div>
 
                     
@@ -1859,7 +1896,7 @@ for this callback to be fired, The touch must have started over the displayObjec
                     
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                     
@@ -1874,7 +1911,7 @@ for this callback to be fired, The touch must have started over the displayObjec
                     
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                     

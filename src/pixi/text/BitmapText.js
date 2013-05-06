@@ -3,23 +3,22 @@
  */
 
 /**
- * A Text Object will create a line(s) of text using bitmap font
- * @class DisplayObjectContainer
- * @extends Sprite
+ * A Text Object will create a line(s) of text using bitmap font 
+ * You can generate the fnt files using 
+ * http://www.angelcode.com/products/bmfont/ for windows of
+ * http://www.bmglyph.com/ for mac.
+ * @class BitmapText
+ * @extends DisplayObjectContainer
  * @constructor
  * @param {String} text The copy that you would like the text to display
  * @param {Object} [style] The style parameters
- * @param {Object} [style.font="bold 20pt Arial"] The style and size of the font
- * @param {Object} [style.fill="black"] A canvas fillstyle that will be used on the text eg "red", "#00FF00"
+ * @param {String} [style.font] default is "20pt Arial" The size and bitmap font id (must have loaded previously)
  * @param {String} [style.align="left"] An alignment of the multiline text ("left", "center" or "right")
- * @param {String} [style.stroke] A canvas fillstyle that will be used on the text stroke eg "blue", "#FCFF00"
- * @param {Number} [style.strokeThickness=0] A number that represents the thickness of the stroke. Default is 0 (no stroke)
  */
+ //* @param {Object} [style.font="bold 20pt Arial"] The style and size of the font
 PIXI.BitmapText = function(text, style)
 {
-    this.canvas = document.createElement("canvas");
-    this.context = this.canvas.getContext("2d");
-    PIXI.DisplayObjectContainer.call(this, PIXI.Texture.fromCanvas(this.canvas));
+    PIXI.DisplayObjectContainer.call(this);
 
     this.setText(text);
     this.setStyle(style);
@@ -91,6 +90,7 @@ PIXI.BitmapText.prototype.updateText = function()
             prevCharCode = null;
             continue;
         }
+        
         var charData = data.chars[charCode];
         if(!charData) continue;
 

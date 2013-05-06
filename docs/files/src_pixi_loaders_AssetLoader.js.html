@@ -45,11 +45,17 @@
             
                 <li><a href="..&#x2F;classes/BaseTexture.html">BaseTexture</a></li>
             
+                <li><a href="..&#x2F;classes/BitmapFontLoader.html">BitmapFontLoader</a></li>
+            
+                <li><a href="..&#x2F;classes/BitmapText.html">BitmapText</a></li>
+            
                 <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
+            
+                <li><a href="..&#x2F;classes/ImageLoader.html">ImageLoader</a></li>
             
                 <li><a href="..&#x2F;classes/InteractionData.html">InteractionData</a></li>
             
@@ -127,17 +133,17 @@
  *&#x2F;
 
 &#x2F;**
- * A Class that loads a bunch of images &#x2F; sprite sheet files. Once the assets have been loaded they are added to the PIXI Texture cache and can be accessed easily through PIXI.Texture.fromFrame(), PIXI.Texture.fromImage() and PIXI.Sprite.fromImage(), PIXI.Sprite.fromFromeId()
- * When all items have been loaded this class will dispatch a &#x27;loaded&#x27; event
- * As each individual item is loaded this class will dispatch a &#x27;progress&#x27; event
+ * A Class that loads a bunch of images &#x2F; sprite sheet &#x2F; bitmap font files. Once the assets have been loaded they are added to the PIXI Texture cache and can be accessed easily through PIXI.Texture.fromImage() and PIXI.Sprite.fromImage()
+ * When all items have been loaded this class will dispatch a &quot;onLoaded&quot; event
+ * As each individual item is loaded this class will dispatch a &quot;onProgress&quot; event
  * @class AssetLoader
  * @constructor
  * @extends EventTarget
- * @param assetURLs {Array} an array of image&#x2F;sprite sheet urls that you would like loaded supported. Supported image formats include &quot;jpeg&quot;, &quot;jpg&quot;, &quot;png&quot;, &quot;gif&quot;. Supported sprite sheet data formats only include &quot;JSON&quot; at this time
+ * @param {Array} assetURLs an array of image&#x2F;sprite sheet urls that you would like loaded supported. Supported image formats include &quot;jpeg&quot;, &quot;jpg&quot;, &quot;png&quot;, &quot;gif&quot;. Supported sprite sheet data formats only include &quot;JSON&quot; at this time. Supported bitmap font data formats include &quot;xml&quot; and &quot;fnt&quot;.
  *&#x2F;
 PIXI.AssetLoader = function(assetURLs)
 {
-	PIXI.EventTarget.call( this );
+	PIXI.EventTarget.call(this);
 	
 	&#x2F;**
 	 * The array of asset URLs that are going to be loaded
@@ -145,11 +151,19 @@ PIXI.AssetLoader = function(assetURLs)
 	 * @type Array
 	 *&#x2F;
 	this.assetURLs = assetURLs;
-	
-	this.assets = [];
 
 	this.crossorigin = false;
-}
+
+    this.loadersByType = {
+        &quot;jpg&quot;:  PIXI.ImageLoader,
+        &quot;jpeg&quot;: PIXI.ImageLoader,
+        &quot;png&quot;:  PIXI.ImageLoader,
+        &quot;gif&quot;:  PIXI.ImageLoader,
+        &quot;json&quot;: PIXI.SpriteSheetLoader,
+        &quot;xml&quot;:  PIXI.BitmapFontLoader,
+        &quot;fnt&quot;:  PIXI.BitmapFontLoader
+    };
+};
 
 &#x2F;**
 Fired when an item has loaded
@@ -169,105 +183,45 @@ PIXI.AssetLoader.constructor = PIXI.AssetLoader;
  *&#x2F;
 PIXI.AssetLoader.prototype.load = function()
 {
-	this.loadCount = this.assetURLs.length;
-	var imageTypes = [&quot;jpeg&quot;, &quot;jpg&quot;, &quot;png&quot;, &quot;gif&quot;];
-	
-	var spriteSheetTypes = [&quot;json&quot;];
-	
-	for (var i=0; i &lt; this.assetURLs.length; i++) 
-	{
-		var filename = this.assetURLs[i];
-		var fileType = filename.split(&#x27;.&#x27;).pop().toLowerCase();
-		&#x2F;&#x2F; what are we loading?
-		var type = null;
-		
-		for (var j=0; j &lt; imageTypes.length; j++) 
-		{
-			if(fileType == imageTypes[j])
-			{
-				type = &quot;img&quot;;
-				break;
-			}
-		}
-		
-		if(type != &quot;img&quot;)
-		{
-			for (var j=0; j &lt; spriteSheetTypes.length; j++) 
-			{
-				if(fileType == spriteSheetTypes[j])
-				{
-					type = &quot;atlas&quot;;
-					break;
-				}
-			}
-		}
-		
-		if(type == &quot;img&quot;)
-		{
-			
-			var texture = PIXI.Texture.fromImage(filename, this.crossorigin);
-			if(!texture.baseTexture.hasLoaded)
-			{
-				
-				var scope = this;
-				texture.baseTexture.addEventListener( &#x27;loaded&#x27;, function ( event ) 
-				{
-					scope.onAssetLoaded();
-				});
-	
-				this.assets.push(texture);
-			}
-			else
-			{
-				
-				&#x2F;&#x2F; already loaded!
-				this.loadCount--;
-				&#x2F;&#x2F; if this hits zero here.. then everything was cached!
-				if(this.loadCount == 0)
-				{
-					this.dispatchEvent( { type: &#x27;onComplete&#x27;, content: this } );
-					if(this.onComplete)this.onComplete();
-				}
-			}
-			
-		}
-		else if(type == &quot;atlas&quot;)
-		{
-			var spriteSheetLoader = new PIXI.SpriteSheetLoader(filename);
-			spriteSheetLoader.crossorigin = this.crossorigin;
-			this.assets.push(spriteSheetLoader);
-			
-			var scope = this;
-			spriteSheetLoader.addEventListener( &#x27;loaded&#x27;, function ( event ) 
-			{
-				scope.onAssetLoaded();
-			});
-			
-			spriteSheetLoader.load();
-		}
-		else
-		{
-			&#x2F;&#x2F; dont know what the file is! :&#x2F;
-			&#x2F;&#x2F;this.loadCount--;
-			throw new Error(filename + &quot; is an unsupported file type &quot; + this);
-		}
-		
-		&#x2F;&#x2F;this.assets[i].load();
-	};
-}
+    var scope = this;
 
+	this.loadCount = this.assetURLs.length;
+
+    for (var i=0; i &lt; this.assetURLs.length; i++)
+	{
+		var fileName = this.assetURLs[i];
+		var fileType = fileName.split(&quot;.&quot;).pop().toLowerCase();
+
+        var loaderClass = this.loadersByType[fileType];
+        if(!loaderClass)
+            throw new Error(fileType + &quot; is an unsupported file type&quot;);
+
+        var loader = new loaderClass(fileName, this.crossorigin);
+
+        loader.addEventListener(&quot;loaded&quot;, function()
+        {
+            scope.onAssetLoaded();
+        });
+        loader.load();
+	}
+};
+
+&#x2F;**
+ * Invoked after each file is loaded
+ * @private
+ *&#x2F;
 PIXI.AssetLoader.prototype.onAssetLoaded = function()
 {
-	this.loadCount--;
-	this.dispatchEvent( { type: &#x27;onProgress&#x27;, content: this } );
-	if(this.onProgress)this.onProgress();
+    this.loadCount--;
+	this.dispatchEvent({type: &quot;onProgress&quot;, content: this});
+	if(this.onProgress) this.onProgress();
 	
 	if(this.loadCount == 0)
 	{
-		this.dispatchEvent( { type: &#x27;onComplete&#x27;, content: this } );
-		if(this.onComplete)this.onComplete();
+		this.dispatchEvent({type: &quot;onComplete&quot;, content: this});
+		if(this.onComplete) this.onComplete();
 	}
-}
+};
 
 
     </pre>

@@ -45,11 +45,17 @@
             
                 <li><a href="..&#x2F;classes/BaseTexture.html">BaseTexture</a></li>
             
+                <li><a href="..&#x2F;classes/BitmapFontLoader.html">BitmapFontLoader</a></li>
+            
+                <li><a href="..&#x2F;classes/BitmapText.html">BitmapText</a></li>
+            
                 <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
+            
+                <li><a href="..&#x2F;classes/ImageLoader.html">ImageLoader</a></li>
             
                 <li><a href="..&#x2F;classes/InteractionData.html">InteractionData</a></li>
             
@@ -130,30 +136,31 @@
  * The sprite sheet loader is used to load in JSON sprite sheet data
  * To generate the data you can use http:&#x2F;&#x2F;www.codeandweb.com&#x2F;texturepacker and publish the &quot;JSON&quot; format
  * There is a free version so thats nice, although the paid version is great value for money.
- * It is highly recommended to use Sprite sheets (also know as texture atlas&#x27;) as it means sprite&#x27;s can be batched and drawn together for highly increased rendering speed.
+ * It is highly recommended to use Sprite sheets (also know as texture atlas&quot;) as it means sprite&quot;s can be batched and drawn together for highly increased rendering speed.
  * Once the data has been loaded the frames are stored in the PIXI texture cache and can be accessed though PIXI.Texture.fromFrameId() and PIXI.Sprite.fromFromeId()
  * This loader will also load the image file that the Spritesheet points to as well as the data.
- * When loaded this class will dispatch a &#x27;loaded&#x27; event
+ * When loaded this class will dispatch a &quot;loaded&quot; event
  * @class SpriteSheetLoader
  * @extends EventTarget
  * @constructor
- * @param url {String} the url of the sprite sheet JSON file
+ * @param {String} url the url of the sprite sheet JSON file
+ * @param {Boolean} crossorigin
  *&#x2F;
 
-PIXI.SpriteSheetLoader = function(url)
+PIXI.SpriteSheetLoader = function(url, crossorigin)
 {
 	&#x2F;*
 	 * i use texture packer to load the assets..
 	 * http:&#x2F;&#x2F;www.codeandweb.com&#x2F;texturepacker
 	 * make sure to set the format as &quot;JSON&quot;
 	 *&#x2F;
-	PIXI.EventTarget.call( this );
+	PIXI.EventTarget.call(this);
 	this.url = url;
-	this.baseUrl = url.replace(&#x2F;[^\&#x2F;]*$&#x2F;, &#x27;&#x27;);
-	this.texture;
+	this.baseUrl = url.replace(&#x2F;[^\&#x2F;]*$&#x2F;, &quot;&quot;);
+	this.texture = null;
 	this.frames = {};
-	this.crossorigin = false;
-}
+	this.crossorigin = crossorigin;
+};
 
 &#x2F;&#x2F; constructor
 PIXI.SpriteSheetLoader.constructor = PIXI.SpriteSheetLoader;
@@ -165,32 +172,38 @@ PIXI.SpriteSheetLoader.prototype.load = function()
 {
 	this.ajaxRequest = new AjaxRequest();
 	var scope = this;
-	this.ajaxRequest.onreadystatechange=function()
+	this.ajaxRequest.onreadystatechange = function()
 	{
-		scope.onLoaded();
-	}
+		scope.onJSONLoaded();
+	};
 		
-	this.ajaxRequest.open(&quot;GET&quot;, this.url, true)
+	this.ajaxRequest.open(&quot;GET&quot;, this.url, true);
 	if (this.ajaxRequest.overrideMimeType) this.ajaxRequest.overrideMimeType(&quot;application&#x2F;json&quot;);
 	this.ajaxRequest.send(null)
-}
+};
 
-PIXI.SpriteSheetLoader.prototype.onLoaded = function()
+&#x2F;**
+ * Invoke when JSON file is loaded
+ * @private
+ *&#x2F;
+PIXI.SpriteSheetLoader.prototype.onJSONLoaded = function()
 {
-	if (this.ajaxRequest.readyState==4)
+	if (this.ajaxRequest.readyState == 4)
 	{
-		 if (this.ajaxRequest.status==200 || window.location.href.indexOf(&quot;http&quot;)==-1)
+		 if (this.ajaxRequest.status == 200 || window.location.href.indexOf(&quot;http&quot;) == -1)
 	 	{
-			var jsondata = eval(&quot;(&quot;+this.ajaxRequest.responseText+&quot;)&quot;);
-			
-			var textureUrl = this.baseUrl + jsondata.meta.image;
-			
-			this.texture = PIXI.Texture.fromImage(textureUrl, this.crossorigin).baseTexture;
-			
-		&#x2F;&#x2F;	if(!this.texture)this.texture = new PIXI.Texture(textureUrl);
-			
-			var frameData = jsondata.frames;
-			for (var i in frameData) 
+			var jsonData = eval(&quot;(&quot; + this.ajaxRequest.responseText + &quot;)&quot;);
+			var textureUrl = this.baseUrl + jsonData.meta.image;
+
+            var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
+            this.texture = image.texture.baseTexture;
+            var scope = this;
+            image.addEventListener(&quot;loaded&quot;, function(event) {
+                 scope.onLoaded();
+            });
+
+			var frameData = jsonData.frames;
+			for (var i in frameData)
 			{
 				var rect = frameData[i].frame;
 				if (rect)
@@ -201,32 +214,24 @@ PIXI.SpriteSheetLoader.prototype.onLoaded = function()
 					{
 						&#x2F;&#x2F;var realSize = frameData[i].spriteSourceSize;
 						PIXI.TextureCache[i].realSize = frameData[i].spriteSourceSize;
-						PIXI.TextureCache[i].trim.x = 0&#x2F;&#x2F; (realSize.x &#x2F; rect.w)
+						PIXI.TextureCache[i].trim.x = 0;&#x2F;&#x2F; (realSize.x &#x2F; rect.w)
 						&#x2F;&#x2F; calculate the offset!
 					}
-	&#x2F;&#x2F;				this.frames[i] = ;
 				}
    			}
-			
-			if(this.texture.hasLoaded)
-			{
-				this.dispatchEvent( { type: &#x27;loaded&#x27;, content: this } );
-			}
-			else
-			{
-				var scope = this;
-				&#x2F;&#x2F; wait for the texture to load..
-				this.texture.addEventListener(&#x27;loaded&#x27;, function(){
-					
-					scope.dispatchEvent( { type: &#x27;loaded&#x27;, content: scope } );
-					
-				});
-			}
-	 	}
-	}
-	
-}
 
+            image.load();
+	 	}
+	}	
+};
+&#x2F;**
+ * Invoke when all files are loaded (json and texture)
+ * @private
+ *&#x2F;
+PIXI.SpriteSheetLoader.prototype.onLoaded = function()
+{
+    this.dispatchEvent({type: &quot;loaded&quot;, content: this});
+};
 
     </pre>
 </div>

@@ -3,13 +3,13 @@
  */
 
 /**
- * A Text Object will create a line(s) of text
+ * A Text Object will create a line(s) of text to split a line you can use "\n"
  * @class Text
  * @extends Sprite
  * @constructor
  * @param {String} text The copy that you would like the text to display
  * @param {Object} [style] The style parameters
- * @param {Object} [style.font="bold 20pt Arial"] The style and size of the font
+ * @param {String} [style.font] default "bold 20pt Arial" The style and size of the font
  * @param {Object} [style.fill="black"] A canvas fillstyle that will be used on the text eg "red", "#00FF00"
  * @param {String} [style.align="left"] An alignment of the multiline text ("left", "center" or "right")
  * @param {String} [style.stroke] A canvas fillstyle that will be used on the text stroke eg "blue", "#FCFF00"
@@ -35,7 +35,7 @@ PIXI.Text.prototype = Object.create(PIXI.Sprite.prototype);
  * Set the style of the text
  * @method setStyle
  * @param {Object} [style] The style parameters
- * @param {Object} [style.font="bold 20pt Arial"] The style and size of the font
+ * @param {String} [style.font="bold 20pt Arial"] The style and size of the font
  * @param {Object} [style.fill="black"] A canvas fillstyle that will be used on the text eg "red", "#00FF00"
  * @param {String} [style.align="left"] An alignment of the multiline text ("left", "center" or "right")
  * @param {String} [style.stroke] A canvas fillstyle that will be used on the text stroke eg "blue", "#FCFF00"
@@ -49,12 +49,11 @@ PIXI.Text.prototype.setStyle = function(style)
     style.align = style.align || "left";
     style.strokeThickness = style.strokeThickness || 0;
     this.style = style;
-
     this.dirty = true;
 };
 
 /**
- * Set the copy for the text object
+ * Set the copy for the text object. To split a line you can use "\n"
  * @methos setText
  * @param {String} text The copy that you would like the text to display
  */
@@ -103,6 +102,7 @@ PIXI.Text.prototype.updateText = function()
 	for (i = 0; i < lines.length; i++)
 	{
 		var linePosition = new PIXI.Point(this.style.strokeThickness / 2, this.style.strokeThickness / 2 + i * lineHeight);
+	
 		if(this.style.align == "right")
 		{
 			linePosition.x += maxLineWidth - lineWidths[i];
@@ -122,6 +122,7 @@ PIXI.Text.prototype.updateText = function()
 			this.context.fillText(lines[i], linePosition.x, linePosition.y);
 		}
 	}
+	
     this.updateTexture();
 };
 

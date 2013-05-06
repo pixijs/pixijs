@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src&#x2F;pixi&#x2F;Text.js - Pixi.JS</title>
+    <title>src&#x2F;pixi&#x2F;text&#x2F;Text.js - Pixi.JS</title>
     <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
@@ -45,11 +45,17 @@
             
                 <li><a href="..&#x2F;classes/BaseTexture.html">BaseTexture</a></li>
             
+                <li><a href="..&#x2F;classes/BitmapFontLoader.html">BitmapFontLoader</a></li>
+            
+                <li><a href="..&#x2F;classes/BitmapText.html">BitmapText</a></li>
+            
                 <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
+            
+                <li><a href="..&#x2F;classes/ImageLoader.html">ImageLoader</a></li>
             
                 <li><a href="..&#x2F;classes/InteractionData.html">InteractionData</a></li>
             
@@ -118,7 +124,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src&#x2F;pixi&#x2F;Text.js</h1>
+                        <h1 class="file-heading">File: src&#x2F;pixi&#x2F;text&#x2F;Text.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
@@ -127,110 +133,156 @@
  *&#x2F;
 
 &#x2F;**
- * A Text Object will create a line of text
+ * A Text Object will create a line(s) of text to split a line you can use &quot;\n&quot;
  * @class Text
  * @extends Sprite
  * @constructor
- * @param text {String} The copy that you would like the text to display
- * @param fontStyle {String} the style and size of the font eg &quot;bold 20px Arial&quot;
- * @param fillStyle {Object} a canvas fillstyle that will be used on the text eg &quot;red&quot;, &quot;#00FF00&quot; can also be null
- * @param strokeStyle {String} a canvas fillstyle that will be used on the text stroke eg &quot;blue&quot;, &quot;#FCFF00&quot; can also be null
- * @param strokeThickness {Number} A number that represents the thicknes of the stroke. default is 0 (no stroke)
+ * @param {String} text The copy that you would like the text to display
+ * @param {Object} [style] The style parameters
+ * @param {String} [style.font] default &quot;bold 20pt Arial&quot; The style and size of the font
+ * @param {Object} [style.fill=&quot;black&quot;] A canvas fillstyle that will be used on the text eg &quot;red&quot;, &quot;#00FF00&quot;
+ * @param {String} [style.align=&quot;left&quot;] An alignment of the multiline text (&quot;left&quot;, &quot;center&quot; or &quot;right&quot;)
+ * @param {String} [style.stroke] A canvas fillstyle that will be used on the text stroke eg &quot;blue&quot;, &quot;#FCFF00&quot;
+ * @param {Number} [style.strokeThickness=0] A number that represents the thickness of the stroke. Default is 0 (no stroke)
  *&#x2F;
-PIXI.Text = function(text, fontStyle, fillStyle, strokeStyle, strokeThickness)
+PIXI.Text = function(text, style)
 {
-	this.canvas = document.createElement(&quot;canvas&quot;);
-	
-	this.context = this.canvas.getContext(&quot;2d&quot;);
-	&#x2F;&#x2F;document.body.appendChild(this.canvas);
-	this.setText(text);
-	this.setStyle(fontStyle, fillStyle, strokeStyle, strokeThickness);
-	
-	this.updateText();
-	
-	PIXI.Sprite.call( this, PIXI.Texture.fromCanvas(this.canvas));
-	
-	&#x2F;&#x2F; need to store a canvas that can
-}
+    this.canvas = document.createElement(&quot;canvas&quot;);
+    this.context = this.canvas.getContext(&quot;2d&quot;);
+    PIXI.Sprite.call(this, PIXI.Texture.fromCanvas(this.canvas));
+
+    this.setText(text);
+    this.setStyle(style);
+    this.updateText();
+    this.dirty = false;
+};
 
 &#x2F;&#x2F; constructor
 PIXI.Text.constructor = PIXI.Text;
-PIXI.Text.prototype = Object.create( PIXI.Sprite.prototype );
-
-&#x2F;**
- * Set the copy for the text object
- * @methos setText
- * @param text {String} The copy that you would like the text to display
- *&#x2F;
-PIXI.Text.prototype.setText = function(text)
-{
-	this.text = text || &quot; &quot;;
-	this.dirty = true;
-}
+PIXI.Text.prototype = Object.create(PIXI.Sprite.prototype);
 
 &#x2F;**
  * Set the style of the text
  * @method setStyle
- * @constructor
- * @param fontStyle {String} the style and size of the font eg &quot;bold 20px Arial&quot;
- * @param fillStyle {Object} a canvas fillstyle that will be used on the text eg &quot;red&quot;, &quot;#00FF00&quot; can also be null
- * @param strokeStyle {String} a canvas fillstyle that will be used on the text stroke eg &quot;blue&quot;, &quot;#FCFF00&quot; can also be null
- * @param strokeThickness {Number} A number that represents the thicknes of the stroke. default is 0 (no stroke)
+ * @param {Object} [style] The style parameters
+ * @param {String} [style.font=&quot;bold 20pt Arial&quot;] The style and size of the font
+ * @param {Object} [style.fill=&quot;black&quot;] A canvas fillstyle that will be used on the text eg &quot;red&quot;, &quot;#00FF00&quot;
+ * @param {String} [style.align=&quot;left&quot;] An alignment of the multiline text (&quot;left&quot;, &quot;center&quot; or &quot;right&quot;)
+ * @param {String} [style.stroke] A canvas fillstyle that will be used on the text stroke eg &quot;blue&quot;, &quot;#FCFF00&quot;
+ * @param {Number} [style.strokeThickness=0] A number that represents the thickness of the stroke. Default is 0 (no stroke)
  *&#x2F;
-PIXI.Text.prototype.setStyle = function(fontStyle, fillStyle, strokeStyle, strokeThickness)
+PIXI.Text.prototype.setStyle = function(style)
 {
-	this.fontStyle = fontStyle || &quot;bold 20pt Arial&quot;;
-	this.fillStyle = fillStyle;
-	this.strokeStyle = strokeStyle;
-	this.strokeThickness = strokeThickness || 0;
-	
-	this.dirty = true;
-}
+    style = style || {};
+    style.font = style.font || &quot;bold 20pt Arial&quot;;
+    style.fill = style.fill || &quot;black&quot;;
+    style.align = style.align || &quot;left&quot;;
+    style.strokeThickness = style.strokeThickness || 0;
+    this.style = style;
+    this.dirty = true;
+};
 
 &#x2F;**
+ * Set the copy for the text object. To split a line you can use &quot;\n&quot;
+ * @methos setText
+ * @param {String} text The copy that you would like the text to display
+ *&#x2F;
+PIXI.Sprite.prototype.setText = function(text)
+{
+    this.text = text || &quot; &quot;;
+    this.dirty = true;
+};
+
+&#x2F;**
+ * Renders text
  * @private
  *&#x2F;
 PIXI.Text.prototype.updateText = function()
 {
-&#x2F;&#x2F;	console.log(this.text);
-	this.context.font = this.fontStyle;
-		
-	this.canvas.width = this.context.measureText(this.text).width + this.strokeThickness&#x2F;&#x2F;textDimensions.width;
-	this.canvas.height = this.determineFontHeight(&quot;font: &quot; + this.fontStyle  + &quot;;&quot;)+ this.strokeThickness;&#x2F;&#x2F; textDimensions.height;
+	this.context.font = this.style.font;
 
-	this.context.fillStyle = this.fillStyle;
-	this.context.font = this.fontStyle;
+	&#x2F;&#x2F;split text into lines
+	var lines = this.text.split(&quot;\n&quot;);
+
+	&#x2F;&#x2F;calculate text width
+	var lineWidths = [];
+	var maxLineWidth = 0;
+	for (var i = 0; i &lt; lines.length; i++)
+	{
+		var lineWidth = this.context.measureText(lines[i]).width;
+		lineWidths[i] = lineWidth;
+		maxLineWidth = Math.max(maxLineWidth, lineWidth);
+	}
+	this.canvas.width = maxLineWidth + this.style.strokeThickness;
 	
-    this.context.strokeStyle = this.strokeStyle;
-	this.context.lineWidth = this.strokeThickness;
+	&#x2F;&#x2F;calculate text height
+	var lineHeight = this.determineFontHeight(&quot;font: &quot; + this.style.font  + &quot;;&quot;) + this.style.strokeThickness;
+	this.canvas.height = lineHeight * lines.length;
 
-	this.context.textBaseline=&quot;top&quot;; 
-
-    if(this.strokeStyle &amp;&amp; this.strokeThickness)this.context.strokeText(this.text,  this.strokeThickness&#x2F;2, this.strokeThickness&#x2F;2);
-	if(this.fillStyle)this.context.fillText(this.text,  this.strokeThickness&#x2F;2, this.strokeThickness&#x2F;2);
+	&#x2F;&#x2F;set canvas text styles
+	this.context.fillStyle = this.style.fill;
+	this.context.font = this.style.font;
 	
-	
-&#x2F;&#x2F;	console.log(&quot;&#x2F;&#x2F;&quot;)
-}
+	this.context.strokeStyle = this.style.stroke;
+	this.context.lineWidth = this.style.strokeThickness;
 
+	this.context.textBaseline = &quot;top&quot;;
+
+	&#x2F;&#x2F;draw lines line by line
+	for (i = 0; i &lt; lines.length; i++)
+	{
+		var linePosition = new PIXI.Point(this.style.strokeThickness &#x2F; 2, this.style.strokeThickness &#x2F; 2 + i * lineHeight);
+	
+		if(this.style.align == &quot;right&quot;)
+		{
+			linePosition.x += maxLineWidth - lineWidths[i];
+		}
+		else if(this.style.align == &quot;center&quot;)
+		{
+			linePosition.x += (maxLineWidth - lineWidths[i]) &#x2F; 2;
+		}
+
+		if(this.style.stroke &amp;&amp; this.style.strokeThickness)
+		{
+			this.context.strokeText(lines[i], linePosition.x, linePosition.y);
+		}
+
+		if(this.style.fill)
+		{
+			this.context.fillText(lines[i], linePosition.x, linePosition.y);
+		}
+	}
+	
+    this.updateTexture();
+};
+
+&#x2F;**
+ * Updates texture size based on canvas size
+ * @private
+ *&#x2F;
+PIXI.Text.prototype.updateTexture = function()
+{
+
+    this.texture.baseTexture.width = this.canvas.width;
+    this.texture.baseTexture.height = this.canvas.height;
+    this.texture.frame.width = this.canvas.width;
+    this.texture.frame.height = this.canvas.height;
+    PIXI.texturesToUpdate.push(this.texture.baseTexture);
+};
+
+&#x2F;**
+ * @private
+ *&#x2F;
 PIXI.Text.prototype.updateTransform = function()
 {
 	if(this.dirty)
 	{
 		this.updateText();	
-		
-		&#x2F;&#x2F; update the texture..
-		this.texture.baseTexture.width = this.canvas.width;
-		this.texture.baseTexture.height = this.canvas.height;
-		this.texture.frame.width = this.canvas.width;
-		this.texture.frame.height = this.canvas.height;
-		
-		PIXI.texturesToUpdate.push(this.texture.baseTexture);
 		this.dirty = false;
 	}
 	
-	PIXI.Sprite.prototype.updateTransform.call( this );
-}
+	PIXI.Sprite.prototype.updateTransform.call(this);
+};
 
 &#x2F;*
  * http:&#x2F;&#x2F;stackoverflow.com&#x2F;users&#x2F;34441&#x2F;ellisbben
@@ -238,9 +290,9 @@ PIXI.Text.prototype.updateTransform = function()
  *&#x2F;
 PIXI.Text.prototype.determineFontHeight = function(fontStyle) 
 {
-	&#x2F;&#x2F; build a little refference dictionary so if the font style has been used return a
+	&#x2F;&#x2F; build a little reference dictionary so if the font style has been used return a
 	&#x2F;&#x2F; cached version...
-	var result = PIXI.Text.heightCache[fontStyle]
+	var result = PIXI.Text.heightCache[fontStyle];
 	
 	if(!result)
 	{
@@ -252,7 +304,7 @@ PIXI.Text.prototype.determineFontHeight = function(fontStyle)
 		body.appendChild(dummy);
 		
 		result = dummy.offsetHeight;
-		PIXI.Text.heightCache[fontStyle] = result
+		PIXI.Text.heightCache[fontStyle] = result;
 		
 		body.removeChild(dummy);
 	}
@@ -267,7 +319,7 @@ PIXI.Text.prototype.destroy = function(destroyTexture)
 		this.texture.destroy();
 	}
 		
-}
+};
 
 PIXI.Text.heightCache = {};
 

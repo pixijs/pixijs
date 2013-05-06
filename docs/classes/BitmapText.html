@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>TilingSprite - Pixi.JS</title>
+    <title>BitmapText - Pixi.JS</title>
     <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
@@ -124,7 +124,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>TilingSprite Class</h1>
+                        <h1>BitmapText Class</h1>
 <div class="box meta">
     
 
@@ -136,7 +136,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="..&#x2F;files&#x2F;src_pixi_extras_TilingSprite.js.html#l5"><code>src&#x2F;pixi&#x2F;extras&#x2F;TilingSprite.js:5</code></a>
+            Defined in: <a href="..&#x2F;files&#x2F;src_pixi_text_BitmapText.js.html#l5"><code>src&#x2F;pixi&#x2F;text&#x2F;BitmapText.js:5</code></a>
         </div>
     
 
@@ -152,14 +152,17 @@
 
 
 <div class="box intro">
-    <p>A tiling sprite is a fast way of rendering a tiling image</p>
+    <p>A Text Object will create a line(s) of text using bitmap font 
+You can generate the fnt files using 
+http://www.angelcode.com/products/bmfont/ for windows of
+http://www.bmglyph.com/ for mac.</p>
 </div>
 
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_TilingSprite" class="method item">
-    <h3 class="name"><code>TilingSprite</code></h3>
+        <div id="method_BitmapText" class="method item">
+    <h3 class="name"><code>BitmapText</code></h3>
 
     
         <div class="args">
@@ -167,19 +170,13 @@
             
                 <li class="arg">
                     
-                        <code>texture</code>
+                        <code>text</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>width</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>height</code>
+                        <code class="optional">[style]</code>
                     
                 </li>
             
@@ -212,7 +209,7 @@
             
         
         
-        <a href="..&#x2F;files&#x2F;src_pixi_extras_TilingSprite.js.html#l5"><code>src&#x2F;pixi&#x2F;extras&#x2F;TilingSprite.js:5</code></a>
+        <a href="..&#x2F;files&#x2F;src_pixi_text_BitmapText.js.html#l5"><code>src&#x2F;pixi&#x2F;text&#x2F;BitmapText.js:5</code></a>
         
         </p>
 
@@ -234,14 +231,14 @@
             
                 <li class="param">
                     
-                        <code class="param-name">texture</code>
-                        <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
+                        <code class="param-name">text</code>
+                        <span class="type">String</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>the texture of the tiling sprite</p>
+                        <p>The copy that you would like the text to display</p>
                     </div>
 
                     
@@ -249,31 +246,49 @@
             
                 <li class="param">
                     
-                        <code class="param-name">width</code>
-                        <span class="type">Number</span>
+                        <code class="param-name optional">[style]</code>
+                        <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>the width of the tiling sprite</p>
+                        <p>The style parameters</p>
                     </div>
 
                     
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">height</code>
-                        <span class="type">Number</span>
-                    
+                        <ul class="params-list">
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[font]</code>
+                                    <span class="type">String</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
 
-                    
+                                <div class="param-description">
+                                    <p>default is "20pt Arial" The size and bitmap font id (must have loaded previously)</p>
+                                </div>
 
-                    <div class="param-description">
-                        <p>the height of the tiling sprite</p>
-                    </div>
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[align=&quot;left&quot;]</code>
+                                    <span class="type">String</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
 
+                                <div class="param-description">
+                                    <p>An alignment of the multiline text ("left", "center" or "right")</p>
+                                </div>
+
+                                
+                            </li>
+                            
+                        </ul>
                     
                 </li>
             
@@ -390,6 +405,13 @@
                                 
                             </li>
                         
+                            <li class="index-item method">
+                                <a href="#method_setStyle">setStyle</a>
+
+                                
+                                
+                            </li>
+                        
                             <li class="index-item method inherited">
                                 <a href="#method_swapChildren">swapChildren</a>
 
@@ -498,20 +520,6 @@
                                 
                             </li>
                         
-                            <li class="index-item property">
-                                <a href="#property_tileScale">tileScale</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_tileScale">tileScale</a>
-
-                                
-                                
-                            </li>
-                        
                             <li class="index-item property inherited">
                                 <a href="#property_visible">visible</a>
 
@@ -601,7 +609,7 @@
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -691,7 +699,7 @@
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -706,7 +714,7 @@
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -790,7 +798,7 @@
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -874,7 +882,7 @@
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -958,7 +966,7 @@
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -1042,7 +1050,7 @@
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -1126,7 +1134,7 @@
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -1211,7 +1219,7 @@ for this callback to be fired the mouse must have been pressed down over the dis
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -1296,7 +1304,7 @@ for this callback to be fired, The touch must have started over the displayObjec
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -1380,7 +1388,7 @@ for this callback to be fired, The touch must have started over the displayObjec
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -1464,9 +1472,128 @@ for this callback to be fired, The touch must have started over the displayObjec
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_setStyle" class="method item">
+    <h3 class="name"><code>setStyle</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code class="optional">[style]</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;src_pixi_text_BitmapText.js.html#l45"><code>src&#x2F;pixi&#x2F;text&#x2F;BitmapText.js:45</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Set the style of the text</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name optional">[style]</code>
+                        <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The style parameters</p>
+                    </div>
+
+                    
+                        <ul class="params-list">
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name">font</code>
+                                    <span class="type">Object</span>
+                                
+
+                                <div class="param-description">
+                                    <p>The style and size of the font. If font size is not specified, it uses default bitmap font size. Font name is required</p>
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[align=&quot;left&quot;]</code>
+                                    <span class="type">String</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    <p>An alignment of the multiline text ("left", "center" or "right")</p>
+                                </div>
+
+                                
+                            </li>
+                            
+                        </ul>
                     
                 </li>
             
@@ -1554,7 +1681,7 @@ for this callback to be fired, The touch must have started over the displayObjec
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -1569,7 +1696,7 @@ for this callback to be fired, The touch must have started over the displayObjec
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -1654,7 +1781,7 @@ basically a touch version of click</p>
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -1738,7 +1865,7 @@ basically a touch version of click</p>
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -1823,7 +1950,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -1907,7 +2034,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -2291,94 +2418,6 @@ Setting it is a neat way of optimising the hitTest function that the interaction
 
     <div class="description">
         <p>[read-only] The stage the display object is connected to, or undefined if it is not connected to the stage.</p>
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_tileScale" class="property item">
-    <h3 class="name"><code>tileScale</code></h3>
-    <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="..&#x2F;files&#x2F;src_pixi_extras_TilingSprite.js.html#l29"><code>src&#x2F;pixi&#x2F;extras&#x2F;TilingSprite.js:29</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>The offset position of the image that is being tiled</p>
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_tileScale" class="property item">
-    <h3 class="name"><code>tileScale</code></h3>
-    <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="..&#x2F;files&#x2F;src_pixi_extras_TilingSprite.js.html#l23"><code>src&#x2F;pixi&#x2F;extras&#x2F;TilingSprite.js:23</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>The scaling of the image that is being tiled</p>
     </div>
 
     
