@@ -18,10 +18,11 @@ PIXI._defaultFrame = new PIXI.Rectangle(0,0,1,1);
  * @default false
  * 
  */
-PIXI.WebGLRenderer = function(width, height, view, transparent)
+PIXI.WebGLRenderer = function(width, height, view, transparent, preserveDrawingBuffer)
 {
 	// do a catch.. only 1 webGL renderer..
 
+	this.preserveDrawingBuffer = preserveDrawingBuffer
 	//console.log(transparent)
 	this.transparent = !!transparent;
 	
@@ -44,7 +45,8 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
         this.gl = this.view.getContext("experimental-webgl",  {  	
     		 alpha: this.transparent,
     		 antialias:false, // SPEED UP??
-    		 premultipliedAlpha:true
+    		 premultipliedAlpha:true,
+    		 preserveDrawingBuffer:preserveDrawingBuffer
         });
     } 
     catch (e) 
@@ -185,6 +187,15 @@ PIXI.WebGLRenderer.prototype.checkVisibility = function(displayObject, globalVis
 
 
 /**
+ * Clears the webGL view
+ * @method clear
+ */
+PIXI.WebGLRenderer.prototype.clear = function(stage)
+{
+	gl.clear(gl.COLOR_BUFFER_BIT);
+	gl.clearColor(stage.backgroundColorSplit[0], stage.backgroundColorSplit[1], stage.backgroundColorSplit[2], 0);
+}
+/**
  * Renders the stage to its webGL view
  * @method render
  * @param stage {Stage} the PIXI.Stage element to be rendered
@@ -207,9 +218,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	{
 		this.removeDisplayObject(stage.__childrenRemoved[i]);
 	}
-
-
-
+	
 	// update any textures	
 	for (var i=0; i < PIXI.texturesToUpdate.length; i++) this.updateTexture(PIXI.texturesToUpdate[i]);
 	for (var i=0; i < PIXI.texturesToDestroy.length; i++) this.destroyTexture(PIXI.texturesToDestroy[i]);
@@ -227,11 +236,10 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	
 	var gl = this.gl;
 	
-	gl.clear(gl.COLOR_BUFFER_BIT)
-
-	gl.clearColor(stage.backgroundColorSplit[0], stage.backgroundColorSplit[1], stage.backgroundColorSplit[2], 0);     
-	
-	
+	if (!this.preserveDrawingBuffer) {
+        	gl.clear(gl.COLOR_BUFFER_BIT);
+        	gl.clearColor(stage.backgroundColorSplit[0], stage.backgroundColorSplit[1], stage.backgroundColorSplit[2], 0);  
+    	}
 	// set the correct blend mode!
  	gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
     gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.projectionMatrix);
