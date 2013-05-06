@@ -73,8 +73,20 @@ PIXI.DisplayObjectContainer.prototype.swapLayers = function (layerName, layerNam
 };
 
 /**
+ * Returns the Layer with specified name or creates it
+ * @method getLayer
+ * @param  layerName {String}
+ * @return DisplayObjectContainer
+ */
+PIXI.DisplayObjectContainer.prototype.getLayer = function (layerName) {
+	if (!this[layerName])
+		this.addLayer(layerName);
+	return this[layerName];
+};
+
+/**
  * Returns the Layer at the specified index
- * @method getChildAt
+ * @method getLayerAt
  * @param  index {Number}
  * @return DisplayObjectContainer
  */
