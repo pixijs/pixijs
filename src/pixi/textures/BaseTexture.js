@@ -43,8 +43,9 @@ PIXI.BaseTexture = function(source)
 	 * @type Image
 	 */
 	this.source = source//new Image();
-	
-	if(this.source instanceof Image)
+
+	// Ejecta Image object is not an instanceof Image
+	if(this.source.hasOwnProperty('src'))
 	{
 		if(this.source.complete)
 		{
@@ -89,8 +90,8 @@ PIXI.BaseTexture.constructor = PIXI.BaseTexture;
 
 PIXI.BaseTexture.prototype.destroy = function()
 {
-	
-	if(this.source instanceof Image)
+	// Ejecta Image object is not an instanceof Image
+	if(this.source.hasOwnProperty('src'))
 	{
 		this.source.src = null;
 	}

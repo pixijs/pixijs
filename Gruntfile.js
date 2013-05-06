@@ -103,7 +103,8 @@ module.exports = function(grunt) {
                 'examples/example 7 - Transparent Background',
                 'examples/example 8 - Dragging',
                 'examples/example 9 - Tiling Texture',
-                'examples/example 10 - Text'
+                'examples/example 10 - Text',
+                'examples/example 11 - Ejecta Bunnymark/App'
             ]
         },
         connect: {
