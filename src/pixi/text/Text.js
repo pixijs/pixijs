@@ -23,8 +23,8 @@ PIXI.Text = function(text, style)
 
     this.setText(text);
     this.setStyle(style);
-    //this.updateText();
-    this.dirty = true;
+    this.updateText();
+    this.dirty = false;
 };
 
 // constructor
