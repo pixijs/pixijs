@@ -203,9 +203,12 @@ PIXI.DisplayObject.prototype.updateTransform = function()
 	localTransform[3] = this._sr * this.scale.x;
 	localTransform[4] = this._cr * this.scale.y;
 	
+	var ax = this.anchor ? this.anchor.x : 0;
+	var ay = this.anchor ? this.anchor.y : 0;
+	
 	///AAARR GETTER SETTTER!
-	localTransform[2] = this.position.x;
-	localTransform[5] = this.position.y;
+	localTransform[2] = this.position.x - localTransform[0] * ax + ax - ay * localTransform[1];
+	localTransform[5] = this.position.y - localTransform[4] * ay + ay - ax * localTransform[3];
 	
     // Cache the matrix values (makes for huge speed increases!)
     var a00 = localTransform[0], a01 = localTransform[1], a02 = localTransform[2],
