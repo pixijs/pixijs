@@ -25,6 +25,7 @@ module.exports = function(grunt) {
             '<%= dirs.src %>/utils/Utils.js',
             '<%= dirs.src %>/utils/EventTarget.js',
             '<%= dirs.src %>/utils/Matrix.js',
+            '<%= dirs.src %>/utils/Layers.js',
             '<%= dirs.src %>/utils/Detector.js',
             '<%= dirs.src %>/renderers/WebGLShaders.js',
             '<%= dirs.src %>/renderers/WebGLRenderer.js',
