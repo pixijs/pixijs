@@ -3,7 +3,7 @@
  */
 
 /**
- * A Text Object will create a line(s) of text using bitmap font 
+ * A Text Object will create a line(s) of text using bitmap font. To split a line you can use "\n", "\r" or "\r\n"
  * You can generate the fnt files using 
  * http://www.angelcode.com/products/bmfont/ for windows or
  * http://www.bmglyph.com/ for mac.
@@ -32,7 +32,7 @@ PIXI.BitmapText.prototype = Object.create(PIXI.DisplayObjectContainer.prototype)
 
 /**
  * Set the copy for the text object
- * @methos setText
+ * @method setText
  * @param {String} text The copy that you would like the text to display
  */
 PIXI.BitmapText.prototype.setText = function(text)
@@ -78,7 +78,7 @@ PIXI.BitmapText.prototype.updateText = function()
     for(var i = 0; i < this.text.length; i++)
     {
         var charCode = this.text.charCodeAt(i);
-        if(charCode == "\n".charCodeAt(0))
+        if(/(?:\r\n|\r|\n)/.test(this.text.charAt(i)))
         {
             lineWidths.push(pos.x);
             maxLineWidth = Math.max(maxLineWidth, pos.x);
