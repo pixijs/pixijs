@@ -3,7 +3,7 @@
  */
 
 /**
- * A Text Object will create a line(s) of text to split a line you can use "\n"
+ * A Text Object will create a line(s) of text. To split a line you can use "\n", "\r" or "\r\n"
  * @class Text
  * @extends Sprite
  * @constructor
@@ -54,7 +54,7 @@ PIXI.Text.prototype.setStyle = function(style)
 
 /**
  * Set the copy for the text object. To split a line you can use "\n"
- * @methos setText
+ * @method setText
  * @param {String} text The copy that you would like the text to display
  */
 PIXI.Sprite.prototype.setText = function(text)
@@ -72,7 +72,7 @@ PIXI.Text.prototype.updateText = function()
 	this.context.font = this.style.font;
 
 	//split text into lines
-	var lines = this.text.split("\n");
+	var lines = this.text.split(/(?:\r\n|\r|\n)/);
 
 	//calculate text width
 	var lineWidths = [];
@@ -154,9 +154,10 @@ PIXI.Text.prototype.updateTransform = function()
 	PIXI.Sprite.prototype.updateTransform.call(this);
 };
 
-/*
+/**
  * http://stackoverflow.com/users/34441/ellisbben
  * great solution to the problem!
+ * @private
  */
 PIXI.Text.prototype.determineFontHeight = function(fontStyle) 
 {
