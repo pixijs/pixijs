@@ -71,8 +71,8 @@ PIXI.Text.prototype.updateText = function()
 //	console.log(this.text);
 	this.context.font = this.fontStyle;
 		
-	this.canvas.width = this.context.measureText(this.text).width + this.strokeThickness//textDimensions.width;
-	this.canvas.height = this.determineFontHeight("font: " + this.fontStyle  + ";")+ this.strokeThickness;// textDimensions.height;
+	this._width = this.canvas.width = this.context.measureText(this.text).width + this.strokeThickness//textDimensions.width;
+	this._height = this.canvas.height = this.determineFontHeight("font: " + this.fontStyle  + ";")+ this.strokeThickness;// textDimensions.height;
 
 	this.context.fillStyle = this.fillStyle;
 	this.context.font = this.fontStyle;

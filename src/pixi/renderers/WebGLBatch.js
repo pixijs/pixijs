@@ -417,8 +417,8 @@ PIXI.WebGLBatch.prototype.update = function()
 		width = displayObject.texture.frame.width;
 		height = displayObject.texture.frame.height;
 		
-		aX = displayObject.anchor.x - displayObject.texture.trim.x
-		aY = displayObject.anchor.y - displayObject.texture.trim.y
+		aX = - displayObject.texture.trim.x
+		aY = - displayObject.texture.trim.y
 		w0 = width * (1-aX);
 		w1 = width * -aX;
 		 

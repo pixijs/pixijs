@@ -57,8 +57,7 @@
 			tpoint3[i] = points3[i];
 
 			var tempBall = new PIXI.Sprite(ballTexture);
-			tempBall.anchor.x = 0.5;
-			tempBall.anchor.y = 0.5;
+			tempBall.setAnchorByPercent(0.5, 0.5);
 			tempBall.alpha = 0.5;
 			balls[i] = tempBall;
 

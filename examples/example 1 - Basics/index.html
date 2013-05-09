@@ -32,8 +32,7 @@
 	var bunny = new PIXI.Sprite(texture);
 	
 	// center the sprites anchor point
-	bunny.anchor.x = 0.5;
-	bunny.anchor.y = 0.5;
+	bunny.setAnchorByPercent(0.5, 0.5);
 	
 	// move the sprite t the center of the screen
 	bunny.position.x = 200;

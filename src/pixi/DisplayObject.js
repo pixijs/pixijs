@@ -9,6 +9,17 @@
  */
 PIXI.DisplayObject = function()
 {
+	
+	 /**
+	 * The anchor sets the origin point of the DisplayObject.
+	 * The default is 0,0 this means the textures origin is the top left 
+	 * Setting than anchor to 100, 100 means the objects origin is at 100, 100 pixels from top left;
+	 * Setting the anchor to -100,-100 would mean the  objects origin is at -100, -100 pixels from top left
+     * @property anchor
+     * @type Point
+     */
+	this.anchor = new PIXI.Point();
+
 	/**
 	 * The coordinate of the object relative to the local coordinates of the parent.
 	 * @property position
@@ -203,12 +214,12 @@ PIXI.DisplayObject.prototype.updateTransform = function()
 	localTransform[3] = this._sr * this.scale.x;
 	localTransform[4] = this._cr * this.scale.y;
 	
-	var ax = this.anchor ? this.anchor.x : 0;
-	var ay = this.anchor ? this.anchor.y : 0;
+	var ax = this.anchor.x;
+	var ay = this.anchor.y;
 	
 	///AAARR GETTER SETTTER!
-	localTransform[2] = this.position.x - localTransform[0] * ax + ax - ay * localTransform[1];
-	localTransform[5] = this.position.y - localTransform[4] * ay + ay - ax * localTransform[3];
+	localTransform[2] = this.position.x - localTransform[0] * ax - ay * localTransform[1];
+	localTransform[5] = this.position.y - localTransform[4] * ay - ax * localTransform[3];
 	
     // Cache the matrix values (makes for huge speed increases!)
     var a00 = localTransform[0], a01 = localTransform[1], a02 = localTransform[2],

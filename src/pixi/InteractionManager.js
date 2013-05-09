@@ -324,11 +324,11 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 		var width = item.texture.frame.width;
 		var height = item.texture.frame.height;
 		
-		var x1 = -width * item.anchor.x;
+		var x1 = 0;
 		
 		if(x > x1 && x < x1 + width)
 		{
-			var y1 = -height * item.anchor.y;
+			var y1 = 0;
 			
 			if(y > y1 && y < y1 + height)
 			{

@@ -17,17 +17,7 @@ PIXI.blendModes.SCREEN = 1;
 PIXI.Sprite = function(texture)
 {
 	PIXI.DisplayObjectContainer.call( this );
-	
-	 /**
-	 * The anchor sets the origin point of the texture.
-	 * The default is 0,0 this means the textures origin is the top left 
-	 * Setting than anchor to 0.5,0.5 means the textures origin is centered
-	 * Setting the anchor to 1,1 would mean the textures origin points will be the bottom right
-     * @property anchor
-     * @type Point
-     */
-	this.anchor = new PIXI.Point();
-	
+		
 	/**
 	 * The texture that the sprite is using
 	 * @property texture
@@ -48,14 +38,14 @@ PIXI.Sprite = function(texture)
 	 * @property width
 	 * @type #Number
 	 */
-	this._width = 0;
+	this._width = this._width || 0;
 	
 	/**
 	 * The height of the sprite (this is initially set by the texture)
 	 * @property height
 	 * @type #Number
 	 */
-	this._height = 0;
+	this._height = this._height || 0;
 	
 	if(texture.baseTexture.hasLoaded)
 	{
@@ -101,6 +91,17 @@ Object.defineProperty(PIXI.Sprite.prototype, 'height', {
 });
  
 /**
+@method setAnchorByPercent
+@param x percents {Number}
+@param y percents {Number}
+*/
+PIXI.Sprite.prototype.setAnchorByPercent = function(xp, yp) {
+	this._anchorxp = xp;
+	this._anchoryp = yp;
+	this.anchor = new PIXI.Point(xp * this._width, yp * this._height);
+}
+
+/**
 @method setTexture
 @param texture {Texture} The PIXI texture that is displayed by the sprite
 */
@@ -124,8 +125,15 @@ PIXI.Sprite.prototype.onTextureUpdate = function(event)
 	//this.texture.removeEventListener( 'update', this.onTextureUpdateBind );
 	
 	// so if _width is 0 then width was not set..
-	if(this._width)this.scale.x = this._width / this.texture.frame.width;
-	if(this._height)this.scale.y = this._height / this.texture.frame.height;
+	this.anchor.x = (this._anchorxp || 0) * this.texture.frame.width;
+	this.anchor.y = (this._anchoryp || 0) * this.texture.frame.height;
+		
+	if(this._width) { 
+		this.scale.x = this._width / this.texture.frame.width;
+	}
+	if(this._height) {
+		this.scale.y = this._height / this.texture.frame.height;
+	}
 	
 	this.updateFrame = true;
 }

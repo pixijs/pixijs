@@ -48,8 +48,7 @@
 
 			tempBall.position.x = (Math.random() * w) - slideX;
 			tempBall.position.y = (Math.random() * h) - slideY;
-			tempBall.anchor.x = 0.5;
-			tempBall.anchor.y = 0.5;
+			tempBall.setAnchorByPercent(0.5, 0.5);
 
 			stars.push({ sprite: tempBall, x: tempBall.position.x, y: tempBall.position.y });
 

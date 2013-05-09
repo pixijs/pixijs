@@ -63,8 +63,7 @@
 		var button = new PIXI.Sprite(textureButton);
 		button.buttonMode = true;
 		
-		button.anchor.x = 0.5;
-		button.anchor.y = 0.5;
+		button.setAnchorByPercent(0.5, 0.5);
 		
 		button.position.x = buttonPositions[i*2];
 		button.position.y = buttonPositions[i*2 + 1];
