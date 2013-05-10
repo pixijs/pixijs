@@ -43,49 +43,12 @@ PIXI.InteractionManager = function(stage)
 	
 	//tiny little interactiveData pool!
 	this.pool = [];
-	
-	this.interactiveItems = [];
 
 	this.last = 0;
 }
 
 // constructor
 PIXI.InteractionManager.constructor = PIXI.InteractionManager;
-
-PIXI.InteractionManager.prototype.collectInteractiveSprite = function(displayObject, iParent)
-{
-	var children = displayObject.children;
-	var length = children.length;
-	
-	//this.interactiveItems = [];
-	/// make an interaction tree... {item.__interactiveParent}
-	for (var i = length-1; i >= 0; i--)
-	{
-		var child = children[i];
-		
-		// push all interactive bits
-		if(child.interactive)
-		{
-			iParent.interactiveChildren = true;
-			//child.__iParent = iParent;
-			this.interactiveItems.push(child);
-			
-			if(child.children.length > 0)
-			{
-				this.collectInteractiveSprite(child, child);
-			}
-		}
-		else
-		{
-			child.__iParent = null;
-			
-			if(child.children.length > 0)
-			{
-				this.collectInteractiveSprite(child, iParent);
-			}
-		}
-	}
-}
 
 PIXI.InteractionManager.prototype.setTarget = function(target)
 {
@@ -125,72 +88,41 @@ PIXI.InteractionManager.prototype.update = function()
 	diff = (diff * 30) / 1000;
 	if(diff < 1)return;
 	this.last = now;
-	//
-	
-	// ok.. so mouse events??
-	// yes for now :)
-	// OPTIMSE - how often to check??
-	if(this.dirty)
-	{
-		this.dirty = false;
-		
-		var len = this.interactiveItems.length;
-		
-		for (var i=0; i < this.interactiveItems.length; i++) {
-		  this.interactiveItems[i].interactiveChildren = false;
-		}
-		
-		this.interactiveItems = [];
-		
-		if(this.stage.interactive)this.interactiveItems.push(this.stage);
-		// go through and collect all the objects that are interactive..
-		this.collectInteractiveSprite(this.stage, this.stage);
+
+	if (this.target) {
+		this.target.view.style.cursor = 'default';
 	}
-	
-	// loop through interactive objects!
-	var length = this.interactiveItems.length;
-	
-	if(this.target)this.target.view.style.cursor = "default";	
-				
-	for (var i = 0; i < length; i++)
-	{
-		var item = this.interactiveItems[i];
-		if(!item.visible)continue;
-		
-		// OPTIMISATION - only calculate every time if the mousemove function exists..
-		// OK so.. does the object have any other interactive functions?
-		// hit-test the clip!
-		
-		
-		if(item.mouseover || item.mouseout || item.buttonMode)
-		{
-			// ok so there are some functions so lets hit test it..
-			item.__hit = this.hitTest(item, this.mouse);
-			// ok so deal with interactions..
-			// loks like there was a hit!
-			if(item.__hit)
-			{
-				if(item.buttonMode)this.target.view.style.cursor = "pointer";	
-				
-				if(!item.__isOver)
-				{
-					
-					if(item.mouseover)item.mouseover(this.mouse);
-					item.__isOver = true;	
+
+	if (this.mouse.global.x != 0 || this.mouse.global.y != 0) {
+		this.iterateDisplayObjects(this.stage, this.mouse.global, function (displayObject, isHit) {
+			if (!displayObject.interactive) {
+				return;
+			}
+
+			if (displayObject.mouseover || displayObject.mouseout || displayObject.buttonMode) {
+				if (isHit) {
+					if (displayObject.buttonMode) {
+						this.target.view.style.cursor = "pointer";
+					}
+
+					if (!displayObject.__isOver) {
+						if (displayObject.mouseover) {
+							displayObject.mouseover(this.mouse);
+						}
+						displayObject.__isOver = true;
+					}
+				} else {
+					if(displayObject.__isOver) {
+						// roll out!
+						if (displayObject.mouseout) {
+							displayObject.mouseout(this.mouse);
+						}
+
+						displayObject.__isOver = false;
+					}
 				}
 			}
-			else
-			{
-				if(item.__isOver)
-				{
-					// roll out!
-					if(item.mouseout)item.mouseout(this.mouse);
-					item.__isOver = false;	
-				}
-			}
-		}
-		
-		// --->
+		}.bind(this));
 	}
 }
 
@@ -198,330 +130,297 @@ PIXI.InteractionManager.prototype.onMouseMove = function(event)
 {
 	event.preventDefault();
 	
-	// TODO optimize by not check EVERY TIME! maybe half as often? //
 	var rect = this.target.view.getBoundingClientRect();
-	
+
 	this.mouse.global.x = (event.clientX - rect.left) * (this.target.width / rect.width);
 	this.mouse.global.y = (event.clientY - rect.top) * ( this.target.height / rect.height);
-	
-	var length = this.interactiveItems.length;
-	var global = this.mouse.global;
-	
-	
-	for (var i = 0; i < length; i++)
-	{
-		var item = this.interactiveItems[i];
-		
-		if(item.mousemove)
-		{
-			//call the function!
-			item.mousemove(this.mouse);
+
+	this.iterateDisplayObjects(this.stage, this.mouse.global, function (displayObject, isHit) {
+		if (!displayObject.interactive) {
+			return;
 		}
-	}
+
+		if (displayObject.mousemove) {
+			displayObject.mousemove(this.mouse);
+		}
+	}.bind(this));
 }
 
 PIXI.InteractionManager.prototype.onMouseDown = function(event)
 {
 	event.preventDefault();
-	
-	// loop through inteaction tree...
-	// hit test each item! -> 
-	// --->--->--->--->
-	// get interactive items under point??
-	// --->--->--->--->
-	//stage.__i
-	var length = this.interactiveItems.length;
-	var global = this.mouse.global;
-	
-	var index = 0;
-	var parent = this.stage;
-	
-	// while 
-	// hit test 
-	for (var i = 0; i < length; i++)
-	{
-		var item = this.interactiveItems[i];
+
+	this.iterateDisplayObjects(this.stage, this.mouse.global, function (displayObject, isHit) {
+		if (!displayObject.interactive) {
+			return;
+		}
 		
-		if(item.mousedown || item.click)
-		{
-			item.__mouseIsDown = true;
-			item.__hit = this.hitTest(item, this.mouse);
-			
-			if(item.__hit)
-			{
-				//call the function!
-				if(item.mousedown)item.mousedown(this.mouse);
-				item.__isDown = true;
-				
-				// just the one!
-				if(!item.interactiveChildren)break;
+		if (displayObject.mousedown || displayObject.click) {
+			displayObject.__mouseIsDown = true;
+
+			if (isHit) {
+				if (!this.mouse.target) {
+					this.mouse.target = displayObject;
+				}
+
+				if (displayObject.mousedown) {
+					displayObject.mousedown(this.mouse);
+				}
+				displayObject.__isDown = true;
 			}
 		}
-	}
+	}.bind(this));
 }
 
 PIXI.InteractionManager.prototype.onMouseUp = function(event)
 {
 	event.preventDefault();
-	var global = this.mouse.global;
-	
-	
-	var length = this.interactiveItems.length;
-	var up = false;
-	
-	for (var i = 0; i < length; i++)
-	{
-		var item = this.interactiveItems[i];
-		
-		if(item.mouseup || item.mouseupoutside || item.click)
-		{
-			item.__hit = this.hitTest(item, this.mouse);
-			
-			if(item.__hit && !up)
-			{
-				//call the function!
-				if(item.mouseup)
-				{
-					item.mouseup(this.mouse);
-				}
-				if(item.__isDown)
-				{
-					if(item.click)item.click(this.mouse);
-				}
-				
-				if(!item.interactiveChildren)up = true;
-			}
-			else
-			{
-				if(item.__isDown)
-				{
-					if(item.mouseupoutside)item.mouseupoutside(this.mouse);
-				}
-			}
-		
-			item.__isDown = false;	
+
+	this.iterateDisplayObjects(this.stage, this.mouse.global, function (displayObject, isHit) {
+		if (!displayObject.interactive) {
+			return;
 		}
-	}
+
+		if(displayObject.mouseup || displayObject.mouseupoutside || displayObject.click) {
+			if(isHit) {
+				if(displayObject.mouseup) {
+					displayObject.mouseup(this.mouse);
+				}
+				if(displayObject.__isDown) {
+					if(displayObject.click) {
+						displayObject.click(this.mouse);
+					}
+				}
+			} else {
+				if(displayObject.__isDown) {
+					if(displayObject.mouseupoutside) {
+						displayObject.mouseupoutside(this.mouse);
+					}
+				}
+			}
+
+			displayObject.__isDown = false;
+		}
+	}.bind(this));
+
+	this.mouse.target = null;
 }
 
-PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
-{
-	var global = interactionData.global;
+PIXI.InteractionManager.prototype.iterateDisplayObjects = function(displayObject, position, iterator) {
+	var hitDisplayObjects = [];
+
+	if (!displayObject.visible) {
+		return hitDisplayObjects;
+	}
 	
-	if(!item.visible)return false;
+	var initialFoundLength = hitDisplayObjects.length;
 	
-	if(item.hitArea)
-	{
-		var worldTransform = item.worldTransform;
-		var hitArea = item.hitArea;
+	if (displayObject instanceof PIXI.DisplayObjectContainer) {
+		var children = displayObject.children;
 		
+		for (var i = children.length - 1; i >= 0; i--) {
+			var child = children[i];
+			
+			hitDisplayObjects = hitDisplayObjects.concat(this.iterateDisplayObjects(child, position, iterator));
+		}
+	}
+	
+	var isHit = false;
+	if (displayObject.hitArea) {
+		var worldTransform = displayObject.worldTransform;
+		var hitArea = displayObject.hitArea;
+
 		var a00 = worldTransform[0], a01 = worldTransform[1], a02 = worldTransform[2],
 			a10 = worldTransform[3], a11 = worldTransform[4], a12 = worldTransform[5],
 			id = 1 / (a00 * a11 + a01 * -a10);
-		
-		var x = a11 * id * global.x + -a01 * id * global.y + (a12 * a01 - a02 * a11) * id; 
-		var y = a00 * id * global.y + -a10 * id * global.x + (-a12 * a00 + a02 * a10) * id;
-		
-		if (item.hitArea instanceof PIXI.Polygon) {
+
+		var x = a11 * id * position.x + -a01 * id * position.y + (a12 * a01 - a02 * a11) * id;
+		var y = a00 * id * position.y + -a10 * id * position.x + (-a12 * a00 + a02 * a10) * id;
+
+		if (displayObject.hitArea instanceof PIXI.Polygon) {
 			var inside = false;
-			
+
 			// https://github.com/substack/point-in-polygon/blob/master/index.js
-			for (var i = 0, j = item.hitArea.points.length - 1; i < item.hitArea.points.length; j = i++) {
-				var xi = item.hitArea.points[i].x, yi = item.hitArea.points[i].y;
-				var xj = item.hitArea.points[j].x, yj = item.hitArea.points[j].y;
-				
+			for (var i = 0, j = displayObject.hitArea.points.length - 1; i < displayObject.hitArea.points.length; j = i++) {
+				var xi = displayObject.hitArea.points[i].x, yi = displayObject.hitArea.points[i].y;
+				var xj = displayObject.hitArea.points[j].x, yj = displayObject.hitArea.points[j].y;
+
 				var intersect = ((yi > y) != (yj > y))
 					&& (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
 				if (intersect) inside = !inside;
 			}
-			
+
 			if (inside) {
-				return true;
+				isHit = true;
 			}
 		} else {
 			var x1 = hitArea.x;
-			if(x > x1 && x < x1 + hitArea.width)
-			{
+			if(x > x1 && x < x1 + hitArea.width) {
 				var y1 = hitArea.y;
-				
-				if(y > y1 && y < y1 + hitArea.height)
-				{
-					return true;
+
+				if(y > y1 && y < y1 + hitArea.height) {
+					isHit = true;
 				}
 			}
 		}
-	}
-	else if(item instanceof PIXI.Sprite)
-	{
-		var worldTransform = item.worldTransform;
-		
+	} else if (displayObject instanceof PIXI.Sprite) {
+		var worldTransform = displayObject.worldTransform;
+
 		var a00 = worldTransform[0], a01 = worldTransform[1], a02 = worldTransform[2],
 			a10 = worldTransform[3], a11 = worldTransform[4], a12 = worldTransform[5],
 			id = 1 / (a00 * a11 + a01 * -a10);
-		
-		var x = a11 * id * global.x + -a01 * id * global.y + (a12 * a01 - a02 * a11) * id;
-		var y = a00 * id * global.y + -a10 * id * global.x + (-a12 * a00 + a02 * a10) * id;
-		
-		var width = item.texture.frame.width;
-		var height = item.texture.frame.height;
-		
-		var x1 = -width * item.anchor.x;
-		
-		if(x > x1 && x < x1 + width)
-		{
-			var y1 = -height * item.anchor.y;
-		
-			if(y > y1 && y < y1 + height)
-			{
-				// set the target property if a hit is true!
-				interactionData.target = item
-				return true;
+
+		var x = a11 * id * position.x + -a01 * id * position.y + (a12 * a01 - a02 * a11) * id;
+		var y = a00 * id * position.y + -a10 * id * position.x + (-a12 * a00 + a02 * a10) * id;
+
+		var width = displayObject.texture.frame.width;
+		var height = displayObject.texture.frame.height;
+
+		var x1 = -width * displayObject.anchor.x;
+
+		if(x > x1 && x < x1 + width) {
+			var y1 = -height * displayObject.anchor.y;
+
+			if(y > y1 && y < y1 + height) {
+				isHit = true;
 			}
+		}
+	} else if (displayObject instanceof PIXI.DisplayObjectContainer) {
+		if (hitDisplayObjects.length > initialFoundLength) {
+			isHit = true;
 		}
 	}
 	
-	var length = item.children.length;
-	
-	for (var i = 0; i < length; i++)
-	{
-		var tempItem = item.children[i];
-		var hit = this.hitTest(tempItem, interactionData);
-		if(hit)return true;
+	if (isHit) {
+		hitDisplayObjects.push(displayObject);
 	}
-		
-	return false;	
+	iterator(displayObject, isHit);
+	
+	return hitDisplayObjects;
 }
-
 
 
 PIXI.InteractionManager.prototype.onTouchMove = function(event)
 {
 	event.preventDefault();
-	
+
 	var rect = this.target.view.getBoundingClientRect();
 	var changedTouches = event.changedTouches;
-	
-	for (var i=0; i < changedTouches.length; i++) 
-	{
+
+	for (var i=0; i < changedTouches.length; i++) {
 		var touchEvent = changedTouches[i];
 		var touchData = this.touchs[touchEvent.identifier];
-		
+
 		// update the touch position
 		touchData.global.x = (touchEvent.clientX - rect.left) * (this.target.width / rect.width);
 		touchData.global.y = (touchEvent.clientY - rect.top)  * (this.target.height / rect.height);
 	}
-	
-	var length = this.interactiveItems.length;
-	for (var i = 0; i < length; i++)
-	{
-		var item = this.interactiveItems[i];
-		if(item.touchmove)item.touchmove(touchData);
-	}
+
+	this.iterateDisplayObjects(this.stage, touchData.global, function (displayObject, isHit) {
+		if (!displayObject.interactive) {
+			return;
+		}
+
+		if (displayObject.touchmove) {
+			displayObject.touchmove(touchData);
+		}
+	}.bind(this));
 }
 
 PIXI.InteractionManager.prototype.onTouchStart = function(event)
 {
 	event.preventDefault();
+
 	var rect = this.target.view.getBoundingClientRect();
-	
+
 	var changedTouches = event.changedTouches;
-	for (var i=0; i < changedTouches.length; i++) 
-	{
+	for (var i=0; i < changedTouches.length; i++) {
 		var touchEvent = changedTouches[i];
-		
+
 		var touchData = this.pool.pop();
-		if(!touchData)touchData = new PIXI.InteractionData();
-		
+		if (!touchData) {
+			touchData = new PIXI.InteractionData();
+		}
+
 		this.touchs[touchEvent.identifier] = touchData;
 		touchData.global.x = (touchEvent.clientX - rect.left) * (this.target.width / rect.width);
 		touchData.global.y = (touchEvent.clientY - rect.top)  * (this.target.height / rect.height);
-		
-		var length = this.interactiveItems.length;
-		
-		for (var j = 0; j < length; j++)
-		{
-			var item = this.interactiveItems[j];
+
+		this.iterateDisplayObjects(this.stage, touchData.global, function (displayObject, isHit) {
+			if (!displayObject.interactive) {
+				return;
+			}
 			
-			if(item.touchstart || item.tap)
-			{
-				item.__hit = this.hitTest(item, touchData);
-				
-				if(item.__hit)
-				{
-					//call the function!
-					if(item.touchstart)item.touchstart(touchData);
-					item.__isDown = true;
-					item.__touchData = touchData;
-					
-					if(!item.interactiveChildren)break;
+			if (isHit) {
+				if (displayObject.touchstart || displayObject.tap) {
+					if (!touchData.target) {
+						touchData.target = displayObject;
+					}
+
+					if (displayObject.touchstart) {
+						displayObject.touchstart(touchData);
+					}
+
+					displayObject.__isDown = true;
+					displayObject.__touchData = touchData;
 				}
 			}
-		}
+		}.bind(this));
 	}
-	
 }
 
 PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 {
 	event.preventDefault();
-	
-	
+
 	var rect = this.target.view.getBoundingClientRect();
 	var changedTouches = event.changedTouches;
-	
-	for (var i=0; i < changedTouches.length; i++) 
-	{
-		 
+
+	for (var i=0; i < changedTouches.length; i++) {
+
 		var touchEvent = changedTouches[i];
 		var touchData = this.touchs[touchEvent.identifier];
 		var up = false;
 		touchData.global.x = (touchEvent.clientX - rect.left) * (this.target.width / rect.width);
 		touchData.global.y = (touchEvent.clientY - rect.top)  * (this.target.height / rect.height);
-		
-		var length = this.interactiveItems.length;
-		for (var j = 0; j < length; j++)
-		{
-			var item = this.interactiveItems[j];
-			var itemTouchData = item.__touchData; // <-- Here!
-			item.__hit = this.hitTest(item, touchData);
-		
-			if(itemTouchData == touchData)
-			{
+
+		this.iterateDisplayObjects(this.stage, touchData.global, function (displayObject, isHit) {
+			if (!displayObject.interactive) {
+				return;
+			}
+
+			var displayObjectTouchData = displayObject.__touchData;
+
+			if(displayObjectTouchData == touchData) {
 				// so this one WAS down...
-				
-				// hitTest??
-				
-				if(item.touchend || item.tap)
-				{
-					if(item.__hit && !up)
-					{
-						if(item.touchend)item.touchend(touchData);
-						if(item.__isDown)
-						{
-							if(item.tap)item.tap(touchData);
+
+				if (displayObject.touchend || displayObject.tap) {
+					if (isHit) {
+						if (displayObject.touchend) {
+							displayObject.touchend(touchData);
 						}
-						
-						if(!item.interactiveChildren)up = true;
-					}
-					else
-					{
-						if(item.__isDown)
-						{
-							if(item.touchendoutside)item.touchendoutside(touchData);
+						if (displayObject.__isDown) {
+							if (displayObject.tap) {
+								displayObject.tap(touchData);
+							}
+						}
+					} else {
+						if (displayObject.__isDown) {
+							if (displayObject.touchendoutside) {
+								displayObject.touchendoutside(touchData);
+							}
 						}
 					}
-					
-					item.__isDown = false;
+
+					displayObject.__isDown = false;
 				}
-				
-				item.__touchData = null;
-					
+
+				displayObject.__touchData = null;
 			}
-			else
-			{
-				
-			}
-		}
+		}.bind(this));
+
+		touchData.target = null;
+		
 		// remove the touch..
 		this.pool.push(touchData);
 		this.touchs[touchEvent.identifier] = null;
