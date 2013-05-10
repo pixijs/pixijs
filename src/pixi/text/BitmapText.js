@@ -3,19 +3,18 @@
  */
 
 /**
- * A Text Object will create a line(s) of text using bitmap font 
+ * A Text Object will create a line(s) of text using bitmap font. To split a line you can use "\n", "\r" or "\r\n"
  * You can generate the fnt files using 
- * http://www.angelcode.com/products/bmfont/ for windows of
+ * http://www.angelcode.com/products/bmfont/ for windows or
  * http://www.bmglyph.com/ for mac.
  * @class BitmapText
  * @extends DisplayObjectContainer
  * @constructor
  * @param {String} text The copy that you would like the text to display
- * @param {Object} [style] The style parameters
- * @param {String} [style.font] default is "20pt Arial" The size and bitmap font id (must have loaded previously)
+ * @param {Object} style The style parameters
+ * @param {String} style.font The size (optional) and bitmap font id (required) eq "Arial" or "20px Arial" (must have loaded previously)
  * @param {String} [style.align="left"] An alignment of the multiline text ("left", "center" or "right")
  */
- //* @param {Object} [style.font="bold 20pt Arial"] The style and size of the font
 PIXI.BitmapText = function(text, style)
 {
     PIXI.DisplayObjectContainer.call(this);
@@ -33,7 +32,7 @@ PIXI.BitmapText.prototype = Object.create(PIXI.DisplayObjectContainer.prototype)
 
 /**
  * Set the copy for the text object
- * @methos setText
+ * @method setText
  * @param {String} text The copy that you would like the text to display
  */
 PIXI.BitmapText.prototype.setText = function(text)
@@ -45,8 +44,8 @@ PIXI.BitmapText.prototype.setText = function(text)
 /**
  * Set the style of the text
  * @method setStyle
- * @param {Object} [style] The style parameters
- * @param {Object} style.font The style and size of the font. If font size is not specified, it uses default bitmap font size. Font name is required
+ * @param {Object} style The style parameters
+ * @param {String} style.font The size (optional) and bitmap font id (required) eq "Arial" or "20px Arial" (must have loaded previously)
  * @param {String} [style.align="left"] An alignment of the multiline text ("left", "center" or "right")
  */
 PIXI.BitmapText.prototype.setStyle = function(style)
@@ -79,7 +78,7 @@ PIXI.BitmapText.prototype.updateText = function()
     for(var i = 0; i < this.text.length; i++)
     {
         var charCode = this.text.charCodeAt(i);
-        if(charCode == "\n".charCodeAt(0))
+        if(/(?:\r\n|\r|\n)/.test(this.text.charAt(i)))
         {
             lineWidths.push(pos.x);
             maxLineWidth = Math.max(maxLineWidth, pos.x);
