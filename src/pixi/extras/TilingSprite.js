@@ -25,7 +25,7 @@ PIXI.TilingSprite = function(texture, width, height)
 	 * @property tileScale
 	 * @type Point
 	 */	
-	this.tileScale = new PIXI.Point(2,1);
+	this.tileScale = new PIXI.Point(1,1);
 	/**
 	 * The offset position of the image that is being tiled
 	 * @property tileScale
