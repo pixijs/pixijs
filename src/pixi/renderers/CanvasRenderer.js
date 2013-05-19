@@ -190,6 +190,11 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 		context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
 		this.renderTilingSprite(displayObject);
 	}
+	else if(displayObject.renderCanvas)
+	{
+		// custom canvas renderer display object
+		displayObject.renderCanvas(context, transform);
+	}
 	
 	// render!
 	for (var i=0; i < displayObject.children.length; i++) 
