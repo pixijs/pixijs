@@ -737,16 +737,16 @@ PIXI.WebGLRenderer.prototype.renderTilingSprite = function(sprite)
 	var scaleY =  (sprite.height / sprite.texture.baseTexture.height) / tileScale.y///sprite.texture.baseTexture.height;
 	//
 	//sprite.dirty = true;
-	sprite.uvs[0] = 0 + offsetX
+	sprite.uvs[0] = 0 - offsetX
 	sprite.uvs[1] = 0 - offsetY;
 	
-	sprite.uvs[2] = (1 * scaleX)  +offsetX
+	sprite.uvs[2] = (1 * scaleX) - offsetX
 	sprite.uvs[3] = 0 - offsetY;
 	
-	sprite.uvs[4] = (1 *scaleX) + offsetX
+	sprite.uvs[4] = (1 *scaleX) - offsetX
 	sprite.uvs[5] = (1 *scaleY) - offsetY;
 	
-	sprite.uvs[6] = 0  + offsetX
+	sprite.uvs[6] = 0 - offsetX
 	sprite.uvs[7] = (1 *scaleY) - offsetY;
 	
 	
