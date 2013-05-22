@@ -23,8 +23,9 @@ PIXI.Text = function(text, style)
 
     this.setText(text);
     this.setStyle(style);
-    //this.updateText();
-    this.dirty = true;
+    
+     this.updateText();
++    this.dirty = false;
 };
 
 // constructor
@@ -137,6 +138,10 @@ PIXI.Text.prototype.updateTexture = function()
     this.texture.baseTexture.height = this.canvas.height;
     this.texture.frame.width = this.canvas.width;
     this.texture.frame.height = this.canvas.height;
+    
+  	this._width = this.canvas.width;
+    this._height = this.canvas.height;
+	
     PIXI.texturesToUpdate.push(this.texture.baseTexture);
 };
 

@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-05-06
+ * Compiled: 2013-05-22
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -867,8 +867,9 @@ PIXI.Text = function(text, style)
 
     this.setText(text);
     this.setStyle(style);
-    //this.updateText();
-    this.dirty = true;
+    
+     this.updateText();
++    this.dirty = false;
 };
 
 // constructor
@@ -981,6 +982,10 @@ PIXI.Text.prototype.updateTexture = function()
     this.texture.baseTexture.height = this.canvas.height;
     this.texture.frame.width = this.canvas.width;
     this.texture.frame.height = this.canvas.height;
+    
+  	this._width = this.canvas.width;
+    this._height = this.canvas.height;
+	
     PIXI.texturesToUpdate.push(this.texture.baseTexture);
 };
 
