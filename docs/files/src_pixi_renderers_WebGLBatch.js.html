@@ -67,6 +67,8 @@
             
                 <li><a href="..&#x2F;classes/Rectangle.html">Rectangle</a></li>
             
+                <li><a href="..&#x2F;classes/RenderTexture.html">RenderTexture</a></li>
+            
                 <li><a href="..&#x2F;classes/Sprite.html">Sprite</a></li>
             
                 <li><a href="..&#x2F;classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
@@ -544,73 +546,95 @@ PIXI.WebGLBatch.prototype.update = function()
 	
 	while(displayObject)
 	{
-		width = displayObject.texture.frame.width;
-		height = displayObject.texture.frame.height;
-		
-		aX = displayObject.anchor.x - displayObject.texture.trim.x
-		aY = displayObject.anchor.y - displayObject.texture.trim.y
-		w0 = width * (1-aX);
-		w1 = width * -aX;
-		 
-		h0 = height * (1-aY);
-		h1 = height * -aY;
-		 
-		index = indexRun * 8;
-
-		worldTransform = displayObject.worldTransform;
+		if(displayObject.worldVisible)
+		{
+			width = displayObject.texture.frame.width;
+			height = displayObject.texture.frame.height;
+			
+			&#x2F;&#x2F; TODO trim??
+			aX = displayObject.anchor.x;&#x2F;&#x2F; - displayObject.texture.trim.x
+			aY = displayObject.anchor.y; &#x2F;&#x2F;- displayObject.texture.trim.y
+			w0 = width * (1-aX);
+			w1 = width * -aX;
+			 
+			h0 = height * (1-aY);
+			h1 = height * -aY;
+			 
+			index = indexRun * 8;
 	
-		a = worldTransform[0];
-		b = worldTransform[3];
-		c = worldTransform[1];
-		d = worldTransform[4];
-		tx = worldTransform[2];
-		ty = worldTransform[5];
+			worldTransform = displayObject.worldTransform;
 		
-		this.verticies[index + 0 ] = a * w1 + c * h1 + tx; 
-		this.verticies[index + 1 ] = d * h1 + b * w1 + ty;
-		 
-		this.verticies[index + 2 ] = a * w0 + c * h1 + tx; 
-		this.verticies[index + 3 ] = d * h1 + b * w0 + ty; 
+			a = worldTransform[0];
+			b = worldTransform[3];
+			c = worldTransform[1];
+			d = worldTransform[4];
+			tx = worldTransform[2];
+			ty = worldTransform[5];
 		
-		this.verticies[index + 4 ] = a * w0 + c * h0 + tx; 
-		this.verticies[index + 5 ] = d * h0 + b * w0 + ty; 
 		
-		this.verticies[index + 6] =  a * w1 + c * h0 + tx; 
-		this.verticies[index + 7] =  d * h0 + b * w1 + ty; 
-		
-		if(displayObject.updateFrame || displayObject.texture.updateFrame)
-		{
-			this.dirtyUVS = true;
+			this.verticies[index + 0 ] = a * w1 + c * h1 + tx; 
+			this.verticies[index + 1 ] = d * h1 + b * w1 + ty;
+			 
+			this.verticies[index + 2 ] = a * w0 + c * h1 + tx; 
+			this.verticies[index + 3 ] = d * h1 + b * w0 + ty; 
 			
-			var texture = displayObject.texture;
+			this.verticies[index + 4 ] = a * w0 + c * h0 + tx; 
+			this.verticies[index + 5 ] = d * h0 + b * w0 + ty; 
 			
-			var frame = texture.frame;
-			var tw = texture.baseTexture.width;
-			var th = texture.baseTexture.height;
+			this.verticies[index + 6] =  a * w1 + c * h0 + tx; 
+			this.verticies[index + 7] =  d * h0 + b * w1 + ty; 
 			
-			this.uvs[index + 0] = frame.x &#x2F; tw;
-			this.uvs[index +1] = frame.y &#x2F; th;
 			
-			this.uvs[index +2] = (frame.x + frame.width) &#x2F; tw;
-			this.uvs[index +3] = frame.y &#x2F; th;
+			if(displayObject.updateFrame || displayObject.texture.updateFrame)
+			{
+				this.dirtyUVS = true;
+				
+				var texture = displayObject.texture;
+				
+				var frame = texture.frame;
+				var tw = texture.baseTexture.width;
+				var th = texture.baseTexture.height;
+				
+				this.uvs[index + 0] = frame.x &#x2F; tw;
+				this.uvs[index +1] = frame.y &#x2F; th;
+				
+				this.uvs[index +2] = (frame.x + frame.width) &#x2F; tw;
+				this.uvs[index +3] = frame.y &#x2F; th;
+				
+				this.uvs[index +4] = (frame.x + frame.width) &#x2F; tw;
+				this.uvs[index +5] = (frame.y + frame.height) &#x2F; th; 
+				
+				this.uvs[index +6] = frame.x &#x2F; tw;
+				this.uvs[index +7] = (frame.y + frame.height) &#x2F; th;
+				
+				displayObject.updateFrame = false;
+			}
 			
-			this.uvs[index +4] = (frame.x + frame.width) &#x2F; tw;
-			this.uvs[index +5] = (frame.y + frame.height) &#x2F; th; 
-			
-			this.uvs[index +6] = frame.x &#x2F; tw;
-			this.uvs[index +7] = (frame.y + frame.height) &#x2F; th;
-			
-			displayObject.updateFrame = false;
+			&#x2F;&#x2F; TODO this probably could do with some optimisation....
+			if(displayObject.cacheAlpha != displayObject.worldAlpha)
+			{
+				displayObject.cacheAlpha = displayObject.worldAlpha;
+				
+				var colorIndex = indexRun * 4;
+				this.colors[colorIndex] = this.colors[colorIndex + 1] = this.colors[colorIndex + 2] = this.colors[colorIndex + 3] = displayObject.worldAlpha;
+				this.dirtyColors = true;
+			}
 		}
-		
-		&#x2F;&#x2F; TODO this probably could do with some optimisation....
-		if(displayObject.cacheAlpha != displayObject.worldAlpha)
+		else
 		{
-			displayObject.cacheAlpha = displayObject.worldAlpha;
+			index = indexRun * 8;
 			
-			var colorIndex = indexRun * 4;
-			this.colors[colorIndex] = this.colors[colorIndex + 1] = this.colors[colorIndex + 2] = this.colors[colorIndex + 3] = displayObject.worldAlpha;
-			this.dirtyColors = true;
+			this.verticies[index + 0 ] = 0;
+			this.verticies[index + 1 ] = 0;
+			 
+			this.verticies[index + 2 ] = 0;
+			this.verticies[index + 3 ] = 0;
+			
+			this.verticies[index + 4 ] = 0;
+			this.verticies[index + 5 ] = 0;
+			
+			this.verticies[index + 6] = 0;
+			this.verticies[index + 7] = 0;
 		}
 		
 		indexRun++;
@@ -622,8 +646,13 @@ PIXI.WebGLBatch.prototype.update = function()
  * Draws the batch to the frame buffer
  * @method render
  *&#x2F;
-PIXI.WebGLBatch.prototype.render = function()
+PIXI.WebGLBatch.prototype.render = function(start, end)
 {
+&#x2F;&#x2F;	console.log(start + &quot; :: &quot; + end + &quot; : &quot; + this.size);
+	start = start || 0;
+	&#x2F;&#x2F;end = end || this.size;
+	if(end == undefined)end = this.size;
+
 	if(this.dirty)
 	{
 		this.refresh();
@@ -636,16 +665,10 @@ PIXI.WebGLBatch.prototype.render = function()
 	var gl = this.gl;
 	
 	&#x2F;&#x2F;TODO optimize this!
-	if(this.blendMode == PIXI.blendModes.NORMAL)
-	{
-		gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-	}
-	else
-	{
-		gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_COLOR);
-	}
+	gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 	
 	var shaderProgram = PIXI.shaderProgram;
+	gl.useProgram(shaderProgram);
 	
 	&#x2F;&#x2F; update the verts..
 	gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
@@ -680,9 +703,13 @@ PIXI.WebGLBatch.prototype.render = function()
 	
 	&#x2F;&#x2F; dont need to upload!
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-	    
+	
+	
+	&#x2F;&#x2F;var startIndex = 0&#x2F;&#x2F;1;
+	var len = end - start;
+	&#x2F;&#x2F; console.log(this.size)
     &#x2F;&#x2F; DRAW THAT this!
-    gl.drawElements(gl.TRIANGLES, this.size * 6, gl.UNSIGNED_SHORT, 0);
+    gl.drawElements(gl.TRIANGLES, len * 6, gl.UNSIGNED_SHORT, start * 2 * 6 );
 }
 
 

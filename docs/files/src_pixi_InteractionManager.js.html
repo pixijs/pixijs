@@ -67,6 +67,8 @@
             
                 <li><a href="..&#x2F;classes/Rectangle.html">Rectangle</a></li>
             
+                <li><a href="..&#x2F;classes/RenderTexture.html">RenderTexture</a></li>
+            
                 <li><a href="..&#x2F;classes/Sprite.html">Sprite</a></li>
             
                 <li><a href="..&#x2F;classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
@@ -135,7 +137,7 @@
 
 
 &#x2F;**
-The interaction manager deals with mouse and touch events. At this moment only Sprite&#x27;s can be interactive.
+The interaction manager deals with mouse and touch events. Any DisplayObject can be interactive
 This manager also supports multitouch.
 @class InteractionManager
 @constructor
@@ -249,6 +251,8 @@ PIXI.InteractionManager.prototype.setTarget = function(target)
 
 PIXI.InteractionManager.prototype.update = function()
 {
+	if(!this.target)return;
+	
 	&#x2F;&#x2F; frequency of 30fps??
 	var now = Date.now();
 	var diff = now - this.last;
@@ -280,7 +284,7 @@ PIXI.InteractionManager.prototype.update = function()
 	&#x2F;&#x2F; loop through interactive objects!
 	var length = this.interactiveItems.length;
 	
-	if(this.target)this.target.view.style.cursor = &quot;default&quot;;	
+	this.target.view.style.cursor = &quot;default&quot;;	
 				
 	for (var i = 0; i &lt; length; i++)
 	{

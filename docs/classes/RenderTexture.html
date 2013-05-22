@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>CanvasRenderer - Pixi.JS</title>
+    <title>RenderTexture - Pixi.JS</title>
     <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
@@ -126,15 +126,19 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>CanvasRenderer Class</h1>
+                        <h1>RenderTexture Class</h1>
 <div class="box meta">
     
 
     
+        <div class="extends">
+            Extends <a href="../classes/Texture.html" class="crosslink">Texture</a>
+        </div>
+    
 
     
         <div class="foundat">
-            Defined in: <a href="..&#x2F;files&#x2F;src_pixi_renderers_CanvasRenderer.js.html#l6"><code>src&#x2F;pixi&#x2F;renderers&#x2F;CanvasRenderer.js:6</code></a>
+            Defined in: <a href="..&#x2F;files&#x2F;src_pixi_textures_RenderTexture.js.html#l5"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:5</code></a>
         </div>
     
 
@@ -150,15 +154,14 @@
 
 
 <div class="box intro">
-    <p>the CanvasRenderer draws the stage and all its content onto a 2d canvas. This renderer should be used for browsers that do not support webGL.
-Dont forget to add the view to your DOM or you will not see anything :)</p>
+    <p>A RenderTexture is a special texture that allows any pixi displayObject to be rendered to it.</p>
 </div>
 
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_CanvasRenderer" class="method item">
-    <h3 class="name"><code>CanvasRenderer</code></h3>
+        <div id="method_RenderTexture" class="method item">
+    <h3 class="name"><code>RenderTexture</code></h3>
 
     
         <div class="args">
@@ -173,18 +176,6 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
                 <li class="arg">
                     
                         <code>height</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>view</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>transparent</code>
                     
                 </li>
             
@@ -217,7 +208,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
         
         
-        <a href="..&#x2F;files&#x2F;src_pixi_renderers_CanvasRenderer.js.html#l6"><code>src&#x2F;pixi&#x2F;renderers&#x2F;CanvasRenderer.js:6</code></a>
+        <a href="..&#x2F;files&#x2F;src_pixi_textures_RenderTexture.js.html#l5"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:5</code></a>
         
         </p>
 
@@ -246,7 +237,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
                     
 
                     <div class="param-description">
-                        <p>the width of the canvas view</p>
+                         
                     </div>
 
                     
@@ -261,37 +252,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
                     
 
                     <div class="param-description">
-                        <p>the height of the canvas view</p>
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">view</code>
-                        <span class="type">Canvas</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>the canvas to use as a view, optional</p>
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">transparent</code>
-                        <span class="type">Boolean</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>the transparency of the render view, default false</p>
+                         
                     </div>
 
                     
@@ -331,10 +292,24 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
                 <div class="index-section methods">
                     <h3>Methods</h3>
 
-                    <ul class="index-list methods">
+                    <ul class="index-list methods extends">
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_fromFrame">fromFrame</a>
+
+                                
+                                
+                            </li>
                         
                             <li class="index-item method">
                                 <a href="#method_render">render</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_setFrame">setFrame</a>
 
                                 
                                 
@@ -348,31 +323,17 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
                 <div class="index-section properties">
                     <h3>Properties</h3>
 
-                    <ul class="index-list properties">
+                    <ul class="index-list properties extends">
                         
-                            <li class="index-item property">
-                                <a href="#property_context">context</a>
+                            <li class="index-item property inherited">
+                                <a href="#property_baseTexture">baseTexture</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item property">
-                                <a href="#property_height">height</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_view">view</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_width">width</a>
+                            <li class="index-item property inherited">
+                                <a href="#property_frame">frame</a>
 
                                 
                                 
@@ -392,6 +353,106 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
                 <h2 class="off-left">Methods</h2>
 
                 
+                    <div id="method_fromFrame" class="method item inherited">
+    <h3 class="name"><code>fromFrame</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>frameId</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;Texture.html#method_fromFrame">Texture</a>:
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;src_pixi_textures_Texture.js.html#l127"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:127</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Helper function that returns a texture based on a frame id
+ If the frame id is not in the texture cache an error will be thrown</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">frameId</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The frame id of the texture</p>
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                    Texture
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
                     <div id="method_render" class="method item">
     <h3 class="name"><code>render</code></h3>
 
@@ -401,7 +462,13 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
                 <li class="arg">
                     
-                        <code>stage</code>
+                        <code>displayObject</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>clear</code>
                     
                 </li>
             
@@ -434,7 +501,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
         
         
-        <a href="..&#x2F;files&#x2F;src_pixi_renderers_CanvasRenderer.js.html#l66"><code>src&#x2F;pixi&#x2F;renderers&#x2F;CanvasRenderer.js:66</code></a>
+        <a href="..&#x2F;files&#x2F;src_pixi_textures_RenderTexture.js.html#l90"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:90</code></a>
         
         </p>
 
@@ -445,7 +512,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
     </div>
 
     <div class="description">
-        <p>Renders the stage to its canvas view</p>
+        <p>This function will draw the display object to the texture.</p>
     </div>
 
     
@@ -456,14 +523,113 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
                 <li class="param">
                     
-                        <code class="param-name">stage</code>
-                        <span class="type"><a href="../classes/Stage.html" class="crosslink">Stage</a></span>
+                        <code class="param-name">displayObject</code>
+                        <span class="type"><a href="../classes/DisplayObject.html" class="crosslink">DisplayObject</a></span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>the Stage element to be rendered</p>
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">clear</code>
+                        <span class="type">Boolean</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>If true the texture will not be cleared before the displayObject is drawn</p>
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_setFrame" class="method item inherited">
+    <h3 class="name"><code>setFrame</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>frame</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;Texture.html#method_setFrame">Texture</a>:
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;src_pixi_textures_Texture.js.html#l83"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:83</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Specifies the rectangle region of the baseTexture</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">frame</code>
+                        <span class="type"><a href="../classes/Rectangle.html" class="crosslink">Rectangle</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
                     </div>
 
                     
@@ -487,9 +653,9 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
                 <h2 class="off-left">Properties</h2>
 
                 
-                    <div id="property_context" class="property item">
-    <h3 class="name"><code>context</code></h3>
-    <span class="type">Canvas 2d Context</span>
+                    <div id="property_baseTexture" class="property item inherited">
+    <h3 class="name"><code>baseTexture</code></h3>
+    <span class="type"><a href="../classes/BaseTexture.html" class="crosslink">BaseTexture</a></span>
 
     
 
@@ -502,15 +668,12 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;Texture.html#property_baseTexture">Texture</a>:
             
         
         
-        <a href="..&#x2F;files&#x2F;src_pixi_renderers_CanvasRenderer.js.html#l55"><code>src&#x2F;pixi&#x2F;renderers&#x2F;CanvasRenderer.js:55</code></a>
+        <a href="..&#x2F;files&#x2F;src_pixi_textures_Texture.js.html#l31"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:31</code></a>
         
         </p>
 
@@ -520,7 +683,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
     </div>
 
     <div class="description">
-        <p>The canvas context that the everything is drawn to</p>
+        <p>The base texture of this texture</p>
     </div>
 
     
@@ -531,9 +694,9 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
 </div>
 
                 
-                    <div id="property_height" class="property item">
-    <h3 class="name"><code>height</code></h3>
-    <span class="type">Number</span>
+                    <div id="property_frame" class="property item inherited">
+    <h3 class="name"><code>frame</code></h3>
+    <span class="type">#Rectangle</span>
 
     
 
@@ -546,15 +709,12 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;Texture.html#property_frame">Texture</a>:
             
         
         
-        <a href="..&#x2F;files&#x2F;src_pixi_renderers_CanvasRenderer.js.html#l31"><code>src&#x2F;pixi&#x2F;renderers&#x2F;CanvasRenderer.js:31</code></a>
+        <a href="..&#x2F;files&#x2F;src_pixi_textures_Texture.js.html#l40"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:40</code></a>
         
         </p>
 
@@ -564,101 +724,9 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
     </div>
 
     <div class="description">
-        <p>The height of the canvas view</p>
+        <p>The frame specifies the region of the base texture that this texture uses</p>
     </div>
 
-    
-        <p><strong>Default:</strong> 600</p>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_view" class="property item">
-    <h3 class="name"><code>view</code></h3>
-    <span class="type">Canvas</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="..&#x2F;files&#x2F;src_pixi_renderers_CanvasRenderer.js.html#l41"><code>src&#x2F;pixi&#x2F;renderers&#x2F;CanvasRenderer.js:41</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>The canvas element that the everything is drawn to</p>
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_width" class="property item">
-    <h3 class="name"><code>width</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="..&#x2F;files&#x2F;src_pixi_renderers_CanvasRenderer.js.html#l24"><code>src&#x2F;pixi&#x2F;renderers&#x2F;CanvasRenderer.js:24</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>The width of the canvas view</p>
-    </div>
-
-    
-        <p><strong>Default:</strong> 800</p>
     
 
     

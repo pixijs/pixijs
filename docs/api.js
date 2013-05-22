@@ -14,6 +14,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "MovieClip",
         "Point",
         "Rectangle",
+        "RenderTexture",
         "Sprite",
         "SpriteSheetLoader",
         "Stage",
