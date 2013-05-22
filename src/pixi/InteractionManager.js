@@ -5,7 +5,7 @@
 
 
 /**
-The interaction manager deals with mouse and touch events. At this moment only Sprite's can be interactive.
+The interaction manager deals with mouse and touch events. Any DisplayObject can be interactive
 This manager also supports multitouch.
 @class InteractionManager
 @constructor
@@ -119,6 +119,8 @@ PIXI.InteractionManager.prototype.setTarget = function(target)
 
 PIXI.InteractionManager.prototype.update = function()
 {
+	if(!this.target)return;
+	
 	// frequency of 30fps??
 	var now = Date.now();
 	var diff = now - this.last;
@@ -150,7 +152,7 @@ PIXI.InteractionManager.prototype.update = function()
 	// loop through interactive objects!
 	var length = this.interactiveItems.length;
 	
-	if(this.target)this.target.view.style.cursor = "default";	
+	this.target.view.style.cursor = "default";	
 				
 	for (var i = 0; i < length; i++)
 	{

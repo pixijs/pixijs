@@ -14,7 +14,7 @@ PIXI.Stage = function(backgroundColor, interactive)
 {
 	
 	PIXI.DisplayObjectContainer.call( this );
-	this.worldTransform = PIXI.mat3.create()//.//identity();
+	this.worldTransform = PIXI.mat3.create()
 	this.__childrenAdded = [];
 	this.__childrenRemoved = [];
 	this.childIndex = 0;
@@ -27,6 +27,7 @@ PIXI.Stage = function(backgroundColor, interactive)
 	this.interactionManager = new PIXI.InteractionManager(this);
 	
 	this.setBackgroundColor(backgroundColor);
+	this.worldVisible = true;
 }
 
 // constructor
@@ -99,15 +100,13 @@ PIXI.Stage.prototype.__removeChild = function(child)
 {
 	if(child.interactive)this.dirty = true;
 	
-	this.__childrenRemoved.push(child);
-
 	child.stage = undefined;
 	
 	if(child.children)
 	{
 		for(var i=0,j=child.children.length; i<j; i++)
 		{
-		  	this.__removeChild(child.children[i])
+		  	this.__removeChild(child.children[i]);
 		}
 	}
 }

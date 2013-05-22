@@ -79,14 +79,12 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 	PIXI.texturesToUpdate = [];
 	PIXI.texturesToDestroy = [];
 	
-	this.context.setTransform(1,0,0,1,0,0); 
 	stage.updateTransform();
-	  
-	this.context.setTransform(1,0,0,1,0,0); 
 	
 	// update the background color
 	if(this.view.style.backgroundColor!=stage.backgroundColorString && !this.transparent)this.view.style.backgroundColor = stage.backgroundColorString;
 
+	this.context.setTransform(1,0,0,1,0,0); 
 	this.context.clearRect(0, 0, this.width, this.height)
     this.renderDisplayObject(stage);
     //as
@@ -130,7 +128,7 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 {
 	var transform = displayObject.worldTransform;
 	var context = this.context;
-	context.globalCompositeOperation = "source-over"
+	//context.globalCompositeOperation = "source-over"
 	var blit = false;
 	
 	if(!displayObject.visible)return;
@@ -167,14 +165,18 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 			else
 			{*/
 				blit = false;
-				context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
+				context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
+				
 				context.drawImage(displayObject.texture.baseTexture.source, 
 								   frame.x,
 								   frame.y,
 								   frame.width,
 								   frame.height,
-								   (displayObject.anchor.x - displayObject.texture.trim.x) * -frame.width, 
-								   (displayObject.anchor.y - displayObject.texture.trim.y) * -frame.height,
+								   (displayObject.anchor.x) * -frame.width, 
+								   (displayObject.anchor.y) * -frame.height,
+								 //   (displayObject.anchor.x - displayObject.texture.trim.x) * -frame.width, 
+								  // (displayObject.anchor.y - displayObject.texture.trim.y) * -frame.height,
+								  
 								   frame.width,
 								   frame.height);
 			//}
@@ -197,7 +199,7 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 		this.renderDisplayObject(displayObject.children[i]);
 	}
 	
-	
+	this.context.setTransform(1,0,0,1,0,0); 
 }
 
 /**

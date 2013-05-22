@@ -35,16 +35,26 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 {
 	if(child.parent != undefined)
 	{
-		child.parent.removeChild(child)
+		child.parent.removeChild(child);
 	}
 	
 	child.parent = this;
 	child.childIndex = this.children.length;
 	
 	this.children.push(child);	
+	
 	if(this.stage)
 	{
 		this.stage.__addChild(child);
+	}
+	
+	// need to remove any render groups..
+	if(this.__renderGroup)
+	{
+		// being used by a renderTexture.. if it exists then it must be from a render texture;
+		if(child.__renderGroup)child.__renderGroup.removeDisplayObjectAndChildren(child);
+		// add them to the new render group..
+		this.__renderGroup.addDisplayObjectAndChildren(child);
 	}
 }
 
@@ -84,6 +94,12 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 		if(this.stage)
 		{
 			this.stage.__addChild(child);
+		}
+		
+		// little webGL!
+		if(this.__renderGroup)
+		{
+			this.__renderGroup.addDisplayObjectAndChildren(child);
 		}
 	}
 	else
@@ -160,12 +176,23 @@ PIXI.DisplayObjectContainer.prototype.getChildAt = function(index)
 PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 {
 	var index = this.children.indexOf( child );
-
+	
 	if ( index !== -1 ) 
 	{
-		if(this.stage)this.stage.__removeChild(child);
+		if(this.stage)
+		{
+			this.stage.__removeChild(child);
+		}
+	//	console.log(child.__renderGroup);
+		if(child.__renderGroup)
+		{
+		//	console.log(">?")
+			child.__renderGroup.removeDisplayObjectAndChildren(child);
+		}
+		
+	//	console.log(">" + child.__renderGroup)
 		child.parent = undefined;
-		//child.childIndex = 0
+
 		this.children.splice( index, 1 );
 	
 		// update in dexs!

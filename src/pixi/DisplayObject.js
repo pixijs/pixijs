@@ -24,6 +24,13 @@ PIXI.DisplayObject = function()
 	this.scale = new PIXI.Point(1,1);//{x:1, y:1};
 	
 	/**
+	 * The pivot point of the displayObject that it rotates around
+	 * @property pivot
+	 * @type Point
+	 */
+	this.pivot = new PIXI.Point(0,0);
+	
+	/**
 	 * The rotation of the object in radians.
 	 * @property rotation
 	 * @type Number
@@ -43,7 +50,7 @@ PIXI.DisplayObject = function()
 	 * @type Boolean
 	 */	
 	this.visible = true;
-	this.cacheVisible = false;
+	this.worldVisible = false;
 	
 	/**
 	 * [read-only] The display object container that contains this display object.
@@ -204,9 +211,16 @@ PIXI.DisplayObject.prototype.updateTransform = function()
 	localTransform[4] = this._cr * this.scale.y;
 	
 	///AAARR GETTER SETTTER!
-	localTransform[2] = this.position.x;
-	localTransform[5] = this.position.y;
+	//localTransform[2] = this.position.x;
+	//localTransform[5] = this.position.y;
 	
+	var px = this.pivot.x;
+	var py = this.pivot.y;
+   	
+   	///AAARR GETTER SETTTER!
+	localTransform[2] = this.position.x - localTransform[0] * px - py * localTransform[1];
+	localTransform[5] = this.position.y - localTransform[4] * py - px * localTransform[3];
+
     // Cache the matrix values (makes for huge speed increases!)
     var a00 = localTransform[0], a01 = localTransform[1], a02 = localTransform[2],
         a10 = localTransform[3], a11 = localTransform[4], a12 = localTransform[5],
@@ -224,5 +238,7 @@ PIXI.DisplayObject.prototype.updateTransform = function()
 
 	// because we are using affine transformation, we can optimise the matrix concatenation process.. wooo!
 	// mat3.multiply(this.localTransform, this.parent.worldTransform, this.worldTransform);
-	this.worldAlpha = this.alpha * this.parent.worldAlpha;		
+	this.worldAlpha = this.alpha * this.parent.worldAlpha;
+
+	
 }

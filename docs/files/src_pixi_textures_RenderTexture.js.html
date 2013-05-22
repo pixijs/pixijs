@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src&#x2F;pixi&#x2F;DisplayObjectContainer.js - Pixi.JS</title>
+    <title>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js - Pixi.JS</title>
     <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
@@ -126,7 +126,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src&#x2F;pixi&#x2F;DisplayObjectContainer.js</h1>
+                        <h1 class="file-heading">File: src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
@@ -134,226 +134,168 @@
  * @author Mat Groves http:&#x2F;&#x2F;matgroves.com&#x2F; @Doormat23
  *&#x2F;
 
-
 &#x2F;**
- * A DisplayObjectContainer represents a collection of display objects. It is the base class of all display objects that act as a container for other objects.
- * @class DisplayObjectContainer 
- * @extends DisplayObject
+ * A RenderTexture is a special texture that allows any pixi displayObject to be rendered to it. 
+ * @class RenderTexture
+ * @extends Texture
  * @constructor
+ * @param width {Number}
+ * @param height {Number}
  *&#x2F;
-PIXI.DisplayObjectContainer = function()
+PIXI.RenderTexture = function(width, height)
 {
-	PIXI.DisplayObject.call( this );
+	PIXI.EventTarget.call( this );
 	
-	&#x2F;**
-	 * [read-only] The of children of this container.
-	 * @property children {Array}
-	 *&#x2F;	
-	this.children = [];
-	&#x2F;&#x2F;s
-	this.renderable = false;
-}
-
-&#x2F;&#x2F; constructor
-PIXI.DisplayObjectContainer.constructor = PIXI.DisplayObjectContainer;
-PIXI.DisplayObjectContainer.prototype = Object.create( PIXI.DisplayObject.prototype );
-
-&#x2F;**
- * Adds a child to the container.
- * @method addChild
- * @param  DisplayObject {DisplayObject}
- *&#x2F;
-PIXI.DisplayObjectContainer.prototype.addChild = function(child)
-{
-	if(child.parent != undefined)
+	this.width = width;
+	this.height = height;
+	
+	this.indetityMatrix = PIXI.mat3.create();
+	
+	this.frame = new PIXI.Rectangle(0, 0, this.width, this.height);	
+	
+	if(PIXI.gl)
 	{
-		child.parent.removeChild(child);
+		this.initWebGL();
 	}
-	
-	child.parent = this;
-	child.childIndex = this.children.length;
-	
-	this.children.push(child);	
-	
-	if(this.stage)
+	else
 	{
-		this.stage.__addChild(child);
-	}
-	
-	&#x2F;&#x2F; need to remove any render groups..
-	if(this.__renderGroup)
-	{
-		&#x2F;&#x2F; being used by a renderTexture.. if it exists then it must be from a render texture;
-		if(child.__renderGroup)child.__renderGroup.removeDisplayObjectAndChildren(child);
-		&#x2F;&#x2F; add them to the new render group..
-		this.__renderGroup.addDisplayObjectAndChildren(child);
+		this.initCanvas();
 	}
 }
 
-&#x2F;**
- * Adds a child to the container at a specified index. If the index is out of bounds an error will be thrown
- * @method addChildAt
- * @param DisplayObject {DisplayObject}
- * @param index {Number}
- *&#x2F;
-PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
-{
-	if(index &gt;= 0 &amp;&amp; index &lt;= this.children.length)
-	{
-		if(child.parent != undefined)
-		{
-			child.parent.removeChild(child);
-		}
-	
-		if (index == this.children.length)
-		{
-		  	this.children.push(child);
-		}	
-		else 
-		{
-			this.children.splice(index, 0, child);
-		}
+PIXI.RenderTexture.constructor = PIXI.RenderTexture;
+PIXI.RenderTexture.prototype = Object.create( PIXI.Texture.prototype );
 
-		child.parent = this;
-		child.childIndex = index;
-		
-		var length = this.children.length;
-		for (var i=index; i &lt; length; i++) 
+PIXI.RenderTexture.prototype.initWebGL = function()
+{
+	var gl = PIXI.gl;
+	this.glFramebuffer = gl.createFramebuffer();
+	
+   	gl.bindFramebuffer(gl.FRAMEBUFFER, this.glFramebuffer );
+
+    this.glFramebuffer.width = this.width;
+    this.glFramebuffer.height = this.height;	
+  
+	this.baseTexture = new PIXI.BaseTexture();
+
+	this.baseTexture.width = this.width;
+	this.baseTexture.height = this.height;
+
+    this.baseTexture._glTexture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, this.baseTexture._glTexture);
+	 	
+	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  this.width,  this.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+	
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+	
+	this.baseTexture.isRender = true;
+	
+	gl.bindFramebuffer(gl.FRAMEBUFFER, this.glFramebuffer );
+	gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.baseTexture._glTexture, 0);
+	
+	&#x2F;&#x2F; create a projection matrix..
+	this.projectionMatrix =  PIXI.mat4.create();
+	
+	this.projectionMatrix[5] = 2&#x2F;this.height&#x2F;&#x2F; * 0.5;
+	this.projectionMatrix[13] = -1;
+	
+	this.projectionMatrix[0] = 2&#x2F;this.width;
+	this.projectionMatrix[12] = -1;
+
+	&#x2F;&#x2F; set the correct render function..
+	this.render = this.renderWebGL;
+}
+
+PIXI.RenderTexture.prototype.initCanvas = function()
+{
+	this.renderer = new PIXI.CanvasRenderer(this.width, this.height, null, 0);
+	
+	this.baseTexture = new PIXI.BaseTexture(this.renderer.view);
+	this.frame = new PIXI.Rectangle(0, 0, this.width, this.height);
+	
+	this.render = this.renderCanvas;
+}
+
+&#x2F;**
+ * This function will draw the display object to the texture.
+ * @method render
+ * @param displayObject {DisplayObject}
+ * @param clear {Boolean} If true the texture will not be cleared before the displayObject is drawn
+ *&#x2F;
+PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, clear)
+{
+	var gl = PIXI.gl;
+	
+	&#x2F;&#x2F; enable the alpha color mask..
+	gl.colorMask(true, true, true, true); 
+	
+	gl.viewport(0, 0, this.width, this.height);	
+	
+	gl.bindFramebuffer(gl.FRAMEBUFFER, this.glFramebuffer );
+	
+	if(clear)
+	{
+		gl.clearColor(0,0,0, 0);     
+		gl.clear(gl.COLOR_BUFFER_BIT);
+	}
+	
+	&#x2F;&#x2F; set the flipped matrix..
+	gl.uniformMatrix4fv(renderer.shaderProgram.mvMatrixUniform, false, this.projectionMatrix);
+	
+	&#x2F;&#x2F; THIS WILL MESS WITH HIT TESTING!
+	var children = displayObject.children;
+	
+	&#x2F;&#x2F;TODO -? create a new one??? dont think so!
+	displayObject.worldTransform = this.indetityMatrix;
+	
+	for(var i=0,j=children.length; i&lt;j; i++)
+	{
+		children[i].updateTransform();	
+	}
+	
+	var renderGroup = displayObject.__renderGroup ;
+
+	if(renderGroup)
+	{
+		if(displayObject == renderGroup.root)
 		{
-		  this.children[i].childIndex = i;
+			renderGroup.render();
 		}
-		
-		if(this.stage)
+		else
 		{
-			this.stage.__addChild(child);
-		}
-		
-		&#x2F;&#x2F; little webGL!
-		if(this.__renderGroup)
-		{
-			this.__renderGroup.addDisplayObjectAndChildren(child);
+			renderGroup.renderSpecific(displayObject);
 		}
 	}
 	else
 	{
-		&#x2F;&#x2F; error!
+		if(!this.renderGroup)this.renderGroup = new PIXI.WebGLRenderGroup(gl);
+		this.renderGroup.setRenderable(displayObject);
 		
-		throw new Error(child + &quot; The index &quot;+ index +&quot; supplied is out of bounds &quot; + this.children.length);
+		this.renderGroup.render();
 	}
+	
 }
 
-&#x2F;**
- * Swaps the depth of 2 displayObjects
- * @method swapChildren
- * @param  DisplayObject {DisplayObject}
- * @param  DisplayObject2 {DisplayObject}
- *&#x2F;
-PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
+PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, clear)
 {
-	&#x2F;&#x2F; TODO I already know this??
-	var index = this.children.indexOf( child );
-	var index2 = this.children.indexOf( child2 );
+	var children = displayObject.children;
 	
-	if ( index !== -1 &amp;&amp; index2 !== -1 ) 
+	displayObject.worldTransform = this.indetityMatrix;
+	
+	for(var i=0,j=children.length; i&lt;j; i++)
 	{
-		&#x2F;&#x2F; cool
-		if(this.stage)
-		{
-			&#x2F;&#x2F; this is to satisfy the webGL batching..
-			&#x2F;&#x2F; TODO sure there is a nicer way to achieve this!
-			this.stage.__removeChild(child);
-			this.stage.__removeChild(child2);
-			
-			this.stage.__addChild(child);
-			this.stage.__addChild(child2);
-		}
-		
-		&#x2F;&#x2F; swap the indexes..
-		child.childIndex = index2;
-		child2.childIndex = index;
-		&#x2F;&#x2F; swap the positions..
-		this.children[index] = child2;
-		this.children[index2] = child;
-		
+		children[i].updateTransform();	
 	}
-	else
-	{
-		throw new Error(child + &quot; Both the supplied DisplayObjects must be a child of the caller &quot; + this);
-	}
+	
+	if(clear)this.renderer.context.clearRect(0,0, this.width, this.height);
+    this.renderer.renderDisplayObject(displayObject);
+    
+    PIXI.texturesToUpdate.push(this.baseTexture);
 }
 
-&#x2F;**
- * Returns the Child at the specified index
- * @method getChildAt
- * @param  index {Number}
- *&#x2F;
-PIXI.DisplayObjectContainer.prototype.getChildAt = function(index)
-{
-	if(index &gt;= 0 &amp;&amp; index &lt; this.children.length)
-	{
-		return this.children[index];
-	}
-	else
-	{
-		throw new Error(child + &quot; Both the supplied DisplayObjects must be a child of the caller &quot; + this);
-	
-	}
-}
-
-&#x2F;**
- * Removes a child from the container.
- * @method removeChild
- * @param  DisplayObject {DisplayObject}
- *&#x2F;
-PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
-{
-	var index = this.children.indexOf( child );
-	
-	if ( index !== -1 ) 
-	{
-		if(this.stage)
-		{
-			this.stage.__removeChild(child);
-		}
-	&#x2F;&#x2F;	console.log(child.__renderGroup);
-		if(child.__renderGroup)
-		{
-		&#x2F;&#x2F;	console.log(&quot;&gt;?&quot;)
-			child.__renderGroup.removeDisplayObjectAndChildren(child);
-		}
-		
-	&#x2F;&#x2F;	console.log(&quot;&gt;&quot; + child.__renderGroup)
-		child.parent = undefined;
-
-		this.children.splice( index, 1 );
-	
-		&#x2F;&#x2F; update in dexs!
-		for(var i=index,j=this.children.length; i&lt;j; i++)
-		{
-			this.children[i].childIndex -= 1;
-		}
-	}
-	else
-	{
-		throw new Error(child + &quot; The supplied DisplayObject must be a child of the caller &quot; + this);
-	}
-}
-
-
-&#x2F;**
- * @private
- *&#x2F;
-PIXI.DisplayObjectContainer.prototype.updateTransform = function()
-{
-	if(!this.visible)return;
-	
-	PIXI.DisplayObject.prototype.updateTransform.call( this );
-	
-	for(var i=0,j=this.children.length; i&lt;j; i++)
-	{
-		this.children[i].updateTransform();	
-	}
-}
 
     </pre>
 </div>

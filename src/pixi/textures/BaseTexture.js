@@ -44,6 +44,8 @@ PIXI.BaseTexture = function(source)
 	 */
 	this.source = source//new Image();
 	
+	if(!source)return;
+	
 	if(this.source instanceof Image)
 	{
 		if(this.source.complete)
@@ -77,7 +79,6 @@ PIXI.BaseTexture = function(source)
 		this.width = this.source.width;
 		this.height = this.source.height;
 			
-		//console.log(">!!",this.width)
 		PIXI.texturesToUpdate.push(this);
 	}
 	

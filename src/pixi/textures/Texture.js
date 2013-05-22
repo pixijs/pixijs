@@ -158,6 +158,7 @@ PIXI.Texture.fromCanvas = function(canvas)
 /**
  * 
  * Adds a texture to the textureCache. 
+ * @static
  * @method addTextureToCache
  * @param texture {Texture}
  * @param id {String} the id that the texture will be stored against.
@@ -170,6 +171,7 @@ PIXI.Texture.addTextureToCache = function(texture, id)
 /**
  * 
  * Remove a texture from the textureCache. 
+ * @static
  * @method removeTextureFromCache
  * @param id {String} the id of the texture to be removed
  * @return {Texture} the texture that was removed
