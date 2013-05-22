@@ -30,7 +30,7 @@ PIXI.Point = function(x, y)
  * @method clone
  * @return a copy of the point
  */
-PIXI.Point.clone = function()
+PIXI.Point.prototype.clone = function()
 {
 	return new PIXI.Point(this.x, this.y);
 }

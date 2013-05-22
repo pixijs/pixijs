@@ -78,13 +78,14 @@ It also copies the non-minified version to the examples.
 - Auto-detect which renderer should be used
 - Full Mouse and Multi-touch Interaction
 - Text
+- BitmapFont text
+- Multiline Text
 
 ### Coming soon ###
 
 - Filters 
 - Render Texture 
-- BitmapFont text
-- Multiline Text
+
 
 ### Coming later ###
 
