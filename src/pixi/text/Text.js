@@ -25,7 +25,7 @@ PIXI.Text = function(text, style)
     this.setStyle(style);
     
      this.updateText();
-+    this.dirty = false;
+    this.dirty = false;
 };
 
 // constructor
@@ -73,7 +73,7 @@ PIXI.Text.prototype.updateText = function()
 	this.context.font = this.style.font;
 
 	//split text into lines
-	var lines = this.text.split("\n");
+	var lines = this.text.split(/(?:\r\n|\r|\n)/);
 
 	//calculate text width
 	var lineWidths = [];
