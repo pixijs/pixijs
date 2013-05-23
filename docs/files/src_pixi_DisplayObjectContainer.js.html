@@ -51,6 +51,8 @@
             
                 <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
             
+                <li><a href="..&#x2F;classes/CustomRenderable.html">CustomRenderable</a></li>
+            
                 <li><a href="..&#x2F;classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
@@ -158,6 +160,18 @@ PIXI.DisplayObjectContainer = function()
 PIXI.DisplayObjectContainer.constructor = PIXI.DisplayObjectContainer;
 PIXI.DisplayObjectContainer.prototype = Object.create( PIXI.DisplayObject.prototype );
 
+&#x2F;&#x2F;TODO make visible a getter setter
+&#x2F;*
+Object.defineProperty(PIXI.DisplayObjectContainer.prototype, &#x27;visible&#x27;, {
+    get: function() {
+        return this._visible;
+    },
+    set: function(value) {
+        this._visible = value;
+        
+    }
+});*&#x2F;
+
 &#x2F;**
  * Adds a child to the container.
  * @method addChild
@@ -228,9 +242,12 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 			this.stage.__addChild(child);
 		}
 		
-		&#x2F;&#x2F; little webGL!
+		&#x2F;&#x2F; need to remove any render groups..
 		if(this.__renderGroup)
 		{
+			&#x2F;&#x2F; being used by a renderTexture.. if it exists then it must be from a render texture;
+			if(child.__renderGroup)child.__renderGroup.removeDisplayObjectAndChildren(child);
+			&#x2F;&#x2F; add them to the new render group..
 			this.__renderGroup.addDisplayObjectAndChildren(child);
 		}
 	}
@@ -315,10 +332,10 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 		{
 			this.stage.__removeChild(child);
 		}
-	&#x2F;&#x2F;	console.log(child.__renderGroup);
+		
+		&#x2F;&#x2F; webGL trim
 		if(child.__renderGroup)
 		{
-		&#x2F;&#x2F;	console.log(&quot;&gt;?&quot;)
 			child.__renderGroup.removeDisplayObjectAndChildren(child);
 		}
 		

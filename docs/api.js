@@ -6,6 +6,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "BitmapFontLoader",
         "BitmapText",
         "CanvasRenderer",
+        "CustomRenderable",
         "DisplayObject",
         "DisplayObjectContainer",
         "ImageLoader",

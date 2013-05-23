@@ -51,6 +51,8 @@
             
                 <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
             
+                <li><a href="..&#x2F;classes/CustomRenderable.html">CustomRenderable</a></li>
+            
                 <li><a href="..&#x2F;classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
@@ -230,23 +232,16 @@ PIXI.InteractionManager.prototype.setTarget = function(target)
 		&#x2F;&#x2F; DO some window specific touch!
 	}
 	
+	this.target = target;
+	target.view.addEventListener(&#x27;mousemove&#x27;,  this.onMouseMove.bind(this), true);
+	target.view.addEventListener(&#x27;mousedown&#x27;,  this.onMouseDown.bind(this), true);
+ 	document.body.addEventListener(&#x27;mouseup&#x27;,  this.onMouseUp.bind(this), true);
+ 	target.view.addEventListener(&#x27;mouseout&#x27;,   this.onMouseUp.bind(this), true);
 	
-	{
-		
-		this.target = target;
-		target.view.addEventListener(&#x27;mousemove&#x27;,  this.onMouseMove.bind(this), true);
-		target.view.addEventListener(&#x27;mousedown&#x27;,  this.onMouseDown.bind(this), true);
-	 	document.body.addEventListener(&#x27;mouseup&#x27;,  this.onMouseUp.bind(this), true);
-	 	target.view.addEventListener(&#x27;mouseout&#x27;,   this.onMouseUp.bind(this), true);
-		
-		&#x2F;&#x2F; aint no multi touch just yet!
-		target.view.addEventListener(&quot;touchstart&quot;, this.onTouchStart.bind(this), true);
-		target.view.addEventListener(&quot;touchend&quot;, this.onTouchEnd.bind(this), true);
-		target.view.addEventListener(&quot;touchmove&quot;, this.onTouchMove.bind(this), true);
-	}
-	
-	
-	
+	&#x2F;&#x2F; aint no multi touch just yet!
+	target.view.addEventListener(&quot;touchstart&quot;, this.onTouchStart.bind(this), true);
+	target.view.addEventListener(&quot;touchend&quot;, this.onTouchEnd.bind(this), true);
+	target.view.addEventListener(&quot;touchmove&quot;, this.onTouchMove.bind(this), true);
 }
 
 PIXI.InteractionManager.prototype.update = function()
@@ -360,9 +355,7 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
 	
 	&#x2F;&#x2F; loop through inteaction tree...
 	&#x2F;&#x2F; hit test each item! -&gt; 
-	&#x2F;&#x2F; ---&gt;---&gt;---&gt;---&gt;
 	&#x2F;&#x2F; get interactive items under point??
-	&#x2F;&#x2F; ---&gt;---&gt;---&gt;---&gt;
 	&#x2F;&#x2F;stage.__i
 	var length = this.interactiveItems.length;
 	var global = this.mouse.global;

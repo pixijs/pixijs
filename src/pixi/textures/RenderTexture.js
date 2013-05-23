@@ -14,8 +14,8 @@ PIXI.RenderTexture = function(width, height)
 {
 	PIXI.EventTarget.call( this );
 	
-	this.width = width;
-	this.height = height;
+	this.width = width || 100;
+	this.height = height || 100;
 	
 	this.indetityMatrix = PIXI.mat3.create();
 	
@@ -110,39 +110,35 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, clear)
 		gl.clear(gl.COLOR_BUFFER_BIT);
 	}
 	
-	// set the flipped matrix..
-	gl.uniformMatrix4fv(renderer.shaderProgram.mvMatrixUniform, false, this.projectionMatrix);
-	
 	// THIS WILL MESS WITH HIT TESTING!
 	var children = displayObject.children;
 	
 	//TODO -? create a new one??? dont think so!
-	displayObject.worldTransform = this.indetityMatrix;
+	displayObject.worldTransform = PIXI.mat3.create();//sthis.indetityMatrix;
 	
 	for(var i=0,j=children.length; i<j; i++)
 	{
 		children[i].updateTransform();	
 	}
 	
-	var renderGroup = displayObject.__renderGroup ;
+	var renderGroup = displayObject.__renderGroup;
 
 	if(renderGroup)
 	{
 		if(displayObject == renderGroup.root)
 		{
-			renderGroup.render();
+			renderGroup.render(this.projectionMatrix);
 		}
 		else
 		{
-			renderGroup.renderSpecific(displayObject);
+			renderGroup.renderSpecific(displayObject, this.projectionMatrix);
 		}
 	}
 	else
 	{
 		if(!this.renderGroup)this.renderGroup = new PIXI.WebGLRenderGroup(gl);
 		this.renderGroup.setRenderable(displayObject);
-		
-		this.renderGroup.render();
+		this.renderGroup.render(this.projectionMatrix);
 	}
 	
 }
@@ -151,13 +147,13 @@ PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, clear)
 {
 	var children = displayObject.children;
 	
-	displayObject.worldTransform = this.indetityMatrix;
+	displayObject.worldTransform = PIXI.mat3.create();
 	
 	for(var i=0,j=children.length; i<j; i++)
 	{
 		children[i].updateTransform();	
 	}
-	
+
 	if(clear)this.renderer.context.clearRect(0,0, this.width, this.height);
     this.renderer.renderDisplayObject(displayObject);
     

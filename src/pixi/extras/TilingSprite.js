@@ -28,7 +28,7 @@ PIXI.TilingSprite = function(texture, width, height)
 	this.tileScale = new PIXI.Point(1,1);
 	/**
 	 * The offset position of the image that is being tiled
-	 * @property tileScale
+	 * @property tilePosition
 	 * @type Point
 	 */	
 	this.tilePosition = new PIXI.Point(0,0);
@@ -54,5 +54,4 @@ PIXI.TilingSprite.prototype.onTextureUpdate = function(event)
 {
 	this.updateFrame = true;
 }
-// some helper functions..
 

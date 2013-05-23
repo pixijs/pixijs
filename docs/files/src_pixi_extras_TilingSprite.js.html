@@ -51,6 +51,8 @@
             
                 <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
             
+                <li><a href="..&#x2F;classes/CustomRenderable.html">CustomRenderable</a></li>
+            
                 <li><a href="..&#x2F;classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
@@ -157,10 +159,10 @@ PIXI.TilingSprite = function(texture, width, height)
 	 * @property tileScale
 	 * @type Point
 	 *&#x2F;	
-	this.tileScale = new PIXI.Point(2,1);
+	this.tileScale = new PIXI.Point(1,1);
 	&#x2F;**
 	 * The offset position of the image that is being tiled
-	 * @property tileScale
+	 * @property tilePosition
 	 * @type Point
 	 *&#x2F;	
 	this.tilePosition = new PIXI.Point(0,0);
@@ -186,7 +188,6 @@ PIXI.TilingSprite.prototype.onTextureUpdate = function(event)
 {
 	this.updateFrame = true;
 }
-&#x2F;&#x2F; some helper functions..
 
 
     </pre>

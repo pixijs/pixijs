@@ -51,6 +51,8 @@
             
                 <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
             
+                <li><a href="..&#x2F;classes/CustomRenderable.html">CustomRenderable</a></li>
+            
                 <li><a href="..&#x2F;classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
@@ -204,8 +206,8 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 {
 	&#x2F;&#x2F; update children if need be
 	
-	stage.__childrenAdded = [];
-	stage.__childrenRemoved = [];
+	&#x2F;&#x2F;stage.__childrenAdded = [];
+	&#x2F;&#x2F;stage.__childrenRemoved = [];
 	
 	&#x2F;&#x2F; update textures if need be
 	PIXI.texturesToUpdate = [];
@@ -256,6 +258,7 @@ PIXI.CanvasRenderer.prototype.resize = function(width, height)
 &#x2F;**
  * @private
  *&#x2F;
+
 PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 {
 	var transform = displayObject.worldTransform;
@@ -296,7 +299,7 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 			}	
 			else
 			{*&#x2F;
-				blit = false;
+			&#x2F;&#x2F;	blit = false;
 				context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
 				
 				context.drawImage(displayObject.texture.baseTexture.source, 
@@ -323,6 +326,10 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 	{
 		context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
 		this.renderTilingSprite(displayObject);
+	}
+	else if(displayObject instanceof PIXI.CustomRenderable)
+	{
+		displayObject.renderCanvas(this);
 	}
 	
 	&#x2F;&#x2F; render!

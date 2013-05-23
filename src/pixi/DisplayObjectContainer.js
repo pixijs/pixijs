@@ -26,6 +26,18 @@ PIXI.DisplayObjectContainer = function()
 PIXI.DisplayObjectContainer.constructor = PIXI.DisplayObjectContainer;
 PIXI.DisplayObjectContainer.prototype = Object.create( PIXI.DisplayObject.prototype );
 
+//TODO make visible a getter setter
+/*
+Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'visible', {
+    get: function() {
+        return this._visible;
+    },
+    set: function(value) {
+        this._visible = value;
+        
+    }
+});*/
+
 /**
  * Adds a child to the container.
  * @method addChild
@@ -96,9 +108,12 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 			this.stage.__addChild(child);
 		}
 		
-		// little webGL!
+		// need to remove any render groups..
 		if(this.__renderGroup)
 		{
+			// being used by a renderTexture.. if it exists then it must be from a render texture;
+			if(child.__renderGroup)child.__renderGroup.removeDisplayObjectAndChildren(child);
+			// add them to the new render group..
 			this.__renderGroup.addDisplayObjectAndChildren(child);
 		}
 	}
@@ -183,10 +198,10 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 		{
 			this.stage.__removeChild(child);
 		}
-	//	console.log(child.__renderGroup);
+		
+		// webGL trim
 		if(child.__renderGroup)
 		{
-		//	console.log(">?")
 			child.__renderGroup.removeDisplayObjectAndChildren(child);
 		}
 		

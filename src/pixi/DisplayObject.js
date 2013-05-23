@@ -85,6 +85,8 @@ PIXI.DisplayObject = function()
 	this._sr = 0;
 	this._cr = 1;
 	
+	this.childIndex = 0;
+	
 	this.renderable = false;
 	
 	// [readonly] best not to toggle directly! use setInteractive()
@@ -173,6 +175,17 @@ PIXI.DisplayObject = function()
 
 // constructor
 PIXI.DisplayObject.constructor = PIXI.DisplayObject;
+
+//TODO make visible a getter setter
+/*
+Object.defineProperty(PIXI.DisplayObject.prototype, 'visible', {
+    get: function() {
+        return this._visible;
+    },
+    set: function(value) {
+        this._visible = value;
+    }
+});*/
 
 /**
  * Indicates if the sprite will have touch and mouse interactivity. It is false by default

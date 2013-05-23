@@ -51,6 +51,8 @@
             
                 <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
             
+                <li><a href="..&#x2F;classes/CustomRenderable.html">CustomRenderable</a></li>
+            
                 <li><a href="..&#x2F;classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
@@ -155,8 +157,9 @@ PIXI.Text = function(text, style)
 
     this.setText(text);
     this.setStyle(style);
-    &#x2F;&#x2F;this.updateText();
-    this.dirty = true;
+    
+     this.updateText();
+    this.dirty = false;
 };
 
 &#x2F;&#x2F; constructor
@@ -204,7 +207,7 @@ PIXI.Text.prototype.updateText = function()
 	this.context.font = this.style.font;
 
 	&#x2F;&#x2F;split text into lines
-	var lines = this.text.split(&quot;\n&quot;);
+	var lines = this.text.split(&#x2F;(?:\r\n|\r|\n)&#x2F;);
 
 	&#x2F;&#x2F;calculate text width
 	var lineWidths = [];
@@ -269,6 +272,10 @@ PIXI.Text.prototype.updateTexture = function()
     this.texture.baseTexture.height = this.canvas.height;
     this.texture.frame.width = this.canvas.width;
     this.texture.frame.height = this.canvas.height;
+    
+  	this._width = this.canvas.width;
+    this._height = this.canvas.height;
+	
     PIXI.texturesToUpdate.push(this.texture.baseTexture);
 };
 

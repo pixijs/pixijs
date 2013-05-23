@@ -51,6 +51,8 @@
             
                 <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
             
+                <li><a href="..&#x2F;classes/CustomRenderable.html">CustomRenderable</a></li>
+            
                 <li><a href="..&#x2F;classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
@@ -178,7 +180,7 @@ PIXI.Rectangle = function(x, y, width, height)
  * @method clone
  * @return a copy of the rectangle
  *&#x2F;
-PIXI.Rectangle.clone = function()
+PIXI.Rectangle.prototype.clone = function()
 {
 	return new PIXI.Rectangle(this.x, this.y, this.width, this.height);
 }

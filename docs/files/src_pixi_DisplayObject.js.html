@@ -51,6 +51,8 @@
             
                 <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
             
+                <li><a href="..&#x2F;classes/CustomRenderable.html">CustomRenderable</a></li>
+            
                 <li><a href="..&#x2F;classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
@@ -217,6 +219,8 @@ PIXI.DisplayObject = function()
 	this._sr = 0;
 	this._cr = 1;
 	
+	this.childIndex = 0;
+	
 	this.renderable = false;
 	
 	&#x2F;&#x2F; [readonly] best not to toggle directly! use setInteractive()
@@ -305,6 +309,17 @@ PIXI.DisplayObject = function()
 
 &#x2F;&#x2F; constructor
 PIXI.DisplayObject.constructor = PIXI.DisplayObject;
+
+&#x2F;&#x2F;TODO make visible a getter setter
+&#x2F;*
+Object.defineProperty(PIXI.DisplayObject.prototype, &#x27;visible&#x27;, {
+    get: function() {
+        return this._visible;
+    },
+    set: function(value) {
+        this._visible = value;
+    }
+});*&#x2F;
 
 &#x2F;**
  * Indicates if the sprite will have touch and mouse interactivity. It is false by default

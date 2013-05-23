@@ -72,8 +72,8 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 {
 	// update children if need be
 	
-	stage.__childrenAdded = [];
-	stage.__childrenRemoved = [];
+	//stage.__childrenAdded = [];
+	//stage.__childrenRemoved = [];
 	
 	// update textures if need be
 	PIXI.texturesToUpdate = [];
@@ -124,6 +124,7 @@ PIXI.CanvasRenderer.prototype.resize = function(width, height)
 /**
  * @private
  */
+
 PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 {
 	var transform = displayObject.worldTransform;
@@ -164,7 +165,7 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 			}	
 			else
 			{*/
-				blit = false;
+			//	blit = false;
 				context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
 				
 				context.drawImage(displayObject.texture.baseTexture.source, 
@@ -191,6 +192,10 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 	{
 		context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
 		this.renderTilingSprite(displayObject);
+	}
+	else if(displayObject instanceof PIXI.CustomRenderable)
+	{
+		displayObject.renderCanvas(this);
 	}
 	
 	// render!

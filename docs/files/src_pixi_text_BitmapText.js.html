@@ -51,6 +51,8 @@
             
                 <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
             
+                <li><a href="..&#x2F;classes/CustomRenderable.html">CustomRenderable</a></li>
+            
                 <li><a href="..&#x2F;classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
@@ -135,19 +137,18 @@
  *&#x2F;
 
 &#x2F;**
- * A Text Object will create a line(s) of text using bitmap font 
+ * A Text Object will create a line(s) of text using bitmap font. To split a line you can use &quot;\n&quot;, &quot;\r&quot; or &quot;\r\n&quot;
  * You can generate the fnt files using 
- * http:&#x2F;&#x2F;www.angelcode.com&#x2F;products&#x2F;bmfont&#x2F; for windows of
+ * http:&#x2F;&#x2F;www.angelcode.com&#x2F;products&#x2F;bmfont&#x2F; for windows or
  * http:&#x2F;&#x2F;www.bmglyph.com&#x2F; for mac.
  * @class BitmapText
  * @extends DisplayObjectContainer
  * @constructor
  * @param {String} text The copy that you would like the text to display
- * @param {Object} [style] The style parameters
- * @param {String} [style.font] default is &quot;20pt Arial&quot; The size and bitmap font id (must have loaded previously)
+ * @param {Object} style The style parameters
+ * @param {String} style.font The size (optional) and bitmap font id (required) eq &quot;Arial&quot; or &quot;20px Arial&quot; (must have loaded previously)
  * @param {String} [style.align=&quot;left&quot;] An alignment of the multiline text (&quot;left&quot;, &quot;center&quot; or &quot;right&quot;)
  *&#x2F;
- &#x2F;&#x2F;* @param {Object} [style.font=&quot;bold 20pt Arial&quot;] The style and size of the font
 PIXI.BitmapText = function(text, style)
 {
     PIXI.DisplayObjectContainer.call(this);
@@ -165,7 +166,7 @@ PIXI.BitmapText.prototype = Object.create(PIXI.DisplayObjectContainer.prototype)
 
 &#x2F;**
  * Set the copy for the text object
- * @methos setText
+ * @method setText
  * @param {String} text The copy that you would like the text to display
  *&#x2F;
 PIXI.BitmapText.prototype.setText = function(text)
@@ -177,8 +178,8 @@ PIXI.BitmapText.prototype.setText = function(text)
 &#x2F;**
  * Set the style of the text
  * @method setStyle
- * @param {Object} [style] The style parameters
- * @param {Object} style.font The style and size of the font. If font size is not specified, it uses default bitmap font size. Font name is required
+ * @param {Object} style The style parameters
+ * @param {String} style.font The size (optional) and bitmap font id (required) eq &quot;Arial&quot; or &quot;20px Arial&quot; (must have loaded previously)
  * @param {String} [style.align=&quot;left&quot;] An alignment of the multiline text (&quot;left&quot;, &quot;center&quot; or &quot;right&quot;)
  *&#x2F;
 PIXI.BitmapText.prototype.setStyle = function(style)
@@ -211,7 +212,7 @@ PIXI.BitmapText.prototype.updateText = function()
     for(var i = 0; i &lt; this.text.length; i++)
     {
         var charCode = this.text.charCodeAt(i);
-        if(charCode == &quot;\n&quot;.charCodeAt(0))
+        if(&#x2F;(?:\r\n|\r|\n)&#x2F;.test(this.text.charAt(i)))
         {
             lineWidths.push(pos.x);
             maxLineWidth = Math.max(maxLineWidth, pos.x);
