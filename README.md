@@ -24,6 +24,8 @@ any breakthroughs will be posted up there too!
 
 - [Bunny Demo](<http://www.goodboydigital.com/pixijs/bunnymark>)
 
+- [Render Texture Demo](<http://www.goodboydigital.com/pixijs/examples/11/>)
+
 - [Interaction Demo](<http://www.goodboydigital.com/pixijs/examples/6/>)
 
 - [photonstorm Balls Demo](<http://gametest.mobi/pixi/balls/>)
@@ -80,11 +82,12 @@ It also copies the non-minified version to the examples.
 - Text
 - BitmapFont text
 - Multiline Text
+- Render Texture
 
 ### Coming soon ###
 
 - Filters 
-- Render Texture 
+ 
 
 
 ### Coming later ###
