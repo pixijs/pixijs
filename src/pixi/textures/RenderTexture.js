@@ -16,7 +16,7 @@ PIXI.RenderTexture = function(width, height)
 	
 	this.width = width || 100;
 	this.height = height || 100;
-	
+
 	this.indetityMatrix = PIXI.mat3.create();
 	
 	this.frame = new PIXI.Rectangle(0, 0, this.width, this.height);	
@@ -91,7 +91,7 @@ PIXI.RenderTexture.prototype.initCanvas = function()
  * This function will draw the display object to the texture.
  * @method render
  * @param displayObject {DisplayObject}
- * @param clear {Boolean} If true the texture will not be cleared before the displayObject is drawn
+ * @param clear {Boolean} If true the texture will be cleared before the displayObject is drawn
  */
 PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, clear)
 {
