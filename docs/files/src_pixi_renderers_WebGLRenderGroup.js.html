@@ -177,6 +177,8 @@ PIXI.WebGLRenderGroup.prototype.setRenderable = function(displayObject)
 
 PIXI.WebGLRenderGroup.prototype.render = function(projectionMatrix)
 {
+	&#x2F;&#x2F;PIXI.WebGLRenderer.updateTextures();
+	
 	var gl = this.gl;
 	
 	&#x2F;&#x2F; set the flipped matrix..
@@ -215,6 +217,8 @@ PIXI.WebGLRenderGroup.prototype.render = function(projectionMatrix)
 
 PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, projectionMatrix)
 {
+	&#x2F;&#x2F;PIXI.WebGLRenderer.updateTextures();
+	
 	var gl = this.gl;
 	this.checkVisibility(displayObject, displayObject.visible);
 	gl.uniformMatrix4fv(PIXI.shaderProgram.mvMatrixUniform, false, projectionMatrix);
@@ -683,7 +687,9 @@ PIXI.WebGLRenderGroup.prototype.getNextRenderable = function(displayObject)
 			while(nextSprite.childIndex == nextSprite.parent.children.length-1)
 			{
 				nextSprite = nextSprite.parent;
-				if(nextSprite ==  this.root)&#x2F;&#x2F;displayObject.stage)
+				&#x2F;&#x2F;console.log(&quot;&gt;&quot; + nextSprite);
+&#x2F;&#x2F;				console.log(&quot;&gt;-&quot; + this.root);
+				if(nextSprite ==  this.root || !nextSprite.parent)&#x2F;&#x2F;displayObject.stage)
 				{
 					nextSprite = null
 					break;

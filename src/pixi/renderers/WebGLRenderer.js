@@ -172,15 +172,8 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	}*/
 
 	// update any textures	
-	for (var i=0; i < PIXI.texturesToUpdate.length; i++) this.updateTexture(PIXI.texturesToUpdate[i]);
-	for (var i=0; i < PIXI.texturesToDestroy.length; i++) this.destroyTexture(PIXI.texturesToDestroy[i]);
-	
-	// empty out the arrays
-	//stage.__childrenRemoved = [];
-	//stage.__childrenAdded = [];
-	PIXI.texturesToUpdate = [];
-	PIXI.texturesToDestroy = [];
-	
+	PIXI.WebGLRenderer.updateTextures();
+		
 	// recursivly loop through all items!
 	//this.checkVisibility(stage, true);
 	
@@ -232,9 +225,18 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 /**
  * @private
  */
-PIXI.WebGLRenderer.prototype.updateTexture = function(texture)
+
+PIXI.WebGLRenderer.updateTextures = function()
 {
-	var gl = this.gl;
+	for (var i=0; i < PIXI.texturesToUpdate.length; i++) this.updateTexture(PIXI.texturesToUpdate[i]);
+	for (var i=0; i < PIXI.texturesToDestroy.length; i++) this.destroyTexture(PIXI.texturesToDestroy[i]);
+	PIXI.texturesToUpdate = [];
+	PIXI.texturesToDestroy = [];
+}
+
+PIXI.WebGLRenderer.updateTexture = function(texture)
+{
+	var gl = PIXI.gl;
 	
 	if(!texture._glTexture)
 	{
@@ -266,7 +268,6 @@ PIXI.WebGLRenderer.prototype.updateTexture = function(texture)
 		gl.bindTexture(gl.TEXTURE_2D, null);
 	}
 	
-	this.refreshBatchs = true;
 }
 
 PIXI.WebGLRenderer.prototype.destroyTexture = function(texture)

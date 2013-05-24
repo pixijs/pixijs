@@ -1388,35 +1388,35 @@
         },
         {
             "file": "src/pixi/renderers/WebGLRenderGroup.js",
-            "line": 523,
+            "line": 527,
             "access": "private",
             "tagname": "",
             "class": "WebGLBatch"
         },
         {
             "file": "src/pixi/renderers/WebGLRenderGroup.js",
-            "line": 607,
+            "line": 613,
             "access": "private",
             "tagname": "",
             "class": "WebGLBatch"
         },
         {
             "file": "src/pixi/renderers/WebGLRenderGroup.js",
-            "line": 663,
+            "line": 669,
             "access": "private",
             "tagname": "",
             "class": "WebGLBatch"
         },
         {
             "file": "src/pixi/renderers/WebGLRenderGroup.js",
-            "line": 740,
+            "line": 746,
             "access": "private",
             "tagname": "",
             "class": "WebGLBatch"
         },
         {
             "file": "src/pixi/renderers/WebGLRenderGroup.js",
-            "line": 777,
+            "line": 783,
             "access": "private",
             "tagname": "",
             "class": "WebGLBatch"
@@ -1465,14 +1465,14 @@
         },
         {
             "file": "src/pixi/renderers/WebGLRenderer.js",
-            "line": 232,
+            "line": 225,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "src/pixi/renderers/WebGLRenderer.js",
-            "line": 283,
+            "line": 284,
             "description": "resizes the webGL view to the specified width and height",
             "itemtype": "method",
             "name": "resize",
@@ -1492,14 +1492,14 @@
         },
         {
             "file": "src/pixi/renderers/WebGLRenderer.js",
-            "line": 307,
+            "line": 308,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "src/pixi/renderers/WebGLRenderer.js",
-            "line": 316,
+            "line": 317,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
@@ -2908,23 +2908,23 @@
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/WebGLRenderGroup.js:523"
+            "line": " src/pixi/renderers/WebGLRenderGroup.js:527"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/WebGLRenderGroup.js:607"
+            "line": " src/pixi/renderers/WebGLRenderGroup.js:613"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/WebGLRenderGroup.js:663"
+            "line": " src/pixi/renderers/WebGLRenderGroup.js:669"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/WebGLRenderGroup.js:740"
+            "line": " src/pixi/renderers/WebGLRenderGroup.js:746"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/WebGLRenderGroup.js:777"
+            "line": " src/pixi/renderers/WebGLRenderGroup.js:783"
         },
         {
             "message": "Missing item type",
@@ -2944,15 +2944,15 @@
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/WebGLRenderer.js:232"
+            "line": " src/pixi/renderers/WebGLRenderer.js:225"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/WebGLRenderer.js:307"
+            "line": " src/pixi/renderers/WebGLRenderer.js:308"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/WebGLRenderer.js:316"
+            "line": " src/pixi/renderers/WebGLRenderer.js:317"
         },
         {
             "message": "Missing item type",

@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-05-23
+ * Compiled: 2013-05-24
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -2558,15 +2558,8 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	}*/
 
 	// update any textures	
-	for (var i=0; i < PIXI.texturesToUpdate.length; i++) this.updateTexture(PIXI.texturesToUpdate[i]);
-	for (var i=0; i < PIXI.texturesToDestroy.length; i++) this.destroyTexture(PIXI.texturesToDestroy[i]);
-	
-	// empty out the arrays
-	//stage.__childrenRemoved = [];
-	//stage.__childrenAdded = [];
-	PIXI.texturesToUpdate = [];
-	PIXI.texturesToDestroy = [];
-	
+	PIXI.WebGLRenderer.updateTextures();
+		
 	// recursivly loop through all items!
 	//this.checkVisibility(stage, true);
 	
@@ -2618,9 +2611,18 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 /**
  * @private
  */
-PIXI.WebGLRenderer.prototype.updateTexture = function(texture)
+
+PIXI.WebGLRenderer.updateTextures = function()
 {
-	var gl = this.gl;
+	for (var i=0; i < PIXI.texturesToUpdate.length; i++) this.updateTexture(PIXI.texturesToUpdate[i]);
+	for (var i=0; i < PIXI.texturesToDestroy.length; i++) this.destroyTexture(PIXI.texturesToDestroy[i]);
+	PIXI.texturesToUpdate = [];
+	PIXI.texturesToDestroy = [];
+}
+
+PIXI.WebGLRenderer.updateTexture = function(texture)
+{
+	var gl = PIXI.gl;
 	
 	if(!texture._glTexture)
 	{
@@ -2652,7 +2654,6 @@ PIXI.WebGLRenderer.prototype.updateTexture = function(texture)
 		gl.bindTexture(gl.TEXTURE_2D, null);
 	}
 	
-	this.refreshBatchs = true;
 }
 
 PIXI.WebGLRenderer.prototype.destroyTexture = function(texture)
@@ -3343,6 +3344,8 @@ PIXI.WebGLRenderGroup.prototype.setRenderable = function(displayObject)
 	// has this changed??
 	if(this.root)this.removeDisplayObjectAndChildren(this.root);
 	
+	displayObject.worldVisible = displayObject.visible;
+	
 	// soooooo //
 	// to check if any batchs exist already??
 	
@@ -3355,23 +3358,21 @@ PIXI.WebGLRenderGroup.prototype.setRenderable = function(displayObject)
 
 PIXI.WebGLRenderGroup.prototype.render = function(projectionMatrix)
 {
+	
+	PIXI.WebGLRenderer.updateTextures();
+	
 	var gl = this.gl;
 	
 	// set the flipped matrix..
 	gl.uniformMatrix4fv(PIXI.shaderProgram.mvMatrixUniform, false, projectionMatrix);
 	
-	
-	for (var i=0; i < this.toRemove.length; i++) 
-	{
-		this.removeDisplayObjectAndChildren(this.toRemove[i]);
-	};
-	
-	this.toRemove = [];
-	
+	// TODO remove this by replacing visible with getter setters..	
 	this.checkVisibility(this.root, this.root.visible);
 	
 	// will render all the elements in the group
 	var renderable;
+	
+	
 	for (var i=0; i < this.batchs.length; i++) 
 	{
 		renderable = this.batchs[i];
@@ -3393,6 +3394,8 @@ PIXI.WebGLRenderGroup.prototype.render = function(projectionMatrix)
 
 PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, projectionMatrix)
 {
+	PIXI.WebGLRenderer.updateTextures();
+	
 	var gl = this.gl;
 	this.checkVisibility(displayObject, displayObject.visible);
 	gl.uniformMatrix4fv(PIXI.shaderProgram.mvMatrixUniform, false, projectionMatrix);
@@ -3861,7 +3864,9 @@ PIXI.WebGLRenderGroup.prototype.getNextRenderable = function(displayObject)
 			while(nextSprite.childIndex == nextSprite.parent.children.length-1)
 			{
 				nextSprite = nextSprite.parent;
-				if(nextSprite ==  this.root)//displayObject.stage)
+				//console.log(">" + nextSprite);
+//				console.log(">-" + this.root);
+				if(nextSprite ==  this.root || !nextSprite.parent)//displayObject.stage)
 				{
 					nextSprite = null
 					break;
