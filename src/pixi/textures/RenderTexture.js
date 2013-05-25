@@ -3,13 +3,33 @@
  */
 
 /**
- * A RenderTexture is a special texture that allows any pixi displayObject to be rendered to it. 
- * @class RenderTexture
- * @extends Texture
- * @constructor
- * @param width {Number}
- * @param height {Number}
- */
+ A RenderTexture is a special texture that allows any pixi displayObject to be rendered to it.
+
+ __Hint__: All DisplayObjects (exmpl. Sprites) that renders on RenderTexture should be preloaded. 
+ Otherwise black rectangles will be drawn instead.  
+ 
+ RenderTexture takes snapshot of DisplayObject passed to render method. If DisplayObject is passed to render method, position and rotation of it will be ignored. For example:
+ 
+	var renderTexture = new PIXI.RenderTexture(800, 600);
+	var sprite = PIXI.Sprite.fromImage("spinObj_01.png");
+	sprite.position.x = 800/2;
+	sprite.position.y = 600/2;
+	sprite.anchor.x = 0.5;
+	sprite.anchor.y = 0.5;
+	renderTexture.render(sprite);
+
+ Sprite in this case will be rendered to 0,0 position. To render this sprite at center DisplayObjectContainer should be used:
+
+	var doc = new PIXI.DisplayObjectContainer();
+	doc.addChild(sprite);
+	renderTexture.render(doc);  // Renders to center of renderTexture
+
+ @class RenderTexture
+ @extends Texture
+ @constructor
+ @param width {Number}
+ @param height {Number}
+ **/
 PIXI.RenderTexture = function(width, height)
 {
 	PIXI.EventTarget.call( this );
