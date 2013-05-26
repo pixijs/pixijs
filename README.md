@@ -86,8 +86,7 @@ It also copies the non-minified version to the examples.
 
 ### Coming soon ###
 
-- Filters 
- 
+- Filters ( wip : [storm brewing](<http://www.goodboydigital.com/pixijs/storm/>) )
 
 
 ### Coming later ###
