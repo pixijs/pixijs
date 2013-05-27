@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-05-24
+ * Compiled: 2013-05-27
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -900,7 +900,7 @@ PIXI.MovieClip.prototype.updateTransform = function()
 	
 	this.currentFrame += this.animationSpeed;
 	var round = (this.currentFrame + 0.5) | 0;
-	if(this.loop || round < this.textures.length)
+	if(this.loop || (round < this.textures.length && round >= 0) )
 	{
 		this.setTexture(this.textures[round % this.textures.length]);
 	}
@@ -5162,7 +5162,7 @@ PIXI.RenderTexture = function(width, height)
 	
 	this.width = width || 100;
 	this.height = height || 100;
-	
+
 	this.indetityMatrix = PIXI.mat3.create();
 	
 	this.frame = new PIXI.Rectangle(0, 0, this.width, this.height);	
@@ -5237,7 +5237,7 @@ PIXI.RenderTexture.prototype.initCanvas = function()
  * This function will draw the display object to the texture.
  * @method render
  * @param displayObject {DisplayObject}
- * @param clear {Boolean} If true the texture will not be cleared before the displayObject is drawn
+ * @param clear {Boolean} If true the texture will be cleared before the displayObject is drawn
  */
 PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, clear)
 {
