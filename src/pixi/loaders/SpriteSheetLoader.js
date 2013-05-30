@@ -17,8 +17,7 @@
  * @param {Boolean} crossorigin
  */
 
-PIXI.SpriteSheetLoader = function(url, crossorigin)
-{
+PIXI.SpriteSheetLoader = function (url, crossorigin) {
 	/*
 	 * i use texture packer to load the assets..
 	 * http://www.codeandweb.com/texturepacker
@@ -38,67 +37,58 @@ PIXI.SpriteSheetLoader.constructor = PIXI.SpriteSheetLoader;
 /**
  * This will begin loading the JSON file
  */
-PIXI.SpriteSheetLoader.prototype.load = function()
-{
-	this.ajaxRequest = new AjaxRequest();
+PIXI.SpriteSheetLoader.prototype.load = function () {
 	var scope = this;
-	this.ajaxRequest.onreadystatechange = function()
-	{
+	var jsonLoader = new PIXI.JsonLoader(this.url, this.crossorigin);
+	jsonLoader.addEventListener("loaded", function (event) {
+		scope.json = event.content.json;
 		scope.onJSONLoaded();
-	};
-		
-	this.ajaxRequest.open("GET", this.url, true);
-	if (this.ajaxRequest.overrideMimeType) this.ajaxRequest.overrideMimeType("application/json");
-	this.ajaxRequest.send(null)
+	});
+	jsonLoader.load();
 };
 
 /**
  * Invoke when JSON file is loaded
  * @private
  */
-PIXI.SpriteSheetLoader.prototype.onJSONLoaded = function()
-{
-	if (this.ajaxRequest.readyState == 4)
-	{
-		 if (this.ajaxRequest.status == 200 || window.location.href.indexOf("http") == -1)
-	 	{
-			var jsonData = eval("(" + this.ajaxRequest.responseText + ")");
-			var textureUrl = this.baseUrl + jsonData.meta.image;
+PIXI.SpriteSheetLoader.prototype.onJSONLoaded = function () {
+	var scope = this;
+	var textureUrl = this.baseUrl + this.json.meta.image;
+	var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
+	var frameData = this.json.frames;
 
-            var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
-            this.texture = image.texture.baseTexture;
-            var scope = this;
-            image.addEventListener("loaded", function(event) {
-                 scope.onLoaded();
-            });
+	this.texture = image.texture.baseTexture;
+	image.addEventListener("loaded", function (event) {
+		scope.onLoaded();
+	});
 
-			var frameData = jsonData.frames;
-			for (var i in frameData)
-			{
-				var rect = frameData[i].frame;
-				if (rect)
-				{
-					PIXI.TextureCache[i] = new PIXI.Texture(this.texture, {x:rect.x, y:rect.y, width:rect.w, height:rect.h});
-					
-					if(frameData[i].trimmed)
-					{
-						//var realSize = frameData[i].spriteSourceSize;
-						PIXI.TextureCache[i].realSize = frameData[i].spriteSourceSize;
-						PIXI.TextureCache[i].trim.x = 0;// (realSize.x / rect.w)
-						// calculate the offset!
-					}
-				}
-   			}
+	for (var i in frameData) {
+		var rect = frameData[i].frame;
+		if (rect) {
+			PIXI.TextureCache[i] = new PIXI.Texture(this.texture, {
+				x: rect.x,
+				y: rect.y,
+				width: rect.w,
+				height: rect.h
+			});
+			if (frameData[i].trimmed) {
+				//var realSize = frameData[i].spriteSourceSize;
+				PIXI.TextureCache[i].realSize = frameData[i].spriteSourceSize;
+				PIXI.TextureCache[i].trim.x = 0; // (realSize.x / rect.w)
+				// calculate the offset!
+			}
+		}
+	}
 
-            image.load();
-	 	}
-	}	
+	image.load();
 };
 /**
  * Invoke when all files are loaded (json and texture)
  * @private
  */
-PIXI.SpriteSheetLoader.prototype.onLoaded = function()
-{
-    this.dispatchEvent({type: "loaded", content: this});
+PIXI.SpriteSheetLoader.prototype.onLoaded = function () {
+	this.dispatchEvent({
+		type: "loaded",
+		content: this
+	});
 };
