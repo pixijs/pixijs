@@ -3,17 +3,13 @@
  */
 
 /**
- * The sprite sheet loader is used to load in JSON sprite sheet data
- * To generate the data you can use http://www.codeandweb.com/texturepacker and publish the "JSON" format
- * There is a free version so thats nice, although the paid version is great value for money.
- * It is highly recommended to use Sprite sheets (also know as texture atlas") as it means sprite"s can be batched and drawn together for highly increased rendering speed.
- * Once the data has been loaded the frames are stored in the PIXI texture cache and can be accessed though PIXI.Texture.fromFrameId() and PIXI.Sprite.fromFromeId()
- * This loader will also load the image file that the Spritesheet points to as well as the data.
+ * The json file loader is used to load in JSON data and parsing it
  * When loaded this class will dispatch a "loaded" event
- * @class SpriteSheetLoader
+ * If load failed this class will dispatch a "error" event
+ * @class JsonLoader
  * @extends EventTarget
  * @constructor
- * @param {String} url the url of the sprite sheet JSON file
+ * @param {String} url the url of the JSON file
  * @param {Boolean} crossorigin
  */
 
