@@ -60,7 +60,8 @@ PIXI.Text.prototype.setStyle = function(style)
  */
 PIXI.Sprite.prototype.setText = function(text)
 {
-    this.text = text || " ";
+    this.text = text.toString() || " ";
+    
     this.dirty = true;
 };
 

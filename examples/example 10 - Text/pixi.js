@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-05-24
+ * Compiled: 2013-06-05
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -975,7 +975,8 @@ PIXI.Text.prototype.setStyle = function(style)
  */
 PIXI.Sprite.prototype.setText = function(text)
 {
-    this.text = text || " ";
+    this.text = text.toString() || " ";
+    
     this.dirty = true;
 };
 
@@ -1212,7 +1213,7 @@ PIXI.BitmapText.prototype.updateText = function()
         {
            pos.x += charData.kerning[prevCharCode];
         }
-        chars.push({line: line, charCode: charCode, position: new PIXI.Point(pos.x + charData.xOffset, pos.y + charData.yOffset)});
+        chars.push({texture:charData.texture, line: line, charCode: charCode, position: new PIXI.Point(pos.x + charData.xOffset, pos.y + charData.yOffset)});
         pos.x += charData.xAdvance;
 
         prevCharCode = charCode;
@@ -1238,7 +1239,7 @@ PIXI.BitmapText.prototype.updateText = function()
 
     for(i = 0; i < chars.length; i++)
     {
-        var char = PIXI.Sprite.fromFrame(chars[i].charCode);
+        var char = new PIXI.Sprite(chars[i].texture)//PIXI.Sprite.fromFrame(chars[i].charCode);
         char.position.x = (chars[i].position.x + lineAlignOffsets[chars[i].line]) * scale;
         char.position.y = chars[i].position.y * scale;
         char.scale.x = char.scale.y = scale;
@@ -4918,7 +4919,6 @@ PIXI.BaseTexture.constructor = PIXI.BaseTexture;
 
 PIXI.BaseTexture.prototype.destroy = function()
 {
-	
 	if(this.source instanceof Image)
 	{
 		this.source.src = null;
@@ -4926,7 +4926,6 @@ PIXI.BaseTexture.prototype.destroy = function()
 	this.source = null;
 	PIXI.texturesToDestroy.push(this);
 }
-
 
 /**
  * 
@@ -5162,7 +5161,7 @@ PIXI.RenderTexture = function(width, height)
 	
 	this.width = width || 100;
 	this.height = height || 100;
-	
+
 	this.indetityMatrix = PIXI.mat3.create();
 	
 	this.frame = new PIXI.Rectangle(0, 0, this.width, this.height);	
@@ -5237,7 +5236,7 @@ PIXI.RenderTexture.prototype.initCanvas = function()
  * This function will draw the display object to the texture.
  * @method render
  * @param displayObject {DisplayObject}
- * @param clear {Boolean} If true the texture will not be cleared before the displayObject is drawn
+ * @param clear {Boolean} If true the texture will be cleared before the displayObject is drawn
  */
 PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, clear)
 {
@@ -5408,6 +5407,82 @@ PIXI.AssetLoader.prototype.onAssetLoaded = function()
  */
 
 /**
+ * The json file loader is used to load in JSON data and parsing it
+ * When loaded this class will dispatch a "loaded" event
+ * If load failed this class will dispatch a "error" event
+ * @class JsonLoader
+ * @extends EventTarget
+ * @constructor
+ * @param {String} url the url of the JSON file
+ * @param {Boolean} crossorigin
+ */
+
+PIXI.JsonLoader = function (url, crossorigin) {
+	PIXI.EventTarget.call(this);
+	this.url = url;
+	this.baseUrl = url.replace(/[^\/]*$/, "");
+	this.crossorigin = crossorigin;
+};
+
+// constructor
+PIXI.JsonLoader.constructor = PIXI.JsonLoader;
+
+/**
+ * This will begin loading the JSON file
+ */
+PIXI.JsonLoader.prototype.load = function () {
+	this.ajaxRequest = new AjaxRequest();
+	var scope = this;
+	this.ajaxRequest.onreadystatechange = function () {
+		scope.onJSONLoaded();
+	};
+
+	this.ajaxRequest.open("GET", this.url, true);
+	if (this.ajaxRequest.overrideMimeType) this.ajaxRequest.overrideMimeType("application/json");
+	this.ajaxRequest.send(null);
+};
+
+/**
+ * Invoke when JSON file is loaded
+ * @private
+ */
+PIXI.JsonLoader.prototype.onJSONLoaded = function () {
+	if (this.ajaxRequest.readyState == 4) {
+		if (this.ajaxRequest.status == 200 || window.location.href.indexOf("http") == -1) {
+			this.json = JSON.parse(this.ajaxRequest.responseText);
+			this.onLoaded();
+		} else {
+			this.onError();
+		}
+	}
+};
+
+/**
+ * Invoke when json file loaded
+ * @private
+ */
+PIXI.JsonLoader.prototype.onLoaded = function () {
+	this.dispatchEvent({
+		type: "loaded",
+		content: this
+	});
+};
+
+/**
+ * Invoke when error occured
+ * @private
+ */
+PIXI.JsonLoader.prototype.onError = function () {
+	this.dispatchEvent({
+		type: "error",
+		content: this
+	});
+};
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+/**
  * The sprite sheet loader is used to load in JSON sprite sheet data
  * To generate the data you can use http://www.codeandweb.com/texturepacker and publish the "JSON" format
  * There is a free version so thats nice, although the paid version is great value for money.
@@ -5422,8 +5497,7 @@ PIXI.AssetLoader.prototype.onAssetLoaded = function()
  * @param {Boolean} crossorigin
  */
 
-PIXI.SpriteSheetLoader = function(url, crossorigin)
-{
+PIXI.SpriteSheetLoader = function (url, crossorigin) {
 	/*
 	 * i use texture packer to load the assets..
 	 * http://www.codeandweb.com/texturepacker
@@ -5443,71 +5517,61 @@ PIXI.SpriteSheetLoader.constructor = PIXI.SpriteSheetLoader;
 /**
  * This will begin loading the JSON file
  */
-PIXI.SpriteSheetLoader.prototype.load = function()
-{
-	this.ajaxRequest = new AjaxRequest();
+PIXI.SpriteSheetLoader.prototype.load = function () {
 	var scope = this;
-	this.ajaxRequest.onreadystatechange = function()
-	{
+	var jsonLoader = new PIXI.JsonLoader(this.url, this.crossorigin);
+	jsonLoader.addEventListener("loaded", function (event) {
+		scope.json = event.content.json;
 		scope.onJSONLoaded();
-	};
-		
-	this.ajaxRequest.open("GET", this.url, true);
-	if (this.ajaxRequest.overrideMimeType) this.ajaxRequest.overrideMimeType("application/json");
-	this.ajaxRequest.send(null)
+	});
+	jsonLoader.load();
 };
 
 /**
  * Invoke when JSON file is loaded
  * @private
  */
-PIXI.SpriteSheetLoader.prototype.onJSONLoaded = function()
-{
-	if (this.ajaxRequest.readyState == 4)
-	{
-		 if (this.ajaxRequest.status == 200 || window.location.href.indexOf("http") == -1)
-	 	{
-			var jsonData = eval("(" + this.ajaxRequest.responseText + ")");
-			var textureUrl = this.baseUrl + jsonData.meta.image;
+PIXI.SpriteSheetLoader.prototype.onJSONLoaded = function () {
+	var scope = this;
+	var textureUrl = this.baseUrl + this.json.meta.image;
+	var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
+	var frameData = this.json.frames;
 
-            var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
-            this.texture = image.texture.baseTexture;
-            var scope = this;
-            image.addEventListener("loaded", function(event) {
-                 scope.onLoaded();
-            });
+	this.texture = image.texture.baseTexture;
+	image.addEventListener("loaded", function (event) {
+		scope.onLoaded();
+	});
 
-			var frameData = jsonData.frames;
-			for (var i in frameData)
-			{
-				var rect = frameData[i].frame;
-				if (rect)
-				{
-					PIXI.TextureCache[i] = new PIXI.Texture(this.texture, {x:rect.x, y:rect.y, width:rect.w, height:rect.h});
-					
-					if(frameData[i].trimmed)
-					{
-						//var realSize = frameData[i].spriteSourceSize;
-						PIXI.TextureCache[i].realSize = frameData[i].spriteSourceSize;
-						PIXI.TextureCache[i].trim.x = 0;// (realSize.x / rect.w)
-						// calculate the offset!
-					}
-				}
-   			}
+	for (var i in frameData) {
+		var rect = frameData[i].frame;
+		if (rect) {
+			PIXI.TextureCache[i] = new PIXI.Texture(this.texture, {
+				x: rect.x,
+				y: rect.y,
+				width: rect.w,
+				height: rect.h
+			});
+			if (frameData[i].trimmed) {
+				//var realSize = frameData[i].spriteSourceSize;
+				PIXI.TextureCache[i].realSize = frameData[i].spriteSourceSize;
+				PIXI.TextureCache[i].trim.x = 0; // (realSize.x / rect.w)
+				// calculate the offset!
+			}
+		}
+	}
 
-            image.load();
-	 	}
-	}	
+	image.load();
 };
 /**
  * Invoke when all files are loaded (json and texture)
  * @private
  */
-PIXI.SpriteSheetLoader.prototype.onLoaded = function()
-{
-    this.dispatchEvent({type: "loaded", content: this});
+PIXI.SpriteSheetLoader.prototype.onLoaded = function () {
+	this.dispatchEvent({
+		type: "loaded",
+		content: this
+	});
 };
-
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -5650,7 +5714,9 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
                     xOffset: parseInt(letters[i].attributes.getNamedItem("xoffset").nodeValue, 10),
                     yOffset: parseInt(letters[i].attributes.getNamedItem("yoffset").nodeValue, 10),
                     xAdvance: parseInt(letters[i].attributes.getNamedItem("xadvance").nodeValue, 10),
-                    kerning: {}
+                    kerning: {},
+                    texture:new PIXI.Texture(this.texture, textureRect)
+
                 };
             }
 
@@ -5665,6 +5731,7 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
                 data.chars[second].kerning[first] = amount;
 
             }
+
             PIXI.BitmapText.fonts[data.font] = data;
 
             var scope = this;
