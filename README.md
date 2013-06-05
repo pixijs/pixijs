@@ -61,7 +61,7 @@ last 2 examples and allowing us to share the source code :)
 * Create a MovieClip Tutorial
 * Create a small game Tutorial
 
-### Contirbute ###
+### Contribute ###
 
 Want to be part of the pixi.js project? Great! All are welcome! We will get there quicker together :)
 Whether you find a bug, have a great feature request or you fancy owning a task from the road map above feel free to get in touch.
