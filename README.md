@@ -51,7 +51,7 @@ last 2 examples and allowing us to share the source code :)
 * Create a Typescript definition file for Pixi.js
 * Implement Custom Render Item (currently being worked on by @GoodBoyDigital)
 * Implement Masking
-* Implement Primative Drawing
+* Implement Primitive Drawing
 * Implement Filters (currently being worked on by @GoodBoyDigital)
 * Add Spine support 
 * Implement Flash animation to pixi
