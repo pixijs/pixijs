@@ -82,10 +82,9 @@ PIXI.SpriteSheetLoader.prototype.onJSONLoaded = function()
 					
 					if(frameData[i].trimmed)
 					{
-						//var realSize = frameData[i].spriteSourceSize;
 						PIXI.TextureCache[i].realSize = frameData[i].spriteSourceSize;
-						PIXI.TextureCache[i].trim.x = 0;// (realSize.x / rect.w)
-						// calculate the offset!
+						PIXI.TextureCache[i].trim.x = PIXI.TextureCache[i].realSize.x / rect.w;
+						PIXI.TextureCache[i].trim.y = PIXI.TextureCache[i].realSize.y / rect.h;
 					}
 				}
    			}
