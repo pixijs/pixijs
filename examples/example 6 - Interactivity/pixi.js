@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-06-05
+ * Compiled: 2013-06-07
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -929,6 +929,8 @@ PIXI.MovieClip.prototype.updateTransform = function()
  * @param {String} [style.align="left"] An alignment of the multiline text ("left", "center" or "right")
  * @param {String} [style.stroke] A canvas fillstyle that will be used on the text stroke eg "blue", "#FCFF00"
  * @param {Number} [style.strokeThickness=0] A number that represents the thickness of the stroke. Default is 0 (no stroke)
+ * @param {Boolean} [style.wordWrap=false] Indicates if word wrap should be used
+ * @param {Number} [style.wordWrapWidth=100] The width at which text will wrap
  */
 PIXI.Text = function(text, style)
 {
@@ -956,6 +958,8 @@ PIXI.Text.prototype = Object.create(PIXI.Sprite.prototype);
  * @param {String} [style.align="left"] An alignment of the multiline text ("left", "center" or "right")
  * @param {String} [style.stroke] A canvas fillstyle that will be used on the text stroke eg "blue", "#FCFF00"
  * @param {Number} [style.strokeThickness=0] A number that represents the thickness of the stroke. Default is 0 (no stroke)
+ * @param {Boolean} [style.wordWrap=false] Indicates if word wrap should be used
+ * @param {Number} [style.wordWrapWidth=100] The width at which text will wrap
  */
 PIXI.Text.prototype.setStyle = function(style)
 {
@@ -964,6 +968,8 @@ PIXI.Text.prototype.setStyle = function(style)
     style.fill = style.fill || "black";
     style.align = style.align || "left";
     style.strokeThickness = style.strokeThickness || 0;
+    style.wordWrap = style.wordWrap || false;
+    style.wordWrapWidth = style.wordWrapWidth || 100;
     this.style = style;
     this.dirty = true;
 };
@@ -976,7 +982,6 @@ PIXI.Text.prototype.setStyle = function(style)
 PIXI.Sprite.prototype.setText = function(text)
 {
     this.text = text.toString() || " ";
-    
     this.dirty = true;
 };
 
@@ -987,9 +992,15 @@ PIXI.Sprite.prototype.setText = function(text)
 PIXI.Text.prototype.updateText = function()
 {
 	this.context.font = this.style.font;
+	
+	var outputText = this.text;
+	
+	// word wrap
+	// preserve original text
+	if(this.style.wordWrap)outputText = this.wordWrap(this.text);
 
 	//split text into lines
-	var lines = this.text.split(/(?:\r\n|\r|\n)/);
+	var lines = outputText.split(/(?:\r\n|\r|\n)/);
 
 	//calculate text width
 	var lineWidths = [];
@@ -1098,6 +1109,57 @@ PIXI.Text.prototype.determineFontHeight = function(fontStyle)
 		PIXI.Text.heightCache[fontStyle] = result;
 		
 		body.removeChild(dummy);
+	}
+	
+	return result;
+};
+
+/**
+ * A Text Object will apply wordwrap
+ * @private
+ */
+PIXI.Text.prototype.wordWrap = function(text)
+{
+	// search good wrap position
+	var searchWrapPos = function(ctx, text, start, end, wrapWidth)
+	{
+		var p = Math.floor((end-start) / 2) + start;
+		if(p == start) {
+			return 1;
+		}
+		
+		if(ctx.measureText(text.substring(0,p)).width <= wrapWidth)
+		{
+			if(ctx.measureText(text.substring(0,p+1)).width > wrapWidth)
+			{
+				return p;
+			}
+			else
+			{
+				return arguments.callee(ctx, text, p, end, wrapWidth);
+			}
+		}
+		else
+		{
+			return arguments.callee(ctx, text, start, p, wrapWidth);
+		}
+	};
+	 
+	var lineWrap = function(ctx, text, wrapWidth)
+	{
+		if(ctx.measureText(text).width <= wrapWidth || text.length < 1)
+		{
+			return text;
+		}
+		var pos = searchWrapPos(ctx, text, 0, text.length, wrapWidth);
+		return text.substring(0, pos) + "\n" + arguments.callee(ctx, text.substring(pos), wrapWidth);
+	};
+	
+	var result = "";
+	var lines = text.split("\n");
+	for (var i = 0; i < lines.length; i++)
+	{
+		result += lineWrap(this.context, lines[i], this.style.wordWrapWidth) + "\n";
 	}
 	
 	return result;
@@ -2435,7 +2497,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
         PIXI.gl = this.gl = this.view.getContext("experimental-webgl",  {  	
     		 alpha: this.transparent,
     		 antialias:false, // SPEED UP??
-    		 premultipliedAlpha:true
+    		 premultipliedAlpha:false
         });
     } 
     catch (e) 
@@ -2578,7 +2640,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
    
    	gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 		
-	gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], this.transparent);     
+	gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], !this.transparent);     
 	gl.clear(gl.COLOR_BUFFER_BIT);
 
 
@@ -2964,6 +3026,7 @@ PIXI.WebGLBatch.prototype.split = function(sprite)
 	//console.log(val + " SAME?");
 	var batch = new PIXI.WebGLBatch(this.gl)//PIXI._getBatch(this.gl);
 	batch.init(sprite);
+	batch.texture = this.texture;
 	batch.tail = this.tail;
 	//console.log("id is " +batcheee.id)
 	

@@ -14,6 +14,8 @@
  * @param {String} [style.align="left"] An alignment of the multiline text ("left", "center" or "right")
  * @param {String} [style.stroke] A canvas fillstyle that will be used on the text stroke eg "blue", "#FCFF00"
  * @param {Number} [style.strokeThickness=0] A number that represents the thickness of the stroke. Default is 0 (no stroke)
+ * @param {Boolean} [style.wordWrap=false] Indicates if word wrap should be used
+ * @param {Number} [style.wordWrapWidth=100] The width at which text will wrap
  */
 PIXI.Text = function(text, style)
 {
@@ -41,6 +43,8 @@ PIXI.Text.prototype = Object.create(PIXI.Sprite.prototype);
  * @param {String} [style.align="left"] An alignment of the multiline text ("left", "center" or "right")
  * @param {String} [style.stroke] A canvas fillstyle that will be used on the text stroke eg "blue", "#FCFF00"
  * @param {Number} [style.strokeThickness=0] A number that represents the thickness of the stroke. Default is 0 (no stroke)
+ * @param {Boolean} [style.wordWrap=false] Indicates if word wrap should be used
+ * @param {Number} [style.wordWrapWidth=100] The width at which text will wrap
  */
 PIXI.Text.prototype.setStyle = function(style)
 {
@@ -73,14 +77,15 @@ PIXI.Sprite.prototype.setText = function(text)
 PIXI.Text.prototype.updateText = function()
 {
 	this.context.font = this.style.font;
-
-	if(this.style.wordWrap)
-	{
-		this.text = this.wordWrap(this.text);
-	}
+	
+	var outputText = this.text;
+	
+	// word wrap
+	// preserve original text
+	if(this.style.wordWrap)outputText = this.wordWrap(this.text);
 
 	//split text into lines
-	var lines = this.text.split(/(?:\r\n|\r|\n)/);
+	var lines = outputText.split(/(?:\r\n|\r|\n)/);
 
 	//calculate text width
 	var lineWidths = [];

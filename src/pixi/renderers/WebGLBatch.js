@@ -233,6 +233,7 @@ PIXI.WebGLBatch.prototype.split = function(sprite)
 	//console.log(val + " SAME?");
 	var batch = new PIXI.WebGLBatch(this.gl)//PIXI._getBatch(this.gl);
 	batch.init(sprite);
+	batch.texture = this.texture;
 	batch.tail = this.tail;
 	//console.log("id is " +batcheee.id)
 	
