@@ -49,6 +49,8 @@ PIXI.Text.prototype.setStyle = function(style)
     style.fill = style.fill || "black";
     style.align = style.align || "left";
     style.strokeThickness = style.strokeThickness || 0;
+    style.wordWrap = style.wordWrap || false;
+    style.wordWrapWidth = style.wordWrapWidth || 100;
     this.style = style;
     this.dirty = true;
 };
@@ -61,7 +63,6 @@ PIXI.Text.prototype.setStyle = function(style)
 PIXI.Sprite.prototype.setText = function(text)
 {
     this.text = text.toString() || " ";
-    
     this.dirty = true;
 };
 
@@ -72,6 +73,11 @@ PIXI.Sprite.prototype.setText = function(text)
 PIXI.Text.prototype.updateText = function()
 {
 	this.context.font = this.style.font;
+
+	if(this.style.wordWrap)
+	{
+		this.text = this.wordWrap(this.text);
+	}
 
 	//split text into lines
 	var lines = this.text.split(/(?:\r\n|\r|\n)/);
@@ -183,6 +189,57 @@ PIXI.Text.prototype.determineFontHeight = function(fontStyle)
 		PIXI.Text.heightCache[fontStyle] = result;
 		
 		body.removeChild(dummy);
+	}
+	
+	return result;
+};
+
+/**
+ * A Text Object will apply wordwrap
+ * @private
+ */
+PIXI.Text.prototype.wordWrap = function(text)
+{
+	// search good wrap position
+	var searchWrapPos = function(ctx, text, start, end, wrapWidth)
+	{
+		var p = Math.floor((end-start) / 2) + start;
+		if(p == start) {
+			return 1;
+		}
+		
+		if(ctx.measureText(text.substring(0,p)).width <= wrapWidth)
+		{
+			if(ctx.measureText(text.substring(0,p+1)).width > wrapWidth)
+			{
+				return p;
+			}
+			else
+			{
+				return arguments.callee(ctx, text, p, end, wrapWidth);
+			}
+		}
+		else
+		{
+			return arguments.callee(ctx, text, start, p, wrapWidth);
+		}
+	};
+	 
+	var lineWrap = function(ctx, text, wrapWidth)
+	{
+		if(ctx.measureText(text).width <= wrapWidth || text.length < 1)
+		{
+			return text;
+		}
+		var pos = searchWrapPos(ctx, text, 0, text.length, wrapWidth);
+		return text.substring(0, pos) + "\n" + arguments.callee(ctx, text.substring(pos), wrapWidth);
+	};
+	
+	var result = "";
+	var lines = text.split("\n");
+	for (var i = 0; i < lines.length; i++)
+	{
+		result += lineWrap(this.context, lines[i], this.style.wordWrapWidth) + "\n";
 	}
 	
 	return result;
