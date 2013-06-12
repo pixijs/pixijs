@@ -13,7 +13,7 @@ PIXI.texturesToDestroy = [];
  * @constructor
  * @param source {String} the source object (image or canvas)
  */
-PIXI.BaseTexture = function(source)
+PIXI.BaseTexture = function(source, filter)
 {
 	PIXI.EventTarget.call( this );
 	
@@ -36,6 +36,13 @@ PIXI.BaseTexture = function(source)
 	 * @type Number
 	 */
 	this.height = 100;
+
+	/**
+	 * The filtering type to apply when scaling
+	 * @property source
+	 * @type Image
+	 */
+	this.filter = filter || PIXI.BaseTexture.FILTER.LINEAR;
 	
 	/**
 	 * The source that is loaded to create the texture
@@ -124,3 +131,8 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin)
 
 	return baseTexture;
 }
+
+PIXI.BaseTexture.FILTER = {
+	LINEAR: 0,
+	NEAREST: 1
+};
