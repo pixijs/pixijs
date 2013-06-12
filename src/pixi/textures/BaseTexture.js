@@ -114,7 +114,7 @@ PIXI.BaseTexture.prototype.destroy = function()
  * @param imageUrl {String} The image url of the texture
  * @return BaseTexture
  */
-PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin)
+PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, filter)
 {
 	var baseTexture = PIXI.BaseTextureCache[imageUrl];
 	if(!baseTexture)
@@ -125,7 +125,7 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin)
 			image.crossOrigin = '';
 		}
 		image.src = imageUrl;
-		baseTexture = new PIXI.BaseTexture(image);
+		baseTexture = new PIXI.BaseTexture(image, filter);
 		PIXI.BaseTextureCache[imageUrl] = baseTexture;
 	}
 
