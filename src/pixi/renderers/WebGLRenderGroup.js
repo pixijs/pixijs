@@ -275,8 +275,9 @@ PIXI.WebGLRenderGroup.prototype.checkVisibility = function(displayObject, global
 			child.textureChange = false;
 			if(child.worldVisible)
 			{
-				//this.addDisplayObject(child);
-				this.updateTexture(child);
+				this.removeDisplayObject(child);
+				this.addDisplayObject(child);
+				//this.updateTexture(child);
 			}
 			// update texture!!
 		}

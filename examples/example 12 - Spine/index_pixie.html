@@ -61,31 +61,31 @@
 		stage.addChild(foreground2);
 		foreground.position.y = foreground2.position.y = 640 - foreground2.height;
 		
-		var dragon = new PIXI.Spine("data/PixieSpineData.json");
+		var pixie = new PIXI.Spine("data/PixieSpineData.json");
 		
 		var scale = 0.3;//window.innerHeight / 700;
 		
-		dragon.position.x = 1024/3;
-		dragon.position.y =	500
+		pixie.position.x = 1024/3;
+		pixie.position.y =	500
 		
-		dragon.scale.x = dragon.scale.y = scale
+		pixie.scale.x = pixie.scale.y = scale
 		
 		
 		//dragon.state.setAnimationByName("running", true);
 		
-		stage.addChild(dragon);
+		stage.addChild(pixie);
 		
-		dragon.stateData.setMixByName("running", "jump", 0.2);
-		dragon.stateData.setMixByName("jump", "running", 0.4);
+		pixie.stateData.setMixByName("running", "jump", 0.2);
+		pixie.stateData.setMixByName("jump", "running", 0.4);
 		
-		dragon.state.setAnimationByName("running", true);
+		pixie.state.setAnimationByName("running", true);
 		
 		
 		
 		stage.click = function()
 		{
-			dragon.state.setAnimationByName("jump", false);
-			dragon.state.addAnimationByName("running", true);
+			pixie.state.setAnimationByName("jump", false);
+			pixie.state.addAnimationByName("running", true);
 			
 		}
 		
