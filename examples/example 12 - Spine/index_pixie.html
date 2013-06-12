@@ -19,7 +19,7 @@
 	
 	// create an array of assets to load
 	
-	var assetsToLoader = ["../../logo_small.png", "data/PixieSpineData.json", "data/Pixie.json", "data/iP4_BGtile.jpg", "data/iP4_ground.jpg"];
+	var assetsToLoader = ["../../logo_small.png", "data/PixieSpineData.json", "data/Pixie.json", "data/iP4_BGtile.jpg", "data/iP4_ground.png"];
 	
 	// create a new loader
 	loader = new PIXI.AssetLoader(assetsToLoader);
@@ -55,8 +55,8 @@
 		stage.addChild(background);
 		stage.addChild(background2);
 		
-		foreground = PIXI.Sprite.fromImage("data/iP4_ground.jpg");
-		foreground2 = PIXI.Sprite.fromImage("data/iP4_ground.jpg");
+		foreground = PIXI.Sprite.fromImage("data/iP4_ground.png");
+		foreground2 = PIXI.Sprite.fromImage("data/iP4_ground.png");
 		stage.addChild(foreground);
 		stage.addChild(foreground2);
 		foreground.position.y = foreground2.position.y = 640 - foreground2.height;
@@ -82,11 +82,10 @@
 		
 		
 		
-		stage.click = function()
+		stage.mousedown = stage.touchstart = function()
 		{
 			pixie.state.setAnimationByName("jump", false);
 			pixie.state.addAnimationByName("running", true);
-			
 		}
 		
 		var logo = PIXI.Sprite.fromImage("../../logo_small.png")
