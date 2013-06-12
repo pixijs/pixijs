@@ -28,6 +28,8 @@ PIXI.Stage = function(backgroundColor, interactive)
 	
 	this.setBackgroundColor(backgroundColor);
 	this.worldVisible = true;
+	
+	this.stage.dirty = true;
 }
 
 // constructor

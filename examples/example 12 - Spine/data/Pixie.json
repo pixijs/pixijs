@@ -1,0 +1,188 @@
+{"frames": {
+
+"L_foot.png":
+{
+	"frame": {"x":401,"y":609,"w":68,"h":51},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":68,"h":51},
+	"sourceSize": {"w":68,"h":51}
+},
+"L_hand.png":
+{
+	"frame": {"x":968,"y":365,"w":55,"h":64},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":55,"h":64},
+	"sourceSize": {"w":55,"h":64}
+},
+"L_lower_arm.png":
+{
+	"frame": {"x":401,"y":576,"w":70,"h":31},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":70,"h":31},
+	"sourceSize": {"w":70,"h":31}
+},
+"L_lower_leg.png":
+{
+	"frame": {"x":963,"y":546,"w":57,"h":65},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":57,"h":65},
+	"sourceSize": {"w":57,"h":65}
+},
+"L_upper_arm.png":
+{
+	"frame": {"x":518,"y":486,"w":78,"h":74},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":78,"h":74},
+	"sourceSize": {"w":78,"h":74}
+},
+"L_upper_leg.png":
+{
+	"frame": {"x":126,"y":587,"w":124,"h":71},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":124,"h":71},
+	"sourceSize": {"w":124,"h":71}
+},
+"R_foot.png":
+{
+	"frame": {"x":473,"y":595,"w":68,"h":51},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":68,"h":51},
+	"sourceSize": {"w":68,"h":51}
+},
+"R_hand.png":
+{
+	"frame": {"x":968,"y":299,"w":55,"h":64},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":55,"h":64},
+	"sourceSize": {"w":55,"h":64}
+},
+"R_lower_arm.png":
+{
+	"frame": {"x":506,"y":562,"w":70,"h":31},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":70,"h":31},
+	"sourceSize": {"w":70,"h":31}
+},
+"R_lower_leg.png":
+{
+	"frame": {"x":963,"y":479,"w":57,"h":65},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":57,"h":65},
+	"sourceSize": {"w":57,"h":65}
+},
+"R_upper_arm.png":
+{
+	"frame": {"x":518,"y":410,"w":78,"h":74},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":78,"h":74},
+	"sourceSize": {"w":78,"h":74}
+},
+"R_upper_leg.png":
+{
+	"frame": {"x":0,"y":587,"w":124,"h":71},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":124,"h":71},
+	"sourceSize": {"w":124,"h":71}
+},
+"backHair.png":
+{
+	"frame": {"x":0,"y":410,"w":261,"h":175},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":261,"h":175},
+	"sourceSize": {"w":261,"h":175}
+},
+"foreWing.png":
+{
+	"frame": {"x":263,"y":410,"w":253,"h":78},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":253,"h":78},
+	"sourceSize": {"w":253,"h":78}
+},
+"frontHair.png":
+{
+	"frame": {"x":615,"y":0,"w":396,"h":297},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":396,"h":297},
+	"sourceSize": {"w":396,"h":297}
+},
+"groinal.png":
+{
+	"frame": {"x":401,"y":490,"w":103,"h":84},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":103,"h":84},
+	"sourceSize": {"w":103,"h":84}
+},
+"head.png":
+{
+	"frame": {"x":0,"y":0,"w":613,"h":408},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":613,"h":408},
+	"sourceSize": {"w":613,"h":408}
+},
+"jaw.png":
+{
+	"frame": {"x":598,"y":479,"w":222,"h":124},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":222,"h":124},
+	"sourceSize": {"w":222,"h":124}
+},
+"midHair.png":
+{
+	"frame": {"x":615,"y":299,"w":351,"h":178},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":351,"h":178},
+	"sourceSize": {"w":351,"h":178}
+},
+"neck.png":
+{
+	"frame": {"x":252,"y":638,"w":65,"h":81},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":65,"h":81},
+	"sourceSize": {"w":65,"h":81}
+},
+"rearWing.png":
+{
+	"frame": {"x":263,"y":490,"w":136,"h":146},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":136,"h":146},
+	"sourceSize": {"w":136,"h":146}
+},
+"vest.png":
+{
+	"frame": {"x":822,"y":479,"w":139,"h":144},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":139,"h":144},
+	"sourceSize": {"w":139,"h":144}
+}},
+"meta": {
+	"app": "http://www.texturepacker.com",
+	"version": "1.0",
+	"image": "Pixie.png",
+	"format": "RGBA8888",
+	"size": {"w":1023,"h":719},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:d58d60a5edd2ac7a15c00bcd989497b2$"
+}
+}

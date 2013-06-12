@@ -440,7 +440,6 @@ PIXI.WebGLBatch.prototype.update = function()
 			tx = worldTransform[2];
 			ty = worldTransform[5];
 		
-		
 			this.verticies[index + 0 ] = a * w1 + c * h1 + tx; 
 			this.verticies[index + 1 ] = d * h1 + b * w1 + ty;
 			 
@@ -526,6 +525,7 @@ PIXI.WebGLBatch.prototype.render = function(start, end)
 	{
 		this.refresh();
 		this.dirty = false;
+		
 	}
 	
 	if (this.size == 0)return;
