@@ -1,0 +1,94 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>pixi.js example 12 Spine</title>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			background-color: #000000;
+		}
+	</style>
+	
+	
+	<script src="pixi.js"></script>
+	
+</head>
+<body>
+	<script>
+	
+	
+	// create an array of assets to load
+	
+	var assetsToLoader = ["../../logo_small.png", "data/dragonBones.json", "data/dragonBonesData.json"];
+	
+	// create a new loader
+	loader = new PIXI.AssetLoader(assetsToLoader);
+	
+	// use callback
+	loader.onComplete = onAssetsLoaded
+	
+	//begin load
+	loader.load();
+	
+	
+	// create an new instance of a pixi stage
+	var stage = new PIXI.Stage(0xFFFFFF, true);
+
+	// create a renderer instance
+	var renderer = new PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight);
+	
+	// set the canvas width and height to fill the screen
+	renderer.view.style.display = "block";
+	
+	// add render view to DOM
+	document.body.appendChild(renderer.view);
+	
+	function onAssetsLoaded()
+	{
+		var dragon = new PIXI.Spine("data/dragonBonesData.json");
+		
+		var scale = 1;//window.innerHeight / 700;
+		
+		dragon.position.x = window.innerWidth/2;
+		dragon.position.y =	window.innerHeight/2 + (450 * scale);
+		
+		dragon.scale.x = dragon.scale.y = scale
+		
+		
+		dragon.state.setAnimationByName("flying", true);
+		
+		stage.addChild(dragon);
+		
+		var logo = PIXI.Sprite.fromImage("../../logo_small.png")
+		stage.addChild(logo);
+		
+		
+		logo.anchor.x = 1;
+		logo.position.x = window.innerWidth
+		logo.scale.x = logo.scale.y = 0.5;
+		logo.position.y = window.innerHeight - 70;
+		logo.setInteractive(true);
+		logo.buttonMode = true;
+		logo.click = logo.tap = function()
+		{
+			window.open("https://github.com/GoodBoyDigital/pixi.js", "_blank")
+		}
+		
+	}
+	
+	
+	
+	requestAnimFrame(animate);
+	     
+
+	function animate() {
+
+	    requestAnimFrame( animate );
+	    renderer.render(stage);
+	}
+
+	</script>
+
+	</body>
+</html>

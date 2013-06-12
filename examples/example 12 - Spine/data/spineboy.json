@@ -1,0 +1,196 @@
+{"frames": {
+
+"head":
+{
+  "frame": {"x":1,"y":122,"w":121,"h":132},
+  "rotated": false,
+  "trimmed": false,
+  "spriteSourceSize": {"x":0,"y":0,"w":121,"h":132},
+  "sourceSize": {"w":121,"h":132}
+},
+"torso":
+{
+  "frame": {"x":1,"y":28,"w":68,"h":92},
+  "rotated": false,
+  "trimmed": false,
+  "spriteSourceSize": {"x":0,"y":0,"w":68,"h":92},
+  "sourceSize": {"w":68,"h":92}
+},
+"left-pant-bottom":
+{
+  "frame": {"x":1,"y":4,"w":44,"h":22},
+  "rotated": false,
+  "trimmed": false,
+  "spriteSourceSize": {"x":0,"y":0,"w":44,"h":22},
+  "sourceSize": {"w":44,"h":22}
+},
+"right-pant-bottom":
+{
+  "frame": {"x":47,"y":8,"w":46,"h":18},
+  "rotated": false,
+  "trimmed": false,
+  "spriteSourceSize": {"x":0,"y":0,"w":46,"h":18},
+  "sourceSize": {"w":46,"h":18}
+},
+"right-upper-leg":
+{
+  "frame": {"x":71,"y":50,"w":44,"h":70},
+  "rotated": false,
+  "trimmed": false,
+  "spriteSourceSize": {"x":0,"y":0,"w":44,"h":70},
+  "sourceSize": {"w":44,"h":70}
+},
+"pelvis":
+{
+  "frame": {"x":95,"y":1,"w":63,"h":47},
+  "rotated": false,
+  "trimmed": false,
+  "spriteSourceSize": {"x":0,"y":0,"w":63,"h":47},
+  "sourceSize": {"w":63,"h":47}
+},
+"left-upper-leg":
+{
+  "frame": {"x":117,"y":53,"w":33,"h":67},
+  "rotated": false,
+  "trimmed": false,
+  "spriteSourceSize": {"x":0,"y":0,"w":33,"h":67},
+  "sourceSize": {"w":33,"h":67}
+},
+"right-foot":
+{
+  "frame": {"x":160,"y":224,"w":67,"h":30},
+  "rotated": false,
+  "trimmed": false,
+  "spriteSourceSize": {"x":0,"y":0,"w":67,"h":30},
+  "sourceSize": {"w":67,"h":30}
+},
+"left-shoulder":
+{
+  "frame": {"x":124,"y":201,"w":34,"h":53},
+  "rotated": false,
+  "trimmed": false,
+  "spriteSourceSize": {"x":0,"y":0,"w":34,"h":53},
+  "sourceSize": {"w":34,"h":53}
+},
+"left-ankle":
+{
+  "frame": {"x":229,"y":222,"w":25,"h":32},
+  "rotated": false,
+  "trimmed": false,
+  "spriteSourceSize": {"x":0,"y":0,"w":25,"h":32},
+  "sourceSize": {"w":25,"h":32}
+},
+"left-foot":
+{
+  "frame": {"x":160,"y":192,"w":65,"h":30},
+  "rotated": false,
+  "trimmed": false,
+  "spriteSourceSize": {"x":0,"y":0,"w":65,"h":30},
+  "sourceSize": {"w":65,"h":30}
+},
+"neck":
+{
+  "frame": {"x":124,"y":171,"w":34,"h":28},
+  "rotated": false,
+  "trimmed": false,
+  "spriteSourceSize": {"x":0,"y":0,"w":34,"h":28},
+  "sourceSize": {"w":34,"h":28}
+},
+"right-arm":
+{
+  "frame": {"x":124,"y":124,"w":21,"h":45},
+  "rotated": false,
+  "trimmed": false,
+  "spriteSourceSize": {"x":0,"y":0,"w":21,"h":45},
+  "sourceSize": {"w":21,"h":45}
+},
+"right-ankle":
+{
+  "frame": {"x":227,"y":190,"w":25,"h":30},
+  "rotated": false,
+  "trimmed": false,
+  "spriteSourceSize": {"x":0,"y":0,"w":25,"h":30},
+  "sourceSize": {"w":25,"h":30}
+},
+"left-hand":
+{
+  "frame": {"x":147,"y":131,"w":35,"h":38},
+  "rotated": false,
+  "trimmed": false,
+  "spriteSourceSize": {"x":0,"y":0,"w":35,"h":38},
+  "sourceSize": {"w":35,"h":38}
+},
+"left-arm":
+{
+  "frame": {"x":184,"y":161,"w":35,"h":29},
+  "rotated": false,
+  "trimmed": false,
+  "spriteSourceSize": {"x":0,"y":0,"w":35,"h":29},
+  "sourceSize": {"w":35,"h":29}
+},
+"eyes-closed":
+{
+  "frame": {"x":221,"y":161,"w":34,"h":27},
+  "rotated": false,
+  "trimmed": false,
+  "spriteSourceSize": {"x":0,"y":0,"w":34,"h":27},
+  "sourceSize": {"w":34,"h":27}
+},
+"right-lower-leg":
+{
+  "frame": {"x":152,"y":65,"w":51,"h":64},
+  "rotated": false,
+  "trimmed": false,
+  "spriteSourceSize": {"x":0,"y":0,"w":51,"h":64},
+  "sourceSize": {"w":51,"h":64}
+},
+"right-foot-idle":
+{
+  "frame": {"x":184,"y":131,"w":53,"h":28},
+  "rotated": false,
+  "trimmed": false,
+  "spriteSourceSize": {"x":0,"y":0,"w":53,"h":28},
+  "sourceSize": {"w":53,"h":28}
+},
+"left-lower-leg":
+{
+  "frame": {"x":205,"y":65,"w":49,"h":64},
+  "rotated": false,
+  "trimmed": false,
+  "spriteSourceSize": {"x":0,"y":0,"w":49,"h":64},
+  "sourceSize": {"w":49,"h":64}
+},
+"right-shoulder":
+{
+  "frame": {"x":160,"y":12,"w":52,"h":51},
+  "rotated": false,
+  "trimmed": false,
+  "spriteSourceSize": {"x":0,"y":0,"w":52,"h":51},
+  "sourceSize": {"w":52,"h":51}
+},
+"eyes":
+{
+  "frame": {"x":214,"y":36,"w":34,"h":27},
+  "rotated": false,
+  "trimmed": false,
+  "spriteSourceSize": {"x":0,"y":0,"w":34,"h":27},
+  "sourceSize": {"w":34,"h":27}
+},
+"right-hand":
+{
+  "frame": {"x":214,"y":2,"w":32,"h":32},
+  "rotated": false,
+  "trimmed": false,
+  "spriteSourceSize": {"x":0,"y":0,"w":32,"h":32},
+  "sourceSize": {"w":32,"h":32}
+}},
+"meta": {
+	"app": "http://www.texturepacker.com",
+	"version": "1.0",
+	"image": "spineboy.png",
+	"format": "RGBA8888",
+	"size": {"w":256,"h":256},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:93f9a66503bccd3c31cdba2ae4b91285$"
+}
+}

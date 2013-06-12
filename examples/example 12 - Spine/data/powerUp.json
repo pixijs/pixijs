@@ -1,0 +1,36 @@
+{"frames": {
+
+"star.png":
+{
+	"frame": {"x":139,"y":0,"w":76,"h":72},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":76,"h":72},
+	"sourceSize": {"w":76,"h":72}
+},
+"token.png":
+{
+	"frame": {"x":0,"y":152,"w":123,"h":122},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":123,"h":122},
+	"sourceSize": {"w":123,"h":122}
+},
+"wing.png":
+{
+	"frame": {"x":0,"y":0,"w":137,"h":150},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":137,"h":150},
+	"sourceSize": {"w":137,"h":150}
+}},
+"meta": {
+	"app": "http://www.texturepacker.com",
+	"version": "1.0",
+	"image": "powerUp.png",
+	"format": "RGBA8888",
+	"size": {"w":215,"h":274},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:1b642a8d4c97ad366346569e64075cac$"
+}
+}

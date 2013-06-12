@@ -29,10 +29,13 @@ PIXI.AssetLoader = function(assetURLs)
         "jpeg": PIXI.ImageLoader,
         "png":  PIXI.ImageLoader,
         "gif":  PIXI.ImageLoader,
-        "json": PIXI.SpriteSheetLoader,
+        "json": PIXI.JsonLoader,
+        "anim": PIXI.SpineLoader,
         "xml":  PIXI.BitmapFontLoader,
         "fnt":  PIXI.BitmapFontLoader
     };
+    
+    
 };
 
 /**
