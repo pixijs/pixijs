@@ -187,9 +187,7 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 					//canvas actually uses bicubic, but lets call it linear for easily matching the WebGL stuff
 					//this will assign 'true' to the context imageSmoothingEnabled when the texture has a linear filter set
 					//otherwise it will assign 'false' so that nearest is used.
-					//I think the compatability is something like:
-					// - Chrome 22+
-					// - 
+					//I think the compatability is something like Chrome 22+
 					context[this.filterProperty] = (displayObject.texture.baseTexture.filter === PIXI.BaseTexture.FILTER.LINEAR);
 				}
 				

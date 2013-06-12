@@ -39,8 +39,9 @@ PIXI.BaseTexture = function(source, filter)
 
 	/**
 	 * The filtering type to apply when scaling
-	 * @property source
-	 * @type Image
+	 * @property filter
+	 * @type PIXI.BaseTexture.FILTER
+	 * @default PIXI.BaseTexture.FILTER.LINEAR
 	 */
 	this.filter = filter || PIXI.BaseTexture.FILTER.LINEAR;
 	
