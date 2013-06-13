@@ -111,13 +111,13 @@ PIXI.Texture.prototype.setFrame = function(frame)
  * @param imageUrl {String} The image url of the texture
  * @return Texture
  */
-PIXI.Texture.fromImage = function(imageUrl, crossorigin)
+PIXI.Texture.fromImage = function(imageUrl, crossorigin, filter)
 {
 	var texture = PIXI.TextureCache[imageUrl];
 	
 	if(!texture)
 	{
-		texture = new PIXI.Texture(PIXI.BaseTexture.fromImage(imageUrl, crossorigin));
+		texture = new PIXI.Texture(PIXI.BaseTexture.fromImage(imageUrl, crossorigin, filter));
 		PIXI.TextureCache[imageUrl] = texture;
 	}
 	
@@ -148,9 +148,9 @@ PIXI.Texture.fromFrame = function(frameId)
  * @param canvas {Canvas} The canvas element source of the texture
  * @return Texture
  */
-PIXI.Texture.fromCanvas = function(canvas)
+PIXI.Texture.fromCanvas = function(canvas, filter)
 {
-	var	baseTexture = new PIXI.BaseTexture(canvas);
+	var	baseTexture = new PIXI.BaseTexture(canvas, filter);
 	return new PIXI.Texture(baseTexture);
 }
 
@@ -186,3 +186,4 @@ PIXI.Texture.removeTextureFromCache = function(id)
 // this is more for webGL.. it contains updated frames..
 PIXI.Texture.frameUpdates = [];
 
+PIXI.Texture.FILTER = PIXI.BaseTexture.FILTER;

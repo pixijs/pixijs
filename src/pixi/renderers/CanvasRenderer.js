@@ -58,6 +58,18 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
 	 * @type Canvas 2d Context
 	 */
 	this.context = this.view.getContext("2d");
+
+	//some filter variables
+	this.filterProperty = null;
+
+	if('imageSmoothingEnabled' in this.context)
+		this.filterProperty = 'imageSmoothingEnabled';
+	else if('webkitImageSmoothingEnabled' in this.context)
+		this.filterProperty = 'webkitImageSmoothingEnabled';
+	else if('mozImageSmoothingEnabled' in this.context)
+		this.filterProperty = 'mozImageSmoothingEnabled';
+	else if('oImageSmoothingEnabled' in this.context)
+		this.filterProperty = 'oImageSmoothingEnabled';
 }
 
 // constructor
@@ -131,6 +143,7 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 	var context = this.context;
 	//context.globalCompositeOperation = "source-over"
 	var blit = false;
+	var originalFilter;
 	
 	if(!displayObject.visible)return;
 		
@@ -167,6 +180,16 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 			{*/
 			//	blit = false;
 				context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
+
+				if(this.filterProperty) {
+					originalFilter = context[this.filterProperty];
+
+					//canvas actually uses bicubic, but lets call it linear for easily matching the WebGL stuff
+					//this will assign 'true' to the context imageSmoothingEnabled when the texture has a linear filter set
+					//otherwise it will assign 'false' so that nearest is used.
+					//I think the compatability is something like Chrome 22+
+					context[this.filterProperty] = (displayObject.texture.baseTexture.filter === PIXI.BaseTexture.FILTER.LINEAR);
+				}
 				
 				context.drawImage(displayObject.texture.baseTexture.source, 
 								   frame.x,
@@ -180,6 +203,9 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 								  
 								   frame.width,
 								   frame.height);
+
+				if(this.filterProperty)
+					context[this.filterProperty] = originalFilter;
 			//}
 		}					   
    	}
