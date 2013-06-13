@@ -29,6 +29,7 @@
             clearTimeout(id);
         };
 }());
+window.requestAnimFrame = window.requestAnimationFrame;
 
 function HEXtoRGB(hex) {
 	return [(hex >> 16 & 0xFF) / 255, ( hex >> 8 & 0xFF) / 255, (hex & 0xFF)/ 255];
