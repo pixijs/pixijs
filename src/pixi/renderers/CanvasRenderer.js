@@ -199,9 +199,11 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 	}
 	
 	// render!
-	for (var i=0; i < displayObject.children.length; i++) 
-	{
-		this.renderDisplayObject(displayObject.children[i]);
+	if(displayObject.children) {
+		for (var i=0; i < displayObject.children.length; i++) 
+		{
+			this.renderDisplayObject(displayObject.children[i]);
+		}
 	}
 	
 	this.context.setTransform(1,0,0,1,0,0); 
