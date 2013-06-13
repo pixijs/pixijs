@@ -199,7 +199,8 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 	}
 	
 	// render!
-	if(displayObject.children) {
+	if(displayObject.children)
+	{
 		for (var i=0; i < displayObject.children.length; i++) 
 		{
 			this.renderDisplayObject(displayObject.children[i]);
