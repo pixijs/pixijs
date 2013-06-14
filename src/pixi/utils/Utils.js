@@ -61,7 +61,7 @@ if (typeof Function.prototype.bind != 'function') {
   })();
 }
 
-var AjaxRequest = function()
+var AjaxRequest = PIXI.AjaxRequest = function()
 {
 	var activexmodes = ["Msxml2.XMLHTTP", "Microsoft.XMLHTTP"] //activeX versions to check for in IE
 	
