@@ -198,10 +198,13 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 		displayObject.renderCanvas(this);
 	}
 	
-	// render!
-	for (var i=0; i < displayObject.children.length; i++) 
+	// render children if any
+	if(displayObject.children)
 	{
-		this.renderDisplayObject(displayObject.children[i]);
+		for (var i=0; i < displayObject.children.length; i++) 
+		{
+			this.renderDisplayObject(displayObject.children[i]);
+		}
 	}
 	
 	this.context.setTransform(1,0,0,1,0,0); 
