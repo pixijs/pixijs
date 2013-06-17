@@ -45,7 +45,6 @@ PIXI.WebGLRenderGroup.prototype.setRenderable = function(displayObject)
 
 PIXI.WebGLRenderGroup.prototype.render = function(projectionMatrix)
 {
-	
 	PIXI.WebGLRenderer.updateTextures();
 	
 	var gl = this.gl;
@@ -74,6 +73,10 @@ PIXI.WebGLRenderGroup.prototype.render = function(projectionMatrix)
 		else if(renderable instanceof PIXI.Strip)
 		{
 			if(renderable.visible)this.renderStrip(renderable, projectionMatrix);
+		}
+		else if(renderable instanceof PIXI.Graphics)
+		{
+			if(renderable.visible) renderable.renderWebGL(this, projectionMatrix);
 		}
 	}
 	
@@ -275,8 +278,9 @@ PIXI.WebGLRenderGroup.prototype.checkVisibility = function(displayObject, global
 			child.textureChange = false;
 			if(child.worldVisible)
 			{
-				this.removeDisplayObject(child)
-				this.addDisplayObject(child)
+				this.removeDisplayObject(child);
+				this.addDisplayObject(child);
+				//this.updateTexture(child);
 			}
 			// update texture!!
 		}
@@ -286,6 +290,106 @@ PIXI.WebGLRenderGroup.prototype.checkVisibility = function(displayObject, global
 			this.checkVisibility(child, child.worldVisible);
 		}
 	};
+}
+
+PIXI.WebGLRenderGroup.prototype.updateTexture = function(displayObject)
+{
+	// we know this exists..
+	// is it in a batch..
+	// check batch length
+	if(displayObject.batch.length == 1)
+	{
+		// just one! this guy! so simply swap the texture
+		displayObject.batch.texture = displayObject.texture.baseTexture;
+		return;
+	}
+	
+	// early out!
+	if(displayObject.batch.texture == displayObject.texture.baseTexture)return;
+	
+	
+	if(displayObject.batch.head == displayObject)
+	{
+		//console.log("HEAD")
+		var currentBatch = displayObject.batch;
+		
+		var index = this.batchs.indexOf( currentBatch );
+		var previousBatch =  this.batchs[index-1];
+		currentBatch.remove(displayObject);
+		
+		if(previousBatch)
+		{
+			if(previousBatch.texture == displayObject.texture.baseTexture && previousBatch.blendMode == displayObject.blendMode)
+			{
+				previousBatch.insertAfter(displayObject, previousBatch.tail);
+			}
+			else
+			{
+				// add it before..
+				var batch = PIXI.WebGLRenderer.getBatch();
+				batch.init(displayObject);
+				this.batchs.splice(index-1, 0, batch);
+			}
+			
+		}
+		else
+		{
+			// we are 0!
+			var batch = PIXI.WebGLRenderer.getBatch();
+			batch.init(displayObject);
+			this.batchs.splice(0, 0, batch);
+		}
+		
+	}
+	else if(displayObject.batch.tail == displayObject)
+	{
+		var currentBatch = displayObject.batch;
+		
+		var index = this.batchs.indexOf( currentBatch );
+		var nextBatch =  this.batchs[index+1];
+		currentBatch.remove(displayObject);
+		
+		if(nextBatch)
+		{
+			if(nextBatch.texture == displayObject.texture.baseTexture && nextBatch.blendMode == displayObject.blendMode)
+			{
+				nextBatch.insertBefore(displayObject, nextBatch.head);
+				return;
+			}
+			else
+			{
+				// add it before..
+				var batch = PIXI.WebGLRenderer.getBatch();
+				batch.init(displayObject);
+				this.batchs.splice(index+1, 0, batch);
+			}
+			
+		}
+		else
+		{
+			// we are 0!
+			var batch = PIXI.WebGLRenderer.getBatch();
+			batch.init(displayObject);
+			this.batchs.push(batch);
+		}
+	}
+	else
+	{
+	//	console.log("MIDDLE")
+		var currentBatch = displayObject.batch;
+		
+		// split the batch into 2
+		// AH! dont split on the current display object as the texture is wrong!
+		var splitBatch = currentBatch.split(displayObject);
+		
+		// now remove the display object
+		splitBatch.remove(displayObject);
+		
+		var batch = PIXI.WebGLRenderer.getBatch();
+		var index = this.batchs.indexOf( currentBatch );
+		batch.init(displayObject);
+		this.batchs.splice(index+1, 0, batch, splitBatch);
+	}
 }
 
 PIXI.WebGLRenderGroup.prototype.addDisplayObject = function(displayObject)
@@ -306,19 +410,16 @@ PIXI.WebGLRenderGroup.prototype.addDisplayObject = function(displayObject)
 	
 	var previousSprite = this.getPreviousRenderable(displayObject);
 	var nextSprite = this.getNextRenderable(displayObject);
-	
 
 	/*
 	 * so now we have the next renderable and the previous renderable
 	 * 
 	 */
-	
 	if(displayObject instanceof PIXI.Sprite)
 	{
 		var previousBatch
 		var nextBatch
 		
-		//console.log( previousSprite)
 		if(previousSprite instanceof PIXI.Sprite)
 		{
 			previousBatch = previousSprite.batch;
@@ -413,6 +514,14 @@ PIXI.WebGLRenderGroup.prototype.addDisplayObject = function(displayObject)
 	{
 		// add to a batch!!
 		this.initStrip(displayObject);
+		this.batchs.push(displayObject);
+	}
+	else if(displayObject instanceof PIXI.Graphics)
+	{
+		//displayObject.initWebGL(this);
+		
+		// add to a batch!!
+		//this.initStrip(displayObject);
 		this.batchs.push(displayObject);
 	}
 	

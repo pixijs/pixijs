@@ -197,6 +197,10 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 	{
 		displayObject.renderCanvas(this);
 	}
+	else if(displayObject instanceof PIXI.Graphics)
+	{
+		displayObject.render(this);
+	}
 	
 	// render!
 	for (var i=0; i < displayObject.children.length; i++) 

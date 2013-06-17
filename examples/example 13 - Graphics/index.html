@@ -1,0 +1,86 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>pixi.js example 13 - Graphics</title>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			background-color: #000000;
+		}
+	</style>
+	
+	
+	<script src="pixi.js"></script>
+	<script src="../../src/pixi/renderers/CanvasRenderer.js"></script>
+	<script src="../../src/pixi/renderers/WebGLRenderer.js"></script>
+	<script src="../../src/pixi/renderers/WebGLRenderGroup.js"></script>
+	<script src="../../src/pixi/primitives/Graphics.js"></script>
+</head>
+<body>
+	<script>
+	
+
+	// create an new instance of a pixi stage
+	var stage = new PIXI.Stage(0x000000);
+
+	// create a renderer instance
+	//var renderer = new PIXI.CanvasRenderer(800, 600);//PIXI.autoDetectRenderer(800, 600);
+	var renderer = PIXI.autoDetectRenderer(800, 600);
+	
+	// set the canvas width and height to fill the screen
+//	renderer.view.style.width = window.innerWidth + "px";
+	//renderer.view.style.height = window.innerHeight + "px";
+	renderer.view.style.display = "block";
+	 
+	// add render view to DOM
+	document.body.appendChild(renderer.view);
+	
+	// OOH! SHINY!
+	// create two render textures.. these dynamic textures will be used to draw the scene into itself
+	
+	var graphics = new PIXI.Graphics();
+	
+	graphics.lineStyle(3, 0xff0000);
+	graphics.moveTo(50,50);
+	graphics.lineTo(100, 100);
+	graphics.lineTo(250, 220);
+	
+	
+	
+	graphics.lineTo(150, 20);
+	//graphics.lineTo(450, 223);
+	
+	/*
+	 * point1 = new Point(350, 50);
+			
+			point2 = new Point(100, 100);
+			
+			point3 = new Point(250, 220);
+			
+			
+			points = new Vector.<Point>();
+			points.push(point1, point2, point3, new Point(350, 220), new Point(450, 223));
+			
+	 */
+	//graphics.lineTo(410,300);
+	
+	
+	//graphics.lineTo(450,320);
+	//graphics.lineTo(570,350);
+	//graphics.lineTo(580,120);
+//	graphics.lineTo(630,120);
+	
+	stage.addChild(graphics);
+	
+	requestAnimFrame(animate);
+	    renderer.render(stage);
+
+	function animate() {
+	    requestAnimFrame( animate );
+	}
+
+	</script>
+
+	</body>
+</html>

@@ -130,10 +130,10 @@ PIXI.WebGLRenderer.prototype.initShaders = function()
     gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
 
     shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, "aTextureCoord");
-    gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
+   // gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
 	
 	shaderProgram.colorAttribute = gl.getAttribLocation(shaderProgram, "aColor");
-    gl.enableVertexAttribArray(shaderProgram.colorAttribute);
+   // gl.enableVertexAttribArray(shaderProgram.colorAttribute);
 
 
     shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
@@ -194,7 +194,9 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], !this.transparent);     
 	gl.clear(gl.COLOR_BUFFER_BIT);
 
-
+	// HACK TO TEST
+	PIXI.projectionMatrix = this.projectionMatrix;
+	
 	this.stageRenderGroup.backgroundColor = stage.backgroundColorSplit;
 	this.stageRenderGroup.render(this.projectionMatrix);
 	
