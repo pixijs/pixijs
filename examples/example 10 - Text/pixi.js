@@ -1,6 +1,6 @@
 /**
  * @license
- * Pixi.JS - v1.0.0
+ * Pixi.JS - v1.1.0
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
@@ -6622,7 +6622,7 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin)
 	{
 		// new Image() breaks tex loading in some versions of Chrome.
 		// See https://code.google.com/p/chromium/issues/detail?id=238071
-		var image = document.createElement('img'); 
+		var image = new Image();//document.createElement('img'); 
 		if (crossorigin)
 		{
 			image.crossOrigin = '';
