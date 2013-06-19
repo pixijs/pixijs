@@ -63,25 +63,27 @@ PIXI.InteractionManager.prototype.collectInteractiveSprite = function(displayObj
 	{
 		var child = children[i];
 		
-		// push all interactive bits
-		if(child.interactive)
-		{
-			iParent.interactiveChildren = true;
-			//child.__iParent = iParent;
-			this.interactiveItems.push(child);
-			
-			if(child.children.length > 0)
+		if(child.visible) {
+			// push all interactive bits
+			if(child.interactive)
 			{
-				this.collectInteractiveSprite(child, child);
+				iParent.interactiveChildren = true;
+				//child.__iParent = iParent;
+				this.interactiveItems.push(child);
+
+				if(child.children.length > 0)
+				{
+					this.collectInteractiveSprite(child, child);
+				}
 			}
-		}
-		else
-		{
-			child.__iParent = null;
-			
-			if(child.children.length > 0)
+			else
 			{
-				this.collectInteractiveSprite(child, iParent);
+				child.__iParent = null;
+
+				if(child.children.length > 0)
+				{
+					this.collectInteractiveSprite(child, iParent);
+				}
 			}
 		}
 	}
