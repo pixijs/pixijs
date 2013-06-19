@@ -34,7 +34,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
 	
 	this.view = view || document.createElement( 'canvas' ); 
     this.view.width = this.width;
-	this.view.height = this.height;  
+	this.view.height = this.height;
 	
 	// deal with losing context..	
     var scope = this;
@@ -56,8 +56,8 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
     	throw new Error(" This browser does not support webGL. Try using the canvas renderer" + this);
     }
     
+    PIXI.WebGLGraphics.initShaders();
     this.initShaders();
-    
     
     var gl = this.gl;
     PIXI.WebGLRenderer.gl = gl;
@@ -127,17 +127,16 @@ PIXI.WebGLRenderer.prototype.initShaders = function()
     gl.useProgram(shaderProgram);
 
     shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
-    gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
 
     shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, "aTextureCoord");
-   // gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
 	
 	shaderProgram.colorAttribute = gl.getAttribLocation(shaderProgram, "aColor");
-   // gl.enableVertexAttribArray(shaderProgram.colorAttribute);
 
 
     shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
     shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "uSampler");
+    
+    PIXI.activateDefaultShader();
 }
 
 

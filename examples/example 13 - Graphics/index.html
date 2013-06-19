@@ -10,8 +10,10 @@
 		}
 	</style>
 	
-	
 	<script src="pixi.js"></script>
+	<script src="../../src/pixi/renderers/WebGLGraphics.js"></script>
+	<script src="../../src/pixi/renderers/WebGLShaders.js"></script>
+	<script src="../../src/pixi/renderers/CanvasGraphics.js"></script>
 	<script src="../../src/pixi/renderers/CanvasRenderer.js"></script>
 	<script src="../../src/pixi/renderers/WebGLRenderer.js"></script>
 	<script src="../../src/pixi/renderers/WebGLRenderGroup.js"></script>
@@ -29,7 +31,7 @@
 	var renderer = PIXI.autoDetectRenderer(800, 600);
 	
 	// set the canvas width and height to fill the screen
-//	renderer.view.style.width = window.innerWidth + "px";
+	//	renderer.view.style.width = window.innerWidth + "px";
 	//renderer.view.style.height = window.innerHeight + "px";
 	renderer.view.style.display = "block";
 	 
@@ -41,14 +43,34 @@
 	
 	var graphics = new PIXI.Graphics();
 	
-	graphics.lineStyle(3, 0xff0000);
+	graphics.lineStyle(10, 0x30FF00, 0.5);
 	graphics.moveTo(50,50);
-	graphics.lineTo(100, 100);
+	graphics.lineTo(250, 50);
+	//graphics.lineTo(100, 100);
 	graphics.lineTo(250, 220);
+	graphics.lineTo(50, 220);
+	
+	graphics.lineTo(150, 50);
+	
+	graphics.lineStyle(2, 0x30FFFF, 1);
+	
+//	graphics.beginFill(0xFF794B);
+	graphics.drawRect(250, 250, 300, 100);
 	
 	
+	graphics.drawCircle(350, 350,100);
+	graphics.endFill();
 	
-	graphics.lineTo(150, 20);
+	graphics.lineTo(250, 50);
+	
+	graphics.lineStyle(10, 0xFF0000, 1);
+	graphics.moveTo(400,400);
+	graphics.lineTo(550, 50);
+	
+	graphics.lineStyle(30, 0xFF0000, 1);
+	graphics.moveTo(400,100);
+	graphics.lineTo(550, 50);
+//	graphics.lineTo(92, 20);
 	//graphics.lineTo(450, 223);
 	
 	/*
@@ -63,20 +85,21 @@
 			points.push(point1, point2, point3, new Point(350, 220), new Point(450, 223));
 			
 	 */
-	//graphics.lineTo(410,300);
+	graphics.lineTo(410,300);
 	
+	graphics.lineTo(450,320);
+	graphics.lineTo(570,350);
+	graphics.lineTo(580,120);
+	graphics.lineTo(630,120);
+	var sprite = PIXI.Sprite.fromImage("spinObj_01.png");
 	
-	//graphics.lineTo(450,320);
-	//graphics.lineTo(570,350);
-	//graphics.lineTo(580,120);
-//	graphics.lineTo(630,120);
-	
+	stage.addChild(sprite);
 	stage.addChild(graphics);
 	
 	requestAnimFrame(animate);
-	    renderer.render(stage);
 
 	function animate() {
+	    renderer.render(stage);
 	    requestAnimFrame( animate );
 	}
 

@@ -28,6 +28,11 @@ PIXI.shaderVertexSrc = [
   "}"
 ];
 
+/*
+ * primitive shader..
+ */
+
+
 PIXI.CompileVertexShader = function(gl, shaderSrc)
 {
   return PIXI._CompileShader(gl, shaderSrc, gl.VERTEX_SHADER);
@@ -52,3 +57,32 @@ PIXI._CompileShader = function(gl, shaderSrc, shaderType)
 
   return shader;
 }
+
+PIXI.activateDefaultShader = function()
+{
+	var gl = PIXI.gl;
+	var shaderProgram = PIXI.shaderProgram;
+	
+	gl.useProgram(shaderProgram);
+	
+	gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+    gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
+    gl.enableVertexAttribArray(shaderProgram.colorAttribute);
+} 
+
+PIXI.activatePrimitiveShader = function()
+{
+	var gl = PIXI.gl;
+	
+	gl.disableVertexAttribArray(PIXI.shaderProgram.textureCoordAttribute);
+    gl.disableVertexAttribArray(PIXI.shaderProgram.colorAttribute);
+    
+	var shaderProgram2 = PIXI.shaderProgram2;
+	
+	gl.useProgram(shaderProgram2);
+	
+	gl.enableVertexAttribArray(shaderProgram2.vertexPositionAttribute);
+	gl.enableVertexAttribArray(PIXI.shaderProgram2.colorAttribute);
+    
+} 
+

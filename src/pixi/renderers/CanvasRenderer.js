@@ -199,7 +199,7 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 	}
 	else if(displayObject instanceof PIXI.Graphics)
 	{
-		displayObject.render(this);
+		PIXI.CanvasGraphics.renderGraphics(displayObject, context);
 	}
 	
 	// render!

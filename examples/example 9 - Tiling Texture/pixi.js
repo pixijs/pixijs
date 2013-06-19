@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-06-14
+ * Compiled: 2013-06-19
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -2422,6 +2422,11 @@ PIXI.shaderVertexSrc = [
   "}"
 ];
 
+/*
+ * primitive shader..
+ */
+
+
 PIXI.CompileVertexShader = function(gl, shaderSrc)
 {
   return PIXI._CompileShader(gl, shaderSrc, gl.VERTEX_SHADER);
@@ -2446,6 +2451,35 @@ PIXI._CompileShader = function(gl, shaderSrc, shaderType)
 
   return shader;
 }
+
+PIXI.activateDefaultShader = function()
+{
+	var gl = PIXI.gl;
+	var shaderProgram = PIXI.shaderProgram;
+	
+	gl.useProgram(shaderProgram);
+	
+	gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+    gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
+    gl.enableVertexAttribArray(shaderProgram.colorAttribute);
+} 
+
+PIXI.activatePrimitiveShader = function()
+{
+	var gl = PIXI.gl;
+	
+	gl.disableVertexAttribArray(PIXI.shaderProgram.textureCoordAttribute);
+    gl.disableVertexAttribArray(PIXI.shaderProgram.colorAttribute);
+    
+	var shaderProgram2 = PIXI.shaderProgram2;
+	
+	gl.useProgram(shaderProgram2);
+	
+	gl.enableVertexAttribArray(shaderProgram2.vertexPositionAttribute);
+	gl.enableVertexAttribArray(PIXI.shaderProgram2.colorAttribute);
+    
+} 
+
 
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
@@ -2505,8 +2539,8 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
     	throw new Error(" This browser does not support webGL. Try using the canvas renderer" + this);
     }
     
+    PIXI.WebGLGraphics.initShaders();
     this.initShaders();
-    
     
     var gl = this.gl;
     PIXI.WebGLRenderer.gl = gl;
@@ -2576,17 +2610,16 @@ PIXI.WebGLRenderer.prototype.initShaders = function()
     gl.useProgram(shaderProgram);
 
     shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
-    gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
 
     shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, "aTextureCoord");
-    gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
 	
 	shaderProgram.colorAttribute = gl.getAttribLocation(shaderProgram, "aColor");
-    gl.enableVertexAttribArray(shaderProgram.colorAttribute);
 
 
     shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
     shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "uSampler");
+    
+    PIXI.activateDefaultShader();
 }
 
 
@@ -3427,7 +3460,7 @@ PIXI.WebGLRenderGroup.prototype.render = function(projectionMatrix)
 	PIXI.WebGLRenderer.updateTextures();
 	
 	var gl = this.gl;
-	
+
 	// set the flipped matrix..
 	gl.uniformMatrix4fv(PIXI.shaderProgram.mvMatrixUniform, false, projectionMatrix);
 	
@@ -3455,7 +3488,7 @@ PIXI.WebGLRenderGroup.prototype.render = function(projectionMatrix)
 		}
 		else if(renderable instanceof PIXI.Graphics)
 		{
-			if(renderable.visible) renderable.renderWebGL(this, projectionMatrix);
+			if(renderable.visible) PIXI.WebGLGraphics.renderGraphics(renderable);//, projectionMatrix);
 		}
 	}
 	

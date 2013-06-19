@@ -48,7 +48,7 @@ PIXI.WebGLRenderGroup.prototype.render = function(projectionMatrix)
 	PIXI.WebGLRenderer.updateTextures();
 	
 	var gl = this.gl;
-	
+
 	// set the flipped matrix..
 	gl.uniformMatrix4fv(PIXI.shaderProgram.mvMatrixUniform, false, projectionMatrix);
 	
@@ -76,7 +76,7 @@ PIXI.WebGLRenderGroup.prototype.render = function(projectionMatrix)
 		}
 		else if(renderable instanceof PIXI.Graphics)
 		{
-			if(renderable.visible) renderable.renderWebGL(this, projectionMatrix);
+			if(renderable.visible) PIXI.WebGLGraphics.renderGraphics(renderable);//, projectionMatrix);
 		}
 	}
 	
