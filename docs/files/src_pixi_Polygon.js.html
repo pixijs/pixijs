@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src&#x2F;pixi&#x2F;loaders&#x2F;SpriteSheetLoader.js - Pixi.JS</title>
+    <title>src&#x2F;pixi&#x2F;Polygon.js - Pixi.JS</title>
     <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
@@ -134,104 +134,41 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src&#x2F;pixi&#x2F;loaders&#x2F;SpriteSheetLoader.js</h1>
+                        <h1 class="file-heading">File: src&#x2F;pixi&#x2F;Polygon.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
 &#x2F;**
- * @author Mat Groves http:&#x2F;&#x2F;matgroves.com&#x2F; @Doormat23
+ * @author Adrien Brault &lt;adrien.brault@gmail.com&gt;
  *&#x2F;
 
 &#x2F;**
- * The sprite sheet loader is used to load in JSON sprite sheet data
- * To generate the data you can use http:&#x2F;&#x2F;www.codeandweb.com&#x2F;texturepacker and publish the &quot;JSON&quot; format
- * There is a free version so thats nice, although the paid version is great value for money.
- * It is highly recommended to use Sprite sheets (also know as texture atlas&quot;) as it means sprite&quot;s can be batched and drawn together for highly increased rendering speed.
- * Once the data has been loaded the frames are stored in the PIXI texture cache and can be accessed though PIXI.Texture.fromFrameId() and PIXI.Sprite.fromFromeId()
- * This loader will also load the image file that the Spritesheet points to as well as the data.
- * When loaded this class will dispatch a &quot;loaded&quot; event
- * @class SpriteSheetLoader
- * @extends EventTarget
+ * @class Polygon
  * @constructor
- * @param {String} url the url of the sprite sheet JSON file
- * @param {Boolean} crossorigin
+ * @param points {Array}
  *&#x2F;
-
-PIXI.SpriteSheetLoader = function (url, crossorigin) {
-	&#x2F;*
-	 * i use texture packer to load the assets..
-	 * http:&#x2F;&#x2F;www.codeandweb.com&#x2F;texturepacker
-	 * make sure to set the format as &quot;JSON&quot;
-	 *&#x2F;
-	PIXI.EventTarget.call(this);
-	this.url = url;
-	this.baseUrl = url.replace(&#x2F;[^\&#x2F;]*$&#x2F;, &quot;&quot;);
-	this.texture = null;
-	this.frames = {};
-	this.crossorigin = crossorigin;
-};
-
-&#x2F;&#x2F; constructor
-PIXI.SpriteSheetLoader.constructor = PIXI.SpriteSheetLoader;
+PIXI.Polygon = function(points)
+{
+	this.points = points;
+}
 
 &#x2F;**
- * This will begin loading the JSON file
+ * @method clone
+ * @return a copy of the polygon
  *&#x2F;
-PIXI.SpriteSheetLoader.prototype.load = function () {
-	var scope = this;
-	var jsonLoader = new PIXI.JsonLoader(this.url, this.crossorigin);
-	jsonLoader.addEventListener(&quot;loaded&quot;, function (event) {
-		scope.json = event.content.json;
-		scope.onJSONLoaded();
-	});
-	jsonLoader.load();
-};
-
-&#x2F;**
- * Invoke when JSON file is loaded
- * @private
- *&#x2F;
-PIXI.SpriteSheetLoader.prototype.onJSONLoaded = function () {
-	var scope = this;
-	var textureUrl = this.baseUrl + this.json.meta.image;
-	var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
-	var frameData = this.json.frames;
-
-	this.texture = image.texture.baseTexture;
-	image.addEventListener(&quot;loaded&quot;, function (event) {
-		scope.onLoaded();
-	});
-
-	for (var i in frameData) {
-		var rect = frameData[i].frame;
-		if (rect) {
-			PIXI.TextureCache[i] = new PIXI.Texture(this.texture, {
-				x: rect.x,
-				y: rect.y,
-				width: rect.w,
-				height: rect.h
-			});
-			if (frameData[i].trimmed) {
-				&#x2F;&#x2F;var realSize = frameData[i].spriteSourceSize;
-				PIXI.TextureCache[i].realSize = frameData[i].spriteSourceSize;
-				PIXI.TextureCache[i].trim.x = 0; &#x2F;&#x2F; (realSize.x &#x2F; rect.w)
-				&#x2F;&#x2F; calculate the offset!
-			}
-		}
+PIXI.Polygon.clone = function()
+{
+	var points = [];
+	for (var i=0; i&lt;this.points.length; i++) {
+		points.push(this.points[i].clone());
 	}
 
-	image.load();
-};
-&#x2F;**
- * Invoke when all files are loaded (json and texture)
- * @private
- *&#x2F;
-PIXI.SpriteSheetLoader.prototype.onLoaded = function () {
-	this.dispatchEvent({
-		type: &quot;loaded&quot;,
-		content: this
-	});
-};
+	return new PIXI.Polygon(points);
+}
+
+PIXI.Polygon.constructor = PIXI.Polygon;
+
+
     </pre>
 </div>
 

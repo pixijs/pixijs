@@ -63,13 +63,19 @@
             
                 <li><a href="..&#x2F;classes/InteractionManager.html">InteractionManager</a></li>
             
+                <li><a href="..&#x2F;classes/JsonLoader.html">JsonLoader</a></li>
+            
                 <li><a href="..&#x2F;classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="..&#x2F;classes/Point.html">Point</a></li>
             
+                <li><a href="..&#x2F;classes/Polygon.html">Polygon</a></li>
+            
                 <li><a href="..&#x2F;classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="..&#x2F;classes/RenderTexture.html">RenderTexture</a></li>
+            
+                <li><a href="..&#x2F;classes/Spine.html">Spine</a></li>
             
                 <li><a href="..&#x2F;classes/Sprite.html">Sprite</a></li>
             
@@ -182,7 +188,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
         PIXI.gl = this.gl = this.view.getContext(&quot;experimental-webgl&quot;,  {  	
     		 alpha: this.transparent,
     		 antialias:false, &#x2F;&#x2F; SPEED UP??
-    		 premultipliedAlpha:true
+    		 premultipliedAlpha:false
         });
     } 
     catch (e) 
@@ -325,7 +331,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
    
    	gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 		
-	gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], this.transparent);     
+	gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], !this.transparent);     
 	gl.clear(gl.COLOR_BUFFER_BIT);
 
 

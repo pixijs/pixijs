@@ -63,13 +63,19 @@
             
                 <li><a href="..&#x2F;classes/InteractionManager.html">InteractionManager</a></li>
             
+                <li><a href="..&#x2F;classes/JsonLoader.html">JsonLoader</a></li>
+            
                 <li><a href="..&#x2F;classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="..&#x2F;classes/Point.html">Point</a></li>
             
+                <li><a href="..&#x2F;classes/Polygon.html">Polygon</a></li>
+            
                 <li><a href="..&#x2F;classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="..&#x2F;classes/RenderTexture.html">RenderTexture</a></li>
+            
+                <li><a href="..&#x2F;classes/Spine.html">Spine</a></li>
             
                 <li><a href="..&#x2F;classes/Sprite.html">Sprite</a></li>
             
@@ -148,6 +154,8 @@
  * @param {String} [style.align=&quot;left&quot;] An alignment of the multiline text (&quot;left&quot;, &quot;center&quot; or &quot;right&quot;)
  * @param {String} [style.stroke] A canvas fillstyle that will be used on the text stroke eg &quot;blue&quot;, &quot;#FCFF00&quot;
  * @param {Number} [style.strokeThickness=0] A number that represents the thickness of the stroke. Default is 0 (no stroke)
+ * @param {Boolean} [style.wordWrap=false] Indicates if word wrap should be used
+ * @param {Number} [style.wordWrapWidth=100] The width at which text will wrap
  *&#x2F;
 PIXI.Text = function(text, style)
 {
@@ -173,8 +181,10 @@ PIXI.Text.prototype = Object.create(PIXI.Sprite.prototype);
  * @param {String} [style.font=&quot;bold 20pt Arial&quot;] The style and size of the font
  * @param {Object} [style.fill=&quot;black&quot;] A canvas fillstyle that will be used on the text eg &quot;red&quot;, &quot;#00FF00&quot;
  * @param {String} [style.align=&quot;left&quot;] An alignment of the multiline text (&quot;left&quot;, &quot;center&quot; or &quot;right&quot;)
- * @param {String} [style.stroke] A canvas fillstyle that will be used on the text stroke eg &quot;blue&quot;, &quot;#FCFF00&quot;
+ * @param {String} [style.stroke=&quot;black&quot;] A canvas fillstyle that will be used on the text stroke eg &quot;blue&quot;, &quot;#FCFF00&quot;
  * @param {Number} [style.strokeThickness=0] A number that represents the thickness of the stroke. Default is 0 (no stroke)
+ * @param {Boolean} [style.wordWrap=false] Indicates if word wrap should be used
+ * @param {Number} [style.wordWrapWidth=100] The width at which text will wrap
  *&#x2F;
 PIXI.Text.prototype.setStyle = function(style)
 {
@@ -182,7 +192,10 @@ PIXI.Text.prototype.setStyle = function(style)
     style.font = style.font || &quot;bold 20pt Arial&quot;;
     style.fill = style.fill || &quot;black&quot;;
     style.align = style.align || &quot;left&quot;;
+    style.stroke = style.stroke || &quot;black&quot;; &#x2F;&#x2F;provide a default, see: https:&#x2F;&#x2F;github.com&#x2F;GoodBoyDigital&#x2F;pixi.js&#x2F;issues&#x2F;136
     style.strokeThickness = style.strokeThickness || 0;
+    style.wordWrap = style.wordWrap || false;
+    style.wordWrapWidth = style.wordWrapWidth || 100;
     this.style = style;
     this.dirty = true;
 };
@@ -194,7 +207,7 @@ PIXI.Text.prototype.setStyle = function(style)
  *&#x2F;
 PIXI.Sprite.prototype.setText = function(text)
 {
-    this.text = text || &quot; &quot;;
+    this.text = text.toString() || &quot; &quot;;
     this.dirty = true;
 };
 
@@ -205,9 +218,15 @@ PIXI.Sprite.prototype.setText = function(text)
 PIXI.Text.prototype.updateText = function()
 {
 	this.context.font = this.style.font;
+	
+	var outputText = this.text;
+	
+	&#x2F;&#x2F; word wrap
+	&#x2F;&#x2F; preserve original text
+	if(this.style.wordWrap)outputText = this.wordWrap(this.text);
 
 	&#x2F;&#x2F;split text into lines
-	var lines = this.text.split(&#x2F;(?:\r\n|\r|\n)&#x2F;);
+	var lines = outputText.split(&#x2F;(?:\r\n|\r|\n)&#x2F;);
 
 	&#x2F;&#x2F;calculate text width
 	var lineWidths = [];
@@ -309,13 +328,64 @@ PIXI.Text.prototype.determineFontHeight = function(fontStyle)
 		var dummy = document.createElement(&quot;div&quot;);
 		var dummyText = document.createTextNode(&quot;M&quot;);
 		dummy.appendChild(dummyText);
-		dummy.setAttribute(&quot;style&quot;, fontStyle);
+		dummy.setAttribute(&quot;style&quot;, fontStyle + &#x27;;position:absolute;top:0;left:0&#x27;);
 		body.appendChild(dummy);
 		
 		result = dummy.offsetHeight;
 		PIXI.Text.heightCache[fontStyle] = result;
 		
 		body.removeChild(dummy);
+	}
+	
+	return result;
+};
+
+&#x2F;**
+ * A Text Object will apply wordwrap
+ * @private
+ *&#x2F;
+PIXI.Text.prototype.wordWrap = function(text)
+{
+	&#x2F;&#x2F; search good wrap position
+	var searchWrapPos = function(ctx, text, start, end, wrapWidth)
+	{
+		var p = Math.floor((end-start) &#x2F; 2) + start;
+		if(p == start) {
+			return 1;
+		}
+		
+		if(ctx.measureText(text.substring(0,p)).width &lt;= wrapWidth)
+		{
+			if(ctx.measureText(text.substring(0,p+1)).width &gt; wrapWidth)
+			{
+				return p;
+			}
+			else
+			{
+				return arguments.callee(ctx, text, p, end, wrapWidth);
+			}
+		}
+		else
+		{
+			return arguments.callee(ctx, text, start, p, wrapWidth);
+		}
+	};
+	 
+	var lineWrap = function(ctx, text, wrapWidth)
+	{
+		if(ctx.measureText(text).width &lt;= wrapWidth || text.length &lt; 1)
+		{
+			return text;
+		}
+		var pos = searchWrapPos(ctx, text, 0, text.length, wrapWidth);
+		return text.substring(0, pos) + &quot;\n&quot; + arguments.callee(ctx, text.substring(pos), wrapWidth);
+	};
+	
+	var result = &quot;&quot;;
+	var lines = text.split(&quot;\n&quot;);
+	for (var i = 0; i &lt; lines.length; i++)
+	{
+		result += lineWrap(this.context, lines[i], this.style.wordWrapWidth) + &quot;\n&quot;;
 	}
 	
 	return result;

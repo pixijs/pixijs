@@ -1,10 +1,10 @@
 /**
  * @license
- * Pixi.JS - v1.1.0
+ * Pixi.JS - v1.0.0
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-06-19
+ * Compiled: 2013-06-12
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -122,37 +122,6 @@ PIXI.Rectangle.prototype.clone = function()
 
 // constructor
 PIXI.Rectangle.constructor = PIXI.Rectangle;
-
-
-/**
- * @author Adrien Brault <adrien.brault@gmail.com>
- */
-
-/**
- * @class Polygon
- * @constructor
- * @param points {Array}
- */
-PIXI.Polygon = function(points)
-{
-	this.points = points;
-}
-
-/**
- * @method clone
- * @return a copy of the polygon
- */
-PIXI.Polygon.clone = function()
-{
-	var points = [];
-	for (var i=0; i<this.points.length; i++) {
-		points.push(this.points[i].clone());
-	}
-
-	return new PIXI.Polygon(points);
-}
-
-PIXI.Polygon.constructor = PIXI.Polygon;
 
 
 /**
@@ -987,7 +956,7 @@ PIXI.Text.prototype = Object.create(PIXI.Sprite.prototype);
  * @param {String} [style.font="bold 20pt Arial"] The style and size of the font
  * @param {Object} [style.fill="black"] A canvas fillstyle that will be used on the text eg "red", "#00FF00"
  * @param {String} [style.align="left"] An alignment of the multiline text ("left", "center" or "right")
- * @param {String} [style.stroke="black"] A canvas fillstyle that will be used on the text stroke eg "blue", "#FCFF00"
+ * @param {String} [style.stroke] A canvas fillstyle that will be used on the text stroke eg "blue", "#FCFF00"
  * @param {Number} [style.strokeThickness=0] A number that represents the thickness of the stroke. Default is 0 (no stroke)
  * @param {Boolean} [style.wordWrap=false] Indicates if word wrap should be used
  * @param {Number} [style.wordWrapWidth=100] The width at which text will wrap
@@ -998,7 +967,6 @@ PIXI.Text.prototype.setStyle = function(style)
     style.font = style.font || "bold 20pt Arial";
     style.fill = style.fill || "black";
     style.align = style.align || "left";
-    style.stroke = style.stroke || "black"; //provide a default, see: https://github.com/GoodBoyDigital/pixi.js/issues/136
     style.strokeThickness = style.strokeThickness || 0;
     style.wordWrap = style.wordWrap || false;
     style.wordWrapWidth = style.wordWrapWidth || 100;
@@ -1134,7 +1102,7 @@ PIXI.Text.prototype.determineFontHeight = function(fontStyle)
 		var dummy = document.createElement("div");
 		var dummyText = document.createTextNode("M");
 		dummy.appendChild(dummyText);
-		dummy.setAttribute("style", fontStyle + ';position:absolute;top:0;left:0');
+		dummy.setAttribute("style", fontStyle);
 		body.appendChild(dummy);
 		
 		result = dummy.offsetHeight;
@@ -1333,11 +1301,11 @@ PIXI.BitmapText.prototype.updateText = function()
 
     for(i = 0; i < chars.length; i++)
     {
-        var c = new PIXI.Sprite(chars[i].texture)//PIXI.Sprite.fromFrame(chars[i].charCode);
-        c.position.x = (chars[i].position.x + lineAlignOffsets[chars[i].line]) * scale;
-        c.position.y = chars[i].position.y * scale;
-        c.scale.x = c.scale.y = scale;
-        this.addChild(c);
+        var char = new PIXI.Sprite(chars[i].texture)//PIXI.Sprite.fromFrame(chars[i].charCode);
+        char.position.x = (chars[i].position.x + lineAlignOffsets[chars[i].line]) * scale;
+        char.position.y = chars[i].position.y * scale;
+        char.scale.x = char.scale.y = scale;
+        this.addChild(char);
     }
 
     this.width = pos.x * scale;
@@ -1429,27 +1397,25 @@ PIXI.InteractionManager.prototype.collectInteractiveSprite = function(displayObj
 	{
 		var child = children[i];
 		
-		if(child.visible) {
-			// push all interactive bits
-			if(child.interactive)
+		// push all interactive bits
+		if(child.interactive)
+		{
+			iParent.interactiveChildren = true;
+			//child.__iParent = iParent;
+			this.interactiveItems.push(child);
+			
+			if(child.children.length > 0)
 			{
-				iParent.interactiveChildren = true;
-				//child.__iParent = iParent;
-				this.interactiveItems.push(child);
-
-				if(child.children.length > 0)
-				{
-					this.collectInteractiveSprite(child, child);
-				}
+				this.collectInteractiveSprite(child, child);
 			}
-			else
+		}
+		else
+		{
+			child.__iParent = null;
+			
+			if(child.children.length > 0)
 			{
-				child.__iParent = null;
-
-				if(child.children.length > 0)
-				{
-					this.collectInteractiveSprite(child, iParent);
-				}
+				this.collectInteractiveSprite(child, iParent);
 			}
 		}
 	}
@@ -1559,6 +1525,8 @@ PIXI.InteractionManager.prototype.update = function()
 
 PIXI.InteractionManager.prototype.onMouseMove = function(event)
 {
+	event.preventDefault();
+	
 	// TODO optimize by not check EVERY TIME! maybe half as often? //
 	var rect = this.target.view.getBoundingClientRect();
 	
@@ -1583,6 +1551,8 @@ PIXI.InteractionManager.prototype.onMouseMove = function(event)
 
 PIXI.InteractionManager.prototype.onMouseDown = function(event)
 {
+	event.preventDefault();
+	
 	// loop through inteaction tree...
 	// hit test each item! -> 
 	// get interactive items under point??
@@ -1619,6 +1589,7 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
 
 PIXI.InteractionManager.prototype.onMouseUp = function(event)
 {
+	event.preventDefault();
 	var global = this.mouse.global;
 	
 	
@@ -1665,66 +1636,27 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 	var global = interactionData.global;
 	
 	if(!item.visible)return false;
-
-	var isSprite = (item instanceof PIXI.Sprite),
-		worldTransform = item.worldTransform,
-		a00 = worldTransform[0], a01 = worldTransform[1], a02 = worldTransform[2],
-		a10 = worldTransform[3], a11 = worldTransform[4], a12 = worldTransform[5],
-		id = 1 / (a00 * a11 + a01 * -a10),
-		x = a11 * id * global.x + -a01 * id * global.y + (a12 * a01 - a02 * a11) * id,
-		y = a00 * id * global.y + -a10 * id * global.x + (-a12 * a00 + a02 * a10) * id;
-
-	//a sprite or display object with a hit area defined
-	if(item.hitArea)
+	
+	if(item instanceof PIXI.Sprite)
 	{
-		var hitArea = item.hitArea;
-
-		//Polygon hit area
-		if(item.hitArea instanceof PIXI.Polygon) {
-			var inside = false;
-
-			// use some raycasting to test hits
-			// https://github.com/substack/point-in-polygon/blob/master/index.js
-			for(var i = 0, j = item.hitArea.points.length - 1; i < item.hitArea.points.length; j = i++) {
-				var xi = item.hitArea.points[i].x, yi = item.hitArea.points[i].y,
-					xj = item.hitArea.points[j].x, yj = item.hitArea.points[j].y,
-					intersect = ((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-
-				if(intersect) inside = !inside;
-			}
-			
-			if(inside) {
-				if(isSprite) interactionData.target = item;
-				return true;
-			}
-		}
-		//Rectangle hit area
-		else {
-			var x1 = hitArea.x;
-			if(x > x1 && x < x1 + hitArea.width)
-			{
-				var y1 = hitArea.y;
-				
-				if(y > y1 && y < y1 + hitArea.height)
-				{
-					if(isSprite) interactionData.target = item;
-					return true;
-				}
-			}
-		}
-	}
-	// a sprite with no hitarea defined
-	else if(isSprite)
-	{
-		var width = item.texture.frame.width,
-			height = item.texture.frame.height,
-			x1 = -width * item.anchor.x,
-			y1;
+		var worldTransform = item.worldTransform;
+		
+		var a00 = worldTransform[0], a01 = worldTransform[1], a02 = worldTransform[2],
+            a10 = worldTransform[3], a11 = worldTransform[4], a12 = worldTransform[5],
+            id = 1 / (a00 * a11 + a01 * -a10);
+		
+		var x = a11 * id * global.x + -a01 * id * global.y + (a12 * a01 - a02 * a11) * id; 
+		var y = a00 * id * global.y + -a10 * id * global.x + (-a12 * a00 + a02 * a10) * id;
+		
+		var width = item.texture.frame.width;
+		var height = item.texture.frame.height;
+		
+		var x1 = -width * item.anchor.x;
 		
 		if(x > x1 && x < x1 + width)
 		{
-			y1 = -height * item.anchor.y;
-		
+			var y1 = -height * item.anchor.y;
+			
 			if(y > y1 && y < y1 + height)
 			{
 				// set the target property if a hit is true!
@@ -1733,7 +1665,30 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 			}
 		}
 	}
-
+	else if(item.hitArea)
+	{
+		var worldTransform = item.worldTransform;
+		var hitArea = item.hitArea;
+		
+		var a00 = worldTransform[0], a01 = worldTransform[1], a02 = worldTransform[2],
+            a10 = worldTransform[3], a11 = worldTransform[4], a12 = worldTransform[5],
+            id = 1 / (a00 * a11 + a01 * -a10);
+		
+		var x = a11 * id * global.x + -a01 * id * global.y + (a12 * a01 - a02 * a11) * id; 
+		var y = a00 * id * global.y + -a10 * id * global.x + (-a12 * a00 + a02 * a10) * id;
+		
+		var x1 = hitArea.x;
+		if(x > x1 && x < x1 + hitArea.width)
+		{
+			var y1 = hitArea.y;
+			
+			if(y > y1 && y < y1 + hitArea.height)
+			{
+				return true;
+			}
+		}
+	}
+	
 	var length = item.children.length;
 	
 	for (var i = 0; i < length; i++)
@@ -1742,7 +1697,7 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 		var hit = this.hitTest(tempItem, interactionData);
 		if(hit)return true;
 	}
-
+		
 	return false;	
 }
 
@@ -1750,6 +1705,8 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 
 PIXI.InteractionManager.prototype.onTouchMove = function(event)
 {
+	event.preventDefault();
+	
 	var rect = this.target.view.getBoundingClientRect();
 	var changedTouches = event.changedTouches;
 	
@@ -1773,6 +1730,7 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
 
 PIXI.InteractionManager.prototype.onTouchStart = function(event)
 {
+	event.preventDefault();
 	var rect = this.target.view.getBoundingClientRect();
 	
 	var changedTouches = event.changedTouches;
@@ -1814,6 +1772,9 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
 
 PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 {
+	event.preventDefault();
+	
+	
 	var rect = this.target.view.getBoundingClientRect();
 	var changedTouches = event.changedTouches;
 	
@@ -1995,9 +1956,7 @@ PIXI.Stage.prototype.setBackgroundColor = function(backgroundColor)
 {
 	this.backgroundColor = backgroundColor || 0x000000;
 	this.backgroundColorSplit = HEXtoRGB(this.backgroundColor);
-	var hex = this.backgroundColor.toString(16);
-	hex = "000000".substr(0, 6 - hex.length) + hex;
-	this.backgroundColorString = "#" + hex;
+	this.backgroundColorString =  "#" + this.backgroundColor.toString(16);
 }
 
 /**
@@ -2042,38 +2001,19 @@ PIXI.Stage.prototype.__removeChild = function(child)
 	}
 }
 
-// http://paulirish.com/2011/requestanimationframe-for-smart-animating/
-// http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
-
-// requestAnimationFrame polyfill by Erik Möller. fixes from Paul Irish and Tino Zijdel
-
-// MIT license
-
-
-    var lastTime = 0;
-    var vendors = ['ms', 'moz', 'webkit', 'o'];
-    for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
-        window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
-        window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame'] 
-                                   || window[vendors[x]+'CancelRequestAnimationFrame'];
-    }
-
-    if (!window.requestAnimationFrame)
-        window.requestAnimationFrame = function(callback, element) {
-            var currTime = new Date().getTime();
-            var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-            var id = window.setTimeout(function() { callback(currTime + timeToCall); }, 
-              timeToCall);
-            lastTime = currTime + timeToCall;
-            return id;
-        };
-
-    if (!window.cancelAnimationFrame)
-        window.cancelAnimationFrame = function(id) {
-            clearTimeout(id);
-        };
-
-window.requestAnimFrame = window.requestAnimationFrame;
+/**
+ * Provides requestAnimationFrame in a cross browser way.
+ */
+window.requestAnimFrame = (function() {
+  return window.requestAnimationFrame ||
+         window.webkitRequestAnimationFrame ||
+         window.mozRequestAnimationFrame ||
+         window.oRequestAnimationFrame ||
+         window.msRequestAnimationFrame ||
+         function(/* function FrameRequestCallback */ callback, /* DOMElement Element */ element) {
+           window.setTimeout(callback, 1000/60);
+         };
+})();
 
 function HEXtoRGB(hex) {
 	return [(hex >> 16 & 0xFF) / 255, ( hex >> 8 & 0xFF) / 255, (hex & 0xFF)/ 255];
@@ -2105,7 +2045,7 @@ if (typeof Function.prototype.bind != 'function') {
   })();
 }
 
-var AjaxRequest = PIXI.AjaxRequest = function()
+var AjaxRequest = function()
 {
 	var activexmodes = ["Msxml2.XMLHTTP", "Microsoft.XMLHTTP"] //activeX versions to check for in IE
 	
@@ -2836,11 +2776,9 @@ PIXI.WebGLRenderer.prototype.handleContextRestored = function(event)
         
 	this.initShaders();	
 	
-	for(var key in PIXI.TextureCache) 
+	for (var i=0; i < PIXI.TextureCache.length; i++) 
 	{
-        	var texture = PIXI.TextureCache[key].baseTexture;
-        	texture._glTexture = null;
-        	PIXI.WebGLRenderer.updateTexture(texture);
+		this.updateTexture(PIXI.TextureCache[i]);
 	};
 	
 	for (var i=0; i <  this.batchs.length; i++) 
@@ -4323,7 +4261,7 @@ PIXI.WebGLRenderGroup.prototype.renderTilingSprite = function(sprite, projection
 /**
  * @private
  */
-PIXI.WebGLRenderGroup.prototype.initStrip = function(strip)
+PIXI.WebGLRenderer.prototype.initStrip = function(strip)
 {
 	// build the strip!
 	var gl = this.gl;
@@ -4550,12 +4488,9 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 	}
 	
 	// render!
-	if(displayObject.children)
+	for (var i=0; i < displayObject.children.length; i++) 
 	{
-		for (var i=0; i < displayObject.children.length; i++) 
-		{
-			this.renderDisplayObject(displayObject.children[i]);
-		}
+		this.renderDisplayObject(displayObject.children[i]);
 	}
 	
 	this.context.setTransform(1,0,0,1,0,0); 
@@ -5034,7 +4969,7 @@ PIXI.TilingSprite.prototype.onTextureUpdate = function(event)
  * See example 12 (http://www.goodboydigital.com/pixijs/examples/12/) to see a working example and check out the source
  * @class Spine
  * @constructor
- * @extends DisplayObjectContainer
+ * @extends 
  * @param {String} url the url of the spine anim file to be used
  */
 PIXI.Spine = function(url)
@@ -6619,9 +6554,7 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin)
 	var baseTexture = PIXI.BaseTextureCache[imageUrl];
 	if(!baseTexture)
 	{
-		// new Image() breaks tex loading in some versions of Chrome.
-		// See https://code.google.com/p/chromium/issues/detail?id=238071
-		var image = new Image();//document.createElement('img'); 
+		var image = new Image();
 		if (crossorigin)
 		{
 			image.crossOrigin = '';
@@ -6828,33 +6761,13 @@ PIXI.Texture.frameUpdates = [];
  */
 
 /**
- A RenderTexture is a special texture that allows any pixi displayObject to be rendered to it.
-
- __Hint__: All DisplayObjects (exmpl. Sprites) that renders on RenderTexture should be preloaded. 
- Otherwise black rectangles will be drawn instead.  
- 
- RenderTexture takes snapshot of DisplayObject passed to render method. If DisplayObject is passed to render method, position and rotation of it will be ignored. For example:
- 
-	var renderTexture = new PIXI.RenderTexture(800, 600);
-	var sprite = PIXI.Sprite.fromImage("spinObj_01.png");
-	sprite.position.x = 800/2;
-	sprite.position.y = 600/2;
-	sprite.anchor.x = 0.5;
-	sprite.anchor.y = 0.5;
-	renderTexture.render(sprite);
-
- Sprite in this case will be rendered to 0,0 position. To render this sprite at center DisplayObjectContainer should be used:
-
-	var doc = new PIXI.DisplayObjectContainer();
-	doc.addChild(sprite);
-	renderTexture.render(doc);  // Renders to center of renderTexture
-
- @class RenderTexture
- @extends Texture
- @constructor
- @param width {Number}
- @param height {Number}
- **/
+ * A RenderTexture is a special texture that allows any pixi displayObject to be rendered to it. 
+ * @class RenderTexture
+ * @extends Texture
+ * @constructor
+ * @param width {Number}
+ * @param height {Number}
+ */
 PIXI.RenderTexture = function(width, height)
 {
 	PIXI.EventTarget.call( this );
@@ -7328,7 +7241,6 @@ PIXI.SpriteSheetLoader.prototype.onLoaded = function () {
 		content: this
 	});
 };
-
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -7527,7 +7439,7 @@ PIXI.BitmapFontLoader.prototype.onLoaded = function()
  * When loaded this class will dispatch a "loaded" event
  * @class Spine
  * @constructor
- * @extends EventTarget
+ * @extends 
  * @param {String} url the url of the sprite sheet JSON file
  * @param {Boolean} crossorigin
  */

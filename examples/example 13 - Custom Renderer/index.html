@@ -1,0 +1,64 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>pixi.js example 12 Spine</title>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			background-color: #000000;
+		}
+	</style>
+	
+	
+	<script src="pixi.js"></script>
+	<script src="../../bin/pixi.dev.js"></script>
+	 <script src="../../src/pixi/extras/CustomRenderable.js"></script>
+</head>
+<body>
+	<script>
+	
+	var renderer = new PIXI.CanvasRenderer(800, 600);
+renderer.view.id = 'canvas';
+document.body.appendChild(renderer.view);
+renderer.view.style.position = "absolute";
+
+var stage = new PIXI.Stage(0xFFFFFF, true);
+
+var container = new PIXI.DisplayObjectContainer();
+
+stage.addChild(container);
+
+
+
+var p2 = {};
+p2.Shape = function(){
+    PIXI.CustomRenderable.apply(this);
+};
+p2.Shape.constructor = p2.Shape;
+p2.Shape.prototype = Object.create(PIXI.CustomRenderable.prototype);
+
+p2.Circle = function(body, radius){
+    p2.Shape.apply(this);
+};
+
+p2.Circle.prototype.renderCanvas = function(renderer){
+        //render stuff
+};
+
+p2.Circle.prototype = Object.create(p2.Shape.prototype);
+	
+	container.addChild(new p2.Circle());
+	
+	requestAnimFrame(animate);
+
+	function animate() {
+
+	    requestAnimFrame( animate );
+	    renderer.render(stage);
+	}
+
+	</script>
+
+	</body>
+</html>

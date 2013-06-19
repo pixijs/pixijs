@@ -152,7 +152,6 @@ PIXI.Polygon.clone = function()
 	return new PIXI.Polygon(points);
 }
 
-// constructor
 PIXI.Polygon.constructor = PIXI.Polygon;
 
 
@@ -5035,7 +5034,7 @@ PIXI.TilingSprite.prototype.onTextureUpdate = function(event)
  * See example 12 (http://www.goodboydigital.com/pixijs/examples/12/) to see a working example and check out the source
  * @class Spine
  * @constructor
- * @extends 
+ * @extends DisplayObjectContainer
  * @param {String} url the url of the spine anim file to be used
  */
 PIXI.Spine = function(url)
@@ -7528,7 +7527,7 @@ PIXI.BitmapFontLoader.prototype.onLoaded = function()
  * When loaded this class will dispatch a "loaded" event
  * @class Spine
  * @constructor
- * @extends 
+ * @extends EventTarget
  * @param {String} url the url of the sprite sheet JSON file
  * @param {Boolean} crossorigin
  */

@@ -26,6 +26,5 @@ PIXI.Polygon.clone = function()
 	return new PIXI.Polygon(points);
 }
 
-// constructor
 PIXI.Polygon.constructor = PIXI.Polygon;
 
