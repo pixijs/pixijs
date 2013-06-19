@@ -193,8 +193,6 @@ PIXI.InteractionManager.prototype.update = function()
 
 PIXI.InteractionManager.prototype.onMouseMove = function(event)
 {
-	event.preventDefault();
-	
 	// TODO optimize by not check EVERY TIME! maybe half as often? //
 	var rect = this.target.view.getBoundingClientRect();
 	
@@ -219,8 +217,6 @@ PIXI.InteractionManager.prototype.onMouseMove = function(event)
 
 PIXI.InteractionManager.prototype.onMouseDown = function(event)
 {
-	event.preventDefault();
-	
 	// loop through inteaction tree...
 	// hit test each item! -> 
 	// get interactive items under point??
@@ -257,7 +253,6 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
 
 PIXI.InteractionManager.prototype.onMouseUp = function(event)
 {
-	event.preventDefault();
 	var global = this.mouse.global;
 	
 	
@@ -389,8 +384,6 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 
 PIXI.InteractionManager.prototype.onTouchMove = function(event)
 {
-	event.preventDefault();
-	
 	var rect = this.target.view.getBoundingClientRect();
 	var changedTouches = event.changedTouches;
 	
@@ -414,7 +407,6 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
 
 PIXI.InteractionManager.prototype.onTouchStart = function(event)
 {
-	event.preventDefault();
 	var rect = this.target.view.getBoundingClientRect();
 	
 	var changedTouches = event.changedTouches;
@@ -456,9 +448,6 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
 
 PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 {
-	event.preventDefault();
-	
-	
 	var rect = this.target.view.getBoundingClientRect();
 	var changedTouches = event.changedTouches;
 	
