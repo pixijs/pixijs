@@ -41,7 +41,7 @@ PIXI.Text.prototype = Object.create(PIXI.Sprite.prototype);
  * @param {String} [style.font="bold 20pt Arial"] The style and size of the font
  * @param {Object} [style.fill="black"] A canvas fillstyle that will be used on the text eg "red", "#00FF00"
  * @param {String} [style.align="left"] An alignment of the multiline text ("left", "center" or "right")
- * @param {String} [style.stroke] A canvas fillstyle that will be used on the text stroke eg "blue", "#FCFF00"
+ * @param {String} [style.stroke="black"] A canvas fillstyle that will be used on the text stroke eg "blue", "#FCFF00"
  * @param {Number} [style.strokeThickness=0] A number that represents the thickness of the stroke. Default is 0 (no stroke)
  * @param {Boolean} [style.wordWrap=false] Indicates if word wrap should be used
  * @param {Number} [style.wordWrapWidth=100] The width at which text will wrap
@@ -52,6 +52,7 @@ PIXI.Text.prototype.setStyle = function(style)
     style.font = style.font || "bold 20pt Arial";
     style.fill = style.fill || "black";
     style.align = style.align || "left";
+    style.stroke = style.stroke || "black"; //provide a default, see: https://github.com/GoodBoyDigital/pixi.js/issues/136
     style.strokeThickness = style.strokeThickness || 0;
     style.wordWrap = style.wordWrap || false;
     style.wordWrapWidth = style.wordWrapWidth || 100;
