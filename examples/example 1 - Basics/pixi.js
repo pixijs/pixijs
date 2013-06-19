@@ -1,6 +1,6 @@
 /**
  * @license
- * Pixi.JS - v1.1.0
+ * Pixi.JS - v1.2.0
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
@@ -1777,6 +1777,8 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
 
 PIXI.InteractionManager.prototype.onTouchStart = function(event)
 {
+	event.preventDefault();
+	
 	var rect = this.target.view.getBoundingClientRect();
 	
 	var changedTouches = event.changedTouches;
