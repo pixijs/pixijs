@@ -63,13 +63,19 @@
             
                 <li><a href="..&#x2F;classes/InteractionManager.html">InteractionManager</a></li>
             
+                <li><a href="..&#x2F;classes/JsonLoader.html">JsonLoader</a></li>
+            
                 <li><a href="..&#x2F;classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="..&#x2F;classes/Point.html">Point</a></li>
             
+                <li><a href="..&#x2F;classes/Polygon.html">Polygon</a></li>
+            
                 <li><a href="..&#x2F;classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="..&#x2F;classes/RenderTexture.html">RenderTexture</a></li>
+            
+                <li><a href="..&#x2F;classes/Spine.html">Spine</a></li>
             
                 <li><a href="..&#x2F;classes/Sprite.html">Sprite</a></li>
             
@@ -165,6 +171,8 @@ PIXI.WebGLRenderGroup.prototype.setRenderable = function(displayObject)
 	&#x2F;&#x2F; has this changed??
 	if(this.root)this.removeDisplayObjectAndChildren(this.root);
 	
+	displayObject.worldVisible = displayObject.visible;
+	
 	&#x2F;&#x2F; soooooo &#x2F;&#x2F;
 	&#x2F;&#x2F; to check if any batchs exist already??
 	
@@ -177,25 +185,21 @@ PIXI.WebGLRenderGroup.prototype.setRenderable = function(displayObject)
 
 PIXI.WebGLRenderGroup.prototype.render = function(projectionMatrix)
 {
-	&#x2F;&#x2F;PIXI.WebGLRenderer.updateTextures();
+	
+	PIXI.WebGLRenderer.updateTextures();
 	
 	var gl = this.gl;
 	
 	&#x2F;&#x2F; set the flipped matrix..
 	gl.uniformMatrix4fv(PIXI.shaderProgram.mvMatrixUniform, false, projectionMatrix);
 	
-	
-	for (var i=0; i &lt; this.toRemove.length; i++) 
-	{
-		this.removeDisplayObjectAndChildren(this.toRemove[i]);
-	};
-	
-	this.toRemove = [];
-	
+	&#x2F;&#x2F; TODO remove this by replacing visible with getter setters..	
 	this.checkVisibility(this.root, this.root.visible);
 	
 	&#x2F;&#x2F; will render all the elements in the group
 	var renderable;
+	
+	
 	for (var i=0; i &lt; this.batchs.length; i++) 
 	{
 		renderable = this.batchs[i];
@@ -217,7 +221,7 @@ PIXI.WebGLRenderGroup.prototype.render = function(projectionMatrix)
 
 PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, projectionMatrix)
 {
-	&#x2F;&#x2F;PIXI.WebGLRenderer.updateTextures();
+	PIXI.WebGLRenderer.updateTextures();
 	
 	var gl = this.gl;
 	this.checkVisibility(displayObject, displayObject.visible);
@@ -411,8 +415,9 @@ PIXI.WebGLRenderGroup.prototype.checkVisibility = function(displayObject, global
 			child.textureChange = false;
 			if(child.worldVisible)
 			{
-				this.removeDisplayObject(child)
-				this.addDisplayObject(child)
+				this.removeDisplayObject(child);
+				this.addDisplayObject(child);
+				&#x2F;&#x2F;this.updateTexture(child);
 			}
 			&#x2F;&#x2F; update texture!!
 		}
@@ -422,6 +427,106 @@ PIXI.WebGLRenderGroup.prototype.checkVisibility = function(displayObject, global
 			this.checkVisibility(child, child.worldVisible);
 		}
 	};
+}
+
+PIXI.WebGLRenderGroup.prototype.updateTexture = function(displayObject)
+{
+	&#x2F;&#x2F; we know this exists..
+	&#x2F;&#x2F; is it in a batch..
+	&#x2F;&#x2F; check batch length
+	if(displayObject.batch.length == 1)
+	{
+		&#x2F;&#x2F; just one! this guy! so simply swap the texture
+		displayObject.batch.texture = displayObject.texture.baseTexture;
+		return;
+	}
+	
+	&#x2F;&#x2F; early out!
+	if(displayObject.batch.texture == displayObject.texture.baseTexture)return;
+	
+	
+	if(displayObject.batch.head == displayObject)
+	{
+		&#x2F;&#x2F;console.log(&quot;HEAD&quot;)
+		var currentBatch = displayObject.batch;
+		
+		var index = this.batchs.indexOf( currentBatch );
+		var previousBatch =  this.batchs[index-1];
+		currentBatch.remove(displayObject);
+		
+		if(previousBatch)
+		{
+			if(previousBatch.texture == displayObject.texture.baseTexture &amp;&amp; previousBatch.blendMode == displayObject.blendMode)
+			{
+				previousBatch.insertAfter(displayObject, previousBatch.tail);
+			}
+			else
+			{
+				&#x2F;&#x2F; add it before..
+				var batch = PIXI.WebGLRenderer.getBatch();
+				batch.init(displayObject);
+				this.batchs.splice(index-1, 0, batch);
+			}
+			
+		}
+		else
+		{
+			&#x2F;&#x2F; we are 0!
+			var batch = PIXI.WebGLRenderer.getBatch();
+			batch.init(displayObject);
+			this.batchs.splice(0, 0, batch);
+		}
+		
+	}
+	else if(displayObject.batch.tail == displayObject)
+	{
+		var currentBatch = displayObject.batch;
+		
+		var index = this.batchs.indexOf( currentBatch );
+		var nextBatch =  this.batchs[index+1];
+		currentBatch.remove(displayObject);
+		
+		if(nextBatch)
+		{
+			if(nextBatch.texture == displayObject.texture.baseTexture &amp;&amp; nextBatch.blendMode == displayObject.blendMode)
+			{
+				nextBatch.insertBefore(displayObject, nextBatch.head);
+				return;
+			}
+			else
+			{
+				&#x2F;&#x2F; add it before..
+				var batch = PIXI.WebGLRenderer.getBatch();
+				batch.init(displayObject);
+				this.batchs.splice(index+1, 0, batch);
+			}
+			
+		}
+		else
+		{
+			&#x2F;&#x2F; we are 0!
+			var batch = PIXI.WebGLRenderer.getBatch();
+			batch.init(displayObject);
+			this.batchs.push(batch);
+		}
+	}
+	else
+	{
+	&#x2F;&#x2F;	console.log(&quot;MIDDLE&quot;)
+		var currentBatch = displayObject.batch;
+		
+		&#x2F;&#x2F; split the batch into 2
+		&#x2F;&#x2F; AH! dont split on the current display object as the texture is wrong!
+		var splitBatch = currentBatch.split(displayObject);
+		
+		&#x2F;&#x2F; now remove the display object
+		splitBatch.remove(displayObject);
+		
+		var batch = PIXI.WebGLRenderer.getBatch();
+		var index = this.batchs.indexOf( currentBatch );
+		batch.init(displayObject);
+		this.batchs.splice(index+1, 0, batch, splitBatch);
+	}
 }
 
 PIXI.WebGLRenderGroup.prototype.addDisplayObject = function(displayObject)

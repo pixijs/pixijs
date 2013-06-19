@@ -23,6 +23,13 @@
             "fors": {},
             "namespaces": {}
         },
+        "src/pixi/extras/Spine.js": {
+            "name": "src/pixi/extras/Spine.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
         "src/pixi/extras/Strip.js": {
             "name": "src/pixi/extras/Strip.js",
             "modules": {},
@@ -62,6 +69,24 @@
             "modules": {},
             "classes": {
                 "ImageLoader": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/pixi/loaders/JsonLoader.js": {
+            "name": "src/pixi/loaders/JsonLoader.js",
+            "modules": {},
+            "classes": {
+                "JsonLoader": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/pixi/loaders/SpineLoader.js": {
+            "name": "src/pixi/loaders/SpineLoader.js",
+            "modules": {},
+            "classes": {
+                "Spine": 1
             },
             "fors": {},
             "namespaces": {}
@@ -251,6 +276,15 @@
             "fors": {},
             "namespaces": {}
         },
+        "src/pixi/Polygon.js": {
+            "name": "src/pixi/Polygon.js",
+            "modules": {},
+            "classes": {
+                "Polygon": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "src/pixi/Rectangle.js": {
             "name": "src/pixi/Rectangle.js",
             "modules": {},
@@ -285,10 +319,12 @@
             "submodules": {},
             "classes": {
                 "CustomRenderable": 1,
+                "Spine": 1,
                 "TilingSprite": 1,
                 "AssetLoader": 1,
                 "BitmapFontLoader": 1,
                 "ImageLoader": 1,
+                "JsonLoader": 1,
                 "SpriteSheetLoader": 1,
                 "CanvasRenderer": 1,
                 "WebGLBatch": 1,
@@ -304,6 +340,7 @@
                 "InteractionData": 1,
                 "MovieClip": 1,
                 "Point": 1,
+                "Polygon": 1,
                 "Rectangle": 1,
                 "Sprite": 1,
                 "Stage": 1
@@ -330,6 +367,28 @@
             "description": "Need to finalize this a bit more but works! Its in but will be working on this feature properly next..:)",
             "extends": "DisplayObject",
             "is_constructor": 1
+        },
+        "Spine": {
+            "name": "Spine",
+            "shortname": "Spine",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "PIXI",
+            "file": "src/pixi/loaders/SpineLoader.js",
+            "line": 10,
+            "description": "The Spine loader is used to load in JSON spine data\nTo generate the data you need to use http://esotericsoftware.com/ and export the \"JSON\" format\nDue to a clash of names  You will need to change the extension of the spine file from *.json to *.anim for it to load\nSee example 12 (http://www.goodboydigital.com/pixijs/examples/12/) to see a working example and check out the source\nYou will need to generate a sprite sheet to accompany the spine data \nWhen loaded this class will dispatch a \"loaded\" event",
+            "is_constructor": 1,
+            "extends": "DisplayObjectContainer",
+            "params": [
+                {
+                    "name": "url",
+                    "description": "the url of the spine anim file to be used",
+                    "type": "String"
+                }
+            ]
         },
         "TilingSprite": {
             "name": "TilingSprite",
@@ -430,6 +489,33 @@
                 {
                     "name": "url",
                     "description": "The url of the image",
+                    "type": "String"
+                },
+                {
+                    "name": "crossorigin",
+                    "description": "",
+                    "type": "Boolean"
+                }
+            ]
+        },
+        "JsonLoader": {
+            "name": "JsonLoader",
+            "shortname": "JsonLoader",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "PIXI",
+            "file": "src/pixi/loaders/JsonLoader.js",
+            "line": 5,
+            "description": "The json file loader is used to load in JSON data and parsing it\nWhen loaded this class will dispatch a \"loaded\" event\nIf load failed this class will dispatch a \"error\" event",
+            "extends": "EventTarget",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "url",
+                    "description": "the url of the JSON file",
                     "type": "String"
                 },
                 {
@@ -662,6 +748,20 @@
                             "type": "Number",
                             "optional": true,
                             "optdefault": "0"
+                        },
+                        {
+                            "name": "wordWrap",
+                            "description": "Indicates if word wrap should be used",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
+                        },
+                        {
+                            "name": "wordWrapWidth",
+                            "description": "The width at which text will wrap",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "100"
                         }
                     ]
                 }
@@ -804,7 +904,7 @@
             "extension_for": [],
             "module": "PIXI",
             "file": "src/pixi/InteractionManager.js",
-            "line": 506,
+            "line": 513,
             "is_constructor": 1
         },
         "MovieClip": {
@@ -853,6 +953,27 @@
                     "name": "y",
                     "description": "position of the point",
                     "type": "Number"
+                }
+            ]
+        },
+        "Polygon": {
+            "name": "Polygon",
+            "shortname": "Polygon",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "PIXI",
+            "namespace": "",
+            "file": "src/pixi/Polygon.js",
+            "line": 5,
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "points",
+                    "description": "",
+                    "type": "Array"
                 }
             ]
         },
@@ -956,7 +1077,135 @@
             "file": "src/pixi/extras/Rope.js",
             "line": 1,
             "author": "Mat Groves http://matgroves.com/",
-            "class": "TilingSprite"
+            "class": "Spine"
+        },
+        {
+            "file": "src/pixi/extras/Spine.js",
+            "line": 1,
+            "author": "Mat Groves http://matgroves.com/ @Doormat23\nbased on pixi impact spine implementation made by Eemeli Kelokorpi (@ekelokorpi) https://github.com/ekelokorpi\n\nAwesome JS run time provided by EsotericSoftware\nhttps://github.com/EsotericSoftware/spine-runtimes",
+            "class": "Spine"
+        },
+        {
+            "file": "src/pixi/extras/Spine.js",
+            "line": 308,
+            "description": "cx1 and cx2 are from 0 to 1, representing the percent of time between the two keyframes. cy1 and cy2 are the percent of",
+            "class": "Spine"
+        },
+        {
+            "file": "src/pixi/extras/Spine.js",
+            "line": 604,
+            "class": "Spine"
+        },
+        {
+            "file": "src/pixi/extras/Spine.js",
+            "line": 611,
+            "class": "Spine"
+        },
+        {
+            "file": "src/pixi/extras/Spine.js",
+            "line": 618,
+            "class": "Spine"
+        },
+        {
+            "file": "src/pixi/extras/Spine.js",
+            "line": 626,
+            "class": "Spine"
+        },
+        {
+            "file": "src/pixi/extras/Spine.js",
+            "line": 633,
+            "class": "Spine"
+        },
+        {
+            "file": "src/pixi/extras/Spine.js",
+            "line": 640,
+            "class": "Spine"
+        },
+        {
+            "file": "src/pixi/extras/Spine.js",
+            "line": 675,
+            "class": "Spine"
+        },
+        {
+            "file": "src/pixi/extras/Spine.js",
+            "line": 683,
+            "class": "Spine"
+        },
+        {
+            "file": "src/pixi/extras/Spine.js",
+            "line": 698,
+            "class": "Spine"
+        },
+        {
+            "file": "src/pixi/extras/Spine.js",
+            "line": 702,
+            "class": "Spine"
+        },
+        {
+            "file": "src/pixi/extras/Spine.js",
+            "line": 709,
+            "class": "Spine"
+        },
+        {
+            "file": "src/pixi/extras/Spine.js",
+            "line": 716,
+            "class": "Spine"
+        },
+        {
+            "file": "src/pixi/extras/Spine.js",
+            "line": 723,
+            "class": "Spine"
+        },
+        {
+            "file": "src/pixi/extras/Spine.js",
+            "line": 735,
+            "description": "from the new skin are attached if the corresponding attachment from the old skin was attached.",
+            "class": "Spine"
+        },
+        {
+            "file": "src/pixi/extras/Spine.js",
+            "line": 742,
+            "class": "Spine"
+        },
+        {
+            "file": "src/pixi/extras/Spine.js",
+            "line": 746,
+            "class": "Spine"
+        },
+        {
+            "file": "src/pixi/extras/Spine.js",
+            "line": 755,
+            "class": "Spine"
+        },
+        {
+            "file": "src/pixi/extras/Spine.js",
+            "line": 948,
+            "class": "Spine"
+        },
+        {
+            "file": "src/pixi/extras/Spine.js",
+            "line": 954,
+            "class": "Spine"
+        },
+        {
+            "file": "src/pixi/extras/Spine.js",
+            "line": 960,
+            "class": "Spine"
+        },
+        {
+            "file": "src/pixi/extras/Spine.js",
+            "line": 966,
+            "class": "Spine"
+        },
+        {
+            "file": "src/pixi/extras/Spine.js",
+            "line": 984,
+            "class": "Spine"
+        },
+        {
+            "file": "src/pixi/extras/Spine.js",
+            "line": 1401,
+            "class": "Spine"
         },
         {
             "file": "src/pixi/extras/Strip.js",
@@ -1005,7 +1254,7 @@
         },
         {
             "file": "src/pixi/loaders/AssetLoader.js",
-            "line": 38,
+            "line": 41,
             "description": "Fired when an item has loaded",
             "itemtype": "event",
             "name": "onProgress",
@@ -1013,7 +1262,7 @@
         },
         {
             "file": "src/pixi/loaders/AssetLoader.js",
-            "line": 43,
+            "line": 46,
             "description": "Fired when all the assets have loaded",
             "itemtype": "event",
             "name": "onComplete",
@@ -1021,13 +1270,13 @@
         },
         {
             "file": "src/pixi/loaders/AssetLoader.js",
-            "line": 51,
+            "line": 54,
             "description": "This will begin loading the assets sequentially",
             "class": "AssetLoader"
         },
         {
             "file": "src/pixi/loaders/AssetLoader.js",
-            "line": 79,
+            "line": 82,
             "description": "Invoked after each file is loaded",
             "access": "private",
             "tagname": "",
@@ -1055,7 +1304,7 @@
         },
         {
             "file": "src/pixi/loaders/BitmapFontLoader.js",
-            "line": 118,
+            "line": 121,
             "description": "Invoked when all files are loaded (xml/fnt and texture)",
             "access": "private",
             "tagname": "",
@@ -1082,6 +1331,56 @@
             "class": "ImageLoader"
         },
         {
+            "file": "src/pixi/loaders/JsonLoader.js",
+            "line": 1,
+            "author": "Mat Groves http://matgroves.com/ @Doormat23",
+            "class": "JsonLoader"
+        },
+        {
+            "file": "src/pixi/loaders/JsonLoader.js",
+            "line": 28,
+            "description": "This will begin loading the JSON file",
+            "class": "JsonLoader"
+        },
+        {
+            "file": "src/pixi/loaders/JsonLoader.js",
+            "line": 43,
+            "description": "Invoke when JSON file is loaded",
+            "access": "private",
+            "tagname": "",
+            "class": "JsonLoader"
+        },
+        {
+            "file": "src/pixi/loaders/JsonLoader.js",
+            "line": 108,
+            "description": "Invoke when json file loaded",
+            "access": "private",
+            "tagname": "",
+            "class": "JsonLoader"
+        },
+        {
+            "file": "src/pixi/loaders/JsonLoader.js",
+            "line": 120,
+            "description": "Invoke when error occured",
+            "access": "private",
+            "tagname": "",
+            "class": "JsonLoader"
+        },
+        {
+            "file": "src/pixi/loaders/SpineLoader.js",
+            "line": 1,
+            "author": "Mat Groves http://matgroves.com/ @Doormat23\nbased on pixi impact spine implementation made by Eemeli Kelokorpi (@ekelokorpi) https://github.com/ekelokorpi\n\nAwesome JS run time provided by EsotericSoftware\nhttps://github.com/EsotericSoftware/spine-runtimes",
+            "class": "Spine"
+        },
+        {
+            "file": "src/pixi/loaders/SpineLoader.js",
+            "line": 54,
+            "description": "Invoke when JSON file is loaded",
+            "access": "private",
+            "tagname": "",
+            "class": "Spine"
+        },
+        {
             "file": "src/pixi/loaders/SpriteSheetLoader.js",
             "line": 1,
             "author": "Mat Groves http://matgroves.com/ @Doormat23",
@@ -1089,13 +1388,13 @@
         },
         {
             "file": "src/pixi/loaders/SpriteSheetLoader.js",
-            "line": 38,
+            "line": 37,
             "description": "This will begin loading the JSON file",
             "class": "SpriteSheetLoader"
         },
         {
             "file": "src/pixi/loaders/SpriteSheetLoader.js",
-            "line": 55,
+            "line": 50,
             "description": "Invoke when JSON file is loaded",
             "access": "private",
             "tagname": "",
@@ -1103,7 +1402,7 @@
         },
         {
             "file": "src/pixi/loaders/SpriteSheetLoader.js",
-            "line": 97,
+            "line": 85,
             "description": "Invoke when all files are loaded (json and texture)",
             "access": "private",
             "tagname": "",
@@ -1193,21 +1492,21 @@
         },
         {
             "file": "src/pixi/renderers/CanvasRenderer.js",
-            "line": 210,
+            "line": 213,
             "access": "private",
             "tagname": "",
             "class": "CanvasRenderer"
         },
         {
             "file": "src/pixi/renderers/CanvasRenderer.js",
-            "line": 245,
+            "line": 248,
             "access": "private",
             "tagname": "",
             "class": "CanvasRenderer"
         },
         {
             "file": "src/pixi/renderers/CanvasRenderer.js",
-            "line": 274,
+            "line": 277,
             "access": "private",
             "tagname": "",
             "class": "CanvasRenderer"
@@ -1336,7 +1635,7 @@
         },
         {
             "file": "src/pixi/renderers/WebGLBatch.js",
-            "line": 267,
+            "line": 268,
             "description": "Merges two batchs together",
             "itemtype": "method",
             "name": "merge",
@@ -1351,14 +1650,14 @@
         },
         {
             "file": "src/pixi/renderers/WebGLBatch.js",
-            "line": 292,
+            "line": 293,
             "description": "Grows the size of the batch. As the elements in the batch cannot have a dynamic size this function is used to increase the size of the batch. It also creates a little extra room so that the batch does not need to be resized every time a sprite is added",
             "methos": "growBatch",
             "class": "WebGLBatch"
         },
         {
             "file": "src/pixi/renderers/WebGLBatch.js",
-            "line": 345,
+            "line": 346,
             "description": "Refresh's all the data in the batch and sync's it with the webGL buffers",
             "itemtype": "method",
             "name": "refresh",
@@ -1366,7 +1665,7 @@
         },
         {
             "file": "src/pixi/renderers/WebGLBatch.js",
-            "line": 400,
+            "line": 401,
             "description": "Updates all the relevant geometry and uploads the data to the GPU",
             "itemtype": "method",
             "name": "update",
@@ -1388,35 +1687,35 @@
         },
         {
             "file": "src/pixi/renderers/WebGLRenderGroup.js",
-            "line": 527,
+            "line": 626,
             "access": "private",
             "tagname": "",
             "class": "WebGLBatch"
         },
         {
             "file": "src/pixi/renderers/WebGLRenderGroup.js",
-            "line": 613,
+            "line": 712,
             "access": "private",
             "tagname": "",
             "class": "WebGLBatch"
         },
         {
             "file": "src/pixi/renderers/WebGLRenderGroup.js",
-            "line": 669,
+            "line": 768,
             "access": "private",
             "tagname": "",
             "class": "WebGLBatch"
         },
         {
             "file": "src/pixi/renderers/WebGLRenderGroup.js",
-            "line": 746,
+            "line": 845,
             "access": "private",
             "tagname": "",
             "class": "WebGLBatch"
         },
         {
             "file": "src/pixi/renderers/WebGLRenderGroup.js",
-            "line": 783,
+            "line": 882,
             "access": "private",
             "tagname": "",
             "class": "WebGLBatch"
@@ -1583,7 +1882,7 @@
         },
         {
             "file": "src/pixi/text/Text.js",
-            "line": 35,
+            "line": 37,
             "description": "Set the style of the text",
             "itemtype": "method",
             "name": "setStyle",
@@ -1612,7 +1911,8 @@
                             "name": "stroke",
                             "description": "A canvas fillstyle that will be used on the text stroke eg \"blue\", \"#FCFF00\"",
                             "type": "String",
-                            "optional": true
+                            "optional": true,
+                            "optdefault": "\"black\""
                         },
                         {
                             "name": "strokeThickness",
@@ -1620,6 +1920,20 @@
                             "type": "Number",
                             "optional": true,
                             "optdefault": "0"
+                        },
+                        {
+                            "name": "wordWrap",
+                            "description": "Indicates if word wrap should be used",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
+                        },
+                        {
+                            "name": "wordWrapWidth",
+                            "description": "The width at which text will wrap",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "100"
                         }
                     ]
                 },
@@ -1633,7 +1947,7 @@
         },
         {
             "file": "src/pixi/text/Text.js",
-            "line": 56,
+            "line": 63,
             "description": "Set the copy for the text object. To split a line you can use \"\\n\"",
             "methos": "setText",
             "params": [
@@ -1647,7 +1961,7 @@
         },
         {
             "file": "src/pixi/text/Text.js",
-            "line": 67,
+            "line": 74,
             "description": "Renders text",
             "access": "private",
             "tagname": "",
@@ -1655,7 +1969,7 @@
         },
         {
             "file": "src/pixi/text/Text.js",
-            "line": 130,
+            "line": 143,
             "description": "Updates texture size based on canvas size",
             "access": "private",
             "tagname": "",
@@ -1663,7 +1977,15 @@
         },
         {
             "file": "src/pixi/text/Text.js",
-            "line": 148,
+            "line": 161,
+            "access": "private",
+            "tagname": "",
+            "class": "Text"
+        },
+        {
+            "file": "src/pixi/text/Text.js",
+            "line": 203,
+            "description": "A Text Object will apply wordwrap",
             "access": "private",
             "tagname": "",
             "class": "Text"
@@ -1703,7 +2025,7 @@
         },
         {
             "file": "src/pixi/textures/BaseTexture.js",
-            "line": 103,
+            "line": 101,
             "description": "Helper function that returns a base texture based on an image url\n If the image is not in the base texture cache it will be  created and loaded",
             "static": 1,
             "itemtype": "method",
@@ -1740,7 +2062,7 @@
                 },
                 {
                     "name": "clear",
-                    "description": "If true the texture will not be cleared before the displayObject is drawn",
+                    "description": "If true the texture will be cleared before the displayObject is drawn",
                     "type": "Boolean"
                 }
             ],
@@ -1928,13 +2250,7 @@
         },
         {
             "file": "src/pixi/utils/Utils.js",
-            "line": 1,
-            "description": "Provides requestAnimationFrame in a cross browser way.",
-            "class": "DisplayObject"
-        },
-        {
-            "file": "src/pixi/utils/Utils.js",
-            "line": 19,
+            "line": 38,
             "description": "Provides bind in a cross browser way.",
             "class": "DisplayObject"
         },
@@ -2348,7 +2664,7 @@
         },
         {
             "file": "src/pixi/InteractionManager.js",
-            "line": 512,
+            "line": 519,
             "description": "This point stores the global coords of where the touch/mouse event happened",
             "itemtype": "property",
             "name": "global",
@@ -2357,7 +2673,7 @@
         },
         {
             "file": "src/pixi/InteractionManager.js",
-            "line": 522,
+            "line": 529,
             "description": "The target Sprite that was interacted with",
             "itemtype": "property",
             "name": "target",
@@ -2366,7 +2682,7 @@
         },
         {
             "file": "src/pixi/InteractionManager.js",
-            "line": 530,
+            "line": 537,
             "description": "This will return the local coords of the specified displayObject for this InteractionData",
             "itemtype": "method",
             "name": "getLocalPosition",
@@ -2543,6 +2859,24 @@
                 "description": "a copy of the point"
             },
             "class": "Point",
+            "module": "PIXI"
+        },
+        {
+            "file": "src/pixi/Polygon.js",
+            "line": 1,
+            "author": "Adrien Brault <adrien.brault@gmail.com>",
+            "class": "Polygon",
+            "module": "PIXI"
+        },
+        {
+            "file": "src/pixi/Polygon.js",
+            "line": 15,
+            "itemtype": "method",
+            "name": "clone",
+            "return": {
+                "description": "a copy of the polygon"
+            },
+            "class": "Polygon",
             "module": "PIXI"
         },
         {
@@ -2733,7 +3067,7 @@
         },
         {
             "file": "src/pixi/Stage.js",
-            "line": 38,
+            "line": 40,
             "itemtype": "method",
             "name": "updateTransform",
             "internal": "",
@@ -2742,7 +3076,7 @@
         },
         {
             "file": "src/pixi/Stage.js",
-            "line": 61,
+            "line": 63,
             "itemtype": "method",
             "name": "setBackgroundColor",
             "params": [
@@ -2757,7 +3091,7 @@
         },
         {
             "file": "src/pixi/Stage.js",
-            "line": 72,
+            "line": 76,
             "description": "This will return the point containing global coords of the mouse.",
             "itemtype": "method",
             "name": "getMousePosition",
@@ -2772,15 +3106,15 @@
     "warnings": [
         {
             "message": "unknown tag: methos",
-            "line": " src/pixi/renderers/WebGLBatch.js:292"
+            "line": " src/pixi/renderers/WebGLBatch.js:293"
         },
         {
             "message": "unknown tag: methos",
-            "line": " src/pixi/text/Text.js:56"
+            "line": " src/pixi/text/Text.js:63"
         },
         {
             "message": "unknown tag: internal",
-            "line": " src/pixi/Stage.js:38"
+            "line": " src/pixi/Stage.js:40"
         },
         {
             "message": "Missing item type",
@@ -2789,6 +3123,106 @@
         {
             "message": "Missing item type",
             "line": " src/pixi/extras/Rope.js:1"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/pixi/extras/Spine.js:1"
+        },
+        {
+            "message": "Missing item type\ncx1 and cx2 are from 0 to 1, representing the percent of time between the two keyframes. cy1 and cy2 are the percent of",
+            "line": " src/pixi/extras/Spine.js:308"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/pixi/extras/Spine.js:604"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/pixi/extras/Spine.js:611"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/pixi/extras/Spine.js:618"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/pixi/extras/Spine.js:626"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/pixi/extras/Spine.js:633"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/pixi/extras/Spine.js:640"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/pixi/extras/Spine.js:675"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/pixi/extras/Spine.js:683"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/pixi/extras/Spine.js:698"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/pixi/extras/Spine.js:702"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/pixi/extras/Spine.js:709"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/pixi/extras/Spine.js:716"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/pixi/extras/Spine.js:723"
+        },
+        {
+            "message": "Missing item type\nfrom the new skin are attached if the corresponding attachment from the old skin was attached.",
+            "line": " src/pixi/extras/Spine.js:735"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/pixi/extras/Spine.js:742"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/pixi/extras/Spine.js:746"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/pixi/extras/Spine.js:755"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/pixi/extras/Spine.js:948"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/pixi/extras/Spine.js:954"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/pixi/extras/Spine.js:960"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/pixi/extras/Spine.js:966"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/pixi/extras/Spine.js:984"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/pixi/extras/Spine.js:1401"
         },
         {
             "message": "Missing item type",
@@ -2804,11 +3238,11 @@
         },
         {
             "message": "Missing item type\nThis will begin loading the assets sequentially",
-            "line": " src/pixi/loaders/AssetLoader.js:51"
+            "line": " src/pixi/loaders/AssetLoader.js:54"
         },
         {
             "message": "Missing item type\nInvoked after each file is loaded",
-            "line": " src/pixi/loaders/AssetLoader.js:79"
+            "line": " src/pixi/loaders/AssetLoader.js:82"
         },
         {
             "message": "Missing item type",
@@ -2824,7 +3258,7 @@
         },
         {
             "message": "Missing item type\nInvoked when all files are loaded (xml/fnt and texture)",
-            "line": " src/pixi/loaders/BitmapFontLoader.js:118"
+            "line": " src/pixi/loaders/BitmapFontLoader.js:121"
         },
         {
             "message": "Missing item type",
@@ -2840,19 +3274,47 @@
         },
         {
             "message": "Missing item type",
+            "line": " src/pixi/loaders/JsonLoader.js:1"
+        },
+        {
+            "message": "Missing item type\nThis will begin loading the JSON file",
+            "line": " src/pixi/loaders/JsonLoader.js:28"
+        },
+        {
+            "message": "Missing item type\nInvoke when JSON file is loaded",
+            "line": " src/pixi/loaders/JsonLoader.js:43"
+        },
+        {
+            "message": "Missing item type\nInvoke when json file loaded",
+            "line": " src/pixi/loaders/JsonLoader.js:108"
+        },
+        {
+            "message": "Missing item type\nInvoke when error occured",
+            "line": " src/pixi/loaders/JsonLoader.js:120"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/pixi/loaders/SpineLoader.js:1"
+        },
+        {
+            "message": "Missing item type\nInvoke when JSON file is loaded",
+            "line": " src/pixi/loaders/SpineLoader.js:54"
+        },
+        {
+            "message": "Missing item type",
             "line": " src/pixi/loaders/SpriteSheetLoader.js:1"
         },
         {
             "message": "Missing item type\nThis will begin loading the JSON file",
-            "line": " src/pixi/loaders/SpriteSheetLoader.js:38"
+            "line": " src/pixi/loaders/SpriteSheetLoader.js:37"
         },
         {
             "message": "Missing item type\nInvoke when JSON file is loaded",
-            "line": " src/pixi/loaders/SpriteSheetLoader.js:55"
+            "line": " src/pixi/loaders/SpriteSheetLoader.js:50"
         },
         {
             "message": "Missing item type\nInvoke when all files are loaded (json and texture)",
-            "line": " src/pixi/loaders/SpriteSheetLoader.js:97"
+            "line": " src/pixi/loaders/SpriteSheetLoader.js:85"
         },
         {
             "message": "Missing item type",
@@ -2868,15 +3330,15 @@
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/CanvasRenderer.js:210"
+            "line": " src/pixi/renderers/CanvasRenderer.js:213"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/CanvasRenderer.js:245"
+            "line": " src/pixi/renderers/CanvasRenderer.js:248"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/CanvasRenderer.js:274"
+            "line": " src/pixi/renderers/CanvasRenderer.js:277"
         },
         {
             "message": "Missing item type",
@@ -2900,7 +3362,7 @@
         },
         {
             "message": "Missing item type\nGrows the size of the batch. As the elements in the batch cannot have a dynamic size this function is used to increase the size of the batch. It also creates a little extra room so that the batch does not need to be resized every time a sprite is added",
-            "line": " src/pixi/renderers/WebGLBatch.js:292"
+            "line": " src/pixi/renderers/WebGLBatch.js:293"
         },
         {
             "message": "Missing item type",
@@ -2908,23 +3370,23 @@
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/WebGLRenderGroup.js:527"
+            "line": " src/pixi/renderers/WebGLRenderGroup.js:626"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/WebGLRenderGroup.js:613"
+            "line": " src/pixi/renderers/WebGLRenderGroup.js:712"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/WebGLRenderGroup.js:669"
+            "line": " src/pixi/renderers/WebGLRenderGroup.js:768"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/WebGLRenderGroup.js:746"
+            "line": " src/pixi/renderers/WebGLRenderGroup.js:845"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/WebGLRenderGroup.js:783"
+            "line": " src/pixi/renderers/WebGLRenderGroup.js:882"
         },
         {
             "message": "Missing item type",
@@ -2976,19 +3438,23 @@
         },
         {
             "message": "Missing item type\nSet the copy for the text object. To split a line you can use \"\\n\"",
-            "line": " src/pixi/text/Text.js:56"
+            "line": " src/pixi/text/Text.js:63"
         },
         {
             "message": "Missing item type\nRenders text",
-            "line": " src/pixi/text/Text.js:67"
+            "line": " src/pixi/text/Text.js:74"
         },
         {
             "message": "Missing item type\nUpdates texture size based on canvas size",
-            "line": " src/pixi/text/Text.js:130"
+            "line": " src/pixi/text/Text.js:143"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/text/Text.js:148"
+            "line": " src/pixi/text/Text.js:161"
+        },
+        {
+            "message": "Missing item type\nA Text Object will apply wordwrap",
+            "line": " src/pixi/text/Text.js:203"
         },
         {
             "message": "Missing item type",
@@ -3011,12 +3477,8 @@
             "line": " src/pixi/utils/EventTarget.js:1"
         },
         {
-            "message": "Missing item type\nProvides requestAnimationFrame in a cross browser way.",
-            "line": " src/pixi/utils/Utils.js:1"
-        },
-        {
             "message": "Missing item type\nProvides bind in a cross browser way.",
-            "line": " src/pixi/utils/Utils.js:19"
+            "line": " src/pixi/utils/Utils.js:38"
         },
         {
             "message": "Missing item type",
@@ -3057,6 +3519,10 @@
         {
             "message": "Missing item type",
             "line": " src/pixi/Point.js:1"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/pixi/Polygon.js:1"
         },
         {
             "message": "Missing item type",

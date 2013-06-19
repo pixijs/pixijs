@@ -16,7 +16,7 @@
  * When loaded this class will dispatch a "loaded" event
  * @class Spine
  * @constructor
- * @extends 
+ * @extends EventTarget
  * @param {String} url the url of the sprite sheet JSON file
  * @param {Boolean} crossorigin
  */

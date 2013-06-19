@@ -63,13 +63,19 @@
             
                 <li><a href="..&#x2F;classes/InteractionManager.html">InteractionManager</a></li>
             
+                <li><a href="..&#x2F;classes/JsonLoader.html">JsonLoader</a></li>
+            
                 <li><a href="..&#x2F;classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="..&#x2F;classes/Point.html">Point</a></li>
             
+                <li><a href="..&#x2F;classes/Polygon.html">Polygon</a></li>
+            
                 <li><a href="..&#x2F;classes/Rectangle.html">Rectangle</a></li>
             
                 <li><a href="..&#x2F;classes/RenderTexture.html">RenderTexture</a></li>
+            
+                <li><a href="..&#x2F;classes/Spine.html">Spine</a></li>
             
                 <li><a href="..&#x2F;classes/Sprite.html">Sprite</a></li>
             
@@ -132,19 +138,38 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-&#x2F;**
- * Provides requestAnimationFrame in a cross browser way.
- *&#x2F;
-window.requestAnimFrame = (function() {
-  return window.requestAnimationFrame ||
-         window.webkitRequestAnimationFrame ||
-         window.mozRequestAnimationFrame ||
-         window.oRequestAnimationFrame ||
-         window.msRequestAnimationFrame ||
-         function(&#x2F;* function FrameRequestCallback *&#x2F; callback, &#x2F;* DOMElement Element *&#x2F; element) {
-           window.setTimeout(callback, 1000&#x2F;60);
-         };
-})();
+&#x2F;&#x2F; http:&#x2F;&#x2F;paulirish.com&#x2F;2011&#x2F;requestanimationframe-for-smart-animating&#x2F;
+&#x2F;&#x2F; http:&#x2F;&#x2F;my.opera.com&#x2F;emoller&#x2F;blog&#x2F;2011&#x2F;12&#x2F;20&#x2F;requestanimationframe-for-smart-er-animating
+
+&#x2F;&#x2F; requestAnimationFrame polyfill by Erik Möller. fixes from Paul Irish and Tino Zijdel
+
+&#x2F;&#x2F; MIT license
+
+
+    var lastTime = 0;
+    var vendors = [&#x27;ms&#x27;, &#x27;moz&#x27;, &#x27;webkit&#x27;, &#x27;o&#x27;];
+    for(var x = 0; x &lt; vendors.length &amp;&amp; !window.requestAnimationFrame; ++x) {
+        window.requestAnimationFrame = window[vendors[x]+&#x27;RequestAnimationFrame&#x27;];
+        window.cancelAnimationFrame = window[vendors[x]+&#x27;CancelAnimationFrame&#x27;] 
+                                   || window[vendors[x]+&#x27;CancelRequestAnimationFrame&#x27;];
+    }
+
+    if (!window.requestAnimationFrame)
+        window.requestAnimationFrame = function(callback, element) {
+            var currTime = new Date().getTime();
+            var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+            var id = window.setTimeout(function() { callback(currTime + timeToCall); }, 
+              timeToCall);
+            lastTime = currTime + timeToCall;
+            return id;
+        };
+
+    if (!window.cancelAnimationFrame)
+        window.cancelAnimationFrame = function(id) {
+            clearTimeout(id);
+        };
+
+window.requestAnimFrame = window.requestAnimationFrame;
 
 function HEXtoRGB(hex) {
 	return [(hex &gt;&gt; 16 &amp; 0xFF) &#x2F; 255, ( hex &gt;&gt; 8 &amp; 0xFF) &#x2F; 255, (hex &amp; 0xFF)&#x2F; 255];
@@ -176,7 +201,7 @@ if (typeof Function.prototype.bind != &#x27;function&#x27;) {
   })();
 }
 
-var AjaxRequest = function()
+var AjaxRequest = PIXI.AjaxRequest = function()
 {
 	var activexmodes = [&quot;Msxml2.XMLHTTP&quot;, &quot;Microsoft.XMLHTTP&quot;] &#x2F;&#x2F;activeX versions to check for in IE
 	

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>DisplayObjectContainer - Pixi.JS</title>
+    <title>Spine - Pixi.JS</title>
     <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
@@ -134,19 +134,19 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>DisplayObjectContainer Class</h1>
+                        <h1>Spine Class</h1>
 <div class="box meta">
     
 
     
         <div class="extends">
-            Extends <a href="../classes/DisplayObject.html" class="crosslink">DisplayObject</a>
+            Extends <a href="../classes/DisplayObjectContainer.html" class="crosslink">DisplayObjectContainer</a>
         </div>
     
 
     
         <div class="foundat">
-            Defined in: <a href="..&#x2F;files&#x2F;src_pixi_DisplayObjectContainer.js.html#l6"><code>src&#x2F;pixi&#x2F;DisplayObjectContainer.js:6</code></a>
+            Defined in: <a href="..&#x2F;files&#x2F;src_pixi_loaders_SpineLoader.js.html#l10"><code>src&#x2F;pixi&#x2F;loaders&#x2F;SpineLoader.js:10</code></a>
         </div>
     
 
@@ -162,17 +162,32 @@
 
 
 <div class="box intro">
-    <p>A DisplayObjectContainer represents a collection of display objects. It is the base class of all display objects that act as a container for other objects.</p>
+    <p>The Spine loader is used to load in JSON spine data
+To generate the data you need to use http://esotericsoftware.com/ and export the "JSON" format
+Due to a clash of names  You will need to change the extension of the spine file from *.json to *.anim for it to load
+See example 12 (http://www.goodboydigital.com/pixijs/examples/12/) to see a working example and check out the source
+You will need to generate a sprite sheet to accompany the spine data 
+When loaded this class will dispatch a "loaded" event</p>
 </div>
 
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_DisplayObjectContainer" class="method item">
-    <h3 class="name"><code>DisplayObjectContainer</code></h3>
+        <div id="method_Spine" class="method item">
+    <h3 class="name"><code>Spine</code></h3>
 
     
-        <span class="paren">()</span>
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>url</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
     
 
     
@@ -200,7 +215,7 @@
             
         
         
-        <a href="..&#x2F;files&#x2F;src_pixi_DisplayObjectContainer.js.html#l6"><code>src&#x2F;pixi&#x2F;DisplayObjectContainer.js:6</code></a>
+        <a href="..&#x2F;files&#x2F;src_pixi_loaders_SpineLoader.js.html#l10"><code>src&#x2F;pixi&#x2F;loaders&#x2F;SpineLoader.js:10</code></a>
         
         </p>
 
@@ -214,6 +229,29 @@
         
     </div>
 
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">url</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the url of the spine anim file to be used</p>
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
     
 
     
@@ -248,14 +286,14 @@
 
                     <ul class="index-list methods extends">
                         
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#method_addChild">addChild</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#method_addChildAt">addChildAt</a>
 
                                 
@@ -269,7 +307,7 @@
                                 
                             </li>
                         
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#method_getChildAt">getChildAt</a>
 
                                 
@@ -311,7 +349,7 @@
                                 
                             </li>
                         
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#method_removeChild">removeChild</a>
 
                                 
@@ -325,7 +363,7 @@
                                 
                             </li>
                         
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#method_swapChildren">swapChildren</a>
 
                                 
@@ -384,7 +422,7 @@
                                 
                             </li>
                         
-                            <li class="index-item property">
+                            <li class="index-item property inherited">
                                 <a href="#property_children">children</a>
 
                                 
@@ -461,7 +499,7 @@
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_addChild" class="method item">
+                    <div id="method_addChild" class="method item inherited">
     <h3 class="name"><code>addChild</code></h3>
 
     
@@ -495,11 +533,8 @@
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObjectContainer.html#method_addChild">DisplayObjectContainer</a>:
             
         
         
@@ -548,7 +583,7 @@
 </div>
 
                 
-                    <div id="method_addChildAt" class="method item">
+                    <div id="method_addChildAt" class="method item inherited">
     <h3 class="name"><code>addChildAt</code></h3>
 
     
@@ -588,11 +623,8 @@
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObjectContainer.html#method_addChildAt">DisplayObjectContainer</a>:
             
         
         
@@ -724,7 +756,7 @@
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -740,7 +772,7 @@
 </div>
 
                 
-                    <div id="method_getChildAt" class="method item">
+                    <div id="method_getChildAt" class="method item inherited">
     <h3 class="name"><code>getChildAt</code></h3>
 
     
@@ -774,11 +806,8 @@
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObjectContainer.html#method_getChildAt">DisplayObjectContainer</a>:
             
         
         
@@ -895,7 +924,7 @@
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -979,7 +1008,7 @@
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -1063,7 +1092,7 @@
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -1148,7 +1177,7 @@ for this callback to be fired the mouse must have been pressed down over the dis
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -1233,7 +1262,7 @@ for this callback to be fired, The touch must have started over the displayObjec
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -1249,7 +1278,7 @@ for this callback to be fired, The touch must have started over the displayObjec
 </div>
 
                 
-                    <div id="method_removeChild" class="method item">
+                    <div id="method_removeChild" class="method item inherited">
     <h3 class="name"><code>removeChild</code></h3>
 
     
@@ -1283,11 +1312,8 @@ for this callback to be fired, The touch must have started over the displayObjec
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObjectContainer.html#method_removeChild">DisplayObjectContainer</a>:
             
         
         
@@ -1404,7 +1430,7 @@ for this callback to be fired, The touch must have started over the displayObjec
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -1420,7 +1446,7 @@ for this callback to be fired, The touch must have started over the displayObjec
 </div>
 
                 
-                    <div id="method_swapChildren" class="method item">
+                    <div id="method_swapChildren" class="method item inherited">
     <h3 class="name"><code>swapChildren</code></h3>
 
     
@@ -1460,11 +1486,8 @@ for this callback to be fired, The touch must have started over the displayObjec
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObjectContainer.html#method_swapChildren">DisplayObjectContainer</a>:
             
         
         
@@ -1597,7 +1620,7 @@ basically a touch version of click</p>
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -1681,7 +1704,7 @@ basically a touch version of click</p>
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -1766,7 +1789,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -1850,7 +1873,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -1956,7 +1979,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
 </div>
 
                 
-                    <div id="property_children" class="property item">
+                    <div id="property_children" class="property item inherited">
     <h3 class="name"><code>children</code></h3>
     <span class="type">Array</span>
 
@@ -1971,11 +1994,8 @@ for this callback to be fired, The touch must have started over the sprite</p>
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="..&#x2F;classes&#x2F;DisplayObjectContainer.html#property_children">DisplayObjectContainer</a>:
             
         
         
