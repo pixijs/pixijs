@@ -48,7 +48,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
         PIXI.gl = this.gl = this.view.getContext("experimental-webgl",  {  	
     		 alpha: this.transparent,
     		 antialias:false, // SPEED UP??
-    		 premultipliedAlpha:true
+    		 premultipliedAlpha:false
         });
     } 
     catch (e) 
@@ -191,7 +191,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
    
    	gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 		
-	gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], this.transparent);     
+	gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], !this.transparent);     
 	gl.clear(gl.COLOR_BUFFER_BIT);
 
 

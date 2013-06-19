@@ -89,7 +89,9 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
                     xOffset: parseInt(letters[i].attributes.getNamedItem("xoffset").nodeValue, 10),
                     yOffset: parseInt(letters[i].attributes.getNamedItem("yoffset").nodeValue, 10),
                     xAdvance: parseInt(letters[i].attributes.getNamedItem("xadvance").nodeValue, 10),
-                    kerning: {}
+                    kerning: {},
+                    texture:new PIXI.Texture(this.texture, textureRect)
+
                 };
             }
 
@@ -104,6 +106,7 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
                 data.chars[second].kerning[first] = amount;
 
             }
+
             PIXI.BitmapText.fonts[data.font] = data;
 
             var scope = this;

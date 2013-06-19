@@ -13,6 +13,7 @@ module.exports = function(grunt) {
             '<%= dirs.src %>/Pixi.js',
             '<%= dirs.src %>/Point.js',
             '<%= dirs.src %>/Rectangle.js',
+            '<%= dirs.src %>/Polygon.js',
             '<%= dirs.src %>/DisplayObject.js',
             '<%= dirs.src %>/DisplayObjectContainer.js',
             '<%= dirs.src %>/Sprite.js',
@@ -34,14 +35,17 @@ module.exports = function(grunt) {
             '<%= dirs.src %>/extras/Strip.js',
             '<%= dirs.src %>/extras/Rope.js',
             '<%= dirs.src %>/extras/TilingSprite.js',
+            '<%= dirs.src %>/extras/Spine.js',
             '<%= dirs.src %>/extras/CustomRenderable.js',
             '<%= dirs.src %>/textures/BaseTexture.js',
             '<%= dirs.src %>/textures/Texture.js',
             '<%= dirs.src %>/textures/RenderTexture.js',
             '<%= dirs.src %>/loaders/AssetLoader.js',
+            '<%= dirs.src %>/loaders/JsonLoader.js',
             '<%= dirs.src %>/loaders/SpriteSheetLoader.js',
             '<%= dirs.src %>/loaders/ImageLoader.js',
             '<%= dirs.src %>/loaders/BitmapFontLoader.js',
+            '<%= dirs.src %>/loaders/SpineLoader.js',
             '<%= dirs.src %>/Outro.js'
         ], banner = [
             '/**',
@@ -111,7 +115,8 @@ module.exports = function(grunt) {
                 'examples/example 8 - Dragging',
                 'examples/example 9 - Tiling Texture',
                 'examples/example 10 - Text',
-                'examples/example 11 - RenderTexture'
+                'examples/example 11 - RenderTexture',
+                'examples/example 12 - Spine'
             ]
         },
         connect: {

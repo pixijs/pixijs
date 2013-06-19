@@ -28,6 +28,8 @@ PIXI.Stage = function(backgroundColor, interactive)
 	
 	this.setBackgroundColor(backgroundColor);
 	this.worldVisible = true;
+	
+	this.stage.dirty = true;
 }
 
 // constructor
@@ -66,7 +68,9 @@ PIXI.Stage.prototype.setBackgroundColor = function(backgroundColor)
 {
 	this.backgroundColor = backgroundColor || 0x000000;
 	this.backgroundColorSplit = HEXtoRGB(this.backgroundColor);
-	this.backgroundColorString =  "#" + this.backgroundColor.toString(16);
+	var hex = this.backgroundColor.toString(16);
+	hex = "000000".substr(0, 6 - hex.length) + hex;
+	this.backgroundColorString = "#" + hex;
 }
 
 /**
