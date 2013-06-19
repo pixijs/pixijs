@@ -304,36 +304,41 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 	var global = interactionData.global;
 	
 	if(!item.visible)return false;
-	
+
+	var isSprite = (item instanceof PIXI.Sprite),
+		worldTransform = item.worldTransform,
+		a00 = worldTransform[0], a01 = worldTransform[1], a02 = worldTransform[2],
+		a10 = worldTransform[3], a11 = worldTransform[4], a12 = worldTransform[5],
+		id = 1 / (a00 * a11 + a01 * -a10),
+		x = a11 * id * global.x + -a01 * id * global.y + (a12 * a01 - a02 * a11) * id,
+		y = a00 * id * global.y + -a10 * id * global.x + (-a12 * a00 + a02 * a10) * id;
+
+	//a sprite or display object with a hit area defined
 	if(item.hitArea)
 	{
-		var worldTransform = item.worldTransform;
 		var hitArea = item.hitArea;
-		
-		var a00 = worldTransform[0], a01 = worldTransform[1], a02 = worldTransform[2],
-			a10 = worldTransform[3], a11 = worldTransform[4], a12 = worldTransform[5],
-			id = 1 / (a00 * a11 + a01 * -a10);
-		
-		var x = a11 * id * global.x + -a01 * id * global.y + (a12 * a01 - a02 * a11) * id; 
-		var y = a00 * id * global.y + -a10 * id * global.x + (-a12 * a00 + a02 * a10) * id;
-		
-		if (item.hitArea instanceof PIXI.Polygon) {
+
+		//Polygon hit area
+		if(item.hitArea instanceof PIXI.Polygon) {
 			var inside = false;
-			
+
+			// use some raycasting to test hits
 			// https://github.com/substack/point-in-polygon/blob/master/index.js
-			for (var i = 0, j = item.hitArea.points.length - 1; i < item.hitArea.points.length; j = i++) {
-				var xi = item.hitArea.points[i].x, yi = item.hitArea.points[i].y;
-				var xj = item.hitArea.points[j].x, yj = item.hitArea.points[j].y;
-				
-				var intersect = ((yi > y) != (yj > y))
-					&& (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-				if (intersect) inside = !inside;
+			for(var i = 0, j = item.hitArea.points.length - 1; i < item.hitArea.points.length; j = i++) {
+				var xi = item.hitArea.points[i].x, yi = item.hitArea.points[i].y,
+					xj = item.hitArea.points[j].x, yj = item.hitArea.points[j].y,
+					intersect = ((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+
+				if(intersect) inside = !inside;
 			}
 			
-			if (inside) {
+			if(inside) {
+				if(isSprite) interactionData.target = item;
 				return true;
 			}
-		} else {
+		}
+		//Rectangle hit area
+		else {
 			var x1 = hitArea.x;
 			if(x > x1 && x < x1 + hitArea.width)
 			{
@@ -341,30 +346,23 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 				
 				if(y > y1 && y < y1 + hitArea.height)
 				{
+					if(isSprite) interactionData.target = item;
 					return true;
 				}
 			}
 		}
 	}
-	else if(item instanceof PIXI.Sprite)
+	// a sprite with no hitarea defined
+	else if(isSprite)
 	{
-		var worldTransform = item.worldTransform;
-		
-		var a00 = worldTransform[0], a01 = worldTransform[1], a02 = worldTransform[2],
-			a10 = worldTransform[3], a11 = worldTransform[4], a12 = worldTransform[5],
-			id = 1 / (a00 * a11 + a01 * -a10);
-		
-		var x = a11 * id * global.x + -a01 * id * global.y + (a12 * a01 - a02 * a11) * id;
-		var y = a00 * id * global.y + -a10 * id * global.x + (-a12 * a00 + a02 * a10) * id;
-		
-		var width = item.texture.frame.width;
-		var height = item.texture.frame.height;
-		
-		var x1 = -width * item.anchor.x;
+		var width = item.texture.frame.width,
+			height = item.texture.frame.height,
+			x1 = -width * item.anchor.x,
+			y1;
 		
 		if(x > x1 && x < x1 + width)
 		{
-			var y1 = -height * item.anchor.y;
+			y1 = -height * item.anchor.y;
 		
 			if(y > y1 && y < y1 + height)
 			{
@@ -374,7 +372,7 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 			}
 		}
 	}
-	
+
 	var length = item.children.length;
 	
 	for (var i = 0; i < length; i++)
@@ -383,7 +381,7 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 		var hit = this.hitTest(tempItem, interactionData);
 		if(hit)return true;
 	}
-		
+
 	return false;	
 }
 
