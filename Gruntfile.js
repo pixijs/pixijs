@@ -13,6 +13,7 @@ module.exports = function(grunt) {
             '<%= dirs.src %>/Pixi.js',
             '<%= dirs.src %>/Point.js',
             '<%= dirs.src %>/Rectangle.js',
+            '<%= dirs.src %>/Polygon.js',
             '<%= dirs.src %>/DisplayObject.js',
             '<%= dirs.src %>/DisplayObjectContainer.js',
             '<%= dirs.src %>/Sprite.js',
