@@ -45,11 +45,10 @@ PIXI.WebGLRenderGroup.prototype.setRenderable = function(displayObject)
 
 PIXI.WebGLRenderGroup.prototype.render = function(projectionMatrix)
 {
-	
 	PIXI.WebGLRenderer.updateTextures();
 	
 	var gl = this.gl;
-	
+
 	// set the flipped matrix..
 	gl.uniformMatrix4fv(PIXI.shaderProgram.mvMatrixUniform, false, projectionMatrix);
 	
@@ -74,6 +73,10 @@ PIXI.WebGLRenderGroup.prototype.render = function(projectionMatrix)
 		else if(renderable instanceof PIXI.Strip)
 		{
 			if(renderable.visible)this.renderStrip(renderable, projectionMatrix);
+		}
+		else if(renderable instanceof PIXI.Graphics)
+		{
+			if(renderable.visible) PIXI.WebGLGraphics.renderGraphics(renderable);//, projectionMatrix);
 		}
 	}
 	
@@ -407,19 +410,16 @@ PIXI.WebGLRenderGroup.prototype.addDisplayObject = function(displayObject)
 	
 	var previousSprite = this.getPreviousRenderable(displayObject);
 	var nextSprite = this.getNextRenderable(displayObject);
-	
 
 	/*
 	 * so now we have the next renderable and the previous renderable
 	 * 
 	 */
-	
 	if(displayObject instanceof PIXI.Sprite)
 	{
 		var previousBatch
 		var nextBatch
 		
-		//console.log( previousSprite)
 		if(previousSprite instanceof PIXI.Sprite)
 		{
 			previousBatch = previousSprite.batch;
@@ -514,6 +514,14 @@ PIXI.WebGLRenderGroup.prototype.addDisplayObject = function(displayObject)
 	{
 		// add to a batch!!
 		this.initStrip(displayObject);
+		this.batchs.push(displayObject);
+	}
+	else if(displayObject instanceof PIXI.Graphics)
+	{
+		//displayObject.initWebGL(this);
+		
+		// add to a batch!!
+		//this.initStrip(displayObject);
 		this.batchs.push(displayObject);
 	}
 	

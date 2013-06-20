@@ -133,7 +133,7 @@ PIXI.InteractionManager.prototype.update = function()
 		
 		var len = this.interactiveItems.length;
 		
-		for (var i=0; i < this.interactiveItems.length; i++) {
+		for (var i=0; i < len; i++) {
 		  this.interactiveItems[i].interactiveChildren = false;
 		}
 		
