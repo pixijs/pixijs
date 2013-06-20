@@ -24,7 +24,9 @@
 	
 
 	// create an new instance of a pixi stage
-	var stage = new PIXI.Stage(0x000000);
+	var stage = new PIXI.Stage(0x000000, true);
+	
+	stage.setInteractive(true);
 
 	// create a renderer instance
 	//var renderer = new PIXI.CanvasRenderer(800, 600);//PIXI.autoDetectRenderer(800, 600);
@@ -96,11 +98,20 @@
 	stage.addChild(sprite);
 	stage.addChild(graphics);
 	
+	stage.click = function()
+	{
+		graphics.clear();	
+	}
+	
 	requestAnimFrame(animate);
 
 	function animate() {
 	    renderer.render(stage);
 	    requestAnimFrame( animate );
+	    graphics.lineStyle(Math.random() * 30, Math.random() * 0xFFFFFF, 0.8);
+	    
+	    graphics.moveTo(Math.random() * 600,Math.random() * 600);
+		graphics.lineTo(Math.random() * 600,Math.random() * 600);
 	}
 
 	</script>

@@ -190,7 +190,10 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 		{
 			if(startBatch.visible) startBatch.renderWebGL(this, projectionMatrix);
 		}
-		
+		else if(renderable instanceof PIXI.Graphics)
+		{
+			if(renderable.visible) PIXI.WebGLGraphics.renderGraphics(renderable);//, projectionMatrix);
+		}
 		return;
 	}
 	
@@ -215,7 +218,10 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 	{
 		if(startBatch.visible) startBatch.renderWebGL(this, projectionMatrix);
 	}
-	
+	else if(renderable instanceof PIXI.Graphics)
+		{
+			if(renderable.visible) PIXI.WebGLGraphics.renderGraphics(renderable);//, projectionMatrix);
+		}
 	// DO the middle batchs..
 	for (var i=startBatchIndex+1; i < endBatchIndex; i++) 
 	{
@@ -237,7 +243,10 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 		{
 			if(renderable.visible) renderable.renderWebGL(this, projectionMatrix);
 		}
-		
+		else if(renderable instanceof PIXI.Graphics)
+		{
+			if(renderable.visible) PIXI.WebGLGraphics.renderGraphics(renderable);//, projectionMatrix);
+		}
 	}
 	
 	// DO the last batch..
@@ -256,6 +265,10 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 	else if(endBatch instanceof PIXI.CustomRenderable)
 	{
 		if(endBatch.visible) endBatch.renderWebGL(this, projectionMatrix);
+	}
+	else if(renderable instanceof PIXI.Graphics)
+	{
+		if(renderable.visible) PIXI.WebGLGraphics.renderGraphics(renderable);//, projectionMatrix);
 	}
 }
 

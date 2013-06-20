@@ -24,8 +24,8 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 		var data = graphics.graphicsData[i];
 		var points = data.points;
 		
-		context.strokeStyle = "#" + data.lineColor.toString(16);
-      	
+		context.strokeStyle = color = '#' + ('00000' + ( data.lineColor | 0).toString(16)).substr(-6);
+
 		context.lineWidth = data.lineWidth;
 		context.globalAlpha = data.lineAlpha;
 		
@@ -55,7 +55,8 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 			// TODO - need to be Undefined!
 			if(data.fillColor)
 			{
-				context.fillStyle = "#" + data.fillColor.toString(16);
+				context.fillStyle = color = '#' + ('00000' + ( data.fillColor | 0).toString(16)).substr(-6);
+
 				context.fillRect(points[0], points[1], points[2], points[3]);
 				
 			}
@@ -73,7 +74,7 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 			
 			if(data.fill)
 			{
-				context.fillStyle = "#" + data.fillColor.toString(16);
+				context.fillStyle = color = '#' + ('00000' + ( data.fillColor | 0).toString(16)).substr(-6);
       			context.fill();
 			}
 			if(data.lineWidth)

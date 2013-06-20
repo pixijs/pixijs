@@ -25,7 +25,22 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics)
 	// graphicsObject
 	// a collection of "shapes" (mainly lines right now!)
 	///this.shape.draw();
-	if(!graphics._webGL)PIXI.WebGLGraphics.initGraphics(graphics);
+	if(!graphics._webGL)graphics._webGL = {points:[], lastPosition:new PIXI.Point(), lastIndex:0, buffer:gl.createBuffer()};
+	
+	if(graphics.dirty)
+	{
+		graphics.dirty = false;
+		
+		if(graphics.clearDirty)
+		{
+			graphics.clearDirty = false;
+			graphics._webGL.lastIndex = 0;
+			graphics._webGL.points = [];
+			
+		}
+		
+		PIXI.WebGLGraphics.initGraphics(graphics);
+	}
 	
 	gl.uniformMatrix4fv(PIXI.shaderProgram2.mvMatrixUniform, false, PIXI.projectionMatrix );
 	
@@ -36,16 +51,14 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics)
 	//shaderProgram.colorAttribute
 	
 //	ulong idx, long size, ulong type, bool norm, long stride, ulong offset )
-	gl.drawArrays(gl.TRIANGLE_STRIP, 0, graphics._webGL.points.length/6);
+	gl.drawArrays(gl.TRIANGLE_STRIP, 0, graphics._webGL.glPoints.length/6);
 	
 	PIXI.activateDefaultShader();
 }
 
 PIXI.WebGLGraphics.initGraphics = function(graphics)
 {
-	graphics._webGL = {points:[], lastPosition:new PIXI.Point()};
-	
-	for (var i=0; i < graphics.graphicsData.length; i++) 
+	for (var i=graphics._webGL.lastIndex; i < graphics.graphicsData.length; i++) 
 	{
 		var data = graphics.graphicsData[i];
 		
@@ -66,15 +79,15 @@ PIXI.WebGLGraphics.initGraphics = function(graphics)
 		}
 	};
 	
+	//console.log(graphics._webGL.lastIndex - graphics.graphicsData.length )
+	graphics._webGL.lastIndex = graphics.graphicsData.length;
+	
 	// convert to points
-	graphics._webGL.points = new Float32Array(graphics._webGL.points);
+	graphics._webGL.glPoints = new Float32Array(graphics._webGL.points);
 	
 	var gl = PIXI.gl;
-	
-	graphics._webGL.buffer = gl.createBuffer();
-	
 	gl.bindBuffer(gl.ARRAY_BUFFER, graphics._webGL.buffer);
-	gl.bufferData(gl.ARRAY_BUFFER, graphics._webGL.points, gl.STATIC_DRAW);
+	gl.bufferData(gl.ARRAY_BUFFER, graphics._webGL.glPoints, gl.STATIC_DRAW);
 }
 
 

@@ -62,6 +62,7 @@ PIXI.Graphics.prototype.moveTo = function(x, y)
 PIXI.Graphics.prototype.lineTo = function(x, y)
 {
 	this.currentPath.points.push(x, y);
+	this.dirty = true;
 }
 
 PIXI.Graphics.prototype.beginFill = function(color, alpha)
@@ -91,6 +92,7 @@ PIXI.Graphics.prototype.drawRect = function( x, y, width, height )
 						points:[x, y, width, height], type:PIXI.Graphics.RECT};
 						
 	this.graphicsData.push(this.currentPath);
+	this.dirty = true;
 }
 
 PIXI.Graphics.prototype.drawCircle = function( x, y, radius)
@@ -100,4 +102,12 @@ PIXI.Graphics.prototype.drawCircle = function( x, y, radius)
 						points:[x, y, radius], type:PIXI.Graphics.CIRC};
 						
 	this.graphicsData.push(this.currentPath);
+	this.dirty = true;
+}
+
+PIXI.Graphics.prototype.clear = function()
+{
+	this.dirty = true;
+	this.clearDirty = true;
+	this.graphicsData = [];
 }
