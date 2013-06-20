@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src&#x2F;pixi&#x2F;Polygon.js - Pixi.JS</title>
+    <title>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasGraphics.js - Pixi.JS</title>
     <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
@@ -134,40 +134,98 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src&#x2F;pixi&#x2F;Polygon.js</h1>
+                        <h1 class="file-heading">File: src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasGraphics.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
 &#x2F;**
- * @author Adrien Brault &lt;adrien.brault@gmail.com&gt;
+ * @author Mat Groves http:&#x2F;&#x2F;matgroves.com&#x2F; @Doormat23
  *&#x2F;
 
+
 &#x2F;**
- * @class Polygon
+ * A DisplayObjectContainer represents a collection of display objects. It is the base class of all display objects that act as a container for other objects.
+ * @class DisplayObjectContainer 
+ * @extends DisplayObject
  * @constructor
- * @param points {Array}
  *&#x2F;
-PIXI.Polygon = function(points)
+PIXI.CanvasGraphics = function()
 {
-	this.points = points;
+	
 }
 
-&#x2F;**
- * @method clone
- * @return a copy of the polygon
- *&#x2F;
-PIXI.Polygon.clone = function()
+&#x2F;&#x2F; constructor
+
+PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 {
-	var points = [];
-	for (var i=0; i&lt;this.points.length; i++) {
-		points.push(this.points[i].clone());
-	}
+	
+	for (var i=0; i &lt; graphics.graphicsData.length; i++) 
+	{
+		var data = graphics.graphicsData[i];
+		var points = data.points;
+		
+		context.strokeStyle = color = &#x27;#&#x27; + (&#x27;00000&#x27; + ( data.lineColor | 0).toString(16)).substr(-6);
 
-	return new PIXI.Polygon(points);
+		context.lineWidth = data.lineWidth;
+		context.globalAlpha = data.lineAlpha;
+		
+		if(data.type == PIXI.Graphics.POLY)
+		{
+			if(data.lineWidth &lt;= 0)continue;
+			
+			context.beginPath();
+			
+			context.moveTo(points[0], points[1]);
+			
+			for (var j=1; j &lt; points.length&#x2F;2; j++)
+			{
+				context.lineTo(points[j * 2], points[j * 2 + 1]);
+			} 
+	      	
+	      	&#x2F;&#x2F; if the first and last point are the same close the path - much neater :)
+	      	if(points[0] == points[points.length-2] &amp;&amp; points[1] == points[points.length-1])
+	      	{
+	      		context.closePath();
+	      	}
+			
+			context.stroke();
+		}
+		else if(data.type == PIXI.Graphics.RECT)
+		{
+			&#x2F;&#x2F; TODO - need to be Undefined!
+			if(data.fillColor)
+			{
+				context.fillStyle = color = &#x27;#&#x27; + (&#x27;00000&#x27; + ( data.fillColor | 0).toString(16)).substr(-6);
+
+				context.fillRect(points[0], points[1], points[2], points[3]);
+				
+			}
+			if(data.lineWidth)
+			{
+				context.strokeRect(points[0], points[1], points[2], points[3]);
+			}
+		}
+		else if(data.type == PIXI.Graphics.CIRC)
+		{
+			&#x2F;&#x2F; TODO - need to be Undefined!
+      		context.beginPath();
+			context.arc(points[0], points[1], points[2],0,2*Math.PI);
+			context.closePath();
+			
+			if(data.fill)
+			{
+				context.fillStyle = color = &#x27;#&#x27; + (&#x27;00000&#x27; + ( data.fillColor | 0).toString(16)).substr(-6);
+      			context.fill();
+			}
+			if(data.lineWidth)
+			{
+      			context.stroke();
+			}
+		}
+      	
+	   
+	};
 }
-
-PIXI.Polygon.constructor = PIXI.Polygon;
-
 
     </pre>
 </div>

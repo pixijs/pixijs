@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src&#x2F;pixi&#x2F;DisplayObjectContainer.js - Pixi.JS</title>
+    <title>src&#x2F;pixi&#x2F;display&#x2F;MovieClip.js - Pixi.JS</title>
     <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
@@ -134,7 +134,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src&#x2F;pixi&#x2F;DisplayObjectContainer.js</h1>
+                        <h1 class="file-heading">File: src&#x2F;pixi&#x2F;display&#x2F;MovieClip.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
@@ -142,242 +142,127 @@
  * @author Mat Groves http:&#x2F;&#x2F;matgroves.com&#x2F; @Doormat23
  *&#x2F;
 
-
 &#x2F;**
- * A DisplayObjectContainer represents a collection of display objects. It is the base class of all display objects that act as a container for other objects.
- * @class DisplayObjectContainer 
- * @extends DisplayObject
+ * A MovieClip is a simple way to display an animation depicted by a list of textures.
+ * @class MovieClip
+ * @extends Sprite
  * @constructor
+ * @param textures {Array} an array of {Texture} objects that make up the animation
  *&#x2F;
-PIXI.DisplayObjectContainer = function()
+PIXI.MovieClip = function(textures)
 {
-	PIXI.DisplayObject.call( this );
+	PIXI.Sprite.call( this, textures[0]);
 	
 	&#x2F;**
-	 * [read-only] The of children of this container.
-	 * @property children {Array}
-	 *&#x2F;	
-	this.children = [];
-	&#x2F;&#x2F;s
-	this.renderable = false;
+	 * The array of textures that make up the animation
+	 * @property textures
+	 * @type Array
+	 *&#x2F;
+	this.textures = textures;
+	
+	&#x2F;**
+	 * [read only] The index MovieClips current frame (this may not have to be a whole number)
+	 * @property currentFrame
+	 * @type Number
+	 *&#x2F;
+	this.currentFrame = 0; 
+	
+	&#x2F;**
+	 * The speed that the MovieClip will play at. Higher is faster, lower is slower
+	 * @property animationSpeed
+	 * @type Number
+	 *&#x2F;
+	this.animationSpeed = 1;
+
+	&#x2F;**
+	 * Whether or not the movie clip repeats after playing.
+	 * @property loop
+	 * @type Boolean
+	 *&#x2F;
+	this.loop = true;
+
+	&#x2F;**
+	 * Function to call when a MovieClip finishes playing
+	 * @property onComplete
+	 * @type Function
+	 *&#x2F;
+	this.onComplete = null;
+	
+	&#x2F;**
+	 * [read only] indicates if the MovieClip is currently playing
+	 * @property playing
+	 * @type Boolean
+	 *&#x2F;
+	this.playing;
 }
 
 &#x2F;&#x2F; constructor
-PIXI.DisplayObjectContainer.constructor = PIXI.DisplayObjectContainer;
-PIXI.DisplayObjectContainer.prototype = Object.create( PIXI.DisplayObject.prototype );
-
-&#x2F;&#x2F;TODO make visible a getter setter
-&#x2F;*
-Object.defineProperty(PIXI.DisplayObjectContainer.prototype, &#x27;visible&#x27;, {
-    get: function() {
-        return this._visible;
-    },
-    set: function(value) {
-        this._visible = value;
-        
-    }
-});*&#x2F;
+PIXI.MovieClip.constructor = PIXI.MovieClip;
+PIXI.MovieClip.prototype = Object.create( PIXI.Sprite.prototype );
 
 &#x2F;**
- * Adds a child to the container.
- * @method addChild
- * @param  DisplayObject {DisplayObject}
+ * Stops the MovieClip
+ * @method stop
  *&#x2F;
-PIXI.DisplayObjectContainer.prototype.addChild = function(child)
+PIXI.MovieClip.prototype.stop = function()
 {
-	if(child.parent != undefined)
-	{
-		child.parent.removeChild(child);
-	}
-	
-	child.parent = this;
-	child.childIndex = this.children.length;
-	
-	this.children.push(child);	
-	
-	if(this.stage)
-	{
-		this.stage.__addChild(child);
-	}
-	
-	&#x2F;&#x2F; need to remove any render groups..
-	if(this.__renderGroup)
-	{
-		&#x2F;&#x2F; being used by a renderTexture.. if it exists then it must be from a render texture;
-		if(child.__renderGroup)child.__renderGroup.removeDisplayObjectAndChildren(child);
-		&#x2F;&#x2F; add them to the new render group..
-		this.__renderGroup.addDisplayObjectAndChildren(child);
-	}
+	this.playing = false;
 }
 
 &#x2F;**
- * Adds a child to the container at a specified index. If the index is out of bounds an error will be thrown
- * @method addChildAt
- * @param DisplayObject {DisplayObject}
- * @param index {Number}
+ * Plays the MovieClip
+ * @method play
  *&#x2F;
-PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
+PIXI.MovieClip.prototype.play = function()
 {
-	if(index &gt;= 0 &amp;&amp; index &lt;= this.children.length)
-	{
-		if(child.parent != undefined)
-		{
-			child.parent.removeChild(child);
-		}
-	
-		if (index == this.children.length)
-		{
-		  	this.children.push(child);
-		}	
-		else 
-		{
-			this.children.splice(index, 0, child);
-		}
-
-		child.parent = this;
-		child.childIndex = index;
-		
-		var length = this.children.length;
-		for (var i=index; i &lt; length; i++) 
-		{
-		  this.children[i].childIndex = i;
-		}
-		
-		if(this.stage)
-		{
-			this.stage.__addChild(child);
-		}
-		
-		&#x2F;&#x2F; need to remove any render groups..
-		if(this.__renderGroup)
-		{
-			&#x2F;&#x2F; being used by a renderTexture.. if it exists then it must be from a render texture;
-			if(child.__renderGroup)child.__renderGroup.removeDisplayObjectAndChildren(child);
-			&#x2F;&#x2F; add them to the new render group..
-			this.__renderGroup.addDisplayObjectAndChildren(child);
-		}
-	}
-	else
-	{
-		&#x2F;&#x2F; error!
-		
-		throw new Error(child + &quot; The index &quot;+ index +&quot; supplied is out of bounds &quot; + this.children.length);
-	}
+	this.playing = true;
 }
 
 &#x2F;**
- * Swaps the depth of 2 displayObjects
- * @method swapChildren
- * @param  DisplayObject {DisplayObject}
- * @param  DisplayObject2 {DisplayObject}
+ * Stops the MovieClip and goes to a specific frame
+ * @method gotoAndStop
+ * @param frameNumber {Number} frame index to stop at
  *&#x2F;
-PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
+PIXI.MovieClip.prototype.gotoAndStop = function(frameNumber)
 {
-	&#x2F;&#x2F; TODO I already know this??
-	var index = this.children.indexOf( child );
-	var index2 = this.children.indexOf( child2 );
-	
-	if ( index !== -1 &amp;&amp; index2 !== -1 ) 
-	{
-		&#x2F;&#x2F; cool
-		if(this.stage)
-		{
-			&#x2F;&#x2F; this is to satisfy the webGL batching..
-			&#x2F;&#x2F; TODO sure there is a nicer way to achieve this!
-			this.stage.__removeChild(child);
-			this.stage.__removeChild(child2);
-			
-			this.stage.__addChild(child);
-			this.stage.__addChild(child2);
-		}
-		
-		&#x2F;&#x2F; swap the indexes..
-		child.childIndex = index2;
-		child2.childIndex = index;
-		&#x2F;&#x2F; swap the positions..
-		this.children[index] = child2;
-		this.children[index2] = child;
-		
-	}
-	else
-	{
-		throw new Error(child + &quot; Both the supplied DisplayObjects must be a child of the caller &quot; + this);
-	}
+	this.playing = false;
+	this.currentFrame = frameNumber;
+	var round = (this.currentFrame + 0.5) | 0;
+	this.setTexture(this.textures[round % this.textures.length]);
 }
 
 &#x2F;**
- * Returns the Child at the specified index
- * @method getChildAt
- * @param  index {Number}
+ * Goes to a specific frame and begins playing the MovieClip
+ * @method gotoAndPlay
+ * @param frameNumber {Number} frame index to start at
  *&#x2F;
-PIXI.DisplayObjectContainer.prototype.getChildAt = function(index)
+PIXI.MovieClip.prototype.gotoAndPlay = function(frameNumber)
 {
-	if(index &gt;= 0 &amp;&amp; index &lt; this.children.length)
-	{
-		return this.children[index];
-	}
-	else
-	{
-		throw new Error(child + &quot; Both the supplied DisplayObjects must be a child of the caller &quot; + this);
-	
-	}
+	this.currentFrame = frameNumber;
+	this.playing = true;
 }
 
-&#x2F;**
- * Removes a child from the container.
- * @method removeChild
- * @param  DisplayObject {DisplayObject}
- *&#x2F;
-PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
+PIXI.MovieClip.prototype.updateTransform = function()
 {
-	var index = this.children.indexOf( child );
+	PIXI.Sprite.prototype.updateTransform.call(this);
 	
-	if ( index !== -1 ) 
+	if(!this.playing)return;
+	
+	this.currentFrame += this.animationSpeed;
+	var round = (this.currentFrame + 0.5) | 0;
+	if(this.loop || round &lt; this.textures.length)
 	{
-		if(this.stage)
-		{
-			this.stage.__removeChild(child);
-		}
-		
-		&#x2F;&#x2F; webGL trim
-		if(child.__renderGroup)
-		{
-			child.__renderGroup.removeDisplayObjectAndChildren(child);
-		}
-		
-	&#x2F;&#x2F;	console.log(&quot;&gt;&quot; + child.__renderGroup)
-		child.parent = undefined;
-
-		this.children.splice( index, 1 );
-	
-		&#x2F;&#x2F; update in dexs!
-		for(var i=index,j=this.children.length; i&lt;j; i++)
-		{
-			this.children[i].childIndex -= 1;
-		}
+		this.setTexture(this.textures[round % this.textures.length]);
 	}
-	else
+	else if(round &gt;= this.textures.length)
 	{
-		throw new Error(child + &quot; The supplied DisplayObject must be a child of the caller &quot; + this);
+		this.gotoAndStop(this.textures.length - 1);
+		if(this.onComplete)
+		{
+			this.onComplete();
+		}
 	}
 }
-
-
-&#x2F;**
- * @private
- *&#x2F;
-PIXI.DisplayObjectContainer.prototype.updateTransform = function()
-{
-	if(!this.visible)return;
-	
-	PIXI.DisplayObject.prototype.updateTransform.call( this );
-	
-	for(var i=0,j=this.children.length; i&lt;j; i++)
-	{
-		this.children[i].updateTransform();	
-	}
-}
-
     </pre>
 </div>
 

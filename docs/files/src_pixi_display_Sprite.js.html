@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Polygon - Pixi.JS</title>
+    <title>src&#x2F;pixi&#x2F;display&#x2F;Sprite.js - Pixi.JS</title>
     <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
@@ -134,248 +134,177 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>Polygon Class</h1>
-<div class="box meta">
-    
+                        <h1 class="file-heading">File: src&#x2F;pixi&#x2F;display&#x2F;Sprite.js</h1>
 
-    
+<div class="file">
+    <pre class="code prettyprint linenums">
+&#x2F;**
+ * @author Mat Groves http:&#x2F;&#x2F;matgroves.com&#x2F; @Doormat23
+ *&#x2F;
 
-    
-        <div class="foundat">
-            Defined in: <a href="..&#x2F;files&#x2F;src_pixi_core_Polygon.js.html#l5"><code>src&#x2F;pixi&#x2F;core&#x2F;Polygon.js:5</code></a>
-        </div>
-    
-
-    
-        
-            Module: <a href="../modules/PIXI.html">PIXI</a>
-        
-    
-
-    
-</div>
+PIXI.blendModes = {};
+PIXI.blendModes.NORMAL = 0;
+PIXI.blendModes.SCREEN = 1;
 
 
+&#x2F;**
+@class Sprite
+@extends DisplayObjectContainer
+@constructor
+@param texture {Texture}
+@type String
+*&#x2F;
+PIXI.Sprite = function(texture)
+{
+	PIXI.DisplayObjectContainer.call( this );
+	
+	 &#x2F;**
+	 * The anchor sets the origin point of the texture.
+	 * The default is 0,0 this means the textures origin is the top left 
+	 * Setting than anchor to 0.5,0.5 means the textures origin is centered
+	 * Setting the anchor to 1,1 would mean the textures origin points will be the bottom right
+     * @property anchor
+     * @type Point
+     *&#x2F;
+	this.anchor = new PIXI.Point();
+	
+	&#x2F;**
+	 * The texture that the sprite is using
+	 * @property texture
+	 * @type Texture
+	 *&#x2F;
+	this.texture = texture;
+	
+	&#x2F;**
+	 * The blend mode of sprite.
+	 * currently supports PIXI.blendModes.NORMAL and PIXI.blendModes.SCREEN
+	 * @property blendMode
+	 * @type uint
+	 *&#x2F;
+	this.blendMode = PIXI.blendModes.NORMAL;
+	
+	&#x2F;**
+	 * The width of the sprite (this is initially set by the texture)
+	 * @property width
+	 * @type #Number
+	 *&#x2F;
+	this._width = 0;
+	
+	&#x2F;**
+	 * The height of the sprite (this is initially set by the texture)
+	 * @property height
+	 * @type #Number
+	 *&#x2F;
+	this._height = 0;
+	
+	if(texture.baseTexture.hasLoaded)
+	{
+		this.updateFrame = true;
+	}
+	else
+	{
+		this.onTextureUpdateBind = this.onTextureUpdate.bind(this);
+		this.texture.addEventListener( &#x27;update&#x27;, this.onTextureUpdateBind );
+	}
+	
+	this.renderable = true;
+	
+	&#x2F;&#x2F; thi next bit is here for the docs...
+	
+	
+}
 
-<div class="box intro">
-    
-</div>
+&#x2F;&#x2F; constructor
+PIXI.Sprite.constructor = PIXI.Sprite;
+PIXI.Sprite.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
 
+&#x2F;&#x2F; OOH! shiney new getters and setters for width and height
+&#x2F;&#x2F; The width and height now modify the scale (this is what flash does, nice and tidy!)
+Object.defineProperty(PIXI.Sprite.prototype, &#x27;width&#x27;, {
+    get: function() {
+        return this.scale.x * this.texture.frame.width;
+    },
+    set: function(value) {
+    	this.scale.x = value &#x2F; this.texture.frame.width
+        this._width = value;
+    }
+});
 
-    <div class="constructor">
-        <h2>Constructor</h2>
-        <div id="method_Polygon" class="method item">
-    <h3 class="name"><code>Polygon</code></h3>
+Object.defineProperty(PIXI.Sprite.prototype, &#x27;height&#x27;, {
+    get: function() {
+        return  this.scale.y * this.texture.frame.height;
+    },
+    set: function(value) {
+    	this.scale.y = value &#x2F; this.texture.frame.height
+        this._height = value;
+    }
+});
+ 
+&#x2F;**
+@method setTexture
+@param texture {Texture} The PIXI texture that is displayed by the sprite
+*&#x2F;
+PIXI.Sprite.prototype.setTexture = function(texture)
+{
+	&#x2F;&#x2F; stop current texture;
+	if(this.texture.baseTexture != texture.baseTexture)
+	{
+		this.textureChange = true;	
+	}
+	
+	this.texture = texture;
+	this.updateFrame = true;
+}
 
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>points</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
+&#x2F;**
+ * @private
+ *&#x2F;
+PIXI.Sprite.prototype.onTextureUpdate = function(event)
+{
+	&#x2F;&#x2F;this.texture.removeEventListener( &#x27;update&#x27;, this.onTextureUpdateBind );
+	
+	&#x2F;&#x2F; so if _width is 0 then width was not set..
+	if(this._width)this.scale.x = this._width &#x2F; this.texture.frame.width;
+	if(this._height)this.scale.y = this._height &#x2F; this.texture.frame.height;
+	
+	this.updateFrame = true;
+}
 
-    
+&#x2F;&#x2F; some helper functions..
 
-    
+&#x2F;**
+ * 
+ * Helper function that creates a sprite that will contain a texture from the TextureCache based on the frameId
+ * The frame ids are created when a Texture packer file has been loaded
+ * @method fromFrame
+ * @static
+ * @param frameId {String} The frame Id of the texture in the cache
+ * @return {Sprite} A new Sprite using a texture from the texture cache matching the frameId
+ *&#x2F;
+PIXI.Sprite.fromFrame = function(frameId)
+{
+	var texture = PIXI.TextureCache[frameId];
+	if(!texture)throw new Error(&quot;The frameId &#x27;&quot;+ frameId +&quot;&#x27; does not exist in the texture cache&quot; + this);
+	return new PIXI.Sprite(texture);
+}
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="..&#x2F;files&#x2F;src_pixi_core_Polygon.js.html#l5"><code>src&#x2F;pixi&#x2F;core&#x2F;Polygon.js:5</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">points</code>
-                        <span class="type">Array</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-    </div>
-
-
-<div id="classdocs" class="tabview">
-    <ul class="api-class-tabs">
-        <li class="api-class-tab index"><a href="#index">Index</a></li>
-
-        
-            <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
-        
-        
-        
-        
-    </ul>
-
-    <div>
-        <div id="index" class="api-class-tabpanel index">
-            <h2 class="off-left">Item Index</h2>
-
-            
-                <div class="index-section methods">
-                    <h3>Methods</h3>
-
-                    <ul class="index-list methods">
-                        
-                            <li class="index-item method">
-                                <a href="#method_clone">clone</a>
-
-                                
-                                
-                            </li>
-                        
-                    </ul>
-                </div>
-            
-
-            
-
-            
-
-            
-        </div>
-
-        
-            <div id="methods" class="api-class-tabpanel">
-                <h2 class="off-left">Methods</h2>
-
-                
-                    <div id="method_clone" class="method item">
-    <h3 class="name"><code>clone</code></h3>
-
-    
-        <span class="paren">()</span>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="..&#x2F;files&#x2F;src_pixi_core_Polygon.js.html#l15"><code>src&#x2F;pixi&#x2F;core&#x2F;Polygon.js:15</code></a>
-        
-        </p>
+&#x2F;**
+ * 
+ * Helper function that creates a sprite that will contain a texture based on an image url
+ * If the image is not in the texture cache it will be loaded
+ * @method fromImage
+ * @static
+ * @param The image url of the texture
+ * @return {Sprite} A new Sprite using a texture from the texture cache matching the image id
+ *&#x2F;
+PIXI.Sprite.fromImage = function(imageId)
+{
+	var texture = PIXI.Texture.fromImage(imageId);
+	return new PIXI.Sprite(texture);
+}
 
 
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                    a copy of the polygon
-                
-            </div>
-        </div>
-    
-
-    
-</div>
-
-                
-            </div>
-        
-
-        
-
-        
-
-        
-    </div>
+    </pre>
 </div>
 
                     </div>

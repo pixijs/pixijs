@@ -34,9 +34,9 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics)
 		if(graphics.clearDirty)
 		{
 			graphics.clearDirty = false;
+			
 			graphics._webGL.lastIndex = 0;
 			graphics._webGL.points = [];
-			
 		}
 		
 		PIXI.WebGLGraphics.initGraphics(graphics);
@@ -50,7 +50,6 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics)
 	
 	//shaderProgram.colorAttribute
 	
-//	ulong idx, long size, ulong type, bool norm, long stride, ulong offset )
 	gl.drawArrays(gl.TRIANGLE_STRIP, 0, graphics._webGL.glPoints.length/6);
 	
 	PIXI.activateDefaultShader();

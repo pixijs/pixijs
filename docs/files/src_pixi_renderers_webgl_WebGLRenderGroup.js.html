@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src&#x2F;pixi&#x2F;renderers&#x2F;WebGLRenderGroup.js - Pixi.JS</title>
+    <title>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;WebGLRenderGroup.js - Pixi.JS</title>
     <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
@@ -134,7 +134,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src&#x2F;pixi&#x2F;renderers&#x2F;WebGLRenderGroup.js</h1>
+                        <h1 class="file-heading">File: src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;WebGLRenderGroup.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
@@ -185,11 +185,10 @@ PIXI.WebGLRenderGroup.prototype.setRenderable = function(displayObject)
 
 PIXI.WebGLRenderGroup.prototype.render = function(projectionMatrix)
 {
-	
 	PIXI.WebGLRenderer.updateTextures();
 	
 	var gl = this.gl;
-	
+
 	&#x2F;&#x2F; set the flipped matrix..
 	gl.uniformMatrix4fv(PIXI.shaderProgram.mvMatrixUniform, false, projectionMatrix);
 	
@@ -214,6 +213,10 @@ PIXI.WebGLRenderGroup.prototype.render = function(projectionMatrix)
 		else if(renderable instanceof PIXI.Strip)
 		{
 			if(renderable.visible)this.renderStrip(renderable, projectionMatrix);
+		}
+		else if(renderable instanceof PIXI.Graphics)
+		{
+			if(renderable.visible) PIXI.WebGLGraphics.renderGraphics(renderable);&#x2F;&#x2F;, projectionMatrix);
 		}
 	}
 	
@@ -327,7 +330,10 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 		{
 			if(startBatch.visible) startBatch.renderWebGL(this, projectionMatrix);
 		}
-		
+		else if(renderable instanceof PIXI.Graphics)
+		{
+			if(renderable.visible) PIXI.WebGLGraphics.renderGraphics(renderable);&#x2F;&#x2F;, projectionMatrix);
+		}
 		return;
 	}
 	
@@ -352,7 +358,10 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 	{
 		if(startBatch.visible) startBatch.renderWebGL(this, projectionMatrix);
 	}
-	
+	else if(renderable instanceof PIXI.Graphics)
+		{
+			if(renderable.visible) PIXI.WebGLGraphics.renderGraphics(renderable);&#x2F;&#x2F;, projectionMatrix);
+		}
 	&#x2F;&#x2F; DO the middle batchs..
 	for (var i=startBatchIndex+1; i &lt; endBatchIndex; i++) 
 	{
@@ -374,7 +383,10 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 		{
 			if(renderable.visible) renderable.renderWebGL(this, projectionMatrix);
 		}
-		
+		else if(renderable instanceof PIXI.Graphics)
+		{
+			if(renderable.visible) PIXI.WebGLGraphics.renderGraphics(renderable);&#x2F;&#x2F;, projectionMatrix);
+		}
 	}
 	
 	&#x2F;&#x2F; DO the last batch..
@@ -393,6 +405,10 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 	else if(endBatch instanceof PIXI.CustomRenderable)
 	{
 		if(endBatch.visible) endBatch.renderWebGL(this, projectionMatrix);
+	}
+	else if(renderable instanceof PIXI.Graphics)
+	{
+		if(renderable.visible) PIXI.WebGLGraphics.renderGraphics(renderable);&#x2F;&#x2F;, projectionMatrix);
 	}
 }
 
@@ -547,19 +563,16 @@ PIXI.WebGLRenderGroup.prototype.addDisplayObject = function(displayObject)
 	
 	var previousSprite = this.getPreviousRenderable(displayObject);
 	var nextSprite = this.getNextRenderable(displayObject);
-	
 
 	&#x2F;*
 	 * so now we have the next renderable and the previous renderable
 	 * 
 	 *&#x2F;
-	
 	if(displayObject instanceof PIXI.Sprite)
 	{
 		var previousBatch
 		var nextBatch
 		
-		&#x2F;&#x2F;console.log( previousSprite)
 		if(previousSprite instanceof PIXI.Sprite)
 		{
 			previousBatch = previousSprite.batch;
@@ -654,6 +667,14 @@ PIXI.WebGLRenderGroup.prototype.addDisplayObject = function(displayObject)
 	{
 		&#x2F;&#x2F; add to a batch!!
 		this.initStrip(displayObject);
+		this.batchs.push(displayObject);
+	}
+	else if(displayObject instanceof PIXI.Graphics)
+	{
+		&#x2F;&#x2F;displayObject.initWebGL(this);
+		
+		&#x2F;&#x2F; add to a batch!!
+		&#x2F;&#x2F;this.initStrip(displayObject);
 		this.batchs.push(displayObject);
 	}
 	

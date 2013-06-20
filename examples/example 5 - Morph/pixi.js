@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-06-19
+ * Compiled: 2013-06-20
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -154,6 +154,239 @@ PIXI.Polygon.clone = function()
 
 PIXI.Polygon.constructor = PIXI.Polygon;
 
+
+
+
+/*
+ * A lighter version of the rad gl-matrix created by Brandon Jones, Colin MacKenzie IV
+ * you both rock!
+ */
+
+function determineMatrixArrayType() {
+    PIXI.Matrix = (typeof Float32Array !== 'undefined') ? Float32Array : Array;
+    return PIXI.Matrix;
+}
+
+determineMatrixArrayType();
+
+PIXI.mat3 = {};
+
+PIXI.mat3.create = function()
+{
+	var matrix = new PIXI.Matrix(9);
+
+	matrix[0] = 1;
+	matrix[1] = 0;
+	matrix[2] = 0;
+	matrix[3] = 0;
+	matrix[4] = 1;
+	matrix[5] = 0;
+	matrix[6] = 0;
+	matrix[7] = 0;
+	matrix[8] = 1;
+	
+	return matrix;
+}
+
+PIXI.mat4 = {};
+
+PIXI.mat4.create = function()
+{
+	var matrix = new PIXI.Matrix(16);
+
+	matrix[0] = 1;
+	matrix[1] = 0;
+	matrix[2] = 0;
+	matrix[3] = 0;
+	matrix[4] = 0;
+	matrix[5] = 1;
+	matrix[6] = 0;
+	matrix[7] = 0;
+	matrix[8] = 0;
+	matrix[9] = 0;
+	matrix[10] = 1;
+	matrix[11] = 0;
+	matrix[12] = 0;
+	matrix[13] = 0;
+	matrix[14] = 0;
+	matrix[15] = 1;
+	
+	return matrix;
+}
+
+PIXI.mat3.multiply = function (mat, mat2, dest) 
+{
+	if (!dest) { dest = mat; }
+	
+	// Cache the matrix values (makes for huge speed increases!)
+	var a00 = mat[0], a01 = mat[1], a02 = mat[2],
+	    a10 = mat[3], a11 = mat[4], a12 = mat[5],
+	    a20 = mat[6], a21 = mat[7], a22 = mat[8],
+	
+	    b00 = mat2[0], b01 = mat2[1], b02 = mat2[2],
+	    b10 = mat2[3], b11 = mat2[4], b12 = mat2[5],
+	    b20 = mat2[6], b21 = mat2[7], b22 = mat2[8];
+	
+	dest[0] = b00 * a00 + b01 * a10 + b02 * a20;
+	dest[1] = b00 * a01 + b01 * a11 + b02 * a21;
+	dest[2] = b00 * a02 + b01 * a12 + b02 * a22;
+	
+	dest[3] = b10 * a00 + b11 * a10 + b12 * a20;
+	dest[4] = b10 * a01 + b11 * a11 + b12 * a21;
+	dest[5] = b10 * a02 + b11 * a12 + b12 * a22;
+	
+	dest[6] = b20 * a00 + b21 * a10 + b22 * a20;
+	dest[7] = b20 * a01 + b21 * a11 + b22 * a21;
+	dest[8] = b20 * a02 + b21 * a12 + b22 * a22;
+	
+	return dest;
+}
+
+
+PIXI.mat3.toMat4 = function (mat, dest) 
+{
+	if (!dest) { dest = PIXI.mat4.create(); }
+	
+	dest[15] = 1;
+	dest[14] = 0;
+	dest[13] = 0;
+	dest[12] = 0;
+	
+	dest[11] = 0;
+	dest[10] = mat[8];
+	dest[9] = mat[7];
+	dest[8] = mat[6];
+	
+	dest[7] = 0;
+	dest[6] = mat[5];
+	dest[5] = mat[4];
+	dest[4] = mat[3];
+	
+	dest[3] = 0;
+	dest[2] = mat[2];
+	dest[1] = mat[1];
+	dest[0] = mat[0];
+	
+	return dest;
+}
+
+
+/////
+
+
+PIXI.mat4.create = function()
+{
+	var matrix = new PIXI.Matrix(16);
+
+	matrix[0] = 1;
+	matrix[1] = 0;
+	matrix[2] = 0;
+	matrix[3] = 0;
+	matrix[4] = 0;
+	matrix[5] = 1;
+	matrix[6] = 0;
+	matrix[7] = 0;
+	matrix[8] = 0;
+	matrix[9] = 0;
+	matrix[10] = 1;
+	matrix[11] = 0;
+	matrix[12] = 0;
+	matrix[13] = 0;
+	matrix[14] = 0;
+	matrix[15] = 1;
+	
+	return matrix;
+}
+
+PIXI.mat4.transpose = function (mat, dest) 
+{
+	// If we are transposing ourselves we can skip a few steps but have to cache some values
+	if (!dest || mat === dest) 
+	{
+	    var a01 = mat[1], a02 = mat[2], a03 = mat[3],
+	        a12 = mat[6], a13 = mat[7],
+	        a23 = mat[11];
+	
+	    mat[1] = mat[4];
+	    mat[2] = mat[8];
+	    mat[3] = mat[12];
+	    mat[4] = a01;
+	    mat[6] = mat[9];
+	    mat[7] = mat[13];
+	    mat[8] = a02;
+	    mat[9] = a12;
+	    mat[11] = mat[14];
+	    mat[12] = a03;
+	    mat[13] = a13;
+	    mat[14] = a23;
+	    return mat;
+	}
+	
+	dest[0] = mat[0];
+	dest[1] = mat[4];
+	dest[2] = mat[8];
+	dest[3] = mat[12];
+	dest[4] = mat[1];
+	dest[5] = mat[5];
+	dest[6] = mat[9];
+	dest[7] = mat[13];
+	dest[8] = mat[2];
+	dest[9] = mat[6];
+	dest[10] = mat[10];
+	dest[11] = mat[14];
+	dest[12] = mat[3];
+	dest[13] = mat[7];
+	dest[14] = mat[11];
+	dest[15] = mat[15];
+	return dest;
+}
+
+PIXI.mat4.multiply = function (mat, mat2, dest) 
+{
+	if (!dest) { dest = mat; }
+	
+	// Cache the matrix values (makes for huge speed increases!)
+	var a00 = mat[ 0], a01 = mat[ 1], a02 = mat[ 2], a03 = mat[3];
+	var a10 = mat[ 4], a11 = mat[ 5], a12 = mat[ 6], a13 = mat[7];
+	var a20 = mat[ 8], a21 = mat[ 9], a22 = mat[10], a23 = mat[11];
+	var a30 = mat[12], a31 = mat[13], a32 = mat[14], a33 = mat[15];
+	
+	// Cache only the current line of the second matrix
+    var b0  = mat2[0], b1 = mat2[1], b2 = mat2[2], b3 = mat2[3];  
+    dest[0] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
+    dest[1] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
+    dest[2] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
+    dest[3] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
+
+    b0 = mat2[4];
+    b1 = mat2[5];
+    b2 = mat2[6];
+    b3 = mat2[7];
+    dest[4] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
+    dest[5] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
+    dest[6] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
+    dest[7] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
+
+    b0 = mat2[8];
+    b1 = mat2[9];
+    b2 = mat2[10];
+    b3 = mat2[11];
+    dest[8] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
+    dest[9] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
+    dest[10] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
+    dest[11] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
+
+    b0 = mat2[12];
+    b1 = mat2[13];
+    b2 = mat2[14];
+    b3 = mat2[15];
+    dest[12] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
+    dest[13] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
+    dest[14] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
+    dest[15] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
+
+    return dest;
+}
 
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
@@ -1583,6 +1816,8 @@ PIXI.InteractionManager.prototype.onMouseMove = function(event)
 
 PIXI.InteractionManager.prototype.onMouseDown = function(event)
 {
+	event.preventDefault();
+	
 	// loop through inteaction tree...
 	// hit test each item! -> 
 	// get interactive items under point??
@@ -1619,6 +1854,8 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
 
 PIXI.InteractionManager.prototype.onMouseUp = function(event)
 {
+	
+	
 	var global = this.mouse.global;
 	
 	
@@ -1773,6 +2010,8 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
 
 PIXI.InteractionManager.prototype.onTouchStart = function(event)
 {
+	event.preventDefault();
+	
 	var rect = this.target.view.getBoundingClientRect();
 	
 	var changedTouches = event.changedTouches;
@@ -2187,239 +2426,6 @@ PIXI.EventTarget = function () {
 
 };
 
-
-
-/*
- * A lighter version of the rad gl-matrix created by Brandon Jones, Colin MacKenzie IV
- * you both rock!
- */
-
-function determineMatrixArrayType() {
-    PIXI.Matrix = (typeof Float32Array !== 'undefined') ? Float32Array : Array;
-    return PIXI.Matrix;
-}
-
-determineMatrixArrayType();
-
-PIXI.mat3 = {};
-
-PIXI.mat3.create = function()
-{
-	var matrix = new PIXI.Matrix(9);
-
-	matrix[0] = 1;
-	matrix[1] = 0;
-	matrix[2] = 0;
-	matrix[3] = 0;
-	matrix[4] = 1;
-	matrix[5] = 0;
-	matrix[6] = 0;
-	matrix[7] = 0;
-	matrix[8] = 1;
-	
-	return matrix;
-}
-
-PIXI.mat4 = {};
-
-PIXI.mat4.create = function()
-{
-	var matrix = new PIXI.Matrix(16);
-
-	matrix[0] = 1;
-	matrix[1] = 0;
-	matrix[2] = 0;
-	matrix[3] = 0;
-	matrix[4] = 0;
-	matrix[5] = 1;
-	matrix[6] = 0;
-	matrix[7] = 0;
-	matrix[8] = 0;
-	matrix[9] = 0;
-	matrix[10] = 1;
-	matrix[11] = 0;
-	matrix[12] = 0;
-	matrix[13] = 0;
-	matrix[14] = 0;
-	matrix[15] = 1;
-	
-	return matrix;
-}
-
-PIXI.mat3.multiply = function (mat, mat2, dest) 
-{
-	if (!dest) { dest = mat; }
-	
-	// Cache the matrix values (makes for huge speed increases!)
-	var a00 = mat[0], a01 = mat[1], a02 = mat[2],
-	    a10 = mat[3], a11 = mat[4], a12 = mat[5],
-	    a20 = mat[6], a21 = mat[7], a22 = mat[8],
-	
-	    b00 = mat2[0], b01 = mat2[1], b02 = mat2[2],
-	    b10 = mat2[3], b11 = mat2[4], b12 = mat2[5],
-	    b20 = mat2[6], b21 = mat2[7], b22 = mat2[8];
-	
-	dest[0] = b00 * a00 + b01 * a10 + b02 * a20;
-	dest[1] = b00 * a01 + b01 * a11 + b02 * a21;
-	dest[2] = b00 * a02 + b01 * a12 + b02 * a22;
-	
-	dest[3] = b10 * a00 + b11 * a10 + b12 * a20;
-	dest[4] = b10 * a01 + b11 * a11 + b12 * a21;
-	dest[5] = b10 * a02 + b11 * a12 + b12 * a22;
-	
-	dest[6] = b20 * a00 + b21 * a10 + b22 * a20;
-	dest[7] = b20 * a01 + b21 * a11 + b22 * a21;
-	dest[8] = b20 * a02 + b21 * a12 + b22 * a22;
-	
-	return dest;
-}
-
-
-PIXI.mat3.toMat4 = function (mat, dest) 
-{
-	if (!dest) { dest = PIXI.mat4.create(); }
-	
-	dest[15] = 1;
-	dest[14] = 0;
-	dest[13] = 0;
-	dest[12] = 0;
-	
-	dest[11] = 0;
-	dest[10] = mat[8];
-	dest[9] = mat[7];
-	dest[8] = mat[6];
-	
-	dest[7] = 0;
-	dest[6] = mat[5];
-	dest[5] = mat[4];
-	dest[4] = mat[3];
-	
-	dest[3] = 0;
-	dest[2] = mat[2];
-	dest[1] = mat[1];
-	dest[0] = mat[0];
-	
-	return dest;
-}
-
-
-/////
-
-
-PIXI.mat4.create = function()
-{
-	var matrix = new PIXI.Matrix(16);
-
-	matrix[0] = 1;
-	matrix[1] = 0;
-	matrix[2] = 0;
-	matrix[3] = 0;
-	matrix[4] = 0;
-	matrix[5] = 1;
-	matrix[6] = 0;
-	matrix[7] = 0;
-	matrix[8] = 0;
-	matrix[9] = 0;
-	matrix[10] = 1;
-	matrix[11] = 0;
-	matrix[12] = 0;
-	matrix[13] = 0;
-	matrix[14] = 0;
-	matrix[15] = 1;
-	
-	return matrix;
-}
-
-PIXI.mat4.transpose = function (mat, dest) 
-{
-	// If we are transposing ourselves we can skip a few steps but have to cache some values
-	if (!dest || mat === dest) 
-	{
-	    var a01 = mat[1], a02 = mat[2], a03 = mat[3],
-	        a12 = mat[6], a13 = mat[7],
-	        a23 = mat[11];
-	
-	    mat[1] = mat[4];
-	    mat[2] = mat[8];
-	    mat[3] = mat[12];
-	    mat[4] = a01;
-	    mat[6] = mat[9];
-	    mat[7] = mat[13];
-	    mat[8] = a02;
-	    mat[9] = a12;
-	    mat[11] = mat[14];
-	    mat[12] = a03;
-	    mat[13] = a13;
-	    mat[14] = a23;
-	    return mat;
-	}
-	
-	dest[0] = mat[0];
-	dest[1] = mat[4];
-	dest[2] = mat[8];
-	dest[3] = mat[12];
-	dest[4] = mat[1];
-	dest[5] = mat[5];
-	dest[6] = mat[9];
-	dest[7] = mat[13];
-	dest[8] = mat[2];
-	dest[9] = mat[6];
-	dest[10] = mat[10];
-	dest[11] = mat[14];
-	dest[12] = mat[3];
-	dest[13] = mat[7];
-	dest[14] = mat[11];
-	dest[15] = mat[15];
-	return dest;
-}
-
-PIXI.mat4.multiply = function (mat, mat2, dest) 
-{
-	if (!dest) { dest = mat; }
-	
-	// Cache the matrix values (makes for huge speed increases!)
-	var a00 = mat[ 0], a01 = mat[ 1], a02 = mat[ 2], a03 = mat[3];
-	var a10 = mat[ 4], a11 = mat[ 5], a12 = mat[ 6], a13 = mat[7];
-	var a20 = mat[ 8], a21 = mat[ 9], a22 = mat[10], a23 = mat[11];
-	var a30 = mat[12], a31 = mat[13], a32 = mat[14], a33 = mat[15];
-	
-	// Cache only the current line of the second matrix
-    var b0  = mat2[0], b1 = mat2[1], b2 = mat2[2], b3 = mat2[3];  
-    dest[0] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
-    dest[1] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
-    dest[2] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
-    dest[3] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
-
-    b0 = mat2[4];
-    b1 = mat2[5];
-    b2 = mat2[6];
-    b3 = mat2[7];
-    dest[4] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
-    dest[5] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
-    dest[6] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
-    dest[7] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
-
-    b0 = mat2[8];
-    b1 = mat2[9];
-    b2 = mat2[10];
-    b3 = mat2[11];
-    dest[8] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
-    dest[9] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
-    dest[10] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
-    dest[11] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
-
-    b0 = mat2[12];
-    b1 = mat2[13];
-    b2 = mat2[14];
-    b3 = mat2[15];
-    dest[12] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
-    dest[13] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
-    dest[14] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
-    dest[15] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
-
-    return dest;
-}
-
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -2547,6 +2553,450 @@ PIXI.activatePrimitiveShader = function()
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
+
+/**
+ * A DisplayObjectContainer represents a collection of display objects. It is the base class of all display objects that act as a container for other objects.
+ * @class DisplayObjectContainer 
+ * @extends DisplayObject
+ * @constructor
+ */
+PIXI.WebGLGraphics = function()
+{
+	
+}
+
+// constructor
+PIXI.WebGLGraphics.constructor = PIXI.WebGLGraphics;
+
+PIXI.WebGLGraphics.renderGraphics = function(graphics)
+{
+	PIXI.activatePrimitiveShader();
+	var gl = PIXI.gl;
+	
+	// graphicsObject
+	// a collection of "shapes" (mainly lines right now!)
+	///this.shape.draw();
+	if(!graphics._webGL)graphics._webGL = {points:[], lastPosition:new PIXI.Point(), lastIndex:0, buffer:gl.createBuffer()};
+	
+	if(graphics.dirty)
+	{
+		graphics.dirty = false;
+		
+		if(graphics.clearDirty)
+		{
+			graphics.clearDirty = false;
+			
+			graphics._webGL.lastIndex = 0;
+			graphics._webGL.points = [];
+		}
+		
+		PIXI.WebGLGraphics.initGraphics(graphics);
+	}
+	
+	gl.uniformMatrix4fv(PIXI.shaderProgram2.mvMatrixUniform, false, PIXI.projectionMatrix );
+	
+	gl.bindBuffer(gl.ARRAY_BUFFER, graphics._webGL.buffer);
+	gl.vertexAttribPointer(PIXI.shaderProgram2.vertexPositionAttribute, 2, gl.FLOAT, false, 4 * 6, 0);
+	gl.vertexAttribPointer(PIXI.shaderProgram2.colorAttribute, 4, gl.FLOAT, false,4 * 6, 2 * 4);
+	
+	//shaderProgram.colorAttribute
+	
+	gl.drawArrays(gl.TRIANGLE_STRIP, 0, graphics._webGL.glPoints.length/6);
+	
+	PIXI.activateDefaultShader();
+}
+
+PIXI.WebGLGraphics.initGraphics = function(graphics)
+{
+	for (var i=graphics._webGL.lastIndex; i < graphics.graphicsData.length; i++) 
+	{
+		var data = graphics.graphicsData[i];
+		
+		if(data.type == PIXI.Graphics.POLY)
+		{
+			if(data.lineWidth > 0)
+			{
+				PIXI.WebGLGraphics.buildLine(data, graphics._webGL);
+			}
+		}
+		else if(data.type == PIXI.Graphics.RECT)
+		{
+			PIXI.WebGLGraphics.buildRectangle(data, graphics._webGL);
+		}
+		else if(data.type == PIXI.Graphics.CIRC)
+		{
+			PIXI.WebGLGraphics.buildCircle(data, graphics._webGL);
+		}
+	};
+	
+	//console.log(graphics._webGL.lastIndex - graphics.graphicsData.length )
+	graphics._webGL.lastIndex = graphics.graphicsData.length;
+	
+	// convert to points
+	graphics._webGL.glPoints = new Float32Array(graphics._webGL.points);
+	
+	var gl = PIXI.gl;
+	gl.bindBuffer(gl.ARRAY_BUFFER, graphics._webGL.buffer);
+	gl.bufferData(gl.ARRAY_BUFFER, graphics._webGL.glPoints, gl.STATIC_DRAW);
+}
+
+
+PIXI.WebGLGraphics.buildRectangle = function(graphicsData, webGLData)
+{
+	// --- //
+	// need to convert points to a nice regular data
+	// 
+	var rectData = graphicsData.points;
+	var x = rectData[0];
+	var y = rectData[1];
+	var width = rectData[2];
+	var height = rectData[3];
+	
+	
+	if(graphicsData.fill)
+	{
+		var color = HEXtoRGB(graphicsData.fillColor);
+		var alpha = graphicsData.fillAlpha;
+
+		var r = color[0] * alpha;
+		var g = color[1] * alpha;
+		var b = color[2] * alpha;
+	
+		var verts = webGLData.points;
+		
+		// dead triangle
+		verts.push(webGLData.lastPosition.x, webGLData.lastPosition.y, 1, 1, 1, 1); 
+		verts.push(x, y, 1, 1, 1, 1);
+		
+		// start
+		verts.push(x, y);
+		verts.push(r, g, b, alpha);
+		
+		verts.push(x + width, y);
+		verts.push(r, g, b, alpha);
+		
+		verts.push(x , y + height);
+		verts.push(r, g, b, alpha);
+		
+		verts.push(x + width, y + height);
+		verts.push(r, g, b, alpha);
+		
+		webGLData.lastPosition.x = x + width;
+		webGLData.lastPosition.y = y + height;
+	}
+	
+	if(graphicsData.lineWidth)
+	{
+		graphicsData.points = [x, y,
+				  x + width, y,
+				  x + width, y + height,
+				  x, y + height,
+				  x, y];
+	
+		PIXI.WebGLGraphics.buildLine(graphicsData, webGLData);
+	}
+	
+}
+
+PIXI.WebGLGraphics.buildCircle = function(graphicsData, webGLData)
+{
+	// --- //
+	// need to convert points to a nice regular data
+	// 
+	var rectData = graphicsData.points;
+	var x = rectData[0];
+	var y = rectData[1];
+	var radius = rectData[2];
+	
+	var totalSegs = 40
+	var seg = (Math.PI * 2) / totalSegs ;
+		
+	if(graphicsData.fill)
+	{
+		var color = HEXtoRGB(graphicsData.fillColor);
+		var alpha = graphicsData.fillAlpha;
+
+		var r = color[0] * alpha;
+		var g = color[1] * alpha;
+		var b = color[2] * alpha;
+	
+		var verts = webGLData.points;
+		
+		verts.push(webGLData.lastPosition.x, webGLData.lastPosition.y, 1, 1, 1, 1); 
+		verts.push(x, y, 1, 1, 1, 1);
+		
+		for (var i=0; i < totalSegs + 1 ; i++) 
+		{
+			verts.push(x,y);
+			verts.push(r, g, b, alpha);
+			
+			verts.push(x + Math.sin(seg * i) * radius,
+					   y + Math.cos(seg * i) * radius);
+		
+			verts.push(r, g, b, alpha);
+		};
+		
+		verts.push(x,y);
+		verts.push(1, 0, 0, 1);
+		
+		webGLData.lastPosition.x = x;
+		webGLData.lastPosition.y = y;
+	}
+	
+	if(graphicsData.lineWidth)
+	{
+		graphicsData.points = [];
+		
+		for (var i=0; i < totalSegs + 1; i++) 
+		{
+			graphicsData.points.push(x + Math.sin(seg * i) * radius,
+									 y + Math.cos(seg * i) * radius)
+		};
+		
+		PIXI.WebGLGraphics.buildLine(graphicsData, webGLData);
+	}
+	
+}
+
+PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
+{
+	var wrap = true;
+	var points = graphicsData.points;
+	if(points.length == 0)return;
+	
+	// get first and last point.. figure out the middle!
+	var firstPoint = new PIXI.Point( points[0], points[1] );
+	var lastPoint = new PIXI.Point( points[points.length - 2], points[points.length - 1] );
+	
+	// if the first point is the last point - goona have issues :)
+	if(firstPoint.x == lastPoint.x && firstPoint.y == lastPoint.y)
+	{
+		points.pop();
+		points.pop();
+		
+		lastPoint = new PIXI.Point( points[points.length - 2], points[points.length - 1] );
+		
+		var midPointX = lastPoint.x + (firstPoint.x - lastPoint.x) *0.5;
+		var midPointY = lastPoint.y + (firstPoint.y - lastPoint.y) *0.5;
+		
+		points.unshift(midPointX, midPointY);
+		points.push(midPointX, midPointY)
+	}
+	
+	var verts = webGLData.points;
+	
+	var length = points.length / 2;
+	
+	// DRAW the Line
+	var width = graphicsData.lineWidth / 2;
+	
+	var color = HEXtoRGB(graphicsData.lineColor);
+	var alpha = graphicsData.lineAlpha;
+	var r = color[0] * alpha;
+	var g = color[1] * alpha;
+	var b = color[2] * alpha;
+	
+	// i = 0 //
+	var point1 = new PIXI.Point( points[0], points[1] );
+	var point2 = new PIXI.Point( points[2], points[3] );
+	var perp = getPerp(point1, point2);
+	var dist = Math.sqrt(perp.x*perp.x + perp.y*perp.y);
+	
+	perp.x /= dist;
+	perp.y /= dist;
+	perp.x *= width;
+	perp.y *= width;
+	
+	// insert dead triangle!
+	verts.push(webGLData.lastPosition.x, webGLData.lastPosition.y, 1, 1, 1, 1); 
+	verts.push(points[0] - perp.x , points[1] - perp.y, 1, 1, 1, 1);
+	
+	
+	// start
+	verts.push(points[0] - perp.x , points[1] - perp.y);
+	verts.push(r, g, b, alpha);
+	
+	verts.push(points[0] + perp.x , points[1] + perp.y);
+	verts.push(r, g, b, alpha);
+	
+	for (var i = 1; i < length-1; i++) 
+	{
+		var point1 = new PIXI.Point( points[(i-1)*2],points[(i-1)*2 + 1] );
+		var point2 = new PIXI.Point(points[(i)*2],points[(i)*2 + 1] );
+		var point3 = new PIXI.Point(points[(i+1)*2],points[(i+1)*2 + 1] );
+		
+		var perp = getPerp(point1, point2);
+		var dist = Math.sqrt(perp.x*perp.x + perp.y*perp.y);
+		perp.x /= dist;
+		perp.y /= dist;
+		perp.x *= width;
+		perp.y *= width;
+
+		var perp2 = getPerp(point2, point3);
+		var dist2 = Math.sqrt(perp2.x*perp2.x + perp2.y*perp2.y);
+		perp2.x /= dist2;
+		perp2.y /= dist2;
+		perp2.x *= width;
+		perp2.y *= width;
+		
+		var p1 = new PIXI.Point(-perp.x+ point2.x , -perp.y+point2.y);
+		var p1_ = new PIXI.Point(-perp.x+ point1.x, -perp.y+point1.y);
+		
+		var p2 = new PIXI.Point(-perp2.x+ point2.x , -perp2.y+point2.y );
+		var p2_ = new PIXI.Point(-perp2.x+ point3.x , -perp2.y+point3.y );
+		
+		var p = lineIntersectLine(p1, p1_, p2, p2_);
+		
+		var pdist = (p.x -point2.x) * (p.x -point2.x) + (p.y -point2.y) + (p.y -point2.y);
+		
+		if(pdist > 140 * 140)
+		{
+			var perp3 = new PIXI.Point(perp.x - perp2.x, perp.y - perp2.y);
+			var dist3 = Math.sqrt(perp3.x*perp3.x + perp3.y*perp3.y);
+			perp3.x /= dist3;
+			perp3.y /= dist3;
+			perp3.x *= width;
+			perp3.y *= width;
+			
+			verts.push(point2.x - perp3.x, point2.y -perp3.y);
+			verts.push(r, g, b, alpha);
+	
+			verts.push(point2.x + perp3.x, point2.y +perp3.y);
+			verts.push(r, g, b, alpha);
+	
+			verts.push(point2.x - perp3.x, point2.y -perp3.y);
+			verts.push(r, g, b, alpha);
+		}
+		else
+		{
+			verts.push(p.x , p.y);
+			verts.push(r, g, b, alpha);
+	
+			verts.push(point2.x - (p.x-point2.x), point2.y - (p.y - point2.y));//, 4);
+			verts.push(r, g, b, alpha);
+		}
+	}
+	
+	var point1 = new PIXI.Point( points[(length-2)*2], points[(length-2)*2 + 1] );
+	var point2 = new PIXI.Point( points[(length-1)*2], points[(length-1)*2 + 1] );
+	
+	var perp = getPerp(point1, point2);
+	var dist = Math.sqrt(perp.x*perp.x + perp.y*perp.y);
+	perp.x /= dist;
+	perp.y /= dist;
+	perp.x *= width;
+	perp.y *= width;
+	verts.push(point2.x - perp.x , point2.y - perp.y)
+	verts.push(r, g, b, alpha);
+	
+	verts.push(point2.x + perp.x , point2.y + perp.y)
+	verts.push(r, g, b, alpha);
+	
+	// set last triangle!
+	webGLData.lastPosition.x = point2.x + perp.x;
+	webGLData.lastPosition.y = point2.y + perp.y;
+	
+}
+
+function HEXtoRGB(hex) {
+	return [(hex >> 16 & 0xFF) / 255, ( hex >> 8 & 0xFF) / 255, (hex & 0xFF)/ 255];
+}
+
+
+function normalise(point)
+{
+	var dist = Math.sqrt(point.x * point.x + point.y * point.y);
+	return new PIXI.Point(point.x / dist, point.y / dist);
+}
+
+function getPerp(point, point2)
+{
+	return new PIXI.Point(-(point.y - point2.y), point.x - point2.x);
+}
+
+function lineIntersectLine(A,B,E,F) 
+{
+    var ip;
+    var a1;
+    var a2;
+    var b1;
+    var b2;
+    var c1;
+    var c2;
+ 
+    a1= B.y-A.y;
+    b1= A.x-B.x;
+    c1= B.x*A.y - A.x*B.y;
+    a2= F.y-E.y;
+    b2= E.x-F.x;
+    c2= F.x*E.y - E.x*F.y;
+ 
+    var denom=a1*b2 - a2*b1;
+    
+    if (denom == 0) {
+    //    return null;
+    console.log("!")
+    	denom+=1;
+    }
+    ip=new PIXI.Point();
+    ip.x=(b1*c2 - b2*c1)/denom;
+    ip.y=(a2*c1 - a1*c2)/denom;
+
+    return ip;
+}	
+
+
+
+PIXI.primitiveShaderFragmentSrc = [
+  "precision mediump float;",
+  "varying vec4 vColor;",
+  "void main(void) {",
+    "gl_FragColor = vColor;",
+  "}"
+];
+
+PIXI.primitiveShaderVertexSrc = [
+  "attribute vec2 aVertexPosition;",
+  "attribute vec4 aColor;",
+  "uniform mat4 uMVMatrix;",
+  "varying vec4 vColor;",
+  "void main(void) {",
+    "gl_Position = uMVMatrix * vec4(aVertexPosition, 1.0, 1.0);",
+    "vColor = aColor;",
+  "}"
+];
+
+
+PIXI.WebGLGraphics.initShaders = function() 
+{
+	var gl = PIXI.gl;
+	var fragmentShader = PIXI.CompileFragmentShader(gl, PIXI.primitiveShaderFragmentSrc);
+	var vertexShader = PIXI.CompileVertexShader(gl, PIXI.primitiveShaderVertexSrc);
+	
+	PIXI.shaderProgram2 = gl.createProgram();
+	
+	var shaderProgram = PIXI.shaderProgram2;
+	
+    gl.attachShader(shaderProgram, vertexShader);
+    gl.attachShader(shaderProgram, fragmentShader);
+    gl.linkProgram(shaderProgram);
+
+    if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+        alert("Could not initialise shaders");
+    }
+
+    gl.useProgram(shaderProgram);
+
+    shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+    shaderProgram.colorAttribute = gl.getAttribLocation(shaderProgram, "aColor");
+    
+    shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+}
+
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
 PIXI._defaultFrame = new PIXI.Rectangle(0,0,1,1);
 
 // an instance of the gl context..
@@ -2579,7 +3029,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
 	
 	this.view = view || document.createElement( 'canvas' ); 
     this.view.width = this.width;
-	this.view.height = this.height;  
+	this.view.height = this.height;
 	
 	// deal with losing context..	
     var scope = this;
@@ -3664,7 +4114,10 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 		{
 			if(startBatch.visible) startBatch.renderWebGL(this, projectionMatrix);
 		}
-		
+		else if(renderable instanceof PIXI.Graphics)
+		{
+			if(renderable.visible) PIXI.WebGLGraphics.renderGraphics(renderable);//, projectionMatrix);
+		}
 		return;
 	}
 	
@@ -3689,7 +4142,10 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 	{
 		if(startBatch.visible) startBatch.renderWebGL(this, projectionMatrix);
 	}
-	
+	else if(renderable instanceof PIXI.Graphics)
+		{
+			if(renderable.visible) PIXI.WebGLGraphics.renderGraphics(renderable);//, projectionMatrix);
+		}
 	// DO the middle batchs..
 	for (var i=startBatchIndex+1; i < endBatchIndex; i++) 
 	{
@@ -3711,7 +4167,10 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 		{
 			if(renderable.visible) renderable.renderWebGL(this, projectionMatrix);
 		}
-		
+		else if(renderable instanceof PIXI.Graphics)
+		{
+			if(renderable.visible) PIXI.WebGLGraphics.renderGraphics(renderable);//, projectionMatrix);
+		}
 	}
 	
 	// DO the last batch..
@@ -3730,6 +4189,10 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 	else if(endBatch instanceof PIXI.CustomRenderable)
 	{
 		if(endBatch.visible) endBatch.renderWebGL(this, projectionMatrix);
+	}
+	else if(renderable instanceof PIXI.Graphics)
+	{
+		if(renderable.visible) PIXI.WebGLGraphics.renderGraphics(renderable);//, projectionMatrix);
 	}
 }
 
@@ -4591,7 +5054,7 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 	}
 	else if(displayObject instanceof PIXI.Graphics)
 	{
-		displayObject.render(this);
+		PIXI.CanvasGraphics.renderGraphics(displayObject, context);
 	}
 	
 	// render!
@@ -4738,6 +5201,209 @@ PIXI.CanvasRenderer.prototype.renderStrip = function(strip)
 
 
 
+
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+
+/**
+ * A DisplayObjectContainer represents a collection of display objects. It is the base class of all display objects that act as a container for other objects.
+ * @class DisplayObjectContainer 
+ * @extends DisplayObject
+ * @constructor
+ */
+PIXI.CanvasGraphics = function()
+{
+	
+}
+
+// constructor
+
+PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
+{
+	
+	for (var i=0; i < graphics.graphicsData.length; i++) 
+	{
+		var data = graphics.graphicsData[i];
+		var points = data.points;
+		
+		context.strokeStyle = color = '#' + ('00000' + ( data.lineColor | 0).toString(16)).substr(-6);
+
+		context.lineWidth = data.lineWidth;
+		context.globalAlpha = data.lineAlpha;
+		
+		if(data.type == PIXI.Graphics.POLY)
+		{
+			if(data.lineWidth <= 0)continue;
+			
+			context.beginPath();
+			
+			context.moveTo(points[0], points[1]);
+			
+			for (var j=1; j < points.length/2; j++)
+			{
+				context.lineTo(points[j * 2], points[j * 2 + 1]);
+			} 
+	      	
+	      	// if the first and last point are the same close the path - much neater :)
+	      	if(points[0] == points[points.length-2] && points[1] == points[points.length-1])
+	      	{
+	      		context.closePath();
+	      	}
+			
+			context.stroke();
+		}
+		else if(data.type == PIXI.Graphics.RECT)
+		{
+			// TODO - need to be Undefined!
+			if(data.fillColor)
+			{
+				context.fillStyle = color = '#' + ('00000' + ( data.fillColor | 0).toString(16)).substr(-6);
+
+				context.fillRect(points[0], points[1], points[2], points[3]);
+				
+			}
+			if(data.lineWidth)
+			{
+				context.strokeRect(points[0], points[1], points[2], points[3]);
+			}
+		}
+		else if(data.type == PIXI.Graphics.CIRC)
+		{
+			// TODO - need to be Undefined!
+      		context.beginPath();
+			context.arc(points[0], points[1], points[2],0,2*Math.PI);
+			context.closePath();
+			
+			if(data.fill)
+			{
+				context.fillStyle = color = '#' + ('00000' + ( data.fillColor | 0).toString(16)).substr(-6);
+      			context.fill();
+			}
+			if(data.lineWidth)
+			{
+      			context.stroke();
+			}
+		}
+      	
+	   
+	};
+}
+
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+
+/**
+ * A DisplayObjectContainer represents a collection of display objects. It is the base class of all display objects that act as a container for other objects.
+ * @class DisplayObjectContainer 
+ * @extends DisplayObject
+ * @constructor
+ */
+PIXI.Graphics = function()
+{
+	PIXI.DisplayObjectContainer.call( this );
+	
+	this.renderable = true;
+	
+	// style - color
+	// style - thickness
+	// alpha - 
+	this.fillAlpha = 1;
+	
+	this.lineWidth = 2;
+	this.lineColor = "#FF0000";
+	
+	this.graphicsData = [];
+	
+}
+
+// SOME TYPES:
+PIXI.Graphics.POLY = 0;
+PIXI.Graphics.RECT = 1;
+PIXI.Graphics.CIRC = 2;
+
+// constructor
+PIXI.Graphics.constructor = PIXI.Graphics;
+PIXI.Graphics.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
+
+PIXI.Graphics.prototype.lineStyle = function(lineWidth, color, alpha)
+{
+	
+	this.lineWidth = lineWidth || 0;
+	this.lineColor = color || 0;
+	this.lineAlpha = (alpha == undefined) ? 1 : alpha;
+	
+	this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha, points:[], type:PIXI.Graphics.POLY};
+	this.graphicsData.push(this.currentPath);
+	
+	// TODO store the last position of the line in the current
+}
+
+
+PIXI.Graphics.prototype.moveTo = function(x, y)
+{
+	this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha, points:[], type:PIXI.Graphics.POLY};
+	
+	this.currentPath.points.push(x, y);
+	
+	this.graphicsData.push(this.currentPath);
+}
+
+PIXI.Graphics.prototype.lineTo = function(x, y)
+{
+	this.currentPath.points.push(x, y);
+	this.dirty = true;
+}
+
+PIXI.Graphics.prototype.beginFill = function(color, alpha)
+{
+	this.filling = true;
+	this.fillColor = color || 0;
+	this.fillAlpha = alpha || 1;
+}
+
+PIXI.Graphics.prototype.endFill = function()
+{
+	this.filling = false;
+	this.fillColor = null;
+	this.fillAlpha = 1;
+}
+
+PIXI.Graphics.prototype.updateTransform = function()
+{
+	if(!this.visible)return;
+	PIXI.DisplayObject.prototype.updateTransform.call( this );
+}
+
+PIXI.Graphics.prototype.drawRect = function( x, y, width, height )
+{
+	this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha, 
+						fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling, 
+						points:[x, y, width, height], type:PIXI.Graphics.RECT};
+						
+	this.graphicsData.push(this.currentPath);
+	this.dirty = true;
+}
+
+PIXI.Graphics.prototype.drawCircle = function( x, y, radius)
+{
+	this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha, 
+						fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling, 
+						points:[x, y, radius], type:PIXI.Graphics.CIRC};
+						
+	this.graphicsData.push(this.currentPath);
+	this.dirty = true;
+}
+
+PIXI.Graphics.prototype.clear = function()
+{
+	this.dirty = true;
+	this.clearDirty = true;
+	this.graphicsData = [];
+}
 
 /**
  * @author Mat Groves http://matgroves.com/
@@ -5079,7 +5745,7 @@ PIXI.TilingSprite.prototype.onTextureUpdate = function(event)
  * See example 12 (http://www.goodboydigital.com/pixijs/examples/12/) to see a working example and check out the source
  * @class Spine
  * @constructor
- * @extends 
+ * @extends DisplayObjectContainer
  * @param {String} url the url of the spine anim file to be used
  */
 PIXI.Spine = function(url)
