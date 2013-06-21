@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.0.0</em>
+            <em>API Docs for: 1.3.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -196,8 +196,10 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
     	throw new Error(&quot; This browser does not support webGL. Try using the canvas renderer&quot; + this);
     }
     
-    PIXI.WebGLGraphics.initShaders();
-    this.initShaders();
+    PIXI.initPrimitiveShader();
+    PIXI.initDefaultShader();
+    
+    PIXI.activateDefaultShader();
     
     var gl = this.gl;
     PIXI.WebGLRenderer.gl = gl;
@@ -209,6 +211,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
     gl.colorMask(true, true, true, this.transparent); 
     
     this.projectionMatrix =  PIXI.mat4.create();
+    
     this.resize(this.width, this.height);
     this.contextLost = false;
     
@@ -246,38 +249,7 @@ PIXI.WebGLRenderer.returnBatch = function(batch)
 &#x2F;**
  * @private
  *&#x2F;
-PIXI.WebGLRenderer.prototype.initShaders = function() 
-{
-	var gl = this.gl;
-	var fragmentShader = PIXI.CompileFragmentShader(gl, PIXI.shaderFragmentSrc);
-	var vertexShader = PIXI.CompileVertexShader(gl, PIXI.shaderVertexSrc);
-	
-	PIXI.shaderProgram = gl.createProgram();
-	
-	var shaderProgram = PIXI.shaderProgram;
-	
-    gl.attachShader(shaderProgram, vertexShader);
-    gl.attachShader(shaderProgram, fragmentShader);
-    gl.linkProgram(shaderProgram);
 
-    if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-        alert(&quot;Could not initialise shaders&quot;);
-    }
-
-    gl.useProgram(shaderProgram);
-
-    shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, &quot;aVertexPosition&quot;);
-
-    shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, &quot;aTextureCoord&quot;);
-	
-	shaderProgram.colorAttribute = gl.getAttribLocation(shaderProgram, &quot;aColor&quot;);
-
-
-    shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, &quot;uMVMatrix&quot;);
-    shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, &quot;uSampler&quot;);
-    
-    PIXI.activateDefaultShader();
-}
 
 
 &#x2F;**

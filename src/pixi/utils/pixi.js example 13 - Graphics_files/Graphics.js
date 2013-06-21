@@ -22,7 +22,6 @@ PIXI.Graphics = function()
 	
 	this.graphicsData = [];
 	
-	this.currentPath = {points:[]};
 }
 
 // constructor
@@ -37,13 +36,11 @@ PIXI.Graphics.prototype = Object.create( PIXI.DisplayObjectContainer.prototype )
  */
 PIXI.Graphics.prototype.lineStyle = function(lineWidth, color, alpha)
 {
-	if(this.currentPath.points.length == 0)this.graphicsData.pop();
-	
 	this.lineWidth = lineWidth || 0;
 	this.lineColor = color || 0;
 	this.lineAlpha = (alpha == undefined) ? 1 : alpha;
 	
-	this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha, 
+	this.currentPath = this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha, 
 						fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling, points:[], type:PIXI.Graphics.POLY};
 	
 	this.graphicsData.push(this.currentPath);
@@ -56,8 +53,6 @@ PIXI.Graphics.prototype.lineStyle = function(lineWidth, color, alpha)
  */
 PIXI.Graphics.prototype.moveTo = function(x, y)
 {
-	if(this.currentPath.points.length == 0)this.graphicsData.pop();
-	
 	this.currentPath = this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha, 
 						fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling, points:[], type:PIXI.Graphics.POLY};
 	
@@ -110,8 +105,6 @@ PIXI.Graphics.prototype.endFill = function()
  */
 PIXI.Graphics.prototype.drawRect = function( x, y, width, height )
 {
-	if(this.currentPath.points.length == 0)this.graphicsData.pop();
-	
 	this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha, 
 						fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling, 
 						points:[x, y, width, height], type:PIXI.Graphics.RECT};
@@ -128,8 +121,6 @@ PIXI.Graphics.prototype.drawRect = function( x, y, width, height )
  */
 PIXI.Graphics.prototype.drawCircle = function( x, y, radius)
 {
-	if(this.currentPath.points.length == 0)this.graphicsData.pop();
-	
 	this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha, 
 						fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling, 
 						points:[x, y, radius, radius], type:PIXI.Graphics.CIRC};
@@ -147,8 +138,6 @@ PIXI.Graphics.prototype.drawCircle = function( x, y, radius)
  */
 PIXI.Graphics.prototype.drawElipse = function( x, y, width, height)
 {
-	if(this.currentPath.points.length == 0)this.graphicsData.pop();
-	
 	this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha, 
 						fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling, 
 						points:[x, y, width, height], type:PIXI.Graphics.ELIP};

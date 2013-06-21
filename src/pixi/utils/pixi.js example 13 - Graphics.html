@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<!-- saved from url=(0077)http://127.0.0.1:8020/pixi.js/examples/example%2013%20-%20Graphics/index.html -->
+<html><script>(function main() {
+    // Create enabled event
+    function fireEnabledEvent() {
+        // If gli exists, then we are already present and shouldn't do anything
+        if (!window.gli) {
+            setTimeout(function () {
+                var enabledEvent = document.createEvent("Event");
+                enabledEvent.initEvent("WebGLEnabledEvent", true, true);
+                document.dispatchEvent(enabledEvent);
+            }, 0);
+        } else {
+            //console.log("WebGL Inspector already embedded on the page - disabling extension");
+        }
+    };
+
+    // Grab the path root from the extension
+    document.addEventListener("WebGLInspectorReadyEvent", function (e) {
+        var pathElement = document.getElementById("__webglpathroot");
+        if (window["gliloader"]) {
+            gliloader.pathRoot = pathElement.innerText;
+        } else {
+            // TODO: more?
+            window.gliCssUrl = pathElement.innerText + "gli.all.css";
+        }
+    }, false);
+
+    // Rewrite getContext to snoop for webgl
+    var originalGetContext = HTMLCanvasElement.prototype.getContext;
+    if (!HTMLCanvasElement.prototype.getContextRaw) {
+        HTMLCanvasElement.prototype.getContextRaw = originalGetContext;
+    }
+    HTMLCanvasElement.prototype.getContext = function () {
+        var ignoreCanvas = this.internalInspectorSurface;
+        if (ignoreCanvas) {
+            return originalGetContext.apply(this, arguments);
+        }
+
+        var result = originalGetContext.apply(this, arguments);
+        if (result == null) {
+            return null;
+        }
+
+        var contextNames = ["moz-webgl", "webkit-3d", "experimental-webgl", "webgl", "3d"];
+        var requestingWebGL = contextNames.indexOf(arguments[0]) != -1;
+        if (requestingWebGL) {
+            // Page is requesting a WebGL context!
+            fireEnabledEvent(this);
+
+            // If we are injected, inspect this context
+            if (window.gli) {
+                if (gli.host.inspectContext) {
+                    // TODO: pull options from extension
+                    result = gli.host.inspectContext(this, result);
+                    // NOTE: execute in a timeout so that if the dom is not yet
+                    // loaded this won't error out.
+                    window.setTimeout(function() {
+                        var hostUI = new gli.host.HostUI(result);
+                        result.hostUI = hostUI; // just so we can access it later for debugging
+                    }, 0);
+                }
+            }
+        }
+
+        return result;
+    };
+})();</script><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+	<title>pixi.js example 13 - Graphics</title>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			background-color: #000000;
+		}
+	</style>
+	
+	<script src="./pixi.js example 13 - Graphics_files/pixi.js"></script>
+	<script src="./pixi.js example 13 - Graphics_files/WebGLGraphics.js"></script>
+	<script src="./pixi.js example 13 - Graphics_files/WebGLShaders.js"></script>
+	<script src="./pixi.js example 13 - Graphics_files/CanvasGraphics.js"></script>
+	<script src="./pixi.js example 13 - Graphics_files/CanvasRenderer.js"></script>
+	<script src="./pixi.js example 13 - Graphics_files/WebGLRenderer.js"></script>
+	<script src="./pixi.js example 13 - Graphics_files/WebGLGraphics.js"></script>
+	<script src="./pixi.js example 13 - Graphics_files/Graphics.js"></script>
+	<script src="./pixi.js example 13 - Graphics_files/Polyk.js"></script>
+</head>
+<body>
+	<script>
+	
+
+	// create an new instance of a pixi stage
+	var stage = new PIXI.Stage(0x000000, true);
+	
+	stage.setInteractive(true);
+
+	// create a renderer instance
+	//var renderer = new PIXI.CanvasRenderer(800, 600);//PIXI.autoDetectRenderer(800, 600);
+	var renderer = PIXI.autoDetectRenderer(800, 600);
+	
+	// set the canvas width and height to fill the screen
+	//	renderer.view.style.width = window.innerWidth + "px";
+	//renderer.view.style.height = window.innerHeight + "px";
+	renderer.view.style.display = "block";
+	 
+	// add render view to DOM
+	document.body.appendChild(renderer.view);
+	
+	// OOH! SHINY!
+	// create two render textures.. these dynamic textures will be used to draw the scene into itself
+	
+	var graphics = new PIXI.Graphics();
+	
+	graphics.beginFill(0xFF0000);
+	graphics.lineStyle(10, 0x30FF00, 0.5);
+	graphics.moveTo(50,50);
+	graphics.lineTo(250, 50);
+	graphics.lineTo(100, 100);
+	graphics.lineTo(250, 220);
+	graphics.lineTo(50, 220);
+	
+	graphics.lineTo(50, 50);
+	graphics.endFill();
+	graphics.lineStyle(2, 0x30FFFF, 1);
+	
+	
+	/*
+//	graphics.beginFill(0xFF794B);
+	graphics.drawRect(250, 250, 300, 100);
+	
+	
+	graphics.drawCircle(350, 350,100);
+	graphics.endFill();
+	
+	graphics.lineTo(250, 50);
+	
+	graphics.lineStyle(10, 0xFF0000, 1);
+	graphics.moveTo(400,400);
+	graphics.lineTo(550, 50);
+	
+	graphics.lineStyle(30, 0xFF0000, 1);
+	graphics.moveTo(400,100);
+	graphics.lineTo(550, 50);
+	
+	//graphics.lineTo(92, 20);
+	//graphics.lineTo(450, 223);
+	*/
+	/*
+	 * point1 = new Point(350, 50);
+			
+			point2 = new Point(100, 100);
+			
+			point3 = new Point(250, 220);
+			
+			
+			points = new Vector.<Point>();
+			points.push(point1, point2, point3, new Point(350, 220), new Point(450, 223));
+			
+	 */
+	//graphics.beginFill(0xFF700B);
+//	graphics.drawElipse(450,320, 100, 200);
+	
+	graphics.lineTo(410,300);
+	
+	graphics.lineTo(450,320);
+	graphics.lineTo(570,350);
+	graphics.lineTo(580,120);
+	graphics.lineTo(630,120);
+	
+	var sprite = PIXI.Sprite.fromImage("spinObj_01.png");
+	var container = new PIXI.DisplayObjectContainer();
+	container.addChild(sprite);
+	sprite.position.x = 300;
+	
+	stage.addChild(container);
+	stage.addChild(graphics);
+	
+	stage.click = function()
+	{
+		//graphics.clear();	
+	}
+	
+	requestAnimFrame(animate);
+
+	function animate() {
+	    renderer.render(stage);
+	    requestAnimFrame( animate );
+	    
+	    container.position.x = 100;//stage.interactionManager.mouse.local.x;
+	    container.position.y = 200;//stage.interactionManager.mouse.local.y;
+	//	graphics.lineStyle(Math.random() * 30, Math.random() * 0xFFFFFF, 1);
+	 //   graphics.moveTo(Math.random() * 600,Math.random() * 600);
+	//	graphics.lineTo(Math.random() * 600,Math.random() * 600);
+//		graphics.scale.x = 3;
+	//	container.rotation += 0.01;
+//		sprite.rotation -= 0.01;
+	}
+
+	</script><canvas width="800" height="600" style="display: block; cursor: default;"></canvas>
+
+	
+
+</body></html>

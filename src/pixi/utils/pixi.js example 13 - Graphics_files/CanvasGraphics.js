@@ -27,11 +27,11 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 		context.strokeStyle = color = '#' + ('00000' + ( data.lineColor | 0).toString(16)).substr(-6);
 
 		context.lineWidth = data.lineWidth;
+		context.globalAlpha = data.lineAlpha;
 		
 		if(data.type == PIXI.Graphics.POLY)
 		{
-			
-			//if(data.lineWidth <= 0)continue;
+			if(data.lineWidth <= 0)continue;
 			
 			context.beginPath();
 			
@@ -48,31 +48,20 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 	      		context.closePath();
 	      	}
 			
-			if(data.fill)
-			{
-				context.globalAlpha = data.fillAlpha;
-				context.fillStyle = color = '#' + ('00000' + ( data.fillColor | 0).toString(16)).substr(-6);
-      			context.fill();
-			}
-			if(data.lineWidth)
-			{
-				context.globalAlpha = data.lineAlpha;
-      			context.stroke();
-			}
+			context.stroke();
 		}
 		else if(data.type == PIXI.Graphics.RECT)
 		{
 			// TODO - need to be Undefined!
 			if(data.fillColor)
 			{
-				context.globalAlpha = data.fillAlpha;
 				context.fillStyle = color = '#' + ('00000' + ( data.fillColor | 0).toString(16)).substr(-6);
+
 				context.fillRect(points[0], points[1], points[2], points[3]);
 				
 			}
 			if(data.lineWidth)
 			{
-				context.globalAlpha = data.lineAlpha;
 				context.strokeRect(points[0], points[1], points[2], points[3]);
 			}
 		}
@@ -85,13 +74,11 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 			
 			if(data.fill)
 			{
-				context.globalAlpha = data.fillAlpha;
 				context.fillStyle = color = '#' + ('00000' + ( data.fillColor | 0).toString(16)).substr(-6);
       			context.fill();
 			}
 			if(data.lineWidth)
 			{
-				context.globalAlpha = data.lineAlpha;
       			context.stroke();
 			}
 		}
@@ -128,13 +115,11 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 			
 			if(data.fill)
 			{
-				context.globalAlpha = data.fillAlpha;
 				context.fillStyle = color = '#' + ('00000' + ( data.fillColor | 0).toString(16)).substr(-6);
       			context.fill();
 			}
 			if(data.lineWidth)
 			{
-				context.globalAlpha = data.lineAlpha;
       			context.stroke();
 			}
 		}

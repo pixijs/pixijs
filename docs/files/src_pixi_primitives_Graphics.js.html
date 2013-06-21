@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.0.0</em>
+            <em>API Docs for: 1.3.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -178,15 +178,12 @@ PIXI.Graphics.prototype = Object.create( PIXI.DisplayObjectContainer.prototype )
 
 PIXI.Graphics.prototype.lineStyle = function(lineWidth, color, alpha)
 {
-	
 	this.lineWidth = lineWidth || 0;
 	this.lineColor = color || 0;
 	this.lineAlpha = (alpha == undefined) ? 1 : alpha;
 	
 	this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha, points:[], type:PIXI.Graphics.POLY};
 	this.graphicsData.push(this.currentPath);
-	
-	&#x2F;&#x2F; TODO store the last position of the line in the current
 }
 
 

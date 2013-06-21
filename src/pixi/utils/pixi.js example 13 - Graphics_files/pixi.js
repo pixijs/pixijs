@@ -2505,136 +2505,6 @@ PIXI.autoDetectRenderer = function(width, height, view, transparent)
 
 
 
-	/*
-		PolyK library
-		url: http://polyk.ivank.net
-		Released under MIT licence.
-		
-		Copyright (c) 2012 Ivan Kuckir
-
-		Permission is hereby granted, free of charge, to any person
-		obtaining a copy of this software and associated documentation
-		files (the "Software"), to deal in the Software without
-		restriction, including without limitation the rights to use,
-		copy, modify, merge, publish, distribute, sublicense, and/or sell
-		copies of the Software, and to permit persons to whom the
-		Software is furnished to do so, subject to the following
-		conditions:
-
-		The above copyright notice and this permission notice shall be
-		included in all copies or substantial portions of the Software.
-
-		THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-		EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-		OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-		NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-		HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-		WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-		FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-		OTHER DEALINGS IN THE SOFTWARE.
-	
-		This is an amazing lib! 
-		
-		slightly modified by mat groves (matgroves.com);
-	* */
-	
-	PIXI.PolyK = {};
-	
-	PIXI.PolyK.Triangulate = function(p)
-	{
-		var sign = true;
-		
-		var n = p.length>>1;
-		if(n<3) return [];
-		var tgs = [];
-		var avl = [];
-		for(var i=0; i<n; i++) avl.push(i);
-		
-		var i = 0;
-		var al = n;
-		while(al > 3)
-		{
-			var i0 = avl[(i+0)%al];
-			var i1 = avl[(i+1)%al];
-			var i2 = avl[(i+2)%al];
-			
-			var ax = p[2*i0],  ay = p[2*i0+1];
-			var bx = p[2*i1],  by = p[2*i1+1];
-			var cx = p[2*i2],  cy = p[2*i2+1];
-			
-			var earFound = false;
-			if(PIXI.PolyK._convex(ax, ay, bx, by, cx, cy, sign))
-			{
-				earFound = true;
-				for(var j=0; j<al; j++)
-				{
-					var vi = avl[j];
-					if(vi==i0 || vi==i1 || vi==i2) continue;
-					if(PIXI.PolyK._PointInTriangle(p[2*vi], p[2*vi+1], ax, ay, bx, by, cx, cy)) {earFound = false; break;}
-				}
-			}
-			if(earFound)
-			{
-				tgs.push(i0, i1, i2);
-				avl.splice((i+1)%al, 1);
-				al--;
-				i = 0;
-			}
-			else if(i++ > 3*al) 
-			{
-				// need to flip flip reverse it!
-				// reset!
-				if(sign)
-				{
-					var tgs = [];
-					avl = [];
-					for(var i=0; i<n; i++) avl.push(i);
-					
-					i = 0;
-					al = n;
-					
-					sign = false;
-				}
-				else
-				{
-					return [];
-				}				
-			}
-		}
-		tgs.push(avl[0], avl[1], avl[2]);
-		return tgs;
-	}
-	
-	PIXI.PolyK._PointInTriangle = function(px, py, ax, ay, bx, by, cx, cy)
-	{
-		var v0x = cx-ax;
-		var v0y = cy-ay;
-		var v1x = bx-ax;
-		var v1y = by-ay;
-		var v2x = px-ax;
-		var v2y = py-ay;
-		
-		var dot00 = v0x*v0x+v0y*v0y;
-		var dot01 = v0x*v1x+v0y*v1y;
-		var dot02 = v0x*v2x+v0y*v2y;
-		var dot11 = v1x*v1x+v1y*v1y;
-		var dot12 = v1x*v2x+v1y*v2y;
-		
-		var invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
-		var u = (dot11 * dot02 - dot01 * dot12) * invDenom;
-		var v = (dot00 * dot12 - dot01 * dot02) * invDenom;
-
-		// Check if point is in triangle
-		return (u >= 0) && (v >= 0) && (u + v < 1);
-	}
-	
-
-	PIXI.PolyK._convex = function(ax, ay, bx, by, cx, cy, sign)
-	{
-		return ((ay-by)*(cx-bx) + (bx-ax)*(cy-by) >= 0) == sign;
-	}
-	
-
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -2684,6 +2554,7 @@ PIXI.stripShaderVertexSrc = [
   "varying float vColor;",
   "void main(void) {",
 	"vec3 v = translationMatrix * vec3(aVertexPosition, 1.0);",
+	//"vec2 v = aVertexPosition;",
     "gl_Position = vec4( v.x / projectionVector.x -1.0, v.y / -projectionVector.y + 1.0 , 0.0, 1.0);",
     "vTextureCoord = aTextureCoord;",
     "vColor = aColor;",
@@ -2865,10 +2736,9 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
 	PIXI.activatePrimitiveShader();
 	var gl = PIXI.gl;
 	
+	// graphicsObject
 	// a collection of "shapes" (mainly lines right now!)
-	if(!graphics._webGL)graphics._webGL = {points:[], indices:[], lastIndex:0, 
-										   buffer:gl.createBuffer(),
-										   indexBuffer:gl.createBuffer()};
+	if(!graphics._webGL)graphics._webGL = {points:[], lastPosition:new PIXI.Point(), lastIndex:0, buffer:gl.createBuffer()};
 	
 	if(graphics.dirty)
 	{
@@ -2886,22 +2756,22 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
 	}
 	
 	// This  could be speeded up fo sure!
+	
 	var m = PIXI.mat3.clone(graphics.worldTransform);
 	
 	PIXI.mat3.transpose(m);
 	
 	// set the matrix transform for the 
  	gl.uniformMatrix3fv(PIXI.primitiveProgram.translationMatrix, false, m);
+ 	
 	gl.uniform2f(PIXI.primitiveProgram.projectionVector, projection.x, projection.y);
 
 	gl.bindBuffer(gl.ARRAY_BUFFER, graphics._webGL.buffer);
+	
 	gl.vertexAttribPointer(PIXI.primitiveProgram.vertexPositionAttribute, 2, gl.FLOAT, false, 4 * 6, 0);
 	gl.vertexAttribPointer(PIXI.primitiveProgram.colorAttribute, 4, gl.FLOAT, false,4 * 6, 2 * 4);
 	
-	// set the index buffer!
-	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, graphics._webGL.indexBuffer);
-	
-	gl.drawElements(gl.TRIANGLE_STRIP,  graphics._webGL.indices.length, gl.UNSIGNED_SHORT, 0 );
+	gl.drawArrays(gl.TRIANGLE_STRIP, 0, graphics._webGL.glPoints.length/6);
 	
 	// return to default shader...
 	PIXI.activateDefaultShader();
@@ -2913,15 +2783,8 @@ PIXI.WebGLGraphics.updateGraphics = function(graphics)
 	{
 		var data = graphics.graphicsData[i];
 		
-		
 		if(data.type == PIXI.Graphics.POLY)
 		{
-			if(data.fill)
-			{
-				if(data.points.length>3) 
-				PIXI.WebGLGraphics.buildPoly(data, graphics._webGL);
-			}
-			
 			if(data.lineWidth > 0)
 			{
 				PIXI.WebGLGraphics.buildLine(data, graphics._webGL);
@@ -2931,24 +2794,21 @@ PIXI.WebGLGraphics.updateGraphics = function(graphics)
 		{
 			PIXI.WebGLGraphics.buildRectangle(data, graphics._webGL);
 		}
-		else if(data.type == PIXI.Graphics.CIRC || data.type == PIXI.Graphics.ELIP)
+		else if(data.type == PIXI.Graphics.CIRC)
 		{
 			PIXI.WebGLGraphics.buildCircle(data, graphics._webGL);
 		}
 	};
 	
+	//console.log(graphics._webGL.lastIndex - graphics.graphicsData.length )
 	graphics._webGL.lastIndex = graphics.graphicsData.length;
 	
-	var gl = PIXI.gl;
-
+	// convert to points
 	graphics._webGL.glPoints = new Float32Array(graphics._webGL.points);
+	
+	var gl = PIXI.gl;
 	gl.bindBuffer(gl.ARRAY_BUFFER, graphics._webGL.buffer);
 	gl.bufferData(gl.ARRAY_BUFFER, graphics._webGL.glPoints, gl.STATIC_DRAW);
-	
-	graphics._webGL.glIndicies = new Uint16Array(graphics._webGL.indices);
-	
-	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, graphics._webGL.indexBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, graphics._webGL.glIndicies, gl.STATIC_DRAW);
 }
 
 
@@ -2968,15 +2828,16 @@ PIXI.WebGLGraphics.buildRectangle = function(graphicsData, webGLData)
 	{
 		var color = HEXtoRGB(graphicsData.fillColor);
 		var alpha = graphicsData.fillAlpha;
-		
+
 		var r = color[0] * alpha;
 		var g = color[1] * alpha;
 		var b = color[2] * alpha;
 	
 		var verts = webGLData.points;
-		var indices = webGLData.indices;
-	
-		var vertPos = verts.length/6;
+		
+		// dead triangle
+		verts.push(webGLData.lastPosition.x, webGLData.lastPosition.y, 1, 1, 1, 1); 
+		verts.push(x, y, 1, 1, 1, 1);
 		
 		// start
 		verts.push(x, y);
@@ -2991,8 +2852,8 @@ PIXI.WebGLGraphics.buildRectangle = function(graphicsData, webGLData)
 		verts.push(x + width, y + height);
 		verts.push(r, g, b, alpha);
 		
-		// insert 2 dead triangles..
-		indices.push(vertPos, vertPos, vertPos+1, vertPos+2, vertPos+3, vertPos+3)
+		webGLData.lastPosition.x = x + width;
+		webGLData.lastPosition.y = y + height;
 	}
 	
 	if(graphicsData.lineWidth)
@@ -3016,8 +2877,7 @@ PIXI.WebGLGraphics.buildCircle = function(graphicsData, webGLData)
 	var rectData = graphicsData.points;
 	var x = rectData[0];
 	var y = rectData[1];
-	var width = rectData[2];
-	var height = rectData[3];
+	var radius = rectData[2];
 	
 	var totalSegs = 40;
 	var seg = (Math.PI * 2) / totalSegs ;
@@ -3032,24 +2892,26 @@ PIXI.WebGLGraphics.buildCircle = function(graphicsData, webGLData)
 		var b = color[2] * alpha;
 	
 		var verts = webGLData.points;
-		var indices = webGLData.indices;
-	
-		var vecPos = verts.length/6;
 		
-		indices.push(vecPos);
+		verts.push(webGLData.lastPosition.x, webGLData.lastPosition.y, 1, 1, 1, 1); 
+		verts.push(x, y, 1, 1, 1, 1);
 		
 		for (var i=0; i < totalSegs + 1 ; i++) 
 		{
-			verts.push(x,y, r, g, b, alpha);
+			verts.push(x,y);
+			verts.push(r, g, b, alpha);
 			
-			verts.push(x + Math.sin(seg * i) * width,
-					   y + Math.cos(seg * i) * height,
-					   r, g, b, alpha);
+			verts.push(x + Math.sin(seg * i) * radius,
+					   y + Math.cos(seg * i) * radius);
 		
-			indices.push(vecPos++, vecPos++);
+			verts.push(r, g, b, alpha);
 		};
 		
-		indices.push(vecPos-1);
+		verts.push(x,y);
+		verts.push(1, 0, 0, 1);
+		
+		webGLData.lastPosition.x = x;
+		webGLData.lastPosition.y = y;
 	}
 	
 	if(graphicsData.lineWidth)
@@ -3058,8 +2920,8 @@ PIXI.WebGLGraphics.buildCircle = function(graphicsData, webGLData)
 		
 		for (var i=0; i < totalSegs + 1; i++) 
 		{
-			graphicsData.points.push(x + Math.sin(seg * i) * width,
-									 y + Math.cos(seg * i) * height)
+			graphicsData.points.push(x + Math.sin(seg * i) * radius,
+									 y + Math.cos(seg * i) * radius)
 		};
 		
 		PIXI.WebGLGraphics.buildLine(graphicsData, webGLData);
@@ -3095,14 +2957,8 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
 	}
 	
 	var verts = webGLData.points;
-	var indices = webGLData.indices;
-	
 	
 	var length = points.length / 2;
-	
-	var indexCount = points.length;// + 2;
-
-	var indexStart = verts.length/6;
 	
 	// DRAW the Line
 	var width = graphicsData.lineWidth / 2;
@@ -3126,7 +2982,10 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
 	perp.x *= width;
 	perp.y *= width;
 	
-	
+	// insert dead triangle as we are using a triangle strip
+	verts.push(webGLData.lastPosition.x, webGLData.lastPosition.y, 1, 1, 1, 1); 
+	verts.push(points[0] - perp.x , points[1] - perp.y, 1, 1, 1, 1);
+
 	// start
 	
 	verts.push(points[0] - perp.x , points[1] - perp.y);
@@ -3193,20 +3052,18 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
 			
 			verts.push(point2.x - perp3.x, point2.y -perp3.y);
 			verts.push(r, g, b, alpha);
-			
+	
 			verts.push(point2.x + perp3.x, point2.y +perp3.y);
 			verts.push(r, g, b, alpha);
-			
+	
 			verts.push(point2.x - perp3.x, point2.y -perp3.y);
 			verts.push(r, g, b, alpha);
-			
-			indexCount++;
 		}
 		else
 		{
 			verts.push(p.x , p.y);
 			verts.push(r, g, b, alpha);
-			
+	
 			verts.push(point2.x - (p.x-point2.x), point2.y - (p.y - point2.y));//, 4);
 			verts.push(r, g, b, alpha);
 		}
@@ -3216,69 +3073,22 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
 	var point2 = new PIXI.Point( points[(length-1)*2], points[(length-1)*2 + 1] );
 	
 	var perp = new PIXI.Point(-(point1.y - point2.y), point1.x - point2.x);
+	//getPerp(point1, point2);
 	var dist = Math.sqrt(perp.x*perp.x + perp.y*perp.y);
 	perp.x /= dist;
 	perp.y /= dist;
 	perp.x *= width;
 	perp.y *= width;
-	
 	verts.push(point2.x - perp.x , point2.y - perp.y)
 	verts.push(r, g, b, alpha);
 	
 	verts.push(point2.x + perp.x , point2.y + perp.y)
 	verts.push(r, g, b, alpha);
 	
-	indices.push(indexStart);
+	// set last triangle!
+	webGLData.lastPosition.x = point2.x + perp.x;
+	webGLData.lastPosition.y = point2.y + perp.y;
 	
-	for (var i=0; i < indexCount; i++) 
-	{
-		indices.push(indexStart++);
-	};
-	
-	indices.push(indexStart-1);
-}
-
-
-PIXI.WebGLGraphics.buildPoly = function(graphicsData, webGLData)
-{
-	var points = graphicsData.points;
-	if(points.length < 6)return;
-	
-	// get first and last point.. figure out the middle!
-	var verts = webGLData.points;
-	var indices = webGLData.indices;
-	
-	var length = points.length / 2;
-	
-	// sort color
-	var color = HEXtoRGB(graphicsData.fillColor);
-	var alpha = graphicsData.fillAlpha;
-	var r = color[0] * alpha;
-	var g = color[1] * alpha;
-	var b = color[2] * alpha;
-	
-	var triangles = PIXI.PolyK.Triangulate(points);
-	
-	
-	
-	var vertPos = verts.length / 6;
-	
-	for (var i=0; i < triangles.length; i+=3) 
-	{
-		indices.push(triangles[i] + vertPos);
-		indices.push(triangles[i] + vertPos);
-		indices.push(triangles[i+1] + vertPos);
-		indices.push(triangles[i+2] +vertPos);
-		indices.push(triangles[i+2] + vertPos);
-	};
-	
-	indices.push(triangles[i+2] + vertPos);
-	
-	for (var i = 0; i < length; i++) 
-	{
-		verts.push(points[i * 2], points[i * 2 + 1],
-				   r, g, b, alpha);
-	};
 }
 
 function HEXtoRGB(hex) {
@@ -4926,6 +4736,7 @@ PIXI.WebGLRenderGroup.prototype.initTilingSprite = function(sprite)
 	
 	sprite.indices =  new Uint16Array([0, 1, 3,2])//, 2]);
 	
+	
 	sprite._vertexBuffer = gl.createBuffer();
 	sprite._indexBuffer = gl.createBuffer();
 	sprite._uvBuffer = gl.createBuffer();
@@ -4979,6 +4790,7 @@ PIXI.WebGLRenderGroup.prototype.renderStrip = function(strip, projection)
 	
 	// set the matrix transform for the 
  	gl.uniformMatrix3fv(PIXI.stripShaderProgram.translationMatrix, false, m);
+ 	
 	gl.uniform2f(PIXI.stripShaderProgram.projectionVector, projection.x, projection.y);
 
 	if(strip.blendMode == PIXI.blendModes.NORMAL)
@@ -5009,6 +4821,8 @@ PIXI.WebGLRenderGroup.prototype.renderStrip = function(strip, projection)
 		
 		// dont need to upload!
 	    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, strip._indexBuffer);
+    
+	
 	}
 	else
 	{
@@ -5038,6 +4852,8 @@ PIXI.WebGLRenderGroup.prototype.renderStrip = function(strip, projection)
 	
 	gl.drawElements(gl.TRIANGLE_STRIP, strip.indices.length, gl.UNSIGNED_SHORT, 0);
     
+ //   gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, projectionMatrix);
+  	
   	gl.useProgram(PIXI.shaderProgram);
 }
 
@@ -5487,11 +5303,11 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 		context.strokeStyle = color = '#' + ('00000' + ( data.lineColor | 0).toString(16)).substr(-6);
 
 		context.lineWidth = data.lineWidth;
+		context.globalAlpha = data.lineAlpha;
 		
 		if(data.type == PIXI.Graphics.POLY)
 		{
-			
-			//if(data.lineWidth <= 0)continue;
+			if(data.lineWidth <= 0)continue;
 			
 			context.beginPath();
 			
@@ -5508,31 +5324,20 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 	      		context.closePath();
 	      	}
 			
-			if(data.fill)
-			{
-				context.globalAlpha = data.fillAlpha;
-				context.fillStyle = color = '#' + ('00000' + ( data.fillColor | 0).toString(16)).substr(-6);
-      			context.fill();
-			}
-			if(data.lineWidth)
-			{
-				context.globalAlpha = data.lineAlpha;
-      			context.stroke();
-			}
+			context.stroke();
 		}
 		else if(data.type == PIXI.Graphics.RECT)
 		{
 			// TODO - need to be Undefined!
 			if(data.fillColor)
 			{
-				context.globalAlpha = data.fillAlpha;
 				context.fillStyle = color = '#' + ('00000' + ( data.fillColor | 0).toString(16)).substr(-6);
+
 				context.fillRect(points[0], points[1], points[2], points[3]);
 				
 			}
 			if(data.lineWidth)
 			{
-				context.globalAlpha = data.lineAlpha;
 				context.strokeRect(points[0], points[1], points[2], points[3]);
 			}
 		}
@@ -5545,56 +5350,11 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 			
 			if(data.fill)
 			{
-				context.globalAlpha = data.fillAlpha;
 				context.fillStyle = color = '#' + ('00000' + ( data.fillColor | 0).toString(16)).substr(-6);
       			context.fill();
 			}
 			if(data.lineWidth)
 			{
-				context.globalAlpha = data.lineAlpha;
-      			context.stroke();
-			}
-		}
-		else if(data.type == PIXI.Graphics.ELIP)
-		{
-			
-			// elipse code taken from: http://stackoverflow.com/questions/2172798/how-to-draw-an-oval-in-html5-canvas
-			
-			var elipseData =  data.points;
-			
-			var w = elipseData[2] * 2;
-			var h = elipseData[3] * 2;
-	
-			var x = elipseData[0] - w/2;
-			var y = elipseData[1] - h/2;
-			
-      		context.beginPath();
-			
-			var kappa = .5522848,
-			ox = (w / 2) * kappa, // control point offset horizontal
-			oy = (h / 2) * kappa, // control point offset vertical
-			xe = x + w,           // x-end
-			ye = y + h,           // y-end
-			xm = x + w / 2,       // x-middle
-			ym = y + h / 2;       // y-middle
-			
-			context.moveTo(x, ym);
-			context.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);
-			context.bezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);
-			context.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);
-			context.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);
-  
-			context.closePath();
-			
-			if(data.fill)
-			{
-				context.globalAlpha = data.fillAlpha;
-				context.fillStyle = color = '#' + ('00000' + ( data.fillColor | 0).toString(16)).substr(-6);
-      			context.fill();
-			}
-			if(data.lineWidth)
-			{
-				context.globalAlpha = data.lineAlpha;
       			context.stroke();
 			}
 		}
@@ -5627,7 +5387,6 @@ PIXI.Graphics = function()
 	
 	this.graphicsData = [];
 	
-	this.currentPath = {points:[]};
 }
 
 // constructor
@@ -5642,15 +5401,11 @@ PIXI.Graphics.prototype = Object.create( PIXI.DisplayObjectContainer.prototype )
  */
 PIXI.Graphics.prototype.lineStyle = function(lineWidth, color, alpha)
 {
-	if(this.currentPath.points.length == 0)this.graphicsData.pop();
-	
 	this.lineWidth = lineWidth || 0;
 	this.lineColor = color || 0;
 	this.lineAlpha = (alpha == undefined) ? 1 : alpha;
 	
-	this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha, 
-						fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling, points:[], type:PIXI.Graphics.POLY};
-	
+	this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha, points:[], type:PIXI.Graphics.POLY};
 	this.graphicsData.push(this.currentPath);
 }
 
@@ -5661,12 +5416,7 @@ PIXI.Graphics.prototype.lineStyle = function(lineWidth, color, alpha)
  */
 PIXI.Graphics.prototype.moveTo = function(x, y)
 {
-	if(this.currentPath.points.length == 0)this.graphicsData.pop();
-	
-	this.currentPath = this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha, 
-						fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling, points:[], type:PIXI.Graphics.POLY};
-	
-	// {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha, points:[], type:PIXI.Graphics.POLY};
+	this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha, points:[], type:PIXI.Graphics.POLY};
 	
 	this.currentPath.points.push(x, y);
 	
@@ -5715,8 +5465,6 @@ PIXI.Graphics.prototype.endFill = function()
  */
 PIXI.Graphics.prototype.drawRect = function( x, y, width, height )
 {
-	if(this.currentPath.points.length == 0)this.graphicsData.pop();
-	
 	this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha, 
 						fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling, 
 						points:[x, y, width, height], type:PIXI.Graphics.RECT};
@@ -5733,30 +5481,9 @@ PIXI.Graphics.prototype.drawRect = function( x, y, width, height )
  */
 PIXI.Graphics.prototype.drawCircle = function( x, y, radius)
 {
-	if(this.currentPath.points.length == 0)this.graphicsData.pop();
-	
 	this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha, 
 						fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling, 
-						points:[x, y, radius, radius], type:PIXI.Graphics.CIRC};
-						
-	this.graphicsData.push(this.currentPath);
-	this.dirty = true;
-}
-
-/**
- * @method drawElipse
- * @param x {Number}
- * @param y {Number}
- * @param width {Number}
- * @param height {Number}
- */
-PIXI.Graphics.prototype.drawElipse = function( x, y, width, height)
-{
-	if(this.currentPath.points.length == 0)this.graphicsData.pop();
-	
-	this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha, 
-						fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling, 
-						points:[x, y, width, height], type:PIXI.Graphics.ELIP};
+						points:[x, y, radius], type:PIXI.Graphics.CIRC};
 						
 	this.graphicsData.push(this.currentPath);
 	this.dirty = true;
@@ -5776,7 +5503,6 @@ PIXI.Graphics.prototype.clear = function()
 PIXI.Graphics.POLY = 0;
 PIXI.Graphics.RECT = 1;
 PIXI.Graphics.CIRC = 2;
-PIXI.Graphics.ELIP = 3;
 
 /**
  * @author Mat Groves http://matgroves.com/

@@ -2,7 +2,7 @@
     "project": {
         "name": "Pixi.JS",
         "description": "Pixi.js is a fast lightweight 2D library that works across all devices.",
-        "version": "1.0.0",
+        "version": "1.3.0",
         "url": "http://goodboydigital.com/",
         "logo": "http://www.goodboydigital.com/pixijs/logo_small.png"
     },
@@ -2254,21 +2254,21 @@
         },
         {
             "file": "src/pixi/renderers/canvas/CanvasRenderer.js",
-            "line": 217,
+            "line": 218,
             "access": "private",
             "tagname": "",
             "class": "CanvasRenderer"
         },
         {
             "file": "src/pixi/renderers/canvas/CanvasRenderer.js",
-            "line": 252,
+            "line": 253,
             "access": "private",
             "tagname": "",
             "class": "CanvasRenderer"
         },
         {
             "file": "src/pixi/renderers/canvas/CanvasRenderer.js",
-            "line": 281,
+            "line": 282,
             "access": "private",
             "tagname": "",
             "class": "CanvasRenderer"
@@ -2496,28 +2496,28 @@
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 81,
+            "line": 84,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 96,
+            "line": 99,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 106,
+            "line": 109,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 143,
+            "line": 115,
             "description": "Renders the stage to its webGL view",
             "itemtype": "method",
             "name": "render",
@@ -2532,14 +2532,14 @@
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 226,
+            "line": 198,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 285,
+            "line": 257,
             "description": "resizes the webGL view to the specified width and height",
             "itemtype": "method",
             "name": "resize",
@@ -2559,14 +2559,14 @@
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 309,
+            "line": 281,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 318,
+            "line": 290,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
@@ -3390,15 +3390,15 @@
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/canvas/CanvasRenderer.js:217"
+            "line": " src/pixi/renderers/canvas/CanvasRenderer.js:218"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/canvas/CanvasRenderer.js:252"
+            "line": " src/pixi/renderers/canvas/CanvasRenderer.js:253"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/canvas/CanvasRenderer.js:281"
+            "line": " src/pixi/renderers/canvas/CanvasRenderer.js:282"
         },
         {
             "message": "Missing item type",
@@ -3458,27 +3458,27 @@
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/webgl/WebGLRenderer.js:81"
+            "line": " src/pixi/renderers/webgl/WebGLRenderer.js:84"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/webgl/WebGLRenderer.js:96"
+            "line": " src/pixi/renderers/webgl/WebGLRenderer.js:99"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/webgl/WebGLRenderer.js:106"
+            "line": " src/pixi/renderers/webgl/WebGLRenderer.js:109"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/webgl/WebGLRenderer.js:226"
+            "line": " src/pixi/renderers/webgl/WebGLRenderer.js:198"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/webgl/WebGLRenderer.js:309"
+            "line": " src/pixi/renderers/webgl/WebGLRenderer.js:281"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/webgl/WebGLRenderer.js:318"
+            "line": " src/pixi/renderers/webgl/WebGLRenderer.js:290"
         },
         {
             "message": "Missing item type",

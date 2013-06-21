@@ -1,0 +1,1 @@
+<html><body><h1>File /pixi.js/src/pixi/renderers/CanvasRenderer.js not found</h1></body></html>

@@ -65,6 +65,8 @@ PIXI.RenderTexture.prototype.initWebGL = function()
 	gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.baseTexture._glTexture, 0);
 	
 	// create a projection matrix..
+	this.projection = new PIXI.Point(this.width/2 , this.height/2);
+	
 	this.projectionMatrix =  PIXI.mat4.create();
 	
 	this.projectionMatrix[5] = 2/this.height// * 0.5;
@@ -115,6 +117,9 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, clear)
 	
 	//TODO -? create a new one??? dont think so!
 	displayObject.worldTransform = PIXI.mat3.create();//sthis.indetityMatrix;
+	// modify to flip...
+	displayObject.worldTransform[4] = -1;
+	displayObject.worldTransform[5] = this.projection.y * 2;
 	
 	for(var i=0,j=children.length; i<j; i++)
 	{
@@ -127,18 +132,18 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, clear)
 	{
 		if(displayObject == renderGroup.root)
 		{
-			renderGroup.render(this.projectionMatrix);
+			renderGroup.render(this.projection);
 		}
 		else
 		{
-			renderGroup.renderSpecific(displayObject, this.projectionMatrix);
+			renderGroup.renderSpecific(displayObject, this.projection);
 		}
 	}
 	else
 	{
 		if(!this.renderGroup)this.renderGroup = new PIXI.WebGLRenderGroup(gl);
 		this.renderGroup.setRenderable(displayObject);
-		this.renderGroup.render(this.projectionMatrix);
+		this.renderGroup.render(this.projection);
 	}
 	
 }

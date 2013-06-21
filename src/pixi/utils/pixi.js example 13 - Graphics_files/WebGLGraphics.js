@@ -22,8 +22,9 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
 	PIXI.activatePrimitiveShader();
 	var gl = PIXI.gl;
 	
+	// graphicsObject
 	// a collection of "shapes" (mainly lines right now!)
-	if(!graphics._webGL)graphics._webGL = {points:[], indices:[], lastIndex:0, 
+	if(!graphics._webGL)graphics._webGL = {points:[], indices:[], lastPosition:new PIXI.Point(), lastIndex:0, 
 										   buffer:gl.createBuffer(),
 										   indexBuffer:gl.createBuffer()};
 	
@@ -43,6 +44,7 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
 	}
 	
 	// This  could be speeded up fo sure!
+	
 	var m = PIXI.mat3.clone(graphics.worldTransform);
 	
 	PIXI.mat3.transpose(m);
@@ -58,8 +60,9 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
 	// set the index buffer!
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, graphics._webGL.indexBuffer);
 	
-	gl.drawElements(gl.TRIANGLE_STRIP,  graphics._webGL.indices.length, gl.UNSIGNED_SHORT, 0 );
+	//gl.drawArrays(gl.TRIANGLE_STRIP, 0, graphics._webGL.glPoints.length/6);
 	
+	gl.drawElements(gl.TRIANGLE_STRIP,  graphics._webGL.indices.length, gl.UNSIGNED_SHORT, 0 );
 	// return to default shader...
 	PIXI.activateDefaultShader();
 }
@@ -83,6 +86,7 @@ PIXI.WebGLGraphics.updateGraphics = function(graphics)
 			{
 				PIXI.WebGLGraphics.buildLine(data, graphics._webGL);
 			}
+			
 		}
 		else if(data.type == PIXI.Graphics.RECT)
 		{
@@ -94,8 +98,10 @@ PIXI.WebGLGraphics.updateGraphics = function(graphics)
 		}
 	};
 	
+	//console.log(graphics._webGL.lastIndex - graphics.graphicsData.length )
 	graphics._webGL.lastIndex = graphics.graphicsData.length;
 	
+	// convert to points
 	var gl = PIXI.gl;
 
 	graphics._webGL.glPoints = new Float32Array(graphics._webGL.points);
@@ -125,15 +131,16 @@ PIXI.WebGLGraphics.buildRectangle = function(graphicsData, webGLData)
 	{
 		var color = HEXtoRGB(graphicsData.fillColor);
 		var alpha = graphicsData.fillAlpha;
-		
+
 		var r = color[0] * alpha;
 		var g = color[1] * alpha;
 		var b = color[2] * alpha;
 	
 		var verts = webGLData.points;
-		var indices = webGLData.indices;
-	
-		var vertPos = verts.length/6;
+		
+		// dead triangle
+		verts.push(webGLData.lastPosition.x, webGLData.lastPosition.y, 1, 1, 1, 1); 
+		verts.push(x, y, 1, 1, 1, 1);
 		
 		// start
 		verts.push(x, y);
@@ -148,8 +155,8 @@ PIXI.WebGLGraphics.buildRectangle = function(graphicsData, webGLData)
 		verts.push(x + width, y + height);
 		verts.push(r, g, b, alpha);
 		
-		// insert 2 dead triangles..
-		indices.push(vertPos, vertPos, vertPos+1, vertPos+2, vertPos+3, vertPos+3)
+		webGLData.lastPosition.x = x + width;
+		webGLData.lastPosition.y = y + height;
 	}
 	
 	if(graphicsData.lineWidth)
@@ -189,24 +196,26 @@ PIXI.WebGLGraphics.buildCircle = function(graphicsData, webGLData)
 		var b = color[2] * alpha;
 	
 		var verts = webGLData.points;
-		var indices = webGLData.indices;
-	
-		var vecPos = verts.length/6;
 		
-		indices.push(vecPos);
+		verts.push(webGLData.lastPosition.x, webGLData.lastPosition.y, 1, 1, 1, 1); 
+		verts.push(x, y, 1, 1, 1, 1);
 		
 		for (var i=0; i < totalSegs + 1 ; i++) 
 		{
-			verts.push(x,y, r, g, b, alpha);
+			verts.push(x,y);
+			verts.push(r, g, b, alpha);
 			
 			verts.push(x + Math.sin(seg * i) * width,
-					   y + Math.cos(seg * i) * height,
-					   r, g, b, alpha);
+					   y + Math.cos(seg * i) * height);
 		
-			indices.push(vecPos++, vecPos++);
+			verts.push(r, g, b, alpha);
 		};
 		
-		indices.push(vecPos-1);
+		verts.push(x,y);
+		verts.push(1, 0, 0, 1);
+		
+		webGLData.lastPosition.x = x;
+		webGLData.lastPosition.y = y;
 	}
 	
 	if(graphicsData.lineWidth)
@@ -257,7 +266,7 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
 	
 	var length = points.length / 2;
 	
-	var indexCount = points.length;// + 2;
+	var indexCount = points.length + 2;
 
 	var indexStart = verts.length/6;
 	
@@ -283,7 +292,9 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
 	perp.x *= width;
 	perp.y *= width;
 	
-	
+	// insert dead triangle as we are using a triangle strip
+	verts.push(webGLData.lastPosition.x, webGLData.lastPosition.y, 1, 1, 1, 1); 
+	verts.push(points[0] - perp.x , points[1] - perp.y, 1, 1, 1, 1);
 	// start
 	
 	verts.push(points[0] - perp.x , points[1] - perp.y);
@@ -373,6 +384,7 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
 	var point2 = new PIXI.Point( points[(length-1)*2], points[(length-1)*2 + 1] );
 	
 	var perp = new PIXI.Point(-(point1.y - point2.y), point1.x - point2.x);
+	//getPerp(point1, point2);
 	var dist = Math.sqrt(perp.x*perp.x + perp.y*perp.y);
 	perp.x /= dist;
 	perp.y /= dist;
@@ -381,18 +393,19 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
 	
 	verts.push(point2.x - perp.x , point2.y - perp.y)
 	verts.push(r, g, b, alpha);
+//	indices.push(indices.length)
 	
 	verts.push(point2.x + perp.x , point2.y + perp.y)
 	verts.push(r, g, b, alpha);
-	
-	indices.push(indexStart);
+//	indices.push(indices.length)
 	
 	for (var i=0; i < indexCount; i++) 
 	{
-		indices.push(indexStart++);
+		indices.push(indexStart + i);
 	};
-	
-	indices.push(indexStart-1);
+	// set last triangle!
+	webGLData.lastPosition.x = point2.x + perp.x;
+	webGLData.lastPosition.y = point2.y + perp.y;
 }
 
 
@@ -402,6 +415,7 @@ PIXI.WebGLGraphics.buildPoly = function(graphicsData, webGLData)
 	if(points.length < 6)return;
 	
 	// get first and last point.. figure out the middle!
+	
 	var verts = webGLData.points;
 	var indices = webGLData.indices;
 	
@@ -409,17 +423,23 @@ PIXI.WebGLGraphics.buildPoly = function(graphicsData, webGLData)
 	
 	// sort color
 	var color = HEXtoRGB(graphicsData.fillColor);
-	var alpha = graphicsData.fillAlpha;
+	var alpha = graphicsData.lineAlpha;
 	var r = color[0] * alpha;
 	var g = color[1] * alpha;
 	var b = color[2] * alpha;
 	
-	var triangles = PIXI.PolyK.Triangulate(points);
 	
 	
+	
+	var triangles = PolyK.Triangulate(graphicsData.points);
+	
+	// DEAD Triangle
+	verts.push(points[i * 2], points[i * 2 + 1],
+				   r, g, b, alpha);
+	indices.push(verts.length/6)
+	indices.push(verts.length/6)
 	
 	var vertPos = verts.length / 6;
-	
 	for (var i=0; i < triangles.length; i+=3) 
 	{
 		indices.push(triangles[i] + vertPos);
@@ -429,13 +449,12 @@ PIXI.WebGLGraphics.buildPoly = function(graphicsData, webGLData)
 		indices.push(triangles[i+2] + vertPos);
 	};
 	
-	indices.push(triangles[i+2] + vertPos);
-	
 	for (var i = 0; i < length; i++) 
 	{
 		verts.push(points[i * 2], points[i * 2 + 1],
 				   r, g, b, alpha);
 	};
+	
 }
 
 function HEXtoRGB(hex) {

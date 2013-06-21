@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.0.0</em>
+            <em>API Docs for: 1.3.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -164,7 +164,6 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics)
 	
 	&#x2F;&#x2F; graphicsObject
 	&#x2F;&#x2F; a collection of &quot;shapes&quot; (mainly lines right now!)
-	&#x2F;&#x2F;&#x2F;this.shape.draw();
 	if(!graphics._webGL)graphics._webGL = {points:[], lastPosition:new PIXI.Point(), lastIndex:0, buffer:gl.createBuffer()};
 	
 	if(graphics.dirty)
@@ -182,13 +181,11 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics)
 		PIXI.WebGLGraphics.initGraphics(graphics);
 	}
 	
-	gl.uniformMatrix4fv(PIXI.shaderProgram2.mvMatrixUniform, false, PIXI.projectionMatrix );
+ 	gl.uniform2f(PIXI.primitiveProgram.projectionVector, 400, 300);
 	
 	gl.bindBuffer(gl.ARRAY_BUFFER, graphics._webGL.buffer);
-	gl.vertexAttribPointer(PIXI.shaderProgram2.vertexPositionAttribute, 2, gl.FLOAT, false, 4 * 6, 0);
-	gl.vertexAttribPointer(PIXI.shaderProgram2.colorAttribute, 4, gl.FLOAT, false,4 * 6, 2 * 4);
-	
-	&#x2F;&#x2F;shaderProgram.colorAttribute
+	gl.vertexAttribPointer(PIXI.primitiveProgram.vertexPositionAttribute, 2, gl.FLOAT, false, 4 * 6, 0);
+	gl.vertexAttribPointer(PIXI.primitiveProgram.colorAttribute, 4, gl.FLOAT, false,4 * 6, 2 * 4);
 	
 	gl.drawArrays(gl.TRIANGLE_STRIP, 0, graphics._webGL.glPoints.length&#x2F;6);
 	
@@ -535,52 +532,6 @@ function lineIntersectLine(A,B,E,F)
 }	
 
 
-
-PIXI.primitiveShaderFragmentSrc = [
-  &quot;precision mediump float;&quot;,
-  &quot;varying vec4 vColor;&quot;,
-  &quot;void main(void) {&quot;,
-    &quot;gl_FragColor = vColor;&quot;,
-  &quot;}&quot;
-];
-
-PIXI.primitiveShaderVertexSrc = [
-  &quot;attribute vec2 aVertexPosition;&quot;,
-  &quot;attribute vec4 aColor;&quot;,
-  &quot;uniform mat4 uMVMatrix;&quot;,
-  &quot;varying vec4 vColor;&quot;,
-  &quot;void main(void) {&quot;,
-    &quot;gl_Position = uMVMatrix * vec4(aVertexPosition, 1.0, 1.0);&quot;,
-    &quot;vColor = aColor;&quot;,
-  &quot;}&quot;
-];
-
-
-PIXI.WebGLGraphics.initShaders = function() 
-{
-	var gl = PIXI.gl;
-	var fragmentShader = PIXI.CompileFragmentShader(gl, PIXI.primitiveShaderFragmentSrc);
-	var vertexShader = PIXI.CompileVertexShader(gl, PIXI.primitiveShaderVertexSrc);
-	
-	PIXI.shaderProgram2 = gl.createProgram();
-	
-	var shaderProgram = PIXI.shaderProgram2;
-	
-    gl.attachShader(shaderProgram, vertexShader);
-    gl.attachShader(shaderProgram, fragmentShader);
-    gl.linkProgram(shaderProgram);
-
-    if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-        alert(&quot;Could not initialise shaders&quot;);
-    }
-
-    gl.useProgram(shaderProgram);
-
-    shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, &quot;aVertexPosition&quot;);
-    shaderProgram.colorAttribute = gl.getAttribLocation(shaderProgram, &quot;aColor&quot;);
-    
-    shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, &quot;uMVMatrix&quot;);
-}
 
     </pre>
 </div>

@@ -43,15 +43,17 @@ PIXI.WebGLRenderGroup.prototype.setRenderable = function(displayObject)
 	//displayObject
 }
 
-PIXI.WebGLRenderGroup.prototype.render = function(projectionMatrix)
+PIXI.WebGLRenderGroup.prototype.render = function(projection)
 {
 	PIXI.WebGLRenderer.updateTextures();
 	
 	var gl = this.gl;
 
 	// set the flipped matrix..
-	gl.uniformMatrix4fv(PIXI.shaderProgram.mvMatrixUniform, false, projectionMatrix);
+//	gl.uniformMatrix4fv(PIXI.shaderProgram.mvMatrixUniform, false, PIXI.projectionMatrix);
 	
+	gl.uniform2f(PIXI.shaderProgram.projectionVector, projection.x, projection.y);
+
 	// TODO remove this by replacing visible with getter setters..	
 	this.checkVisibility(this.root, this.root.visible);
 	
@@ -68,28 +70,30 @@ PIXI.WebGLRenderGroup.prototype.render = function(projectionMatrix)
 		}
 		else if(renderable instanceof PIXI.TilingSprite)
 		{
-			if(renderable.visible)this.renderTilingSprite(renderable, projectionMatrix);
+			if(renderable.visible)this.renderTilingSprite(renderable, projection);
 		}
 		else if(renderable instanceof PIXI.Strip)
 		{
-			if(renderable.visible)this.renderStrip(renderable, projectionMatrix);
+			if(renderable.visible)this.renderStrip(renderable, projection);
 		}
 		else if(renderable instanceof PIXI.Graphics)
 		{
-			if(renderable.visible) PIXI.WebGLGraphics.renderGraphics(renderable);//, projectionMatrix);
+			if(renderable.visible) PIXI.WebGLGraphics.renderGraphics(renderable, projection);//, projectionMatrix);
 		}
 	}
 	
 }
 
-PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, projectionMatrix)
+PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, projection)
 {
 	PIXI.WebGLRenderer.updateTextures();
 	
 	var gl = this.gl;
 	this.checkVisibility(displayObject, displayObject.visible);
-	gl.uniformMatrix4fv(PIXI.shaderProgram.mvMatrixUniform, false, projectionMatrix);
 	
+//	gl.uniformMatrix4fv(PIXI.shaderProgram.mvMatrixUniform, false, projectionMatrix);
+	gl.uniform2f(PIXI.shaderProgram.projectionVector, projection.x, projection.y);
+
 	
 	//console.log("SPECIFIC");
 	// to do!
@@ -171,28 +175,15 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 	
 	// TODO - need to fold this up a bit!
 	
-	
 	if(startBatch == endBatch)
 	{
 		if(startBatch instanceof PIXI.WebGLBatch)
 		{
 			startBatch.render(startIndex, endIndex+1);
 		}
-		else if(startBatch instanceof PIXI.TilingSprite)
+		else
 		{
-			if(startBatch.visible)this.renderTilingSprite(startBatch, projectionMatrix);
-		}
-		else if(startBatch instanceof PIXI.Strip)
-		{
-			if(startBatch.visible)this.renderStrip(startBatch, projectionMatrix);
-		}
-		else if(startBatch instanceof PIXI.CustomRenderable)
-		{
-			if(startBatch.visible) startBatch.renderWebGL(this, projectionMatrix);
-		}
-		else if(renderable instanceof PIXI.Graphics)
-		{
-			if(renderable.visible) PIXI.WebGLGraphics.renderGraphics(renderable);//, projectionMatrix);
+			this.renderSpecial(startBatch);
 		}
 		return;
 	}
@@ -206,22 +197,11 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 	{
 		startBatch.render(startIndex);
 	}
-	else if(startBatch instanceof PIXI.TilingSprite)
+	else
 	{
-		if(startBatch.visible)this.renderTilingSprite(startBatch, projectionMatrix);
+		this.renderSpecial(startBatch);
 	}
-	else if(startBatch instanceof PIXI.Strip)
-	{
-		if(startBatch.visible)this.renderStrip(startBatch, projectionMatrix);
-	}
-	else if(startBatch instanceof PIXI.CustomRenderable)
-	{
-		if(startBatch.visible) startBatch.renderWebGL(this, projectionMatrix);
-	}
-	else if(renderable instanceof PIXI.Graphics)
-		{
-			if(renderable.visible) PIXI.WebGLGraphics.renderGraphics(renderable);//, projectionMatrix);
-		}
+	
 	// DO the middle batchs..
 	for (var i=startBatchIndex+1; i < endBatchIndex; i++) 
 	{
@@ -231,21 +211,9 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 		{
 			this.batchs[i].render();
 		}
-		else if(renderable instanceof PIXI.TilingSprite)
+		else
 		{
-			if(renderable.visible)this.renderTilingSprite(renderable, projectionMatrix);
-		}
-		else if(renderable instanceof PIXI.Strip)
-		{
-			if(renderable.visible)this.renderStrip(renderable, projectionMatrix);
-		}
-		else if(renderable instanceof PIXI.CustomRenderable)
-		{
-			if(renderable.visible) renderable.renderWebGL(this, projectionMatrix);
-		}
-		else if(renderable instanceof PIXI.Graphics)
-		{
-			if(renderable.visible) PIXI.WebGLGraphics.renderGraphics(renderable);//, projectionMatrix);
+			this.renderSpecial(renderable);
 		}
 	}
 	
@@ -254,17 +222,25 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 	{
 		endBatch.render(0, endIndex+1);
 	}
-	else if(endBatch instanceof PIXI.TilingSprite)
+	else
 	{
-		if(endBatch.visible)this.renderTilingSprite(endBatch);
+		this.renderSpecial(endBatch);
 	}
-	else if(endBatch instanceof PIXI.Strip)
+}
+
+PIXI.WebGLRenderGroup.prototype.renderSpecial = function(renderable)
+{
+	if(renderable instanceof PIXI.TilingSprite)
 	{
-		if(endBatch.visible)this.renderStrip(endBatch);
+		if(renderable.visible)this.renderTilingSprite(renderable, projectionMatrix);
 	}
-	else if(endBatch instanceof PIXI.CustomRenderable)
+	else if(renderable instanceof PIXI.Strip)
 	{
-		if(endBatch.visible) endBatch.renderWebGL(this, projectionMatrix);
+		if(renderable.visible)this.renderStrip(renderable, projectionMatrix);
+	}
+	else if(renderable instanceof PIXI.CustomRenderable)
+	{
+		if(renderable.visible) renderable.renderWebGL(this, projectionMatrix);
 	}
 	else if(renderable instanceof PIXI.Graphics)
 	{
@@ -518,6 +494,7 @@ PIXI.WebGLRenderGroup.prototype.addDisplayObject = function(displayObject)
 	}
 	else if(displayObject instanceof PIXI.TilingSprite)
 	{
+		
 		// add to a batch!!
 		this.initTilingSprite(displayObject);
 		this.batchs.push(displayObject);
@@ -753,7 +730,6 @@ PIXI.WebGLRenderGroup.prototype.initTilingSprite = function(sprite)
 	
 	sprite.indices =  new Uint16Array([0, 1, 3,2])//, 2]);
 	
-	
 	sprite._vertexBuffer = gl.createBuffer();
 	sprite._indexBuffer = gl.createBuffer();
 	sprite._uvBuffer = gl.createBuffer();
@@ -789,17 +765,26 @@ PIXI.WebGLRenderGroup.prototype.initTilingSprite = function(sprite)
 /**
  * @private
  */
-PIXI.WebGLRenderGroup.prototype.renderStrip = function(strip, projectionMatrix)
+PIXI.WebGLRenderGroup.prototype.renderStrip = function(strip, projection)
 {
 	var gl = this.gl;
 	var shaderProgram = PIXI.shaderProgram;
 //	mat
-	var mat4Real = PIXI.mat3.toMat4(strip.worldTransform);
-	PIXI.mat4.transpose(mat4Real);
-	PIXI.mat4.multiply(projectionMatrix, mat4Real, mat4Real )
+	//var mat4Real = PIXI.mat3.toMat4(strip.worldTransform);
+	//PIXI.mat4.transpose(mat4Real);
+	//PIXI.mat4.multiply(projectionMatrix, mat4Real, mat4Real )
 
-	gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mat4Real);
-  
+	
+	gl.useProgram(PIXI.stripShaderProgram);
+
+	var m = PIXI.mat3.clone(strip.worldTransform);
+	
+	PIXI.mat3.transpose(m);
+	
+	// set the matrix transform for the 
+ 	gl.uniformMatrix3fv(PIXI.stripShaderProgram.translationMatrix, false, m);
+	gl.uniform2f(PIXI.stripShaderProgram.projectionVector, projection.x, projection.y);
+
 	if(strip.blendMode == PIXI.blendModes.NORMAL)
 	{
 		gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
@@ -828,8 +813,6 @@ PIXI.WebGLRenderGroup.prototype.renderStrip = function(strip, projectionMatrix)
 		
 		// dont need to upload!
 	    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, strip._indexBuffer);
-    
-	
 	}
 	else
 	{
@@ -855,11 +838,11 @@ PIXI.WebGLRenderGroup.prototype.renderStrip = function(strip, projectionMatrix)
 	    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, strip.indices, gl.STATIC_DRAW);
 	    
 	}
-	//console.log(gl.TRIANGLE_STRIP)
+	//console.log(gl.TRIANGLE_STRIP);
+	
 	gl.drawElements(gl.TRIANGLE_STRIP, strip.indices.length, gl.UNSIGNED_SHORT, 0);
     
-    gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, projectionMatrix);
-  
+  	gl.useProgram(PIXI.shaderProgram);
 }
 
 
