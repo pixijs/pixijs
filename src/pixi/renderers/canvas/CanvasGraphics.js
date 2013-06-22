@@ -22,6 +22,7 @@ PIXI.CanvasGraphics = function()
  */
 PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 {
+	var worldAlpha = graphics.worldAlpha;
 	
 	for (var i=0; i < graphics.graphicsData.length; i++) 
 	{
@@ -54,13 +55,13 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 			
 			if(data.fill)
 			{
-				context.globalAlpha = data.fillAlpha;
+				context.globalAlpha = data.fillAlpha * worldAlpha;
 				context.fillStyle = color = '#' + ('00000' + ( data.fillColor | 0).toString(16)).substr(-6);
       			context.fill();
 			}
 			if(data.lineWidth)
 			{
-				context.globalAlpha = data.lineAlpha;
+				context.globalAlpha = data.lineAlpha * worldAlpha;
       			context.stroke();
 			}
 		}
@@ -69,14 +70,14 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 			// TODO - need to be Undefined!
 			if(data.fillColor)
 			{
-				context.globalAlpha = data.fillAlpha;
+				context.globalAlpha = data.fillAlpha * worldAlpha;
 				context.fillStyle = color = '#' + ('00000' + ( data.fillColor | 0).toString(16)).substr(-6);
 				context.fillRect(points[0], points[1], points[2], points[3]);
 				
 			}
 			if(data.lineWidth)
 			{
-				context.globalAlpha = data.lineAlpha;
+				context.globalAlpha = data.lineAlpha * worldAlpha;
 				context.strokeRect(points[0], points[1], points[2], points[3]);
 			}
 		}
@@ -89,13 +90,13 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 			
 			if(data.fill)
 			{
-				context.globalAlpha = data.fillAlpha;
+				context.globalAlpha = data.fillAlpha * worldAlpha;
 				context.fillStyle = color = '#' + ('00000' + ( data.fillColor | 0).toString(16)).substr(-6);
       			context.fill();
 			}
 			if(data.lineWidth)
 			{
-				context.globalAlpha = data.lineAlpha;
+				context.globalAlpha = data.lineAlpha * worldAlpha;
       			context.stroke();
 			}
 		}
@@ -132,13 +133,13 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 			
 			if(data.fill)
 			{
-				context.globalAlpha = data.fillAlpha;
+				context.globalAlpha = data.fillAlpha * worldAlpha;
 				context.fillStyle = color = '#' + ('00000' + ( data.fillColor | 0).toString(16)).substr(-6);
       			context.fill();
 			}
 			if(data.lineWidth)
 			{
-				context.globalAlpha = data.lineAlpha;
+				context.globalAlpha = data.lineAlpha * worldAlpha;
       			context.stroke();
 			}
 		}

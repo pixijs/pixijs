@@ -47,7 +47,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
  	{
         PIXI.gl = this.gl = this.view.getContext("experimental-webgl",  {  	
     		 alpha: this.transparent,
-    		 antialias:false, // SPEED UP??
+    		 antialias:true, // SPEED UP??
     		 premultipliedAlpha:false
         });
     } 

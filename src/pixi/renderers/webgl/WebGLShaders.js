@@ -24,6 +24,7 @@ PIXI.shaderVertexSrc = [
   "attribute vec2 aTextureCoord;",
   "attribute float aColor;",
   //"uniform mat4 uMVMatrix;",
+  
   "uniform vec2 projectionVector;",
   "varying vec2 vTextureCoord;",
   "varying float vColor;",
@@ -72,11 +73,12 @@ PIXI.primitiveShaderVertexSrc = [
   "attribute vec4 aColor;",
   "uniform mat3 translationMatrix;",
   "uniform vec2 projectionVector;",
+  "uniform float alpha;",
   "varying vec4 vColor;",
   "void main(void) {",
   	"vec3 v = translationMatrix * vec3(aVertexPosition, 1.0);",
     "gl_Position = vec4( v.x / projectionVector.x -1.0, v.y / -projectionVector.y + 1.0 , 0.0, 1.0);",
-    "vColor = aColor;",
+    "vColor = aColor  * alpha;",
   "}"
 ];
 
@@ -92,6 +94,7 @@ PIXI.initPrimitiveShader = function()
     shaderProgram.colorAttribute = gl.getAttribLocation(shaderProgram, "aColor");
     shaderProgram.projectionVector = gl.getUniformLocation(shaderProgram, "projectionVector");
     shaderProgram.translationMatrix = gl.getUniformLocation(shaderProgram, "translationMatrix");
+	shaderProgram.alpha = gl.getUniformLocation(shaderProgram, "alpha");
 
 	PIXI.primitiveProgram = shaderProgram;
 }

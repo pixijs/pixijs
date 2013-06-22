@@ -2661,6 +2661,7 @@ PIXI.shaderVertexSrc = [
   "attribute vec2 aTextureCoord;",
   "attribute float aColor;",
   //"uniform mat4 uMVMatrix;",
+  
   "uniform vec2 projectionVector;",
   "varying vec2 vTextureCoord;",
   "varying float vColor;",
@@ -2709,11 +2710,12 @@ PIXI.primitiveShaderVertexSrc = [
   "attribute vec4 aColor;",
   "uniform mat3 translationMatrix;",
   "uniform vec2 projectionVector;",
+  "uniform float alpha;",
   "varying vec4 vColor;",
   "void main(void) {",
   	"vec3 v = translationMatrix * vec3(aVertexPosition, 1.0);",
     "gl_Position = vec4( v.x / projectionVector.x -1.0, v.y / -projectionVector.y + 1.0 , 0.0, 1.0);",
-    "vColor = aColor;",
+    "vColor = aColor  * alpha;",
   "}"
 ];
 
@@ -2729,6 +2731,7 @@ PIXI.initPrimitiveShader = function()
     shaderProgram.colorAttribute = gl.getAttribLocation(shaderProgram, "aColor");
     shaderProgram.projectionVector = gl.getUniformLocation(shaderProgram, "projectionVector");
     shaderProgram.translationMatrix = gl.getUniformLocation(shaderProgram, "translationMatrix");
+	shaderProgram.alpha = gl.getUniformLocation(shaderProgram, "alpha");
 
 	PIXI.primitiveProgram = shaderProgram;
 }
@@ -2887,8 +2890,13 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
 	PIXI.mat3.transpose(m);
 	
 	// set the matrix transform for the 
+ 	
+ 	
  	gl.uniformMatrix3fv(PIXI.primitiveProgram.translationMatrix, false, m);
+ 	
 	gl.uniform2f(PIXI.primitiveProgram.projectionVector, projection.x, projection.y);
+	
+	gl.uniform1f(PIXI.primitiveProgram.alpha, graphics.worldAlpha);
 
 	gl.bindBuffer(gl.ARRAY_BUFFER, graphics._webGL.buffer);
 	gl.vertexAttribPointer(PIXI.primitiveProgram.vertexPositionAttribute, 2, gl.FLOAT, false, 4 * 6, 0);
@@ -2937,6 +2945,7 @@ PIXI.WebGLGraphics.updateGraphics = function(graphics)
 	var gl = PIXI.gl;
 
 	graphics._webGL.glPoints = new Float32Array(graphics._webGL.points);
+	
 	gl.bindBuffer(gl.ARRAY_BUFFER, graphics._webGL.buffer);
 	gl.bufferData(gl.ARRAY_BUFFER, graphics._webGL.glPoints, gl.STATIC_DRAW);
 	
@@ -3340,7 +3349,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
  	{
         PIXI.gl = this.gl = this.view.getContext("experimental-webgl",  {  	
     		 alpha: this.transparent,
-    		 antialias:false, // SPEED UP??
+    		 antialias:true, // SPEED UP??
     		 premultipliedAlpha:false
         });
     } 
@@ -5484,6 +5493,7 @@ PIXI.CanvasGraphics = function()
  */
 PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 {
+	var worldAlpha = graphics.worldAlpha;
 	
 	for (var i=0; i < graphics.graphicsData.length; i++) 
 	{
@@ -5516,13 +5526,13 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 			
 			if(data.fill)
 			{
-				context.globalAlpha = data.fillAlpha;
+				context.globalAlpha = data.fillAlpha * worldAlpha;
 				context.fillStyle = color = '#' + ('00000' + ( data.fillColor | 0).toString(16)).substr(-6);
       			context.fill();
 			}
 			if(data.lineWidth)
 			{
-				context.globalAlpha = data.lineAlpha;
+				context.globalAlpha = data.lineAlpha * worldAlpha;
       			context.stroke();
 			}
 		}
@@ -5531,14 +5541,14 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 			// TODO - need to be Undefined!
 			if(data.fillColor)
 			{
-				context.globalAlpha = data.fillAlpha;
+				context.globalAlpha = data.fillAlpha * worldAlpha;
 				context.fillStyle = color = '#' + ('00000' + ( data.fillColor | 0).toString(16)).substr(-6);
 				context.fillRect(points[0], points[1], points[2], points[3]);
 				
 			}
 			if(data.lineWidth)
 			{
-				context.globalAlpha = data.lineAlpha;
+				context.globalAlpha = data.lineAlpha * worldAlpha;
 				context.strokeRect(points[0], points[1], points[2], points[3]);
 			}
 		}
@@ -5551,13 +5561,13 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 			
 			if(data.fill)
 			{
-				context.globalAlpha = data.fillAlpha;
+				context.globalAlpha = data.fillAlpha * worldAlpha;
 				context.fillStyle = color = '#' + ('00000' + ( data.fillColor | 0).toString(16)).substr(-6);
       			context.fill();
 			}
 			if(data.lineWidth)
 			{
-				context.globalAlpha = data.lineAlpha;
+				context.globalAlpha = data.lineAlpha * worldAlpha;
       			context.stroke();
 			}
 		}
@@ -5594,13 +5604,13 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 			
 			if(data.fill)
 			{
-				context.globalAlpha = data.fillAlpha;
+				context.globalAlpha = data.fillAlpha * worldAlpha;
 				context.fillStyle = color = '#' + ('00000' + ( data.fillColor | 0).toString(16)).substr(-6);
       			context.fill();
 			}
 			if(data.lineWidth)
 			{
-				context.globalAlpha = data.lineAlpha;
+				context.globalAlpha = data.lineAlpha * worldAlpha;
       			context.stroke();
 			}
 		}
@@ -5615,7 +5625,7 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 
 
 /**
- * The Graphics class contains a set of methods that you can use to create a primitive shapes and lines. 
+ * The Graphics class contains a set of methods that you can use to create primitive shapes and lines. 
  * @class Graphics 
  * @extends DisplayObjectContainer
  * @constructor

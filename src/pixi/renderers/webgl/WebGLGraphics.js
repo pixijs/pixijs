@@ -43,8 +43,13 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
 	PIXI.mat3.transpose(m);
 	
 	// set the matrix transform for the 
+ 	
+ 	
  	gl.uniformMatrix3fv(PIXI.primitiveProgram.translationMatrix, false, m);
+ 	
 	gl.uniform2f(PIXI.primitiveProgram.projectionVector, projection.x, projection.y);
+	
+	gl.uniform1f(PIXI.primitiveProgram.alpha, graphics.worldAlpha);
 
 	gl.bindBuffer(gl.ARRAY_BUFFER, graphics._webGL.buffer);
 	gl.vertexAttribPointer(PIXI.primitiveProgram.vertexPositionAttribute, 2, gl.FLOAT, false, 4 * 6, 0);
@@ -93,6 +98,7 @@ PIXI.WebGLGraphics.updateGraphics = function(graphics)
 	var gl = PIXI.gl;
 
 	graphics._webGL.glPoints = new Float32Array(graphics._webGL.points);
+	
 	gl.bindBuffer(gl.ARRAY_BUFFER, graphics._webGL.buffer);
 	gl.bufferData(gl.ARRAY_BUFFER, graphics._webGL.glPoints, gl.STATIC_DRAW);
 	
