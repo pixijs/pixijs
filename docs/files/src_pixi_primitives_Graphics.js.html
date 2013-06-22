@@ -49,6 +49,8 @@
             
                 <li><a href="..&#x2F;classes/BitmapText.html">BitmapText</a></li>
             
+                <li><a href="..&#x2F;classes/CanvasGraphics.html">CanvasGraphics</a></li>
+            
                 <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
             
                 <li><a href="..&#x2F;classes/CustomRenderable.html">CustomRenderable</a></li>
@@ -56,6 +58,8 @@
                 <li><a href="..&#x2F;classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
+            
+                <li><a href="..&#x2F;classes/Graphics.html">Graphics</a></li>
             
                 <li><a href="..&#x2F;classes/ImageLoader.html">ImageLoader</a></li>
             
@@ -144,9 +148,9 @@
 
 
 &#x2F;**
- * A DisplayObjectContainer represents a collection of display objects. It is the base class of all display objects that act as a container for other objects.
- * @class DisplayObjectContainer 
- * @extends DisplayObject
+ * The Graphics class contains a set of methods that you can use to create primitive shapes and lines. 
+ * @class Graphics 
+ * @extends DisplayObjectContainer
  * @constructor
  *&#x2F;
 PIXI.Graphics = function()
@@ -155,9 +159,6 @@ PIXI.Graphics = function()
 	
 	this.renderable = true;
 	
-	&#x2F;&#x2F; style - color
-	&#x2F;&#x2F; style - thickness
-	&#x2F;&#x2F; alpha - 
 	this.fillAlpha = 1;
 	
 	this.lineWidth = 2;
@@ -165,43 +166,70 @@ PIXI.Graphics = function()
 	
 	this.graphicsData = [];
 	
+	this.currentPath = {points:[]};
 }
-
-&#x2F;&#x2F; SOME TYPES:
-PIXI.Graphics.POLY = 0;
-PIXI.Graphics.RECT = 1;
-PIXI.Graphics.CIRC = 2;
 
 &#x2F;&#x2F; constructor
 PIXI.Graphics.constructor = PIXI.Graphics;
 PIXI.Graphics.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
 
+&#x2F;**
+ * Specifies a line style used for subsequent calls to Graphics methods such as the lineTo() method or the drawCircle() method.
+ * @method lineStyle
+ * @param lineWidth {Number}
+ * @param color {Number}
+ * @param alpha {Number}
+ *&#x2F;
 PIXI.Graphics.prototype.lineStyle = function(lineWidth, color, alpha)
 {
+	if(this.currentPath.points.length == 0)this.graphicsData.pop();
+	
 	this.lineWidth = lineWidth || 0;
 	this.lineColor = color || 0;
 	this.lineAlpha = (alpha == undefined) ? 1 : alpha;
 	
-	this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha, points:[], type:PIXI.Graphics.POLY};
+	this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha, 
+						fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling, points:[], type:PIXI.Graphics.POLY};
+	
 	this.graphicsData.push(this.currentPath);
 }
 
-
+&#x2F;**
+ * Moves the current drawing position to (x, y).
+ * @method moveTo
+ * @param x {Number}
+ * @param y {Number}
+ *&#x2F;
 PIXI.Graphics.prototype.moveTo = function(x, y)
 {
-	this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha, points:[], type:PIXI.Graphics.POLY};
+	if(this.currentPath.points.length == 0)this.graphicsData.pop();
+	
+	this.currentPath = this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha, 
+						fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling, points:[], type:PIXI.Graphics.POLY};
 	
 	this.currentPath.points.push(x, y);
 	
 	this.graphicsData.push(this.currentPath);
 }
 
+&#x2F;**
+ * Draws a line using the current line style from the current drawing position to (x, y); the current drawing position is then set to (x, y).
+ * @method lineTo
+ * @param x {Number}
+ * @param y {Number}
+ *&#x2F;
 PIXI.Graphics.prototype.lineTo = function(x, y)
 {
 	this.currentPath.points.push(x, y);
 	this.dirty = true;
 }
 
+&#x2F;**
+ * Specifies a simple one-color fill that subsequent calls to other Graphics methods (such as lineTo() or drawCircle()) use when drawing.
+ * @method beginFill
+ * @param color {uint} the color of the fill
+ * @param alpha {Number} the alpha
+ *&#x2F;
 PIXI.Graphics.prototype.beginFill = function(color, alpha)
 {
 	this.filling = true;
@@ -209,6 +237,10 @@ PIXI.Graphics.prototype.beginFill = function(color, alpha)
 	this.fillAlpha = alpha || 1;
 }
 
+&#x2F;**
+ * Applies a fill to the lines and shapes that were added since the last call to the beginFill() method.
+ * @method endFill
+ *&#x2F;
 PIXI.Graphics.prototype.endFill = function()
 {
 	this.filling = false;
@@ -216,14 +248,17 @@ PIXI.Graphics.prototype.endFill = function()
 	this.fillAlpha = 1;
 }
 
-PIXI.Graphics.prototype.updateTransform = function()
-{
-	if(!this.visible)return;
-	PIXI.DisplayObject.prototype.updateTransform.call( this );
-}
-
+&#x2F;**
+ * @method drawRect
+ * @param x {Number}
+ * @param y {Number}
+ * @param width {Number}
+ * @param height {Number}
+ *&#x2F;
 PIXI.Graphics.prototype.drawRect = function( x, y, width, height )
 {
+	if(this.currentPath.points.length == 0)this.graphicsData.pop();
+	
 	this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha, 
 						fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling, 
 						points:[x, y, width, height], type:PIXI.Graphics.RECT};
@@ -232,22 +267,64 @@ PIXI.Graphics.prototype.drawRect = function( x, y, width, height )
 	this.dirty = true;
 }
 
+&#x2F;**
+ * Draws a circle.
+ * @method drawCircle
+ * @param x {Number}
+ * @param y {Number}
+ * @param radius {Number}
+ *&#x2F;
 PIXI.Graphics.prototype.drawCircle = function( x, y, radius)
 {
+	if(this.currentPath.points.length == 0)this.graphicsData.pop();
+	
 	this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha, 
 						fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling, 
-						points:[x, y, radius], type:PIXI.Graphics.CIRC};
+						points:[x, y, radius, radius], type:PIXI.Graphics.CIRC};
 						
 	this.graphicsData.push(this.currentPath);
 	this.dirty = true;
 }
 
+&#x2F;**
+ * Draws an elipse.
+ * @method drawElipse
+ * @param x {Number}
+ * @param y {Number}
+ * @param width {Number}
+ * @param height {Number}
+ *&#x2F;
+PIXI.Graphics.prototype.drawElipse = function( x, y, width, height)
+{
+	if(this.currentPath.points.length == 0)this.graphicsData.pop();
+	
+	this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha, 
+						fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling, 
+						points:[x, y, width, height], type:PIXI.Graphics.ELIP};
+						
+	this.graphicsData.push(this.currentPath);
+	this.dirty = true;
+}
+
+&#x2F;**
+ * Clears the graphics that were drawn to this Graphics object, and resets fill and line style settings.
+ * @method clear
+ *&#x2F;
 PIXI.Graphics.prototype.clear = function()
 {
+	this.lineWidth = 0;
+	this.filling = false;
+	
 	this.dirty = true;
 	this.clearDirty = true;
 	this.graphicsData = [];
 }
+
+&#x2F;&#x2F; SOME TYPES:
+PIXI.Graphics.POLY = 0;
+PIXI.Graphics.RECT = 1;
+PIXI.Graphics.CIRC = 2;
+PIXI.Graphics.ELIP = 3;
 
     </pre>
 </div>

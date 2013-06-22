@@ -49,6 +49,8 @@
             
                 <li><a href="..&#x2F;classes/BitmapText.html">BitmapText</a></li>
             
+                <li><a href="..&#x2F;classes/CanvasGraphics.html">CanvasGraphics</a></li>
+            
                 <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
             
                 <li><a href="..&#x2F;classes/CustomRenderable.html">CustomRenderable</a></li>
@@ -56,6 +58,8 @@
                 <li><a href="..&#x2F;classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
+            
+                <li><a href="..&#x2F;classes/Graphics.html">Graphics</a></li>
             
                 <li><a href="..&#x2F;classes/ImageLoader.html">ImageLoader</a></li>
             
@@ -143,6 +147,11 @@
  * @author Mat Groves http:&#x2F;&#x2F;matgroves.com&#x2F; @Doormat23
  *&#x2F;
 
+
+&#x2F;*
+ * the default suoer fast shader!
+ *&#x2F;
+
 PIXI.shaderFragmentSrc = [
   &quot;precision mediump float;&quot;,
   &quot;varying vec2 vTextureCoord;&quot;,
@@ -158,17 +167,41 @@ PIXI.shaderVertexSrc = [
   &quot;attribute vec2 aVertexPosition;&quot;,
   &quot;attribute vec2 aTextureCoord;&quot;,
   &quot;attribute float aColor;&quot;,
-  &quot;uniform mat4 uMVMatrix;&quot;,
+  &#x2F;&#x2F;&quot;uniform mat4 uMVMatrix;&quot;,
+  &quot;uniform vec2 projectionVector;&quot;,
   &quot;varying vec2 vTextureCoord;&quot;,
   &quot;varying float vColor;&quot;,
   &quot;void main(void) {&quot;,
-    &quot;gl_Position = uMVMatrix * vec4(aVertexPosition, 1.0, 1.0);&quot;,
+   &#x2F;&#x2F; &quot;gl_Position = uMVMatrix * vec4(aVertexPosition, 1.0, 1.0);&quot;,
+    &quot;gl_Position = vec4( aVertexPosition.x &#x2F; projectionVector.x -1.0, aVertexPosition.y &#x2F; -projectionVector.y + 1.0 , 0.0, 1.0);&quot;,
+    &quot;vTextureCoord = aTextureCoord;&quot;,
+    &quot;vColor = aColor;&quot;,
+  &quot;}&quot;
+];
+
+&#x2F;*
+ * the triangle strip shader..
+ *&#x2F;
+PIXI.stripShaderVertexSrc = [
+  &quot;attribute vec2 aVertexPosition;&quot;,
+  &quot;attribute vec2 aTextureCoord;&quot;,
+  &quot;attribute float aColor;&quot;,
+  &quot;uniform mat3 translationMatrix;&quot;,
+  &quot;uniform vec2 projectionVector;&quot;,
+  &quot;varying vec2 vTextureCoord;&quot;,
+  &quot;varying float vColor;&quot;,
+  &quot;void main(void) {&quot;,
+	&quot;vec3 v = translationMatrix * vec3(aVertexPosition, 1.0);&quot;,
+    &quot;gl_Position = vec4( v.x &#x2F; projectionVector.x -1.0, v.y &#x2F; -projectionVector.y + 1.0 , 0.0, 1.0);&quot;,
     &quot;vTextureCoord = aTextureCoord;&quot;,
     &quot;vColor = aColor;&quot;,
   &quot;}&quot;
 ];
 
 
+&#x2F;*
+ * primitive shader..
+ *&#x2F;
 
 PIXI.primitiveShaderFragmentSrc = [
   &quot;precision mediump float;&quot;,
@@ -181,18 +214,15 @@ PIXI.primitiveShaderFragmentSrc = [
 PIXI.primitiveShaderVertexSrc = [
   &quot;attribute vec2 aVertexPosition;&quot;,
   &quot;attribute vec4 aColor;&quot;,
+  &quot;uniform mat3 translationMatrix;&quot;,
   &quot;uniform vec2 projectionVector;&quot;,
   &quot;varying vec4 vColor;&quot;,
   &quot;void main(void) {&quot;,
-    &quot;gl_Position = vec4( aVertexPosition.x &#x2F; projectionVector.x -1.0, aVertexPosition.y &#x2F; -projectionVector.y + 1.0 , 0.0, 1.0);&quot;,
+  	&quot;vec3 v = translationMatrix * vec3(aVertexPosition, 1.0);&quot;,
+    &quot;gl_Position = vec4( v.x &#x2F; projectionVector.x -1.0, v.y &#x2F; -projectionVector.y + 1.0 , 0.0, 1.0);&quot;,
     &quot;vColor = aColor;&quot;,
   &quot;}&quot;
 ];
-
-&#x2F;*
- * primitive shader..
- *&#x2F;
-
 
 PIXI.initPrimitiveShader = function() 
 {
@@ -205,6 +235,7 @@ PIXI.initPrimitiveShader = function()
     shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, &quot;aVertexPosition&quot;);
     shaderProgram.colorAttribute = gl.getAttribLocation(shaderProgram, &quot;aColor&quot;);
     shaderProgram.projectionVector = gl.getUniformLocation(shaderProgram, &quot;projectionVector&quot;);
+    shaderProgram.translationMatrix = gl.getUniformLocation(shaderProgram, &quot;translationMatrix&quot;);
 
 	PIXI.primitiveProgram = shaderProgram;
 }
@@ -217,6 +248,7 @@ PIXI.initDefaultShader = function()
     gl.useProgram(shaderProgram);
 
     shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, &quot;aVertexPosition&quot;);
+    shaderProgram.projectionVector = gl.getUniformLocation(shaderProgram, &quot;projectionVector&quot;);
     shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, &quot;aTextureCoord&quot;);
 	shaderProgram.colorAttribute = gl.getAttribLocation(shaderProgram, &quot;aColor&quot;);
 
@@ -224,6 +256,27 @@ PIXI.initDefaultShader = function()
     shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, &quot;uSampler&quot;);
     
 	PIXI.shaderProgram = shaderProgram;
+}
+
+PIXI.initDefaultStripShader = function() 
+{
+	var gl = this.gl;
+	var shaderProgram = PIXI.compileProgram(PIXI.stripShaderVertexSrc, PIXI.shaderFragmentSrc)
+	
+    gl.useProgram(shaderProgram);
+
+    shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, &quot;aVertexPosition&quot;);
+    shaderProgram.projectionVector = gl.getUniformLocation(shaderProgram, &quot;projectionVector&quot;);
+    shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, &quot;aTextureCoord&quot;);
+	shaderProgram.translationMatrix = gl.getUniformLocation(shaderProgram, &quot;translationMatrix&quot;);
+
+	shaderProgram.colorAttribute = gl.getAttribLocation(shaderProgram, &quot;aColor&quot;);
+
+    shaderProgram.projectionVector = gl.getUniformLocation(shaderProgram, &quot;projectionVector&quot;);
+    
+    shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, &quot;uSampler&quot;);
+    
+	PIXI.stripShaderProgram = shaderProgram;
 }
 
 PIXI.CompileVertexShader = function(gl, shaderSrc)

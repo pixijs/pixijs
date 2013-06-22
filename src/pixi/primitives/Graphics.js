@@ -4,7 +4,7 @@
 
 
 /**
- * The Graphics class contains a set of methods that you can use to create a primitive shapes and lines. 
+ * The Graphics class contains a set of methods that you can use to create primitive shapes and lines. 
  * @class Graphics 
  * @extends DisplayObjectContainer
  * @constructor
@@ -30,6 +30,7 @@ PIXI.Graphics.constructor = PIXI.Graphics;
 PIXI.Graphics.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
 
 /**
+ * Specifies a line style used for subsequent calls to Graphics methods such as the lineTo() method or the drawCircle() method.
  * @method lineStyle
  * @param lineWidth {Number}
  * @param color {Number}
@@ -50,6 +51,7 @@ PIXI.Graphics.prototype.lineStyle = function(lineWidth, color, alpha)
 }
 
 /**
+ * Moves the current drawing position to (x, y).
  * @method moveTo
  * @param x {Number}
  * @param y {Number}
@@ -61,14 +63,13 @@ PIXI.Graphics.prototype.moveTo = function(x, y)
 	this.currentPath = this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha, 
 						fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling, points:[], type:PIXI.Graphics.POLY};
 	
-	// {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha, points:[], type:PIXI.Graphics.POLY};
-	
 	this.currentPath.points.push(x, y);
 	
 	this.graphicsData.push(this.currentPath);
 }
 
 /**
+ * Draws a line using the current line style from the current drawing position to (x, y); the current drawing position is then set to (x, y).
  * @method lineTo
  * @param x {Number}
  * @param y {Number}
@@ -80,9 +81,10 @@ PIXI.Graphics.prototype.lineTo = function(x, y)
 }
 
 /**
+ * Specifies a simple one-color fill that subsequent calls to other Graphics methods (such as lineTo() or drawCircle()) use when drawing.
  * @method beginFill
- * @param color {Number}
- * @param alpha {Number}
+ * @param color {uint} the color of the fill
+ * @param alpha {Number} the alpha
  */
 PIXI.Graphics.prototype.beginFill = function(color, alpha)
 {
@@ -92,6 +94,7 @@ PIXI.Graphics.prototype.beginFill = function(color, alpha)
 }
 
 /**
+ * Applies a fill to the lines and shapes that were added since the last call to the beginFill() method.
  * @method endFill
  */
 PIXI.Graphics.prototype.endFill = function()
@@ -121,6 +124,7 @@ PIXI.Graphics.prototype.drawRect = function( x, y, width, height )
 }
 
 /**
+ * Draws a circle.
  * @method drawCircle
  * @param x {Number}
  * @param y {Number}
@@ -139,6 +143,7 @@ PIXI.Graphics.prototype.drawCircle = function( x, y, radius)
 }
 
 /**
+ * Draws an elipse.
  * @method drawElipse
  * @param x {Number}
  * @param y {Number}
@@ -158,10 +163,14 @@ PIXI.Graphics.prototype.drawElipse = function( x, y, width, height)
 }
 
 /**
+ * Clears the graphics that were drawn to this Graphics object, and resets fill and line style settings.
  * @method clear
  */
 PIXI.Graphics.prototype.clear = function()
 {
+	this.lineWidth = 0;
+	this.filling = false;
+	
 	this.dirty = true;
 	this.clearDirty = true;
 	this.graphicsData = [];

@@ -91,6 +91,7 @@
 				}
 				else
 				{
+					console.log("PIXI Warning: shape too complex to fill")
 					return [];
 				}				
 			}

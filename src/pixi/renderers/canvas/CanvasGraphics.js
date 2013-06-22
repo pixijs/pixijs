@@ -4,18 +4,22 @@
 
 
 /**
- * A DisplayObjectContainer represents a collection of display objects. It is the base class of all display objects that act as a container for other objects.
- * @class DisplayObjectContainer 
- * @extends DisplayObject
- * @constructor
+ * A set of functions used by the canvas renderer to draw the primitive graphics data
+ * @class CanvasGraphics 
  */
 PIXI.CanvasGraphics = function()
 {
 	
 }
 
-// constructor
 
+/*
+ * @private
+ * @static
+ * @method renderGraphics
+ * @param graphics {Graphics}
+ * @param context {Context2D}
+ */
 PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 {
 	

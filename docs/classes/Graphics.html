@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Spine - Pixi.JS</title>
+    <title>Graphics - Pixi.JS</title>
     <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
@@ -138,7 +138,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>Spine Class</h1>
+                        <h1>Graphics Class</h1>
 <div class="box meta">
     
 
@@ -150,7 +150,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="..&#x2F;files&#x2F;src_pixi_loaders_SpineLoader.js.html#l10"><code>src&#x2F;pixi&#x2F;loaders&#x2F;SpineLoader.js:10</code></a>
+            Defined in: <a href="..&#x2F;files&#x2F;src_pixi_primitives_Graphics.js.html#l6"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:6</code></a>
         </div>
     
 
@@ -166,32 +166,17 @@
 
 
 <div class="box intro">
-    <p>The Spine loader is used to load in JSON spine data
-To generate the data you need to use http://esotericsoftware.com/ and export the "JSON" format
-Due to a clash of names  You will need to change the extension of the spine file from *.json to *.anim for it to load
-See example 12 (http://www.goodboydigital.com/pixijs/examples/12/) to see a working example and check out the source
-You will need to generate a sprite sheet to accompany the spine data 
-When loaded this class will dispatch a "loaded" event</p>
+    <p>The Graphics class contains a set of methods that you can use to create primitive shapes and lines.</p>
 </div>
 
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_Spine" class="method item">
-    <h3 class="name"><code>Spine</code></h3>
+        <div id="method_Graphics" class="method item">
+    <h3 class="name"><code>Graphics</code></h3>
 
     
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>url</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
+        <span class="paren">()</span>
     
 
     
@@ -219,7 +204,7 @@ When loaded this class will dispatch a "loaded" event</p>
             
         
         
-        <a href="..&#x2F;files&#x2F;src_pixi_loaders_SpineLoader.js.html#l10"><code>src&#x2F;pixi&#x2F;loaders&#x2F;SpineLoader.js:10</code></a>
+        <a href="..&#x2F;files&#x2F;src_pixi_primitives_Graphics.js.html#l6"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:6</code></a>
         
         </p>
 
@@ -233,29 +218,6 @@ When loaded this class will dispatch a "loaded" event</p>
         
     </div>
 
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">url</code>
-                        <span class="type">String</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>the url of the spine anim file to be used</p>
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
     
 
     
@@ -304,6 +266,20 @@ When loaded this class will dispatch a "loaded" event</p>
                                 
                             </li>
                         
+                            <li class="index-item method">
+                                <a href="#method_beginFill">beginFill</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_clear">clear</a>
+
+                                
+                                
+                            </li>
+                        
                             <li class="index-item method inherited">
                                 <a href="#method_click">click</a>
 
@@ -311,8 +287,50 @@ When loaded this class will dispatch a "loaded" event</p>
                                 
                             </li>
                         
+                            <li class="index-item method">
+                                <a href="#method_drawCircle">drawCircle</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_drawElipse">drawElipse</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_drawRect">drawRect</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_endFill">endFill</a>
+
+                                
+                                
+                            </li>
+                        
                             <li class="index-item method inherited">
                                 <a href="#method_getChildAt">getChildAt</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_lineStyle">lineStyle</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_lineTo">lineTo</a>
 
                                 
                                 
@@ -348,6 +366,13 @@ When loaded this class will dispatch a "loaded" event</p>
                         
                             <li class="index-item method inherited">
                                 <a href="#method_mouseupoutside">mouseupoutside</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_moveTo">moveTo</a>
 
                                 
                                 
@@ -692,6 +717,168 @@ When loaded this class will dispatch a "loaded" event</p>
 </div>
 
                 
+                    <div id="method_beginFill" class="method item">
+    <h3 class="name"><code>beginFill</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>color</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>alpha</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;src_pixi_primitives_Graphics.js.html#l83"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:83</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Specifies a simple one-color fill that subsequent calls to other Graphics methods (such as lineTo() or drawCircle()) use when drawing.</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">color</code>
+                        <span class="type">Uint</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the color of the fill</p>
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">alpha</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the alpha</p>
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_clear" class="method item">
+    <h3 class="name"><code>clear</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;src_pixi_primitives_Graphics.js.html#l165"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:165</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Clears the graphics that were drawn to this Graphics object, and resets fill and line style settings.</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
                     <div id="method_click" class="method item inherited">
     <h3 class="name"><code>click</code></h3>
 
@@ -776,6 +963,489 @@ When loaded this class will dispatch a "loaded" event</p>
 </div>
 
                 
+                    <div id="method_drawCircle" class="method item">
+    <h3 class="name"><code>drawCircle</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>x</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>y</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>radius</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;src_pixi_primitives_Graphics.js.html#l126"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:126</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Draws a circle.</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">x</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">y</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">radius</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_drawElipse" class="method item">
+    <h3 class="name"><code>drawElipse</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>x</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>y</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>width</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>height</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;src_pixi_primitives_Graphics.js.html#l145"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:145</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Draws an elipse.</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">x</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">y</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">width</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">height</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_drawRect" class="method item">
+    <h3 class="name"><code>drawRect</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>x</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>y</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>width</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>height</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;src_pixi_primitives_Graphics.js.html#l107"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:107</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">x</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">y</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">width</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">height</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_endFill" class="method item">
+    <h3 class="name"><code>endFill</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;src_pixi_primitives_Graphics.js.html#l96"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:96</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Applies a fill to the lines and shapes that were added since the last call to the beginFill() method.</p>
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
                     <div id="method_getChildAt" class="method item inherited">
     <h3 class="name"><code>getChildAt</code></h3>
 
@@ -838,6 +1508,243 @@ When loaded this class will dispatch a "loaded" event</p>
                 <li class="param">
                     
                         <code class="param-name">index</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_lineStyle" class="method item">
+    <h3 class="name"><code>lineStyle</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>lineWidth</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>color</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>alpha</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;src_pixi_primitives_Graphics.js.html#l32"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:32</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Specifies a line style used for subsequent calls to Graphics methods such as the lineTo() method or the drawCircle() method.</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">lineWidth</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">color</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">alpha</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_lineTo" class="method item">
+    <h3 class="name"><code>lineTo</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>x</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>y</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;src_pixi_primitives_Graphics.js.html#l71"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:71</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Draws a line using the current line style from the current drawing position to (x, y); the current drawing position is then set to (x, y).</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">x</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">y</code>
                         <span class="type">Number</span>
                     
 
@@ -1261,6 +2168,114 @@ for this callback to be fired, The touch must have started over the displayObjec
                     
                         <code class="param-name">interactionData</code>
                         <span class="type"><a href="../classes/InteractionData.html" class="crosslink">InteractionData</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_moveTo" class="method item">
+    <h3 class="name"><code>moveTo</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>x</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>y</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;src_pixi_primitives_Graphics.js.html#l53"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:53</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Moves the current drawing position to (x, y).</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">x</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">y</code>
+                        <span class="type">Number</span>
                     
 
                     

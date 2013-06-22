@@ -49,6 +49,8 @@
             
                 <li><a href="..&#x2F;classes/BitmapText.html">BitmapText</a></li>
             
+                <li><a href="..&#x2F;classes/CanvasGraphics.html">CanvasGraphics</a></li>
+            
                 <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
             
                 <li><a href="..&#x2F;classes/CustomRenderable.html">CustomRenderable</a></li>
@@ -56,6 +58,8 @@
                 <li><a href="..&#x2F;classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
+            
+                <li><a href="..&#x2F;classes/Graphics.html">Graphics</a></li>
             
                 <li><a href="..&#x2F;classes/ImageLoader.html">ImageLoader</a></li>
             
@@ -144,18 +148,22 @@
 
 
 &#x2F;**
- * A DisplayObjectContainer represents a collection of display objects. It is the base class of all display objects that act as a container for other objects.
- * @class DisplayObjectContainer 
- * @extends DisplayObject
- * @constructor
+ * A set of functions used by the canvas renderer to draw the primitive graphics data
+ * @class CanvasGraphics 
  *&#x2F;
 PIXI.CanvasGraphics = function()
 {
 	
 }
 
-&#x2F;&#x2F; constructor
 
+&#x2F;*
+ * @private
+ * @static
+ * @method renderGraphics
+ * @param graphics {Graphics}
+ * @param context {Context2D}
+ *&#x2F;
 PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 {
 	
@@ -167,11 +175,11 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 		context.strokeStyle = color = &#x27;#&#x27; + (&#x27;00000&#x27; + ( data.lineColor | 0).toString(16)).substr(-6);
 
 		context.lineWidth = data.lineWidth;
-		context.globalAlpha = data.lineAlpha;
 		
 		if(data.type == PIXI.Graphics.POLY)
 		{
-			if(data.lineWidth &lt;= 0)continue;
+			
+			&#x2F;&#x2F;if(data.lineWidth &lt;= 0)continue;
 			
 			context.beginPath();
 			
@@ -188,20 +196,31 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 	      		context.closePath();
 	      	}
 			
-			context.stroke();
+			if(data.fill)
+			{
+				context.globalAlpha = data.fillAlpha;
+				context.fillStyle = color = &#x27;#&#x27; + (&#x27;00000&#x27; + ( data.fillColor | 0).toString(16)).substr(-6);
+      			context.fill();
+			}
+			if(data.lineWidth)
+			{
+				context.globalAlpha = data.lineAlpha;
+      			context.stroke();
+			}
 		}
 		else if(data.type == PIXI.Graphics.RECT)
 		{
 			&#x2F;&#x2F; TODO - need to be Undefined!
 			if(data.fillColor)
 			{
+				context.globalAlpha = data.fillAlpha;
 				context.fillStyle = color = &#x27;#&#x27; + (&#x27;00000&#x27; + ( data.fillColor | 0).toString(16)).substr(-6);
-
 				context.fillRect(points[0], points[1], points[2], points[3]);
 				
 			}
 			if(data.lineWidth)
 			{
+				context.globalAlpha = data.lineAlpha;
 				context.strokeRect(points[0], points[1], points[2], points[3]);
 			}
 		}
@@ -214,11 +233,56 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 			
 			if(data.fill)
 			{
+				context.globalAlpha = data.fillAlpha;
 				context.fillStyle = color = &#x27;#&#x27; + (&#x27;00000&#x27; + ( data.fillColor | 0).toString(16)).substr(-6);
       			context.fill();
 			}
 			if(data.lineWidth)
 			{
+				context.globalAlpha = data.lineAlpha;
+      			context.stroke();
+			}
+		}
+		else if(data.type == PIXI.Graphics.ELIP)
+		{
+			
+			&#x2F;&#x2F; elipse code taken from: http:&#x2F;&#x2F;stackoverflow.com&#x2F;questions&#x2F;2172798&#x2F;how-to-draw-an-oval-in-html5-canvas
+			
+			var elipseData =  data.points;
+			
+			var w = elipseData[2] * 2;
+			var h = elipseData[3] * 2;
+	
+			var x = elipseData[0] - w&#x2F;2;
+			var y = elipseData[1] - h&#x2F;2;
+			
+      		context.beginPath();
+			
+			var kappa = .5522848,
+			ox = (w &#x2F; 2) * kappa, &#x2F;&#x2F; control point offset horizontal
+			oy = (h &#x2F; 2) * kappa, &#x2F;&#x2F; control point offset vertical
+			xe = x + w,           &#x2F;&#x2F; x-end
+			ye = y + h,           &#x2F;&#x2F; y-end
+			xm = x + w &#x2F; 2,       &#x2F;&#x2F; x-middle
+			ym = y + h &#x2F; 2;       &#x2F;&#x2F; y-middle
+			
+			context.moveTo(x, ym);
+			context.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);
+			context.bezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);
+			context.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);
+			context.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);
+  
+			context.closePath();
+			
+			if(data.fill)
+			{
+				context.globalAlpha = data.fillAlpha;
+				context.fillStyle = color = &#x27;#&#x27; + (&#x27;00000&#x27; + ( data.fillColor | 0).toString(16)).substr(-6);
+      			context.fill();
+			}
+			if(data.lineWidth)
+			{
+				context.globalAlpha = data.lineAlpha;
       			context.stroke();
 			}
 		}

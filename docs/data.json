@@ -46,7 +46,9 @@
         "src/pixi/display/DisplayObjectContainer.js": {
             "name": "src/pixi/display/DisplayObjectContainer.js",
             "modules": {},
-            "classes": {},
+            "classes": {
+                "DisplayObjectContainer": 1
+            },
             "fors": {},
             "namespaces": {}
         },
@@ -173,7 +175,9 @@
         "src/pixi/primitives/Graphics.js": {
             "name": "src/pixi/primitives/Graphics.js",
             "modules": {},
-            "classes": {},
+            "classes": {
+                "Graphics": 1
+            },
             "fors": {},
             "namespaces": {}
         },
@@ -204,7 +208,7 @@
             "name": "src/pixi/renderers/webgl/WebGLGraphics.js",
             "modules": {},
             "classes": {
-                "DisplayObjectContainer": 1
+                "CanvasGraphics": 1
             },
             "fors": {},
             "namespaces": {}
@@ -355,6 +359,8 @@
                 "ImageLoader": 1,
                 "JsonLoader": 1,
                 "SpriteSheetLoader": 1,
+                "Graphics": 1,
+                "CanvasGraphics": 1,
                 "CanvasRenderer": 1,
                 "WebGLBatch": 1,
                 "WebGLRenderer": 1,
@@ -479,7 +485,7 @@
             "plugin_for": [],
             "extension_for": [],
             "module": "PIXI",
-            "file": "src/pixi/renderers/webgl/WebGLGraphics.js",
+            "file": "src/pixi/display/DisplayObjectContainer.js",
             "line": 6,
             "description": "A DisplayObjectContainer represents a collection of display objects. It is the base class of all display objects that act as a container for other objects.",
             "extends": "DisplayObject",
@@ -754,6 +760,34 @@
                     "type": "Boolean"
                 }
             ]
+        },
+        "Graphics": {
+            "name": "Graphics",
+            "shortname": "Graphics",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "PIXI",
+            "file": "src/pixi/primitives/Graphics.js",
+            "line": 6,
+            "description": "The Graphics class contains a set of methods that you can use to create primitive shapes and lines.",
+            "extends": "DisplayObjectContainer",
+            "is_constructor": 1
+        },
+        "CanvasGraphics": {
+            "name": "CanvasGraphics",
+            "shortname": "CanvasGraphics",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "PIXI",
+            "file": "src/pixi/renderers/webgl/WebGLGraphics.js",
+            "line": 7,
+            "description": "A set of functions used by the webGL renderer to draw the primitive graphics data"
         },
         "CanvasRenderer": {
             "name": "CanvasRenderer",
@@ -2162,13 +2196,198 @@
             "file": "src/pixi/primitives/Graphics.js",
             "line": 1,
             "author": "Mat Groves http://matgroves.com/ @Doormat23",
-            "class": "DisplayObjectContainer"
+            "class": "Graphics"
+        },
+        {
+            "file": "src/pixi/primitives/Graphics.js",
+            "line": 32,
+            "description": "Specifies a line style used for subsequent calls to Graphics methods such as the lineTo() method or the drawCircle() method.",
+            "itemtype": "method",
+            "name": "lineStyle",
+            "params": [
+                {
+                    "name": "lineWidth",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "color",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "alpha",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "class": "Graphics"
+        },
+        {
+            "file": "src/pixi/primitives/Graphics.js",
+            "line": 53,
+            "description": "Moves the current drawing position to (x, y).",
+            "itemtype": "method",
+            "name": "moveTo",
+            "params": [
+                {
+                    "name": "x",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "y",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "class": "Graphics"
+        },
+        {
+            "file": "src/pixi/primitives/Graphics.js",
+            "line": 71,
+            "description": "Draws a line using the current line style from the current drawing position to (x, y); the current drawing position is then set to (x, y).",
+            "itemtype": "method",
+            "name": "lineTo",
+            "params": [
+                {
+                    "name": "x",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "y",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "class": "Graphics"
+        },
+        {
+            "file": "src/pixi/primitives/Graphics.js",
+            "line": 83,
+            "description": "Specifies a simple one-color fill that subsequent calls to other Graphics methods (such as lineTo() or drawCircle()) use when drawing.",
+            "itemtype": "method",
+            "name": "beginFill",
+            "params": [
+                {
+                    "name": "color",
+                    "description": "the color of the fill",
+                    "type": "Uint"
+                },
+                {
+                    "name": "alpha",
+                    "description": "the alpha",
+                    "type": "Number"
+                }
+            ],
+            "class": "Graphics"
+        },
+        {
+            "file": "src/pixi/primitives/Graphics.js",
+            "line": 96,
+            "description": "Applies a fill to the lines and shapes that were added since the last call to the beginFill() method.",
+            "itemtype": "method",
+            "name": "endFill",
+            "class": "Graphics"
+        },
+        {
+            "file": "src/pixi/primitives/Graphics.js",
+            "line": 107,
+            "itemtype": "method",
+            "name": "drawRect",
+            "params": [
+                {
+                    "name": "x",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "y",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "width",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "height",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "class": "Graphics"
+        },
+        {
+            "file": "src/pixi/primitives/Graphics.js",
+            "line": 126,
+            "description": "Draws a circle.",
+            "itemtype": "method",
+            "name": "drawCircle",
+            "params": [
+                {
+                    "name": "x",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "y",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "radius",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "class": "Graphics"
+        },
+        {
+            "file": "src/pixi/primitives/Graphics.js",
+            "line": 145,
+            "description": "Draws an elipse.",
+            "itemtype": "method",
+            "name": "drawElipse",
+            "params": [
+                {
+                    "name": "x",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "y",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "width",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "height",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "class": "Graphics"
+        },
+        {
+            "file": "src/pixi/primitives/Graphics.js",
+            "line": 165,
+            "description": "Clears the graphics that were drawn to this Graphics object, and resets fill and line style settings.",
+            "itemtype": "method",
+            "name": "clear",
+            "class": "Graphics"
         },
         {
             "file": "src/pixi/renderers/canvas/CanvasGraphics.js",
             "line": 1,
             "author": "Mat Groves http://matgroves.com/ @Doormat23",
-            "class": "DisplayObjectContainer"
+            "class": "CanvasGraphics"
         },
         {
             "file": "src/pixi/renderers/canvas/CanvasRenderer.js",
@@ -2445,7 +2664,7 @@
             "file": "src/pixi/renderers/webgl/WebGLGraphics.js",
             "line": 1,
             "author": "Mat Groves http://matgroves.com/ @Doormat23",
-            "class": "DisplayObjectContainer"
+            "class": "CanvasGraphics"
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderGroup.js",
@@ -2455,35 +2674,35 @@
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderGroup.js",
-            "line": 647,
+            "line": 624,
             "access": "private",
             "tagname": "",
             "class": "WebGLBatch"
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderGroup.js",
-            "line": 733,
+            "line": 710,
             "access": "private",
             "tagname": "",
             "class": "WebGLBatch"
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderGroup.js",
-            "line": 789,
+            "line": 765,
             "access": "private",
             "tagname": "",
             "class": "WebGLBatch"
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderGroup.js",
-            "line": 866,
+            "line": 849,
             "access": "private",
             "tagname": "",
             "class": "WebGLBatch"
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderGroup.js",
-            "line": 903,
+            "line": 886,
             "access": "private",
             "tagname": "",
             "class": "WebGLBatch"
@@ -2496,28 +2715,28 @@
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 84,
+            "line": 85,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 99,
+            "line": 100,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 109,
+            "line": 110,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 115,
+            "line": 116,
             "description": "Renders the stage to its webGL view",
             "itemtype": "method",
             "name": "render",
@@ -2532,14 +2751,14 @@
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 198,
+            "line": 199,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 257,
+            "line": 258,
             "description": "resizes the webGL view to the specified width and height",
             "itemtype": "method",
             "name": "resize",
@@ -2559,14 +2778,14 @@
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 281,
+            "line": 285,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 290,
+            "line": 294,
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
@@ -2818,7 +3037,7 @@
         },
         {
             "file": "src/pixi/textures/RenderTexture.js",
-            "line": 90,
+            "line": 92,
             "description": "This function will draw the display object to the texture.",
             "itemtype": "method",
             "name": "render",
@@ -3434,23 +3653,23 @@
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/webgl/WebGLRenderGroup.js:647"
+            "line": " src/pixi/renderers/webgl/WebGLRenderGroup.js:624"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/webgl/WebGLRenderGroup.js:733"
+            "line": " src/pixi/renderers/webgl/WebGLRenderGroup.js:710"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/webgl/WebGLRenderGroup.js:789"
+            "line": " src/pixi/renderers/webgl/WebGLRenderGroup.js:765"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/webgl/WebGLRenderGroup.js:866"
+            "line": " src/pixi/renderers/webgl/WebGLRenderGroup.js:849"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/webgl/WebGLRenderGroup.js:903"
+            "line": " src/pixi/renderers/webgl/WebGLRenderGroup.js:886"
         },
         {
             "message": "Missing item type",
@@ -3458,27 +3677,27 @@
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/webgl/WebGLRenderer.js:84"
+            "line": " src/pixi/renderers/webgl/WebGLRenderer.js:85"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/webgl/WebGLRenderer.js:99"
+            "line": " src/pixi/renderers/webgl/WebGLRenderer.js:100"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/webgl/WebGLRenderer.js:109"
+            "line": " src/pixi/renderers/webgl/WebGLRenderer.js:110"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/webgl/WebGLRenderer.js:198"
+            "line": " src/pixi/renderers/webgl/WebGLRenderer.js:199"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/webgl/WebGLRenderer.js:281"
+            "line": " src/pixi/renderers/webgl/WebGLRenderer.js:285"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/webgl/WebGLRenderer.js:290"
+            "line": " src/pixi/renderers/webgl/WebGLRenderer.js:294"
         },
         {
             "message": "Missing item type",

@@ -49,6 +49,8 @@
             
                 <li><a href="..&#x2F;classes/BitmapText.html">BitmapText</a></li>
             
+                <li><a href="..&#x2F;classes/CanvasGraphics.html">CanvasGraphics</a></li>
+            
                 <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
             
                 <li><a href="..&#x2F;classes/CustomRenderable.html">CustomRenderable</a></li>
@@ -56,6 +58,8 @@
                 <li><a href="..&#x2F;classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
+            
+                <li><a href="..&#x2F;classes/Graphics.html">Graphics</a></li>
             
                 <li><a href="..&#x2F;classes/ImageLoader.html">ImageLoader</a></li>
             
@@ -205,6 +209,8 @@ PIXI.RenderTexture.prototype.initWebGL = function()
 	gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.baseTexture._glTexture, 0);
 	
 	&#x2F;&#x2F; create a projection matrix..
+	this.projection = new PIXI.Point(this.width&#x2F;2 , this.height&#x2F;2);
+	
 	this.projectionMatrix =  PIXI.mat4.create();
 	
 	this.projectionMatrix[5] = 2&#x2F;this.height&#x2F;&#x2F; * 0.5;
@@ -255,6 +261,9 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, clear)
 	
 	&#x2F;&#x2F;TODO -? create a new one??? dont think so!
 	displayObject.worldTransform = PIXI.mat3.create();&#x2F;&#x2F;sthis.indetityMatrix;
+	&#x2F;&#x2F; modify to flip...
+	displayObject.worldTransform[4] = -1;
+	displayObject.worldTransform[5] = this.projection.y * 2;
 	
 	for(var i=0,j=children.length; i&lt;j; i++)
 	{
@@ -267,18 +276,18 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, clear)
 	{
 		if(displayObject == renderGroup.root)
 		{
-			renderGroup.render(this.projectionMatrix);
+			renderGroup.render(this.projection);
 		}
 		else
 		{
-			renderGroup.renderSpecific(displayObject, this.projectionMatrix);
+			renderGroup.renderSpecific(displayObject, this.projection);
 		}
 	}
 	else
 	{
 		if(!this.renderGroup)this.renderGroup = new PIXI.WebGLRenderGroup(gl);
 		this.renderGroup.setRenderable(displayObject);
-		this.renderGroup.render(this.projectionMatrix);
+		this.renderGroup.render(this.projection);
 	}
 	
 }

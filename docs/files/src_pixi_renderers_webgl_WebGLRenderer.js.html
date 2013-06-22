@@ -49,6 +49,8 @@
             
                 <li><a href="..&#x2F;classes/BitmapText.html">BitmapText</a></li>
             
+                <li><a href="..&#x2F;classes/CanvasGraphics.html">CanvasGraphics</a></li>
+            
                 <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
             
                 <li><a href="..&#x2F;classes/CustomRenderable.html">CustomRenderable</a></li>
@@ -56,6 +58,8 @@
                 <li><a href="..&#x2F;classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
+            
+                <li><a href="..&#x2F;classes/Graphics.html">Graphics</a></li>
             
                 <li><a href="..&#x2F;classes/ImageLoader.html">ImageLoader</a></li>
             
@@ -198,6 +202,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
     
     PIXI.initPrimitiveShader();
     PIXI.initDefaultShader();
+    PIXI.initDefaultStripShader();
     
     PIXI.activateDefaultShader();
     
@@ -210,7 +215,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
     gl.enable(gl.BLEND);
     gl.colorMask(true, true, true, this.transparent); 
     
-    this.projectionMatrix =  PIXI.mat4.create();
+    PIXI.projection = new PIXI.Point(400, 300);
     
     this.resize(this.width, this.height);
     this.contextLost = false;
@@ -298,7 +303,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	gl.viewport(0, 0, this.width, this.height);	
 	
 	&#x2F;&#x2F; set the correct matrix..	
-   &#x2F;&#x2F; gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.projectionMatrix);
+   &#x2F;&#x2F;	gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.projectionMatrix);
    
    	gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 		
@@ -306,10 +311,10 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	gl.clear(gl.COLOR_BUFFER_BIT);
 
 	&#x2F;&#x2F; HACK TO TEST
-	PIXI.projectionMatrix = this.projectionMatrix;
+	&#x2F;&#x2F;PIXI.projectionMatrix = this.projectionMatrix;
 	
 	this.stageRenderGroup.backgroundColor = stage.backgroundColorSplit;
-	this.stageRenderGroup.render(this.projectionMatrix);
+	this.stageRenderGroup.render(PIXI.projection);
 	
 	&#x2F;&#x2F; interaction
 	&#x2F;&#x2F; run interaction!
@@ -410,12 +415,15 @@ PIXI.WebGLRenderer.prototype.resize = function(width, height)
 	
 	this.gl.viewport(0, 0, this.width, this.height);	
 	
-	var projectionMatrix = this.projectionMatrix;
+	&#x2F;&#x2F;var projectionMatrix = this.projectionMatrix;
 	
-	projectionMatrix[0] = 2&#x2F;this.width;
-	projectionMatrix[5] = -2&#x2F;this.height;
-	projectionMatrix[12] = -1;
-	projectionMatrix[13] = 1;
+	PIXI.projection.x =  this.width&#x2F;2;
+	PIXI.projection.y =  this.height&#x2F;2;
+	
+&#x2F;&#x2F;	projectionMatrix[0] = 2&#x2F;this.width;
+&#x2F;&#x2F;	projectionMatrix[5] = -2&#x2F;this.height;
+&#x2F;&#x2F;	projectionMatrix[12] = -1;
+&#x2F;&#x2F;	projectionMatrix[13] = 1;
 }
 
 &#x2F;**
