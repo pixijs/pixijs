@@ -193,6 +193,7 @@ PIXI.InteractionManager.prototype.update = function()
 
 PIXI.InteractionManager.prototype.onMouseMove = function(event)
 {
+	this.mouse.originalEvent = event;
 	// TODO optimize by not check EVERY TIME! maybe half as often? //
 	var rect = this.target.view.getBoundingClientRect();
 	
@@ -218,6 +219,7 @@ PIXI.InteractionManager.prototype.onMouseMove = function(event)
 PIXI.InteractionManager.prototype.onMouseDown = function(event)
 {
 	event.preventDefault();
+	this.mouse.originalEvent = event;
 	
 	// loop through inteaction tree...
 	// hit test each item! -> 
@@ -255,7 +257,7 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
 
 PIXI.InteractionManager.prototype.onMouseUp = function(event)
 {
-	
+	this.mouse.originalEvent = event;
 	
 	var global = this.mouse.global;
 	
@@ -388,6 +390,7 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 
 PIXI.InteractionManager.prototype.onTouchMove = function(event)
 {
+	this.mouse.originalEvent = event;
 	var rect = this.target.view.getBoundingClientRect();
 	var changedTouches = event.changedTouches;
 	
@@ -412,6 +415,7 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
 PIXI.InteractionManager.prototype.onTouchStart = function(event)
 {
 	event.preventDefault();
+	this.mouse.originalEvent = event;
 	
 	var rect = this.target.view.getBoundingClientRect();
 	
@@ -454,6 +458,7 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
 
 PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 {
+	this.mouse.originalEvent = event;
 	var rect = this.target.view.getBoundingClientRect();
 	var changedTouches = event.changedTouches;
 	
@@ -538,6 +543,13 @@ PIXI.InteractionData = function()
 	 * @type Sprite
 	 */
 	this.target;
+
+	/**
+	 * When passed to an event handler, this will be the original DOM Event that was captured
+	 * @property originalEvent
+	 * @type Event
+	 */
+	this.originalEvent;
 }
 
 /**
