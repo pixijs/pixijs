@@ -106,8 +106,10 @@ PIXI.initPrimitiveShader = function()
 
     shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
     shaderProgram.colorAttribute = gl.getAttribLocation(shaderProgram, "aColor");
+    
     shaderProgram.projectionVector = gl.getUniformLocation(shaderProgram, "projectionVector");
     shaderProgram.translationMatrix = gl.getUniformLocation(shaderProgram, "translationMatrix");
+    
 	shaderProgram.alpha = gl.getUniformLocation(shaderProgram, "alpha");
 
 	PIXI.primitiveProgram = shaderProgram;
@@ -125,7 +127,7 @@ PIXI.initDefaultShader = function()
     shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, "aTextureCoord");
 	shaderProgram.colorAttribute = gl.getAttribLocation(shaderProgram, "aColor");
 
-    shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+   // shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
     shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "uSampler");
     
 	PIXI.shaderProgram = shaderProgram;
@@ -185,9 +187,13 @@ PIXI.activateDefaultShader = function()
 	
 	gl.useProgram(shaderProgram);
 	
+	
 	gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
     gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
     gl.enableVertexAttribArray(shaderProgram.colorAttribute);
+    
+
+	
 } 
 
 PIXI.compileProgram = function(vertexSrc, fragmentSrc)

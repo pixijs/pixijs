@@ -516,6 +516,7 @@ PIXI.WebGLBatch.prototype.update = function()
  */
 PIXI.WebGLBatch.prototype.render = function(start, end)
 {
+	
 //	console.log(start + " :: " + end + " : " + this.size);
 	start = start || 0;
 	//end = end || this.size;
@@ -527,6 +528,7 @@ PIXI.WebGLBatch.prototype.render = function(start, end)
 		this.dirty = false;
 		
 	}
+	
 	
 	if (this.size == 0)return;
 	
@@ -544,7 +546,6 @@ PIXI.WebGLBatch.prototype.render = function(start, end)
 	// ok..
 	gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.verticies)
     gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 2, gl.FLOAT, false, 0, 0);
-	
 	// update the uvs
    	gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer);
 
@@ -578,6 +579,6 @@ PIXI.WebGLBatch.prototype.render = function(start, end)
 	var len = end - start;
 	// console.log(this.size)
     // DRAW THAT this!
-    gl.drawElements(gl.TRIANGLES, len * 6, gl.UNSIGNED_SHORT, start * 2 * 6 );
+//    gl.drawElements(gl.TRIANGLES, len * 6, gl.UNSIGNED_SHORT, start * 2 * 6 );
 }
 

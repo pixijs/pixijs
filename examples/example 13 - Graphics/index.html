@@ -21,7 +21,9 @@
 	var stage = new PIXI.Stage(0xFFFFFF, true);
 	
 	stage.setInteractive(true);
-
+	
+	var sprite=  PIXI.Sprite.fromImage("spinObj_02.png");
+	//stage.addChild(sprite);
 	// create a renderer instance
 	//var renderer = new PIXI.CanvasRenderer(800, 600);//PIXI.autoDetectRenderer(800, 600);
 	var renderer = PIXI.autoDetectRenderer(620, 380);

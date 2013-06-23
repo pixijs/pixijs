@@ -15,7 +15,7 @@ PIXI.WebGLGraphics = function()
 
 PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
 {
-	PIXI.activatePrimitiveShader();
+	
 	var gl = PIXI.gl;
 	
 	if(!graphics._webGL)graphics._webGL = {points:[], indices:[], lastIndex:0, 
@@ -39,6 +39,9 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
 		PIXI.WebGLGraphics.updateGraphics(graphics);
 	}
 	
+	
+	PIXI.activatePrimitiveShader();
+	
 	// This  could be speeded up fo sure!
 	var m = PIXI.mat3.clone(graphics.worldTransform);
 	
@@ -54,11 +57,21 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
 	gl.uniform1f(PIXI.primitiveProgram.alpha, graphics.worldAlpha);
 
 	gl.bindBuffer(gl.ARRAY_BUFFER, graphics._webGL.buffer);
+	
+	// WHY DOES THIS LINE NEED TO BE THERE???
+	gl.vertexAttribPointer(PIXI.shaderProgram.vertexPositionAttribute, 2, gl.FLOAT, false, 0, 0);
+	// its not even used.. but need to be set or it breaks?
+	// only on pc though..
+	
 	gl.vertexAttribPointer(PIXI.primitiveProgram.vertexPositionAttribute, 2, gl.FLOAT, false, 4 * 6, 0);
 	gl.vertexAttribPointer(PIXI.primitiveProgram.colorAttribute, 4, gl.FLOAT, false,4 * 6, 2 * 4);
 	
+//	console.log(PIXI.primitiveProgram.vertexPositionAttribute);
+	//console.log("Color " + PIXI.primitiveProgram.colorAttribute);
+	
 	// set the index buffer!
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, graphics._webGL.indexBuffer);
+	
 	
 	gl.drawElements(gl.TRIANGLE_STRIP,  graphics._webGL.indices.length, gl.UNSIGNED_SHORT, 0 );
 	

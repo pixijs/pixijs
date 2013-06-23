@@ -2743,8 +2743,10 @@ PIXI.initPrimitiveShader = function()
 
     shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
     shaderProgram.colorAttribute = gl.getAttribLocation(shaderProgram, "aColor");
+    
     shaderProgram.projectionVector = gl.getUniformLocation(shaderProgram, "projectionVector");
     shaderProgram.translationMatrix = gl.getUniformLocation(shaderProgram, "translationMatrix");
+    
 	shaderProgram.alpha = gl.getUniformLocation(shaderProgram, "alpha");
 
 	PIXI.primitiveProgram = shaderProgram;
@@ -2762,7 +2764,7 @@ PIXI.initDefaultShader = function()
     shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, "aTextureCoord");
 	shaderProgram.colorAttribute = gl.getAttribLocation(shaderProgram, "aColor");
 
-    shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+   // shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
     shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "uSampler");
     
 	PIXI.shaderProgram = shaderProgram;
@@ -2822,9 +2824,13 @@ PIXI.activateDefaultShader = function()
 	
 	gl.useProgram(shaderProgram);
 	
+	
 	gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
     gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
     gl.enableVertexAttribArray(shaderProgram.colorAttribute);
+    
+
+	
 } 
 
 PIXI.compileProgram = function(vertexSrc, fragmentSrc)
@@ -2877,7 +2883,7 @@ PIXI.WebGLGraphics = function()
 
 PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
 {
-	PIXI.activatePrimitiveShader();
+	
 	var gl = PIXI.gl;
 	
 	if(!graphics._webGL)graphics._webGL = {points:[], indices:[], lastIndex:0, 
@@ -2901,6 +2907,9 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
 		PIXI.WebGLGraphics.updateGraphics(graphics);
 	}
 	
+	
+	PIXI.activatePrimitiveShader();
+	
 	// This  could be speeded up fo sure!
 	var m = PIXI.mat3.clone(graphics.worldTransform);
 	
@@ -2916,11 +2925,21 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
 	gl.uniform1f(PIXI.primitiveProgram.alpha, graphics.worldAlpha);
 
 	gl.bindBuffer(gl.ARRAY_BUFFER, graphics._webGL.buffer);
+	
+	// WHY DOES THIS LINE NEED TO BE THERE???
+	gl.vertexAttribPointer(PIXI.shaderProgram.vertexPositionAttribute, 2, gl.FLOAT, false, 0, 0);
+	// its not even used.. but need to be set or it breaks?
+	// only on pc though..
+	
 	gl.vertexAttribPointer(PIXI.primitiveProgram.vertexPositionAttribute, 2, gl.FLOAT, false, 4 * 6, 0);
 	gl.vertexAttribPointer(PIXI.primitiveProgram.colorAttribute, 4, gl.FLOAT, false,4 * 6, 2 * 4);
 	
+//	console.log(PIXI.primitiveProgram.vertexPositionAttribute);
+	//console.log("Color " + PIXI.primitiveProgram.colorAttribute);
+	
 	// set the index buffer!
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, graphics._webGL.indexBuffer);
+	
 	
 	gl.drawElements(gl.TRIANGLE_STRIP,  graphics._webGL.indices.length, gl.UNSIGNED_SHORT, 0 );
 	
@@ -4158,6 +4177,7 @@ PIXI.WebGLBatch.prototype.update = function()
  */
 PIXI.WebGLBatch.prototype.render = function(start, end)
 {
+	
 //	console.log(start + " :: " + end + " : " + this.size);
 	start = start || 0;
 	//end = end || this.size;
@@ -4169,6 +4189,7 @@ PIXI.WebGLBatch.prototype.render = function(start, end)
 		this.dirty = false;
 		
 	}
+	
 	
 	if (this.size == 0)return;
 	
@@ -4186,7 +4207,6 @@ PIXI.WebGLBatch.prototype.render = function(start, end)
 	// ok..
 	gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.verticies)
     gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 2, gl.FLOAT, false, 0, 0);
-	
 	// update the uvs
    	gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer);
 
@@ -4220,7 +4240,7 @@ PIXI.WebGLBatch.prototype.render = function(start, end)
 	var len = end - start;
 	// console.log(this.size)
     // DRAW THAT this!
-    gl.drawElements(gl.TRIANGLES, len * 6, gl.UNSIGNED_SHORT, start * 2 * 6 );
+//    gl.drawElements(gl.TRIANGLES, len * 6, gl.UNSIGNED_SHORT, start * 2 * 6 );
 }
 
 
