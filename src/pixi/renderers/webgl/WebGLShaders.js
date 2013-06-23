@@ -39,6 +39,20 @@ PIXI.shaderVertexSrc = [
 /*
  * the triangle strip shader..
  */
+
+PIXI.stripShaderFragmentSrc = [
+  "precision mediump float;",
+  "varying vec2 vTextureCoord;",
+  "varying float vColor;",
+  "uniform float alpha;",
+  "uniform sampler2D uSampler;",
+  "void main(void) {",
+    "gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y));",
+    "gl_FragColor = gl_FragColor * alpha;",
+  "}"
+];
+
+
 PIXI.stripShaderVertexSrc = [
   "attribute vec2 aVertexPosition;",
   "attribute vec2 aTextureCoord;",
@@ -120,7 +134,7 @@ PIXI.initDefaultShader = function()
 PIXI.initDefaultStripShader = function() 
 {
 	var gl = this.gl;
-	var shaderProgram = PIXI.compileProgram(PIXI.stripShaderVertexSrc, PIXI.shaderFragmentSrc)
+	var shaderProgram = PIXI.compileProgram(PIXI.stripShaderVertexSrc, PIXI.stripShaderFragmentSrc)
 	
     gl.useProgram(shaderProgram);
 
@@ -128,6 +142,7 @@ PIXI.initDefaultStripShader = function()
     shaderProgram.projectionVector = gl.getUniformLocation(shaderProgram, "projectionVector");
     shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, "aTextureCoord");
 	shaderProgram.translationMatrix = gl.getUniformLocation(shaderProgram, "translationMatrix");
+	shaderProgram.alpha = gl.getUniformLocation(shaderProgram, "alpha");
 
 	shaderProgram.colorAttribute = gl.getAttribLocation(shaderProgram, "aColor");
 

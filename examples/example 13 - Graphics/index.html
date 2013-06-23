@@ -24,26 +24,22 @@
 
 	// create a renderer instance
 	//var renderer = new PIXI.CanvasRenderer(800, 600);//PIXI.autoDetectRenderer(800, 600);
-	var renderer = PIXI.autoDetectRenderer(800, 600);
+	var renderer = PIXI.autoDetectRenderer(620, 380);
 	
 	// set the canvas width and height to fill the screen
-	//	renderer.view.style.width = window.innerWidth + "px";
+	//renderer.view.style.width = window.innerWidth + "px";
 	//renderer.view.style.height = window.innerHeight + "px";
 	renderer.view.style.display = "block";
 	 
 	// add render view to DOM
 	document.body.appendChild(renderer.view);
 	
-	// OOH! SHINY!
-	// create two render textures.. these dynamic textures will be used to draw the scene into itself
-	
 	var graphics = new PIXI.Graphics();
-	graphics.alpha = 0.2;
 	
 	
 	// set a fill and line style
-	graphics.beginFill(0xFF0000);
-	graphics.lineStyle(10, 0x30FF00, 1);
+	graphics.beginFill(0xFF3300);
+	graphics.lineStyle(10, 0xffd900, 1);
 	
 	// draw a shape
 	graphics.moveTo(50,50);
@@ -55,7 +51,7 @@
 	graphics.endFill();
 	
 	// set a fill and line style again
-	graphics.lineStyle(10, 0x000000, 0.8);
+	graphics.lineStyle(10, 0xFF0000, 0.8);
 	graphics.beginFill(0xFF700B, 1);
 	
 	// draw a second shape
@@ -64,34 +60,31 @@
 	graphics.lineTo(570,350);
 	graphics.lineTo(580,20);
 	graphics.lineTo(330,120);
-	graphics.lineTo(410,300);
+	graphics.lineTo(410,200);
 	graphics.lineTo(210,300);
 	graphics.endFill();
 	
 	// draw a rectangel
 	graphics.lineStyle(2, 0x0000FF, 1);
-	graphics.drawRect(50, 250, 100, 200);
+	graphics.drawRect(50, 250, 100, 100);
 	
 	// draw a circle
 	graphics.lineStyle(0);
 	graphics.beginFill(0xFFFF0B, 0.5);
-	graphics.drawCircle(350, 350,100);
+	graphics.drawCircle(470, 200,100);
 	
-	var sprite = PIXI.Sprite.fromImage("spinObj_01.png");
-	sprite.anchor.x = sprite.anchor.y = 0.5;
-	sprite.scale.x = sprite.scale.y = 5;
-	
-	stage.addChild(sprite);
-	sprite.position.x = 400;
-	sprite.position.y = 300;
-	
+	graphics.lineStyle(20, 0x33FF00);
+	graphics.moveTo(30,30);
+	graphics.lineTo(600, 300);
+		
+		
 	stage.addChild(graphics);
 	
 	stage.click = stage.tap = function()
 	{
 		graphics.lineStyle(Math.random() * 30, Math.random() * 0xFFFFFF, 1);
-	    graphics.moveTo(Math.random() * 600,Math.random() * 600);
-		graphics.lineTo(Math.random() * 600,Math.random() * 600);
+	    graphics.moveTo(Math.random() * 620,Math.random() * 380);
+		graphics.lineTo(Math.random() * 620,Math.random() * 380);
 		
 	}
 	
@@ -100,8 +93,6 @@
 	function animate() {
 	    renderer.render(stage);
 	    requestAnimFrame( animate );
-	    
-		sprite.rotation -= 0.01;
 	}
 
 	</script>

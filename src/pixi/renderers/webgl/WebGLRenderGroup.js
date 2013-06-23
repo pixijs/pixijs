@@ -784,6 +784,8 @@ PIXI.WebGLRenderGroup.prototype.renderStrip = function(strip, projection)
 	// set the matrix transform for the 
  	gl.uniformMatrix3fv(PIXI.stripShaderProgram.translationMatrix, false, m);
 	gl.uniform2f(PIXI.stripShaderProgram.projectionVector, projection.x, projection.y);
+	gl.uniform1f(PIXI.stripShaderProgram.alpha, strip.worldAlpha);
+
 
 	if(strip.blendMode == PIXI.blendModes.NORMAL)
 	{
@@ -793,6 +795,8 @@ PIXI.WebGLRenderGroup.prototype.renderStrip = function(strip, projection)
 	{
 		gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_COLOR);
 	}
+	
+	
 	
 	if(!strip.dirty)
 	{

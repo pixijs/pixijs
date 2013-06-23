@@ -43,7 +43,7 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
 	PIXI.mat3.transpose(m);
 	
 	// set the matrix transform for the 
- 	
+ 	gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
  	
  	gl.uniformMatrix3fv(PIXI.primitiveProgram.translationMatrix, false, m);
  	

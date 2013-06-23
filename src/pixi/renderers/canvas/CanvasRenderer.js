@@ -257,6 +257,8 @@ PIXI.CanvasRenderer.prototype.renderTilingSprite = function(sprite)
 {
 	var context = this.context;
 	
+	context.globalAlpha = sprite.worldAlpha;
+	
  	if(!sprite.__tilePattern) sprite.__tilePattern = context.createPattern(sprite.texture.baseTexture.source, "repeat");
  	
 	context.beginPath();

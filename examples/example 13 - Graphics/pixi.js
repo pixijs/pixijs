@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-06-22
+ * Compiled: 2013-06-23
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -2676,6 +2676,20 @@ PIXI.shaderVertexSrc = [
 /*
  * the triangle strip shader..
  */
+
+PIXI.stripShaderFragmentSrc = [
+  "precision mediump float;",
+  "varying vec2 vTextureCoord;",
+  "varying float vColor;",
+  "uniform float alpha;",
+  "uniform sampler2D uSampler;",
+  "void main(void) {",
+    "gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y));",
+    "gl_FragColor = gl_FragColor * alpha;",
+  "}"
+];
+
+
 PIXI.stripShaderVertexSrc = [
   "attribute vec2 aVertexPosition;",
   "attribute vec2 aTextureCoord;",
@@ -2757,7 +2771,7 @@ PIXI.initDefaultShader = function()
 PIXI.initDefaultStripShader = function() 
 {
 	var gl = this.gl;
-	var shaderProgram = PIXI.compileProgram(PIXI.stripShaderVertexSrc, PIXI.shaderFragmentSrc)
+	var shaderProgram = PIXI.compileProgram(PIXI.stripShaderVertexSrc, PIXI.stripShaderFragmentSrc)
 	
     gl.useProgram(shaderProgram);
 
@@ -2765,6 +2779,7 @@ PIXI.initDefaultStripShader = function()
     shaderProgram.projectionVector = gl.getUniformLocation(shaderProgram, "projectionVector");
     shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, "aTextureCoord");
 	shaderProgram.translationMatrix = gl.getUniformLocation(shaderProgram, "translationMatrix");
+	shaderProgram.alpha = gl.getUniformLocation(shaderProgram, "alpha");
 
 	shaderProgram.colorAttribute = gl.getAttribLocation(shaderProgram, "aColor");
 
@@ -2890,7 +2905,7 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
 	PIXI.mat3.transpose(m);
 	
 	// set the matrix transform for the 
- 	
+ 	gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
  	
  	gl.uniformMatrix3fv(PIXI.primitiveProgram.translationMatrix, false, m);
  	
@@ -4991,6 +5006,8 @@ PIXI.WebGLRenderGroup.prototype.renderStrip = function(strip, projection)
 	// set the matrix transform for the 
  	gl.uniformMatrix3fv(PIXI.stripShaderProgram.translationMatrix, false, m);
 	gl.uniform2f(PIXI.stripShaderProgram.projectionVector, projection.x, projection.y);
+	gl.uniform1f(PIXI.stripShaderProgram.alpha, strip.worldAlpha);
+
 
 	if(strip.blendMode == PIXI.blendModes.NORMAL)
 	{
@@ -5000,6 +5017,8 @@ PIXI.WebGLRenderGroup.prototype.renderStrip = function(strip, projection)
 	{
 		gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_COLOR);
 	}
+	
+	
 	
 	if(!strip.dirty)
 	{
@@ -5377,6 +5396,8 @@ PIXI.CanvasRenderer.prototype.renderStripFlat = function(strip)
 PIXI.CanvasRenderer.prototype.renderTilingSprite = function(sprite)
 {
 	var context = this.context;
+	
+	context.globalAlpha = sprite.worldAlpha;
 	
  	if(!sprite.__tilePattern) sprite.__tilePattern = context.createPattern(sprite.texture.baseTexture.source, "repeat");
  	
