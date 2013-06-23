@@ -2894,6 +2894,8 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
 			
 			graphics._webGL.lastIndex = 0;
 			graphics._webGL.points = [];
+			graphics._webGL.indices = [];
+			
 		}
 		
 		PIXI.WebGLGraphics.updateGraphics(graphics);

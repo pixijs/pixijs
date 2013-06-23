@@ -80,17 +80,40 @@
 		
 	stage.addChild(graphics);
 	
+	// lets create moving shape
+	var thing = new PIXI.Graphics();
+	stage.addChild(thing);
+	thing.position.x = 620/2;
+	thing.position.y = 380/2;
+	
+	var count = 0;
+	
 	stage.click = stage.tap = function()
 	{
 		graphics.lineStyle(Math.random() * 30, Math.random() * 0xFFFFFF, 1);
 	    graphics.moveTo(Math.random() * 620,Math.random() * 380);
 		graphics.lineTo(Math.random() * 620,Math.random() * 380);
-		
 	}
 	
 	requestAnimFrame(animate);
 
 	function animate() {
+		
+		thing.clear();
+		
+		count += 0.1;
+		
+		thing.clear();
+		thing.lineStyle(30, 0xff0000, 1);
+		thing.beginFill(0xffFF00, 0.5);
+		
+		thing.moveTo(-120 + Math.sin(count) * 20, -100 + Math.cos(count)* 20);
+		thing.lineTo(120 + Math.cos(count) * 20, -100 + Math.sin(count)* 20);
+		thing.lineTo(120 + Math.sin(count) * 20, 100 + Math.cos(count)* 20);
+		thing.lineTo(-120 + Math.cos(count)* 20, 100 + Math.sin(count)* 20);
+		thing.lineTo(-120 + Math.sin(count) * 20, -100 + Math.cos(count)* 20);
+		
+		thing.rotation = count * 0.1;
 	    renderer.render(stage);
 	    requestAnimFrame( animate );
 	}
