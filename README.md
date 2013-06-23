@@ -45,6 +45,27 @@ last 2 examples and allowing us to share the source code :)
 
 [Pixi.js forum](<http://www.html5gamedevs.com/forum/15-pixijs/>)
 
+
+### Road Map ###
+
+* Create a Typescript definition file for Pixi.js
+* Implement Custom Render Item (currently being worked on by @GoodBoyDigital)
+* Implement Masking
+* Implement Primitive Drawing
+* Implement Filters (currently being worked on by @GoodBoyDigital)
+* Add Spine support 
+* Implement Flash animation to pixi
+* Update Loader so that it support XHR2 if it is available
+* Improve the Documentation of the Project
+* Create an Asset Loader Tutorial
+* Create a MovieClip Tutorial
+* Create a small game Tutorial
+
+### Contribute ###
+
+Want to be part of the pixi.js project? Great! All are welcome! We will get there quicker together :)
+Whether you find a bug, have a great feature request or you fancy owning a task from the road map above feel free to get in touch.
+
 ### How to build ###
 
 PixiJS is build with Grunt. If you don't already have this, go install Node and NPM then install the Grunt Command Line.
@@ -86,8 +107,7 @@ It also copies the non-minified version to the examples.
 
 ### Coming soon ###
 
-- Filters 
- 
+- Filters ( wip : [storm brewing](<http://www.goodboydigital.com/pixijs/storm/>) )
 
 
 ### Coming later ###
