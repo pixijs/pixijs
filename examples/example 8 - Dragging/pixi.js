@@ -3621,9 +3621,11 @@ PIXI.WebGLRenderer.prototype.handleContextRestored = function(event)
         
 	this.initShaders();	
 	
-	for (var i=0; i < PIXI.TextureCache.length; i++) 
+	for(var key in PIXI.TextureCache) 
 	{
-		this.updateTexture(PIXI.TextureCache[i]);
+        	var texture = PIXI.TextureCache[key].baseTexture;
+        	texture._glTexture = null;
+        	PIXI.WebGLRenderer.updateTexture(texture);
 	};
 	
 	for (var i=0; i <  this.batchs.length; i++) 
@@ -5114,7 +5116,7 @@ PIXI.WebGLRenderGroup.prototype.renderTilingSprite = function(sprite, projection
 /**
  * @private
  */
-PIXI.WebGLRenderer.prototype.initStrip = function(strip)
+PIXI.WebGLRenderGroup.prototype.initStrip = function(strip)
 {
 	// build the strip!
 	var gl = this.gl;
@@ -7751,7 +7753,9 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin)
 	var baseTexture = PIXI.BaseTextureCache[imageUrl];
 	if(!baseTexture)
 	{
-		var image = new Image();
+		// new Image() breaks tex loading in some versions of Chrome.
+		// See https://code.google.com/p/chromium/issues/detail?id=238071
+		var image = new Image();//document.createElement('img'); 
 		if (crossorigin)
 		{
 			image.crossOrigin = '';
@@ -7958,13 +7962,33 @@ PIXI.Texture.frameUpdates = [];
  */
 
 /**
- * A RenderTexture is a special texture that allows any pixi displayObject to be rendered to it. 
- * @class RenderTexture
- * @extends Texture
- * @constructor
- * @param width {Number}
- * @param height {Number}
- */
+ A RenderTexture is a special texture that allows any pixi displayObject to be rendered to it.
+
+ __Hint__: All DisplayObjects (exmpl. Sprites) that renders on RenderTexture should be preloaded. 
+ Otherwise black rectangles will be drawn instead.  
+ 
+ RenderTexture takes snapshot of DisplayObject passed to render method. If DisplayObject is passed to render method, position and rotation of it will be ignored. For example:
+ 
+	var renderTexture = new PIXI.RenderTexture(800, 600);
+	var sprite = PIXI.Sprite.fromImage("spinObj_01.png");
+	sprite.position.x = 800/2;
+	sprite.position.y = 600/2;
+	sprite.anchor.x = 0.5;
+	sprite.anchor.y = 0.5;
+	renderTexture.render(sprite);
+
+ Sprite in this case will be rendered to 0,0 position. To render this sprite at center DisplayObjectContainer should be used:
+
+	var doc = new PIXI.DisplayObjectContainer();
+	doc.addChild(sprite);
+	renderTexture.render(doc);  // Renders to center of renderTexture
+
+ @class RenderTexture
+ @extends Texture
+ @constructor
+ @param width {Number}
+ @param height {Number}
+ **/
 PIXI.RenderTexture = function(width, height)
 {
 	PIXI.EventTarget.call( this );
@@ -8443,6 +8467,7 @@ PIXI.SpriteSheetLoader.prototype.onLoaded = function () {
 		content: this
 	});
 };
+
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
