@@ -579,6 +579,6 @@ PIXI.WebGLBatch.prototype.render = function(start, end)
 	var len = end - start;
 	// console.log(this.size)
     // DRAW THAT this!
-//    gl.drawElements(gl.TRIANGLES, len * 6, gl.UNSIGNED_SHORT, start * 2 * 6 );
+    gl.drawElements(gl.TRIANGLES, len * 6, gl.UNSIGNED_SHORT, start * 2 * 6 );
 }
 

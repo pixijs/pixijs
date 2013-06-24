@@ -928,6 +928,8 @@ PIXI.WebGLRenderGroup.prototype.renderStrip = function(strip, projection)
 	&#x2F;&#x2F; set the matrix transform for the 
  	gl.uniformMatrix3fv(PIXI.stripShaderProgram.translationMatrix, false, m);
 	gl.uniform2f(PIXI.stripShaderProgram.projectionVector, projection.x, projection.y);
+	gl.uniform1f(PIXI.stripShaderProgram.alpha, strip.worldAlpha);
+
 
 	if(strip.blendMode == PIXI.blendModes.NORMAL)
 	{
@@ -937,6 +939,8 @@ PIXI.WebGLRenderGroup.prototype.renderStrip = function(strip, projection)
 	{
 		gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_COLOR);
 	}
+	
+	
 	
 	if(!strip.dirty)
 	{
@@ -1030,7 +1034,7 @@ PIXI.WebGLRenderGroup.prototype.renderTilingSprite = function(sprite, projection
 &#x2F;**
  * @private
  *&#x2F;
-PIXI.WebGLRenderer.prototype.initStrip = function(strip)
+PIXI.WebGLRenderGroup.prototype.initStrip = function(strip)
 {
 	&#x2F;&#x2F; build the strip!
 	var gl = this.gl;

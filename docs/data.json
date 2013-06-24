@@ -376,7 +376,7 @@
             "namespaces": {},
             "tag": "module",
             "file": "src/pixi/InteractionManager.js",
-            "line": 519
+            "line": 524
         }
     },
     "classes": {
@@ -772,7 +772,7 @@
             "module": "PIXI",
             "file": "src/pixi/primitives/Graphics.js",
             "line": 6,
-            "description": "The Graphics class contains a set of methods that you can use to create primitive shapes and lines.",
+            "description": "The Graphics class contains a set of methods that you can use to create primitive shapes and lines. \nIt is important to know that with the webGL renderer only simple polys can be filled at this stage\nComplex polys will not be filled. Heres an example of a complex poly: http://www.goodboydigital.com/wp-content/uploads/2013/06/complexPolygon.png",
             "extends": "DisplayObjectContainer",
             "is_constructor": 1
         },
@@ -1037,7 +1037,7 @@
             "module": "PIXI",
             "file": "src/pixi/textures/RenderTexture.js",
             "line": 5,
-            "description": "A RenderTexture is a special texture that allows any pixi displayObject to be rendered to it.",
+            "description": "A RenderTexture is a special texture that allows any pixi displayObject to be rendered to it.\n\n__Hint__: All DisplayObjects (exmpl. Sprites) that renders on RenderTexture should be preloaded. \nOtherwise black rectangles will be drawn instead.  \n\nRenderTexture takes snapshot of DisplayObject passed to render method. If DisplayObject is passed to render method, position and rotation of it will be ignored. For example:\n\n\tvar renderTexture = new PIXI.RenderTexture(800, 600);\n\tvar sprite = PIXI.Sprite.fromImage(\"spinObj_01.png\");\n\tsprite.position.x = 800/2;\n\tsprite.position.y = 600/2;\n\tsprite.anchor.x = 0.5;\n\tsprite.anchor.y = 0.5;\n\trenderTexture.render(sprite);\n\nSprite in this case will be rendered to 0,0 position. To render this sprite at center DisplayObjectContainer should be used:\n\n\tvar doc = new PIXI.DisplayObjectContainer();\n\tdoc.addChild(sprite);\n\trenderTexture.render(doc);  // Renders to center of renderTexture",
             "extends": "Texture",
             "is_constructor": 1,
             "params": [
@@ -1112,7 +1112,7 @@
             "extension_for": [],
             "module": "PIXI",
             "file": "src/pixi/InteractionManager.js",
-            "line": 519,
+            "line": 524,
             "is_constructor": 1
         }
     },
@@ -2200,7 +2200,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 32,
+            "line": 34,
             "description": "Specifies a line style used for subsequent calls to Graphics methods such as the lineTo() method or the drawCircle() method.",
             "itemtype": "method",
             "name": "lineStyle",
@@ -2225,7 +2225,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 53,
+            "line": 55,
             "description": "Moves the current drawing position to (x, y).",
             "itemtype": "method",
             "name": "moveTo",
@@ -2245,7 +2245,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 71,
+            "line": 73,
             "description": "Draws a line using the current line style from the current drawing position to (x, y); the current drawing position is then set to (x, y).",
             "itemtype": "method",
             "name": "lineTo",
@@ -2265,7 +2265,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 83,
+            "line": 85,
             "description": "Specifies a simple one-color fill that subsequent calls to other Graphics methods (such as lineTo() or drawCircle()) use when drawing.",
             "itemtype": "method",
             "name": "beginFill",
@@ -2285,7 +2285,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 96,
+            "line": 98,
             "description": "Applies a fill to the lines and shapes that were added since the last call to the beginFill() method.",
             "itemtype": "method",
             "name": "endFill",
@@ -2293,7 +2293,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 107,
+            "line": 109,
             "itemtype": "method",
             "name": "drawRect",
             "params": [
@@ -2322,7 +2322,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 126,
+            "line": 128,
             "description": "Draws a circle.",
             "itemtype": "method",
             "name": "drawCircle",
@@ -2347,7 +2347,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 145,
+            "line": 147,
             "description": "Draws an elipse.",
             "itemtype": "method",
             "name": "drawElipse",
@@ -2377,7 +2377,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 165,
+            "line": 167,
             "description": "Clears the graphics that were drawn to this Graphics object, and resets fill and line style settings.",
             "itemtype": "method",
             "name": "clear",
@@ -2487,7 +2487,7 @@
         },
         {
             "file": "src/pixi/renderers/canvas/CanvasRenderer.js",
-            "line": 282,
+            "line": 284,
             "access": "private",
             "tagname": "",
             "class": "CanvasRenderer"
@@ -2695,14 +2695,14 @@
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderGroup.js",
-            "line": 849,
+            "line": 853,
             "access": "private",
             "tagname": "",
             "class": "WebGLBatch"
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderGroup.js",
-            "line": 886,
+            "line": 890,
             "access": "private",
             "tagname": "",
             "class": "WebGLBatch"
@@ -3037,7 +3037,7 @@
         },
         {
             "file": "src/pixi/textures/RenderTexture.js",
-            "line": 92,
+            "line": 112,
             "description": "This function will draw the display object to the texture.",
             "itemtype": "method",
             "name": "render",
@@ -3276,7 +3276,7 @@
         },
         {
             "file": "src/pixi/InteractionManager.js",
-            "line": 525,
+            "line": 530,
             "description": "This point stores the global coords of where the touch/mouse event happened",
             "itemtype": "property",
             "name": "global",
@@ -3285,7 +3285,7 @@
         },
         {
             "file": "src/pixi/InteractionManager.js",
-            "line": 535,
+            "line": 540,
             "description": "The target Sprite that was interacted with",
             "itemtype": "property",
             "name": "target",
@@ -3294,7 +3294,16 @@
         },
         {
             "file": "src/pixi/InteractionManager.js",
-            "line": 543,
+            "line": 547,
+            "description": "When passed to an event handler, this will be the original DOM Event that was captured",
+            "itemtype": "property",
+            "name": "originalEvent",
+            "type": "Event",
+            "class": "InteractionData"
+        },
+        {
+            "file": "src/pixi/InteractionManager.js",
+            "line": 555,
             "description": "This will return the local coords of the specified displayObject for this InteractionData",
             "itemtype": "method",
             "name": "getLocalPosition",
@@ -3617,7 +3626,7 @@
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/canvas/CanvasRenderer.js:282"
+            "line": " src/pixi/renderers/canvas/CanvasRenderer.js:284"
         },
         {
             "message": "Missing item type",
@@ -3665,11 +3674,11 @@
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/webgl/WebGLRenderGroup.js:849"
+            "line": " src/pixi/renderers/webgl/WebGLRenderGroup.js:853"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/webgl/WebGLRenderGroup.js:886"
+            "line": " src/pixi/renderers/webgl/WebGLRenderGroup.js:890"
         },
         {
             "message": "Missing item type",

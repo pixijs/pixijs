@@ -159,7 +159,7 @@ PIXI.WebGLGraphics = function()
 
 PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
 {
-	PIXI.activatePrimitiveShader();
+	
 	var gl = PIXI.gl;
 	
 	if(!graphics._webGL)graphics._webGL = {points:[], indices:[], lastIndex:0, 
@@ -176,10 +176,15 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
 			
 			graphics._webGL.lastIndex = 0;
 			graphics._webGL.points = [];
+			graphics._webGL.indices = [];
+			
 		}
 		
 		PIXI.WebGLGraphics.updateGraphics(graphics);
 	}
+	
+	
+	PIXI.activatePrimitiveShader();
 	
 	&#x2F;&#x2F; This  could be speeded up fo sure!
 	var m = PIXI.mat3.clone(graphics.worldTransform);
@@ -187,15 +192,30 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
 	PIXI.mat3.transpose(m);
 	
 	&#x2F;&#x2F; set the matrix transform for the 
+ 	gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+ 	
  	gl.uniformMatrix3fv(PIXI.primitiveProgram.translationMatrix, false, m);
+ 	
 	gl.uniform2f(PIXI.primitiveProgram.projectionVector, projection.x, projection.y);
+	
+	gl.uniform1f(PIXI.primitiveProgram.alpha, graphics.worldAlpha);
 
 	gl.bindBuffer(gl.ARRAY_BUFFER, graphics._webGL.buffer);
+	
+	&#x2F;&#x2F; WHY DOES THIS LINE NEED TO BE THERE???
+	gl.vertexAttribPointer(PIXI.shaderProgram.vertexPositionAttribute, 2, gl.FLOAT, false, 0, 0);
+	&#x2F;&#x2F; its not even used.. but need to be set or it breaks?
+	&#x2F;&#x2F; only on pc though..
+	
 	gl.vertexAttribPointer(PIXI.primitiveProgram.vertexPositionAttribute, 2, gl.FLOAT, false, 4 * 6, 0);
 	gl.vertexAttribPointer(PIXI.primitiveProgram.colorAttribute, 4, gl.FLOAT, false,4 * 6, 2 * 4);
 	
+&#x2F;&#x2F;	console.log(PIXI.primitiveProgram.vertexPositionAttribute);
+	&#x2F;&#x2F;console.log(&quot;Color &quot; + PIXI.primitiveProgram.colorAttribute);
+	
 	&#x2F;&#x2F; set the index buffer!
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, graphics._webGL.indexBuffer);
+	
 	
 	gl.drawElements(gl.TRIANGLE_STRIP,  graphics._webGL.indices.length, gl.UNSIGNED_SHORT, 0 );
 	
@@ -237,6 +257,7 @@ PIXI.WebGLGraphics.updateGraphics = function(graphics)
 	var gl = PIXI.gl;
 
 	graphics._webGL.glPoints = new Float32Array(graphics._webGL.points);
+	
 	gl.bindBuffer(gl.ARRAY_BUFFER, graphics._webGL.buffer);
 	gl.bufferData(gl.ARRAY_BUFFER, graphics._webGL.glPoints, gl.STATIC_DRAW);
 	

@@ -191,7 +191,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
  	{
         PIXI.gl = this.gl = this.view.getContext(&quot;experimental-webgl&quot;,  {  	
     		 alpha: this.transparent,
-    		 antialias:false, &#x2F;&#x2F; SPEED UP??
+    		 antialias:true, &#x2F;&#x2F; SPEED UP??
     		 premultipliedAlpha:false
         });
     } 
@@ -446,9 +446,11 @@ PIXI.WebGLRenderer.prototype.handleContextRestored = function(event)
         
 	this.initShaders();	
 	
-	for (var i=0; i &lt; PIXI.TextureCache.length; i++) 
+	for(var key in PIXI.TextureCache) 
 	{
-		this.updateTexture(PIXI.TextureCache[i]);
+        	var texture = PIXI.TextureCache[key].baseTexture;
+        	texture._glTexture = null;
+        	PIXI.WebGLRenderer.updateTexture(texture);
 	};
 	
 	for (var i=0; i &lt;  this.batchs.length; i++) 

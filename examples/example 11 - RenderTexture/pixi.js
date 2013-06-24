@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-06-23
+ * Compiled: 2013-06-24
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -1836,6 +1836,7 @@ PIXI.InteractionManager.prototype.update = function()
 
 PIXI.InteractionManager.prototype.onMouseMove = function(event)
 {
+	this.mouse.originalEvent = event || window.event; //IE uses window.event
 	// TODO optimize by not check EVERY TIME! maybe half as often? //
 	var rect = this.target.view.getBoundingClientRect();
 	
@@ -1861,6 +1862,7 @@ PIXI.InteractionManager.prototype.onMouseMove = function(event)
 PIXI.InteractionManager.prototype.onMouseDown = function(event)
 {
 	event.preventDefault();
+	this.mouse.originalEvent = event || window.event; //IE uses window.event
 	
 	// loop through inteaction tree...
 	// hit test each item! -> 
@@ -1898,7 +1900,7 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
 
 PIXI.InteractionManager.prototype.onMouseUp = function(event)
 {
-	
+	this.mouse.originalEvent = event || window.event; //IE uses window.event
 	
 	var global = this.mouse.global;
 	
@@ -2031,6 +2033,7 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 
 PIXI.InteractionManager.prototype.onTouchMove = function(event)
 {
+	this.mouse.originalEvent = event || window.event; //IE uses window.event
 	var rect = this.target.view.getBoundingClientRect();
 	var changedTouches = event.changedTouches;
 	
@@ -2055,6 +2058,7 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
 PIXI.InteractionManager.prototype.onTouchStart = function(event)
 {
 	event.preventDefault();
+	this.mouse.originalEvent = event || window.event; //IE uses window.event
 	
 	var rect = this.target.view.getBoundingClientRect();
 	
@@ -2097,6 +2101,7 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
 
 PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 {
+	this.mouse.originalEvent = event || window.event; //IE uses window.event
 	var rect = this.target.view.getBoundingClientRect();
 	var changedTouches = event.changedTouches;
 	
@@ -2181,6 +2186,13 @@ PIXI.InteractionData = function()
 	 * @type Sprite
 	 */
 	this.target;
+
+	/**
+	 * When passed to an event handler, this will be the original DOM Event that was captured
+	 * @property originalEvent
+	 * @type Event
+	 */
+	this.originalEvent;
 }
 
 /**
@@ -2817,21 +2829,6 @@ PIXI._CompileShader = function(gl, shaderSrc, shaderType)
   return shader;
 }
 
-PIXI.activateDefaultShader = function()
-{
-	var gl = PIXI.gl;
-	var shaderProgram = PIXI.shaderProgram;
-	
-	gl.useProgram(shaderProgram);
-	
-	
-	gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
-    gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
-    gl.enableVertexAttribArray(shaderProgram.colorAttribute);
-    
-
-	
-} 
 
 PIXI.compileProgram = function(vertexSrc, fragmentSrc)
 {
@@ -2851,6 +2848,22 @@ PIXI.compileProgram = function(vertexSrc, fragmentSrc)
 
 	return shaderProgram;
 } 
+
+
+PIXI.activateDefaultShader = function()
+{
+	var gl = PIXI.gl;
+	var shaderProgram = PIXI.shaderProgram;
+	
+	gl.useProgram(shaderProgram);
+	
+	
+	gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+    gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
+    gl.enableVertexAttribArray(shaderProgram.colorAttribute);
+}
+
+	
 
 PIXI.activatePrimitiveShader = function()
 {
@@ -4240,7 +4253,7 @@ PIXI.WebGLBatch.prototype.render = function(start, end)
 	var len = end - start;
 	// console.log(this.size)
     // DRAW THAT this!
-//    gl.drawElements(gl.TRIANGLES, len * 6, gl.UNSIGNED_SHORT, start * 2 * 6 );
+    gl.drawElements(gl.TRIANGLES, len * 6, gl.UNSIGNED_SHORT, start * 2 * 6 );
 }
 
 
@@ -5671,6 +5684,8 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 
 /**
  * The Graphics class contains a set of methods that you can use to create primitive shapes and lines. 
+ * It is important to know that with the webGL renderer only simple polys can be filled at this stage
+ * Complex polys will not be filled. Heres an example of a complex poly: http://www.goodboydigital.com/wp-content/uploads/2013/06/complexPolygon.png
  * @class Graphics 
  * @extends DisplayObjectContainer
  * @constructor

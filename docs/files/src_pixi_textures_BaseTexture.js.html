@@ -256,7 +256,9 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin)
 	var baseTexture = PIXI.BaseTextureCache[imageUrl];
 	if(!baseTexture)
 	{
-		var image = new Image();
+		&#x2F;&#x2F; new Image() breaks tex loading in some versions of Chrome.
+		&#x2F;&#x2F; See https:&#x2F;&#x2F;code.google.com&#x2F;p&#x2F;chromium&#x2F;issues&#x2F;detail?id=238071
+		var image = new Image();&#x2F;&#x2F;document.createElement(&#x27;img&#x27;); 
 		if (crossorigin)
 		{
 			image.crossOrigin = &#x27;&#x27;;

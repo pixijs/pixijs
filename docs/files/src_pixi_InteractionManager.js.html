@@ -337,6 +337,7 @@ PIXI.InteractionManager.prototype.update = function()
 
 PIXI.InteractionManager.prototype.onMouseMove = function(event)
 {
+	this.mouse.originalEvent = event || window.event; &#x2F;&#x2F;IE uses window.event
 	&#x2F;&#x2F; TODO optimize by not check EVERY TIME! maybe half as often? &#x2F;&#x2F;
 	var rect = this.target.view.getBoundingClientRect();
 	
@@ -362,6 +363,7 @@ PIXI.InteractionManager.prototype.onMouseMove = function(event)
 PIXI.InteractionManager.prototype.onMouseDown = function(event)
 {
 	event.preventDefault();
+	this.mouse.originalEvent = event || window.event; &#x2F;&#x2F;IE uses window.event
 	
 	&#x2F;&#x2F; loop through inteaction tree...
 	&#x2F;&#x2F; hit test each item! -&gt; 
@@ -399,7 +401,7 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
 
 PIXI.InteractionManager.prototype.onMouseUp = function(event)
 {
-	
+	this.mouse.originalEvent = event || window.event; &#x2F;&#x2F;IE uses window.event
 	
 	var global = this.mouse.global;
 	
@@ -532,6 +534,7 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 
 PIXI.InteractionManager.prototype.onTouchMove = function(event)
 {
+	this.mouse.originalEvent = event || window.event; &#x2F;&#x2F;IE uses window.event
 	var rect = this.target.view.getBoundingClientRect();
 	var changedTouches = event.changedTouches;
 	
@@ -556,6 +559,7 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
 PIXI.InteractionManager.prototype.onTouchStart = function(event)
 {
 	event.preventDefault();
+	this.mouse.originalEvent = event || window.event; &#x2F;&#x2F;IE uses window.event
 	
 	var rect = this.target.view.getBoundingClientRect();
 	
@@ -598,6 +602,7 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
 
 PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 {
+	this.mouse.originalEvent = event || window.event; &#x2F;&#x2F;IE uses window.event
 	var rect = this.target.view.getBoundingClientRect();
 	var changedTouches = event.changedTouches;
 	
@@ -682,6 +687,13 @@ PIXI.InteractionData = function()
 	 * @type Sprite
 	 *&#x2F;
 	this.target;
+
+	&#x2F;**
+	 * When passed to an event handler, this will be the original DOM Event that was captured
+	 * @property originalEvent
+	 * @type Event
+	 *&#x2F;
+	this.originalEvent;
 }
 
 &#x2F;**

@@ -168,6 +168,7 @@ PIXI.shaderVertexSrc = [
   &quot;attribute vec2 aTextureCoord;&quot;,
   &quot;attribute float aColor;&quot;,
   &#x2F;&#x2F;&quot;uniform mat4 uMVMatrix;&quot;,
+  
   &quot;uniform vec2 projectionVector;&quot;,
   &quot;varying vec2 vTextureCoord;&quot;,
   &quot;varying float vColor;&quot;,
@@ -182,6 +183,20 @@ PIXI.shaderVertexSrc = [
 &#x2F;*
  * the triangle strip shader..
  *&#x2F;
+
+PIXI.stripShaderFragmentSrc = [
+  &quot;precision mediump float;&quot;,
+  &quot;varying vec2 vTextureCoord;&quot;,
+  &quot;varying float vColor;&quot;,
+  &quot;uniform float alpha;&quot;,
+  &quot;uniform sampler2D uSampler;&quot;,
+  &quot;void main(void) {&quot;,
+    &quot;gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y));&quot;,
+    &quot;gl_FragColor = gl_FragColor * alpha;&quot;,
+  &quot;}&quot;
+];
+
+
 PIXI.stripShaderVertexSrc = [
   &quot;attribute vec2 aVertexPosition;&quot;,
   &quot;attribute vec2 aTextureCoord;&quot;,
@@ -216,16 +231,18 @@ PIXI.primitiveShaderVertexSrc = [
   &quot;attribute vec4 aColor;&quot;,
   &quot;uniform mat3 translationMatrix;&quot;,
   &quot;uniform vec2 projectionVector;&quot;,
+  &quot;uniform float alpha;&quot;,
   &quot;varying vec4 vColor;&quot;,
   &quot;void main(void) {&quot;,
   	&quot;vec3 v = translationMatrix * vec3(aVertexPosition, 1.0);&quot;,
     &quot;gl_Position = vec4( v.x &#x2F; projectionVector.x -1.0, v.y &#x2F; -projectionVector.y + 1.0 , 0.0, 1.0);&quot;,
-    &quot;vColor = aColor;&quot;,
+    &quot;vColor = aColor  * alpha;&quot;,
   &quot;}&quot;
 ];
 
 PIXI.initPrimitiveShader = function() 
 {
+	return;
 	var gl = PIXI.gl;
 
 	var shaderProgram = PIXI.compileProgram(PIXI.primitiveShaderVertexSrc, PIXI.primitiveShaderFragmentSrc)
@@ -234,8 +251,11 @@ PIXI.initPrimitiveShader = function()
 
     shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, &quot;aVertexPosition&quot;);
     shaderProgram.colorAttribute = gl.getAttribLocation(shaderProgram, &quot;aColor&quot;);
+    
     shaderProgram.projectionVector = gl.getUniformLocation(shaderProgram, &quot;projectionVector&quot;);
     shaderProgram.translationMatrix = gl.getUniformLocation(shaderProgram, &quot;translationMatrix&quot;);
+    
+	shaderProgram.alpha = gl.getUniformLocation(shaderProgram, &quot;alpha&quot;);
 
 	PIXI.primitiveProgram = shaderProgram;
 }
@@ -252,7 +272,7 @@ PIXI.initDefaultShader = function()
     shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, &quot;aTextureCoord&quot;);
 	shaderProgram.colorAttribute = gl.getAttribLocation(shaderProgram, &quot;aColor&quot;);
 
-    shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, &quot;uMVMatrix&quot;);
+   &#x2F;&#x2F; shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, &quot;uMVMatrix&quot;);
     shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, &quot;uSampler&quot;);
     
 	PIXI.shaderProgram = shaderProgram;
@@ -261,7 +281,7 @@ PIXI.initDefaultShader = function()
 PIXI.initDefaultStripShader = function() 
 {
 	var gl = this.gl;
-	var shaderProgram = PIXI.compileProgram(PIXI.stripShaderVertexSrc, PIXI.shaderFragmentSrc)
+	var shaderProgram = PIXI.compileProgram(PIXI.stripShaderVertexSrc, PIXI.stripShaderFragmentSrc)
 	
     gl.useProgram(shaderProgram);
 
@@ -269,6 +289,7 @@ PIXI.initDefaultStripShader = function()
     shaderProgram.projectionVector = gl.getUniformLocation(shaderProgram, &quot;projectionVector&quot;);
     shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, &quot;aTextureCoord&quot;);
 	shaderProgram.translationMatrix = gl.getUniformLocation(shaderProgram, &quot;translationMatrix&quot;);
+	shaderProgram.alpha = gl.getUniformLocation(shaderProgram, &quot;alpha&quot;);
 
 	shaderProgram.colorAttribute = gl.getAttribLocation(shaderProgram, &quot;aColor&quot;);
 
@@ -311,9 +332,13 @@ PIXI.activateDefaultShader = function()
 	
 	gl.useProgram(shaderProgram);
 	
+	
 	gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
     gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
     gl.enableVertexAttribArray(shaderProgram.colorAttribute);
+    
+
+	
 } 
 
 PIXI.compileProgram = function(vertexSrc, fragmentSrc)
