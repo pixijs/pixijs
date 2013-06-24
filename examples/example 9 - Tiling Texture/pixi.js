@@ -524,7 +524,7 @@ PIXI.DisplayObject = function()
 	this.renderable = false;
 	
 	// [readonly] best not to toggle directly! use setInteractive()
-	this.interactive = false;
+	this._interactive = false;
 	
 	/**
 	 * This is used to indicate if the displayObject should display a mouse hand cursor on rollover
@@ -622,18 +622,34 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'visible', {
 });*/
 
 /**
- * Indicates if the sprite will have touch and mouse interactivity. It is false by default
+ * [Deprecated] Indicates if the sprite will have touch and mouse interactivity. It is false by default
+ * Instead of using this function you can now simply set the interactive property to true or false
  * @method setInteractive
  * @param interactive {Boolean}
  */
 PIXI.DisplayObject.prototype.setInteractive = function(interactive)
 {
 	this.interactive = interactive;
-	// TODO more to be done here..
-	// need to sort out a re-crawl!
-	if(this.stage)this.stage.dirty = true;
+
 }
 
+/**
+ * Indicates if the sprite will have touch and mouse interactivity. It is false by default
+ * @property interactive
+ * @type Boolean
+ */
+Object.defineProperty(PIXI.DisplayObject.prototype, 'interactive', {
+    get: function() {
+        return this._interactive;
+    },
+    set: function(value) {
+    	this._interactive = value;
+    	
+    	// TODO more to be done here..
+		// need to sort out a re-crawl!
+		if(this.stage)this.stage.dirty = true;
+    }
+});
 
 /**
  * @private
@@ -664,16 +680,18 @@ PIXI.DisplayObject.prototype.updateTransform = function()
 	var px = this.pivot.x;
 	var py = this.pivot.y;
    	
-   	///AAARR GETTER SETTTER!
-	localTransform[2] = this.position.x - localTransform[0] * px - py * localTransform[1];
-	localTransform[5] = this.position.y - localTransform[4] * py - px * localTransform[3];
-
-    // Cache the matrix values (makes for huge speed increases!)
+   	// Cache the matrix values (makes for huge speed increases!)
     var a00 = localTransform[0], a01 = localTransform[1], a02 = localTransform[2],
         a10 = localTransform[3], a11 = localTransform[4], a12 = localTransform[5],
 
         b00 = parentTransform[0], b01 = parentTransform[1], b02 = parentTransform[2],
         b10 = parentTransform[3], b11 = parentTransform[4], b12 = parentTransform[5];
+        
+   	///AAARR GETTER SETTTER!
+	localTransform[2] = this.position.x - a00 * px - py * a01;
+	localTransform[5] = this.position.y - a11 * py - px * a10;
+
+    
 
     worldTransform[0] = b00 * a00 + b01 * a10;
     worldTransform[1] = b00 * a01 + b01 * a11;
@@ -2236,16 +2254,18 @@ PIXI.Stage = function(backgroundColor, interactive)
 {
 	
 	PIXI.DisplayObjectContainer.call( this );
+	
 	this.worldTransform = PIXI.mat3.create()
 	this.__childrenAdded = [];
 	this.__childrenRemoved = [];
+	
 	this.childIndex = 0;
 	this.stage= this;
 	
 	this.stage.hitArea = new PIXI.Rectangle(0,0,100000, 100000);
 	
 	// interaction!
-	this.interactive = !!interactive;
+	// this.interactive = !!interactive;
 	this.interactionManager = new PIXI.InteractionManager(this);
 	
 	this.setBackgroundColor(backgroundColor);

@@ -14,16 +14,18 @@ PIXI.Stage = function(backgroundColor, interactive)
 {
 	
 	PIXI.DisplayObjectContainer.call( this );
+	
 	this.worldTransform = PIXI.mat3.create()
 	this.__childrenAdded = [];
 	this.__childrenRemoved = [];
+	
 	this.childIndex = 0;
 	this.stage= this;
 	
 	this.stage.hitArea = new PIXI.Rectangle(0,0,100000, 100000);
 	
 	// interaction!
-	this.interactive = !!interactive;
+	// this.interactive = !!interactive;
 	this.interactionManager = new PIXI.InteractionManager(this);
 	
 	this.setBackgroundColor(backgroundColor);
