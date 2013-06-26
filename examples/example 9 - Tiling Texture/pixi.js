@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-06-24
+ * Compiled: 2013-06-26
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -2261,6 +2261,7 @@ PIXI.Stage = function(backgroundColor, interactive)
 	
 	this.childIndex = 0;
 	this.stage= this;
+	this.interactive = interactive;
 	
 	this.stage.hitArea = new PIXI.Rectangle(0,0,100000, 100000);
 	

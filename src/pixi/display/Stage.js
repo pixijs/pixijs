@@ -21,6 +21,7 @@ PIXI.Stage = function(backgroundColor, interactive)
 	
 	this.childIndex = 0;
 	this.stage= this;
+	this.interactive = interactive;
 	
 	this.stage.hitArea = new PIXI.Rectangle(0,0,100000, 100000);
 	
