@@ -47,6 +47,10 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'visible', {
  */
 PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 {
+	//this.addChildAt(child, this.children.length)
+	
+//	return;
+	
 	if(child.parent != undefined)
 	{
 		child.parent.removeChild(child);
@@ -122,6 +126,9 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
  */
 PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 {
+	//this.addChild(child);
+	//console.log("AT " + index)
+	//return;
 	if(index >= 0 && index <= this.children.length)
 	{
 		if(child.parent != undefined)child.parent.removeChild(child);
@@ -138,7 +145,6 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 			}
 			while(tmpChild)
 		}
-	
 		// modify the list..
 		var childFirst = child.first
 		var childLast = child.last;
@@ -159,6 +165,10 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 			}
 	
 		}
+		else if(index == 0)
+		{
+			previousObject = this;
+		}
 		else
 		{
 			previousObject = this.children[index].last;
@@ -178,7 +188,6 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 		
 		
 		this.children.splice(index, 0, child);
-		
 		// need to remove any render groups..
 		if(this.__renderGroup)
 		{
@@ -267,8 +276,6 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 	
 	if ( index !== -1 ) 
 	{
-		
-		
 		// unlink //
 		// modify the list..
 		var childFirst = child.first

@@ -823,6 +823,10 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'visible', {
  */
 PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 {
+	//this.addChildAt(child, this.children.length)
+	
+//	return;
+	
 	if(child.parent != undefined)
 	{
 		child.parent.removeChild(child);
@@ -898,6 +902,9 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
  */
 PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 {
+	//this.addChild(child);
+	//console.log("AT " + index)
+	//return;
 	if(index >= 0 && index <= this.children.length)
 	{
 		if(child.parent != undefined)child.parent.removeChild(child);
@@ -914,7 +921,6 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 			}
 			while(tmpChild)
 		}
-	
 		// modify the list..
 		var childFirst = child.first
 		var childLast = child.last;
@@ -935,6 +941,10 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 			}
 	
 		}
+		else if(index == 0)
+		{
+			previousObject = this;
+		}
 		else
 		{
 			previousObject = this.children[index].last;
@@ -954,7 +964,6 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 		
 		
 		this.children.splice(index, 0, child);
-		
 		// need to remove any render groups..
 		if(this.__renderGroup)
 		{
@@ -1043,8 +1052,6 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 	
 	if ( index !== -1 ) 
 	{
-		
-		
 		// unlink //
 		// modify the list..
 		var childFirst = child.first
@@ -2477,7 +2484,7 @@ PIXI.Stage.prototype.updateTransform = function()
 PIXI.Stage.prototype.setBackgroundColor = function(backgroundColor)
 {
 	this.backgroundColor = backgroundColor || 0x000000;
-	this.backgroundColorSplit = [1,1,1,1];//HEXtoRGB(this.backgroundColor);
+	this.backgroundColorSplit = HEXtoRGB(this.backgroundColor);
 	var hex = this.backgroundColor.toString(16);
 	hex = "000000".substr(0, 6 - hex.length) + hex;
 	this.backgroundColorString = "#" + hex;
@@ -4757,14 +4764,25 @@ PIXI.WebGLRenderGroup.prototype.addDisplayObjectAndChildren = function(displayOb
 	if(displayObject.__renderGroup)displayObject.__renderGroup.removeDisplayObjectAndChildren(displayObject);
 	
 	
+	var safe;
+	
 	/*
 	 *  LOOK FOR THE PREVIOUS RENDERABLE
 	 *  This part looks for the closest previous sprite that can go into a batch
 	 *  It keeps going back until it finds a sprite or the stage
 	 */
+	
+	safe = 0;
 	var previousRenderable = displayObject.first;
 	while(previousRenderable != this.root)
 	{
+		safe++;
+		if(safe > 1000)
+		{
+			console.log("BREAK")
+			break;
+		}
+		
 		previousRenderable = previousRenderable._iPrev;
 		if(previousRenderable.renderable && previousRenderable.__renderGroup)break;
 	}
@@ -4775,16 +4793,25 @@ PIXI.WebGLRenderGroup.prototype.addDisplayObjectAndChildren = function(displayOb
 	 *  it keeps looking until it finds a sprite or gets to the end of the display
 	 *  scene graph
 	 */
+	safe = 0
 	var nextRenderable = displayObject.last;
 	while(nextRenderable._iNext)
 	{
+		safe++;
+		if(safe > 1000)
+		{
+			console.log("BREAK")
+			break;
+		}
 		nextRenderable = nextRenderable._iNext;
 		if(nextRenderable.renderable && nextRenderable.__renderGroup)break;
 	}
-
+	
+	
+	
 	// one the display object hits this. we can break the loop	
-	var testObject = nextRenderable._iNext;
-
+	var testObject = displayObject.last._iNext;
+	safe = 0;
 	do	
 	{
 		displayObject.__renderGroup = this;
@@ -4807,9 +4834,15 @@ PIXI.WebGLRenderGroup.prototype.removeDisplayObjectAndChildren = function(displa
 	
 //	var displayObject = displayObject.first;
 	var lastObject = displayObject.last;
-	
+	var safe = 0
 	do	
 	{
+		safe++;
+		if(safe > 100)
+		{
+			console.log("BREAK 2s")
+			break;
+		}
 		displayObject.__renderGroup = null;
 		if(displayObject.renderable)this.removeObject(displayObject);
 		displayObject = displayObject._iNext;
@@ -4819,7 +4852,6 @@ PIXI.WebGLRenderGroup.prototype.removeDisplayObjectAndChildren = function(displa
 
 PIXI.WebGLRenderGroup.prototype.insertObject = function(displayObject, previousObject, nextObject)
 {
-	
 	// while looping below THE OBJECT MAY NOT HAVE BEEN ADDED
 	var previousSprite = previousObject;
 	var nextSprite = nextObject;
