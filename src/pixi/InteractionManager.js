@@ -315,43 +315,11 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 		y = a00 * id * global.y + -a10 * id * global.x + (-a12 * a00 + a02 * a10) * id;
 
 	//a sprite or display object with a hit area defined
-	if(item.hitArea)
-	{
-		var hitArea = item.hitArea;
+	if(item.hitArea && item.hitArea.contains && item.hitArea.contains(x, y)) {
+		if(isSprite)
+			interactionData.target = item;
 
-		//Polygon hit area
-		if(item.hitArea instanceof PIXI.Polygon) {
-			var inside = false;
-
-			// use some raycasting to test hits
-			// https://github.com/substack/point-in-polygon/blob/master/index.js
-			for(var i = 0, j = item.hitArea.points.length - 1; i < item.hitArea.points.length; j = i++) {
-				var xi = item.hitArea.points[i].x, yi = item.hitArea.points[i].y,
-					xj = item.hitArea.points[j].x, yj = item.hitArea.points[j].y,
-					intersect = ((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-
-				if(intersect) inside = !inside;
-			}
-			
-			if(inside) {
-				if(isSprite) interactionData.target = item;
-				return true;
-			}
-		}
-		//Rectangle hit area
-		else {
-			var x1 = hitArea.x;
-			if(x > x1 && x < x1 + hitArea.width)
-			{
-				var y1 = hitArea.y;
-				
-				if(y > y1 && y < y1 + hitArea.height)
-				{
-					if(isSprite) interactionData.target = item;
-					return true;
-				}
-			}
-		}
+		return true;
 	}
 	// a sprite with no hitarea defined
 	else if(isSprite)
