@@ -19,7 +19,7 @@ PIXI.Stage = function(backgroundColor, interactive)
 	this.__childrenAdded = [];
 	this.__childrenRemoved = [];
 	
-	this.childIndex = 0;
+	//this.childIndex = 0;
 	this.stage= this;
 	this.interactive = interactive;
 	
@@ -70,7 +70,7 @@ PIXI.Stage.prototype.updateTransform = function()
 PIXI.Stage.prototype.setBackgroundColor = function(backgroundColor)
 {
 	this.backgroundColor = backgroundColor || 0x000000;
-	this.backgroundColorSplit = HEXtoRGB(this.backgroundColor);
+	this.backgroundColorSplit = [1,1,1,1];//HEXtoRGB(this.backgroundColor);
 	var hex = this.backgroundColor.toString(16);
 	hex = "000000".substr(0, 6 - hex.length) + hex;
 	this.backgroundColorString = "#" + hex;
@@ -85,7 +85,7 @@ PIXI.Stage.prototype.getMousePosition = function()
 {
 	return this.interactionManager.mouse.global;
 }
-
+/*
 PIXI.Stage.prototype.__addChild = function(child)
 {
 	if(child.interactive)this.dirty = true;
@@ -116,4 +116,4 @@ PIXI.Stage.prototype.__removeChild = function(child)
 		  	this.__removeChild(child.children[i]);
 		}
 	}
-}
+}*/

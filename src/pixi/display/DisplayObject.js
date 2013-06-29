@@ -9,6 +9,9 @@
  */
 PIXI.DisplayObject = function()
 {
+	this.last = this;
+	this.first = this;
+	
 	/**
 	 * The coordinate of the object relative to the local coordinates of the parent.
 	 * @property position
@@ -196,7 +199,7 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'visible', {
 PIXI.DisplayObject.prototype.setInteractive = function(interactive)
 {
 	this.interactive = interactive;
-
+	
 }
 
 /**
@@ -216,6 +219,69 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'interactive', {
 		if(this.stage)this.stage.dirty = true;
     }
 });
+
+PIXI.DisplayObject.prototype.addFilter = function()
+{
+	
+	// insert a filter block..
+	var start = new PIXI.FilterBlock();
+	var end = new PIXI.FilterBlock();
+	
+	/*
+	 * 
+	 * and an start filter
+	 * 
+	 */
+	
+	var childFirst = start
+	var childLast = start
+	var nextObject;
+	var previousObject;
+		
+	previousObject = this.first._iPrev;
+	nextObject = previousObject._iNext;
+	
+	if(nextObject)
+	{
+		nextObject._iPrev = childLast;
+		childLast._iNext = nextObject;
+	}
+	childFirst._iPrev = previousObject;
+	previousObject._iNext = childFirst;		
+	// now insert the end filter block..
+	
+	/*
+	 * 
+	 * and an end filter
+	 * 
+	 */
+	
+	var childFirst = end
+	var childLast = end
+	var nextObject = null;
+	var previousObject = null;
+		
+	previousObject = this.last;
+	nextObject = previousObject._iNext;
+	
+	if(nextObject)
+	{
+		nextObject._iPrev = childLast;
+		childLast._iNext = nextObject;
+	}
+	childFirst._iPrev = previousObject;
+	previousObject._iNext = childFirst;	
+	
+	this.first = start;
+	this.last = end;
+	
+	// TODO need to check if the stage already exists...
+}
+
+PIXI.FilterBlock = function()
+{
+	
+}
 
 /**
  * @private

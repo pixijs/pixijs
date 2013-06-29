@@ -127,6 +127,84 @@ PIXI.CanvasRenderer.prototype.resize = function(width, height)
 
 PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 {
+	// no loger recurrsive!
+	var transform;
+	var context = this.context;
+	
+	// one the display object hits this. we can break the loop	
+	var testObject = displayObject.last._iNext;
+	
+	var count = 0
+	do	
+	{
+	
+		transform = displayObject.worldTransform;
+		
+		if(!displayObject.visible)
+		{
+			displayObject = displayObject.last._iNext;
+			continue;
+		}
+		
+		if(!displayObject.renderable)
+		{
+			displayObject = displayObject._iNext;
+			continue;
+		}
+		count++;
+		
+		
+		if(displayObject instanceof PIXI.Sprite)
+		{
+				
+			var frame = displayObject.texture.frame;
+			
+			if(frame)
+			{
+				context.globalAlpha = displayObject.worldAlpha;
+				
+				context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
+					
+				context.drawImage(displayObject.texture.baseTexture.source, 
+								   frame.x,
+								   frame.y,
+								   frame.width,
+								   frame.height,
+								   (displayObject.anchor.x) * -frame.width, 
+								   (displayObject.anchor.y) * -frame.height,
+								   frame.width,
+								   frame.height);
+			}					   
+	   	}
+	   	else if(displayObject instanceof PIXI.Strip)
+		{
+			context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
+			this.renderStrip(displayObject);
+		}
+		else if(displayObject instanceof PIXI.TilingSprite)
+		{
+			context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
+			this.renderTilingSprite(displayObject);
+		}
+		else if(displayObject instanceof PIXI.CustomRenderable)
+		{
+			displayObject.renderCanvas(this);
+		}
+		else if(displayObject instanceof PIXI.Graphics)
+		{
+			context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
+			PIXI.CanvasGraphics.renderGraphics(displayObject, context);
+		}
+		
+		displayObject = displayObject._iNext;
+	}
+	while(displayObject != testObject)
+	
+	this.context.setTransform(1,0,0,1,0,0); 	
+}
+
+PIXI.CanvasRenderer.prototype.renderDisplayObject2 = function(displayObject)
+{
 	var transform = displayObject.worldTransform;
 	var context = this.context;
 	//context.globalCompositeOperation = "source-over"
