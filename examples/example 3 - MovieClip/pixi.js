@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-06-26
+ * Compiled: 2013-06-30
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -443,6 +443,9 @@ PIXI.mat4.multiply = function (mat, mat2, dest)
  */
 PIXI.DisplayObject = function()
 {
+	this.last = this;
+	this.first = this;
+	
 	/**
 	 * The coordinate of the object relative to the local coordinates of the parent.
 	 * @property position
@@ -630,7 +633,7 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'visible', {
 PIXI.DisplayObject.prototype.setInteractive = function(interactive)
 {
 	this.interactive = interactive;
-
+	
 }
 
 /**
@@ -650,6 +653,69 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'interactive', {
 		if(this.stage)this.stage.dirty = true;
     }
 });
+
+PIXI.DisplayObject.prototype.addFilter = function()
+{
+	
+	// insert a filter block..
+	var start = new PIXI.FilterBlock();
+	var end = new PIXI.FilterBlock();
+	
+	/*
+	 * 
+	 * and an start filter
+	 * 
+	 */
+	
+	var childFirst = start
+	var childLast = start
+	var nextObject;
+	var previousObject;
+		
+	previousObject = this.first._iPrev;
+	nextObject = previousObject._iNext;
+	
+	if(nextObject)
+	{
+		nextObject._iPrev = childLast;
+		childLast._iNext = nextObject;
+	}
+	childFirst._iPrev = previousObject;
+	previousObject._iNext = childFirst;		
+	// now insert the end filter block..
+	
+	/*
+	 * 
+	 * and an end filter
+	 * 
+	 */
+	
+	var childFirst = end
+	var childLast = end
+	var nextObject = null;
+	var previousObject = null;
+		
+	previousObject = this.last;
+	nextObject = previousObject._iNext;
+	
+	if(nextObject)
+	{
+		nextObject._iPrev = childLast;
+		childLast._iNext = nextObject;
+	}
+	childFirst._iPrev = previousObject;
+	previousObject._iNext = childFirst;	
+	
+	this.first = start;
+	this.last = end;
+	
+	// TODO need to check if the stage already exists...
+}
+
+PIXI.FilterBlock = function()
+{
+	
+}
 
 /**
  * @private
@@ -673,26 +739,21 @@ PIXI.DisplayObject.prototype.updateTransform = function()
 	localTransform[3] = this._sr * this.scale.x;
 	localTransform[4] = this._cr * this.scale.y;
 	
-	///AAARR GETTER SETTTER!
-	//localTransform[2] = this.position.x;
-	//localTransform[5] = this.position.y;
+	// TODO --> do we even need a local matrix???
 	
 	var px = this.pivot.x;
 	var py = this.pivot.y;
    	
-   	// Cache the matrix values (makes for huge speed increases!)
-    var a00 = localTransform[0], a01 = localTransform[1], a02 = localTransform[2],
-        a10 = localTransform[3], a11 = localTransform[4], a12 = localTransform[5],
+    // Cache the matrix values (makes for huge speed increases!)
+    var a00 = localTransform[0], a01 = localTransform[1], a02 = this.position.x - localTransform[0] * px - py * localTransform[1],
+        a10 = localTransform[3], a11 = localTransform[4], a12 = this.position.y - localTransform[4] * py - px * localTransform[3],
 
         b00 = parentTransform[0], b01 = parentTransform[1], b02 = parentTransform[2],
         b10 = parentTransform[3], b11 = parentTransform[4], b12 = parentTransform[5];
-        
-   	///AAARR GETTER SETTTER!
-	localTransform[2] = this.position.x - a00 * px - py * a01;
-	localTransform[5] = this.position.y - a11 * py - px * a10;
 
-    
-
+	localTransform[2] = a02
+	localTransform[5] = a12
+	
     worldTransform[0] = b00 * a00 + b01 * a10;
     worldTransform[1] = b00 * a01 + b01 * a11;
     worldTransform[2] = b00 * a02 + b01 * a12 + b02;
@@ -705,7 +766,6 @@ PIXI.DisplayObject.prototype.updateTransform = function()
 	// mat3.multiply(this.localTransform, this.parent.worldTransform, this.worldTransform);
 	this.worldAlpha = this.alpha * this.parent.worldAlpha;
 
-	
 }
 
 /**
@@ -730,6 +790,7 @@ PIXI.DisplayObjectContainer = function()
 	this.children = [];
 	//s
 	this.renderable = false;
+	
 }
 
 // constructor
@@ -755,21 +816,77 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'visible', {
  */
 PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 {
+	
+	//this.addChildAt(child, this.children.length)
+	//return;
+	
 	if(child.parent != undefined)
 	{
+		
+		//// COULD BE THIS???
 		child.parent.removeChild(child);
+	//	return;
 	}
 	
 	child.parent = this;
-	child.childIndex = this.children.length;
+	//child.childIndex = this.children.length;
 	
 	this.children.push(child);	
 	
+	// updae the stage refference..
+	
 	if(this.stage)
 	{
-		this.stage.__addChild(child);
+		var tmpChild = child;
+		do
+		{
+			if(tmpChild.interactive)this.stage.dirty = true;
+			tmpChild.stage = this.stage;
+			tmpChild = tmpChild._iNext;
+		}	
+		while(tmpChild)
 	}
 	
+	// LINKED LIST //
+	
+	// modify the list..
+	var childFirst = child.first
+	var childLast = child.last;
+//	console.log(childFirst)
+	var nextObject;
+	var previousObject;
+		
+	previousObject =  this.last;
+	
+//	if(this.last._iNext)
+	
+	//console.log( this.last._iNext);
+	nextObject = previousObject._iNext;
+	
+	// always true in this case
+	//this.last = child.last;
+	// need to make sure the parents last is updated too
+	var updateLast = this;
+	var prevLast = this.last;
+	while(updateLast)
+	{
+		if(updateLast.last == prevLast)
+		{
+			updateLast.last = child.last;
+		}
+		updateLast = updateLast.parent;
+	}
+	
+	if(nextObject)
+	{
+		nextObject._iPrev = childLast;
+		childLast._iNext = nextObject;
+	}
+	
+	childFirst._iPrev = previousObject;
+	previousObject._iNext = childFirst;		
+	
+//	console.log(childFirst);
 	// need to remove any render groups..
 	if(this.__renderGroup)
 	{
@@ -778,6 +895,7 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 		// add them to the new render group..
 		this.__renderGroup.addDisplayObjectAndChildren(child);
 	}
+	
 }
 
 /**
@@ -794,30 +912,65 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 		{
 			child.parent.removeChild(child);
 		}
-	
-		if (index == this.children.length)
-		{
-		  	this.children.push(child);
-		}	
-		else 
-		{
-			this.children.splice(index, 0, child);
-		}
-
 		child.parent = this;
-		child.childIndex = index;
-		
-		var length = this.children.length;
-		for (var i=index; i < length; i++) 
-		{
-		  this.children[i].childIndex = i;
-		}
 		
 		if(this.stage)
 		{
-			this.stage.__addChild(child);
+			var tmpChild = child;
+			do
+			{
+				if(tmpChild.interactive)this.stage.dirty = true;
+				tmpChild.stage = this.stage;
+				tmpChild = tmpChild._iNext;
+			}
+			while(tmpChild)
 		}
 		
+		// modify the list..
+		var childFirst = child.first
+		var childLast = child.last;
+		var nextObject;
+		var previousObject;
+		
+		if(index == this.children.length)
+		{
+			previousObject =  this.last;
+			var updateLast = this;//.parent;
+			var prevLast = this.last;
+			while(updateLast)
+			{
+				if(updateLast.last == prevLast)
+				{
+					updateLast.last = child.last;
+				}
+				updateLast = updateLast.parent;
+			}
+	
+	
+		}
+		else if(index == 0)
+		{
+			previousObject = this;
+		}
+		else
+		{
+			previousObject = this.children[index].last;
+		}
+		
+		nextObject = previousObject._iNext;
+		
+		// always true in this case
+		if(nextObject)
+		{
+			nextObject._iPrev = childLast;
+			childLast._iNext = nextObject;
+		}
+		
+		childFirst._iPrev = previousObject;
+		previousObject._iNext = childFirst;		
+		
+		
+		this.children.splice(index, 0, child);
 		// need to remove any render groups..
 		if(this.__renderGroup)
 		{
@@ -826,11 +979,10 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 			// add them to the new render group..
 			this.__renderGroup.addDisplayObjectAndChildren(child);
 		}
+		
 	}
 	else
 	{
-		// error!
-		
 		throw new Error(child + " The index "+ index +" supplied is out of bounds " + this.children.length);
 	}
 }
@@ -843,6 +995,9 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
  */
 PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
 {
+	return;
+	// need to fix this function :/
+	
 	// TODO I already know this??
 	var index = this.children.indexOf( child );
 	var index2 = this.children.indexOf( child2 );
@@ -850,6 +1005,8 @@ PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
 	if ( index !== -1 && index2 !== -1 ) 
 	{
 		// cool
+		
+		/*
 		if(this.stage)
 		{
 			// this is to satisfy the webGL batching..
@@ -859,11 +1016,8 @@ PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
 			
 			this.stage.__addChild(child);
 			this.stage.__addChild(child2);
-		}
+		}*/
 		
-		// swap the indexes..
-		child.childIndex = index2;
-		child2.childIndex = index;
 		// swap the positions..
 		this.children[index] = child2;
 		this.children[index2] = child;
@@ -889,7 +1043,6 @@ PIXI.DisplayObjectContainer.prototype.getChildAt = function(index)
 	else
 	{
 		throw new Error(child + " Both the supplied DisplayObjects must be a child of the caller " + this);
-	
 	}
 }
 
@@ -901,30 +1054,57 @@ PIXI.DisplayObjectContainer.prototype.getChildAt = function(index)
 PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 {
 	var index = this.children.indexOf( child );
-	
 	if ( index !== -1 ) 
 	{
-		if(this.stage)
+		//console.log(">>")
+		// unlink //
+		// modify the list..
+		var childFirst = child.first
+		var childLast = child.last;
+		
+		var nextObject = childLast._iNext;
+		var previousObject = childFirst._iPrev;
+			
+		if(nextObject)nextObject._iPrev = previousObject;
+		previousObject._iNext = nextObject;		
+		
+		if(this.last == childLast)
 		{
-			this.stage.__removeChild(child);
+			var tempLast =  childFirst._iPrev;	
+			// need to make sure the parents last is updated too
+			var updateLast = this;
+			while(updateLast.last == childLast.last)
+			{
+				updateLast.last = tempLast;
+				updateLast = updateLast.parent;
+				if(!updateLast)break;
+			}
 		}
 		
+		childLast._iNext = null;
+		childFirst._iPrev = null;
+		 
+		// updae the stage reference..
+		if(this.stage)
+		{
+			var tmpChild = child;
+			do
+			{
+				if(tmpChild.interactive)this.stage.dirty = true;
+				tmpChild.stage = null;
+				tmpChild = tmpChild._iNext;
+			}	
+			while(tmpChild)
+		}
+	
 		// webGL trim
 		if(child.__renderGroup)
 		{
 			child.__renderGroup.removeDisplayObjectAndChildren(child);
 		}
 		
-	//	console.log(">" + child.__renderGroup)
 		child.parent = undefined;
-
 		this.children.splice( index, 1 );
-	
-		// update in dexs!
-		for(var i=index,j=this.children.length; i<j; i++)
-		{
-			this.children[i].childIndex -= 1;
-		}
 	}
 	else
 	{
@@ -2259,8 +2439,8 @@ PIXI.Stage = function(backgroundColor, interactive)
 	this.__childrenAdded = [];
 	this.__childrenRemoved = [];
 	
-	this.childIndex = 0;
-	this.stage= this;
+	//this.childIndex = 0;
+	this.stage = this;
 	this.interactive = interactive;
 	
 	this.stage.hitArea = new PIXI.Rectangle(0,0,100000, 100000);
@@ -2271,7 +2451,6 @@ PIXI.Stage = function(backgroundColor, interactive)
 	
 	this.setBackgroundColor(backgroundColor);
 	this.worldVisible = true;
-	
 	this.stage.dirty = true;
 }
 
@@ -2325,7 +2504,7 @@ PIXI.Stage.prototype.getMousePosition = function()
 {
 	return this.interactionManager.mouse.global;
 }
-
+/*
 PIXI.Stage.prototype.__addChild = function(child)
 {
 	if(child.interactive)this.dirty = true;
@@ -2356,7 +2535,7 @@ PIXI.Stage.prototype.__removeChild = function(child)
 		  	this.__removeChild(child.children[i]);
 		}
 	}
-}
+}*/
 
 // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
 // http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
@@ -4302,7 +4481,6 @@ PIXI.WebGLRenderGroup = function(gl)
 	this.toRemove = [];
 }
 
-
 // constructor
 PIXI.WebGLRenderGroup.constructor = PIXI.WebGLRenderGroup;
 
@@ -4320,7 +4498,6 @@ PIXI.WebGLRenderGroup.prototype.setRenderable = function(displayObject)
 	this.root = displayObject;
 	//displayObject.__renderGroup = this;
 	this.addDisplayObjectAndChildren(displayObject);
-	//displayObject
 }
 
 PIXI.WebGLRenderGroup.prototype.render = function(projection)
@@ -4329,9 +4506,6 @@ PIXI.WebGLRenderGroup.prototype.render = function(projection)
 	
 	var gl = this.gl;
 
-	// set the flipped matrix..
-//	gl.uniformMatrix4fv(PIXI.shaderProgram.mvMatrixUniform, false, PIXI.projectionMatrix);
-	
 	gl.uniform2f(PIXI.shaderProgram.projectionVector, projection.x, projection.y);
 
 	// TODO remove this by replacing visible with getter setters..	
@@ -4350,6 +4524,7 @@ PIXI.WebGLRenderGroup.prototype.render = function(projection)
 		}
 		else if(renderable instanceof PIXI.TilingSprite)
 		{
+			
 			if(renderable.visible)this.renderTilingSprite(renderable, projection);
 		}
 		else if(renderable instanceof PIXI.Strip)
@@ -4374,8 +4549,6 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 //	gl.uniformMatrix4fv(PIXI.shaderProgram.mvMatrixUniform, false, projectionMatrix);
 	gl.uniform2f(PIXI.shaderProgram.projectionVector, projection.x, projection.y);
 
-	
-	//console.log("SPECIFIC");
 	// to do!
 	// render part of the scene...
 	
@@ -4530,14 +4703,14 @@ PIXI.WebGLRenderGroup.prototype.renderSpecial = function(renderable)
 
 PIXI.WebGLRenderGroup.prototype.checkVisibility = function(displayObject, globalVisible)
 {
-	// give the dp a refference to its renderGroup...
+	// give the dp a reference to its renderGroup...
 	var children = displayObject.children;
 	//displayObject.worldVisible = globalVisible;
 	for (var i=0; i < children.length; i++) 
 	{
 		var child = children[i];
 		
-		// TODO optimize... shouldt need to loop through everything all the time
+		// TODO optimize... should'nt need to loop through everything all the time
 		child.worldVisible = child.visible && globalVisible;
 		
 		// everything should have a batch!
@@ -4545,12 +4718,7 @@ PIXI.WebGLRenderGroup.prototype.checkVisibility = function(displayObject, global
 		if(child.textureChange)
 		{
 			child.textureChange = false;
-			if(child.worldVisible)
-			{
-				this.removeDisplayObject(child);
-				this.addDisplayObject(child);
-				//this.updateTexture(child);
-			}
+			if(child.worldVisible)this.updateTexture(child);
 			// update texture!!
 		}
 		
@@ -4563,122 +4731,109 @@ PIXI.WebGLRenderGroup.prototype.checkVisibility = function(displayObject, global
 
 PIXI.WebGLRenderGroup.prototype.updateTexture = function(displayObject)
 {
-	// we know this exists..
-	// is it in a batch..
-	// check batch length
-	if(displayObject.batch.length == 1)
+	
+	// TODO definitely can optimse this function..
+	
+	this.removeObject(displayObject);
+	
+	/*
+	 *  LOOK FOR THE PREVIOUS RENDERABLE
+	 *  This part looks for the closest previous sprite that can go into a batch
+	 *  It keeps going back until it finds a sprite or the stage
+	 */
+	var previousRenderable = displayObject.first;
+	while(previousRenderable != this.root)
 	{
-		// just one! this guy! so simply swap the texture
-		displayObject.batch.texture = displayObject.texture.baseTexture;
-		return;
+		previousRenderable = previousRenderable._iPrev;
+		if(previousRenderable.renderable && previousRenderable.__renderGroup)break;
 	}
 	
-	// early out!
-	if(displayObject.batch.texture == displayObject.texture.baseTexture)return;
+	/*
+	 *  LOOK FOR THE NEXT SPRITE
+	 *  This part looks for the closest next sprite that can go into a batch
+	 *  it keeps looking until it finds a sprite or gets to the end of the display
+	 *  scene graph
+	 */
+	var nextRenderable = displayObject.last;
+	while(nextRenderable._iNext)
+	{
+		nextRenderable = nextRenderable._iNext;
+		if(nextRenderable.renderable && nextRenderable.__renderGroup)break;
+	}
 	
-	
-	if(displayObject.batch.head == displayObject)
-	{
-		//console.log("HEAD")
-		var currentBatch = displayObject.batch;
-		
-		var index = this.batchs.indexOf( currentBatch );
-		var previousBatch =  this.batchs[index-1];
-		currentBatch.remove(displayObject);
-		
-		if(previousBatch)
-		{
-			if(previousBatch.texture == displayObject.texture.baseTexture && previousBatch.blendMode == displayObject.blendMode)
-			{
-				previousBatch.insertAfter(displayObject, previousBatch.tail);
-			}
-			else
-			{
-				// add it before..
-				var batch = PIXI.WebGLRenderer.getBatch();
-				batch.init(displayObject);
-				this.batchs.splice(index-1, 0, batch);
-			}
-			
-		}
-		else
-		{
-			// we are 0!
-			var batch = PIXI.WebGLRenderer.getBatch();
-			batch.init(displayObject);
-			this.batchs.splice(0, 0, batch);
-		}
-		
-	}
-	else if(displayObject.batch.tail == displayObject)
-	{
-		var currentBatch = displayObject.batch;
-		
-		var index = this.batchs.indexOf( currentBatch );
-		var nextBatch =  this.batchs[index+1];
-		currentBatch.remove(displayObject);
-		
-		if(nextBatch)
-		{
-			if(nextBatch.texture == displayObject.texture.baseTexture && nextBatch.blendMode == displayObject.blendMode)
-			{
-				nextBatch.insertBefore(displayObject, nextBatch.head);
-				return;
-			}
-			else
-			{
-				// add it before..
-				var batch = PIXI.WebGLRenderer.getBatch();
-				batch.init(displayObject);
-				this.batchs.splice(index+1, 0, batch);
-			}
-			
-		}
-		else
-		{
-			// we are 0!
-			var batch = PIXI.WebGLRenderer.getBatch();
-			batch.init(displayObject);
-			this.batchs.push(batch);
-		}
-	}
-	else
-	{
-	//	console.log("MIDDLE")
-		var currentBatch = displayObject.batch;
-		
-		// split the batch into 2
-		// AH! dont split on the current display object as the texture is wrong!
-		var splitBatch = currentBatch.split(displayObject);
-		
-		// now remove the display object
-		splitBatch.remove(displayObject);
-		
-		var batch = PIXI.WebGLRenderer.getBatch();
-		var index = this.batchs.indexOf( currentBatch );
-		batch.init(displayObject);
-		this.batchs.splice(index+1, 0, batch, splitBatch);
-	}
+	this.insertObject(displayObject, previousRenderable, nextRenderable);
 }
 
-PIXI.WebGLRenderGroup.prototype.addDisplayObject = function(displayObject)
+PIXI.WebGLRenderGroup.prototype.addDisplayObjectAndChildren = function(displayObject)
 {
-	// add a child to the render group..
 	if(displayObject.__renderGroup)displayObject.__renderGroup.removeDisplayObjectAndChildren(displayObject);
-
-	// DONT htink this is needed?
-	//	displayObject.batch = null;
 	
-	displayObject.__renderGroup = this;
+	/*
+	 *  LOOK FOR THE PREVIOUS RENDERABLE
+	 *  This part looks for the closest previous sprite that can go into a batch
+	 *  It keeps going back until it finds a sprite or the stage
+	 */
+	
+	var previousRenderable = displayObject.first;
+	while(previousRenderable != this.root)
+	{
+		previousRenderable = previousRenderable._iPrev;
+		if(previousRenderable.renderable && previousRenderable.__renderGroup)break;
+	}
+	
+	/*
+	 *  LOOK FOR THE NEXT SPRITE
+	 *  This part looks for the closest next sprite that can go into a batch
+	 *  it keeps looking until it finds a sprite or gets to the end of the display
+	 *  scene graph
+	 */
+	var nextRenderable = displayObject.last;
+	while(nextRenderable._iNext)
+	{
+		nextRenderable = nextRenderable._iNext;
+		if(nextRenderable.renderable && nextRenderable.__renderGroup)break;
+	}
+	
+	// one the display object hits this. we can break the loop	
+	
+	var tempObject = displayObject.first;
+	var testObject = displayObject.last._iNext;
+	
+	do	
+	{
+		tempObject.__renderGroup = this;
 
-	//displayObject.cacheVisible = true;
-	if(!displayObject.renderable)return;
+		if(tempObject.renderable)
+		{
+			this.insertObject(tempObject, previousRenderable, nextRenderable);
+			previousRenderable = tempObject;
+		}
+		
+		tempObject = tempObject._iNext;
+	}
+	while(tempObject != testObject)
+}
 
+PIXI.WebGLRenderGroup.prototype.removeDisplayObjectAndChildren = function(displayObject)
+{
+	if(displayObject.__renderGroup != this)return;
+	
+//	var displayObject = displayObject.first;
+	var lastObject = displayObject.last;
+	do	
+	{
+		displayObject.__renderGroup = null;
+		if(displayObject.renderable)this.removeObject(displayObject);
+		displayObject = displayObject._iNext;
+	}
+	while(displayObject)
+}
+
+PIXI.WebGLRenderGroup.prototype.insertObject = function(displayObject, previousObject, nextObject)
+{
 	// while looping below THE OBJECT MAY NOT HAVE BEEN ADDED
-	//displayObject.__inWebGL = true;
-	
-	var previousSprite = this.getPreviousRenderable(displayObject);
-	var nextSprite = this.getNextRenderable(displayObject);
+	var previousSprite = previousObject;
+	var nextSprite = nextObject;
 
 	/*
 	 * so now we have the next renderable and the previous renderable
@@ -4794,25 +4949,9 @@ PIXI.WebGLRenderGroup.prototype.addDisplayObject = function(displayObject)
 		//this.initStrip(displayObject);
 		this.batchs.push(displayObject);
 	}
-	
-	// if its somthing else... then custom codes!
-	this.batchUpdate = true;
 }
 
-PIXI.WebGLRenderGroup.prototype.addDisplayObjectAndChildren = function(displayObject)
-{
-	// TODO - this can be faster - but not as important right now
-	
-	this.addDisplayObject(displayObject);
-	var children = displayObject.children;
-	
-	for (var i=0; i < children.length; i++) 
-	{
-	  	this.addDisplayObjectAndChildren(children[i]);
-	};
-}
-
-PIXI.WebGLRenderGroup.prototype.removeDisplayObject = function(displayObject)
+PIXI.WebGLRenderGroup.prototype.removeObject = function(displayObject)
 {
 	// loop through children..
 	// display object //
@@ -4820,10 +4959,7 @@ PIXI.WebGLRenderGroup.prototype.removeDisplayObject = function(displayObject)
 	// add a child from the render group..
 	// remove it and all its children!
 	//displayObject.cacheVisible = false;//displayObject.visible;
-	displayObject.__renderGroup = null;
-	
-	if(!displayObject.renderable)return;
-	
+
 	/*
 	 * removing is a lot quicker..
 	 * 
@@ -4881,111 +5017,18 @@ PIXI.WebGLRenderGroup.prototype.removeDisplayObject = function(displayObject)
 			}
 		}
 		
-		
 		this.batchs.splice(index, 1);
 		if(batchToRemove instanceof PIXI.WebGLBatch)PIXI.WebGLRenderer.returnBatch(batchToRemove);
 	}
 }
 
-PIXI.WebGLRenderGroup.prototype.removeDisplayObjectAndChildren = function(displayObject)
-{
-	// TODO - this can be faster - but not as important right now
-	if(displayObject.__renderGroup != this)return;
-	
-	this.removeDisplayObject(displayObject);
-	var children = displayObject.children;
-	
-	for (var i=0; i < children.length; i++) 
-	{
-	  	this.removeDisplayObjectAndChildren(children[i]);
-	};
-}
 
 /**
  * @private
  */
 
-PIXI.WebGLRenderGroup.prototype.getNextRenderable = function(displayObject)
-{
-	/*
-	 *  LOOK FOR THE NEXT SPRITE
-	 *  This part looks for the closest next sprite that can go into a batch
-	 *  it keeps looking until it finds a sprite or gets to the end of the display
-	 *  scene graph
-	 * 
-	 *  These look a lot scarier than the actually are...
-	 */
-	
-	var nextSprite = displayObject;
-	do
-	{
-		// moving forward!
-		// if it has no children.. 
-		if(nextSprite.children.length == 0)
-		{
-			//maynot have a parent
-			if(!nextSprite.parent)return null;
-			
-			// go along to the parent..
-			while(nextSprite.childIndex == nextSprite.parent.children.length-1)
-			{
-				nextSprite = nextSprite.parent;
-				//console.log(">" + nextSprite);
-//				console.log(">-" + this.root);
-				if(nextSprite ==  this.root || !nextSprite.parent)//displayObject.stage)
-				{
-					nextSprite = null
-					break;
-				}
-			}
-			
-			if(nextSprite)nextSprite = nextSprite.parent.children[nextSprite.childIndex+1];
-		}
-		else
-		{
-			nextSprite = nextSprite.children[0];
-		}
 
-		if(!nextSprite)break;
-	}
-	while(!nextSprite.renderable || !nextSprite.__renderGroup)
-	
-	return nextSprite;
-}
 
-PIXI.WebGLRenderGroup.prototype.getPreviousRenderable = function(displayObject)
-{
-	/*
-	 *  LOOK FOR THE PREVIOUS SPRITE
-	 *  This part looks for the closest previous sprite that can go into a batch
-	 *  It keeps going back until it finds a sprite or the stage
-	 */
-	var previousSprite = displayObject;
-	do
-	{
-		if(previousSprite.childIndex == 0)
-		{
-			previousSprite = previousSprite.parent;
-			if(!previousSprite)return null;
-		}
-		else
-		{
-			
-			previousSprite = previousSprite.parent.children[previousSprite.childIndex-1];
-			// what if the bloop has children???
-			while(previousSprite.children.length != 0)
-			{
-				// keep diggin till we get to the last child
-				previousSprite = previousSprite.children[previousSprite.children.length-1];
-			}
-		}
-		
-		if(previousSprite == this.root)break;
-	}
-	while(!previousSprite.renderable || !previousSprite.__renderGroup);
-	
-	return previousSprite;
-}
 
 /**
  * @private
@@ -5325,47 +5368,42 @@ PIXI.CanvasRenderer.prototype.resize = function(width, height)
 
 PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 {
-	var transform = displayObject.worldTransform;
+	// no loger recurrsive!
+	var transform;
 	var context = this.context;
-	//context.globalCompositeOperation = "source-over"
-	var blit = false;
 	
-	if(!displayObject.visible)return;
-		
-	if(displayObject instanceof PIXI.Sprite)
+	// one the display object hits this. we can break the loop	
+	var testObject = displayObject.last._iNext;
+	displayObject = displayObject.first;
+	
+	do	
 	{
-		var frame = displayObject.texture.frame;
+		transform = displayObject.worldTransform;
 		
-		if(frame)
+		if(!displayObject.visible)
 		{
-			context.globalAlpha = displayObject.worldAlpha;
+			displayObject = displayObject.last._iNext;
+			continue;
+		}
+		
+		if(!displayObject.renderable)
+		{
+			displayObject = displayObject._iNext;
+			continue;
+		}
+		
+		
+		if(displayObject instanceof PIXI.Sprite)
+		{
+				
+			var frame = displayObject.texture.frame;
 			
-			// BLITZ!!!
-			/*
-			 * if the rotation is 0 then we can blitz it
-			 * meaning we dont need to do a transform and also we
-			 * can round to the nearest round number for a little extra speed!
-			 */
-			/*if(displayObject.rotation == 0)
+			if(frame)
 			{
-				if(!blit)this.context.setTransform(1,0,0,1,0,0); 
-				blit = true;
-				context.drawImage(displayObject.texture.baseTexture.image, 
-								   frame.x,
-								   frame.y,
-								   frame.width,
-								   frame.height,
-								   (transform[2]+ ((displayObject.anchor.x - displayObject.texture.trim.x) * -frame.width) * transform[0]),
-								   (transform[5]+ ((displayObject.anchor.y - displayObject.texture.trim.y) * -frame.height)* transform[4]),
-								   (displayObject.width * transform[0]),
-								   (displayObject.height * transform[4]));
+				context.globalAlpha = displayObject.worldAlpha;
 				
-			}	
-			else
-			{*/
-			//	blit = false;
 				context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
-				
+					
 				context.drawImage(displayObject.texture.baseTexture.source, 
 								   frame.x,
 								   frame.y,
@@ -5373,45 +5411,41 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 								   frame.height,
 								   (displayObject.anchor.x) * -frame.width, 
 								   (displayObject.anchor.y) * -frame.height,
-								 //   (displayObject.anchor.x - displayObject.texture.trim.x) * -frame.width, 
-								  // (displayObject.anchor.y - displayObject.texture.trim.y) * -frame.height,
-								  
 								   frame.width,
 								   frame.height);
-			//}
-		}					   
-   	}
-   	else if(displayObject instanceof PIXI.Strip)
-	{
-		context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
-		this.renderStrip(displayObject);
-	}
-	else if(displayObject instanceof PIXI.TilingSprite)
-	{
-		context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
-		this.renderTilingSprite(displayObject);
-	}
-	else if(displayObject instanceof PIXI.CustomRenderable)
-	{
-		displayObject.renderCanvas(this);
-	}
-	else if(displayObject instanceof PIXI.Graphics)
-	{
-		context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
-		PIXI.CanvasGraphics.renderGraphics(displayObject, context);
-	}
-	
-	// render!
-	if(displayObject.children)
-	{
-		for (var i=0; i < displayObject.children.length; i++) 
+			}					   
+	   	}
+	   	else if(displayObject instanceof PIXI.Strip)
 		{
-			this.renderDisplayObject(displayObject.children[i]);
+			context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
+			this.renderStrip(displayObject);
 		}
+		else if(displayObject instanceof PIXI.TilingSprite)
+		{
+			context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
+			this.renderTilingSprite(displayObject);
+		}
+		else if(displayObject instanceof PIXI.CustomRenderable)
+		{
+			displayObject.renderCanvas(this);
+		}
+		else if(displayObject instanceof PIXI.Graphics)
+		{
+			context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
+			PIXI.CanvasGraphics.renderGraphics(displayObject, context);
+		}
+		
+	//	count++
+		displayObject = displayObject._iNext;
+		
+		
 	}
+	while(displayObject != testObject)
 	
-	this.context.setTransform(1,0,0,1,0,0); 
+	//console.log(count);
+//	this.context.setTransform(1,0,0,1,0,0); 	
 }
+
 
 /**
  * @private
@@ -6171,7 +6205,6 @@ PIXI.TilingSprite = function(texture, width, height)
 	this.width = width;
 	this.height = height;
 	this.renderable = true;
-	
 	/**
 	 * The scaling of the image that is being tiled
 	 * @property tileScale

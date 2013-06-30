@@ -19,8 +19,8 @@ PIXI.Stage = function(backgroundColor, interactive)
 	this.__childrenAdded = [];
 	this.__childrenRemoved = [];
 	
-	this.childIndex = 0;
-	this.stage= this;
+	//this.childIndex = 0;
+	this.stage = this;
 	this.interactive = interactive;
 	
 	this.stage.hitArea = new PIXI.Rectangle(0,0,100000, 100000);
@@ -31,7 +31,6 @@ PIXI.Stage = function(backgroundColor, interactive)
 	
 	this.setBackgroundColor(backgroundColor);
 	this.worldVisible = true;
-	
 	this.stage.dirty = true;
 }
 
@@ -85,7 +84,7 @@ PIXI.Stage.prototype.getMousePosition = function()
 {
 	return this.interactionManager.mouse.global;
 }
-
+/*
 PIXI.Stage.prototype.__addChild = function(child)
 {
 	if(child.interactive)this.dirty = true;
@@ -116,4 +115,4 @@ PIXI.Stage.prototype.__removeChild = function(child)
 		  	this.__removeChild(child.children[i]);
 		}
 	}
-}
+}*/

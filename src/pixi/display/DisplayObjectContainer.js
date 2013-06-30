@@ -20,6 +20,7 @@ PIXI.DisplayObjectContainer = function()
 	this.children = [];
 	//s
 	this.renderable = false;
+	
 }
 
 // constructor
@@ -45,21 +46,77 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'visible', {
  */
 PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 {
+	
+	//this.addChildAt(child, this.children.length)
+	//return;
+	
 	if(child.parent != undefined)
 	{
+		
+		//// COULD BE THIS???
 		child.parent.removeChild(child);
+	//	return;
 	}
 	
 	child.parent = this;
-	child.childIndex = this.children.length;
+	//child.childIndex = this.children.length;
 	
 	this.children.push(child);	
 	
+	// updae the stage refference..
+	
 	if(this.stage)
 	{
-		this.stage.__addChild(child);
+		var tmpChild = child;
+		do
+		{
+			if(tmpChild.interactive)this.stage.dirty = true;
+			tmpChild.stage = this.stage;
+			tmpChild = tmpChild._iNext;
+		}	
+		while(tmpChild)
 	}
 	
+	// LINKED LIST //
+	
+	// modify the list..
+	var childFirst = child.first
+	var childLast = child.last;
+//	console.log(childFirst)
+	var nextObject;
+	var previousObject;
+		
+	previousObject =  this.last;
+	
+//	if(this.last._iNext)
+	
+	//console.log( this.last._iNext);
+	nextObject = previousObject._iNext;
+	
+	// always true in this case
+	//this.last = child.last;
+	// need to make sure the parents last is updated too
+	var updateLast = this;
+	var prevLast = this.last;
+	while(updateLast)
+	{
+		if(updateLast.last == prevLast)
+		{
+			updateLast.last = child.last;
+		}
+		updateLast = updateLast.parent;
+	}
+	
+	if(nextObject)
+	{
+		nextObject._iPrev = childLast;
+		childLast._iNext = nextObject;
+	}
+	
+	childFirst._iPrev = previousObject;
+	previousObject._iNext = childFirst;		
+	
+//	console.log(childFirst);
 	// need to remove any render groups..
 	if(this.__renderGroup)
 	{
@@ -68,6 +125,7 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 		// add them to the new render group..
 		this.__renderGroup.addDisplayObjectAndChildren(child);
 	}
+	
 }
 
 /**
@@ -84,30 +142,65 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 		{
 			child.parent.removeChild(child);
 		}
-	
-		if (index == this.children.length)
-		{
-		  	this.children.push(child);
-		}	
-		else 
-		{
-			this.children.splice(index, 0, child);
-		}
-
 		child.parent = this;
-		child.childIndex = index;
-		
-		var length = this.children.length;
-		for (var i=index; i < length; i++) 
-		{
-		  this.children[i].childIndex = i;
-		}
 		
 		if(this.stage)
 		{
-			this.stage.__addChild(child);
+			var tmpChild = child;
+			do
+			{
+				if(tmpChild.interactive)this.stage.dirty = true;
+				tmpChild.stage = this.stage;
+				tmpChild = tmpChild._iNext;
+			}
+			while(tmpChild)
 		}
 		
+		// modify the list..
+		var childFirst = child.first
+		var childLast = child.last;
+		var nextObject;
+		var previousObject;
+		
+		if(index == this.children.length)
+		{
+			previousObject =  this.last;
+			var updateLast = this;//.parent;
+			var prevLast = this.last;
+			while(updateLast)
+			{
+				if(updateLast.last == prevLast)
+				{
+					updateLast.last = child.last;
+				}
+				updateLast = updateLast.parent;
+			}
+	
+	
+		}
+		else if(index == 0)
+		{
+			previousObject = this;
+		}
+		else
+		{
+			previousObject = this.children[index].last;
+		}
+		
+		nextObject = previousObject._iNext;
+		
+		// always true in this case
+		if(nextObject)
+		{
+			nextObject._iPrev = childLast;
+			childLast._iNext = nextObject;
+		}
+		
+		childFirst._iPrev = previousObject;
+		previousObject._iNext = childFirst;		
+		
+		
+		this.children.splice(index, 0, child);
 		// need to remove any render groups..
 		if(this.__renderGroup)
 		{
@@ -116,11 +209,10 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 			// add them to the new render group..
 			this.__renderGroup.addDisplayObjectAndChildren(child);
 		}
+		
 	}
 	else
 	{
-		// error!
-		
 		throw new Error(child + " The index "+ index +" supplied is out of bounds " + this.children.length);
 	}
 }
@@ -133,6 +225,9 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
  */
 PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
 {
+	return;
+	// need to fix this function :/
+	
 	// TODO I already know this??
 	var index = this.children.indexOf( child );
 	var index2 = this.children.indexOf( child2 );
@@ -140,6 +235,8 @@ PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
 	if ( index !== -1 && index2 !== -1 ) 
 	{
 		// cool
+		
+		/*
 		if(this.stage)
 		{
 			// this is to satisfy the webGL batching..
@@ -149,11 +246,8 @@ PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
 			
 			this.stage.__addChild(child);
 			this.stage.__addChild(child2);
-		}
+		}*/
 		
-		// swap the indexes..
-		child.childIndex = index2;
-		child2.childIndex = index;
 		// swap the positions..
 		this.children[index] = child2;
 		this.children[index2] = child;
@@ -179,7 +273,6 @@ PIXI.DisplayObjectContainer.prototype.getChildAt = function(index)
 	else
 	{
 		throw new Error(child + " Both the supplied DisplayObjects must be a child of the caller " + this);
-	
 	}
 }
 
@@ -191,30 +284,57 @@ PIXI.DisplayObjectContainer.prototype.getChildAt = function(index)
 PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 {
 	var index = this.children.indexOf( child );
-	
 	if ( index !== -1 ) 
 	{
-		if(this.stage)
+		//console.log(">>")
+		// unlink //
+		// modify the list..
+		var childFirst = child.first
+		var childLast = child.last;
+		
+		var nextObject = childLast._iNext;
+		var previousObject = childFirst._iPrev;
+			
+		if(nextObject)nextObject._iPrev = previousObject;
+		previousObject._iNext = nextObject;		
+		
+		if(this.last == childLast)
 		{
-			this.stage.__removeChild(child);
+			var tempLast =  childFirst._iPrev;	
+			// need to make sure the parents last is updated too
+			var updateLast = this;
+			while(updateLast.last == childLast.last)
+			{
+				updateLast.last = tempLast;
+				updateLast = updateLast.parent;
+				if(!updateLast)break;
+			}
 		}
 		
+		childLast._iNext = null;
+		childFirst._iPrev = null;
+		 
+		// update the stage reference..
+		if(this.stage)
+		{
+			var tmpChild = child;
+			do
+			{
+				if(tmpChild.interactive)this.stage.dirty = true;
+				tmpChild.stage = null;
+				tmpChild = tmpChild._iNext;
+			}	
+			while(tmpChild)
+		}
+	
 		// webGL trim
 		if(child.__renderGroup)
 		{
 			child.__renderGroup.removeDisplayObjectAndChildren(child);
 		}
 		
-	//	console.log(">" + child.__renderGroup)
 		child.parent = undefined;
-
 		this.children.splice( index, 1 );
-	
-		// update in dexs!
-		for(var i=index,j=this.children.length; i<j; i++)
-		{
-			this.children[i].childIndex -= 1;
-		}
 	}
 	else
 	{

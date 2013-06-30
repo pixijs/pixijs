@@ -19,7 +19,6 @@ PIXI.TilingSprite = function(texture, width, height)
 	this.width = width;
 	this.height = height;
 	this.renderable = true;
-	
 	/**
 	 * The scaling of the image that is being tiled
 	 * @property tileScale
