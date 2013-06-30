@@ -133,12 +133,7 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 	
 	// one the display object hits this. we can break the loop	
 	var testObject = displayObject.last._iNext;
-	if(testObject)
-	{
-	//	console.log(testObject.last == displayObject.last)//_iNext);
-	}
-	
-	var count = 0;
+	displayObject = displayObject.first;
 	
 	do	
 	{
@@ -155,7 +150,6 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 			displayObject = displayObject._iNext;
 			continue;
 		}
-		
 		
 		if(displayObject instanceof PIXI.Sprite)
 		{
@@ -205,100 +199,8 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 		
 	}
 	while(displayObject != testObject)
-	
-	//console.log(count);
-//	this.context.setTransform(1,0,0,1,0,0); 	
 }
 
-PIXI.CanvasRenderer.prototype.renderDisplayObject2 = function(displayObject)
-{
-	var transform = displayObject.worldTransform;
-	var context = this.context;
-	//context.globalCompositeOperation = "source-over"
-	var blit = false;
-	
-	if(!displayObject.visible)return;
-		
-	if(displayObject instanceof PIXI.Sprite)
-	{
-		var frame = displayObject.texture.frame;
-		
-		if(frame)
-		{
-			context.globalAlpha = displayObject.worldAlpha;
-			
-			// BLITZ!!!
-			/*
-			 * if the rotation is 0 then we can blitz it
-			 * meaning we dont need to do a transform and also we
-			 * can round to the nearest round number for a little extra speed!
-			 */
-			/*if(displayObject.rotation == 0)
-			{
-				if(!blit)this.context.setTransform(1,0,0,1,0,0); 
-				blit = true;
-				context.drawImage(displayObject.texture.baseTexture.image, 
-								   frame.x,
-								   frame.y,
-								   frame.width,
-								   frame.height,
-								   (transform[2]+ ((displayObject.anchor.x - displayObject.texture.trim.x) * -frame.width) * transform[0]),
-								   (transform[5]+ ((displayObject.anchor.y - displayObject.texture.trim.y) * -frame.height)* transform[4]),
-								   (displayObject.width * transform[0]),
-								   (displayObject.height * transform[4]));
-				
-			}	
-			else
-			{*/
-			//	blit = false;
-				context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
-				
-				context.drawImage(displayObject.texture.baseTexture.source, 
-								   frame.x,
-								   frame.y,
-								   frame.width,
-								   frame.height,
-								   (displayObject.anchor.x) * -frame.width, 
-								   (displayObject.anchor.y) * -frame.height,
-								 //   (displayObject.anchor.x - displayObject.texture.trim.x) * -frame.width, 
-								  // (displayObject.anchor.y - displayObject.texture.trim.y) * -frame.height,
-								  
-								   frame.width,
-								   frame.height);
-			//}
-		}					   
-   	}
-   	else if(displayObject instanceof PIXI.Strip)
-	{
-		context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
-		this.renderStrip(displayObject);
-	}
-	else if(displayObject instanceof PIXI.TilingSprite)
-	{
-		context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
-		this.renderTilingSprite(displayObject);
-	}
-	else if(displayObject instanceof PIXI.CustomRenderable)
-	{
-		displayObject.renderCanvas(this);
-	}
-	else if(displayObject instanceof PIXI.Graphics)
-	{
-		context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
-		PIXI.CanvasGraphics.renderGraphics(displayObject, context);
-	}
-	
-	// render!
-	if(displayObject.children)
-	{
-		for (var i=0; i < displayObject.children.length; i++) 
-		{
-			this.renderDisplayObject(displayObject.children[i]);
-		}
-	}
-	
-	this.context.setTransform(1,0,0,1,0,0); 
-}
 
 /**
  * @private
@@ -328,11 +230,9 @@ PIXI.CanvasRenderer.prototype.renderStripFlat = function(strip)
 		
 	};	
 	
-//	context.globalCompositeOperation = 'lighter';
 	context.fillStyle = "#FF0000";
 	context.fill();
 	context.closePath();
-	//context.globalCompositeOperation = 'source-over';	
 }
 
 /**

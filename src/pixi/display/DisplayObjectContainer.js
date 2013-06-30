@@ -96,7 +96,7 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 	// always true in this case
 	//this.last = child.last;
 	// need to make sure the parents last is updated too
-	var updateLast = this;//.parent;
+	var updateLast = this;
 	var prevLast = this.last;
 	while(updateLast)
 	{
@@ -298,7 +298,7 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 		if(nextObject)nextObject._iPrev = previousObject;
 		previousObject._iNext = nextObject;		
 		
-		if(this.last == childLast.last)
+		if(this.last == childLast)
 		{
 			var tempLast =  childFirst._iPrev;	
 			// need to make sure the parents last is updated too
@@ -314,7 +314,7 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 		childLast._iNext = null;
 		childFirst._iPrev = null;
 		 
-		// updae the stage reference..
+		// update the stage reference..
 		if(this.stage)
 		{
 			var tmpChild = child;
