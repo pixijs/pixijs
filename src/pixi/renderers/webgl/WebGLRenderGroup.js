@@ -309,26 +309,15 @@ PIXI.WebGLRenderGroup.prototype.addDisplayObjectAndChildren = function(displayOb
 {
 	if(displayObject.__renderGroup)displayObject.__renderGroup.removeDisplayObjectAndChildren(displayObject);
 	
-	
-	var safe;
-	
 	/*
 	 *  LOOK FOR THE PREVIOUS RENDERABLE
 	 *  This part looks for the closest previous sprite that can go into a batch
 	 *  It keeps going back until it finds a sprite or the stage
 	 */
 	
-	safe = 0;
 	var previousRenderable = displayObject.first;
 	while(previousRenderable != this.root)
 	{
-		safe++;
-		if(safe > 1000)
-		{
-			console.log("BREAK")
-			break;
-		}
-		
 		previousRenderable = previousRenderable._iPrev;
 		if(previousRenderable.renderable && previousRenderable.__renderGroup)break;
 	}
@@ -339,38 +328,31 @@ PIXI.WebGLRenderGroup.prototype.addDisplayObjectAndChildren = function(displayOb
 	 *  it keeps looking until it finds a sprite or gets to the end of the display
 	 *  scene graph
 	 */
-	safe = 0
 	var nextRenderable = displayObject.last;
 	while(nextRenderable._iNext)
 	{
-		safe++;
-		if(safe > 1000)
-		{
-			console.log("BREAK")
-			break;
-		}
 		nextRenderable = nextRenderable._iNext;
 		if(nextRenderable.renderable && nextRenderable.__renderGroup)break;
 	}
 	
-	
-	
 	// one the display object hits this. we can break the loop	
+	
+	var tempObject = displayObject.first;
 	var testObject = displayObject.last._iNext;
-	safe = 0;
+	
 	do	
 	{
-		displayObject.__renderGroup = this;
+		tempObject.__renderGroup = this;
 
-		if(displayObject.renderable)
+		if(tempObject.renderable)
 		{
-			this.insertObject(displayObject, previousRenderable, nextRenderable);
-			previousRenderable = displayObject;
+			this.insertObject(tempObject, previousRenderable, nextRenderable);
+			previousRenderable = tempObject;
 		}
 		
-		displayObject = displayObject._iNext;
+		tempObject = tempObject._iNext;
 	}
-	while(displayObject != testObject)
+	while(tempObject != testObject)
 }
 
 PIXI.WebGLRenderGroup.prototype.removeDisplayObjectAndChildren = function(displayObject)
@@ -379,15 +361,8 @@ PIXI.WebGLRenderGroup.prototype.removeDisplayObjectAndChildren = function(displa
 	
 //	var displayObject = displayObject.first;
 	var lastObject = displayObject.last;
-	var safe = 0
 	do	
 	{
-		safe++;
-		if(safe > 100)
-		{
-			console.log("BREAK 2s")
-			break;
-		}
 		displayObject.__renderGroup = null;
 		if(displayObject.renderable)this.removeObject(displayObject);
 		displayObject = displayObject._iNext;
@@ -516,7 +491,6 @@ PIXI.WebGLRenderGroup.prototype.insertObject = function(displayObject, previousO
 		this.batchs.push(displayObject);
 	}
 }
-
 
 PIXI.WebGLRenderGroup.prototype.removeObject = function(displayObject)
 {

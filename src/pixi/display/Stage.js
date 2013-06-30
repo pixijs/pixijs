@@ -20,7 +20,7 @@ PIXI.Stage = function(backgroundColor, interactive)
 	this.__childrenRemoved = [];
 	
 	//this.childIndex = 0;
-	this.stage= this;
+	this.stage = this;
 	this.interactive = interactive;
 	
 	this.stage.hitArea = new PIXI.Rectangle(0,0,100000, 100000);
@@ -31,7 +31,6 @@ PIXI.Stage = function(backgroundColor, interactive)
 	
 	this.setBackgroundColor(backgroundColor);
 	this.worldVisible = true;
-	
 	this.stage.dirty = true;
 }
 

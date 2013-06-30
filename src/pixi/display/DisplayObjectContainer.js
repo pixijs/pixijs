@@ -48,7 +48,7 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 {
 	
 	//this.addChildAt(child, this.children.length)
-//	return;
+	//return;
 	
 	if(child.parent != undefined)
 	{
@@ -104,10 +104,6 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 		{
 			updateLast.last = child.last;
 		}
-		else
-		{
-		//	console.log("Not last")
-		}
 		updateLast = updateLast.parent;
 	}
 	
@@ -130,12 +126,6 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 		this.__renderGroup.addDisplayObjectAndChildren(child);
 	}
 	
-	/*
-	if(this.stage)
-	{
-		console.log(this.stage.last == child.last);
-		console.log(this.stage.last._iNext)
-	}*/
 }
 
 /**
@@ -146,13 +136,12 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
  */
 PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 {
-//	console.log(child)
-	this.addChild(child);
-	//console.log("AT " + index)
-	return;
 	if(index >= 0 && index <= this.children.length)
 	{
-		if(child.parent != undefined)child.parent.removeChild(child);
+		if(child.parent != undefined)
+		{
+			child.parent.removeChild(child);
+		}
 		child.parent = this;
 		
 		if(this.stage)
@@ -173,28 +162,28 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 		var nextObject;
 		var previousObject;
 		
-		if(index == this.children.length-1)
+		if(index == this.children.length)
 		{
 			previousObject =  this.last;
-			this.last = child.last;
-			
-			// need to make sure the parents last is updated too
-			var updateParent = this.parent;
-			while(updateParent)
+			var updateLast = this;//.parent;
+			var prevLast = this.last;
+			while(updateLast)
 			{
-				updateParent.last = this.last
-				updateParent = updateParent.parent;
+				if(updateLast.last == prevLast)
+				{
+					updateLast.last = child.last;
+				}
+				updateLast = updateLast.parent;
 			}
+	
 	
 		}
 		else if(index == 0)
 		{
-		//	console.log("")
 			previousObject = this;
 		}
 		else
 		{
-			//console.log("!!!")
 			previousObject = this.children[index].last;
 		}
 		
@@ -221,15 +210,9 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 			this.__renderGroup.addDisplayObjectAndChildren(child);
 		}
 		
-		if(this.stage)
-		{
-			console.log(this.stage.last == child.last );
-		}
 	}
 	else
 	{
-		// error!
-		
 		throw new Error(child + " The index "+ index +" supplied is out of bounds " + this.children.length);
 	}
 }
@@ -290,7 +273,6 @@ PIXI.DisplayObjectContainer.prototype.getChildAt = function(index)
 	else
 	{
 		throw new Error(child + " Both the supplied DisplayObjects must be a child of the caller " + this);
-	
 	}
 }
 
@@ -320,7 +302,7 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 		{
 			var tempLast =  childFirst._iPrev;	
 			// need to make sure the parents last is updated too
-			var updateLast = this;//.parent;
+			var updateLast = this;
 			while(updateLast.last == childLast.last)
 			{
 				updateLast.last = tempLast;

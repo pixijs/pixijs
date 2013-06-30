@@ -739,26 +739,21 @@ PIXI.DisplayObject.prototype.updateTransform = function()
 	localTransform[3] = this._sr * this.scale.x;
 	localTransform[4] = this._cr * this.scale.y;
 	
-	///AAARR GETTER SETTTER!
-	//localTransform[2] = this.position.x;
-	//localTransform[5] = this.position.y;
+	// TODO --> do we even need a local matrix???
 	
 	var px = this.pivot.x;
 	var py = this.pivot.y;
    	
-   	// Cache the matrix values (makes for huge speed increases!)
-    var a00 = localTransform[0], a01 = localTransform[1], a02 = localTransform[2],
-        a10 = localTransform[3], a11 = localTransform[4], a12 = localTransform[5],
+    // Cache the matrix values (makes for huge speed increases!)
+    var a00 = localTransform[0], a01 = localTransform[1], a02 = this.position.x - localTransform[0] * px - py * localTransform[1],
+        a10 = localTransform[3], a11 = localTransform[4], a12 = this.position.y - localTransform[4] * py - px * localTransform[3],
 
         b00 = parentTransform[0], b01 = parentTransform[1], b02 = parentTransform[2],
         b10 = parentTransform[3], b11 = parentTransform[4], b12 = parentTransform[5];
-        
-   	///AAARR GETTER SETTTER!
-	localTransform[2] = this.position.x - a00 * px - py * a01;
-	localTransform[5] = this.position.y - a11 * py - px * a10;
 
-    
-
+	localTransform[2] = a02
+	localTransform[5] = a12
+	
     worldTransform[0] = b00 * a00 + b01 * a10;
     worldTransform[1] = b00 * a01 + b01 * a11;
     worldTransform[2] = b00 * a02 + b01 * a12 + b02;
@@ -771,7 +766,6 @@ PIXI.DisplayObject.prototype.updateTransform = function()
 	// mat3.multiply(this.localTransform, this.parent.worldTransform, this.worldTransform);
 	this.worldAlpha = this.alpha * this.parent.worldAlpha;
 
-	
 }
 
 /**
@@ -824,7 +818,7 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 {
 	
 	//this.addChildAt(child, this.children.length)
-//	return;
+	//return;
 	
 	if(child.parent != undefined)
 	{
@@ -880,10 +874,6 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 		{
 			updateLast.last = child.last;
 		}
-		else
-		{
-		//	console.log("Not last")
-		}
 		updateLast = updateLast.parent;
 	}
 	
@@ -906,12 +896,6 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 		this.__renderGroup.addDisplayObjectAndChildren(child);
 	}
 	
-	/*
-	if(this.stage)
-	{
-		console.log(this.stage.last == child.last);
-		console.log(this.stage.last._iNext)
-	}*/
 }
 
 /**
@@ -922,13 +906,12 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
  */
 PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 {
-//	console.log(child)
-	this.addChild(child);
-	//console.log("AT " + index)
-	return;
 	if(index >= 0 && index <= this.children.length)
 	{
-		if(child.parent != undefined)child.parent.removeChild(child);
+		if(child.parent != undefined)
+		{
+			child.parent.removeChild(child);
+		}
 		child.parent = this;
 		
 		if(this.stage)
@@ -949,28 +932,28 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 		var nextObject;
 		var previousObject;
 		
-		if(index == this.children.length-1)
+		if(index == this.children.length)
 		{
 			previousObject =  this.last;
-			this.last = child.last;
-			
-			// need to make sure the parents last is updated too
-			var updateParent = this.parent;
-			while(updateParent)
+			var updateLast = this;//.parent;
+			var prevLast = this.last;
+			while(updateLast)
 			{
-				updateParent.last = this.last
-				updateParent = updateParent.parent;
+				if(updateLast.last == prevLast)
+				{
+					updateLast.last = child.last;
+				}
+				updateLast = updateLast.parent;
 			}
+	
 	
 		}
 		else if(index == 0)
 		{
-		//	console.log("")
 			previousObject = this;
 		}
 		else
 		{
-			//console.log("!!!")
 			previousObject = this.children[index].last;
 		}
 		
@@ -997,15 +980,9 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 			this.__renderGroup.addDisplayObjectAndChildren(child);
 		}
 		
-		if(this.stage)
-		{
-			console.log(this.stage.last == child.last );
-		}
 	}
 	else
 	{
-		// error!
-		
 		throw new Error(child + " The index "+ index +" supplied is out of bounds " + this.children.length);
 	}
 }
@@ -1066,7 +1043,6 @@ PIXI.DisplayObjectContainer.prototype.getChildAt = function(index)
 	else
 	{
 		throw new Error(child + " Both the supplied DisplayObjects must be a child of the caller " + this);
-	
 	}
 }
 
@@ -1096,7 +1072,7 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 		{
 			var tempLast =  childFirst._iPrev;	
 			// need to make sure the parents last is updated too
-			var updateLast = this;//.parent;
+			var updateLast = this;
 			while(updateLast.last == childLast.last)
 			{
 				updateLast.last = tempLast;
@@ -2464,7 +2440,7 @@ PIXI.Stage = function(backgroundColor, interactive)
 	this.__childrenRemoved = [];
 	
 	//this.childIndex = 0;
-	this.stage= this;
+	this.stage = this;
 	this.interactive = interactive;
 	
 	this.stage.hitArea = new PIXI.Rectangle(0,0,100000, 100000);
@@ -2475,7 +2451,6 @@ PIXI.Stage = function(backgroundColor, interactive)
 	
 	this.setBackgroundColor(backgroundColor);
 	this.worldVisible = true;
-	
 	this.stage.dirty = true;
 }
 
@@ -2733,7 +2708,7 @@ PIXI.autoDetectRenderer = function(width, height, view, transparent)
 	//console.log(webgl);
 	if( webgl )
 	{
-	//	return new PIXI.WebGLRenderer(width, height, view, transparent);
+		return new PIXI.WebGLRenderer(width, height, view, transparent);
 	}
 
 	return	new PIXI.CanvasRenderer(width, height, view, transparent);
@@ -4793,26 +4768,15 @@ PIXI.WebGLRenderGroup.prototype.addDisplayObjectAndChildren = function(displayOb
 {
 	if(displayObject.__renderGroup)displayObject.__renderGroup.removeDisplayObjectAndChildren(displayObject);
 	
-	
-	var safe;
-	
 	/*
 	 *  LOOK FOR THE PREVIOUS RENDERABLE
 	 *  This part looks for the closest previous sprite that can go into a batch
 	 *  It keeps going back until it finds a sprite or the stage
 	 */
 	
-	safe = 0;
 	var previousRenderable = displayObject.first;
 	while(previousRenderable != this.root)
 	{
-		safe++;
-		if(safe > 1000)
-		{
-			console.log("BREAK")
-			break;
-		}
-		
 		previousRenderable = previousRenderable._iPrev;
 		if(previousRenderable.renderable && previousRenderable.__renderGroup)break;
 	}
@@ -4823,38 +4787,31 @@ PIXI.WebGLRenderGroup.prototype.addDisplayObjectAndChildren = function(displayOb
 	 *  it keeps looking until it finds a sprite or gets to the end of the display
 	 *  scene graph
 	 */
-	safe = 0
 	var nextRenderable = displayObject.last;
 	while(nextRenderable._iNext)
 	{
-		safe++;
-		if(safe > 1000)
-		{
-			console.log("BREAK")
-			break;
-		}
 		nextRenderable = nextRenderable._iNext;
 		if(nextRenderable.renderable && nextRenderable.__renderGroup)break;
 	}
 	
-	
-	
 	// one the display object hits this. we can break the loop	
+	
+	var tempObject = displayObject.first;
 	var testObject = displayObject.last._iNext;
-	safe = 0;
+	
 	do	
 	{
-		displayObject.__renderGroup = this;
+		tempObject.__renderGroup = this;
 
-		if(displayObject.renderable)
+		if(tempObject.renderable)
 		{
-			this.insertObject(displayObject, previousRenderable, nextRenderable);
-			previousRenderable = displayObject;
+			this.insertObject(tempObject, previousRenderable, nextRenderable);
+			previousRenderable = tempObject;
 		}
 		
-		displayObject = displayObject._iNext;
+		tempObject = tempObject._iNext;
 	}
-	while(displayObject != testObject)
+	while(tempObject != testObject)
 }
 
 PIXI.WebGLRenderGroup.prototype.removeDisplayObjectAndChildren = function(displayObject)
@@ -4863,15 +4820,8 @@ PIXI.WebGLRenderGroup.prototype.removeDisplayObjectAndChildren = function(displa
 	
 //	var displayObject = displayObject.first;
 	var lastObject = displayObject.last;
-	var safe = 0
 	do	
 	{
-		safe++;
-		if(safe > 100)
-		{
-			console.log("BREAK 2s")
-			break;
-		}
 		displayObject.__renderGroup = null;
 		if(displayObject.renderable)this.removeObject(displayObject);
 		displayObject = displayObject._iNext;
@@ -5000,7 +4950,6 @@ PIXI.WebGLRenderGroup.prototype.insertObject = function(displayObject, previousO
 		this.batchs.push(displayObject);
 	}
 }
-
 
 PIXI.WebGLRenderGroup.prototype.removeObject = function(displayObject)
 {
@@ -5491,14 +5440,14 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 			PIXI.CanvasGraphics.renderGraphics(displayObject, context);
 		}
 		
-		count++
+	//	count++
 		displayObject = displayObject._iNext;
 		
 		
 	}
 	while(displayObject != testObject)
 	
-	console.log(count);
+	//console.log(count);
 //	this.context.setTransform(1,0,0,1,0,0); 	
 }
 

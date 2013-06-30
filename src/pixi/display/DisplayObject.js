@@ -305,26 +305,21 @@ PIXI.DisplayObject.prototype.updateTransform = function()
 	localTransform[3] = this._sr * this.scale.x;
 	localTransform[4] = this._cr * this.scale.y;
 	
-	///AAARR GETTER SETTTER!
-	//localTransform[2] = this.position.x;
-	//localTransform[5] = this.position.y;
+	// TODO --> do we even need a local matrix???
 	
 	var px = this.pivot.x;
 	var py = this.pivot.y;
    	
-   	// Cache the matrix values (makes for huge speed increases!)
-    var a00 = localTransform[0], a01 = localTransform[1], a02 = localTransform[2],
-        a10 = localTransform[3], a11 = localTransform[4], a12 = localTransform[5],
+    // Cache the matrix values (makes for huge speed increases!)
+    var a00 = localTransform[0], a01 = localTransform[1], a02 = this.position.x - localTransform[0] * px - py * localTransform[1],
+        a10 = localTransform[3], a11 = localTransform[4], a12 = this.position.y - localTransform[4] * py - px * localTransform[3],
 
         b00 = parentTransform[0], b01 = parentTransform[1], b02 = parentTransform[2],
         b10 = parentTransform[3], b11 = parentTransform[4], b12 = parentTransform[5];
-        
-   	///AAARR GETTER SETTTER!
-	localTransform[2] = this.position.x - a00 * px - py * a01;
-	localTransform[5] = this.position.y - a11 * py - px * a10;
 
-    
-
+	localTransform[2] = a02
+	localTransform[5] = a12
+	
     worldTransform[0] = b00 * a00 + b01 * a10;
     worldTransform[1] = b00 * a01 + b01 * a11;
     worldTransform[2] = b00 * a02 + b01 * a12 + b02;
@@ -337,5 +332,4 @@ PIXI.DisplayObject.prototype.updateTransform = function()
 	// mat3.multiply(this.localTransform, this.parent.worldTransform, this.worldTransform);
 	this.worldAlpha = this.alpha * this.parent.worldAlpha;
 
-	
 }

@@ -199,18 +199,16 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 			PIXI.CanvasGraphics.renderGraphics(displayObject, context);
 		}
 		
-		count++
+	//	count++
 		displayObject = displayObject._iNext;
 		
 		
 	}
 	while(displayObject != testObject)
 	
-	console.log(count);
+	//console.log(count);
 //	this.context.setTransform(1,0,0,1,0,0); 	
 }
-
-var cacheCount;
 
 PIXI.CanvasRenderer.prototype.renderDisplayObject2 = function(displayObject)
 {
