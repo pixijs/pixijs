@@ -24,7 +24,7 @@ PIXI.autoDetectRenderer = function(width, height, view, transparent)
 	//console.log(webgl);
 	if( webgl )
 	{
-		return new PIXI.WebGLRenderer(width, height, view, transparent);
+	//	return new PIXI.WebGLRenderer(width, height, view, transparent);
 	}
 
 	return	new PIXI.CanvasRenderer(width, height, view, transparent);

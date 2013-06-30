@@ -364,7 +364,6 @@ PIXI.WebGLRenderGroup.prototype.addDisplayObjectAndChildren = function(displayOb
 
 		if(displayObject.renderable)
 		{
-		
 			this.insertObject(displayObject, previousRenderable, nextRenderable);
 			previousRenderable = displayObject;
 		}

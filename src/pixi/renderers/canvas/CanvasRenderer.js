@@ -133,11 +133,15 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 	
 	// one the display object hits this. we can break the loop	
 	var testObject = displayObject.last._iNext;
+	if(testObject)
+	{
+	//	console.log(testObject.last == displayObject.last)//_iNext);
+	}
 	
-	var count = 0
+	var count = 0;
+	
 	do	
 	{
-	
 		transform = displayObject.worldTransform;
 		
 		if(!displayObject.visible)
@@ -151,7 +155,6 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 			displayObject = displayObject._iNext;
 			continue;
 		}
-		count++;
 		
 		
 		if(displayObject instanceof PIXI.Sprite)
@@ -196,12 +199,18 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 			PIXI.CanvasGraphics.renderGraphics(displayObject, context);
 		}
 		
+		count++
 		displayObject = displayObject._iNext;
+		
+		
 	}
 	while(displayObject != testObject)
 	
-	this.context.setTransform(1,0,0,1,0,0); 	
+	console.log(count);
+//	this.context.setTransform(1,0,0,1,0,0); 	
 }
+
+var cacheCount;
 
 PIXI.CanvasRenderer.prototype.renderDisplayObject2 = function(displayObject)
 {
