@@ -315,11 +315,13 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 		y = a00 * id * global.y + -a10 * id * global.x + (-a12 * a00 + a02 * a10) * id;
 
 	//a sprite or display object with a hit area defined
-	if(item.hitArea && item.hitArea.contains && item.hitArea.contains(x, y)) {
-		if(isSprite)
-			interactionData.target = item;
+	if(item.hitArea && item.hitArea.contains) {
+		if(item.hitArea.contains(x, y)) {
+			if(isSprite)
+				interactionData.target = item;
 
-		return true;
+			return true;
+		}
 	}
 	// a sprite with no hitarea defined
 	else if(isSprite)
