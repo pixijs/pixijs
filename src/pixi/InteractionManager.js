@@ -57,7 +57,6 @@ PIXI.InteractionManager.prototype.collectInteractiveSprite = function(displayObj
 	var children = displayObject.children;
 	var length = children.length;
 	
-	//this.interactiveItems = [];
 	/// make an interaction tree... {item.__interactiveParent}
 	for (var i = length-1; i >= 0; i--)
 	{

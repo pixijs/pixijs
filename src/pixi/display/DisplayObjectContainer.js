@@ -183,8 +183,6 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 				}
 				updateLast = updateLast.parent;
 			}
-	
-	
 		}
 		else if(index == 0)
 		{
@@ -192,7 +190,7 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 		}
 		else
 		{
-			previousObject = this.children[index].last;
+			previousObject = this.children[index-1].last;
 		}
 		
 		nextObject = previousObject._iNext;
@@ -218,6 +216,7 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 			this.__renderGroup.addDisplayObjectAndChildren(child);
 		}
 		
+		console.log(this.children)
 	}
 	else
 	{

@@ -37,7 +37,6 @@ PIXI.WebGLRenderGroup.prototype.setRenderable = function(displayObject)
 	
 	// TODO what if its already has an object? should remove it
 	this.root = displayObject;
-	//displayObject.__renderGroup = this;
 	this.addDisplayObjectAndChildren(displayObject);
 }
 
@@ -74,24 +73,38 @@ PIXI.WebGLRenderGroup.prototype.render = function(projection)
 		}
 		else if(renderable instanceof PIXI.Graphics)
 		{
-			if(renderable.visible) PIXI.WebGLGraphics.renderGraphics(renderable, projection);//, projectionMatrix);
+			if(renderable.visible && renderable.renderable) PIXI.WebGLGraphics.renderGraphics(renderable, projection);//, projectionMatrix);
 		}
 		else if(renderable instanceof PIXI.FilterBlock)
 		{
+			/*
+			 * for now only masks are supported..
+			 */
 			if(renderable.open)
 			{
-			//	console.log(renderable.id + " open " + i)
-				gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_COLOR);
-	
+    			gl.enable(gl.STENCIL_TEST);
+					
+				gl.colorMask(false, false, false, false);
+				gl.stencilFunc(gl.ALWAYS,1,0xff);
+				gl.stencilOp(gl.KEEP,gl.KEEP,gl.REPLACE);
+  
+				PIXI.WebGLGraphics.renderGraphics(renderable.mask, projection);
+  					
+				gl.colorMask(true, true, true, false);
+				gl.stencilFunc(gl.NOTEQUAL,0,0xff);
+				gl.stencilOp(gl.KEEP,gl.KEEP,gl.KEEP);
 			}
 			else
 			{
-				//console.log(renderable.id + "close " + i)
-				gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-				
+				gl.disable(gl.STENCIL_TEST);
 			}
 		}
 	}
+	
+}
+
+PIXI.WebGLRenderGroup.prototype.handleFilter = function(filter, projection)
+{
 	
 }
 
@@ -114,8 +127,18 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 	var endIndex;
 	var endBatchIndex;
 	
-	// get NEXT Renderable!
-	var nextRenderable = displayObject.renderable ? displayObject : this.getNextRenderable(displayObject);
+	/*
+	 *  LOOK FOR THE NEXT SPRITE
+	 *  This part looks for the closest next sprite that can go into a batch
+	 *  it keeps looking until it finds a sprite or gets to the end of the display
+	 *  scene graph
+	 */
+	var nextRenderable = displayObject.last;
+	while(nextRenderable._iNext)
+	{
+		nextRenderable = nextRenderable._iNext;
+		if(nextRenderable.renderable && nextRenderable.__renderGroup)break;
+	}
 	var startBatch = nextRenderable.batch;
 	
 	if(nextRenderable instanceof PIXI.Sprite)
@@ -253,7 +276,31 @@ PIXI.WebGLRenderGroup.prototype.renderSpecial = function(renderable)
 	}
 	else if(renderable instanceof PIXI.Graphics)
 	{
-		if(renderable.visible) PIXI.WebGLGraphics.renderGraphics(renderable);//, projectionMatrix);
+		if(renderable.visible && renderable.renderable) PIXI.WebGLGraphics.renderGraphics(renderable);//, projectionMatrix);
+	}
+	else if(renderable instanceof PIXI.FilterBlock)
+	{
+		/*
+		 * for now only masks are supported..
+		 */
+		if(renderable.open)
+		{
+			gl.enable(gl.STENCIL_TEST);
+				
+			gl.colorMask(false, false, false, false);
+			gl.stencilFunc(gl.ALWAYS,1,0xff);
+			gl.stencilOp(gl.KEEP,gl.KEEP,gl.REPLACE);
+  
+			PIXI.WebGLGraphics.renderGraphics(renderable.mask, projection);
+				
+			gl.colorMask(true, true, true, false);
+			gl.stencilFunc(gl.NOTEQUAL,0,0xff);
+			gl.stencilOp(gl.KEEP,gl.KEEP,gl.KEEP);
+		}
+		else
+		{
+			gl.disable(gl.STENCIL_TEST);
+		}
 	}
 }
 
@@ -499,22 +546,6 @@ PIXI.WebGLRenderGroup.prototype.insertObject = function(displayObject, previousO
 			else
 			{
 				// TODO re-word!
-				
-				// THERE IS A SPLIT IN THIS BATCH! //
-				var splitBatch = previousBatch.split(nextSprite);
-				// COOL!
-				// add it back into the array	
-				/*
-				 * OOPS!
-				 * seems the new sprite is in the middle of a batch
-				 * lets split it.. 
-				 */
-				var batch = PIXI.WebGLRenderer.getBatch();
-
-				var index = this.batchs.indexOf( previousBatch );
-				batch.init(displayObject);
-				this.batchs.splice(index+1, 0, batch, splitBatch);
-				
 				
 				nextBatch = nextSprite;
 			}

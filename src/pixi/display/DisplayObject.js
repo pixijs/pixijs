@@ -199,7 +199,6 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'visible', {
 PIXI.DisplayObject.prototype.setInteractive = function(interactive)
 {
 	this.interactive = interactive;
-	
 }
 
 /**
@@ -220,16 +219,48 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'interactive', {
     }
 });
 
-county = 0;
+/**
+ * Sets a mask for the displayObject. A mask is an object that limits the visibility of an object to the shape of the mask applied to it.
+ * In PIXI a regular mask must be a PIXI.Ggraphics object. This allows for much faster masking in canvas as it utilises shape clipping.
+ * To remove a mask, set this property to null.
+ * @property mask
+ * @type PIXI.Graphics
+ */
+Object.defineProperty(PIXI.DisplayObject.prototype, 'mask', {
+    get: function() {
+        return this._mask;
+    },
+    set: function(value) {
+    	
+        this._mask = value;
+        
+        if(value)
+        {
+	        this.addFilter(value)
+        }
+        else
+        {
+        	 this.removeFilter();
+        }
+    }
+});
 
-PIXI.DisplayObject.prototype.addFilter = function()
+/* 
+ * private
+ */
+PIXI.DisplayObject.prototype.addFilter = function(mask)
 {
 	if(this.filter)return;
 	this.filter = true;
 	
+	
 	// insert a filter block..
 	var start = new PIXI.FilterBlock();
 	var end = new PIXI.FilterBlock();
+	
+	
+	start.mask = mask;
+	end.mask = mask;
 	
 	start.id = end.id = county
 
@@ -242,7 +273,7 @@ PIXI.DisplayObject.prototype.addFilter = function()
 	
 	/*
 	 * 
-	 * and an start filter
+	 * insert start
 	 * 
 	 */
 	
@@ -275,7 +306,7 @@ PIXI.DisplayObject.prototype.addFilter = function()
 	
 	/*
 	 * 
-	 * and an end filter
+	 * insert end filter
 	 * 
 	 */
 	var childFirst = end
@@ -309,13 +340,14 @@ PIXI.DisplayObject.prototype.addFilter = function()
 	
 	this.first = start;
 	
-	// TODO need to check if the stage already exists...
-	
 	// if webGL...
 	if(this.__renderGroup)
 	{
 		this.__renderGroup.addFilterBlocks(start, end);
 	}
+	
+	mask.renderable = false;
+	
 }
 
 PIXI.DisplayObject.prototype.removeFilter = function()
@@ -334,8 +366,6 @@ PIXI.DisplayObject.prototype.removeFilter = function()
 	
 	this.first = startBlock._iNext;
 	
-	
-	// this will NEVER be true!
 	
 	// remove the end filter
 	var lastBlock = this.last;
@@ -359,18 +389,15 @@ PIXI.DisplayObject.prototype.removeFilter = function()
 		if(!updateLast)break;
 	}
 	
+	var mask = startBlock.mask
+	mask.renderable = true;
+	
 	// if webGL...
 	if(this.__renderGroup)
 	{
 		this.__renderGroup.removeFilterBlocks(startBlock, lastBlock);
 	}
 	//}
-}
-
-PIXI.FilterBlock = function()
-{
-	this.visible = true;
-	this.renderable = true;
 }
 
 /**

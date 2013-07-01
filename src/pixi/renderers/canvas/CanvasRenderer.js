@@ -198,12 +198,29 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 		{
 			if(displayObject.open)
 			{
+				context.save();
 				
-				context.globalCompositeOperation = 'lighter';
+				var cacheAlpha = displayObject.mask.alpha;
+				var maskTransform = displayObject.mask.worldTransform;
+				
+				context.setTransform(maskTransform[0], maskTransform[3], maskTransform[1], maskTransform[4], maskTransform[2], maskTransform[5])
+				
+				displayObject.mask.worldAlpha = 0.5;
+				
+				context.worldAlpha = 0;
+				
+				PIXI.CanvasGraphics.renderGraphicsMask(displayObject.mask, context);
+		//		context.fillStyle = 0xFF0000;
+			//	context.fillRect(0, 0, 200, 200);
+				context.clip();
+				
+				displayObject.mask.worldAlpha = cacheAlpha;
+				//context.globalCompositeOperation = 'lighter';
 			}
 			else
 			{
-				context.globalCompositeOperation = 'source-over';
+				//context.globalCompositeOperation = 'source-over';
+				context.restore();
 			}
 		}
 	//	count++

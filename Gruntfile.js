@@ -21,6 +21,7 @@ module.exports = function(grunt) {
             '<%= dirs.src %>/display/DisplayObjectContainer.js',
             '<%= dirs.src %>/display/Sprite.js',
             '<%= dirs.src %>/display/MovieClip.js',
+            '<%= dirs.src %>/filters/FilterBlock.js',
             '<%= dirs.src %>/text/Text.js',
             '<%= dirs.src %>/text/BitmapText.js',
             '<%= dirs.src %>/InteractionManager.js',
@@ -122,7 +123,8 @@ module.exports = function(grunt) {
                 'examples/example 10 - Text',
                 'examples/example 11 - RenderTexture',
                 'examples/example 12 - Spine',
-                'examples/example 13 - Graphics'
+                'examples/example 13 - Graphics',
+                'examples/example 14 - Masking'
             ]
         },
         connect: {
