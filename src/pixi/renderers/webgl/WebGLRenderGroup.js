@@ -48,7 +48,8 @@ PIXI.WebGLRenderGroup.prototype.render = function(projection)
 	var gl = this.gl;
 
 	gl.uniform2f(PIXI.shaderProgram.projectionVector, projection.x, projection.y);
-
+	gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+	
 	// TODO remove this by replacing visible with getter setters..	
 	this.checkVisibility(this.root, this.root.visible);
 	
@@ -65,7 +66,6 @@ PIXI.WebGLRenderGroup.prototype.render = function(projection)
 		}
 		else if(renderable instanceof PIXI.TilingSprite)
 		{
-			
 			if(renderable.visible)this.renderTilingSprite(renderable, projection);
 		}
 		else if(renderable instanceof PIXI.Strip)
@@ -75,6 +75,21 @@ PIXI.WebGLRenderGroup.prototype.render = function(projection)
 		else if(renderable instanceof PIXI.Graphics)
 		{
 			if(renderable.visible) PIXI.WebGLGraphics.renderGraphics(renderable, projection);//, projectionMatrix);
+		}
+		else if(renderable instanceof PIXI.FilterBlock)
+		{
+			if(renderable.open)
+			{
+			//	console.log(renderable.id + " open " + i)
+				gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_COLOR);
+	
+			}
+			else
+			{
+				//console.log(renderable.id + "close " + i)
+				gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+				
+			}
 		}
 	}
 	
@@ -305,6 +320,44 @@ PIXI.WebGLRenderGroup.prototype.updateTexture = function(displayObject)
 	this.insertObject(displayObject, previousRenderable, nextRenderable);
 }
 
+PIXI.WebGLRenderGroup.prototype.addFilterBlocks = function(start, end)
+{
+	start.__renderGroup = this;
+	end.__renderGroup = this;
+	/*
+	 *  LOOK FOR THE PREVIOUS RENDERABLE
+	 *  This part looks for the closest previous sprite that can go into a batch
+	 *  It keeps going back until it finds a sprite or the stage
+	 */
+	var previousRenderable = start;
+	while(previousRenderable != this.root)
+	{
+		previousRenderable = previousRenderable._iPrev;
+		if(previousRenderable.renderable && previousRenderable.__renderGroup)break;
+	}
+	this.insertAfter(start, previousRenderable);
+		
+	/*
+	 *  LOOK FOR THE NEXT SPRITE
+	 *  This part looks for the closest next sprite that can go into a batch
+	 *  it keeps looking until it finds a sprite or gets to the end of the display
+	 *  scene graph
+	 */
+	var previousRenderable2 = end;
+	while(previousRenderable2 != this.root)
+	{
+		previousRenderable2 = previousRenderable2._iPrev;
+		if(previousRenderable2.renderable && previousRenderable2.__renderGroup)break;
+	}
+	this.insertAfter(end, previousRenderable2);
+}
+
+PIXI.WebGLRenderGroup.prototype.removeFilterBlocks = function(start, end)
+{
+	this.removeObject(start);
+	this.removeObject(end);
+}
+
 PIXI.WebGLRenderGroup.prototype.addDisplayObjectAndChildren = function(displayObject)
 {
 	if(displayObject.__renderGroup)displayObject.__renderGroup.removeDisplayObjectAndChildren(displayObject);
@@ -339,13 +392,13 @@ PIXI.WebGLRenderGroup.prototype.addDisplayObjectAndChildren = function(displayOb
 	
 	var tempObject = displayObject.first;
 	var testObject = displayObject.last._iNext;
-	
 	do	
 	{
 		tempObject.__renderGroup = this;
-
+		
 		if(tempObject.renderable)
 		{
+		
 			this.insertObject(tempObject, previousRenderable, nextRenderable);
 			previousRenderable = tempObject;
 		}
@@ -370,12 +423,14 @@ PIXI.WebGLRenderGroup.prototype.removeDisplayObjectAndChildren = function(displa
 	while(displayObject)
 }
 
+	
+
 PIXI.WebGLRenderGroup.prototype.insertObject = function(displayObject, previousObject, nextObject)
 {
 	// while looping below THE OBJECT MAY NOT HAVE BEEN ADDED
 	var previousSprite = previousObject;
 	var nextSprite = nextObject;
-
+	
 	/*
 	 * so now we have the next renderable and the previous renderable
 	 * 
@@ -444,6 +499,23 @@ PIXI.WebGLRenderGroup.prototype.insertObject = function(displayObject, previousO
 			else
 			{
 				// TODO re-word!
+				
+				// THERE IS A SPLIT IN THIS BATCH! //
+				var splitBatch = previousBatch.split(nextSprite);
+				// COOL!
+				// add it back into the array	
+				/*
+				 * OOPS!
+				 * seems the new sprite is in the middle of a batch
+				 * lets split it.. 
+				 */
+				var batch = PIXI.WebGLRenderer.getBatch();
+
+				var index = this.batchs.indexOf( previousBatch );
+				batch.init(displayObject);
+				this.batchs.splice(index+1, 0, batch, splitBatch);
+				
+				
 				nextBatch = nextSprite;
 			}
 		}
@@ -466,29 +538,84 @@ PIXI.WebGLRenderGroup.prototype.insertObject = function(displayObject, previousO
 		{
 			this.batchs.push(batch);
 		}
-	
+		
+		return;
 	}
 	else if(displayObject instanceof PIXI.TilingSprite)
 	{
 		
 		// add to a batch!!
 		this.initTilingSprite(displayObject);
-		this.batchs.push(displayObject);
+	//	this.batchs.push(displayObject);
 		
 	}
 	else if(displayObject instanceof PIXI.Strip)
 	{
 		// add to a batch!!
 		this.initStrip(displayObject);
-		this.batchs.push(displayObject);
+	//	this.batchs.push(displayObject);
 	}
-	else if(displayObject instanceof PIXI.Graphics)
+	else if(displayObject)// instanceof PIXI.Graphics)
 	{
 		//displayObject.initWebGL(this);
 		
 		// add to a batch!!
 		//this.initStrip(displayObject);
-		this.batchs.push(displayObject);
+		//this.batchs.push(displayObject);
+	}
+	
+	this.insertAfter(displayObject, previousSprite);
+			
+	// insert and SPLIT!
+
+}
+
+				
+			
+PIXI.WebGLRenderGroup.prototype.insertAfter = function(item, displayObject)
+{
+	if(displayObject instanceof PIXI.Sprite)
+	{
+		var previousBatch = displayObject.batch;
+		
+		if(previousBatch)
+		{
+			// so this object is in a batch!
+			
+			// is it not? need to split the batch
+			if(previousBatch.tail == displayObject)
+			{
+				// is it tail? insert in to batchs	
+				var index = this.batchs.indexOf( previousBatch );
+				this.batchs.splice(index+1, 0, item);
+			}
+			else
+			{
+				// TODO MODIFY ADD / REMOVE CHILD TO ACCOUNT FOR FILTERS (also get prev and next) //
+				
+				// THERE IS A SPLIT IN THIS BATCH! //
+				var splitBatch = previousBatch.split(displayObject.__next);
+				
+				// COOL!
+				// add it back into the array	
+				/*
+				 * OOPS!
+				 * seems the new sprite is in the middle of a batch
+				 * lets split it.. 
+				 */
+				var index = this.batchs.indexOf( previousBatch );
+				this.batchs.splice(index+1, 0, item, splitBatch);
+			}
+		}
+		else
+		{
+			this.batchs.push(item);
+		}
+	}
+	else
+	{
+		var index = this.batchs.indexOf( displayObject );
+		this.batchs.splice(index+1, 0, item);
 	}
 }
 
@@ -650,7 +777,7 @@ PIXI.WebGLRenderGroup.prototype.renderStrip = function(strip, projection)
 	gl.uniform2f(PIXI.stripShaderProgram.projectionVector, projection.x, projection.y);
 	gl.uniform1f(PIXI.stripShaderProgram.alpha, strip.worldAlpha);
 
-
+/*
 	if(strip.blendMode == PIXI.blendModes.NORMAL)
 	{
 		gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
@@ -659,7 +786,7 @@ PIXI.WebGLRenderGroup.prototype.renderStrip = function(strip, projection)
 	{
 		gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_COLOR);
 	}
-	
+	*/
 	
 	
 	if(!strip.dirty)

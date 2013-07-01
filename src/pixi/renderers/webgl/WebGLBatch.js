@@ -536,7 +536,6 @@ PIXI.WebGLBatch.prototype.render = function(start, end)
 	var gl = this.gl;
 	
 	//TODO optimize this!
-	gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 	
 	var shaderProgram = PIXI.shaderProgram;
 	gl.useProgram(shaderProgram);

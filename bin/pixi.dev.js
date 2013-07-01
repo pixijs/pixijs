@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-06-30
+ * Compiled: 2013-07-01
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -120,6 +120,31 @@ PIXI.Rectangle.prototype.clone = function()
 	return new PIXI.Rectangle(this.x, this.y, this.width, this.height);
 }
 
+/**
+ * @method contains
+ * @param x {Number} The X coord of the point to test
+ * @param y {Number} The Y coord of the point to test
+ * @return if the x/y coords are within this polygon
+ */
+PIXI.Rectangle.contains = function(x, y)
+{
+    if(this.width <= 0 || this.height <= 0)
+        return false;
+
+	var x1 = this.x;
+	if(x > x1 && x < x1 + this.width)
+	{
+		var y1 = this.y;
+		
+		if(y > y1 && y < y1 + this.height)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
 // constructor
 PIXI.Rectangle.constructor = PIXI.Rectangle;
 
@@ -131,10 +156,23 @@ PIXI.Rectangle.constructor = PIXI.Rectangle;
 /**
  * @class Polygon
  * @constructor
- * @param points {Array}
+ * @param points {Array<Point>|Array<Number>} This cna be an array of Points or a flat array of numbers
+ *      that will be interpreted as [x,y, x,y, ...]
  */
 PIXI.Polygon = function(points)
 {
+    //if this is a flat array of numbers, convert it to points
+    if(typeof points[0] === 'number') {
+        var p = [];
+        for(var i = 0, il = points.length; i < il; i+=2) {
+            p.push(
+                new PIXI.Point(points[i], points[i + 1])
+            );
+        }
+
+        points = p;
+    }
+
 	this.points = points;
 }
 
@@ -152,7 +190,180 @@ PIXI.Polygon.clone = function()
 	return new PIXI.Polygon(points);
 }
 
+/**
+ * @method contains
+ * @param x {Number} The X coord of the point to test
+ * @param y {Number} The Y coord of the point to test
+ * @return if the x/y coords are within this polygon
+ */
+PIXI.Polygon.contains = function(x, y)
+{
+    var inside = false;
+
+    // use some raycasting to test hits
+    // https://github.com/substack/point-in-polygon/blob/master/index.js
+    for(var i = 0, j = this.points.length - 1; i < this.points.length; j = i++) {
+        var xi = this.points[i].x, yi = this.points[i].y,
+            xj = this.points[j].x, yj = this.points[j].y,
+            intersect = ((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+
+        if(intersect) inside = !inside;
+    }
+
+    return inside;
+}
+
 PIXI.Polygon.constructor = PIXI.Polygon;
+
+
+/**
+ * @author Chad Engler <chad@pantherdev.com>
+ */
+
+/**
+ * @class Circle
+ * @constructor
+ * @param x {Number} The X coord of the upper-left corner of the framing rectangle of this circle
+ * @param y {Number} The Y coord of the upper-left corner of the framing rectangle of this circle
+ * @param radius {Number} The radius of the circle
+ */
+PIXI.Circle = function(x, y, radius)
+{
+    /**
+     * @property x
+     * @type Number
+     * @default 0
+     */
+    this.x = x || 0;
+    
+    /**
+     * @property y
+     * @type Number
+     * @default 0
+     */
+    this.y = y || 0;
+
+    /**
+     * @property radius
+     * @type Number
+     * @default 0
+     */
+    this.radius = radius || 0;
+}
+
+/**
+ * @method clone
+ * @return a copy of the polygon
+ */
+PIXI.Circle.clone = function()
+{
+    return new PIXI.Circle(this.x, this.y, this.radius);
+}
+
+/**
+ * @method contains
+ * @param x {Number} The X coord of the point to test
+ * @param y {Number} The Y coord of the point to test
+ * @return if the x/y coords are within this polygon
+ */
+PIXI.Circle.contains = function(x, y)
+{
+    if(this.radius <= 0)
+        return false;
+
+    var dx = (this.x - x),
+        dy = (this.y - y),
+        r2 = this.radius * this.radius;
+
+    dx *= dx;
+    dy *= dy;
+
+    return (dx + dy <= r2);
+}
+
+PIXI.Circle.constructor = PIXI.Circle;
+
+
+/**
+ * @author Chad Engler <chad@pantherdev.com>
+ */
+
+/**
+ * @class Ellipse
+ * @constructor
+ * @param x {Number} The X coord of the upper-left corner of the framing rectangle of this circle
+ * @param y {Number} The Y coord of the upper-left corner of the framing rectangle of this circle
+ * @param width {Number} The overall height of this ellipse
+ * @param height {Number} The overall width of this ellipse
+ */
+PIXI.Ellipse = function(x, y, width, height)
+{
+    /**
+     * @property x
+     * @type Number
+     * @default 0
+     */
+    this.x = x || 0;
+    
+    /**
+     * @property y
+     * @type Number
+     * @default 0
+     */
+    this.y = y || 0;
+    
+    /**
+     * @property width
+     * @type Number
+     * @default 0
+     */
+    this.width = width || 0;
+    
+    /**
+     * @property height
+     * @type Number
+     * @default 0
+     */
+    this.height = height || 0;
+}
+
+/**
+ * @method clone
+ * @return a copy of the polygon
+ */
+PIXI.Ellipse.clone = function()
+{
+    return new PIXI.Ellipse(this.x, this.y, this.width, this.height);
+}
+
+/**
+ * @method contains
+ * @param x {Number} The X coord of the point to test
+ * @param y {Number} The Y coord of the point to test
+ * @return if the x/y coords are within this polygon
+ */
+PIXI.Ellipse.contains = function(x, y)
+{
+    if(this.width <= 0 || this.height <= 0)
+        return false;
+
+    //normalize the coords to an ellipse with center 0,0
+    //and a radius of 0.5
+    var normx = ((x - this.x) / this.width) - 0.5,
+        normy = ((y - this.y) / this.height) - 0.5;
+
+    normx *= normx;
+    normy *= normy;
+
+    return (normx + normy < 0.25);
+}
+
+PIXI.Ellipse.getBounds = function()
+{
+    return new PIXI.Rectangle(this.x, this.y, this.width, this.height);
+}
+
+PIXI.Ellipse.constructor = PIXI.Ellipse;
 
 
 
@@ -654,12 +865,25 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'interactive', {
     }
 });
 
+county = 0;
+
 PIXI.DisplayObject.prototype.addFilter = function()
 {
+	if(this.filter)return;
+	this.filter = true;
 	
 	// insert a filter block..
 	var start = new PIXI.FilterBlock();
 	var end = new PIXI.FilterBlock();
+	
+	start.id = end.id = county
+
+	county++;
+	
+	start.first = start.last =  this;
+	end.first = end.last = this;
+	
+	start.open = true;
 	
 	/*
 	 * 
@@ -673,15 +897,25 @@ PIXI.DisplayObject.prototype.addFilter = function()
 	var previousObject;
 		
 	previousObject = this.first._iPrev;
-	nextObject = previousObject._iNext;
+	
+	if(previousObject)
+	{
+		nextObject = previousObject._iNext;
+		childFirst._iPrev = previousObject;
+		previousObject._iNext = childFirst;		
+	}
+	else
+	{
+		nextObject = this;
+	}	
 	
 	if(nextObject)
 	{
 		nextObject._iPrev = childLast;
 		childLast._iNext = nextObject;
 	}
-	childFirst._iPrev = previousObject;
-	previousObject._iNext = childFirst;		
+	
+	
 	// now insert the end filter block..
 	
 	/*
@@ -689,7 +923,6 @@ PIXI.DisplayObject.prototype.addFilter = function()
 	 * and an end filter
 	 * 
 	 */
-	
 	var childFirst = end
 	var childLast = end
 	var nextObject = null;
@@ -703,18 +936,86 @@ PIXI.DisplayObject.prototype.addFilter = function()
 		nextObject._iPrev = childLast;
 		childLast._iNext = nextObject;
 	}
+	
 	childFirst._iPrev = previousObject;
 	previousObject._iNext = childFirst;	
 	
+	var updateLast = this;
+	
+	var prevLast = this.last;
+	while(updateLast)
+	{
+		if(updateLast.last == prevLast)
+		{
+			updateLast.last = end;
+		}
+		updateLast = updateLast.parent;
+	}
+	
 	this.first = start;
-	this.last = end;
 	
 	// TODO need to check if the stage already exists...
+	
+	// if webGL...
+	if(this.__renderGroup)
+	{
+		this.__renderGroup.addFilterBlocks(start, end);
+	}
+}
+
+PIXI.DisplayObject.prototype.removeFilter = function()
+{
+	if(!this.filter)return;
+	this.filter = false;
+	
+	// modify the list..
+	var startBlock = this.first;
+	
+	var nextObject = startBlock._iNext;
+	var previousObject = startBlock._iPrev;
+		
+	if(nextObject)nextObject._iPrev = previousObject;
+	if(previousObject)previousObject._iNext = nextObject;		
+	
+	this.first = startBlock._iNext;
+	
+	
+	// this will NEVER be true!
+	
+	// remove the end filter
+	var lastBlock = this.last;
+	
+	var nextObject = lastBlock._iNext;
+	var previousObject = lastBlock._iPrev;
+		
+	if(nextObject)nextObject._iPrev = previousObject;
+	previousObject._iNext = nextObject;		
+	
+	// this is always true too!
+//	if(this.last == lastBlock)
+	//{
+	var tempLast =  lastBlock._iPrev;	
+	// need to make sure the parents last is updated too
+	var updateLast = this;
+	while(updateLast.last == lastBlock)
+	{
+		updateLast.last = tempLast;
+		updateLast = updateLast.parent;
+		if(!updateLast)break;
+	}
+	
+	// if webGL...
+	if(this.__renderGroup)
+	{
+		this.__renderGroup.removeFilterBlocks(startBlock, lastBlock);
+	}
+	//}
 }
 
 PIXI.FilterBlock = function()
 {
-	
+	this.visible = true;
+	this.renderable = true;
 }
 
 /**
@@ -855,9 +1156,16 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 //	console.log(childFirst)
 	var nextObject;
 	var previousObject;
-		
-	previousObject =  this.last;
 	
+	// this could be wrong if there is a filter??
+	if(this.filter)
+	{
+		previousObject =  this.last._iPrev;
+	}
+	else
+	{
+		previousObject = this.last;
+	}
 //	if(this.last._iNext)
 	
 	//console.log( this.last._iNext);
@@ -867,7 +1175,8 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 	//this.last = child.last;
 	// need to make sure the parents last is updated too
 	var updateLast = this;
-	var prevLast = this.last;
+	var prevLast = previousObject;
+	
 	while(updateLast)
 	{
 		if(updateLast.last == prevLast)
@@ -1084,7 +1393,7 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 		childLast._iNext = null;
 		childFirst._iPrev = null;
 		 
-		// updae the stage reference..
+		// update the stage reference..
 		if(this.stage)
 		{
 			var tmpChild = child;
@@ -2156,43 +2465,11 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 		y = a00 * id * global.y + -a10 * id * global.x + (-a12 * a00 + a02 * a10) * id;
 
 	//a sprite or display object with a hit area defined
-	if(item.hitArea)
-	{
-		var hitArea = item.hitArea;
+	if(item.hitArea && item.hitArea.contains && item.hitArea.contains(x, y)) {
+		if(isSprite)
+			interactionData.target = item;
 
-		//Polygon hit area
-		if(item.hitArea instanceof PIXI.Polygon) {
-			var inside = false;
-
-			// use some raycasting to test hits
-			// https://github.com/substack/point-in-polygon/blob/master/index.js
-			for(var i = 0, j = item.hitArea.points.length - 1; i < item.hitArea.points.length; j = i++) {
-				var xi = item.hitArea.points[i].x, yi = item.hitArea.points[i].y,
-					xj = item.hitArea.points[j].x, yj = item.hitArea.points[j].y,
-					intersect = ((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-
-				if(intersect) inside = !inside;
-			}
-			
-			if(inside) {
-				if(isSprite) interactionData.target = item;
-				return true;
-			}
-		}
-		//Rectangle hit area
-		else {
-			var x1 = hitArea.x;
-			if(x > x1 && x < x1 + hitArea.width)
-			{
-				var y1 = hitArea.y;
-				
-				if(y > y1 && y < y1 + hitArea.height)
-				{
-					if(isSprite) interactionData.target = item;
-					return true;
-				}
-			}
-		}
+		return true;
 	}
 	// a sprite with no hitarea defined
 	else if(isSprite)
@@ -3129,7 +3406,7 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
 	PIXI.mat3.transpose(m);
 	
 	// set the matrix transform for the 
- 	gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+ //	gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
  	
  	gl.uniformMatrix3fv(PIXI.primitiveProgram.translationMatrix, false, m);
  	
@@ -4410,7 +4687,6 @@ PIXI.WebGLBatch.prototype.render = function(start, end)
 	var gl = this.gl;
 	
 	//TODO optimize this!
-	gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 	
 	var shaderProgram = PIXI.shaderProgram;
 	gl.useProgram(shaderProgram);
@@ -4507,7 +4783,8 @@ PIXI.WebGLRenderGroup.prototype.render = function(projection)
 	var gl = this.gl;
 
 	gl.uniform2f(PIXI.shaderProgram.projectionVector, projection.x, projection.y);
-
+	gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+	
 	// TODO remove this by replacing visible with getter setters..	
 	this.checkVisibility(this.root, this.root.visible);
 	
@@ -4524,7 +4801,6 @@ PIXI.WebGLRenderGroup.prototype.render = function(projection)
 		}
 		else if(renderable instanceof PIXI.TilingSprite)
 		{
-			
 			if(renderable.visible)this.renderTilingSprite(renderable, projection);
 		}
 		else if(renderable instanceof PIXI.Strip)
@@ -4534,6 +4810,21 @@ PIXI.WebGLRenderGroup.prototype.render = function(projection)
 		else if(renderable instanceof PIXI.Graphics)
 		{
 			if(renderable.visible) PIXI.WebGLGraphics.renderGraphics(renderable, projection);//, projectionMatrix);
+		}
+		else if(renderable instanceof PIXI.FilterBlock)
+		{
+			if(renderable.open)
+			{
+			//	console.log(renderable.id + " open " + i)
+				gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_COLOR);
+	
+			}
+			else
+			{
+				//console.log(renderable.id + "close " + i)
+				gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+				
+			}
 		}
 	}
 	
@@ -4764,6 +5055,44 @@ PIXI.WebGLRenderGroup.prototype.updateTexture = function(displayObject)
 	this.insertObject(displayObject, previousRenderable, nextRenderable);
 }
 
+PIXI.WebGLRenderGroup.prototype.addFilterBlocks = function(start, end)
+{
+	start.__renderGroup = this;
+	end.__renderGroup = this;
+	/*
+	 *  LOOK FOR THE PREVIOUS RENDERABLE
+	 *  This part looks for the closest previous sprite that can go into a batch
+	 *  It keeps going back until it finds a sprite or the stage
+	 */
+	var previousRenderable = start;
+	while(previousRenderable != this.root)
+	{
+		previousRenderable = previousRenderable._iPrev;
+		if(previousRenderable.renderable && previousRenderable.__renderGroup)break;
+	}
+	this.insertAfter(start, previousRenderable);
+		
+	/*
+	 *  LOOK FOR THE NEXT SPRITE
+	 *  This part looks for the closest next sprite that can go into a batch
+	 *  it keeps looking until it finds a sprite or gets to the end of the display
+	 *  scene graph
+	 */
+	var previousRenderable2 = end;
+	while(previousRenderable2 != this.root)
+	{
+		previousRenderable2 = previousRenderable2._iPrev;
+		if(previousRenderable2.renderable && previousRenderable2.__renderGroup)break;
+	}
+	this.insertAfter(end, previousRenderable2);
+}
+
+PIXI.WebGLRenderGroup.prototype.removeFilterBlocks = function(start, end)
+{
+	this.removeObject(start);
+	this.removeObject(end);
+}
+
 PIXI.WebGLRenderGroup.prototype.addDisplayObjectAndChildren = function(displayObject)
 {
 	if(displayObject.__renderGroup)displayObject.__renderGroup.removeDisplayObjectAndChildren(displayObject);
@@ -4798,13 +5127,13 @@ PIXI.WebGLRenderGroup.prototype.addDisplayObjectAndChildren = function(displayOb
 	
 	var tempObject = displayObject.first;
 	var testObject = displayObject.last._iNext;
-	
 	do	
 	{
 		tempObject.__renderGroup = this;
-
+		
 		if(tempObject.renderable)
 		{
+		
 			this.insertObject(tempObject, previousRenderable, nextRenderable);
 			previousRenderable = tempObject;
 		}
@@ -4829,12 +5158,14 @@ PIXI.WebGLRenderGroup.prototype.removeDisplayObjectAndChildren = function(displa
 	while(displayObject)
 }
 
+	
+
 PIXI.WebGLRenderGroup.prototype.insertObject = function(displayObject, previousObject, nextObject)
 {
 	// while looping below THE OBJECT MAY NOT HAVE BEEN ADDED
 	var previousSprite = previousObject;
 	var nextSprite = nextObject;
-
+	
 	/*
 	 * so now we have the next renderable and the previous renderable
 	 * 
@@ -4903,6 +5234,23 @@ PIXI.WebGLRenderGroup.prototype.insertObject = function(displayObject, previousO
 			else
 			{
 				// TODO re-word!
+				
+				// THERE IS A SPLIT IN THIS BATCH! //
+				var splitBatch = previousBatch.split(nextSprite);
+				// COOL!
+				// add it back into the array	
+				/*
+				 * OOPS!
+				 * seems the new sprite is in the middle of a batch
+				 * lets split it.. 
+				 */
+				var batch = PIXI.WebGLRenderer.getBatch();
+
+				var index = this.batchs.indexOf( previousBatch );
+				batch.init(displayObject);
+				this.batchs.splice(index+1, 0, batch, splitBatch);
+				
+				
 				nextBatch = nextSprite;
 			}
 		}
@@ -4925,29 +5273,84 @@ PIXI.WebGLRenderGroup.prototype.insertObject = function(displayObject, previousO
 		{
 			this.batchs.push(batch);
 		}
-	
+		
+		return;
 	}
 	else if(displayObject instanceof PIXI.TilingSprite)
 	{
 		
 		// add to a batch!!
 		this.initTilingSprite(displayObject);
-		this.batchs.push(displayObject);
+	//	this.batchs.push(displayObject);
 		
 	}
 	else if(displayObject instanceof PIXI.Strip)
 	{
 		// add to a batch!!
 		this.initStrip(displayObject);
-		this.batchs.push(displayObject);
+	//	this.batchs.push(displayObject);
 	}
-	else if(displayObject instanceof PIXI.Graphics)
+	else if(displayObject)// instanceof PIXI.Graphics)
 	{
 		//displayObject.initWebGL(this);
 		
 		// add to a batch!!
 		//this.initStrip(displayObject);
-		this.batchs.push(displayObject);
+		//this.batchs.push(displayObject);
+	}
+	
+	this.insertAfter(displayObject, previousSprite);
+			
+	// insert and SPLIT!
+
+}
+
+				
+			
+PIXI.WebGLRenderGroup.prototype.insertAfter = function(item, displayObject)
+{
+	if(displayObject instanceof PIXI.Sprite)
+	{
+		var previousBatch = displayObject.batch;
+		
+		if(previousBatch)
+		{
+			// so this object is in a batch!
+			
+			// is it not? need to split the batch
+			if(previousBatch.tail == displayObject)
+			{
+				// is it tail? insert in to batchs	
+				var index = this.batchs.indexOf( previousBatch );
+				this.batchs.splice(index+1, 0, item);
+			}
+			else
+			{
+				// TODO MODIFY ADD / REMOVE CHILD TO ACCOUNT FOR FILTERS (also get prev and next) //
+				
+				// THERE IS A SPLIT IN THIS BATCH! //
+				var splitBatch = previousBatch.split(displayObject.__next);
+				
+				// COOL!
+				// add it back into the array	
+				/*
+				 * OOPS!
+				 * seems the new sprite is in the middle of a batch
+				 * lets split it.. 
+				 */
+				var index = this.batchs.indexOf( previousBatch );
+				this.batchs.splice(index+1, 0, item, splitBatch);
+			}
+		}
+		else
+		{
+			this.batchs.push(item);
+		}
+	}
+	else
+	{
+		var index = this.batchs.indexOf( displayObject );
+		this.batchs.splice(index+1, 0, item);
 	}
 }
 
@@ -5109,7 +5512,7 @@ PIXI.WebGLRenderGroup.prototype.renderStrip = function(strip, projection)
 	gl.uniform2f(PIXI.stripShaderProgram.projectionVector, projection.x, projection.y);
 	gl.uniform1f(PIXI.stripShaderProgram.alpha, strip.worldAlpha);
 
-
+/*
 	if(strip.blendMode == PIXI.blendModes.NORMAL)
 	{
 		gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
@@ -5118,7 +5521,7 @@ PIXI.WebGLRenderGroup.prototype.renderStrip = function(strip, projection)
 	{
 		gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_COLOR);
 	}
-	
+	*/
 	
 	
 	if(!strip.dirty)
@@ -5372,6 +5775,8 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 	var transform;
 	var context = this.context;
 	
+	context.globalCompositeOperation = 'source-over';
+	
 	// one the display object hits this. we can break the loop	
 	var testObject = displayObject.last._iNext;
 	displayObject = displayObject.first;
@@ -5391,7 +5796,6 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 			displayObject = displayObject._iNext;
 			continue;
 		}
-		
 		
 		if(displayObject instanceof PIXI.Sprite)
 		{
@@ -5434,16 +5838,24 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 			context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
 			PIXI.CanvasGraphics.renderGraphics(displayObject, context);
 		}
-		
+		else if(displayObject instanceof PIXI.FilterBlock)
+		{
+			if(displayObject.open)
+			{
+				
+				context.globalCompositeOperation = 'lighter';
+			}
+			else
+			{
+				context.globalCompositeOperation = 'source-over';
+			}
+		}
 	//	count++
 		displayObject = displayObject._iNext;
 		
 		
 	}
 	while(displayObject != testObject)
-	
-	//console.log(count);
-//	this.context.setTransform(1,0,0,1,0,0); 	
 }
 
 
@@ -5475,11 +5887,9 @@ PIXI.CanvasRenderer.prototype.renderStripFlat = function(strip)
 		
 	};	
 	
-//	context.globalCompositeOperation = 'lighter';
 	context.fillStyle = "#FF0000";
 	context.fill();
 	context.closePath();
-	//context.globalCompositeOperation = 'source-over';	
 }
 
 /**

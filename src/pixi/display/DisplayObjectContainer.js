@@ -85,9 +85,16 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 //	console.log(childFirst)
 	var nextObject;
 	var previousObject;
-		
-	previousObject =  this.last;
 	
+	// this could be wrong if there is a filter??
+	if(this.filter)
+	{
+		previousObject =  this.last._iPrev;
+	}
+	else
+	{
+		previousObject = this.last;
+	}
 //	if(this.last._iNext)
 	
 	//console.log( this.last._iNext);
@@ -97,7 +104,8 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 	//this.last = child.last;
 	// need to make sure the parents last is updated too
 	var updateLast = this;
-	var prevLast = this.last;
+	var prevLast = previousObject;
+	
 	while(updateLast)
 	{
 		if(updateLast.last == prevLast)

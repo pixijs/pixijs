@@ -220,12 +220,25 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'interactive', {
     }
 });
 
+county = 0;
+
 PIXI.DisplayObject.prototype.addFilter = function()
 {
+	if(this.filter)return;
+	this.filter = true;
 	
 	// insert a filter block..
 	var start = new PIXI.FilterBlock();
 	var end = new PIXI.FilterBlock();
+	
+	start.id = end.id = county
+
+	county++;
+	
+	start.first = start.last =  this;
+	end.first = end.last = this;
+	
+	start.open = true;
 	
 	/*
 	 * 
@@ -239,15 +252,25 @@ PIXI.DisplayObject.prototype.addFilter = function()
 	var previousObject;
 		
 	previousObject = this.first._iPrev;
-	nextObject = previousObject._iNext;
+	
+	if(previousObject)
+	{
+		nextObject = previousObject._iNext;
+		childFirst._iPrev = previousObject;
+		previousObject._iNext = childFirst;		
+	}
+	else
+	{
+		nextObject = this;
+	}	
 	
 	if(nextObject)
 	{
 		nextObject._iPrev = childLast;
 		childLast._iNext = nextObject;
 	}
-	childFirst._iPrev = previousObject;
-	previousObject._iNext = childFirst;		
+	
+	
 	// now insert the end filter block..
 	
 	/*
@@ -255,7 +278,6 @@ PIXI.DisplayObject.prototype.addFilter = function()
 	 * and an end filter
 	 * 
 	 */
-	
 	var childFirst = end
 	var childLast = end
 	var nextObject = null;
@@ -269,18 +291,86 @@ PIXI.DisplayObject.prototype.addFilter = function()
 		nextObject._iPrev = childLast;
 		childLast._iNext = nextObject;
 	}
+	
 	childFirst._iPrev = previousObject;
 	previousObject._iNext = childFirst;	
 	
+	var updateLast = this;
+	
+	var prevLast = this.last;
+	while(updateLast)
+	{
+		if(updateLast.last == prevLast)
+		{
+			updateLast.last = end;
+		}
+		updateLast = updateLast.parent;
+	}
+	
 	this.first = start;
-	this.last = end;
 	
 	// TODO need to check if the stage already exists...
+	
+	// if webGL...
+	if(this.__renderGroup)
+	{
+		this.__renderGroup.addFilterBlocks(start, end);
+	}
+}
+
+PIXI.DisplayObject.prototype.removeFilter = function()
+{
+	if(!this.filter)return;
+	this.filter = false;
+	
+	// modify the list..
+	var startBlock = this.first;
+	
+	var nextObject = startBlock._iNext;
+	var previousObject = startBlock._iPrev;
+		
+	if(nextObject)nextObject._iPrev = previousObject;
+	if(previousObject)previousObject._iNext = nextObject;		
+	
+	this.first = startBlock._iNext;
+	
+	
+	// this will NEVER be true!
+	
+	// remove the end filter
+	var lastBlock = this.last;
+	
+	var nextObject = lastBlock._iNext;
+	var previousObject = lastBlock._iPrev;
+		
+	if(nextObject)nextObject._iPrev = previousObject;
+	previousObject._iNext = nextObject;		
+	
+	// this is always true too!
+//	if(this.last == lastBlock)
+	//{
+	var tempLast =  lastBlock._iPrev;	
+	// need to make sure the parents last is updated too
+	var updateLast = this;
+	while(updateLast.last == lastBlock)
+	{
+		updateLast.last = tempLast;
+		updateLast = updateLast.parent;
+		if(!updateLast)break;
+	}
+	
+	// if webGL...
+	if(this.__renderGroup)
+	{
+		this.__renderGroup.removeFilterBlocks(startBlock, lastBlock);
+	}
+	//}
 }
 
 PIXI.FilterBlock = function()
 {
-	
+	this.visible = true;
+	this.renderable = true;
 }
 
 /**

@@ -131,6 +131,8 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 	var transform;
 	var context = this.context;
 	
+	context.globalCompositeOperation = 'source-over';
+	
 	// one the display object hits this. we can break the loop	
 	var testObject = displayObject.last._iNext;
 	displayObject = displayObject.first;
@@ -192,7 +194,18 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 			context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
 			PIXI.CanvasGraphics.renderGraphics(displayObject, context);
 		}
-		
+		else if(displayObject instanceof PIXI.FilterBlock)
+		{
+			if(displayObject.open)
+			{
+				
+				context.globalCompositeOperation = 'lighter';
+			}
+			else
+			{
+				context.globalCompositeOperation = 'source-over';
+			}
+		}
 	//	count++
 		displayObject = displayObject._iNext;
 		
