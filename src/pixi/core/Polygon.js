@@ -29,7 +29,7 @@ PIXI.Polygon = function(points)
  * @method clone
  * @return a copy of the polygon
  */
-PIXI.Polygon.clone = function()
+PIXI.Polygon.prototype.clone = function()
 {
 	var points = [];
 	for (var i=0; i<this.points.length; i++) {
@@ -45,7 +45,7 @@ PIXI.Polygon.clone = function()
  * @param y {Number} The Y coord of the point to test
  * @return if the x/y coords are within this polygon
  */
-PIXI.Polygon.contains = function(x, y)
+PIXI.Polygon.prototype.contains = function(x, y)
 {
     var inside = false;
 

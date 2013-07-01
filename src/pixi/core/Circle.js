@@ -37,7 +37,7 @@ PIXI.Circle = function(x, y, radius)
  * @method clone
  * @return a copy of the polygon
  */
-PIXI.Circle.clone = function()
+PIXI.Circle.prototype.clone = function()
 {
     return new PIXI.Circle(this.x, this.y, this.radius);
 }
@@ -48,7 +48,7 @@ PIXI.Circle.clone = function()
  * @param y {Number} The Y coord of the point to test
  * @return if the x/y coords are within this polygon
  */
-PIXI.Circle.contains = function(x, y)
+PIXI.Circle.prototype.contains = function(x, y)
 {
     if(this.radius <= 0)
         return false;

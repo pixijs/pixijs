@@ -45,7 +45,7 @@ PIXI.Ellipse = function(x, y, width, height)
  * @method clone
  * @return a copy of the polygon
  */
-PIXI.Ellipse.clone = function()
+PIXI.Ellipse.prototype.clone = function()
 {
     return new PIXI.Ellipse(this.x, this.y, this.width, this.height);
 }
@@ -56,7 +56,7 @@ PIXI.Ellipse.clone = function()
  * @param y {Number} The Y coord of the point to test
  * @return if the x/y coords are within this polygon
  */
-PIXI.Ellipse.contains = function(x, y)
+PIXI.Ellipse.prototype.contains = function(x, y)
 {
     if(this.width <= 0 || this.height <= 0)
         return false;
