@@ -126,7 +126,7 @@ PIXI.Rectangle.prototype.clone = function()
  * @param y {Number} The Y coord of the point to test
  * @return if the x/y coords are within this polygon
  */
-PIXI.Rectangle.contains = function(x, y)
+PIXI.Rectangle.prototype.contains = function(x, y)
 {
     if(this.width <= 0 || this.height <= 0)
         return false;
@@ -844,7 +844,6 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'visible', {
 PIXI.DisplayObject.prototype.setInteractive = function(interactive)
 {
 	this.interactive = interactive;
-	
 }
 
 /**
@@ -867,14 +866,40 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'interactive', {
 
 county = 0;
 
-PIXI.DisplayObject.prototype.addFilter = function()
+
+Object.defineProperty(PIXI.DisplayObject.prototype, 'mask', {
+    get: function() {
+        return this._mask;
+    },
+    set: function(value) {
+    	
+        this._mask = value;
+        
+        if(value)
+        {
+	        this.addFilter(value)
+        }
+        else
+        {
+        	 this.removeFilter();
+        }
+    }
+});
+
+
+PIXI.DisplayObject.prototype.addFilter = function(mask)
 {
 	if(this.filter)return;
 	this.filter = true;
 	
+	
 	// insert a filter block..
 	var start = new PIXI.FilterBlock();
 	var end = new PIXI.FilterBlock();
+	
+	
+	start.mask = mask;
+	end.mask = mask;
 	
 	start.id = end.id = county
 
@@ -961,6 +986,9 @@ PIXI.DisplayObject.prototype.addFilter = function()
 	{
 		this.__renderGroup.addFilterBlocks(start, end);
 	}
+	
+	mask.renderable = false;
+	
 }
 
 PIXI.DisplayObject.prototype.removeFilter = function()
@@ -1004,18 +1032,15 @@ PIXI.DisplayObject.prototype.removeFilter = function()
 		if(!updateLast)break;
 	}
 	
+	var mask = startBlock.mask
+	mask.renderable = true;
+	
 	// if webGL...
 	if(this.__renderGroup)
 	{
 		this.__renderGroup.removeFilterBlocks(startBlock, lastBlock);
 	}
 	//}
-}
-
-PIXI.FilterBlock = function()
-{
-	this.visible = true;
-	this.renderable = true;
 }
 
 /**
@@ -1254,8 +1279,6 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 				}
 				updateLast = updateLast.parent;
 			}
-	
-	
 		}
 		else if(index == 0)
 		{
@@ -1263,7 +1286,7 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 		}
 		else
 		{
-			previousObject = this.children[index].last;
+			previousObject = this.children[index-1].last;
 		}
 		
 		nextObject = previousObject._iNext;
@@ -1289,6 +1312,7 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 			this.__renderGroup.addDisplayObjectAndChildren(child);
 		}
 		
+		console.log(this.children)
 	}
 	else
 	{
@@ -1728,6 +1752,20 @@ PIXI.MovieClip.prototype.updateTransform = function()
 		}
 	}
 }
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+
+
+PIXI.FilterBlock = function(mask)
+{
+	this.graphics = mask
+	this.visible = true;
+	this.renderable = true;
+}
+
+
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -2207,7 +2245,6 @@ PIXI.InteractionManager.prototype.collectInteractiveSprite = function(displayObj
 	var children = displayObject.children;
 	var length = children.length;
 	
-	//this.interactiveItems = [];
 	/// make an interaction tree... {item.__interactiveParent}
 	for (var i = length-1; i >= 0; i--)
 	{
@@ -2903,7 +2940,32 @@ var AjaxRequest = PIXI.AjaxRequest = function()
  	}
 }
 
-
+/*
+ * DEBUGGING ONLY
+ */
+PIXI.runList = function(item)
+{
+	console.log(">>>>>>>>>")
+	console.log("_")
+	var safe = 0;
+	var tmp = item.first;
+	console.log(tmp);
+	
+	while(tmp._iNext)
+	{
+		safe++;
+//		console.log(tmp.childIndex + tmp);
+		tmp = tmp._iNext;
+		console.log(tmp);//.childIndex);
+	//	console.log(tmp);
+	
+		if(safe > 100)
+		{
+			console.log("BREAK")
+			break
+		}
+	}	
+}
 
 
 
@@ -3406,7 +3468,7 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
 	PIXI.mat3.transpose(m);
 	
 	// set the matrix transform for the 
- //	gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+ 	gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
  	
  	gl.uniformMatrix3fv(PIXI.primitiveProgram.translationMatrix, false, m);
  	
@@ -3424,12 +3486,8 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
 	gl.vertexAttribPointer(PIXI.primitiveProgram.vertexPositionAttribute, 2, gl.FLOAT, false, 4 * 6, 0);
 	gl.vertexAttribPointer(PIXI.primitiveProgram.colorAttribute, 4, gl.FLOAT, false,4 * 6, 2 * 4);
 	
-//	console.log(PIXI.primitiveProgram.vertexPositionAttribute);
-	//console.log("Color " + PIXI.primitiveProgram.colorAttribute);
-	
 	// set the index buffer!
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, graphics._webGL.indexBuffer);
-	
 	
 	gl.drawElements(gl.TRIANGLE_STRIP,  graphics._webGL.indices.length, gl.UNSIGNED_SHORT, 0 );
 	
@@ -3876,7 +3934,8 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
         PIXI.gl = this.gl = this.view.getContext("experimental-webgl",  {  	
     		 alpha: this.transparent,
     		 antialias:true, // SPEED UP??
-    		 premultipliedAlpha:false
+    		 premultipliedAlpha:false,
+    		 stencil:true
         });
     } 
     catch (e) 
@@ -3896,6 +3955,10 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
     this.batch = new PIXI.WebGLBatch(gl);
    	gl.disable(gl.DEPTH_TEST);
    	gl.disable(gl.CULL_FACE);
+   	
+   	//
+   	 
+   	 
     gl.enable(gl.BLEND);
     gl.colorMask(true, true, true, this.transparent); 
     
@@ -4809,24 +4872,38 @@ PIXI.WebGLRenderGroup.prototype.render = function(projection)
 		}
 		else if(renderable instanceof PIXI.Graphics)
 		{
-			if(renderable.visible) PIXI.WebGLGraphics.renderGraphics(renderable, projection);//, projectionMatrix);
+			if(renderable.visible && renderable.renderable) PIXI.WebGLGraphics.renderGraphics(renderable, projection);//, projectionMatrix);
 		}
 		else if(renderable instanceof PIXI.FilterBlock)
 		{
+			/*
+			 * for now only masks are supported..
+			 */
 			if(renderable.open)
 			{
-			//	console.log(renderable.id + " open " + i)
-				gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_COLOR);
-	
+    			gl.enable(gl.STENCIL_TEST);
+					
+				gl.colorMask(false, false, false, false);
+				gl.stencilFunc(gl.ALWAYS,1,0xff);
+				gl.stencilOp(gl.KEEP,gl.KEEP,gl.REPLACE);
+  
+				PIXI.WebGLGraphics.renderGraphics(renderable.mask, projection);
+  					
+				gl.colorMask(true, true, true, false);
+				gl.stencilFunc(gl.NOTEQUAL,0,0xff);
+				gl.stencilOp(gl.KEEP,gl.KEEP,gl.KEEP);
 			}
 			else
 			{
-				//console.log(renderable.id + "close " + i)
-				gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-				
+				gl.disable(gl.STENCIL_TEST);
 			}
 		}
 	}
+	
+}
+
+PIXI.WebGLRenderGroup.prototype.handleFilter = function(filter, projection)
+{
 	
 }
 
@@ -4849,8 +4926,18 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 	var endIndex;
 	var endBatchIndex;
 	
-	// get NEXT Renderable!
-	var nextRenderable = displayObject.renderable ? displayObject : this.getNextRenderable(displayObject);
+	/*
+	 *  LOOK FOR THE NEXT SPRITE
+	 *  This part looks for the closest next sprite that can go into a batch
+	 *  it keeps looking until it finds a sprite or gets to the end of the display
+	 *  scene graph
+	 */
+	var nextRenderable = displayObject.last;
+	while(nextRenderable._iNext)
+	{
+		nextRenderable = nextRenderable._iNext;
+		if(nextRenderable.renderable && nextRenderable.__renderGroup)break;
+	}
 	var startBatch = nextRenderable.batch;
 	
 	if(nextRenderable instanceof PIXI.Sprite)
@@ -4988,7 +5075,31 @@ PIXI.WebGLRenderGroup.prototype.renderSpecial = function(renderable)
 	}
 	else if(renderable instanceof PIXI.Graphics)
 	{
-		if(renderable.visible) PIXI.WebGLGraphics.renderGraphics(renderable);//, projectionMatrix);
+		if(renderable.visible && renderable.renderable) PIXI.WebGLGraphics.renderGraphics(renderable);//, projectionMatrix);
+	}
+	else if(renderable instanceof PIXI.FilterBlock)
+	{
+		/*
+		 * for now only masks are supported..
+		 */
+		if(renderable.open)
+		{
+			gl.enable(gl.STENCIL_TEST);
+				
+			gl.colorMask(false, false, false, false);
+			gl.stencilFunc(gl.ALWAYS,1,0xff);
+			gl.stencilOp(gl.KEEP,gl.KEEP,gl.REPLACE);
+  
+			PIXI.WebGLGraphics.renderGraphics(renderable.mask, projection);
+				
+			gl.colorMask(true, true, true, false);
+			gl.stencilFunc(gl.NOTEQUAL,0,0xff);
+			gl.stencilOp(gl.KEEP,gl.KEEP,gl.KEEP);
+		}
+		else
+		{
+			gl.disable(gl.STENCIL_TEST);
+		}
 	}
 }
 
@@ -5234,22 +5345,6 @@ PIXI.WebGLRenderGroup.prototype.insertObject = function(displayObject, previousO
 			else
 			{
 				// TODO re-word!
-				
-				// THERE IS A SPLIT IN THIS BATCH! //
-				var splitBatch = previousBatch.split(nextSprite);
-				// COOL!
-				// add it back into the array	
-				/*
-				 * OOPS!
-				 * seems the new sprite is in the middle of a batch
-				 * lets split it.. 
-				 */
-				var batch = PIXI.WebGLRenderer.getBatch();
-
-				var index = this.batchs.indexOf( previousBatch );
-				batch.init(displayObject);
-				this.batchs.splice(index+1, 0, batch, splitBatch);
-				
 				
 				nextBatch = nextSprite;
 			}
@@ -5842,12 +5937,29 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 		{
 			if(displayObject.open)
 			{
+				context.save();
 				
-				context.globalCompositeOperation = 'lighter';
+				var cacheAlpha = displayObject.mask.alpha;
+				var maskTransform = displayObject.mask.worldTransform;
+				
+				context.setTransform(maskTransform[0], maskTransform[3], maskTransform[1], maskTransform[4], maskTransform[2], maskTransform[5])
+				
+				displayObject.mask.worldAlpha = 0.5;
+				
+				context.worldAlpha = 0;
+				
+				PIXI.CanvasGraphics.renderGraphicsMask(displayObject.mask, context);
+		//		context.fillStyle = 0xFF0000;
+			//	context.fillRect(0, 0, 200, 200);
+				context.clip();
+				
+				displayObject.mask.worldAlpha = cacheAlpha;
+				//context.globalCompositeOperation = 'lighter';
 			}
 			else
 			{
-				context.globalCompositeOperation = 'source-over';
+				//context.globalCompositeOperation = 'source-over';
+				context.restore();
 			}
 		}
 	//	count++
@@ -6029,7 +6141,6 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 		
 		if(data.type == PIXI.Graphics.POLY)
 		{
-			
 			//if(data.lineWidth <= 0)continue;
 			
 			context.beginPath();
@@ -6061,12 +6172,13 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 		}
 		else if(data.type == PIXI.Graphics.RECT)
 		{
+				
 			// TODO - need to be Undefined!
 			if(data.fillColor)
 			{
 				context.globalAlpha = data.fillAlpha * worldAlpha;
 				context.fillStyle = color = '#' + ('00000' + ( data.fillColor | 0).toString(16)).substr(-6);
-				context.fillRect(points[0], points[1], points[2], points[3]);
+				context.rect(points[0], points[1], points[2], points[3]);
 				
 			}
 			if(data.lineWidth)
@@ -6074,6 +6186,7 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 				context.globalAlpha = data.lineAlpha * worldAlpha;
 				context.strokeRect(points[0], points[1], points[2], points[3]);
 			}
+			
 		}
 		else if(data.type == PIXI.Graphics.CIRC)
 		{
@@ -6138,6 +6251,94 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 			}
 		}
       	
+	};
+}
+
+/*
+ * @private
+ * @static
+ * @method renderGraphicsMask
+ * @param graphics {Graphics}
+ * @param context {Context2D}
+ */
+PIXI.CanvasGraphics.renderGraphicsMask = function(graphics, context)
+{
+	var worldAlpha = graphics.worldAlpha;
+	
+	var len = graphics.graphicsData.length;
+	if(len > 1)
+	{
+		len = 1;
+		console.log("Pixi.js warning: masks in canvas can only mask using the first path in the graphics object")
+	}
+	
+	for (var i=0; i < 1; i++) 
+	{
+		var data = graphics.graphicsData[i];
+		var points = data.points;
+		
+		if(data.type == PIXI.Graphics.POLY)
+		{
+			//if(data.lineWidth <= 0)continue;
+			
+			context.beginPath();
+			context.moveTo(points[0], points[1]);
+			
+			for (var j=1; j < points.length/2; j++)
+			{
+				context.lineTo(points[j * 2], points[j * 2 + 1]);
+			} 
+	      	
+	      	// if the first and last point are the same close the path - much neater :)
+	      	if(points[0] == points[points.length-2] && points[1] == points[points.length-1])
+	      	{
+	      		context.closePath();
+	      	}
+			
+		}
+		else if(data.type == PIXI.Graphics.RECT)
+		{
+			context.beginPath();
+			context.rect(points[0], points[1], points[2], points[3]);
+			context.closePath();
+		}
+		else if(data.type == PIXI.Graphics.CIRC)
+		{
+			// TODO - need to be Undefined!
+      		context.beginPath();
+			context.arc(points[0], points[1], points[2],0,2*Math.PI);
+			context.closePath();
+		}
+		else if(data.type == PIXI.Graphics.ELIP)
+		{
+			
+			// elipse code taken from: http://stackoverflow.com/questions/2172798/how-to-draw-an-oval-in-html5-canvas
+			var elipseData =  data.points;
+			
+			var w = elipseData[2] * 2;
+			var h = elipseData[3] * 2;
+	
+			var x = elipseData[0] - w/2;
+			var y = elipseData[1] - h/2;
+			
+      		context.beginPath();
+			
+			var kappa = .5522848,
+			ox = (w / 2) * kappa, // control point offset horizontal
+			oy = (h / 2) * kappa, // control point offset vertical
+			xe = x + w,           // x-end
+			ye = y + h,           // y-end
+			xm = x + w / 2,       // x-middle
+			ym = y + h / 2;       // y-middle
+			
+			context.moveTo(x, ym);
+			context.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);
+			context.bezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);
+			context.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);
+			context.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);
+			context.closePath();
+		}
+      	
 	   
 	};
 }
@@ -6163,8 +6364,8 @@ PIXI.Graphics = function()
 	
 	this.fillAlpha = 1;
 	
-	this.lineWidth = 2;
-	this.lineColor = "#FF0000";
+	this.lineWidth = 0;
+	this.lineColor = "black";
 	
 	this.graphicsData = [];
 	

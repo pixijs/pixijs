@@ -42,7 +42,7 @@
 	renderer = PIXI.autoDetectRenderer(800, 600);
 	
 	var graphics = new PIXI.Graphics();
-	graphics.beginFill(0x0000FF);
+	graphics.beginFill(0x0000FF, 1);
 	
 	graphics.drawRect(0, 0, 800, 600);
 	stage.addChild(graphics);
@@ -97,15 +97,13 @@
 			
 			explosion.click = function()
 			{
-			//	this.alpha = 0.3;
-				
-				if(!container.filter)
+				if(!graphics.filter)
 				{
-					container.addFilter();
+					graphics.addFilter();
 				}
 				else
 				{
-					container.removeFilter();
+					graphics.removeFilter();
 				}
 			//	this.parent.addChildAt(this, 4);
 				onRemove();
@@ -117,7 +115,7 @@
 			}
 		}
 		
-		
+		stage.addChildAt(graphics, 2);
 		// start animating
 		requestAnimFrame( animate );
 		
