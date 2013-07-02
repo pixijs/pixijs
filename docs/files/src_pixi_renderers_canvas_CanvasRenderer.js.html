@@ -53,11 +53,15 @@
             
                 <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
             
+                <li><a href="..&#x2F;classes/Circle.html">Circle</a></li>
+            
                 <li><a href="..&#x2F;classes/CustomRenderable.html">CustomRenderable</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
+            
+                <li><a href="..&#x2F;classes/Ellipse.html">Ellipse</a></li>
             
                 <li><a href="..&#x2F;classes/Graphics.html">Graphics</a></li>
             
@@ -271,47 +275,43 @@ PIXI.CanvasRenderer.prototype.resize = function(width, height)
 
 PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 {
-	var transform = displayObject.worldTransform;
+	&#x2F;&#x2F; no loger recurrsive!
+	var transform;
 	var context = this.context;
-	&#x2F;&#x2F;context.globalCompositeOperation = &quot;source-over&quot;
-	var blit = false;
 	
-	if(!displayObject.visible)return;
-		
-	if(displayObject instanceof PIXI.Sprite)
+	context.globalCompositeOperation = &#x27;source-over&#x27;;
+	
+	&#x2F;&#x2F; one the display object hits this. we can break the loop	
+	var testObject = displayObject.last._iNext;
+	displayObject = displayObject.first;
+	
+	do	
 	{
-		var frame = displayObject.texture.frame;
+		transform = displayObject.worldTransform;
 		
-		if(frame)
+		if(!displayObject.visible)
 		{
-			context.globalAlpha = displayObject.worldAlpha;
+			displayObject = displayObject.last._iNext;
+			continue;
+		}
+		
+		if(!displayObject.renderable)
+		{
+			displayObject = displayObject._iNext;
+			continue;
+		}
+		
+		if(displayObject instanceof PIXI.Sprite)
+		{
+				
+			var frame = displayObject.texture.frame;
 			
-			&#x2F;&#x2F; BLITZ!!!
-			&#x2F;*
-			 * if the rotation is 0 then we can blitz it
-			 * meaning we dont need to do a transform and also we
-			 * can round to the nearest round number for a little extra speed!
-			 *&#x2F;
-			&#x2F;*if(displayObject.rotation == 0)
+			if(frame)
 			{
-				if(!blit)this.context.setTransform(1,0,0,1,0,0); 
-				blit = true;
-				context.drawImage(displayObject.texture.baseTexture.image, 
-								   frame.x,
-								   frame.y,
-								   frame.width,
-								   frame.height,
-								   (transform[2]+ ((displayObject.anchor.x - displayObject.texture.trim.x) * -frame.width) * transform[0]),
-								   (transform[5]+ ((displayObject.anchor.y - displayObject.texture.trim.y) * -frame.height)* transform[4]),
-								   (displayObject.width * transform[0]),
-								   (displayObject.height * transform[4]));
+				context.globalAlpha = displayObject.worldAlpha;
 				
-			}	
-			else
-			{*&#x2F;
-			&#x2F;&#x2F;	blit = false;
 				context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
-				
+					
 				context.drawImage(displayObject.texture.baseTexture.source, 
 								   frame.x,
 								   frame.y,
@@ -319,45 +319,66 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 								   frame.height,
 								   (displayObject.anchor.x) * -frame.width, 
 								   (displayObject.anchor.y) * -frame.height,
-								 &#x2F;&#x2F;   (displayObject.anchor.x - displayObject.texture.trim.x) * -frame.width, 
-								  &#x2F;&#x2F; (displayObject.anchor.y - displayObject.texture.trim.y) * -frame.height,
-								  
 								   frame.width,
 								   frame.height);
-			&#x2F;&#x2F;}
-		}					   
-   	}
-   	else if(displayObject instanceof PIXI.Strip)
-	{
-		context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
-		this.renderStrip(displayObject);
-	}
-	else if(displayObject instanceof PIXI.TilingSprite)
-	{
-		context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
-		this.renderTilingSprite(displayObject);
-	}
-	else if(displayObject instanceof PIXI.CustomRenderable)
-	{
-		displayObject.renderCanvas(this);
-	}
-	else if(displayObject instanceof PIXI.Graphics)
-	{
-		context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
-		PIXI.CanvasGraphics.renderGraphics(displayObject, context);
-	}
-	
-	&#x2F;&#x2F; render!
-	if(displayObject.children)
-	{
-		for (var i=0; i &lt; displayObject.children.length; i++) 
+			}					   
+	   	}
+	   	else if(displayObject instanceof PIXI.Strip)
 		{
-			this.renderDisplayObject(displayObject.children[i]);
+			context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
+			this.renderStrip(displayObject);
 		}
+		else if(displayObject instanceof PIXI.TilingSprite)
+		{
+			context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
+			this.renderTilingSprite(displayObject);
+		}
+		else if(displayObject instanceof PIXI.CustomRenderable)
+		{
+			displayObject.renderCanvas(this);
+		}
+		else if(displayObject instanceof PIXI.Graphics)
+		{
+			context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
+			PIXI.CanvasGraphics.renderGraphics(displayObject, context);
+		}
+		else if(displayObject instanceof PIXI.FilterBlock)
+		{
+			if(displayObject.open)
+			{
+				context.save();
+				
+				var cacheAlpha = displayObject.mask.alpha;
+				var maskTransform = displayObject.mask.worldTransform;
+				
+				context.setTransform(maskTransform[0], maskTransform[3], maskTransform[1], maskTransform[4], maskTransform[2], maskTransform[5])
+				
+				displayObject.mask.worldAlpha = 0.5;
+				
+				context.worldAlpha = 0;
+				
+				PIXI.CanvasGraphics.renderGraphicsMask(displayObject.mask, context);
+		&#x2F;&#x2F;		context.fillStyle = 0xFF0000;
+			&#x2F;&#x2F;	context.fillRect(0, 0, 200, 200);
+				context.clip();
+				
+				displayObject.mask.worldAlpha = cacheAlpha;
+				&#x2F;&#x2F;context.globalCompositeOperation = &#x27;lighter&#x27;;
+			}
+			else
+			{
+				&#x2F;&#x2F;context.globalCompositeOperation = &#x27;source-over&#x27;;
+				context.restore();
+			}
+		}
+	&#x2F;&#x2F;	count++
+		displayObject = displayObject._iNext;
+		
+		
 	}
-	
-	this.context.setTransform(1,0,0,1,0,0); 
+	while(displayObject != testObject)
 }
+
 
 &#x2F;**
  * @private
@@ -387,11 +408,9 @@ PIXI.CanvasRenderer.prototype.renderStripFlat = function(strip)
 		
 	};	
 	
-&#x2F;&#x2F;	context.globalCompositeOperation = &#x27;lighter&#x27;;
 	context.fillStyle = &quot;#FF0000&quot;;
 	context.fill();
 	context.closePath();
-	&#x2F;&#x2F;context.globalCompositeOperation = &#x27;source-over&#x27;;	
 }
 
 &#x2F;**

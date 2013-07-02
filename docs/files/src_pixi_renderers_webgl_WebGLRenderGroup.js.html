@@ -53,11 +53,15 @@
             
                 <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
             
+                <li><a href="..&#x2F;classes/Circle.html">Circle</a></li>
+            
                 <li><a href="..&#x2F;classes/CustomRenderable.html">CustomRenderable</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
+            
+                <li><a href="..&#x2F;classes/Ellipse.html">Ellipse</a></li>
             
                 <li><a href="..&#x2F;classes/Graphics.html">Graphics</a></li>
             
@@ -166,7 +170,6 @@ PIXI.WebGLRenderGroup = function(gl)
 	this.toRemove = [];
 }
 
-
 &#x2F;&#x2F; constructor
 PIXI.WebGLRenderGroup.constructor = PIXI.WebGLRenderGroup;
 
@@ -182,9 +185,7 @@ PIXI.WebGLRenderGroup.prototype.setRenderable = function(displayObject)
 	
 	&#x2F;&#x2F; TODO what if its already has an object? should remove it
 	this.root = displayObject;
-	&#x2F;&#x2F;displayObject.__renderGroup = this;
 	this.addDisplayObjectAndChildren(displayObject);
-	&#x2F;&#x2F;displayObject
 }
 
 PIXI.WebGLRenderGroup.prototype.render = function(projection)
@@ -193,11 +194,9 @@ PIXI.WebGLRenderGroup.prototype.render = function(projection)
 	
 	var gl = this.gl;
 
-	&#x2F;&#x2F; set the flipped matrix..
-&#x2F;&#x2F;	gl.uniformMatrix4fv(PIXI.shaderProgram.mvMatrixUniform, false, PIXI.projectionMatrix);
-	
 	gl.uniform2f(PIXI.shaderProgram.projectionVector, projection.x, projection.y);
-
+	gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+	
 	&#x2F;&#x2F; TODO remove this by replacing visible with getter setters..	
 	this.checkVisibility(this.root, this.root.visible);
 	
@@ -222,9 +221,38 @@ PIXI.WebGLRenderGroup.prototype.render = function(projection)
 		}
 		else if(renderable instanceof PIXI.Graphics)
 		{
-			if(renderable.visible) PIXI.WebGLGraphics.renderGraphics(renderable, projection);&#x2F;&#x2F;, projectionMatrix);
+			if(renderable.visible &amp;&amp; renderable.renderable) PIXI.WebGLGraphics.renderGraphics(renderable, projection);&#x2F;&#x2F;, projectionMatrix);
+		}
+		else if(renderable instanceof PIXI.FilterBlock)
+		{
+			&#x2F;*
+			 * for now only masks are supported..
+			 *&#x2F;
+			if(renderable.open)
+			{
+    			gl.enable(gl.STENCIL_TEST);
+					
+				gl.colorMask(false, false, false, false);
+				gl.stencilFunc(gl.ALWAYS,1,0xff);
+				gl.stencilOp(gl.KEEP,gl.KEEP,gl.REPLACE);
+  
+				PIXI.WebGLGraphics.renderGraphics(renderable.mask, projection);
+  					
+				gl.colorMask(true, true, true, false);
+				gl.stencilFunc(gl.NOTEQUAL,0,0xff);
+				gl.stencilOp(gl.KEEP,gl.KEEP,gl.KEEP);
+			}
+			else
+			{
+				gl.disable(gl.STENCIL_TEST);
+			}
 		}
 	}
+	
+}
+
+PIXI.WebGLRenderGroup.prototype.handleFilter = function(filter, projection)
+{
 	
 }
 
@@ -238,8 +266,6 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 &#x2F;&#x2F;	gl.uniformMatrix4fv(PIXI.shaderProgram.mvMatrixUniform, false, projectionMatrix);
 	gl.uniform2f(PIXI.shaderProgram.projectionVector, projection.x, projection.y);
 
-	
-	&#x2F;&#x2F;console.log(&quot;SPECIFIC&quot;);
 	&#x2F;&#x2F; to do!
 	&#x2F;&#x2F; render part of the scene...
 	
@@ -249,8 +275,18 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 	var endIndex;
 	var endBatchIndex;
 	
-	&#x2F;&#x2F; get NEXT Renderable!
-	var nextRenderable = displayObject.renderable ? displayObject : this.getNextRenderable(displayObject);
+	&#x2F;*
+	 *  LOOK FOR THE NEXT SPRITE
+	 *  This part looks for the closest next sprite that can go into a batch
+	 *  it keeps looking until it finds a sprite or gets to the end of the display
+	 *  scene graph
+	 *&#x2F;
+	var nextRenderable = displayObject.last;
+	while(nextRenderable._iNext)
+	{
+		nextRenderable = nextRenderable._iNext;
+		if(nextRenderable.renderable &amp;&amp; nextRenderable.__renderGroup)break;
+	}
 	var startBatch = nextRenderable.batch;
 	
 	if(nextRenderable instanceof PIXI.Sprite)
@@ -388,20 +424,44 @@ PIXI.WebGLRenderGroup.prototype.renderSpecial = function(renderable)
 	}
 	else if(renderable instanceof PIXI.Graphics)
 	{
-		if(renderable.visible) PIXI.WebGLGraphics.renderGraphics(renderable);&#x2F;&#x2F;, projectionMatrix);
+		if(renderable.visible &amp;&amp; renderable.renderable) PIXI.WebGLGraphics.renderGraphics(renderable);&#x2F;&#x2F;, projectionMatrix);
+	}
+	else if(renderable instanceof PIXI.FilterBlock)
+	{
+		&#x2F;*
+		 * for now only masks are supported..
+		 *&#x2F;
+		if(renderable.open)
+		{
+			gl.enable(gl.STENCIL_TEST);
+				
+			gl.colorMask(false, false, false, false);
+			gl.stencilFunc(gl.ALWAYS,1,0xff);
+			gl.stencilOp(gl.KEEP,gl.KEEP,gl.REPLACE);
+  
+			PIXI.WebGLGraphics.renderGraphics(renderable.mask, projection);
+				
+			gl.colorMask(true, true, true, false);
+			gl.stencilFunc(gl.NOTEQUAL,0,0xff);
+			gl.stencilOp(gl.KEEP,gl.KEEP,gl.KEEP);
+		}
+		else
+		{
+			gl.disable(gl.STENCIL_TEST);
+		}
 	}
 }
 
 PIXI.WebGLRenderGroup.prototype.checkVisibility = function(displayObject, globalVisible)
 {
-	&#x2F;&#x2F; give the dp a refference to its renderGroup...
+	&#x2F;&#x2F; give the dp a reference to its renderGroup...
 	var children = displayObject.children;
 	&#x2F;&#x2F;displayObject.worldVisible = globalVisible;
 	for (var i=0; i &lt; children.length; i++) 
 	{
 		var child = children[i];
 		
-		&#x2F;&#x2F; TODO optimize... shouldt need to loop through everything all the time
+		&#x2F;&#x2F; TODO optimize... should&#x27;nt need to loop through everything all the time
 		child.worldVisible = child.visible &amp;&amp; globalVisible;
 		
 		&#x2F;&#x2F; everything should have a batch!
@@ -409,12 +469,7 @@ PIXI.WebGLRenderGroup.prototype.checkVisibility = function(displayObject, global
 		if(child.textureChange)
 		{
 			child.textureChange = false;
-			if(child.worldVisible)
-			{
-				this.removeDisplayObject(child);
-				this.addDisplayObject(child);
-				&#x2F;&#x2F;this.updateTexture(child);
-			}
+			if(child.worldVisible)this.updateTexture(child);
 			&#x2F;&#x2F; update texture!!
 		}
 		
@@ -427,123 +482,150 @@ PIXI.WebGLRenderGroup.prototype.checkVisibility = function(displayObject, global
 
 PIXI.WebGLRenderGroup.prototype.updateTexture = function(displayObject)
 {
-	&#x2F;&#x2F; we know this exists..
-	&#x2F;&#x2F; is it in a batch..
-	&#x2F;&#x2F; check batch length
-	if(displayObject.batch.length == 1)
+	
+	&#x2F;&#x2F; TODO definitely can optimse this function..
+	
+	this.removeObject(displayObject);
+	
+	&#x2F;*
+	 *  LOOK FOR THE PREVIOUS RENDERABLE
+	 *  This part looks for the closest previous sprite that can go into a batch
+	 *  It keeps going back until it finds a sprite or the stage
+	 *&#x2F;
+	var previousRenderable = displayObject.first;
+	while(previousRenderable != this.root)
 	{
-		&#x2F;&#x2F; just one! this guy! so simply swap the texture
-		displayObject.batch.texture = displayObject.texture.baseTexture;
-		return;
+		previousRenderable = previousRenderable._iPrev;
+		if(previousRenderable.renderable &amp;&amp; previousRenderable.__renderGroup)break;
 	}
 	
-	&#x2F;&#x2F; early out!
-	if(displayObject.batch.texture == displayObject.texture.baseTexture)return;
+	&#x2F;*
+	 *  LOOK FOR THE NEXT SPRITE
+	 *  This part looks for the closest next sprite that can go into a batch
+	 *  it keeps looking until it finds a sprite or gets to the end of the display
+	 *  scene graph
+	 *&#x2F;
+	var nextRenderable = displayObject.last;
+	while(nextRenderable._iNext)
+	{
+		nextRenderable = nextRenderable._iNext;
+		if(nextRenderable.renderable &amp;&amp; nextRenderable.__renderGroup)break;
+	}
 	
-	
-	if(displayObject.batch.head == displayObject)
-	{
-		&#x2F;&#x2F;console.log(&quot;HEAD&quot;)
-		var currentBatch = displayObject.batch;
-		
-		var index = this.batchs.indexOf( currentBatch );
-		var previousBatch =  this.batchs[index-1];
-		currentBatch.remove(displayObject);
-		
-		if(previousBatch)
-		{
-			if(previousBatch.texture == displayObject.texture.baseTexture &amp;&amp; previousBatch.blendMode == displayObject.blendMode)
-			{
-				previousBatch.insertAfter(displayObject, previousBatch.tail);
-			}
-			else
-			{
-				&#x2F;&#x2F; add it before..
-				var batch = PIXI.WebGLRenderer.getBatch();
-				batch.init(displayObject);
-				this.batchs.splice(index-1, 0, batch);
-			}
-			
-		}
-		else
-		{
-			&#x2F;&#x2F; we are 0!
-			var batch = PIXI.WebGLRenderer.getBatch();
-			batch.init(displayObject);
-			this.batchs.splice(0, 0, batch);
-		}
-		
-	}
-	else if(displayObject.batch.tail == displayObject)
-	{
-		var currentBatch = displayObject.batch;
-		
-		var index = this.batchs.indexOf( currentBatch );
-		var nextBatch =  this.batchs[index+1];
-		currentBatch.remove(displayObject);
-		
-		if(nextBatch)
-		{
-			if(nextBatch.texture == displayObject.texture.baseTexture &amp;&amp; nextBatch.blendMode == displayObject.blendMode)
-			{
-				nextBatch.insertBefore(displayObject, nextBatch.head);
-				return;
-			}
-			else
-			{
-				&#x2F;&#x2F; add it before..
-				var batch = PIXI.WebGLRenderer.getBatch();
-				batch.init(displayObject);
-				this.batchs.splice(index+1, 0, batch);
-			}
-			
-		}
-		else
-		{
-			&#x2F;&#x2F; we are 0!
-			var batch = PIXI.WebGLRenderer.getBatch();
-			batch.init(displayObject);
-			this.batchs.push(batch);
-		}
-	}
-	else
-	{
-	&#x2F;&#x2F;	console.log(&quot;MIDDLE&quot;)
-		var currentBatch = displayObject.batch;
-		
-		&#x2F;&#x2F; split the batch into 2
-		&#x2F;&#x2F; AH! dont split on the current display object as the texture is wrong!
-		var splitBatch = currentBatch.split(displayObject);
-		
-		&#x2F;&#x2F; now remove the display object
-		splitBatch.remove(displayObject);
-		
-		var batch = PIXI.WebGLRenderer.getBatch();
-		var index = this.batchs.indexOf( currentBatch );
-		batch.init(displayObject);
-		this.batchs.splice(index+1, 0, batch, splitBatch);
-	}
+	this.insertObject(displayObject, previousRenderable, nextRenderable);
 }
 
-PIXI.WebGLRenderGroup.prototype.addDisplayObject = function(displayObject)
+PIXI.WebGLRenderGroup.prototype.addFilterBlocks = function(start, end)
 {
-	&#x2F;&#x2F; add a child to the render group..
+	start.__renderGroup = this;
+	end.__renderGroup = this;
+	&#x2F;*
+	 *  LOOK FOR THE PREVIOUS RENDERABLE
+	 *  This part looks for the closest previous sprite that can go into a batch
+	 *  It keeps going back until it finds a sprite or the stage
+	 *&#x2F;
+	var previousRenderable = start;
+	while(previousRenderable != this.root)
+	{
+		previousRenderable = previousRenderable._iPrev;
+		if(previousRenderable.renderable &amp;&amp; previousRenderable.__renderGroup)break;
+	}
+	this.insertAfter(start, previousRenderable);
+		
+	&#x2F;*
+	 *  LOOK FOR THE NEXT SPRITE
+	 *  This part looks for the closest next sprite that can go into a batch
+	 *  it keeps looking until it finds a sprite or gets to the end of the display
+	 *  scene graph
+	 *&#x2F;
+	var previousRenderable2 = end;
+	while(previousRenderable2 != this.root)
+	{
+		previousRenderable2 = previousRenderable2._iPrev;
+		if(previousRenderable2.renderable &amp;&amp; previousRenderable2.__renderGroup)break;
+	}
+	this.insertAfter(end, previousRenderable2);
+}
+
+PIXI.WebGLRenderGroup.prototype.removeFilterBlocks = function(start, end)
+{
+	this.removeObject(start);
+	this.removeObject(end);
+}
+
+PIXI.WebGLRenderGroup.prototype.addDisplayObjectAndChildren = function(displayObject)
+{
 	if(displayObject.__renderGroup)displayObject.__renderGroup.removeDisplayObjectAndChildren(displayObject);
-
-	&#x2F;&#x2F; DONT htink this is needed?
-	&#x2F;&#x2F;	displayObject.batch = null;
 	
-	displayObject.__renderGroup = this;
+	&#x2F;*
+	 *  LOOK FOR THE PREVIOUS RENDERABLE
+	 *  This part looks for the closest previous sprite that can go into a batch
+	 *  It keeps going back until it finds a sprite or the stage
+	 *&#x2F;
+	
+	var previousRenderable = displayObject.first;
+	while(previousRenderable != this.root)
+	{
+		previousRenderable = previousRenderable._iPrev;
+		if(previousRenderable.renderable &amp;&amp; previousRenderable.__renderGroup)break;
+	}
+	
+	&#x2F;*
+	 *  LOOK FOR THE NEXT SPRITE
+	 *  This part looks for the closest next sprite that can go into a batch
+	 *  it keeps looking until it finds a sprite or gets to the end of the display
+	 *  scene graph
+	 *&#x2F;
+	var nextRenderable = displayObject.last;
+	while(nextRenderable._iNext)
+	{
+		nextRenderable = nextRenderable._iNext;
+		if(nextRenderable.renderable &amp;&amp; nextRenderable.__renderGroup)break;
+	}
+	
+	&#x2F;&#x2F; one the display object hits this. we can break the loop	
+	
+	var tempObject = displayObject.first;
+	var testObject = displayObject.last._iNext;
+	do	
+	{
+		tempObject.__renderGroup = this;
+		
+		if(tempObject.renderable)
+		{
+		
+			this.insertObject(tempObject, previousRenderable, nextRenderable);
+			previousRenderable = tempObject;
+		}
+		
+		tempObject = tempObject._iNext;
+	}
+	while(tempObject != testObject)
+}
 
-	&#x2F;&#x2F;displayObject.cacheVisible = true;
-	if(!displayObject.renderable)return;
+PIXI.WebGLRenderGroup.prototype.removeDisplayObjectAndChildren = function(displayObject)
+{
+	if(displayObject.__renderGroup != this)return;
+	
+&#x2F;&#x2F;	var displayObject = displayObject.first;
+	var lastObject = displayObject.last;
+	do	
+	{
+		displayObject.__renderGroup = null;
+		if(displayObject.renderable)this.removeObject(displayObject);
+		displayObject = displayObject._iNext;
+	}
+	while(displayObject)
+}
 
+	
+
+PIXI.WebGLRenderGroup.prototype.insertObject = function(displayObject, previousObject, nextObject)
+{
 	&#x2F;&#x2F; while looping below THE OBJECT MAY NOT HAVE BEEN ADDED
-	&#x2F;&#x2F;displayObject.__inWebGL = true;
+	var previousSprite = previousObject;
+	var nextSprite = nextObject;
 	
-	var previousSprite = this.getPreviousRenderable(displayObject);
-	var nextSprite = this.getNextRenderable(displayObject);
-
 	&#x2F;*
 	 * so now we have the next renderable and the previous renderable
 	 * 
@@ -612,6 +694,7 @@ PIXI.WebGLRenderGroup.prototype.addDisplayObject = function(displayObject)
 			else
 			{
 				&#x2F;&#x2F; TODO re-word!
+				
 				nextBatch = nextSprite;
 			}
 		}
@@ -634,49 +717,88 @@ PIXI.WebGLRenderGroup.prototype.addDisplayObject = function(displayObject)
 		{
 			this.batchs.push(batch);
 		}
-	
+		
+		return;
 	}
 	else if(displayObject instanceof PIXI.TilingSprite)
 	{
 		
 		&#x2F;&#x2F; add to a batch!!
 		this.initTilingSprite(displayObject);
-		this.batchs.push(displayObject);
+	&#x2F;&#x2F;	this.batchs.push(displayObject);
 		
 	}
 	else if(displayObject instanceof PIXI.Strip)
 	{
 		&#x2F;&#x2F; add to a batch!!
 		this.initStrip(displayObject);
-		this.batchs.push(displayObject);
+	&#x2F;&#x2F;	this.batchs.push(displayObject);
 	}
-	else if(displayObject instanceof PIXI.Graphics)
+	else if(displayObject)&#x2F;&#x2F; instanceof PIXI.Graphics)
 	{
 		&#x2F;&#x2F;displayObject.initWebGL(this);
 		
 		&#x2F;&#x2F; add to a batch!!
 		&#x2F;&#x2F;this.initStrip(displayObject);
-		this.batchs.push(displayObject);
+		&#x2F;&#x2F;this.batchs.push(displayObject);
 	}
 	
-	&#x2F;&#x2F; if its somthing else... then custom codes!
-	this.batchUpdate = true;
+	this.insertAfter(displayObject, previousSprite);
+			
+	&#x2F;&#x2F; insert and SPLIT!
+
 }
 
-PIXI.WebGLRenderGroup.prototype.addDisplayObjectAndChildren = function(displayObject)
+				
+			
+PIXI.WebGLRenderGroup.prototype.insertAfter = function(item, displayObject)
 {
-	&#x2F;&#x2F; TODO - this can be faster - but not as important right now
-	
-	this.addDisplayObject(displayObject);
-	var children = displayObject.children;
-	
-	for (var i=0; i &lt; children.length; i++) 
+	if(displayObject instanceof PIXI.Sprite)
 	{
-	  	this.addDisplayObjectAndChildren(children[i]);
-	};
+		var previousBatch = displayObject.batch;
+		
+		if(previousBatch)
+		{
+			&#x2F;&#x2F; so this object is in a batch!
+			
+			&#x2F;&#x2F; is it not? need to split the batch
+			if(previousBatch.tail == displayObject)
+			{
+				&#x2F;&#x2F; is it tail? insert in to batchs	
+				var index = this.batchs.indexOf( previousBatch );
+				this.batchs.splice(index+1, 0, item);
+			}
+			else
+			{
+				&#x2F;&#x2F; TODO MODIFY ADD &#x2F; REMOVE CHILD TO ACCOUNT FOR FILTERS (also get prev and next) &#x2F;&#x2F;
+				
+				&#x2F;&#x2F; THERE IS A SPLIT IN THIS BATCH! &#x2F;&#x2F;
+				var splitBatch = previousBatch.split(displayObject.__next);
+				
+				&#x2F;&#x2F; COOL!
+				&#x2F;&#x2F; add it back into the array	
+				&#x2F;*
+				 * OOPS!
+				 * seems the new sprite is in the middle of a batch
+				 * lets split it.. 
+				 *&#x2F;
+				var index = this.batchs.indexOf( previousBatch );
+				this.batchs.splice(index+1, 0, item, splitBatch);
+			}
+		}
+		else
+		{
+			this.batchs.push(item);
+		}
+	}
+	else
+	{
+		var index = this.batchs.indexOf( displayObject );
+		this.batchs.splice(index+1, 0, item);
+	}
 }
 
-PIXI.WebGLRenderGroup.prototype.removeDisplayObject = function(displayObject)
+PIXI.WebGLRenderGroup.prototype.removeObject = function(displayObject)
 {
 	&#x2F;&#x2F; loop through children..
 	&#x2F;&#x2F; display object &#x2F;&#x2F;
@@ -684,10 +806,7 @@ PIXI.WebGLRenderGroup.prototype.removeDisplayObject = function(displayObject)
 	&#x2F;&#x2F; add a child from the render group..
 	&#x2F;&#x2F; remove it and all its children!
 	&#x2F;&#x2F;displayObject.cacheVisible = false;&#x2F;&#x2F;displayObject.visible;
-	displayObject.__renderGroup = null;
-	
-	if(!displayObject.renderable)return;
-	
+
 	&#x2F;*
 	 * removing is a lot quicker..
 	 * 
@@ -745,111 +864,18 @@ PIXI.WebGLRenderGroup.prototype.removeDisplayObject = function(displayObject)
 			}
 		}
 		
-		
 		this.batchs.splice(index, 1);
 		if(batchToRemove instanceof PIXI.WebGLBatch)PIXI.WebGLRenderer.returnBatch(batchToRemove);
 	}
 }
 
-PIXI.WebGLRenderGroup.prototype.removeDisplayObjectAndChildren = function(displayObject)
-{
-	&#x2F;&#x2F; TODO - this can be faster - but not as important right now
-	if(displayObject.__renderGroup != this)return;
-	
-	this.removeDisplayObject(displayObject);
-	var children = displayObject.children;
-	
-	for (var i=0; i &lt; children.length; i++) 
-	{
-	  	this.removeDisplayObjectAndChildren(children[i]);
-	};
-}
 
 &#x2F;**
  * @private
  *&#x2F;
 
-PIXI.WebGLRenderGroup.prototype.getNextRenderable = function(displayObject)
-{
-	&#x2F;*
-	 *  LOOK FOR THE NEXT SPRITE
-	 *  This part looks for the closest next sprite that can go into a batch
-	 *  it keeps looking until it finds a sprite or gets to the end of the display
-	 *  scene graph
-	 * 
-	 *  These look a lot scarier than the actually are...
-	 *&#x2F;
-	
-	var nextSprite = displayObject;
-	do
-	{
-		&#x2F;&#x2F; moving forward!
-		&#x2F;&#x2F; if it has no children.. 
-		if(nextSprite.children.length == 0)
-		{
-			&#x2F;&#x2F;maynot have a parent
-			if(!nextSprite.parent)return null;
-			
-			&#x2F;&#x2F; go along to the parent..
-			while(nextSprite.childIndex == nextSprite.parent.children.length-1)
-			{
-				nextSprite = nextSprite.parent;
-				&#x2F;&#x2F;console.log(&quot;&gt;&quot; + nextSprite);
-&#x2F;&#x2F;				console.log(&quot;&gt;-&quot; + this.root);
-				if(nextSprite ==  this.root || !nextSprite.parent)&#x2F;&#x2F;displayObject.stage)
-				{
-					nextSprite = null
-					break;
-				}
-			}
-			
-			if(nextSprite)nextSprite = nextSprite.parent.children[nextSprite.childIndex+1];
-		}
-		else
-		{
-			nextSprite = nextSprite.children[0];
-		}
 
-		if(!nextSprite)break;
-	}
-	while(!nextSprite.renderable || !nextSprite.__renderGroup)
-	
-	return nextSprite;
-}
 
-PIXI.WebGLRenderGroup.prototype.getPreviousRenderable = function(displayObject)
-{
-	&#x2F;*
-	 *  LOOK FOR THE PREVIOUS SPRITE
-	 *  This part looks for the closest previous sprite that can go into a batch
-	 *  It keeps going back until it finds a sprite or the stage
-	 *&#x2F;
-	var previousSprite = displayObject;
-	do
-	{
-		if(previousSprite.childIndex == 0)
-		{
-			previousSprite = previousSprite.parent;
-			if(!previousSprite)return null;
-		}
-		else
-		{
-			
-			previousSprite = previousSprite.parent.children[previousSprite.childIndex-1];
-			&#x2F;&#x2F; what if the bloop has children???
-			while(previousSprite.children.length != 0)
-			{
-				&#x2F;&#x2F; keep diggin till we get to the last child
-				previousSprite = previousSprite.children[previousSprite.children.length-1];
-			}
-		}
-		
-		if(previousSprite == this.root)break;
-	}
-	while(!previousSprite.renderable || !previousSprite.__renderGroup);
-	
-	return previousSprite;
-}
 
 &#x2F;**
  * @private
@@ -930,7 +956,7 @@ PIXI.WebGLRenderGroup.prototype.renderStrip = function(strip, projection)
 	gl.uniform2f(PIXI.stripShaderProgram.projectionVector, projection.x, projection.y);
 	gl.uniform1f(PIXI.stripShaderProgram.alpha, strip.worldAlpha);
 
-
+&#x2F;*
 	if(strip.blendMode == PIXI.blendModes.NORMAL)
 	{
 		gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
@@ -939,7 +965,7 @@ PIXI.WebGLRenderGroup.prototype.renderStrip = function(strip, projection)
 	{
 		gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_COLOR);
 	}
-	
+	*&#x2F;
 	
 	
 	if(!strip.dirty)

@@ -53,11 +53,15 @@
             
                 <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
             
+                <li><a href="..&#x2F;classes/Circle.html">Circle</a></li>
+            
                 <li><a href="..&#x2F;classes/CustomRenderable.html">CustomRenderable</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
+            
+                <li><a href="..&#x2F;classes/Ellipse.html">Ellipse</a></li>
             
                 <li><a href="..&#x2F;classes/Graphics.html">Graphics</a></li>
             
@@ -680,7 +684,6 @@ PIXI.WebGLBatch.prototype.render = function(start, end)
 	var gl = this.gl;
 	
 	&#x2F;&#x2F;TODO optimize this!
-	gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 	
 	var shaderProgram = PIXI.shaderProgram;
 	gl.useProgram(shaderProgram);
@@ -723,7 +726,7 @@ PIXI.WebGLBatch.prototype.render = function(start, end)
 	var len = end - start;
 	&#x2F;&#x2F; console.log(this.size)
     &#x2F;&#x2F; DRAW THAT this!
-&#x2F;&#x2F;    gl.drawElements(gl.TRIANGLES, len * 6, gl.UNSIGNED_SHORT, start * 2 * 6 );
+    gl.drawElements(gl.TRIANGLES, len * 6, gl.UNSIGNED_SHORT, start * 2 * 6 );
 }
 
 

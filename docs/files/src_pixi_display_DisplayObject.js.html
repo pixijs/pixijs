@@ -53,11 +53,15 @@
             
                 <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
             
+                <li><a href="..&#x2F;classes/Circle.html">Circle</a></li>
+            
                 <li><a href="..&#x2F;classes/CustomRenderable.html">CustomRenderable</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
+            
+                <li><a href="..&#x2F;classes/Ellipse.html">Ellipse</a></li>
             
                 <li><a href="..&#x2F;classes/Graphics.html">Graphics</a></li>
             
@@ -153,6 +157,9 @@
  *&#x2F;
 PIXI.DisplayObject = function()
 {
+	this.last = this;
+	this.first = this;
+	
 	&#x2F;**
 	 * The coordinate of the object relative to the local coordinates of the parent.
 	 * @property position
@@ -234,7 +241,7 @@ PIXI.DisplayObject = function()
 	this.renderable = false;
 	
 	&#x2F;&#x2F; [readonly] best not to toggle directly! use setInteractive()
-	this.interactive = false;
+	this._interactive = false;
 	
 	&#x2F;**
 	 * This is used to indicate if the displayObject should display a mouse hand cursor on rollover
@@ -332,18 +339,214 @@ Object.defineProperty(PIXI.DisplayObject.prototype, &#x27;visible&#x27;, {
 });*&#x2F;
 
 &#x2F;**
- * Indicates if the sprite will have touch and mouse interactivity. It is false by default
+ * [Deprecated] Indicates if the sprite will have touch and mouse interactivity. It is false by default
+ * Instead of using this function you can now simply set the interactive property to true or false
  * @method setInteractive
  * @param interactive {Boolean}
  *&#x2F;
 PIXI.DisplayObject.prototype.setInteractive = function(interactive)
 {
 	this.interactive = interactive;
-	&#x2F;&#x2F; TODO more to be done here..
-	&#x2F;&#x2F; need to sort out a re-crawl!
-	if(this.stage)this.stage.dirty = true;
 }
 
+&#x2F;**
+ * Indicates if the sprite will have touch and mouse interactivity. It is false by default
+ * @property interactive
+ * @type Boolean
+ *&#x2F;
+Object.defineProperty(PIXI.DisplayObject.prototype, &#x27;interactive&#x27;, {
+    get: function() {
+        return this._interactive;
+    },
+    set: function(value) {
+    	this._interactive = value;
+    	
+    	&#x2F;&#x2F; TODO more to be done here..
+		&#x2F;&#x2F; need to sort out a re-crawl!
+		if(this.stage)this.stage.dirty = true;
+    }
+});
+
+&#x2F;**
+ * Sets a mask for the displayObject. A mask is an object that limits the visibility of an object to the shape of the mask applied to it.
+ * In PIXI a regular mask must be a PIXI.Ggraphics object. This allows for much faster masking in canvas as it utilises shape clipping.
+ * To remove a mask, set this property to null.
+ * @property mask
+ * @type PIXI.Graphics
+ *&#x2F;
+Object.defineProperty(PIXI.DisplayObject.prototype, &#x27;mask&#x27;, {
+    get: function() {
+        return this._mask;
+    },
+    set: function(value) {
+    	
+        this._mask = value;
+        
+        if(value)
+        {
+	        this.addFilter(value)
+        }
+        else
+        {
+        	 this.removeFilter();
+        }
+    }
+});
+
+&#x2F;* 
+ * private
+ *&#x2F;
+PIXI.DisplayObject.prototype.addFilter = function(mask)
+{
+	if(this.filter)return;
+	this.filter = true;
+	
+	
+	&#x2F;&#x2F; insert a filter block..
+	var start = new PIXI.FilterBlock();
+	var end = new PIXI.FilterBlock();
+	
+	
+	start.mask = mask;
+	end.mask = mask;
+	
+	start.id = end.id = county
+
+	county++;
+	
+	start.first = start.last =  this;
+	end.first = end.last = this;
+	
+	start.open = true;
+	
+	&#x2F;*
+	 * 
+	 * insert start
+	 * 
+	 *&#x2F;
+	
+	var childFirst = start
+	var childLast = start
+	var nextObject;
+	var previousObject;
+		
+	previousObject = this.first._iPrev;
+	
+	if(previousObject)
+	{
+		nextObject = previousObject._iNext;
+		childFirst._iPrev = previousObject;
+		previousObject._iNext = childFirst;		
+	}
+	else
+	{
+		nextObject = this;
+	}	
+	
+	if(nextObject)
+	{
+		nextObject._iPrev = childLast;
+		childLast._iNext = nextObject;
+	}
+	
+	
+	&#x2F;&#x2F; now insert the end filter block..
+	
+	&#x2F;*
+	 * 
+	 * insert end filter
+	 * 
+	 *&#x2F;
+	var childFirst = end
+	var childLast = end
+	var nextObject = null;
+	var previousObject = null;
+		
+	previousObject = this.last;
+	nextObject = previousObject._iNext;
+	
+	if(nextObject)
+	{
+		nextObject._iPrev = childLast;
+		childLast._iNext = nextObject;
+	}
+	
+	childFirst._iPrev = previousObject;
+	previousObject._iNext = childFirst;	
+	
+	var updateLast = this;
+	
+	var prevLast = this.last;
+	while(updateLast)
+	{
+		if(updateLast.last == prevLast)
+		{
+			updateLast.last = end;
+		}
+		updateLast = updateLast.parent;
+	}
+	
+	this.first = start;
+	
+	&#x2F;&#x2F; if webGL...
+	if(this.__renderGroup)
+	{
+		this.__renderGroup.addFilterBlocks(start, end);
+	}
+	
+	mask.renderable = false;
+	
+}
+
+PIXI.DisplayObject.prototype.removeFilter = function()
+{
+	if(!this.filter)return;
+	this.filter = false;
+	
+	&#x2F;&#x2F; modify the list..
+	var startBlock = this.first;
+	
+	var nextObject = startBlock._iNext;
+	var previousObject = startBlock._iPrev;
+		
+	if(nextObject)nextObject._iPrev = previousObject;
+	if(previousObject)previousObject._iNext = nextObject;		
+	
+	this.first = startBlock._iNext;
+	
+	
+	&#x2F;&#x2F; remove the end filter
+	var lastBlock = this.last;
+	
+	var nextObject = lastBlock._iNext;
+	var previousObject = lastBlock._iPrev;
+		
+	if(nextObject)nextObject._iPrev = previousObject;
+	previousObject._iNext = nextObject;		
+	
+	&#x2F;&#x2F; this is always true too!
+&#x2F;&#x2F;	if(this.last == lastBlock)
+	&#x2F;&#x2F;{
+	var tempLast =  lastBlock._iPrev;	
+	&#x2F;&#x2F; need to make sure the parents last is updated too
+	var updateLast = this;
+	while(updateLast.last == lastBlock)
+	{
+		updateLast.last = tempLast;
+		updateLast = updateLast.parent;
+		if(!updateLast)break;
+	}
+	
+	var mask = startBlock.mask
+	mask.renderable = true;
+	
+	&#x2F;&#x2F; if webGL...
+	if(this.__renderGroup)
+	{
+		this.__renderGroup.removeFilterBlocks(startBlock, lastBlock);
+	}
+	&#x2F;&#x2F;}
+}
 
 &#x2F;**
  * @private
@@ -367,24 +570,21 @@ PIXI.DisplayObject.prototype.updateTransform = function()
 	localTransform[3] = this._sr * this.scale.x;
 	localTransform[4] = this._cr * this.scale.y;
 	
-	&#x2F;&#x2F;&#x2F;AAARR GETTER SETTTER!
-	&#x2F;&#x2F;localTransform[2] = this.position.x;
-	&#x2F;&#x2F;localTransform[5] = this.position.y;
+	&#x2F;&#x2F; TODO --&gt; do we even need a local matrix???
 	
 	var px = this.pivot.x;
 	var py = this.pivot.y;
    	
-   	&#x2F;&#x2F;&#x2F;AAARR GETTER SETTTER!
-	localTransform[2] = this.position.x - localTransform[0] * px - py * localTransform[1];
-	localTransform[5] = this.position.y - localTransform[4] * py - px * localTransform[3];
-
     &#x2F;&#x2F; Cache the matrix values (makes for huge speed increases!)
-    var a00 = localTransform[0], a01 = localTransform[1], a02 = localTransform[2],
-        a10 = localTransform[3], a11 = localTransform[4], a12 = localTransform[5],
+    var a00 = localTransform[0], a01 = localTransform[1], a02 = this.position.x - localTransform[0] * px - py * localTransform[1],
+        a10 = localTransform[3], a11 = localTransform[4], a12 = this.position.y - localTransform[4] * py - px * localTransform[3],
 
         b00 = parentTransform[0], b01 = parentTransform[1], b02 = parentTransform[2],
         b10 = parentTransform[3], b11 = parentTransform[4], b12 = parentTransform[5];
 
+	localTransform[2] = a02
+	localTransform[5] = a12
+	
     worldTransform[0] = b00 * a00 + b01 * a10;
     worldTransform[1] = b00 * a01 + b01 * a11;
     worldTransform[2] = b00 * a02 + b01 * a12 + b02;
@@ -397,7 +597,6 @@ PIXI.DisplayObject.prototype.updateTransform = function()
 	&#x2F;&#x2F; mat3.multiply(this.localTransform, this.parent.worldTransform, this.worldTransform);
 	this.worldAlpha = this.alpha * this.parent.worldAlpha;
 
-	
 }
 
     </pre>

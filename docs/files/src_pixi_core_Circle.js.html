@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>ImageLoader - Pixi.JS</title>
+    <title>src&#x2F;pixi&#x2F;core&#x2F;Circle.js - Pixi.JS</title>
     <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
@@ -142,183 +142,79 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>ImageLoader Class</h1>
-<div class="box meta">
+                        <h1 class="file-heading">File: src&#x2F;pixi&#x2F;core&#x2F;Circle.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+&#x2F;**
+ * @author Chad Engler &lt;chad@pantherdev.com&gt;
+ *&#x2F;
+
+&#x2F;**
+ * @class Circle
+ * @constructor
+ * @param x {Number} The X coord of the upper-left corner of the framing rectangle of this circle
+ * @param y {Number} The Y coord of the upper-left corner of the framing rectangle of this circle
+ * @param radius {Number} The radius of the circle
+ *&#x2F;
+PIXI.Circle = function(x, y, radius)
+{
+    &#x2F;**
+     * @property x
+     * @type Number
+     * @default 0
+     *&#x2F;
+    this.x = x || 0;
     
+    &#x2F;**
+     * @property y
+     * @type Number
+     * @default 0
+     *&#x2F;
+    this.y = y || 0;
 
-    
-        <div class="extends">
-            Extends EventTarget
-        </div>
-    
+    &#x2F;**
+     * @property radius
+     * @type Number
+     * @default 0
+     *&#x2F;
+    this.radius = radius || 0;
+}
 
-    
-        <div class="foundat">
-            Defined in: <a href="..&#x2F;files&#x2F;src_pixi_loaders_ImageLoader.js.html#l5"><code>src&#x2F;pixi&#x2F;loaders&#x2F;ImageLoader.js:5</code></a>
-        </div>
-    
+&#x2F;**
+ * @method clone
+ * @return a copy of the polygon
+ *&#x2F;
+PIXI.Circle.prototype.clone = function()
+{
+    return new PIXI.Circle(this.x, this.y, this.radius);
+}
 
-    
-        
-            Module: <a href="../modules/PIXI.html">PIXI</a>
-        
-    
+&#x2F;**
+ * @method contains
+ * @param x {Number} The X coord of the point to test
+ * @param y {Number} The Y coord of the point to test
+ * @return if the x&#x2F;y coords are within this polygon
+ *&#x2F;
+PIXI.Circle.prototype.contains = function(x, y)
+{
+    if(this.radius &lt;= 0)
+        return false;
 
-    
-</div>
+    var dx = (this.x - x),
+        dy = (this.y - y),
+        r2 = this.radius * this.radius;
 
+    dx *= dx;
+    dy *= dy;
 
+    return (dx + dy &lt;= r2);
+}
 
-<div class="box intro">
-    <p>The image loader class is responsible for loading images file formats ("jpeg", "jpg", "png" and "gif")
-Once the image has been loaded it is stored in the PIXI texture cache and can be accessed though PIXI.Texture.fromFrameId() and PIXI.Sprite.fromFromeId()
-When loaded this class will dispatch a 'loaded' event</p>
-</div>
-
-
-    <div class="constructor">
-        <h2>Constructor</h2>
-        <div id="method_ImageLoader" class="method item">
-    <h3 class="name"><code>ImageLoader</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>url</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>crossorigin</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="..&#x2F;files&#x2F;src_pixi_loaders_ImageLoader.js.html#l5"><code>src&#x2F;pixi&#x2F;loaders&#x2F;ImageLoader.js:5</code></a>
-        
-        </p>
+PIXI.Circle.constructor = PIXI.Circle;
 
 
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">url</code>
-                        <span class="type">String</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>The url of the image</p>
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">crossorigin</code>
-                        <span class="type">Boolean</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-    </div>
-
-
-<div id="classdocs" class="tabview">
-    <ul class="api-class-tabs">
-        <li class="api-class-tab index"><a href="#index">Index</a></li>
-
-        
-        
-        
-        
-    </ul>
-
-    <div>
-        <div id="index" class="api-class-tabpanel index">
-            <h2 class="off-left">Item Index</h2>
-
-            
-
-            
-
-            
-
-            
-        </div>
-
-        
-
-        
-
-        
-
-        
-    </div>
+    </pre>
 </div>
 
                     </div>

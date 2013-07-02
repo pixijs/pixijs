@@ -53,11 +53,15 @@
             
                 <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
             
+                <li><a href="..&#x2F;classes/Circle.html">Circle</a></li>
+            
                 <li><a href="..&#x2F;classes/CustomRenderable.html">CustomRenderable</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
+            
+                <li><a href="..&#x2F;classes/Ellipse.html">Ellipse</a></li>
             
                 <li><a href="..&#x2F;classes/Graphics.html">Graphics</a></li>
             
@@ -242,7 +246,6 @@ PIXI.primitiveShaderVertexSrc = [
 
 PIXI.initPrimitiveShader = function() 
 {
-	return;
 	var gl = PIXI.gl;
 
 	var shaderProgram = PIXI.compileProgram(PIXI.primitiveShaderVertexSrc, PIXI.primitiveShaderFragmentSrc)
@@ -325,21 +328,6 @@ PIXI._CompileShader = function(gl, shaderSrc, shaderType)
   return shader;
 }
 
-PIXI.activateDefaultShader = function()
-{
-	var gl = PIXI.gl;
-	var shaderProgram = PIXI.shaderProgram;
-	
-	gl.useProgram(shaderProgram);
-	
-	
-	gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
-    gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
-    gl.enableVertexAttribArray(shaderProgram.colorAttribute);
-    
-
-	
-} 
 
 PIXI.compileProgram = function(vertexSrc, fragmentSrc)
 {
@@ -359,6 +347,22 @@ PIXI.compileProgram = function(vertexSrc, fragmentSrc)
 
 	return shaderProgram;
 } 
+
+
+PIXI.activateDefaultShader = function()
+{
+	var gl = PIXI.gl;
+	var shaderProgram = PIXI.shaderProgram;
+	
+	gl.useProgram(shaderProgram);
+	
+	
+	gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+    gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
+    gl.enableVertexAttribArray(shaderProgram.colorAttribute);
+}
+
+	
 
 PIXI.activatePrimitiveShader = function()
 {

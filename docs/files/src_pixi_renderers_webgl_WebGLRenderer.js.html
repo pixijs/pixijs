@@ -53,11 +53,15 @@
             
                 <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
             
+                <li><a href="..&#x2F;classes/Circle.html">Circle</a></li>
+            
                 <li><a href="..&#x2F;classes/CustomRenderable.html">CustomRenderable</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
+            
+                <li><a href="..&#x2F;classes/Ellipse.html">Ellipse</a></li>
             
                 <li><a href="..&#x2F;classes/Graphics.html">Graphics</a></li>
             
@@ -192,7 +196,8 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
         PIXI.gl = this.gl = this.view.getContext(&quot;experimental-webgl&quot;,  {  	
     		 alpha: this.transparent,
     		 antialias:true, &#x2F;&#x2F; SPEED UP??
-    		 premultipliedAlpha:false
+    		 premultipliedAlpha:false,
+    		 stencil:true
         });
     } 
     catch (e) 
@@ -212,6 +217,10 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
     this.batch = new PIXI.WebGLBatch(gl);
    	gl.disable(gl.DEPTH_TEST);
    	gl.disable(gl.CULL_FACE);
+   	
+   	&#x2F;&#x2F;
+   	 
+   	 
     gl.enable(gl.BLEND);
     gl.colorMask(true, true, true, this.transparent); 
     

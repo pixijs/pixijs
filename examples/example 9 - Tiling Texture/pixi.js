@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-07-01
+ * Compiled: 2013-07-02
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -180,7 +180,7 @@ PIXI.Polygon = function(points)
  * @method clone
  * @return a copy of the polygon
  */
-PIXI.Polygon.clone = function()
+PIXI.Polygon.prototype.clone = function()
 {
 	var points = [];
 	for (var i=0; i<this.points.length; i++) {
@@ -196,7 +196,7 @@ PIXI.Polygon.clone = function()
  * @param y {Number} The Y coord of the point to test
  * @return if the x/y coords are within this polygon
  */
-PIXI.Polygon.contains = function(x, y)
+PIXI.Polygon.prototype.contains = function(x, y)
 {
     var inside = false;
 
@@ -255,7 +255,7 @@ PIXI.Circle = function(x, y, radius)
  * @method clone
  * @return a copy of the polygon
  */
-PIXI.Circle.clone = function()
+PIXI.Circle.prototype.clone = function()
 {
     return new PIXI.Circle(this.x, this.y, this.radius);
 }
@@ -266,7 +266,7 @@ PIXI.Circle.clone = function()
  * @param y {Number} The Y coord of the point to test
  * @return if the x/y coords are within this polygon
  */
-PIXI.Circle.contains = function(x, y)
+PIXI.Circle.prototype.contains = function(x, y)
 {
     if(this.radius <= 0)
         return false;
@@ -331,7 +331,7 @@ PIXI.Ellipse = function(x, y, width, height)
  * @method clone
  * @return a copy of the polygon
  */
-PIXI.Ellipse.clone = function()
+PIXI.Ellipse.prototype.clone = function()
 {
     return new PIXI.Ellipse(this.x, this.y, this.width, this.height);
 }
@@ -342,7 +342,7 @@ PIXI.Ellipse.clone = function()
  * @param y {Number} The Y coord of the point to test
  * @return if the x/y coords are within this polygon
  */
-PIXI.Ellipse.contains = function(x, y)
+PIXI.Ellipse.prototype.contains = function(x, y)
 {
     if(this.width <= 0 || this.height <= 0)
         return false;
@@ -864,9 +864,13 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'interactive', {
     }
 });
 
-county = 0;
-
-
+/**
+ * Sets a mask for the displayObject. A mask is an object that limits the visibility of an object to the shape of the mask applied to it.
+ * In PIXI a regular mask must be a PIXI.Ggraphics object. This allows for much faster masking in canvas as it utilises shape clipping.
+ * To remove a mask, set this property to null.
+ * @property mask
+ * @type PIXI.Graphics
+ */
 Object.defineProperty(PIXI.DisplayObject.prototype, 'mask', {
     get: function() {
         return this._mask;
@@ -886,7 +890,9 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'mask', {
     }
 });
 
-
+/* 
+ * private
+ */
 PIXI.DisplayObject.prototype.addFilter = function(mask)
 {
 	if(this.filter)return;
@@ -912,7 +918,7 @@ PIXI.DisplayObject.prototype.addFilter = function(mask)
 	
 	/*
 	 * 
-	 * and an start filter
+	 * insert start
 	 * 
 	 */
 	
@@ -945,7 +951,7 @@ PIXI.DisplayObject.prototype.addFilter = function(mask)
 	
 	/*
 	 * 
-	 * and an end filter
+	 * insert end filter
 	 * 
 	 */
 	var childFirst = end
@@ -979,8 +985,6 @@ PIXI.DisplayObject.prototype.addFilter = function(mask)
 	
 	this.first = start;
 	
-	// TODO need to check if the stage already exists...
-	
 	// if webGL...
 	if(this.__renderGroup)
 	{
@@ -1007,8 +1011,6 @@ PIXI.DisplayObject.prototype.removeFilter = function()
 	
 	this.first = startBlock._iNext;
 	
-	
-	// this will NEVER be true!
 	
 	// remove the end filter
 	var lastBlock = this.last;
@@ -1328,9 +1330,14 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
  */
 PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
 {
+	/*
+	 * this funtion needs to be recoded.. 
+	 * can be done a lot faster..
+	 */
 	return;
-	// need to fix this function :/
 	
+	// need to fix this function :/
+	/*
 	// TODO I already know this??
 	var index = this.children.indexOf( child );
 	var index2 = this.children.indexOf( child2 );
@@ -1349,7 +1356,7 @@ PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
 			
 			this.stage.__addChild(child);
 			this.stage.__addChild(child2);
-		}*/
+		}
 		
 		// swap the positions..
 		this.children[index] = child2;
@@ -1359,7 +1366,7 @@ PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
 	else
 	{
 		throw new Error(child + " Both the supplied DisplayObjects must be a child of the caller " + this);
-	}
+	}*/
 }
 
 /**
@@ -2502,11 +2509,13 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 		y = a00 * id * global.y + -a10 * id * global.x + (-a12 * a00 + a02 * a10) * id;
 
 	//a sprite or display object with a hit area defined
-	if(item.hitArea && item.hitArea.contains && item.hitArea.contains(x, y)) {
-		if(isSprite)
-			interactionData.target = item;
+	if(item.hitArea && item.hitArea.contains) {
+		if(item.hitArea.contains(x, y)) {
+			if(isSprite)
+				interactionData.target = item;
 
-		return true;
+			return true;
+		}
 	}
 	// a sprite with no hitarea defined
 	else if(isSprite)
@@ -4835,7 +4844,6 @@ PIXI.WebGLRenderGroup.prototype.setRenderable = function(displayObject)
 	
 	// TODO what if its already has an object? should remove it
 	this.root = displayObject;
-	//displayObject.__renderGroup = this;
 	this.addDisplayObjectAndChildren(displayObject);
 }
 

@@ -53,11 +53,15 @@
             
                 <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
             
+                <li><a href="..&#x2F;classes/Circle.html">Circle</a></li>
+            
                 <li><a href="..&#x2F;classes/CustomRenderable.html">CustomRenderable</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
+            
+                <li><a href="..&#x2F;classes/Ellipse.html">Ellipse</a></li>
             
                 <li><a href="..&#x2F;classes/Graphics.html">Graphics</a></li>
             
@@ -149,10 +153,23 @@
 &#x2F;**
  * @class Polygon
  * @constructor
- * @param points {Array}
+ * @param points {Array&lt;Point&gt;|Array&lt;Number&gt;} This cna be an array of Points or a flat array of numbers
+ *      that will be interpreted as [x,y, x,y, ...]
  *&#x2F;
 PIXI.Polygon = function(points)
 {
+    &#x2F;&#x2F;if this is a flat array of numbers, convert it to points
+    if(typeof points[0] === &#x27;number&#x27;) {
+        var p = [];
+        for(var i = 0, il = points.length; i &lt; il; i+=2) {
+            p.push(
+                new PIXI.Point(points[i], points[i + 1])
+            );
+        }
+
+        points = p;
+    }
+
 	this.points = points;
 }
 
@@ -160,7 +177,7 @@ PIXI.Polygon = function(points)
  * @method clone
  * @return a copy of the polygon
  *&#x2F;
-PIXI.Polygon.clone = function()
+PIXI.Polygon.prototype.clone = function()
 {
 	var points = [];
 	for (var i=0; i&lt;this.points.length; i++) {
@@ -168,6 +185,29 @@ PIXI.Polygon.clone = function()
 	}
 
 	return new PIXI.Polygon(points);
+}
+
+&#x2F;**
+ * @method contains
+ * @param x {Number} The X coord of the point to test
+ * @param y {Number} The Y coord of the point to test
+ * @return if the x&#x2F;y coords are within this polygon
+ *&#x2F;
+PIXI.Polygon.prototype.contains = function(x, y)
+{
+    var inside = false;
+
+    &#x2F;&#x2F; use some raycasting to test hits
+    &#x2F;&#x2F; https:&#x2F;&#x2F;github.com&#x2F;substack&#x2F;point-in-polygon&#x2F;blob&#x2F;master&#x2F;index.js
+    for(var i = 0, j = this.points.length - 1; i &lt; this.points.length; j = i++) {
+        var xi = this.points[i].x, yi = this.points[i].y,
+            xj = this.points[j].x, yj = this.points[j].y,
+            intersect = ((yi &gt; y) != (yj &gt; y)) &amp;&amp; (x &lt; (xj - xi) * (y - yi) &#x2F; (yj - yi) + xi);
+
+        if(intersect) inside = !inside;
+    }
+
+    return inside;
 }
 
 PIXI.Polygon.constructor = PIXI.Polygon;

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>WebGLRenderer - Pixi.JS</title>
+    <title>Circle - Pixi.JS</title>
     <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
@@ -142,7 +142,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>WebGLRenderer Class</h1>
+                        <h1>Circle Class</h1>
 <div class="box meta">
     
 
@@ -150,7 +150,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="..&#x2F;files&#x2F;src_pixi_renderers_webgl_WebGLRenderer.js.html#l11"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;WebGLRenderer.js:11</code></a>
+            Defined in: <a href="..&#x2F;files&#x2F;src_pixi_core_Circle.js.html#l5"><code>src&#x2F;pixi&#x2F;core&#x2F;Circle.js:5</code></a>
         </div>
     
 
@@ -166,15 +166,14 @@
 
 
 <div class="box intro">
-    <p>the WebGLRenderer is draws the stage and all its content onto a webGL enabled canvas. This renderer should be used for browsers support webGL. This Render works by automatically managing webGLBatchs. So no need for Sprite Batch's or Sprite Cloud's
-Dont forget to add the view to your DOM or you will not see anything :)</p>
+    
 </div>
 
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_WebGLRenderer" class="method item">
-    <h3 class="name"><code>WebGLRenderer</code></h3>
+        <div id="method_Circle" class="method item">
+    <h3 class="name"><code>Circle</code></h3>
 
     
         <div class="args">
@@ -182,25 +181,19 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
                 <li class="arg">
                     
-                        <code>width</code>
+                        <code>x</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>height</code>
+                        <code>y</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>view</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>transparent</code>
+                        <code>radius</code>
                     
                 </li>
             
@@ -233,7 +226,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
         
         
-        <a href="..&#x2F;files&#x2F;src_pixi_renderers_webgl_WebGLRenderer.js.html#l11"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;WebGLRenderer.js:11</code></a>
+        <a href="..&#x2F;files&#x2F;src_pixi_core_Circle.js.html#l5"><code>src&#x2F;pixi&#x2F;core&#x2F;Circle.js:5</code></a>
         
         </p>
 
@@ -255,14 +248,14 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
                 <li class="param">
                     
-                        <code class="param-name">width</code>
+                        <code class="param-name">x</code>
                         <span class="type">Number</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>the width of the canvas view</p>
+                        <p>The X coord of the upper-left corner of the framing rectangle of this circle</p>
                     </div>
 
                     
@@ -270,14 +263,14 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
                 <li class="param">
                     
-                        <code class="param-name">height</code>
+                        <code class="param-name">y</code>
                         <span class="type">Number</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>the height of the canvas view</p>
+                        <p>The Y coord of the upper-left corner of the framing rectangle of this circle</p>
                     </div>
 
                     
@@ -285,29 +278,14 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
                 <li class="param">
                     
-                        <code class="param-name">view</code>
-                        <span class="type">Canvas</span>
+                        <code class="param-name">radius</code>
+                        <span class="type">Number</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>the canvas to use as a view, optional</p>
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">transparent</code>
-                        <span class="type">Boolean</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>the transparency of the render view, default false</p>
+                        <p>The radius of the circle</p>
                     </div>
 
                     
@@ -333,6 +311,8 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
         
         
+            <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
+        
         
         
     </ul>
@@ -348,14 +328,45 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
                     <ul class="index-list methods">
                         
                             <li class="index-item method">
-                                <a href="#method_render">render</a>
+                                <a href="#method_clone">clone</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_resize">resize</a>
+                                <a href="#method_contains">contains</a>
+
+                                
+                                
+                            </li>
+                        
+                    </ul>
+                </div>
+            
+
+            
+                <div class="index-section properties">
+                    <h3>Properties</h3>
+
+                    <ul class="index-list properties">
+                        
+                            <li class="index-item property">
+                                <a href="#property_radius">radius</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_x">x</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_y">y</a>
 
                                 
                                 
@@ -368,8 +379,6 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
 
             
-
-            
         </div>
 
         
@@ -377,23 +386,17 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_render" class="method item">
-    <h3 class="name"><code>render</code></h3>
+                    <div id="method_clone" class="method item">
+    <h3 class="name"><code>clone</code></h3>
 
     
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>stage</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
+        <span class="paren">()</span>
     
 
+    
+        <span class="returns-inline">
+            <span class="type"></span>
+        </span>
     
 
     
@@ -419,7 +422,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
         
         
-        <a href="..&#x2F;files&#x2F;src_pixi_renderers_webgl_WebGLRenderer.js.html#l121"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;WebGLRenderer.js:121</code></a>
+        <a href="..&#x2F;files&#x2F;src_pixi_core_Circle.js.html#l36"><code>src&#x2F;pixi&#x2F;core&#x2F;Circle.js:36</code></a>
         
         </p>
 
@@ -430,42 +433,30 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
     </div>
 
     <div class="description">
-        <p>Renders the stage to its webGL view</p>
+        
     </div>
 
     
-        <div class="params">
-            <h4>Parameters:</h4>
 
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">stage</code>
-                        <span class="type"><a href="../classes/Stage.html" class="crosslink">Stage</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>the PIXI.Stage element to be rendered</p>
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
     
+        <div class="returns">
+            <h4>Returns:</h4>
 
+            <div class="returns-description">
+                
+                    
+                    a copy of the polygon
+                
+            </div>
+        </div>
     
 
     
 </div>
 
                 
-                    <div id="method_resize" class="method item">
-    <h3 class="name"><code>resize</code></h3>
+                    <div id="method_contains" class="method item">
+    <h3 class="name"><code>contains</code></h3>
 
     
         <div class="args">
@@ -473,13 +464,13 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
                 <li class="arg">
                     
-                        <code>width</code>
+                        <code>x</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>height</code>
+                        <code>y</code>
                     
                 </li>
             
@@ -487,6 +478,10 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
         </div>
     
 
+    
+        <span class="returns-inline">
+            <span class="type"></span>
+        </span>
     
 
     
@@ -512,7 +507,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
         
         
-        <a href="..&#x2F;files&#x2F;src_pixi_renderers_webgl_WebGLRenderer.js.html#l263"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;WebGLRenderer.js:263</code></a>
+        <a href="..&#x2F;files&#x2F;src_pixi_core_Circle.js.html#l45"><code>src&#x2F;pixi&#x2F;core&#x2F;Circle.js:45</code></a>
         
         </p>
 
@@ -523,7 +518,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
     </div>
 
     <div class="description">
-        <p>resizes the webGL view to the specified width and height</p>
+        
     </div>
 
     
@@ -534,14 +529,14 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
                 <li class="param">
                     
-                        <code class="param-name">width</code>
+                        <code class="param-name">x</code>
                         <span class="type">Number</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>the new width of the webGL view</p>
+                        <p>The X coord of the point to test</p>
                     </div>
 
                     
@@ -549,14 +544,14 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
                 <li class="param">
                     
-                        <code class="param-name">height</code>
+                        <code class="param-name">y</code>
                         <span class="type">Number</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>the new height of the webGL view</p>
+                        <p>The Y coord of the point to test</p>
                     </div>
 
                     
@@ -566,6 +561,17 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
         </div>
     
 
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                    if the x/y coords are within this polygon
+                
+            </div>
+        </div>
     
 
     
@@ -575,6 +581,150 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             </div>
         
 
+        
+            <div id="properties" class="api-class-tabpanel">
+                <h2 class="off-left">Properties</h2>
+
+                
+                    <div id="property_radius" class="property item">
+    <h3 class="name"><code>radius</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;src_pixi_core_Circle.js.html#l28"><code>src&#x2F;pixi&#x2F;core&#x2F;Circle.js:28</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+        <p><strong>Default:</strong> 0</p>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_x" class="property item">
+    <h3 class="name"><code>x</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;src_pixi_core_Circle.js.html#l14"><code>src&#x2F;pixi&#x2F;core&#x2F;Circle.js:14</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+        <p><strong>Default:</strong> 0</p>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_y" class="property item">
+    <h3 class="name"><code>y</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;src_pixi_core_Circle.js.html#l21"><code>src&#x2F;pixi&#x2F;core&#x2F;Circle.js:21</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+        <p><strong>Default:</strong> 0</p>
+    
+
+    
+
+    
+</div>
+
+                
+            </div>
         
 
         

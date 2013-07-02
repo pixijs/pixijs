@@ -53,11 +53,15 @@
             
                 <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
             
+                <li><a href="..&#x2F;classes/Circle.html">Circle</a></li>
+            
                 <li><a href="..&#x2F;classes/CustomRenderable.html">CustomRenderable</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
+            
+                <li><a href="..&#x2F;classes/Ellipse.html">Ellipse</a></li>
             
                 <li><a href="..&#x2F;classes/Graphics.html">Graphics</a></li>
             
@@ -201,7 +205,6 @@ PIXI.InteractionManager.prototype.collectInteractiveSprite = function(displayObj
 	var children = displayObject.children;
 	var length = children.length;
 	
-	&#x2F;&#x2F;this.interactiveItems = [];
 	&#x2F;&#x2F;&#x2F; make an interaction tree... {item.__interactiveParent}
 	for (var i = length-1; i &gt;= 0; i--)
 	{
@@ -459,42 +462,12 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 		y = a00 * id * global.y + -a10 * id * global.x + (-a12 * a00 + a02 * a10) * id;
 
 	&#x2F;&#x2F;a sprite or display object with a hit area defined
-	if(item.hitArea)
-	{
-		var hitArea = item.hitArea;
+	if(item.hitArea &amp;&amp; item.hitArea.contains) {
+		if(item.hitArea.contains(x, y)) {
+			if(isSprite)
+				interactionData.target = item;
 
-		&#x2F;&#x2F;Polygon hit area
-		if(item.hitArea instanceof PIXI.Polygon) {
-			var inside = false;
-
-			&#x2F;&#x2F; use some raycasting to test hits
-			&#x2F;&#x2F; https:&#x2F;&#x2F;github.com&#x2F;substack&#x2F;point-in-polygon&#x2F;blob&#x2F;master&#x2F;index.js
-			for(var i = 0, j = item.hitArea.points.length - 1; i &lt; item.hitArea.points.length; j = i++) {
-				var xi = item.hitArea.points[i].x, yi = item.hitArea.points[i].y,
-					xj = item.hitArea.points[j].x, yj = item.hitArea.points[j].y,
-					intersect = ((yi &gt; y) != (yj &gt; y)) &amp;&amp; (x &lt; (xj - xi) * (y - yi) &#x2F; (yj - yi) + xi);
-
-				if(intersect) inside = !inside;
-			}
-			
-			if(inside) {
-				if(isSprite) interactionData.target = item;
-				return true;
-			}
-		}
-		&#x2F;&#x2F;Rectangle hit area
-		else {
-			var x1 = hitArea.x;
-			if(x &gt; x1 &amp;&amp; x &lt; x1 + hitArea.width)
-			{
-				var y1 = hitArea.y;
-				
-				if(y &gt; y1 &amp;&amp; y &lt; y1 + hitArea.height)
-				{
-					if(isSprite) interactionData.target = item;
-					return true;
-				}
-			}
+			return true;
 		}
 	}
 	&#x2F;&#x2F; a sprite with no hitarea defined
