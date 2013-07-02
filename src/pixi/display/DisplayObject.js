@@ -262,10 +262,6 @@ PIXI.DisplayObject.prototype.addFilter = function(mask)
 	start.mask = mask;
 	end.mask = mask;
 	
-	start.id = end.id = county
-
-	county++;
-	
 	start.first = start.last =  this;
 	end.first = end.last = this;
 	

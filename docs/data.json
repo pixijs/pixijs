@@ -1782,7 +1782,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 403,
+            "line": 399,
             "access": "private",
             "tagname": "",
             "class": "DisplayObject"
@@ -3690,7 +3690,7 @@
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/display/DisplayObject.js:403"
+            "line": " src/pixi/display/DisplayObject.js:399"
         },
         {
             "message": "Missing item type",
