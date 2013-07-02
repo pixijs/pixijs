@@ -85,9 +85,16 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 //	console.log(childFirst)
 	var nextObject;
 	var previousObject;
-		
-	previousObject =  this.last;
 	
+	// this could be wrong if there is a filter??
+	if(this.filter)
+	{
+		previousObject =  this.last._iPrev;
+	}
+	else
+	{
+		previousObject = this.last;
+	}
 //	if(this.last._iNext)
 	
 	//console.log( this.last._iNext);
@@ -97,7 +104,8 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 	//this.last = child.last;
 	// need to make sure the parents last is updated too
 	var updateLast = this;
-	var prevLast = this.last;
+	var prevLast = previousObject;
+	
 	while(updateLast)
 	{
 		if(updateLast.last == prevLast)
@@ -175,8 +183,6 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 				}
 				updateLast = updateLast.parent;
 			}
-	
-	
 		}
 		else if(index == 0)
 		{
@@ -184,7 +190,7 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 		}
 		else
 		{
-			previousObject = this.children[index].last;
+			previousObject = this.children[index-1].last;
 		}
 		
 		nextObject = previousObject._iNext;
@@ -210,6 +216,7 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 			this.__renderGroup.addDisplayObjectAndChildren(child);
 		}
 		
+		console.log(this.children)
 	}
 	else
 	{
@@ -225,9 +232,14 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
  */
 PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
 {
+	/*
+	 * this funtion needs to be recoded.. 
+	 * can be done a lot faster..
+	 */
 	return;
-	// need to fix this function :/
 	
+	// need to fix this function :/
+	/*
 	// TODO I already know this??
 	var index = this.children.indexOf( child );
 	var index2 = this.children.indexOf( child2 );
@@ -246,7 +258,7 @@ PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
 			
 			this.stage.__addChild(child);
 			this.stage.__addChild(child2);
-		}*/
+		}
 		
 		// swap the positions..
 		this.children[index] = child2;
@@ -256,7 +268,7 @@ PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
 	else
 	{
 		throw new Error(child + " Both the supplied DisplayObjects must be a child of the caller " + this);
-	}
+	}*/
 }
 
 /**

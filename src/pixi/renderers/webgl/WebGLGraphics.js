@@ -66,12 +66,8 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
 	gl.vertexAttribPointer(PIXI.primitiveProgram.vertexPositionAttribute, 2, gl.FLOAT, false, 4 * 6, 0);
 	gl.vertexAttribPointer(PIXI.primitiveProgram.colorAttribute, 4, gl.FLOAT, false,4 * 6, 2 * 4);
 	
-//	console.log(PIXI.primitiveProgram.vertexPositionAttribute);
-	//console.log("Color " + PIXI.primitiveProgram.colorAttribute);
-	
 	// set the index buffer!
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, graphics._webGL.indexBuffer);
-	
 	
 	gl.drawElements(gl.TRIANGLE_STRIP,  graphics._webGL.indices.length, gl.UNSIGNED_SHORT, 0 );
 	

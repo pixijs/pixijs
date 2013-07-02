@@ -19,8 +19,8 @@ PIXI.Graphics = function()
 	
 	this.fillAlpha = 1;
 	
-	this.lineWidth = 2;
-	this.lineColor = "#FF0000";
+	this.lineWidth = 0;
+	this.lineColor = "black";
 	
 	this.graphicsData = [];
 	

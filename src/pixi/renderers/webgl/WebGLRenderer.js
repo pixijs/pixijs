@@ -48,7 +48,8 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
         PIXI.gl = this.gl = this.view.getContext("experimental-webgl",  {  	
     		 alpha: this.transparent,
     		 antialias:true, // SPEED UP??
-    		 premultipliedAlpha:false
+    		 premultipliedAlpha:false,
+    		 stencil:true
         });
     } 
     catch (e) 
@@ -68,6 +69,10 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
     this.batch = new PIXI.WebGLBatch(gl);
    	gl.disable(gl.DEPTH_TEST);
    	gl.disable(gl.CULL_FACE);
+   	
+   	//
+   	 
+   	 
     gl.enable(gl.BLEND);
     gl.colorMask(true, true, true, this.transparent); 
     

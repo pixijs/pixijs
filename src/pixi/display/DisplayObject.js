@@ -199,7 +199,6 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'visible', {
 PIXI.DisplayObject.prototype.setInteractive = function(interactive)
 {
 	this.interactive = interactive;
-	
 }
 
 /**
@@ -220,16 +219,61 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'interactive', {
     }
 });
 
-PIXI.DisplayObject.prototype.addFilter = function()
+/**
+ * Sets a mask for the displayObject. A mask is an object that limits the visibility of an object to the shape of the mask applied to it.
+ * In PIXI a regular mask must be a PIXI.Ggraphics object. This allows for much faster masking in canvas as it utilises shape clipping.
+ * To remove a mask, set this property to null.
+ * @property mask
+ * @type PIXI.Graphics
+ */
+Object.defineProperty(PIXI.DisplayObject.prototype, 'mask', {
+    get: function() {
+        return this._mask;
+    },
+    set: function(value) {
+    	
+        this._mask = value;
+        
+        if(value)
+        {
+	        this.addFilter(value)
+        }
+        else
+        {
+        	 this.removeFilter();
+        }
+    }
+});
+
+/* 
+ * private
+ */
+PIXI.DisplayObject.prototype.addFilter = function(mask)
 {
+	if(this.filter)return;
+	this.filter = true;
+	
 	
 	// insert a filter block..
 	var start = new PIXI.FilterBlock();
 	var end = new PIXI.FilterBlock();
 	
+	
+	start.mask = mask;
+	end.mask = mask;
+	
+	start.id = end.id = county
+
+	county++;
+	
+	start.first = start.last =  this;
+	end.first = end.last = this;
+	
+	start.open = true;
+	
 	/*
 	 * 
-	 * and an start filter
+	 * insert start
 	 * 
 	 */
 	
@@ -239,23 +283,32 @@ PIXI.DisplayObject.prototype.addFilter = function()
 	var previousObject;
 		
 	previousObject = this.first._iPrev;
-	nextObject = previousObject._iNext;
+	
+	if(previousObject)
+	{
+		nextObject = previousObject._iNext;
+		childFirst._iPrev = previousObject;
+		previousObject._iNext = childFirst;		
+	}
+	else
+	{
+		nextObject = this;
+	}	
 	
 	if(nextObject)
 	{
 		nextObject._iPrev = childLast;
 		childLast._iNext = nextObject;
 	}
-	childFirst._iPrev = previousObject;
-	previousObject._iNext = childFirst;		
+	
+	
 	// now insert the end filter block..
 	
 	/*
 	 * 
-	 * and an end filter
+	 * insert end filter
 	 * 
 	 */
-	
 	var childFirst = end
 	var childLast = end
 	var nextObject = null;
@@ -269,18 +322,82 @@ PIXI.DisplayObject.prototype.addFilter = function()
 		nextObject._iPrev = childLast;
 		childLast._iNext = nextObject;
 	}
+	
 	childFirst._iPrev = previousObject;
 	previousObject._iNext = childFirst;	
 	
-	this.first = start;
-	this.last = end;
+	var updateLast = this;
 	
-	// TODO need to check if the stage already exists...
+	var prevLast = this.last;
+	while(updateLast)
+	{
+		if(updateLast.last == prevLast)
+		{
+			updateLast.last = end;
+		}
+		updateLast = updateLast.parent;
+	}
+	
+	this.first = start;
+	
+	// if webGL...
+	if(this.__renderGroup)
+	{
+		this.__renderGroup.addFilterBlocks(start, end);
+	}
+	
+	mask.renderable = false;
+	
 }
 
-PIXI.FilterBlock = function()
+PIXI.DisplayObject.prototype.removeFilter = function()
 {
+	if(!this.filter)return;
+	this.filter = false;
 	
+	// modify the list..
+	var startBlock = this.first;
+	
+	var nextObject = startBlock._iNext;
+	var previousObject = startBlock._iPrev;
+		
+	if(nextObject)nextObject._iPrev = previousObject;
+	if(previousObject)previousObject._iNext = nextObject;		
+	
+	this.first = startBlock._iNext;
+	
+	
+	// remove the end filter
+	var lastBlock = this.last;
+	
+	var nextObject = lastBlock._iNext;
+	var previousObject = lastBlock._iPrev;
+		
+	if(nextObject)nextObject._iPrev = previousObject;
+	previousObject._iNext = nextObject;		
+	
+	// this is always true too!
+//	if(this.last == lastBlock)
+	//{
+	var tempLast =  lastBlock._iPrev;	
+	// need to make sure the parents last is updated too
+	var updateLast = this;
+	while(updateLast.last == lastBlock)
+	{
+		updateLast.last = tempLast;
+		updateLast = updateLast.parent;
+		if(!updateLast)break;
+	}
+	
+	var mask = startBlock.mask
+	mask.renderable = true;
+	
+	// if webGL...
+	if(this.__renderGroup)
+	{
+		this.__renderGroup.removeFilterBlocks(startBlock, lastBlock);
+	}
+	//}
 }
 
 /**

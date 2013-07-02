@@ -131,6 +131,8 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 	var transform;
 	var context = this.context;
 	
+	context.globalCompositeOperation = 'source-over';
+	
 	// one the display object hits this. we can break the loop	
 	var testObject = displayObject.last._iNext;
 	displayObject = displayObject.first;
@@ -192,7 +194,35 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 			context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5])
 			PIXI.CanvasGraphics.renderGraphics(displayObject, context);
 		}
-		
+		else if(displayObject instanceof PIXI.FilterBlock)
+		{
+			if(displayObject.open)
+			{
+				context.save();
+				
+				var cacheAlpha = displayObject.mask.alpha;
+				var maskTransform = displayObject.mask.worldTransform;
+				
+				context.setTransform(maskTransform[0], maskTransform[3], maskTransform[1], maskTransform[4], maskTransform[2], maskTransform[5])
+				
+				displayObject.mask.worldAlpha = 0.5;
+				
+				context.worldAlpha = 0;
+				
+				PIXI.CanvasGraphics.renderGraphicsMask(displayObject.mask, context);
+		//		context.fillStyle = 0xFF0000;
+			//	context.fillRect(0, 0, 200, 200);
+				context.clip();
+				
+				displayObject.mask.worldAlpha = cacheAlpha;
+				//context.globalCompositeOperation = 'lighter';
+			}
+			else
+			{
+				//context.globalCompositeOperation = 'source-over';
+				context.restore();
+			}
+		}
 	//	count++
 		displayObject = displayObject._iNext;
 		
