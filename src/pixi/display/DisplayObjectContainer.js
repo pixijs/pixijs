@@ -232,9 +232,14 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
  */
 PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
 {
+	/*
+	 * this funtion needs to be recoded.. 
+	 * can be done a lot faster..
+	 */
 	return;
-	// need to fix this function :/
 	
+	// need to fix this function :/
+	/*
 	// TODO I already know this??
 	var index = this.children.indexOf( child );
 	var index2 = this.children.indexOf( child2 );
@@ -253,7 +258,7 @@ PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
 			
 			this.stage.__addChild(child);
 			this.stage.__addChild(child2);
-		}*/
+		}
 		
 		// swap the positions..
 		this.children[index] = child2;
@@ -263,7 +268,7 @@ PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
 	else
 	{
 		throw new Error(child + " Both the supplied DisplayObjects must be a child of the caller " + this);
-	}
+	}*/
 }
 
 /**
