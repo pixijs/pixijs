@@ -46,6 +46,7 @@ PIXI.WebGLRenderGroup.prototype.render = function(projection)
 	
 	var gl = this.gl;
 
+	
 	gl.uniform2f(PIXI.shaderProgram.projectionVector, projection.x, projection.y);
 	gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 	
@@ -133,7 +134,7 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 	 *  it keeps looking until it finds a sprite or gets to the end of the display
 	 *  scene graph
 	 */
-	var nextRenderable = displayObject.last;
+	var nextRenderable = displayObject.first;
 	while(nextRenderable._iNext)
 	{
 		nextRenderable = nextRenderable._iNext;
@@ -215,7 +216,7 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 		}
 		else
 		{
-			this.renderSpecial(startBatch);
+			this.renderSpecial(startBatch, projection);
 		}
 		return;
 	}
@@ -231,7 +232,7 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 	}
 	else
 	{
-		this.renderSpecial(startBatch);
+		this.renderSpecial(startBatch, projection);
 	}
 	
 	// DO the middle batchs..
@@ -245,7 +246,7 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 		}
 		else
 		{
-			this.renderSpecial(renderable);
+			this.renderSpecial(renderable, projection);
 		}
 	}
 	
@@ -256,27 +257,27 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 	}
 	else
 	{
-		this.renderSpecial(endBatch);
+		this.renderSpecial(endBatch, projection);
 	}
 }
 
-PIXI.WebGLRenderGroup.prototype.renderSpecial = function(renderable)
+PIXI.WebGLRenderGroup.prototype.renderSpecial = function(renderable, projection)
 {
 	if(renderable instanceof PIXI.TilingSprite)
 	{
-		if(renderable.visible)this.renderTilingSprite(renderable, projectionMatrix);
+		if(renderable.visible)this.renderTilingSprite(renderable, projection);
 	}
 	else if(renderable instanceof PIXI.Strip)
 	{
-		if(renderable.visible)this.renderStrip(renderable, projectionMatrix);
+		if(renderable.visible)this.renderStrip(renderable, projection);
 	}
 	else if(renderable instanceof PIXI.CustomRenderable)
 	{
-		if(renderable.visible) renderable.renderWebGL(this, projectionMatrix);
+		if(renderable.visible) renderable.renderWebGL(this, projection);
 	}
 	else if(renderable instanceof PIXI.Graphics)
 	{
-		if(renderable.visible && renderable.renderable) PIXI.WebGLGraphics.renderGraphics(renderable);//, projectionMatrix);
+		if(renderable.visible && renderable.renderable) PIXI.WebGLGraphics.renderGraphics(renderable, projection);
 	}
 	else if(renderable instanceof PIXI.FilterBlock)
 	{
