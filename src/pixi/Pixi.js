@@ -3,6 +3,6 @@
  */
 
 /**
-@module PIXI
+ * @module PIXI
  */
 var PIXI = PIXI || {};

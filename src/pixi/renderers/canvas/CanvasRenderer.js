@@ -6,58 +6,58 @@
 /**
  * the CanvasRenderer draws the stage and all its content onto a 2d canvas. This renderer should be used for browsers that do not support webGL.
  * Dont forget to add the view to your DOM or you will not see anything :)
+ *
  * @class CanvasRenderer
  * @constructor
- * @param width {Number} the width of the canvas view
- * @default 0
- * @param height {Number} the height of the canvas view
- * @default 0
+ * @param width=0 {Number} the width of the canvas view
+ * @param height=0 {Number} the height of the canvas view
  * @param view {Canvas} the canvas to use as a view, optional
- * @param transparent {Boolean} the transparency of the render view, default false
- * @default false
- * 
+ * @param transparent=false {Boolean} the transparency of the render view, default false
  */
 PIXI.CanvasRenderer = function(width, height, view, transparent)
 {
 	this.transparent = transparent;
-	
+
 	/**
 	 * The width of the canvas view
+	 *
 	 * @property width
 	 * @type Number
 	 * @default 800
 	 */
 	this.width = width || 800;
+
 	/**
 	 * The height of the canvas view
+	 *
 	 * @property height
 	 * @type Number
 	 * @default 600
 	 */
 	this.height = height || 600;
-	
-	this.refresh = true;
-	
+
 	/**
 	 * The canvas element that the everything is drawn to
+	 *
 	 * @property view
 	 * @type Canvas
 	 */
-	this.view = view || document.createElement( 'canvas' ); 
-	
-	// hack to enable some hardware acceleration!
-	//this.view.style["transform"] = "translatez(0)";
-	
-    this.view.width = this.width;
-	this.view.height = this.height;  
-	this.count = 0;
-	
+	this.view = view || document.createElement( 'canvas' );
+
 	/**
 	 * The canvas context that the everything is drawn to
 	 * @property context
 	 * @type Canvas 2d Context
 	 */
 	this.context = this.view.getContext("2d");
+
+	this.refresh = true;
+	// hack to enable some hardware acceleration!
+	//this.view.style["transform"] = "translatez(0)";
+	
+    this.view.width = this.width;
+	this.view.height = this.height;  
+	this.count = 0;
 }
 
 // constructor
@@ -65,6 +65,7 @@ PIXI.CanvasRenderer.constructor = PIXI.CanvasRenderer;
 
 /**
  * Renders the stage to its canvas view
+ *
  * @method render
  * @param stage {Stage} the Stage element to be rendered
  */
@@ -109,8 +110,10 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 
 /**
  * resizes the canvas view to the specified width and height
- * @param the new width of the canvas view
- * @param the new height of the canvas view
+ *
+ * @method resize
+ * @param width {Number} the new width of the canvas view
+ * @param height {Number} the new height of the canvas view
  */
 PIXI.CanvasRenderer.prototype.resize = function(width, height)
 {
@@ -122,9 +125,12 @@ PIXI.CanvasRenderer.prototype.resize = function(width, height)
 }
 
 /**
+ * Renders a display object
+ *
+ * @method renderDisplayObject
+ * @param displayObject {DisplayObject} The displayObject to render
  * @private
  */
-
 PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 {
 	// no loger recurrsive!
@@ -231,8 +237,11 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 	while(displayObject != testObject)
 }
 
-
 /**
+ * Renders a flat strip
+ *
+ * @method renderStripFlat
+ * @param strip {Strip} The Strip to render
  * @private
  */
 PIXI.CanvasRenderer.prototype.renderStripFlat = function(strip)
@@ -266,6 +275,10 @@ PIXI.CanvasRenderer.prototype.renderStripFlat = function(strip)
 }
 
 /**
+ * Renders a tiling sprite
+ *
+ * @method renderTilingSprite
+ * @param sprite {TilingSprite} The tilingsprite to render
  * @private
  */
 PIXI.CanvasRenderer.prototype.renderTilingSprite = function(sprite)
@@ -294,9 +307,11 @@ PIXI.CanvasRenderer.prototype.renderTilingSprite = function(sprite)
     context.closePath();
 }
 
-
-
 /**
+ * Renders a strip
+ *
+ * @method renderStrip
+ * @param strip {Strip} The Strip to render
  * @private
  */
 PIXI.CanvasRenderer.prototype.renderStrip = function(strip)
@@ -356,11 +371,3 @@ PIXI.CanvasRenderer.prototype.renderStrip = function(strip)
 	
 //	context.globalCompositeOperation = 'source-over';	
 }
-
-
-
-
-
-
-
-
