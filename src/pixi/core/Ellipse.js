@@ -47,7 +47,7 @@ PIXI.Ellipse = function(x, y, width, height)
  * Creates a clone of this Ellipse instance
  *
  * @method clone
- * @return {Ellipse} a copy of the polygon
+ * @return {Ellipse} a copy of the ellipse
  */
 PIXI.Ellipse.prototype.clone = function()
 {
@@ -60,7 +60,7 @@ PIXI.Ellipse.prototype.clone = function()
  * @method contains
  * @param x {Number} The X coord of the point to test
  * @param y {Number} The Y coord of the point to test
- * @return {Boolean} if the x/y coords are within this polygon
+ * @return {Boolean} if the x/y coords are within this ellipse
  */
 PIXI.Ellipse.prototype.contains = function(x, y)
 {

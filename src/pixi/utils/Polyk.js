@@ -34,7 +34,7 @@
 PIXI.PolyK = {};
 
 /**
- * Triangulates something or another
+ * Triangulates shapes for webGL graphic fills
  *
  * @method Triangulate
  * @namespace PolyK
@@ -137,7 +137,7 @@ PIXI.PolyK._PointInTriangle = function(px, py, ax, ay, bx, by, cx, cy)
 }
 
 /**
- * Something something something convex
+ * Checks if a shape is convex
  *
  * @class _convex
  * @namespace PolyK
