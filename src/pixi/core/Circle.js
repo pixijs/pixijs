@@ -3,6 +3,8 @@
  */
 
 /**
+ * The Circle object can be used to specify a hit area for displayobjects
+ *
  * @class Circle
  * @constructor
  * @param x {Number} The X coord of the upper-left corner of the framing rectangle of this circle
@@ -34,8 +36,10 @@ PIXI.Circle = function(x, y, radius)
 }
 
 /**
+ * Creates a clone of this Circle instance
+ *
  * @method clone
- * @return a copy of the polygon
+ * @return {Circle} a copy of the polygon
  */
 PIXI.Circle.prototype.clone = function()
 {
@@ -43,10 +47,12 @@ PIXI.Circle.prototype.clone = function()
 }
 
 /**
+ * Checks if the x, and y coords passed to this function are contained within this circle
+ *
  * @method contains
  * @param x {Number} The X coord of the point to test
  * @param y {Number} The Y coord of the point to test
- * @return if the x/y coords are within this polygon
+ * @return {Boolean} if the x/y coords are within this polygon
  */
 PIXI.Circle.prototype.contains = function(x, y)
 {
