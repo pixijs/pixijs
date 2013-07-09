@@ -60,6 +60,13 @@ PIXI.Spine = function(url)
 
 PIXI.Spine.constructor = PIXI.Spine;
 PIXI.Spine.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
+
+/*
+ * Updates the object transform for rendering
+ *
+ * @method updateTransform
+ * @private
+ */
 PIXI.Spine.prototype.updateTransform = function()
 {
 	// TODO should make this time based really..
