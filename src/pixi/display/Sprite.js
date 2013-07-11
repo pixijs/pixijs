@@ -8,55 +8,64 @@ PIXI.blendModes.SCREEN = 1;
 
 
 /**
-@class Sprite
-@extends DisplayObjectContainer
-@constructor
-@param texture {Texture}
-@type String
-*/
+ * The SPrite object is the base for all textured objects that are rendered to the screen
+ *
+ * @class Sprite
+ * @extends DisplayObjectContainer
+ * @constructor
+ * @param texture {Texture} The texture for this sprite
+ * @type String
+ */
 PIXI.Sprite = function(texture)
 {
 	PIXI.DisplayObjectContainer.call( this );
-	
-	 /**
+
+	/**
 	 * The anchor sets the origin point of the texture.
 	 * The default is 0,0 this means the textures origin is the top left 
 	 * Setting than anchor to 0.5,0.5 means the textures origin is centered
 	 * Setting the anchor to 1,1 would mean the textures origin points will be the bottom right
+	 *
      * @property anchor
      * @type Point
      */
 	this.anchor = new PIXI.Point();
-	
+
 	/**
 	 * The texture that the sprite is using
+	 *
 	 * @property texture
 	 * @type Texture
 	 */
 	this.texture = texture;
-	
+
 	/**
 	 * The blend mode of sprite.
 	 * currently supports PIXI.blendModes.NORMAL and PIXI.blendModes.SCREEN
+	 *
 	 * @property blendMode
-	 * @type uint
+	 * @type Number
 	 */
 	this.blendMode = PIXI.blendModes.NORMAL;
-	
+
 	/**
 	 * The width of the sprite (this is initially set by the texture)
-	 * @property width
-	 * @type #Number
+	 *
+	 * @property _width
+	 * @type Number
+	 * @private
 	 */
 	this._width = 0;
-	
+
 	/**
 	 * The height of the sprite (this is initially set by the texture)
-	 * @property height
-	 * @type #Number
+	 *
+	 * @property _height
+	 * @type Number
+	 * @private
 	 */
 	this._height = 0;
-	
+
 	if(texture.baseTexture.hasLoaded)
 	{
 		this.updateFrame = true;
@@ -66,20 +75,20 @@ PIXI.Sprite = function(texture)
 		this.onTextureUpdateBind = this.onTextureUpdate.bind(this);
 		this.texture.addEventListener( 'update', this.onTextureUpdateBind );
 	}
-	
+
 	this.renderable = true;
-	
-	// thi next bit is here for the docs...
-	
-	
 }
 
 // constructor
 PIXI.Sprite.constructor = PIXI.Sprite;
 PIXI.Sprite.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
 
-// OOH! shiney new getters and setters for width and height
-// The width and height now modify the scale (this is what flash does, nice and tidy!)
+/**
+ * The width of the sprite, setting this will actually modify the scale to acheive the value set
+ *
+ * @property width
+ * @type Number
+ */
 Object.defineProperty(PIXI.Sprite.prototype, 'width', {
     get: function() {
         return this.scale.x * this.texture.frame.width;
@@ -90,6 +99,12 @@ Object.defineProperty(PIXI.Sprite.prototype, 'width', {
     }
 });
 
+/**
+ * The height of the sprite, setting this will actually modify the scale to acheive the value set
+ *
+ * @property height
+ * @type Number
+ */
 Object.defineProperty(PIXI.Sprite.prototype, 'height', {
     get: function() {
         return  this.scale.y * this.texture.frame.height;
@@ -99,11 +114,13 @@ Object.defineProperty(PIXI.Sprite.prototype, 'height', {
         this._height = value;
     }
 });
- 
+
 /**
-@method setTexture
-@param texture {Texture} The PIXI texture that is displayed by the sprite
-*/
+ * Sets the texture of the sprite
+ *
+ * @method setTexture
+ * @param texture {Texture} The PIXI texture that is displayed by the sprite
+ */
 PIXI.Sprite.prototype.setTexture = function(texture)
 {
 	// stop current texture;
@@ -117,6 +134,10 @@ PIXI.Sprite.prototype.setTexture = function(texture)
 }
 
 /**
+ * When the texture is updated, this event will fire to update the scale and frame
+ *
+ * @method onTextureUpdate
+ * @param event
  * @private
  */
 PIXI.Sprite.prototype.onTextureUpdate = function(event)
@@ -136,6 +157,7 @@ PIXI.Sprite.prototype.onTextureUpdate = function(event)
  * 
  * Helper function that creates a sprite that will contain a texture from the TextureCache based on the frameId
  * The frame ids are created when a Texture packer file has been loaded
+ *
  * @method fromFrame
  * @static
  * @param frameId {String} The frame Id of the texture in the cache
@@ -152,9 +174,10 @@ PIXI.Sprite.fromFrame = function(frameId)
  * 
  * Helper function that creates a sprite that will contain a texture based on an image url
  * If the image is not in the texture cache it will be loaded
+ *
  * @method fromImage
  * @static
- * @param The image url of the texture
+ * @param imageId {String} The image url of the texture
  * @return {Sprite} A new Sprite using a texture from the texture cache matching the image id
  */
 PIXI.Sprite.fromImage = function(imageId)

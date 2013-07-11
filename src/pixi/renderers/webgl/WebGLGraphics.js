@@ -2,20 +2,27 @@
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
-
-
 /**
  * A set of functions used by the webGL renderer to draw the primitive graphics data
- * @class CanvasGraphics 
+ *
+ * @class CanvasGraphics
  */
 PIXI.WebGLGraphics = function()
 {
 	
 }
 
+/**
+ * Renders the graphics object
+ *
+ * @static
+ * @private
+ * @method renderGraphics
+ * @param graphics {Graphics}
+ * @param projection {Object}
+ */
 PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
 {
-	
 	var gl = PIXI.gl;
 	
 	if(!graphics._webGL)graphics._webGL = {points:[], indices:[], lastIndex:0, 
@@ -75,6 +82,14 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
 	PIXI.activateDefaultShader();
 }
 
+/**
+ * Updates the graphics object
+ *
+ * @static
+ * @private
+ * @method updateGraphics
+ * @param graphics {Graphics}
+ */
 PIXI.WebGLGraphics.updateGraphics = function(graphics)
 {
 	for (var i=graphics._webGL.lastIndex; i < graphics.graphicsData.length; i++) 
@@ -119,7 +134,15 @@ PIXI.WebGLGraphics.updateGraphics = function(graphics)
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, graphics._webGL.glIndicies, gl.STATIC_DRAW);
 }
 
-
+/**
+ * Builds a rectangle to draw
+ *
+ * @static
+ * @private
+ * @method buildRectangle
+ * @param graphics {Graphics}
+ * @param webGLData {Object}
+ */
 PIXI.WebGLGraphics.buildRectangle = function(graphicsData, webGLData)
 {
 	// --- //
@@ -176,6 +199,15 @@ PIXI.WebGLGraphics.buildRectangle = function(graphicsData, webGLData)
 	
 }
 
+/**
+ * Builds a circle to draw
+ *
+ * @static
+ * @private
+ * @method buildCircle
+ * @param graphics {Graphics}
+ * @param webGLData {Object}
+ */
 PIXI.WebGLGraphics.buildCircle = function(graphicsData, webGLData)
 {
 	// --- //
@@ -235,6 +267,15 @@ PIXI.WebGLGraphics.buildCircle = function(graphicsData, webGLData)
 	
 }
 
+/**
+ * Builds a line to draw
+ *
+ * @static
+ * @private
+ * @method buildLine
+ * @param graphics {Graphics}
+ * @param webGLData {Object}
+ */
 PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
 {
 	// TODO OPTIMISE!
@@ -417,7 +458,15 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
 	indices.push(indexStart-1);
 }
 
-
+/**
+ * Builds a polygon to draw
+ *
+ * @static
+ * @private
+ * @method buildPoly
+ * @param graphics {Graphics}
+ * @param webGLData {Object}
+ */
 PIXI.WebGLGraphics.buildPoly = function(graphicsData, webGLData)
 {
 	var points = graphicsData.points;

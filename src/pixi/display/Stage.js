@@ -3,46 +3,77 @@
  */
 
 /**
-A Stage represents the root of the display tree. Everything connected to the stage is rendered
-@class Stage
-@extends DisplayObjectContainer
-@constructor
-@param backgroundColor {Number} the background color of the stage
-@param interactive {Boolean} enable / disable interaction (default is false)
-*/
+ * A Stage represents the root of the display tree. Everything connected to the stage is rendered
+ *
+ * @class Stage
+ * @extends DisplayObjectContainer
+ * @constructor
+ * @param backgroundColor {Number} the background color of the stage, easiest way to pass this in is in hex format
+ *		like: 0xFFFFFF for white
+ * @param interactive {Boolean} enable / disable interaction (default is false)
+ */
 PIXI.Stage = function(backgroundColor, interactive)
 {
-	
 	PIXI.DisplayObjectContainer.call( this );
-	
-	this.worldTransform = PIXI.mat3.create()
+
+	/**
+	 * [read-only] Current transform of the object based on world (parent) factors
+	 *
+	 * @property worldTransform
+	 * @type Mat3
+	 * @readOnly
+	 * @private
+	 */
+	this.worldTransform = PIXI.mat3.create();
+
+	/**
+	 * Whether or not the stage is interactive
+	 *
+	 * @property interactive
+	 * @type Boolean
+	 */
+	this.interactive = interactive;
+
+	/**
+	 * The interaction manage for this stage, manages all interactive activity on the stage
+	 *
+	 * @property interactive
+	 * @type InteractionManager
+	 */
+	this.interactionManager = new PIXI.InteractionManager(this);
+
+	/**
+	 * Whether the stage is dirty and needs to have interactions updated
+	 *
+	 * @property dirty
+	 * @type Boolean
+	 * @private
+	 */
+	this.dirty = true;
+
 	this.__childrenAdded = [];
 	this.__childrenRemoved = [];
-	
-	//this.childIndex = 0;
+
+	//the stage is it's own stage
 	this.stage = this;
-	this.interactive = interactive;
-	
+
+	//optimize hit detection a bit
 	this.stage.hitArea = new PIXI.Rectangle(0,0,100000, 100000);
-	
-	// interaction!
-	// this.interactive = !!interactive;
-	this.interactionManager = new PIXI.InteractionManager(this);
-	
+
 	this.setBackgroundColor(backgroundColor);
 	this.worldVisible = true;
-	this.stage.dirty = true;
 }
 
 // constructor
 PIXI.Stage.constructor = PIXI.Stage;
-
 PIXI.Stage.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
 
-/**
-@method updateTransform
-@internal
-*/
+/*
+ * Updates the object transform for rendering
+ *
+ * @method updateTransform
+ * @private
+ */
 PIXI.Stage.prototype.updateTransform = function()
 {
 	this.worldAlpha = 1;		
@@ -63,8 +94,11 @@ PIXI.Stage.prototype.updateTransform = function()
 }
 
 /**
+ * Sets the background color for the stage
+ *
  * @method setBackgroundColor
- * @param backgroundColor {Number}
+ * @param backgroundColor {Number} the color of the background, easiest way to pass this in is in hex format
+ *		like: 0xFFFFFF for white
  */
 PIXI.Stage.prototype.setBackgroundColor = function(backgroundColor)
 {
@@ -77,6 +111,7 @@ PIXI.Stage.prototype.setBackgroundColor = function(backgroundColor)
 
 /**
  * This will return the point containing global coords of the mouse.
+ *
  * @method getMousePosition
  * @return {Point} The point containing the coords of the global InteractionData position.
  */

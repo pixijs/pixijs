@@ -4,56 +4,68 @@
 
 /**
  * A MovieClip is a simple way to display an animation depicted by a list of textures.
+ *
  * @class MovieClip
  * @extends Sprite
  * @constructor
- * @param textures {Array} an array of {Texture} objects that make up the animation
+ * @param textures {Array<Texture>} an array of {Texture} objects that make up the animation
  */
 PIXI.MovieClip = function(textures)
 {
-	PIXI.Sprite.call( this, textures[0]);
+	PIXI.Sprite.call(this, textures[0]);
 	
 	/**
 	 * The array of textures that make up the animation
+	 *
 	 * @property textures
 	 * @type Array
 	 */
 	this.textures = textures;
 	
 	/**
-	 * [read only] The index MovieClips current frame (this may not have to be a whole number)
-	 * @property currentFrame
-	 * @type Number
-	 */
-	this.currentFrame = 0; 
-	
-	/**
 	 * The speed that the MovieClip will play at. Higher is faster, lower is slower
+	 *
 	 * @property animationSpeed
 	 * @type Number
+	 * @default 1
 	 */
 	this.animationSpeed = 1;
 
 	/**
 	 * Whether or not the movie clip repeats after playing.
+	 *
 	 * @property loop
 	 * @type Boolean
+	 * @default true
 	 */
 	this.loop = true;
 
 	/**
 	 * Function to call when a MovieClip finishes playing
+	 *
 	 * @property onComplete
 	 * @type Function
 	 */
 	this.onComplete = null;
 	
 	/**
-	 * [read only] indicates if the MovieClip is currently playing
+	 * [read-only] The index MovieClips current frame (this may not have to be a whole number)
+	 *
+	 * @property currentFrame
+	 * @type Number
+	 * @default 0
+	 * @readOnly
+	 */
+	this.currentFrame = 0; 
+	
+	/**
+	 * [read-only] Indicates if the MovieClip is currently playing
+	 *
 	 * @property playing
 	 * @type Boolean
+	 * @readOnly
 	 */
-	this.playing;
+	this.playing = false;
 }
 
 // constructor
@@ -62,6 +74,7 @@ PIXI.MovieClip.prototype = Object.create( PIXI.Sprite.prototype );
 
 /**
  * Stops the MovieClip
+ *
  * @method stop
  */
 PIXI.MovieClip.prototype.stop = function()
@@ -71,6 +84,7 @@ PIXI.MovieClip.prototype.stop = function()
 
 /**
  * Plays the MovieClip
+ *
  * @method play
  */
 PIXI.MovieClip.prototype.play = function()
@@ -80,6 +94,7 @@ PIXI.MovieClip.prototype.play = function()
 
 /**
  * Stops the MovieClip and goes to a specific frame
+ *
  * @method gotoAndStop
  * @param frameNumber {Number} frame index to stop at
  */
@@ -93,6 +108,7 @@ PIXI.MovieClip.prototype.gotoAndStop = function(frameNumber)
 
 /**
  * Goes to a specific frame and begins playing the MovieClip
+ *
  * @method gotoAndPlay
  * @param frameNumber {Number} frame index to start at
  */
@@ -102,6 +118,12 @@ PIXI.MovieClip.prototype.gotoAndPlay = function(frameNumber)
 	this.playing = true;
 }
 
+/*
+ * Updates the object transform for rendering
+ *
+ * @method updateTransform
+ * @private
+ */
 PIXI.MovieClip.prototype.updateTransform = function()
 {
 	PIXI.Sprite.prototype.updateTransform.call(this);
