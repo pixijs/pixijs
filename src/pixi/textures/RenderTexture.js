@@ -97,6 +97,30 @@ PIXI.RenderTexture.prototype.initWebGL = function()
 
 	// set the correct render function..
 	this.render = this.renderWebGL;
+
+	
+}
+
+
+PIXI.RenderTexture.prototype.resize = function(width, height)
+{
+	this.width = width;
+	this.height = height;
+	
+	this.projection = new PIXI.Point(this.width/2 , this.height/2);
+	
+	if(PIXI.gl)
+	{
+		var gl = PIXI.gl;
+		gl.bindTexture(gl.TEXTURE_2D, this.baseTexture._glTexture);
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  this.width,  this.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+	}
+	else
+	{
+		this.frame.width = this.width
+		this.frame.height = this.height;
+		this.renderer.resize(this.width, this.height);
+	}
 }
 
 PIXI.RenderTexture.prototype.initCanvas = function()
@@ -115,7 +139,7 @@ PIXI.RenderTexture.prototype.initCanvas = function()
  * @param displayObject {DisplayObject}
  * @param clear {Boolean} If true the texture will be cleared before the displayObject is drawn
  */
-PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, clear)
+PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, position, clear)
 {
 	var gl = PIXI.gl;
 	
@@ -140,6 +164,12 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, clear)
 	// modify to flip...
 	displayObject.worldTransform[4] = -1;
 	displayObject.worldTransform[5] = this.projection.y * 2;
+	
+	if(position)
+	{
+		displayObject.worldTransform[2] = position.x;
+		displayObject.worldTransform[5] -= position.y;
+	}
 	
 	for(var i=0,j=children.length; i<j; i++)
 	{
@@ -168,11 +198,17 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, clear)
 	
 }
 
-PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, clear)
+PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, position, clear)
 {
 	var children = displayObject.children;
 	
 	displayObject.worldTransform = PIXI.mat3.create();
+	
+	if(position)
+	{
+		displayObject.worldTransform[2] = position.x;
+		displayObject.worldTransform[5] = position.y;
+	}
 	
 	for(var i=0,j=children.length; i<j; i++)
 	{
@@ -180,7 +216,10 @@ PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, clear)
 	}
 
 	if(clear)this.renderer.context.clearRect(0,0, this.width, this.height);
+	
     this.renderer.renderDisplayObject(displayObject);
+    
+    this.renderer.context.setTransform(1,0,0,1,0,0); 
     
     PIXI.texturesToUpdate.push(this.baseTexture);
 }

@@ -216,7 +216,6 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 			this.__renderGroup.addDisplayObjectAndChildren(child);
 		}
 		
-		console.log(this.children)
 	}
 	else
 	{

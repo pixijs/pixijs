@@ -31,6 +31,23 @@ PIXI.mat3.create = function()
 	return matrix;
 }
 
+
+PIXI.mat3.identity = function(matrix)
+{
+	matrix[0] = 1;
+	matrix[1] = 0;
+	matrix[2] = 0;
+	matrix[3] = 0;
+	matrix[4] = 1;
+	matrix[5] = 0;
+	matrix[6] = 0;
+	matrix[7] = 0;
+	matrix[8] = 1;
+	
+	return matrix;
+}
+
+
 PIXI.mat4 = {};
 
 PIXI.mat4.create = function()

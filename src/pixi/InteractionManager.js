@@ -433,7 +433,6 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 	
 	for (var i=0; i < changedTouches.length; i++) 
 	{
-		 
 		var touchEvent = changedTouches[i];
 		var touchData = this.touchs[touchEvent.identifier];
 		var up = false;

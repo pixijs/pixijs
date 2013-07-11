@@ -284,6 +284,9 @@ PIXI.WebGLRenderGroup.prototype.renderSpecial = function(renderable, projection)
 		/*
 		 * for now only masks are supported..
 		 */
+
+		var gl = PIXI.gl;
+
 		if(renderable.open)
 		{
 			gl.enable(gl.STENCIL_TEST);
@@ -293,8 +296,9 @@ PIXI.WebGLRenderGroup.prototype.renderSpecial = function(renderable, projection)
 			gl.stencilOp(gl.KEEP,gl.KEEP,gl.REPLACE);
   
 			PIXI.WebGLGraphics.renderGraphics(renderable.mask, projection);
-				
-			gl.colorMask(true, true, true, false);
+			
+			// we know this is a render texture so enable alpha too..
+			gl.colorMask(true, true, true, true);
 			gl.stencilFunc(gl.NOTEQUAL,0,0xff);
 			gl.stencilOp(gl.KEEP,gl.KEEP,gl.KEEP);
 		}
