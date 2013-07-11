@@ -4,6 +4,7 @@
 
 /**
  * The Point object represents a location in a two-dimensional coordinate system, where x represents the horizontal axis and y represents the vertical axis.
+ *
  * @class Point
  * @constructor 
  * @param x {Number} position of the point
@@ -26,9 +27,11 @@ PIXI.Point = function(x, y)
 	this.y = y || 0;
 }
 
-/** 
+/**
+ * Creates a clone of this point
+ *
  * @method clone
- * @return a copy of the point
+ * @return {Point} a copy of the point
  */
 PIXI.Point.prototype.clone = function()
 {

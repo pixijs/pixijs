@@ -2,15 +2,18 @@
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
-
-
-
 /**
  * A WebGLBatch Enables a group of sprites to be drawn using the same settings.
- * if a group of sprites all have the same baseTexture and blendMode then they can be grouped into a batch. All the sprites in a batch can then be drawn in one go by the GPU which is hugely efficient. ALL sprites in the webGL renderer are added to a batch even if the batch only contains one sprite. Batching is handled automatically by the webGL renderer. A good tip is: the smaller the number of batchs there are, the faster the webGL renderer will run. 
+ * if a group of sprites all have the same baseTexture and blendMode then they can be
+ * grouped into a batch. All the sprites in a batch can then be drawn in one go by the
+ * GPU which is hugely efficient. ALL sprites in the webGL renderer are added to a batch
+ * even if the batch only contains one sprite. Batching is handled automatically by the
+ * webGL renderer. A good tip is: the smaller the number of batchs there are, the faster
+ * the webGL renderer will run.
+ *
  * @class WebGLBatch
- * @param an instance of the webGL context
- * @return {PIXI.renderers.WebGLBatch} WebGLBatch {@link PIXI.renderers.WebGLBatch}
+ * @contructor
+ * @param gl {WebGLContext} An instance of the webGL context
  */
 PIXI.WebGLRenderGroup = function(gl)
 {
@@ -25,6 +28,13 @@ PIXI.WebGLRenderGroup = function(gl)
 // constructor
 PIXI.WebGLRenderGroup.constructor = PIXI.WebGLRenderGroup;
 
+/**
+ * Add a display object to the webgl renderer
+ *
+ * @method setRenderable
+ * @param displayObject {DisplayObject}
+ * @private 
+ */
 PIXI.WebGLRenderGroup.prototype.setRenderable = function(displayObject)
 {
 	// has this changed??
@@ -40,6 +50,12 @@ PIXI.WebGLRenderGroup.prototype.setRenderable = function(displayObject)
 	this.addDisplayObjectAndChildren(displayObject);
 }
 
+/**
+ * Renders the stage to its webgl view
+ *
+ * @method render
+ * @param projection {Object}
+ */
 PIXI.WebGLRenderGroup.prototype.render = function(projection)
 {
 	PIXI.WebGLRenderer.updateTextures();
@@ -104,11 +120,26 @@ PIXI.WebGLRenderGroup.prototype.render = function(projection)
 	
 }
 
+/**
+ * Renders the stage to its webgl view
+ *
+ * @method handleFilter
+ * @param filter {FilterBlock}
+ * @private
+ */
 PIXI.WebGLRenderGroup.prototype.handleFilter = function(filter, projection)
 {
 	
 }
 
+/**
+ * Renders a specific displayObject
+ *
+ * @method renderSpecific
+ * @param displayObject {DisplayObject}
+ * @param projection {Object}
+ * @private
+ */
 PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, projection)
 {
 	PIXI.WebGLRenderer.updateTextures();
@@ -261,6 +292,14 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 	}
 }
 
+/**
+ * Renders a specific renderable
+ *
+ * @method renderSpecial
+ * @param renderable {DisplayObject}
+ * @param projection {Object}
+ * @private
+ */
 PIXI.WebGLRenderGroup.prototype.renderSpecial = function(renderable, projection)
 {
 	if(renderable instanceof PIXI.TilingSprite)
@@ -309,6 +348,14 @@ PIXI.WebGLRenderGroup.prototype.renderSpecial = function(renderable, projection)
 	}
 }
 
+/**
+ * Checks the visibility of a displayObject
+ *
+ * @method checkVisibility
+ * @param displayObject {DisplayObject}
+ * @param globalVisible {Boolean}
+ * @private
+ */
 PIXI.WebGLRenderGroup.prototype.checkVisibility = function(displayObject, globalVisible)
 {
 	// give the dp a reference to its renderGroup...
@@ -337,6 +384,13 @@ PIXI.WebGLRenderGroup.prototype.checkVisibility = function(displayObject, global
 	};
 }
 
+/**
+ * Updates a webgl texture
+ *
+ * @method updateTexture
+ * @param displayObject {DisplayObject}
+ * @private
+ */
 PIXI.WebGLRenderGroup.prototype.updateTexture = function(displayObject)
 {
 	
@@ -372,6 +426,14 @@ PIXI.WebGLRenderGroup.prototype.updateTexture = function(displayObject)
 	this.insertObject(displayObject, previousRenderable, nextRenderable);
 }
 
+/**
+ * Adds filter blocks
+ *
+ * @method addFilterBlocks
+ * @param start {FilterBlock}
+ * @param end {FilterBlock}
+ * @private
+ */
 PIXI.WebGLRenderGroup.prototype.addFilterBlocks = function(start, end)
 {
 	start.__renderGroup = this;
@@ -404,12 +466,27 @@ PIXI.WebGLRenderGroup.prototype.addFilterBlocks = function(start, end)
 	this.insertAfter(end, previousRenderable2);
 }
 
+/**
+ * Remove filter blocks
+ *
+ * @method removeFilterBlocks
+ * @param start {FilterBlock}
+ * @param end {FilterBlock}
+ * @private
+ */
 PIXI.WebGLRenderGroup.prototype.removeFilterBlocks = function(start, end)
 {
 	this.removeObject(start);
 	this.removeObject(end);
 }
 
+/**
+ * Adds a display object and children to the webgl context
+ *
+ * @method addDisplayObjectAndChildren
+ * @param displayObject {DisplayObject}
+ * @private
+ */
 PIXI.WebGLRenderGroup.prototype.addDisplayObjectAndChildren = function(displayObject)
 {
 	if(displayObject.__renderGroup)displayObject.__renderGroup.removeDisplayObjectAndChildren(displayObject);
@@ -460,6 +537,13 @@ PIXI.WebGLRenderGroup.prototype.addDisplayObjectAndChildren = function(displayOb
 	while(tempObject != testObject)
 }
 
+/**
+ * Removes a display object and children to the webgl context
+ *
+ * @method removeDisplayObjectAndChildren
+ * @param displayObject {DisplayObject}
+ * @private
+ */
 PIXI.WebGLRenderGroup.prototype.removeDisplayObjectAndChildren = function(displayObject)
 {
 	if(displayObject.__renderGroup != this)return;
@@ -475,8 +559,15 @@ PIXI.WebGLRenderGroup.prototype.removeDisplayObjectAndChildren = function(displa
 	while(displayObject)
 }
 
-	
-
+/**
+ * Inserts a displayObject into the linked list
+ *
+ * @method insertObject
+ * @param displayObject {DisplayObject}
+ * @param previousObject {DisplayObject}
+ * @param nextObject {DisplayObject}
+ * @private
+ */
 PIXI.WebGLRenderGroup.prototype.insertObject = function(displayObject, previousObject, nextObject)
 {
 	// while looping below THE OBJECT MAY NOT HAVE BEEN ADDED
@@ -606,8 +697,14 @@ PIXI.WebGLRenderGroup.prototype.insertObject = function(displayObject, previousO
 
 }
 
-				
-			
+/**
+ * Inserts a displayObject into the linked list
+ *
+ * @method insertAfter
+ * @param item {DisplayObject}
+ * @param displayObject {DisplayObject} The object to insert
+ * @private
+ */
 PIXI.WebGLRenderGroup.prototype.insertAfter = function(item, displayObject)
 {
 	if(displayObject instanceof PIXI.Sprite)
@@ -655,6 +752,13 @@ PIXI.WebGLRenderGroup.prototype.insertAfter = function(item, displayObject)
 	}
 }
 
+/**
+ * Removes a displayObject from the linked list
+ *
+ * @method removeObject
+ * @param displayObject {DisplayObject} The object to remove
+ * @private
+ */
 PIXI.WebGLRenderGroup.prototype.removeObject = function(displayObject)
 {
 	// loop through children..
@@ -726,15 +830,11 @@ PIXI.WebGLRenderGroup.prototype.removeObject = function(displayObject)
 	}
 }
 
-
 /**
- * @private
- */
-
-
-
-
-/**
+ * Initializes a tiling sprite
+ *
+ * @method initTilingSprite
+ * @param sprite {TilingSprite} The tiling sprite to initialize
  * @private
  */
 PIXI.WebGLRenderGroup.prototype.initTilingSprite = function(sprite)
@@ -790,6 +890,11 @@ PIXI.WebGLRenderGroup.prototype.initTilingSprite = function(sprite)
 }
 
 /**
+ * Renders a Strip
+ *
+ * @method renderStrip
+ * @param strip {Strip} The strip to render
+ * @param projection {Object}
  * @private
  */
 PIXI.WebGLRenderGroup.prototype.renderStrip = function(strip, projection)
@@ -876,8 +981,12 @@ PIXI.WebGLRenderGroup.prototype.renderStrip = function(strip, projection)
   	gl.useProgram(PIXI.shaderProgram);
 }
 
-
 /**
+ * Renders a TilingSprite
+ *
+ * @method renderTilingSprite
+ * @param sprite {TilingSprite} The tiling sprite to render
+ * @param projectionMatrix {Object}
  * @private
  */
 PIXI.WebGLRenderGroup.prototype.renderTilingSprite = function(sprite, projectionMatrix)
@@ -912,9 +1021,11 @@ PIXI.WebGLRenderGroup.prototype.renderTilingSprite = function(sprite, projection
 	this.renderStrip(sprite, projectionMatrix);
 }
 
-
-
 /**
+ * Initializes a strip to be rendered
+ *
+ * @method initStrip
+ * @param strip {Strip} The strip to initialize
  * @private
  */
 PIXI.WebGLRenderGroup.prototype.initStrip = function(strip)
@@ -941,4 +1052,3 @@ PIXI.WebGLRenderGroup.prototype.initStrip = function(strip)
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, strip._indexBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, strip.indices, gl.STATIC_DRAW);
 }
-

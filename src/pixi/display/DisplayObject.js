@@ -3,7 +3,8 @@
  */
 
 /**
- * this is the base class for all objects that are rendered on the screen.
+ * The base class for all objects that are rendered on the screen.
+ *
  * @class DisplayObject
  * @constructor
  */
@@ -11,163 +12,243 @@ PIXI.DisplayObject = function()
 {
 	this.last = this;
 	this.first = this;
-	
+
 	/**
 	 * The coordinate of the object relative to the local coordinates of the parent.
+	 *
 	 * @property position
 	 * @type Point
 	 */
 	this.position = new PIXI.Point();
-	
+
 	/**
 	 * The scale factor of the object.
+	 *
 	 * @property scale
 	 * @type Point
 	 */
 	this.scale = new PIXI.Point(1,1);//{x:1, y:1};
-	
+
 	/**
 	 * The pivot point of the displayObject that it rotates around
+	 *
 	 * @property pivot
 	 * @type Point
 	 */
 	this.pivot = new PIXI.Point(0,0);
-	
+
 	/**
 	 * The rotation of the object in radians.
+	 *
 	 * @property rotation
 	 * @type Number
 	 */
 	this.rotation = 0;
-	
+
 	/**
 	 * The opacity of the object.
+	 *
 	 * @property alpha
 	 * @type Number
 	 */	
 	this.alpha = 1;
-	
+
 	/**
 	 * The visibility of the object.
+	 *
 	 * @property visible
 	 * @type Boolean
 	 */	
 	this.visible = true;
-	this.worldVisible = false;
-	
-	/**
-	 * [read-only] The display object container that contains this display object.
-	 * @property parent
-	 * @type DisplayObjectContainer
-	 */	
-	this.parent = null;
-	
-	/**
-	 * [read-only] The stage the display object is connected to, or undefined if it is not connected to the stage.
-	 * @property stage
-	 * @type Stage
-	 */	
-	this.stage = null;
-	
+
 	/**
 	 * This is the defined area that will pick up mouse / touch events. It is null by default.
 	 * Setting it is a neat way of optimising the hitTest function that the interactionManager will use (as it will not need to hit test all the children)
+	 *
 	 * @property hitArea
-	 * @type Rectangle
+	 * @type Rectangle|Circle|Ellipse|Polygon
 	 */	
 	this.hitArea = null;
-	
-	this.worldAlpha = 1;
-	this.color = [];
-	
-	this.worldTransform = PIXI.mat3.create()//mat3.identity();
-	this.localTransform = PIXI.mat3.create()//mat3.identity();
-	
-	this.dynamic = true;
-	// chach that puppy!
-	this._sr = 0;
-	this._cr = 1;
-	
-	this.childIndex = 0;
-	
-	this.renderable = false;
-	
-	// [readonly] best not to toggle directly! use setInteractive()
-	this._interactive = false;
-	
+
 	/**
 	 * This is used to indicate if the displayObject should display a mouse hand cursor on rollover
+	 *
 	 * @property buttonMode
 	 * @type Boolean
 	 */
 	this.buttonMode = false;
-	
+
+	/**
+	 * Can this object be rendered
+	 *
+	 * @property renderable
+	 * @type Boolean
+	 */
+	this.renderable = false;
+
+	/**
+	 * [read-only] The visibility of the object based on world (parent) factors.
+	 *
+	 * @property worldVisible
+	 * @type Boolean
+	 * @readOnly
+	 */	
+	this.worldVisible = false;
+
+	/**
+	 * [read-only] The display object container that contains this display object.
+	 *
+	 * @property parent
+	 * @type DisplayObjectContainer
+	 * @readOnly
+	 */	
+	this.parent = null;
+
+	/**
+	 * [read-only] The stage the display object is connected to, or undefined if it is not connected to the stage.
+	 *
+	 * @property stage
+	 * @type Stage
+	 * @readOnly
+	 */	
+	this.stage = null;
+
+	/**
+	 * [read-only] The index of this object in the parent's `children` array
+	 *
+	 * @property childIndex
+	 * @type Number
+	 * @readOnly
+	 */	
+	this.childIndex = 0;
+
+	/**
+	 * [read-only] The multiplied alpha of the displayobject
+	 *
+	 * @property worldAlpha
+	 * @type Number
+	 * @readOnly
+	 */
+	this.worldAlpha = 1;
+
+	/**
+	 * [read-only] Whether or not the object is interactive, do not toggle directly! use the `interactive` property
+	 *
+	 * @property _interactive
+	 * @type Boolean
+	 * @readOnly
+	 * @private
+	 */
+	this._interactive = false;
+
+	/**
+	 * [read-only] Current transform of the object based on world (parent) factors
+	 *
+	 * @property worldTransform
+	 * @type Mat3
+	 * @readOnly
+	 * @private
+	 */
+	this.worldTransform = PIXI.mat3.create()//mat3.identity();
+
+	/**
+	 * [read-only] Current transform of the object locally
+	 *
+	 * @property localTransform
+	 * @type Mat3
+	 * @readOnly
+	 * @private
+	 */
+	this.localTransform = PIXI.mat3.create()//mat3.identity();
+
+	/**
+	 * [NYI] Unkown
+	 *
+	 * @property color
+	 * @type Array<>
+	 * @private
+	 */
+	this.color = [];
+
+	/**
+	 * [NYI] Holds whether or not this object is dynamic, for rendering optimization
+	 *
+	 * @property dynamic
+	 * @type Boolean
+	 * @private
+	 */
+	this.dynamic = true;
+
+	// chach that puppy!
+	this._sr = 0;
+	this._cr = 1;
+
 	/*
 	 * MOUSE Callbacks
 	 */
-	
+
 	/**
 	 * A callback that is used when the users clicks on the displayObject with their mouse
 	 * @method click
 	 * @param interactionData {InteractionData}
 	 */
-	
+
 	/**
 	 * A callback that is used when the user clicks the mouse down over the sprite
 	 * @method mousedown
 	 * @param interactionData {InteractionData}
 	 */
-	 
+
 	/**
 	 * A callback that is used when the user releases the mouse that was over the displayObject
 	 * for this callback to be fired the mouse must have been pressed down over the displayObject
 	 * @method mouseup
 	 * @param interactionData {InteractionData}
 	 */
-	
+
 	/**
 	 * A callback that is used when the user releases the mouse that was over the displayObject but is no longer over the displayObject
 	 * for this callback to be fired, The touch must have started over the displayObject
 	 * @method mouseupoutside
 	 * @param interactionData {InteractionData}
 	 */
-	
+
 	/**
 	 * A callback that is used when the users mouse rolls over the displayObject
 	 * @method mouseover
 	 * @param interactionData {InteractionData}
 	 */
-	
+
 	/**
 	 * A callback that is used when the users mouse leaves the displayObject
 	 * @method mouseout
 	 * @param interactionData {InteractionData}
 	 */
-	
-	
+
+
 	/*
 	 * TOUCH Callbacks
 	 */
-	
+
 	/**
 	 * A callback that is used when the users taps on the sprite with their finger
 	 * basically a touch version of click
 	 * @method tap
 	 * @param interactionData {InteractionData}
 	 */
-	
+
 	/**
 	 * A callback that is used when the user touch's over the displayObject
 	 * @method touchstart
 	 * @param interactionData {InteractionData}
 	 */
-	 
+
 	/**
 	 * A callback that is used when the user releases a touch over the displayObject
 	 * @method touchend
 	 * @param interactionData {InteractionData}
 	 */
-	
+
 	/**
 	 * A callback that is used when the user releases the touch that was over the displayObject
 	 * for this callback to be fired, The touch must have started over the sprite
@@ -193,8 +274,10 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'visible', {
 /**
  * [Deprecated] Indicates if the sprite will have touch and mouse interactivity. It is false by default
  * Instead of using this function you can now simply set the interactive property to true or false
+ *
  * @method setInteractive
  * @param interactive {Boolean}
+ * @deprecated Simply set the `interactive` property directly
  */
 PIXI.DisplayObject.prototype.setInteractive = function(interactive)
 {
@@ -203,8 +286,10 @@ PIXI.DisplayObject.prototype.setInteractive = function(interactive)
 
 /**
  * Indicates if the sprite will have touch and mouse interactivity. It is false by default
+ *
  * @property interactive
  * @type Boolean
+ * @default false
  */
 Object.defineProperty(PIXI.DisplayObject.prototype, 'interactive', {
     get: function() {
@@ -223,8 +308,9 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'interactive', {
  * Sets a mask for the displayObject. A mask is an object that limits the visibility of an object to the shape of the mask applied to it.
  * In PIXI a regular mask must be a PIXI.Ggraphics object. This allows for much faster masking in canvas as it utilises shape clipping.
  * To remove a mask, set this property to null.
+ *
  * @property mask
- * @type PIXI.Graphics
+ * @type Graphics
  */
 Object.defineProperty(PIXI.DisplayObject.prototype, 'mask', {
     get: function() {
@@ -245,8 +331,12 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'mask', {
     }
 });
 
-/* 
- * private
+/*
+ * Adds a filter to this displayObject
+ *
+ * @method addFilter
+ * @param mask {Graphics} the graphics object to use as a filter
+ * @private
  */
 PIXI.DisplayObject.prototype.addFilter = function(mask)
 {
@@ -346,6 +436,12 @@ PIXI.DisplayObject.prototype.addFilter = function(mask)
 	
 }
 
+/*
+ * Removes the filter to this displayObject
+ *
+ * @method removeFilter
+ * @private
+ */
 PIXI.DisplayObject.prototype.removeFilter = function()
 {
 	if(!this.filter)return;
@@ -396,7 +492,10 @@ PIXI.DisplayObject.prototype.removeFilter = function()
 	//}
 }
 
-/**
+/*
+ * Updates the object transform for rendering
+ *
+ * @method updateTransform
  * @private
  */
 PIXI.DisplayObject.prototype.updateTransform = function()

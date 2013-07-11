@@ -4,7 +4,9 @@
 
 
 /**
- * A DisplayObjectContainer represents a collection of display objects. It is the base class of all display objects that act as a container for other objects.
+ * A DisplayObjectContainer represents a collection of display objects.
+ * It is the base class of all display objects that act as a container for other objects.
+ *
  * @class DisplayObjectContainer 
  * @extends DisplayObject
  * @constructor
@@ -15,12 +17,12 @@ PIXI.DisplayObjectContainer = function()
 	
 	/**
 	 * [read-only] The of children of this container.
-	 * @property children {Array}
+	 *
+	 * @property children
+	 * @type Array<DisplayObject>
+	 * @readOnly
 	 */	
 	this.children = [];
-	//s
-	this.renderable = false;
-	
 }
 
 // constructor
@@ -41,15 +43,12 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'visible', {
 
 /**
  * Adds a child to the container.
+ *
  * @method addChild
- * @param  DisplayObject {DisplayObject}
+ * @param child {DisplayObject} The DisplayObject to add to the container
  */
 PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 {
-	
-	//this.addChildAt(child, this.children.length)
-	//return;
-	
 	if(child.parent != undefined)
 	{
 		
@@ -57,9 +56,9 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 		child.parent.removeChild(child);
 	//	return;
 	}
-	
+
 	child.parent = this;
-	//child.childIndex = this.children.length;
+	child.childIndex = this.children.length;
 	
 	this.children.push(child);	
 	
@@ -82,7 +81,6 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 	// modify the list..
 	var childFirst = child.first
 	var childLast = child.last;
-//	console.log(childFirst)
 	var nextObject;
 	var previousObject;
 	
@@ -95,9 +93,7 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 	{
 		previousObject = this.last;
 	}
-//	if(this.last._iNext)
-	
-	//console.log( this.last._iNext);
+
 	nextObject = previousObject._iNext;
 	
 	// always true in this case
@@ -123,8 +119,7 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 	
 	childFirst._iPrev = previousObject;
 	previousObject._iNext = childFirst;		
-	
-//	console.log(childFirst);
+
 	// need to remove any render groups..
 	if(this.__renderGroup)
 	{
@@ -138,9 +133,10 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 
 /**
  * Adds a child to the container at a specified index. If the index is out of bounds an error will be thrown
+ *
  * @method addChildAt
- * @param DisplayObject {DisplayObject}
- * @param index {Number}
+ * @param child {DisplayObject} The child to add
+ * @param index {Number} The index to place the child in
  */
 PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 {
@@ -204,8 +200,7 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 		
 		childFirst._iPrev = previousObject;
 		previousObject._iNext = childFirst;		
-		
-		
+
 		this.children.splice(index, 0, child);
 		// need to remove any render groups..
 		if(this.__renderGroup)
@@ -224,10 +219,12 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 }
 
 /**
- * Swaps the depth of 2 displayObjects
+ * [NYI] Swaps the depth of 2 displayObjects
+ *
  * @method swapChildren
- * @param  DisplayObject {DisplayObject}
- * @param  DisplayObject2 {DisplayObject}
+ * @param child {DisplayObject}
+ * @param child2 {DisplayObject}
+ * @private
  */
 PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
 {
@@ -272,8 +269,9 @@ PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
 
 /**
  * Returns the Child at the specified index
+ *
  * @method getChildAt
- * @param  index {Number}
+ * @param index {Number} The index to get the child from
  */
 PIXI.DisplayObjectContainer.prototype.getChildAt = function(index)
 {
@@ -289,15 +287,15 @@ PIXI.DisplayObjectContainer.prototype.getChildAt = function(index)
 
 /**
  * Removes a child from the container.
+ *
  * @method removeChild
- * @param  DisplayObject {DisplayObject}
+ * @param child {DisplayObject} The DisplayObject to remove
  */
 PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 {
 	var index = this.children.indexOf( child );
 	if ( index !== -1 ) 
 	{
-		//console.log(">>")
 		// unlink //
 		// modify the list..
 		var childFirst = child.first
@@ -353,8 +351,10 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 	}
 }
 
-
-/**
+/*
+ * Updates the container's children's transform for rendering
+ *
+ * @method updateTransform
  * @private
  */
 PIXI.DisplayObjectContainer.prototype.updateTransform = function()
