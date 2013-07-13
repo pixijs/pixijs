@@ -55,7 +55,7 @@ PIXI.BaseTexture = function(source)
 
 	if(!source)return;
 
-	if(this.source instanceof Image)
+	if(this.source instanceof Image || this.source instanceof HTMLImageElement)
 	{
 		if(this.source.complete)
 		{
