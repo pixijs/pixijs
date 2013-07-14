@@ -11,7 +11,7 @@ PIXI.FrameCache = {};
  * @extends EventTarget
  * @constructor
  * @param baseTexture {BaseTexture}
- * @param frmae {Rectangle}
+ * @param frame {Rectangle}
  */
 PIXI.Texture = function(baseTexture, frame)
 {
