@@ -69,5 +69,5 @@ PIXI.Circle.prototype.contains = function(x, y)
     return (dx + dy <= r2);
 }
 
-PIXI.Circle.constructor = PIXI.Circle;
+PIXI.Circle.prototype.constructor = PIXI.Circle;
 

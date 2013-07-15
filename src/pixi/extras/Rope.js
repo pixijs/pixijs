@@ -29,8 +29,8 @@ PIXI.Rope = function(texture, points)
 
 
 // constructor
-PIXI.Rope.constructor = PIXI.Rope;
 PIXI.Rope.prototype = Object.create( PIXI.Strip.prototype );
+PIXI.Rope.prototype.constructor = PIXI.Rope;
 
 PIXI.Rope.prototype.refresh = function()
 {

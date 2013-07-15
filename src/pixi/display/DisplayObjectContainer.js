@@ -26,8 +26,8 @@ PIXI.DisplayObjectContainer = function()
 }
 
 // constructor
-PIXI.DisplayObjectContainer.constructor = PIXI.DisplayObjectContainer;
 PIXI.DisplayObjectContainer.prototype = Object.create( PIXI.DisplayObject.prototype );
+PIXI.DisplayObjectContainer.prototype.constructor = PIXI.DisplayObjectContainer;
 
 //TODO make visible a getter setter
 /*

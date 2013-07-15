@@ -39,5 +39,5 @@ PIXI.Point.prototype.clone = function()
 }
 
 // constructor
-PIXI.Point.constructor = PIXI.Point;
+PIXI.Point.prototype.constructor = PIXI.Point;
 

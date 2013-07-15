@@ -69,7 +69,7 @@ PIXI.AssetLoader = function(assetURLs, crossorigin)
  */
 
 // constructor
-PIXI.AssetLoader.constructor = PIXI.AssetLoader;
+PIXI.AssetLoader.prototype.constructor = PIXI.AssetLoader;
 
 /**
  * Starts loading the assets sequentially

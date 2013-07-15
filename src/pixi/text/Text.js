@@ -32,8 +32,8 @@ PIXI.Text = function(text, style)
 };
 
 // constructor
-PIXI.Text.constructor = PIXI.Text;
 PIXI.Text.prototype = Object.create(PIXI.Sprite.prototype);
+PIXI.Text.prototype.constructor = PIXI.Text;
 
 /**
  * Set the style of the text

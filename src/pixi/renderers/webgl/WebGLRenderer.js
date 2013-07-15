@@ -81,7 +81,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
 }
 
 // constructor
-PIXI.WebGLRenderer.constructor = PIXI.WebGLRenderer;
+PIXI.WebGLRenderer.prototype.constructor = PIXI.WebGLRenderer;
 
 /**
  * Gets a new WebGLBatch from the pool

@@ -53,7 +53,7 @@ PIXI.JsonLoader = function (url, crossorigin) {
 };
 
 // constructor
-PIXI.JsonLoader.constructor = PIXI.JsonLoader;
+PIXI.JsonLoader.prototype.constructor = PIXI.JsonLoader;
 
 /**
  * Loads the JSON data

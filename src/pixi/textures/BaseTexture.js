@@ -94,7 +94,7 @@ PIXI.BaseTexture = function(source)
 	this._powerOf2 = false;
 }
 
-PIXI.BaseTexture.constructor = PIXI.BaseTexture;
+PIXI.BaseTexture.prototype.constructor = PIXI.BaseTexture;
 
 /**
  * Destroys this base texture
