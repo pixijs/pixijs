@@ -53,7 +53,7 @@ PIXI.InteractionManager = function(stage)
 }
 
 // constructor
-PIXI.InteractionManager.constructor = PIXI.InteractionManager;
+PIXI.InteractionManager.constructor = PIXI.InteractionManager.prototype.constructor = PIXI.InteractionManager;
 
 /**
  * Collects an interactive sprite recursively to have their interactions managed
@@ -618,4 +618,4 @@ PIXI.InteractionData.prototype.getLocalPosition = function(displayObject)
 }
 
 // constructor
-PIXI.InteractionData.constructor = PIXI.InteractionData;
+PIXI.InteractionData.constructor = PIXI.InteractionData.prototype.constructor = PIXI.InteractionData;

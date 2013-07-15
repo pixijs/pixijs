@@ -51,8 +51,8 @@ PIXI.RenderTexture = function(width, height)
 	}
 }
 
-PIXI.RenderTexture.constructor = PIXI.RenderTexture;
 PIXI.RenderTexture.prototype = Object.create( PIXI.Texture.prototype );
+PIXI.RenderTexture.constructor = PIXI.RenderTexture.prototype.constructor = PIXI.RenderTexture;
 
 /**
  * Initializes the webgl data for this texture

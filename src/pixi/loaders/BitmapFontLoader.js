@@ -58,7 +58,7 @@ PIXI.BitmapFontLoader = function(url, crossorigin)
 };
 
 // constructor
-PIXI.BitmapFontLoader.constructor = PIXI.BitmapFontLoader;
+PIXI.BitmapFontLoader.constructor = PIXI.BitmapFontLoader.prototype.constructor = PIXI.BitmapFontLoader;
 
 /**
  * Loads the XML font data

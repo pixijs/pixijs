@@ -69,8 +69,8 @@ PIXI.MovieClip = function(textures)
 }
 
 // constructor
-PIXI.MovieClip.constructor = PIXI.MovieClip;
 PIXI.MovieClip.prototype = Object.create( PIXI.Sprite.prototype );
+PIXI.MovieClip.constructor = PIXI.MovieClip.prototype.constructor = PIXI.MovieClip;
 
 /**
  * Stops the MovieClip

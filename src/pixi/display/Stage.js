@@ -65,8 +65,8 @@ PIXI.Stage = function(backgroundColor, interactive)
 }
 
 // constructor
-PIXI.Stage.constructor = PIXI.Stage;
 PIXI.Stage.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
+PIXI.Stage.constructor = PIXI.Stage.prototype.constructor = PIXI.Stage;
 
 /*
  * Updates the object transform for rendering
