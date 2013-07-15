@@ -28,8 +28,8 @@ PIXI.BitmapText = function(text, style)
 };
 
 // constructor
-PIXI.BitmapText.constructor = PIXI.BitmapText;
 PIXI.BitmapText.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
+PIXI.BitmapText.constructor = PIXI.BitmapText.prototype.constructor = PIXI.BitmapText;
 
 /**
  * Set the copy for the text object

@@ -82,5 +82,5 @@ PIXI.Rectangle.prototype.contains = function(x, y)
 }
 
 // constructor
-PIXI.Rectangle.constructor = PIXI.Rectangle;
+PIXI.Rectangle.constructor = PIXI.Rectangle.prototype.constructor = PIXI.Rectangle;
 

@@ -68,7 +68,7 @@ PIXI.Texture = function(baseTexture, frame)
 	}
 }
 
-PIXI.Texture.constructor = PIXI.Texture;
+PIXI.Texture.constructor = PIXI.Texture.prototype.constructor = PIXI.Texture;
 
 /**
  * Called when the base texture is loaded

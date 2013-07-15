@@ -73,5 +73,5 @@ PIXI.Polygon.prototype.contains = function(x, y)
     return inside;
 }
 
-PIXI.Polygon.constructor = PIXI.Polygon;
+PIXI.Polygon.constructor = PIXI.Polygon.prototype.constructor = PIXI.Polygon;
 

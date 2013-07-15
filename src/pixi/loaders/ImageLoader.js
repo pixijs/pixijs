@@ -27,7 +27,7 @@ PIXI.ImageLoader = function(url, crossorigin)
 };
 
 // constructor
-PIXI.ImageLoader.constructor = PIXI.ImageLoader;
+PIXI.ImageLoader.constructor = PIXI.ImageLoader.prototype.constructor = PIXI.ImageLoader;
 
 /**
  * Loads image or takes it from cache

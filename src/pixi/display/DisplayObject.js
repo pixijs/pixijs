@@ -258,7 +258,7 @@ PIXI.DisplayObject = function()
 }
 
 // constructor
-PIXI.DisplayObject.constructor = PIXI.DisplayObject;
+PIXI.DisplayObject.constructor = PIXI.DisplayObject.prototype.constructor = PIXI.DisplayObject;
 
 //TODO make visible a getter setter
 /*

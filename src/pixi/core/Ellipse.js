@@ -83,5 +83,5 @@ PIXI.Ellipse.getBounds = function()
     return new PIXI.Rectangle(this.x, this.y, this.width, this.height);
 }
 
-PIXI.Ellipse.constructor = PIXI.Ellipse;
+PIXI.Ellipse.constructor = PIXI.Ellipse.prototype.constructor = PIXI.Ellipse;
 

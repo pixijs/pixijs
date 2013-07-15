@@ -62,8 +62,8 @@ PIXI.TilingSprite = function(texture, width, height)
 }
 
 // constructor
-PIXI.TilingSprite.constructor = PIXI.TilingSprite;
 PIXI.TilingSprite.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
+PIXI.TilingSprite.constructor = PIXI.TilingSprite.prototype.constructor = PIXI.TilingSprite;
 
 /**
  * Sets the texture of the tiling sprite

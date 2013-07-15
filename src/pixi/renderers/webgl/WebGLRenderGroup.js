@@ -26,7 +26,7 @@ PIXI.WebGLRenderGroup = function(gl)
 }
 
 // constructor
-PIXI.WebGLRenderGroup.constructor = PIXI.WebGLRenderGroup;
+PIXI.WebGLRenderGroup.constructor = PIXI.WebGLRenderGroup.prototype.constructor = PIXI.WebGLRenderGroup;
 
 /**
  * Add a display object to the webgl renderer
