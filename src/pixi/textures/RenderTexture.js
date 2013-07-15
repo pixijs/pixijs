@@ -174,6 +174,7 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, position, cle
 	var children = displayObject.children;
 
 	//TODO -? create a new one??? dont think so!
+	var originalWorldTransform = displayObject.worldTransform;
 	displayObject.worldTransform = PIXI.mat3.create();//sthis.indetityMatrix;
 	// modify to flip...
 	displayObject.worldTransform[4] = -1;
@@ -212,6 +213,8 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, position, cle
 		this.renderGroup.setRenderable(displayObject);
 		this.renderGroup.render(this.projection);
 	}
+
+	displayObject.worldTransform = originalWorldTransform;
 }
 
 
