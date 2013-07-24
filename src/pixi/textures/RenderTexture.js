@@ -92,7 +92,7 @@ PIXI.RenderTexture.prototype.initWebGL = function()
 
 	// create a projection matrix..
 	this.projection = new PIXI.Point(this.width/2 , this.height/2);
-
+/*
 	this.projectionMatrix =  PIXI.mat4.create();
 
 	this.projectionMatrix[5] = 2/this.height// * 0.5;
@@ -100,7 +100,7 @@ PIXI.RenderTexture.prototype.initWebGL = function()
 
 	this.projectionMatrix[0] = 2/this.width;
 	this.projectionMatrix[12] = -1;
-
+*/
 	// set the correct render function..
 	this.render = this.renderWebGL;
 
@@ -110,19 +110,26 @@ PIXI.RenderTexture.prototype.initWebGL = function()
 
 PIXI.RenderTexture.prototype.resize = function(width, height)
 {
+
 	this.width = width;
 	this.height = height;
 	
-	this.projection = new PIXI.Point(this.width/2 , this.height/2);
+	//this.frame.width = this.width
+	//this.frame.height = this.height;
+		
 	
 	if(PIXI.gl)
 	{
+		this.projection.x = this.width/2
+		this.projection.y = this.height/2;
+	
 		var gl = PIXI.gl;
 		gl.bindTexture(gl.TEXTURE_2D, this.baseTexture._glTexture);
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  this.width,  this.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
 	}
 	else
 	{
+		
 		this.frame.width = this.width
 		this.frame.height = this.height;
 		this.renderer.resize(this.width, this.height);

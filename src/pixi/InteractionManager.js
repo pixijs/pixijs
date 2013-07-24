@@ -186,6 +186,7 @@ PIXI.InteractionManager.prototype.update = function()
 		{
 			// ok so there are some functions so lets hit test it..
 			item.__hit = this.hitTest(item, this.mouse);
+			this.mouse.target = item;
 			// ok so deal with interactions..
 			// loks like there was a hit!
 			if(item.__hit)
@@ -366,14 +367,18 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 		x = a11 * id * global.x + -a01 * id * global.y + (a12 * a01 - a02 * a11) * id,
 		y = a00 * id * global.y + -a10 * id * global.x + (-a12 * a00 + a02 * a10) * id;
 
+	interactionData.target = item;
+	
 	//a sprite or display object with a hit area defined
 	if(item.hitArea && item.hitArea.contains) {
 		if(item.hitArea.contains(x, y)) {
-			if(isSprite)
-				interactionData.target = item;
+			//if(isSprite)
+			interactionData.target = item;
 
 			return true;
 		}
+		
+		return false;
 	}
 	// a sprite with no hitarea defined
 	else if(isSprite)
@@ -402,7 +407,12 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 	{
 		var tempItem = item.children[i];
 		var hit = this.hitTest(tempItem, interactionData);
-		if(hit)return true;
+		if(hit)
+		{
+			// hmm.. TODO SET CORRECT TARGET?
+			interactionData.target = item
+			return true;
+		}
 	}
 
 	return false;	

@@ -498,7 +498,7 @@ PIXI.WebGLRenderGroup.prototype.addDisplayObjectAndChildren = function(displayOb
 	 */
 	
 	var previousRenderable = displayObject.first;
-	while(previousRenderable != this.root)
+	while(previousRenderable != this.root.first)
 	{
 		previousRenderable = previousRenderable._iPrev;
 		if(previousRenderable.renderable && previousRenderable.__renderGroup)break;

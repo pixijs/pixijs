@@ -227,7 +227,7 @@ PIXI.WebGLRenderer.updateTextures = function()
 PIXI.WebGLRenderer.updateTexture = function(texture)
 {
 	var gl = PIXI.gl;
-
+	
 	if(!texture._glTexture)
 	{
 		texture._glTexture = gl.createTexture();

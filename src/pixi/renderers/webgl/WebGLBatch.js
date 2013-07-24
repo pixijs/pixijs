@@ -527,7 +527,7 @@ PIXI.WebGLBatch.prototype.render = function(start, end)
 	start = start || 0;
 	//end = end || this.size;
 	if(end == undefined)end = this.size;
-
+	
 	if(this.dirty)
 	{
 		this.refresh();

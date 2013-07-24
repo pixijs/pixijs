@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-07-11
+ * Compiled: 2013-07-24
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -1267,7 +1267,7 @@ PIXI.DisplayObjectContainer = function()
 }
 
 // constructor
-PIXI.DisplayObjectContainer.constructor = PIXI.DisplayObjectContainer;
+//PIXI.DisplayObjectContainer.constructor = PIXI.DisplayObjectContainer;
 PIXI.DisplayObjectContainer.prototype = Object.create( PIXI.DisplayObject.prototype );
 
 //TODO make visible a getter setter
@@ -2600,6 +2600,7 @@ PIXI.InteractionManager.prototype.update = function()
 		{
 			// ok so there are some functions so lets hit test it..
 			item.__hit = this.hitTest(item, this.mouse);
+			this.mouse.target = item;
 			// ok so deal with interactions..
 			// loks like there was a hit!
 			if(item.__hit)
@@ -2780,14 +2781,18 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 		x = a11 * id * global.x + -a01 * id * global.y + (a12 * a01 - a02 * a11) * id,
 		y = a00 * id * global.y + -a10 * id * global.x + (-a12 * a00 + a02 * a10) * id;
 
+	interactionData.target = item;
+	
 	//a sprite or display object with a hit area defined
 	if(item.hitArea && item.hitArea.contains) {
 		if(item.hitArea.contains(x, y)) {
-			if(isSprite)
-				interactionData.target = item;
+			//if(isSprite)
+			interactionData.target = item;
 
 			return true;
 		}
+		
+		return false;
 	}
 	// a sprite with no hitarea defined
 	else if(isSprite)
@@ -2816,7 +2821,12 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 	{
 		var tempItem = item.children[i];
 		var hit = this.hitTest(tempItem, interactionData);
-		if(hit)return true;
+		if(hit)
+		{
+			// hmm.. TODO SET CORRECT TARGET?
+			interactionData.target = item
+			return true;
+		}
 	}
 
 	return false;	
@@ -4554,7 +4564,7 @@ PIXI.WebGLRenderer.updateTextures = function()
 PIXI.WebGLRenderer.updateTexture = function(texture)
 {
 	var gl = PIXI.gl;
-
+	
 	if(!texture._glTexture)
 	{
 		texture._glTexture = gl.createTexture();
@@ -5207,7 +5217,7 @@ PIXI.WebGLBatch.prototype.render = function(start, end)
 	start = start || 0;
 	//end = end || this.size;
 	if(end == undefined)end = this.size;
-
+	
 	if(this.dirty)
 	{
 		this.refresh();
@@ -5764,7 +5774,7 @@ PIXI.WebGLRenderGroup.prototype.addDisplayObjectAndChildren = function(displayOb
 	 */
 	
 	var previousRenderable = displayObject.first;
-	while(previousRenderable != this.root)
+	while(previousRenderable != this.root.first)
 	{
 		previousRenderable = previousRenderable._iPrev;
 		if(previousRenderable.renderable && previousRenderable.__renderGroup)break;
@@ -9494,7 +9504,7 @@ PIXI.RenderTexture.prototype.initWebGL = function()
 
 	// create a projection matrix..
 	this.projection = new PIXI.Point(this.width/2 , this.height/2);
-
+/*
 	this.projectionMatrix =  PIXI.mat4.create();
 
 	this.projectionMatrix[5] = 2/this.height// * 0.5;
@@ -9502,7 +9512,7 @@ PIXI.RenderTexture.prototype.initWebGL = function()
 
 	this.projectionMatrix[0] = 2/this.width;
 	this.projectionMatrix[12] = -1;
-
+*/
 	// set the correct render function..
 	this.render = this.renderWebGL;
 
@@ -9512,19 +9522,26 @@ PIXI.RenderTexture.prototype.initWebGL = function()
 
 PIXI.RenderTexture.prototype.resize = function(width, height)
 {
+
 	this.width = width;
 	this.height = height;
 	
-	this.projection = new PIXI.Point(this.width/2 , this.height/2);
+	//this.frame.width = this.width
+	//this.frame.height = this.height;
+		
 	
 	if(PIXI.gl)
 	{
+		this.projection.x = this.width/2
+		this.projection.y = this.height/2;
+	
 		var gl = PIXI.gl;
 		gl.bindTexture(gl.TEXTURE_2D, this.baseTexture._glTexture);
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  this.width,  this.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
 	}
 	else
 	{
+		
 		this.frame.width = this.width
 		this.frame.height = this.height;
 		this.renderer.resize(this.width, this.height);
