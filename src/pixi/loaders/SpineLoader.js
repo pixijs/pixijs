@@ -51,7 +51,7 @@ PIXI.SpineLoader = function(url, crossorigin)
 	this.loaded = false;
 }
 
-PIXI.SpineLoader.constructor = PIXI.SpineLoader;
+PIXI.SpineLoader.prototype.constructor = PIXI.SpineLoader;
 
 /**
  * Loads the JSON data

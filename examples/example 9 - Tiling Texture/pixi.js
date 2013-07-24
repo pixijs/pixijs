@@ -67,7 +67,7 @@ PIXI.Point.prototype.clone = function()
 }
 
 // constructor
-PIXI.Point.constructor = PIXI.Point;
+PIXI.Point.prototype.constructor = PIXI.Point;
 
 
 /**
@@ -154,7 +154,7 @@ PIXI.Rectangle.prototype.contains = function(x, y)
 }
 
 // constructor
-PIXI.Rectangle.constructor = PIXI.Rectangle;
+PIXI.Rectangle.prototype.constructor = PIXI.Rectangle;
 
 
 /**
@@ -232,7 +232,7 @@ PIXI.Polygon.prototype.contains = function(x, y)
     return inside;
 }
 
-PIXI.Polygon.constructor = PIXI.Polygon;
+PIXI.Polygon.prototype.constructor = PIXI.Polygon;
 
 
 /**
@@ -306,7 +306,7 @@ PIXI.Circle.prototype.contains = function(x, y)
     return (dx + dy <= r2);
 }
 
-PIXI.Circle.constructor = PIXI.Circle;
+PIXI.Circle.prototype.constructor = PIXI.Circle;
 
 
 /**
@@ -394,7 +394,7 @@ PIXI.Ellipse.getBounds = function()
     return new PIXI.Rectangle(this.x, this.y, this.width, this.height);
 }
 
-PIXI.Ellipse.constructor = PIXI.Ellipse;
+PIXI.Ellipse.prototype.constructor = PIXI.Ellipse;
 
 
 
@@ -951,7 +951,7 @@ PIXI.DisplayObject = function()
 }
 
 // constructor
-PIXI.DisplayObject.constructor = PIXI.DisplayObject;
+PIXI.DisplayObject.prototype.constructor = PIXI.DisplayObject;
 
 //TODO make visible a getter setter
 /*
@@ -1267,8 +1267,8 @@ PIXI.DisplayObjectContainer = function()
 }
 
 // constructor
-//PIXI.DisplayObjectContainer.constructor = PIXI.DisplayObjectContainer;
 PIXI.DisplayObjectContainer.prototype = Object.create( PIXI.DisplayObject.prototype );
+PIXI.DisplayObjectContainer.prototype.constructor = PIXI.DisplayObjectContainer;
 
 //TODO make visible a getter setter
 /*
@@ -1692,8 +1692,8 @@ PIXI.Sprite = function(texture)
 }
 
 // constructor
-PIXI.Sprite.constructor = PIXI.Sprite;
 PIXI.Sprite.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
+PIXI.Sprite.prototype.constructor = PIXI.Sprite;
 
 /**
  * The width of the sprite, setting this will actually modify the scale to acheive the value set
@@ -1870,8 +1870,8 @@ PIXI.MovieClip = function(textures)
 }
 
 // constructor
-PIXI.MovieClip.constructor = PIXI.MovieClip;
 PIXI.MovieClip.prototype = Object.create( PIXI.Sprite.prototype );
+PIXI.MovieClip.prototype.constructor = PIXI.MovieClip;
 
 /**
  * Stops the MovieClip
@@ -1989,13 +1989,13 @@ PIXI.Text = function(text, style)
     this.setText(text);
     this.setStyle(style);
     
-     this.updateText();
+    this.updateText();
     this.dirty = false;
 };
 
 // constructor
-PIXI.Text.constructor = PIXI.Text;
 PIXI.Text.prototype = Object.create(PIXI.Sprite.prototype);
+PIXI.Text.prototype.constructor = PIXI.Text;
 
 /**
  * Set the style of the text
@@ -2115,7 +2115,6 @@ PIXI.Text.prototype.updateText = function()
  */
 PIXI.Text.prototype.updateTexture = function()
 {
-
     this.texture.baseTexture.width = this.canvas.width;
     this.texture.baseTexture.height = this.canvas.height;
     this.texture.frame.width = this.canvas.width;
@@ -2277,8 +2276,8 @@ PIXI.BitmapText = function(text, style)
 };
 
 // constructor
-PIXI.BitmapText.constructor = PIXI.BitmapText;
 PIXI.BitmapText.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
+PIXI.BitmapText.prototype.constructor = PIXI.BitmapText;
 
 /**
  * Set the copy for the text object
@@ -2467,7 +2466,7 @@ PIXI.InteractionManager = function(stage)
 }
 
 // constructor
-PIXI.InteractionManager.constructor = PIXI.InteractionManager;
+PIXI.InteractionManager.prototype.constructor = PIXI.InteractionManager;
 
 /**
  * Collects an interactive sprite recursively to have their interactions managed
@@ -3042,7 +3041,7 @@ PIXI.InteractionData.prototype.getLocalPosition = function(displayObject)
 }
 
 // constructor
-PIXI.InteractionData.constructor = PIXI.InteractionData;
+PIXI.InteractionData.prototype.constructor = PIXI.InteractionData;
 
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
@@ -3111,8 +3110,8 @@ PIXI.Stage = function(backgroundColor, interactive)
 }
 
 // constructor
-PIXI.Stage.constructor = PIXI.Stage;
 PIXI.Stage.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
+PIXI.Stage.prototype.constructor = PIXI.Stage;
 
 /*
  * Updates the object transform for rendering
@@ -4418,7 +4417,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
 }
 
 // constructor
-PIXI.WebGLRenderer.constructor = PIXI.WebGLRenderer;
+PIXI.WebGLRenderer.prototype.constructor = PIXI.WebGLRenderer;
 
 /**
  * Gets a new WebGLBatch from the pool
@@ -4756,7 +4755,7 @@ PIXI.WebGLBatch = function(gl)
 }
 
 // constructor
-PIXI.WebGLBatch.constructor = PIXI.WebGLBatch;
+PIXI.WebGLBatch.prototype.constructor = PIXI.WebGLBatch;
 
 /**
  * Cleans the batch so that is can be returned to an object pool and reused
@@ -5302,7 +5301,7 @@ PIXI.WebGLRenderGroup = function(gl)
 }
 
 // constructor
-PIXI.WebGLRenderGroup.constructor = PIXI.WebGLRenderGroup;
+PIXI.WebGLRenderGroup.prototype.constructor = PIXI.WebGLRenderGroup;
 
 /**
  * Add a display object to the webgl renderer
@@ -6392,7 +6391,7 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
 }
 
 // constructor
-PIXI.CanvasRenderer.constructor = PIXI.CanvasRenderer;
+PIXI.CanvasRenderer.prototype.constructor = PIXI.CanvasRenderer;
 
 /**
  * Renders the stage to its canvas view
@@ -7015,8 +7014,8 @@ PIXI.Graphics = function()
 }
 
 // constructor
-PIXI.Graphics.constructor = PIXI.Graphics;
 PIXI.Graphics.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
+PIXI.Graphics.prototype.constructor = PIXI.Graphics;
 
 /**
  * Specifies a line style used for subsequent calls to Graphics methods such as the lineTo() method or the drawCircle() method.
@@ -7250,8 +7249,8 @@ PIXI.Strip = function(texture, width, height)
 }
 
 // constructor
-PIXI.Strip.constructor = PIXI.Strip;
 PIXI.Strip.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
+PIXI.Strip.prototype.constructor = PIXI.Strip;
 
 PIXI.Strip.prototype.setTexture = function(texture)
 {
@@ -7303,8 +7302,8 @@ PIXI.Rope = function(texture, points)
 
 
 // constructor
-PIXI.Rope.constructor = PIXI.Rope;
 PIXI.Rope.prototype = Object.create( PIXI.Strip.prototype );
+PIXI.Rope.prototype.constructor = PIXI.Rope;
 
 PIXI.Rope.prototype.refresh = function()
 {
@@ -7512,8 +7511,8 @@ PIXI.TilingSprite = function(texture, width, height)
 }
 
 // constructor
-PIXI.TilingSprite.constructor = PIXI.TilingSprite;
 PIXI.TilingSprite.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
+PIXI.TilingSprite.prototype.constructor = PIXI.TilingSprite;
 
 /**
  * Sets the texture of the tiling sprite
@@ -7604,8 +7603,8 @@ PIXI.Spine = function(url)
 	};
 }
 
-PIXI.Spine.constructor = PIXI.Spine;
 PIXI.Spine.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
+PIXI.Spine.prototype.constructor = PIXI.Spine;
 
 /*
  * Updates the object transform for rendering
@@ -9017,8 +9016,8 @@ PIXI.CustomRenderable = function()
 }
 
 // constructor
-PIXI.CustomRenderable.constructor = PIXI.CustomRenderable;
 PIXI.CustomRenderable.prototype = Object.create( PIXI.DisplayObject.prototype );
+PIXI.CustomRenderable.prototype.constructor = PIXI.CustomRenderable;
 
 /**
  * If this object is being rendered by a CanvasRenderer it will call this callback
@@ -9112,7 +9111,7 @@ PIXI.BaseTexture = function(source)
 
 	if(!source)return;
 
-	if(this.source instanceof Image)
+	if(this.source instanceof Image || this.source instanceof HTMLImageElement)
 	{
 		if(this.source.complete)
 		{
@@ -9151,7 +9150,7 @@ PIXI.BaseTexture = function(source)
 	this._powerOf2 = false;
 }
 
-PIXI.BaseTexture.constructor = PIXI.BaseTexture;
+PIXI.BaseTexture.prototype.constructor = PIXI.BaseTexture;
 
 /**
  * Destroys this base texture
@@ -9267,7 +9266,7 @@ PIXI.Texture = function(baseTexture, frame)
 	}
 }
 
-PIXI.Texture.constructor = PIXI.Texture;
+PIXI.Texture.prototype.constructor = PIXI.Texture;
 
 /**
  * Called when the base texture is loaded
@@ -9463,8 +9462,8 @@ PIXI.RenderTexture = function(width, height)
 	}
 }
 
-PIXI.RenderTexture.constructor = PIXI.RenderTexture;
 PIXI.RenderTexture.prototype = Object.create( PIXI.Texture.prototype );
+PIXI.RenderTexture.prototype.constructor = PIXI.RenderTexture;
 
 /**
  * Initializes the webgl data for this texture
@@ -9742,7 +9741,7 @@ PIXI.AssetLoader = function(assetURLs, crossorigin)
  */
 
 // constructor
-PIXI.AssetLoader.constructor = PIXI.AssetLoader;
+PIXI.AssetLoader.prototype.constructor = PIXI.AssetLoader;
 
 /**
  * Starts loading the assets sequentially
@@ -9849,7 +9848,7 @@ PIXI.JsonLoader = function (url, crossorigin) {
 };
 
 // constructor
-PIXI.JsonLoader.constructor = PIXI.JsonLoader;
+PIXI.JsonLoader.prototype.constructor = PIXI.JsonLoader;
 
 /**
  * Loads the JSON data
@@ -10030,7 +10029,7 @@ PIXI.SpriteSheetLoader = function (url, crossorigin) {
 };
 
 // constructor
-PIXI.SpriteSheetLoader.constructor = PIXI.SpriteSheetLoader;
+PIXI.SpriteSheetLoader.prototype.constructor = PIXI.SpriteSheetLoader;
 
 /**
  * This will begin loading the JSON file
@@ -10126,7 +10125,7 @@ PIXI.ImageLoader = function(url, crossorigin)
 };
 
 // constructor
-PIXI.ImageLoader.constructor = PIXI.ImageLoader;
+PIXI.ImageLoader.prototype.constructor = PIXI.ImageLoader;
 
 /**
  * Loads image or takes it from cache
@@ -10220,7 +10219,7 @@ PIXI.BitmapFontLoader = function(url, crossorigin)
 };
 
 // constructor
-PIXI.BitmapFontLoader.constructor = PIXI.BitmapFontLoader;
+PIXI.BitmapFontLoader.prototype.constructor = PIXI.BitmapFontLoader;
 
 /**
  * Loads the XML font data
@@ -10377,7 +10376,7 @@ PIXI.SpineLoader = function(url, crossorigin)
 	this.loaded = false;
 }
 
-PIXI.SpineLoader.constructor = PIXI.SpineLoader;
+PIXI.SpineLoader.prototype.constructor = PIXI.SpineLoader;
 
 /**
  * Loads the JSON data

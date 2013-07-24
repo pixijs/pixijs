@@ -61,7 +61,7 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
 }
 
 // constructor
-PIXI.CanvasRenderer.constructor = PIXI.CanvasRenderer;
+PIXI.CanvasRenderer.prototype.constructor = PIXI.CanvasRenderer;
 
 /**
  * Renders the stage to its canvas view

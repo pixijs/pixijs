@@ -17,8 +17,8 @@ PIXI.CustomRenderable = function()
 }
 
 // constructor
-PIXI.CustomRenderable.constructor = PIXI.CustomRenderable;
 PIXI.CustomRenderable.prototype = Object.create( PIXI.DisplayObject.prototype );
+PIXI.CustomRenderable.prototype.constructor = PIXI.CustomRenderable;
 
 /**
  * If this object is being rendered by a CanvasRenderer it will call this callback

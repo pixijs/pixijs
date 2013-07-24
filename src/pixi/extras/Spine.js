@@ -58,8 +58,8 @@ PIXI.Spine = function(url)
 	};
 }
 
-PIXI.Spine.constructor = PIXI.Spine;
 PIXI.Spine.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
+PIXI.Spine.prototype.constructor = PIXI.Spine;
 
 /*
  * Updates the object transform for rendering

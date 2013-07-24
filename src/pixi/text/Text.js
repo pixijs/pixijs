@@ -27,13 +27,13 @@ PIXI.Text = function(text, style)
     this.setText(text);
     this.setStyle(style);
     
-     this.updateText();
+    this.updateText();
     this.dirty = false;
 };
 
 // constructor
-PIXI.Text.constructor = PIXI.Text;
 PIXI.Text.prototype = Object.create(PIXI.Sprite.prototype);
+PIXI.Text.prototype.constructor = PIXI.Text;
 
 /**
  * Set the style of the text
@@ -153,7 +153,6 @@ PIXI.Text.prototype.updateText = function()
  */
 PIXI.Text.prototype.updateTexture = function()
 {
-
     this.texture.baseTexture.width = this.canvas.width;
     this.texture.baseTexture.height = this.canvas.height;
     this.texture.frame.width = this.canvas.width;

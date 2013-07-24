@@ -69,7 +69,7 @@ PIXI.SpriteSheetLoader = function (url, crossorigin) {
 };
 
 // constructor
-PIXI.SpriteSheetLoader.constructor = PIXI.SpriteSheetLoader;
+PIXI.SpriteSheetLoader.prototype.constructor = PIXI.SpriteSheetLoader;
 
 /**
  * This will begin loading the JSON file

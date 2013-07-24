@@ -55,7 +55,7 @@ PIXI.BaseTexture = function(source)
 
 	if(!source)return;
 
-	if(this.source instanceof Image)
+	if(this.source instanceof Image || this.source instanceof HTMLImageElement)
 	{
 		if(this.source.complete)
 		{
@@ -94,7 +94,7 @@ PIXI.BaseTexture = function(source)
 	this._powerOf2 = false;
 }
 
-PIXI.BaseTexture.constructor = PIXI.BaseTexture;
+PIXI.BaseTexture.prototype.constructor = PIXI.BaseTexture;
 
 /**
  * Destroys this base texture

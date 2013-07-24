@@ -66,7 +66,7 @@ PIXI.WebGLBatch = function(gl)
 }
 
 // constructor
-PIXI.WebGLBatch.constructor = PIXI.WebGLBatch;
+PIXI.WebGLBatch.prototype.constructor = PIXI.WebGLBatch;
 
 /**
  * Cleans the batch so that is can be returned to an object pool and reused
