@@ -13,16 +13,16 @@
  */
 PIXI.AssetLoader = function(assetURLs)
 {
-	PIXI.EventTarget.call(this);
-	
-	/**
-	 * The array of asset URLs that are going to be loaded
-	 * @property assetURLs
-	 * @type Array
-	 */
-	this.assetURLs = assetURLs;
+  PIXI.EventTarget.call(this);
 
-	this.crossorigin = false;
+  /**
+   * The array of asset URLs that are going to be loaded
+   * @property assetURLs
+   * @type Array
+   */
+  this.assetURLs = assetURLs;
+
+  this.crossorigin = false;
 
     this.loadersByType = {
         "jpg":  PIXI.ImageLoader,
@@ -30,12 +30,13 @@ PIXI.AssetLoader = function(assetURLs)
         "png":  PIXI.ImageLoader,
         "gif":  PIXI.ImageLoader,
         "json": PIXI.JsonLoader,
+        "atlas": PIXI.AtlasLoader,
         "anim": PIXI.SpineLoader,
         "xml":  PIXI.BitmapFontLoader,
         "fnt":  PIXI.BitmapFontLoader
     };
-    
-    
+
+
 };
 
 /**
@@ -45,7 +46,7 @@ Fired when an item has loaded
 
 /**
 Fired when all the assets have loaded
-@event onComplete 
+@event onComplete
 **/
 
 // constructor
@@ -58,12 +59,12 @@ PIXI.AssetLoader.prototype.load = function()
 {
     var scope = this;
 
-	this.loadCount = this.assetURLs.length;
+  this.loadCount = this.assetURLs.length;
 
     for (var i=0; i < this.assetURLs.length; i++)
-	{
-		var fileName = this.assetURLs[i];
-		var fileType = fileName.split(".").pop().toLowerCase();
+  {
+    var fileName = this.assetURLs[i];
+    var fileType = fileName.split(".").pop().toLowerCase();
 
         var loaderClass = this.loadersByType[fileType];
         if(!loaderClass)
@@ -76,7 +77,7 @@ PIXI.AssetLoader.prototype.load = function()
             scope.onAssetLoaded();
         });
         loader.load();
-	}
+  }
 };
 
 /**
@@ -86,13 +87,13 @@ PIXI.AssetLoader.prototype.load = function()
 PIXI.AssetLoader.prototype.onAssetLoaded = function()
 {
     this.loadCount--;
-	this.dispatchEvent({type: "onProgress", content: this});
-	if(this.onProgress) this.onProgress();
-	
-	if(this.loadCount == 0)
-	{
-		this.dispatchEvent({type: "onComplete", content: this});
-		if(this.onComplete) this.onComplete();
-	}
+  this.dispatchEvent({type: "onProgress", content: this});
+  if(this.onProgress) this.onProgress();
+
+  if(this.loadCount == 0)
+  {
+    this.dispatchEvent({type: "onComplete", content: this});
+    if(this.onComplete) this.onComplete();
+  }
 };
 
