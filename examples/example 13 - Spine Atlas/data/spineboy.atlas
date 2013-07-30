@@ -1,0 +1,131 @@
+
+spineboy.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+eyes
+  rotate: false
+  xy: 212, 30
+  size: 34, 27
+  orig: 34, 27
+  offset: 0, 0
+  index: -1
+eyes-closed
+  rotate: false
+  xy: 178, 1
+  size: 34, 27
+  orig: 34, 27
+  offset: 0, 0
+  index: -1
+head
+  rotate: false
+  xy: 1, 114
+  size: 121, 132
+  orig: 121, 132
+  offset: 0, 0
+  index: -1
+left-arm
+  rotate: false
+  xy: 71, 11
+  size: 35, 29
+  orig: 35, 29
+  offset: 0, 0
+  index: -1
+left-foot
+  rotate: false
+  xy: 177, 167
+  size: 65, 30
+  orig: 65, 30
+  offset: 0, 0
+  index: -1
+left-hand
+  rotate: false
+  xy: 152, 42
+  size: 35, 38
+  orig: 35, 38
+  offset: 0, 0
+  index: -1
+left-lower-leg
+  rotate: false
+  xy: 124, 116
+  size: 49, 64
+  orig: 49, 64
+  offset: 0, 0
+  index: -1
+left-shoulder
+  rotate: false
+  xy: 221, 59
+  size: 34, 53
+  orig: 34, 53
+  offset: 0, 0
+  index: -1
+left-upper-leg
+  rotate: false
+  xy: 117, 45
+  size: 33, 67
+  orig: 33, 67
+  offset: 0, 0
+  index: -1
+neck
+  rotate: false
+  xy: 142, 12
+  size: 34, 28
+  orig: 34, 28
+  offset: 0, 0
+  index: -1
+pelvis
+  rotate: false
+  xy: 177, 199
+  size: 63, 47
+  orig: 63, 47
+  offset: 0, 0
+  index: -1
+right-arm
+  rotate: false
+  xy: 189, 35
+  size: 21, 45
+  orig: 21, 45
+  offset: 0, 0
+  index: -1
+right-foot
+  rotate: false
+  xy: 152, 82
+  size: 67, 30
+  orig: 67, 30
+  offset: 0, 0
+  index: -1
+right-hand
+  rotate: false
+  xy: 108, 8
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+right-lower-leg
+  rotate: false
+  xy: 124, 182
+  size: 51, 64
+  orig: 51, 64
+  offset: 0, 0
+  index: -1
+right-shoulder
+  rotate: false
+  xy: 175, 114
+  size: 52, 51
+  orig: 52, 51
+  offset: 0, 0
+  index: -1
+right-upper-leg
+  rotate: false
+  xy: 71, 42
+  size: 44, 70
+  orig: 44, 70
+  offset: 0, 0
+  index: -1
+torso
+  rotate: false
+  xy: 1, 20
+  size: 68, 92
+  orig: 68, 92
+  offset: 0, 0
+  index: -1
