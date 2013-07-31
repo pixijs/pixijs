@@ -6,7 +6,7 @@
  * The atlas file loader is used to load in Atlas data and parsing it
  * When loaded this class will dispatch a "loaded" event
  * If load failed this class will dispatch a "error" event
- * @class JsonLoader
+ * @class AtlasLoader
  * @extends EventTarget
  * @constructor
  * @param {String} url the url of the JSON file
