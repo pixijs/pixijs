@@ -64,19 +64,32 @@ PIXI.AtlasLoader.prototype.onAtlasLoaded = function () {
           if (lineCount == -3) {
             this.atlas.meta.image = result[i];
           } else if (lineCount > 0) {
-            if (lineCount % 7 == 1) {
+            if (lineCount % 7 == 1) { // frame name
               if (currentFrame != null) {
                 this.atlas.frames[currentFrame.name] = currentFrame;
               }
               currentFrame = { name: result[i], frame : {} };
             } else {
               var text = result[i].split(" ");
-              if (lineCount % 7 == 3) {
+              if (lineCount % 7 == 3) { // position
                 currentFrame.frame.x = Number(text[1].replace(",", ""));
                 currentFrame.frame.y = Number(text[2]);
-              } else if (lineCount % 7 == 4) {
+              } else if (lineCount % 7 == 4) { // size
                 currentFrame.frame.w = Number(text[1].replace(",", ""));
                 currentFrame.frame.h = Number(text[2]);
+              } else if (lineCount % 7 == 5) { // real size
+                var realSize = {
+                  x : 0,
+                  y : 0,
+                  w : Number(text[1].replace(",", "")),
+                  h : Number(text[2])
+                }
+                if (realSize.width > currentFrame.frame.w || realSize.height > currentFrame.frame.h) {
+                  currentFrame.trimmed = true;
+                  currentFrame.realSize = realSize;
+                } else {
+                  currentFrame.trimmed = false;
+                }
               }
             }
           }
@@ -109,10 +122,15 @@ PIXI.AtlasLoader.prototype.onAtlasLoaded = function () {
               width: rect.w,
               height: rect.h
             });
+            if (frameData[i].trimmed == true) {
+              PIXI.TextureCache[i].realSize = frameData[i].realSize;
+              // trim in pixi not supported yet, todo update trim properties if it is done ...
+              PIXI.TextureCache[i].trim.x = 0;
+              PIXI.TextureCache[i].trim.y = 0;
+            }
           }
         }
         image.load();
-
       }
       else
       {
