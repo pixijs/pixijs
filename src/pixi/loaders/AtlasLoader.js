@@ -84,7 +84,7 @@ PIXI.AtlasLoader.prototype.onAtlasLoaded = function () {
                   w : Number(text[1].replace(",", "")),
                   h : Number(text[2])
                 }
-                if (realSize.width > currentFrame.frame.w || realSize.height > currentFrame.frame.h) {
+                if (realSize.w > currentFrame.frame.w || realSize.h > currentFrame.frame.h) {
                   currentFrame.trimmed = true;
                   currentFrame.realSize = realSize;
                 } else {
