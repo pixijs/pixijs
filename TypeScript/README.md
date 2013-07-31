@@ -1,0 +1,1 @@
+Note: You need to run the examples on a web server (localhost is ok) due to assets paths.
