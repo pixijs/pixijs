@@ -21,9 +21,9 @@ module PixiTest {
 
             this.aliens = [];
 
-            loader.onComplete = this.onAssetsLoaded;
-
-            console.log(this.aliens)
+            loader.onComplete = () => {
+               this.onAssetsLoaded(this);
+            };
 
             loader.load();
 
@@ -47,13 +47,13 @@ module PixiTest {
             this.stage.addChild(this.alienContainer);
         }
 
-        private onAssetsLoaded() {
+        private onAssetsLoaded(that:any) {
             
             // create a texture from an image path
             // add a bunch of aliens
             for (var i:number = 0; i < 100; i++) 
             {
-                var frameName:string = this.alienFrames[i % 4];
+                var frameName:string = that.alienFrames[i % 4];
                 
                 // create an alien using the frame name..
                 var alien:PIXI.Sprite = PIXI.Sprite.fromFrame(frameName);
@@ -69,8 +69,8 @@ module PixiTest {
                 alien.position.y = Math.random() * 600 - 300;
                 alien.anchor.x = 0.5;
                 alien.anchor.y = 0.5;
-                this.aliens.push(alien);
-                this.alienContainer.addChild(alien);
+                that.aliens.push(alien);
+                that.alienContainer.addChild(alien);
             }
             
             // start animating

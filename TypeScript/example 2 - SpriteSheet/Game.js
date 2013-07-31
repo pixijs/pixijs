@@ -2,6 +2,7 @@ var PixiTest;
 (function (PixiTest) {
     var Game = (function () {
         function Game() {
+            var _this = this;
             this.count = 0;
             var assetsToLoader = ["../../examples/example 2 - SpriteSheet/SpriteSheet.json"];
 
@@ -9,9 +10,9 @@ var PixiTest;
 
             this.aliens = [];
 
-            loader.onComplete = this.onAssetsLoaded;
-
-            console.log(this.aliens);
+            loader.onComplete = function () {
+                _this.onAssetsLoaded(_this);
+            };
 
             loader.load();
 
@@ -31,16 +32,18 @@ var PixiTest;
 
             this.stage.addChild(this.alienContainer);
         }
-        Game.prototype.onAssetsLoaded = function () {
+        Game.prototype.onAssetsLoaded = function (that) {
             for (var i = 0; i < 100; i++) {
-                var alien = PIXI.Sprite.fromFrame("eggHead.png");
+                var frameName = that.alienFrames[i % 4];
+
+                var alien = PIXI.Sprite.fromFrame(frameName);
 
                 alien.position.x = Math.random() * 800 - 400;
                 alien.position.y = Math.random() * 600 - 300;
                 alien.anchor.x = 0.5;
                 alien.anchor.y = 0.5;
-                this.aliens.push(alien);
-                this.alienContainer.addChild(alien);
+                that.aliens.push(alien);
+                that.alienContainer.addChild(alien);
             }
 
             requestAnimationFrame(this.animate.bind(this));
