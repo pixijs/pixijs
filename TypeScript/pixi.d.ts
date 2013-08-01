@@ -114,14 +114,18 @@ declare module PIXI
 	    	//callbacks
 	    	click: (interactionData: InteractionData) => void;
 	    	mousedown: (interactionData: InteractionData) => void;
-		mouseout: (interactionData: InteractionData) => void;
-		mouseover: (interactionData: InteractionData) => void;
-		mouseup: (interactionData: InteractionData) => void;
-		mouseupoutside: (interactionData: InteractionData) => void;
-		tap: (interactionData: InteractionData) => void;
-		touchend: (event: InteractionData) => void;
-		touchendoutside: (event: InteractionData) => void;
-		touchstart: (event: InteractionData) => void;
+			mouseout: (interactionData: InteractionData) => void;
+			mouseover: (interactionData: InteractionData) => void;
+			mouseup: (interactionData: InteractionData) => void;
+			mouseupoutside: (interactionData: InteractionData) => void;
+			tap: (interactionData: InteractionData) => void;
+			touchend: (event: InteractionData) => void;
+			touchendoutside: (event: InteractionData) => void;
+			touchstart: (event: InteractionData) => void;
+
+			// they seems to be kind of private? report to the example 8, they are not defined in DisplayObject class. 
+			mousemove: (event: InteractionData) => void;
+			touchmove: (event: InteractionData) => void;
 	}
 
 

@@ -16,15 +16,19 @@ module PixiTest {
             this.stage = new PIXI.Stage(0x66FF99);
 
             // create a renderer instance
-            this.renderer = PIXI.autoDetectRenderer(400, 300);
+            this.renderer = PIXI.autoDetectRenderer(400, 300, null, true);
 
             // add the renderer view element to the DOM
             document.body.appendChild(this.renderer.view);
 
+            this.renderer.view.style.position = "absolute";
+            this.renderer.view.style.top = "0px";
+            this.renderer.view.style.left = "0px";
+
             requestAnimationFrame(this.animate.bind(this));
 
             // create a texture from an image path
-            var texture:PIXI.Texture = PIXI.Texture.fromImage("../../examples/example 1 - Basics/bunny.png");
+            var texture:PIXI.Texture = PIXI.Texture.fromImage("../../examples/example 7 - Transparent Background/bunny.png");
             // create a new Sprite using the texture
             this.bunny = new PIXI.Sprite(texture);
 
