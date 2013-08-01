@@ -55,9 +55,7 @@ var PixiTest;
             this.slideX = this.w / 2;
             this.slideY = this.h / 2;
 
-            console.log(typeof this.renderer.prototype.toString);
-
-            if (this.renderer)
+            if (this.renderer instanceof PIXI.WebGLRenderer)
                 (this.renderer).resize(this.w, this.h);
         };
 
