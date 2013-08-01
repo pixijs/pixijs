@@ -196,7 +196,7 @@ declare module PIXI
 		constructor(url:String, crossOrigin? : bool);
 	}
 
-	export class MovieClip
+	export class MovieClip extends Sprite
 	{
 		//properties
 	    	animationSpeed: number;

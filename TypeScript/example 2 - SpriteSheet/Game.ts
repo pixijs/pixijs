@@ -10,26 +10,24 @@ module PixiTest {
         private renderer:PIXI.IRenderer;
         private alienContainer:PIXI.DisplayObjectContainer;
         private count:number = 0;
-        private aliens:PIXI.Sprite[];
-        private alienFrames:string[];
+        private aliens:PIXI.Sprite[] = [];
+        private alienFrames:string[] = ["eggHead.png", "flowerTop.png", "helmlok.png", "skully.png"];
 
         constructor() {
 
+            // create an array of assets to load
             var assetsToLoader:string[] = ["../../examples/example 2 - SpriteSheet/SpriteSheet.json"];
 
+            // create a new loader
             var loader:PIXI.AssetLoader = new PIXI.AssetLoader(assetsToLoader);
 
-            this.aliens = [];
-
+            // use callback
             loader.onComplete = () => {
                this.onAssetsLoaded(this);
             };
 
+            //begin load
             loader.load();
-
-            this.alienFrames = ["eggHead.png", "flowerTop.png", "helmlok.png", "skully.png"];
-            
-            var count:number = 0;
 
             // create an new instance of a pixi stage
             this.stage = new PIXI.Stage(0xFFFFFF);
@@ -40,6 +38,7 @@ module PixiTest {
             // add the renderer view element to the DOM
             document.body.appendChild(this.renderer.view);
 
+            // create an empty container
             this.alienContainer = new PIXI.DisplayObjectContainer();
             this.alienContainer.position.x = 400;
             this.alienContainer.position.y = 300;
@@ -61,8 +60,8 @@ module PixiTest {
                 /*
                  * fun fact for the day :)
                  * another way of doing the above would be
-                 * var texture = PIXI.Texture.fromFrame(frameName);
-                 * var alien = new PIXI.Sprite(texture);
+                 * var texture:PIXI.Texture = PIXI.Texture.fromFrame(frameName);
+                 * var alien:PIXI.Sprite = new PIXI.Sprite(texture);
                  */
                 
                 alien.position.x = Math.random() * 800 - 400;
@@ -91,6 +90,7 @@ module PixiTest {
             this.alienContainer.scale.y = Math.sin(this.count)
             
             this.alienContainer.rotation += 0.01
+            
             // render the stage   
             this.renderer.render(this.stage);
             

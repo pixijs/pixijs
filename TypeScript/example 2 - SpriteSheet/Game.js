@@ -4,21 +4,17 @@ var PixiTest;
         function Game() {
             var _this = this;
             this.count = 0;
+            this.aliens = [];
+            this.alienFrames = ["eggHead.png", "flowerTop.png", "helmlok.png", "skully.png"];
             var assetsToLoader = ["../../examples/example 2 - SpriteSheet/SpriteSheet.json"];
 
             var loader = new PIXI.AssetLoader(assetsToLoader);
-
-            this.aliens = [];
 
             loader.onComplete = function () {
                 _this.onAssetsLoaded(_this);
             };
 
             loader.load();
-
-            this.alienFrames = ["eggHead.png", "flowerTop.png", "helmlok.png", "skully.png"];
-
-            var count = 0;
 
             this.stage = new PIXI.Stage(0xFFFFFF);
 
