@@ -11,7 +11,7 @@ var PixiTest;
             var loader = new PIXI.AssetLoader(assetsToLoader);
 
             loader.onComplete = function () {
-                _this.onAssetsLoaded(_this);
+                _this.onAssetsLoaded();
             };
 
             loader.load();
@@ -28,9 +28,9 @@ var PixiTest;
 
             this.stage.addChild(this.alienContainer);
         }
-        Game.prototype.onAssetsLoaded = function (that) {
+        Game.prototype.onAssetsLoaded = function () {
             for (var i = 0; i < 100; i++) {
-                var frameName = that.alienFrames[i % 4];
+                var frameName = this.alienFrames[i % 4];
 
                 var alien = PIXI.Sprite.fromFrame(frameName);
 
@@ -38,8 +38,8 @@ var PixiTest;
                 alien.position.y = Math.random() * 600 - 300;
                 alien.anchor.x = 0.5;
                 alien.anchor.y = 0.5;
-                that.aliens.push(alien);
-                that.alienContainer.addChild(alien);
+                this.aliens.push(alien);
+                this.alienContainer.addChild(alien);
             }
 
             requestAnimationFrame(this.animate.bind(this));

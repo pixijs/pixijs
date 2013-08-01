@@ -8,7 +8,7 @@ var PixiTest;
             var loader = new PIXI.AssetLoader(assetsToLoader);
 
             loader.onComplete = function () {
-                _this.onAssetsLoaded(_this);
+                _this.onAssetsLoaded();
             };
 
             loader.load();
@@ -19,7 +19,7 @@ var PixiTest;
 
             document.body.appendChild(this.renderer.view);
         }
-        Game.prototype.onAssetsLoaded = function (that) {
+        Game.prototype.onAssetsLoaded = function () {
             var explosionTextures = [];
 
             for (var i = 0; i < 26; i++) {
@@ -41,7 +41,7 @@ var PixiTest;
 
                 explosion.gotoAndPlay(Math.random() * 27);
 
-                that.stage.addChild(explosion);
+                this.stage.addChild(explosion);
             }
 
             requestAnimationFrame(this.animate.bind(this));

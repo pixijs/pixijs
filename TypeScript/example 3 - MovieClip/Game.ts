@@ -19,7 +19,7 @@ module PixiTest {
 
             // use callback
             loader.onComplete = () => {
-               this.onAssetsLoaded(this);
+               this.onAssetsLoaded();
             };
 
             //begin load
@@ -35,7 +35,7 @@ module PixiTest {
             document.body.appendChild(this.renderer.view);
         }
 
-        private onAssetsLoaded(that:any) {
+        private onAssetsLoaded() {
             
             // create an array to store the textures
             var explosionTextures:PIXI.Texture[] = [];
@@ -63,7 +63,7 @@ module PixiTest {
                 
                 explosion.gotoAndPlay(Math.random() * 27);
                 
-                that.stage.addChild(explosion);
+                this.stage.addChild(explosion);
             }
             
             // start animating

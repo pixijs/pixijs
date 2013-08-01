@@ -55,7 +55,10 @@ var PixiTest;
             this.slideX = this.w / 2;
             this.slideY = this.h / 2;
 
-            (this.renderer).resize(this.w, this.h);
+            console.log(typeof this.renderer.prototype.toString);
+
+            if (this.renderer)
+                (this.renderer).resize(this.w, this.h);
         };
 
         Game.prototype.update = function () {

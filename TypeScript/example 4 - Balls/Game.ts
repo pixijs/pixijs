@@ -74,8 +74,9 @@ module PixiTest {
             this.slideX = this.w / 2;
             this.slideY = this.h / 2;
 
-            //if (this.renderer is PIXI.WebGLRenderer)
-            (<PIXI.WebGLRenderer> this.renderer).resize(this.w, this.h);
+            //if (typeof this.renderer == "PIXI.WebGLRenderer") -> doesn't work !?
+            if (<PIXI.WebGLRenderer> this.renderer)
+                (<PIXI.WebGLRenderer> this.renderer).resize(this.w, this.h);
         }
 
         private update()
