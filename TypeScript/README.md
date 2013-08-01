@@ -1,7 +1,7 @@
 TypeScript definition file
 ==========================
 
-This TypeScript definition is not maitained by [GoodBoyDigital](http:www.goodboydigital.com "GoodBoyDigital"), but by pixi.js's community. If you find some errors, missing or expired definitions, please make a make a pull request!
+This TypeScript definition is not maitained by [GoodBoyDigital](http:www.goodboydigital.com "GoodBoyDigital"), but by pixi.js's community. If you find some errors, missing or expired definitions, please make a pull request!
 
 Reference the *pixi.d.ts* file in your TypeScript class, have a look on the examples files.
 
