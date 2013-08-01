@@ -51,12 +51,16 @@ declare module PIXI
 
 	export class BitmapText extends DisplayObjectContainer
 	{
+			//properties -> they seem to be hidden, see example 10
+	    	height: number;
+	    	width: number;
+
            	//constructor
 	    	constructor(text: string, style: any);
 
             	//methods
-	    	setStyle(style: any);
-	    	setText(text: string);
+	    	setStyle(style: any):void;
+	    	setText(text: string):void;
 	}
 
 	export class CanvasRenderer
@@ -337,6 +341,7 @@ declare module PIXI
 		
 		//methods
 	    	setStyle(style: any, font?: string): void;
+	    	setText(text: string):void; // seems to be hidden? See example 10 
 	}
 
 	export class Texture extends EventTarget

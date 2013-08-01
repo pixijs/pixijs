@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>pixi.js example 10 using TypeScript</title>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			background-color: #000000;
+		}
+	</style>
+	<script src="../../bin/pixi.js"></script>
+	<script src="Game.js"></script>
+
+</head>
+<body>
+	<script>
+
+	// Load them google fonts before starting...!
+	WebFontConfig = {
+	  google: {
+	    families: [ 'Snippet', 'Arvo:700italic', 'Podkova:700' ]
+	  },
+
+	  active: function() {
+	    // do something
+	    init();
+	  }
+
+	};
+	(function() {
+        var wf = document.createElement('script');
+        wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
+            '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+        wf.type = 'text/javascript';
+        wf.async = 'true';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(wf, s);
+      })();
+
+	function init() {
+
+		var game = new PixiTest.Game();
+	}
+
+	</script>
+
+	</body>
+</html>
