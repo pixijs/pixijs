@@ -282,7 +282,12 @@ declare module PIXI
 	}
 	
 	export class Spine extends DisplayObjectContainer
-	{
+	{	
+		//properties -> both seems to be masked, see example 12
+	    	state: any;
+	    	stateData: any;
+
+
 		//constructor
 		constructor(url: String, crossorigin?: bool);
 		
