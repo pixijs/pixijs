@@ -80,6 +80,7 @@ Object.defineProperty(PIXI.Point.prototype, 'angle', {
  * Normalize the point
  *
  * @method normalize
+ * @return {Point} itself
  */
 PIXI.Point.prototype.normalize = function() {
 	var len;
@@ -89,33 +90,47 @@ PIXI.Point.prototype.normalize = function() {
 	len = this.length;
 	this.x /= len;
 	this.y /= len;
+
+	return this;
 }
 /**
  * Truncate the vector to a maximum value
  *
  * @property max
  * @type Number
+ *
+ * @return {Point} itself
  */
 PIXI.Point.prototype.truncate = function(max) {
 	this.length = Math.min(max, this.length);
+
+	return this;
 }
 /**
  * Returns whenever the point is a zero vector or not
  *
  * @method zero
  * @return {Boolean}
+ *
+ * @return {Point} itself
  */
 PIXI.Point.prototype.zero = function() {
 	this.x = this.y = 0;
+
+	return this;
 }
 /**
  * Reverse the point
  *
  * @method reverse
+ *
+ * @return {Point} itself
  */
 PIXI.Point.prototype.reverse = function() {
 	this.x = -this.x;
 	this.y = -this.y;
+
+	return this;
 }
 
 
@@ -139,10 +154,14 @@ PIXI.Point.prototype.dotProd = function(p) {
  *
  * @property p
  * @type Point
+ *
+ * @return {Point} itself
  */
 PIXI.Point.prototype.add = function(p) {
 	this.x += p.x; 
 	this.y += p.y;
+
+	return this;
 }
 
 /**
@@ -150,10 +169,14 @@ PIXI.Point.prototype.add = function(p) {
  *
  * @property p
  * @type Point
+ *
+ * @return {Point} itself
  */
 PIXI.Point.prototype.subtract = function(p) {
 	this.x -= p.x;
 	this.y -= p.y;
+
+	return this;
 }
 
 /**
@@ -161,10 +184,14 @@ PIXI.Point.prototype.subtract = function(p) {
  *
  * @property val
  * @type Number
+ *
+ * @return {Point} itself
  */
 PIXI.Point.prototype.multiply = function(val) {
 	this.x *= val;
 	this.y *= val;
+
+	return this;
 }
 
 /**
@@ -172,10 +199,14 @@ PIXI.Point.prototype.multiply = function(val) {
  *
  * @property val
  * @type Number
+ *
+ * @return {Point} itself
  */
 PIXI.Point.prototype.divide = function(val) {
 	this.x /= val; 
 	this.y /= val;
+
+	return this;
 }
 
 /**
