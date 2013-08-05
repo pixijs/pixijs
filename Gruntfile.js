@@ -124,7 +124,8 @@ module.exports = function(grunt) {
                 'examples/example 11 - RenderTexture',
                 'examples/example 12 - Spine',
                 'examples/example 13 - Graphics',
-                'examples/example 14 - Masking'
+                'examples/example 14 - Masking',
+                'examples/example 15 - Vectors',
             ]
         },
         connect: {

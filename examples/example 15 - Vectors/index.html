@@ -1,0 +1,76 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>pixi.js example 15 - Vectors</title>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			background-color: #000000;
+		}
+	</style>
+	
+	<script src="pixi.js"></script>
+	<script src="Vehicle.js"></script>
+	<script src="SteeredVehicle.js"></script>
+</head>
+<body>
+	<script>
+	// create an new instance of a pixi stage
+	var stage = new PIXI.Stage(0xFFFFFF, true);
+	
+	stage.interactive = true;
+
+	window.pixiStageWidth = 920;
+	window.pixiStageHeight = 480;
+	// create a renderer instance
+	var renderer = PIXI.autoDetectRenderer(window.pixiStageWidth, window.pixiStageHeight);
+	
+	renderer.view.style.position = "absolute"
+	renderer.view.style.marginLeft = (window.pixiStageWidth/-2)+"px";
+	renderer.view.style.marginTop = (window.pixiStageHeight/-2)+"px";
+	renderer.view.style.top = "50%";
+	renderer.view.style.left = "50%";
+	renderer.view.style.display = "block";
+	
+	// add render view to DOM
+	document.body.appendChild(renderer.view);
+
+
+	var texture = PIXI.Texture.fromImage("bunny.png");
+
+    var bunnies = [], i;
+    for(i=0; i<100; i++){
+
+        var bunny = new SteeredVehicle(texture);
+        bunny.position.x = Math.round(Math.random() * 620)
+        bunny.position.y = Math.round(Math.random() * 380)
+        
+        bunny.anchor.x = 0.5
+        bunny.anchor.y = 0.5
+        bunny.maxSpeed = 5
+
+        bunnies[i] = bunny
+        stage.addChild(bunny)
+	}
+
+    function animate(){
+
+        requestAnimFrame( animate )
+        
+        for(var i in bunnies){
+        	var bunny = bunnies[i];
+            if( bunny.update ){
+                bunny.wander()
+                bunny.flock(bunnies, i)
+                bunny.update()
+			}
+		}
+        renderer.render(stage)
+	}
+	requestAnimFrame( animate )
+
+	</script>
+
+	</body>
+</html>
