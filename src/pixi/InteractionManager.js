@@ -73,27 +73,22 @@ PIXI.InteractionManager.prototype.collectInteractiveSprite = function(displayObj
 	{
 		var child = children[i];
 		
-		if(child.visible) {
-			// push all interactive bits
-			if(child.interactive)
-			{
-				iParent.interactiveChildren = true;
-				//child.__iParent = iParent;
-				this.interactiveItems.push(child);
+		// push all interactive bits
+		if(child.interactive)
+		{
+			iParent.interactiveChildren = true;
+			this.interactiveItems.push(child);
 
-				if(child.children.length > 0)
-				{
-					this.collectInteractiveSprite(child, child);
-				}
+			if(child.children.length > 0)
+			{
+				this.collectInteractiveSprite(child, child);
 			}
-			else
+		}
+		else
+		{
+			if(child.children.length > 0)
 			{
-				child.__iParent = null;
-
-				if(child.children.length > 0)
-				{
-					this.collectInteractiveSprite(child, iParent);
-				}
+				this.collectInteractiveSprite(child, iParent);
 			}
 		}
 	}
@@ -238,7 +233,8 @@ PIXI.InteractionManager.prototype.onMouseMove = function(event)
 	for (var i = 0; i < length; i++)
 	{
 		var item = this.interactiveItems[i];
-		
+		if(!item.visible)continue;
+
 		if(item.mousemove)
 		{
 			//call the function!
@@ -274,7 +270,8 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
 	for (var i = 0; i < length; i++)
 	{
 		var item = this.interactiveItems[i];
-		
+		if(!item.visible)continue;
+
 		if(item.mousedown || item.click)
 		{
 			item.__mouseIsDown = true;
@@ -313,6 +310,7 @@ PIXI.InteractionManager.prototype.onMouseUp = function(event)
 	for (var i = 0; i < length; i++)
 	{
 		var item = this.interactiveItems[i];
+		if(!item.visible)continue;
 		
 		if(item.mouseup || item.mouseupoutside || item.click)
 		{
