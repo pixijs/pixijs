@@ -49,24 +49,32 @@ PIXI.AtlasLoader.prototype.onAtlasLoaded = function () {
     if (this.ajaxRequest.status == 200 || window.location.href.indexOf("http") == -1) {
       this.atlas = {
         meta : {
-          image : ""
+          image : []
         },
-        frames : {}
+        frames : []
       };
       var result = this.ajaxRequest.responseText.split(/\r?\n/);
       var lineCount = -3;
 
+      var currentImageId = 0;
       var currentFrame = null;
+      var nameInNextLine = false;
       // parser without rotation support yet!
       for (var i = 0; i < result.length; i++) {
         result[i] = result[i].replace(/^\s+|\s+$/g, '');
+        if (result[i] == "") {
+          nameInNextLine = i+1;
+        }
         if (result[i].length > 0) {
-          if (lineCount == -3) {
-            this.atlas.meta.image = result[i];
+          if (nameInNextLine == i) {
+            this.atlas.meta.image.push(result[i]);
+            currentImageId = this.atlas.meta.image.length - 1;
+            this.atlas.frames.push({});
+            lineCount = -3;
           } else if (lineCount > 0) {
             if (lineCount % 7 == 1) { // frame name
               if (currentFrame != null) {
-                this.atlas.frames[currentFrame.name] = currentFrame;
+                this.atlas.frames[currentImageId][currentFrame.name] = currentFrame;
               }
               currentFrame = { name: result[i], frame : {} };
             } else {
@@ -97,43 +105,46 @@ PIXI.AtlasLoader.prototype.onAtlasLoaded = function () {
         }
       }
       if (currentFrame != null) {
-        this.atlas.frames[currentFrame.name] = currentFrame;
+        this.atlas.frames[currentImageId][currentFrame.name] = currentFrame;
       }
 
-      if(this.atlas.frames)
-      {
-        // sprite sheet
-        var scope = this;
-        var textureUrl = this.baseUrl + this.atlas.meta.image;
-        var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
-        var frameData = this.atlas.frames;
+      if (this.atlas.meta.image.length > 0) {
+        this.images = [];
+        for (var j = 0; j < this.atlas.meta.image.length; j++) {
+          // sprite sheet
+          var scope = this;
+          var textureUrl = this.baseUrl + this.atlas.meta.image[j];
+          var frameData = this.atlas.frames[j];
+          this.images.push(new PIXI.ImageLoader(textureUrl, this.crossorigin));
 
-        this.texture = image.texture.baseTexture;
-        image.addEventListener("loaded", function (event) {
-          scope.onLoaded();
-        });
-
-        for (var i in frameData) {
-          var rect = frameData[i].frame;
-          if (rect) {
-            PIXI.TextureCache[i] = new PIXI.Texture(this.texture, {
-              x: rect.x,
-              y: rect.y,
-              width: rect.w,
-              height: rect.h
-            });
-            if (frameData[i].trimmed == true) {
-              PIXI.TextureCache[i].realSize = frameData[i].realSize;
-              // trim in pixi not supported yet, todo update trim properties if it is done ...
-              PIXI.TextureCache[i].trim.x = 0;
-              PIXI.TextureCache[i].trim.y = 0;
+          for (var i in frameData) {
+            var rect = frameData[i].frame;
+            if (rect) {
+              PIXI.TextureCache[i] = new PIXI.Texture(this.images[j].texture.baseTexture, {
+                x: rect.x,
+                y: rect.y,
+                width: rect.w,
+                height: rect.h
+              });
+              if (frameData[i].trimmed == true) {
+                PIXI.TextureCache[i].realSize = frameData[i].realSize;
+                // trim in pixi not supported yet, todo update trim properties if it is done ...
+                PIXI.TextureCache[i].trim.x = 0;
+                PIXI.TextureCache[i].trim.y = 0;
+              }
             }
           }
         }
-        image.load();
-      }
-      else
-      {
+
+        this.currentImageId = 0;
+        for (var j = 0; j < this.images.length; j++) {
+          this.images[j].addEventListener(
+            "loaded",  function (event) { scope.onLoaded(); }
+          );
+        }
+        this.images[this.currentImageId].load();
+
+      } else {
         this.onLoaded();
       }
 
@@ -148,11 +159,16 @@ PIXI.AtlasLoader.prototype.onAtlasLoaded = function () {
  * @private
  */
 PIXI.AtlasLoader.prototype.onLoaded = function () {
-  this.loaded = true;
-  this.dispatchEvent({
-    type: "loaded",
-    content: this
-  });
+  if (this.images.length - 1 > this.currentImageId) {
+    this.currentImageId++;
+    this.images[this.currentImageId].load();
+  } else {
+    this.loaded = true;
+    this.dispatchEvent({
+      type: "loaded",
+      content: this
+    });
+  }
 };
 
 /**
