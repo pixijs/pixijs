@@ -50,6 +50,7 @@ PIXI.AssetLoader = function(assetURLs, crossorigin)
         "png":  PIXI.ImageLoader,
         "gif":  PIXI.ImageLoader,
         "json": PIXI.JsonLoader,
+        "atlas": PIXI.AtlasLoader,
         "anim": PIXI.SpineLoader,
         "xml":  PIXI.BitmapFontLoader,
         "fnt":  PIXI.BitmapFontLoader
