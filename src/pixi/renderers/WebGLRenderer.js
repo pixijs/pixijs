@@ -172,7 +172,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	}*/
 
 	// update any textures	
-	PIXI.WebGLRenderer.updateTextures();
+	this.updateTextures();
 		
 	// recursivly loop through all items!
 	//this.checkVisibility(stage, true);
@@ -196,7 +196,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 
 
 	this.stageRenderGroup.backgroundColor = stage.backgroundColorSplit;
-	this.stageRenderGroup.render(this.projectionMatrix);
+	this.stageRenderGroup.render(this.projectionMatrix, this);
 	
 	// interaction
 	// run interaction!
@@ -226,7 +226,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
  * @private
  */
 
-PIXI.WebGLRenderer.updateTextures = function()
+PIXI.WebGLRenderer.prototype.updateTextures = function()
 {
 	for (var i=0; i < PIXI.texturesToUpdate.length; i++) this.updateTexture(PIXI.texturesToUpdate[i]);
 	for (var i=0; i < PIXI.texturesToDestroy.length; i++) this.destroyTexture(PIXI.texturesToDestroy[i]);
@@ -234,7 +234,7 @@ PIXI.WebGLRenderer.updateTextures = function()
 	PIXI.texturesToDestroy = [];
 }
 
-PIXI.WebGLRenderer.updateTexture = function(texture)
+PIXI.WebGLRenderer.prototype.updateTexture = function(texture)
 {
 	var gl = PIXI.gl;
 	
@@ -276,8 +276,8 @@ PIXI.WebGLRenderer.prototype.destroyTexture = function(texture)
 	
 	if(texture._glTexture)
 	{
-		texture._glTexture = gl.createTexture();
-		gl.deleteTexture(gl.TEXTURE_2D, texture._glTexture);
+		gl.deleteTexture(texture._glTexture);
+		texture._glTexture = null;
 	}
 }
 
