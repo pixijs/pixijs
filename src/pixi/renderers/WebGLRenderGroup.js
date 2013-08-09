@@ -43,10 +43,10 @@ PIXI.WebGLRenderGroup.prototype.setRenderable = function(displayObject)
 	//displayObject
 }
 
-PIXI.WebGLRenderGroup.prototype.render = function(projectionMatrix)
+PIXI.WebGLRenderGroup.prototype.render = function(projectionMatrix, renderer)
 {
 	
-	PIXI.WebGLRenderer.updateTextures();
+	renderer.updateTextures();
 	
 	var gl = this.gl;
 	
@@ -79,9 +79,9 @@ PIXI.WebGLRenderGroup.prototype.render = function(projectionMatrix)
 	
 }
 
-PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, projectionMatrix)
+PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, projectionMatrix, renderer)
 {
-	PIXI.WebGLRenderer.updateTextures();
+	renderer.updateTextures();
 	
 	var gl = this.gl;
 	this.checkVisibility(displayObject, displayObject.visible);
