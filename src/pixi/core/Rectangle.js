@@ -68,11 +68,11 @@ PIXI.Rectangle.prototype.contains = function(x, y)
         return false;
 
 	var x1 = this.x;
-	if(x > x1 && x < x1 + this.width)
+	if(x >= x1 && x <= x1 + this.width)
 	{
 		var y1 = this.y;
 		
-		if(y > y1 && y < y1 + this.height)
+		if(y >= y1 && y <= y1 + this.height)
 		{
 			return true;
 		}
