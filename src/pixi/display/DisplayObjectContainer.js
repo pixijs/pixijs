@@ -58,7 +58,6 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 	}
 
 	child.parent = this;
-	child.childIndex = this.children.length;
 	
 	this.children.push(child);	
 	
