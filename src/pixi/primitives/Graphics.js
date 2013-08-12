@@ -132,7 +132,7 @@ PIXI.Graphics.prototype.beginFill = function(color, alpha)
 {
 	this.filling = true;
 	this.fillColor = color || 0;
-	this.fillAlpha = alpha || 1;
+	this.fillAlpha = (alpha == undefined) ? 1 : alpha;
 }
 
 /**
