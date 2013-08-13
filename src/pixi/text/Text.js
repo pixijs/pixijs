@@ -268,15 +268,12 @@ PIXI.Text.prototype.wordWrap = function(text)
     return result + arguments.callee(ctx, text.substring(pos), wrapWidth);
   };
 
-  var result = "", c = 0;
+  var result = "";
   var lines = text.split("\n");
   for (var i = 0; i < lines.length; i++)
   {
-    if (c > 0) result += "\n";
-    if (lines[i].length > 0) {
-      result += lineWrap(this.context, lines[i], this.style.wordWrapWidth);
-      c++;
-    }
+    if (i > 0) result += "\n";
+    result += lineWrap(this.context, lines[i], this.style.wordWrapWidth);
   }
   return result;
 };
