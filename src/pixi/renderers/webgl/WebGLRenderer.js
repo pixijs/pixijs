@@ -275,8 +275,8 @@ PIXI.WebGLRenderer.destroyTexture = function(texture)
 
 	if(texture._glTexture)
 	{
-		texture._glTexture = gl.createTexture();
-		gl.deleteTexture(gl.TEXTURE_2D, texture._glTexture);
+		gl.deleteTexture( texture._glTexture);
+		texture._glTexture = null;
 	}
 }
 
