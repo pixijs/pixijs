@@ -82,15 +82,15 @@ PIXI.WebGLRenderGroup.prototype.render = function(projection)
 		}
 		else if(renderable instanceof PIXI.TilingSprite)
 		{
-			if(renderable.visible)this.renderTilingSprite(renderable, projection);
+			if(renderable.worldVisible)this.renderTilingSprite(renderable, projection);
 		}
 		else if(renderable instanceof PIXI.Strip)
 		{
-			if(renderable.visible)this.renderStrip(renderable, projection);
+			if(renderable.worldVisible)this.renderStrip(renderable, projection);
 		}
 		else if(renderable instanceof PIXI.Graphics)
 		{
-			if(renderable.visible && renderable.renderable) PIXI.WebGLGraphics.renderGraphics(renderable, projection);//, projectionMatrix);
+			if(renderable.worldVisible && renderable.renderable) PIXI.WebGLGraphics.renderGraphics(renderable, projection);//, projectionMatrix);
 		}
 		else if(renderable instanceof PIXI.FilterBlock)
 		{
@@ -304,19 +304,19 @@ PIXI.WebGLRenderGroup.prototype.renderSpecial = function(renderable, projection)
 {
 	if(renderable instanceof PIXI.TilingSprite)
 	{
-		if(renderable.visible)this.renderTilingSprite(renderable, projection);
+		if(renderable.worldVisible)this.renderTilingSprite(renderable, projection);
 	}
 	else if(renderable instanceof PIXI.Strip)
 	{
-		if(renderable.visible)this.renderStrip(renderable, projection);
+		if(renderable.worldVisible)this.renderStrip(renderable, projection);
 	}
 	else if(renderable instanceof PIXI.CustomRenderable)
 	{
-		if(renderable.visible) renderable.renderWebGL(this, projection);
+		if(renderable.worldVisible) renderable.renderWebGL(this, projection);
 	}
 	else if(renderable instanceof PIXI.Graphics)
 	{
-		if(renderable.visible && renderable.renderable) PIXI.WebGLGraphics.renderGraphics(renderable, projection);
+		if(renderable.worldVisible && renderable.renderable) PIXI.WebGLGraphics.renderGraphics(renderable, projection);
 	}
 	else if(renderable instanceof PIXI.FilterBlock)
 	{
