@@ -24,9 +24,9 @@ PIXI.Text = function(text, style)
     this.context = this.canvas.getContext("2d");
     PIXI.Sprite.call(this, PIXI.Texture.fromCanvas(this.canvas));
 
-    this.setText(text);
     this.setStyle(style);
-    
+    this.setText(text);
+
     this.updateText();
     this.dirty = false;
 };
@@ -82,66 +82,66 @@ PIXI.Sprite.prototype.setText = function(text)
  */
 PIXI.Text.prototype.updateText = function()
 {
-	this.context.font = this.style.font;
-	
-	var outputText = this.text;
-	
-	// word wrap
-	// preserve original text
-	if(this.style.wordWrap)outputText = this.wordWrap(this.text);
+  this.context.font = this.style.font;
 
-	//split text into lines
-	var lines = outputText.split(/(?:\r\n|\r|\n)/);
+  var outputText = this.text;
 
-	//calculate text width
-	var lineWidths = [];
-	var maxLineWidth = 0;
-	for (var i = 0; i < lines.length; i++)
-	{
-		var lineWidth = this.context.measureText(lines[i]).width;
-		lineWidths[i] = lineWidth;
-		maxLineWidth = Math.max(maxLineWidth, lineWidth);
-	}
-	this.canvas.width = maxLineWidth + this.style.strokeThickness;
-	
-	//calculate text height
-	var lineHeight = this.determineFontHeight("font: " + this.style.font  + ";") + this.style.strokeThickness;
-	this.canvas.height = lineHeight * lines.length;
+  // word wrap
+  // preserve original text
+  if(this.style.wordWrap)outputText = this.wordWrap(this.text);
 
-	//set canvas text styles
-	this.context.fillStyle = this.style.fill;
-	this.context.font = this.style.font;
-	
-	this.context.strokeStyle = this.style.stroke;
-	this.context.lineWidth = this.style.strokeThickness;
+  //split text into lines
+  var lines = outputText.split(/(?:\r\n|\r|\n)/);
 
-	this.context.textBaseline = "top";
+  //calculate text width
+  var lineWidths = [];
+  var maxLineWidth = 0;
+  for (var i = 0; i < lines.length; i++)
+  {
+    var lineWidth = this.context.measureText(lines[i]).width;
+    lineWidths[i] = lineWidth;
+    maxLineWidth = Math.max(maxLineWidth, lineWidth);
+  }
+  this.canvas.width = maxLineWidth + this.style.strokeThickness;
 
-	//draw lines line by line
-	for (i = 0; i < lines.length; i++)
-	{
-		var linePosition = new PIXI.Point(this.style.strokeThickness / 2, this.style.strokeThickness / 2 + i * lineHeight);
-	
-		if(this.style.align == "right")
-		{
-			linePosition.x += maxLineWidth - lineWidths[i];
-		}
-		else if(this.style.align == "center")
-		{
-			linePosition.x += (maxLineWidth - lineWidths[i]) / 2;
-		}
+  //calculate text height
+  var lineHeight = this.determineFontHeight("font: " + this.style.font  + ";") + this.style.strokeThickness;
+  this.canvas.height = lineHeight * lines.length;
 
-		if(this.style.stroke && this.style.strokeThickness)
-		{
-			this.context.strokeText(lines[i], linePosition.x, linePosition.y);
-		}
+  //set canvas text styles
+  this.context.fillStyle = this.style.fill;
+  this.context.font = this.style.font;
 
-		if(this.style.fill)
-		{
-			this.context.fillText(lines[i], linePosition.x, linePosition.y);
-		}
-	}
-	
+  this.context.strokeStyle = this.style.stroke;
+  this.context.lineWidth = this.style.strokeThickness;
+
+  this.context.textBaseline = "top";
+
+  //draw lines line by line
+  for (i = 0; i < lines.length; i++)
+  {
+    var linePosition = new PIXI.Point(this.style.strokeThickness / 2, this.style.strokeThickness / 2 + i * lineHeight);
+
+    if(this.style.align == "right")
+    {
+      linePosition.x += maxLineWidth - lineWidths[i];
+    }
+    else if(this.style.align == "center")
+    {
+      linePosition.x += (maxLineWidth - lineWidths[i]) / 2;
+    }
+
+    if(this.style.stroke && this.style.strokeThickness)
+    {
+      this.context.strokeText(lines[i], linePosition.x, linePosition.y);
+    }
+
+    if(this.style.fill)
+    {
+      this.context.fillText(lines[i], linePosition.x, linePosition.y);
+    }
+  }
+
     this.updateTexture();
 };
 
@@ -157,10 +157,10 @@ PIXI.Text.prototype.updateTexture = function()
     this.texture.baseTexture.height = this.canvas.height;
     this.texture.frame.width = this.canvas.width;
     this.texture.frame.height = this.canvas.height;
-    
-  	this._width = this.canvas.width;
+
+    this._width = this.canvas.width;
     this._height = this.canvas.height;
-	
+
     PIXI.texturesToUpdate.push(this.texture.baseTexture);
 };
 
@@ -172,13 +172,13 @@ PIXI.Text.prototype.updateTexture = function()
  */
 PIXI.Text.prototype.updateTransform = function()
 {
-	if(this.dirty)
-	{
-		this.updateText();	
-		this.dirty = false;
-	}
-	
-	PIXI.Sprite.prototype.updateTransform.call(this);
+  if(this.dirty)
+  {
+    this.updateText();
+    this.dirty = false;
+  }
+
+  PIXI.Sprite.prototype.updateTransform.call(this);
 };
 
 /*
@@ -189,28 +189,28 @@ PIXI.Text.prototype.updateTransform = function()
  * @param fontStyle {Object}
  * @private
  */
-PIXI.Text.prototype.determineFontHeight = function(fontStyle) 
+PIXI.Text.prototype.determineFontHeight = function(fontStyle)
 {
-	// build a little reference dictionary so if the font style has been used return a
-	// cached version...
-	var result = PIXI.Text.heightCache[fontStyle];
-	
-	if(!result)
-	{
-		var body = document.getElementsByTagName("body")[0];
-		var dummy = document.createElement("div");
-		var dummyText = document.createTextNode("M");
-		dummy.appendChild(dummyText);
-		dummy.setAttribute("style", fontStyle + ';position:absolute;top:0;left:0');
-		body.appendChild(dummy);
-		
-		result = dummy.offsetHeight;
-		PIXI.Text.heightCache[fontStyle] = result;
-		
-		body.removeChild(dummy);
-	}
-	
-	return result;
+  // build a little reference dictionary so if the font style has been used return a
+  // cached version...
+  var result = PIXI.Text.heightCache[fontStyle];
+
+  if(!result)
+  {
+    var body = document.getElementsByTagName("body")[0];
+    var dummy = document.createElement("div");
+    var dummyText = document.createTextNode("M");
+    dummy.appendChild(dummyText);
+    dummy.setAttribute("style", fontStyle + ';position:absolute;top:0;left:0');
+    body.appendChild(dummy);
+
+    result = dummy.offsetHeight;
+    PIXI.Text.heightCache[fontStyle] = result;
+
+    body.removeChild(dummy);
+  }
+
+  return result;
 };
 
 /**
@@ -222,49 +222,63 @@ PIXI.Text.prototype.determineFontHeight = function(fontStyle)
  */
 PIXI.Text.prototype.wordWrap = function(text)
 {
-	// search good wrap position
-	var searchWrapPos = function(ctx, text, start, end, wrapWidth)
-	{
-		var p = Math.floor((end-start) / 2) + start;
-		if(p == start) {
-			return 1;
-		}
-		
-		if(ctx.measureText(text.substring(0,p)).width <= wrapWidth)
-		{
-			if(ctx.measureText(text.substring(0,p+1)).width > wrapWidth)
-			{
-				return p;
-			}
-			else
-			{
-				return arguments.callee(ctx, text, p, end, wrapWidth);
-			}
-		}
-		else
-		{
-			return arguments.callee(ctx, text, start, p, wrapWidth);
-		}
-	};
-	 
-	var lineWrap = function(ctx, text, wrapWidth)
-	{
-		if(ctx.measureText(text).width <= wrapWidth || text.length < 1)
-		{
-			return text;
-		}
-		var pos = searchWrapPos(ctx, text, 0, text.length, wrapWidth);
-		return text.substring(0, pos) + "\n" + arguments.callee(ctx, text.substring(pos), wrapWidth);
-	};
-	
-	var result = "";
-	var lines = text.split("\n");
-	for (var i = 0; i < lines.length; i++)
-	{
-		result += lineWrap(this.context, lines[i], this.style.wordWrapWidth) + "\n";
-	}
-	
-	return result;
+  // search good wrap position
+  var searchWrapPos = function(ctx, text, start, end, wrapWidth)
+  {
+    var p = Math.floor((end-start) / 2) + start;
+    if(p == start) {
+      return 1;
+    }
+
+    if(ctx.measureText(text.substring(0,p)).width <= wrapWidth)
+    {
+      if(ctx.measureText(text.substring(0,p+1)).width > wrapWidth)
+      {
+        // search next space to wrap
+        if (text.substring(p-1,p) != " " && text.substring(p,p+1) != " ") {
+          do {
+            p--;
+          } while (p > 0 && text.substring(p, p+1) != " ");
+        }
+        return p;
+      }
+      else
+      {
+        return arguments.callee(ctx, text, p, end, wrapWidth);
+      }
+    }
+    else
+    {
+      return arguments.callee(ctx, text, start, p, wrapWidth);
+    }
+  };
+
+  var lineWrap = function(ctx, text, wrapWidth)
+  {
+    if(ctx.measureText(text).width <= wrapWidth || text.length < 1)
+    {
+      return text;
+    }
+    var pos = searchWrapPos(ctx, text, 0, text.length, wrapWidth);
+    var result = text.substring(0, pos) + "\n";
+    // no space as first line character
+    if (text.substring(pos, pos+1) == " ") {
+      pos++;
+    }
+    return result + arguments.callee(ctx, text.substring(pos), wrapWidth);
+  };
+
+  var result = "", c = 0;
+  var lines = text.split("\n");
+  for (var i = 0; i < lines.length; i++)
+  {
+    if (c > 0) result += "\n";
+    if (lines[i].length > 0) {
+      result += lineWrap(this.context, lines[i], this.style.wordWrapWidth);
+      c++;
+    }
+  }
+  return result;
 };
 
 /**
@@ -275,11 +289,11 @@ PIXI.Text.prototype.wordWrap = function(text)
  */
 PIXI.Text.prototype.destroy = function(destroyTexture)
 {
-	if(destroyTexture)
-	{
-		this.texture.destroy();
-	}
-		
+  if(destroyTexture)
+  {
+    this.texture.destroy();
+  }
+
 };
 
 PIXI.Text.heightCache = {};
