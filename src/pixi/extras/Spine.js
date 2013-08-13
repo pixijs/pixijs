@@ -89,8 +89,8 @@ PIXI.Spine.prototype.updateTransform = function () {
 				} else {
 					var sprite = this.createSprite(slot, attachment.rendererObject);
 					slotContainer.addChild(sprite);
-					slot.data.attachmentName = attachment.rendererObject.name;
 				}
+				slot.data.attachmentName = attachment.rendererObject.name;
 				slot.currentSprite = slot.sprites[spriteName];
 			}
 		}
