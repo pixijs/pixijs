@@ -38,6 +38,15 @@ PIXI.InteractionManager = function(stage)
 	 */
 	this.touchs = {};
 
+
+	/**
+	 * sets whether or not the touchStart and mouseDown interactions stop the high level browser functions like zoom and pan.
+	 * It is true by default, Meaning the native zoom/pan functions will be disabled on mobiles
+	 * @property preventDefault
+	 * @type Boolean
+	 */
+	this.preventDefault = true;
+
 	// helpers
 	this.tempPoint = new PIXI.Point();
 	//this.tempMatrix =  mat3.create();
@@ -48,7 +57,8 @@ PIXI.InteractionManager = function(stage)
 	this.pool = [];
 
 	this.interactiveItems = [];
-
+	
+	
 	this.last = 0;
 }
 
@@ -256,7 +266,8 @@ PIXI.InteractionManager.prototype.onMouseMove = function(event)
  */
 PIXI.InteractionManager.prototype.onMouseDown = function(event)
 {
-	event.preventDefault();
+	if(this.preventDefault)event.preventDefault();
+	
 	this.mouse.originalEvent = event || window.event; //IE uses window.event
 	
 	// loop through inteaction tree...
@@ -427,7 +438,6 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
  */
 PIXI.InteractionManager.prototype.onTouchMove = function(event)
 {
-	this.mouse.originalEvent = event || window.event; //IE uses window.event
 	var rect = this.target.view.getBoundingClientRect();
 	var changedTouches = event.changedTouches;
 	
@@ -435,6 +445,7 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
 	{
 		var touchEvent = changedTouches[i];
 		var touchData = this.touchs[touchEvent.identifier];
+		touchData.originalEvent =  event || window.event;
 		
 		// update the touch position
 		touchData.global.x = (touchEvent.clientX - rect.left) * (this.target.width / rect.width);
@@ -458,8 +469,7 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
  */
 PIXI.InteractionManager.prototype.onTouchStart = function(event)
 {
-	event.preventDefault();
-	this.mouse.originalEvent = event || window.event; //IE uses window.event
+	if(this.preventDefault)event.preventDefault();
 	
 	var rect = this.target.view.getBoundingClientRect();
 	
@@ -470,6 +480,8 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
 		
 		var touchData = this.pool.pop();
 		if(!touchData)touchData = new PIXI.InteractionData();
+		
+		touchData.originalEvent =  event || window.event;
 		
 		this.touchs[touchEvent.identifier] = touchData;
 		touchData.global.x = (touchEvent.clientX - rect.left) * (this.target.width / rect.width);
@@ -508,7 +520,7 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
  */
 PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 {
-	this.mouse.originalEvent = event || window.event; //IE uses window.event
+	//this.mouse.originalEvent = event || window.event; //IE uses window.event
 	var rect = this.target.view.getBoundingClientRect();
 	var changedTouches = event.changedTouches;
 	
@@ -530,7 +542,7 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 			if(itemTouchData == touchData)
 			{
 				// so this one WAS down...
-				
+				touchData.originalEvent =  event || window.event;
 				// hitTest??
 				
 				if(item.touchend || item.tap)
