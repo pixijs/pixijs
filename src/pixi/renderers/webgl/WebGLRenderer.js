@@ -135,7 +135,6 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 		// TODO make this work
 		// dont think this is needed any more?
 		//if(this.__stage)this.checkVisibility(this.__stage, false)
-		
 		this.__stage = stage;
 		this.stageRenderGroup.setRenderable(stage);
 	}
@@ -156,6 +155,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	//this.checkVisibility(stage, true);
 	
 	// update the scene graph	
+	PIXI.visibleCount++;
 	stage.updateTransform();
 	
 	var gl = this.gl;

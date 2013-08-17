@@ -492,7 +492,7 @@ PIXI.DisplayObject.prototype.removeFilter = function()
 PIXI.DisplayObject.prototype.updateTransform = function()
 {
 	// TODO OPTIMIZE THIS!! with dirty
-	if(this.rotation != this.rotationCache)
+	if(this.rotation !== this.rotationCache)
 	{
 		this.rotationCache = this.rotation;
 		this._sr =  Math.sin(this.rotation);
@@ -534,5 +534,9 @@ PIXI.DisplayObject.prototype.updateTransform = function()
 	// because we are using affine transformation, we can optimise the matrix concatenation process.. wooo!
 	// mat3.multiply(this.localTransform, this.parent.worldTransform, this.worldTransform);
 	this.worldAlpha = this.alpha * this.parent.worldAlpha;
+	
+	this.vcount = PIXI.visibleCount;
 
 }
+
+PIXI.visibleCount = 0;

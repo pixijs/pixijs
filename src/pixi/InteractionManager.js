@@ -83,7 +83,7 @@ PIXI.InteractionManager.prototype.collectInteractiveSprite = function(displayObj
 	{
 		var child = children[i];
 		
-		if(child.visible) {
+//		if(child.visible) {
 			// push all interactive bits
 			if(child.interactive)
 			{
@@ -105,7 +105,7 @@ PIXI.InteractionManager.prototype.collectInteractiveSprite = function(displayObj
 					this.collectInteractiveSprite(child, iParent);
 				}
 			}
-		}
+//		}
 	}
 }
 
@@ -185,7 +185,10 @@ PIXI.InteractionManager.prototype.update = function()
 	for (var i = 0; i < length; i++)
 	{
 		var item = this.interactiveItems[i];
-		if(!item.visible)continue;
+		
+		
+		
+		//if(!item.visible)continue;
 		
 		// OPTIMISATION - only calculate every time if the mousemove function exists..
 		// OK so.. does the object have any other interactive functions?
@@ -368,7 +371,7 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 {
 	var global = interactionData.global;
 	
-	if(!item.visible)return false;
+	if(item.vcount !== PIXI.visibleCount)return false;
 
 	var isSprite = (item instanceof PIXI.Sprite),
 		worldTransform = item.worldTransform,
