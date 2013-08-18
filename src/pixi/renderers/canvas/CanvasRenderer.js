@@ -218,16 +218,12 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 				context.worldAlpha = 0;
 				
 				PIXI.CanvasGraphics.renderGraphicsMask(displayObject.mask, context);
-		//		context.fillStyle = 0xFF0000;
-			//	context.fillRect(0, 0, 200, 200);
 				context.clip();
 				
 				displayObject.mask.worldAlpha = cacheAlpha;
-				//context.globalCompositeOperation = 'lighter';
 			}
 			else
 			{
-				//context.globalCompositeOperation = 'source-over';
 				context.restore();
 			}
 		}
@@ -321,7 +317,7 @@ PIXI.CanvasRenderer.prototype.renderTilingSprite = function(sprite)
 PIXI.CanvasRenderer.prototype.renderStrip = function(strip)
 {
 	var context = this.context;
-	//context.globalCompositeOperation = 'lighter';
+
 	// draw triangles!!
 	var verticies = strip.verticies;
 	var uvs = strip.uvs;
@@ -348,8 +344,6 @@ PIXI.CanvasRenderer.prototype.renderStrip = function(strip)
 		context.lineTo(x2, y2);
 		context.closePath();
 		
-	//	context.fillStyle = "white"//rgb(1, 1, 1,1));
-	//	context.fill();
 		context.clip();
 		
 		
@@ -373,5 +367,4 @@ PIXI.CanvasRenderer.prototype.renderStrip = function(strip)
 	  	context.restore();
 	};
 	
-//	context.globalCompositeOperation = 'source-over';	
 }

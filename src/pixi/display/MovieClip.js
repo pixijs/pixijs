@@ -131,7 +131,9 @@ PIXI.MovieClip.prototype.updateTransform = function()
 	if(!this.playing)return;
 	
 	this.currentFrame += this.animationSpeed;
+	
 	var round = (this.currentFrame + 0.5) | 0;
+	
 	if(this.loop || round < this.textures.length)
 	{
 		this.setTexture(this.textures[round % this.textures.length]);

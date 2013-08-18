@@ -61,7 +61,7 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 	
 	this.children.push(child);	
 	
-	// updae the stage refference..
+	// update the stage refference..
 	
 	if(this.stage)
 	{
@@ -96,7 +96,6 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 	nextObject = previousObject._iNext;
 	
 	// always true in this case
-	//this.last = child.last;
 	// need to make sure the parents last is updated too
 	var updateLast = this;
 	var prevLast = previousObject;
@@ -160,7 +159,7 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 		}
 		
 		// modify the list..
-		var childFirst = child.first
+		var childFirst = child.first;
 		var childLast = child.last;
 		var nextObject;
 		var previousObject;
@@ -168,7 +167,7 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 		if(index == this.children.length)
 		{
 			previousObject =  this.last;
-			var updateLast = this;//.parent;
+			var updateLast = this;
 			var prevLast = this.last;
 			while(updateLast)
 			{
@@ -297,7 +296,7 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 	{
 		// unlink //
 		// modify the list..
-		var childFirst = child.first
+		var childFirst = child.first;
 		var childLast = child.last;
 		
 		var nextObject = childLast._iNext;

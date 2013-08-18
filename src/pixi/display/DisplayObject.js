@@ -87,15 +87,6 @@ PIXI.DisplayObject = function()
 	this.renderable = false;
 
 	/**
-	 * [read-only] The visibility of the object based on world (parent) factors.
-	 *
-	 * @property worldVisible
-	 * @type Boolean
-	 * @readOnly
-	 */	
-	this.worldVisible = false;
-
-	/**
 	 * [read-only] The display object container that contains this display object.
 	 *
 	 * @property parent
@@ -251,17 +242,6 @@ PIXI.DisplayObject = function()
 // constructor
 PIXI.DisplayObject.prototype.constructor = PIXI.DisplayObject;
 
-//TODO make visible a getter setter
-/*
-Object.defineProperty(PIXI.DisplayObject.prototype, 'visible', {
-    get: function() {
-        return this._visible;
-    },
-    set: function(value) {
-        this._visible = value;
-    }
-});*/
-
 /**
  * [Deprecated] Indicates if the sprite will have touch and mouse interactivity. It is false by default
  * Instead of using this function you can now simply set the interactive property to true or false
@@ -334,11 +314,9 @@ PIXI.DisplayObject.prototype.addFilter = function(mask)
 	if(this.filter)return;
 	this.filter = true;
 	
-	
 	// insert a filter block..
 	var start = new PIXI.FilterBlock();
 	var end = new PIXI.FilterBlock();
-	
 	
 	start.mask = mask;
 	end.mask = mask;
@@ -349,9 +327,7 @@ PIXI.DisplayObject.prototype.addFilter = function(mask)
 	start.open = true;
 	
 	/*
-	 * 
 	 * insert start
-	 * 
 	 */
 	
 	var childFirst = start
@@ -382,9 +358,7 @@ PIXI.DisplayObject.prototype.addFilter = function(mask)
 	// now insert the end filter block..
 	
 	/*
-	 * 
 	 * insert end filter
-	 * 
 	 */
 	var childFirst = end
 	var childLast = end
@@ -460,8 +434,6 @@ PIXI.DisplayObject.prototype.removeFilter = function()
 	previousObject._iNext = nextObject;		
 	
 	// this is always true too!
-//	if(this.last == lastBlock)
-	//{
 	var tempLast =  lastBlock._iPrev;	
 	// need to make sure the parents last is updated too
 	var updateLast = this;
@@ -480,7 +452,6 @@ PIXI.DisplayObject.prototype.removeFilter = function()
 	{
 		this.__renderGroup.removeFilterBlocks(startBlock, lastBlock);
 	}
-	//}
 }
 
 /*

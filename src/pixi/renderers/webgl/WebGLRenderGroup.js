@@ -66,9 +66,6 @@ PIXI.WebGLRenderGroup.prototype.render = function(projection)
 	gl.uniform2f(PIXI.shaderProgram.projectionVector, projection.x, projection.y);
 	gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 	
-	// TODO remove this by replacing visible with getter setters..	
-	//this.checkVisibility(this.root, this.root.visible);
-	
 	// will render all the elements in the group
 	var renderable;
 	
@@ -150,9 +147,7 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 	PIXI.WebGLRenderer.updateTextures();
 	
 	var gl = this.gl;
-	//this.checkVisibility(displayObject, displayObject.visible);
-	
-//	gl.uniformMatrix4fv(PIXI.shaderProgram.mvMatrixUniform, false, projectionMatrix);
+
 	gl.uniform2f(PIXI.shaderProgram.projectionVector, projection.x, projection.y);
 
 	// to do!
@@ -354,45 +349,6 @@ PIXI.WebGLRenderGroup.prototype.renderSpecial = function(renderable, projection)
 		}
 	}
 }
-
-/**
- * Checks the visibility of a displayObject
- *
- * @method checkVisibility
- * @param displayObject {DisplayObject}
- * @param globalVisible {Boolean}
- * @private
- */
-
-/*
-PIXI.WebGLRenderGroup.prototype.checkVisibility = function(displayObject, globalVisible)
-{
-	// give the dp a reference to its renderGroup...
-	var children = displayObject.children;
-	//displayObject.worldVisible = globalVisible;
-	for (var i=0; i < children.length; i++) 
-	{
-		var child = children[i];
-		
-		// TODO optimize... should'nt need to loop through everything all the time
-	//	child.worldVisible = child.visible && globalVisible;
-		
-		// everything should have a batch!
-		// time to see whats new!
-		if(child.textureChange)
-		{
-			child.textureChange = false;
-			//if(child.worldVisible)
-			//this.updateTexture(child);
-			// update texture!!
-		}
-		
-		if(child.children.length > 0)
-		{
-			this.checkVisibility(child, child.worldVisible);
-		}
-	};
-}*/
 
 /**
  * Updates a webgl texture

@@ -422,7 +422,7 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
 			verts.push(px , py);
 			verts.push(r, g, b, alpha);
 			
-			verts.push(p2x - (px-p2x), p2y - (py - p2y));//, 4);
+			verts.push(p2x - (px-p2x), p2y - (py - p2y));
 			verts.push(r, g, b, alpha);
 		}
 	}

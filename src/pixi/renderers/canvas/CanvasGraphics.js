@@ -38,8 +38,6 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 		
 		if(data.type == PIXI.Graphics.POLY)
 		{
-			//if(data.lineWidth <= 0)continue;
-			
 			context.beginPath();
 			
 			context.moveTo(points[0], points[1]);
@@ -178,8 +176,6 @@ PIXI.CanvasGraphics.renderGraphicsMask = function(graphics, context)
 		
 		if(data.type == PIXI.Graphics.POLY)
 		{
-			//if(data.lineWidth <= 0)continue;
-			
 			context.beginPath();
 			context.moveTo(points[0], points[1]);
 			

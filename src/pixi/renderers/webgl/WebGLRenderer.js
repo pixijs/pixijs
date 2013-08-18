@@ -134,7 +134,6 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	{
 		// TODO make this work
 		// dont think this is needed any more?
-		//if(this.__stage)this.checkVisibility(this.__stage, false)
 		this.__stage = stage;
 		this.stageRenderGroup.setRenderable(stage);
 	}
@@ -151,9 +150,6 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	// update any textures	
 	PIXI.WebGLRenderer.updateTextures();
 		
-	// recursivly loop through all items!
-	//this.checkVisibility(stage, true);
-	
 	// update the scene graph	
 	PIXI.visibleCount++;
 	stage.updateTransform();
@@ -164,16 +160,12 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	gl.colorMask(true, true, true, this.transparent); 
 	gl.viewport(0, 0, this.width, this.height);	
 	
-	// set the correct matrix..	
-   //	gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.projectionMatrix);
-   
    	gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 		
 	gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], !this.transparent);     
 	gl.clear(gl.COLOR_BUFFER_BIT);
 
 	// HACK TO TEST
-	//PIXI.projectionMatrix = this.projectionMatrix;
 	
 	this.stageRenderGroup.backgroundColor = stage.backgroundColorSplit;
 	this.stageRenderGroup.render(PIXI.projection);

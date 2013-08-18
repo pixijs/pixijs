@@ -119,35 +119,3 @@ PIXI.Stage.prototype.getMousePosition = function()
 {
 	return this.interactionManager.mouse.global;
 }
-/*
-PIXI.Stage.prototype.__addChild = function(child)
-{
-	if(child.interactive)this.dirty = true;
-	
-	child.stage = this;
-	
-	if(child.children)
-	{
-		for (var i=0; i < child.children.length; i++) 
-		{
-		  	this.__addChild(child.children[i]);
-		};
-	}
-	
-}
-
-
-PIXI.Stage.prototype.__removeChild = function(child)
-{
-	if(child.interactive)this.dirty = true;
-	
-	child.stage = undefined;
-	
-	if(child.children)
-	{
-		for(var i=0,j=child.children.length; i<j; i++)
-		{
-		  	this.__removeChild(child.children[i]);
-		}
-	}
-}*/
