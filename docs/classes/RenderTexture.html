@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.0.0</em>
+            <em>API Docs for: 1.3.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -49,13 +49,21 @@
             
                 <li><a href="..&#x2F;classes/BitmapText.html">BitmapText</a></li>
             
+                <li><a href="..&#x2F;classes/CanvasGraphics.html">CanvasGraphics</a></li>
+            
                 <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
+            
+                <li><a href="..&#x2F;classes/Circle.html">Circle</a></li>
             
                 <li><a href="..&#x2F;classes/CustomRenderable.html">CustomRenderable</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
+            
+                <li><a href="..&#x2F;classes/Ellipse.html">Ellipse</a></li>
+            
+                <li><a href="..&#x2F;classes/Graphics.html">Graphics</a></li>
             
                 <li><a href="..&#x2F;classes/ImageLoader.html">ImageLoader</a></li>
             
@@ -163,6 +171,27 @@
 
 <div class="box intro">
     <p>A RenderTexture is a special texture that allows any pixi displayObject to be rendered to it.</p>
+
+<p><strong>Hint</strong>: All DisplayObjects (exmpl. Sprites) that renders on RenderTexture should be preloaded. 
+Otherwise black rectangles will be drawn instead.  </p>
+
+<p>RenderTexture takes snapshot of DisplayObject passed to render method. If DisplayObject is passed to render method, position and rotation of it will be ignored. For example:</p>
+
+<pre class="code prettyprint"><code>var renderTexture = new PIXI.RenderTexture(800, 600);
+var sprite = PIXI.Sprite.fromImage("spinObj_01.png");
+sprite.position.x = 800/2;
+sprite.position.y = 600/2;
+sprite.anchor.x = 0.5;
+sprite.anchor.y = 0.5;
+renderTexture.render(sprite);
+</code></pre>
+
+<p>Sprite in this case will be rendered to 0,0 position. To render this sprite at center DisplayObjectContainer should be used:</p>
+
+<pre class="code prettyprint"><code>var doc = new PIXI.DisplayObjectContainer();
+doc.addChild(sprite);
+renderTexture.render(doc);  // Renders to center of renderTexture
+</code></pre>
 </div>
 
 
@@ -509,7 +538,7 @@
             
         
         
-        <a href="..&#x2F;files&#x2F;src_pixi_textures_RenderTexture.js.html#l90"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:90</code></a>
+        <a href="..&#x2F;files&#x2F;src_pixi_textures_RenderTexture.js.html#l112"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:112</code></a>
         
         </p>
 

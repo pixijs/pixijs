@@ -26,6 +26,10 @@ any breakthroughs will be posted up there too!
 
 - [Render Texture Demo](<http://www.goodboydigital.com/pixijs/examples/11/>)
 
+- [Primitives Demo](<http://www.goodboydigital.com/pixijs/examples/13/>)
+
+- [Masking Demo](<http://www.goodboydigital.com/pixijs/examples/14/>)
+
 - [Interaction Demo](<http://www.goodboydigital.com/pixijs/examples/6/>)
 
 - [photonstorm Balls Demo](<http://gametest.mobi/pixi/balls/>)
@@ -49,11 +53,7 @@ last 2 examples and allowing us to share the source code :)
 ### Road Map ###
 
 * Create a Typescript definition file for Pixi.js
-* Implement Custom Render Item (currently being worked on by @GoodBoyDigital)
-* Implement Masking
-* Implement Primitive Drawing
 * Implement Filters (currently being worked on by @GoodBoyDigital)
-* Add Spine support 
 * Implement Flash animation to pixi
 * Update Loader so that it support XHR2 if it is available
 * Improve the Documentation of the Project
@@ -104,6 +104,9 @@ It also copies the non-minified version to the examples.
 - BitmapFont text
 - Multiline Text
 - Render Texture
+- Spine support
+- Primitive Drawing
+- Masking
 
 ### Coming soon ###
 

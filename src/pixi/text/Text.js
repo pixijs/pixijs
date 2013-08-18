@@ -4,18 +4,19 @@
 
 /**
  * A Text Object will create a line(s) of text to split a line you can use "\n"
+ *
  * @class Text
  * @extends Sprite
  * @constructor
- * @param {String} text The copy that you would like the text to display
- * @param {Object} [style] The style parameters
- * @param {String} [style.font] default "bold 20pt Arial" The style and size of the font
- * @param {Object} [style.fill="black"] A canvas fillstyle that will be used on the text eg "red", "#00FF00"
- * @param {String} [style.align="left"] An alignment of the multiline text ("left", "center" or "right")
- * @param {String} [style.stroke] A canvas fillstyle that will be used on the text stroke eg "blue", "#FCFF00"
- * @param {Number} [style.strokeThickness=0] A number that represents the thickness of the stroke. Default is 0 (no stroke)
- * @param {Boolean} [style.wordWrap=false] Indicates if word wrap should be used
- * @param {Number} [style.wordWrapWidth=100] The width at which text will wrap
+ * @param text {String} The copy that you would like the text to display
+ * @param [style] {Object} The style parameters
+ * @param [style.font] {String} default "bold 20pt Arial" The style and size of the font
+ * @param [style.fill="black"] {Object} A canvas fillstyle that will be used on the text eg "red", "#00FF00"
+ * @param [style.align="left"] {String} An alignment of the multiline text ("left", "center" or "right")
+ * @param [style.stroke] {String} A canvas fillstyle that will be used on the text stroke eg "blue", "#FCFF00"
+ * @param [style.strokeThickness=0] {Number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
+ * @param [style.wordWrap=false] {Boolean} Indicates if word wrap should be used
+ * @param [style.wordWrapWidth=100] {Number} The width at which text will wrap
  */
 PIXI.Text = function(text, style)
 {
@@ -26,25 +27,26 @@ PIXI.Text = function(text, style)
     this.setText(text);
     this.setStyle(style);
     
-     this.updateText();
+    this.updateText();
     this.dirty = false;
 };
 
 // constructor
-PIXI.Text.constructor = PIXI.Text;
 PIXI.Text.prototype = Object.create(PIXI.Sprite.prototype);
+PIXI.Text.prototype.constructor = PIXI.Text;
 
 /**
  * Set the style of the text
+ *
  * @method setStyle
- * @param {Object} [style] The style parameters
- * @param {String} [style.font="bold 20pt Arial"] The style and size of the font
- * @param {Object} [style.fill="black"] A canvas fillstyle that will be used on the text eg "red", "#00FF00"
- * @param {String} [style.align="left"] An alignment of the multiline text ("left", "center" or "right")
- * @param {String} [style.stroke="black"] A canvas fillstyle that will be used on the text stroke eg "blue", "#FCFF00"
- * @param {Number} [style.strokeThickness=0] A number that represents the thickness of the stroke. Default is 0 (no stroke)
- * @param {Boolean} [style.wordWrap=false] Indicates if word wrap should be used
- * @param {Number} [style.wordWrapWidth=100] The width at which text will wrap
+ * @param [style] {Object} The style parameters
+ * @param [style.font="bold 20pt Arial"] {String} The style and size of the font
+ * @param [style.fill="black"] {Object} A canvas fillstyle that will be used on the text eg "red", "#00FF00"
+ * @param [style.align="left"] {String} An alignment of the multiline text ("left", "center" or "right")
+ * @param [style.stroke="black"] {String} A canvas fillstyle that will be used on the text stroke eg "blue", "#FCFF00"
+ * @param [style.strokeThickness=0] {Number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
+ * @param [style.wordWrap=false] {Boolean} Indicates if word wrap should be used
+ * @param [style.wordWrapWidth=100] {Number} The width at which text will wrap
  */
 PIXI.Text.prototype.setStyle = function(style)
 {
@@ -62,6 +64,7 @@ PIXI.Text.prototype.setStyle = function(style)
 
 /**
  * Set the copy for the text object. To split a line you can use "\n"
+ *
  * @methos setText
  * @param {String} text The copy that you would like the text to display
  */
@@ -73,6 +76,8 @@ PIXI.Sprite.prototype.setText = function(text)
 
 /**
  * Renders text
+ *
+ * @method updateText
  * @private
  */
 PIXI.Text.prototype.updateText = function()
@@ -142,11 +147,12 @@ PIXI.Text.prototype.updateText = function()
 
 /**
  * Updates texture size based on canvas size
+ *
+ * @method updateTexture
  * @private
  */
 PIXI.Text.prototype.updateTexture = function()
 {
-
     this.texture.baseTexture.width = this.canvas.width;
     this.texture.baseTexture.height = this.canvas.height;
     this.texture.frame.width = this.canvas.width;
@@ -159,6 +165,9 @@ PIXI.Text.prototype.updateTexture = function()
 };
 
 /**
+ * Updates the transfor of this object
+ *
+ * @method updateTransform
  * @private
  */
 PIXI.Text.prototype.updateTransform = function()
@@ -175,6 +184,10 @@ PIXI.Text.prototype.updateTransform = function()
 /*
  * http://stackoverflow.com/users/34441/ellisbben
  * great solution to the problem!
+ *
+ * @method determineFontHeight
+ * @param fontStyle {Object}
+ * @private
  */
 PIXI.Text.prototype.determineFontHeight = function(fontStyle) 
 {
@@ -202,6 +215,9 @@ PIXI.Text.prototype.determineFontHeight = function(fontStyle)
 
 /**
  * A Text Object will apply wordwrap
+ *
+ * @method wordWrap
+ * @param text {String}
  * @private
  */
 PIXI.Text.prototype.wordWrap = function(text)
@@ -251,6 +267,12 @@ PIXI.Text.prototype.wordWrap = function(text)
 	return result;
 };
 
+/**
+ * Destroys this text object
+ *
+ * @method destroy
+ * @param destroyTexture {Boolean}
+ */
 PIXI.Text.prototype.destroy = function(destroyTexture)
 {
 	if(destroyTexture)

@@ -8,45 +8,54 @@ PIXI.texturesToDestroy = [];
 
 /**
  * A texture stores the information that represents an image. All textures have a base texture
+ *
  * @class BaseTexture
- * @extends EventTarget
+ * @uses EventTarget
  * @constructor
  * @param source {String} the source object (image or canvas)
  */
 PIXI.BaseTexture = function(source)
 {
 	PIXI.EventTarget.call( this );
-	
-	/*
-	 * The url of the texture
-	 * @property imageUrl
-	 * @type String
-	 */
-	//this.imageUrl = source.src;
-	
+
 	/**
-	 * [read only] The width of the base texture set when the image has loaded
+	 * [read-only] The width of the base texture set when the image has loaded
+	 *
 	 * @property width
 	 * @type Number
+	 * @readOnly
 	 */
 	this.width = 100;
+
 	/**
-	 * [read only] The height of the base texture set when the image has loaded
+	 * [read-only] The height of the base texture set when the image has loaded
+	 *
 	 * @property height
 	 * @type Number
+	 * @readOnly
 	 */
 	this.height = 100;
-	
+
+	/**
+	 * [read-only] Describes if the base texture has loaded or not
+	 *
+	 * @property hasLoaded
+	 * @type Boolean
+	 * @readOnly
+	 */
+	this.hasLoaded = false;
+
 	/**
 	 * The source that is loaded to create the texture
+	 *
 	 * @property source
 	 * @type Image
 	 */
-	this.source = source//new Image();
-	
+	this.source = source;
+
 	if(!source)return;
-	
-	if(this.source instanceof Image)
+
+	if(this.source instanceof Image || this.source instanceof HTMLImageElement)
 	{
 		if(this.source.complete)
 		{
@@ -81,13 +90,17 @@ PIXI.BaseTexture = function(source)
 			
 		PIXI.texturesToUpdate.push(this);
 	}
-	
+
 	this._powerOf2 = false;
-	
 }
 
-PIXI.BaseTexture.constructor = PIXI.BaseTexture;
+PIXI.BaseTexture.prototype.constructor = PIXI.BaseTexture;
 
+/**
+ * Destroys this base texture
+ *
+ * @method destroy
+ */
 PIXI.BaseTexture.prototype.destroy = function()
 {
 	if(this.source instanceof Image)
@@ -99,9 +112,9 @@ PIXI.BaseTexture.prototype.destroy = function()
 }
 
 /**
- * 
  * Helper function that returns a base texture based on an image url
  * If the image is not in the base texture cache it will be  created and loaded
+ *
  * @static
  * @method fromImage
  * @param imageUrl {String} The image url of the texture

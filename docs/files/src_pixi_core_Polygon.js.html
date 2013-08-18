@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>src&#x2F;pixi&#x2F;core&#x2F;Polygon.js - Pixi.JS</title>
+    <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
+    <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="..&#x2F;assets/favicon.png">
+    <script src="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;combo?3.8.0&#x2F;build&#x2F;yui&#x2F;yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="http:&#x2F;&#x2F;www.goodboydigital.com&#x2F;pixijs&#x2F;logo_small.png" title="Pixi.JS"></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 1.3.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="..&#x2F;classes/AssetLoader.html">AssetLoader</a></li>
+            
+                <li><a href="..&#x2F;classes/BaseTexture.html">BaseTexture</a></li>
+            
+                <li><a href="..&#x2F;classes/BitmapFontLoader.html">BitmapFontLoader</a></li>
+            
+                <li><a href="..&#x2F;classes/BitmapText.html">BitmapText</a></li>
+            
+                <li><a href="..&#x2F;classes/CanvasGraphics.html">CanvasGraphics</a></li>
+            
+                <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
+            
+                <li><a href="..&#x2F;classes/Circle.html">Circle</a></li>
+            
+                <li><a href="..&#x2F;classes/CustomRenderable.html">CustomRenderable</a></li>
+            
+                <li><a href="..&#x2F;classes/DisplayObject.html">DisplayObject</a></li>
+            
+                <li><a href="..&#x2F;classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
+            
+                <li><a href="..&#x2F;classes/Ellipse.html">Ellipse</a></li>
+            
+                <li><a href="..&#x2F;classes/Graphics.html">Graphics</a></li>
+            
+                <li><a href="..&#x2F;classes/ImageLoader.html">ImageLoader</a></li>
+            
+                <li><a href="..&#x2F;classes/InteractionData.html">InteractionData</a></li>
+            
+                <li><a href="..&#x2F;classes/InteractionManager.html">InteractionManager</a></li>
+            
+                <li><a href="..&#x2F;classes/JsonLoader.html">JsonLoader</a></li>
+            
+                <li><a href="..&#x2F;classes/MovieClip.html">MovieClip</a></li>
+            
+                <li><a href="..&#x2F;classes/Point.html">Point</a></li>
+            
+                <li><a href="..&#x2F;classes/Polygon.html">Polygon</a></li>
+            
+                <li><a href="..&#x2F;classes/Rectangle.html">Rectangle</a></li>
+            
+                <li><a href="..&#x2F;classes/RenderTexture.html">RenderTexture</a></li>
+            
+                <li><a href="..&#x2F;classes/Spine.html">Spine</a></li>
+            
+                <li><a href="..&#x2F;classes/Sprite.html">Sprite</a></li>
+            
+                <li><a href="..&#x2F;classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
+            
+                <li><a href="..&#x2F;classes/Stage.html">Stage</a></li>
+            
+                <li><a href="..&#x2F;classes/Text.html">Text</a></li>
+            
+                <li><a href="..&#x2F;classes/Texture.html">Texture</a></li>
+            
+                <li><a href="..&#x2F;classes/TilingSprite.html">TilingSprite</a></li>
+            
+                <li><a href="..&#x2F;classes/WebGLBatch.html">WebGLBatch</a></li>
+            
+                <li><a href="..&#x2F;classes/WebGLRenderer.html">WebGLRenderer</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="..&#x2F;modules/PIXI.html">PIXI</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: src&#x2F;pixi&#x2F;core&#x2F;Polygon.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+&#x2F;**
+ * @author Adrien Brault &lt;adrien.brault@gmail.com&gt;
+ *&#x2F;
+
+&#x2F;**
+ * @class Polygon
+ * @constructor
+ * @param points {Array&lt;Point&gt;|Array&lt;Number&gt;} This cna be an array of Points or a flat array of numbers
+ *      that will be interpreted as [x,y, x,y, ...]
+ *&#x2F;
+PIXI.Polygon = function(points)
+{
+    &#x2F;&#x2F;if this is a flat array of numbers, convert it to points
+    if(typeof points[0] === &#x27;number&#x27;) {
+        var p = [];
+        for(var i = 0, il = points.length; i &lt; il; i+=2) {
+            p.push(
+                new PIXI.Point(points[i], points[i + 1])
+            );
+        }
+
+        points = p;
+    }
+
+	this.points = points;
+}
+
+&#x2F;**
+ * @method clone
+ * @return a copy of the polygon
+ *&#x2F;
+PIXI.Polygon.prototype.clone = function()
+{
+	var points = [];
+	for (var i=0; i&lt;this.points.length; i++) {
+		points.push(this.points[i].clone());
+	}
+
+	return new PIXI.Polygon(points);
+}
+
+&#x2F;**
+ * @method contains
+ * @param x {Number} The X coord of the point to test
+ * @param y {Number} The Y coord of the point to test
+ * @return if the x&#x2F;y coords are within this polygon
+ *&#x2F;
+PIXI.Polygon.prototype.contains = function(x, y)
+{
+    var inside = false;
+
+    &#x2F;&#x2F; use some raycasting to test hits
+    &#x2F;&#x2F; https:&#x2F;&#x2F;github.com&#x2F;substack&#x2F;point-in-polygon&#x2F;blob&#x2F;master&#x2F;index.js
+    for(var i = 0, j = this.points.length - 1; i &lt; this.points.length; j = i++) {
+        var xi = this.points[i].x, yi = this.points[i].y,
+            xj = this.points[j].x, yj = this.points[j].y,
+            intersect = ((yi &gt; y) != (yj &gt; y)) &amp;&amp; (x &lt; (xj - xi) * (y - yi) &#x2F; (yj - yi) + xi);
+
+        if(intersect) inside = !inside;
+    }
+
+    return inside;
+}
+
+PIXI.Polygon.constructor = PIXI.Polygon;
+
+
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="..&#x2F;assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="..&#x2F;assets/js/yui-prettify.js"></script>
+<script src="..&#x2F;assets/../api.js"></script>
+<script src="..&#x2F;assets/js/api-filter.js"></script>
+<script src="..&#x2F;assets/js/api-list.js"></script>
+<script src="..&#x2F;assets/js/api-search.js"></script>
+<script src="..&#x2F;assets/js/apidocs.js"></script>
+</body>
+</html>

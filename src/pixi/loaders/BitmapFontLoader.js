@@ -7,13 +7,13 @@
  * To generate the data you can use http://www.angelcode.com/products/bmfont/
  * This loader will also load the image file as the data.
  * When loaded this class will dispatch a "loaded" event
+ *
  * @class BitmapFontLoader
- * @extends EventTarget
+ * @uses EventTarget
  * @constructor
- * @param {String} url the url of the sprite sheet JSON file
- * @param {Boolean} crossorigin
+ * @param url {String} The url of the sprite sheet JSON file
+ * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
  */
-
 PIXI.BitmapFontLoader = function(url, crossorigin)
 {
     /*
@@ -22,17 +22,48 @@ PIXI.BitmapFontLoader = function(url, crossorigin)
      * make sure to set the format as "JSON"
      */
     PIXI.EventTarget.call(this);
+
+    /**
+     * The url of the bitmap font data
+     *
+     * @property url
+     * @type String
+     */
     this.url = url;
-    this.baseUrl = url.replace(/[^\/]*$/, "");
-    this.texture = null;
+
+    /**
+     * Whether the requests should be treated as cross origin
+     *
+     * @property crossorigin
+     * @type Boolean
+     */
     this.crossorigin = crossorigin;
+
+    /**
+     * [read-only] The base url of the bitmap font data
+     *
+     * @property baseUrl
+     * @type String
+     * @readOnly
+     */
+    this.baseUrl = url.replace(/[^\/]*$/, "");
+
+    /**
+     * [read-only] The texture of the bitmap font
+     *
+     * @property baseUrl
+     * @type String
+     */
+    this.texture = null;
 };
 
 // constructor
-PIXI.BitmapFontLoader.constructor = PIXI.BitmapFontLoader;
+PIXI.BitmapFontLoader.prototype.constructor = PIXI.BitmapFontLoader;
 
 /**
- * This will begin loading the JSON file
+ * Loads the XML font data
+ *
+ * @method load
  */
 PIXI.BitmapFontLoader.prototype.load = function()
 {
@@ -49,7 +80,9 @@ PIXI.BitmapFontLoader.prototype.load = function()
 };
 
 /**
- * Invoked when XML file is loaded
+ * Invoked when XML file is loaded, parses the data
+ *
+ * @method onXMLLoaded
  * @private
  */
 PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
@@ -120,6 +153,8 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
 
 /**
  * Invoked when all files are loaded (xml/fnt and texture)
+ *
+ * @method onLoaded
  * @private
  */
 PIXI.BitmapFontLoader.prototype.onLoaded = function()

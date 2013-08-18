@@ -1,6 +1,7 @@
 {
     "name": "Pixi.JS",
-    "version": "1.2.0",
+    "version": "1.3.0",
+
     "description": "Pixi.js is a fast lightweight 2D library that works across all devices.",
 
     "author": "Mat Groves",
@@ -15,6 +16,8 @@
         "type": "git",
         "url": "https://github.com/GoodBoyDigital/pixi.js.git"
     },
+
+    "main": "bin/pixi.js",
 
     "dependencies": {},
     "devDependencies": {

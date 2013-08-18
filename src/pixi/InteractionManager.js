@@ -5,65 +5,78 @@
 
 
 /**
-The interaction manager deals with mouse and touch events. Any DisplayObject can be interactive
-This manager also supports multitouch.
-@class InteractionManager
-@constructor
-@param stage {Stage}
-@type Stage
-*/
+ * The interaction manager deals with mouse and touch events. Any DisplayObject can be interactive
+ * This manager also supports multitouch.
+ *
+ * @class InteractionManager
+ * @constructor
+ * @param stage {Stage} The stage to handle interactions
+ */
 PIXI.InteractionManager = function(stage)
 {
 	/**
 	 * a refference to the stage
+	 *
 	 * @property stage
 	 * @type Stage
 	 */
 	this.stage = stage;
 
-	// helpers
-	this.tempPoint = new PIXI.Point();
-	//this.tempMatrix =  mat3.create();
-	
-	this.mouseoverEnabled = true;
-	
 	/**
-	 * the mouse data 
+	 * the mouse data
+	 *
 	 * @property mouse
 	 * @type InteractionData
 	 */
 	this.mouse = new PIXI.InteractionData();
-	
+
 	/**
-	 * an object that stores current touches (InteractionData) by id reference 
+	 * an object that stores current touches (InteractionData) by id reference
+	 *
 	 * @property touchs
 	 * @type Object
 	 */
 	this.touchs = {};
+
+
 	
+	// helpers
+	this.tempPoint = new PIXI.Point();
+	//this.tempMatrix =  mat3.create();
+
+	this.mouseoverEnabled = true;
+
 	//tiny little interactiveData pool!
 	this.pool = [];
-	
-	this.interactiveItems = [];
 
+	this.interactiveItems = [];
+	
+	
 	this.last = 0;
 }
 
 // constructor
-PIXI.InteractionManager.constructor = PIXI.InteractionManager;
+PIXI.InteractionManager.prototype.constructor = PIXI.InteractionManager;
 
+/**
+ * Collects an interactive sprite recursively to have their interactions managed
+ *
+ * @method collectInteractiveSprite
+ * @param displayObject {DisplayObject} the displayObject to collect
+ * @param iParent {DisplayObject}
+ * @private
+ */
 PIXI.InteractionManager.prototype.collectInteractiveSprite = function(displayObject, iParent)
 {
 	var children = displayObject.children;
 	var length = children.length;
 	
-	//this.interactiveItems = [];
 	/// make an interaction tree... {item.__interactiveParent}
 	for (var i = length-1; i >= 0; i--)
 	{
 		var child = children[i];
 		
-		if(child.visible) {
+//		if(child.visible) {
 			// push all interactive bits
 			if(child.interactive)
 			{
@@ -85,10 +98,17 @@ PIXI.InteractionManager.prototype.collectInteractiveSprite = function(displayObj
 					this.collectInteractiveSprite(child, iParent);
 				}
 			}
-		}
+//		}
 	}
 }
 
+/**
+ * Sets the target for event delegation
+ *
+ * @method setTarget
+ * @param target {WebGLRenderer|CanvasRenderer} the renderer to bind events to
+ * @private
+ */
 PIXI.InteractionManager.prototype.setTarget = function(target)
 {
 	if (window.navigator.msPointerEnabled) 
@@ -104,7 +124,7 @@ PIXI.InteractionManager.prototype.setTarget = function(target)
 	target.view.addEventListener('mousemove',  this.onMouseMove.bind(this), true);
 	target.view.addEventListener('mousedown',  this.onMouseDown.bind(this), true);
  	document.body.addEventListener('mouseup',  this.onMouseUp.bind(this), true);
- 	target.view.addEventListener('mouseout',   this.onMouseUp.bind(this), true);
+ 	target.view.addEventListener('mouseout',   this.onMouseOut.bind(this), true);
 	
 	// aint no multi touch just yet!
 	target.view.addEventListener("touchstart", this.onTouchStart.bind(this), true);
@@ -112,6 +132,12 @@ PIXI.InteractionManager.prototype.setTarget = function(target)
 	target.view.addEventListener("touchmove", this.onTouchMove.bind(this), true);
 }
 
+/**
+ * updates the state of interactive objects
+ *
+ * @method update
+ * @private
+ */
 PIXI.InteractionManager.prototype.update = function()
 {
 	if(!this.target)return;
@@ -133,7 +159,7 @@ PIXI.InteractionManager.prototype.update = function()
 		
 		var len = this.interactiveItems.length;
 		
-		for (var i=0; i < this.interactiveItems.length; i++) {
+		for (var i=0; i < len; i++) {
 		  this.interactiveItems[i].interactiveChildren = false;
 		}
 		
@@ -152,7 +178,9 @@ PIXI.InteractionManager.prototype.update = function()
 	for (var i = 0; i < length; i++)
 	{
 		var item = this.interactiveItems[i];
-		if(!item.visible)continue;
+		
+		
+		//if(!item.visible)continue;
 		
 		// OPTIMISATION - only calculate every time if the mousemove function exists..
 		// OK so.. does the object have any other interactive functions?
@@ -163,6 +191,7 @@ PIXI.InteractionManager.prototype.update = function()
 		{
 			// ok so there are some functions so lets hit test it..
 			item.__hit = this.hitTest(item, this.mouse);
+			this.mouse.target = item;
 			// ok so deal with interactions..
 			// loks like there was a hit!
 			if(item.__hit)
@@ -191,8 +220,16 @@ PIXI.InteractionManager.prototype.update = function()
 	}
 }
 
+/**
+ * Is called when the mouse moves accross the renderer element
+ *
+ * @method onMouseMove
+ * @param event {Event} The DOM event of the mouse moving
+ * @private
+ */
 PIXI.InteractionManager.prototype.onMouseMove = function(event)
 {
+	this.mouse.originalEvent = event || window.event; //IE uses window.event
 	// TODO optimize by not check EVERY TIME! maybe half as often? //
 	var rect = this.target.view.getBoundingClientRect();
 	
@@ -215,9 +252,16 @@ PIXI.InteractionManager.prototype.onMouseMove = function(event)
 	}
 }
 
+/**
+ * Is called when the mouse button is pressed down on the renderer element
+ *
+ * @method onMouseDown
+ * @param event {Event} The DOM event of a mouse button being pressed down
+ * @private
+ */
 PIXI.InteractionManager.prototype.onMouseDown = function(event)
 {
-	event.preventDefault();
+	this.mouse.originalEvent = event || window.event; //IE uses window.event
 	
 	// loop through inteaction tree...
 	// hit test each item! -> 
@@ -253,9 +297,36 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
 	}
 }
 
+
+PIXI.InteractionManager.prototype.onMouseOut = function(event)
+{
+	var length = this.interactiveItems.length;
+	
+	this.target.view.style.cursor = "default";	
+				
+	for (var i = 0; i < length; i++)
+	{
+		var item = this.interactiveItems[i];
+		
+		if(item.__isOver)
+		{
+			this.mouse.target = item;
+			if(item.mouseout)item.mouseout(this.mouse);
+			item.__isOver = false;	
+		}
+	}
+}
+
+/**
+ * Is called when the mouse button is released on the renderer element
+ *
+ * @method onMouseUp
+ * @param event {Event} The DOM event of a mouse button being released
+ * @private
+ */
 PIXI.InteractionManager.prototype.onMouseUp = function(event)
 {
-	
+	this.mouse.originalEvent = event || window.event; //IE uses window.event
 	
 	var global = this.mouse.global;
 	
@@ -298,11 +369,19 @@ PIXI.InteractionManager.prototype.onMouseUp = function(event)
 	}
 }
 
+/**
+ * Tests if the current mouse coords hit a sprite
+ *
+ * @method hitTest
+ * @param item {DisplayObject} The displayObject to test for a hit
+ * @param interactionData {InteractionData} The interactiondata object to update in the case of a hit
+ * @private
+ */
 PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 {
 	var global = interactionData.global;
 	
-	if(!item.visible)return false;
+	if(item.vcount !== PIXI.visibleCount)return false;
 
 	var isSprite = (item instanceof PIXI.Sprite),
 		worldTransform = item.worldTransform,
@@ -312,44 +391,18 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 		x = a11 * id * global.x + -a01 * id * global.y + (a12 * a01 - a02 * a11) * id,
 		y = a00 * id * global.y + -a10 * id * global.x + (-a12 * a00 + a02 * a10) * id;
 
+	interactionData.target = item;
+	
 	//a sprite or display object with a hit area defined
-	if(item.hitArea)
-	{
-		var hitArea = item.hitArea;
+	if(item.hitArea && item.hitArea.contains) {
+		if(item.hitArea.contains(x, y)) {
+			//if(isSprite)
+			interactionData.target = item;
 
-		//Polygon hit area
-		if(item.hitArea instanceof PIXI.Polygon) {
-			var inside = false;
-
-			// use some raycasting to test hits
-			// https://github.com/substack/point-in-polygon/blob/master/index.js
-			for(var i = 0, j = item.hitArea.points.length - 1; i < item.hitArea.points.length; j = i++) {
-				var xi = item.hitArea.points[i].x, yi = item.hitArea.points[i].y,
-					xj = item.hitArea.points[j].x, yj = item.hitArea.points[j].y,
-					intersect = ((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-
-				if(intersect) inside = !inside;
-			}
-			
-			if(inside) {
-				if(isSprite) interactionData.target = item;
-				return true;
-			}
+			return true;
 		}
-		//Rectangle hit area
-		else {
-			var x1 = hitArea.x;
-			if(x > x1 && x < x1 + hitArea.width)
-			{
-				var y1 = hitArea.y;
-				
-				if(y > y1 && y < y1 + hitArea.height)
-				{
-					if(isSprite) interactionData.target = item;
-					return true;
-				}
-			}
-		}
+		
+		return false;
 	}
 	// a sprite with no hitarea defined
 	else if(isSprite)
@@ -378,14 +431,24 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 	{
 		var tempItem = item.children[i];
 		var hit = this.hitTest(tempItem, interactionData);
-		if(hit)return true;
+		if(hit)
+		{
+			// hmm.. TODO SET CORRECT TARGET?
+			interactionData.target = item
+			return true;
+		}
 	}
 
 	return false;	
 }
 
-
-
+/**
+ * Is called when a touch is moved accross the renderer element
+ *
+ * @method onTouchMove
+ * @param event {Event} The DOM event of a touch moving accross the renderer view
+ * @private
+ */
 PIXI.InteractionManager.prototype.onTouchMove = function(event)
 {
 	var rect = this.target.view.getBoundingClientRect();
@@ -395,6 +458,7 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
 	{
 		var touchEvent = changedTouches[i];
 		var touchData = this.touchs[touchEvent.identifier];
+		touchData.originalEvent =  event || window.event;
 		
 		// update the touch position
 		touchData.global.x = (touchEvent.clientX - rect.left) * (this.target.width / rect.width);
@@ -409,10 +473,15 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
 	}
 }
 
+/**
+ * Is called when a touch is started on the renderer element
+ *
+ * @method onTouchStart
+ * @param event {Event} The DOM event of a touch starting on the renderer view
+ * @private
+ */
 PIXI.InteractionManager.prototype.onTouchStart = function(event)
 {
-	event.preventDefault();
-	
 	var rect = this.target.view.getBoundingClientRect();
 	
 	var changedTouches = event.changedTouches;
@@ -422,6 +491,8 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
 		
 		var touchData = this.pool.pop();
 		if(!touchData)touchData = new PIXI.InteractionData();
+		
+		touchData.originalEvent =  event || window.event;
 		
 		this.touchs[touchEvent.identifier] = touchData;
 		touchData.global.x = (touchEvent.clientX - rect.left) * (this.target.width / rect.width);
@@ -449,17 +520,23 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
 			}
 		}
 	}
-	
 }
 
+/**
+ * Is called when a touch is ended on the renderer element
+ *
+ * @method onTouchEnd
+ * @param event {Event} The DOM event of a touch ending on the renderer view
+ * @private
+ */
 PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 {
+	//this.mouse.originalEvent = event || window.event; //IE uses window.event
 	var rect = this.target.view.getBoundingClientRect();
 	var changedTouches = event.changedTouches;
 	
 	for (var i=0; i < changedTouches.length; i++) 
 	{
-		 
 		var touchEvent = changedTouches[i];
 		var touchData = this.touchs[touchEvent.identifier];
 		var up = false;
@@ -476,7 +553,7 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 			if(itemTouchData == touchData)
 			{
 				// so this one WAS down...
-				
+				touchData.originalEvent =  event || window.event;
 				// hitTest??
 				
 				if(item.touchend || item.tap)
@@ -517,13 +594,16 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 }
 
 /**
-@class InteractionData
-@constructor
-*/
+ * Holds all information related to an Interaction event
+ *
+ * @class InteractionData
+ * @constructor
+ */
 PIXI.InteractionData = function()
 {
 	/**
 	 * This point stores the global coords of where the touch/mouse event happened
+	 *
 	 * @property global 
 	 * @type Point
 	 */
@@ -534,14 +614,24 @@ PIXI.InteractionData = function()
 
 	/**
 	 * The target Sprite that was interacted with
+	 *
 	 * @property target
 	 * @type Sprite
 	 */
 	this.target;
+
+	/**
+	 * When passed to an event handler, this will be the original DOM Event that was captured
+	 *
+	 * @property originalEvent
+	 * @type Event
+	 */
+	this.originalEvent;
 }
 
 /**
  * This will return the local coords of the specified displayObject for this InteractionData
+ *
  * @method getLocalPosition
  * @param displayObject {DisplayObject} The DisplayObject that you would like the local coords off
  * @return {Point} A point containing the coords of the InteractionData position relative to the DisplayObject
@@ -561,6 +651,4 @@ PIXI.InteractionData.prototype.getLocalPosition = function(displayObject)
 }
 
 // constructor
-PIXI.InteractionData.constructor = PIXI.InteractionData;
-
-
+PIXI.InteractionData.prototype.constructor = PIXI.InteractionData;

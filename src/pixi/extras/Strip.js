@@ -66,8 +66,8 @@ PIXI.Strip = function(texture, width, height)
 }
 
 // constructor
-PIXI.Strip.constructor = PIXI.Strip;
 PIXI.Strip.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
+PIXI.Strip.prototype.constructor = PIXI.Strip;
 
 PIXI.Strip.prototype.setTexture = function(texture)
 {

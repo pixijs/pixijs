@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.0.0</em>
+            <em>API Docs for: 1.3.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -49,13 +49,21 @@
             
                 <li><a href="..&#x2F;classes/BitmapText.html">BitmapText</a></li>
             
+                <li><a href="..&#x2F;classes/CanvasGraphics.html">CanvasGraphics</a></li>
+            
                 <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
+            
+                <li><a href="..&#x2F;classes/Circle.html">Circle</a></li>
             
                 <li><a href="..&#x2F;classes/CustomRenderable.html">CustomRenderable</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
+            
+                <li><a href="..&#x2F;classes/Ellipse.html">Ellipse</a></li>
+            
+                <li><a href="..&#x2F;classes/Graphics.html">Graphics</a></li>
             
                 <li><a href="..&#x2F;classes/ImageLoader.html">ImageLoader</a></li>
             
@@ -143,13 +151,33 @@
  *&#x2F;
 
 &#x2F;**
- * A RenderTexture is a special texture that allows any pixi displayObject to be rendered to it. 
- * @class RenderTexture
- * @extends Texture
- * @constructor
- * @param width {Number}
- * @param height {Number}
- *&#x2F;
+ A RenderTexture is a special texture that allows any pixi displayObject to be rendered to it.
+
+ __Hint__: All DisplayObjects (exmpl. Sprites) that renders on RenderTexture should be preloaded. 
+ Otherwise black rectangles will be drawn instead.  
+ 
+ RenderTexture takes snapshot of DisplayObject passed to render method. If DisplayObject is passed to render method, position and rotation of it will be ignored. For example:
+ 
+	var renderTexture = new PIXI.RenderTexture(800, 600);
+	var sprite = PIXI.Sprite.fromImage(&quot;spinObj_01.png&quot;);
+	sprite.position.x = 800&#x2F;2;
+	sprite.position.y = 600&#x2F;2;
+	sprite.anchor.x = 0.5;
+	sprite.anchor.y = 0.5;
+	renderTexture.render(sprite);
+
+ Sprite in this case will be rendered to 0,0 position. To render this sprite at center DisplayObjectContainer should be used:
+
+	var doc = new PIXI.DisplayObjectContainer();
+	doc.addChild(sprite);
+	renderTexture.render(doc);  &#x2F;&#x2F; Renders to center of renderTexture
+
+ @class RenderTexture
+ @extends Texture
+ @constructor
+ @param width {Number}
+ @param height {Number}
+ **&#x2F;
 PIXI.RenderTexture = function(width, height)
 {
 	PIXI.EventTarget.call( this );
@@ -205,6 +233,8 @@ PIXI.RenderTexture.prototype.initWebGL = function()
 	gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.baseTexture._glTexture, 0);
 	
 	&#x2F;&#x2F; create a projection matrix..
+	this.projection = new PIXI.Point(this.width&#x2F;2 , this.height&#x2F;2);
+	
 	this.projectionMatrix =  PIXI.mat4.create();
 	
 	this.projectionMatrix[5] = 2&#x2F;this.height&#x2F;&#x2F; * 0.5;
@@ -255,6 +285,9 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, clear)
 	
 	&#x2F;&#x2F;TODO -? create a new one??? dont think so!
 	displayObject.worldTransform = PIXI.mat3.create();&#x2F;&#x2F;sthis.indetityMatrix;
+	&#x2F;&#x2F; modify to flip...
+	displayObject.worldTransform[4] = -1;
+	displayObject.worldTransform[5] = this.projection.y * 2;
 	
 	for(var i=0,j=children.length; i&lt;j; i++)
 	{
@@ -267,18 +300,18 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, clear)
 	{
 		if(displayObject == renderGroup.root)
 		{
-			renderGroup.render(this.projectionMatrix);
+			renderGroup.render(this.projection);
 		}
 		else
 		{
-			renderGroup.renderSpecific(displayObject, this.projectionMatrix);
+			renderGroup.renderSpecific(displayObject, this.projection);
 		}
 	}
 	else
 	{
 		if(!this.renderGroup)this.renderGroup = new PIXI.WebGLRenderGroup(gl);
 		this.renderGroup.setRenderable(displayObject);
-		this.renderGroup.render(this.projectionMatrix);
+		this.renderGroup.render(this.projection);
 	}
 	
 }

@@ -10,11 +10,12 @@
  * Once the data has been loaded the frames are stored in the PIXI texture cache and can be accessed though PIXI.Texture.fromFrameId() and PIXI.Sprite.fromFromeId()
  * This loader will also load the image file that the Spritesheet points to as well as the data.
  * When loaded this class will dispatch a "loaded" event
+ *
  * @class SpriteSheetLoader
- * @extends EventTarget
+ * @uses EventTarget
  * @constructor
- * @param {String} url the url of the sprite sheet JSON file
- * @param {Boolean} crossorigin
+ * @param url {String} The url of the sprite sheet JSON file
+ * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
  */
 
 PIXI.SpriteSheetLoader = function (url, crossorigin) {
@@ -24,18 +25,56 @@ PIXI.SpriteSheetLoader = function (url, crossorigin) {
 	 * make sure to set the format as "JSON"
 	 */
 	PIXI.EventTarget.call(this);
+
+	/**
+	 * The url of the bitmap font data
+	 *
+	 * @property url
+	 * @type String
+	 */
 	this.url = url;
-	this.baseUrl = url.replace(/[^\/]*$/, "");
-	this.texture = null;
-	this.frames = {};
+
+	/**
+	 * Whether the requests should be treated as cross origin
+	 *
+	 * @property crossorigin
+	 * @type Boolean
+	 */
 	this.crossorigin = crossorigin;
+
+	/**
+	 * [read-only] The base url of the bitmap font data
+	 *
+	 * @property baseUrl
+	 * @type String
+	 * @readOnly
+	 */
+	this.baseUrl = url.replace(/[^\/]*$/, "");
+
+    /**
+     * The texture being loaded
+     *
+     * @property texture
+     * @type Texture
+     */
+    this.texture = null;
+
+    /**
+     * The frames of the sprite sheet
+     *
+     * @property frames
+     * @type Object
+     */
+	this.frames = {};
 };
 
 // constructor
-PIXI.SpriteSheetLoader.constructor = PIXI.SpriteSheetLoader;
+PIXI.SpriteSheetLoader.prototype.constructor = PIXI.SpriteSheetLoader;
 
 /**
  * This will begin loading the JSON file
+ *
+ * @method load
  */
 PIXI.SpriteSheetLoader.prototype.load = function () {
 	var scope = this;
@@ -49,6 +88,8 @@ PIXI.SpriteSheetLoader.prototype.load = function () {
 
 /**
  * Invoke when JSON file is loaded
+ *
+ * @method onJSONLoaded
  * @private
  */
 PIXI.SpriteSheetLoader.prototype.onJSONLoaded = function () {
@@ -84,6 +125,8 @@ PIXI.SpriteSheetLoader.prototype.onJSONLoaded = function () {
 };
 /**
  * Invoke when all files are loaded (json and texture)
+ *
+ * @method onLoaded
  * @private
  */
 PIXI.SpriteSheetLoader.prototype.onLoaded = function () {

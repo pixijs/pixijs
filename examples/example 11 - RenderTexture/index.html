@@ -16,7 +16,6 @@
 <body>
 	<script>
 	
-
 	// create an new instance of a pixi stage
 	var stage = new PIXI.Stage(0x000000);
 
@@ -76,6 +75,7 @@
 		item.anchor.y = 0.5;
 		
 		stuffContainer.addChild(item);
+		console.log("_")
 		items.push(item);
 	};
 
@@ -113,7 +113,7 @@
 		
 		// render the stage to the texture
 		// the true clears the texture before content is rendered
-		renderTexture2.render(stage, true);
+		renderTexture2.render(stage, new PIXI.Point(0,0), true);
 		
 		// and finally render the stage
 	    renderer.render(stage);

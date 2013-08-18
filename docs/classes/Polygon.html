@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.0.0</em>
+            <em>API Docs for: 1.3.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -49,13 +49,21 @@
             
                 <li><a href="..&#x2F;classes/BitmapText.html">BitmapText</a></li>
             
+                <li><a href="..&#x2F;classes/CanvasGraphics.html">CanvasGraphics</a></li>
+            
                 <li><a href="..&#x2F;classes/CanvasRenderer.html">CanvasRenderer</a></li>
+            
+                <li><a href="..&#x2F;classes/Circle.html">Circle</a></li>
             
                 <li><a href="..&#x2F;classes/CustomRenderable.html">CustomRenderable</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObject.html">DisplayObject</a></li>
             
                 <li><a href="..&#x2F;classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
+            
+                <li><a href="..&#x2F;classes/Ellipse.html">Ellipse</a></li>
+            
+                <li><a href="..&#x2F;classes/Graphics.html">Graphics</a></li>
             
                 <li><a href="..&#x2F;classes/ImageLoader.html">ImageLoader</a></li>
             
@@ -142,7 +150,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="..&#x2F;files&#x2F;src_pixi_Polygon.js.html#l5"><code>src&#x2F;pixi&#x2F;Polygon.js:5</code></a>
+            Defined in: <a href="..&#x2F;files&#x2F;src_pixi_core_Polygon.js.html#l5"><code>src&#x2F;pixi&#x2F;core&#x2F;Polygon.js:5</code></a>
         </div>
     
 
@@ -206,7 +214,7 @@
             
         
         
-        <a href="..&#x2F;files&#x2F;src_pixi_Polygon.js.html#l5"><code>src&#x2F;pixi&#x2F;Polygon.js:5</code></a>
+        <a href="..&#x2F;files&#x2F;src_pixi_core_Polygon.js.html#l5"><code>src&#x2F;pixi&#x2F;core&#x2F;Polygon.js:5</code></a>
         
         </p>
 
@@ -229,13 +237,14 @@
                 <li class="param">
                     
                         <code class="param-name">points</code>
-                        <span class="type">Array</span>
+                        <span class="type">Array<Point> | Array<Number></span>
                     
 
                     
 
                     <div class="param-description">
-                         
+                        <p>This cna be an array of Points or a flat array of numbers
+     that will be interpreted as [x,y, x,y, ...]</p>
                     </div>
 
                     
@@ -277,6 +286,13 @@
                         
                             <li class="index-item method">
                                 <a href="#method_clone">clone</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_contains">contains</a>
 
                                 
                                 
@@ -334,7 +350,7 @@
             
         
         
-        <a href="..&#x2F;files&#x2F;src_pixi_Polygon.js.html#l15"><code>src&#x2F;pixi&#x2F;Polygon.js:15</code></a>
+        <a href="..&#x2F;files&#x2F;src_pixi_core_Polygon.js.html#l28"><code>src&#x2F;pixi&#x2F;core&#x2F;Polygon.js:28</code></a>
         
         </p>
 
@@ -358,6 +374,129 @@
                 
                     
                     a copy of the polygon
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_contains" class="method item">
+    <h3 class="name"><code>contains</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>x</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>y</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="..&#x2F;files&#x2F;src_pixi_core_Polygon.js.html#l42"><code>src&#x2F;pixi&#x2F;core&#x2F;Polygon.js:42</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">x</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The X coord of the point to test</p>
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">y</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The Y coord of the point to test</p>
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                    if the x/y coords are within this polygon
                 
             </div>
         </div>
