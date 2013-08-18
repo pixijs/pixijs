@@ -131,7 +131,7 @@ PIXI.InteractionManager.prototype.setTarget = function(target)
 	target.view.addEventListener('mousemove',  this.onMouseMove.bind(this), true);
 	target.view.addEventListener('mousedown',  this.onMouseDown.bind(this), true);
  	document.body.addEventListener('mouseup',  this.onMouseUp.bind(this), true);
- 	target.view.addEventListener('mouseout',   this.onMouseUp.bind(this), true);
+ 	target.view.addEventListener('mouseout',   this.onMouseOut.bind(this), true);
 	
 	// aint no multi touch just yet!
 	target.view.addEventListener("touchstart", this.onTouchStart.bind(this), true);
@@ -185,7 +185,6 @@ PIXI.InteractionManager.prototype.update = function()
 	for (var i = 0; i < length; i++)
 	{
 		var item = this.interactiveItems[i];
-		
 		
 		
 		//if(!item.visible)continue;
@@ -303,6 +302,26 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
 				// just the one!
 				if(!item.interactiveChildren)break;
 			}
+		}
+	}
+}
+
+
+PIXI.InteractionManager.prototype.onMouseOut = function(event)
+{
+	var length = this.interactiveItems.length;
+	
+	this.target.view.style.cursor = "default";	
+				
+	for (var i = 0; i < length; i++)
+	{
+		var item = this.interactiveItems[i];
+		
+		if(item.__isOver)
+		{
+			this.mouse.target = item;
+			if(item.mouseout)item.mouseout(this.mouse);
+			item.__isOver = false;	
 		}
 	}
 }
