@@ -7,8 +7,10 @@
       exports = module.exports = PIXI;
     }
     exports.PIXI = PIXI;
+  } else if (typeof define !== 'undefined' && define.amd) {
+    define( PIXI );
   } else {
-    root.PIXI = PIXI;
+  	root.PIXI = PIXI;
   }
 
 
