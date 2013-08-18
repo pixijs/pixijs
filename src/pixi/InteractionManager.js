@@ -39,14 +39,7 @@ PIXI.InteractionManager = function(stage)
 	this.touchs = {};
 
 
-	/**
-	 * sets whether or not the touchStart and mouseDown interactions stop the high level browser functions like zoom and pan.
-	 * It is true by default, Meaning the native zoom/pan functions will be disabled on mobiles
-	 * @property preventDefault
-	 * @type Boolean
-	 */
-	this.preventDefault = true;
-
+	
 	// helpers
 	this.tempPoint = new PIXI.Point();
 	//this.tempMatrix =  mat3.create();
@@ -268,8 +261,6 @@ PIXI.InteractionManager.prototype.onMouseMove = function(event)
  */
 PIXI.InteractionManager.prototype.onMouseDown = function(event)
 {
-	if(this.preventDefault)event.preventDefault();
-	
 	this.mouse.originalEvent = event || window.event; //IE uses window.event
 	
 	// loop through inteaction tree...
@@ -491,8 +482,6 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
  */
 PIXI.InteractionManager.prototype.onTouchStart = function(event)
 {
-	if(this.preventDefault)event.preventDefault();
-	
 	var rect = this.target.view.getBoundingClientRect();
 	
 	var changedTouches = event.changedTouches;

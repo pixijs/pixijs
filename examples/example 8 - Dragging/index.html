@@ -61,6 +61,9 @@
 		// use the mousedown and touchstart
 		bunny.mousedown = bunny.touchstart = function(data)
 		{
+			// stop the default event...
+			data.originalEvent.preventDefault();
+			
 			// store a refference to the data
 			// The reason for this is because of multitouch
 			// we want to track the movement of this particular touch
