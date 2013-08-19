@@ -37,7 +37,7 @@ PIXI.EventTarget = function () {
 
 	this.dispatchEvent = this.emit = function ( event ) {
 
-		if ( typeof listeners[ event.type ] !== 'function' ) {
+		if ( !listeners[ event.type ] || !listeners[ event.type ].length ) {
 
 			return;
 			
