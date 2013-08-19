@@ -36,10 +36,16 @@ PIXI.EventTarget = function () {
 	};
 
 	this.dispatchEvent = this.emit = function ( event ) {
-		
-		for ( var listener in listeners[ event.type ] ) {
 
-			listeners[ event.type ][ listener ]( event );
+		if ( typeof listeners[ event.type ] !== 'function' ) {
+
+			return;
+			
+		}
+		
+		for(var i = 0, l = listeners[ event.type ].length; i < l; i++) {
+
+			listeners[ event.type ][ i ]( event );
 			
 		}
 
