@@ -247,7 +247,8 @@ PIXI.InteractionManager.prototype.onMouseMove = function(event)
 		if(item.mousemove)
 		{
 			//call the function!
-			item.mousemove(this.mouse);
+			if(item.mousemove(this.mouse) === false)
+				break;
 		}
 	}
 }
@@ -286,9 +287,12 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
 			
 			if(item.__hit)
 			{
-				//call the function!
-				if(item.mousedown)item.mousedown(this.mouse);
 				item.__isDown = true;
+
+				//call the function!
+				if(item.mousedown)
+					if(item.mousedown(this.mouse) === false)
+						break;
 				
 				// just the one!
 				if(!item.interactiveChildren)break;
@@ -336,7 +340,8 @@ PIXI.InteractionManager.prototype.onMouseUp = function(event)
 	
 	for (var i = 0; i < length; i++)
 	{
-		var item = this.interactiveItems[i];
+		var item = this.interactiveItems[i],
+			doBreak = false;
 		
 		if(item.mouseup || item.mouseupoutside || item.click)
 		{
@@ -347,11 +352,12 @@ PIXI.InteractionManager.prototype.onMouseUp = function(event)
 				//call the function!
 				if(item.mouseup)
 				{
-					item.mouseup(this.mouse);
+					doBreak = doBreak || (item.mouseup(this.mouse) === false);
 				}
 				if(item.__isDown)
 				{
-					if(item.click)item.click(this.mouse);
+					if(item.click)
+						doBreak = doBreak || (item.click(this.mouse) === false);
 				}
 				
 				if(!item.interactiveChildren)up = true;
@@ -360,12 +366,16 @@ PIXI.InteractionManager.prototype.onMouseUp = function(event)
 			{
 				if(item.__isDown)
 				{
-					if(item.mouseupoutside)item.mouseupoutside(this.mouse);
+					if(item.mouseupoutside)
+						doBreak = doBreak || (item.mouseupoutside(this.mouse) === false);
 				}
 			}
 		
 			item.__isDown = false;	
 		}
+
+		if(doBreak)
+			break;
 	}
 }
 
@@ -469,7 +479,9 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
 	for (var i = 0; i < length; i++)
 	{
 		var item = this.interactiveItems[i];
-		if(item.touchmove)item.touchmove(touchData);
+		if(item.touchmove)
+			if(item.touchmove(touchData) === false)
+				break;
 	}
 }
 
@@ -510,10 +522,13 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
 				
 				if(item.__hit)
 				{
-					//call the function!
-					if(item.touchstart)item.touchstart(touchData);
 					item.__isDown = true;
 					item.__touchData = touchData;
+
+					//call the function!
+					if(item.touchstart)
+						if(item.touchstart(touchData) === false)
+							break;
 					
 					if(!item.interactiveChildren)break;
 				}
@@ -552,6 +567,7 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 		
 			if(itemTouchData == touchData)
 			{
+				var doBreak = false;
 				// so this one WAS down...
 				touchData.originalEvent =  event || window.event;
 				// hitTest??
@@ -560,10 +576,13 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 				{
 					if(item.__hit && !up)
 					{
-						if(item.touchend)item.touchend(touchData);
+						if(item.touchend)
+							doBreak = doBreak || (item.touchend(touchData) === false);
+
 						if(item.__isDown)
 						{
-							if(item.tap)item.tap(touchData);
+							if(item.tap)
+								doBreak = doBreak || (item.tap(touchData) === false);
 						}
 						
 						if(!item.interactiveChildren)up = true;
@@ -572,7 +591,8 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 					{
 						if(item.__isDown)
 						{
-							if(item.touchendoutside)item.touchendoutside(touchData);
+							if(item.touchendoutside)
+								doBreak = doBreak || (item.touchendoutside(touchData) === false);
 						}
 					}
 					
@@ -580,7 +600,9 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 				}
 				
 				item.__touchData = null;
-					
+
+				if(doBreak)
+					break;
 			}
 			else
 			{
