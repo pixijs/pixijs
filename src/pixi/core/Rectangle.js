@@ -9,7 +9,7 @@
  * @constructor 
  * @param x {Number} The X coord of the upper-left corner of the rectangle
  * @param y {Number} The Y coord of the upper-left corner of the rectangle
- * @param width {Number} The overall wisth of this rectangle
+ * @param width {Number} The overall width of this rectangle
  * @param height {Number} The overall height of this rectangle
  */
 PIXI.Rectangle = function(x, y, width, height)
