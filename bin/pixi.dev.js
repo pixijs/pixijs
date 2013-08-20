@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-08-18
+ * Compiled: 2013-08-20
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -6333,6 +6333,7 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 	PIXI.texturesToUpdate = [];
 	PIXI.texturesToDestroy = [];
 	
+	PIXI.visibleCount++;
 	stage.updateTransform();
 	
 	// update the background color

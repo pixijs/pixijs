@@ -80,6 +80,7 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 	PIXI.texturesToUpdate = [];
 	PIXI.texturesToDestroy = [];
 	
+	PIXI.visibleCount++;
 	stage.updateTransform();
 	
 	// update the background color
