@@ -166,7 +166,7 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 				
 			var frame = displayObject.texture.frame;
 			
-			if(frame)
+			if(frame && frame.width && frame.height)
 			{
 				context.globalAlpha = displayObject.worldAlpha;
 				
