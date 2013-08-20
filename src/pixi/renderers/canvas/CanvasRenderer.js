@@ -71,7 +71,6 @@ PIXI.CanvasRenderer.prototype.constructor = PIXI.CanvasRenderer;
  */
 PIXI.CanvasRenderer.prototype.render = function(stage)
 {
-	// update children if need be
 	
 	//stage.__childrenAdded = [];
 	//stage.__childrenRemoved = [];

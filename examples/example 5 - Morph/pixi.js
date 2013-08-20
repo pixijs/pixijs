@@ -1702,10 +1702,10 @@ PIXI.Sprite.prototype.setTexture = function(texture)
 	if(this.texture.baseTexture != texture.baseTexture)
 	{
 		this.textureChange = true;	
+		this.texture = texture;
 		
 		if(this.__renderGroup)
 		{
-			this.texture = texture;
 			this.__renderGroup.updateTexture(this);
 		}
 	}
@@ -6324,7 +6324,6 @@ PIXI.CanvasRenderer.prototype.constructor = PIXI.CanvasRenderer;
  */
 PIXI.CanvasRenderer.prototype.render = function(stage)
 {
-	// update children if need be
 	
 	//stage.__childrenAdded = [];
 	//stage.__childrenRemoved = [];
