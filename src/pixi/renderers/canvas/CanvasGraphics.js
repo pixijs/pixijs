@@ -67,9 +67,8 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 		}
 		else if(data.type == PIXI.Graphics.RECT)
 		{
-				
-			// TODO - need to be Undefined!
-			if(data.fillColor)
+
+			if(data.fillColor || data.fillColor === 0)
 			{
 				context.globalAlpha = data.fillAlpha * worldAlpha;
 				context.fillStyle = color = '#' + ('00000' + ( data.fillColor | 0).toString(16)).substr(-6);
