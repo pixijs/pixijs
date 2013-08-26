@@ -109,7 +109,7 @@ PIXI.WebGLRenderGroup.prototype.render = function(projection)
   
 				PIXI.WebGLGraphics.renderGraphics(renderable.mask, projection);
   					
-				gl.colorMask(true, true, true, false);
+				gl.colorMask(true, true, true, true);
 				gl.stencilFunc(gl.NOTEQUAL,0,0xff);
 				gl.stencilOp(gl.KEEP,gl.KEEP,gl.KEEP);
 			}
