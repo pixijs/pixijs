@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-08-20
+ * Compiled: 2013-08-27
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -3119,6 +3119,7 @@ PIXI.Stage.prototype.constructor = PIXI.Stage;
 PIXI.Stage.prototype.updateTransform = function()
 {
 	this.worldAlpha = 1;		
+	this.vcount = PIXI.visibleCount;
 	
 	for(var i=0,j=this.children.length; i<j; i++)
 	{
@@ -3131,7 +3132,8 @@ PIXI.Stage.prototype.updateTransform = function()
 		// update interactive!
 		this.interactionManager.dirty = true;
 	}
-
+	
+	
 	if(this.interactive)this.interactionManager.update();
 }
 
