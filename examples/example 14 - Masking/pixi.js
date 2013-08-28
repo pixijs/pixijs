@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-08-27
+ * Compiled: 2013-08-28
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -6695,7 +6695,7 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 		{
 				
 			// TODO - need to be Undefined!
-			if(data.fillColor)
+			if(data.fillColor != undefined)
 			{
 				context.globalAlpha = data.fillAlpha * worldAlpha;
 				context.fillStyle = color = '#' + ('00000' + ( data.fillColor | 0).toString(16)).substr(-6);
