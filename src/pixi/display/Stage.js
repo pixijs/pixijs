@@ -76,6 +76,7 @@ PIXI.Stage.prototype.constructor = PIXI.Stage;
 PIXI.Stage.prototype.updateTransform = function()
 {
 	this.worldAlpha = 1;		
+	this.vcount = PIXI.visibleCount;
 	
 	for(var i=0,j=this.children.length; i<j; i++)
 	{
@@ -88,7 +89,8 @@ PIXI.Stage.prototype.updateTransform = function()
 		// update interactive!
 		this.interactionManager.dirty = true;
 	}
-
+	
+	
 	if(this.interactive)this.interactionManager.update();
 }
 
