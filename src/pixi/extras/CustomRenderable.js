@@ -6,14 +6,14 @@
 /**
  * This object is one that will allow you to specify custom rendering functions based on render type
  *
- * @class CustomRenderable 
+ * @class CustomRenderable
  * @extends DisplayObject
  * @constructor
  */
 PIXI.CustomRenderable = function()
 {
 	PIXI.DisplayObject.call( this );
-	
+
 }
 
 // constructor

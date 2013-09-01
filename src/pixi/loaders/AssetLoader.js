@@ -54,8 +54,8 @@ PIXI.AssetLoader = function(assetURLs, crossorigin)
         "xml":  PIXI.BitmapFontLoader,
         "fnt":  PIXI.BitmapFontLoader
     };
-    
-    
+
+
 };
 
 /**
@@ -65,7 +65,7 @@ PIXI.AssetLoader = function(assetURLs, crossorigin)
 
 /**
  * Fired when all the assets have loaded
- * @event onComplete 
+ * @event onComplete
  */
 
 // constructor
@@ -112,7 +112,7 @@ PIXI.AssetLoader.prototype.onAssetLoaded = function()
     this.loadCount--;
 	this.dispatchEvent({type: "onProgress", content: this});
 	if(this.onProgress) this.onProgress();
-	
+
 	if(this.loadCount == 0)
 	{
 		this.dispatchEvent({type: "onComplete", content: this});

@@ -10,8 +10,8 @@
 			background-color: #000000;
 		}
 	</style>
-	
-	
+
+
 	<script src="pixi.js"></script>
 </head>
 <body>
@@ -38,7 +38,7 @@
         var s = document.getElementsByTagName('script')[0];
         s.parentNode.insertBefore(wf, s);
       })();
-	
+
 	function runList(item)
 	{
 		console.log(">>>>>>>>>")
@@ -52,15 +52,15 @@
 			tmp = tmp._iNext;
 			console.log(tmp);//.childIndex);
 		//	console.log(tmp);
-		
+
 			if(safe > 100)
 			{
 				console.log("BREAK")
 				break
 			}
-		}	
+		}
 	}
-	
+
     function init()
     {
         var assetsToLoader = ["desyrel.xml"];
@@ -72,24 +72,24 @@
         loader.onComplete = onAssetsLoaded;
 
         //begin load
-        
+
         	// create an new instance of a pixi stage
 		var stage = new PIXI.Stage(0x66FF99);
-		
+
         loader.load();
         function onAssetsLoaded()
         {
             var bitmapFontText = new PIXI.BitmapText("bitmap fonts are\n now supported!", {font: "35px Desyrel", align: "right"});
             bitmapFontText.position.x = 620 - bitmapFontText.width - 20;
             bitmapFontText.position.y = 20;
-			
+
 			runList(bitmapFontText)
 	           stage.addChild(bitmapFontText);
 
 
         }
 
-	
+
 
 		// add a shiney background..
 		var background = PIXI.Sprite.fromImage("textDemoBG.jpg");
@@ -101,7 +101,7 @@
 		document.body.appendChild(renderer.view);
 
 		requestAnimFrame(animate);
-		
+
 		// create some white text using the Snippet webfont
 		var textSample = new PIXI.Text("Pixi.js can has\nmultiline text!", {font: "35px Snippet", fill: "white", align: "left"});
 		textSample.position.x = 20;
@@ -119,11 +119,11 @@
 		countingText.position.x = 620 / 2;
 		countingText.position.y = 320;
 		countingText.anchor.x = 0.5;
-		
+
 		stage.addChild(textSample);
 		stage.addChild(spinningText);
 		stage.addChild(countingText);
-		
+
 		var count = 0;
 		var score = 0;
 
@@ -137,16 +137,16 @@
 				score++;
 				// update the text...
 				countingText.setText("COUNT 4EVAR: " + score);
-				
+
 			}
 		    // just for fun, lets rotate the text
 		    spinningText.rotation += 0.03;
-			
-		    // render the stage   
+
+		    // render the stage
 		    renderer.render(stage);
 		}
 	}
-	   
+
 	</script>
 
 	</body>
