@@ -75,6 +75,11 @@ PIXI.Sprite = function(texture)
 		this.onTextureUpdateBind = this.onTextureUpdate.bind(this);
 		this.texture.addEventListener( 'update', this.onTextureUpdateBind );
 	}
+	//Set Anchor Point of Texture to Anchor Point of Sprite
+	if(texture.anchor)
+	{
+		this.anchor = texture.anchor;
+	}
 
 	this.renderable = true;
 }
@@ -128,6 +133,7 @@ PIXI.Sprite.prototype.setTexture = function(texture)
 	{
 		this.textureChange = true;	
 		this.texture = texture;
+		if(texture.anchor)this.anchor = texture.anchor;
 		
 		if(this.__renderGroup)
 		{
@@ -137,6 +143,8 @@ PIXI.Sprite.prototype.setTexture = function(texture)
 	else
 	{
 		this.texture = texture;
+		if(texture.anchor)this.anchor = texture.anchor;
+
 	}
 	
 	this.updateFrame = true;
