@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-08-28
+ * Compiled: 2013-09-03
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -1650,6 +1650,11 @@ PIXI.Sprite = function(texture)
 		this.onTextureUpdateBind = this.onTextureUpdate.bind(this);
 		this.texture.addEventListener( 'update', this.onTextureUpdateBind );
 	}
+	//Set Anchor Point of Texture to Anchor Point of Sprite
+	if(texture.anchor)
+	{
+		this.anchor = texture.anchor;
+	}
 
 	this.renderable = true;
 }
@@ -1703,6 +1708,7 @@ PIXI.Sprite.prototype.setTexture = function(texture)
 	{
 		this.textureChange = true;	
 		this.texture = texture;
+		if(texture.anchor)this.anchor = texture.anchor;
 		
 		if(this.__renderGroup)
 		{
@@ -1712,6 +1718,8 @@ PIXI.Sprite.prototype.setTexture = function(texture)
 	else
 	{
 		this.texture = texture;
+		if(texture.anchor)this.anchor = texture.anchor;
+
 	}
 	
 	this.updateFrame = true;
@@ -9819,6 +9827,10 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
 							PIXI.TextureCache[i].trim.x = 0; // (realSize.x / rect.w)
 							// calculate the offset!
 						}
+						//Get the custom Anchor Point
+						if (frameData[i].AnchorPoint) {
+							PIXI.TextureCache[i].anchor = new PIXI.Point(frameData[i].AnchorPoint.x, frameData[i].AnchorPoint.y);
+						}
 					}
 				}
 			
@@ -9990,6 +10002,10 @@ PIXI.SpriteSheetLoader.prototype.onJSONLoaded = function () {
 				PIXI.TextureCache[i].realSize = frameData[i].spriteSourceSize;
 				PIXI.TextureCache[i].trim.x = 0; // (realSize.x / rect.w)
 				// calculate the offset!
+			}
+			//Get the custom Anchor Point
+			if (frameData[i].AnchorPoint) {
+				PIXI.TextureCache[i].anchor = new PIXI.Point(frameData[i].AnchorPoint.x, frameData[i].AnchorPoint.y);
 			}
 		}
 	}
