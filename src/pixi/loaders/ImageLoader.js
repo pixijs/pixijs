@@ -58,7 +58,6 @@ PIXI.ImageLoader.prototype.load = function()
 };
 
 
-
 /**
  * Loads image and split it to uniform sized frames
  * 
