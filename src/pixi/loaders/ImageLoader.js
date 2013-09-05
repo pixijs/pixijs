@@ -58,6 +58,7 @@ PIXI.ImageLoader.prototype.load = function()
 };
 
 
+
 /**
  * Loads image and split it to uniform sized frames
  * 
@@ -103,6 +104,7 @@ PIXI.ImageLoader.prototype.loadFramedSpriteSheet = function(frameWidth, frameHei
         this.onLoaded();
     }
 };
+
 
 /**
  * Invoked when image file is loaded or it is already cached and ready to use
