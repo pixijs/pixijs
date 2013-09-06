@@ -192,6 +192,8 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 		
 		PIXI.Texture.frameUpdates = [];
 	}
+
+	PIXI.Time.update();
 }
 
 /**
