@@ -73,6 +73,23 @@ PIXI.MovieClip.prototype = Object.create( PIXI.Sprite.prototype );
 PIXI.MovieClip.prototype.constructor = PIXI.MovieClip;
 
 /**
+* [read-only] totalFrames is the total number of frames in the MovieClip. This is the same as number of textures
+* assigned to the MovieClip.
+*
+* @property totalFrames
+* @type Number
+* @default 0
+* @readOnly
+*/
+Object.defineProperty( PIXI.MovieClip.prototype, 'totalFrames', {
+	get: function() {
+
+		return this.textures.length;
+	}
+});
+
+
+/**
  * Stops the MovieClip
  *
  * @method stop
