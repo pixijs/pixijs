@@ -50,6 +50,17 @@ PIXI.InteractionManager = function(stage)
 	this.pool = [];
 
 	this.interactiveItems = [];
+	this.interactionDOMElement = null;
+
+	//this will make it so that you dont have to call bind all the time
+	this.onMouseMove = this.onMouseMove.bind( this );
+	this.onMouseDown = this.onMouseDown.bind(this);
+	this.onMouseOut = this.onMouseOut.bind(this);
+	this.onMouseUp = this.onMouseUp.bind(this);
+
+	this.onTouchStart = this.onTouchStart.bind(this);
+	this.onTouchEnd = this.onTouchEnd.bind(this);
+	this.onTouchMove = this.onTouchMove.bind(this);
 	
 	
 	this.last = 0;
@@ -121,16 +132,53 @@ PIXI.InteractionManager.prototype.setTarget = function(target)
 	}
 	
 	this.target = target;
-	target.view.addEventListener('mousemove',  this.onMouseMove.bind(this), true);
-	target.view.addEventListener('mousedown',  this.onMouseDown.bind(this), true);
- 	document.body.addEventListener('mouseup',  this.onMouseUp.bind(this), true);
- 	target.view.addEventListener('mouseout',   this.onMouseOut.bind(this), true);
-	
-	// aint no multi touch just yet!
-	target.view.addEventListener("touchstart", this.onTouchStart.bind(this), true);
-	target.view.addEventListener("touchend", this.onTouchEnd.bind(this), true);
-	target.view.addEventListener("touchmove", this.onTouchMove.bind(this), true);
+
+	//check if the dom element has been set. If it has don't do anything
+	if( this.interactionDOMElement === null ) {
+
+		this.setTargetDomElement( target.view );
+	}
+
+ 	document.body.addEventListener('mouseup',  this.onMouseUp, true);
 }
+
+
+/**
+ * Sets the dom element which will receive mouse/touch events. This is useful for when you have other DOM
+ * elements ontop of the renderers Canvas element. With this you'll be able to delegate another dom element
+ * to receive those events
+ *
+ * @method setTargetDomElement
+ * @param domElement {DOMElement} the dom element which will receive mouse and touch events
+ * @private
+ */
+PIXI.InteractionManager.prototype.setTargetDomElement = function(domElement)
+{
+	//remove previouse listeners
+	if( this.interactionDOMElement !== null ) 
+	{
+		this.interactionDOMElement.removeEventListener('mousemove',  this.onMouseMove, true);
+		this.interactionDOMElement.removeEventListener('mousedown',  this.onMouseDown, true);
+	 	this.interactionDOMElement.removeEventListener('mouseout',   this.onMouseOut, true);
+
+	 	// aint no multi touch just yet!
+		this.interactionDOMElement.removeEventListener('touchstart', this.onTouchStart, true);
+		this.interactionDOMElement.removeEventListener('touchend', this.onTouchEnd, true);
+		this.interactionDOMElement.removeEventListener('touchmove', this.onTouchMove, true);
+	}
+
+	this.interactionDOMElement = domElement;
+
+	domElement.addEventListener('mousemove',  this.onMouseMove, true);
+	domElement.addEventListener('mousedown',  this.onMouseDown, true);
+ 	domElement.addEventListener('mouseout',   this.onMouseOut, true);
+
+ 	// aint no multi touch just yet!
+	domElement.addEventListener('touchstart', this.onTouchStart, true);
+	domElement.addEventListener('touchend', this.onTouchEnd, true);
+	domElement.addEventListener('touchmove', this.onTouchMove, true);
+}
+
 
 /**
  * updates the state of interactive objects
@@ -173,7 +221,7 @@ PIXI.InteractionManager.prototype.update = function()
 	// loop through interactive objects!
 	var length = this.interactiveItems.length;
 	
-	this.target.view.style.cursor = "default";	
+	this.interactionDOMElement.style.cursor = "default";	
 				
 	for (var i = 0; i < length; i++)
 	{
@@ -196,7 +244,7 @@ PIXI.InteractionManager.prototype.update = function()
 			// loks like there was a hit!
 			if(item.__hit)
 			{
-				if(item.buttonMode)this.target.view.style.cursor = "pointer";	
+				if(item.buttonMode) this.interactionDOMElement.style.cursor = "pointer";	
 				
 				if(!item.__isOver)
 				{
@@ -302,7 +350,7 @@ PIXI.InteractionManager.prototype.onMouseOut = function(event)
 {
 	var length = this.interactiveItems.length;
 	
-	this.target.view.style.cursor = "default";	
+	this.interactionDOMElement.style.cursor = "default";	
 				
 	for (var i = 0; i < length; i++)
 	{
