@@ -68,6 +68,18 @@ PIXI.Stage = function(backgroundColor, interactive)
 PIXI.Stage.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
 PIXI.Stage.prototype.constructor = PIXI.Stage;
 
+/**
+ * Sets another DOM element which can receive mouse/touch interactions instead of the default Canvas element.
+ * This is useful for when you have other DOM elements ontop of the Canvas element.
+ *
+ * @method setInteractionDelegate
+ * @param domElement {DOMElement} This new domElement which will receive mouse/touch events
+ */
+PIXI.Stage.prototype.setInteractionDelegate = function(domElement)
+{
+	this.interactionManager.setTargetDomElement( domElement );
+}
+
 /*
  * Updates the object transform for rendering
  *
