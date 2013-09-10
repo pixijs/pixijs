@@ -133,7 +133,11 @@ PIXI.InteractionManager.prototype.setTarget = function(target)
 	
 	this.target = target;
 
-	this.setTargetDomElement( target.view );
+	//check if the dom element has been set. If it has don't do anything
+	if( this.interactionDOMElement === null ) {
+
+		this.setTargetDomElement( target.view );
+	}
 
  	document.body.addEventListener('mouseup',  this.onMouseUp, true);
 }
