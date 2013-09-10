@@ -122,15 +122,6 @@ PIXI.InteractionManager.prototype.collectInteractiveSprite = function(displayObj
  */
 PIXI.InteractionManager.prototype.setTarget = function(target)
 {
-	if (window.navigator.msPointerEnabled) 
-	{
-		// time to remove some of that zoom in ja..
-		target.view.style["-ms-content-zooming"] = "none";
-    	target.view.style["-ms-touch-action"] = "none"
-    
-		// DO some window specific touch!
-	}
-	
 	this.target = target;
 
 	//check if the dom element has been set. If it has don't do anything
@@ -157,6 +148,9 @@ PIXI.InteractionManager.prototype.setTargetDomElement = function(domElement)
 	//remove previouse listeners
 	if( this.interactionDOMElement !== null ) 
 	{
+		this.interactionDOMElement.style['-ms-content-zooming'] = '';
+    	this.interactionDOMElement.style['-ms-touch-action'] = '';
+
 		this.interactionDOMElement.removeEventListener('mousemove',  this.onMouseMove, true);
 		this.interactionDOMElement.removeEventListener('mousedown',  this.onMouseDown, true);
 	 	this.interactionDOMElement.removeEventListener('mouseout',   this.onMouseOut, true);
@@ -165,6 +159,16 @@ PIXI.InteractionManager.prototype.setTargetDomElement = function(domElement)
 		this.interactionDOMElement.removeEventListener('touchstart', this.onTouchStart, true);
 		this.interactionDOMElement.removeEventListener('touchend', this.onTouchEnd, true);
 		this.interactionDOMElement.removeEventListener('touchmove', this.onTouchMove, true);
+	}
+
+
+	if (window.navigator.msPointerEnabled) 
+	{
+		// time to remove some of that zoom in ja..
+		domElement.style['-ms-content-zooming'] = 'none';
+    	domElement.style['-ms-touch-action'] = 'none';
+    
+		// DO some window specific touch!
 	}
 
 	this.interactionDOMElement = domElement;
@@ -279,7 +283,7 @@ PIXI.InteractionManager.prototype.onMouseMove = function(event)
 {
 	this.mouse.originalEvent = event || window.event; //IE uses window.event
 	// TODO optimize by not check EVERY TIME! maybe half as often? //
-	var rect = this.target.view.getBoundingClientRect();
+	var rect = this.interactionDOMElement.getBoundingClientRect();
 	
 	this.mouse.global.x = (event.clientX - rect.left) * (this.target.width / rect.width);
 	this.mouse.global.y = (event.clientY - rect.top) * ( this.target.height / rect.height);
@@ -499,7 +503,7 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
  */
 PIXI.InteractionManager.prototype.onTouchMove = function(event)
 {
-	var rect = this.target.view.getBoundingClientRect();
+	var rect = this.interactionDOMElement.getBoundingClientRect();
 	var changedTouches = event.changedTouches;
 	
 	for (var i=0; i < changedTouches.length; i++) 
@@ -530,7 +534,7 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
  */
 PIXI.InteractionManager.prototype.onTouchStart = function(event)
 {
-	var rect = this.target.view.getBoundingClientRect();
+	var rect = this.interactionDOMElement.getBoundingClientRect();
 	
 	var changedTouches = event.changedTouches;
 	for (var i=0; i < changedTouches.length; i++) 
@@ -580,7 +584,7 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
 PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 {
 	//this.mouse.originalEvent = event || window.event; //IE uses window.event
-	var rect = this.target.view.getBoundingClientRect();
+	var rect = this.interactionDOMElement.getBoundingClientRect();
 	var changedTouches = event.changedTouches;
 	
 	for (var i=0; i < changedTouches.length; i++) 
