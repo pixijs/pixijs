@@ -157,14 +157,14 @@ PIXI.InteractionManager.prototype.setTargetDomElement = function(domElement)
 	//remove previouse listeners
 	if( this.interactionDOMElement !== null ) 
 	{
-		domElement.removeEventListener('mousemove',  this.onMouseMove, true);
-		domElement.removeEventListener('mousedown',  this.onMouseDown, true);
-	 	domElement.removeEventListener('mouseout',   this.onMouseOut, true);
+		this.interactionDOMElement.removeEventListener('mousemove',  this.onMouseMove, true);
+		this.interactionDOMElement.removeEventListener('mousedown',  this.onMouseDown, true);
+	 	this.interactionDOMElement.removeEventListener('mouseout',   this.onMouseOut, true);
 
 	 	// aint no multi touch just yet!
-		domElement.removeEventListener('touchstart', this.onTouchStart, true);
-		domElement.removeEventListener('touchend', this.onTouchEnd, true);
-		domElement.removeEventListener('touchmove', this.onTouchMove, true);
+		this.interactionDOMElement.removeEventListener('touchstart', this.onTouchStart, true);
+		this.interactionDOMElement.removeEventListener('touchend', this.onTouchEnd, true);
+		this.interactionDOMElement.removeEventListener('touchmove', this.onTouchMove, true);
 	}
 
 	this.interactionDOMElement = domElement;
@@ -221,7 +221,7 @@ PIXI.InteractionManager.prototype.update = function()
 	// loop through interactive objects!
 	var length = this.interactiveItems.length;
 	
-	this.target.view.style.cursor = "default";	
+	this.interactionDOMElement.style.cursor = "default";	
 				
 	for (var i = 0; i < length; i++)
 	{
@@ -244,7 +244,7 @@ PIXI.InteractionManager.prototype.update = function()
 			// loks like there was a hit!
 			if(item.__hit)
 			{
-				if(item.buttonMode)this.target.view.style.cursor = "pointer";	
+				if(item.buttonMode) this.interactionDOMElement.style.cursor = "pointer";	
 				
 				if(!item.__isOver)
 				{
@@ -350,7 +350,7 @@ PIXI.InteractionManager.prototype.onMouseOut = function(event)
 {
 	var length = this.interactiveItems.length;
 	
-	this.target.view.style.cursor = "default";	
+	this.interactionDOMElement.style.cursor = "default";	
 				
 	for (var i = 0; i < length; i++)
 	{
