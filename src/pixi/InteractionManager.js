@@ -50,6 +50,17 @@ PIXI.InteractionManager = function(stage)
 	this.pool = [];
 
 	this.interactiveItems = [];
+	this.interactionDOMElement = null;
+
+	//this will make it so that you dont have to call bind all the time
+	this.onMouseMove = this.onMouseMove.bind( this );
+	this.onMouseDown = this.onMouseDown.bind(this);
+	this.onMouseOut = this.onMouseOut.bind(this);
+	this.onMouseUp = this.onMouseUp.bind(this);
+
+	this.onTouchStart = this.onTouchStart.bind(this);
+	this.onTouchEnd = this.onTouchEnd.bind(this);
+	this.onTouchMove = this.onTouchMove.bind(this);
 	
 	
 	this.last = 0;
@@ -121,16 +132,49 @@ PIXI.InteractionManager.prototype.setTarget = function(target)
 	}
 	
 	this.target = target;
-	target.view.addEventListener('mousemove',  this.onMouseMove.bind(this), true);
-	target.view.addEventListener('mousedown',  this.onMouseDown.bind(this), true);
- 	document.body.addEventListener('mouseup',  this.onMouseUp.bind(this), true);
- 	target.view.addEventListener('mouseout',   this.onMouseOut.bind(this), true);
-	
-	// aint no multi touch just yet!
-	target.view.addEventListener("touchstart", this.onTouchStart.bind(this), true);
-	target.view.addEventListener("touchend", this.onTouchEnd.bind(this), true);
-	target.view.addEventListener("touchmove", this.onTouchMove.bind(this), true);
+
+	this.setTargetDomElement( target.view );
+
+ 	document.body.addEventListener('mouseup',  this.onMouseUp, true);
 }
+
+
+/**
+ * Sets the dom element which will receive mouse/touch events. This is useful for when you have other DOM
+ * elements ontop of the renderers Canvas element. With this you'll be able to delegate another dom element
+ * to receive those events
+ *
+ * @method setTargetDomElement
+ * @param domElement {DOMElement} the dom element which will receive mouse and touch events
+ * @private
+ */
+PIXI.InteractionManager.prototype.setTargetDomElement = function(domElement)
+{
+	//remove previouse listeners
+	if( this.interactionDOMElement !== null ) 
+	{
+		domElement.removeEventListener('mousemove',  this.onMouseMove, true);
+		domElement.removeEventListener('mousedown',  this.onMouseDown, true);
+	 	domElement.removeEventListener('mouseout',   this.onMouseOut, true);
+
+	 	// aint no multi touch just yet!
+		domElement.removeEventListener('touchstart', this.onTouchStart, true);
+		domElement.removeEventListener('touchend', this.onTouchEnd, true);
+		domElement.removeEventListener('touchmove', this.onTouchMove, true);
+	}
+
+	this.interactionDOMElement = domElement;
+
+	domElement.addEventListener('mousemove',  this.onMouseMove, true);
+	domElement.addEventListener('mousedown',  this.onMouseDown, true);
+ 	domElement.addEventListener('mouseout',   this.onMouseOut, true);
+
+ 	// aint no multi touch just yet!
+	domElement.addEventListener('touchstart', this.onTouchStart, true);
+	domElement.addEventListener('touchend', this.onTouchEnd, true);
+	domElement.addEventListener('touchmove', this.onTouchMove, true);
+}
+
 
 /**
  * updates the state of interactive objects
