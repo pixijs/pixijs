@@ -110,8 +110,12 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
 							//I don't think realSize is used anywhere in the library so I'm commenting this out
 							//PIXI.TextureCache[i].realSize = frameData[i].spriteSourceSize;
 
-							PIXI.TextureCache[i].anchor.x = -frameData[i].spriteSourceSize.x / frameData[i].sourceSize.w;
-							PIXI.TextureCache[i].anchor.y = -frameData[i].spriteSourceSize.y / frameData[i].sourceSize.h;
+							//we need to upscale cause the anchor offset is calculated based on sourceSize and not frame
+							var upScaleX = frameData[i].sourceSize.w / rect.w;
+							var upScaleY = frameData[i].sourceSize.h / rect.h;
+
+							PIXI.TextureCache[i].anchor.x = -frameData[i].spriteSourceSize.x / frameData[i].sourceSize.w * upScaleX;
+							PIXI.TextureCache[i].anchor.y = -frameData[i].spriteSourceSize.y / frameData[i].sourceSize.h * upScaleY;
 
 							PIXI.TextureCache[i].trim.x = 0; // (realSize.x / rect.w)
 							// calculate the offset!
