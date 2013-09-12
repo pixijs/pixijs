@@ -128,9 +128,7 @@ PIXI.Sprite.prototype.setTexture = function(texture)
 	{
 		this.textureChange = true;	
 		this.texture = texture;
-		this.anchor.x = texture.anchor.x;
-		this.anchor.y = texture.anchor.y;
-		
+	
 		if(this.__renderGroup)
 		{
 			this.__renderGroup.updateTexture(this);
@@ -141,6 +139,9 @@ PIXI.Sprite.prototype.setTexture = function(texture)
 		this.texture = texture;
 	}
 	
+	this.anchor.x = texture.anchor.x;
+	this.anchor.y = texture.anchor.y;
+
 	this.updateFrame = true;
 }
 
