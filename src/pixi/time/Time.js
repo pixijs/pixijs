@@ -2,14 +2,36 @@
  * @author Mikko Haapoja http://mikkoh.com/ @MikkoH
  */
 
+
 /**
-Time is a static class that can be used to ensure that items update independent of framerate. Movieclip's
-framerate will be capped by the timeScale property which is updated during every render call.
+ * The base class for all objects that are rendered on the screen.
+ *
+ * @class DisplayObject
+ * @constructor
+ */
+
+/**
+Time is a class that can be used to ensure that items update independent of framerate. Movieclip's
+framerate will be capped by the timeScale property which is updated during every render call. Each
+renderer will have their own instance of Time which will do the limitting for MovieClips.
 
 @class Time
 @static
 **/
-PIXI.Time = {
+PIXI.Time = function( targetFrameRate, minFrameRate ) {
+
+	if( targetFrameRate !== undefined ) {
+
+		this.setTargetFrameRate( targetFrameRate );
+	}
+
+	if( minFrameRate !== undefined ) {
+
+		this.setMinFrameRate( minFrameRate );
+	}
+};
+
+PIXI.Time.prototype = {
 
 /**
  * is the update scale based on the target framerate. So for example if you're expecting something
@@ -85,7 +107,7 @@ PIXI.Time = {
  * @type Number
  * @default 60
  */
-Object.defineProperty( PIXI.Time, 'targetFrameRate', {
+Object.defineProperty( PIXI.Time.prototype, 'targetFrameRate', {
 
 	get: PIXI.Time.getTargetFrameRate,
 	set: PIXI.Time.setTargetFrameRate
@@ -100,7 +122,7 @@ Object.defineProperty( PIXI.Time, 'targetFrameRate', {
  * @type Number
  * @default 12
  */
-Object.defineProperty( PIXI.Time, 'minFrameRate', {
+Object.defineProperty( PIXI.Time.prototype, 'minFrameRate', {
 
 	get: PIXI.Time.getMinFrameRate,
 	set: PIXI.Time.setMinFrameRate

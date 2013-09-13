@@ -51,6 +51,15 @@ PIXI.Stage = function(backgroundColor, interactive)
 	 */
 	this.dirty = true;
 
+	/**
+	 * time is an instance of the Time class. It can be used to perform frame independent animations.
+	 * This property will be set by the renderer during render.
+	 *
+	 * @property time
+	 * @type {Time}
+	 */	
+	this.time = null;
+
 	this.__childrenAdded = [];
 	this.__childrenRemoved = [];
 

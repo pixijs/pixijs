@@ -23,7 +23,7 @@ PIXI.gl;
  * @param antialias=false {Boolean} sets antialias (only applicable in chrome at the moment)
  * 
  */
-PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
+PIXI.WebGLRenderer = function(width, height, view, transparent, antialias, targetFrameRate, minFrameRate )
 {
 	// do a catch.. only 1 webGL renderer..
 
@@ -35,6 +35,15 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
 	this.view = view || document.createElement( 'canvas' ); 
     this.view.width = this.width;
 	this.view.height = this.height;
+
+	/**
+	 * time is an instance if Time. It will be used to cap the framerate of MovieClip's it can also be used to
+	 * perform framerate independent programmatic animations.
+	 *
+	 * @property time
+	 * @type {Time}
+	 */
+	this.time = new PIXI.Time( targetFrameRate, minFrameRate );
 
 	// deal with losing context..	
     var scope = this;
@@ -127,7 +136,8 @@ PIXI.WebGLRenderer.returnBatch = function(batch)
 PIXI.WebGLRenderer.prototype.render = function(stage)
 {
 	if(this.contextLost)return;
-	
+
+	stage.time = this.time;
 	
 	// if rendering a new stage clear the batchs..
 	if(this.__stage !== stage)
@@ -193,7 +203,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 		PIXI.Texture.frameUpdates = [];
 	}
 
-	PIXI.Time.update();
+	this.time.update();
 }
 
 /**
