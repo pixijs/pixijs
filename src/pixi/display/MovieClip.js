@@ -83,6 +83,16 @@ PIXI.MovieClip.prototype.stop = function()
 }
 
 /**
+ * Change Textures of MovieClip
+ *
+ * @method setTextures
+ */
+PIXI.MovieClip.prototype.setTextures = function(textures)
+{
+	this.textures = textures;
+}
+
+/**
  * Plays the MovieClip
  *
  * @method play

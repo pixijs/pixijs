@@ -118,6 +118,10 @@ PIXI.SpriteSheetLoader.prototype.onJSONLoaded = function () {
 				PIXI.TextureCache[i].trim.x = 0; // (realSize.x / rect.w)
 				// calculate the offset!
 			}
+			//Get the custom Anchor Point
+			if (frameData[i].AnchorPoint) {
+				PIXI.TextureCache[i].anchor = new PIXI.Point(frameData[i].AnchorPoint.x, frameData[i].AnchorPoint.y);
+			}
 		}
 	}
 

@@ -112,6 +112,10 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
 							// calculate the offset!
 						}
 					}
+					//Get the custom Anchor Point
+					if (frameData[i].AnchorPoint) {
+						PIXI.TextureCache[i].anchor = new PIXI.Point(frameData[i].AnchorPoint.x, frameData[i].AnchorPoint.y);
+					}
 				}
 			
 				image.load();
