@@ -45,7 +45,7 @@ PIXI.TilingSprite = function(texture, width, height)
 	 *
 	 * @property tileScale
 	 * @type Point
-	 */	
+	 */
 	this.tileScale = new PIXI.Point(1,1);
 
 	/**
@@ -53,11 +53,11 @@ PIXI.TilingSprite = function(texture, width, height)
 	 *
 	 * @property tilePosition
 	 * @type Point
-	 */	
+	 */
 	this.tilePosition = new PIXI.Point(0,0);
 
 	this.renderable = true;
-	
+
 	this.blendMode = PIXI.blendModes.NORMAL
 }
 
@@ -75,8 +75,8 @@ PIXI.TilingSprite.prototype.setTexture = function(texture)
 {
 	//TODO SET THE TEXTURES
 	//TODO VISIBILITY
-	
-	// stop current texture 
+
+	// stop current texture
 	this.texture = texture;
 	this.updateFrame = true;
 }

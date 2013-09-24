@@ -62,19 +62,19 @@ PIXI.BaseTexture = function(source)
 			this.hasLoaded = true;
 			this.width = this.source.width;
 			this.height = this.source.height;
-			
+
 			PIXI.texturesToUpdate.push(this);
 		}
 		else
 		{
-			
+
 			var scope = this;
 			this.source.onload = function(){
-				
+
 				scope.hasLoaded = true;
 				scope.width = scope.source.width;
 				scope.height = scope.source.height;
-			
+
 				// add it to somewhere...
 				PIXI.texturesToUpdate.push(scope);
 				scope.dispatchEvent( { type: 'loaded', content: scope } );
@@ -87,7 +87,7 @@ PIXI.BaseTexture = function(source)
 		this.hasLoaded = true;
 		this.width = this.source.width;
 		this.height = this.source.height;
-			
+
 		PIXI.texturesToUpdate.push(this);
 	}
 
@@ -127,7 +127,7 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin)
 	{
 		// new Image() breaks tex loading in some versions of Chrome.
 		// See https://code.google.com/p/chromium/issues/detail?id=238071
-		var image = new Image();//document.createElement('img'); 
+		var image = new Image();//document.createElement('img');
 		if (crossorigin)
 		{
 			image.crossOrigin = '';

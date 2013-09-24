@@ -18,14 +18,14 @@
 PIXI.EventTarget = function () {
 
 	var listeners = {};
-	
+
 	this.addEventListener = this.on = function ( type, listener ) {
-		
-		
+
+
 		if ( listeners[ type ] === undefined ) {
 
 			listeners[ type ] = [];
-			
+
 		}
 
 		if ( listeners[ type ].indexOf( listener ) === - 1 ) {
@@ -40,13 +40,13 @@ PIXI.EventTarget = function () {
 		if ( !listeners[ event.type ] || !listeners[ event.type ].length ) {
 
 			return;
-			
+
 		}
-		
+
 		for(var i = 0, l = listeners[ event.type ].length; i < l; i++) {
 
 			listeners[ event.type ][ i ]( event );
-			
+
 		}
 
 	};
