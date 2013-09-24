@@ -6,7 +6,7 @@
 
 PIXI.MaskFilter = function(graphics)
 {
-	// the graphics data that will be used for filtering
-	this.graphics;
+    // the graphics data that will be used for filtering
+    this.graphics;
 }
 

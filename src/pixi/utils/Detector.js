@@ -19,19 +19,19 @@
  */
 PIXI.autoDetectRenderer = function(width, height, view, transparent, antialias)
 {
-	if(!width)width = 800;
-	if(!height)height = 600;
+    if(!width)width = 800;
+    if(!height)height = 600;
 
-	// BORROWED from Mr Doob (mrdoob.com)
-	var webgl = ( function () { try { return !! window.WebGLRenderingContext && !! document.createElement( 'canvas' ).getContext( 'experimental-webgl' ); } catch( e ) { return false; } } )();
+    // BORROWED from Mr Doob (mrdoob.com)
+    var webgl = ( function () { try { return !! window.WebGLRenderingContext && !! document.createElement( 'canvas' ).getContext( 'experimental-webgl' ); } catch( e ) { return false; } } )();
 
-	//console.log(webgl);
-	if( webgl )
-	{
-		return new PIXI.WebGLRenderer(width, height, view, transparent, antialias);
-	}
+    //console.log(webgl);
+    if( webgl )
+    {
+        return new PIXI.WebGLRenderer(width, height, view, transparent, antialias);
+    }
 
-	return	new PIXI.CanvasRenderer(width, height, view, transparent);
+    return  new PIXI.CanvasRenderer(width, height, view, transparent);
 };
 
 

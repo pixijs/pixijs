@@ -13,16 +13,16 @@
  */
 PIXI.DisplayObjectContainer = function()
 {
-	PIXI.DisplayObject.call( this );
+    PIXI.DisplayObject.call( this );
 
-	/**
-	 * [read-only] The of children of this container.
-	 *
-	 * @property children
-	 * @type Array<DisplayObject>
-	 * @readOnly
-	 */
-	this.children = [];
+    /**
+     * [read-only] The of children of this container.
+     *
+     * @property children
+     * @type Array<DisplayObject>
+     * @readOnly
+     */
+    this.children = [];
 }
 
 // constructor
@@ -49,83 +49,80 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'visible', {
  */
 PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 {
-	if(child.parent != undefined)
-	{
+    if (child.parent) {
+        //// COULD BE THIS???
+        child.parent.removeChild(child);
+    //  return;
+    }
+    child.parent = this;
 
-		//// COULD BE THIS???
-		child.parent.removeChild(child);
-	//	return;
-	}
+    this.children.push(child);
 
-	child.parent = this;
+    // update the stage refference..
 
-	this.children.push(child);
+    if(this.stage)
+    {
+        var tmpChild = child;
+        do
+        {
+            if(tmpChild.interactive)this.stage.dirty = true;
+            tmpChild.stage = this.stage;
+            tmpChild = tmpChild._iNext;
+        }
+        while(tmpChild)
+    }
 
-	// update the stage refference..
+    // LINKED LIST //
 
-	if(this.stage)
-	{
-		var tmpChild = child;
-		do
-		{
-			if(tmpChild.interactive)this.stage.dirty = true;
-			tmpChild.stage = this.stage;
-			tmpChild = tmpChild._iNext;
-		}
-		while(tmpChild)
-	}
+    // modify the list..
+    var childFirst = child.first
+    var childLast = child.last;
+    var nextObject;
+    var previousObject;
 
-	// LINKED LIST //
+    // this could be wrong if there is a filter??
+    if(this.filter)
+    {
+        previousObject =  this.last._iPrev;
+    }
+    else
+    {
+        previousObject = this.last;
+    }
 
-	// modify the list..
-	var childFirst = child.first
-	var childLast = child.last;
-	var nextObject;
-	var previousObject;
+    nextObject = previousObject._iNext;
 
-	// this could be wrong if there is a filter??
-	if(this.filter)
-	{
-		previousObject =  this.last._iPrev;
-	}
-	else
-	{
-		previousObject = this.last;
-	}
+    // always true in this case
+    // need to make sure the parents last is updated too
+    var updateLast = this;
+    var prevLast = previousObject;
 
-	nextObject = previousObject._iNext;
+    while(updateLast)
+    {
+        if(updateLast.last == prevLast)
+        {
+            updateLast.last = child.last;
+        }
+        updateLast = updateLast.parent;
+    }
 
-	// always true in this case
-	// need to make sure the parents last is updated too
-	var updateLast = this;
-	var prevLast = previousObject;
+    if(nextObject)
+    {
+        nextObject._iPrev = childLast;
+        childLast._iNext = nextObject;
+    }
 
-	while(updateLast)
-	{
-		if(updateLast.last == prevLast)
-		{
-			updateLast.last = child.last;
-		}
-		updateLast = updateLast.parent;
-	}
+    childFirst._iPrev = previousObject;
+    previousObject._iNext = childFirst;
 
-	if(nextObject)
-	{
-		nextObject._iPrev = childLast;
-		childLast._iNext = nextObject;
-	}
-
-	childFirst._iPrev = previousObject;
-	previousObject._iNext = childFirst;
-
-	// need to remove any render groups..
-	if(this.__renderGroup)
-	{
-		// being used by a renderTexture.. if it exists then it must be from a render texture;
-		if(child.__renderGroup)child.__renderGroup.removeDisplayObjectAndChildren(child);
-		// add them to the new render group..
-		this.__renderGroup.addDisplayObjectAndChildren(child);
-	}
+    // need to remove any render groups..
+    if(this.__renderGroup)
+    {
+        // being used by a renderTexture.. if it exists then it must be from a render texture;
+        if(child.__renderGroup)child.__renderGroup.removeDisplayObjectAndChildren(child);
+        // add them to the new render group..
+        this.__renderGroup.addDisplayObjectAndChildren(child);
+    }
 
 }
 
@@ -138,82 +135,81 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
  */
 PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 {
-	if(index >= 0 && index <= this.children.length)
-	{
-		if(child.parent != undefined)
-		{
-			child.parent.removeChild(child);
-		}
-		child.parent = this;
+    if(index >= 0 && index <= this.children.length)
+    {
+        if (child.parent) {
+            child.parent.removeChild(child);
+        }
+        child.parent = this;
 
-		if(this.stage)
-		{
-			var tmpChild = child;
-			do
-			{
-				if(tmpChild.interactive)this.stage.dirty = true;
-				tmpChild.stage = this.stage;
-				tmpChild = tmpChild._iNext;
-			}
-			while(tmpChild)
-		}
+        if(this.stage)
+        {
+            var tmpChild = child;
+            do
+            {
+                if(tmpChild.interactive)this.stage.dirty = true;
+                tmpChild.stage = this.stage;
+                tmpChild = tmpChild._iNext;
+            }
+            while(tmpChild)
+        }
 
-		// modify the list..
-		var childFirst = child.first;
-		var childLast = child.last;
-		var nextObject;
-		var previousObject;
+        // modify the list..
+        var childFirst = child.first;
+        var childLast = child.last;
+        var nextObject;
+        var previousObject;
 
-		if(index == this.children.length)
-		{
-			previousObject =  this.last;
-			var updateLast = this;
-			var prevLast = this.last;
-			while(updateLast)
-			{
-				if(updateLast.last == prevLast)
-				{
-					updateLast.last = child.last;
-				}
-				updateLast = updateLast.parent;
-			}
-		}
-		else if(index == 0)
-		{
-			previousObject = this;
-		}
-		else
-		{
-			previousObject = this.children[index-1].last;
-		}
+        if(index === this.children.length)
+        {
+            previousObject = this.last;
+            var updateLast = this;
+            var prevLast = this.last;
+            while(updateLast)
+            {
+                if(updateLast.last == prevLast)
+                {
+                    updateLast.last = child.last;
+                }
+                updateLast = updateLast.parent;
+            }
+        }
+        else if(!index)
+        {
+            previousObject = this;
+        }
+        else
+        {
+            previousObject = this.children[index-1].last;
+        }
 
-		nextObject = previousObject._iNext;
+        nextObject = previousObject._iNext;
 
-		// always true in this case
-		if(nextObject)
-		{
-			nextObject._iPrev = childLast;
-			childLast._iNext = nextObject;
-		}
+        // always true in this case
+        if(nextObject)
+        {
+            nextObject._iPrev = childLast;
+            childLast._iNext = nextObject;
+        }
 
-		childFirst._iPrev = previousObject;
-		previousObject._iNext = childFirst;
+        childFirst._iPrev = previousObject;
+        previousObject._iNext = childFirst;
 
-		this.children.splice(index, 0, child);
-		// need to remove any render groups..
-		if(this.__renderGroup)
-		{
-			// being used by a renderTexture.. if it exists then it must be from a render texture;
-			if(child.__renderGroup)child.__renderGroup.removeDisplayObjectAndChildren(child);
-			// add them to the new render group..
-			this.__renderGroup.addDisplayObjectAndChildren(child);
-		}
+        this.children.splice(index, 0, child);
+        // need to remove any render groups..
+        if(this.__renderGroup)
+        {
+            // being used by a renderTexture.. if it exists then it must be from a render texture;
+            if(child.__renderGroup)child.__renderGroup.removeDisplayObjectAndChildren(child);
+            // add them to the new render group..
+            this.__renderGroup.addDisplayObjectAndChildren(child);
+        }
 
-	}
-	else
-	{
-		throw new Error(child + " The index "+ index +" supplied is out of bounds " + this.children.length);
-	}
+    }
+    else
+    {
+        throw new Error(child + " The index "+ index +" supplied is out of bounds " + this.children.length);
+    }
 }
 
 /**
@@ -226,43 +222,43 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
  */
 PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
 {
-	/*
-	 * this funtion needs to be recoded..
-	 * can be done a lot faster..
-	 */
-	return;
+    /*
+     * this funtion needs to be recoded..
+     * can be done a lot faster..
+     */
+    return;
 
-	// need to fix this function :/
-	/*
-	// TODO I already know this??
-	var index = this.children.indexOf( child );
-	var index2 = this.children.indexOf( child2 );
+    // need to fix this function :/
+    /*
+    // TODO I already know this??
+    var index = this.children.indexOf( child );
+    var index2 = this.children.indexOf( child2 );
 
-	if ( index !== -1 && index2 !== -1 )
-	{
-		// cool
+    if ( index !== -1 && index2 !== -1 )
+    {
+        // cool
 
-		/*
-		if(this.stage)
-		{
-			// this is to satisfy the webGL batching..
-			// TODO sure there is a nicer way to achieve this!
-			this.stage.__removeChild(child);
-			this.stage.__removeChild(child2);
+        /*
+        if(this.stage)
+        {
+            // this is to satisfy the webGL batching..
+            // TODO sure there is a nicer way to achieve this!
+            this.stage.__removeChild(child);
+            this.stage.__removeChild(child2);
 
-			this.stage.__addChild(child);
-			this.stage.__addChild(child2);
-		}
+            this.stage.__addChild(child);
+            this.stage.__addChild(child2);
+        }
 
-		// swap the positions..
-		this.children[index] = child2;
-		this.children[index2] = child;
+        // swap the positions..
+        this.children[index] = child2;
+        this.children[index2] = child;
 
-	}
-	else
-	{
-		throw new Error(child + " Both the supplied DisplayObjects must be a child of the caller " + this);
-	}*/
+    }
+    else
+    {
+        throw new Error(child + " Both the supplied DisplayObjects must be a child of the caller " + this);
+    }*/
 }
 
 /**
@@ -273,14 +269,14 @@ PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
  */
 PIXI.DisplayObjectContainer.prototype.getChildAt = function(index)
 {
-	if(index >= 0 && index < this.children.length)
-	{
-		return this.children[index];
-	}
-	else
-	{
-		throw new Error(child + " Both the supplied DisplayObjects must be a child of the caller " + this);
-	}
+    if(index >= 0 && index < this.children.length)
+    {
+        return this.children[index];
+    }
+    else
+    {
+        throw new Error(child + " Both the supplied DisplayObjects must be a child of the caller " + this);
+    }
 }
 
 /**
@@ -291,62 +287,62 @@ PIXI.DisplayObjectContainer.prototype.getChildAt = function(index)
  */
 PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 {
-	var index = this.children.indexOf( child );
-	if ( index !== -1 )
-	{
-		// unlink //
-		// modify the list..
-		var childFirst = child.first;
-		var childLast = child.last;
+    var index = this.children.indexOf( child );
+    if ( index !== -1 )
+    {
+        // unlink //
+        // modify the list..
+        var childFirst = child.first;
+        var childLast = child.last;
 
-		var nextObject = childLast._iNext;
-		var previousObject = childFirst._iPrev;
+        var nextObject = childLast._iNext;
+        var previousObject = childFirst._iPrev;
 
-		if(nextObject)nextObject._iPrev = previousObject;
-		previousObject._iNext = nextObject;
+        if(nextObject)nextObject._iPrev = previousObject;
+        previousObject._iNext = nextObject;
 
-		if(this.last == childLast)
-		{
-			var tempLast =  childFirst._iPrev;
-			// need to make sure the parents last is updated too
-			var updateLast = this;
-			while(updateLast.last == childLast.last)
-			{
-				updateLast.last = tempLast;
-				updateLast = updateLast.parent;
-				if(!updateLast)break;
-			}
-		}
+        if(this.last == childLast)
+        {
+            var tempLast =  childFirst._iPrev;
+            // need to make sure the parents last is updated too
+            var updateLast = this;
+            while(updateLast.last == childLast.last)
+            {
+                updateLast.last = tempLast;
+                updateLast = updateLast.parent;
+                if(!updateLast)break;
+            }
+        }
 
-		childLast._iNext = null;
-		childFirst._iPrev = null;
+        childLast._iNext = null;
+        childFirst._iPrev = null;
 
-		// update the stage reference..
-		if(this.stage)
-		{
-			var tmpChild = child;
-			do
-			{
-				if(tmpChild.interactive)this.stage.dirty = true;
-				tmpChild.stage = null;
-				tmpChild = tmpChild._iNext;
-			}
-			while(tmpChild)
-		}
+        // update the stage reference..
+        if(this.stage)
+        {
+            var tmpChild = child;
+            do
+            {
+                if(tmpChild.interactive)this.stage.dirty = true;
+                tmpChild.stage = null;
+                tmpChild = tmpChild._iNext;
+            }
+            while(tmpChild)
+        }
 
-		// webGL trim
-		if(child.__renderGroup)
-		{
-			child.__renderGroup.removeDisplayObjectAndChildren(child);
-		}
+        // webGL trim
+        if(child.__renderGroup)
+        {
+            child.__renderGroup.removeDisplayObjectAndChildren(child);
+        }
 
-		child.parent = undefined;
-		this.children.splice( index, 1 );
-	}
-	else
-	{
-		throw new Error(child + " The supplied DisplayObject must be a child of the caller " + this);
-	}
+        child.parent = undefined;
+        this.children.splice( index, 1 );
+    }
+    else
+    {
+        throw new Error(child + " The supplied DisplayObject must be a child of the caller " + this);
+    }
 }
 
 /*
@@ -357,12 +353,12 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
  */
 PIXI.DisplayObjectContainer.prototype.updateTransform = function()
 {
-	if(!this.visible)return;
+    if(!this.visible)return;
 
-	PIXI.DisplayObject.prototype.updateTransform.call( this );
+    PIXI.DisplayObject.prototype.updateTransform.call( this );
 
-	for(var i=0,j=this.children.length; i<j; i++)
-	{
-		this.children[i].updateTransform();
-	}
+    for(var i=0,j=this.children.length; i<j; i++)
+    {
+        this.children[i].updateTransform();
+    }
 }
