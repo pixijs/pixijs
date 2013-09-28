@@ -88,16 +88,16 @@ $> grunt
 
 This will create a minified version at bin/pixi.js and a non-minified version at bin/pixi.dev.js.
 
-It also copies the non-minified version to the examples. 
+It also copies the non-minified version to the examples.
 
 ### Current features ###
 
-- WebGL renderer (with automatic smart batching allowing for REALLY fast performance) 
+- WebGL renderer (with automatic smart batching allowing for REALLY fast performance)
 - Canvas renderer (Fastest in town!)
-- Full scene graph 
-- Super easy to use API (similar to the flash display list API) 
-- Support for texture atlases 
-- Asset loader / sprite sheet loader 
+- Full scene graph
+- Super easy to use API (similar to the flash display list API)
+- Support for texture atlases
+- Asset loader / sprite sheet loader
 - Auto-detect which renderer should be used
 - Full Mouse and Multi-touch Interaction
 - Text
@@ -120,32 +120,32 @@ It also copies the non-minified version to the examples.
 ### Usage ###
 
 ```javascript
-	
+
 	// You can use either PIXI.WebGLRenderer or PIXI.CanvasRenderer
-	var renderer = new PIXI.WebGLRenderer(800, 600); 
+	var renderer = new PIXI.WebGLRenderer(800, 600);
 
 	document.body.appendChild(renderer.view);
-	
+
 	var stage = new PIXI.Stage;
 
 	var bunnyTexture = PIXI.Texture.fromImage("bunny.png");
 	var bunny = new PIXI.Sprite(bunnyTexture);
-	
+
 	bunny.position.x = 400;
 	bunny.position.y = 300;
-	
+
 	bunny.scale.x = 2;
 	bunny.scale.y = 2;
-	
+
 	stage.addChild(bunny);
-	
+
 	requestAnimationFrame(animate);
-	
+
 	function animate() {
 		bunny.rotation += 0.01;
-		
+
 		renderer.render(stage);
-		
+
 		requestAnimationFrame(animate);
 	}
 ```
