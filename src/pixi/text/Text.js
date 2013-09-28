@@ -68,7 +68,7 @@ PIXI.Text.prototype.setStyle = function(style)
  * @methos setText
  * @param {String} text The copy that you would like the text to display
  */
-PIXI.Sprite.prototype.setText = function(text)
+PIXI.Text.prototype.setText = function(text)
 {
     this.text = text.toString() || " ";
     this.dirty = true;
