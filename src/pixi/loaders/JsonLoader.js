@@ -49,7 +49,7 @@ PIXI.JsonLoader = function (url, crossorigin) {
 	 * @readOnly
 	 */
 	this.loaded = false;
-	
+
 };
 
 // constructor
@@ -82,7 +82,7 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
 	if (this.ajaxRequest.readyState == 4) {
 		if (this.ajaxRequest.status == 200 || window.location.href.indexOf("http") == -1) {
 			this.json = JSON.parse(this.ajaxRequest.responseText);
-			
+
 			if(this.json.frames)
 			{
 				// sprite sheet
@@ -90,12 +90,12 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
 				var textureUrl = this.baseUrl + this.json.meta.image;
 				var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
 				var frameData = this.json.frames;
-			
+
 				this.texture = image.texture.baseTexture;
 				image.addEventListener("loaded", function (event) {
 					scope.onLoaded();
 				});
-			
+
 				for (var i in frameData) {
 					var rect = frameData[i].frame;
 					if (rect) {
@@ -113,9 +113,9 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
 						}
 					}
 				}
-			
+
 				image.load();
-				
+
 			}
 			else if(this.json.bones)
 			{

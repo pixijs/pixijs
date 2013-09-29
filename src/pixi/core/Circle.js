@@ -19,7 +19,7 @@ PIXI.Circle = function(x, y, radius)
      * @default 0
      */
     this.x = x || 0;
-    
+
     /**
      * @property y
      * @type Number

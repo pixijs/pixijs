@@ -13,7 +13,7 @@ PIXI.FrameCache = {};
  * @uses EventTarget
  * @constructor
  * @param baseTexture {BaseTexture} The base texture source to create the texture from
- * @param frmae {Rectangle} The rectangle frame of the texture to show
+ * @param frame {Rectangle} The rectangle frame of the texture to show
  */
 PIXI.Texture = function(baseTexture, frame)
 {
@@ -58,7 +58,7 @@ PIXI.Texture = function(baseTexture, frame)
 	{
 		if(this.noFrame)frame = new PIXI.Rectangle(0,0, baseTexture.width, baseTexture.height);
 		//console.log(frame)
-		
+
 		this.setFrame(frame);
 	}
 	else
@@ -137,13 +137,13 @@ PIXI.Texture.prototype.setFrame = function(frame)
 PIXI.Texture.fromImage = function(imageUrl, crossorigin)
 {
 	var texture = PIXI.TextureCache[imageUrl];
-	
+
 	if(!texture)
 	{
 		texture = new PIXI.Texture(PIXI.BaseTexture.fromImage(imageUrl, crossorigin));
 		PIXI.TextureCache[imageUrl] = texture;
 	}
-	
+
 	return texture;
 }
 
@@ -193,7 +193,7 @@ PIXI.Texture.addTextureToCache = function(texture, id)
 }
 
 /**
- * Remove a texture from the textureCache. 
+ * Remove a texture from the textureCache.
  *
  * @static
  * @method removeTextureFromCache

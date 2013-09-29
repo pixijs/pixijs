@@ -13,7 +13,7 @@
 PIXI.MovieClip = function(textures)
 {
 	PIXI.Sprite.call(this, textures[0]);
-	
+
 	/**
 	 * The array of textures that make up the animation
 	 *
@@ -21,7 +21,7 @@ PIXI.MovieClip = function(textures)
 	 * @type Array
 	 */
 	this.textures = textures;
-	
+
 	/**
 	 * The speed that the MovieClip will play at. Higher is faster, lower is slower
 	 *
@@ -47,7 +47,7 @@ PIXI.MovieClip = function(textures)
 	 * @type Function
 	 */
 	this.onComplete = null;
-	
+
 	/**
 	 * [read-only] The index MovieClips current frame (this may not have to be a whole number)
 	 *
@@ -56,8 +56,8 @@ PIXI.MovieClip = function(textures)
 	 * @default 0
 	 * @readOnly
 	 */
-	this.currentFrame = 0; 
-	
+	this.currentFrame = 0;
+
 	/**
 	 * [read-only] Indicates if the MovieClip is currently playing
 	 *
@@ -71,6 +71,23 @@ PIXI.MovieClip = function(textures)
 // constructor
 PIXI.MovieClip.prototype = Object.create( PIXI.Sprite.prototype );
 PIXI.MovieClip.prototype.constructor = PIXI.MovieClip;
+
+/**
+* [read-only] totalFrames is the total number of frames in the MovieClip. This is the same as number of textures
+* assigned to the MovieClip.
+*
+* @property totalFrames
+* @type Number
+* @default 0
+* @readOnly
+*/
+Object.defineProperty( PIXI.MovieClip.prototype, 'totalFrames', {
+	get: function() {
+
+		return this.textures.length;
+	}
+});
+
 
 /**
  * Stops the MovieClip
@@ -127,13 +144,13 @@ PIXI.MovieClip.prototype.gotoAndPlay = function(frameNumber)
 PIXI.MovieClip.prototype.updateTransform = function()
 {
 	PIXI.Sprite.prototype.updateTransform.call(this);
-	
+
 	if(!this.playing)return;
-	
+
 	this.currentFrame += this.animationSpeed;
-	
+
 	var round = (this.currentFrame + 0.5) | 0;
-	
+
 	if(this.loop || round < this.textures.length)
 	{
 		this.setTexture(this.textures[round % this.textures.length]);
