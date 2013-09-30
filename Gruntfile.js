@@ -22,6 +22,8 @@ module.exports = function(grunt) {
             '<%= dirs.src %>/display/Sprite.js',
             '<%= dirs.src %>/display/MovieClip.js',
             '<%= dirs.src %>/filters/FilterBlock.js',
+            '<%= dirs.src %>/filters/ColorMatrixFilter.js',
+            '<%= dirs.src %>/filters/GreyFilter.js',
             '<%= dirs.src %>/text/Text.js',
             '<%= dirs.src %>/text/BitmapText.js',
             '<%= dirs.src %>/InteractionManager.js',
@@ -31,6 +33,7 @@ module.exports = function(grunt) {
             '<%= dirs.src %>/utils/Detector.js',
             '<%= dirs.src %>/utils/Polyk.js',
             '<%= dirs.src %>/renderers/webgl/WebGLShaders.js',
+            '<%= dirs.src %>/renderers/webgl/PixiShader.js',
             '<%= dirs.src %>/renderers/webgl/WebGLGraphics.js',
             '<%= dirs.src %>/renderers/webgl/WebGLRenderer.js',
             '<%= dirs.src %>/renderers/webgl/WebGLBatch.js',
@@ -124,7 +127,8 @@ module.exports = function(grunt) {
                 'examples/example 11 - RenderTexture',
                 'examples/example 12 - Spine',
                 'examples/example 13 - Graphics',
-                'examples/example 14 - Masking'
+                'examples/example 14 - Masking',
+                'examples/example 15 - Filters'
             ]
         },
         connect: {
