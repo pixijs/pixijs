@@ -62,7 +62,6 @@ PIXI.InteractionManager = function(stage)
 	this.onTouchEnd = this.onTouchEnd.bind(this);
 	this.onTouchMove = this.onTouchMove.bind(this);
 
-
 	this.last = 0;
 }
 
