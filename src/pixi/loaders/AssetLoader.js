@@ -20,15 +20,15 @@
  */
 PIXI.AssetLoader = function(assetURLs, crossorigin)
 {
-	PIXI.EventTarget.call(this);
+    PIXI.EventTarget.call(this);
 
-	/**
-	 * The array of asset URLs that are going to be loaded
+    /**
+     * The array of asset URLs that are going to be loaded
      *
-	 * @property assetURLs
-	 * @type Array<String>
-	 */
-	this.assetURLs = assetURLs;
+     * @property assetURLs
+     * @type Array<String>
+     */
+    this.assetURLs = assetURLs;
 
     /**
      * Whether the requests should be treated as cross origin
@@ -36,7 +36,7 @@ PIXI.AssetLoader = function(assetURLs, crossorigin)
      * @property crossorigin
      * @type Boolean
      */
-	this.crossorigin = crossorigin;
+    this.crossorigin = crossorigin;
 
     /**
      * Maps file extension to loader types
@@ -80,25 +80,26 @@ PIXI.AssetLoader.prototype.load = function()
 {
     var scope = this;
 
-	this.loadCount = this.assetURLs.length;
+    function onLoad() {
+        scope.onAssetLoaded();
+    }
 
-    for (var i=0; i < this.assetURLs.length; i++)
-	{
-		var fileName = this.assetURLs[i];
-		var fileType = fileName.split(".").pop().toLowerCase();
+    this.loadCount = this.assetURLs.length;
 
-        var loaderClass = this.loadersByType[fileType];
-        if(!loaderClass)
+    for (var i = 0, l = this.assetURLs.length; i < l; i++)
+    {
+        var fileName = this.assetURLs[i];
+        var fileType = fileName.split(".").pop().toLowerCase();
+
+        var Constructor = this.loadersByType[fileType];
+        if(!Constructor)
             throw new Error(fileType + " is an unsupported file type");
 
-        var loader = new loaderClass(fileName, this.crossorigin);
+        var loader = new Constructor(fileName, this.crossorigin);
 
-        loader.addEventListener("loaded", function()
-        {
-            scope.onAssetLoaded();
-        });
+        loader.addEventListener("loaded", onLoad);
         loader.load();
-	}
+    }
 };
 
 /**
@@ -110,13 +111,13 @@ PIXI.AssetLoader.prototype.load = function()
 PIXI.AssetLoader.prototype.onAssetLoaded = function()
 {
     this.loadCount--;
-	this.dispatchEvent({type: "onProgress", content: this});
-	if(this.onProgress) this.onProgress();
+    this.dispatchEvent({type: "onProgress", content: this});
+    if (this.onProgress) this.onProgress();
 
-	if(this.loadCount == 0)
-	{
-		this.dispatchEvent({type: "onComplete", content: this});
-		if(this.onComplete) this.onComplete();
-	}
+    if (!this.loadCount)
+    {
+        this.dispatchEvent({type: "onComplete", content: this});
+        if(this.onComplete) this.onComplete();
+    }
 };
 

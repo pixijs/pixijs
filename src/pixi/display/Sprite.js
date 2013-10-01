@@ -18,65 +18,65 @@ PIXI.blendModes.SCREEN = 1;
  */
 PIXI.Sprite = function(texture)
 {
-	PIXI.DisplayObjectContainer.call( this );
+    PIXI.DisplayObjectContainer.call( this );
 
-	/**
-	 * The anchor sets the origin point of the texture.
-	 * The default is 0,0 this means the textures origin is the top left
-	 * Setting than anchor to 0.5,0.5 means the textures origin is centered
-	 * Setting the anchor to 1,1 would mean the textures origin points will be the bottom right
-	 *
+    /**
+     * The anchor sets the origin point of the texture.
+     * The default is 0,0 this means the textures origin is the top left
+     * Setting than anchor to 0.5,0.5 means the textures origin is centered
+     * Setting the anchor to 1,1 would mean the textures origin points will be the bottom right
+     *
      * @property anchor
      * @type Point
      */
-	this.anchor = new PIXI.Point();
+    this.anchor = new PIXI.Point();
 
-	/**
-	 * The texture that the sprite is using
-	 *
-	 * @property texture
-	 * @type Texture
-	 */
-	this.texture = texture;
+    /**
+     * The texture that the sprite is using
+     *
+     * @property texture
+     * @type Texture
+     */
+    this.texture = texture;
 
-	/**
-	 * The blend mode of sprite.
-	 * currently supports PIXI.blendModes.NORMAL and PIXI.blendModes.SCREEN
-	 *
-	 * @property blendMode
-	 * @type Number
-	 */
-	this.blendMode = PIXI.blendModes.NORMAL;
+    /**
+     * The blend mode of sprite.
+     * currently supports PIXI.blendModes.NORMAL and PIXI.blendModes.SCREEN
+     *
+     * @property blendMode
+     * @type Number
+     */
+    this.blendMode = PIXI.blendModes.NORMAL;
 
-	/**
-	 * The width of the sprite (this is initially set by the texture)
-	 *
-	 * @property _width
-	 * @type Number
-	 * @private
-	 */
-	this._width = 0;
+    /**
+     * The width of the sprite (this is initially set by the texture)
+     *
+     * @property _width
+     * @type Number
+     * @private
+     */
+    this._width = 0;
 
-	/**
-	 * The height of the sprite (this is initially set by the texture)
-	 *
-	 * @property _height
-	 * @type Number
-	 * @private
-	 */
-	this._height = 0;
+    /**
+     * The height of the sprite (this is initially set by the texture)
+     *
+     * @property _height
+     * @type Number
+     * @private
+     */
+    this._height = 0;
 
-	if(texture.baseTexture.hasLoaded)
-	{
-		this.updateFrame = true;
-	}
-	else
-	{
-		this.onTextureUpdateBind = this.onTextureUpdate.bind(this);
-		this.texture.addEventListener( 'update', this.onTextureUpdateBind );
-	}
+    if(texture.baseTexture.hasLoaded)
+    {
+        this.updateFrame = true;
+    }
+    else
+    {
+        this.onTextureUpdateBind = this.onTextureUpdate.bind(this);
+        this.texture.addEventListener( 'update', this.onTextureUpdateBind );
+    }
 
-	this.renderable = true;
+    this.renderable = true;
 }
 
 // constructor
@@ -94,7 +94,7 @@ Object.defineProperty(PIXI.Sprite.prototype, 'width', {
         return this.scale.x * this.texture.frame.width;
     },
     set: function(value) {
-    	this.scale.x = value / this.texture.frame.width
+        this.scale.x = value / this.texture.frame.width
         this._width = value;
     }
 });
@@ -110,7 +110,7 @@ Object.defineProperty(PIXI.Sprite.prototype, 'height', {
         return  this.scale.y * this.texture.frame.height;
     },
     set: function(value) {
-    	this.scale.y = value / this.texture.frame.height
+        this.scale.y = value / this.texture.frame.height
         this._height = value;
     }
 });
@@ -123,23 +123,23 @@ Object.defineProperty(PIXI.Sprite.prototype, 'height', {
  */
 PIXI.Sprite.prototype.setTexture = function(texture)
 {
-	// stop current texture;
-	if(this.texture.baseTexture != texture.baseTexture)
-	{
-		this.textureChange = true;
-		this.texture = texture;
+    // stop current texture;
+    if(this.texture.baseTexture != texture.baseTexture)
+    {
+        this.textureChange = true;
+        this.texture = texture;
 
-		if(this.__renderGroup)
-		{
-			this.__renderGroup.updateTexture(this);
-		}
-	}
-	else
-	{
-		this.texture = texture;
-	}
+        if(this.__renderGroup)
+        {
+            this.__renderGroup.updateTexture(this);
+        }
+    }
+    else
+    {
+        this.texture = texture;
+    }
 
-	this.updateFrame = true;
+    this.updateFrame = true;
 }
 
 /**
@@ -151,13 +151,13 @@ PIXI.Sprite.prototype.setTexture = function(texture)
  */
 PIXI.Sprite.prototype.onTextureUpdate = function(event)
 {
-	//this.texture.removeEventListener( 'update', this.onTextureUpdateBind );
+    //this.texture.removeEventListener( 'update', this.onTextureUpdateBind );
 
-	// so if _width is 0 then width was not set..
-	if(this._width)this.scale.x = this._width / this.texture.frame.width;
-	if(this._height)this.scale.y = this._height / this.texture.frame.height;
+    // so if _width is 0 then width was not set..
+    if(this._width)this.scale.x = this._width / this.texture.frame.width;
+    if(this._height)this.scale.y = this._height / this.texture.frame.height;
 
-	this.updateFrame = true;
+    this.updateFrame = true;
 }
 
 // some helper functions..
@@ -174,9 +174,9 @@ PIXI.Sprite.prototype.onTextureUpdate = function(event)
  */
 PIXI.Sprite.fromFrame = function(frameId)
 {
-	var texture = PIXI.TextureCache[frameId];
-	if(!texture)throw new Error("The frameId '"+ frameId +"' does not exist in the texture cache" + this);
-	return new PIXI.Sprite(texture);
+    var texture = PIXI.TextureCache[frameId];
+    if(!texture)throw new Error("The frameId '"+ frameId +"' does not exist in the texture cache" + this);
+    return new PIXI.Sprite(texture);
 }
 
 /**
@@ -191,7 +191,7 @@ PIXI.Sprite.fromFrame = function(frameId)
  */
 PIXI.Sprite.fromImage = function(imageId)
 {
-	var texture = PIXI.Texture.fromImage(imageId);
-	return new PIXI.Sprite(texture);
+    var texture = PIXI.Texture.fromImage(imageId);
+    return new PIXI.Sprite(texture);
 }
 

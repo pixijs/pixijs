@@ -93,11 +93,24 @@ module.exports = function(grunt) {
             }
         },
         jshint: {
-            beforeconcat: srcFiles,
-            test: ['<%= files.testBlob %>'],
-            options: {
-                asi: true,
-                smarttabs: true
+            beforeconcat: {
+                src: srcFiles,
+                options: {
+                    jshintrc: '.jshintrc',
+                    ignores: ['<%= dirs.src %>/{Intro,Outro}.js']
+                }
+            },
+            afterconcat: {
+                src: '<%= files.build %>',
+                options: {
+                    jshintrc: '.jshintrc',
+                }
+            },
+            test: {
+                src: ['<%= files.testBlob %>'],
+                options: {
+                    expr: true
+                }
             }
         },
         uglify: {
@@ -182,8 +195,9 @@ module.exports = function(grunt) {
         }
     )
 
-    grunt.registerTask('default', ['concat', 'uglify', 'distribute']);
-    grunt.registerTask('build', ['concat', 'uglify', 'distribute']);
+    grunt.registerTask('lintconcat', ['jshint:beforeconcat', 'concat', 'jshint:afterconcat']);
+    grunt.registerTask('default', ['lintconcat', 'uglify', 'distribute']);
+    grunt.registerTask('build', ['lintconcat', 'uglify', 'distribute']);
     grunt.registerTask('test', ['build', 'connect:qunit', 'qunit']);
     grunt.registerTask('docs', ['yuidoc']);
 

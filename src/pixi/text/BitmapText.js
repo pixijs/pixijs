@@ -147,8 +147,8 @@ PIXI.BitmapText.prototype.updateText = function()
  */
 PIXI.BitmapText.prototype.updateTransform = function()
 {
-	if(this.dirty)
-	{
+    if(this.dirty)
+    {
         while(this.children.length > 0)
         {
             this.removeChild(this.getChildAt(0));
@@ -156,9 +156,9 @@ PIXI.BitmapText.prototype.updateTransform = function()
         this.updateText();
 
         this.dirty = false;
-	}
+    }
 
-	PIXI.DisplayObjectContainer.prototype.updateTransform.call(this);
+    PIXI.DisplayObjectContainer.prototype.updateTransform.call(this);
 };
 
 PIXI.BitmapText.fonts = {};
