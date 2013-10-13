@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-06-19
+ * Compiled: 2013-10-13
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -2579,7 +2579,6 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
     var gl = this.gl;
     PIXI.WebGLRenderer.gl = gl;
     
-    this.batch = new PIXI.WebGLBatch(gl);
    	gl.disable(gl.DEPTH_TEST);
    	gl.disable(gl.CULL_FACE);
     gl.enable(gl.BLEND);
@@ -6653,7 +6652,7 @@ PIXI.FrameCache = {};
  * @extends EventTarget
  * @constructor
  * @param baseTexture {BaseTexture}
- * @param frmae {Rectangle}
+ * @param frame {Rectangle}
  */
 PIXI.Texture = function(baseTexture, frame)
 {
