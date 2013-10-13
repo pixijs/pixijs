@@ -5,6 +5,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-connect');
     grunt.loadNpmTasks('grunt-contrib-qunit');
     grunt.loadNpmTasks('grunt-contrib-yuidoc');
+    grunt.loadNpmTasks('grunt-contrib-watch');
 
     var root = 'src/pixi/',
         debug = 'bin/pixi.dev.js',
@@ -161,6 +162,16 @@ module.exports = function(grunt) {
                     outdir: '<%= dirs.docs %>'
                 }
             }
+        },
+
+        watch: {
+            scripts: {
+                files: 'src/**/*.js',
+                tasks: ['build'],
+                options: {
+                    livereload: true
+                }
+            }
         }
     });
 
@@ -180,7 +191,7 @@ module.exports = function(grunt) {
 
             grunt.log.writeln('Pixi copied to examples.');
         }
-    )
+    );
 
     grunt.registerTask('default', ['concat', 'uglify', 'distribute']);
     grunt.registerTask('build', ['concat', 'uglify', 'distribute']);
