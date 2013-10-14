@@ -77,7 +77,7 @@ PIXI.Sprite = function(texture)
 	}
 
 	this.renderable = true;
-}
+};
 
 // constructor
 PIXI.Sprite.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
