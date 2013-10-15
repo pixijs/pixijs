@@ -20,7 +20,6 @@ PIXI.WebGLRenderGroup = function(gl)
 	this.gl = gl;
 	this.root;
 
-	this.backgroundColor;
 	this.batchs = [];
 	this.toRemove = [];
 }
@@ -62,7 +61,7 @@ PIXI.WebGLRenderGroup.prototype.render = function(projection)
 
 	var gl = this.gl;
 
-
+	PIXI.activateDefaultShader(); //could be done elswhere, but this is needed for context restoration
 	gl.uniform2f(PIXI.shaderProgram.projectionVector, projection.x, projection.y);
 	gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
@@ -1017,4 +1016,21 @@ PIXI.WebGLRenderGroup.prototype.initStrip = function(strip)
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, strip._indexBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, strip.indices, gl.STATIC_DRAW);
-}
+};
+
+/**
+ * Handles context restore by re-initializing all batches.
+ *
+ * @method handleContextRestored
+ * @param gl {GLContext} the new GL context to use
+ */
+PIXI.WebGLRenderGroup.prototype.handleContextRestored = function(gl)
+{
+	this.gl = gl;
+	for (var i=0; i <  this.batchs.length; i++)
+	{	
+		if (this.batchs[i].restoreLostContext)
+			this.batchs[i].restoreLostContext(this.gl)//
+		this.batchs[i].dirty = true;
+	}
+}; 

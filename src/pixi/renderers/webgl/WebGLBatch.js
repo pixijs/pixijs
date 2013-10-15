@@ -28,8 +28,10 @@ PIXI._returnBatch = function(batch)
 	PIXI._batchs.push(batch);
 }
 
+////TODO: this seems no longer necessary?
 /**
  * @private
+ * @deprecated no longer needed with render groups..?
  */
 PIXI._restoreBatchs = function(gl)
 {
@@ -100,6 +102,23 @@ PIXI.WebGLBatch.prototype.restoreLostContext = function(gl)
 	this.indexBuffer =  gl.createBuffer();
 	this.uvBuffer =  gl.createBuffer();
 	this.colorBuffer =  gl.createBuffer();
+
+	//give the batches our last used data...
+	gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER,this.verticies, gl.DYNAMIC_DRAW);
+
+	gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, this.uvs , gl.DYNAMIC_DRAW);
+
+	gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, this.colors , gl.DYNAMIC_DRAW);
+
+	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW);
+
+	this.dirtyUVS = true;
+	this.dirtyColors = true;
+	this.dirty = true;
 }
 
 /**
@@ -395,7 +414,7 @@ PIXI.WebGLBatch.prototype.refresh = function()
 
 		indexRun ++;
 	}
-
+	//TODO: we now need to re-initialize the buffers for context loss
 	this.dirtyUVS = true;
 	this.dirtyColors = true;
 }
