@@ -41,8 +41,6 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
 	this.view.addEventListener('webglcontextlost', function(event) { scope.handleContextLost(event); }, false)
 	this.view.addEventListener('webglcontextrestored', function(event) { scope.handleContextRestored(event); }, false)
 
-	this.batchs = [];
-
 	this.contextOptions = {
 		 alpha: this.transparent,
 		 antialias: !!antialias, // SPEED UP??
@@ -83,17 +81,15 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
 
 	
     //can simulate context loss in Chrome like so:
-    // this.view.addEventListener("mousedown", function(ev) {
-    // 	//console.log(this.gl.getSupportedExtensions());
+    // setTimeout(function() {
     // 	var loseCtx = this.gl.getExtension("WEBGL_lose_context");
     // 	console.log("killing context");
     // 	loseCtx.loseContext();
-
     // 	setTimeout(function() {
     // 		console.log("restoring context...");
     // 		loseCtx.restoreContext();
-    // 	}.bind(this), 1000);
-    // }.bind(this));	
+    // 	}.bind(this), 1000)
+    // }.bind(this), 2000);
 }
 
 // constructor
@@ -141,7 +137,8 @@ PIXI.WebGLRenderer.returnBatch = function(batch)
  */
 PIXI.WebGLRenderer.prototype.render = function(stage)
 {
-	if(this.contextLost)return;
+	if(this.contextLost)
+		return;
 
 
 	// if rendering a new stage clear the batchs..
@@ -239,7 +236,7 @@ PIXI.WebGLRenderer.updateTexture = function(texture)
 	}
 
 	if(texture.hasLoaded)
-	{
+	{ 
 		gl.bindTexture(gl.TEXTURE_2D, texture._glTexture);
 	 	gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
 
@@ -278,8 +275,8 @@ PIXI.WebGLRenderer.destroyTexture = function(texture)
 
 	if(texture._glTexture)
 	{
-		texture._glTexture = gl.createTexture();
 		gl.deleteTexture(gl.TEXTURE_2D, texture._glTexture);
+		texture._glTexture = null;
 	}
 }
 
@@ -339,7 +336,7 @@ PIXI.WebGLRenderer.prototype.handleContextLost = function(event)
 {
 	event.preventDefault();
 	this.contextLost = true;
-	// console.warn("context lost");
+
 }
 
 /**
@@ -352,25 +349,34 @@ PIXI.WebGLRenderer.prototype.handleContextLost = function(event)
 PIXI.WebGLRenderer.prototype.handleContextRestored = function(event)
 {
 	this.gl = this.view.getContext("experimental-webgl", this.contextOptions);
-    // console.warn("context restored");
+    
+
+
+    //static is ugly.. will need to refactor to get rid of this kind of stuff
+    PIXI.gl = this.gl;
+
+    //if anything is going to get updated next frame, clear its GL texture
+    for (var i=0; i<PIXI.texturesToUpdate.length; i++) {
+    	PIXI.texturesToUpdate[i].baseTexture._glTexture = null;
+	}
+    PIXI.texturesToUpdate = [];	
+    PIXI.texturesToDestroy = []; //will already be deleted due to context loss
+
+    //This will probably change when TextureCache gets cleaned up to use multiple 
+    //contexts/canvases
+	for(var key in PIXI.TextureCache)
+	{
+    	var texture = PIXI.TextureCache[key].baseTexture;
+    	texture._glTexture = null;
+    	PIXI.WebGLRenderer.updateTexture(texture);
+	}
+
 
     PIXI.initPrimitiveShader();
     PIXI.initDefaultShader();
     PIXI.initDefaultStripShader();
 
     this.initializeGL();
-
-    for (var i=0; i<PIXI.texturesToUpdate.length; i++) 
-    	PIXI.texturesToUpdate.baseTexture._glTexture = null;
-    PIXI.texturesToUpdate = [];
-    PIXI.texturesToDestroy = []; //will already be destroyed due to context loss
-    
-	for(var key in PIXI.TextureCache)
-	{
-        	var texture = PIXI.TextureCache[key].baseTexture;
-        	texture._glTexture = null;
-        	PIXI.WebGLRenderer.updateTexture(texture);
-	};
 
 	if (this.stageRenderGroup) {
 		this.stageRenderGroup.handleContextRestored(this.gl);
