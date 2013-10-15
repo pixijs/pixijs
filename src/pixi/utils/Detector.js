@@ -23,7 +23,7 @@ PIXI.autoDetectRenderer = function(width, height, view, transparent, antialias)
 	if(!height)height = 600;
 
 	// BORROWED from Mr Doob (mrdoob.com)
-	var webgl = ( function () { try { return !! window.WebGLRenderingContext && !! document.createElement( 'canvas' ).getContext( 'experimental-webgl' ); } catch( e ) { return false; } } )();
+	var webgl = ( function () { try { var canvas = document.createElement( 'canvas' ); return !! window.WebGLRenderingContext && ( canvas.getContext( 'webgl' ) || canvas.getContext( 'experimental-webgl' ) ); } catch( e ) { return false; } } )();
 
 	//console.log(webgl);
 	if( webgl )
