@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-08-28
+ * Compiled: 2013-10-17
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -3394,7 +3394,13 @@ PIXI.autoDetectRenderer = function(width, height, view, transparent, antialias)
 
 	// BORROWED from Mr Doob (mrdoob.com)
 	var webgl = ( function () { try { return !! window.WebGLRenderingContext && !! document.createElement( 'canvas' ).getContext( 'experimental-webgl' ); } catch( e ) { return false; } } )();
-
+	
+	// TEMP FIX
+	if(webgl)
+	{
+		var ie =  (navigator.userAgent.toLowerCase().indexOf('msie') != -1);
+		 webgl = !ie;
+	}
 	//console.log(webgl);
 	if( webgl )
 	{
@@ -6662,7 +6668,7 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 
 		context.lineWidth = data.lineWidth;
 		
-		if(data.type == PIXI.Graphics.POLY)
+		if(data.type === PIXI.Graphics.POLY)
 		{
 			context.beginPath();
 			
@@ -6674,7 +6680,7 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 			} 
 	      	
 	      	// if the first and last point are the same close the path - much neater :)
-	      	if(points[0] == points[points.length-2] && points[1] == points[points.length-1])
+	      	if(points[0] === points[points.length-2] && points[1] === points[points.length-1])
 	      	{
 	      		context.closePath();
 	      	}
@@ -6691,7 +6697,7 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
       			context.stroke();
 			}
 		}
-		else if(data.type == PIXI.Graphics.RECT)
+		else if(data.type === PIXI.Graphics.RECT)
 		{
 				
 			// TODO - need to be Undefined!

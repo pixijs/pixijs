@@ -36,7 +36,7 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 
 		context.lineWidth = data.lineWidth;
 		
-		if(data.type == PIXI.Graphics.POLY)
+		if(data.type === PIXI.Graphics.POLY)
 		{
 			context.beginPath();
 			
@@ -48,7 +48,7 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 			} 
 	      	
 	      	// if the first and last point are the same close the path - much neater :)
-	      	if(points[0] == points[points.length-2] && points[1] == points[points.length-1])
+	      	if(points[0] === points[points.length-2] && points[1] === points[points.length-1])
 	      	{
 	      		context.closePath();
 	      	}
@@ -65,7 +65,7 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
       			context.stroke();
 			}
 		}
-		else if(data.type == PIXI.Graphics.RECT)
+		else if(data.type === PIXI.Graphics.RECT)
 		{
 				
 			// TODO - need to be Undefined!

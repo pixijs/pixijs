@@ -24,7 +24,13 @@ PIXI.autoDetectRenderer = function(width, height, view, transparent, antialias)
 
 	// BORROWED from Mr Doob (mrdoob.com)
 	var webgl = ( function () { try { return !! window.WebGLRenderingContext && !! document.createElement( 'canvas' ).getContext( 'experimental-webgl' ); } catch( e ) { return false; } } )();
-
+	
+	// TEMP FIX
+	if(webgl)
+	{
+		var ie =  (navigator.userAgent.toLowerCase().indexOf('msie') != -1);
+		 webgl = !ie;
+	}
 	//console.log(webgl);
 	if( webgl )
 	{
