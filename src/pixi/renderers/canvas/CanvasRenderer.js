@@ -207,14 +207,14 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 		{
 			if(displayObject.data instanceof PIXI.Graphics)
  			{
-+				var mask = displayObject.data;
+				var mask = displayObject.data;
 
 				if(displayObject.open)
 				{
 					context.save();
 					
 					var cacheAlpha = mask.alpha;
-+					var maskTransform = mask.worldTransform;
+					var maskTransform = mask.worldTransform;
 					
 					context.setTransform(maskTransform[0], maskTransform[3], maskTransform[1], maskTransform[4], maskTransform[2], maskTransform[5])
 					
