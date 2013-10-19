@@ -87,22 +87,22 @@ PIXI.Stage.prototype.setInteractionDelegate = function(domElement)
  */
 PIXI.Stage.prototype.updateTransform = function()
 {
-	this.worldAlpha = 1;
+	this.worldAlpha = 1;		
 	this.vcount = PIXI.visibleCount;
-
+	
 	for(var i=0,j=this.children.length; i<j; i++)
 	{
-		this.children[i].updateTransform();
+		this.children[i].updateTransform();	
 	}
-
+	
 	if(this.dirty)
 	{
 		this.dirty = false;
 		// update interactive!
 		this.interactionManager.dirty = true;
 	}
-
-
+	
+	
 	if(this.interactive)this.interactionManager.update();
 }
 
