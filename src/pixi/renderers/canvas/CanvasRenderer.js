@@ -195,6 +195,7 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 		}
 		else if(displayObject instanceof PIXI.CustomRenderable)
 		{
+			context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
 			displayObject.renderCanvas(this);
 		}
 		else if(displayObject instanceof PIXI.Graphics)
@@ -204,25 +205,27 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 		}
 		else if(displayObject instanceof PIXI.FilterBlock)
 		{
-			if(PIXI.FilterBlock.data instanceof PIXI.Graphics)
-			{
+			if(displayObject.data instanceof PIXI.Graphics)
+ 			{
++				var mask = displayObject.data;
+
 				if(displayObject.open)
 				{
 					context.save();
 					
-					var cacheAlpha = displayObject.mask.alpha;
-					var maskTransform = displayObject.mask.worldTransform;
+					var cacheAlpha = mask.alpha;
++					var maskTransform = mask.worldTransform;
 					
 					context.setTransform(maskTransform[0], maskTransform[3], maskTransform[1], maskTransform[4], maskTransform[2], maskTransform[5])
 					
-					displayObject.mask.worldAlpha = 0.5;
+					mask.worldAlpha = 0.5;
 					
 					context.worldAlpha = 0;
 					
-					PIXI.CanvasGraphics.renderGraphicsMask(displayObject.mask, context);
+					PIXI.CanvasGraphics.renderGraphicsMask(mask, context);
 					context.clip();
 					
-					displayObject.mask.worldAlpha = cacheAlpha;
+					mask.worldAlpha = cacheAlpha;
 				}
 				else
 				{

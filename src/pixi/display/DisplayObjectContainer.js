@@ -72,7 +72,7 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 	var previousObject;
 	
 	// this could be wrong if there is a filter??
-	if(this._filters)
+	if(this._filters || this._mask)
 	{
 		previousObject =  this.last._iPrev;
 	}
