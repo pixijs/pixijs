@@ -1,0 +1,168 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>pixi.js example 15 - Filters</title>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			background-color: #000000;
+		}
+	</style>
+	
+	<script src="pixi.js"></script>
+	<script src="../../src/pixi/filters/DisplacementFilter.js"></script>
+	<script src="../../src/pixi/renderers/webgl/PixiShader.js"></script>
+</head>
+<body>
+	<script>
+	
+	var renderer = PIXI.autoDetectRenderer(620, 380);
+	
+	// create an new instance of a pixi stage
+	var stage = new PIXI.Stage(0xFFFFFF, true);
+	
+	stage.interactive = true;
+	
+	var bg = PIXI.Sprite.fromImage("BGrotate.jpg");
+	bg.anchor.x = 0.5;
+	bg.anchor.y = 0.5;
+	 
+	bg.position.x = 620/2;
+	bg.position.y = 380/2;
+	
+	var colorMatrix =  [1,0,0,0,
+						0,1,0,0,
+						0,0,1,0,
+						0,0,0,1];
+						
+	
+	var mapTexture = new PIXI.RenderTexture(256, 256)// PIXI.Texture.fromImage("map.png");
+	
+	var filter = new PIXI.DisplacementFilter(mapTexture);
+	
+	var container = new PIXI.DisplayObjectContainer();
+	container.position.x = 620/2;
+	container.position.y = 380/2;
+	
+	var bgFront = PIXI.Sprite.fromImage("SceneRotate.jpg");
+	bgFront.anchor.x = 0.5;
+	bgFront.anchor.y = 0.5;
+	 
+	container.addChild(bgFront);
+	
+	var light2 = PIXI.Sprite.fromImage("LightRotate2.png");
+	light2.anchor.x = 0.5;
+	light2.anchor.y = 0.5;
+	container.addChild(light2);
+	
+	var light1 = PIXI.Sprite.fromImage("LightRotate1.png");
+	light1.anchor.x = 0.5;
+	light1.anchor.y = 0.5;
+	container.addChild(light1);
+	
+	var panda =  PIXI.Sprite.fromImage("panda.png");
+	panda.anchor.x = 0.5;
+	panda.anchor.y = 0.5;
+	
+	
+	//container.addChild(panda);
+	
+	stage.addChild(container);
+	
+	// create a renderer instance
+	
+	renderer.view.style.position = "absolute"
+	renderer.view.style.width = window.innerWidth + "px";
+	renderer.view.style.height = window.innerHeight + "px";
+	renderer.view.style.display = "block";
+	
+	// add render view to DOM
+	document.body.appendChild(renderer.view);
+	
+	
+	stage.filters = [filter];
+	
+	var count = 0;
+	var switchy = false;
+	
+	stage.click = stage.tap = function()
+	{
+		switchy = !switchy
+		
+		if(!switchy)
+		{
+		//	panda.filters = [filter];//
+			stage.filters = [filter];
+		}
+		else
+		{
+			//panda.filters = null//.. [filter];
+			stage.filters = null;
+		}
+		
+		PIXI.runList(stage);	
+	}
+	
+
+	/*
+	 * Add a pixi Logo!
+	 */
+	var logo = PIXI.Sprite.fromImage("../../logo_small.png");
+//	stage.addChild(logo);
+	
+	logo.anchor.x = 1;
+	logo.position.x = 620
+	logo.scale.x = logo.scale.y = 0.5;
+	logo.position.y = 320;
+	logo.interactive = true;
+	logo.buttonMode = true;
+	
+	logo.click = logo.tap = function()
+	{
+		window.open("https://github.com/GoodBoyDigital/pixi.js", "_blank");
+	}
+	
+	var help = new PIXI.Text("Click to turn filters on / off.", {font:"bold 12pt Arial", fill:"white"});
+	help.position.y = 350;
+	help.position.x = 10;
+	stage.addChild(help);
+	
+	//stage.filters = [filter];
+		//stage.addChild(new PIXI.Sprite(mapTexture))
+		
+	PIXI.runList(stage);
+	
+	requestAnimFrame(animate);
+	
+	var position = new PIXI.Point( 256/2, 256/2);
+	function animate() {
+		
+		mapTexture.render(container, position);
+		
+		
+		filter.scale.x = Math.sin(count) * 100;
+		filter.scale.y = Math.cos(count) * 100;
+		bg.rotation += 0.01;
+		bgFront.rotation -= 0.01;
+		
+		light1.rotation += 0.02;
+		light2.rotation += 0.01;
+
+		panda.scale.x = 1 + Math.sin(count) * 0.04;
+		panda.scale.y = 1 + Math.cos(count) * 0.04;
+		
+		count += 0.1;
+		
+	//	filter.matrix = colorMatrix;
+		
+		
+
+	    renderer.render(stage);
+	    requestAnimFrame( animate );
+	}
+
+	</script>
+
+	</body>
+</html>

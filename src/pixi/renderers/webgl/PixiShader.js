@@ -60,9 +60,28 @@ PIXI.PixiShader.prototype.syncUniforms = function()
     	{
 			gl.uniform1f(this.program[key], this.uniforms[key].value);
     	}
+    	if(type == "f2")
+    	{
+			gl.uniform2f(this.program[key], this.uniforms[key].value.x, this.uniforms[key].value.y);
+    	}
     	else if(type == "mat4")
     	{
     		gl.uniformMatrix4fv(this.program[key], false, this.uniforms[key].value);
+    	}
+    	else if(type == "sampler2D")
+    	{
+    		// first texture...
+    		var texture = this.uniforms[key].value;
+    		
+    		gl.activeTexture(gl.TEXTURE1);
+	    	gl.bindTexture(gl.TEXTURE_2D, texture.baseTexture._glTexture);
+	    	
+    		gl.uniform1i(this.program[key], 1);
+    		
+    		
+    		// activate texture..
+    		// gl.uniformMatrix4fv(this.program[key], false, this.uniforms[key].value);
+    		// gl.uniformMatrix4fv(this.program[key], false, this.uniforms[key].value);
     	}
     }
     

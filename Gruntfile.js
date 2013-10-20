@@ -24,6 +24,7 @@ module.exports = function(grunt) {
             '<%= dirs.src %>/filters/FilterBlock.js',
             '<%= dirs.src %>/filters/ColorMatrixFilter.js',
             '<%= dirs.src %>/filters/GreyFilter.js',
+            '<%= dirs.src %>/filters/DisplacementFilter.js',
             '<%= dirs.src %>/text/Text.js',
             '<%= dirs.src %>/text/BitmapText.js',
             '<%= dirs.src %>/InteractionManager.js',
@@ -128,7 +129,8 @@ module.exports = function(grunt) {
                 'examples/example 12 - Spine',
                 'examples/example 13 - Graphics',
                 'examples/example 14 - Masking',
-                'examples/example 15 - Filters'
+                'examples/example 15 - Filters',
+                'examples/example 16 - Displacement'
             ]
         },
         connect: {

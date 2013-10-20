@@ -124,7 +124,7 @@ PIXI.initDefaultShader = function()
 {
 	PIXI.defaultShader = new PIXI.PixiShader();
 	PIXI.defaultShader.init();
-	PIXI.activateShader(PIXI.defaultShader);
+	PIXI.pushShader(PIXI.defaultShader);
 	/*
 	PIXI.shaderStack.push(PIXI.defaultShader);
 	PIXI.current*/
@@ -195,14 +195,14 @@ PIXI.compileProgram = function(vertexSrc, fragmentSrc)
 	return shaderProgram;
 } 
 
-PIXI.activateShader = function(shader)
+PIXI.pushShader = function(shader)
 {
 	PIXI.shaderStack.push(shader);
-	
-	//console.log(">>>")
+
 	var gl = PIXI.gl;
 	
 	var shaderProgram = shader.program;
+	
 	
 	// map uniforms..
 	gl.useProgram(shaderProgram);
@@ -220,7 +220,6 @@ PIXI.activateShader = function(shader)
 PIXI.popShader = function()
 {
 	var gl = PIXI.gl;
-	// activate last program..
 	var lastProgram = PIXI.shaderStack.pop();
 	
 	var shaderProgram = PIXI.shaderStack[ PIXI.shaderStack.length-1 ].program;
@@ -235,13 +234,7 @@ PIXI.activatePrimitiveShader = function()
 	var gl = PIXI.gl;
 	
 	gl.useProgram(PIXI.primitiveProgram);
-	
-    //gl.disableVertexAttribArray(PIXI.currentShader.vertexPositionAttribute);
-	//gl.disableVertexAttribArray(PIXI.currentShader.colorAttribute);
 	gl.disableVertexAttribArray(PIXI.currentShader.textureCoordAttribute);
-    
-	//gl.enableVertexAttribArray(PIXI.primitiveProgram.vertexPositionAttribute);
-	//gl.enableVertexAttribArray(PIXI.primitiveProgram.colorAttribute);
 } 
 
 PIXI.deactivatePrimitiveShader = function()
@@ -249,8 +242,5 @@ PIXI.deactivatePrimitiveShader = function()
 	var gl = PIXI.gl;
 
 	gl.useProgram(PIXI.currentShader);
-	
 	gl.enableVertexAttribArray(PIXI.currentShader.textureCoordAttribute);
-	//gl.enableVertexAttribArray(PIXI.currentShader.vertexPositionAttribute);
-	//gl.enableVertexAttribArray(PIXI.currentShader.colorAttribute);
 }

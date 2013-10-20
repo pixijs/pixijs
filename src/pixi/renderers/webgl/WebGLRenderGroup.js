@@ -317,7 +317,7 @@ PIXI.WebGLRenderGroup.prototype.handleFilterBlock = function(renderable, project
 				filter.shader = shader
 			}
 			
-			PIXI.activateShader(filter.shader);
+			PIXI.pushShader(filter.shader);
 			gl.uniform2f(PIXI.currentShader.projectionVector, projection.x, projection.y);
 		}
 		else
