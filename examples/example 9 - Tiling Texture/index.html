@@ -44,10 +44,20 @@
 
 	stage.addChild(tilingSprite);
 
+	if (window.addEventListener) {
+		window.addEventListener("resize", function(ev) {
+			var w = window.innerWidth, h = window.innerHeight;
+			
+			tilingSprite.width = w;
+			tilingSprite.height = h;
+			renderer.resize( w, h );
+			
+		}.bind(this));
+	}
+
+
 	function animate() {
-
 	    requestAnimFrame( animate );
-
 
 		count += 0.005
 		tilingSprite.tileScale.x = 2 + Math.sin(count);
