@@ -62,7 +62,6 @@ PIXI.WebGLRenderGroup.prototype.render = function(projection)
 	
 	var gl = this.gl;
 	
-	gl.uniform2f(PIXI.currentShader.projectionVector, projection.x, projection.y);
 	
 	gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 	// will render all the elements in the group
@@ -113,7 +112,6 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 	PIXI.WebGLRenderer.updateTextures();
 	
 	var gl = this.gl;
-	gl.uniform2f(PIXI.currentShader.projectionVector, projection.x, projection.y);
 	
 	// to do!
 	// render part of the scene...
@@ -869,6 +867,7 @@ PIXI.WebGLRenderGroup.prototype.renderStrip = function(strip, projection)
 	
 	
 	gl.useProgram(shaderProgram);
+	gl.uniform2f(shaderProgram.projectionVector, projection.x, projection.y);
 
 	var m = PIXI.mat3.clone(strip.worldTransform);
 	
@@ -952,7 +951,6 @@ PIXI.WebGLRenderGroup.prototype.renderStrip = function(strip, projection)
 PIXI.WebGLRenderGroup.prototype.renderTilingSprite = function(sprite, projectionMatrix)
 {
 	var gl = this.gl;
-	var shaderProgram = PIXI.shaderProgram;
 	
 	var tilePosition = sprite.tilePosition;
 	var tileScale = sprite.tileScale;
@@ -975,6 +973,13 @@ PIXI.WebGLRenderGroup.prototype.renderTilingSprite = function(sprite, projection
 	sprite.uvs[6] = 0 - offsetX;
 	sprite.uvs[7] = (1 *scaleY) - offsetY;
 	
+
+	sprite.verticies[2] = sprite.verticies[4] = sprite.width;
+	sprite.verticies[5] = sprite.verticies[7] = sprite.height;
+
+	gl.bindBuffer(gl.ARRAY_BUFFER, sprite._vertexBuffer);
+	gl.bufferSubData(gl.ARRAY_BUFFER, 0, sprite.verticies)
+
 	gl.bindBuffer(gl.ARRAY_BUFFER, sprite._uvBuffer);
 	gl.bufferSubData(gl.ARRAY_BUFFER, 0, sprite.uvs)
 	
