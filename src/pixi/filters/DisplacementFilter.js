@@ -22,7 +22,7 @@ PIXI.DisplacementFilter = function(texture)
 	  "uniform sampler2D uSampler;",
 	  "uniform vec2 scale;",
 	  "uniform vec2 mapDimensions;",// = vec2(256.0, 256.0);",
-	  "const vec2 textureDimensions = vec2(245.0, 263.0);",
+	  "const vec2 textureDimensions = vec2(800.0, 600.0);",
 	  
 	  "void main(void) {",
 	  

@@ -164,6 +164,9 @@ PIXI.DisplayObject = function()
 	this._sr = 0;
 	this._cr = 1;
 
+
+	this.filterArea = new PIXI.Rectangle(0,0,1,1);
+	
 	/*
 	 * MOUSE Callbacks
 	 */
@@ -353,6 +356,7 @@ PIXI.DisplayObject.prototype.addFilter = function(data)
 {
 	//if(this.filter)return;
 	//this.filter = true;
+//	data[0].target = this;
 	
 	// insert a filter block..
 	// TODO Onject pool thease bad boys..
@@ -369,6 +373,8 @@ PIXI.DisplayObject.prototype.addFilter = function(data)
 	end.first = end.last = this;
 	
 	start.open = true;
+	
+	start.target = this;
 	
 	/*
 	 * insert start

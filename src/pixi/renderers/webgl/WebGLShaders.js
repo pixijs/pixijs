@@ -24,10 +24,14 @@ PIXI.shaderVertexSrc = [
   "attribute float aColor;",
   
   "uniform vec2 projectionVector;",
+ "uniform vec2 offsetVector;",
   "varying vec2 vTextureCoord;",
+  
   "varying float vColor;",
+ //"const vec2 offsetVector = vec2(1000.0, 0.0);",
+  "const vec2 center = vec2(-1.0, 1.0);",
   "void main(void) {",
-    "gl_Position = vec4( aVertexPosition.x / projectionVector.x -1.0, aVertexPosition.y / -projectionVector.y + 1.0 , 0.0, 1.0);",
+    "gl_Position = vec4( ((aVertexPosition + offsetVector) / projectionVector) + center , 0.0, 1.0);",
     "vTextureCoord = aTextureCoord;",
     "vColor = aColor;",
   "}"
@@ -83,10 +87,12 @@ PIXI.primitiveShaderVertexSrc = [
   "attribute vec4 aColor;",
   "uniform mat3 translationMatrix;",
   "uniform vec2 projectionVector;",
+  "uniform vec2 offsetVector;",
   "uniform float alpha;",
   "varying vec4 vColor;",
   "void main(void) {",
-  	"vec3 v = translationMatrix * vec3(aVertexPosition, 1.0);",
+  	"vec3 v = translationMatrix * vec3(aVertexPosition , 1.0);",
+    "v -= offsetVector.xyx;",
     "gl_Position = vec4( v.x / projectionVector.x -1.0, v.y / -projectionVector.y + 1.0 , 0.0, 1.0);",
     "vColor = aColor  * alpha;",
   "}"
@@ -106,6 +112,8 @@ PIXI.initPrimitiveShader = function()
     shaderProgram.colorAttribute = gl.getAttribLocation(shaderProgram, "aColor");
     
     shaderProgram.projectionVector = gl.getUniformLocation(shaderProgram, "projectionVector");
+    shaderProgram.offsetVector = gl.getUniformLocation(shaderProgram, "offsetVector");
+
     shaderProgram.translationMatrix = gl.getUniformLocation(shaderProgram, "translationMatrix");
     
   
@@ -122,13 +130,27 @@ PIXI.initPrimitiveShader = function()
 
 PIXI.initDefaultShader = function() 
 {
+	PIXI.frameBufferStack = [];
+	PIXI.frameBufferPool = [];
+	
 	PIXI.defaultShader = new PIXI.PixiShader();
 	PIXI.defaultShader.init();
 	PIXI.pushShader(PIXI.defaultShader);
+	
+	// offset..
+	
+	
+	
+	// ok and also create 2 spare frame buffers..
+//	PIXI.frameBuffer1 = PIXI.generateFrameBuffer(800, 600);
+//	PIXI.frameBuffer2 = PIXI.generateFrameBuffer(800, 600);
+//	PIXI.currentFrameBuffer;
+	
 	/*
 	PIXI.shaderStack.push(PIXI.defaultShader);
 	PIXI.current*/
 }
+
 
 PIXI.initDefaultStripShader = function() 
 {
@@ -197,12 +219,19 @@ PIXI.compileProgram = function(vertexSrc, fragmentSrc)
 
 PIXI.pushShader = function(shader)
 {
-	PIXI.shaderStack.push(shader);
-
 	var gl = PIXI.gl;
+	
+	gl.colorMask(true, true, true, true); 
+	gl.viewport(0, 0, this.width, this.height);	
+	gl.clearColor(0,0,0, 0);     
+	gl.clear(gl.COLOR_BUFFER_BIT);
+
+	PIXI.shaderStack.push(shader);
 	
 	var shaderProgram = shader.program;
 	
+	// flip! the texture..
+	// set the texture!
 	
 	// map uniforms..
 	gl.useProgram(shaderProgram);

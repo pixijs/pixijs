@@ -28,6 +28,16 @@ PIXI.PixiShader.prototype.init = function()
 	
     gl.useProgram(program);
 	
+	// get and store the uniforms for the shader
+	this.uSampler = gl.getUniformLocation(program, "uSampler");
+	this.projectionVector = gl.getUniformLocation(program, "projectionVector");
+	this.offsetVector = gl.getUniformLocation(program, "offsetVector");
+	//this.dimensions = gl.getUniformLocation(this.program, "dimensions");
+	
+	// get and store the attributes
+	this.aVertexPosition = gl.getAttribLocation(program, "aVertexPosition");
+	this.aTextureCoord = gl.getAttribLocation(program, "aTextureCoord");
+	
 	// get the default shader bits!
     program.vertexPositionAttribute = gl.getAttribLocation(program, "aVertexPosition");
 	program.colorAttribute = gl.getAttribLocation(program, "aColor");
@@ -35,6 +45,7 @@ PIXI.PixiShader.prototype.init = function()
     
     program.projectionVector = gl.getUniformLocation(program, "projectionVector");
     program.samplerUniform = gl.getUniformLocation(program, "uSampler");
+    program.offsetVector = gl.getUniformLocation(program, "offsetVector");
     
     // add those custom shaders!
     for (var key in this.uniforms)
@@ -77,7 +88,6 @@ PIXI.PixiShader.prototype.syncUniforms = function()
 	    	gl.bindTexture(gl.TEXTURE_2D, texture.baseTexture._glTexture);
 	    	
     		gl.uniform1i(this.program[key], 1);
-    		
     		
     		// activate texture..
     		// gl.uniformMatrix4fv(this.program[key], false, this.uniforms[key].value);

@@ -23,6 +23,8 @@ PIXI.WebGLRenderGroup = function(gl)
 	this.backgroundColor;
 	this.batchs = [];
 	this.toRemove = [];
+	
+	this.filterManager = new PIXI.FilterManager();
 }
 
 // constructor
@@ -56,17 +58,20 @@ PIXI.WebGLRenderGroup.prototype.setRenderable = function(displayObject)
  * @method render
  * @param projection {Object}
  */
-PIXI.WebGLRenderGroup.prototype.render = function(projection)
+PIXI.WebGLRenderGroup.prototype.render = function(projection, buffer)
 {
 	PIXI.WebGLRenderer.updateTextures();
 	
 	var gl = this.gl;
-	
 	gl.uniform2f(PIXI.currentShader.projectionVector, projection.x, projection.y);
+
+	this.filterManager.begin(projection, buffer);
+
 	
 	gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 	// will render all the elements in the group
 	var renderable;
+
 	for (var i=0; i < this.batchs.length; i++) 
 	{
 		
@@ -77,25 +82,8 @@ PIXI.WebGLRenderGroup.prototype.render = function(projection)
 			continue;
 		}
 		
-		// non sprite batch..
-		var worldVisible = renderable.vcount === PIXI.visibleCount;
-
-		if(renderable instanceof PIXI.TilingSprite)
-		{
-			if(worldVisible)this.renderTilingSprite(renderable, projection);
-		}
-		else if(renderable instanceof PIXI.Strip)
-		{
-			if(worldVisible)this.renderStrip(renderable, projection);
-		}
-		else if(renderable instanceof PIXI.Graphics)
-		{
-			if(worldVisible && renderable.renderable) PIXI.WebGLGraphics.renderGraphics(renderable, projection);//, projectionMatrix);
-		}
-		else if(renderable instanceof PIXI.FilterBlock)
-		{
-			this.handleFilterBlock(renderable, projection);
-		}
+		// render special
+		this.renderSpecial(renderable, projection);
 	}
 	
 }
@@ -108,7 +96,7 @@ PIXI.WebGLRenderGroup.prototype.render = function(projection)
  * @param projection {Object}
  * @private
  */
-PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, projection)
+PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, projection, buffer)
 {
 	PIXI.WebGLRenderer.updateTextures();
 	
@@ -293,41 +281,32 @@ PIXI.WebGLRenderGroup.prototype.renderSpecial = function(renderable, projection)
 	}
 }
 
-PIXI.WebGLRenderGroup.prototype.handleFilterBlock = function(renderable, projection)
+PIXI.WebGLRenderGroup.prototype.handleFilterBlock = function(filterBlock, projection)
 {
 	/*
 	 * for now only masks are supported..
 	 */
 	var gl = PIXI.gl;
-
-	if(renderable.open)
+	
+	if(filterBlock.open)
 	{
-		if(renderable.data instanceof Array)
+		if(filterBlock.data instanceof Array)
 		{
-			var filter = renderable.data[0];
+			var filter = filterBlock.data[0];
+			//console.log(filter)
+			this.filterManager.pushFilter(filterBlock);//filter);
+			// ok so..
 			
-			if(!filter.shader)
-			{
-				var shader = new PIXI.PixiShader();
-				
-				shader.fragmentSrc = filter.fragmentSrc;
-				shader.uniforms = filter.uniforms;
-				shader.init();
-				
-				filter.shader = shader
-			}
-			
-			PIXI.pushShader(filter.shader);
-			gl.uniform2f(PIXI.currentShader.projectionVector, projection.x, projection.y);
 		}
 		else
 		{
+			
 			gl.enable(gl.STENCIL_TEST);
 				
 			gl.colorMask(false, false, false, false);
 			gl.stencilFunc(gl.ALWAYS,1,0xff);
 			gl.stencilOp(gl.KEEP,gl.KEEP,gl.REPLACE);
-			PIXI.WebGLGraphics.renderGraphics(renderable.data, projection);
+			PIXI.WebGLGraphics.renderGraphics(filterBlock.data, projection);
 				
 			gl.colorMask(true, true, true, true);
 			gl.stencilFunc(gl.NOTEQUAL,0,0xff);
@@ -336,10 +315,11 @@ PIXI.WebGLRenderGroup.prototype.handleFilterBlock = function(renderable, project
 	}
 	else
 	{
-		if(renderable.data instanceof Array)
+		if(filterBlock.data instanceof Array)
 		{
-			PIXI.popShader();
-			gl.uniform2f(PIXI.currentShader.projectionVector, projection.x, projection.y);
+			this.filterManager.popFilter();
+		//	PIXI.popShader();
+		//	gl.uniform2f(PIXI.currentShader.projectionVector, projection.x, projection.y);
 		}
 		else
 		{

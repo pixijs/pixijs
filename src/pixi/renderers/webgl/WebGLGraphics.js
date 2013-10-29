@@ -46,7 +46,6 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
 		PIXI.WebGLGraphics.updateGraphics(graphics);
 	}
 	
-	
 	PIXI.activatePrimitiveShader();
 	
 	// This  could be speeded up fo sure!
@@ -59,7 +58,8 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
  	
  	gl.uniformMatrix3fv(PIXI.primitiveProgram.translationMatrix, false, m);
  	
-	gl.uniform2f(PIXI.primitiveProgram.projectionVector, projection.x, projection.y);
+	gl.uniform2f(PIXI.primitiveProgram.projectionVector, projection.x, -projection.y);
+	gl.uniform2f(PIXI.primitiveProgram.offsetVector, -PIXI.offset.x, -PIXI.offset.y);
 	
 	gl.uniform1f(PIXI.primitiveProgram.alpha, graphics.worldAlpha);
 
