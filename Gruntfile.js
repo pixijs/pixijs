@@ -1,10 +1,12 @@
 module.exports = function(grunt) {
+    grunt.loadNpmTasks('grunt-concat-sourcemap');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-connect');
     grunt.loadNpmTasks('grunt-contrib-qunit');
     grunt.loadNpmTasks('grunt-contrib-yuidoc');
+    grunt.loadNpmTasks('grunt-contrib-watch');
 
     var root = 'src/pixi/',
         debug = 'bin/pixi.dev.js',
@@ -79,7 +81,6 @@ module.exports = function(grunt) {
         dirs: {
             build: 'bin',
             docs: 'docs',
-            examples: 'examples',
             src: 'src/pixi',
             test: 'test'
         },
@@ -98,6 +99,16 @@ module.exports = function(grunt) {
                 dest: '<%= files.build %>'
             }
         },
+        concat_sourcemap: {
+            dev: {
+                files: {
+                    '<%= files.build %>': srcFiles
+                },
+                options: {
+                    sourceRoot: '../'
+                }
+            }
+        },
         jshint: {
             beforeconcat: srcFiles,
             test: ['<%= files.testBlob %>'],
@@ -114,26 +125,6 @@ module.exports = function(grunt) {
                 src: '<%= files.build %>',
                 dest: '<%= files.buildMin %>'
             }
-        },
-        distribute: {
-            examples: [
-                'examples/example 1 - Basics',
-                'examples/example 2 - SpriteSheet',
-                'examples/example 3 - MovieClip',
-                'examples/example 4 - Balls',
-                'examples/example 5 - Morph',
-                'examples/example 6 - Interactivity',
-                'examples/example 7 - Transparent Background',
-                'examples/example 8 - Dragging',
-                'examples/example 9 - Tiling Texture',
-                'examples/example 10 - Text',
-                'examples/example 11 - RenderTexture',
-                'examples/example 12 - Spine',
-                'examples/example 13 - Graphics',
-                'examples/example 14 - Masking',
-                'examples/example 15 - Filters',
-                'examples/example 16 - Displacement'
-            ]
         },
         connect: {
             qunit: {
@@ -169,29 +160,23 @@ module.exports = function(grunt) {
                     outdir: '<%= dirs.docs %>'
                 }
             }
+        },
+        watch: {
+            dev: {
+                files: ['Gruntfile.js', 'src/**/*.js', 'examples/**/*.html'],
+                tasks: ['build-debug'],
+                
+                // We would need to inject <script> in each HTML...
+                // options: {
+                //     livereload: true
+                // }
+            }
         }
     });
 
-    grunt.registerMultiTask(
-        'distribute',
-        'Copy built file to examples',
-        function(){
-            var pixi = grunt.file.read( debug );
-
-            var dests = this.data;
-
-            dests.forEach(function(filepath){
-
-                grunt.file.write(filepath + '/pixi.js', pixi);
-
-            });
-
-            grunt.log.writeln('Pixi copied to examples.');
-        }
-    )
-
-    grunt.registerTask('default', ['concat', 'uglify', 'distribute']);
-    grunt.registerTask('build', ['concat', 'uglify', 'distribute']);
+    grunt.registerTask('build-debug', ['concat_sourcemap', 'uglify'])
+    grunt.registerTask('default', ['concat', 'uglify']);
+    grunt.registerTask('build', ['concat', 'uglify']);
     grunt.registerTask('test', ['build', 'connect:qunit', 'qunit']);
     grunt.registerTask('docs', ['yuidoc']);
 
