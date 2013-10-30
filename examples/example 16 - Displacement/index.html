@@ -12,13 +12,33 @@
 	
 	<script src="../../bin/pixi.dev.js"></script>
 	<script src="../../src/pixi/filters/DisplacementFilter.js"></script>
+	<script src="../../src/pixi/renderers/webgl/WebGLRenderGroup.js"></script>
 	<script src="../../src/pixi/renderers/webgl/PixiShader.js"></script>
+	<script src="../../src/pixi/renderers/webgl/WebGLShaders.js"></script>
+	<script src="../../src/pixi/renderers/webgl/filters/Filter.js"></script>
+	<script src="../../src/pixi/renderers/webgl/filters/FilterManager.js"></script>
+	<script src="../../src/pixi/filters/InvertFilter.js"></script>
+	<script src="../../src/pixi/filters/SepiaFilter.js"></script>
+	<script src="../../src/pixi/filters/BlurXFilter.js"></script>
+	<script src="../../src/pixi/filters/BlurFilter.js"></script>
+	<script src="../../src/pixi/filters/BlurYFilter.js"></script>
+	<script src="../../src/pixi/filters/SmartBlurFilter.js"></script>
 </head>
 <body>
 	<script>
 	
-	var renderer = PIXI.autoDetectRenderer(620, 380);
+	var renderer = PIXI.autoDetectRenderer(800, 600);
 	
+	
+	var f2 = new PIXI.BlurYFilter()//new PIXI.Filter();
+	var f = new PIXI.GreyFilter()//new PIXI.Filter();
+	var blurX = new PIXI.BlurXFilter()//new PIXI.Filter();
+	var blurY = new PIXI.BlurYFilter();
+	var smart = new PIXI.SmartBlurFilter();
+
+	var blur = new PIXI.BlurFilter();
+
+
 	// create an new instance of a pixi stage
 	var stage = new PIXI.Stage(0xFFFFFF, true);
 	
@@ -28,28 +48,31 @@
 	bg.anchor.x = 0.5;
 	bg.anchor.y = 0.5;
 	 
-	bg.position.x = 620/2;
-	bg.position.y = 380/2;
+	bg.position.x = 800/2;
+	bg.position.y = 600/2;
 	
+
 	var colorMatrix =  [1,0,0,0,
 						0,1,0,0,
 						0,0,1,0,
 						0,0,0,1];
 						
 	
-	var mapTexture = new PIXI.RenderTexture(256, 256)// PIXI.Texture.fromImage("map.png");
-	
+	var mapTexture = new PIXI.RenderTexture(800, 600);
+
 	var filter = new PIXI.DisplacementFilter(mapTexture);
 	
 	var container = new PIXI.DisplayObjectContainer();
-	container.position.x = 620/2;
-	container.position.y = 380/2;
+	container.position.x = 800/2;
+	container.position.y = 600/2;
 	
 	var bgFront = PIXI.Sprite.fromImage("SceneRotate.jpg");
 	bgFront.anchor.x = 0.5;
 	bgFront.anchor.y = 0.5;
-	 
-	container.addChild(bgFront);
+	bgFront.filters = [blur]//, blurY];
+	stage.addChild(bgFront);
+	bgFront.position.x = 800/2;
+	bgFront.position.y = 600/2;
 	
 	var light2 = PIXI.Sprite.fromImage("LightRotate2.png");
 	light2.anchor.x = 0.5;
@@ -62,26 +85,28 @@
 	container.addChild(light1);
 	
 	var panda =  PIXI.Sprite.fromImage("panda.png");
-	panda.anchor.x = 0.5;
+	panda.anchor.x = 1.5;
 	panda.anchor.y = 0.5;
 	
 	
-	//container.addChild(panda);
+	container.addChild(panda);
 	
 	stage.addChild(container);
 	
 	// create a renderer instance
 	
 	renderer.view.style.position = "absolute"
-	renderer.view.style.width = window.innerWidth + "px";
-	renderer.view.style.height = window.innerHeight + "px";
+	//renderer.view.style.width = window.innerWidth + "px";
+	//renderer.view.style.height = window.innerHeight + "px";
 	renderer.view.style.display = "block";
 	
 	// add render view to DOM
 	document.body.appendChild(renderer.view);
 	
+	//container.filterArea = new PIXI.Rectangle(0,0,800, 600);
+	//container.filters = [smart]//f, f2];
 	
-	stage.filters = [filter];
+	//panda.filters = [f2];
 	
 	var count = 0;
 	var switchy = false;
@@ -93,17 +118,17 @@
 		if(!switchy)
 		{
 		//	panda.filters = [filter];//
-			stage.filters = [filter];
+			container.filters = [f,blurX, blurY];
 		}
 		else
 		{
 			//panda.filters = null//.. [filter];
-			stage.filters = null;
+			container.filters = null;
 		}
 		
 		PIXI.runList(stage);	
 	}
-	
+
 
 	/*
 	 * Add a pixi Logo!
@@ -124,22 +149,24 @@
 	}
 	
 	var help = new PIXI.Text("Click to turn filters on / off.", {font:"bold 12pt Arial", fill:"white"});
-	help.position.y = 350;
+	help.position.y = 600 - 20;
 	help.position.x = 10;
 	stage.addChild(help);
 	
 	//stage.filters = [filter];
-		//stage.addChild(new PIXI.Sprite(mapTexture))
+	//stage.addChild(new PIXI.Sprite(mapTexture))
 		
 	PIXI.runList(stage);
 	
 	requestAnimFrame(animate);
 	
-	var position = new PIXI.Point( 256/2, 256/2);
+	var position = new PIXI.Point(800/2 + 200, 600/2 );
+	
 	function animate() {
 		
-		mapTexture.render(container, position);
+	///	mapTexture.render(container, position);
 		
+	//	console.log(PIXI.frameBufferPool.length);
 		
 		filter.scale.x = Math.sin(count) * 100;
 		filter.scale.y = Math.cos(count) * 100;
@@ -154,11 +181,16 @@
 		
 		count += 0.1;
 		
+		blurX.blur = 1/256;
+		blurY.blur = 1/256;
 	//	filter.matrix = colorMatrix;
 		
 		
 
 	    renderer.render(stage);
+	 //  f.renderTex();
+	   // f.render();
+	    
 	    requestAnimFrame( animate );
 	}
 

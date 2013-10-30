@@ -92,6 +92,7 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
 	if(filterBlock.filterPasses.length > 1)
 	{
 		gl.viewport(0, 0, filterArea.width, filterArea.height);
+
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
 	
 		this.vertexArray[0] = 0;
@@ -109,8 +110,7 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
 
 		gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vertexArray);
 
-		gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vertexArray);
-		
+	
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer);
 		// nnow set the uvs..
 		this.uvArray[2] = filterArea.width/this.width;
@@ -124,6 +124,7 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
 		var outputTexture = this.texturePool.pop();
 		if(!outputTexture)outputTexture = new PIXI.FilterTexture(this.width, this.height);
 		
+		// need to clear this FBO as it may have some left over elements from a prvious filter.
 		gl.bindFramebuffer(gl.FRAMEBUFFER, outputTexture.frameBuffer );     
 		gl.clear(gl.COLOR_BUFFER_BIT);
 	 
@@ -132,8 +133,7 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
 		for (var i = 0; i < filterBlock.filterPasses.length-1; i++) 
 		{
 			var filterPass = filterBlock.filterPasses[i];
-
-			
+	
 			gl.bindFramebuffer(gl.FRAMEBUFFER, outputTexture.frameBuffer );
 			
 			// set texture
@@ -286,28 +286,6 @@ PIXI.WebGLFilterManager.prototype.applyFilterPass = function(filter, width, heig
     
 	// draw the filter...
     gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0 );
-}
-
-PIXI.WebGLFilterManager.prototype.applyPassiveFilter = function(filter)
-{
-	var gl = PIXI.gl;
-
-	if(!filter.shader)
-	{
-		var shader = new PIXI.PixiShader();
-				
-		shader.fragmentSrc = filter.fragmentSrc;
-		shader.uniforms = filter.uniforms;
-		shader.init();
-		
-		filter.shader = shader;
-	}
-
-	var shader = filter.shader;
-	
-	// set the shader
-	gl.useProgram(shader.program);
-
 }
 
 PIXI.WebGLFilterManager.prototype.initShaderBuffers = function()
