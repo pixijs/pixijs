@@ -38,7 +38,6 @@
 
 	var blur = new PIXI.BlurFilter();
 
-
 	// create an new instance of a pixi stage
 	var stage = new PIXI.Stage(0xFFFFFF, true);
 	
@@ -69,7 +68,7 @@
 	var bgFront = PIXI.Sprite.fromImage("SceneRotate.jpg");
 	bgFront.anchor.x = 0.5;
 	bgFront.anchor.y = 0.5;
-	bgFront.filters = [blur]//, blurY];
+	//bgFront.filters = [blur]//, blurY];
 	stage.addChild(bgFront);
 	bgFront.position.x = 800/2;
 	bgFront.position.y = 600/2;
@@ -107,7 +106,7 @@
 	//container.filters = [smart]//f, f2];
 	
 	//panda.filters = [f2];
-	
+//	container.filters = [filter]
 	var count = 0;
 	var switchy = false;
 	
@@ -117,13 +116,13 @@
 		
 		if(!switchy)
 		{
-		//	panda.filters = [filter];//
-			container.filters = [f,blurX, blurY];
+			container.filters = [f];//
+		//	container.filters = [filter]//,blurX, blurY];
 		}
 		else
 		{
-			//panda.filters = null//.. [filter];
-			container.filters = null;
+			container.filters = null//.. [filter];
+	//		container.filters = null;
 		}
 		
 		PIXI.runList(stage);	
@@ -154,20 +153,19 @@
 	stage.addChild(help);
 	
 	//stage.filters = [filter];
-	//stage.addChild(new PIXI.Sprite(mapTexture))
+	stage.addChild(new PIXI.Sprite(mapTexture))
 		
 	PIXI.runList(stage);
 	
 	requestAnimFrame(animate);
 	
-	var position = new PIXI.Point(800/2 + 200, 600/2 );
+	var position = new PIXI.Point(800/2 , 600/2 );
 	
 	function animate() {
 		
-	///	mapTexture.render(container, position);
+		mapTexture.render(container, position, true);
 		
-	//	console.log(PIXI.frameBufferPool.length);
-		
+	
 		filter.scale.x = Math.sin(count) * 100;
 		filter.scale.y = Math.cos(count) * 100;
 		bg.rotation += 0.01;
@@ -181,11 +179,11 @@
 		
 		count += 0.1;
 		
-		blurX.blur = 1/256;
-		blurY.blur = 1/256;
+//		blurX.blur = Math.sin(count) * 1/128;
+	//	blurY.blur = Math.cos(count)  * 1/128;
 	//	filter.matrix = colorMatrix;
 		
-		
+		f.grey = Math.sin(count) 
 
 	    renderer.render(stage);
 	 //  f.renderTex();

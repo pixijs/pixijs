@@ -27,8 +27,11 @@ PIXI.DisplacementFilter = function(texture)
 	  "const vec2 textureDimensions = vec2(800.0, 600.0);",
 	  
 	  "void main(void) {",
-	  
-	  	"vec2 matSample = texture2D(displacementMap, vTextureCoord * (textureDimensions/mapDimensions)).xy;",
+	  	"vec2 mapCords = vTextureCoord.xy;",
+//	  	"mapCords -= ;",
+	//  	"mapCords.y *= -1.0;",
+	// 	"mapCords.y += 1.0;",
+	  	"vec2 matSample = texture2D(displacementMap, mapCords).xy;",
 		"matSample -= 0.5;",	  
 	 	"matSample *= scale;",
 	 	"matSample /= textureDimensions;",

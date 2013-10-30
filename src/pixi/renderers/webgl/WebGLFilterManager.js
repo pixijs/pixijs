@@ -73,6 +73,8 @@ PIXI.WebGLFilterManager.prototype.pushFilter = function(filterBlock)
 	
 	//filter.texture = texture;
 	filterBlock._glFilterTexture = texture;
+
+	//console.log("PUSH")
 }
 
 
@@ -172,7 +174,7 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
 	// time to render the filters texture to the previous scene
 	if(this.filterStack.length === 0)
 	{
-		gl.colorMask(true, true, true, false); 
+		gl.colorMask(true, true, true, this.buffer); 
 	}
 	else
 	{

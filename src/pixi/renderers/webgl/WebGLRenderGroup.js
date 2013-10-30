@@ -99,9 +99,15 @@ PIXI.WebGLRenderGroup.prototype.render = function(projection, buffer)
 PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, projection, buffer)
 {
 	PIXI.WebGLRenderer.updateTextures();
-	
 	var gl = this.gl;
+
 	gl.uniform2f(PIXI.currentShader.projectionVector, projection.x, projection.y);
+
+	this.filterManager.begin(projection, buffer);
+
+	//console.log(buffer)
+	
+	//gl.uniform2f(PIXI.currentShader.projectionVector, projection.x, projection.y);
 	
 	// to do!
 	// render part of the scene...
@@ -121,11 +127,13 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 	var nextRenderable = displayObject.first;
 	while(nextRenderable._iNext)
 	{
-		nextRenderable = nextRenderable._iNext;
 		if(nextRenderable.renderable && nextRenderable.__renderGroup)break;
+		nextRenderable = nextRenderable._iNext;
 	}
 	var startBatch = nextRenderable.batch;
+	//console.log(nextRenderable);
 	
+	//console.log(renderable)
 	if(nextRenderable instanceof PIXI.Sprite)
 	{
 		startBatch = nextRenderable.batch;
@@ -155,13 +163,11 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 	}
 	
 	// Get the LAST renderable object
-	var lastRenderable = displayObject;
-	var endBatch;
-	var lastItem = displayObject;
-	while(lastItem.children.length > 0)
+	var lastRenderable = displayObject.last;
+	while(lastRenderable._iPrev)
 	{
-		lastItem = lastItem.children[lastItem.children.length-1];
-		if(lastItem.renderable)lastRenderable = lastItem.last;
+		if(lastRenderable.renderable && lastRenderable.__renderGroup)break;
+		lastRenderable = lastRenderable._iNext;
 	}
 	
 	if(lastRenderable instanceof PIXI.Sprite)
@@ -190,6 +196,7 @@ PIXI.WebGLRenderGroup.prototype.renderSpecific = function(displayObject, project
 		endBatch = lastRenderable;
 	}
 	
+	console.log(endBatch);
 	// TODO - need to fold this up a bit!
 	
 	if(startBatch == endBatch)
@@ -258,6 +265,7 @@ PIXI.WebGLRenderGroup.prototype.renderSpecial = function(renderable, projection)
 	var sta = PIXI.shaderStack.length;
 	
 	var worldVisible = renderable.vcount === PIXI.visibleCount
+
 
 	if(renderable instanceof PIXI.TilingSprite)
 	{
