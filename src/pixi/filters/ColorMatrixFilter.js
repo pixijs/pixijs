@@ -4,6 +4,8 @@
 
 PIXI.ColorMatrixFilter = function()
 {
+	this.passes = [this];
+	
 	// set the uniforms
 	this.uniforms = {
 		matrix: {type: 'mat4', value: [1,0,0,0,

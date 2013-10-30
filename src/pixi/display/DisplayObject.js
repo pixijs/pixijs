@@ -330,11 +330,23 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'filters', {
     },
     set: function(value) {
     	
-        //if(value == )
         if(value)
         {
         	if(this._filters)this.removeFilter(this._filters);
-	        this.addFilter(value)
+	        this.addFilter(value);
+
+		    // now put all the passes in one place..
+	        var passes = [];
+	        for (var i = 0; i < value.length; i++) 
+	        {
+	        	var filterPasses = value[i].passes;
+	        	for (var j = 0; j < filterPasses.length; j++) 
+	        	{
+	        		passes.push(filterPasses[j]);
+	        	};
+	        };
+
+	        value.start.filterPasses = passes;
         }
         else
         {
@@ -342,6 +354,10 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'filters', {
         }
         
         this._filters = value;
+
+       
+
+        
     }
 });
 
@@ -358,6 +374,7 @@ PIXI.DisplayObject.prototype.addFilter = function(data)
 	//this.filter = true;
 //	data[0].target = this;
 	
+
 	// insert a filter block..
 	// TODO Onject pool thease bad boys..
 	var start = new PIXI.FilterBlock();

@@ -24,7 +24,7 @@ PIXI.WebGLRenderGroup = function(gl)
 	this.batchs = [];
 	this.toRemove = [];
 	
-	this.filterManager = new PIXI.FilterManager();
+	this.filterManager = new PIXI.WebGLFilterManager();
 }
 
 // constructor
@@ -292,7 +292,7 @@ PIXI.WebGLRenderGroup.prototype.handleFilterBlock = function(filterBlock, projec
 	{
 		if(filterBlock.data instanceof Array)
 		{
-			var filter = filterBlock.data[0];
+			//var filter = filterBlock.data[0];
 			//console.log(filter)
 			this.filterManager.pushFilter(filterBlock);//filter);
 			// ok so..

@@ -1,4 +1,5 @@
 /**
+/**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
@@ -6,6 +7,8 @@
 
 PIXI.SepiaFilter = function()
 {
+	this.passes = [this];
+	
 	// set the uniforms
 	this.uniforms = {
 		sepia: {type: 'f', value: 1},

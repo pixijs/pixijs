@@ -6,6 +6,8 @@
 
 PIXI.DisplacementFilter = function(texture)
 {
+	this.passes = [this];
+	
 	// set the uniforms
 	
 	this.uniforms = {

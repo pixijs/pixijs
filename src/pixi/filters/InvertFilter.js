@@ -4,6 +4,8 @@
 
 PIXI.InvertFilter = function()
 {
+	this.passes = [this];
+	
 	// set the uniforms
 	this.uniforms = {
 		invert: {type: 'f', value: 0},
