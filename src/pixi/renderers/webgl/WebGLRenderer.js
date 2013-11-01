@@ -63,16 +63,18 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
 		}
 	}
 
-    PIXI.initDefaultShader();
-    PIXI.initPrimitiveShader();
-    PIXI.initDefaultStripShader();
+    PIXI.initDefaultShaders();
+ 
 
 	
 
-
-//    PIXI.activateDefaultShader();
+   // PIXI.activateDefaultShader();
 
     var gl = this.gl;
+    
+    gl.useProgram(PIXI.defaultShader.program);
+
+
     PIXI.WebGLRenderer.gl = gl;
 
     this.batch = new PIXI.WebGLBatch(gl);
@@ -90,7 +92,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     this.resize(this.width, this.height);
     this.contextLost = false;
 
-	PIXI.pushShader(PIXI.defaultShader);
+	//PIXI.pushShader(PIXI.defaultShader);
 
     this.stageRenderGroup = new PIXI.WebGLRenderGroup(this.gl);
     
@@ -152,15 +154,6 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 		this.__stage = stage;
 		this.stageRenderGroup.setRenderable(stage);
 	}
-	
-	// TODO not needed now... 
-	// update children if need be
-	// best to remove first!
-	/*for (var i=0; i < stage.__childrenRemoved.length; i++)
-	{
-		var group = stage.__childrenRemoved[i].__renderGroup
-		if(group)group.removeDisplayObject(stage.__childrenRemoved[i]);
-	}*/
 
 	// update any textures	
 	PIXI.WebGLRenderer.updateTextures();

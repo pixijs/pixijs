@@ -11,7 +11,7 @@
 	</style>
 	
 	<script src="../../bin/pixi.dev.js"></script>
-	<script src="pixi.js"></script>
+	<!--<script src="pixi.js"></script>-->
 </head>
 <body>
 	<script>
@@ -99,8 +99,8 @@
 		var blurAmount2 = Math.sin(count) ;
 
 
-		blurFilter1.blur = 1/300 * (blurAmount);
-		blurFilter2.blur = 1/300 * (blurAmount2);
+		blurFilter1.blur = 20 * (blurAmount);
+		blurFilter2.blur = 20 * (blurAmount2);
 	    renderer.render(stage);
 	    requestAnimFrame( animate );
 	}

@@ -529,7 +529,7 @@ PIXI.WebGLBatch.prototype.render = function(start, end)
 
 	//TODO optimize this!
 
-	var shaderProgram = PIXI.currentShader;
+	var shaderProgram = PIXI.defaultShader;
 	
 	//gl.useProgram(shaderProgram);
 
@@ -537,7 +537,7 @@ PIXI.WebGLBatch.prototype.render = function(start, end)
 	gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
 	// ok..
 	gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.verticies)
-    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 2, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(shaderProgram.aVertexPosition, 2, gl.FLOAT, false, 0, 0);
 	// update the uvs
 	//var isDefault = (shaderProgram == PIXI.shaderProgram)
 
@@ -549,7 +549,7 @@ PIXI.WebGLBatch.prototype.render = function(start, end)
     	gl.bufferSubData(gl.ARRAY_BUFFER,  0, this.uvs);
     }
 
-    gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, 2, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(shaderProgram.aTextureCoord, 2, gl.FLOAT, false, 0, 0);
 
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, this.texture._glTexture);

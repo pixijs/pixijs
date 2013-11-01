@@ -6,16 +6,35 @@
 
 PIXI.DisplacementFilter = function(texture)
 {
+	PIXI.AbstractFilter.call( this );
+	
 	this.passes = [this];
-	
+	texture.baseTexture._powerOf2 = true;
+
+
 	// set the uniforms
-	
+	//console.log()
 	this.uniforms = {
 		displacementMap: {type: 'sampler2D', value:texture},
 		scale:			 {type: 'f2', value:{x:30, y:30}},
-		mapDimensions:   {type: 'f2', value:{x:texture.width, y:texture.height}}
+		offset:			 {type: 'f2', value:{x:0, y:0}},
+		mapDimensions:   {type: 'f2', value:{x:1, y:5112}},
+		dimensions:   {type: 'f4', value:[0,0,0,0]}
 	};
 	
+
+	if(texture.baseTexture.hasLoaded)
+	{
+		this.uniforms.mapDimensions.value.x = texture.width;
+		this.uniforms.mapDimensions.value.y = texture.height;
+	}
+	else
+	{
+		this.boundLoadedFunction = this.onTextureLoaded.bind(this);
+
+		texture.baseTexture.on("loaded", this.boundLoadedFunction);
+	}
+
 	this.fragmentSrc = [
 	  "precision mediump float;",
 	  "varying vec2 vTextureCoord;",
@@ -23,25 +42,44 @@ PIXI.DisplacementFilter = function(texture)
 	  "uniform sampler2D displacementMap;",
 	  "uniform sampler2D uSampler;",
 	  "uniform vec2 scale;",
+	  "uniform vec2 offset;",
+	  "uniform vec4 dimensions;",
 	  "uniform vec2 mapDimensions;",// = vec2(256.0, 256.0);",
-	  "const vec2 textureDimensions = vec2(800.0, 600.0);",
+	 // "const vec2 textureDimensions = vec2(750.0, 750.0);",
 	  
 	  "void main(void) {",
 	  	"vec2 mapCords = vTextureCoord.xy;",
 //	  	"mapCords -= ;",
-	//  	"mapCords.y *= -1.0;",
-	// 	"mapCords.y += 1.0;",
+	 	"mapCords += (dimensions.zw + offset)/ dimensions.xy ;",
+	 	"mapCords.y *= -1.0;",
+	 	"mapCords.y += 1.0;",
 	  	"vec2 matSample = texture2D(displacementMap, mapCords).xy;",
 		"matSample -= 0.5;",	  
 	 	"matSample *= scale;",
-	 	"matSample /= textureDimensions;",
+	 	"matSample /= mapDimensions;",
 	    "gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x + matSample.x, vTextureCoord.y + matSample.y));",
 		"gl_FragColor.rgb = mix( gl_FragColor.rgb, gl_FragColor.rgb, 1.0);",
+		"vec2 cord = vTextureCoord;",
+		
+		//"gl_FragColor =  texture2D(displacementMap, cord);",
 	    "gl_FragColor = gl_FragColor * vColor;",
 	    
 	  "}"
 	];
 	
+}
+
+PIXI.DisplacementFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
+PIXI.DisplacementFilter.prototype.constructor = PIXI.DisplacementFilter;
+
+PIXI.DisplacementFilter.prototype.onTextureLoaded = function()
+{
+	
+	this.uniforms.mapDimensions.value.x = this.uniforms.displacementMap.value.width;
+	this.uniforms.mapDimensions.value.y = this.uniforms.displacementMap.value.height;
+
+	this.uniforms.displacementMap.value.baseTexture.off("loaded", this.boundLoadedFunction)
+
 }
 
 Object.defineProperty(PIXI.DisplacementFilter.prototype, 'map', {
@@ -59,5 +97,14 @@ Object.defineProperty(PIXI.DisplacementFilter.prototype, 'scale', {
     },
     set: function(value) {
     	this.uniforms.scale.value = value;
+    }
+});
+
+Object.defineProperty(PIXI.DisplacementFilter.prototype, 'offset', {
+    get: function() {
+        return this.uniforms.offset.value;
+    },
+    set: function(value) {
+    	this.uniforms.offset.value = value;
     }
 });

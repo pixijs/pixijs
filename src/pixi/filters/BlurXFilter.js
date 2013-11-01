@@ -6,6 +6,8 @@
 
 PIXI.BlurXFilter = function()
 {
+	PIXI.AbstractFilter.call( this );
+	
 	this.passes = [this];
 	
 	// set the uniforms
@@ -38,11 +40,17 @@ PIXI.BlurXFilter = function()
 	];
 }
 
+PIXI.BlurXFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
+PIXI.BlurXFilter.prototype.constructor = PIXI.BlurXFilter;
+
+
 Object.defineProperty(PIXI.BlurXFilter.prototype, 'blur', {
     get: function() {
-        return this.uniforms.blur.value;
+        return this.uniforms.blur.value / (1/7000);
     },
     set: function(value) {
-    	this.uniforms.blur.value = value;
+    
+    	this.dirty = true;
+    	this.uniforms.blur.value = (1/7000) * value;
     }
 });

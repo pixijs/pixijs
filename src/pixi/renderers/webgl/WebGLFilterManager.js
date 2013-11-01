@@ -48,11 +48,29 @@ PIXI.WebGLFilterManager.prototype.pushFilter = function(filterBlock)
 	gl.bindTexture(gl.TEXTURE_2D,  texture.texture);
 	
 	this.getBounds(filterBlock.target);
-	
+		
+	// addpadding?
+	//displayObject.filterArea.x
+
 	var filterArea = filterBlock.target.filterArea;
+
+	var padidng = filter.padding;
+	filterArea.x -= padidng;
+	filterArea.y -= padidng;
+	filterArea.width += padidng * 2;
+	filterArea.height += padidng * 2;
+
+	// cap filter to screen size..
+	if(filterArea.x < 0)filterArea.x = 0;	
+	if(filterArea.width > this.width)filterArea.width = this.width;
+	if(filterArea.y < 0)filterArea.y = 0;	
+	if(filterArea.height > this.height)filterArea.height = this.height;
+
+
 	//gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  filterArea.width, filterArea.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
 	gl.bindFramebuffer(gl.FRAMEBUFFER, texture.frameBuffer);
    
+  // console.log(filterArea)
 	// set view port
 	gl.viewport(0, 0, filterArea.width, filterArea.height);	
 	
@@ -62,9 +80,10 @@ PIXI.WebGLFilterManager.prototype.pushFilter = function(filterBlock)
 	PIXI.offset.x = -filterArea.x; 
 	PIXI.offset.y = -filterArea.y;
 
+	//console.log(PIXI.defaultShader.projectionVector)
 	// update projection
-	gl.uniform2f(PIXI.currentShader.projectionVector, filterArea.width/2, -filterArea.height/2);
-	gl.uniform2f(PIXI.currentShader.offsetVector, -filterArea.x, -filterArea.y);
+	gl.uniform2f(PIXI.defaultShader.projectionVector, filterArea.width/2, -filterArea.height/2);
+	gl.uniform2f(PIXI.defaultShader.offsetVector, -filterArea.x, -filterArea.y);
 	//PIXI.primitiveProgram
 
 	gl.colorMask(true, true, true, true); 
@@ -143,7 +162,9 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
 			gl.bindTexture(gl.TEXTURE_2D, inputTexture.texture);
 			
 			// draw texture..
-			this.applyFilterPass(filterPass, filterArea.width, filterArea.height);
+			//filterPass.applyFilterPass(filterArea.width, filterArea.height);
+			this.applyFilterPass(filterPass, filterArea, filterArea.width, filterArea.height);
+
 			// swap the textures..
 			var temp = inputTexture;
 			inputTexture = outputTexture;
@@ -240,19 +261,20 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
 	gl.bindTexture(gl.TEXTURE_2D, texture.texture);
 	
 	// apply!
-	this.applyFilterPass(filter, sizeX, sizeY);
+	//filter.applyFilterPass(sizeX, sizeY);
+	this.applyFilterPass(filter, filterArea, sizeX, sizeY);
 
 	// now restore the regular shader..
     gl.useProgram(PIXI.defaultShader.program);
-	gl.uniform2f(PIXI.currentShader.projectionVector, sizeX/2, -sizeY/2);
-	gl.uniform2f(PIXI.currentShader.offsetVector, -offsetX, -offsetY);
+	gl.uniform2f(PIXI.defaultShader.projectionVector, sizeX/2, -sizeY/2);
+	gl.uniform2f(PIXI.defaultShader.offsetVector, -offsetX, -offsetY);
 
 	// return the texture to the pool
 	this.texturePool.push(texture);
 	filterBlock._glFilterTexture = null;	
 }
 
-PIXI.WebGLFilterManager.prototype.applyFilterPass = function(filter, width, height)
+PIXI.WebGLFilterManager.prototype.applyFilterPass = function(filter, filterArea, width, height)
 {
 	// use program
 	var gl = PIXI.gl;
@@ -275,6 +297,16 @@ PIXI.WebGLFilterManager.prototype.applyFilterPass = function(filter, width, heig
 
 	gl.uniform2f(shader.projectionVector, width/2, -height/2);
 	gl.uniform2f(shader.offsetVector, 0,0)
+
+	if(filter.uniforms.dimensions)
+	{
+		//console.log(filter.uniforms.dimensions)
+		filter.uniforms.dimensions.value[0] = this.width;//width;
+		filter.uniforms.dimensions.value[1] = this.height;//height;
+		filter.uniforms.dimensions.value[2] = this.vertexArray[0];
+		filter.uniforms.dimensions.value[3] = this.vertexArray[5];//filterArea.height;
+	//	console.log(this.vertexArray[5])
+	}
 
 	shader.syncUniforms();
 	
@@ -352,38 +384,41 @@ PIXI.WebGLFilterManager.prototype.getBounds = function(displayObject)
 	{
 		// TODO can be optimized! - what if there is no scale / rotation?
 		
-		if(tempObject instanceof PIXI.Sprite)
+		if(tempObject.visible)
 		{
-			width = tempObject.texture.frame.width;
-			height = tempObject.texture.frame.height;
+			if(tempObject instanceof PIXI.Sprite)
+			{
+				width = tempObject.texture.frame.width;
+				height = tempObject.texture.frame.height;
 
-			// TODO trim??
-			aX = tempObject.anchor.x;
-			aY = tempObject.anchor.y;
-			w0 = width * (1-aX);
-			w1 = width * -aX;
+				// TODO trim??
+				aX = tempObject.anchor.x;
+				aY = tempObject.anchor.y;
+				w0 = width * (1-aX);
+				w1 = width * -aX;
 
-			h0 = height * (1-aY);
-			h1 = height * -aY;
+				h0 = height * (1-aY);
+				h1 = height * -aY;
 
-			doTest = true;
-		}
-		else if(tempObject instanceof PIXI.Graphics)
-		{
-			tempObject.updateFilterBounds();
+				doTest = true;
+			}
+			else if(tempObject instanceof PIXI.Graphics)
+			{
+				tempObject.updateFilterBounds();
 
-			var bounds = tempObject.bounds;
+				var bounds = tempObject.bounds;
 
-			width = bounds.width;
-			height = bounds.height;
+				width = bounds.width;
+				height = bounds.height;
 
-			w0 = bounds.x
-			w1 = bounds.x + bounds.width;
+				w0 = bounds.x
+				w1 = bounds.x + bounds.width;
 
-			h0 = bounds.y
-			h1 = bounds.y + bounds.height;
+				h0 = bounds.y
+				h1 = bounds.y + bounds.height;
 
-			doTest = true;	
+				doTest = true;	
+			}
 		}
 		
 		if(doTest)
@@ -432,18 +467,18 @@ PIXI.WebGLFilterManager.prototype.getBounds = function(displayObject)
 
 		doTest = false;
 		tempObject = tempObject._iNext;
+
 	}
 	while(tempObject != testObject)
 	
 	// maximum bounds is the size of the screen..
-	minX = minX > 0 ? minX : 0;
-	minY = minY > 0 ? minY : 0;
-
-	maxX = maxX < this.width ? maxX : this.width;
-	maxY = maxY < this.height ? maxY : this.height;
+	//minX = minX > 0 ? minX : 0;
+	//minY = minY > 0 ? minY : 0;
 
 	displayObject.filterArea.x = minX;
 	displayObject.filterArea.y = minY;
+
+//	console.log(maxX+ " : " + minX)
 	displayObject.filterArea.width = maxX - minX;
 	displayObject.filterArea.height = maxY - minY;
 }

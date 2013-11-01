@@ -7,6 +7,8 @@
 
 PIXI.SepiaFilter = function()
 {
+	PIXI.AbstractFilter.call( this );
+	
 	this.passes = [this];
 	
 	// set the uniforms
@@ -30,6 +32,9 @@ PIXI.SepiaFilter = function()
 	];
 	
 }
+
+PIXI.SepiaFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
+PIXI.SepiaFilter.prototype.constructor = PIXI.SepiaFilter;
 
 Object.defineProperty(PIXI.SepiaFilter.prototype, 'sepia', {
     get: function() {

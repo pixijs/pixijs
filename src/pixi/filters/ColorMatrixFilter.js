@@ -4,6 +4,8 @@
 
 PIXI.ColorMatrixFilter = function()
 {
+	PIXI.AbstractFilter.call( this );
+	
 	this.passes = [this];
 	
 	// set the uniforms
@@ -29,6 +31,8 @@ PIXI.ColorMatrixFilter = function()
 	
 }
 
+PIXI.ColorMatrixFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
+PIXI.ColorMatrixFilter.prototype.constructor = PIXI.ColorMatrixFilter;
 
 Object.defineProperty(PIXI.ColorMatrixFilter.prototype, 'matrix', {
     get: function() {

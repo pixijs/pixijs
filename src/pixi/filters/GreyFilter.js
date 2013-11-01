@@ -6,6 +6,8 @@
 
 PIXI.GreyFilter = function()
 {
+	PIXI.AbstractFilter.call( this );
+	
 	this.passes = [this];
 	
 	// set the uniforms
@@ -26,6 +28,9 @@ PIXI.GreyFilter = function()
 	  "}"
 	];
 }
+
+PIXI.GreyFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
+PIXI.GreyFilter.prototype.constructor = PIXI.GreyFilter;
 
 Object.defineProperty(PIXI.GreyFilter.prototype, 'grey', {
     get: function() {

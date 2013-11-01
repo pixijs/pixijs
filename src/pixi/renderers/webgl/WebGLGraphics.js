@@ -55,13 +55,13 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
 	
 	// set the matrix transform for the 
  	gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+
+ 	gl.uniformMatrix3fv(PIXI.primitiveShader.translationMatrix, false, m);
  	
- 	gl.uniformMatrix3fv(PIXI.primitiveProgram.translationMatrix, false, m);
- 	
-	gl.uniform2f(PIXI.primitiveProgram.projectionVector, projection.x, -projection.y);
-	gl.uniform2f(PIXI.primitiveProgram.offsetVector, -PIXI.offset.x, -PIXI.offset.y);
+	gl.uniform2f(PIXI.primitiveShader.projectionVector, projection.x, -projection.y);
+	gl.uniform2f(PIXI.primitiveShader.offsetVector, -PIXI.offset.x, -PIXI.offset.y);
 	
-	gl.uniform1f(PIXI.primitiveProgram.alpha, graphics.worldAlpha);
+	gl.uniform1f(PIXI.primitiveShader.alpha, graphics.worldAlpha);
 
 	gl.bindBuffer(gl.ARRAY_BUFFER, graphics._webGL.buffer);
 	
@@ -70,8 +70,8 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
 	// its not even used.. but need to be set or it breaks?
 	// only on pc though..
 	
-	gl.vertexAttribPointer(PIXI.primitiveProgram.vertexPositionAttribute, 2, gl.FLOAT, false, 4 * 6, 0);
-	gl.vertexAttribPointer(PIXI.primitiveProgram.colorAttribute, 4, gl.FLOAT, false,4 * 6, 2 * 4);
+	gl.vertexAttribPointer(PIXI.primitiveShader.aVertexPosition, 2, gl.FLOAT, false, 4 * 6, 0);
+	gl.vertexAttribPointer(PIXI.primitiveShader.colorAttribute, 4, gl.FLOAT, false,4 * 6, 2 * 4);
 	
 	// set the index buffer!
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, graphics._webGL.indexBuffer);

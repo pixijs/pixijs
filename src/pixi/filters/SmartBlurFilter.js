@@ -6,6 +6,8 @@
 
 PIXI.SmartBlurFilter = function()
 {
+	PIXI.AbstractFilter.call( this );
+	
 	this.passes = [this];
 	
 	// set the uniforms
@@ -48,6 +50,9 @@ PIXI.SmartBlurFilter = function()
 	  "}"
 	];
 }
+
+PIXI.SmartBlurFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
+PIXI.SmartBlurFilter.prototype.constructor = PIXI.SmartBlurFilter;
 
 Object.defineProperty(PIXI.SmartBlurFilter.prototype, 'blur', {
     get: function() {

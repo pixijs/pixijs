@@ -4,16 +4,16 @@
 		"selected_items":
 		[
 			[
+				"fil",
+				"filter"
+			],
+			[
 				"pro",
 				"prototype"
 			],
 			[
 				"for",
 				"for	for (…) {…}"
-			],
-			[
-				"fil",
-				"filters"
 			],
 			[
 				"blu",
@@ -63,7 +63,7 @@
 			"file": "examples/example 16 - Displacement/index.html",
 			"settings":
 			{
-				"buffer_size": 4901,
+				"buffer_size": 4917,
 				"line_ending": "Unix"
 			}
 		},
@@ -71,7 +71,7 @@
 			"file": "src/pixi/filters/GreyFilter.js",
 			"settings":
 			{
-				"buffer_size": 852,
+				"buffer_size": 986,
 				"line_ending": "Unix"
 			}
 		},
@@ -79,7 +79,7 @@
 			"file": "src/pixi/filters/DisplacementFilter.js",
 			"settings":
 			{
-				"buffer_size": 1698,
+				"buffer_size": 1856,
 				"line_ending": "Unix"
 			}
 		},
@@ -87,7 +87,31 @@
 			"file": "src/pixi/renderers/webgl/WebGLRenderGroup.js",
 			"settings":
 			{
-				"buffer_size": 25104,
+				"buffer_size": 25077,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/pixi/textures/RenderTexture.js",
+			"settings":
+			{
+				"buffer_size": 6698,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "examples/example 15 - Filters/indexBlur.html",
+			"settings":
+			{
+				"buffer_size": 2162,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/pixi/filters/PixelateFilter.js",
+			"settings":
+			{
+				"buffer_size": 1597,
 				"line_ending": "Unix"
 			}
 		},
@@ -95,7 +119,23 @@
 			"file": "src/pixi/renderers/webgl/WebGLFilterManager.js",
 			"settings":
 			{
-				"buffer_size": 11987,
+				"buffer_size": 12129,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/pixi/filters/InvertFilter.js",
+			"settings":
+			{
+				"buffer_size": 1038,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/pixi/filters/AbstractFilter.js",
+			"settings":
+			{
+				"buffer_size": 1168,
 				"line_ending": "Unix"
 			}
 		}
@@ -124,20 +164,22 @@
 	},
 	"file_history":
 	[
-		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/renderers/webgl/WebGLFilterManager.js",
-		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/filters/BlurXFilter.js",
-		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/examples/example 16 - Displacement/index.html",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/Gruntfile.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/filters/SmartBlurFilter.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/filters/SepiaFilter.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/filters/ColorMatrixFilter.js",
 		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/filters/BlurYFilter.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/filters/BlurXFilter.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/display/DisplayObjectContainer.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/test/unit/DisplayObjectContainer.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/renderers/webgl/WebGLFilterManager.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/examples/example 16 - Displacement/index.html",
 		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/filters/BlurFilter.js",
 		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/renderers/webgl/WebGLRenderGroup.js",
-		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/filters/SmartBlurFilter.js",
-		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/Gruntfile.js",
 		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/display/DisplayObject.js",
-		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/filters/ColorMatrixFilter.js",
 		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/filters/DisplacementFilter.js",
 		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/filters/GreyFilter.js",
 		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/filters/InvertFilter.js",
-		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/filters/SepiaFilter.js",
 		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/test/unit/DisplayObject.js",
 		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/filters/SmartBlur.js",
 		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/renderers/webgl/filters/FilterManager.js",
@@ -172,6 +214,15 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"consol",
+			"BlurXFilter",
+			"filter",
+			"blurAmount",
+			"	\n",
+			"console",
+			"		\n",
+			"/˚˚/	console.log(PIXI.frameBufferPool.length);\n		",
+			"cons",
 			"console",
 			"pand",
 			"colorMatrix",
@@ -255,7 +306,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 3,
 			"sheets":
 			[
 				{
@@ -263,15 +314,15 @@
 					"file": "examples/example 16 - Displacement/index.html",
 					"settings":
 					{
-						"buffer_size": 4901,
+						"buffer_size": 4917,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2608,
-								2608
+								3159,
+								3159
 							]
 						],
 						"settings":
@@ -280,7 +331,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 1599.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -290,15 +341,23 @@
 					"file": "src/pixi/filters/GreyFilter.js",
 					"settings":
 					{
-						"buffer_size": 852,
+						"buffer_size": 986,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								662,
+								662
+							],
+							[
+								738,
+								738
+							],
+							[
+								778,
+								778
 							]
 						],
 						"settings":
@@ -316,15 +375,191 @@
 					"file": "src/pixi/filters/DisplacementFilter.js",
 					"settings":
 					{
-						"buffer_size": 1698,
+						"buffer_size": 1856,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								818,
-								818
+								1271,
+								1271
+							],
+							[
+								1355,
+								1355
+							],
+							[
+								1403,
+								1403
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 159.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "src/pixi/renderers/webgl/WebGLRenderGroup.js",
+					"settings":
+					{
+						"buffer_size": 25077,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4449,
+								4449
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 3015.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "src/pixi/textures/RenderTexture.js",
+					"settings":
+					{
+						"buffer_size": 6698,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5441,
+								5455
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 2750.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "examples/example 15 - Filters/indexBlur.html",
+					"settings":
+					{
+						"buffer_size": 2162,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1657,
+								1657
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 702.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "src/pixi/filters/PixelateFilter.js",
+					"settings":
+					{
+						"buffer_size": 1597,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								664,
+								664
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 74.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "src/pixi/renderers/webgl/WebGLFilterManager.js",
+					"settings":
+					{
+						"buffer_size": 12129,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3743,
+								3743
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 2171.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "src/pixi/filters/InvertFilter.js",
+					"settings":
+					{
+						"buffer_size": 1038,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								703,
+								703
+							],
+							[
+								781,
+								781
+							],
+							[
+								823,
+								823
 							]
 						],
 						"settings":
@@ -338,55 +573,27 @@
 					"type": "text"
 				},
 				{
-					"buffer": 3,
-					"file": "src/pixi/renderers/webgl/WebGLRenderGroup.js",
+					"buffer": 9,
+					"file": "src/pixi/filters/AbstractFilter.js",
 					"settings":
 					{
-						"buffer_size": 25104,
+						"buffer_size": 1168,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3418,
-								3418
+								980,
+								982
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 4.0,
-						"translation.y": 1680.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "src/pixi/renderers/webgl/WebGLFilterManager.js",
-					"settings":
-					{
-						"buffer_size": 11987,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								664,
-								664
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"translate_tabs_to_spaces": false
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 371.0,
+						"translation.y": 74.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -436,16 +643,36 @@
 		"selected_items":
 		[
 			[
+				"webglr",
+				"src/pixi/renderers/webgl/WebGLRenderGroup.js"
+			],
+			[
+				"displayobjectco",
+				"src/pixi/display/DisplayObjectContainer.js"
+			],
+			[
+				"displ",
+				"test/unit/DisplayObjectContainer.js"
+			],
+			[
+				"pixela",
+				"src/pixi/filters/PixelateFilter.js"
+			],
+			[
+				"indexblur",
+				"examples/example 15 - Filters/indexBlur.html"
+			],
+			[
+				"render",
+				"src/pixi/textures/RenderTexture.js"
+			],
+			[
 				"webglrend",
 				"src/pixi/renderers/webgl/WebGLRenderGroup.js"
 			],
 			[
 				"greyfil",
 				"src/pixi/filters/GreyFilter.js"
-			],
-			[
-				"displ",
-				"src/pixi/display/DisplayObject.js"
 			],
 			[
 				"grun",
@@ -520,11 +747,15 @@
 	},
 	"select_project":
 	{
-		"height": 0.0,
+		"height": 500.0,
 		"selected_items":
 		[
+			[
+				"",
+				"/Users/matgroves/Dropbox/Development/html/workspace/Project Awesome/js/moments.sublime-project"
+			]
 		],
-		"width": 0.0
+		"width": 380.0
 	},
 	"show_minimap": true,
 	"show_open_files": false,

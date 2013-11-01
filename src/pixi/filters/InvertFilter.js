@@ -4,6 +4,8 @@
 
 PIXI.InvertFilter = function()
 {
+	PIXI.AbstractFilter.call( this );
+	
 	this.passes = [this];
 	
 	// set the uniforms
@@ -27,6 +29,8 @@ PIXI.InvertFilter = function()
 	
 }
 
+PIXI.InvertFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
+PIXI.InvertFilter.prototype.constructor = PIXI.InvertFilter;
 
 Object.defineProperty(PIXI.InvertFilter.prototype, 'invert', {
     get: function() {

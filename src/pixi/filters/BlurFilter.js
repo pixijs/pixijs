@@ -6,7 +6,7 @@
 
 PIXI.BlurFilter = function()
 {
-
+    
 	this.blurXFilter = new PIXI.BlurXFilter();
 	this.blurYFilter = new PIXI.BlurYFilter();
 

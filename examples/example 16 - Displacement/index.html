@@ -23,6 +23,7 @@
 	<script src="../../src/pixi/filters/BlurFilter.js"></script>
 	<script src="../../src/pixi/filters/BlurYFilter.js"></script>
 	<script src="../../src/pixi/filters/SmartBlurFilter.js"></script>
+	<script src="../../src/pixi/filters/PixelateFilter.js"></script>
 </head>
 <body>
 	<script>
@@ -30,11 +31,11 @@
 	var renderer = PIXI.autoDetectRenderer(800, 600);
 	
 	
-	var f2 = new PIXI.BlurYFilter()//new PIXI.Filter();
+	var f2 = new PIXI.BlurFilter()//new PIXI.Filter();
 	var f = new PIXI.GreyFilter()//new PIXI.Filter();
 	var blurX = new PIXI.BlurXFilter()//new PIXI.Filter();
 	var blurY = new PIXI.BlurYFilter();
-	var smart = new PIXI.SmartBlurFilter();
+	var smart = new PIXI.PixelateFilter();
 
 	var blur = new PIXI.BlurFilter();
 
@@ -59,7 +60,6 @@
 	
 	var mapTexture = new PIXI.RenderTexture(800, 600);
 
-	var filter = new PIXI.DisplacementFilter(mapTexture);
 	
 	var container = new PIXI.DisplayObjectContainer();
 	container.position.x = 800/2;
@@ -68,11 +68,16 @@
 	var bgFront = PIXI.Sprite.fromImage("SceneRotate.jpg");
 	bgFront.anchor.x = 0.5;
 	bgFront.anchor.y = 0.5;
-	//bgFront.filters = [blur]//, blurY];
+	bgFront.filters = [f2]//, blurY];
+	//smart
+
+	var filter = new PIXI.DisplacementFilter(PIXI.Texture.fromImage("SceneRotate.jpg"));
+	
+
 	stage.addChild(bgFront);
 	bgFront.position.x = 800/2;
 	bgFront.position.y = 600/2;
-	
+	bgFront.scale.y = 0.3;
 	var light2 = PIXI.Sprite.fromImage("LightRotate2.png");
 	light2.anchor.x = 0.5;
 	light2.anchor.y = 0.5;
@@ -84,7 +89,7 @@
 	container.addChild(light1);
 	
 	var panda =  PIXI.Sprite.fromImage("panda.png");
-	panda.anchor.x = 1.5;
+	panda.anchor.x = 0.5;
 	panda.anchor.y = 0.5;
 	
 	
@@ -106,7 +111,7 @@
 	//container.filters = [smart]//f, f2];
 	
 	//panda.filters = [f2];
-//	container.filters = [filter]
+	panda.filters = [filter]//,f2]
 	var count = 0;
 	var switchy = false;
 	
@@ -116,7 +121,7 @@
 		
 		if(!switchy)
 		{
-			container.filters = [f];//
+			container.filters = [smart];//
 		//	container.filters = [filter]//,blurX, blurY];
 		}
 		else
@@ -125,7 +130,7 @@
 	//		container.filters = null;
 		}
 		
-		PIXI.runList(stage);	
+		//PIXI.runList(stage);	
 	}
 
 
@@ -153,33 +158,43 @@
 	stage.addChild(help);
 	
 	//stage.filters = [filter];
-	stage.addChild(new PIXI.Sprite(mapTexture))
+	//stage.addChild(new PIXI.Sprite(mapTexture))
 		
-	PIXI.runList(stage);
+	//PIXI.runList(stage);
 	
 	requestAnimFrame(animate);
 	
-	var position = new PIXI.Point(800/2 , 600/2 );
+	var position = new PIXI.Point(0, 0);
 	
+	var pixelSize = new PIXI.Point(2,2);
+	smart.size = pixelSize;
+
 	function animate() {
 		
-		mapTexture.render(container, position, true);
+		mapTexture.render(panda, position, true);
 		
 	
-		filter.scale.x = Math.sin(count) * 100;
-		filter.scale.y = Math.cos(count) * 100;
-		bg.rotation += 0.01;
-		bgFront.rotation -= 0.01;
+	//	filter.scale.x = Math.sin(count) * 100;
+	//filter.scale.y = Math.cos(count) * 100;
+		panda.rotation += 0.01;
+	//	bgFront.rotation -= 0.01;
 		
 		light1.rotation += 0.02;
 		light2.rotation += 0.01;
 
-		panda.scale.x = 1 + Math.sin(count) * 0.04;
-		panda.scale.y = 1 + Math.cos(count) * 0.04;
-		
+		panda.scale.x = 1+ Math.sin(count * 0.1) * 0.4;
+		panda.scale.y = (1 + Math.cos(count * 0.1) * 0.4) //* 0.2;
+		panda.position.x = count;
 		count += 0.1;
-		
-//		blurX.blur = Math.sin(count) * 1/128;
+		pixelSize.x = 20 + Math.sin(count * 0.1) * 20;
+		pixelSize.y = 20 + Math.sin(count * 0.1) * 20;
+
+		var val = 16;
+		f2.blur = 16// * val//  0.5 * 0.5//Math.sin(count) * 1/512//128// * 2;
+		bgFront.scale.y = 0.5 //+ Math.sin(count * 0.1) * 0.4;
+		bgFront.scale.x = 0.5 //+ Math.sin(count * 0.2) * 0.4;
+
+
 	//	blurY.blur = Math.cos(count)  * 1/128;
 	//	filter.matrix = colorMatrix;
 		
