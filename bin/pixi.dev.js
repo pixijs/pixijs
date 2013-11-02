@@ -999,13 +999,11 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'mask', {
 });
 
 /**
- * Sets the filters for the displayObject. Currently there's a few limitations.
- * 1: At the moment only one filter can be applied at a time.. 
- * 2: They cannot be nested.
- * 3: There's no padding yet.
- * 4: this is a webGL only feature.
+ * Sets the filters for the displayObject. 
+ * * IMPORTANT: This is a webGL only feature and will be ignored by the canvas renderer.
+ * To remove filters simply set this property to 'null'
  * @property filters
- * @type Array
+ * @type Array An array of filters
  */
 Object.defineProperty(PIXI.DisplayObject.prototype, 'filters', {
     get: function() {
@@ -11230,14 +11228,33 @@ PIXI.SpineLoader.prototype.onLoaded = function () {
  */
 
 
-
+/**
+ * This is the base class for  creating a pixi.js filter. Currently only webGL supports filters.
+ * If you want to make a custom filter this should be your base class.
+ * @class AbstractFilter
+ * @constructor
+ * @param fragmentSrc
+ * @param unifroms  
+ */
 PIXI.AbstractFilter = function(fragmentSrc, unifroms)
 {
+	/**
+	* An array of passes - some filters contain a few steps this array simply stores the steps in a liniear fashion.
+	* For example the blur filter has two passes blurX and blurY.
+	* @property passes
+	* @type Array an array of filter objects
+	* @private
+	*/
 	this.passes = [this];
+
+
 	this.dirty = true;
 	this.padding = 0;
 
-	// set the uniforms
+	/**
+	@property uniforms
+	@private
+	*/
 	this.uniforms = unifroms || {};
 	
 	this.fragmentSrc = fragmentSrc || [];
@@ -11248,6 +11265,14 @@ PIXI.AbstractFilter = function(fragmentSrc, unifroms)
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
+/**
+ * 
+ * The ColorMatrixFilter class lets you apply a 4x4 matrix transformation on the RGBA 
+ * color and alpha values of every pixel on your displayObject to produce a result 
+ * with a new set of RGBA color and alpha values. Its pretty powerful!
+ * @class ColorMatrixFilter
+ * @contructor
+ */
 PIXI.ColorMatrixFilter = function()
 {
 	PIXI.AbstractFilter.call( this );
@@ -11280,6 +11305,13 @@ PIXI.ColorMatrixFilter = function()
 PIXI.ColorMatrixFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.ColorMatrixFilter.prototype.constructor = PIXI.ColorMatrixFilter;
 
+/**
+ * Sets the matrix of the color matrix filter
+ *
+ * @property matrix
+ * @type Array and array of 26 numbers
+ * @default [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]
+ */
 Object.defineProperty(PIXI.ColorMatrixFilter.prototype, 'matrix', {
     get: function() {
         return this.uniforms.matrix.value;
@@ -11293,7 +11325,12 @@ Object.defineProperty(PIXI.ColorMatrixFilter.prototype, 'matrix', {
  */
 
 
-
+/**
+ * 
+ * This turns your displayObjects to black and white.
+ * @class GreyFilter
+ * @contructor
+ */
 PIXI.GreyFilter = function()
 {
 	PIXI.AbstractFilter.call( this );
@@ -11322,6 +11359,10 @@ PIXI.GreyFilter = function()
 PIXI.GreyFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.GreyFilter.prototype.constructor = PIXI.GreyFilter;
 
+/**
+The strength of the grey. 1 will make the object black and white, 0 will make the object its normal color
+@property grey
+*/
 Object.defineProperty(PIXI.GreyFilter.prototype, 'grey', {
     get: function() {
         return this.uniforms.grey.value;
@@ -11336,14 +11377,21 @@ Object.defineProperty(PIXI.GreyFilter.prototype, 'grey', {
  */
 
 
-
+/**
+ * 
+ * The DisplacementFilter class uses the pixel values from the specified texture (called the displacement map) to perform a displacement of an object. 
+ * You can use this filter to apply all manor of crazy warping effects
+ * Currently the r property of the texture is used offset the x and the g propery of the texture is used to offset the y.
+ * @class DisplacementFilter
+ * @contructor
+ * @param texture {Texture} The texture used for the displacemtent map * must be power of 2 texture at the moment
+ */
 PIXI.DisplacementFilter = function(texture)
 {
 	PIXI.AbstractFilter.call( this );
 	
 	this.passes = [this];
 	texture.baseTexture._powerOf2 = true;
-
 
 	// set the uniforms
 	//console.log()
@@ -11415,6 +11463,12 @@ PIXI.DisplacementFilter.prototype.onTextureLoaded = function()
 
 }
 
+/**
+ * The texture used for the displacemtent map * must be power of 2 texture at the moment
+ *
+ * @property map
+ * @type Texture
+ */
 Object.defineProperty(PIXI.DisplacementFilter.prototype, 'map', {
     get: function() {
         return this.uniforms.displacementMap.value;
@@ -11424,6 +11478,12 @@ Object.defineProperty(PIXI.DisplacementFilter.prototype, 'map', {
     }
 });
 
+/**
+ * The multiplier used to scale the displacement result from the map calculation.
+ *
+ * @property scale
+ * @type Point
+ */
 Object.defineProperty(PIXI.DisplacementFilter.prototype, 'scale', {
     get: function() {
         return this.uniforms.scale.value;
@@ -11433,6 +11493,12 @@ Object.defineProperty(PIXI.DisplacementFilter.prototype, 'scale', {
     }
 });
 
+/**
+ * The offset used to move the displacement map.
+ *
+ * @property offset
+ * @type Point
+ */
 Object.defineProperty(PIXI.DisplacementFilter.prototype, 'offset', {
     get: function() {
         return this.uniforms.offset.value;
@@ -11445,6 +11511,12 @@ Object.defineProperty(PIXI.DisplacementFilter.prototype, 'offset', {
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
+/**
+ * 
+ * This filter applies a pixlate effect making display objects appear "blocky"
+ * @class PixelateFilter
+ * @contructor
+ */
 PIXI.PixelateFilter = function()
 {
 	PIXI.AbstractFilter.call( this );
@@ -11469,11 +11541,9 @@ PIXI.PixelateFilter = function()
 	  "void main(void) {",
 	 	"vec2 coord = vTextureCoord;",
 
-	 //	"vec2 dim = testDim;",
 	 	"vec2 size = dimensions.xy/pixelSize;",
 
 	 	"vec2 color = floor( ( vTextureCoord * size ) ) / size + pixelSize/dimensions.xy * 0.5;",
-	// 	"color += (mod(dimensions.xy, size)/dimensions.zw;",
 	    "gl_FragColor = texture2D(uSampler, color);",
 	  "}"
 	];
@@ -11484,6 +11554,12 @@ PIXI.PixelateFilter = function()
 PIXI.PixelateFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.PixelateFilter.prototype.constructor = PIXI.PixelateFilter;
 
+/**
+ * 
+ * This a point that describes the size of the blocs. x is the width of the block and y is the the height
+ * @property size
+ * @type Point
+ */
 Object.defineProperty(PIXI.PixelateFilter.prototype, 'size', {
     get: function() {
         return this.uniforms.pixelSize.value;
@@ -11610,7 +11686,14 @@ Object.defineProperty(PIXI.BlurYFilter.prototype, 'blur', {
  */
 
 
-
+/**
+ * 
+ * The BlurFilter applies a Gaussian blur to an object. 
+ * The strength of the blur can be set for x- and y-axis separately (always relative to the stage).
+ *
+ * @class BlurFilter
+ * @contructor
+ */
 PIXI.BlurFilter = function()
 {
     
@@ -11621,6 +11704,13 @@ PIXI.BlurFilter = function()
 	
 }
 
+/**
+ * Sets the strength of both the blurX and blurY properties simultaneously
+ *
+ * @property blur
+ * @type Number the strength of the blur
+ * @default 2
+ */
 Object.defineProperty(PIXI.BlurFilter.prototype, 'blur', {
     get: function() {
         return this.blurX.blur;
@@ -11630,7 +11720,13 @@ Object.defineProperty(PIXI.BlurFilter.prototype, 'blur', {
     }
 });
 
-
+/**
+ * Sets the strength of the blurX property simultaneously
+ *
+ * @property blurX
+ * @type Number the strength of the blurX
+ * @default 2
+ */
 Object.defineProperty(PIXI.BlurFilter.prototype, 'blurX', {
     get: function() {
         return this.blurXFilter.blur;
@@ -11640,6 +11736,13 @@ Object.defineProperty(PIXI.BlurFilter.prototype, 'blurX', {
     }
 });
 
+/**
+ * Sets the strength of the blurX property simultaneously
+ *
+ * @property blurY
+ * @type Number the strength of the blurY
+ * @default 2
+ */
 Object.defineProperty(PIXI.BlurFilter.prototype, 'blurY', {
     get: function() {
         return this.blurYFilter.blur;
@@ -11653,6 +11756,12 @@ Object.defineProperty(PIXI.BlurFilter.prototype, 'blurY', {
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
+/**
+ * 
+ * This inverts your displayObjects colors.
+ * @class InvertFilter
+ * @contructor
+ */
 PIXI.InvertFilter = function()
 {
 	PIXI.AbstractFilter.call( this );
@@ -11683,6 +11792,10 @@ PIXI.InvertFilter = function()
 PIXI.InvertFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.InvertFilter.prototype.constructor = PIXI.InvertFilter;
 
+/**
+The strength of the invert. 1 will fully invert the colors, 0 will make the object its normal color
+@property invert
+*/
 Object.defineProperty(PIXI.InvertFilter.prototype, 'invert', {
     get: function() {
         return this.uniforms.invert.value;
@@ -11697,7 +11810,12 @@ Object.defineProperty(PIXI.InvertFilter.prototype, 'invert', {
  */
 
 
-
+/**
+ * 
+ * This applies a sepia effect to your displayObjects.
+ * @class SepiaFilter
+ * @contructor
+ */
 PIXI.SepiaFilter = function()
 {
 	PIXI.AbstractFilter.call( this );
@@ -11729,6 +11847,10 @@ PIXI.SepiaFilter = function()
 PIXI.SepiaFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.SepiaFilter.prototype.constructor = PIXI.SepiaFilter;
 
+/**
+The strength of the sepia. 1 will apply the full sepia effect, 0 will make the object its normal color
+@property sepia
+*/
 Object.defineProperty(PIXI.SepiaFilter.prototype, 'sepia', {
     get: function() {
         return this.uniforms.sepia.value;

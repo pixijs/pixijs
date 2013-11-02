@@ -4,7 +4,12 @@
  */
 
 
-
+/**
+ * 
+ * This applies a sepia effect to your displayObjects.
+ * @class SepiaFilter
+ * @contructor
+ */
 PIXI.SepiaFilter = function()
 {
 	PIXI.AbstractFilter.call( this );
@@ -36,6 +41,10 @@ PIXI.SepiaFilter = function()
 PIXI.SepiaFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.SepiaFilter.prototype.constructor = PIXI.SepiaFilter;
 
+/**
+The strength of the sepia. 1 will apply the full sepia effect, 0 will make the object its normal color
+@property sepia
+*/
 Object.defineProperty(PIXI.SepiaFilter.prototype, 'sepia', {
     get: function() {
         return this.uniforms.sepia.value;

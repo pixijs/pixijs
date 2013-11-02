@@ -3,14 +3,21 @@
  */
 
 
-
+/**
+ * 
+ * The DisplacementFilter class uses the pixel values from the specified texture (called the displacement map) to perform a displacement of an object. 
+ * You can use this filter to apply all manor of crazy warping effects
+ * Currently the r property of the texture is used offset the x and the g propery of the texture is used to offset the y.
+ * @class DisplacementFilter
+ * @contructor
+ * @param texture {Texture} The texture used for the displacemtent map * must be power of 2 texture at the moment
+ */
 PIXI.DisplacementFilter = function(texture)
 {
 	PIXI.AbstractFilter.call( this );
 	
 	this.passes = [this];
 	texture.baseTexture._powerOf2 = true;
-
 
 	// set the uniforms
 	//console.log()
@@ -82,6 +89,12 @@ PIXI.DisplacementFilter.prototype.onTextureLoaded = function()
 
 }
 
+/**
+ * The texture used for the displacemtent map * must be power of 2 texture at the moment
+ *
+ * @property map
+ * @type Texture
+ */
 Object.defineProperty(PIXI.DisplacementFilter.prototype, 'map', {
     get: function() {
         return this.uniforms.displacementMap.value;
@@ -91,6 +104,12 @@ Object.defineProperty(PIXI.DisplacementFilter.prototype, 'map', {
     }
 });
 
+/**
+ * The multiplier used to scale the displacement result from the map calculation.
+ *
+ * @property scale
+ * @type Point
+ */
 Object.defineProperty(PIXI.DisplacementFilter.prototype, 'scale', {
     get: function() {
         return this.uniforms.scale.value;
@@ -100,6 +119,12 @@ Object.defineProperty(PIXI.DisplacementFilter.prototype, 'scale', {
     }
 });
 
+/**
+ * The offset used to move the displacement map.
+ *
+ * @property offset
+ * @type Point
+ */
 Object.defineProperty(PIXI.DisplacementFilter.prototype, 'offset', {
     get: function() {
         return this.uniforms.offset.value;

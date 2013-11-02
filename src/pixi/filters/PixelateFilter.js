@@ -2,6 +2,12 @@
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
+/**
+ * 
+ * This filter applies a pixlate effect making display objects appear "blocky"
+ * @class PixelateFilter
+ * @contructor
+ */
 PIXI.PixelateFilter = function()
 {
 	PIXI.AbstractFilter.call( this );
@@ -26,11 +32,9 @@ PIXI.PixelateFilter = function()
 	  "void main(void) {",
 	 	"vec2 coord = vTextureCoord;",
 
-	 //	"vec2 dim = testDim;",
 	 	"vec2 size = dimensions.xy/pixelSize;",
 
 	 	"vec2 color = floor( ( vTextureCoord * size ) ) / size + pixelSize/dimensions.xy * 0.5;",
-	// 	"color += (mod(dimensions.xy, size)/dimensions.zw;",
 	    "gl_FragColor = texture2D(uSampler, color);",
 	  "}"
 	];
@@ -41,6 +45,12 @@ PIXI.PixelateFilter = function()
 PIXI.PixelateFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.PixelateFilter.prototype.constructor = PIXI.PixelateFilter;
 
+/**
+ * 
+ * This a point that describes the size of the blocs. x is the width of the block and y is the the height
+ * @property size
+ * @type Point
+ */
 Object.defineProperty(PIXI.PixelateFilter.prototype, 'size', {
     get: function() {
         return this.uniforms.pixelSize.value;

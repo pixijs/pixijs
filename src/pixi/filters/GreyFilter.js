@@ -3,7 +3,12 @@
  */
 
 
-
+/**
+ * 
+ * This turns your displayObjects to black and white.
+ * @class GreyFilter
+ * @contructor
+ */
 PIXI.GreyFilter = function()
 {
 	PIXI.AbstractFilter.call( this );
@@ -32,6 +37,10 @@ PIXI.GreyFilter = function()
 PIXI.GreyFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.GreyFilter.prototype.constructor = PIXI.GreyFilter;
 
+/**
+The strength of the grey. 1 will make the object black and white, 0 will make the object its normal color
+@property grey
+*/
 Object.defineProperty(PIXI.GreyFilter.prototype, 'grey', {
     get: function() {
         return this.uniforms.grey.value;

@@ -316,13 +316,11 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'mask', {
 });
 
 /**
- * Sets the filters for the displayObject. Currently there's a few limitations.
- * 1: At the moment only one filter can be applied at a time.. 
- * 2: They cannot be nested.
- * 3: There's no padding yet.
- * 4: this is a webGL only feature.
+ * Sets the filters for the displayObject. 
+ * * IMPORTANT: This is a webGL only feature and will be ignored by the canvas renderer.
+ * To remove filters simply set this property to 'null'
  * @property filters
- * @type Array
+ * @type Array An array of filters
  */
 Object.defineProperty(PIXI.DisplayObject.prototype, 'filters', {
     get: function() {
