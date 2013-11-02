@@ -68,6 +68,10 @@ module.exports = function(grunt) {
             '<%= dirs.src %>/filters/BlurFilter.js',
             '<%= dirs.src %>/filters/InvertFilter.js',
             '<%= dirs.src %>/filters/SepiaFilter.js',
+            '<%= dirs.src %>/filters/TwistFilter.js',
+            '<%= dirs.src %>/filters/ColorStepFilter.js',
+            '<%= dirs.src %>/filters/DotScreenFilter.js',
+            
             '<%= dirs.src %>/Outro.js'
         ], banner = [
             '/**',

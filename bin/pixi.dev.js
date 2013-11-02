@@ -11713,7 +11713,7 @@ PIXI.BlurFilter = function()
  */
 Object.defineProperty(PIXI.BlurFilter.prototype, 'blur', {
     get: function() {
-        return this.blurX.blur;
+        return this.blurXFilter.blur;
     },
     set: function(value) {
   		this.blurXFilter.blur = this.blurYFilter.blur = value;
@@ -11770,7 +11770,7 @@ PIXI.InvertFilter = function()
 	
 	// set the uniforms
 	this.uniforms = {
-		invert: {type: 'f', value: 0},
+		invert: {type: 'f', value: 1},
 	};
 	
 	this.fragmentSrc = [
@@ -11781,7 +11781,7 @@ PIXI.InvertFilter = function()
 	  "uniform sampler2D uSampler;",
 	  "void main(void) {",
 	    "gl_FragColor = texture2D(uSampler, vTextureCoord);",
-		"gl_FragColor.rgb = mix( (vec3(1)-gl_FragColor.rgb) * gl_FragColor.a, gl_FragColor.rgb, invert);",
+		"gl_FragColor.rgb = mix( (vec3(1)-gl_FragColor.rgb) * gl_FragColor.a, gl_FragColor.rgb, 1.0 - invert);",
 		//"gl_FragColor.rgb = gl_FragColor.rgb  * gl_FragColor.a;",
 	    "gl_FragColor = gl_FragColor * vColor;",
 	  "}"
@@ -11860,6 +11860,247 @@ Object.defineProperty(PIXI.SepiaFilter.prototype, 'sepia', {
     }
 });
 
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+/**
+ * 
+ * This filter applies a pixlate effect making display objects appear "blocky"
+ * @class PixelateFilter
+ * @contructor
+ */
+PIXI.TwistFilter = function()
+{
+	PIXI.AbstractFilter.call( this );
+
+	this.passes = [this];
+	
+	// set the uniforms
+	this.uniforms = {
+		radius: {type: 'f', value:0.5},
+		angle: {type: 'f', value:5},
+		offset: {type: 'f2', value:{x:0.5, y:0.5}},
+	};
+
+	this.fragmentSrc = [
+	  "precision mediump float;",
+	  "varying vec2 vTextureCoord;",
+	  "varying float vColor;",
+	  "uniform vec4 dimensions;",
+	  "uniform sampler2D uSampler;",
+	  
+	  "uniform float radius;",
+      "uniform float angle;",
+      "uniform vec2 offset;",
+
+	  "void main(void) {",
+	 	"vec2 coord = vTextureCoord - offset;",
+		"float distance = length(coord);",
+	 	
+	 	"if (distance < radius){",
+
+		 	"float ratio = (radius - distance) / radius;",
+		 	"float angleMod = ratio * ratio * angle;",
+		 	"float s = sin(angleMod);",
+		 	"float c = cos(angleMod);",
+		 	"coord = vec2(coord.x * c - coord.y * s, coord.x * s + coord.y * c);",
+
+	 	"}",
+
+	    "gl_FragColor = texture2D(uSampler, coord+offset);",
+	  "}"
+	];
+}
+
+PIXI.TwistFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
+PIXI.TwistFilter.prototype.constructor = PIXI.TwistFilter;
+
+/**
+ * 
+ * This point describes the the offset of the twist
+ * @property size
+ * @type Point
+ */
+Object.defineProperty(PIXI.TwistFilter.prototype, 'offset', {
+    get: function() {
+        return this.uniforms.offset.value;
+    },
+    set: function(value) {
+    	this.dirty = true;
+    	this.uniforms.offset.value = value;
+    }
+});
+
+/**
+ * 
+ * This radius describes size of the twist
+ * @property size
+ * @type Number
+ */
+Object.defineProperty(PIXI.TwistFilter.prototype, 'radius', {
+    get: function() {
+        return this.uniforms.radius.value;
+    },
+    set: function(value) {
+    	this.dirty = true;
+    	this.uniforms.radius.value = value;
+    }
+});
+
+/**
+ * 
+ * This radius describes angle of the twist
+ * @property angle
+ * @type Number
+ */
+Object.defineProperty(PIXI.TwistFilter.prototype, 'angle', {
+    get: function() {
+        return this.uniforms.angle.value;
+    },
+    set: function(value) {
+    	this.dirty = true;
+    	this.uniforms.angle.value = value;
+    }
+});
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+
+/**
+ * 
+ * This turns your displayObjects to black and white.
+ * @class GreyFilter
+ * @contructor
+ */
+PIXI.ColorStepFilter = function()
+{
+	PIXI.AbstractFilter.call( this );
+	
+	this.passes = [this];
+	
+	// set the uniforms
+	this.uniforms = {
+		step: {type: 'f', value: 5},
+	};
+	
+	this.fragmentSrc = [
+	  "precision mediump float;",
+	  "varying vec2 vTextureCoord;",
+	  "varying float vColor;",
+	  "uniform sampler2D uSampler;",
+	  "uniform float step;",
+	  "void main(void) {",
+	    "vec4 color = texture2D(uSampler, vTextureCoord);",
+	    "color = floor(color * step) / step;",
+	    "gl_FragColor = color * vColor;",
+	  "}"
+	];
+}
+
+PIXI.ColorStepFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
+PIXI.ColorStepFilter.prototype.constructor = PIXI.ColorStepFilter;
+
+/**
+The number of steps.
+@property step
+*/
+Object.defineProperty(PIXI.ColorStepFilter.prototype, 'step', {
+    get: function() {
+        return this.uniforms.step.value;
+    },
+    set: function(value) {
+    	this.uniforms.step.value = value;
+    }
+});
+
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ * original filter: https://github.com/evanw/glfx.js/blob/master/src/filters/fun/dotscreen.js
+ */
+
+/**
+ * 
+ * This filter applies a pixlate effect making display objects appear "blocky"
+ * @class PixelateFilter
+ * @contructor
+ */
+PIXI.DotScreenFilter = function()
+{
+	PIXI.AbstractFilter.call( this );
+
+	this.passes = [this];
+	
+	// set the uniforms
+	this.uniforms = {
+		scale: {type: 'f', value:1},
+		angle: {type: 'f', value:5},
+		dimensions:   {type: 'f4', value:[0,0,0,0]}
+	};
+
+	this.fragmentSrc = [
+	  "precision mediump float;",
+	  "varying vec2 vTextureCoord;",
+	  "varying float vColor;",
+	  "uniform vec4 dimensions;",
+	  "uniform sampler2D uSampler;",
+
+	    "uniform float angle;",
+	    "uniform float scale;",
+
+	    "float pattern() {",
+	    	"float s = sin(angle), c = cos(angle);",
+	    	"vec2 tex = vTextureCoord * dimensions.xy;",
+	    	"vec2 point = vec2(",
+	    		"c * tex.x - s * tex.y,",
+	    		"s * tex.x + c * tex.y",
+	    	") * scale;",
+	    	"return (sin(point.x) * sin(point.y)) * 4.0;",
+	    "}",
+
+	    "void main() {",
+            "vec4 color = texture2D(uSampler, vTextureCoord);",
+            "float average = (color.r + color.g + color.b) / 3.0;",
+            "gl_FragColor = vec4(vec3(average * 10.0 - 5.0 + pattern()), color.a);",
+        "}",
+	];
+}
+
+PIXI.DotScreenFilter.prototype = Object.create( PIXI.DotScreenFilter.prototype );
+PIXI.DotScreenFilter.prototype.constructor = PIXI.DotScreenFilter;
+
+/**
+ * 
+ * This describes the the scale
+ * @property scale
+ * @type Number
+ */
+Object.defineProperty(PIXI.DotScreenFilter.prototype, 'scale', {
+    get: function() {
+        return this.uniforms.scale.value;
+    },
+    set: function(value) {
+    	this.dirty = true;
+    	this.uniforms.scale.value = value;
+    }
+});
+
+/**
+ * 
+ * This radius describes angle
+ * @property angle
+ * @type Number
+ */
+Object.defineProperty(PIXI.DotScreenFilter.prototype, 'angle', {
+    get: function() {
+        return this.uniforms.angle.value;
+    },
+    set: function(value) {
+    	this.dirty = true;
+    	this.uniforms.angle.value = value;
+    }
+});
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */

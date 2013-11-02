@@ -30,7 +30,7 @@ PIXI.BlurFilter = function()
  */
 Object.defineProperty(PIXI.BlurFilter.prototype, 'blur', {
     get: function() {
-        return this.blurX.blur;
+        return this.blurXFilter.blur;
     },
     set: function(value) {
   		this.blurXFilter.blur = this.blurYFilter.blur = value;
