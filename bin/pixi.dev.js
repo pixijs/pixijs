@@ -4321,6 +4321,14 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
 	var points = graphicsData.points;
 	if(points.length == 0)return;
 	
+	// if the line width is an odd number add 0.5 to align to a whole pixel
+	if(graphicsData.lineWidth%2)
+	{
+		for (var i = 0; i < points.length; i++) {
+			points[i] += 0.5;
+		};
+	}
+
 	// get first and last point.. figure out the middle!
 	var firstPoint = new PIXI.Point( points[0], points[1] );
 	var lastPoint = new PIXI.Point( points[points.length - 2], points[points.length - 1] );
@@ -4492,6 +4500,7 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
 		indices.push(indexStart++);
 	};
 	
+	console.log(verts)
 	indices.push(indexStart-1);
 }
 
@@ -11651,6 +11660,7 @@ Object.defineProperty(PIXI.BlurXFilter.prototype, 'blur', {
     }
 });
 
+/**
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
