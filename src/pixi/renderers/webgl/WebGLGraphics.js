@@ -80,6 +80,7 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
 	
 	PIXI.deactivatePrimitiveShader();
 	
+	
 	// return to default shader...
 //	PIXI.activateShader(PIXI.defaultShader);
 }

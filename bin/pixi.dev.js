@@ -4114,6 +4114,7 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
 	
 	PIXI.deactivatePrimitiveShader();
 	
+	
 	// return to default shader...
 //	PIXI.activateShader(PIXI.defaultShader);
 }
@@ -5774,6 +5775,12 @@ PIXI.WebGLRenderGroup.prototype.renderSpecial = function(renderable, projection)
 	}
 }
 
+flip = false;
+var maskStack = [];
+var maskPosition = 0;
+
+//var usedMaskStack = [];
+
 PIXI.WebGLRenderGroup.prototype.handleFilterBlock = function(filterBlock, projection)
 {
 	/*
@@ -5785,24 +5792,27 @@ PIXI.WebGLRenderGroup.prototype.handleFilterBlock = function(filterBlock, projec
 	{
 		if(filterBlock.data instanceof Array)
 		{
-			//var filter = filterBlock.data[0];
-			//console.log(filter)
-			this.filterManager.pushFilter(filterBlock);//filter);
+			this.filterManager.pushFilter(filterBlock);
 			// ok so..
 			
 		}
 		else
-		{
-			
+		{	
+			maskPosition++;
+
+			maskStack.push(filterBlock)
+	
 			gl.enable(gl.STENCIL_TEST);
-				
+			
 			gl.colorMask(false, false, false, false);
-			gl.stencilFunc(gl.ALWAYS,1,0xff);
-			gl.stencilOp(gl.KEEP,gl.KEEP,gl.REPLACE);
+			
+			gl.stencilFunc(gl.ALWAYS,1,1);
+			gl.stencilOp(gl.KEEP,gl.KEEP,gl.INCR);
+	
 			PIXI.WebGLGraphics.renderGraphics(filterBlock.data, projection);
-				
+			
 			gl.colorMask(true, true, true, true);
-			gl.stencilFunc(gl.NOTEQUAL,0,0xff);
+			gl.stencilFunc(gl.NOTEQUAL,0,maskStack.length);
 			gl.stencilOp(gl.KEEP,gl.KEEP,gl.KEEP);
 		}
 	}
@@ -5811,11 +5821,26 @@ PIXI.WebGLRenderGroup.prototype.handleFilterBlock = function(filterBlock, projec
 		if(filterBlock.data instanceof Array)
 		{
 			this.filterManager.popFilter();
-		//	PIXI.popShader();
-		//	gl.uniform2f(PIXI.currentShader.projectionVector, projection.x, projection.y);
 		}
 		else
 		{
+			var maskData = maskStack.pop(filterBlock)
+
+
+			if(maskData)
+			{
+				gl.colorMask(false, false, false, false);
+			
+				gl.stencilFunc(gl.ALWAYS,1,1);
+				gl.stencilOp(gl.KEEP,gl.KEEP,gl.DECR);
+
+				PIXI.WebGLGraphics.renderGraphics(maskData.data, projection);
+			
+				gl.colorMask(true, true, true, true);
+				gl.stencilFunc(gl.NOTEQUAL,0,maskStack.length);
+				gl.stencilOp(gl.KEEP,gl.KEEP,gl.KEEP);
+			};
+
 			gl.disable(gl.STENCIL_TEST);
 		}
 	}

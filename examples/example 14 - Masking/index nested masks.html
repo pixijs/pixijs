@@ -27,35 +27,11 @@
 	bg.position.x = 620/2;
 	bg.position.y = 380/2;
 
-	stage.addChild(bg);
+	//stage.addChild(bg);
 
-	var container = new PIXI.DisplayObjectContainer();
-	container.position.x = 620/2;
-	container.position.y = 380/2;
 
-	var bgFront = PIXI.Sprite.fromImage("SceneRotate.jpg");
-	bgFront.anchor.x = 0.5;
-	bgFront.anchor.y = 0.5;
-
-	container.addChild(bgFront);
-
-	var light2 = PIXI.Sprite.fromImage("LightRotate2.png");
-	light2.anchor.x = 0.5;
-	light2.anchor.y = 0.5;
-	container.addChild(light2);
-
-	var light1 = PIXI.Sprite.fromImage("LightRotate1.png");
-	light1.anchor.x = 0.5;
-	light1.anchor.y = 0.5;
-	container.addChild(light1);
-
-	var panda =  PIXI.Sprite.fromImage("panda.png");
-	panda.anchor.x = 0.5;
-	panda.anchor.y = 0.5;
-
-	container.addChild(panda);
-
-	stage.addChild(container);
+	
+	//stage.addChild(bgFront);
 
 	// create a renderer instance
 	var renderer = PIXI.autoDetectRenderer(620, 380);
@@ -71,19 +47,44 @@
 	document.body.appendChild(renderer.view);
 
 	// lets create moving shape
-	var thing = new PIXI.Graphics();
-	stage.addChild(thing);
-	thing.position.x = 620/2;
-	thing.position.y = 380/2;
-	thing.lineStyle(0);
 
-	container.mask = thing;
+
+
+	var mask2 = new PIXI.Graphics();
+	mask2.beginFill(0);
+	mask2.drawCircle(620/2, 380/2, 300)
+
+	var container = new PIXI.DisplayObjectContainer();
+	stage.addChild(container);
+	container.addChild(bg);
+
+
+
+	container.mask = mask2;
+
+
+
+	for (var i = 0; i < 4; i++) 
+	{
+		var bear = PIXI.Sprite.fromImage("panda.png");
+		
+		var mask1 = new PIXI.Graphics();
+		mask1.beginFill(0);
+		mask1.drawRect(20, 40, 100, 100)
+		bear.mask = mask1;
+		bear.addChild(mask1);
+		container.addChild(bear);
+
+		bear.position.x = i * 50;
+	};
+	
+
 
 	var count = 0;
 
 	stage.click = stage.tap = function()
 	{
-		if(!container.mask)
+		if(!container.filter)
 		{
 			container.mask = thing;
 			PIXI.runList(stage);
@@ -122,28 +123,10 @@
 	function animate() {
 
 		bg.rotation += 0.01;
-		bgFront.rotation -= 0.01;
-
-		light1.rotation += 0.02;
-		light2.rotation += 0.01;
-
-		panda.scale.x = 1 + Math.sin(count) * 0.04;
-		panda.scale.y = 1 + Math.cos(count) * 0.04;
-
+	
 		count += 0.1;
 
-		thing.clear();
 
-		thing.beginFill(0x8bc5ff, 0.4);
-		thing.moveTo(-120 + Math.sin(count) * 20, -100 + Math.cos(count)* 20);
-		thing.lineTo(120 + Math.cos(count) * 20, -100 + Math.sin(count)* 20);
-		thing.lineTo(120 + Math.sin(count) * 20, 100 + Math.cos(count)* 20);
-		thing.lineTo(-120 + Math.cos(count)* 20, 100 + Math.sin(count)* 20);
-		thing.lineTo(-120 + Math.sin(count) * 20, -100 + Math.cos(count)* 20);
-		thing.rotation = count * 0.1;
-
-		//var mask1 = new PIXI.Graphics();
-	
 
 	    renderer.render(stage);
 	    requestAnimFrame( animate );
