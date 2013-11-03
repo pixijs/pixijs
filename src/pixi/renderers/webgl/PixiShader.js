@@ -44,8 +44,8 @@ PIXI.PixiShader.prototype.init = function()
     {
        
     	// get the uniform locations..
-		program[key] = gl.getUniformLocation(program, key);
-
+	//	program[key] = 
+        this.uniforms[key].uniformLocation = gl.getUniformLocation(program, key);
 
       
     }
@@ -65,21 +65,21 @@ PIXI.PixiShader.prototype.syncUniforms = function()
     	// need to grow this!
     	if(type == "f")
     	{
-			gl.uniform1f(this.program[key], this.uniforms[key].value);
+			gl.uniform1f(this.uniforms[key].uniformLocation, this.uniforms[key].value);
     	}
     	if(type == "f2")
     	{
     	//	console.log(this.program[key])
-			gl.uniform2f(this.program[key], this.uniforms[key].value.x, this.uniforms[key].value.y);
+			gl.uniform2f(this.uniforms[key].uniformLocation, this.uniforms[key].value.x, this.uniforms[key].value.y);
     	}
         else if(type == "f4")
         {
            // console.log(this.uniforms[key].value)
-            gl.uniform4fv(this.program[key], this.uniforms[key].value);
+            gl.uniform4fv(this.uniforms[key].uniformLocation, this.uniforms[key].value);
         }
     	else if(type == "mat4")
     	{
-    		gl.uniformMatrix4fv(this.program[key], false, this.uniforms[key].value);
+    		gl.uniformMatrix4fv(this.uniforms[key].uniformLocation, false, this.uniforms[key].value);
     	}
     	else if(type == "sampler2D")
     	{
@@ -89,7 +89,7 @@ PIXI.PixiShader.prototype.syncUniforms = function()
     		gl.activeTexture(gl.TEXTURE1);
 	    	gl.bindTexture(gl.TEXTURE_2D, texture.baseTexture._glTexture);
 	    	
-    		gl.uniform1i(this.program[key], 1);
+    		gl.uniform1i(this.uniforms[key].uniformLocation, 1);
     		
     		// activate texture..
     		// gl.uniformMatrix4fv(this.program[key], false, this.uniforms[key].value);
