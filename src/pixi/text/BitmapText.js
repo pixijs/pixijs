@@ -57,9 +57,17 @@ PIXI.BitmapText.prototype.setStyle = function(style)
     style.align = style.align || "left";
     this.style = style;
 
-    var font = style.font.split(" ");
-    this.fontName = font[font.length - 1];
-    this.fontSize = font.length >= 2 ? parseInt(font[font.length - 2], 10) : PIXI.BitmapText.fonts[this.fontName].size;
+    var regex = /(\d+[\w]*) (.*)/;
+    var match = regex.exec(style.font);
+    
+    if (match.length==3) {
+        this.fontName = match[2];
+        this.fontSize = parseInt(match[1], 10);
+    }
+    else {
+        this.fontName = style.font;
+        this.fontSize = PIXI.BitmapText.fonts[this.fontName].size;
+    }
 
     this.dirty = true;
 };
