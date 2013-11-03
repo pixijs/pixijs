@@ -162,6 +162,8 @@ PIXI.CanvasGraphics.renderGraphicsMask = function(graphics, context)
 	var worldAlpha = graphics.worldAlpha;
 
 	var len = graphics.graphicsData.length;
+	if(len === 0)return;
+
 	if(len > 1)
 	{
 		len = 1;
