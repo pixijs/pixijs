@@ -1,4 +1,15 @@
 /**
+ * @license
+ * Pixi.JS - v1.3.0
+ * Copyright (c) 2012, Mat Groves
+ * http://goodboydigital.com/
+ *
+ * Compiled: 2013-11-03
+ *
+ * Pixi.JS is licensed under the MIT License.
+ * http://www.opensource.org/licenses/mit-license.php
+ */
+/**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
@@ -4500,7 +4511,6 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
 		indices.push(indexStart++);
 	};
 	
-	console.log(verts)
 	indices.push(indexStart-1);
 }
 
@@ -11661,7 +11671,6 @@ Object.defineProperty(PIXI.BlurXFilter.prototype, 'blur', {
 });
 
 /**
-/**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
@@ -12151,4 +12160,3 @@ Object.defineProperty(PIXI.DotScreenFilter.prototype, 'angle', {
         root.PIXI = PIXI;
     }
 }).call(this);
-//@ sourceMappingURL=pixi.dev.js.map

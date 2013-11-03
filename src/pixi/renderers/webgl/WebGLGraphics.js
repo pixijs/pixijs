@@ -466,7 +466,6 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
 		indices.push(indexStart++);
 	};
 	
-	console.log(verts)
 	indices.push(indexStart-1);
 }
 
