@@ -62,13 +62,7 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
 	gl.uniform2f(PIXI.primitiveShader.offsetVector, -PIXI.offset.x, -PIXI.offset.y);
 	
 	gl.uniform1f(PIXI.primitiveShader.alpha, graphics.worldAlpha);
-
 	gl.bindBuffer(gl.ARRAY_BUFFER, graphics._webGL.buffer);
-	
-	// WHY DOES THIS LINE NEED TO BE THERE???
-	//gl.vertexAttribPointer(PIXI.shaderProgram.vertexPositionAttribute, 2, gl.FLOAT, false, 0, 0);
-	// its not even used.. but need to be set or it breaks?
-	// only on pc though..
 	
 	gl.vertexAttribPointer(PIXI.primitiveShader.aVertexPosition, 2, gl.FLOAT, false, 4 * 6, 0);
 	gl.vertexAttribPointer(PIXI.primitiveShader.colorAttribute, 4, gl.FLOAT, false,4 * 6, 2 * 4);
@@ -76,6 +70,7 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
 	// set the index buffer!
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, graphics._webGL.indexBuffer);
 	
+
 	gl.drawElements(gl.TRIANGLE_STRIP,  graphics._webGL.indices.length, gl.UNSIGNED_SHORT, 0 );
 	
 	PIXI.deactivatePrimitiveShader();
@@ -396,16 +391,27 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
 	    c2 = (-perp2x + p3x) * (-perp2y + p2y) - (-perp2x + p2x) * (-perp2y + p3y);
 	 
 	    denom = a1*b2 - a2*b1;
-	    
-	    if (denom == 0) {
-	    	denom+=1;
-	    }
+
+	   if(Math.abs(denom) < 0.1 )
+		{
+		
+			denom+=10.1;
+			verts.push(p2x - perpx , p2y - perpy,
+				r, g, b, alpha);
+	
+			verts.push(p2x + perpx , p2y + perpy,
+				r, g, b, alpha);
+			
+			continue;
+		}
 	    
 	    px = (b1*c2 - b2*c1)/denom;
 	    py = (a2*c1 - a1*c2)/denom;
 		
+			
 		pdist = (px -p2x) * (px -p2x) + (py -p2y) + (py -p2y);
 		
+
 		if(pdist > 140 * 140)
 		{
 			perp3x = perpx - perp2x;
@@ -430,6 +436,7 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
 		}
 		else
 		{
+
 			verts.push(px , py);
 			verts.push(r, g, b, alpha);
 			

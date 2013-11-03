@@ -45,13 +45,13 @@ PIXI.PrimitiveShader.prototype.init = function()
 	// get and store the uniforms for the shader
 	this.projectionVector = gl.getUniformLocation(program, "projectionVector");
 	this.offsetVector = gl.getUniformLocation(program, "offsetVector");
+  
+  // get and store the attributes
+  this.aVertexPosition = gl.getAttribLocation(program, "aVertexPosition");
 	this.colorAttribute = gl.getAttribLocation(program, "aColor");
 	
-	// get and store the attributes
-	this.aVertexPosition = gl.getAttribLocation(program, "aVertexPosition");
-	
-    this.translationMatrix = gl.getUniformLocation(program, "translationMatrix");
-    this.alpha = gl.getUniformLocation(program, "alpha");
+  this.translationMatrix = gl.getUniformLocation(program, "translationMatrix");
+  this.alpha = gl.getUniformLocation(program, "alpha");
 
 	this.program = program;
 }

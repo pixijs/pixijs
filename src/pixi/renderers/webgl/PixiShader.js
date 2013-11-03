@@ -32,11 +32,11 @@ PIXI.PixiShader.prototype.init = function()
 	this.uSampler = gl.getUniformLocation(program, "uSampler");
 	this.projectionVector = gl.getUniformLocation(program, "projectionVector");
 	this.offsetVector = gl.getUniformLocation(program, "offsetVector");
+    //this.dimensions = gl.getUniformLocation(this.program, "dimensions");
+    
+    // get and store the attributes
+    this.aVertexPosition = gl.getAttribLocation(program, "aVertexPosition");
 	this.colorAttribute = gl.getAttribLocation(program, "aColor");
-	//this.dimensions = gl.getUniformLocation(this.program, "dimensions");
-	
-	// get and store the attributes
-	this.aVertexPosition = gl.getAttribLocation(program, "aVertexPosition");
 	this.aTextureCoord = gl.getAttribLocation(program, "aTextureCoord");
 	  
     // add those custom shaders!
