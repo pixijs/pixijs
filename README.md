@@ -23,6 +23,10 @@ any breakthroughs will be posted up there too!
 - [Flash vs HTML](<http://flashvhtml.com>)
 
 - [Bunny Demo](<http://www.goodboydigital.com/pixijs/bunnymark>)
+ 
+- [Storm Brewing](<http://www.goodboydigital.com/pixijs/storm/>)
+
+- [Filters Demo](<http://www.goodboydigital.com/pixijs/examples/15/indexAll.html>)
 
 - [Render Texture Demo](<http://www.goodboydigital.com/pixijs/examples/11/>)
 
@@ -53,7 +57,6 @@ last 2 examples and allowing us to share the source code :)
 ### Road Map ###
 
 * Create a Typescript definition file for Pixi.js
-* Implement Filters (currently being worked on by @GoodBoyDigital)
 * Implement Flash animation to pixi
 * Update Loader so that it support XHR2 if it is available
 * Improve the Documentation of the Project
@@ -107,15 +110,7 @@ It also copies the non-minified version to the examples.
 - Spine support
 - Primitive Drawing
 - Masking
-
-### Coming soon ###
-
-- Filters ( wip : [storm brewing](<http://www.goodboydigital.com/pixijs/storm/>) )
-
-
-### Coming later ###
-
-- Awesome Post processing effects
+- Filters
 
 ### Usage ###
 
