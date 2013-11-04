@@ -222,48 +222,37 @@ PIXI.Text.prototype.determineFontHeight = function(fontStyle)
  */
 PIXI.Text.prototype.wordWrap = function(text)
 {
-	// search good wrap position
-	var searchWrapPos = function(ctx, text, start, end, wrapWidth)
-	{
-		var p = Math.floor((end-start) / 2) + start;
-		if(p == start) {
-			return 1;
-		}
-		
-		if(ctx.measureText(text.substring(0,p)).width <= wrapWidth)
-		{
-			if(ctx.measureText(text.substring(0,p+1)).width > wrapWidth)
-			{
-				return p;
-			}
-			else
-			{
-				return arguments.callee(ctx, text, p, end, wrapWidth);
-			}
-		}
-		else
-		{
-			return arguments.callee(ctx, text, start, p, wrapWidth);
-		}
-	};
-	 
-	var lineWrap = function(ctx, text, wrapWidth)
-	{
-		if(ctx.measureText(text).width <= wrapWidth || text.length < 1)
-		{
-			return text;
-		}
-		var pos = searchWrapPos(ctx, text, 0, text.length, wrapWidth);
-		return text.substring(0, pos) + "\n" + arguments.callee(ctx, text.substring(pos), wrapWidth);
-	};
-	
+	// Greedy wrapping algorithm that will wrap words as the line grows longer
+	// than its horizontal bounds.
 	var result = "";
 	var lines = text.split("\n");
 	for (var i = 0; i < lines.length; i++)
 	{
-		result += lineWrap(this.context, lines[i], this.style.wordWrapWidth) + "\n";
+		var spaceLeft = this.style.wordWrapWidth;
+		var words = lines[i].split(" ");
+		for (var j = 0; j < words.length; j++)
+		{
+			var wordWidth = this.context.measureText(words[j]).width;
+			var wordWidthWithSpace = wordWidth + this.context.measureText(" ").width;
+			if(wordWidthWithSpace > spaceLeft)
+			{
+				// Skip printing the newline if it's the first word of the line that is
+				// greater than the word wrap width.
+				if(j > 0)
+				{
+					result += "\n";
+				}
+				result += words[j] + " ";
+				spaceLeft = this.style.wordWrapWidth - wordWidth;
+			}
+			else
+			{
+				spaceLeft -= wordWidthWithSpace;
+				result += words[j] + " ";
+			}
+		}
+		result += "\n";
 	}
-	
 	return result;
 };
 
