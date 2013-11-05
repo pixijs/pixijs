@@ -24,7 +24,7 @@
 	renderer.view.style.height = window.innerHeight + "px";
 	renderer.view.style.display = "block";
 	
-	var filtersSwitchs = [false, false, false, false, false, false, false, false];
+	var filtersSwitchs = [true, false, false, false, false, false, false, false, false, false, false];
 
 	// add render view to DOM
 	document.body.appendChild(renderer.view);
@@ -35,10 +35,20 @@
     //width : 350
 	});
 	
+	//// 
+
+	var displacementTexture = PIXI.Texture.fromImage("displacement_map.jpg");
+	var displacementFilter = new PIXI.DisplacementFilter(displacementTexture);
+
+	var displacementFolder = gui.addFolder('Displacement');
+	displacementFolder.add(filtersSwitchs, '0').name("apply");
+	displacementFolder.add(displacementFilter.scale, 'x', 1, 200).name("scaleX");
+	displacementFolder.add(displacementFilter.scale, 'y', 1, 200).name("scaleY");
+
 	var blurFilter = new PIXI.BlurFilter();
 
 	var blurFolder = gui.addFolder('Blur');
-	blurFolder.add(filtersSwitchs, '0').name("apply");
+	blurFolder.add(filtersSwitchs, '1').name("apply");
 	blurFolder.add(blurFilter, 'blurX', 0, 32).name("blurX");
 	blurFolder.add(blurFilter, 'blurY', 0, 32).name("blurY");
 
@@ -47,7 +57,7 @@
 	var pixelateFilter = new PIXI.PixelateFilter();
 
 	var pixelateFolder = gui.addFolder('Pixelate');
-	pixelateFolder.add(filtersSwitchs, '1').name("apply");
+	pixelateFolder.add(filtersSwitchs, '2').name("apply");
 	pixelateFolder.add(pixelateFilter.size, 'x', 1, 32).name("PixelSizeX");
 	pixelateFolder.add(pixelateFilter.size, 'y', 1, 32).name("PixelSizeY");
 
@@ -56,7 +66,7 @@
 	var invertFilter = new PIXI.InvertFilter();
 
 	var invertFolder = gui.addFolder('Invert');
-	invertFolder.add(filtersSwitchs, '2').name("apply");
+	invertFolder.add(filtersSwitchs, '3').name("apply");
 	invertFolder.add(invertFilter, 'invert', 0, 1).name("Invert");
 
 	////
@@ -64,7 +74,7 @@
 	var greyFilter = new PIXI.GreyFilter();
 
 	var greyFolder = gui.addFolder('Grey');
-	greyFolder.add(filtersSwitchs, '3').name("apply");
+	greyFolder.add(filtersSwitchs, '4').name("apply");
 	greyFolder.add(greyFilter, 'grey', 0, 1).name("Grey");
 
 	////
@@ -72,7 +82,7 @@
 	var sepiaFilter = new PIXI.SepiaFilter();
 
 	var sepiaFolder = gui.addFolder('Sepia');
-	sepiaFolder.add(filtersSwitchs, '4').name("apply");
+	sepiaFolder.add(filtersSwitchs, '5').name("apply");
 	sepiaFolder.add(sepiaFilter, 'sepia', 0, 1).name("Sepia");
 
 	////
@@ -80,7 +90,7 @@
 	var twistFilter = new PIXI.TwistFilter();
 
 	var twistFolder = gui.addFolder('Twist');
-	twistFolder.add(filtersSwitchs, '5').name("apply");
+	twistFolder.add(filtersSwitchs, '6').name("apply");
 	twistFolder.add(twistFilter, 'angle', 0, 10).name("Angle");
 	twistFolder.add(twistFilter, 'radius', 0, 1).name("Radius");
 	
@@ -92,7 +102,7 @@
 	var dotScreenFilter = new PIXI.DotScreenFilter();
 
 	var dotScreenFolder = gui.addFolder('DotScreen');
-	dotScreenFolder.add(filtersSwitchs, '6').name("apply");
+	dotScreenFolder.add(filtersSwitchs, '7').name("apply");
 	dotScreenFolder.add(dotScreenFilter, 'angle', 0, 10);
 	dotScreenFolder.add(dotScreenFilter, 'scale', 0, 1);
 
@@ -101,12 +111,28 @@
 	var colorStepFilter = new PIXI.ColorStepFilter();
 	
 	var colorStepFolder = gui.addFolder('ColorStep');
-	colorStepFolder.add(filtersSwitchs, '7').name("apply");
+	colorStepFolder.add(filtersSwitchs, '8').name("apply");
 
 	colorStepFolder.add(colorStepFilter, 'step', 1, 100);
 	colorStepFolder.add(colorStepFilter, 'step', 1, 100);
 
-	var filterCollection = [blurFilter, pixelateFilter, invertFilter, greyFilter, sepiaFilter, twistFilter, dotScreenFilter, colorStepFilter];
+	////
+
+	var crossHatchFilter = new PIXI.CrossHatchFilter();
+	
+	var crossHatchFolder = gui.addFolder('CrossHatch');
+	crossHatchFolder.add(filtersSwitchs, '9').name("apply");
+
+
+//	var filterCollection = [blurFilter, pixelateFilter, invertFilter, greyFilter, sepiaFilter, twistFilter, dotScreenFilter, //colorStepFilter, crossHatchFilter];
+
+	var rgbSplitterFilter = new PIXI.RGBSplitFilter();
+	
+	var rgbSplitFolder = gui.addFolder('RGB Splitter');
+	rgbSplitFolder.add(filtersSwitchs, '10').name("apply");
+
+
+	var filterCollection = [displacementFilter, blurFilter, pixelateFilter, invertFilter, greyFilter, sepiaFilter, twistFilter, dotScreenFilter, colorStepFilter, crossHatchFilter, rgbSplitterFilter];
 
 
 	// create an new instance of a pixi stage
@@ -159,11 +185,9 @@
 	pondContainer.addChild(overlay);
 
 
-	var displacementTexture = PIXI.Texture.fromImage("displacement_map.jpg");
-	var displacementFilter = new PIXI.DisplacementFilter(displacementTexture);
-
 	
-	pondContainer.filters = [displacementFilter];
+	
+	//pondContainer.filters = [displacementFilter];
 
 	
 
@@ -216,7 +240,7 @@
 			if(filtersSwitchs[i])filtersToApply.push(filterCollection[i]);
 		};
 
-		stage.filters = filtersToApply.length > 0 ? filtersToApply : null;
+		pondContainer.filters = filtersToApply.length > 0 ? filtersToApply : null;
 
 		for (var i = 0; i < fishs.length; i++) 
 		{
@@ -249,6 +273,14 @@
 	}
 
 	</script>
+
+	<div style="position:absolute; bottom:0px; left:6px"> 
+
+		<iframe src="//www.facebook.com/plugins/like.php?href=http%3A%2F%2Fwww.goodboydigital.com%2Fpixijs%2Fexamples%2F15%2FindexAll.html&amp;width=100&amp;height=21&amp;colorscheme=light&amp;layout=button_count&amp;action=like&amp;show_faces=true&amp;send=false&amp;appId=544967255569759" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:100px; height:21px;" allowTransparency="true"></iframe>
+
+		<a href="https://twitter.com/share" class="twitter-share-button" data-via="goodboydigital">Tweet</a>
+		<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+	</div>
 
 	</body>
 </html>

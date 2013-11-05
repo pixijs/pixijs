@@ -3,8 +3,10 @@
  */
 
 
-PIXI.WebGLFilterManager = function()
+PIXI.WebGLFilterManager = function(transparent)
 {
+	this.transparent = transparent;
+	
 	this.filterStack = [];
 	this.texturePool = [];
 	
@@ -195,7 +197,7 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
 	// time to render the filters texture to the previous scene
 	if(this.filterStack.length === 0)
 	{
-		gl.colorMask(true, true, true, this.buffer); 
+		gl.colorMask(true, true, true, this.transparent); 
 	}
 	else
 	{

@@ -4,16 +4,72 @@
 		"selected_items":
 		[
 			[
+				"for",
+				"for	for (…) {…}"
+			],
+			[
+				"filters",
+				"filtersSwitchs"
+			],
+			[
 				"fil",
-				"filter"
+				"filtersSwitchs"
+			],
+			[
+				"di",
+				"displacementMap"
+			],
+			[
+				"fis",
+				"fishId"
+			],
+			[
+				"po",
+				"pondContainer"
+			],
+			[
+				"an",
+				"anchor"
+			],
+			[
+				"fish",
+				"fishs"
+			],
+			[
+				"displ",
+				"displacementTexture"
+			],
+			[
+				"pix",
+				"pixelSize"
+			],
+			[
+				"pi",
+				"pixelSize"
+			],
+			[
+				"bg",
+				"bgFront"
+			],
+			[
+				"P",
+				"PixiShader"
+			],
+			[
+				"de",
+				"defaultShader"
+			],
+			[
+				"primi",
+				"primitiveShader"
+			],
+			[
+				"unif",
+				"uniforms"
 			],
 			[
 				"pro",
 				"prototype"
-			],
-			[
-				"for",
-				"for	for (…) {…}"
 			],
 			[
 				"blu",
@@ -60,82 +116,10 @@
 	"buffers":
 	[
 		{
-			"file": "examples/example 16 - Displacement/index.html",
+			"file": "examples/example 15 - Filters/indexAll.html",
 			"settings":
 			{
-				"buffer_size": 4917,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "src/pixi/filters/GreyFilter.js",
-			"settings":
-			{
-				"buffer_size": 986,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "src/pixi/filters/DisplacementFilter.js",
-			"settings":
-			{
-				"buffer_size": 1856,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "src/pixi/renderers/webgl/WebGLRenderGroup.js",
-			"settings":
-			{
-				"buffer_size": 25077,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "src/pixi/textures/RenderTexture.js",
-			"settings":
-			{
-				"buffer_size": 6698,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "examples/example 15 - Filters/indexBlur.html",
-			"settings":
-			{
-				"buffer_size": 2162,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "src/pixi/filters/PixelateFilter.js",
-			"settings":
-			{
-				"buffer_size": 1597,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "src/pixi/renderers/webgl/WebGLFilterManager.js",
-			"settings":
-			{
-				"buffer_size": 12129,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "src/pixi/filters/InvertFilter.js",
-			"settings":
-			{
-				"buffer_size": 1038,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "src/pixi/filters/AbstractFilter.js",
-			"settings":
-			{
-				"buffer_size": 1168,
+				"buffer_size": 8200,
 				"line_ending": "Unix"
 			}
 		}
@@ -143,11 +127,11 @@
 	"build_system": "",
 	"command_palette":
 	{
-		"height": 0.0,
+		"height": 392.0,
 		"selected_items":
 		[
 		],
-		"width": 0.0
+		"width": 467.0
 	},
 	"console":
 	{
@@ -164,34 +148,68 @@
 	},
 	"file_history":
 	[
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/utils/Detector.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/examples/example 15 - Filters/indexAll.html",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/text/Text.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/renderers/webgl/WebGLRenderer.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/examples/example 13 - Graphics/indexLineTest.html",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/renderers/canvas/CanvasRenderer.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/renderers/webgl/WebGLShaders.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/renderers/webgl/PrimitiveShader.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/renderers/webgl/PixiShader.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/test/unit/renderers/CanvasRenderer.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/renderers/canvas/CanvasGraphics.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/filters/CrossHatchFilter.js",
 		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/Gruntfile.js",
-		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/filters/SmartBlurFilter.js",
-		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/filters/SepiaFilter.js",
-		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/filters/ColorMatrixFilter.js",
-		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/filters/BlurYFilter.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/filters/RGBSplitFilter.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/renderers/webgl/WebGLRenderGroup.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/filters/RBGSplitFilter.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/renderers/webgl/WebGLGraphics.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/display/Stage.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/examples/example 13 - Graphics/index.html",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/examples/example 10 - Text/index.html",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/examples/example 9 - Tiling Texture/index.html",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/filters/BlurFilter.js",
 		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/filters/BlurXFilter.js",
-		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/display/DisplayObjectContainer.js",
-		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/test/unit/DisplayObjectContainer.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/filters/InvertFilter.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/filters/GreyFilter.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/filters/BlurYFilter.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/filters/TwistFilter.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/filters/DotScreenFilter.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/filters/ColorStepFilter.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/examples/example 14 - Masking/index double mask.html",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/examples/example 14 - Masking/index nested masks.html",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/examples/example 14 - Masking/index.html",
+		"/Users/matgroves/Library/Application Support/Sublime Text 2/Packages/User/Preferences.sublime-settings",
 		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/renderers/webgl/WebGLFilterManager.js",
 		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/examples/example 16 - Displacement/index.html",
-		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/filters/BlurFilter.js",
-		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/renderers/webgl/WebGLRenderGroup.js",
-		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/display/DisplayObject.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/filters/PixelateFilter.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/filters/AbstractFilter.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/examples/example 15 - Filters/indexDisplacement.html",
 		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/filters/DisplacementFilter.js",
-		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/filters/GreyFilter.js",
-		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/filters/InvertFilter.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/filters/ColorMatrixFilter.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/filters/SepiaFilter.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/InteractionManager.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/utils/EventTarget.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/display/DisplayObject.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/textures/BaseTexture.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/test/unit/Sprite.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/extras/TilingSprite.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/examples/example 15 - Filters/indexBlur.html",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/filters/SmartBlurFilter.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/display/DisplayObjectContainer.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/test/unit/DisplayObjectContainer.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/renderers/webgl/StripShader.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/renderers/webgl/WebGLBatch.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/textures/RenderTexture.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/renderers/webgl/PixiStripShader.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/bin/pixi.dev.js",
+		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/extras/CustomRenderable.js",
 		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/test/unit/DisplayObject.js",
 		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/filters/SmartBlur.js",
 		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/renderers/webgl/filters/FilterManager.js",
-		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/textures/RenderTexture.js",
-		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/renderers/webgl/PixiShader.js",
-		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/examples/example 13 - Graphics/index.html",
 		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/primitives/Graphics.js",
-		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/renderers/webgl/WebGLGraphics.js",
 		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/examples/example 11 - RenderTexture/index.html",
-		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/examples/example 14 - Masking/index.html",
-		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/renderers/webgl/WebGLShaders.js",
-		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/renderers/webgl/WebGLRenderer.js",
 		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/test/unit/renderers/WebGLShaders.js",
 		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/src/pixi/core/Matrix.js",
 		"/Users/matgroves/Dropbox/Development/html/workspace/pixi.js/docs/classes/RenderTexture.html",
@@ -214,6 +232,42 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"displ",
+			"wordWrap",
+			"console.log",
+			"count",
+			"getAttribLocation",
+			"setT",
+			"clear",
+			"filterManager",
+			"center",
+			"angle",
+			"filter",
+			"renderSt",
+			"width",
+			"mapDimensions",
+			"flo",
+			"consol",
+			"	\n",
+			"pad",
+			"shaderProgram",
+			"renderTilingSprite",
+			"sta",
+			"PIXI.currentShader",
+			"primitiveProgram",
+			"shaderProgram",
+			"setun",
+			"2f",
+			"projectionVector",
+			"vertexPositionAttribute",
+			"render",
+			"textureCoordAttribute",
+			"pop",
+			"Filter",
+			"pus",
+			"push",
+			"pushShader",
+			"colorAttribute",
 			"consol",
 			"BlurXFilter",
 			"filter",
@@ -306,23 +360,23 @@
 	"groups":
 	[
 		{
-			"selected": 3,
+			"selected": 0,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "examples/example 16 - Displacement/index.html",
+					"file": "examples/example 15 - Filters/indexAll.html",
 					"settings":
 					{
-						"buffer_size": 4917,
+						"buffer_size": 8200,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3159,
-								3159
+								365,
+								365
 							]
 						],
 						"settings":
@@ -331,269 +385,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1599.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "src/pixi/filters/GreyFilter.js",
-					"settings":
-					{
-						"buffer_size": 986,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								662,
-								662
-							],
-							[
-								738,
-								738
-							],
-							[
-								778,
-								778
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
-						},
-						"translation.x": 0.0,
 						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "src/pixi/filters/DisplacementFilter.js",
-					"settings":
-					{
-						"buffer_size": 1856,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1271,
-								1271
-							],
-							[
-								1355,
-								1355
-							],
-							[
-								1403,
-								1403
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 159.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "src/pixi/renderers/webgl/WebGLRenderGroup.js",
-					"settings":
-					{
-						"buffer_size": 25077,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								4449,
-								4449
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 3015.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "src/pixi/textures/RenderTexture.js",
-					"settings":
-					{
-						"buffer_size": 6698,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								5441,
-								5455
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 2750.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "examples/example 15 - Filters/indexBlur.html",
-					"settings":
-					{
-						"buffer_size": 2162,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1657,
-								1657
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML/HTML.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 702.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "src/pixi/filters/PixelateFilter.js",
-					"settings":
-					{
-						"buffer_size": 1597,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								664,
-								664
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 74.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "src/pixi/renderers/webgl/WebGLFilterManager.js",
-					"settings":
-					{
-						"buffer_size": 12129,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3743,
-								3743
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 2171.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"file": "src/pixi/filters/InvertFilter.js",
-					"settings":
-					{
-						"buffer_size": 1038,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								703,
-								703
-							],
-							[
-								781,
-								781
-							],
-							[
-								823,
-								823
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "src/pixi/filters/AbstractFilter.js",
-					"settings":
-					{
-						"buffer_size": 1168,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								980,
-								982
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 74.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -643,8 +435,168 @@
 		"selected_items":
 		[
 			[
+				"indexall",
+				"examples/example 15 - Filters/indexAll.html"
+			],
+			[
+				"dete",
+				"src/pixi/utils/Detector.js"
+			],
+			[
+				"webglren",
+				"src/pixi/renderers/webgl/WebGLRenderGroup.js"
+			],
+			[
+				"rgb",
+				"src/pixi/filters/RGBSplitFilter.js"
+			],
+			[
+				"grun",
+				"Gruntfile.js"
+			],
+			[
+				"crossha",
+				"src/pixi/filters/CrossHatchFilter.js"
+			],
+			[
+				"text",
+				"src/pixi/text/Text.js"
+			],
+			[
+				"webglgr",
+				"src/pixi/renderers/webgl/WebGLGraphics.js"
+			],
+			[
+				"canvas",
+				"src/pixi/renderers/canvas/CanvasGraphics.js"
+			],
+			[
+				"pixisha",
+				"src/pixi/renderers/webgl/PixiShader.js"
+			],
+			[
+				"sta",
+				"src/pixi/display/Stage.js"
+			],
+			[
+				"ind",
+				"examples/example 13 - Graphics/index.html"
+			],
+			[
+				"webglgrap",
+				"src/pixi/renderers/webgl/WebGLGraphics.js"
+			],
+			[
+				"indexlinete",
+				"examples/example 13 - Graphics/indexLineTest.html"
+			],
+			[
+				"detec",
+				"src/pixi/utils/Detector.js"
+			],
+			[
+				"index",
+				"examples/example 10 - Text/index.html"
+			],
+			[
+				"index.html",
+				"examples/example 9 - Tiling Texture/index.html"
+			],
+			[
+				"tex",
+				"src/pixi/text/Text.js"
+			],
+			[
+				"indexnest",
+				"examples/example 14 - Masking/index nested masks.html"
+			],
+			[
+				"indexdouble",
+				"examples/example 14 - Masking/index double mask.html"
+			],
+			[
+				"filterma",
+				"src/pixi/renderers/webgl/WebGLFilterManager.js"
+			],
+			[
+				"bl",
+				"src/pixi/filters/BlurXFilter.js"
+			],
+			[
+				"blurfi",
+				"src/pixi/filters/BlurFilter.js"
+			],
+			[
+				"indexa",
+				"examples/example 15 - Filters/indexAll.html"
+			],
+			[
+				"interac",
+				"src/pixi/InteractionManager.js"
+			],
+			[
+				"even",
+				"src/pixi/utils/EventTarget.js"
+			],
+			[
+				"sprite",
+				"test/unit/Sprite.js"
+			],
+			[
+				"base",
+				"src/pixi/textures/BaseTexture.js"
+			],
+			[
 				"webglr",
 				"src/pixi/renderers/webgl/WebGLRenderGroup.js"
+			],
+			[
+				"displa",
+				"src/pixi/filters/DisplacementFilter.js"
+			],
+			[
+				"tilings",
+				"src/pixi/extras/TilingSprite.js"
+			],
+			[
+				"indexbl",
+				"examples/example 15 - Filters/indexBlur.html"
+			],
+			[
+				"indexdis",
+				"examples/example 15 - Filters/indexDisplacement.html"
+			],
+			[
+				"displayobjectcon",
+				"src/pixi/display/DisplayObjectContainer.js"
+			],
+			[
+				"inde",
+				"examples/example 9 - Tiling Texture/index.html"
+			],
+			[
+				"grunt",
+				"Gruntfile.js"
+			],
+			[
+				"rendert",
+				"src/pixi/textures/RenderTexture.js"
+			],
+			[
+				"custom",
+				"src/pixi/extras/CustomRenderable.js"
+			],
+			[
+				"webgls",
+				"src/pixi/renderers/webgl/WebGLShaders.js"
+			],
+			[
+				"webglsh",
+				"src/pixi/renderers/webgl/WebGLShaders.js"
+			],
+			[
+				"pixish",
+				"src/pixi/renderers/webgl/PixiShader.js"
 			],
 			[
 				"displayobjectco",
@@ -675,44 +627,12 @@
 				"src/pixi/filters/GreyFilter.js"
 			],
 			[
-				"grun",
-				"Gruntfile.js"
-			],
-			[
 				"webgle",
 				"src/pixi/renderers/webgl/WebGLRenderGroup.js"
 			],
 			[
-				"displa",
-				"src/pixi/display/DisplayObject.js"
-			],
-			[
-				"index",
-				"examples/example 16 - Displacement/index.html"
-			],
-			[
-				"ind",
-				"examples/example 13 - Graphics/index.html"
-			],
-			[
-				"grunt",
-				"Gruntfile.js"
-			],
-			[
-				"webglgr",
-				"src/pixi/renderers/webgl/WebGLGraphics.js"
-			],
-			[
-				"webglsh",
-				"src/pixi/renderers/webgl/WebGLShaders.js"
-			],
-			[
 				"webglsha",
 				"test/unit/renderers/WebGLShaders.js"
-			],
-			[
-				"webglren",
-				"src/pixi/renderers/webgl/WebGLRenderer.js"
 			],
 			[
 				"webgl",
@@ -727,16 +647,8 @@
 				"examples/example 13 - Graphics/index.html"
 			],
 			[
-				"inde",
-				"examples/example 14 - Masking/index.html"
-			],
-			[
 				"rendertexture",
 				"src/pixi/textures/RenderTexture.js"
-			],
-			[
-				"rendert",
-				"docs/classes/RenderTexture.html"
 			],
 			[
 				"matrix",

@@ -15,16 +15,18 @@
  * @contructor
  * @param gl {WebGLContext} An instance of the webGL context
  */
-PIXI.WebGLRenderGroup = function(gl)
+PIXI.WebGLRenderGroup = function(gl, transparent)
 {
 	this.gl = gl;
 	this.root;
 	
 	this.backgroundColor;
+	this.transparent = transparent == undefined ? true : transparent;
+	
 	this.batchs = [];
 	this.toRemove = [];
-	
-	this.filterManager = new PIXI.WebGLFilterManager();
+	console.log(this.transparent)
+	this.filterManager = new PIXI.WebGLFilterManager(this.transparent);
 }
 
 // constructor

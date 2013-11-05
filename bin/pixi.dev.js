@@ -2200,7 +2200,8 @@ PIXI.Text.prototype.determineFontHeight = function(fontStyle)
 };
 
 /**
- * A Text Object will apply wordwrap
+ * Applies newlines to a string to have it optimally fit into the horizontal
+ * bounds set by the Text object's wordWrapWidth property.
  *
  * @method wordWrap
  * @param text {String}
@@ -2208,48 +2209,37 @@ PIXI.Text.prototype.determineFontHeight = function(fontStyle)
  */
 PIXI.Text.prototype.wordWrap = function(text)
 {
-	// search good wrap position
-	var searchWrapPos = function(ctx, text, start, end, wrapWidth)
-	{
-		var p = Math.floor((end-start) / 2) + start;
-		if(p == start) {
-			return 1;
-		}
-
-		if(ctx.measureText(text.substring(0,p)).width <= wrapWidth)
-		{
-			if(ctx.measureText(text.substring(0,p+1)).width > wrapWidth)
-			{
-				return p;
-			}
-			else
-			{
-				return arguments.callee(ctx, text, p, end, wrapWidth);
-			}
-		}
-		else
-		{
-			return arguments.callee(ctx, text, start, p, wrapWidth);
-		}
-	};
-
-	var lineWrap = function(ctx, text, wrapWidth)
-	{
-		if(ctx.measureText(text).width <= wrapWidth || text.length < 1)
-		{
-			return text;
-		}
-		var pos = searchWrapPos(ctx, text, 0, text.length, wrapWidth);
-		return text.substring(0, pos) + "\n" + arguments.callee(ctx, text.substring(pos), wrapWidth);
-	};
-
+	// Greedy wrapping algorithm that will wrap words as the line grows longer
+	// than its horizontal bounds.
 	var result = "";
 	var lines = text.split("\n");
 	for (var i = 0; i < lines.length; i++)
 	{
-		result += lineWrap(this.context, lines[i], this.style.wordWrapWidth) + "\n";
+		var spaceLeft = this.style.wordWrapWidth;
+		var words = lines[i].split(" ");
+		for (var j = 0; j < words.length; j++)
+		{
+			var wordWidth = this.context.measureText(words[j]).width;
+			var wordWidthWithSpace = wordWidth + this.context.measureText(" ").width;
+			if(wordWidthWithSpace > spaceLeft)
+			{
+				// Skip printing the newline if it's the first word of the line that is
+				// greater than the word wrap width.
+				if(j > 0)
+				{
+					result += "\n";
+				}
+				result += words[j] + " ";
+				spaceLeft = this.style.wordWrapWidth - wordWidth;
+			}
+			else
+			{
+				spaceLeft -= wordWidthWithSpace;
+				result += words[j] + " ";
+			}
+		}
+		result += "\n";
 	}
-
 	return result;
 };
 
@@ -4674,8 +4664,8 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
 
 	//PIXI.pushShader(PIXI.defaultShader);
 
-    this.stageRenderGroup = new PIXI.WebGLRenderGroup(this.gl);
-    
+    this.stageRenderGroup = new PIXI.WebGLRenderGroup(this.gl, this.transparent);
+  //  this.stageRenderGroup. = this.transparent
 }
 
 // constructor
@@ -5534,16 +5524,18 @@ PIXI.WebGLBatch.prototype.render = function(start, end)
  * @contructor
  * @param gl {WebGLContext} An instance of the webGL context
  */
-PIXI.WebGLRenderGroup = function(gl)
+PIXI.WebGLRenderGroup = function(gl, transparent)
 {
 	this.gl = gl;
 	this.root;
 	
 	this.backgroundColor;
+	this.transparent = transparent == undefined ? true : transparent;
+	
 	this.batchs = [];
 	this.toRemove = [];
-	
-	this.filterManager = new PIXI.WebGLFilterManager();
+	console.log(this.transparent)
+	this.filterManager = new PIXI.WebGLFilterManager(this.transparent);
 }
 
 // constructor
@@ -6552,8 +6544,10 @@ PIXI.WebGLRenderGroup.prototype.initStrip = function(strip)
  */
 
 
-PIXI.WebGLFilterManager = function()
+PIXI.WebGLFilterManager = function(transparent)
 {
+	this.transparent = transparent;
+	
 	this.filterStack = [];
 	this.texturePool = [];
 	
@@ -6744,7 +6738,7 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
 	// time to render the filters texture to the previous scene
 	if(this.filterStack.length === 0)
 	{
-		gl.colorMask(true, true, true, this.buffer); 
+		gl.colorMask(true, true, true, this.transparent); 
 	}
 	else
 	{
@@ -12156,6 +12150,127 @@ Object.defineProperty(PIXI.DotScreenFilter.prototype, 'angle', {
     	this.uniforms.angle.value = value;
     }
 });
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+
+
+PIXI.CrossHatchFilter = function()
+{
+	PIXI.AbstractFilter.call( this );
+	
+	this.passes = [this];
+	
+	// set the uniforms
+	this.uniforms = {
+		blur: {type: 'f', value: 1/512},
+	};
+	
+	this.fragmentSrc = [
+	  "precision mediump float;",
+	  "varying vec2 vTextureCoord;",
+	  "varying float vColor;",
+	  "uniform float blur;",
+	  "uniform sampler2D uSampler;",
+	    "void main(void) {",
+	  	
+	    
+		"    float lum = length(texture2D(uSampler, vTextureCoord.xy).rgb);",
+		"     ",
+		"    gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);",
+		"     ",
+		"    if (lum < 1.00) {",
+		"        if (mod(gl_FragCoord.x + gl_FragCoord.y, 10.0) == 0.0) {",
+		"            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);",
+		"        }",
+		"    }",
+		"     ",
+		"    if (lum < 0.75) {",
+		"        if (mod(gl_FragCoord.x - gl_FragCoord.y, 10.0) == 0.0) {",
+		"            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);",
+		"        }",
+		"    }",
+		"     ",
+		"    if (lum < 0.50) {",
+		"        if (mod(gl_FragCoord.x + gl_FragCoord.y - 5.0, 10.0) == 0.0) {",
+		"            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);",
+		"        }",
+		"    }",
+		"     ",
+		"    if (lum < 0.3) {",
+		"        if (mod(gl_FragCoord.x - gl_FragCoord.y - 5.0, 10.0) == 0.0) {",
+		"            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);",
+		"        }",
+		"    }",
+		"}"
+	];
+}
+
+PIXI.CrossHatchFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
+PIXI.CrossHatchFilter.prototype.constructor = PIXI.BlurYFilter;
+
+Object.defineProperty(PIXI.CrossHatchFilter.prototype, 'blur', {
+    get: function() {
+        return this.uniforms.blur.value / (1/7000);
+    },
+    set: function(value) {
+    	//this.padding = value;
+    	this.uniforms.blur.value = (1/7000) * value;
+    }
+});
+
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+
+
+PIXI.RGBSplitFilter = function()
+{
+	PIXI.AbstractFilter.call( this );
+	
+	this.passes = [this];
+	
+	// set the uniforms
+	this.uniforms = {
+		red: {type: 'f2', value: {x:20, y:20}},
+		green: {type: 'f2', value: {x:-20, y:20}},
+		blue: {type: 'f2', value: {x:20, y:-20}},
+		dimensions:   {type: 'f4', value:[0,0,0,0]}
+	};
+	
+	this.fragmentSrc = [
+	  "precision mediump float;",
+	  "varying vec2 vTextureCoord;",
+	  "varying float vColor;",
+	  "uniform vec2 red;",
+	  "uniform vec2 green;",
+	  "uniform vec2 blue;",
+	  "uniform vec4 dimensions;",
+	  "uniform sampler2D uSampler;",
+	    "void main(void) {",
+	  	  "gl_FragColor.r = texture2D(uSampler, vTextureCoord + red/dimensions.xy).r;",
+	  	  "gl_FragColor.g = texture2D(uSampler, vTextureCoord + green/dimensions.xy).g;",
+	  	  "gl_FragColor.b = texture2D(uSampler, vTextureCoord + blue/dimensions.xy).b;",
+	  	  "gl_FragColor.a = texture2D(uSampler, vTextureCoord).a;",
+	  "}"
+	];
+}
+
+PIXI.RGBSplitFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
+PIXI.RGBSplitFilter.prototype.constructor = PIXI.RGBSplitFilter;
+
+Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'angle', {
+    get: function() {
+        return this.uniforms.blur.value / (1/7000);
+    },
+    set: function(value) {
+    	//this.padding = value;
+    	this.uniforms.blur.value = (1/7000) * value;
+    }
+});
+
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */

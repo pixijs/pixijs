@@ -94,8 +94,8 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
 
 	//PIXI.pushShader(PIXI.defaultShader);
 
-    this.stageRenderGroup = new PIXI.WebGLRenderGroup(this.gl);
-    
+    this.stageRenderGroup = new PIXI.WebGLRenderGroup(this.gl, this.transparent);
+  //  this.stageRenderGroup. = this.transparent
 }
 
 // constructor
