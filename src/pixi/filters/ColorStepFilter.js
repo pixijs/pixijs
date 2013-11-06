@@ -6,7 +6,7 @@
 /**
  * 
  * This turns your displayObjects to black and white.
- * @class GreyFilter
+ * @class ColorStepFilter
  * @contructor
  */
 PIXI.ColorStepFilter = function()
