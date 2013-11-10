@@ -85,7 +85,7 @@ PIXI.AssetLoader.prototype.load = function()
     for (var i=0; i < this.assetURLs.length; i++)
 	{
 		var fileName = this.assetURLs[i];
-		var fileType = fileName.split(".").pop().toLowerCase();
+		var fileType = fileName.split("?").shift().split(".").pop().toLowerCase();
 
         var loaderClass = this.loadersByType[fileType];
         if(!loaderClass)
