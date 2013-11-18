@@ -1,4 +1,15 @@
 /**
+ * @license
+ * Pixi.JS - v1.3.0
+ * Copyright (c) 2012, Mat Groves
+ * http://goodboydigital.com/
+ *
+ * Compiled: 2013-11-18
+ *
+ * Pixi.JS is licensed under the MIT License.
+ * http://www.opensource.org/licenses/mit-license.php
+ */
+/**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
@@ -2760,7 +2771,7 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
 		{
 			item.__mouseIsDown = true;
 			item.__hit = this.hitTest(item, this.mouse);
-			
+		//	console.log("mousedown" +  " : " + item.__hit)
 			if(item.__hit)
 			{
 				//call the function!
@@ -2858,6 +2869,9 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 {
 	var global = interactionData.global;
 	
+//	console.log(item.vcount + " : " + PIXI.visibleCount);
+
+
 	if(item.vcount !== PIXI.visibleCount)return false;
 
 	var isSprite = (item instanceof PIXI.Sprite),
@@ -3837,7 +3851,7 @@ PIXI.PixiShader.prototype.init = function()
     {
        
     	// get the uniform locations..
-	//	program[key] = 
+	    //	program[key] = 
         this.uniforms[key].uniformLocation = gl.getUniformLocation(program, key);
 
       
@@ -9974,6 +9988,9 @@ PIXI.BaseTexture.prototype.destroy = function()
 {
 	if(this.source instanceof Image)
 	{
+		// removeFrom Cache
+		PIXI.BaseTextureCache[this.source.src] = null;
+
 		this.source.src = null;
 	}
 	this.source = null;
@@ -9992,6 +10009,8 @@ PIXI.BaseTexture.prototype.destroy = function()
 PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin)
 {
 	var baseTexture = PIXI.BaseTextureCache[imageUrl];
+
+
 	if(!baseTexture)
 	{
 		// new Image() breaks tex loading in some versions of Chrome.
@@ -12286,4 +12305,3 @@ Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'angle', {
         root.PIXI = PIXI;
     }
 }).call(this);
-//@ sourceMappingURL=pixi.dev.js.map
