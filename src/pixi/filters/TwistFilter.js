@@ -16,9 +16,9 @@ PIXI.TwistFilter = function()
 	
 	// set the uniforms
 	this.uniforms = {
-		radius: {type: 'f', value:0.5},
-		angle: {type: 'f', value:5},
-		offset: {type: 'f2', value:{x:0.5, y:0.5}},
+		radius: {type: '1f', value:0.5},
+		angle: {type: '1f', value:5},
+		offset: {type: '2f', value:{x:0.5, y:0.5}},
 	};
 
 	this.fragmentSrc = [

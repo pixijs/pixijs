@@ -16,7 +16,7 @@ PIXI.InvertFilter = function()
 	
 	// set the uniforms
 	this.uniforms = {
-		invert: {type: 'f', value: 1},
+		invert: {type: '1f', value: 1},
 	};
 	
 	this.fragmentSrc = [
