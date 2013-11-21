@@ -197,7 +197,7 @@ PIXI.PixiShader.prototype.syncUniforms = function()
         }
         else if (type == "sampler2D")
         {
-            if (this.uniforms[key].value.baseTexture.hasLoaded)
+            if (this.uniforms[key].value && this.uniforms[key].value.baseTexture.hasLoaded)
             {
                 var texture = this.uniforms[key].value.baseTexture._glTexture;
                 var image = this.uniforms[key].value.baseTexture.source;
