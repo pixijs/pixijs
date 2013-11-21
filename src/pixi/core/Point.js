@@ -38,6 +38,18 @@ PIXI.Point.prototype.clone = function()
 	return new PIXI.Point(this.x, this.y);
 }
 
+/**
+ * Sets the point's attributes
+ *
+ * @method set
+ * @param x {Number} position of the point
+ * @param y {Number} position of the point
+ */
+PIXI.Point.prototype.set = function(x, y) {
+	this.x = x;
+	this.y = y;
+}
+
 // constructor
 PIXI.Point.prototype.constructor = PIXI.Point;
 
