@@ -91,6 +91,7 @@ PIXI.BaseTexture = function(source)
 		PIXI.texturesToUpdate.push(this);
 	}
 
+	this.imageUrl = null;
 	this._powerOf2 = false;
 }
 
@@ -103,11 +104,11 @@ PIXI.BaseTexture.prototype.constructor = PIXI.BaseTexture;
  */
 PIXI.BaseTexture.prototype.destroy = function()
 {
-	if(this.source instanceof Image)
+	if(this.source && this.source instanceof Image)
 	{
-		// removeFrom Cache
-		PIXI.BaseTextureCache[this.source.src] = null;
-
+		if (this.imageUrl in PIXI.BaseTextureCache) 
+			delete PIXI.BaseTextureCache[this.imageUrl];
+		this.imageUrl = null;
 		this.source.src = null;
 	}
 	this.source = null;
@@ -139,6 +140,7 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin)
 		}
 		image.src = imageUrl;
 		baseTexture = new PIXI.BaseTexture(image);
+		baseTexture.imageUrl = imageUrl;
 		PIXI.BaseTextureCache[imageUrl] = baseTexture;
 	}
 
