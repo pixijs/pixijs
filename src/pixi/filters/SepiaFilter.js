@@ -18,7 +18,7 @@ PIXI.SepiaFilter = function()
 	
 	// set the uniforms
 	this.uniforms = {
-		sepia: {type: 'f', value: 1},
+		sepia: {type: '1f', value: 1},
 	};
 	
 	this.fragmentSrc = [

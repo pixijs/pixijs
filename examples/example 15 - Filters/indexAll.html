@@ -13,7 +13,7 @@
 	<script src="../../bin/pixi.dev.js"></script>
 	<script src="dat.gui.min.js"></script>
 	
-	<script src="pixi.js"></script>
+	<!-- <script src="pixi.js"></script> -->
 </head>
 <body>
 	<script>
@@ -71,11 +71,11 @@
 
 	////
 
-	var greyFilter = new PIXI.GreyFilter();
+	var grayFilter = new PIXI.GrayFilter();
 
-	var greyFolder = gui.addFolder('Grey');
-	greyFolder.add(filtersSwitchs, '4').name("apply");
-	greyFolder.add(greyFilter, 'grey', 0, 1).name("Grey");
+	var grayFolder = gui.addFolder('Gray');
+	grayFolder.add(filtersSwitchs, '4').name("apply");
+	grayFolder.add(grayFilter, 'gray', 0, 1).name("Gray");
 
 	////
 
@@ -124,7 +124,7 @@
 	crossHatchFolder.add(filtersSwitchs, '9').name("apply");
 
 
-//	var filterCollection = [blurFilter, pixelateFilter, invertFilter, greyFilter, sepiaFilter, twistFilter, dotScreenFilter, //colorStepFilter, crossHatchFilter];
+//	var filterCollection = [blurFilter, pixelateFilter, invertFilter, grayFilter, sepiaFilter, twistFilter, dotScreenFilter, //colorStepFilter, crossHatchFilter];
 
 	var rgbSplitterFilter = new PIXI.RGBSplitFilter();
 	
@@ -132,7 +132,7 @@
 	rgbSplitFolder.add(filtersSwitchs, '10').name("apply");
 
 
-	var filterCollection = [displacementFilter, blurFilter, pixelateFilter, invertFilter, greyFilter, sepiaFilter, twistFilter, dotScreenFilter, colorStepFilter, crossHatchFilter, rgbSplitterFilter];
+	var filterCollection = [displacementFilter, blurFilter, pixelateFilter, invertFilter, grayFilter, sepiaFilter, twistFilter, dotScreenFilter, colorStepFilter, crossHatchFilter, rgbSplitterFilter];
 
 
 	// create an new instance of a pixi stage
@@ -267,7 +267,7 @@
 		
 		overlay.tilePosition.x = count * -10//blurAmount * 40;
 		overlay.tilePosition.y = count * -10
-		
+
 	    renderer.render(stage);
 	    requestAnimFrame( animate );
 	}

@@ -17,7 +17,7 @@ PIXI.GrayFilter = function()
 	
 	// set the uniforms
 	this.uniforms = {
-		gray: {type: 'f', value: 1},
+		gray: {type: '1f', value: 1},
 	};
 	
 	this.fragmentSrc = [

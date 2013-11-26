@@ -17,9 +17,9 @@ PIXI.DotScreenFilter = function()
 	
 	// set the uniforms
 	this.uniforms = {
-		scale: {type: 'f', value:1},
-		angle: {type: 'f', value:5},
-		dimensions:   {type: 'f4', value:[0,0,0,0]}
+		scale: {type: '1f', value:1},
+		angle: {type: '1f', value:5},
+		dimensions:   {type: '4fv', value:[0,0,0,0]}
 	};
 
 	this.fragmentSrc = [
