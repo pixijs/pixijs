@@ -57,6 +57,16 @@ PIXI.MovieClip = function(textures)
 	 * @readOnly
 	 */
 	this.currentFrame = 0; 
+
+	/**
+	 * [read-only] return the textures array length
+	 *
+	 * @property currentFrame
+	 * @type Number
+	 * @default 0
+	 * @readOnly
+	 */
+	this.totalFrames = textures.length;
 	
 	/**
 	 * [read-only] Indicates if the MovieClip is currently playing
@@ -101,9 +111,8 @@ PIXI.MovieClip.prototype.play = function()
 PIXI.MovieClip.prototype.gotoAndStop = function(frameNumber)
 {
 	this.playing = false;
-	this.currentFrame = frameNumber;
-	var round = (this.currentFrame + 0.5) | 0;
-	this.setTexture(this.textures[round % this.textures.length]);
+	this.currentFrame = (frameNumber + 0.5) | 0;
+	this.setTexture(this.textures[this.currentFrame % this.totalFrames]);
 }
 
 /**
@@ -132,15 +141,14 @@ PIXI.MovieClip.prototype.updateTransform = function()
 	
 	this.currentFrame += this.animationSpeed;
 	
-	var round = (this.currentFrame + 0.5) | 0;
+	this.currentFrame = ((this.currentFrame + 0.5) | 0) % this.totalFrames;	
 	
-	if(this.loop || round < this.textures.length)
+	if(this.loop || this.currentFrame < this.totalFrames-1)
 	{
-		this.setTexture(this.textures[round % this.textures.length]);
+		this.setTexture(this.textures[this.currentFrame % this.totalFrames]);
 	}
-	else if(round >= this.textures.length)
+	else if(this.currentFrame == this.totalFrames-1)
 	{
-		this.gotoAndStop(this.textures.length - 1);
 		if(this.onComplete)
 		{
 			this.onComplete();
