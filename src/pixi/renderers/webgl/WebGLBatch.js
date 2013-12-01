@@ -429,11 +429,11 @@ PIXI.WebGLBatch.prototype.update = function()
 			// TODO trim??
 			aX = displayObject.anchor.x;// - displayObject.texture.trim.x
 			aY = displayObject.anchor.y; //- displayObject.texture.trim.y
-			w0 = width * (1-aX);
-			w1 = width * -aX;
+			w0 = ( width * (1-aX) ) | 0;
+			w1 = ( width * -aX ) | 0;
 
-			h0 = height * (1-aY);
-			h1 = height * -aY;
+			h0 = ( height * (1-aY) ) | 0;
+			h1 = ( height * -aY ) | 0;
 
 			index = indexRun * 8;
 
