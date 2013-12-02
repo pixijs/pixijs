@@ -135,7 +135,7 @@ PIXI.BitmapText.prototype.updateText = function()
         this.addChild(c);
     }
 
-    this.width = pos.x * scale;
+    this.width = maxLineWidth * scale;
     this.height = (pos.y + data.lineHeight) * scale;
 };
 
