@@ -51,11 +51,25 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
 	 */
 	this.context = this.view.getContext("2d");
 
+	//some filter variables
+	this.smoothProperty = null;
+
+	if('imageSmoothingEnabled' in this.context)
+		this.smoothProperty = 'imageSmoothingEnabled';
+	else if('webkitImageSmoothingEnabled' in this.context)
+		this.smoothProperty = 'webkitImageSmoothingEnabled';
+	else if('mozImageSmoothingEnabled' in this.context)
+		this.smoothProperty = 'mozImageSmoothingEnabled';
+	else if('oImageSmoothingEnabled' in this.context)
+		this.smoothProperty = 'oImageSmoothingEnabled';
+
+	this.scaleMode = null;
+
 	this.refresh = true;
 	// hack to enable some hardware acceleration!
 	//this.view.style["transform"] = "translatez(0)";
 	
-    this.view.width = this.width;
+	this.view.width = this.width;
 	this.view.height = this.height;  
 	this.count = 0;
 }
@@ -171,8 +185,14 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 				context.globalAlpha = displayObject.worldAlpha;
 				
 				context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
+
+				//if smoothingEnabled is supported and we need to change the smoothing property for this texture
+				if(this.smoothProperty && this.scaleMode !== displayObject.texture.baseTexture.scaleMode) {
+					this.scaleMode = displayObject.texture.baseTexture.scaleMode;
+					context[this.smoothProperty] = (this.scaleMode === PIXI.BaseTexture.SCALE_MODE.LINEAR);
+				}
 					
-				context.drawImage(displayObject.texture.baseTexture.source, 
+				context.drawImage(displayObject.texture.baseTexture.source,
 								   frame.x,
 								   frame.y,
 								   frame.width,
