@@ -57,16 +57,6 @@ PIXI.MovieClip = function(textures)
 	 * @readOnly
 	 */
 	this.currentFrame = 0; 
-
-	/**
-	 * [read-only] return the textures array length
-	 *
-	 * @property currentFrame
-	 * @type Number
-	 * @default 0
-	 * @readOnly
-	 */
-	this.totalFrames = textures.length;
 	
 	/**
 	 * [read-only] Indicates if the MovieClip is currently playing
@@ -127,6 +117,12 @@ PIXI.MovieClip.prototype.gotoAndPlay = function(frameNumber)
 	this.playing = true;
 }
 
+Object.defineProperty(PIXI.MovieClip.prototype, 'totalFrames', {
+    get: function() {
+        return this.textures.length;
+    }
+});
+
 /*
  * Updates the object transform for rendering
  *
@@ -155,3 +151,5 @@ PIXI.MovieClip.prototype.updateTransform = function()
 		}
 	}
 }
+
+
