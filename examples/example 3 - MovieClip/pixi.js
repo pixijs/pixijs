@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-10-17
+ * Compiled: 2013-12-04
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -1874,9 +1874,8 @@ PIXI.MovieClip.prototype.play = function()
 PIXI.MovieClip.prototype.gotoAndStop = function(frameNumber)
 {
 	this.playing = false;
-	this.currentFrame = frameNumber;
-	var round = (this.currentFrame + 0.5) | 0;
-	this.setTexture(this.textures[round % this.textures.length]);
+	this.currentFrame = (frameNumber + 0.5) | 0;
+	this.setTexture(this.textures[this.currentFrame % this.totalFrames]);
 }
 
 /**
@@ -1890,6 +1889,12 @@ PIXI.MovieClip.prototype.gotoAndPlay = function(frameNumber)
 	this.currentFrame = frameNumber;
 	this.playing = true;
 }
+
+Object.defineProperty(PIXI.MovieClip.prototype, 'totalFrames', {
+    get: function() {
+        return this.textures.length;
+    }
+});
 
 /*
  * Updates the object transform for rendering
@@ -1905,21 +1910,23 @@ PIXI.MovieClip.prototype.updateTransform = function()
 	
 	this.currentFrame += this.animationSpeed;
 	
-	var round = (this.currentFrame + 0.5) | 0;
+	this.currentFrame = ((this.currentFrame + 0.5) | 0) % this.totalFrames;	
 	
-	if(this.loop || round < this.textures.length)
+	if(this.loop || this.currentFrame < this.totalFrames-1)
 	{
-		this.setTexture(this.textures[round % this.textures.length]);
+		this.setTexture(this.textures[this.currentFrame % this.totalFrames]);
 	}
-	else if(round >= this.textures.length)
+	else if(this.currentFrame == this.totalFrames-1)
 	{
-		this.gotoAndStop(this.textures.length - 1);
 		if(this.onComplete)
 		{
 			this.onComplete();
 		}
 	}
 }
+
+
+
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
