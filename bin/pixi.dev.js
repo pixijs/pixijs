@@ -1553,14 +1553,17 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 		
 		if(this.last == childLast)
 		{
+
 			var tempLast =  childFirst._iPrev;	
 			// need to make sure the parents last is updated too
 			var updateLast = this;
-			while(updateLast.last == childLast.last)
+			
+			while(updateLast.last == childLast)
 			{
 				updateLast.last = tempLast;
 				updateLast = updateLast.parent;
 				if(!updateLast)break;
+				
 			}
 		}
 		
