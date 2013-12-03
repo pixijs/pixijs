@@ -226,27 +226,7 @@ PIXI.PixiShader.prototype.syncUniforms = function()
     //  This would probably be faster in an array and it would guarantee key order
     for (var key in this.uniforms) 
     {
-<<<<<<< HEAD
-    	//var 
-    	var type = this.uniforms[key].type;
-    	
-    	// need to grow this!
-    	if(type == "f")
-    	{
-			gl.uniform1f(this.uniforms[key].uniformLocation, this.uniforms[key].value);
-    	}
-    	if(type == "f2")
-    	{
-    	//	console.log(this.program[key])
-			gl.uniform2f(this.uniforms[key].uniformLocation, this.uniforms[key].value.x, this.uniforms[key].value.y);
-    	}
-        if(type == "f3")
-        {
-        //  console.log(this.program[key])
-            gl.uniform3fv(this.uniforms[key].uniformLocation, this.uniforms[key].value);
-        }
-        else if(type == "f4")
-=======
+
         uniform = this.uniforms[key];
 
         if (uniform.glValueLength == 1)
@@ -269,7 +249,6 @@ PIXI.PixiShader.prototype.syncUniforms = function()
             uniform.glFunc.call(PIXI.gl, uniform.uniformLocation, uniform.value.x, uniform.value.y, uniform.value.z);
         }
         else if (uniform.glValueLength == 4)
->>>>>>> pr/406
         {
             uniform.glFunc.call(PIXI.gl, uniform.uniformLocation, uniform.value.x, uniform.value.y, uniform.value.z, uniform.value.w);
         }

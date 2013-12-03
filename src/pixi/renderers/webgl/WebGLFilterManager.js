@@ -70,9 +70,9 @@ PIXI.WebGLFilterManager.prototype.pushFilter = function(filterBlock)
 	filterArea.height += padidng * 2;
 
 	// cap filter to screen size..
-	//if(filterArea.x < 0)filterArea.x = 0;	
+	if(filterArea.x < 0)filterArea.x = 0;	
 	if(filterArea.width > this.width)filterArea.width = this.width;
-	//if(filterArea.y < 0)filterArea.y = 0;	
+	if(filterArea.y < 0)filterArea.y = 0;	
 	if(filterArea.height > this.height)filterArea.height = this.height;
 
 
