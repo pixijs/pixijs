@@ -16,9 +16,9 @@ PIXI.PixelateFilter = function()
 	
 	// set the uniforms
 	this.uniforms = {
-		invert: {type: 'f', value: 0},
-		dimensions: {type: 'f4', value:new Float32Array([10000, 100, 10, 10])},
-		pixelSize: {type: 'f2', value:{x:10, y:10}},
+		invert: {type: '1f', value: 0},
+		dimensions: {type: '4fv', value:new Float32Array([10000, 100, 10, 10])},
+		pixelSize: {type: '2f', value:{x:10, y:10}},
 	};
 
 	this.fragmentSrc = [

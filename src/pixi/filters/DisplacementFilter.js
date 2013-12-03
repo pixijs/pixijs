@@ -23,10 +23,10 @@ PIXI.DisplacementFilter = function(texture)
 	//console.log()
 	this.uniforms = {
 		displacementMap: {type: 'sampler2D', value:texture},
-		scale:			 {type: 'f2', value:{x:30, y:30}},
-		offset:			 {type: 'f2', value:{x:0, y:0}},
-		mapDimensions:   {type: 'f2', value:{x:1, y:5112}},
-		dimensions:   {type: 'f4', value:[0,0,0,0]}
+		scale:			 {type: '2f', value:{x:30, y:30}},
+		offset:			 {type: '2f', value:{x:0, y:0}},
+		mapDimensions:   {type: '2f', value:{x:1, y:5112}},
+		dimensions:   {type: '4fv', value:[0,0,0,0]}
 	};
 	
 

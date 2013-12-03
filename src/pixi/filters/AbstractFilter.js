@@ -9,9 +9,9 @@
  * @class AbstractFilter
  * @constructor
  * @param fragmentSrc
- * @param unifroms  
+ * @param uniforms  
  */
-PIXI.AbstractFilter = function(fragmentSrc, unifroms)
+PIXI.AbstractFilter = function(fragmentSrc, uniforms)
 {
 	/**
 	* An array of passes - some filters contain a few steps this array simply stores the steps in a liniear fashion.
@@ -30,7 +30,7 @@ PIXI.AbstractFilter = function(fragmentSrc, unifroms)
 	@property uniforms
 	@private
 	*/
-	this.uniforms = unifroms || {};
+	this.uniforms = uniforms || {};
 	
 	this.fragmentSrc = fragmentSrc || [];
 }

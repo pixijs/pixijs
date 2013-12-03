@@ -12,10 +12,10 @@ PIXI.RGBSplitFilter = function()
 	
 	// set the uniforms
 	this.uniforms = {
-		red: {type: 'f2', value: {x:20, y:20}},
-		green: {type: 'f2', value: {x:-20, y:20}},
-		blue: {type: 'f2', value: {x:20, y:-20}},
-		dimensions:   {type: 'f4', value:[0,0,0,0]}
+		red: {type: '2f', value: {x:20, y:20}},
+		green: {type: '2f', value: {x:-20, y:20}},
+		blue: {type: '2f', value: {x:20, y:-20}},
+		dimensions:   {type: '4fv', value:[0,0,0,0]}
 	};
 	
 	this.fragmentSrc = [
