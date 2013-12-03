@@ -122,6 +122,8 @@ PIXI.DisplayObject = function()
 	 */
 	this._interactive = false;
 
+	this.defaultCursor = "pointer";
+	
 	/**
 	 * [read-only] Current transform of the object based on world (parent) factors
 	 *

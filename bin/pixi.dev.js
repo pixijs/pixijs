@@ -805,6 +805,8 @@ PIXI.DisplayObject = function()
 	 */
 	this._interactive = false;
 
+	this.defaultCursor = "pointer";
+	
 	/**
 	 * [read-only] Current transform of the object based on world (parent) factors
 	 *
@@ -2673,7 +2675,7 @@ PIXI.InteractionManager.prototype.update = function()
 			// loks like there was a hit!
 			if(item.__hit)
 			{
-				if(item.buttonMode) this.interactionDOMElement.style.cursor = "pointer";	
+				if(item.buttonMode) this.interactionDOMElement.style.cursor = item.defaultCursor;	
 				
 				if(!item.__isOver)
 				{
@@ -3865,6 +3867,11 @@ PIXI.PixiShader.prototype.syncUniforms = function()
     	//	console.log(this.program[key])
 			gl.uniform2f(this.uniforms[key].uniformLocation, this.uniforms[key].value.x, this.uniforms[key].value.y);
     	}
+        if(type == "f3")
+        {
+        //  console.log(this.program[key])
+            gl.uniform3fv(this.uniforms[key].uniformLocation, this.uniforms[key].value);
+        }
         else if(type == "f4")
         {
            // console.log(this.uniforms[key].value)
@@ -6586,8 +6593,15 @@ PIXI.WebGLFilterManager.prototype.pushFilter = function(filterBlock)
 	
 	
 	var texture = this.texturePool.pop();
-	if(!texture)texture = new PIXI.FilterTexture(this.width, this.height);
-	
+	if(!texture)
+	{
+		texture = new PIXI.FilterTexture(this.width, this.height);
+	}
+	else
+	{
+		texture.resize(this.width, this.height);
+	}
+
 	gl.bindTexture(gl.TEXTURE_2D,  texture.texture);
 	
 	this.getBounds(filterBlock.target);
@@ -6604,9 +6618,9 @@ PIXI.WebGLFilterManager.prototype.pushFilter = function(filterBlock)
 	filterArea.height += padidng * 2;
 
 	// cap filter to screen size..
-	if(filterArea.x < 0)filterArea.x = 0;	
+	//if(filterArea.x < 0)filterArea.x = 0;	
 	if(filterArea.width > this.width)filterArea.width = this.width;
-	if(filterArea.y < 0)filterArea.y = 0;	
+	//if(filterArea.y < 0)filterArea.y = 0;	
 	if(filterArea.height > this.height)filterArea.height = this.height;
 
 
@@ -7049,6 +7063,8 @@ PIXI.FilterTexture = function(width, height)
 
 PIXI.FilterTexture.prototype.resize = function(width, height)
 {
+	if(this.width == width && this.height == height)return;
+
 	this.width = width;
 	this.height = height;
 
@@ -9981,6 +9997,19 @@ PIXI.BaseTexture.prototype.destroy = function()
 }
 
 /**
+ * 
+ *
+ * @method destroy
+ */
+
+PIXI.BaseTexture.prototype.updateSourceImage = function(newSrc)
+{
+	this.hasLoaded = false;
+	this.source.src = null;
+	this.source.src = newSrc;
+}
+
+/**
  * Helper function that returns a base texture based on an image url
  * If the image is not in the base texture cache it will be  created and loaded
  *
@@ -10558,7 +10587,7 @@ PIXI.AssetLoader.prototype.load = function()
     for (var i=0; i < this.assetURLs.length; i++)
 	{
 		var fileName = this.assetURLs[i];
-		var fileType = fileName.split(".").pop().toLowerCase();
+		var fileType = fileName.split("?").shift().split(".").pop().toLowerCase();
 
         var loaderClass = this.loadersByType[fileType];
         if(!loaderClass)
@@ -11376,58 +11405,6 @@ Object.defineProperty(PIXI.ColorMatrixFilter.prototype, 'matrix', {
 
 /**
  * 
- * This turns your displayObjects to black and white.
- * @class GreyFilter
- * @contructor
- */
-PIXI.GreyFilter = function()
-{
-	PIXI.AbstractFilter.call( this );
-	
-	this.passes = [this];
-	
-	// set the uniforms
-	this.uniforms = {
-		grey: {type: 'f', value: 1},
-	};
-	
-	this.fragmentSrc = [
-	  "precision mediump float;",
-	  "varying vec2 vTextureCoord;",
-	  "varying float vColor;",
-	  "uniform sampler2D uSampler;",
-	  "uniform float grey;",
-	  "void main(void) {",
-	    "gl_FragColor = texture2D(uSampler, vTextureCoord);",
-		"gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.2126*gl_FragColor.r + 0.7152*gl_FragColor.g + 0.0722*gl_FragColor.b), grey);",
-	    "gl_FragColor = gl_FragColor * vColor;",
-	  "}"
-	];
-}
-
-PIXI.GreyFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
-PIXI.GreyFilter.prototype.constructor = PIXI.GreyFilter;
-
-/**
-The strength of the grey. 1 will make the object black and white, 0 will make the object its normal color
-@property grey
-*/
-Object.defineProperty(PIXI.GreyFilter.prototype, 'grey', {
-    get: function() {
-        return this.uniforms.grey.value;
-    },
-    set: function(value) {
-    	this.uniforms.grey.value = value;
-    }
-});
-
-/**
- * @author Mat Groves http://matgroves.com/ @Doormat23
- */
-
-
-/**
- * 
  * The DisplacementFilter class uses the pixel values from the specified texture (called the displacement map) to perform a displacement of an object. 
  * You can use this filter to apply all manor of crazy warping effects
  * Currently the r property of the texture is used offset the x and the g propery of the texture is used to offset the y.
@@ -12020,7 +11997,7 @@ Object.defineProperty(PIXI.TwistFilter.prototype, 'angle', {
 /**
  * 
  * This turns your displayObjects to black and white.
- * @class GreyFilter
+ * @class ColorStepFilter
  * @contructor
  */
 PIXI.ColorStepFilter = function()

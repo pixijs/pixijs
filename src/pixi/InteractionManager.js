@@ -246,7 +246,7 @@ PIXI.InteractionManager.prototype.update = function()
 			// loks like there was a hit!
 			if(item.__hit)
 			{
-				if(item.buttonMode) this.interactionDOMElement.style.cursor = "pointer";	
+				if(item.buttonMode) this.interactionDOMElement.style.cursor = item.defaultCursor;	
 				
 				if(!item.__isOver)
 				{

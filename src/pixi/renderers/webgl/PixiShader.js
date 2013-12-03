@@ -72,6 +72,11 @@ PIXI.PixiShader.prototype.syncUniforms = function()
     	//	console.log(this.program[key])
 			gl.uniform2f(this.uniforms[key].uniformLocation, this.uniforms[key].value.x, this.uniforms[key].value.y);
     	}
+        if(type == "f3")
+        {
+        //  console.log(this.program[key])
+            gl.uniform3fv(this.uniforms[key].uniformLocation, this.uniforms[key].value);
+        }
         else if(type == "f4")
         {
            // console.log(this.uniforms[key].value)
