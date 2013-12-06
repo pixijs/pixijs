@@ -214,14 +214,14 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
  */
 PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
 {
-	if (child === child2) {
+	if(child === child2) {
 		return;
 	}
 
 	var index1 = this.children.indexOf(child);
 	var index2 = this.children.indexOf(child2);
 	
-	if (index1 < 0 || index2 < 0) {
+	if(index1 < 0 || index2 < 0) {
 		throw new Error("swapChildren: Both the supplied DisplayObjects must be a child of the caller.");
 	}
 
