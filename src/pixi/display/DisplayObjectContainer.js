@@ -214,6 +214,10 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
  */
 PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
 {
+	if (child === child2) {
+		return;
+	}
+	
 	var index1 = this.children.indexOf(child);
 	var index2 = this.children.indexOf(child2);
 
