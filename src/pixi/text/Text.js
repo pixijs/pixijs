@@ -65,7 +65,7 @@ PIXI.Text.prototype.setStyle = function(style)
 /**
  * Set the copy for the text object. To split a line you can use "\n"
  *
- * @methos setText
+ * @method setText
  * @param {String} text The copy that you would like the text to display
  */
 PIXI.Text.prototype.setText = function(text)
