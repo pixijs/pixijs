@@ -223,7 +223,7 @@ PIXI.InteractionManager.prototype.update = function()
 	// loop through interactive objects!
 	var length = this.interactiveItems.length;
 	
-	this.interactionDOMElement.style.cursor = "default";	
+	this.interactionDOMElement.style.cursor = "inherit";
 				
 	for (var i = 0; i < length; i++)
 	{
@@ -352,7 +352,7 @@ PIXI.InteractionManager.prototype.onMouseOut = function(event)
 {
 	var length = this.interactiveItems.length;
 	
-	this.interactionDOMElement.style.cursor = "default";	
+	this.interactionDOMElement.style.cursor = "inherit";
 				
 	for (var i = 0; i < length; i++)
 	{
