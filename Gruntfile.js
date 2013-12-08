@@ -125,16 +125,10 @@ module.exports = function(grunt) {
             }
         },
         jshint: {
-            beforeconcat: srcFiles,
-            test: {
-                src: ['<%= files.testBlob %>'],
-                options: {
-                    expr: true
-                }
-            },
+            src: srcFiles.concat('Gruntfile.js'),
+            test: ['<%= files.testBlob %>'],
             options: {
-                asi: true,
-                smarttabs: true
+                jshintrc: '.jshintrc'
             }
         },
         uglify: {
@@ -179,7 +173,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask('default', ['build', 'test']);
 
-    grunt.registerTask('build', ['jshint', 'concat', 'uglify']);
+    grunt.registerTask('build', ['jshint:src', 'concat', 'uglify']);
     grunt.registerTask('build-debug', ['concat_sourcemap', 'uglify']);
 
     grunt.registerTask('test', ['concat', 'jshint:test', 'karma']);
