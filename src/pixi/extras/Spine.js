@@ -95,7 +95,7 @@ PIXI.Spine.prototype.updateTransform = function () {
 				slot.currentSpriteName = spriteName;
 			}
 		}
-		slotContainer.visible = true;
+		slotContainer.visible = slot.a > 0;
 
 		var bone = slot.bone;
 
@@ -105,6 +105,9 @@ PIXI.Spine.prototype.updateTransform = function () {
 		slotContainer.scale.y = bone.worldScaleY;
 
 		slotContainer.rotation = -(slot.bone.worldRotation * Math.PI / 180);
+
+		/* Note: RGB not supported. Only alpha */
+		slotContainer.alpha = slot.a;
 	}
 
 	PIXI.DisplayObjectContainer.prototype.updateTransform.call(this);
@@ -523,9 +526,9 @@ spine.ColorTimeline = function (frameCount) {
 spine.ColorTimeline.prototype = {
 	slotIndex: 0,
 	getFrameCount: function () {
-		return this.frames.length / 2;
+		return this.frames.length / 5;
 	},
-	setFrame: function (frameIndex, time, x, y) {
+	setFrame: function (frameIndex, time, r, g, b, a) {
 		frameIndex *= 5;
 		this.frames[frameIndex] = time;
 		this.frames[frameIndex + 1] = r;
@@ -1216,7 +1219,7 @@ spine.SkeletonJson.readCurve = function (timeline, frameIndex, valueMap) {
 };
 spine.SkeletonJson.toColor = function (hexString, colorIndex) {
 	if (hexString.length != 8) throw "Color hexidecimal length must be 8, recieved: " + hexString;
-	return parseInt(hexString.substring(colorIndex * 2, 2), 16) / 255;
+	return parseInt(hexString.substring(colorIndex * 2, colorIndex * 2 + 2), 16) / 255;
 };
 
 spine.Atlas = function (atlasText, textureLoader) {
