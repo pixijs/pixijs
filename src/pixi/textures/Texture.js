@@ -52,6 +52,15 @@ PIXI.Texture = function(baseTexture, frame)
 	 */
 	this.trim = new PIXI.Point();
 
+	/**
+	 * The anchor point that a Sprite should set it's anchor to. This will most be used by
+	 * sprite sheets to offset themselves
+	 *
+	 * @property anchor
+	 * @type Point
+	 */
+	this.anchor = new PIXI.Point();
+
 	this.scope = this;
 
 	if(baseTexture.hasLoaded)
