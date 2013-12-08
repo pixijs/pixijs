@@ -428,6 +428,15 @@ PIXI.WebGLFilterManager.prototype.getBounds = function(displayObject)
 
 				doTest = true;	
 			}
+			else if (tempObject instanceof PIXI.TilingSprite)
+			{
+				width = w0 = tempObject.width + tempObject.position.x;
+				height = h0 = tempObject.height + tempObject.position.y;
+
+				w1 = h1 = 0;
+
+				doTest = true;
+			}
 		}
 		
 		if(doTest)
