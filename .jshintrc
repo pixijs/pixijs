@@ -103,8 +103,8 @@
 
     // == Undocumented Options ============================================
     //
-    // While I've found these options in [example1][2] and [example2][3]
-    // they are not described in the [JSHint Options documentation][4].
+    // While I've found these options in some projects, they are not
+    // described in the [JSHint Options documentation][4].
     //
     // [4]: http://www.jshint.com/options/
 
