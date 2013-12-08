@@ -25,48 +25,48 @@ PIXI.gl;
  */
 PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
 {
-	// do a catch.. only 1 webGL renderer..
+    // do a catch.. only 1 webGL renderer..
 
-	this.transparent = !!transparent;
+    this.transparent = !!transparent;
 
-	this.width = width || 800;
-	this.height = height || 600;
+    this.width = width || 800;
+    this.height = height || 600;
 
-	this.view = view || document.createElement( 'canvas' ); 
+    this.view = view || document.createElement( 'canvas' ); 
     this.view.width = this.width;
-	this.view.height = this.height;
+    this.view.height = this.height;
 
-	// deal with losing context..	
+    // deal with losing context..   
     var scope = this;
-	this.view.addEventListener('webglcontextlost', function(event) { scope.handleContextLost(event); }, false)
-	this.view.addEventListener('webglcontextrestored', function(event) { scope.handleContextRestored(event); }, false)
+    this.view.addEventListener('webglcontextlost', function(event) { scope.handleContextLost(event); }, false)
+    this.view.addEventListener('webglcontextrestored', function(event) { scope.handleContextRestored(event); }, false)
 
-	this.batchs = [];
+    this.batchs = [];
 
-	var options = {
-		alpha: this.transparent,
-		antialias:!!antialias, // SPEED UP??
-		premultipliedAlpha:false,
-		stencil:true
-	}
+    var options = {
+        alpha: this.transparent,
+        antialias:!!antialias, // SPEED UP??
+        premultipliedAlpha:false,
+        stencil:true
+    }
 
-	//try 'experimental-webgl'
-	try {
-		PIXI.gl = this.gl = this.view.getContext("experimental-webgl",  options);
-	} catch (e) {
-		//try 'webgl'
-		try {
-			PIXI.gl = this.gl = this.view.getContext("webgl",  options);
-		} catch (e) {
-			// fail, not able to get a context
-			throw new Error(" This browser does not support webGL. Try using the canvas renderer" + this);
-		}
-	}
+    //try 'experimental-webgl'
+    try {
+        PIXI.gl = this.gl = this.view.getContext("experimental-webgl",  options);
+    } catch (e) {
+        //try 'webgl'
+        try {
+            PIXI.gl = this.gl = this.view.getContext("webgl",  options);
+        } catch (e) {
+            // fail, not able to get a context
+            throw new Error(" This browser does not support webGL. Try using the canvas renderer" + this);
+        }
+    }
 
     PIXI.initDefaultShaders();
  
 
-	
+    
 
    // PIXI.activateDefaultShader();
 
@@ -78,8 +78,8 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     PIXI.WebGLRenderer.gl = gl;
 
     this.batch = new PIXI.WebGLBatch(gl);
-   	gl.disable(gl.DEPTH_TEST);
-   	gl.disable(gl.CULL_FACE);
+    gl.disable(gl.DEPTH_TEST);
+    gl.disable(gl.CULL_FACE);
 
     gl.enable(gl.BLEND);
     gl.colorMask(true, true, true, this.transparent); 
@@ -92,7 +92,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     this.resize(this.width, this.height);
     this.contextLost = false;
 
-	//PIXI.pushShader(PIXI.defaultShader);
+    //PIXI.pushShader(PIXI.defaultShader);
 
     this.stageRenderGroup = new PIXI.WebGLRenderGroup(this.gl, this.transparent);
   //  this.stageRenderGroup. = this.transparent
@@ -111,14 +111,14 @@ PIXI.WebGLRenderer.prototype.constructor = PIXI.WebGLRenderer;
  */
 PIXI.WebGLRenderer.getBatch = function()
 {
-	if(PIXI._batchs.length == 0)
-	{
-		return new PIXI.WebGLBatch(PIXI.WebGLRenderer.gl);
-	}
-	else
-	{
-		return PIXI._batchs.pop();
-	}
+    if(PIXI._batchs.length == 0)
+    {
+        return new PIXI.WebGLBatch(PIXI.WebGLRenderer.gl);
+    }
+    else
+    {
+        return PIXI._batchs.pop();
+    }
 }
 
 /**
@@ -131,8 +131,8 @@ PIXI.WebGLRenderer.getBatch = function()
  */
 PIXI.WebGLRenderer.returnBatch = function(batch)
 {
-	batch.clean();	
-	PIXI._batchs.push(batch);
+    batch.clean();  
+    PIXI._batchs.push(batch);
 }
 
 /**
@@ -143,67 +143,67 @@ PIXI.WebGLRenderer.returnBatch = function(batch)
  */
 PIXI.WebGLRenderer.prototype.render = function(stage)
 {
-	if(this.contextLost)return;
-	
-	
-	// if rendering a new stage clear the batchs..
-	if(this.__stage !== stage)
-	{
-		// TODO make this work
-		// dont think this is needed any more?
-		this.__stage = stage;
-		this.stageRenderGroup.setRenderable(stage);
-	}
+    if(this.contextLost)return;
+    
+    
+    // if rendering a new stage clear the batchs..
+    if(this.__stage !== stage)
+    {
+        // TODO make this work
+        // dont think this is needed any more?
+        this.__stage = stage;
+        this.stageRenderGroup.setRenderable(stage);
+    }
 
-	// update any textures	
-	PIXI.WebGLRenderer.updateTextures();
-		
-	// update the scene graph	
-	PIXI.visibleCount++;
-	stage.updateTransform();
-	
-	var gl = this.gl;
-	
-	// -- Does this need to be set every frame? -- //
-	gl.colorMask(true, true, true, this.transparent); 
-	gl.viewport(0, 0, this.width, this.height);	
-	
-   	gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-		
-	gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], !this.transparent);     
-	gl.clear(gl.COLOR_BUFFER_BIT);
+    // update any textures  
+    PIXI.WebGLRenderer.updateTextures();
+        
+    // update the scene graph   
+    PIXI.visibleCount++;
+    stage.updateTransform();
+    
+    var gl = this.gl;
+    
+    // -- Does this need to be set every frame? -- //
+    gl.colorMask(true, true, true, this.transparent); 
+    gl.viewport(0, 0, this.width, this.height); 
+    
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        
+    gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], !this.transparent);     
+    gl.clear(gl.COLOR_BUFFER_BIT);
 
-	// HACK TO TEST
-	
-	this.stageRenderGroup.backgroundColor = stage.backgroundColorSplit;
-	
-	PIXI.projection.x =  this.width/2;
-	PIXI.projection.y =  -this.height/2;
-	
-	this.stageRenderGroup.render(PIXI.projection);
-	
-	// interaction
-	// run interaction!
-	if(stage.interactive)
-	{
-		//need to add some events!
-		if(!stage._interactiveEventsAdded)
-		{
-			stage._interactiveEventsAdded = true;
-			stage.interactionManager.setTarget(this);
-		}
-	}
-	
-	// after rendering lets confirm all frames that have been uodated..
-	if(PIXI.Texture.frameUpdates.length > 0)
-	{
-		for (var i=0; i < PIXI.Texture.frameUpdates.length; i++) 
-		{
-		  	PIXI.Texture.frameUpdates[i].updateFrame = false;
-		};
-		
-		PIXI.Texture.frameUpdates = [];
-	}
+    // HACK TO TEST
+    
+    this.stageRenderGroup.backgroundColor = stage.backgroundColorSplit;
+    
+    PIXI.projection.x =  this.width/2;
+    PIXI.projection.y =  -this.height/2;
+    
+    this.stageRenderGroup.render(PIXI.projection);
+    
+    // interaction
+    // run interaction!
+    if(stage.interactive)
+    {
+        //need to add some events!
+        if(!stage._interactiveEventsAdded)
+        {
+            stage._interactiveEventsAdded = true;
+            stage.interactionManager.setTarget(this);
+        }
+    }
+    
+    // after rendering lets confirm all frames that have been uodated..
+    if(PIXI.Texture.frameUpdates.length > 0)
+    {
+        for (var i=0; i < PIXI.Texture.frameUpdates.length; i++) 
+        {
+            PIXI.Texture.frameUpdates[i].updateFrame = false;
+        };
+        
+        PIXI.Texture.frameUpdates = [];
+    }
 }
 
 /**
@@ -215,11 +215,11 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
  */
 PIXI.WebGLRenderer.updateTextures = function()
 {
-	//TODO break this out into a texture manager...
-	for (var i=0; i < PIXI.texturesToUpdate.length; i++) PIXI.WebGLRenderer.updateTexture(PIXI.texturesToUpdate[i]);
-	for (var i=0; i < PIXI.texturesToDestroy.length; i++) PIXI.WebGLRenderer.destroyTexture(PIXI.texturesToDestroy[i]);
-	PIXI.texturesToUpdate = [];
-	PIXI.texturesToDestroy = [];
+    //TODO break this out into a texture manager...
+    for (var i=0; i < PIXI.texturesToUpdate.length; i++) PIXI.WebGLRenderer.updateTexture(PIXI.texturesToUpdate[i]);
+    for (var i=0; i < PIXI.texturesToDestroy.length; i++) PIXI.WebGLRenderer.destroyTexture(PIXI.texturesToDestroy[i]);
+    PIXI.texturesToUpdate = [];
+    PIXI.texturesToDestroy = [];
 }
 
 /**
@@ -232,38 +232,38 @@ PIXI.WebGLRenderer.updateTextures = function()
  */
 PIXI.WebGLRenderer.updateTexture = function(texture)
 {
-	//TODO break this out into a texture manager...
-	var gl = PIXI.gl;
-	
-	if(!texture._glTexture)
-	{
-		texture._glTexture = gl.createTexture();
-	}
+    //TODO break this out into a texture manager...
+    var gl = PIXI.gl;
+    
+    if(!texture._glTexture)
+    {
+        texture._glTexture = gl.createTexture();
+    }
 
-	if(texture.hasLoaded)
-	{
-		gl.bindTexture(gl.TEXTURE_2D, texture._glTexture);
-	 	gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+    if(texture.hasLoaded)
+    {
+        gl.bindTexture(gl.TEXTURE_2D, texture._glTexture);
+        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
 
-		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.source);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.source);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 
-		// reguler...
+        // reguler...
 
-		if(!texture._powerOf2)
-		{
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-		}
-		else
-		{
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-		}
+        if(!texture._powerOf2)
+        {
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        }
+        else
+        {
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+        }
 
-		gl.bindTexture(gl.TEXTURE_2D, null);
-	}
+        gl.bindTexture(gl.TEXTURE_2D, null);
+    }
 }
 
 /**
@@ -275,14 +275,14 @@ PIXI.WebGLRenderer.updateTexture = function(texture)
  */
 PIXI.WebGLRenderer.destroyTexture = function(texture)
 {
-	//TODO break this out into a texture manager...
-	var gl = PIXI.gl;
+    //TODO break this out into a texture manager...
+    var gl = PIXI.gl;
 
-	if(texture._glTexture)
-	{
-		texture._glTexture = gl.createTexture();
-		gl.deleteTexture(gl.TEXTURE_2D, texture._glTexture);
-	}
+    if(texture._glTexture)
+    {
+        texture._glTexture = gl.createTexture();
+        gl.deleteTexture(gl.TEXTURE_2D, texture._glTexture);
+    }
 }
 
 /**
@@ -294,26 +294,26 @@ PIXI.WebGLRenderer.destroyTexture = function(texture)
  */
 PIXI.WebGLRenderer.prototype.resize = function(width, height)
 {
-	this.width = width;
-	this.height = height;
+    this.width = width;
+    this.height = height;
 
-	this.view.width = width;
-	this.view.height = height;
+    this.view.width = width;
+    this.view.height = height;
 
-	this.gl.viewport(0, 0, this.width, this.height);	
+    this.gl.viewport(0, 0, this.width, this.height);    
 
-	//var projectionMatrix = this.projectionMatrix;
+    //var projectionMatrix = this.projectionMatrix;
 
-	PIXI.projection.x =  this.width/2;
-	PIXI.projection.y =  -this.height/2;
-	
-	//PIXI.size.x =  this.width/2;
-	//PIXI.size.y =  -this.height/2;
+    PIXI.projection.x =  this.width/2;
+    PIXI.projection.y =  -this.height/2;
+    
+    //PIXI.size.x =  this.width/2;
+    //PIXI.size.y =  -this.height/2;
 
-//	projectionMatrix[0] = 2/this.width;
-//	projectionMatrix[5] = -2/this.height;
-//	projectionMatrix[12] = -1;
-//	projectionMatrix[13] = 1;
+//  projectionMatrix[0] = 2/this.width;
+//  projectionMatrix[5] = -2/this.height;
+//  projectionMatrix[12] = -1;
+//  projectionMatrix[13] = 1;
 }
 
 /**
@@ -325,8 +325,8 @@ PIXI.WebGLRenderer.prototype.resize = function(width, height)
  */
 PIXI.WebGLRenderer.prototype.handleContextLost = function(event)
 {
-	event.preventDefault();
-	this.contextLost = true;
+    event.preventDefault();
+    this.contextLost = true;
 }
 
 /**
@@ -338,26 +338,26 @@ PIXI.WebGLRenderer.prototype.handleContextLost = function(event)
  */
 PIXI.WebGLRenderer.prototype.handleContextRestored = function(event)
 {
-	this.gl = this.view.getContext("experimental-webgl",  {  	
-		alpha: true
+    this.gl = this.view.getContext("experimental-webgl",  {     
+        alpha: true
     });
 
-	this.initShaders();	
+    this.initShaders(); 
 
-	for(var key in PIXI.TextureCache) 
-	{
-        	var texture = PIXI.TextureCache[key].baseTexture;
-        	texture._glTexture = null;
-        	PIXI.WebGLRenderer.updateTexture(texture);
-	};
+    for(var key in PIXI.TextureCache) 
+    {
+            var texture = PIXI.TextureCache[key].baseTexture;
+            texture._glTexture = null;
+            PIXI.WebGLRenderer.updateTexture(texture);
+    };
 
-	for (var i=0; i <  this.batchs.length; i++) 
-	{
-		this.batchs[i].restoreLostContext(this.gl)//
-		this.batchs[i].dirty = true;
-	};
+    for (var i=0; i <  this.batchs.length; i++) 
+    {
+        this.batchs[i].restoreLostContext(this.gl)//
+        this.batchs[i].dirty = true;
+    };
 
-	PIXI._restoreBatchs(this.gl);
+    PIXI._restoreBatchs(this.gl);
 
-	this.contextLost = false;
+    this.contextLost = false;
 }

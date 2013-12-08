@@ -29,7 +29,7 @@ PIXI.Polygon = function(points)
         points = p;
     }
 
-	this.points = points;
+    this.points = points;
 }
 
 /**
@@ -40,12 +40,12 @@ PIXI.Polygon = function(points)
  */
 PIXI.Polygon.prototype.clone = function()
 {
-	var points = [];
-	for (var i=0; i<this.points.length; i++) {
-		points.push(this.points[i].clone());
-	}
+    var points = [];
+    for (var i=0; i<this.points.length; i++) {
+        points.push(this.points[i].clone());
+    }
 
-	return new PIXI.Polygon(points);
+    return new PIXI.Polygon(points);
 }
 
 /**

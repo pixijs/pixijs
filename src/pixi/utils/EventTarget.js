@@ -8,60 +8,60 @@
  *
  * @class EventTarget
  * @example
- *		function MyEmitter() {
- *			PIXI.EventTarget.call(this); //mixes in event target stuff
- *		}
+ *      function MyEmitter() {
+ *          PIXI.EventTarget.call(this); //mixes in event target stuff
+ *      }
  *
- *		var em = new MyEmitter();
- *		em.emit({ type: 'eventName', data: 'some data' });
+ *      var em = new MyEmitter();
+ *      em.emit({ type: 'eventName', data: 'some data' });
  */
 PIXI.EventTarget = function () {
 
-	var listeners = {};
+    var listeners = {};
 
-	this.addEventListener = this.on = function ( type, listener ) {
+    this.addEventListener = this.on = function ( type, listener ) {
 
 
-		if ( listeners[ type ] === undefined ) {
+        if ( listeners[ type ] === undefined ) {
 
-			listeners[ type ] = [];
+            listeners[ type ] = [];
 
-		}
+        }
 
-		if ( listeners[ type ].indexOf( listener ) === - 1 ) {
+        if ( listeners[ type ].indexOf( listener ) === - 1 ) {
 
-			listeners[ type ].push( listener );
-		}
+            listeners[ type ].push( listener );
+        }
 
-	};
+    };
 
-	this.dispatchEvent = this.emit = function ( event ) {
+    this.dispatchEvent = this.emit = function ( event ) {
 
-		if ( !listeners[ event.type ] || !listeners[ event.type ].length ) {
+        if ( !listeners[ event.type ] || !listeners[ event.type ].length ) {
 
-			return;
+            return;
 
-		}
+        }
 
-		for(var i = 0, l = listeners[ event.type ].length; i < l; i++) {
+        for(var i = 0, l = listeners[ event.type ].length; i < l; i++) {
 
-			listeners[ event.type ][ i ]( event );
+            listeners[ event.type ][ i ]( event );
 
-		}
+        }
 
-	};
+    };
 
-	this.removeEventListener = this.off = function ( type, listener ) {
+    this.removeEventListener = this.off = function ( type, listener ) {
 
-		var index = listeners[ type ].indexOf( listener );
+        var index = listeners[ type ].indexOf( listener );
 
-		if ( index !== - 1 ) {
+        if ( index !== - 1 ) {
 
-			listeners[ type ].splice( index, 1 );
+            listeners[ type ].splice( index, 1 );
 
-		}
+        }
 
-	};
+    };
 
 	this.removeAllEventListeners = function( type ) {
 		var a = listeners[type];

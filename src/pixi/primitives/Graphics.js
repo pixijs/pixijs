@@ -14,9 +14,9 @@
  */
 PIXI.Graphics = function()
 {
-	PIXI.DisplayObjectContainer.call( this );
+    PIXI.DisplayObjectContainer.call( this );
 
-	this.renderable = true;
+    this.renderable = true;
 
     /**
      * The alpha of the fill of this graphics object
@@ -24,7 +24,7 @@ PIXI.Graphics = function()
      * @property fillAlpha
      * @type Number
      */
-	this.fillAlpha = 1;
+    this.fillAlpha = 1;
 
     /**
      * The width of any lines drawn
@@ -32,7 +32,7 @@ PIXI.Graphics = function()
      * @property lineWidth
      * @type Number
      */
-	this.lineWidth = 0;
+    this.lineWidth = 0;
 
     /**
      * The color of any lines drawn
@@ -40,7 +40,7 @@ PIXI.Graphics = function()
      * @property lineColor
      * @type String
      */
-	this.lineColor = "black";
+    this.lineColor = "black";
 
     /**
      * Graphics data
@@ -49,7 +49,7 @@ PIXI.Graphics = function()
      * @type Array
      * @private
      */
-	this.graphicsData = [];
+    this.graphicsData = [];
 
     /**
      * Current path
@@ -58,7 +58,7 @@ PIXI.Graphics = function()
      * @type Object
      * @private
      */
-	this.currentPath = {points:[]};
+    this.currentPath = {points:[]};
 }
 
 // constructor
@@ -75,16 +75,16 @@ PIXI.Graphics.prototype.constructor = PIXI.Graphics;
  */
 PIXI.Graphics.prototype.lineStyle = function(lineWidth, color, alpha)
 {
-	if(this.currentPath.points.length == 0)this.graphicsData.pop();
+    if (!this.currentPath.points.length) this.graphicsData.pop();
 
-	this.lineWidth = lineWidth || 0;
-	this.lineColor = color || 0;
-	this.lineAlpha = (alpha == undefined) ? 1 : alpha;
+    this.lineWidth = lineWidth || 0;
+    this.lineColor = color || 0;
+    this.lineAlpha = (arguments.length < 3) ? 1 : alpha;
 
-	this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha,
-						fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling, points:[], type:PIXI.Graphics.POLY};
+    this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha,
+                        fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling, points:[], type:PIXI.Graphics.POLY};
 
-	this.graphicsData.push(this.currentPath);
+    this.graphicsData.push(this.currentPath);
 }
 
 /**
@@ -96,14 +96,14 @@ PIXI.Graphics.prototype.lineStyle = function(lineWidth, color, alpha)
  */
 PIXI.Graphics.prototype.moveTo = function(x, y)
 {
-	if(this.currentPath.points.length == 0)this.graphicsData.pop();
+    if (!this.currentPath.points.length) this.graphicsData.pop();
 
-	this.currentPath = this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha,
-						fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling, points:[], type:PIXI.Graphics.POLY};
+    this.currentPath = this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha,
+                        fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling, points:[], type:PIXI.Graphics.POLY};
 
-	this.currentPath.points.push(x, y);
+    this.currentPath.points.push(x, y);
 
-	this.graphicsData.push(this.currentPath);
+    this.graphicsData.push(this.currentPath);
 }
 
 /**
@@ -116,8 +116,8 @@ PIXI.Graphics.prototype.moveTo = function(x, y)
  */
 PIXI.Graphics.prototype.lineTo = function(x, y)
 {
-	this.currentPath.points.push(x, y);
-	this.dirty = true;
+    this.currentPath.points.push(x, y);
+    this.dirty = true;
 }
 
 /**
@@ -130,9 +130,9 @@ PIXI.Graphics.prototype.lineTo = function(x, y)
  */
 PIXI.Graphics.prototype.beginFill = function(color, alpha)
 {
-	this.filling = true;
-	this.fillColor = color || 0;
-	this.fillAlpha = (alpha == undefined) ? 1 : alpha;
+    this.filling = true;
+    this.fillColor = color || 0;
+    this.fillAlpha = (arguments.length < 2) ? 1 : alpha;
 }
 
 /**
@@ -142,9 +142,9 @@ PIXI.Graphics.prototype.beginFill = function(color, alpha)
  */
 PIXI.Graphics.prototype.endFill = function()
 {
-	this.filling = false;
-	this.fillColor = null;
-	this.fillAlpha = 1;
+    this.filling = false;
+    this.fillColor = null;
+    this.fillAlpha = 1;
 }
 
 /**
@@ -157,14 +157,14 @@ PIXI.Graphics.prototype.endFill = function()
  */
 PIXI.Graphics.prototype.drawRect = function( x, y, width, height )
 {
-	if(this.currentPath.points.length == 0)this.graphicsData.pop();
+    if (!this.currentPath.points.length) this.graphicsData.pop();
 
-	this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha,
-						fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling,
-						points:[x, y, width, height], type:PIXI.Graphics.RECT};
+    this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha,
+                        fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling,
+                        points:[x, y, width, height], type:PIXI.Graphics.RECT};
 
-	this.graphicsData.push(this.currentPath);
-	this.dirty = true;
+    this.graphicsData.push(this.currentPath);
+    this.dirty = true;
 }
 
 /**
@@ -177,14 +177,14 @@ PIXI.Graphics.prototype.drawRect = function( x, y, width, height )
  */
 PIXI.Graphics.prototype.drawCircle = function( x, y, radius)
 {
-	if(this.currentPath.points.length == 0)this.graphicsData.pop();
+    if (!this.currentPath.points.length) this.graphicsData.pop();
 
-	this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha,
-						fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling,
-						points:[x, y, radius, radius], type:PIXI.Graphics.CIRC};
+    this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha,
+                        fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling,
+                        points:[x, y, radius, radius], type:PIXI.Graphics.CIRC};
 
-	this.graphicsData.push(this.currentPath);
-	this.dirty = true;
+    this.graphicsData.push(this.currentPath);
+    this.dirty = true;
 }
 
 /**
@@ -198,14 +198,14 @@ PIXI.Graphics.prototype.drawCircle = function( x, y, radius)
  */
 PIXI.Graphics.prototype.drawElipse = function( x, y, width, height)
 {
-	if(this.currentPath.points.length == 0)this.graphicsData.pop();
+    if (!this.currentPath.points.length) this.graphicsData.pop();
 
-	this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha,
-						fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling,
-						points:[x, y, width, height], type:PIXI.Graphics.ELIP};
+    this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha,
+                        fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling,
+                        points:[x, y, width, height], type:PIXI.Graphics.ELIP};
 
-	this.graphicsData.push(this.currentPath);
-	this.dirty = true;
+    this.graphicsData.push(this.currentPath);
+    this.dirty = true;
 }
 
 /**
@@ -215,87 +215,87 @@ PIXI.Graphics.prototype.drawElipse = function( x, y, width, height)
  */
 PIXI.Graphics.prototype.clear = function()
 {
-	this.lineWidth = 0;
-	this.filling = false;
+    this.lineWidth = 0;
+    this.filling = false;
 
-	this.dirty = true;
-	this.clearDirty = true;
-	this.graphicsData = [];
+    this.dirty = true;
+    this.clearDirty = true;
+    this.graphicsData = [];
 
-	this.bounds = null//new PIXI.Rectangle();
+    this.bounds = null//new PIXI.Rectangle();
 }
 
 
 PIXI.Graphics.prototype.updateFilterBounds = function()
 {
-	if(!this.bounds)
-	{
-		var minX = Infinity;
-		var maxX = -Infinity;
+    if(!this.bounds)
+    {
+        var minX = Infinity;
+        var maxX = -Infinity;
 
-		var minY = Infinity;
-		var maxY = -Infinity;
+        var minY = Infinity;
+        var maxY = -Infinity;
 
-		var points, x, y;
+        var points, x, y;
 
-		for (var i = 0; i < this.graphicsData.length; i++) {
-			
+        for (var i = 0; i < this.graphicsData.length; i++) {
+            
 
-			var data = this.graphicsData[i];
-			var type = data.type;
-			var lineWidth = data.lineWidth;
+            var data = this.graphicsData[i];
+            var type = data.type;
+            var lineWidth = data.lineWidth;
 
-			points = data.points;
+            points = data.points;
 
-			if(type === PIXI.Graphics.RECT)
-			{
-				x = points.x - lineWidth/2;
-				y = points.y - lineWidth/2;
-				var width = points.width + lineWidth;
-				var height = points.height + lineWidth;
+            if(type === PIXI.Graphics.RECT)
+            {
+                x = points.x - lineWidth/2;
+                y = points.y - lineWidth/2;
+                var width = points.width + lineWidth;
+                var height = points.height + lineWidth;
 
-				minX = x < minX ? x : minX;
-				maxX = x + width > maxX ? x + width : maxX;
+                minX = x < minX ? x : minX;
+                maxX = x + width > maxX ? x + width : maxX;
 
-				minY = y < minY ? x : minY;
-				maxY = y + height > maxY ? y + height : maxY;
-			}
-			else if(type === PIXI.Graphics.CIRC || type === PIXI.Graphics.ELIP)
-			{
-				x = points.x;
-				y = points.y;
-				var radius = points.radius + lineWidth/2;
-				
-				minX = x - radius < minX ? x - radius : minX;
-				maxX = x + radius > maxX ? x + radius : maxX;
+                minY = y < minY ? x : minY;
+                maxY = y + height > maxY ? y + height : maxY;
+            }
+            else if(type === PIXI.Graphics.CIRC || type === PIXI.Graphics.ELIP)
+            {
+                x = points.x;
+                y = points.y;
+                var radius = points.radius + lineWidth/2;
+                
+                minX = x - radius < minX ? x - radius : minX;
+                maxX = x + radius > maxX ? x + radius : maxX;
 
-				minY = y - radius < minY ? y - radius : minY;
-				maxY = y + radius > maxY ? y + radius : maxY;
-			}
-			else
-			{
-				// POLY
-				for (var j = 0; j < points.length; j+=2) 
-				{
-					
-					x = points[j];
-					y = points[j+1];
+                minY = y - radius < minY ? y - radius : minY;
+                maxY = y + radius > maxY ? y + radius : maxY;
+            }
+            else
+            {
+                // POLY
+                for (var j = 0; j < points.length; j+=2) 
+                {
+                    
+                    x = points[j];
+                    y = points[j+1];
 
-					minX = x-lineWidth < minX ? x-lineWidth : minX;
-					maxX = x+lineWidth > maxX ? x+lineWidth : maxX;
+                    minX = x-lineWidth < minX ? x-lineWidth : minX;
+                    maxX = x+lineWidth > maxX ? x+lineWidth : maxX;
 
-					minY = y-lineWidth < minY ? y-lineWidth : minY;
-					maxY = y+lineWidth > maxY ? y+lineWidth : maxY;
-				};
-			}
+                    minY = y-lineWidth < minY ? y-lineWidth : minY;
+                    maxY = y+lineWidth > maxY ? y+lineWidth : maxY;
+                };
+            }
 
-		};
+        };
 
-		this.bounds = new PIXI.Rectangle(minX, minY, maxX - minX, maxY - minY);
+        this.bounds = new PIXI.Rectangle(minX, minY, maxX - minX, maxY - minY);
 
-	}
+    }
 
-//	console.log(this.bounds);
+//  console.log(this.bounds);
 }
 
 // SOME TYPES:

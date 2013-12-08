@@ -16,83 +16,83 @@ PIXI.texturesToDestroy = [];
  */
 PIXI.BaseTexture = function(source)
 {
-	PIXI.EventTarget.call( this );
+    PIXI.EventTarget.call( this );
 
-	/**
-	 * [read-only] The width of the base texture set when the image has loaded
-	 *
-	 * @property width
-	 * @type Number
-	 * @readOnly
-	 */
-	this.width = 100;
+    /**
+     * [read-only] The width of the base texture set when the image has loaded
+     *
+     * @property width
+     * @type Number
+     * @readOnly
+     */
+    this.width = 100;
 
-	/**
-	 * [read-only] The height of the base texture set when the image has loaded
-	 *
-	 * @property height
-	 * @type Number
-	 * @readOnly
-	 */
-	this.height = 100;
+    /**
+     * [read-only] The height of the base texture set when the image has loaded
+     *
+     * @property height
+     * @type Number
+     * @readOnly
+     */
+    this.height = 100;
 
-	/**
-	 * [read-only] Describes if the base texture has loaded or not
-	 *
-	 * @property hasLoaded
-	 * @type Boolean
-	 * @readOnly
-	 */
-	this.hasLoaded = false;
+    /**
+     * [read-only] Describes if the base texture has loaded or not
+     *
+     * @property hasLoaded
+     * @type Boolean
+     * @readOnly
+     */
+    this.hasLoaded = false;
 
-	/**
-	 * The source that is loaded to create the texture
-	 *
-	 * @property source
-	 * @type Image
-	 */
-	this.source = source;
+    /**
+     * The source that is loaded to create the texture
+     *
+     * @property source
+     * @type Image
+     */
+    this.source = source;
 
-	if(!source)return;
+    if(!source)return;
 
-	if(this.source instanceof Image || this.source instanceof HTMLImageElement)
-	{
-		if(this.source.complete)
-		{
-			this.hasLoaded = true;
-			this.width = this.source.width;
-			this.height = this.source.height;
+    if(this.source instanceof Image || this.source instanceof HTMLImageElement)
+    {
+        if(this.source.complete)
+        {
+            this.hasLoaded = true;
+            this.width = this.source.width;
+            this.height = this.source.height;
 
-			PIXI.texturesToUpdate.push(this);
-		}
-		else
-		{
+            PIXI.texturesToUpdate.push(this);
+        }
+        else
+        {
 
-			var scope = this;
-			this.source.onload = function(){
+            var scope = this;
+            this.source.onload = function(){
 
-				scope.hasLoaded = true;
-				scope.width = scope.source.width;
-				scope.height = scope.source.height;
+                scope.hasLoaded = true;
+                scope.width = scope.source.width;
+                scope.height = scope.source.height;
 
-				// add it to somewhere...
-				PIXI.texturesToUpdate.push(scope);
-				scope.dispatchEvent( { type: 'loaded', content: scope } );
-			}
-			//	this.image.src = imageUrl;
-		}
-	}
-	else
-	{
-		this.hasLoaded = true;
-		this.width = this.source.width;
-		this.height = this.source.height;
+                // add it to somewhere...
+                PIXI.texturesToUpdate.push(scope);
+                scope.dispatchEvent( { type: 'loaded', content: scope } );
+            }
+            //  this.image.src = imageUrl;
+        }
+    }
+    else
+    {
+        this.hasLoaded = true;
+        this.width = this.source.width;
+        this.height = this.source.height;
 
-		PIXI.texturesToUpdate.push(this);
-	}
+        PIXI.texturesToUpdate.push(this);
+    }
 
-	this.imageUrl = null;
-	this._powerOf2 = false;
+    this.imageUrl = null;
+    this._powerOf2 = false;
 }
 
 PIXI.BaseTexture.prototype.constructor = PIXI.BaseTexture;
@@ -104,15 +104,15 @@ PIXI.BaseTexture.prototype.constructor = PIXI.BaseTexture;
  */
 PIXI.BaseTexture.prototype.destroy = function()
 {
-	if(this.source instanceof Image)
-	{
-		if (this.imageUrl in PIXI.BaseTextureCache) 
-			delete PIXI.BaseTextureCache[this.imageUrl];
-		this.imageUrl = null;
-		this.source.src = null;
-	}
-	this.source = null;
-	PIXI.texturesToDestroy.push(this);
+    if(this.source instanceof Image)
+    {
+        if (this.imageUrl in PIXI.BaseTextureCache) 
+            delete PIXI.BaseTextureCache[this.imageUrl];
+        this.imageUrl = null;
+        this.source.src = null;
+    }
+    this.source = null;
+    PIXI.texturesToDestroy.push(this);
 }
 
 /**
@@ -123,9 +123,9 @@ PIXI.BaseTexture.prototype.destroy = function()
 
 PIXI.BaseTexture.prototype.updateSourceImage = function(newSrc)
 {
-	this.hasLoaded = false;
-	this.source.src = null;
-	this.source.src = newSrc;
+    this.hasLoaded = false;
+    this.source.src = null;
+    this.source.src = newSrc;
 }
 
 /**
@@ -139,21 +139,21 @@ PIXI.BaseTexture.prototype.updateSourceImage = function(newSrc)
  */
 PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin)
 {
-	var baseTexture = PIXI.BaseTextureCache[imageUrl];
-	if(!baseTexture)
-	{
-		// new Image() breaks tex loading in some versions of Chrome.
-		// See https://code.google.com/p/chromium/issues/detail?id=238071
-		var image = new Image();//document.createElement('img');
-		if (crossorigin)
-		{
-			image.crossOrigin = '';
-		}
-		image.src = imageUrl;
-		baseTexture = new PIXI.BaseTexture(image);
-		baseTexture.imageUrl = imageUrl;
-		PIXI.BaseTextureCache[imageUrl] = baseTexture;
-	}
+    var baseTexture = PIXI.BaseTextureCache[imageUrl];
+    if(!baseTexture)
+    {
+        // new Image() breaks tex loading in some versions of Chrome.
+        // See https://code.google.com/p/chromium/issues/detail?id=238071
+        var image = new Image();//document.createElement('img');
+        if (crossorigin)
+        {
+            image.crossOrigin = '';
+        }
+        image.src = imageUrl;
+        baseTexture = new PIXI.BaseTexture(image);
+        baseTexture.imageUrl = imageUrl;
+        PIXI.BaseTextureCache[imageUrl] = baseTexture;
+    }
 
-	return baseTexture;
+    return baseTexture;
 }

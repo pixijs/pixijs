@@ -12,9 +12,9 @@
  */
 PIXI.CustomRenderable = function()
 {
-	PIXI.DisplayObject.call( this );
-	
-	this.renderable = true;
+    PIXI.DisplayObject.call( this );
+
+    this.renderable = true;
 }
 
 // constructor
@@ -29,7 +29,7 @@ PIXI.CustomRenderable.prototype.constructor = PIXI.CustomRenderable;
  */
 PIXI.CustomRenderable.prototype.renderCanvas = function(renderer)
 {
-	// override!
+    // override!
 }
 
 /**
@@ -40,7 +40,7 @@ PIXI.CustomRenderable.prototype.renderCanvas = function(renderer)
  */
 PIXI.CustomRenderable.prototype.initWebGL = function(renderer)
 {
-	// override!
+    // override!
 }
 
 /**
@@ -51,7 +51,7 @@ PIXI.CustomRenderable.prototype.initWebGL = function(renderer)
  */
 PIXI.CustomRenderable.prototype.renderWebGL = function(renderGroup, projectionMatrix)
 {
-	// not sure if both needed? but ya have for now!
-	// override!
+    // not sure if both needed? but ya have for now!
+    // override!
 }
 

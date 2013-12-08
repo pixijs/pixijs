@@ -19,37 +19,37 @@
  */
 
 PIXI.SpriteSheetLoader = function (url, crossorigin) {
-	/*
-	 * i use texture packer to load the assets..
-	 * http://www.codeandweb.com/texturepacker
-	 * make sure to set the format as "JSON"
-	 */
-	PIXI.EventTarget.call(this);
+    /*
+     * i use texture packer to load the assets..
+     * http://www.codeandweb.com/texturepacker
+     * make sure to set the format as "JSON"
+     */
+    PIXI.EventTarget.call(this);
 
-	/**
-	 * The url of the bitmap font data
-	 *
-	 * @property url
-	 * @type String
-	 */
-	this.url = url;
+    /**
+     * The url of the bitmap font data
+     *
+     * @property url
+     * @type String
+     */
+    this.url = url;
 
-	/**
-	 * Whether the requests should be treated as cross origin
-	 *
-	 * @property crossorigin
-	 * @type Boolean
-	 */
-	this.crossorigin = crossorigin;
+    /**
+     * Whether the requests should be treated as cross origin
+     *
+     * @property crossorigin
+     * @type Boolean
+     */
+    this.crossorigin = crossorigin;
 
-	/**
-	 * [read-only] The base url of the bitmap font data
-	 *
-	 * @property baseUrl
-	 * @type String
-	 * @readOnly
-	 */
-	this.baseUrl = url.replace(/[^\/]*$/, "");
+    /**
+     * [read-only] The base url of the bitmap font data
+     *
+     * @property baseUrl
+     * @type String
+     * @readOnly
+     */
+    this.baseUrl = url.replace(/[^\/]*$/, "");
 
     /**
      * The texture being loaded
@@ -65,7 +65,7 @@ PIXI.SpriteSheetLoader = function (url, crossorigin) {
      * @property frames
      * @type Object
      */
-	this.frames = {};
+    this.frames = {};
 };
 
 // constructor
@@ -77,13 +77,13 @@ PIXI.SpriteSheetLoader.prototype.constructor = PIXI.SpriteSheetLoader;
  * @method load
  */
 PIXI.SpriteSheetLoader.prototype.load = function () {
-	var scope = this;
-	var jsonLoader = new PIXI.JsonLoader(this.url, this.crossorigin);
-	jsonLoader.addEventListener("loaded", function (event) {
-		scope.json = event.content.json;
-		scope.onJSONLoaded();
-	});
-	jsonLoader.load();
+    var scope = this;
+    var jsonLoader = new PIXI.JsonLoader(this.url, this.crossorigin);
+    jsonLoader.addEventListener("loaded", function (event) {
+        scope.json = event.content.json;
+        scope.onJSONLoaded();
+    });
+    jsonLoader.load();
 };
 
 /**
@@ -93,35 +93,35 @@ PIXI.SpriteSheetLoader.prototype.load = function () {
  * @private
  */
 PIXI.SpriteSheetLoader.prototype.onJSONLoaded = function () {
-	var scope = this;
-	var textureUrl = this.baseUrl + this.json.meta.image;
-	var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
-	var frameData = this.json.frames;
+    var scope = this;
+    var textureUrl = this.baseUrl + this.json.meta.image;
+    var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
+    var frameData = this.json.frames;
 
-	this.texture = image.texture.baseTexture;
-	image.addEventListener("loaded", function (event) {
-		scope.onLoaded();
-	});
+    this.texture = image.texture.baseTexture;
+    image.addEventListener("loaded", function (event) {
+        scope.onLoaded();
+    });
 
-	for (var i in frameData) {
-		var rect = frameData[i].frame;
-		if (rect) {
-			PIXI.TextureCache[i] = new PIXI.Texture(this.texture, {
-				x: rect.x,
-				y: rect.y,
-				width: rect.w,
-				height: rect.h
-			});
-			if (frameData[i].trimmed) {
-				//var realSize = frameData[i].spriteSourceSize;
-				PIXI.TextureCache[i].realSize = frameData[i].spriteSourceSize;
-				PIXI.TextureCache[i].trim.x = 0; // (realSize.x / rect.w)
-				// calculate the offset!
-			}
-		}
-	}
+    for (var i in frameData) {
+        var rect = frameData[i].frame;
+        if (rect) {
+            PIXI.TextureCache[i] = new PIXI.Texture(this.texture, {
+                x: rect.x,
+                y: rect.y,
+                width: rect.w,
+                height: rect.h
+            });
+            if (frameData[i].trimmed) {
+                //var realSize = frameData[i].spriteSourceSize;
+                PIXI.TextureCache[i].realSize = frameData[i].spriteSourceSize;
+                PIXI.TextureCache[i].trim.x = 0; // (realSize.x / rect.w)
+                // calculate the offset!
+            }
+        }
+    }
 
-	image.load();
+    image.load();
 };
 /**
  * Invoke when all files are loaded (json and texture)
@@ -130,8 +130,8 @@ PIXI.SpriteSheetLoader.prototype.onJSONLoaded = function () {
  * @private
  */
 PIXI.SpriteSheetLoader.prototype.onLoaded = function () {
-	this.dispatchEvent({
-		type: "loaded",
-		content: this
-	});
+    this.dispatchEvent({
+        type: "loaded",
+        content: this
+    });
 };
