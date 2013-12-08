@@ -1,5 +1,3 @@
-'use strict';
-
 module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-concat-sourcemap');
     grunt.loadNpmTasks('grunt-contrib-concat');
@@ -9,9 +7,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-yuidoc');
     grunt.loadTasks('tasks');
 
-    var root = 'src/pixi/',
-        debug = 'bin/pixi.dev.js',
-        srcFiles = [
+    var srcFiles = [
             '<%= dirs.src %>/Intro.js',
             '<%= dirs.src %>/Pixi.js',
             '<%= dirs.src %>/core/Point.js',
@@ -74,9 +70,9 @@ module.exports = function(grunt) {
             '<%= dirs.src %>/filters/DotScreenFilter.js',
             '<%= dirs.src %>/filters/CrossHatchFilter.js',
             '<%= dirs.src %>/filters/RGBSplitFilter.js',
-            
             '<%= dirs.src %>/Outro.js'
-        ], banner = [
+        ],
+        banner = [
             '/**',
             ' * @license',
             ' * <%= pkg.name %> - v<%= pkg.version %>',
@@ -114,6 +110,7 @@ module.exports = function(grunt) {
                 dest: '<%= files.build %>'
             }
         },
+        /* jshint -W106 */
         concat_sourcemap: {
             dev: {
                 files: {
@@ -125,7 +122,7 @@ module.exports = function(grunt) {
             }
         },
         jshint: {
-            src: srcFiles.concat('Gruntfile.js'),
+            src: srcFiles.filter(function(v) { return v.match(/(Intro|Outro|Spine|Pixi)\.js$/) === null; }).concat('Gruntfile.js'),
             test: ['<%= files.testBlob %>'],
             options: {
                 jshintrc: '.jshintrc'
@@ -180,4 +177,4 @@ module.exports = function(grunt) {
 
     grunt.registerTask('docs', ['yuidoc']);
     grunt.registerTask('travis', ['test']);
-}
+};

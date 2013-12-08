@@ -4,12 +4,12 @@
 
 /**
  * The sprite sheet loader is used to load in JSON sprite sheet data
- * To generate the data you can use http://www.codeandweb.com/texturepacker and publish the "JSON" format
+ * To generate the data you can use http://www.codeandweb.com/texturepacker and publish the 'JSON' format
  * There is a free version so thats nice, although the paid version is great value for money.
- * It is highly recommended to use Sprite sheets (also know as texture atlas") as it means sprite"s can be batched and drawn together for highly increased rendering speed.
+ * It is highly recommended to use Sprite sheets (also know as texture atlas') as it means sprite's can be batched and drawn together for highly increased rendering speed.
  * Once the data has been loaded the frames are stored in the PIXI texture cache and can be accessed though PIXI.Texture.fromFrameId() and PIXI.Sprite.fromFromeId()
  * This loader will also load the image file that the Spritesheet points to as well as the data.
- * When loaded this class will dispatch a "loaded" event
+ * When loaded this class will dispatch a 'loaded' event
  *
  * @class SpriteSheetLoader
  * @uses EventTarget
@@ -17,12 +17,11 @@
  * @param url {String} The url of the sprite sheet JSON file
  * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
  */
-
 PIXI.SpriteSheetLoader = function (url, crossorigin) {
     /*
      * i use texture packer to load the assets..
      * http://www.codeandweb.com/texturepacker
-     * make sure to set the format as "JSON"
+     * make sure to set the format as 'JSON'
      */
     PIXI.EventTarget.call(this);
 
@@ -49,7 +48,7 @@ PIXI.SpriteSheetLoader = function (url, crossorigin) {
      * @type String
      * @readOnly
      */
-    this.baseUrl = url.replace(/[^\/]*$/, "");
+    this.baseUrl = url.replace(/[^\/]*$/, '');
 
     /**
      * The texture being loaded
@@ -79,7 +78,7 @@ PIXI.SpriteSheetLoader.prototype.constructor = PIXI.SpriteSheetLoader;
 PIXI.SpriteSheetLoader.prototype.load = function () {
     var scope = this;
     var jsonLoader = new PIXI.JsonLoader(this.url, this.crossorigin);
-    jsonLoader.addEventListener("loaded", function (event) {
+    jsonLoader.addEventListener('loaded', function (event) {
         scope.json = event.content.json;
         scope.onJSONLoaded();
     });
@@ -99,7 +98,7 @@ PIXI.SpriteSheetLoader.prototype.onJSONLoaded = function () {
     var frameData = this.json.frames;
 
     this.texture = image.texture.baseTexture;
-    image.addEventListener("loaded", function (event) {
+    image.addEventListener('loaded', function () {
         scope.onLoaded();
     });
 
@@ -123,6 +122,7 @@ PIXI.SpriteSheetLoader.prototype.onJSONLoaded = function () {
 
     image.load();
 };
+
 /**
  * Invoke when all files are loaded (json and texture)
  *
@@ -131,7 +131,7 @@ PIXI.SpriteSheetLoader.prototype.onJSONLoaded = function () {
  */
 PIXI.SpriteSheetLoader.prototype.onLoaded = function () {
     this.dispatchEvent({
-        type: "loaded",
+        type: 'loaded',
         content: this
     });
 };

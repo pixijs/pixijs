@@ -77,7 +77,7 @@ PIXI.Sprite = function(texture)
     }
 
     this.renderable = true;
-}
+};
 
 // constructor
 PIXI.Sprite.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
@@ -94,7 +94,7 @@ Object.defineProperty(PIXI.Sprite.prototype, 'width', {
         return this.scale.x * this.texture.frame.width;
     },
     set: function(value) {
-        this.scale.x = value / this.texture.frame.width
+        this.scale.x = value / this.texture.frame.width;
         this._width = value;
     }
 });
@@ -110,7 +110,7 @@ Object.defineProperty(PIXI.Sprite.prototype, 'height', {
         return  this.scale.y * this.texture.frame.height;
     },
     set: function(value) {
-        this.scale.y = value / this.texture.frame.height
+        this.scale.y = value / this.texture.frame.height;
         this._height = value;
     }
 });
@@ -124,7 +124,7 @@ Object.defineProperty(PIXI.Sprite.prototype, 'height', {
 PIXI.Sprite.prototype.setTexture = function(texture)
 {
     // stop current texture;
-    if(this.texture.baseTexture != texture.baseTexture)
+    if(this.texture.baseTexture !== texture.baseTexture)
     {
         this.textureChange = true;
         this.texture = texture;
@@ -140,7 +140,7 @@ PIXI.Sprite.prototype.setTexture = function(texture)
     }
 
     this.updateFrame = true;
-}
+};
 
 /**
  * When the texture is updated, this event will fire to update the scale and frame
@@ -149,7 +149,7 @@ PIXI.Sprite.prototype.setTexture = function(texture)
  * @param event
  * @private
  */
-PIXI.Sprite.prototype.onTextureUpdate = function(event)
+PIXI.Sprite.prototype.onTextureUpdate = function()
 {
     //this.texture.removeEventListener( 'update', this.onTextureUpdateBind );
 
@@ -158,12 +158,12 @@ PIXI.Sprite.prototype.onTextureUpdate = function(event)
     if(this._height)this.scale.y = this._height / this.texture.frame.height;
 
     this.updateFrame = true;
-}
+};
 
 // some helper functions..
 
 /**
- * 
+ *
  * Helper function that creates a sprite that will contain a texture from the TextureCache based on the frameId
  * The frame ids are created when a Texture packer file has been loaded
  *
@@ -175,12 +175,12 @@ PIXI.Sprite.prototype.onTextureUpdate = function(event)
 PIXI.Sprite.fromFrame = function(frameId)
 {
     var texture = PIXI.TextureCache[frameId];
-    if(!texture)throw new Error("The frameId '"+ frameId +"' does not exist in the texture cache" + this);
+    if(!texture) throw new Error('The frameId "' + frameId + '" does not exist in the texture cache' + this);
     return new PIXI.Sprite(texture);
-}
+};
 
 /**
- * 
+ *
  * Helper function that creates a sprite that will contain a texture based on an image url
  * If the image is not in the texture cache it will be loaded
  *
@@ -193,4 +193,4 @@ PIXI.Sprite.fromImage = function(imageId)
 {
     var texture = PIXI.Texture.fromImage(imageId);
     return new PIXI.Sprite(texture);
-}
+};

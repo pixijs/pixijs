@@ -49,7 +49,7 @@ PIXI.SpineLoader = function(url, crossorigin)
      * @readOnly
      */
     this.loaded = false;
-}
+};
 
 PIXI.SpineLoader.prototype.constructor = PIXI.SpineLoader;
 
@@ -75,7 +75,7 @@ PIXI.SpineLoader.prototype.load = function () {
  * @method onJSONLoaded
  * @private
  */
-PIXI.SpineLoader.prototype.onJSONLoaded = function (event) {
+PIXI.SpineLoader.prototype.onJSONLoaded = function () {
     var spineJsonParser = new spine.SkeletonJson();
     var skeletonData = spineJsonParser.readSkeletonData(this.json);
 

@@ -45,7 +45,7 @@ PIXI.Strip = function(texture, width, height)
     this.verticies = new Float32Array()
     this.colors = new Float32Array()
     this.indices = new Uint16Array()
-*/
+    */
     this.width = width;
     this.height = height;
 
@@ -63,7 +63,7 @@ PIXI.Strip = function(texture, width, height)
     }
 
     this.renderable = true;
-}
+};
 
 // constructor
 PIXI.Strip.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
@@ -79,11 +79,10 @@ PIXI.Strip.prototype.setTexture = function(texture)
     this.width   = texture.frame.width;
     this.height  = texture.frame.height;
     this.updateFrame = true;
-}
+};
 
-PIXI.Strip.prototype.onTextureUpdate = function(event)
+PIXI.Strip.prototype.onTextureUpdate = function()
 {
     this.updateFrame = true;
-}
+};
 // some helper functions..
-

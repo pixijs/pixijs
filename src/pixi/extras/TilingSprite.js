@@ -58,8 +58,8 @@ PIXI.TilingSprite = function(texture, width, height)
 
     this.renderable = true;
 
-    this.blendMode = PIXI.blendModes.NORMAL
-}
+    this.blendMode = PIXI.blendModes.NORMAL;
+};
 
 // constructor
 PIXI.TilingSprite.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
@@ -79,7 +79,7 @@ PIXI.TilingSprite.prototype.setTexture = function(texture)
     // stop current texture
     this.texture = texture;
     this.updateFrame = true;
-}
+};
 
 /**
  * When the texture is updated, this event will fire to update the frame
@@ -88,8 +88,7 @@ PIXI.TilingSprite.prototype.setTexture = function(texture)
  * @param event
  * @private
  */
-PIXI.TilingSprite.prototype.onTextureUpdate = function(event)
+PIXI.TilingSprite.prototype.onTextureUpdate = function()
 {
     this.updateFrame = true;
-}
-
+};

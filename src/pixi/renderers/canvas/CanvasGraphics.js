@@ -11,7 +11,7 @@
 PIXI.CanvasGraphics = function()
 {
 
-}
+};
 
 
 /*
@@ -27,28 +27,28 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 {
     var worldAlpha = graphics.worldAlpha;
 
-    for (var i=0; i < graphics.graphicsData.length; i++)
+    for (var i = 0; i < graphics.graphicsData.length; i++)
     {
         var data = graphics.graphicsData[i];
         var points = data.points;
 
-        context.strokeStyle = color = '#' + ('00000' + ( data.lineColor | 0).toString(16)).substr(-6);
+        context.strokeStyle = '#' + ('00000' + ( data.lineColor | 0).toString(16)).substr(-6);
 
         context.lineWidth = data.lineWidth;
 
-        if(data.type == PIXI.Graphics.POLY)
+        if(data.type === PIXI.Graphics.POLY)
         {
             context.beginPath();
 
             context.moveTo(points[0], points[1]);
 
-            for (var j=1; j < points.length/2; j++)
+            for (var j = 1; j < points.length / 2; j++)
             {
                 context.lineTo(points[j * 2], points[j * 2 + 1]);
             }
 
             // if the first and last point are the same close the path - much neater :)
-            if(points[0] == points[points.length-2] && points[1] == points[points.length-1])
+            if(points[0] === points[points.length-2] && points[1] === points[points.length-1])
             {
                 context.closePath();
             }
@@ -56,7 +56,7 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
             if(data.fill)
             {
                 context.globalAlpha = data.fillAlpha * worldAlpha;
-                context.fillStyle = color = '#' + ('00000' + ( data.fillColor | 0).toString(16)).substr(-6);
+                context.fillStyle = '#' + ('00000' + ( data.fillColor | 0).toString(16)).substr(-6);
                 context.fill();
             }
             if(data.lineWidth)
@@ -65,13 +65,13 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
                 context.stroke();
             }
         }
-        else if(data.type == PIXI.Graphics.RECT)
+        else if(data.type === PIXI.Graphics.RECT)
         {
 
             if(data.fillColor || data.fillColor === 0)
             {
                 context.globalAlpha = data.fillAlpha * worldAlpha;
-                context.fillStyle = color = '#' + ('00000' + ( data.fillColor | 0).toString(16)).substr(-6);
+                context.fillStyle = '#' + ('00000' + ( data.fillColor | 0).toString(16)).substr(-6);
                 context.fillRect(points[0], points[1], points[2], points[3]);
 
             }
@@ -82,7 +82,7 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
             }
 
         }
-        else if(data.type == PIXI.Graphics.CIRC)
+        else if(data.type === PIXI.Graphics.CIRC)
         {
             // TODO - need to be Undefined!
             context.beginPath();
@@ -92,7 +92,7 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
             if(data.fill)
             {
                 context.globalAlpha = data.fillAlpha * worldAlpha;
-                context.fillStyle = color = '#' + ('00000' + ( data.fillColor | 0).toString(16)).substr(-6);
+                context.fillStyle = '#' + ('00000' + ( data.fillColor | 0).toString(16)).substr(-6);
                 context.fill();
             }
             if(data.lineWidth)
@@ -101,7 +101,7 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
                 context.stroke();
             }
         }
-        else if(data.type == PIXI.Graphics.ELIP)
+        else if(data.type === PIXI.Graphics.ELIP)
         {
 
             // elipse code taken from: http://stackoverflow.com/questions/2172798/how-to-draw-an-oval-in-html5-canvas
@@ -135,7 +135,7 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
             if(data.fill)
             {
                 context.globalAlpha = data.fillAlpha * worldAlpha;
-                context.fillStyle = color = '#' + ('00000' + ( data.fillColor | 0).toString(16)).substr(-6);
+                context.fillStyle = '#' + ('00000' + ( data.fillColor | 0).toString(16)).substr(-6);
                 context.fill();
             }
             if(data.lineWidth)
@@ -146,7 +146,7 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
         }
 
     }
-}
+};
 
 /*
  * Renders a graphics mask
@@ -159,53 +159,51 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
  */
 PIXI.CanvasGraphics.renderGraphicsMask = function(graphics, context)
 {
-    var worldAlpha = graphics.worldAlpha;
-
     var len = graphics.graphicsData.length;
-    if(len === 0)return;
+    if(len === 0) return;
 
     if(len > 1)
     {
         len = 1;
-        console.log("Pixi.js warning: masks in canvas can only mask using the first path in the graphics object")
+        window.console.log('Pixi.js warning: masks in canvas can only mask using the first path in the graphics object');
     }
 
-    for (var i=0; i < 1; i++)
+    for (var i = 0; i < 1; i++)
     {
         var data = graphics.graphicsData[i];
         var points = data.points;
 
-        if(data.type == PIXI.Graphics.POLY)
+        if(data.type === PIXI.Graphics.POLY)
         {
             context.beginPath();
             context.moveTo(points[0], points[1]);
 
-            for (var j=1; j < points.length/2; j++)
+            for (var j = 1; j < points.length / 2; j++)
             {
                 context.lineTo(points[j * 2], points[j * 2 + 1]);
             }
 
             // if the first and last point are the same close the path - much neater :)
-            if(points[0] == points[points.length-2] && points[1] == points[points.length-1])
+            if(points[0] === points[points.length-2] && points[1] === points[points.length-1])
             {
                 context.closePath();
             }
 
         }
-        else if(data.type == PIXI.Graphics.RECT)
+        else if(data.type === PIXI.Graphics.RECT)
         {
             context.beginPath();
             context.rect(points[0], points[1], points[2], points[3]);
             context.closePath();
         }
-        else if(data.type == PIXI.Graphics.CIRC)
+        else if(data.type === PIXI.Graphics.CIRC)
         {
             // TODO - need to be Undefined!
             context.beginPath();
             context.arc(points[0], points[1], points[2],0,2*Math.PI);
             context.closePath();
         }
-        else if(data.type == PIXI.Graphics.ELIP)
+        else if(data.type === PIXI.Graphics.ELIP)
         {
 
             // elipse code taken from: http://stackoverflow.com/questions/2172798/how-to-draw-an-oval-in-html5-canvas
@@ -219,7 +217,7 @@ PIXI.CanvasGraphics.renderGraphicsMask = function(graphics, context)
 
             context.beginPath();
 
-            var kappa = .5522848,
+            var kappa = 0.5522848,
             ox = (w / 2) * kappa, // control point offset horizontal
             oy = (h / 2) * kappa, // control point offset vertical
             xe = x + w,           // x-end
@@ -234,7 +232,5 @@ PIXI.CanvasGraphics.renderGraphicsMask = function(graphics, context)
             context.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);
             context.closePath();
         }
-
-
-    };
-}
+    }
+};

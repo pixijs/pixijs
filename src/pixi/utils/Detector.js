@@ -23,14 +23,20 @@ PIXI.autoDetectRenderer = function(width, height, view, transparent, antialias)
     if(!height)height = 600;
 
     // BORROWED from Mr Doob (mrdoob.com)
-    var webgl = ( function () { try { var canvas = document.createElement( 'canvas' ); return !! window.WebGLRenderingContext && ( canvas.getContext( 'webgl' ) || canvas.getContext( 'experimental-webgl' ) ); } catch( e ) { return false; } } )();
+    var webgl = ( function () { try {
+                                    var canvas = document.createElement( 'canvas' );
+                                    return !! window.WebGLRenderingContext && ( canvas.getContext( 'webgl' ) || canvas.getContext( 'experimental-webgl' ) );
+                                } catch( e ) {
+                                    return false;
+                                }
+                            } )();
 
     if(webgl)
     {
-        var ie =  (navigator.userAgent.toLowerCase().indexOf('msie') != -1);
-         webgl = !ie;
+        var ie =  (navigator.userAgent.toLowerCase().indexOf('msie') !== -1);
+        webgl = !ie;
     }
-    
+
     //console.log(webgl);
     if( webgl )
     {

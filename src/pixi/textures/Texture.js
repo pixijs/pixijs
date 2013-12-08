@@ -64,9 +64,9 @@ PIXI.Texture = function(baseTexture, frame)
     else
     {
         var scope = this;
-        baseTexture.addEventListener( 'loaded', function(){ scope.onBaseTextureLoaded()} );
+        baseTexture.addEventListener('loaded', function(){ scope.onBaseTextureLoaded(); });
     }
-}
+};
 
 PIXI.Texture.prototype.constructor = PIXI.Texture;
 
@@ -77,7 +77,7 @@ PIXI.Texture.prototype.constructor = PIXI.Texture;
  * @param event
  * @private
  */
-PIXI.Texture.prototype.onBaseTextureLoaded = function(event)
+PIXI.Texture.prototype.onBaseTextureLoaded = function()
 {
     var baseTexture = this.baseTexture;
     baseTexture.removeEventListener( 'loaded', this.onLoaded );
@@ -88,7 +88,7 @@ PIXI.Texture.prototype.onBaseTextureLoaded = function(event)
     this.height = this.frame.height;
 
     this.scope.dispatchEvent( { type: 'update', content: this } );
-}
+};
 
 /**
  * Destroys this texture
@@ -98,8 +98,8 @@ PIXI.Texture.prototype.onBaseTextureLoaded = function(event)
  */
 PIXI.Texture.prototype.destroy = function(destroyBase)
 {
-    if(destroyBase)this.baseTexture.destroy();
-}
+    if(destroyBase) this.baseTexture.destroy();
+};
 
 /**
  * Specifies the rectangle region of the baseTexture
@@ -115,14 +115,14 @@ PIXI.Texture.prototype.setFrame = function(frame)
 
     if(frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height)
     {
-        throw new Error("Texture Error: frame does not fit inside the base Texture dimensions " + this);
+        throw new Error('Texture Error: frame does not fit inside the base Texture dimensions ' + this);
     }
 
     this.updateFrame = true;
 
     PIXI.Texture.frameUpdates.push(this);
     //this.dispatchEvent( { type: 'update', content: this } );
-}
+};
 
 /**
  * Helper function that returns a texture based on an image url
@@ -145,7 +145,7 @@ PIXI.Texture.fromImage = function(imageUrl, crossorigin)
     }
 
     return texture;
-}
+};
 
 /**
  * Helper function that returns a texture based on a frame id
@@ -159,9 +159,9 @@ PIXI.Texture.fromImage = function(imageUrl, crossorigin)
 PIXI.Texture.fromFrame = function(frameId)
 {
     var texture = PIXI.TextureCache[frameId];
-    if(!texture)throw new Error("The frameId '"+ frameId +"' does not exist in the texture cache " + this);
+    if(!texture) throw new Error('The frameId "' + frameId + '" does not exist in the texture cache ' + this);
     return texture;
-}
+};
 
 /**
  * Helper function that returns a texture based on a canvas element
@@ -176,7 +176,7 @@ PIXI.Texture.fromCanvas = function(canvas)
 {
     var baseTexture = new PIXI.BaseTexture(canvas);
     return new PIXI.Texture(baseTexture);
-}
+};
 
 
 /**
@@ -190,7 +190,7 @@ PIXI.Texture.fromCanvas = function(canvas)
 PIXI.Texture.addTextureToCache = function(texture, id)
 {
     PIXI.TextureCache[id] = texture;
-}
+};
 
 /**
  * Remove a texture from the textureCache.
@@ -202,11 +202,10 @@ PIXI.Texture.addTextureToCache = function(texture, id)
  */
 PIXI.Texture.removeTextureFromCache = function(id)
 {
-    var texture = PIXI.TextureCache[id]
+    var texture = PIXI.TextureCache[id];
     PIXI.TextureCache[id] = null;
     return texture;
-}
+};
 
 // this is more for webGL.. it contains updated frames..
 PIXI.Texture.frameUpdates = [];
-

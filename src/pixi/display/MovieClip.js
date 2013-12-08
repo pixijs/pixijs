@@ -66,7 +66,7 @@ PIXI.MovieClip = function(textures)
      * @readOnly
      */
     this.playing = false;
-}
+};
 
 // constructor
 PIXI.MovieClip.prototype = Object.create( PIXI.Sprite.prototype );
@@ -97,7 +97,7 @@ Object.defineProperty( PIXI.MovieClip.prototype, 'totalFrames', {
 PIXI.MovieClip.prototype.stop = function()
 {
     this.playing = false;
-}
+};
 
 /**
  * Plays the MovieClip
@@ -107,7 +107,7 @@ PIXI.MovieClip.prototype.stop = function()
 PIXI.MovieClip.prototype.play = function()
 {
     this.playing = true;
-}
+};
 
 /**
  * Stops the MovieClip and goes to a specific frame
@@ -121,7 +121,7 @@ PIXI.MovieClip.prototype.gotoAndStop = function(frameNumber)
     this.currentFrame = frameNumber;
     var round = (this.currentFrame + 0.5) | 0;
     this.setTexture(this.textures[round % this.textures.length]);
-}
+};
 
 /**
  * Goes to a specific frame and begins playing the MovieClip
@@ -133,7 +133,7 @@ PIXI.MovieClip.prototype.gotoAndPlay = function(frameNumber)
 {
     this.currentFrame = frameNumber;
     this.playing = true;
-}
+};
 
 /*
  * Updates the object transform for rendering
@@ -163,4 +163,4 @@ PIXI.MovieClip.prototype.updateTransform = function()
             this.onComplete();
         }
     }
-}
+};

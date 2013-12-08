@@ -69,7 +69,7 @@ PIXI.BaseTexture = function(source)
         {
 
             var scope = this;
-            this.source.onload = function(){
+            this.source.onload = function() {
 
                 scope.hasLoaded = true;
                 scope.width = scope.source.width;
@@ -78,7 +78,7 @@ PIXI.BaseTexture = function(source)
                 // add it to somewhere...
                 PIXI.texturesToUpdate.push(scope);
                 scope.dispatchEvent( { type: 'loaded', content: scope } );
-            }
+            };
             //  this.image.src = imageUrl;
         }
     }
@@ -93,7 +93,7 @@ PIXI.BaseTexture = function(source)
 
     this.imageUrl = null;
     this._powerOf2 = false;
-}
+};
 
 PIXI.BaseTexture.prototype.constructor = PIXI.BaseTexture;
 
@@ -106,17 +106,17 @@ PIXI.BaseTexture.prototype.destroy = function()
 {
     if(this.source instanceof Image)
     {
-        if (this.imageUrl in PIXI.BaseTextureCache) 
+        if (this.imageUrl in PIXI.BaseTextureCache)
             delete PIXI.BaseTextureCache[this.imageUrl];
         this.imageUrl = null;
         this.source.src = null;
     }
     this.source = null;
     PIXI.texturesToDestroy.push(this);
-}
+};
 
 /**
- * 
+ *
  *
  * @method destroy
  */
@@ -126,7 +126,7 @@ PIXI.BaseTexture.prototype.updateSourceImage = function(newSrc)
     this.hasLoaded = false;
     this.source.src = null;
     this.source.src = newSrc;
-}
+};
 
 /**
  * Helper function that returns a base texture based on an image url
@@ -156,4 +156,4 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin)
     }
 
     return baseTexture;
-}
+};

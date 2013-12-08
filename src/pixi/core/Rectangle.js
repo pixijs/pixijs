@@ -41,7 +41,7 @@ PIXI.Rectangle = function(x, y, width, height)
      * @default 0
      */
     this.height = height || 0;
-}
+};
 
 /**
  * Creates a clone of this Rectangle
@@ -52,7 +52,7 @@ PIXI.Rectangle = function(x, y, width, height)
 PIXI.Rectangle.prototype.clone = function()
 {
     return new PIXI.Rectangle(this.x, this.y, this.width, this.height);
-}
+};
 
 /**
  * Checks if the x, and y coords passed to this function are contained within this Rectangle
@@ -79,7 +79,7 @@ PIXI.Rectangle.prototype.contains = function(x, y)
     }
 
     return false;
-}
+};
 
 // constructor
 PIXI.Rectangle.prototype.constructor = PIXI.Rectangle;

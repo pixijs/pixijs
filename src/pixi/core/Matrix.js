@@ -29,7 +29,7 @@ PIXI.mat3.create = function()
     matrix[8] = 1;
 
     return matrix;
-}
+};
 
 
 PIXI.mat3.identity = function(matrix)
@@ -45,7 +45,7 @@ PIXI.mat3.identity = function(matrix)
     matrix[8] = 1;
 
     return matrix;
-}
+};
 
 
 PIXI.mat4 = {};
@@ -72,7 +72,7 @@ PIXI.mat4.create = function()
     matrix[15] = 1;
 
     return matrix;
-}
+};
 
 PIXI.mat3.multiply = function (mat, mat2, dest)
 {
@@ -100,7 +100,7 @@ PIXI.mat3.multiply = function (mat, mat2, dest)
     dest[8] = b20 * a02 + b21 * a12 + b22 * a22;
 
     return dest;
-}
+};
 
 PIXI.mat3.clone = function(mat)
 {
@@ -117,7 +117,7 @@ PIXI.mat3.clone = function(mat)
     matrix[8] = mat[8];
 
     return matrix;
-}
+};
 
 PIXI.mat3.transpose = function (mat, dest)
 {
@@ -145,7 +145,7 @@ PIXI.mat3.transpose = function (mat, dest)
     dest[7] = mat[5];
     dest[8] = mat[8];
     return dest;
-}
+};
 
 PIXI.mat3.toMat4 = function (mat, dest)
 {
@@ -172,7 +172,7 @@ PIXI.mat3.toMat4 = function (mat, dest)
     dest[0] = mat[0];
 
     return dest;
-}
+};
 
 
 /////
@@ -200,7 +200,7 @@ PIXI.mat4.create = function()
     matrix[15] = 1;
 
     return matrix;
-}
+};
 
 PIXI.mat4.transpose = function (mat, dest)
 {
@@ -243,7 +243,7 @@ PIXI.mat4.transpose = function (mat, dest)
     dest[14] = mat[11];
     dest[15] = mat[15];
     return dest;
-}
+};
 
 PIXI.mat4.multiply = function (mat, mat2, dest)
 {
@@ -290,4 +290,4 @@ PIXI.mat4.multiply = function (mat, mat2, dest)
     dest[15] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
 
     return dest;
-}
+};

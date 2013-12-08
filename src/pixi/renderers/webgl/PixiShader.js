@@ -12,26 +12,25 @@ PIXI.PixiShader = function()
     /**
     * @property {any} program - The WebGL program.
     */
-    this.program;
-    
+    this.program = null;
+
     /**
     * @property {array} fragmentSrc - The fragment shader.
     */
     this.fragmentSrc = [
-        "precision lowp float;",
-        "varying vec2 vTextureCoord;",
-        "varying float vColor;",
-        "uniform sampler2D uSampler;",
-        "void main(void) {",
-            "gl_FragColor = texture2D(uSampler, vTextureCoord) * vColor;",
-        "}"
+        'precision lowp float;',
+        'varying vec2 vTextureCoord;',
+        'varying float vColor;',
+        'uniform sampler2D uSampler;',
+        'void main(void) {',
+        '   gl_FragColor = texture2D(uSampler, vTextureCoord) * vColor;',
+        '}'
     ];
 
     /**
     * @property {number} textureCount - A local texture counter for multi-texture shaders.
     */
     this.textureCount = 0;
-    
 };
 
 /**
@@ -39,23 +38,23 @@ PIXI.PixiShader = function()
 */
 PIXI.PixiShader.prototype.init = function()
 {
-    var program = PIXI.compileProgram(this.vertexSrc || PIXI.PixiShader.defaultVertexSrc, this.fragmentSrc)
-    
+    var program = PIXI.compileProgram(this.vertexSrc || PIXI.PixiShader.defaultVertexSrc, this.fragmentSrc);
+
     var gl = PIXI.gl;
 
     gl.useProgram(program);
-    
+
     // get and store the uniforms for the shader
-    this.uSampler = gl.getUniformLocation(program, "uSampler");
-    this.projectionVector = gl.getUniformLocation(program, "projectionVector");
-    this.offsetVector = gl.getUniformLocation(program, "offsetVector");
-    this.dimensions = gl.getUniformLocation(program, "dimensions");
-    
+    this.uSampler = gl.getUniformLocation(program, 'uSampler');
+    this.projectionVector = gl.getUniformLocation(program, 'projectionVector');
+    this.offsetVector = gl.getUniformLocation(program, 'offsetVector');
+    this.dimensions = gl.getUniformLocation(program, 'dimensions');
+
     // get and store the attributes
-    this.aVertexPosition = gl.getAttribLocation(program, "aVertexPosition");
-    this.colorAttribute = gl.getAttribLocation(program, "aColor");
-    this.aTextureCoord = gl.getAttribLocation(program, "aTextureCoord");
-      
+    this.aVertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
+    this.colorAttribute = gl.getAttribLocation(program, 'aColor');
+    this.aTextureCoord = gl.getAttribLocation(program, 'aTextureCoord');
+
     // add those custom shaders!
     for (var key in this.uniforms)
     {
@@ -64,7 +63,7 @@ PIXI.PixiShader.prototype.init = function()
     }
 
     this.initUniforms();
-  
+
     this.program = program;
 };
 
@@ -80,13 +79,14 @@ PIXI.PixiShader.prototype.initUniforms = function()
     this.textureCount = 1;
 
     var uniform;
-    
-    for (var key in this.uniforms) 
+
+    for (var key in this.uniforms)
     {
-        var uniform = this.uniforms[key];
+        uniform = this.uniforms[key];
+
         var type = uniform.type;
 
-        if (type == 'sampler2D')
+        if (type === 'sampler2D')
         {
             uniform._init = false;
 
@@ -95,21 +95,21 @@ PIXI.PixiShader.prototype.initUniforms = function()
                 this.initSampler2D(uniform);
             }
         }
-        else if (type == 'mat2' || type == 'mat3' || type == 'mat4')
+        else if (type === 'mat2' || type === 'mat3' || type === 'mat4')
         {
             //  These require special handling
             uniform.glMatrix = true;
             uniform.glValueLength = 1;
 
-            if (type == 'mat2')
+            if (type === 'mat2')
             {
                 uniform.glFunc = PIXI.gl.uniformMatrix2fv;
             }
-            else if (type == 'mat3')
+            else if (type === 'mat3')
             {
                 uniform.glFunc = PIXI.gl.uniformMatrix3fv;
             }
-            else if (type == 'mat4')
+            else if (type === 'mat4')
             {
                 uniform.glFunc = PIXI.gl.uniformMatrix4fv;
             }
@@ -119,15 +119,15 @@ PIXI.PixiShader.prototype.initUniforms = function()
             //  GL function reference
             uniform.glFunc = PIXI.gl['uniform' + type];
 
-            if (type == '2f' || type == '2i')
+            if (type === '2f' || type === '2i')
             {
                 uniform.glValueLength = 2;
             }
-            else if (type == '3f' || type == '3i')
+            else if (type === '3f' || type === '3i')
             {
                 uniform.glValueLength = 3;
             }
-            else if (type == '4f' || type == '4i')
+            else if (type === '4f' || type === '4i')
             {
                 uniform.glValueLength = 4;
             }
@@ -137,7 +137,7 @@ PIXI.PixiShader.prototype.initUniforms = function()
             }
         }
     }
-    
+
 };
 
 /**
@@ -224,12 +224,12 @@ PIXI.PixiShader.prototype.syncUniforms = function()
     var uniform;
 
     //  This would probably be faster in an array and it would guarantee key order
-    for (var key in this.uniforms) 
+    for (var key in this.uniforms)
     {
 
         uniform = this.uniforms[key];
 
-        if (uniform.glValueLength == 1)
+        if (uniform.glValueLength === 1)
         {
             if (uniform.glMatrix === true)
             {
@@ -240,19 +240,19 @@ PIXI.PixiShader.prototype.syncUniforms = function()
                 uniform.glFunc.call(PIXI.gl, uniform.uniformLocation, uniform.value);
             }
         }
-        else if (uniform.glValueLength == 2)
+        else if (uniform.glValueLength === 2)
         {
             uniform.glFunc.call(PIXI.gl, uniform.uniformLocation, uniform.value.x, uniform.value.y);
         }
-        else if (uniform.glValueLength == 3)
+        else if (uniform.glValueLength === 3)
         {
             uniform.glFunc.call(PIXI.gl, uniform.uniformLocation, uniform.value.x, uniform.value.y, uniform.value.z);
         }
-        else if (uniform.glValueLength == 4)
+        else if (uniform.glValueLength === 4)
         {
             uniform.glFunc.call(PIXI.gl, uniform.uniformLocation, uniform.value.x, uniform.value.y, uniform.value.z, uniform.value.w);
         }
-        else if (uniform.type == 'sampler2D')
+        else if (uniform.type === 'sampler2D')
         {
             if (uniform._init)
             {
@@ -267,26 +267,25 @@ PIXI.PixiShader.prototype.syncUniforms = function()
             }
         }
     }
-    
+
 };
 
 PIXI.PixiShader.defaultVertexSrc = [
-    
-    "attribute vec2 aVertexPosition;",
-    "attribute vec2 aTextureCoord;",
-    "attribute float aColor;",
+    'attribute vec2 aVertexPosition;',
+    'attribute vec2 aTextureCoord;',
+    'attribute float aColor;',
 
-    "uniform vec2 projectionVector;",
-    "uniform vec2 offsetVector;",
-    "varying vec2 vTextureCoord;",
+    'uniform vec2 projectionVector;',
+    'uniform vec2 offsetVector;',
+    'varying vec2 vTextureCoord;',
 
-    "varying float vColor;",
+    'varying float vColor;',
 
-    "const vec2 center = vec2(-1.0, 1.0);",
-    
-    "void main(void) {",
-        "gl_Position = vec4( ((aVertexPosition + offsetVector) / projectionVector) + center , 0.0, 1.0);",
-        "vTextureCoord = aTextureCoord;",
-        "vColor = aColor;",
-    "}"
+    'const vec2 center = vec2(-1.0, 1.0);',
+
+    'void main(void) {',
+    '   gl_Position = vec4( ((aVertexPosition + offsetVector) / projectionVector) + center , 0.0, 1.0);',
+    '   vTextureCoord = aTextureCoord;',
+    '   vColor = aColor;',
+    '}'
 ];

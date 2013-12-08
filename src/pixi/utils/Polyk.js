@@ -44,11 +44,12 @@ PIXI.PolyK.Triangulate = function(p)
 {
     var sign = true;
 
-    var n = p.length>>1;
-    if(n<3) return [];
+    var n = p.length >> 1;
+    if(n < 3) return [];
+
     var tgs = [];
     var avl = [];
-    for(var i=0; i<n; i++) avl.push(i);
+    for(var i = 0; i < n; i++) avl.push(i);
 
     i = 0;
     var al = n;
@@ -66,13 +67,18 @@ PIXI.PolyK.Triangulate = function(p)
         if(PIXI.PolyK._convex(ax, ay, bx, by, cx, cy, sign))
         {
             earFound = true;
-            for(var j=0; j<al; j++)
+            for(var j = 0; j < al; j++)
             {
                 var vi = avl[j];
-                if(vi==i0 || vi==i1 || vi==i2) continue;
-                if(PIXI.PolyK._PointInTriangle(p[2*vi], p[2*vi+1], ax, ay, bx, by, cx, cy)) {earFound = false; break;}
+                if(vi === i0 || vi === i1 || vi === i2) continue;
+
+                if(PIXI.PolyK._PointInTriangle(p[2*vi], p[2*vi+1], ax, ay, bx, by, cx, cy)) {
+                    earFound = false;
+                    break;
+                }
             }
         }
+
         if(earFound)
         {
             tgs.push(i0, i1, i2);
@@ -88,7 +94,7 @@ PIXI.PolyK.Triangulate = function(p)
             {
                 tgs = [];
                 avl = [];
-                for(i=0; i<n; i++) avl.push(i);
+                for(i = 0; i < n; i++) avl.push(i);
 
                 i = 0;
                 al = n;
@@ -97,14 +103,15 @@ PIXI.PolyK.Triangulate = function(p)
             }
             else
             {
-                console.log("PIXI Warning: shape too complex to fill")
+                window.console.log("PIXI Warning: shape too complex to fill");
                 return [];
             }
         }
     }
+
     tgs.push(avl[0], avl[1], avl[2]);
     return tgs;
-}
+};
 
 /**
  * Checks if a point is within a triangle
@@ -134,7 +141,7 @@ PIXI.PolyK._PointInTriangle = function(px, py, ax, ay, bx, by, cx, cy)
 
     // Check if point is in triangle
     return (u >= 0) && (v >= 0) && (u + v < 1);
-}
+};
 
 /**
  * Checks if a shape is convex
@@ -145,5 +152,5 @@ PIXI.PolyK._PointInTriangle = function(px, py, ax, ay, bx, by, cx, cy)
  */
 PIXI.PolyK._convex = function(ax, ay, bx, by, cx, cy, sign)
 {
-    return ((ay-by)*(cx-bx) + (bx-ax)*(cy-by) >= 0) == sign;
-}
+    return ((ay-by)*(cx-bx) + (bx-ax)*(cy-by) >= 0) === sign;
+};

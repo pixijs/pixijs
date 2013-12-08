@@ -2,10 +2,9 @@
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
-
 /**
- * 
- * The BlurFilter applies a Gaussian blur to an object. 
+ *
+ * The BlurFilter applies a Gaussian blur to an object.
  * The strength of the blur can be set for x- and y-axis separately (always relative to the stage).
  *
  * @class BlurFilter
@@ -13,13 +12,11 @@
  */
 PIXI.BlurFilter = function()
 {
-    
-	this.blurXFilter = new PIXI.BlurXFilter();
-	this.blurYFilter = new PIXI.BlurYFilter();
+    this.blurXFilter = new PIXI.BlurXFilter();
+    this.blurYFilter = new PIXI.BlurYFilter();
 
-	this.passes =[this.blurXFilter, this.blurYFilter];
-	
-}
+    this.passes =[this.blurXFilter, this.blurYFilter];
+};
 
 /**
  * Sets the strength of both the blurX and blurY properties simultaneously
@@ -33,7 +30,7 @@ Object.defineProperty(PIXI.BlurFilter.prototype, 'blur', {
         return this.blurXFilter.blur;
     },
     set: function(value) {
-  		this.blurXFilter.blur = this.blurYFilter.blur = value;
+        this.blurXFilter.blur = this.blurYFilter.blur = value;
     }
 });
 
@@ -49,7 +46,7 @@ Object.defineProperty(PIXI.BlurFilter.prototype, 'blurX', {
         return this.blurXFilter.blur;
     },
     set: function(value) {
-    	this.blurXFilter.blur = value;
+        this.blurXFilter.blur = value;
     }
 });
 
@@ -65,6 +62,6 @@ Object.defineProperty(PIXI.BlurFilter.prototype, 'blurY', {
         return this.blurYFilter.blur;
     },
     set: function(value) {
-    	this.blurYFilter.blur = value;
+        this.blurYFilter.blur = value;
     }
 });

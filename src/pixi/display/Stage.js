@@ -61,7 +61,7 @@ PIXI.Stage = function(backgroundColor)
 
     this.setBackgroundColor(backgroundColor);
     this.worldVisible = true;
-}
+};
 
 // constructor
 PIXI.Stage.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
@@ -77,7 +77,7 @@ PIXI.Stage.prototype.constructor = PIXI.Stage;
 PIXI.Stage.prototype.setInteractionDelegate = function(domElement)
 {
     this.interactionManager.setTargetDomElement( domElement );
-}
+};
 
 /*
  * Updates the object transform for rendering
@@ -104,7 +104,7 @@ PIXI.Stage.prototype.updateTransform = function()
 
 
     if(this.interactive)this.interactionManager.update();
-}
+};
 
 /**
  * Sets the background color for the stage
@@ -116,11 +116,11 @@ PIXI.Stage.prototype.updateTransform = function()
 PIXI.Stage.prototype.setBackgroundColor = function(backgroundColor)
 {
     this.backgroundColor = backgroundColor || 0x000000;
-    this.backgroundColorSplit = hex2rgb(this.backgroundColor);
+    this.backgroundColorSplit = PIXI.hex2rgb(this.backgroundColor);
     var hex = this.backgroundColor.toString(16);
-    hex = "000000".substr(0, 6 - hex.length) + hex;
-    this.backgroundColorString = "#" + hex;
-}
+    hex = '000000'.substr(0, 6 - hex.length) + hex;
+    this.backgroundColorString = '#' + hex;
+};
 
 /**
  * This will return the point containing global coords of the mouse.
@@ -131,4 +131,4 @@ PIXI.Stage.prototype.setBackgroundColor = function(backgroundColor)
 PIXI.Stage.prototype.getMousePosition = function()
 {
     return this.interactionManager.mouse.global;
-}
+};

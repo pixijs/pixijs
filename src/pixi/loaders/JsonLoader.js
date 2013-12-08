@@ -4,8 +4,8 @@
 
 /**
  * The json file loader is used to load in JSON data and parsing it
- * When loaded this class will dispatch a "loaded" event
- * If load failed this class will dispatch a "error" event
+ * When loaded this class will dispatch a 'loaded' event
+ * If load failed this class will dispatch a 'error' event
  *
  * @class JsonLoader
  * @uses EventTarget
@@ -39,7 +39,7 @@ PIXI.JsonLoader = function (url, crossorigin) {
      * @type String
      * @readOnly
      */
-    this.baseUrl = url.replace(/[^\/]*$/, "");
+    this.baseUrl = url.replace(/[^\/]*$/, '');
 
     /**
      * [read-only] Whether the data has loaded yet
@@ -61,14 +61,14 @@ PIXI.JsonLoader.prototype.constructor = PIXI.JsonLoader;
  * @method load
  */
 PIXI.JsonLoader.prototype.load = function () {
-    this.ajaxRequest = new AjaxRequest();
+    this.ajaxRequest = new PIXI.AjaxRequest();
     var scope = this;
     this.ajaxRequest.onreadystatechange = function () {
         scope.onJSONLoaded();
     };
 
-    this.ajaxRequest.open("GET", this.url, true);
-    if (this.ajaxRequest.overrideMimeType) this.ajaxRequest.overrideMimeType("application/json");
+    this.ajaxRequest.open('GET', this.url, true);
+    if (this.ajaxRequest.overrideMimeType) this.ajaxRequest.overrideMimeType('application/json');
     this.ajaxRequest.send(null);
 };
 
@@ -79,8 +79,8 @@ PIXI.JsonLoader.prototype.load = function () {
  * @private
  */
 PIXI.JsonLoader.prototype.onJSONLoaded = function () {
-    if (this.ajaxRequest.readyState == 4) {
-        if (this.ajaxRequest.status == 200 || window.location.href.indexOf("http") == -1) {
+    if (this.ajaxRequest.readyState === 4) {
+        if (this.ajaxRequest.status === 200 || window.location.href.indexOf('http') === -1) {
             this.json = JSON.parse(this.ajaxRequest.responseText);
 
             if(this.json.frames)
@@ -92,7 +92,7 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
                 var frameData = this.json.frames;
 
                 this.texture = image.texture.baseTexture;
-                image.addEventListener("loaded", function (event) {
+                image.addEventListener('loaded', function () {
                     scope.onLoaded();
                 });
 
@@ -146,7 +146,7 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
 PIXI.JsonLoader.prototype.onLoaded = function () {
     this.loaded = true;
     this.dispatchEvent({
-        type: "loaded",
+        type: 'loaded',
         content: this
     });
 };
@@ -159,7 +159,7 @@ PIXI.JsonLoader.prototype.onLoaded = function () {
  */
 PIXI.JsonLoader.prototype.onError = function () {
     this.dispatchEvent({
-        type: "error",
+        type: 'error',
         content: this
     });
 };

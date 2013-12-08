@@ -59,7 +59,7 @@ PIXI.Graphics = function()
      * @private
      */
     this.currentPath = {points:[]};
-}
+};
 
 // constructor
 PIXI.Graphics.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
@@ -85,7 +85,7 @@ PIXI.Graphics.prototype.lineStyle = function(lineWidth, color, alpha)
                         fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling, points:[], type:PIXI.Graphics.POLY};
 
     this.graphicsData.push(this.currentPath);
-}
+};
 
 /**
  * Moves the current drawing position to (x, y).
@@ -104,7 +104,7 @@ PIXI.Graphics.prototype.moveTo = function(x, y)
     this.currentPath.points.push(x, y);
 
     this.graphicsData.push(this.currentPath);
-}
+};
 
 /**
  * Draws a line using the current line style from the current drawing position to (x, y);
@@ -118,7 +118,7 @@ PIXI.Graphics.prototype.lineTo = function(x, y)
 {
     this.currentPath.points.push(x, y);
     this.dirty = true;
-}
+};
 
 /**
  * Specifies a simple one-color fill that subsequent calls to other Graphics methods
@@ -133,7 +133,7 @@ PIXI.Graphics.prototype.beginFill = function(color, alpha)
     this.filling = true;
     this.fillColor = color || 0;
     this.fillAlpha = (arguments.length < 2) ? 1 : alpha;
-}
+};
 
 /**
  * Applies a fill to the lines and shapes that were added since the last call to the beginFill() method.
@@ -145,7 +145,7 @@ PIXI.Graphics.prototype.endFill = function()
     this.filling = false;
     this.fillColor = null;
     this.fillAlpha = 1;
-}
+};
 
 /**
  * @method drawRect
@@ -165,7 +165,7 @@ PIXI.Graphics.prototype.drawRect = function( x, y, width, height )
 
     this.graphicsData.push(this.currentPath);
     this.dirty = true;
-}
+};
 
 /**
  * Draws a circle.
@@ -185,7 +185,7 @@ PIXI.Graphics.prototype.drawCircle = function( x, y, radius)
 
     this.graphicsData.push(this.currentPath);
     this.dirty = true;
-}
+};
 
 /**
  * Draws an elipse.
@@ -206,7 +206,7 @@ PIXI.Graphics.prototype.drawElipse = function( x, y, width, height)
 
     this.graphicsData.push(this.currentPath);
     this.dirty = true;
-}
+};
 
 /**
  * Clears the graphics that were drawn to this Graphics object, and resets fill and line style settings.
@@ -222,8 +222,8 @@ PIXI.Graphics.prototype.clear = function()
     this.clearDirty = true;
     this.graphicsData = [];
 
-    this.bounds = null//new PIXI.Rectangle();
-}
+    this.bounds = null; //new PIXI.Rectangle();
+};
 
 
 PIXI.Graphics.prototype.updateFilterBounds = function()
@@ -239,8 +239,6 @@ PIXI.Graphics.prototype.updateFilterBounds = function()
         var points, x, y;
 
         for (var i = 0; i < this.graphicsData.length; i++) {
-            
-
             var data = this.graphicsData[i];
             var type = data.type;
             var lineWidth = data.lineWidth;
@@ -265,7 +263,7 @@ PIXI.Graphics.prototype.updateFilterBounds = function()
                 x = points.x;
                 y = points.y;
                 var radius = points.radius + lineWidth/2;
-                
+
                 minX = x - radius < minX ? x - radius : minX;
                 maxX = x + radius > maxX ? x + radius : maxX;
 
@@ -275,9 +273,9 @@ PIXI.Graphics.prototype.updateFilterBounds = function()
             else
             {
                 // POLY
-                for (var j = 0; j < points.length; j+=2) 
+                for (var j = 0; j < points.length; j+=2)
                 {
-                    
+
                     x = points[j];
                     y = points[j+1];
 
@@ -286,17 +284,14 @@ PIXI.Graphics.prototype.updateFilterBounds = function()
 
                     minY = y-lineWidth < minY ? y-lineWidth : minY;
                     maxY = y+lineWidth > maxY ? y+lineWidth : maxY;
-                };
+                }
             }
-
-        };
+        }
 
         this.bounds = new PIXI.Rectangle(minX, minY, maxX - minX, maxY - minY);
-
     }
-
 //  console.log(this.bounds);
-}
+};
 
 // SOME TYPES:
 PIXI.Graphics.POLY = 0;

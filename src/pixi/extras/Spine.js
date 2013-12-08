@@ -1466,4 +1466,3 @@ PIXI.Spine.prototype.createSprite = function (slot, descriptor) {
     slot.sprites[descriptor.name] = sprite;
     return sprite;
 };
-

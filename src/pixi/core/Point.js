@@ -25,7 +25,7 @@ PIXI.Point = function(x, y)
      * @default 0
      */
     this.y = y || 0;
-}
+};
 
 /**
  * Creates a clone of this point
@@ -36,7 +36,7 @@ PIXI.Point = function(x, y)
 PIXI.Point.prototype.clone = function()
 {
     return new PIXI.Point(this.x, this.y);
-}
+};
 
 // constructor
 PIXI.Point.prototype.constructor = PIXI.Point;

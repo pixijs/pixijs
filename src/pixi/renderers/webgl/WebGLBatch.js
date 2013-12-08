@@ -9,7 +9,7 @@ PIXI._batchs = [];
  */
 PIXI._getBatch = function(gl)
 {
-    if(PIXI._batchs.length == 0)
+    if(PIXI._batchs.length === 0)
     {
         return new PIXI.WebGLBatch(gl);
     }
@@ -17,27 +17,27 @@ PIXI._getBatch = function(gl)
     {
         return PIXI._batchs.pop();
     }
-}
+};
 
 /**
  * @private
  */
 PIXI._returnBatch = function(batch)
 {
-    batch.clean();  
+    batch.clean();
     PIXI._batchs.push(batch);
-}
+};
 
 /**
  * @private
  */
 PIXI._restoreBatchs = function(gl)
 {
-    for (var i=0; i < PIXI._batchs.length; i++) 
+    for (var i=0; i < PIXI._batchs.length; i++)
     {
-      PIXI._batchs[i].restoreLostContext(gl);
-    };
-}
+        PIXI._batchs[i].restoreLostContext(gl);
+    }
+};
 
 /**
  * A WebGLBatch Enables a group of sprites to be drawn using the same settings.
@@ -54,7 +54,7 @@ PIXI._restoreBatchs = function(gl)
 PIXI.WebGLBatch = function(gl)
 {
     this.gl = gl;
-    
+
     this.size = 0;
 
     this.vertexBuffer =  gl.createBuffer();
@@ -63,7 +63,7 @@ PIXI.WebGLBatch = function(gl)
     this.colorBuffer =  gl.createBuffer();
     this.blendMode = PIXI.blendModes.NORMAL;
     this.dynamicSize = 1;
-}
+};
 
 // constructor
 PIXI.WebGLBatch.prototype.constructor = PIXI.WebGLBatch;
@@ -83,9 +83,9 @@ PIXI.WebGLBatch.prototype.clean = function()
     this.texture = null;
     this.last = null;
     this.size = 0;
-    this.head;
-    this.tail;
-}
+    this.head = null;
+    this.tail = null;
+};
 
 /**
  * Recreates the buffers in the event of a context loss
@@ -100,7 +100,7 @@ PIXI.WebGLBatch.prototype.restoreLostContext = function(gl)
     this.indexBuffer =  gl.createBuffer();
     this.uvBuffer =  gl.createBuffer();
     this.colorBuffer =  gl.createBuffer();
-}
+};
 
 /**
  * inits the batch's texture and blend mode based if the supplied sprite
@@ -108,7 +108,7 @@ PIXI.WebGLBatch.prototype.restoreLostContext = function(gl)
  * @method init
  * @param sprite {Sprite} the first sprite to be added to the batch. Only sprites with
  *      the same base texture and blend mode will be allowed to be added to this batch
- */ 
+ */
 PIXI.WebGLBatch.prototype.init = function(sprite)
 {
     sprite.batch = this;
@@ -120,7 +120,7 @@ PIXI.WebGLBatch.prototype.init = function(sprite)
     this.size = 1;
 
     this.growBatch();
-}
+};
 
 /**
  * inserts a sprite before the specified sprite
@@ -128,7 +128,7 @@ PIXI.WebGLBatch.prototype.init = function(sprite)
  * @method insertBefore
  * @param sprite {Sprite} the sprite to be added
  * @param nextSprite {nextSprite} the first sprite will be inserted before this sprite
- */ 
+ */
 PIXI.WebGLBatch.prototype.insertBefore = function(sprite, nextSprite)
 {
     this.size++;
@@ -148,7 +148,7 @@ PIXI.WebGLBatch.prototype.insertBefore = function(sprite, nextSprite)
     {
         this.head = sprite;
     }
-}
+};
 
 /**
  * inserts a sprite after the specified sprite
@@ -156,7 +156,7 @@ PIXI.WebGLBatch.prototype.insertBefore = function(sprite, nextSprite)
  * @method insertAfter
  * @param sprite {Sprite} the sprite to be added
  * @param  previousSprite {Sprite} the first sprite will be inserted after this sprite
- */ 
+ */
 PIXI.WebGLBatch.prototype.insertAfter = function(sprite, previousSprite)
 {
     this.size++;
@@ -175,21 +175,21 @@ PIXI.WebGLBatch.prototype.insertAfter = function(sprite, previousSprite)
     }
     else
     {
-        this.tail = sprite
+        this.tail = sprite;
     }
-}
+};
 
 /**
  * removes a sprite from the batch
  *
  * @method remove
  * @param sprite {Sprite} the sprite to be removed
- */ 
+ */
 PIXI.WebGLBatch.prototype.remove = function(sprite)
 {
     this.size--;
 
-    if(this.size == 0)
+    if(this.size === 0)
     {
         sprite.batch = null;
         sprite.__prev = null;
@@ -214,14 +214,14 @@ PIXI.WebGLBatch.prototype.remove = function(sprite)
     else
     {
         this.tail = sprite.__prev;
-        this.tail.__next = null
+        this.tail.__next = null;
     }
 
     sprite.batch = null;
     sprite.__next = null;
     sprite.__prev = null;
     this.dirty = true;
-}
+};
 
 /**
  * Splits the batch into two with the specified sprite being the start of the new batch.
@@ -262,13 +262,13 @@ PIXI.WebGLBatch.prototype.split = function(sprite)
     this.size -= tempSize;
 
     return batch;
-}
+};
 
 /**
  * Merges two batchs together
  *
  * @method merge
- * @param batch {WebGLBatch} the batch that will be merged 
+ * @param batch {WebGLBatch} the batch that will be merged
  */
 PIXI.WebGLBatch.prototype.merge = function(batch)
 {
@@ -287,7 +287,7 @@ PIXI.WebGLBatch.prototype.merge = function(batch)
         sprite.batch = this;
         sprite = sprite.__next;
     }
-}
+};
 
 /**
  * Grows the size of the batch. As the elements in the batch cannot have a dynamic size this
@@ -299,14 +299,15 @@ PIXI.WebGLBatch.prototype.merge = function(batch)
 PIXI.WebGLBatch.prototype.growBatch = function()
 {
     var gl = this.gl;
-    if( this.size == 1)
+    if( this.size === 1)
     {
         this.dynamicSize = 1;
     }
     else
     {
-        this.dynamicSize = this.size * 1.5
+        this.dynamicSize = this.size * 1.5;
     }
+
     // grow verts
     this.verticies = new Float32Array(this.dynamicSize * 8);
 
@@ -325,10 +326,10 @@ PIXI.WebGLBatch.prototype.growBatch = function()
 
     this.dirtyColors = true;
 
-    this.indices = new Uint16Array(this.dynamicSize * 6); 
+    this.indices = new Uint16Array(this.dynamicSize * 6);
     var length = this.indices.length/6;
 
-    for (var i=0; i < length; i++) 
+    for (var i = 0; i < length; i++)
     {
         var index2 = i * 6;
         var index3 = i * 4;
@@ -338,11 +339,11 @@ PIXI.WebGLBatch.prototype.growBatch = function()
         this.indices[index2 + 3] = index3 + 0;
         this.indices[index2 + 4] = index3 + 2;
         this.indices[index2 + 5] = index3 + 3;
-    };
+    }
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW);
-}
+};
 
 /**
  * Refresh's all the data in the batch and sync's it with the webGL buffers
@@ -351,16 +352,13 @@ PIXI.WebGLBatch.prototype.growBatch = function()
  */
 PIXI.WebGLBatch.prototype.refresh = function()
 {
-    var gl = this.gl;
-
     if (this.dynamicSize < this.size)
     {
         this.growBatch();
     }
 
     var indexRun = 0;
-    var worldTransform, width, height, aX, aY, w0, w1, h0, h1, index;
-    var a, b, c, d, tx, ty;
+    var index, colorIndex;
 
     var displayObject = this.head;
 
@@ -381,7 +379,7 @@ PIXI.WebGLBatch.prototype.refresh = function()
         this.uvs[index +3] = frame.y / th;
 
         this.uvs[index +4] = (frame.x + frame.width) / tw;
-        this.uvs[index +5] = (frame.y + frame.height) / th; 
+        this.uvs[index +5] = (frame.y + frame.height) / th;
 
         this.uvs[index +6] = frame.x / tw;
         this.uvs[index +7] = (frame.y + frame.height) / th;
@@ -393,12 +391,12 @@ PIXI.WebGLBatch.prototype.refresh = function()
 
         displayObject = displayObject.__next;
 
-        indexRun ++;
+        indexRun++;
     }
 
     this.dirtyUVS = true;
     this.dirtyColors = true;
-}
+};
 
 /**
  * Updates all the relevant geometry and uploads the data to the GPU
@@ -407,8 +405,7 @@ PIXI.WebGLBatch.prototype.refresh = function()
  */
 PIXI.WebGLBatch.prototype.update = function()
 {
-    var gl = this.gl;
-    var worldTransform, width, height, aX, aY, w0, w1, h0, h1, index, index2, index3
+    var worldTransform, width, height, aX, aY, w0, w1, h0, h1, index;
 
     var a, b, c, d, tx, ty;
 
@@ -418,7 +415,7 @@ PIXI.WebGLBatch.prototype.update = function()
     var verticies = this.verticies;
     var uvs = this.uvs;
     var colors = this.colors;
-    
+
     while(displayObject)
     {
         if(displayObject.vcount === PIXI.visibleCount)
@@ -446,17 +443,17 @@ PIXI.WebGLBatch.prototype.update = function()
             tx = worldTransform[2];
             ty = worldTransform[5];
 
-            verticies[index + 0 ] = a * w1 + c * h1 + tx; 
+            verticies[index + 0 ] = a * w1 + c * h1 + tx;
             verticies[index + 1 ] = d * h1 + b * w1 + ty;
 
-            verticies[index + 2 ] = a * w0 + c * h1 + tx; 
-            verticies[index + 3 ] = d * h1 + b * w0 + ty; 
+            verticies[index + 2 ] = a * w0 + c * h1 + tx;
+            verticies[index + 3 ] = d * h1 + b * w0 + ty;
 
-            verticies[index + 4 ] = a * w0 + c * h0 + tx; 
-            verticies[index + 5 ] = d * h0 + b * w0 + ty; 
+            verticies[index + 4 ] = a * w0 + c * h0 + tx;
+            verticies[index + 5 ] = d * h0 + b * w0 + ty;
 
-            verticies[index + 6] =  a * w1 + c * h0 + tx; 
-            verticies[index + 7] =  d * h0 + b * w1 + ty; 
+            verticies[index + 6] =  a * w1 + c * h0 + tx;
+            verticies[index + 7] =  d * h0 + b * w1 + ty;
 
             if(displayObject.updateFrame || displayObject.texture.updateFrame)
             {
@@ -475,7 +472,7 @@ PIXI.WebGLBatch.prototype.update = function()
                 uvs[index +3] = frame.y / th;
 
                 uvs[index +4] = (frame.x + frame.width) / tw;
-                uvs[index +5] = (frame.y + frame.height) / th; 
+                uvs[index +5] = (frame.y + frame.height) / th;
 
                 uvs[index +6] = frame.x / tw;
                 uvs[index +7] = (frame.y + frame.height) / th;
@@ -484,7 +481,7 @@ PIXI.WebGLBatch.prototype.update = function()
             }
 
             // TODO this probably could do with some optimisation....
-            if(displayObject.cacheAlpha != displayObject.worldAlpha)
+            if(displayObject.cacheAlpha !== displayObject.worldAlpha)
             {
                 displayObject.cacheAlpha = displayObject.worldAlpha;
 
@@ -502,8 +499,8 @@ PIXI.WebGLBatch.prototype.update = function()
 
         indexRun++;
         displayObject = displayObject.__next;
-   }
-}
+    }
+};
 
 /**
  * Draws the batch to the frame buffer
@@ -514,15 +511,16 @@ PIXI.WebGLBatch.prototype.render = function(start, end)
 {
     start = start || 0;
 
-    if(end == undefined)end = this.size;
-    
+    if(end === undefined)
+        end = this.size;
+
     if(this.dirty)
     {
         this.refresh();
         this.dirty = false;
     }
 
-    if (this.size == 0)return;
+    if (this.size === 0)return;
 
     this.update();
     var gl = this.gl;
@@ -530,13 +528,13 @@ PIXI.WebGLBatch.prototype.render = function(start, end)
     //TODO optimize this!
 
     var shaderProgram = PIXI.defaultShader;
-    
+
     //gl.useProgram(shaderProgram);
 
     // update the verts..
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
     // ok..
-    gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.verticies)
+    gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.verticies);
     gl.vertexAttribPointer(shaderProgram.aVertexPosition, 2, gl.FLOAT, false, 0, 0);
     // update the uvs
     //var isDefault = (shaderProgram == PIXI.shaderProgram)
@@ -571,4 +569,4 @@ PIXI.WebGLBatch.prototype.render = function(start, end)
 
     // DRAW THAT this!
     gl.drawElements(gl.TRIANGLES, len * 6, gl.UNSIGNED_SHORT, start * 2 * 6 );
-}
+};
