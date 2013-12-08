@@ -78,7 +78,7 @@ PIXI.Ellipse.prototype.contains = function(x, y)
     return (normx + normy < 0.25);
 }
 
-PIXI.Ellipse.getBounds = function()
+PIXI.Ellipse.prototype.getBounds = function()
 {
     return new PIXI.Rectangle(this.x, this.y, this.width, this.height);
 }

@@ -1,12 +1,13 @@
+'use strict';
+
 module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-concat-sourcemap');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-connect');
-    grunt.loadNpmTasks('grunt-contrib-qunit');
     grunt.loadNpmTasks('grunt-contrib-yuidoc');
-    grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadTasks('tasks');
 
     var root = 'src/pixi/',
         debug = 'bin/pixi.dev.js',
@@ -100,7 +101,7 @@ module.exports = function(grunt) {
         },
         files: {
             srcBlob: '<%= dirs.src %>/**/*.js',
-            testBlob: '<%= dirs.test %>/unit/**/*.js',
+            testBlob: '<%= dirs.test %>/{functional,lib/pixi,unit}/**/*.js',
             build: '<%= dirs.build %>/pixi.dev.js',
             buildMin: '<%= dirs.build %>/pixi.js'
         },
@@ -124,24 +125,16 @@ module.exports = function(grunt) {
             }
         },
         jshint: {
-            beforeconcat: {
-                src: srcFiles,
-                options: {
-                    jshintrc: '.jshintrc',
-                    ignores: ['<%= dirs.src %>/{Intro,Outro}.js']
-                }
-            },
-            afterconcat: {
-                src: '<%= files.build %>',
-                options: {
-                    jshintrc: '.jshintrc',
-                }
-            },
+            beforeconcat: srcFiles,
             test: {
                 src: ['<%= files.testBlob %>'],
                 options: {
                     expr: true
                 }
+            },
+            options: {
+                asi: true,
+                smarttabs: true
             }
         },
         uglify: {
@@ -154,24 +147,11 @@ module.exports = function(grunt) {
             }
         },
         connect: {
-            qunit: {
-                options: {
-                    port: grunt.option('port-test') || 9002,
-                    base: './'
-                }
-            },
             test: {
                 options: {
                     port: grunt.option('port-test') || 9002,
                     base: './',
                     keepalive: true
-                }
-            }
-        },
-        qunit: {
-            all: {
-                options: {
-                    urls: ['http://localhost:' + (grunt.option('port-test') || 9002) + '/test/index.html']
                 }
             }
         },
@@ -188,24 +168,22 @@ module.exports = function(grunt) {
                 }
             }
         },
-        watch: {
-            dev: {
-                files: ['Gruntfile.js', 'src/**/*.js', 'examples/**/*.html'],
-                tasks: ['build-debug'],
-                
-                // We would need to inject <script> in each HTML...
-                // options: {
-                //     livereload: true
-                // }
+        karma: {
+            unit: {
+                configFile: 'test/karma.conf.js',
+                // browsers: ['Chrome'],
+                singleRun: true
             }
         }
     });
 
-    grunt.registerTask('build-debug', ['concat_sourcemap', 'uglify']);
-    grunt.registerTask('lintconcat', ['jshint:beforeconcat', 'concat', 'jshint:afterconcat']);
-    grunt.registerTask('default', ['lintconcat', 'uglify']);
-    grunt.registerTask('build', ['lintconcat', 'uglify']);
-    grunt.registerTask('test', ['build', 'connect:qunit', 'qunit']);
-    grunt.registerTask('docs', ['yuidoc']);
+    grunt.registerTask('default', ['build', 'test']);
 
+    grunt.registerTask('build', ['jshint', 'concat', 'uglify']);
+    grunt.registerTask('build-debug', ['concat_sourcemap', 'uglify']);
+
+    grunt.registerTask('test', ['concat', 'jshint:test', 'karma']);
+
+    grunt.registerTask('docs', ['yuidoc']);
+    grunt.registerTask('travis', ['test']);
 }
