@@ -173,7 +173,7 @@ PIXI.InteractionManager.prototype.update = function()
 	// loop through interactive objects!
 	var length = this.interactiveItems.length;
 	
-	this.target.view.style.cursor = "default";	
+	this.target.view.style.cursor = "inherit";	
 				
 	for (var i = 0; i < length; i++)
 	{
