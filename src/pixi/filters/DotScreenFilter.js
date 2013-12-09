@@ -4,7 +4,7 @@
  */
 
 /**
- * 
+ *
  * This filter applies a pixlate effect making display objects appear 'blocky'
  * @class PixelateFilter
  * @contructor
@@ -14,7 +14,7 @@ PIXI.DotScreenFilter = function()
     PIXI.AbstractFilter.call( this );
 
     this.passes = [this];
-    
+
     // set the uniforms
     this.uniforms = {
         scale: {type: '1f', value:1},
@@ -54,7 +54,7 @@ PIXI.DotScreenFilter.prototype = Object.create( PIXI.DotScreenFilter.prototype )
 PIXI.DotScreenFilter.prototype.constructor = PIXI.DotScreenFilter;
 
 /**
- * 
+ *
  * This describes the the scale
  * @property scale
  * @type Number
@@ -70,7 +70,7 @@ Object.defineProperty(PIXI.DotScreenFilter.prototype, 'scale', {
 });
 
 /**
- * 
+ *
  * This radius describes angle
  * @property angle
  * @type Number
