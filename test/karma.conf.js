@@ -66,7 +66,7 @@ module.exports = function(config) {
 
         // report which specs are slower than 500ms
         // CLI --report-slower-than 500
-        reportSlowerThan : 1000,
+        reportSlowerThan : 500,
 
         preprocessors : {
             //    '**/client/js/*.js': 'coverage'

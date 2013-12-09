@@ -25,7 +25,7 @@ function pixi_textures_Texture_confirmNew(obj, done) {
     if (obj.baseTexture.hasLoaded) {
         confirmFrameDone();
     } else {
-        pixi_core_Rectangle_confirm(obj.frame, 0, 0, 1, 1);
         obj.addEventListener('update', confirmFrameDone);
+        pixi_core_Rectangle_confirm(obj.frame, 0, 0, 1, 1);
     }
 }

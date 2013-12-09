@@ -4,10 +4,17 @@ describe('renderers/webgl/WebGLShaders', function () {
     var expect = chai.expect;
 
     it('Module members exist', function () {
-        expect(PIXI).to.respondTo('initPrimitiveShader');
-        expect(PIXI).to.respondTo('initDefaultShader');
-        expect(PIXI).to.respondTo('initDefaultStripShader');
-        expect(PIXI).to.respondTo('activateDefaultShader');
+        expect(PIXI).to.respondTo('initDefaultShaders');
+
         expect(PIXI).to.respondTo('activatePrimitiveShader');
+        expect(PIXI).to.respondTo('deactivatePrimitiveShader');
+
+        expect(PIXI).to.respondTo('activateStripShader');
+        expect(PIXI).to.respondTo('deactivateStripShader');
+
+        expect(PIXI).to.respondTo('CompileVertexShader');
+        expect(PIXI).to.respondTo('CompileFragmentShader');
+        expect(PIXI).to.respondTo('_CompileShader');
+        expect(PIXI).to.respondTo('compileProgram');
     });
 });
