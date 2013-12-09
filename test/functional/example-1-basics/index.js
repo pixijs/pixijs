@@ -16,7 +16,7 @@ describe('Example 1 - Basics', function () {
     function animate() {
         currentFrame += 1;
 
-        requestAnimFrame( animate );
+        window.requestAnimFrame( animate );
 
         // just for fun, lets rotate mr rabbit a little
         bunny.rotation += 0.1;
@@ -39,10 +39,10 @@ describe('Example 1 - Basics', function () {
         // add the renderer view element to the DOM
         document.body.appendChild(renderer.view);
 
-        requestAnimFrame( animate );
+        window.requestAnimFrame( animate );
 
         // create a texture from an image path
-        var texture = PIXI.Texture.fromImage(baseUri + "/bunny.png");
+        var texture = PIXI.Texture.fromImage(baseUri + '/bunny.png');
         // create a new Sprite using the texture
         bunny = new PIXI.Sprite(texture);
 
@@ -67,7 +67,7 @@ describe('Example 1 - Basics', function () {
         // loader.on('onProgress', function (event) {
         //     console.log(event.content);
         // });
-        loader.on('onComplete', function (event) {
+        loader.on('onComplete', function () {
             done();
             initScene();
         });

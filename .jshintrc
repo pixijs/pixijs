@@ -37,11 +37,23 @@
     "maxcomplexity" : false,    // Restrict the cyclomatic complexity of the code.
     "maxlen"        : 220,      // Require that all lines are 100 characters or less.
     "globals"       : {         // Register globals that are used in the code.
+        //commonjs globals
         "module": false,
         "require": false,
 
+        // PIXI globals
         "PIXI": false,
-        "spine": false
+        "spine": false,
+
+        //chai globals
+        "chai": false,
+
+        //mocha globals
+        "describe": false,
+        "it": false,
+
+        //resemble globals
+        "resemble": false
     },
 
     // == Relaxing Options ================================================

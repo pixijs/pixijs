@@ -97,7 +97,7 @@ module.exports = function(grunt) {
         },
         files: {
             srcBlob: '<%= dirs.src %>/**/*.js',
-            testBlob: '<%= dirs.test %>/{functional,lib/pixi,unit}/**/*.js',
+            testBlob: '<%= dirs.test %>/{functional,lib/pixi,unit/pixi}/**/*.js',
             build: '<%= dirs.build %>/pixi.dev.js',
             buildMin: '<%= dirs.build %>/pixi.js'
         },
@@ -122,10 +122,18 @@ module.exports = function(grunt) {
             }
         },
         jshint: {
-            src: srcFiles.filter(function(v) { return v.match(/(Intro|Outro|Spine|Pixi)\.js$/) === null; }).concat('Gruntfile.js'),
-            test: ['<%= files.testBlob %>'],
             options: {
                 jshintrc: '.jshintrc'
+            },
+            source: srcFiles.filter(function(v) { return v.match(/(Intro|Outro|Spine|Pixi)\.js$/) === null; }).concat('Gruntfile.js'),
+            test: {
+                src: ['<%= files.testBlob %>'],
+                options: {
+                    jshintrc: undefined, //don't use jshintrc for tests
+                    expr: true,
+                    undef: false,
+                    camelcase: false
+                }
             }
         },
         uglify: {
@@ -170,7 +178,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask('default', ['build', 'test']);
 
-    grunt.registerTask('build', ['jshint:src', 'concat', 'uglify']);
+    grunt.registerTask('build', ['jshint:source', 'concat', 'uglify']);
     grunt.registerTask('build-debug', ['concat_sourcemap', 'uglify']);
 
     grunt.registerTask('test', ['concat', 'jshint:test', 'karma']);
