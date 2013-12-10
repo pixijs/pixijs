@@ -428,6 +428,27 @@ PIXI.WebGLFilterManager.prototype.getBounds = function(displayObject)
 
 				doTest = true;	
 			}
+			else
+			{
+				if(tempObject.updateFilterBounds)
+				{
+					tempObject.updateFilterBounds();
+
+					var bounds = tempObject.filterArea;
+
+					width = bounds.width;
+					height = bounds.height;
+
+					w0 = bounds.x
+					w1 = bounds.x + bounds.width;
+
+					h0 = bounds.y
+					h1 = bounds.y + bounds.height;
+
+					doTest = true;	
+				}
+
+			}
 		}
 		
 		if(doTest)
