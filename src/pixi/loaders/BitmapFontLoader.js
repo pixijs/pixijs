@@ -89,7 +89,7 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
 {
     if (this.ajaxRequest.readyState == 4)
     {
-        if (this.ajaxRequest.status == 200 || window.location.href.indexOf("http") == -1)
+        if (this.ajaxRequest.status == 200 || window.location.protocol.indexOf("http") == -1)
         {
             var textureUrl = this.baseUrl + this.ajaxRequest.responseXML.getElementsByTagName("page")[0].attributes.getNamedItem("file").nodeValue;
             var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);

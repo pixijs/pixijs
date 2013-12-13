@@ -80,7 +80,7 @@ PIXI.JsonLoader.prototype.load = function () {
  */
 PIXI.JsonLoader.prototype.onJSONLoaded = function () {
 	if (this.ajaxRequest.readyState == 4) {
-		if (this.ajaxRequest.status == 200 || window.location.href.indexOf("http") == -1) {
+		if (this.ajaxRequest.status == 200 || window.location.protocol.indexOf("http") == -1) {
 			this.json = JSON.parse(this.ajaxRequest.responseText);
 			
 			if(this.json.frames)
