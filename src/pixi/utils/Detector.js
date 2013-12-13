@@ -27,7 +27,7 @@ PIXI.autoDetectRenderer = function(width, height, view, transparent, antialias)
 
 	if(webgl)
 	{
-		var ie =  (navigator.userAgent.toLowerCase().indexOf('msie') != -1);
+		var ie =  (navigator.userAgent.toLowerCase().indexOf('trident') != -1);
 		 webgl = !ie;
 	}
 	
