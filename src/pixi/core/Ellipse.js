@@ -9,8 +9,8 @@
  * @constructor
  * @param x {Number} The X coord of the upper-left corner of the framing rectangle of this ellipse
  * @param y {Number} The Y coord of the upper-left corner of the framing rectangle of this ellipse
- * @param width {Number} The overall height of this ellipse
- * @param height {Number} The overall width of this ellipse
+ * @param width {Number} The overall width of this ellipse
+ * @param height {Number} The overall height of this ellipse
  */
 PIXI.Ellipse = function(x, y, width, height)
 {
@@ -20,21 +20,21 @@ PIXI.Ellipse = function(x, y, width, height)
      * @default 0
      */
     this.x = x || 0;
-    
+
     /**
      * @property y
      * @type Number
      * @default 0
      */
     this.y = y || 0;
-    
+
     /**
      * @property width
      * @type Number
      * @default 0
      */
     this.width = width || 0;
-    
+
     /**
      * @property height
      * @type Number
@@ -83,5 +83,5 @@ PIXI.Ellipse.getBounds = function()
     return new PIXI.Rectangle(this.x, this.y, this.width, this.height);
 }
 
+// constructor
 PIXI.Ellipse.prototype.constructor = PIXI.Ellipse;
-

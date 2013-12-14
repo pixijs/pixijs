@@ -4,10 +4,8 @@
 
 
 
-PIXI.FilterBlock = function(mask)
+PIXI.FilterBlock = function()
 {
-	this.graphics = mask
 	this.visible = true;
 	this.renderable = true;
 }
-

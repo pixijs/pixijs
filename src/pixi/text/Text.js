@@ -26,7 +26,7 @@ PIXI.Text = function(text, style)
 
     this.setText(text);
     this.setStyle(style);
-    
+
     this.updateText();
     this.dirty = false;
 };
@@ -65,10 +65,10 @@ PIXI.Text.prototype.setStyle = function(style)
 /**
  * Set the copy for the text object. To split a line you can use "\n"
  *
- * @methos setText
+ * @method setText
  * @param {String} text The copy that you would like the text to display
  */
-PIXI.Sprite.prototype.setText = function(text)
+PIXI.Text.prototype.setText = function(text)
 {
     this.text = text.toString() || " ";
     this.dirty = true;
@@ -83,9 +83,9 @@ PIXI.Sprite.prototype.setText = function(text)
 PIXI.Text.prototype.updateText = function()
 {
 	this.context.font = this.style.font;
-	
+
 	var outputText = this.text;
-	
+
 	// word wrap
 	// preserve original text
 	if(this.style.wordWrap)outputText = this.wordWrap(this.text);
@@ -103,7 +103,7 @@ PIXI.Text.prototype.updateText = function()
 		maxLineWidth = Math.max(maxLineWidth, lineWidth);
 	}
 	this.canvas.width = maxLineWidth + this.style.strokeThickness;
-	
+
 	//calculate text height
 	var lineHeight = this.determineFontHeight("font: " + this.style.font  + ";") + this.style.strokeThickness;
 	this.canvas.height = lineHeight * lines.length;
@@ -111,7 +111,7 @@ PIXI.Text.prototype.updateText = function()
 	//set canvas text styles
 	this.context.fillStyle = this.style.fill;
 	this.context.font = this.style.font;
-	
+
 	this.context.strokeStyle = this.style.stroke;
 	this.context.lineWidth = this.style.strokeThickness;
 
@@ -121,7 +121,7 @@ PIXI.Text.prototype.updateText = function()
 	for (i = 0; i < lines.length; i++)
 	{
 		var linePosition = new PIXI.Point(this.style.strokeThickness / 2, this.style.strokeThickness / 2 + i * lineHeight);
-	
+
 		if(this.style.align == "right")
 		{
 			linePosition.x += maxLineWidth - lineWidths[i];
@@ -141,7 +141,7 @@ PIXI.Text.prototype.updateText = function()
 			this.context.fillText(lines[i], linePosition.x, linePosition.y);
 		}
 	}
-	
+
     this.updateTexture();
 };
 
@@ -157,10 +157,10 @@ PIXI.Text.prototype.updateTexture = function()
     this.texture.baseTexture.height = this.canvas.height;
     this.texture.frame.width = this.canvas.width;
     this.texture.frame.height = this.canvas.height;
-    
+
   	this._width = this.canvas.width;
     this._height = this.canvas.height;
-	
+
     PIXI.texturesToUpdate.push(this.texture.baseTexture);
 };
 
@@ -174,10 +174,10 @@ PIXI.Text.prototype.updateTransform = function()
 {
 	if(this.dirty)
 	{
-		this.updateText();	
+		this.updateText();
 		this.dirty = false;
 	}
-	
+
 	PIXI.Sprite.prototype.updateTransform.call(this);
 };
 
@@ -189,12 +189,12 @@ PIXI.Text.prototype.updateTransform = function()
  * @param fontStyle {Object}
  * @private
  */
-PIXI.Text.prototype.determineFontHeight = function(fontStyle) 
+PIXI.Text.prototype.determineFontHeight = function(fontStyle)
 {
 	// build a little reference dictionary so if the font style has been used return a
 	// cached version...
 	var result = PIXI.Text.heightCache[fontStyle];
-	
+
 	if(!result)
 	{
 		var body = document.getElementsByTagName("body")[0];
@@ -203,18 +203,19 @@ PIXI.Text.prototype.determineFontHeight = function(fontStyle)
 		dummy.appendChild(dummyText);
 		dummy.setAttribute("style", fontStyle + ';position:absolute;top:0;left:0');
 		body.appendChild(dummy);
-		
+
 		result = dummy.offsetHeight;
 		PIXI.Text.heightCache[fontStyle] = result;
-		
+
 		body.removeChild(dummy);
 	}
-	
+
 	return result;
 };
 
 /**
- * A Text Object will apply wordwrap
+ * Applies newlines to a string to have it optimally fit into the horizontal
+ * bounds set by the Text object's wordWrapWidth property.
  *
  * @method wordWrap
  * @param text {String}
@@ -222,48 +223,37 @@ PIXI.Text.prototype.determineFontHeight = function(fontStyle)
  */
 PIXI.Text.prototype.wordWrap = function(text)
 {
-	// search good wrap position
-	var searchWrapPos = function(ctx, text, start, end, wrapWidth)
-	{
-		var p = Math.floor((end-start) / 2) + start;
-		if(p == start) {
-			return 1;
-		}
-		
-		if(ctx.measureText(text.substring(0,p)).width <= wrapWidth)
-		{
-			if(ctx.measureText(text.substring(0,p+1)).width > wrapWidth)
-			{
-				return p;
-			}
-			else
-			{
-				return arguments.callee(ctx, text, p, end, wrapWidth);
-			}
-		}
-		else
-		{
-			return arguments.callee(ctx, text, start, p, wrapWidth);
-		}
-	};
-	 
-	var lineWrap = function(ctx, text, wrapWidth)
-	{
-		if(ctx.measureText(text).width <= wrapWidth || text.length < 1)
-		{
-			return text;
-		}
-		var pos = searchWrapPos(ctx, text, 0, text.length, wrapWidth);
-		return text.substring(0, pos) + "\n" + arguments.callee(ctx, text.substring(pos), wrapWidth);
-	};
-	
+	// Greedy wrapping algorithm that will wrap words as the line grows longer
+	// than its horizontal bounds.
 	var result = "";
 	var lines = text.split("\n");
 	for (var i = 0; i < lines.length; i++)
 	{
-		result += lineWrap(this.context, lines[i], this.style.wordWrapWidth) + "\n";
+		var spaceLeft = this.style.wordWrapWidth;
+		var words = lines[i].split(" ");
+		for (var j = 0; j < words.length; j++)
+		{
+			var wordWidth = this.context.measureText(words[j]).width;
+			var wordWidthWithSpace = wordWidth + this.context.measureText(" ").width;
+			if(wordWidthWithSpace > spaceLeft)
+			{
+				// Skip printing the newline if it's the first word of the line that is
+				// greater than the word wrap width.
+				if(j > 0)
+				{
+					result += "\n";
+				}
+				result += words[j] + " ";
+				spaceLeft = this.style.wordWrapWidth - wordWidth;
+			}
+			else
+			{
+				spaceLeft -= wordWidthWithSpace;
+				result += words[j] + " ";
+			}
+		}
+		result += "\n";
 	}
-	
 	return result;
 };
 
@@ -279,7 +269,7 @@ PIXI.Text.prototype.destroy = function(destroyTexture)
 	{
 		this.texture.destroy();
 	}
-		
+
 };
 
 PIXI.Text.heightCache = {};

@@ -71,7 +71,6 @@ PIXI.CanvasRenderer.prototype.constructor = PIXI.CanvasRenderer;
  */
 PIXI.CanvasRenderer.prototype.render = function(stage)
 {
-	// update children if need be
 	
 	//stage.__childrenAdded = [];
 	//stage.__childrenRemoved = [];
@@ -80,6 +79,7 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 	PIXI.texturesToUpdate = [];
 	PIXI.texturesToDestroy = [];
 	
+	PIXI.visibleCount++;
 	stage.updateTransform();
 	
 	// update the background color
@@ -163,10 +163,11 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 		
 		if(displayObject instanceof PIXI.Sprite)
 		{
-				
-			var frame = displayObject.texture.frame;
-			
-			if(frame)
+
+		var frame = displayObject.texture.frame;
+
+			//ignore null sources
+			if(frame && frame.width && frame.height && displayObject.texture.baseTexture.source)
 			{
 				context.globalAlpha = displayObject.worldAlpha;
 				
@@ -195,6 +196,7 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 		}
 		else if(displayObject instanceof PIXI.CustomRenderable)
 		{
+			context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
 			displayObject.renderCanvas(this);
 		}
 		else if(displayObject instanceof PIXI.Graphics)
@@ -204,31 +206,36 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 		}
 		else if(displayObject instanceof PIXI.FilterBlock)
 		{
-			if(displayObject.open)
-			{
-				context.save();
-				
-				var cacheAlpha = displayObject.mask.alpha;
-				var maskTransform = displayObject.mask.worldTransform;
-				
-				context.setTransform(maskTransform[0], maskTransform[3], maskTransform[1], maskTransform[4], maskTransform[2], maskTransform[5])
-				
-				displayObject.mask.worldAlpha = 0.5;
-				
-				context.worldAlpha = 0;
-				
-				PIXI.CanvasGraphics.renderGraphicsMask(displayObject.mask, context);
-		//		context.fillStyle = 0xFF0000;
-			//	context.fillRect(0, 0, 200, 200);
-				context.clip();
-				
-				displayObject.mask.worldAlpha = cacheAlpha;
-				//context.globalCompositeOperation = 'lighter';
+			if(displayObject.data instanceof PIXI.Graphics)
+ 			{
+				var mask = displayObject.data;
+
+				if(displayObject.open)
+				{
+					context.save();
+					
+					var cacheAlpha = mask.alpha;
+					var maskTransform = mask.worldTransform;
+					
+					context.setTransform(maskTransform[0], maskTransform[3], maskTransform[1], maskTransform[4], maskTransform[2], maskTransform[5])
+					
+					mask.worldAlpha = 0.5;
+					
+					context.worldAlpha = 0;
+					
+					PIXI.CanvasGraphics.renderGraphicsMask(mask, context);
+					context.clip();
+					
+					mask.worldAlpha = cacheAlpha;
+				}
+				else
+				{
+					context.restore();
+				}
 			}
 			else
 			{
-				//context.globalCompositeOperation = 'source-over';
-				context.restore();
+				// only masks supported right now!
 			}
 		}
 	//	count++
@@ -321,7 +328,7 @@ PIXI.CanvasRenderer.prototype.renderTilingSprite = function(sprite)
 PIXI.CanvasRenderer.prototype.renderStrip = function(strip)
 {
 	var context = this.context;
-	//context.globalCompositeOperation = 'lighter';
+
 	// draw triangles!!
 	var verticies = strip.verticies;
 	var uvs = strip.uvs;
@@ -348,8 +355,6 @@ PIXI.CanvasRenderer.prototype.renderStrip = function(strip)
 		context.lineTo(x2, y2);
 		context.closePath();
 		
-	//	context.fillStyle = "white"//rgb(1, 1, 1,1));
-	//	context.fill();
 		context.clip();
 		
 		
@@ -373,5 +378,4 @@ PIXI.CanvasRenderer.prototype.renderStrip = function(strip)
 	  	context.restore();
 	};
 	
-//	context.globalCompositeOperation = 'source-over';	
 }

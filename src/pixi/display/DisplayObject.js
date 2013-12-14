@@ -12,7 +12,6 @@ PIXI.DisplayObject = function()
 {
 	this.last = this;
 	this.first = this;
-
 	/**
 	 * The coordinate of the object relative to the local coordinates of the parent.
 	 *
@@ -87,15 +86,6 @@ PIXI.DisplayObject = function()
 	this.renderable = false;
 
 	/**
-	 * [read-only] The visibility of the object based on world (parent) factors.
-	 *
-	 * @property worldVisible
-	 * @type Boolean
-	 * @readOnly
-	 */	
-	this.worldVisible = false;
-
-	/**
 	 * [read-only] The display object container that contains this display object.
 	 *
 	 * @property parent
@@ -112,15 +102,6 @@ PIXI.DisplayObject = function()
 	 * @readOnly
 	 */	
 	this.stage = null;
-
-	/**
-	 * [read-only] The index of this object in the parent's `children` array
-	 *
-	 * @property childIndex
-	 * @type Number
-	 * @readOnly
-	 */	
-	this.childIndex = 0;
 
 	/**
 	 * [read-only] The multiplied alpha of the displayobject
@@ -141,6 +122,8 @@ PIXI.DisplayObject = function()
 	 */
 	this._interactive = false;
 
+	this.defaultCursor = "pointer";
+	
 	/**
 	 * [read-only] Current transform of the object based on world (parent) factors
 	 *
@@ -183,6 +166,9 @@ PIXI.DisplayObject = function()
 	this._sr = 0;
 	this._cr = 1;
 
+
+	this.filterArea = new PIXI.Rectangle(0,0,1,1);
+	
 	/*
 	 * MOUSE Callbacks
 	 */
@@ -260,17 +246,6 @@ PIXI.DisplayObject = function()
 // constructor
 PIXI.DisplayObject.prototype.constructor = PIXI.DisplayObject;
 
-//TODO make visible a getter setter
-/*
-Object.defineProperty(PIXI.DisplayObject.prototype, 'visible', {
-    get: function() {
-        return this._visible;
-    },
-    set: function(value) {
-        this._visible = value;
-    }
-});*/
-
 /**
  * [Deprecated] Indicates if the sprite will have touch and mouse interactivity. It is false by default
  * Instead of using this function you can now simply set the interactive property to true or false
@@ -318,16 +293,71 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'mask', {
     },
     set: function(value) {
     	
-        this._mask = value;
-        
+    	
         if(value)
         {
-	        this.addFilter(value)
+        	if(this._mask)
+	    	{
+	    		value.start = this._mask.start;
+	    		value.end = this._mask.end;
+	    	}
+    		else
+    		{
+		        this.addFilter(value);
+		        value.renderable = false;
+    		}
         }
         else
         {
-        	 this.removeFilter();
+        	 this.removeFilter(this._mask);
+			 this._mask.renderable = true;
         }
+        
+        this._mask = value;
+    }
+});
+
+/**
+ * Sets the filters for the displayObject. 
+ * * IMPORTANT: This is a webGL only feature and will be ignored by the canvas renderer.
+ * To remove filters simply set this property to 'null'
+ * @property filters
+ * @type Array An array of filters
+ */
+Object.defineProperty(PIXI.DisplayObject.prototype, 'filters', {
+    get: function() {
+        return this._filters;
+    },
+    set: function(value) {
+    	
+        if(value)
+        {
+        	if(this._filters)this.removeFilter(this._filters);
+	        this.addFilter(value);
+
+		    // now put all the passes in one place..
+	        var passes = [];
+	        for (var i = 0; i < value.length; i++) 
+	        {
+	        	var filterPasses = value[i].passes;
+	        	for (var j = 0; j < filterPasses.length; j++) 
+	        	{
+	        		passes.push(filterPasses[j]);
+	        	};
+	        };
+
+	        value.start.filterPasses = passes;
+        }
+        else
+        {
+        	if(this._filters)this.removeFilter(this._filters);
+        }
+        
+        this._filters = value;
+
+       
+
+        
     }
 });
 
@@ -338,29 +368,33 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'mask', {
  * @param mask {Graphics} the graphics object to use as a filter
  * @private
  */
-PIXI.DisplayObject.prototype.addFilter = function(mask)
+PIXI.DisplayObject.prototype.addFilter = function(data)
 {
-	if(this.filter)return;
-	this.filter = true;
+	//if(this.filter)return;
+	//this.filter = true;
+//	data[0].target = this;
 	
-	
+
 	// insert a filter block..
+	// TODO Onject pool thease bad boys..
 	var start = new PIXI.FilterBlock();
 	var end = new PIXI.FilterBlock();
 	
+	data.start = start;
+	data.end = end;
 	
-	start.mask = mask;
-	end.mask = mask;
+	start.data = data;
+	end.data = data;
 	
 	start.first = start.last =  this;
 	end.first = end.last = this;
 	
 	start.open = true;
 	
+	start.target = this;
+	
 	/*
-	 * 
 	 * insert start
-	 * 
 	 */
 	
 	var childFirst = start
@@ -391,9 +425,7 @@ PIXI.DisplayObject.prototype.addFilter = function(mask)
 	// now insert the end filter block..
 	
 	/*
-	 * 
 	 * insert end filter
-	 * 
 	 */
 	var childFirst = end
 	var childLast = end
@@ -432,8 +464,6 @@ PIXI.DisplayObject.prototype.addFilter = function(mask)
 		this.__renderGroup.addFilterBlocks(start, end);
 	}
 	
-	mask.renderable = false;
-	
 }
 
 /*
@@ -442,13 +472,14 @@ PIXI.DisplayObject.prototype.addFilter = function(mask)
  * @method removeFilter
  * @private
  */
-PIXI.DisplayObject.prototype.removeFilter = function()
+PIXI.DisplayObject.prototype.removeFilter = function(data)
 {
-	if(!this.filter)return;
-	this.filter = false;
-	
+	//if(!this.filter)return;
+	//this.filter = false;
+	// console.log("YUOIO")
 	// modify the list..
-	var startBlock = this.first;
+	var startBlock = data.start;
+	
 	
 	var nextObject = startBlock._iNext;
 	var previousObject = startBlock._iPrev;
@@ -458,9 +489,8 @@ PIXI.DisplayObject.prototype.removeFilter = function()
 	
 	this.first = startBlock._iNext;
 	
-	
 	// remove the end filter
-	var lastBlock = this.last;
+	var lastBlock = data.end;
 	
 	var nextObject = lastBlock._iNext;
 	var previousObject = lastBlock._iPrev;
@@ -469,8 +499,6 @@ PIXI.DisplayObject.prototype.removeFilter = function()
 	previousObject._iNext = nextObject;		
 	
 	// this is always true too!
-//	if(this.last == lastBlock)
-	//{
 	var tempLast =  lastBlock._iPrev;	
 	// need to make sure the parents last is updated too
 	var updateLast = this;
@@ -481,15 +509,11 @@ PIXI.DisplayObject.prototype.removeFilter = function()
 		if(!updateLast)break;
 	}
 	
-	var mask = startBlock.mask
-	mask.renderable = true;
-	
 	// if webGL...
 	if(this.__renderGroup)
 	{
 		this.__renderGroup.removeFilterBlocks(startBlock, lastBlock);
 	}
-	//}
 }
 
 /*
@@ -501,7 +525,7 @@ PIXI.DisplayObject.prototype.removeFilter = function()
 PIXI.DisplayObject.prototype.updateTransform = function()
 {
 	// TODO OPTIMIZE THIS!! with dirty
-	if(this.rotation != this.rotationCache)
+	if(this.rotation !== this.rotationCache)
 	{
 		this.rotationCache = this.rotation;
 		this._sr =  Math.sin(this.rotation);
@@ -543,5 +567,9 @@ PIXI.DisplayObject.prototype.updateTransform = function()
 	// because we are using affine transformation, we can optimise the matrix concatenation process.. wooo!
 	// mat3.multiply(this.localTransform, this.parent.worldTransform, this.worldTransform);
 	this.worldAlpha = this.alpha * this.parent.worldAlpha;
+	
+	this.vcount = PIXI.visibleCount;
 
 }
+
+PIXI.visibleCount = 0;

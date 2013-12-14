@@ -26,6 +26,8 @@
         "grunt-contrib-connect": "0.2.x",
         "grunt-contrib-qunit": "0.2.x",
         "grunt-contrib-yuidoc": "0.4.x",
+        "grunt-contrib-concat": "0.1.x",
+        "grunt-concat-sourcemap": "0.3.x",
         "grunt-contrib-concat": "0.1.x"
     }
 }

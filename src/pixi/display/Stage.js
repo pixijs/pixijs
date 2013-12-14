@@ -10,9 +10,8 @@
  * @constructor
  * @param backgroundColor {Number} the background color of the stage, easiest way to pass this in is in hex format
  *		like: 0xFFFFFF for white
- * @param interactive {Boolean} enable / disable interaction (default is false)
  */
-PIXI.Stage = function(backgroundColor, interactive)
+PIXI.Stage = function(backgroundColor)
 {
 	PIXI.DisplayObjectContainer.call( this );
 
@@ -32,7 +31,7 @@ PIXI.Stage = function(backgroundColor, interactive)
 	 * @property interactive
 	 * @type Boolean
 	 */
-	this.interactive = interactive;
+	this.interactive = true;
 
 	/**
 	 * The interaction manage for this stage, manages all interactive activity on the stage
@@ -68,6 +67,18 @@ PIXI.Stage = function(backgroundColor, interactive)
 PIXI.Stage.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
 PIXI.Stage.prototype.constructor = PIXI.Stage;
 
+/**
+ * Sets another DOM element which can receive mouse/touch interactions instead of the default Canvas element.
+ * This is useful for when you have other DOM elements ontop of the Canvas element.
+ *
+ * @method setInteractionDelegate
+ * @param domElement {DOMElement} This new domElement which will receive mouse/touch events
+ */
+PIXI.Stage.prototype.setInteractionDelegate = function(domElement)
+{
+	this.interactionManager.setTargetDomElement( domElement );
+}
+
 /*
  * Updates the object transform for rendering
  *
@@ -77,6 +88,7 @@ PIXI.Stage.prototype.constructor = PIXI.Stage;
 PIXI.Stage.prototype.updateTransform = function()
 {
 	this.worldAlpha = 1;		
+	this.vcount = PIXI.visibleCount;
 	
 	for(var i=0,j=this.children.length; i<j; i++)
 	{
@@ -89,7 +101,8 @@ PIXI.Stage.prototype.updateTransform = function()
 		// update interactive!
 		this.interactionManager.dirty = true;
 	}
-
+	
+	
 	if(this.interactive)this.interactionManager.update();
 }
 
@@ -119,35 +132,3 @@ PIXI.Stage.prototype.getMousePosition = function()
 {
 	return this.interactionManager.mouse.global;
 }
-/*
-PIXI.Stage.prototype.__addChild = function(child)
-{
-	if(child.interactive)this.dirty = true;
-	
-	child.stage = this;
-	
-	if(child.children)
-	{
-		for (var i=0; i < child.children.length; i++) 
-		{
-		  	this.__addChild(child.children[i]);
-		};
-	}
-	
-}
-
-
-PIXI.Stage.prototype.__removeChild = function(child)
-{
-	if(child.interactive)this.dirty = true;
-	
-	child.stage = undefined;
-	
-	if(child.children)
-	{
-		for(var i=0,j=child.children.length; i<j; i++)
-		{
-		  	this.__removeChild(child.children[i]);
-		}
-	}
-}*/

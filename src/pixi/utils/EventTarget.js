@@ -18,14 +18,14 @@
 PIXI.EventTarget = function () {
 
 	var listeners = {};
-	
+
 	this.addEventListener = this.on = function ( type, listener ) {
-		
-		
+
+
 		if ( listeners[ type ] === undefined ) {
 
 			listeners[ type ] = [];
-			
+
 		}
 
 		if ( listeners[ type ].indexOf( listener ) === - 1 ) {
@@ -36,11 +36,17 @@ PIXI.EventTarget = function () {
 	};
 
 	this.dispatchEvent = this.emit = function ( event ) {
-		
-		for ( var listener in listeners[ event.type ] ) {
 
-			listeners[ event.type ][ listener ]( event );
-			
+		if ( !listeners[ event.type ] || !listeners[ event.type ].length ) {
+
+			return;
+
+		}
+
+		for(var i = 0, l = listeners[ event.type ].length; i < l; i++) {
+
+			listeners[ event.type ][ i ]( event );
+
 		}
 
 	};
@@ -57,4 +63,9 @@ PIXI.EventTarget = function () {
 
 	};
 
+	this.removeAllEventListeners = function( type ) {
+		var a = listeners[type];
+		if (a)
+			a.length = 0;
+	};
 };

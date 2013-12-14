@@ -29,18 +29,6 @@ PIXI.DisplayObjectContainer = function()
 PIXI.DisplayObjectContainer.prototype = Object.create( PIXI.DisplayObject.prototype );
 PIXI.DisplayObjectContainer.prototype.constructor = PIXI.DisplayObjectContainer;
 
-//TODO make visible a getter setter
-/*
-Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'visible', {
-    get: function() {
-        return this._visible;
-    },
-    set: function(value) {
-        this._visible = value;
-        
-    }
-});*/
-
 /**
  * Adds a child to the container.
  *
@@ -58,11 +46,10 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 	}
 
 	child.parent = this;
-	child.childIndex = this.children.length;
 	
 	this.children.push(child);	
 	
-	// updae the stage refference..
+	// update the stage refference..
 	
 	if(this.stage)
 	{
@@ -85,7 +72,7 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 	var previousObject;
 	
 	// this could be wrong if there is a filter??
-	if(this.filter)
+	if(this._filters || this._mask)
 	{
 		previousObject =  this.last._iPrev;
 	}
@@ -97,7 +84,6 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 	nextObject = previousObject._iNext;
 	
 	// always true in this case
-	//this.last = child.last;
 	// need to make sure the parents last is updated too
 	var updateLast = this;
 	var prevLast = previousObject;
@@ -161,7 +147,7 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 		}
 		
 		// modify the list..
-		var childFirst = child.first
+		var childFirst = child.first;
 		var childLast = child.last;
 		var nextObject;
 		var previousObject;
@@ -169,7 +155,7 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 		if(index == this.children.length)
 		{
 			previousObject =  this.last;
-			var updateLast = this;//.parent;
+			var updateLast = this;
 			var prevLast = this.last;
 			while(updateLast)
 			{
@@ -228,43 +214,30 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
  */
 PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
 {
-	/*
-	 * this funtion needs to be recoded.. 
-	 * can be done a lot faster..
-	 */
-	return;
+	if(child === child2) {
+		return;
+	}
+
+	var index1 = this.children.indexOf(child);
+	var index2 = this.children.indexOf(child2);
 	
-	// need to fix this function :/
-	/*
-	// TODO I already know this??
-	var index = this.children.indexOf( child );
-	var index2 = this.children.indexOf( child2 );
+	if(index1 < 0 || index2 < 0) {
+		throw new Error("swapChildren: Both the supplied DisplayObjects must be a child of the caller.");
+	}
+
+	this.removeChild(child);
+	this.removeChild(child2);
 	
-	if ( index !== -1 && index2 !== -1 ) 
+	if(index1 < index2)
 	{
-		// cool
-		
-		/*
-		if(this.stage)
-		{
-			// this is to satisfy the webGL batching..
-			// TODO sure there is a nicer way to achieve this!
-			this.stage.__removeChild(child);
-			this.stage.__removeChild(child2);
-			
-			this.stage.__addChild(child);
-			this.stage.__addChild(child2);
-		}
-		
-		// swap the positions..
-		this.children[index] = child2;
-		this.children[index2] = child;
-		
+		this.addChildAt(child2, index1);
+		this.addChildAt(child, index2);
 	}
 	else
 	{
-		throw new Error(child + " Both the supplied DisplayObjects must be a child of the caller " + this);
-	}*/
+		this.addChildAt(child, index2);
+		this.addChildAt(child2, index1);
+	}
 }
 
 /**
@@ -298,7 +271,7 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 	{
 		// unlink //
 		// modify the list..
-		var childFirst = child.first
+		var childFirst = child.first;
 		var childLast = child.last;
 		
 		var nextObject = childLast._iNext;
@@ -309,14 +282,17 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 		
 		if(this.last == childLast)
 		{
+
 			var tempLast =  childFirst._iPrev;	
 			// need to make sure the parents last is updated too
 			var updateLast = this;
-			while(updateLast.last == childLast.last)
+			
+			while(updateLast.last == childLast)
 			{
 				updateLast.last = tempLast;
 				updateLast = updateLast.parent;
 				if(!updateLast)break;
+				
 			}
 		}
 		

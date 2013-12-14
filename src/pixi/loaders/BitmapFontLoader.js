@@ -110,20 +110,19 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
             {
                 var charCode = parseInt(letters[i].attributes.getNamedItem("id").nodeValue, 10);
 
-                var textureRect = {
-                    x: parseInt(letters[i].attributes.getNamedItem("x").nodeValue, 10),
-                    y: parseInt(letters[i].attributes.getNamedItem("y").nodeValue, 10),
-                    width: parseInt(letters[i].attributes.getNamedItem("width").nodeValue, 10),
-                    height: parseInt(letters[i].attributes.getNamedItem("height").nodeValue, 10)
-                };
-                PIXI.TextureCache[charCode] = new PIXI.Texture(this.texture, textureRect);
+                var textureRect = new PIXI.Rectangle(
+                    parseInt(letters[i].attributes.getNamedItem("x").nodeValue, 10),
+                    parseInt(letters[i].attributes.getNamedItem("y").nodeValue, 10),
+                    parseInt(letters[i].attributes.getNamedItem("width").nodeValue, 10),
+                    parseInt(letters[i].attributes.getNamedItem("height").nodeValue, 10)
+                );
 
                 data.chars[charCode] = {
                     xOffset: parseInt(letters[i].attributes.getNamedItem("xoffset").nodeValue, 10),
                     yOffset: parseInt(letters[i].attributes.getNamedItem("yoffset").nodeValue, 10),
                     xAdvance: parseInt(letters[i].attributes.getNamedItem("xadvance").nodeValue, 10),
                     kerning: {},
-                    texture:new PIXI.Texture(this.texture, textureRect)
+                    texture: PIXI.TextureCache[charCode] = new PIXI.Texture(this.texture, textureRect)
 
                 };
             }

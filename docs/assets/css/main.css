@@ -25,7 +25,8 @@ html {
 }
 
 body {
-    font: 13px/1.4 'Lucida Grande', 'Lucida Sans Unicode', 'DejaVu Sans', 'Bitstream Vera Sans', 'Helvetica', 'Arial', sans-serif;
+    /*font: 13px/1.4 'Lucida Grande', 'Lucida Sans Unicode', 'DejaVu Sans', 'Bitstream Vera Sans', 'Helvetica', 'Arial', sans-serif;*/
+    font: 13px/1.4 'Helvetica', 'Arial', sans-serif;
     margin: 0;
     padding: 0;
 }

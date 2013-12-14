@@ -19,7 +19,7 @@ PIXI.Circle = function(x, y, radius)
      * @default 0
      */
     this.x = x || 0;
-    
+
     /**
      * @property y
      * @type Number
@@ -69,5 +69,6 @@ PIXI.Circle.prototype.contains = function(x, y)
     return (dx + dy <= r2);
 }
 
+// constructor
 PIXI.Circle.prototype.constructor = PIXI.Circle;
 

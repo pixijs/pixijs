@@ -62,19 +62,19 @@ PIXI.BaseTexture = function(source)
 			this.hasLoaded = true;
 			this.width = this.source.width;
 			this.height = this.source.height;
-			
+
 			PIXI.texturesToUpdate.push(this);
 		}
 		else
 		{
-			
+
 			var scope = this;
 			this.source.onload = function(){
-				
+
 				scope.hasLoaded = true;
 				scope.width = scope.source.width;
 				scope.height = scope.source.height;
-			
+
 				// add it to somewhere...
 				PIXI.texturesToUpdate.push(scope);
 				scope.dispatchEvent( { type: 'loaded', content: scope } );
@@ -87,10 +87,11 @@ PIXI.BaseTexture = function(source)
 		this.hasLoaded = true;
 		this.width = this.source.width;
 		this.height = this.source.height;
-			
+
 		PIXI.texturesToUpdate.push(this);
 	}
 
+	this.imageUrl = null;
 	this._powerOf2 = false;
 }
 
@@ -105,10 +106,26 @@ PIXI.BaseTexture.prototype.destroy = function()
 {
 	if(this.source instanceof Image)
 	{
+		if (this.imageUrl in PIXI.BaseTextureCache) 
+			delete PIXI.BaseTextureCache[this.imageUrl];
+		this.imageUrl = null;
 		this.source.src = null;
 	}
 	this.source = null;
 	PIXI.texturesToDestroy.push(this);
+}
+
+/**
+ * 
+ *
+ * @method destroy
+ */
+
+PIXI.BaseTexture.prototype.updateSourceImage = function(newSrc)
+{
+	this.hasLoaded = false;
+	this.source.src = null;
+	this.source.src = newSrc;
 }
 
 /**
@@ -127,13 +144,14 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin)
 	{
 		// new Image() breaks tex loading in some versions of Chrome.
 		// See https://code.google.com/p/chromium/issues/detail?id=238071
-		var image = new Image();//document.createElement('img'); 
+		var image = new Image();//document.createElement('img');
 		if (crossorigin)
 		{
 			image.crossOrigin = '';
 		}
 		image.src = imageUrl;
 		baseTexture = new PIXI.BaseTexture(image);
+		baseTexture.imageUrl = imageUrl;
 		PIXI.BaseTextureCache[imageUrl] = baseTexture;
 	}
 

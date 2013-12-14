@@ -55,8 +55,8 @@ PIXI.AssetLoader = function(assetURLs, crossorigin)
         "xml":  PIXI.BitmapFontLoader,
         "fnt":  PIXI.BitmapFontLoader
     };
-    
-    
+
+
 };
 
 /**
@@ -66,11 +66,38 @@ PIXI.AssetLoader = function(assetURLs, crossorigin)
 
 /**
  * Fired when all the assets have loaded
- * @event onComplete 
+ * @event onComplete
  */
 
 // constructor
 PIXI.AssetLoader.prototype.constructor = PIXI.AssetLoader;
+
+
+PIXI.AssetLoader.prototype._getDataType = function(str) 
+{
+    var test = "data:";
+    //starts with 'data:'
+    var start = str.slice(0, test.length).toLowerCase();
+    if (start == test) {
+        var data = str.slice(test.length);
+        
+        var sepIdx = data.indexOf(',');
+        if (sepIdx === -1) //malformed data URI scheme
+            return null;
+
+        //e.g. "image/gif;base64" => "image/gif"
+        var info = data.slice(0, sepIdx).split(';')[0];
+
+        //We might need to handle some special cases here...
+        //standardize text/plain to "txt" file extension
+        if (!info || info.toLowerCase() == "text/plain")
+            return "txt"
+
+        //User specified mime type, try splitting it by '/'
+        return info.split('/').pop().toLowerCase();
+    }
+    return null;
+}
 
 /**
  * Starts loading the assets sequentially
@@ -86,7 +113,12 @@ PIXI.AssetLoader.prototype.load = function()
     for (var i=0; i < this.assetURLs.length; i++)
 	{
 		var fileName = this.assetURLs[i];
-		var fileType = fileName.split(".").pop().toLowerCase();
+        //first see if we have a data URI scheme..
+        var fileType = this._getDataType(fileName);
+
+        //if not, assume it's a file URI
+        if (!fileType)
+            fileType = fileName.split("?").shift().split(".").pop().toLowerCase();
 
         var loaderClass = this.loadersByType[fileType];
         if(!loaderClass)
@@ -113,7 +145,7 @@ PIXI.AssetLoader.prototype.onAssetLoaded = function()
     this.loadCount--;
 	this.dispatchEvent({type: "onProgress", content: this});
 	if(this.onProgress) this.onProgress();
-	
+
 	if(this.loadCount == 0)
 	{
 		this.dispatchEvent({type: "onComplete", content: this});

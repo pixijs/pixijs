@@ -127,9 +127,18 @@ PIXI.Sprite.prototype.setTexture = function(texture)
 	if(this.texture.baseTexture != texture.baseTexture)
 	{
 		this.textureChange = true;	
+		this.texture = texture;
+		
+		if(this.__renderGroup)
+		{
+			this.__renderGroup.updateTexture(this);
+		}
+	}
+	else
+	{
+		this.texture = texture;
 	}
 	
-	this.texture = texture;
 	this.updateFrame = true;
 }
 
@@ -185,4 +194,3 @@ PIXI.Sprite.fromImage = function(imageId)
 	var texture = PIXI.Texture.fromImage(imageId);
 	return new PIXI.Sprite(texture);
 }
-

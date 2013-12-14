@@ -20,9 +20,10 @@ PIXI.gl;
  * @param height=0 {Number} the height of the canvas view
  * @param view {Canvas} the canvas to use as a view, optional
  * @param transparent=false {Boolean} the transparency of the render view, default false
+ * @param antialias=false {Boolean} sets antialias (only applicable in chrome at the moment)
  * 
  */
-PIXI.WebGLRenderer = function(width, height, view, transparent)
+PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
 {
 	// do a catch.. only 1 webGL renderer..
 
@@ -42,27 +43,38 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
 
 	this.batchs = [];
 
-	try 
- 	{
-        PIXI.gl = this.gl = this.view.getContext("experimental-webgl",  {  	
-    		 alpha: this.transparent,
-    		 antialias:true, // SPEED UP??
-    		 premultipliedAlpha:false,
-    		 stencil:true
-        });
-    } 
-    catch (e) 
-    {
-    	throw new Error(" This browser does not support webGL. Try using the canvas renderer" + this);
-    }
+	var options = {
+		alpha: this.transparent,
+		antialias:!!antialias, // SPEED UP??
+		premultipliedAlpha:false,
+		stencil:true
+	}
 
-    PIXI.initPrimitiveShader();
-    PIXI.initDefaultShader();
-    PIXI.initDefaultStripShader();
+	//try 'experimental-webgl'
+	try {
+		PIXI.gl = this.gl = this.view.getContext("experimental-webgl",  options);
+	} catch (e) {
+		//try 'webgl'
+		try {
+			PIXI.gl = this.gl = this.view.getContext("webgl",  options);
+		} catch (e) {
+			// fail, not able to get a context
+			throw new Error(" This browser does not support webGL. Try using the canvas renderer" + this);
+		}
+	}
 
-    PIXI.activateDefaultShader();
+    PIXI.initDefaultShaders();
+ 
+
+	
+
+   // PIXI.activateDefaultShader();
 
     var gl = this.gl;
+    
+    gl.useProgram(PIXI.defaultShader.program);
+
+
     PIXI.WebGLRenderer.gl = gl;
 
     this.batch = new PIXI.WebGLBatch(gl);
@@ -73,11 +85,17 @@ PIXI.WebGLRenderer = function(width, height, view, transparent)
     gl.colorMask(true, true, true, this.transparent); 
 
     PIXI.projection = new PIXI.Point(400, 300);
+    PIXI.offset = new PIXI.Point(0, 0);
+
+    // TODO remove thease globals..
 
     this.resize(this.width, this.height);
     this.contextLost = false;
 
-    this.stageRenderGroup = new PIXI.WebGLRenderGroup(this.gl);
+	//PIXI.pushShader(PIXI.defaultShader);
+
+    this.stageRenderGroup = new PIXI.WebGLRenderGroup(this.gl, this.transparent);
+  //  this.stageRenderGroup. = this.transparent
 }
 
 // constructor
@@ -133,28 +151,15 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	{
 		// TODO make this work
 		// dont think this is needed any more?
-		//if(this.__stage)this.checkVisibility(this.__stage, false)
-		
 		this.__stage = stage;
 		this.stageRenderGroup.setRenderable(stage);
 	}
-	
-	// TODO not needed now... 
-	// update children if need be
-	// best to remove first!
-	/*for (var i=0; i < stage.__childrenRemoved.length; i++)
-	{
-		var group = stage.__childrenRemoved[i].__renderGroup
-		if(group)group.removeDisplayObject(stage.__childrenRemoved[i]);
-	}*/
 
 	// update any textures	
 	PIXI.WebGLRenderer.updateTextures();
 		
-	// recursivly loop through all items!
-	//this.checkVisibility(stage, true);
-	
 	// update the scene graph	
+	PIXI.visibleCount++;
 	stage.updateTransform();
 	
 	var gl = this.gl;
@@ -163,18 +168,18 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 	gl.colorMask(true, true, true, this.transparent); 
 	gl.viewport(0, 0, this.width, this.height);	
 	
-	// set the correct matrix..	
-   //	gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.projectionMatrix);
-   
    	gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 		
 	gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], !this.transparent);     
 	gl.clear(gl.COLOR_BUFFER_BIT);
 
 	// HACK TO TEST
-	//PIXI.projectionMatrix = this.projectionMatrix;
 	
 	this.stageRenderGroup.backgroundColor = stage.backgroundColorSplit;
+	
+	PIXI.projection.x =  this.width/2;
+	PIXI.projection.y =  -this.height/2;
+	
 	this.stageRenderGroup.render(PIXI.projection);
 	
 	// interaction
@@ -210,8 +215,9 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
  */
 PIXI.WebGLRenderer.updateTextures = function()
 {
-	for (var i=0; i < PIXI.texturesToUpdate.length; i++) this.updateTexture(PIXI.texturesToUpdate[i]);
-	for (var i=0; i < PIXI.texturesToDestroy.length; i++) this.destroyTexture(PIXI.texturesToDestroy[i]);
+	//TODO break this out into a texture manager...
+	for (var i=0; i < PIXI.texturesToUpdate.length; i++) PIXI.WebGLRenderer.updateTexture(PIXI.texturesToUpdate[i]);
+	for (var i=0; i < PIXI.texturesToDestroy.length; i++) PIXI.WebGLRenderer.destroyTexture(PIXI.texturesToDestroy[i]);
 	PIXI.texturesToUpdate = [];
 	PIXI.texturesToDestroy = [];
 }
@@ -226,6 +232,7 @@ PIXI.WebGLRenderer.updateTextures = function()
  */
 PIXI.WebGLRenderer.updateTexture = function(texture)
 {
+	//TODO break this out into a texture manager...
 	var gl = PIXI.gl;
 	
 	if(!texture._glTexture)
@@ -266,9 +273,10 @@ PIXI.WebGLRenderer.updateTexture = function(texture)
  * @param texture {Texture} The texture to update
  * @private
  */
-PIXI.WebGLRenderer.prototype.destroyTexture = function(texture)
+PIXI.WebGLRenderer.destroyTexture = function(texture)
 {
-	var gl = this.gl;
+	//TODO break this out into a texture manager...
+	var gl = PIXI.gl;
 
 	if(texture._glTexture)
 	{
@@ -297,7 +305,10 @@ PIXI.WebGLRenderer.prototype.resize = function(width, height)
 	//var projectionMatrix = this.projectionMatrix;
 
 	PIXI.projection.x =  this.width/2;
-	PIXI.projection.y =  this.height/2;
+	PIXI.projection.y =  -this.height/2;
+	
+	//PIXI.size.x =  this.width/2;
+	//PIXI.size.y =  -this.height/2;
 
 //	projectionMatrix[0] = 2/this.width;
 //	projectionMatrix[5] = -2/this.height;
