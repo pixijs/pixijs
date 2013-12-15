@@ -178,8 +178,8 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
 								   frame.y,
 								   frame.width,
 								   frame.height,
-								   (displayObject.anchor.x) * -frame.width, 
-								   (displayObject.anchor.y) * -frame.height,
+								   ( (displayObject.anchor.x) * -frame.width ) | 0,
+								   ( (displayObject.anchor.y) * -frame.height ) | 0,
 								   frame.width,
 								   frame.height);
 			}					   
