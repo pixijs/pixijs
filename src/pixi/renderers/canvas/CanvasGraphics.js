@@ -104,15 +104,15 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 		else if(data.type == PIXI.Graphics.ELIP)
 		{
 
-			// elipse code taken from: http://stackoverflow.com/questions/2172798/how-to-draw-an-oval-in-html5-canvas
+			// ellipse code taken from: http://stackoverflow.com/questions/2172798/how-to-draw-an-oval-in-html5-canvas
 
-			var elipseData =  data.points;
+			var ellipseData =  data.points;
 
-			var w = elipseData[2] * 2;
-			var h = elipseData[3] * 2;
+			var w = ellipseData[2] * 2;
+			var h = ellipseData[3] * 2;
 
-			var x = elipseData[0] - w/2;
-			var y = elipseData[1] - h/2;
+			var x = ellipseData[0] - w/2;
+			var y = ellipseData[1] - h/2;
 
       		context.beginPath();
 
@@ -208,14 +208,14 @@ PIXI.CanvasGraphics.renderGraphicsMask = function(graphics, context)
 		else if(data.type == PIXI.Graphics.ELIP)
 		{
 
-			// elipse code taken from: http://stackoverflow.com/questions/2172798/how-to-draw-an-oval-in-html5-canvas
-			var elipseData =  data.points;
+			// ellipse code taken from: http://stackoverflow.com/questions/2172798/how-to-draw-an-oval-in-html5-canvas
+			var ellipseData =  data.points;
 
-			var w = elipseData[2] * 2;
-			var h = elipseData[3] * 2;
+			var w = ellipseData[2] * 2;
+			var h = ellipseData[3] * 2;
 
-			var x = elipseData[0] - w/2;
-			var y = elipseData[1] - h/2;
+			var x = ellipseData[0] - w/2;
+			var y = ellipseData[1] - h/2;
 
       		context.beginPath();
 
