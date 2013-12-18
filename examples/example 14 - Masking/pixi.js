@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-10-17
+ * Compiled: 2013-12-18
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -1204,6 +1204,7 @@ PIXI.DisplayObject.prototype.updateTransform = function()
 }
 
 PIXI.visibleCount = 0;
+
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -1920,6 +1921,7 @@ PIXI.MovieClip.prototype.updateTransform = function()
 		}
 	}
 }
+
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -6737,15 +6739,15 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 		else if(data.type == PIXI.Graphics.ELIP)
 		{
 			
-			// elipse code taken from: http://stackoverflow.com/questions/2172798/how-to-draw-an-oval-in-html5-canvas
+			// ellipse code taken from: http://stackoverflow.com/questions/2172798/how-to-draw-an-oval-in-html5-canvas
 			
-			var elipseData =  data.points;
+			var ellipseData =  data.points;
 			
-			var w = elipseData[2] * 2;
-			var h = elipseData[3] * 2;
+			var w = ellipseData[2] * 2;
+			var h = ellipseData[3] * 2;
 	
-			var x = elipseData[0] - w/2;
-			var y = elipseData[1] - h/2;
+			var x = ellipseData[0] - w/2;
+			var y = ellipseData[1] - h/2;
 			
       		context.beginPath();
 			
@@ -6839,14 +6841,14 @@ PIXI.CanvasGraphics.renderGraphicsMask = function(graphics, context)
 		else if(data.type == PIXI.Graphics.ELIP)
 		{
 			
-			// elipse code taken from: http://stackoverflow.com/questions/2172798/how-to-draw-an-oval-in-html5-canvas
-			var elipseData =  data.points;
+			// ellipse code taken from: http://stackoverflow.com/questions/2172798/how-to-draw-an-oval-in-html5-canvas
+			var ellipseData =  data.points;
 			
-			var w = elipseData[2] * 2;
-			var h = elipseData[3] * 2;
+			var w = ellipseData[2] * 2;
+			var h = ellipseData[3] * 2;
 	
-			var x = elipseData[0] - w/2;
-			var y = elipseData[1] - h/2;
+			var x = ellipseData[0] - w/2;
+			var y = ellipseData[1] - h/2;
 			
       		context.beginPath();
 			
@@ -7060,15 +7062,15 @@ PIXI.Graphics.prototype.drawCircle = function( x, y, radius)
 }
 
 /**
- * Draws an elipse.
+ * Draws an ellipse.
  *
- * @method drawElipse
+ * @method drawEllipse
  * @param x {Number}
  * @param y {Number}
  * @param width {Number}
  * @param height {Number}
  */
-PIXI.Graphics.prototype.drawElipse = function( x, y, width, height)
+PIXI.Graphics.prototype.drawEllipse = function( x, y, width, height)
 {
 	if(this.currentPath.points.length == 0)this.graphicsData.pop();
 	
@@ -9794,7 +9796,7 @@ PIXI.JsonLoader.prototype.load = function () {
  */
 PIXI.JsonLoader.prototype.onJSONLoaded = function () {
 	if (this.ajaxRequest.readyState == 4) {
-		if (this.ajaxRequest.status == 200 || window.location.href.indexOf("http") == -1) {
+		if (this.ajaxRequest.status == 200 || window.location.protocol.indexOf("http") == -1) {
 			this.json = JSON.parse(this.ajaxRequest.responseText);
 			
 			if(this.json.frames)
@@ -9877,6 +9879,7 @@ PIXI.JsonLoader.prototype.onError = function () {
 		content: this
 	});
 };
+
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -10169,7 +10172,7 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
 {
     if (this.ajaxRequest.readyState == 4)
     {
-        if (this.ajaxRequest.status == 200 || window.location.href.indexOf("http") == -1)
+        if (this.ajaxRequest.status == 200 || window.location.protocol.indexOf("http") == -1)
         {
             var textureUrl = this.baseUrl + this.ajaxRequest.responseXML.getElementsByTagName("page")[0].attributes.getNamedItem("file").nodeValue;
             var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
