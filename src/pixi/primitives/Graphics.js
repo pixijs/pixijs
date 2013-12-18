@@ -188,15 +188,15 @@ PIXI.Graphics.prototype.drawCircle = function( x, y, radius)
 }
 
 /**
- * Draws an elipse.
+ * Draws an ellipse.
  *
- * @method drawElipse
+ * @method drawEllipse
  * @param x {Number}
  * @param y {Number}
  * @param width {Number}
  * @param height {Number}
  */
-PIXI.Graphics.prototype.drawElipse = function( x, y, width, height)
+PIXI.Graphics.prototype.drawEllipse = function( x, y, width, height)
 {
 	if(this.currentPath.points.length == 0)this.graphicsData.pop();
 	
