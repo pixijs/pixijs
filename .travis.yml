@@ -14,5 +14,4 @@ install:
     - npm install
 
 script:
-    - grunt build
     - grunt travis

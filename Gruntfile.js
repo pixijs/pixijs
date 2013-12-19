@@ -185,5 +185,5 @@ module.exports = function(grunt) {
     grunt.registerTask('test', ['concat', 'jshint:test', 'karma']);
 
     grunt.registerTask('docs', ['yuidoc']);
-    grunt.registerTask('travis', ['test']);
+    grunt.registerTask('travis', ['build', 'test']);
 };
