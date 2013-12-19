@@ -134,13 +134,13 @@ PIXI.Texture.prototype.setFrame = function(frame)
  * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
  * @return Texture
  */
-PIXI.Texture.fromImage = function(imageUrl, crossorigin)
+PIXI.Texture.fromImage = function(imageUrl, crossorigin, scaleMode)
 {
 	var texture = PIXI.TextureCache[imageUrl];
 
 	if(!texture)
 	{
-		texture = new PIXI.Texture(PIXI.BaseTexture.fromImage(imageUrl, crossorigin));
+		texture = new PIXI.Texture(PIXI.BaseTexture.fromImage(imageUrl, crossorigin, scaleMode));
 		PIXI.TextureCache[imageUrl] = texture;
 	}
 
@@ -172,9 +172,9 @@ PIXI.Texture.fromFrame = function(frameId)
  * @param canvas {Canvas} The canvas element source of the texture
  * @return Texture
  */
-PIXI.Texture.fromCanvas = function(canvas)
+PIXI.Texture.fromCanvas = function(canvas, scaleMode)
 {
-	var	baseTexture = new PIXI.BaseTexture(canvas);
+	var	baseTexture = new PIXI.BaseTexture(canvas, scaleMode);
 	return new PIXI.Texture(baseTexture);
 }
 
@@ -210,3 +210,4 @@ PIXI.Texture.removeTextureFromCache = function(id)
 // this is more for webGL.. it contains updated frames..
 PIXI.Texture.frameUpdates = [];
 
+PIXI.Texture.SCALE_MODE = PIXI.BaseTexture.SCALE_MODE;

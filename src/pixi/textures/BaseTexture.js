@@ -14,7 +14,7 @@ PIXI.texturesToDestroy = [];
  * @constructor
  * @param source {String} the source object (image or canvas)
  */
-PIXI.BaseTexture = function(source)
+PIXI.BaseTexture = function(source, scaleMode)
 {
 	PIXI.EventTarget.call( this );
 
@@ -35,6 +35,14 @@ PIXI.BaseTexture = function(source)
 	 * @readOnly
 	 */
 	this.height = 100;
+
+	/**
+	 * The scale mode to apply when scaling this texture
+	 * @property scaleMode
+	 * @type PIXI.BaseTexture.SCALE_MODE
+	 * @default PIXI.BaseTexture.SCALE_MODE.LINEAR
+	 */
+	this.scaleMode = scaleMode || PIXI.BaseTexture.SCALE_MODE.DEFAULT;
 
 	/**
 	 * [read-only] Describes if the base texture has loaded or not
@@ -137,7 +145,7 @@ PIXI.BaseTexture.prototype.updateSourceImage = function(newSrc)
  * @param imageUrl {String} The image url of the texture
  * @return BaseTexture
  */
-PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin)
+PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
 {
 	var baseTexture = PIXI.BaseTextureCache[imageUrl];
 	if(!baseTexture)
@@ -150,10 +158,16 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin)
 			image.crossOrigin = '';
 		}
 		image.src = imageUrl;
-		baseTexture = new PIXI.BaseTexture(image);
+		baseTexture = new PIXI.BaseTexture(image, scaleMode);
 		baseTexture.imageUrl = imageUrl;
 		PIXI.BaseTextureCache[imageUrl] = baseTexture;
 	}
 
 	return baseTexture;
 }
+
+PIXI.BaseTexture.SCALE_MODE = {
+	DEFAULT: 0, //default to LINEAR
+	LINEAR: 0,
+	NEAREST: 1
+};
