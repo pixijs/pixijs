@@ -14,34 +14,34 @@
  */
 PIXI.Rectangle = function(x, y, width, height)
 {
-	/**
-	 * @property x
-	 * @type Number
-	 * @default 0
-	 */
-	this.x = x || 0;
+    /**
+     * @property x
+     * @type Number
+     * @default 0
+     */
+    this.x = x || 0;
 
-	/**
-	 * @property y
-	 * @type Number
-	 * @default 0
-	 */
-	this.y = y || 0;
+    /**
+     * @property y
+     * @type Number
+     * @default 0
+     */
+    this.y = y || 0;
 
-	/**
-	 * @property width
-	 * @type Number
-	 * @default 0
-	 */
-	this.width = width || 0;
+    /**
+     * @property width
+     * @type Number
+     * @default 0
+     */
+    this.width = width || 0;
 
-	/**
-	 * @property height
-	 * @type Number
-	 * @default 0
-	 */
-	this.height = height || 0;
-}
+    /**
+     * @property height
+     * @type Number
+     * @default 0
+     */
+    this.height = height || 0;
+};
 
 /**
  * Creates a clone of this Rectangle
@@ -51,8 +51,8 @@ PIXI.Rectangle = function(x, y, width, height)
  */
 PIXI.Rectangle.prototype.clone = function()
 {
-	return new PIXI.Rectangle(this.x, this.y, this.width, this.height);
-}
+    return new PIXI.Rectangle(this.x, this.y, this.width, this.height);
+};
 
 /**
  * Checks if the x, and y coords passed to this function are contained within this Rectangle
@@ -67,19 +67,19 @@ PIXI.Rectangle.prototype.contains = function(x, y)
     if(this.width <= 0 || this.height <= 0)
         return false;
 
-	var x1 = this.x;
-	if(x >= x1 && x <= x1 + this.width)
-	{
-		var y1 = this.y;
+    var x1 = this.x;
+    if(x >= x1 && x <= x1 + this.width)
+    {
+        var y1 = this.y;
 
-		if(y >= y1 && y <= y1 + this.height)
-		{
-			return true;
-		}
-	}
+        if(y >= y1 && y <= y1 + this.height)
+        {
+            return true;
+        }
+    }
 
-	return false;
-}
+    return false;
+};
 
 // constructor
 PIXI.Rectangle.prototype.constructor = PIXI.Rectangle;

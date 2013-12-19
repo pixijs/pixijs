@@ -19,25 +19,29 @@
  */
 PIXI.autoDetectRenderer = function(width, height, view, transparent, antialias)
 {
-	if(!width)width = 800;
-	if(!height)height = 600;
+    if(!width)width = 800;
+    if(!height)height = 600;
 
-	// BORROWED from Mr Doob (mrdoob.com)
-	var webgl = ( function () { try { var canvas = document.createElement( 'canvas' ); return !! window.WebGLRenderingContext && ( canvas.getContext( 'webgl' ) || canvas.getContext( 'experimental-webgl' ) ); } catch( e ) { return false; } } )();
+    // BORROWED from Mr Doob (mrdoob.com)
+    var webgl = ( function () { try {
+                                    var canvas = document.createElement( 'canvas' );
+                                    return !! window.WebGLRenderingContext && ( canvas.getContext( 'webgl' ) || canvas.getContext( 'experimental-webgl' ) );
+                                } catch( e ) {
+                                    return false;
+                                }
+                            } )();
 
-	if(webgl)
-	{
-		var ie =  (navigator.userAgent.toLowerCase().indexOf('trident') != -1);
-		 webgl = !ie;
-	}
-	
-	//console.log(webgl);
-	if( webgl )
-	{
-		return new PIXI.WebGLRenderer(width, height, view, transparent, antialias);
-	}
+    if(webgl)
+    {
+        var ie =  (navigator.userAgent.toLowerCase().indexOf('trident') !== -1);
+        webgl = !ie;
+    }
 
-	return	new PIXI.CanvasRenderer(width, height, view, transparent);
+    //console.log(webgl);
+    if( webgl )
+    {
+        return new PIXI.WebGLRenderer(width, height, view, transparent, antialias);
+    }
+
+    return  new PIXI.CanvasRenderer(width, height, view, transparent);
 };
-
-
