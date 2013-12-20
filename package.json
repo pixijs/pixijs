@@ -33,7 +33,7 @@
         "grunt-contrib-concat": "~0.3",
         "mocha": "~1.15",
         "chai": "~1.8",
-        "karma": "~0.11",
+        "karma": "~0.10",
         "karma-firefox-launcher": "~0.1",
         "karma-mocha": "~0.1"
     }
