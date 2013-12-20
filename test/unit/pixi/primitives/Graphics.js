@@ -27,7 +27,7 @@ describe('pixi/primitives/Graphics', function () {
         expect(obj).to.respondTo('endFill');
         expect(obj).to.respondTo('drawRect');
         expect(obj).to.respondTo('drawCircle');
-        expect(obj).to.respondTo('drawElipse');
+        expect(obj).to.respondTo('drawEllipse');
         expect(obj).to.respondTo('clear');
 
         expect(obj).to.have.property('renderable', true);
