@@ -28,6 +28,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     // do a catch.. only 1 webGL renderer..
 
     this.transparent = !!transparent;
+    this.alpha = this.transparent? 0.0 : 1.0;
 
     this.width = width || 800;
     this.height = height || 600;
@@ -46,7 +47,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     var options = {
         alpha: this.transparent,
         antialias:!!antialias, // SPEED UP??
-        premultipliedAlpha:false,
+        premultipliedAlpha:true,
         stencil:true
     };
 
@@ -170,7 +171,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
-    gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], !this.transparent);
+    gl.clearColor(stage.backgroundColorSplit[0], stage.backgroundColorSplit[1], stage.backgroundColorSplit[2], this.alpha);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     // HACK TO TEST
