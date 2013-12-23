@@ -37,9 +37,8 @@ PIXI.DisplayObjectContainer.prototype.constructor = PIXI.DisplayObjectContainer;
  */
 PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 {
-    if(child.parent !== undefined)
+    if(child.parent && child.parent !== this)
     {
-
         //// COULD BE THIS???
         child.parent.removeChild(child);
     //  return;
