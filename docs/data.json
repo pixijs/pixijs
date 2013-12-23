@@ -3811,9 +3811,9 @@
         {
             "file": "src/pixi/primitives/Graphics.js",
             "line": 190,
-            "description": "Draws an elipse.",
+            "description": "Draws an ellipse.",
             "itemtype": "method",
-            "name": "drawElipse",
+            "name": "drawEllipse",
             "params": [
                 {
                     "name": "x",

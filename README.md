@@ -69,6 +69,9 @@ last 2 examples and allowing us to share the source code :)
 Want to be part of the pixi.js project? Great! All are welcome! We will get there quicker together :)
 Whether you find a bug, have a great feature request or you fancy owning a task from the road map above feel free to get in touch.
 
+Make sure to read the [Contributing Guide](https://github.com/GoodBoyDigital/pixi.js/blob/master/CONTRIBUTING.md)
+before submitting changes.
+
 ### How to build ###
 
 PixiJS is build with Grunt. If you don't already have this, go install Node and NPM then install the Grunt Command Line.

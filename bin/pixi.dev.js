@@ -7147,6 +7147,27 @@ PIXI.WebGLFilterManager.prototype.getBounds = function(displayObject)
 
 				doTest = true;	
 			}
+			else
+			{
+				if(tempObject.updateFilterBounds)
+				{
+					tempObject.updateFilterBounds();
+
+					var bounds = tempObject.filterArea;
+
+					width = bounds.width;
+					height = bounds.height;
+
+					w0 = bounds.x
+					w1 = bounds.x + bounds.width;
+
+					h0 = bounds.y
+					h1 = bounds.y + bounds.height;
+
+					doTest = true;	
+				}
+
+			}
 		}
 		
 		if(doTest)
@@ -10131,6 +10152,7 @@ PIXI.BaseTexture = function(source)
 				scope.width = scope.source.width;
 				scope.height = scope.source.height;
 
+				
 				// add it to somewhere...
 				PIXI.texturesToUpdate.push(scope);
 				scope.dispatchEvent( { type: 'loaded', content: scope } );
@@ -10175,9 +10197,33 @@ PIXI.BaseTexture.prototype.destroy = function()
 
 PIXI.BaseTexture.prototype.updateSourceImage = function(newSrc)
 {
-	this.hasLoaded = false;
-	this.source.src = null;
-	this.source.src = newSrc;
+
+	if(this.source._realSrc == newSrc)
+	{
+		
+		this.dispatchEvent( { type: 'loaded', content: this } );
+	}
+	else
+	{
+		
+		this.hasLoaded = false;
+		this.source._realSrc = newSrc;
+		var scope = this;
+		this.source.onload = function(){
+
+			scope.hasLoaded = true;
+			scope.width = scope.source.width;
+			scope.height = scope.source.height;
+
+			
+			// add it to somewhere...
+			PIXI.texturesToUpdate.push(scope);
+			scope.dispatchEvent( { type: 'loaded', content: scope } );
+		}
+
+		//this.source.src = null;
+		this.source.src = newSrc;
+	}
 }
 
 /**
@@ -10202,6 +10248,8 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin)
 			image.crossOrigin = '';
 		}
 		image.src = imageUrl;
+		image._realSrc = imageUrl;
+
 		baseTexture = new PIXI.BaseTexture(image);
 		PIXI.BaseTextureCache[imageUrl] = baseTexture;
 	}

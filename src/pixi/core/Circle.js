@@ -33,7 +33,7 @@ PIXI.Circle = function(x, y, radius)
      * @default 0
      */
     this.radius = radius || 0;
-}
+};
 
 /**
  * Creates a clone of this Circle instance
@@ -44,7 +44,7 @@ PIXI.Circle = function(x, y, radius)
 PIXI.Circle.prototype.clone = function()
 {
     return new PIXI.Circle(this.x, this.y, this.radius);
-}
+};
 
 /**
  * Checks if the x, and y coords passed to this function are contained within this circle
@@ -67,7 +67,7 @@ PIXI.Circle.prototype.contains = function(x, y)
     dy *= dy;
 
     return (dx + dy <= r2);
-}
+};
 
 // constructor
 PIXI.Circle.prototype.constructor = PIXI.Circle;

@@ -4,13 +4,10 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-connect');
-    grunt.loadNpmTasks('grunt-contrib-qunit');
     grunt.loadNpmTasks('grunt-contrib-yuidoc');
-    grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadTasks('tasks');
 
-    var root = 'src/pixi/',
-        debug = 'bin/pixi.dev.js',
-        srcFiles = [
+    var srcFiles = [
             '<%= dirs.src %>/Intro.js',
             '<%= dirs.src %>/Pixi.js',
             '<%= dirs.src %>/core/Point.js',
@@ -54,6 +51,7 @@ module.exports = function(grunt) {
             '<%= dirs.src %>/textures/RenderTexture.js',
             '<%= dirs.src %>/loaders/AssetLoader.js',
             '<%= dirs.src %>/loaders/JsonLoader.js',
+            '<%= dirs.src %>/loaders/AtlasLoader.js',
             '<%= dirs.src %>/loaders/SpriteSheetLoader.js',
             '<%= dirs.src %>/loaders/ImageLoader.js',
             '<%= dirs.src %>/loaders/BitmapFontLoader.js',
@@ -73,9 +71,9 @@ module.exports = function(grunt) {
             '<%= dirs.src %>/filters/DotScreenFilter.js',
             '<%= dirs.src %>/filters/CrossHatchFilter.js',
             '<%= dirs.src %>/filters/RGBSplitFilter.js',
-            
             '<%= dirs.src %>/Outro.js'
-        ], banner = [
+        ],
+        banner = [
             '/**',
             ' * @license',
             ' * <%= pkg.name %> - v<%= pkg.version %>',
@@ -100,7 +98,7 @@ module.exports = function(grunt) {
         },
         files: {
             srcBlob: '<%= dirs.src %>/**/*.js',
-            testBlob: '<%= dirs.test %>/unit/**/*.js',
+            testBlob: '<%= dirs.test %>/{functional,lib/pixi,unit/pixi}/**/*.js',
             build: '<%= dirs.build %>/pixi.dev.js',
             buildMin: '<%= dirs.build %>/pixi.js'
         },
@@ -113,6 +111,7 @@ module.exports = function(grunt) {
                 dest: '<%= files.build %>'
             }
         },
+        /* jshint -W106 */
         concat_sourcemap: {
             dev: {
                 files: {
@@ -124,11 +123,18 @@ module.exports = function(grunt) {
             }
         },
         jshint: {
-            beforeconcat: srcFiles,
-            test: ['<%= files.testBlob %>'],
             options: {
-                asi: true,
-                smarttabs: true
+                jshintrc: '.jshintrc'
+            },
+            source: srcFiles.filter(function(v) { return v.match(/(Intro|Outro|Spine|Pixi)\.js$/) === null; }).concat('Gruntfile.js'),
+            test: {
+                src: ['<%= files.testBlob %>'],
+                options: {
+                    jshintrc: undefined, //don't use jshintrc for tests
+                    expr: true,
+                    undef: false,
+                    camelcase: false
+                }
             }
         },
         uglify: {
@@ -141,24 +147,11 @@ module.exports = function(grunt) {
             }
         },
         connect: {
-            qunit: {
-                options: {
-                    port: grunt.option('port-test') || 9002,
-                    base: './'
-                }
-            },
             test: {
                 options: {
                     port: grunt.option('port-test') || 9002,
                     base: './',
                     keepalive: true
-                }
-            }
-        },
-        qunit: {
-            all: {
-                options: {
-                    urls: ['http://localhost:' + (grunt.option('port-test') || 9002) + '/test/index.html']
                 }
             }
         },
@@ -175,23 +168,22 @@ module.exports = function(grunt) {
                 }
             }
         },
-        watch: {
-            dev: {
-                files: ['Gruntfile.js', 'src/**/*.js', 'examples/**/*.html'],
-                tasks: ['build-debug'],
-                
-                // We would need to inject <script> in each HTML...
-                // options: {
-                //     livereload: true
-                // }
+        karma: {
+            unit: {
+                configFile: 'test/karma.conf.js',
+                // browsers: ['Chrome'],
+                singleRun: true
             }
         }
     });
 
-    grunt.registerTask('build-debug', ['concat_sourcemap', 'uglify'])
-    grunt.registerTask('default', ['concat', 'uglify']);
-    grunt.registerTask('build', ['concat', 'uglify']);
-    grunt.registerTask('test', ['build', 'connect:qunit', 'qunit']);
-    grunt.registerTask('docs', ['yuidoc']);
+    grunt.registerTask('default', ['build', 'test']);
 
-}
+    grunt.registerTask('build', ['jshint:source', 'concat', 'uglify']);
+    grunt.registerTask('build-debug', ['concat_sourcemap', 'uglify']);
+
+    grunt.registerTask('test', ['concat', 'jshint:test', 'karma']);
+
+    grunt.registerTask('docs', ['yuidoc']);
+    grunt.registerTask('travis', ['build', 'test']);
+};

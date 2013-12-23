@@ -4,57 +4,57 @@
  */
 
 /**
- * 
- * This filter applies a pixlate effect making display objects appear "blocky"
+ *
+ * This filter applies a pixlate effect making display objects appear 'blocky'
  * @class PixelateFilter
  * @contructor
  */
 PIXI.DotScreenFilter = function()
 {
-	PIXI.AbstractFilter.call( this );
+    PIXI.AbstractFilter.call( this );
 
-	this.passes = [this];
-	
-	// set the uniforms
-	this.uniforms = {
-		scale: {type: '1f', value:1},
-		angle: {type: '1f', value:5},
-		dimensions:   {type: '4fv', value:[0,0,0,0]}
-	};
+    this.passes = [this];
 
-	this.fragmentSrc = [
-	  "precision mediump float;",
-	  "varying vec2 vTextureCoord;",
-	  "varying float vColor;",
-	  "uniform vec4 dimensions;",
-	  "uniform sampler2D uSampler;",
+    // set the uniforms
+    this.uniforms = {
+        scale: {type: '1f', value:1},
+        angle: {type: '1f', value:5},
+        dimensions:   {type: '4fv', value:[0,0,0,0]}
+    };
 
-	    "uniform float angle;",
-	    "uniform float scale;",
+    this.fragmentSrc = [
+        'precision mediump float;',
+        'varying vec2 vTextureCoord;',
+        'varying float vColor;',
+        'uniform vec4 dimensions;',
+        'uniform sampler2D uSampler;',
 
-	    "float pattern() {",
-	    	"float s = sin(angle), c = cos(angle);",
-	    	"vec2 tex = vTextureCoord * dimensions.xy;",
-	    	"vec2 point = vec2(",
-	    		"c * tex.x - s * tex.y,",
-	    		"s * tex.x + c * tex.y",
-	    	") * scale;",
-	    	"return (sin(point.x) * sin(point.y)) * 4.0;",
-	    "}",
+        'uniform float angle;',
+        'uniform float scale;',
 
-	    "void main() {",
-            "vec4 color = texture2D(uSampler, vTextureCoord);",
-            "float average = (color.r + color.g + color.b) / 3.0;",
-            "gl_FragColor = vec4(vec3(average * 10.0 - 5.0 + pattern()), color.a);",
-        "}",
-	];
-}
+        'float pattern() {',
+        '   float s = sin(angle), c = cos(angle);',
+        '   vec2 tex = vTextureCoord * dimensions.xy;',
+        '   vec2 point = vec2(',
+        '       c * tex.x - s * tex.y,',
+        '       s * tex.x + c * tex.y',
+        '   ) * scale;',
+        '   return (sin(point.x) * sin(point.y)) * 4.0;',
+        '}',
+
+        'void main() {',
+        '   vec4 color = texture2D(uSampler, vTextureCoord);',
+        '   float average = (color.r + color.g + color.b) / 3.0;',
+        '   gl_FragColor = vec4(vec3(average * 10.0 - 5.0 + pattern()), color.a);',
+        '}'
+    ];
+};
 
 PIXI.DotScreenFilter.prototype = Object.create( PIXI.DotScreenFilter.prototype );
 PIXI.DotScreenFilter.prototype.constructor = PIXI.DotScreenFilter;
 
 /**
- * 
+ *
  * This describes the the scale
  * @property scale
  * @type Number
@@ -64,13 +64,13 @@ Object.defineProperty(PIXI.DotScreenFilter.prototype, 'scale', {
         return this.uniforms.scale.value;
     },
     set: function(value) {
-    	this.dirty = true;
-    	this.uniforms.scale.value = value;
+        this.dirty = true;
+        this.uniforms.scale.value = value;
     }
 });
 
 /**
- * 
+ *
  * This radius describes angle
  * @property angle
  * @type Number
@@ -80,7 +80,7 @@ Object.defineProperty(PIXI.DotScreenFilter.prototype, 'angle', {
         return this.uniforms.angle.value;
     },
     set: function(value) {
-    	this.dirty = true;
-    	this.uniforms.angle.value = value;
+        this.dirty = true;
+        this.uniforms.angle.value = value;
     }
 });

@@ -23,33 +23,33 @@
  */
 PIXI.SpineLoader = function(url, crossorigin)
 {
-	PIXI.EventTarget.call(this);
+    PIXI.EventTarget.call(this);
 
-	/**
-	 * The url of the bitmap font data
-	 *
-	 * @property url
-	 * @type String
-	 */
-	this.url = url;
+    /**
+     * The url of the bitmap font data
+     *
+     * @property url
+     * @type String
+     */
+    this.url = url;
 
-	/**
-	 * Whether the requests should be treated as cross origin
-	 *
-	 * @property crossorigin
-	 * @type Boolean
-	 */
-	this.crossorigin = crossorigin;
+    /**
+     * Whether the requests should be treated as cross origin
+     *
+     * @property crossorigin
+     * @type Boolean
+     */
+    this.crossorigin = crossorigin;
 
-	/**
-	 * [read-only] Whether the data has loaded yet
-	 *
-	 * @property loaded
-	 * @type Boolean
-	 * @readOnly
-	 */
-	this.loaded = false;
-}
+    /**
+     * [read-only] Whether the data has loaded yet
+     *
+     * @property loaded
+     * @type Boolean
+     * @readOnly
+     */
+    this.loaded = false;
+};
 
 PIXI.SpineLoader.prototype.constructor = PIXI.SpineLoader;
 
@@ -60,13 +60,13 @@ PIXI.SpineLoader.prototype.constructor = PIXI.SpineLoader;
  */
 PIXI.SpineLoader.prototype.load = function () {
 
-	var scope = this;
-	var jsonLoader = new PIXI.JsonLoader(this.url, this.crossorigin);
-	jsonLoader.addEventListener("loaded", function (event) {
-		scope.json = event.content.json;
-		scope.onJSONLoaded();
-	});
-	jsonLoader.load();
+    var scope = this;
+    var jsonLoader = new PIXI.JsonLoader(this.url, this.crossorigin);
+    jsonLoader.addEventListener("loaded", function (event) {
+        scope.json = event.content.json;
+        scope.onJSONLoaded();
+    });
+    jsonLoader.load();
 };
 
 /**
@@ -75,13 +75,13 @@ PIXI.SpineLoader.prototype.load = function () {
  * @method onJSONLoaded
  * @private
  */
-PIXI.SpineLoader.prototype.onJSONLoaded = function (event) {
-	var spineJsonParser = new spine.SkeletonJson();
-	var skeletonData = spineJsonParser.readSkeletonData(this.json);
+PIXI.SpineLoader.prototype.onJSONLoaded = function () {
+    var spineJsonParser = new spine.SkeletonJson();
+    var skeletonData = spineJsonParser.readSkeletonData(this.json);
 
-	PIXI.AnimCache[this.url] = skeletonData;
+    PIXI.AnimCache[this.url] = skeletonData;
 
-	this.onLoaded();
+    this.onLoaded();
 };
 
 /**
@@ -91,7 +91,7 @@ PIXI.SpineLoader.prototype.onJSONLoaded = function (event) {
  * @private
  */
 PIXI.SpineLoader.prototype.onLoaded = function () {
-	this.loaded = true;
+    this.loaded = true;
     this.dispatchEvent({type: "loaded", content: this});
 };
 

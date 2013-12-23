@@ -14,52 +14,52 @@
  */
 PIXI.TilingSprite = function(texture, width, height)
 {
-	PIXI.DisplayObjectContainer.call( this );
+    PIXI.DisplayObjectContainer.call( this );
 
-	/**
-	 * The texture that the sprite is using
-	 *
-	 * @property texture
-	 * @type Texture
-	 */
-	this.texture = texture;
+    /**
+     * The texture that the sprite is using
+     *
+     * @property texture
+     * @type Texture
+     */
+    this.texture = texture;
 
-	/**
-	 * The width of the tiling sprite
-	 *
-	 * @property width
-	 * @type Number
-	 */
-	this.width = width;
+    /**
+     * The width of the tiling sprite
+     *
+     * @property width
+     * @type Number
+     */
+    this.width = width;
 
-	/**
-	 * The height of the tiling sprite
-	 *
-	 * @property height
-	 * @type Number
-	 */
-	this.height = height;
+    /**
+     * The height of the tiling sprite
+     *
+     * @property height
+     * @type Number
+     */
+    this.height = height;
 
-	/**
-	 * The scaling of the image that is being tiled
-	 *
-	 * @property tileScale
-	 * @type Point
-	 */
-	this.tileScale = new PIXI.Point(1,1);
+    /**
+     * The scaling of the image that is being tiled
+     *
+     * @property tileScale
+     * @type Point
+     */
+    this.tileScale = new PIXI.Point(1,1);
 
-	/**
-	 * The offset position of the image that is being tiled
-	 *
-	 * @property tilePosition
-	 * @type Point
-	 */
-	this.tilePosition = new PIXI.Point(0,0);
+    /**
+     * The offset position of the image that is being tiled
+     *
+     * @property tilePosition
+     * @type Point
+     */
+    this.tilePosition = new PIXI.Point(0,0);
 
-	this.renderable = true;
+    this.renderable = true;
 
-	this.blendMode = PIXI.blendModes.NORMAL
-}
+    this.blendMode = PIXI.blendModes.NORMAL;
+};
 
 // constructor
 PIXI.TilingSprite.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
@@ -73,13 +73,13 @@ PIXI.TilingSprite.prototype.constructor = PIXI.TilingSprite;
  */
 PIXI.TilingSprite.prototype.setTexture = function(texture)
 {
-	//TODO SET THE TEXTURES
-	//TODO VISIBILITY
+    //TODO SET THE TEXTURES
+    //TODO VISIBILITY
 
-	// stop current texture
-	this.texture = texture;
-	this.updateFrame = true;
-}
+    // stop current texture
+    this.texture = texture;
+    this.updateFrame = true;
+};
 
 /**
  * When the texture is updated, this event will fire to update the frame
@@ -88,8 +88,7 @@ PIXI.TilingSprite.prototype.setTexture = function(texture)
  * @param event
  * @private
  */
-PIXI.TilingSprite.prototype.onTextureUpdate = function(event)
+PIXI.TilingSprite.prototype.onTextureUpdate = function()
 {
-	this.updateFrame = true;
-}
-
+    this.updateFrame = true;
+};

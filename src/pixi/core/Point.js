@@ -12,20 +12,20 @@
  */
 PIXI.Point = function(x, y)
 {
-	/**
-	 * @property x
-	 * @type Number
-	 * @default 0
-	 */
-	this.x = x || 0;
+    /**
+     * @property x
+     * @type Number
+     * @default 0
+     */
+    this.x = x || 0;
 
-	/**
-	 * @property y
-	 * @type Number
-	 * @default 0
-	 */
-	this.y = y || 0;
-}
+    /**
+     * @property y
+     * @type Number
+     * @default 0
+     */
+    this.y = y || 0;
+};
 
 /**
  * Creates a clone of this point
@@ -35,8 +35,8 @@ PIXI.Point = function(x, y)
  */
 PIXI.Point.prototype.clone = function()
 {
-	return new PIXI.Point(this.x, this.y);
-}
+    return new PIXI.Point(this.x, this.y);
+};
 
 // constructor
 PIXI.Point.prototype.constructor = PIXI.Point;
