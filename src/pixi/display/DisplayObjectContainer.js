@@ -49,7 +49,7 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'visible', {
  */
 PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 {
-	if(child.parent != undefined)
+	if(child.parent)
 	{
 		
 		//// COULD BE THIS???
