@@ -68,6 +68,11 @@ PIXI.InteractionManager.prototype.constructor = PIXI.InteractionManager;
  */
 PIXI.InteractionManager.prototype.collectInteractiveSprite = function(displayObject, iParent)
 {
+	if (displayObject.interactive) {
+		displayObject.__iParent = iParent;
+		displayObject.__iChildren = [];
+	}
+
 	var children = displayObject.children;
 	var length = children.length;
 	
@@ -81,7 +86,8 @@ PIXI.InteractionManager.prototype.collectInteractiveSprite = function(displayObj
 			if(child.interactive)
 			{
 				iParent.interactiveChildren = true;
-				//child.__iParent = iParent;
+				child.__iParent = iParent;
+				iParent.__iChildren[i] = child;
 				this.interactiveItems.push(child);
 
 				if(child.children.length > 0)
@@ -220,6 +226,57 @@ PIXI.InteractionManager.prototype.update = function()
 	}
 }
 
+
+/**
+ * Traverse the interactive items tree from the bottom- and rightmost node and
+ * call the callback in each node. Also implement event bubbling and the option
+ * to stop event bubbling.
+ *
+ * @method fireCallbackTreewise
+ * @param callback {function} The callback to be called in every node. It gets
+ * 	a sigle parameter referring to the current node.
+ * @private
+ */
+PIXI.InteractionManager.prototype.fireCallbackTreewise = function(callback)
+{
+	this._fireCallbackTreewise(callback, this.stage);
+}
+
+/**
+ * The actual tree recursion implementation for fireCallbackTreewise.
+ * Traverse the interactive items subtree from the bottom- and rightmost node 
+ * and call the callback in each node. Also implement event bubbling and the 
+ * option to stop event bubbling.
+ *
+ * @method _fireCallbackTreewise
+ * @param callback {function} The callback to be called in every node. It gets
+ * 	a sigle parameter referring to the current node.
+ * @param treeNode {DisplayObject} The tree node to start in (the root of the 
+ * 	searched subtree).
+ * @return {boolean} Return false if the event propagation should be stopped.
+ * @private
+ */
+PIXI.InteractionManager.prototype._fireCallbackTreewise = function(callback, treeNode)
+{
+	if (treeNode.interactiveChildren) {
+		// first try if the children don't stop event propagation
+
+		// list the children from the rightmost (because we consider 
+		// 	rightmost == topmost and we want to check from the top)
+		for (var i = treeNode.__iChildren.length-1; i >= 0; i--) {
+			var child = treeNode.__iChildren[i];
+			var stopPropagation = 
+				(this._fireCallbackTreewise(callback, child) === false);
+
+			if (stopPropagation)
+				return false;
+		}
+	}
+
+	// no child stopped propagation, so we can trigger our callback
+	return callback.call(this, treeNode);
+}
+
 /**
  * Is called when the mouse moves accross the renderer element
  *
@@ -240,17 +297,13 @@ PIXI.InteractionManager.prototype.onMouseMove = function(event)
 	var global = this.mouse.global;
 	
 	
-	for (var i = 0; i < length; i++)
-	{
-		var item = this.interactiveItems[i];
-		
+	this.fireCallbackTreewise(function (item) {
 		if(item.mousemove)
 		{
 			//call the function!
-			if(item.mousemove(this.mouse) === false)
-				break;
+			return item.mousemove(this.mouse);
 		}
-	}
+	});
 }
 
 /**
@@ -271,18 +324,12 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
 	var length = this.interactiveItems.length;
 	var global = this.mouse.global;
 	
-	var index = 0;
-	var parent = this.stage;
-	
-	// while 
-	// hit test 
-	for (var i = 0; i < length; i++)
-	{
-		var item = this.interactiveItems[i];
-		
+	this.fireCallbackTreewise(function(item) {
+		// item.click is here because it needs item.__isDown set
 		if(item.mousedown || item.click)
 		{
 			item.__mouseIsDown = true;
+			// hit test 
 			item.__hit = this.hitTest(item, this.mouse);
 			
 			if(item.__hit)
@@ -291,34 +338,25 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
 
 				//call the function!
 				if(item.mousedown)
-					if(item.mousedown(this.mouse) === false)
-						break;
-				
-				// just the one!
-				if(!item.interactiveChildren)break;
+					return item.mousedown(this.mouse);
 			}
 		}
-	}
+	});
 }
 
 
 PIXI.InteractionManager.prototype.onMouseOut = function(event)
-{
-	var length = this.interactiveItems.length;
-	
+{	
 	this.target.view.style.cursor = "default";	
 				
-	for (var i = 0; i < length; i++)
-	{
-		var item = this.interactiveItems[i];
-		
+	this.fireCallbackTreewise(function (item) {
 		if(item.__isOver)
 		{
 			this.mouse.target = item;
 			if(item.mouseout)item.mouseout(this.mouse);
 			item.__isOver = false;	
 		}
-	}
+	});
 }
 
 /**
@@ -332,51 +370,48 @@ PIXI.InteractionManager.prototype.onMouseUp = function(event)
 {
 	this.mouse.originalEvent = event || window.event; //IE uses window.event
 	
-	var global = this.mouse.global;
-	
-	
-	var length = this.interactiveItems.length;
-	var up = false;
-	
-	for (var i = 0; i < length; i++)
-	{
-		var item = this.interactiveItems[i],
-			doBreak = false;
-		
-		if(item.mouseup || item.mouseupoutside || item.click)
+	// fire onmouseup and onclick events
+	this.fireCallbackTreewise(function (item) {
+		if(item.mouseup || item.click)
 		{
 			item.__hit = this.hitTest(item, this.mouse);
 			
-			if(item.__hit && !up)
+			if(item.__hit)
 			{
+				var stopPropagation = false;
+
 				//call the function!
 				if(item.mouseup)
 				{
-					doBreak = doBreak || (item.mouseup(this.mouse) === false);
+					stopPropagation = stopPropagation || (item.mouseup(this.mouse) === false);
 				}
 				if(item.__isDown)
 				{
 					if(item.click)
-						doBreak = doBreak || (item.click(this.mouse) === false);
+						stopPropagation = stopPropagation || (item.click(this.mouse) === false);
 				}
-				
-				if(!item.interactiveChildren)up = true;
-			}
-			else
-			{
-				if(item.__isDown)
-				{
-					if(item.mouseupoutside)
-						doBreak = doBreak || (item.mouseupoutside(this.mouse) === false);
-				}
-			}
-		
-			item.__isDown = false;	
-		}
 
-		if(doBreak)
-			break;
-	}
+				item.__isDown = false;	
+
+				if (stopPropagation)
+					return false;
+			}
+		}
+	});
+
+	// fire onmouseupoutside events
+	this.fireCallbackTreewise(function (item) {
+		if (item.mouseupoutside && item.__isDown) {
+			item.__hit = this.hitTest(item, this.mouse);
+
+			if (!item.__hit) {
+				var stopPropagation = (item.mouseupoutside(this.mouse) === false);
+				item.__isDown = false;
+				if (stopPropagation)
+					return false;
+			}
+		}
+	});
 }
 
 /**
@@ -475,14 +510,10 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
 		touchData.global.y = (touchEvent.clientY - rect.top)  * (this.target.height / rect.height);
 	}
 	
-	var length = this.interactiveItems.length;
-	for (var i = 0; i < length; i++)
-	{
-		var item = this.interactiveItems[i];
+	this.fireCallbackTreewise(function (item) {
 		if(item.touchmove)
-			if(item.touchmove(touchData) === false)
-				break;
-	}
+			return item.touchmove(touchData);
+	});
 }
 
 /**
@@ -512,10 +543,7 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
 		
 		var length = this.interactiveItems.length;
 		
-		for (var j = 0; j < length; j++)
-		{
-			var item = this.interactiveItems[j];
-			
+		this.fireCallbackTreewise(function (item) {
 			if(item.touchstart || item.tap)
 			{
 				item.__hit = this.hitTest(item, touchData);
@@ -526,14 +554,18 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
 					item.__touchData = touchData;
 
 					//call the function!
-					if(item.touchstart)
+					if(item.touchstart) {
 						if(item.touchstart(touchData) === false)
-							break;
+							return false;
+					}
 					
-					if(!item.interactiveChildren)break;
+					// in the original code this condition was applied but I 
+					// don't think it is correct
+					//if (!item.interactiveChildren)
+					//	return false;
 				}
 			}
-		}
+		});
 	}
 }
 
@@ -554,61 +586,64 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 	{
 		var touchEvent = changedTouches[i];
 		var touchData = this.touchs[touchEvent.identifier];
-		var up = false;
 		touchData.global.x = (touchEvent.clientX - rect.left) * (this.target.width / rect.width);
 		touchData.global.y = (touchEvent.clientY - rect.top)  * (this.target.height / rect.height);
 		
-		var length = this.interactiveItems.length;
-		for (var j = 0; j < length; j++)
-		{
-			var item = this.interactiveItems[j];
-			var itemTouchData = item.__touchData; // <-- Here!
-			item.__hit = this.hitTest(item, touchData);
-		
-			if(itemTouchData == touchData)
+		// run ontouchend and ontap callbacks
+		this.fireCallbackTreewise(function (item) {
+			if(item.__touchData == touchData)
 			{
-				var doBreak = false;
+				var stopPropagation = false;
+
 				// so this one WAS down...
 				touchData.originalEvent =  event || window.event;
-				// hitTest??
 				
 				if(item.touchend || item.tap)
 				{
-					if(item.__hit && !up)
+					item.__hit = this.hitTest(item, touchData);
+
+					if(item.__hit)
 					{
 						if(item.touchend)
-							doBreak = doBreak || (item.touchend(touchData) === false);
+							stopPropagation = stopPropagation || (item.touchend(touchData) === false);
 
 						if(item.__isDown)
 						{
 							if(item.tap)
-								doBreak = doBreak || (item.tap(touchData) === false);
-						}
-						
-						if(!item.interactiveChildren)up = true;
-					}
-					else
-					{
-						if(item.__isDown)
-						{
-							if(item.touchendoutside)
-								doBreak = doBreak || (item.touchendoutside(touchData) === false);
+								stopPropagation = stopPropagation || (item.tap(touchData) === false);
 						}
 					}
 					
 					item.__isDown = false;
 				}
-				
+
 				item.__touchData = null;
 
-				if(doBreak)
-					break;
+				if(stopPropagation)
+					return false;
 			}
-			else
+		});
+
+		// run ontouchendoutside callback
+		this.fireCallbackTreewise(function (item) {
+			if(item.__touchData == touchData)
 			{
+				// so this one WAS down...
+				touchData.originalEvent =  event || window.event;
 				
+				if((item.touchend || item.tap) && item.__isDown) {
+					item.__isDown = false;
+
+					item.__hit = this.hitTest(item, touchData);
+					item.__touchData = null;
+					if(!item.__hit && item.touchendoutside)
+						return item.touchendoutside(touchData);
+				} else if (item.touchend || item.tap) {
+					item.__touchData = null;
+				}
 			}
-		}
+		});
+
 		// remove the touch..
 		this.pool.push(touchData);
 		this.touchs[touchEvent.identifier] = null;
