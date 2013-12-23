@@ -52,6 +52,8 @@ PIXI.WebGLFilterManager.prototype.pushFilter = function(filterBlock)
 
     this.getBounds(filterBlock.target);
 
+    filterBlock.target.filterArea = filterBlock.target.getBounds();
+    console.log(filterBlock.target.filterArea);
     // addpadding?
     //displayObject.filterArea.x
 

@@ -169,6 +169,14 @@ PIXI.DisplayObject = function()
 
     this.filterArea = new PIXI.Rectangle(0,0,1,1);
 
+
+    /**
+    *
+    *      
+    *
+    */
+    this._bounds = new PIXI.Rectangle(0, 0, 1, 1);
+
     /*
      * MOUSE Callbacks
      */
@@ -566,5 +574,12 @@ PIXI.DisplayObject.prototype.updateTransform = function()
 
     this.vcount = PIXI.visibleCount;
 };
+
+PIXI.DisplayObject.prototype.getBounds = function()
+{
+    return PIXI.EmptyRectangle;
+}
+
+PIXI.EmptyRectangle = new PIXI.Rectangle(0,0,0,0);
 
 PIXI.visibleCount = 0;

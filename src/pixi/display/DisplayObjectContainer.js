@@ -37,12 +37,11 @@ PIXI.DisplayObjectContainer.prototype.constructor = PIXI.DisplayObjectContainer;
  */
 PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 {
-    if(child.parent !== undefined)
+    if(child.parent)
     {
-
         //// COULD BE THIS???
         child.parent.removeChild(child);
-    //  return;
+        //  return;
     }
 
     child.parent = this;
@@ -343,3 +342,46 @@ PIXI.DisplayObjectContainer.prototype.updateTransform = function()
         this.children[i].updateTransform();
     }
 };
+
+PIXI.DisplayObjectContainer.prototype.getBounds = function()
+{    
+    if(this.children.length === 0)return PIXI.EmptyRectangle;
+
+    var minX = Infinity;
+    var minY = Infinity;
+
+    var maxX = -Infinity;
+    var maxY = -Infinity;
+
+    var childBounds;
+    var childMaxX;
+    var childMaxY;
+
+    for(var i=0,j=this.children.length; i<j; i++)
+    {
+        var child = this.children[i];
+        
+        if(!child.visible)continue;
+
+        childBounds = this.children[i].getBounds();
+     
+        minX = minX < childBounds.x ? minX : childBounds.x;
+        minY = minY < childBounds.y ? minY : childBounds.y;
+
+        childMaxX = childBounds.width + childBounds.x;
+        childMaxY = childBounds.height + childBounds.y;
+
+        maxX = maxX > childMaxX ? maxX : childMaxX;
+        maxY = maxY > childMaxY ? maxY : childMaxY;
+    }
+    
+    var bounds = this._bounds;
+
+    bounds.x = minX;
+    bounds.y = minY;
+    bounds.width = maxX - minX;
+    bounds.height = maxY - minY;
+
+    return bounds;
+}
+
