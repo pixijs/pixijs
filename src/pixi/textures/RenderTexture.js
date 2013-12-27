@@ -93,8 +93,17 @@ PIXI.RenderTexture.prototype.initWebGL = function()
     // create a projection matrix..
     this.projection = new PIXI.Point(this.width/2 , -this.height/2);
 
+    
+
     // set the correct render function..
     this.render = this.renderWebGL;
+
+    this.spriteBatch = new PIXI.WebGLSpriteBatch(gl);
+
+    this.renderSession = {};
+    this.renderSession.spriteBatch = this.spriteBatch;
+
+    PIXI.Texture.frameUpdates.push(this);
 };
 
 
@@ -187,25 +196,12 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, position, cle
         children[i].updateTransform();
     }
 
-    var renderGroup = displayObject.__renderGroup;
+    this.renderSession.drawCount = 0;
+    this.renderSession.projection = this.projection;
 
-    if(renderGroup)
-    {
-        if(displayObject === renderGroup.root)
-        {
-            renderGroup.render(this.projection, this.glFramebuffer);
-        }
-        else
-        {
-            renderGroup.renderSpecific(displayObject, this.projection, this.glFramebuffer);
-        }
-    }
-    else
-    {
-        if(!this.renderGroup)this.renderGroup = new PIXI.WebGLRenderGroup(gl);
-        this.renderGroup.setRenderable(displayObject);
-        this.renderGroup.render(this.projection, this.glFramebuffer);
-    }
+    this.spriteBatch.begin(this.renderSession);
+    displayObject._renderWebGL( this.renderSession);
+    this.spriteBatch.end();
 
     displayObject.worldTransform = originalWorldTransform;
 };

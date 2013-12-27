@@ -374,7 +374,7 @@ PIXI.DisplayObjectContainer.prototype.getBounds = function()
         maxX = maxX > childMaxX ? maxX : childMaxX;
         maxY = maxY > childMaxY ? maxY : childMaxY;
     }
-    
+
     var bounds = this._bounds;
 
     bounds.x = minX;
@@ -385,3 +385,57 @@ PIXI.DisplayObjectContainer.prototype.getBounds = function()
     return bounds;
 }
 
+
+PIXI.DisplayObjectContainer.prototype._renderWebGL = function(renderSession)
+{
+    if(this.visible === false || this.alpha === 0)return;
+    
+    if(this.mask || this.filters)
+    {
+        if(this.mask)
+        {
+            renderSession.spriteBatch.stop();
+            renderSession.maskManager.pushMask(this.mask, renderSession.projection);
+            renderSession.spriteBatch.start();
+        }
+
+        if(this.filters)
+        {    
+            renderSession.spriteBatch.flush();
+            renderSession.filterManager.pushFilter(this._filterBlock);
+        }
+
+        // simple render children!
+        for(var i=0,j=this.children.length; i<j; i++)
+        {
+            var child = this.children[i];
+            child._renderWebGL(renderSession);
+        }
+
+        renderSession.spriteBatch.stop();
+
+        if(this.filters)renderSession.filterManager.popFilter();
+        if(this.mask)renderSession.maskManager.popMask(renderSession.projection);
+        
+        renderSession.spriteBatch.start();
+    }
+    else
+    {
+        // simple render children!
+        for(var i=0,j=this.children.length; i<j; i++)
+        {
+            var child = this.children[i];
+            child._renderWebGL(renderSession);
+        }
+    }
+}
+
+PIXI.DisplayObjectContainer.prototype._renderCanvas = function(renderSession)
+{
+    // OVERWRITE
+    for(var i=0,j=this.children.length; i<j; i++)
+    {
+        var child = this.children[i];
+        child._renderCanvas(renderSession);
+    }
+}

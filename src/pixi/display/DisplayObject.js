@@ -353,7 +353,8 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'filters', {
                     passes.push(filterPasses[j]);
                 }
             }
-
+            this._filterBlock = value.start;
+            
             value.start.filterPasses = passes;
         }
         else
@@ -578,6 +579,17 @@ PIXI.DisplayObject.prototype.updateTransform = function()
 PIXI.DisplayObject.prototype.getBounds = function()
 {
     return PIXI.EmptyRectangle;
+}
+
+
+PIXI.DisplayObject.prototype._renderWebGL = function(renderSession)
+{
+    // OVERWRITE
+}
+
+PIXI.DisplayObject.prototype._renderCanvas = function(renderSession)
+{
+    // OVERWRITE
 }
 
 PIXI.EmptyRectangle = new PIXI.Rectangle(0,0,0,0);

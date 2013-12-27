@@ -8,6 +8,8 @@ PIXI._defaultFrame = new PIXI.Rectangle(0,0,1,1);
 // only one at the moment :/
 PIXI.gl = null;
 
+
+
 /**
  * the WebGLRenderer is draws the stage and all its content onto a webGL enabled canvas. This renderer
  * should be used for browsers support webGL. This Render works by automatically managing webGLBatchs.
@@ -96,6 +98,15 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
 
     this.stageRenderGroup = new PIXI.WebGLRenderGroup(this.gl, this.transparent);
   //  this.stageRenderGroup. = this.transparent
+  
+    this.spriteBatch = new PIXI.WebGLSpriteBatch(gl)//this.gl, PIXI.WebGLRenderer.batchSize);
+    this.maskManager = new PIXI.WebGLMaskManager(gl);
+    this.filterManager = new PIXI.WebGLFilterManager(this.transparent);
+
+    this.renderSession = {};
+    this.renderSession.maskManager = this.maskManager;
+    this.renderSession.filterManager = this.filterManager;
+    this.renderSession.spriteBatch = this.spriteBatch;
 };
 
 // constructor
@@ -158,6 +169,22 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
     // update any textures
     PIXI.WebGLRenderer.updateTextures();
 
+     // after rendering lets confirm all frames that have been uodated..
+    if(PIXI.Texture.frameUpdates.length > 0)
+    {
+        for (var i=0; i < PIXI.Texture.frameUpdates.length; i++)
+        {
+            var texture = PIXI.Texture.frameUpdates[i];
+            texture.updateFrame = false;
+
+            // now set the uvs. Figured that the uv data sits with a texture rather than a sprite.
+            // so uv data is stored on the texture itself
+            texture._updateWebGLuvs();
+        }
+
+        PIXI.Texture.frameUpdates = [];
+    }
+    
     // update the scene graph
     PIXI.visibleCount++;
     stage.updateTransform();
@@ -180,7 +207,21 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
     PIXI.projection.x =  this.width/2;
     PIXI.projection.y =  -this.height/2;
 
-    this.stageRenderGroup.render(PIXI.projection);
+    // reset the render session data..
+    this.renderSession.drawCount = 0;
+    this.renderSession.projection = PIXI.projection;
+    //console.log(this.renderSession)
+    // start using the sprite batch
+    this.spriteBatch.begin(this.renderSession);
+
+    this.filterManager.begin(PIXI.projection, null);
+
+    stage._renderWebGL(this.renderSession);
+    this.spriteBatch.end();
+  
+//    this.stage.render();
+    
+ //   this.stageRenderGroup.render(PIXI.projection);
 
     // interaction
     // run interaction!
@@ -194,16 +235,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
         }
     }
 
-    // after rendering lets confirm all frames that have been uodated..
-    if(PIXI.Texture.frameUpdates.length > 0)
-    {
-        for (var i=0; i < PIXI.Texture.frameUpdates.length; i++)
-        {
-            PIXI.Texture.frameUpdates[i].updateFrame = false;
-        }
 
-        PIXI.Texture.frameUpdates = [];
-    }
 };
 
 /**

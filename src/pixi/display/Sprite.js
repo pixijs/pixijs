@@ -151,8 +151,6 @@ PIXI.Sprite.prototype.setTexture = function(texture)
  */
 PIXI.Sprite.prototype.onTextureUpdate = function()
 {
-    //this.texture.removeEventListener( 'update', this.onTextureUpdateBind );
-
     // so if _width is 0 then width was not set..
     if(this._width)this.scale.x = this._width / this.texture.frame.width;
     if(this._height)this.scale.y = this._height / this.texture.frame.height;
@@ -227,6 +225,68 @@ PIXI.Sprite.prototype.getBounds = function()
     bounds.height = maxY - minY;
 
     return bounds;
+}
+
+
+PIXI.Sprite.prototype._renderWebGL = function(renderSession)
+{
+    if(this.visible === false || this.alpha === 0)return;
+    
+    if(this.mask || this.filters)
+    {
+        if(this.mask)
+        {
+            renderSession.spriteBatch.stop();
+            renderSession.maskManager.pushMask(this.mask, renderSession.projection);
+            renderSession.spriteBatch.start();
+        }
+
+        if(this.filters)
+        {    
+            renderSession.spriteBatch.flush();
+            renderSession.filterManager.pushFilter(this._filterBlock);
+        }
+
+        renderSession.spriteBatch.render(this);
+
+        // simple render children!
+        for(var i=0,j=this.children.length; i<j; i++)
+        {
+            var child = this.children[i];
+            child._renderWebGL(renderSession);
+        }
+
+        renderSession.spriteBatch.stop();
+
+        if(this.filters)renderSession.filterManager.popFilter();
+        if(this.mask)renderSession.maskManager.popMask(renderSession.projection);
+        
+        renderSession.spriteBatch.start();
+    }
+    else
+    {
+        renderSession.spriteBatch.render(this);
+        
+        // simple render children!
+        for(var i=0,j=this.children.length; i<j; i++)
+        {
+            var child = this.children[i];
+            child._renderWebGL(renderSession);
+        }
+    }
+
+   
+    //TODO check culling  
+}
+
+PIXI.Sprite.prototype._renderCanvas = function(renderSession)
+{
+    // OVERWRITE
+    for(var i=0,j=this.children.length; i<j; i++)
+    {
+        var child = this.children[i];
+        child._renderCanvas(renderSession);
+    }
 }
 
 // some helper functions..

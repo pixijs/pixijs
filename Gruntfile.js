@@ -5,6 +5,8 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-connect');
     grunt.loadNpmTasks('grunt-contrib-yuidoc');
+    grunt.loadNpmTasks('grunt-contrib-watch');
+
     grunt.loadTasks('tasks');
 
     var srcFiles = [
@@ -33,11 +35,13 @@ module.exports = function(grunt) {
             '<%= dirs.src %>/renderers/webgl/PixiShader.js',
             '<%= dirs.src %>/renderers/webgl/StripShader.js',
             '<%= dirs.src %>/renderers/webgl/PrimitiveShader.js',
-            '<%= dirs.src %>/renderers/webgl/WebGLGraphics.js',
+            '<%= dirs.src %>/renderers/webgl/utils/WebGLGraphics.js',
             '<%= dirs.src %>/renderers/webgl/WebGLRenderer.js',
+            '<%= dirs.src %>/renderers/webgl/utils/WebGLMaskManager.js',
+            '<%= dirs.src %>/renderers/webgl/utils/WebGLSpriteBatch.js',
             '<%= dirs.src %>/renderers/webgl/WebGLBatch.js',
             '<%= dirs.src %>/renderers/webgl/WebGLRenderGroup.js',
-            '<%= dirs.src %>/renderers/webgl/WebGLFilterManager.js',
+            '<%= dirs.src %>/renderers/webgl/utils/WebGLFilterManager.js',
             '<%= dirs.src %>/renderers/canvas/CanvasRenderer.js',
             '<%= dirs.src %>/renderers/canvas/CanvasGraphics.js',
             '<%= dirs.src %>/primitives/Graphics.js',
@@ -168,6 +172,15 @@ module.exports = function(grunt) {
                 }
             }
         },
+        watch: {
+            scripts: {
+                files: ['<%= dirs.src %>/**/*.js'],
+                tasks: ['concat'],
+                options: {
+                    spawn: false,
+                }
+            }
+        }, 
         karma: {
             unit: {
                 configFile: 'test/karma.conf.js',
@@ -186,4 +199,8 @@ module.exports = function(grunt) {
 
     grunt.registerTask('docs', ['yuidoc']);
     grunt.registerTask('travis', ['build', 'test']);
+
+    grunt.registerTask('default', ['build', 'test']);
+
+    grunt.registerTask('debug-watch', ['concat', 'watch']);
 };

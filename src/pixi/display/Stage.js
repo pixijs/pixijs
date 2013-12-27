@@ -102,7 +102,6 @@ PIXI.Stage.prototype.updateTransform = function()
         this.interactionManager.dirty = true;
     }
 
-
     if(this.interactive)this.interactionManager.update();
 };
 

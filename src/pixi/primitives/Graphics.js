@@ -130,6 +130,7 @@ PIXI.Graphics.prototype.lineTo = function(x, y)
  */
 PIXI.Graphics.prototype.beginFill = function(color, alpha)
 {
+
     this.filling = true;
     this.fillColor = color || 0;
     this.fillAlpha = (arguments.length < 2) ? 1 : alpha;
@@ -177,6 +178,7 @@ PIXI.Graphics.prototype.drawRect = function( x, y, width, height )
  */
 PIXI.Graphics.prototype.drawCircle = function( x, y, radius)
 {
+
     if (!this.currentPath.points.length) this.graphicsData.pop();
 
     this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha,
@@ -198,6 +200,7 @@ PIXI.Graphics.prototype.drawCircle = function( x, y, radius)
  */
 PIXI.Graphics.prototype.drawEllipse = function( x, y, width, height)
 {
+
     if (!this.currentPath.points.length) this.graphicsData.pop();
 
     this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha,
@@ -225,6 +228,20 @@ PIXI.Graphics.prototype.clear = function()
     this.bounds = null; //new PIXI.Rectangle();
 };
 
+
+PIXI.Graphics.prototype._renderWebGL = function(renderSession)
+{
+    renderSession.spriteBatch.stop();
+
+    PIXI.WebGLGraphics.renderGraphics(this, renderSession.projection);
+    
+    renderSession.spriteBatch.start();
+}
+
+PIXI.DisplayObject.prototype._renderCanvas = function(renderSession)
+{
+    // OVERWRITE
+}
 
 PIXI.Graphics.prototype.getBounds = function()
 {

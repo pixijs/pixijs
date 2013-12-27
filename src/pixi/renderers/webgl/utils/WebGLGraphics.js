@@ -110,7 +110,7 @@ PIXI.WebGLGraphics.updateGraphics = function(graphics)
         {
             PIXI.WebGLGraphics.buildRectangle(data, graphics._webGL);
         }
-        else if(data.type === PIXI.Graphics.CIRC || data.type === PIXI.Graphics.ELIP);
+        else if(data.type === PIXI.Graphics.CIRC || data.type === PIXI.Graphics.ELIP)
         {
             PIXI.WebGLGraphics.buildCircle(data, graphics._webGL);
         }

@@ -14,32 +14,13 @@
  */
 PIXI.TilingSprite = function(texture, width, height)
 {
-    PIXI.DisplayObjectContainer.call( this );
+    PIXI.Sprite.call( this, texture);
 
-    /**
-     * The texture that the sprite is using
-     *
-     * @property texture
-     * @type Texture
-     */
-    this.texture = texture;
+    this.width = width || 100;
+    this.height = height || 100;
 
-    /**
-     * The width of the tiling sprite
-     *
-     * @property width
-     * @type Number
-     */
-    this.width = width;
-
-    /**
-     * The height of the tiling sprite
-     *
-     * @property height
-     * @type Number
-     */
-    this.height = height;
-
+    texture.baseTexture._powerOf2 = true;
+    
     /**
      * The scaling of the image that is being tiled
      *
@@ -62,33 +43,90 @@ PIXI.TilingSprite = function(texture, width, height)
 };
 
 // constructor
-PIXI.TilingSprite.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
+PIXI.TilingSprite.prototype = Object.create( PIXI.Sprite.prototype );
 PIXI.TilingSprite.prototype.constructor = PIXI.TilingSprite;
 
-/**
- * Sets the texture of the tiling sprite
- *
- * @method setTexture
- * @param texture {Texture} The PIXI texture that is displayed by the sprite
- */
-PIXI.TilingSprite.prototype.setTexture = function(texture)
-{
-    //TODO SET THE TEXTURES
-    //TODO VISIBILITY
-
-    // stop current texture
-    this.texture = texture;
-    this.updateFrame = true;
-};
 
 /**
- * When the texture is updated, this event will fire to update the frame
+ * The width of the sprite, setting this will actually modify the scale to acheive the value set
  *
- * @method onTextureUpdate
- * @param event
- * @private
+ * @property width
+ * @type Number
  */
-PIXI.TilingSprite.prototype.onTextureUpdate = function()
+Object.defineProperty(PIXI.TilingSprite.prototype, 'width', {
+    get: function() {
+        return this._width
+    },
+    set: function(value) {
+        
+        this._width = value;
+    }
+});
+
+/**
+ * The height of the TilingSprite, setting this will actually modify the scale to acheive the value set
+ *
+ * @property height
+ * @type Number
+ */
+Object.defineProperty(PIXI.TilingSprite.prototype, 'height', {
+    get: function() {
+        return  this._height
+    },
+    set: function(value) {
+        this._height = value;
+    }
+});
+
+PIXI.TilingSprite.prototype._renderWebGL = function(renderSession)
 {
-    this.updateFrame = true;
-};
+    if(this.visible === false || this.alpha === 0)return;
+    
+    if(this.mask || this.filters)
+    {
+        if(this.mask)
+        {
+            renderSession.spriteBatch.stop();
+            renderSession.maskManager.pushMask(this.mask, renderSession.projection);
+            renderSession.spriteBatch.start();
+        }
+
+        if(this.filters)
+        {    
+            renderSession.spriteBatch.flush();
+            renderSession.filterManager.pushFilter(this._filterBlock);
+        }
+
+        renderSession.spriteBatch.renderTilingSprite(this);
+
+        // simple render children!
+        for(var i=0,j=this.children.length; i<j; i++)
+        {
+            var child = this.children[i];
+            child._renderWebGL(renderSession);
+        }
+
+        renderSession.spriteBatch.stop();
+
+        if(this.filters)renderSession.filterManager.popFilter();
+        if(this.mask)renderSession.maskManager.popMask(renderSession.projection);
+        
+        renderSession.spriteBatch.start();
+    }
+    else
+    {
+        renderSession.spriteBatch.renderTilingSprite(this);
+        
+        // simple render children!
+        for(var i=0,j=this.children.length; i<j; i++)
+        {
+            var child = this.children[i];
+            child._renderWebGL(renderSession);
+        }
+    }
+}
+
+PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
+{
+    
+}
