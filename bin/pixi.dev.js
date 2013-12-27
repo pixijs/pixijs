@@ -870,6 +870,8 @@ PIXI.DisplayObject = function()
     *
     */
     this._bounds = new PIXI.Rectangle(0, 0, 1, 1);
+    
+    this._currentBounds = null;
 
     /*
      * MOUSE Callbacks
@@ -1321,6 +1323,38 @@ PIXI.DisplayObjectContainer.prototype = Object.create( PIXI.DisplayObject.protot
 PIXI.DisplayObjectContainer.prototype.constructor = PIXI.DisplayObjectContainer;
 
 /**
+ * The width of the sprite, setting this will actually modify the scale to acheive the value set
+ *
+ * @property width
+ * @type Number
+ */
+Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'width', {
+    get: function() {
+        return this.scale.x * this.getBounds().width;
+    },
+    set: function(value) {
+        this.scale.x = value / (this.getBounds().width/this.scale.x);
+        this._width = value;
+    }
+});
+
+/**
+ * The height of the sprite, setting this will actually modify the scale to acheive the value set
+ *
+ * @property height
+ * @type Number
+ */
+Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'height', {
+    get: function() {
+        return  this.scale.y * this.getBounds().height;
+    },
+    set: function(value) {
+        this.scale.y = value / (this.getBounds().height/this.scale.y);
+        this._height = value;
+    }
+});
+
+/**
  * Adds a child to the container.
  *
  * @method addChild
@@ -1448,6 +1482,8 @@ PIXI.DisplayObjectContainer.prototype.updateTransform = function()
 {
     if(!this.visible)return;
 
+    this._currentBounds = null;
+
     PIXI.DisplayObject.prototype.updateTransform.call( this );
 
     for(var i=0,j=this.children.length; i<j; i++)
@@ -1459,6 +1495,9 @@ PIXI.DisplayObjectContainer.prototype.updateTransform = function()
 PIXI.DisplayObjectContainer.prototype.getBounds = function()
 {    
     if(this.children.length === 0)return PIXI.EmptyRectangle;
+
+    // the bounds have already been calculated this render session so return what we have
+    if(this._currentBounds)return this._currentBounds;
 
     var minX = Infinity;
     var minY = Infinity;
@@ -1494,6 +1533,9 @@ PIXI.DisplayObjectContainer.prototype.getBounds = function()
     bounds.y = minY;
     bounds.width = maxX - minX;
     bounds.height = maxY - minY;
+
+    // store a refferance so that if this function gets called again in the render cycle we do not have to recacalculate
+    this._currentBounds = bounds;
 
     return bounds;
 }

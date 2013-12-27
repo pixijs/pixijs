@@ -176,6 +176,8 @@ PIXI.DisplayObject = function()
     *
     */
     this._bounds = new PIXI.Rectangle(0, 0, 1, 1);
+    
+    this._currentBounds = null;
 
     /*
      * MOUSE Callbacks
