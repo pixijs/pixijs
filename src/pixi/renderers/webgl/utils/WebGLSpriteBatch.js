@@ -1,5 +1,5 @@
 /**
- * @author Matt DesLauriers <mattdesl> https://github.com/mattdesl/
+ * @author Mat Groves + Matt DesLauriers <mattdesl> https://github.com/mattdesl/
  * 
  * Heavily inspired by LibGDX's WebGLSpriteBatch:
  * https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/graphics/g2d/WebGLSpriteBatch.java
@@ -69,7 +69,6 @@ PIXI.WebGLSpriteBatch.prototype.begin = function(renderSession)
 
     gl.uniform2f(PIXI.defaultShader.projectionVector, projection.x, projection.y);
 
-    
     gl.vertexAttribPointer(PIXI.defaultShader.aVertexPosition, 2, gl.FLOAT, false, stride, 0);
     gl.vertexAttribPointer(PIXI.defaultShader.aTextureCoord, 2, gl.FLOAT, false, stride, 2 * 4);
     gl.vertexAttribPointer(PIXI.defaultShader.colorAttribute, 1, gl.FLOAT, false, stride, 4 * 4);
@@ -169,6 +168,13 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
 {   
     var texture = tilingSprite.texture;
 
+    if(texture.baseTexture !== this.currentBaseTexture || this.currentBatchSize >= this.size)
+    {
+        this.flush();
+        this.currentBaseTexture = texture.baseTexture;
+    }
+
+
      // set the textures uvs temporarily
     // TODO create a seperate texture so that we can tile part of a texture
     var tempUvs = texture._uvs;
@@ -195,11 +201,75 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
     uvs[6] = 0 - offsetX;
     uvs[7] = (1 *scaleY) - offsetY;
 
-    texture._uvs = uvs;
+   
+   
+    // get the tilingSprites current alpha
+    var alpha = tilingSprite.alpha;
 
-    this.render(tilingSprite);
 
-    tilingSprite.texture._uvs = tempUvs;
+    var  verticies = this.vertices;
+
+    width = tilingSprite.width;
+    height = tilingSprite.height;
+
+    // TODO trim??
+    var aX = tilingSprite.anchor.x; // - tilingSprite.texture.trim.x
+    var aY = tilingSprite.anchor.y; //- tilingSprite.texture.trim.y
+    var w0 = width * (1-aX);
+    var w1 = width * -aX;
+
+    var h0 = height * (1-aY);
+    var h1 = height * -aY;
+
+    var index = this.currentBatchSize * 4 * 5;
+
+    worldTransform = tilingSprite.worldTransform;
+
+    var a = worldTransform[0];
+    var b = worldTransform[3];
+    var c = worldTransform[1];
+    var d = worldTransform[4];
+    var tx = worldTransform[2];
+    var ty = worldTransform[5];
+
+    // xy
+    verticies[index++] = a * w1 + c * h1 + tx;
+    verticies[index++] = d * h1 + b * w1 + ty;
+    // uv
+    verticies[index++] = uvs[0];
+    verticies[index++] = uvs[1];
+    // color
+    verticies[index++] = alpha;
+
+    // xy
+    verticies[index++] = a * w0 + c * h1 + tx;
+    verticies[index++] = d * h1 + b * w0 + ty;
+    // uv
+    verticies[index++] = uvs[2];
+    verticies[index++] = uvs[3];
+    // color
+    verticies[index++] = alpha;
+
+    // xy
+    verticies[index++] = a * w0 + c * h0 + tx;
+    verticies[index++] = d * h0 + b * w0 + ty;
+    // uv
+    verticies[index++] = uvs[4];
+    verticies[index++] = uvs[5];
+    // color
+    verticies[index++] = alpha;
+
+    // xy
+    verticies[index++] = a * w1 + c * h0 + tx;
+    verticies[index++] = d * h0 + b * w1 + ty;
+    // uv
+    verticies[index++] = uvs[6];
+    verticies[index++] = uvs[7];
+    // color
+    verticies[index++] = alpha;
+
+    // increment the batchs
+    this.currentBatchSize++;
 }
 
 PIXI.WebGLSpriteBatch.prototype.flush = function()

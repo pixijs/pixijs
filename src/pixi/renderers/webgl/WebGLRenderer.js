@@ -88,17 +88,10 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
 
     PIXI.projection = new PIXI.Point(400, 300);
     PIXI.offset = new PIXI.Point(0, 0);
-
-    // TODO remove thease globals..
-
+    
     this.resize(this.width, this.height);
     this.contextLost = false;
 
-    //PIXI.pushShader(PIXI.defaultShader);
-
-    this.stageRenderGroup = new PIXI.WebGLRenderGroup(this.gl, this.transparent);
-  //  this.stageRenderGroup. = this.transparent
-  
     this.spriteBatch = new PIXI.WebGLSpriteBatch(gl)//this.gl, PIXI.WebGLRenderer.batchSize);
     this.maskManager = new PIXI.WebGLMaskManager(gl);
     this.filterManager = new PIXI.WebGLFilterManager(this.transparent);
@@ -111,40 +104,6 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
 
 // constructor
 PIXI.WebGLRenderer.prototype.constructor = PIXI.WebGLRenderer;
-
-/**
- * Gets a new WebGLBatch from the pool
- *
- * @static
- * @method getBatch
- * @return {WebGLBatch}
- * @private
- */
-PIXI.WebGLRenderer.getBatch = function()
-{
-    if(PIXI._batchs.length === 0)
-    {
-        return new PIXI.WebGLBatch(PIXI.WebGLRenderer.gl);
-    }
-    else
-    {
-        return PIXI._batchs.pop();
-    }
-};
-
-/**
- * Puts a batch back into the pool
- *
- * @static
- * @method returnBatch
- * @param batch {WebGLBatch} The batch to return
- * @private
- */
-PIXI.WebGLRenderer.returnBatch = function(batch)
-{
-    batch.clean();
-    PIXI._batchs.push(batch);
-};
 
 /**
  * Renders the stage to its webGL view
@@ -163,30 +122,12 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
         // TODO make this work
         // dont think this is needed any more?
         this.__stage = stage;
-        this.stageRenderGroup.setRenderable(stage);
     }
 
-    // update any textures
+    // update any textures this includes uvs and uploading them to the gpu
     PIXI.WebGLRenderer.updateTextures();
-
-     // after rendering lets confirm all frames that have been uodated..
-    if(PIXI.Texture.frameUpdates.length > 0)
-    {
-        for (var i=0; i < PIXI.Texture.frameUpdates.length; i++)
-        {
-            var texture = PIXI.Texture.frameUpdates[i];
-            texture.updateFrame = false;
-
-            // now set the uvs. Figured that the uv data sits with a texture rather than a sprite.
-            // so uv data is stored on the texture itself
-            texture._updateWebGLuvs();
-        }
-
-        PIXI.Texture.frameUpdates = [];
-    }
-    
+ 
     // update the scene graph
-    PIXI.visibleCount++;
     stage.updateTransform();
 
     var gl = this.gl;
@@ -195,14 +136,12 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
     gl.colorMask(true, true, true, this.transparent);
     gl.viewport(0, 0, this.width, this.height);
 
+    // make sure we are bound to the main frame buffer
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+
 
     gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], !this.transparent);
     gl.clear(gl.COLOR_BUFFER_BIT);
-
-    // HACK TO TEST
-
-    this.stageRenderGroup.backgroundColor = stage.backgroundColorSplit;
 
     PIXI.projection.x =  this.width/2;
     PIXI.projection.y =  -this.height/2;
@@ -210,21 +149,20 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
     // reset the render session data..
     this.renderSession.drawCount = 0;
     this.renderSession.projection = PIXI.projection;
-    //console.log(this.renderSession)
-    // start using the sprite batch
+   
+    // start the sprite batch
     this.spriteBatch.begin(this.renderSession);
 
+    // start the filter manager
     this.filterManager.begin(PIXI.projection, null);
 
+    // render the scene!
     stage._renderWebGL(this.renderSession);
+
+    // finish the sprite batch
     this.spriteBatch.end();
-  
-//    this.stage.render();
-    
- //   this.stageRenderGroup.render(PIXI.projection);
 
     // interaction
-    // run interaction!
     if(stage.interactive)
     {
         //need to add some events!
@@ -234,8 +172,6 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
             stage.interactionManager.setTarget(this);
         }
     }
-
-
 };
 
 /**
@@ -253,11 +189,16 @@ PIXI.WebGLRenderer.updateTextures = function()
     for (i = 0; i < PIXI.texturesToUpdate.length; i++)
         PIXI.WebGLRenderer.updateTexture(PIXI.texturesToUpdate[i]);
 
+
+    for (var i=0; i < PIXI.Texture.frameUpdates.length; i++)
+        PIXI.WebGLRenderer.updateTextureFrame(PIXI.Texture.frameUpdates[i]);
+
     for (i = 0; i < PIXI.texturesToDestroy.length; i++)
         PIXI.WebGLRenderer.destroyTexture(PIXI.texturesToDestroy[i]);
 
     PIXI.texturesToUpdate = [];
     PIXI.texturesToDestroy = [];
+    PIXI.Texture.frameUpdates = [];
 };
 
 /**
@@ -323,6 +264,15 @@ PIXI.WebGLRenderer.destroyTexture = function(texture)
     }
 };
 
+PIXI.WebGLRenderer.updateTextureFrame = function(texture)
+{
+    texture.updateFrame = false;
+
+    // now set the uvs. Figured that the uv data sits with a texture rather than a sprite.
+    // so uv data is stored on the texture itself
+    texture._updateWebGLuvs();
+};
+
 /**
  * resizes the webGL view to the specified width and height
  *
@@ -339,19 +289,9 @@ PIXI.WebGLRenderer.prototype.resize = function(width, height)
     this.view.height = height;
 
     this.gl.viewport(0, 0, this.width, this.height);
-
-    //var projectionMatrix = this.projectionMatrix;
-
+    
     PIXI.projection.x =  this.width/2;
     PIXI.projection.y =  -this.height/2;
-
-    //PIXI.size.x =  this.width/2;
-    //PIXI.size.y =  -this.height/2;
-
-//  projectionMatrix[0] = 2/this.width;
-//  projectionMatrix[5] = -2/this.height;
-//  projectionMatrix[12] = -1;
-//  projectionMatrix[13] = 1;
 };
 
 /**

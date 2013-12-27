@@ -238,9 +238,13 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
     renderSession.spriteBatch.start();
 }
 
-PIXI.DisplayObject.prototype._renderCanvas = function(renderSession)
+PIXI.Graphics.prototype._renderCanvas = function(renderSession)
 {
-    // OVERWRITE
+    var context = renderSession.context;
+    var transform = this.worldTransform;
+    
+    context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
+    PIXI.CanvasGraphics.renderGraphics(this, context);
 }
 
 PIXI.Graphics.prototype.getBounds = function()

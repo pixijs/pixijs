@@ -42,6 +42,7 @@ module.exports = function(grunt) {
             '<%= dirs.src %>/renderers/webgl/WebGLBatch.js',
             '<%= dirs.src %>/renderers/webgl/WebGLRenderGroup.js',
             '<%= dirs.src %>/renderers/webgl/utils/WebGLFilterManager.js',
+            '<%= dirs.src %>/renderers/canvas/utils/CanvasMaskManager.js',
             '<%= dirs.src %>/renderers/canvas/CanvasRenderer.js',
             '<%= dirs.src %>/renderers/canvas/CanvasGraphics.js',
             '<%= dirs.src %>/primitives/Graphics.js',

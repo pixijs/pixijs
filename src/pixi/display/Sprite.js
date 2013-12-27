@@ -266,7 +266,7 @@ PIXI.Sprite.prototype._renderWebGL = function(renderSession)
     else
     {
         renderSession.spriteBatch.render(this);
-        
+
         // simple render children!
         for(var i=0,j=this.children.length; i<j; i++)
         {
@@ -281,6 +281,35 @@ PIXI.Sprite.prototype._renderWebGL = function(renderSession)
 
 PIXI.Sprite.prototype._renderCanvas = function(renderSession)
 {
+    var frame = this.texture.frame;
+    var context = renderSession.context;
+
+    //ignore null sources
+    if(frame && frame.width && frame.height && this.texture.baseTexture.source)
+    {
+        context.globalAlpha = this.worldAlpha;
+
+        var transform = this.worldTransform;
+
+        context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
+
+        //if smoothingEnabled is supported and we need to change the smoothing property for this texture
+     //   if(this.smoothProperty && this.scaleMode !== displayObject.texture.baseTexture.scaleMode) {
+       //     this.scaleMode = displayObject.texture.baseTexture.scaleMode;
+         //   context[this.smoothProperty] = (this.scaleMode === PIXI.BaseTexture.SCALE_MODE.LINEAR);
+        //}
+
+        context.drawImage(this.texture.baseTexture.source,
+                           frame.x,
+                           frame.y,
+                           frame.width,
+                           frame.height,
+                           (this.anchor.x) * -frame.width,
+                           (this.anchor.y) * -frame.height,
+                           frame.width,
+                           frame.height);
+    }
+
     // OVERWRITE
     for(var i=0,j=this.children.length; i<j; i++)
     {

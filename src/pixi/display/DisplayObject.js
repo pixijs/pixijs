@@ -301,7 +301,7 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'mask', {
     },
     set: function(value) {
 
-
+        
         if(value)
         {
             if(this._mask)

@@ -974,6 +974,8 @@ PIXI.WebGLRenderGroup.prototype.renderTilingSprite = function(sprite, projection
     var offsetX =  tilePosition.x/sprite.texture.baseTexture.width;
     var offsetY =  tilePosition.y/sprite.texture.baseTexture.height;
 
+    console.log(sprite.width);
+    
     var scaleX =  (sprite.width / sprite.texture.baseTexture.width)  / tileScale.x;
     var scaleY =  (sprite.height / sprite.texture.baseTexture.height) / tileScale.y;
 

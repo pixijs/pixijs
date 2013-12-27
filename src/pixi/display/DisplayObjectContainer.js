@@ -389,7 +389,7 @@ PIXI.DisplayObjectContainer.prototype.getBounds = function()
 PIXI.DisplayObjectContainer.prototype._renderWebGL = function(renderSession)
 {
     if(this.visible === false || this.alpha === 0)return;
-    
+
     if(this.mask || this.filters)
     {
         if(this.mask)
@@ -432,10 +432,21 @@ PIXI.DisplayObjectContainer.prototype._renderWebGL = function(renderSession)
 
 PIXI.DisplayObjectContainer.prototype._renderCanvas = function(renderSession)
 {
-    // OVERWRITE
+    if(this.visible === false || this.alpha === 0)return;
+
+    if(this.mask)
+    {
+        renderSession.maskManager.pushMask(this.mask, renderSession.context);
+    }
+
     for(var i=0,j=this.children.length; i<j; i++)
     {
         var child = this.children[i];
         child._renderCanvas(renderSession);
+    }
+
+    if(this.mask)
+    {
+        renderSession.maskManager.popMask(renderSession.context);
     }
 }

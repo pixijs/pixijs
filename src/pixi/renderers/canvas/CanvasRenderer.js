@@ -71,6 +71,13 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
     this.view.width = this.width;
     this.view.height = this.height;
     this.count = 0;
+
+    this.maskManager = new PIXI.CanvasMaskManager();
+
+    this.renderSession = {};
+    this.renderSession.context = this.context;
+    this.renderSession.maskManager = this.maskManager;
+    
 };
 
 // constructor
@@ -153,9 +160,12 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
     context.globalCompositeOperation = 'source-over';
 
     // one the display object hits this. we can break the loop
-    var testObject = displayObject.last._iNext;
-    displayObject = displayObject.first;
+   // var testObject = displayObject.last._iNext;
+   // displayObject = displayObject.first;
 
+    displayObject._renderCanvas(this.renderSession);
+
+    /*
     do
     {
         transform = displayObject.worldTransform;
@@ -255,6 +265,8 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
         displayObject = displayObject._iNext;
     }
     while(displayObject !== testObject);
+
+    */
 };
 
 /**

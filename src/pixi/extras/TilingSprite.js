@@ -20,7 +20,7 @@ PIXI.TilingSprite = function(texture, width, height)
     this.height = height || 100;
 
     texture.baseTexture._powerOf2 = true;
-    
+
     /**
      * The scaling of the image that is being tiled
      *
@@ -78,8 +78,18 @@ Object.defineProperty(PIXI.TilingSprite.prototype, 'height', {
     }
 });
 
+PIXI.TilingSprite.prototype.onTextureUpdate = function()
+{
+    // so if _width is 0 then width was not set..
+    //if(this._width)this.scale.x = this._width / this.texture.frame.width;
+    //if(this._height)this.scale.y = this._height / this.texture.frame.height;
+   // alert(this._width)
+    this.updateFrame = true;
+};
+
 PIXI.TilingSprite.prototype._renderWebGL = function(renderSession)
 {
+
     if(this.visible === false || this.alpha === 0)return;
     
     if(this.mask || this.filters)
@@ -96,6 +106,7 @@ PIXI.TilingSprite.prototype._renderWebGL = function(renderSession)
             renderSession.spriteBatch.flush();
             renderSession.filterManager.pushFilter(this._filterBlock);
         }
+
 
         renderSession.spriteBatch.renderTilingSprite(this);
 
@@ -115,6 +126,7 @@ PIXI.TilingSprite.prototype._renderWebGL = function(renderSession)
     }
     else
     {
+          
         renderSession.spriteBatch.renderTilingSprite(this);
         
         // simple render children!
@@ -128,5 +140,27 @@ PIXI.TilingSprite.prototype._renderWebGL = function(renderSession)
 
 PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
 {
-    
+    var context = renderSession.context;
+
+    context.globalAlpha = this.worldAlpha;
+
+    if(!this.__tilePattern)
+        this.__tilePattern = context.createPattern(this.texture.baseTexture.source, 'repeat');
+
+    context.beginPath();
+
+    var tilePosition = this.tilePosition;
+    var tileScale = this.tileScale;
+
+    // offset
+    context.scale(tileScale.x,tileScale.y);
+    context.translate(tilePosition.x, tilePosition.y);
+
+    context.fillStyle = this.__tilePattern;
+    context.fillRect(-tilePosition.x,-tilePosition.y,this.width / tileScale.x, this.height / tileScale.y);
+
+    context.scale(1/tileScale.x, 1/tileScale.y);
+    context.translate(-tilePosition.x, -tilePosition.y);
+
+    context.closePath();
 }
