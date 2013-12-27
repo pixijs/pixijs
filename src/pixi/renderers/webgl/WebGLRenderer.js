@@ -76,10 +76,8 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
 
     gl.useProgram(PIXI.defaultShader.program);
 
-
     PIXI.WebGLRenderer.gl = gl;
 
-    this.batch = new PIXI.WebGLBatch(gl);
     gl.disable(gl.DEPTH_TEST);
     gl.disable(gl.CULL_FACE);
 
