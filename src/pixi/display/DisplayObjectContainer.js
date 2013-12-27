@@ -50,69 +50,8 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 
     // update the stage refference..
 
-    if(this.stage)
-    {
-        var tmpChild = child;
-        do
-        {
-            if(tmpChild.interactive)this.stage.dirty = true;
-            tmpChild.stage = this.stage;
-            tmpChild = tmpChild._iNext;
-        }
-        while(tmpChild);
-    }
+    if(this.stage)this.setStageReference(this.stage)
 
-    // LINKED LIST //
-
-    // modify the list..
-    var childFirst = child.first;
-    var childLast = child.last;
-    var nextObject;
-    var previousObject;
-
-    // this could be wrong if there is a filter??
-    if(this._filters || this._mask)
-    {
-        previousObject =  this.last._iPrev;
-    }
-    else
-    {
-        previousObject = this.last;
-    }
-
-    nextObject = previousObject._iNext;
-
-    // always true in this case
-    // need to make sure the parents last is updated too
-    var updateLast = this;
-    var prevLast = previousObject;
-
-    while(updateLast)
-    {
-        if(updateLast.last === prevLast)
-        {
-            updateLast.last = child.last;
-        }
-        updateLast = updateLast.parent;
-    }
-
-    if(nextObject)
-    {
-        nextObject._iPrev = childLast;
-        childLast._iNext = nextObject;
-    }
-
-    childFirst._iPrev = previousObject;
-    previousObject._iNext = childFirst;
-
-    // need to remove any render groups..
-    if(this.__renderGroup)
-    {
-        // being used by a renderTexture.. if it exists then it must be from a render texture;
-        if(child.__renderGroup)child.__renderGroup.removeDisplayObjectAndChildren(child);
-        // add them to the new render group..
-        this.__renderGroup.addDisplayObjectAndChildren(child);
-    }
 };
 
 /**
@@ -133,69 +72,7 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 
         child.parent = this;
 
-        if(this.stage)
-        {
-            var tmpChild = child;
-            do
-            {
-                if(tmpChild.interactive)this.stage.dirty = true;
-                tmpChild.stage = this.stage;
-                tmpChild = tmpChild._iNext;
-            }
-            while(tmpChild);
-        }
-
-        // modify the list..
-        var childFirst = child.first;
-        var childLast = child.last;
-        var nextObject;
-        var previousObject;
-
-        if(index === this.children.length)
-        {
-            previousObject =  this.last;
-            var updateLast = this;
-            var prevLast = this.last;
-            while(updateLast)
-            {
-                if(updateLast.last === prevLast)
-                {
-                    updateLast.last = child.last;
-                }
-                updateLast = updateLast.parent;
-            }
-        }
-        else if(index === 0)
-        {
-            previousObject = this;
-        }
-        else
-        {
-            previousObject = this.children[index-1].last;
-        }
-
-        nextObject = previousObject._iNext;
-
-        // always true in this case
-        if(nextObject)
-        {
-            nextObject._iPrev = childLast;
-            childLast._iNext = nextObject;
-        }
-
-        childFirst._iPrev = previousObject;
-        previousObject._iNext = childFirst;
-
-        this.children.splice(index, 0, child);
-        // need to remove any render groups..
-        if(this.__renderGroup)
-        {
-            // being used by a renderTexture.. if it exists then it must be from a render texture;
-            if(child.__renderGroup)child.__renderGroup.removeDisplayObjectAndChildren(child);
-            // add them to the new render group..
-            this.__renderGroup.addDisplayObjectAndChildren(child);
-        }
-
+        if(this.stage)this.setStageReference(this.stage)
     }
     else
     {
@@ -224,19 +101,9 @@ PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
         throw new Error('swapChildren: Both the supplied DisplayObjects must be a child of the caller.');
     }
 
-    this.removeChild(child);
-    this.removeChild(child2);
-
-    if(index1 < index2)
-    {
-        this.addChildAt(child2, index1);
-        this.addChildAt(child, index2);
-    }
-    else
-    {
-        this.addChildAt(child, index2);
-        this.addChildAt(child2, index1);
-    }
+    this.children[index1] = child2;
+    this.children[index2] = child1;
+    
 };
 
 /**
@@ -267,54 +134,9 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 {
     var index = this.children.indexOf( child );
     if ( index !== -1 )
-    {
-        // unlink //
-        // modify the list..
-        var childFirst = child.first;
-        var childLast = child.last;
-
-        var nextObject = childLast._iNext;
-        var previousObject = childFirst._iPrev;
-
-        if(nextObject)nextObject._iPrev = previousObject;
-        previousObject._iNext = nextObject;
-
-        if(this.last === childLast)
-        {
-            var tempLast = childFirst._iPrev;
-            // need to make sure the parents last is updated too
-            var updateLast = this;
-
-            while(updateLast.last === childLast)
-            {
-                updateLast.last = tempLast;
-                updateLast = updateLast.parent;
-                if(!updateLast)break;
-
-            }
-        }
-
-        childLast._iNext = null;
-        childFirst._iPrev = null;
-
+    {  
         // update the stage reference..
-        if(this.stage)
-        {
-            var tmpChild = child;
-            do
-            {
-                if(tmpChild.interactive)this.stage.dirty = true;
-                tmpChild.stage = null;
-                tmpChild = tmpChild._iNext;
-            }
-            while(tmpChild);
-        }
-
-        // webGL trim
-        if(child.__renderGroup)
-        {
-            child.__renderGroup.removeDisplayObjectAndChildren(child);
-        }
+        if(this.stage)this.removeStageReference();
 
         child.parent = undefined;
         this.children.splice( index, 1 );
@@ -385,6 +207,28 @@ PIXI.DisplayObjectContainer.prototype.getBounds = function()
     return bounds;
 }
 
+PIXI.DisplayObjectContainer.prototype.setStageReference = function(stage)
+{
+    this.stage = stage;
+
+    for(var i=0,j=this.children.length; i<j; i++)
+    {
+        var child = this.children[i];
+        if(child.interactive)this.stage.dirty = true;
+        child.setStageReference(stage);
+    }   
+}
+
+PIXI.DisplayObjectContainer.prototype.removeStageReference = function()
+{
+    for(var i=0,j=this.children.length; i<j; i++)
+    {
+        var child = this.children[i];
+        if(child.interactive)this.stage.dirty = true;
+        child.removeStageReference();
+        child.stage = null;
+    }   
+}
 
 PIXI.DisplayObjectContainer.prototype._renderWebGL = function(renderSession)
 {
