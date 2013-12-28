@@ -22,7 +22,7 @@ PIXI.SepiaFilter = function()
     this.fragmentSrc = [
         'precision mediump float;',
         'varying vec2 vTextureCoord;',
-        'varying float vColor;',
+        'varying vec4 vColor;',
         'uniform float sepia;',
         'uniform sampler2D uSampler;',
 
@@ -31,7 +31,7 @@ PIXI.SepiaFilter = function()
         'void main(void) {',
         '   gl_FragColor = texture2D(uSampler, vTextureCoord);',
         '   gl_FragColor.rgb = mix( gl_FragColor.rgb, gl_FragColor.rgb * sepiaMatrix, sepia);',
-        '   gl_FragColor = gl_FragColor * vColor;',
+       // '   gl_FragColor = gl_FragColor * vColor;',
         '}'
     ];
 };

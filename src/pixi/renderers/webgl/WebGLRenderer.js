@@ -69,6 +69,14 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     
     var gl = this.gl;
 
+    PIXI.blendModesWebGL = [];
+
+    PIXI.blendModesWebGL[PIXI.blendModes.NORMAL]   = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+    PIXI.blendModesWebGL[PIXI.blendModes.ADD]      = [gl.SRC_ALPHA, gl.DST_ALPHA];
+    PIXI.blendModesWebGL[PIXI.blendModes.MULTIPLY] = [gl.DST_COLOR, gl.ONE_MINUS_SRC_ALPHA];
+    PIXI.blendModesWebGL[PIXI.blendModes.SCREEN]   = [gl.SRC_ALPHA, gl.ONE];
+
+    console.log( PIXI.blendModesWebGL[PIXI.blendModes.SCREEN])
     gl.useProgram(PIXI.defaultShader.program);
 
     PIXI.WebGLRenderer.gl = gl;
@@ -132,7 +140,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
     // make sure we are bound to the main frame buffer
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
-
+    
     gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], !this.transparent);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
@@ -141,6 +149,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 
     // reset the render session data..
     this.renderSession.drawCount = 0;
+    this.renderSession.currentBlendMode = 9999;
     this.renderSession.projection = PIXI.projection;
    
     // start the sprite batch

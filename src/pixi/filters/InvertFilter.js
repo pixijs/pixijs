@@ -22,7 +22,7 @@ PIXI.InvertFilter = function()
     this.fragmentSrc = [
         'precision mediump float;',
         'varying vec2 vTextureCoord;',
-        'varying float vColor;',
+        'varying vec4 vColor;',
         'uniform float invert;',
         'uniform sampler2D uSampler;',
 
@@ -30,7 +30,7 @@ PIXI.InvertFilter = function()
         '   gl_FragColor = texture2D(uSampler, vTextureCoord);',
         '   gl_FragColor.rgb = mix( (vec3(1)-gl_FragColor.rgb) * gl_FragColor.a, gl_FragColor.rgb, 1.0 - invert);',
         //'   gl_FragColor.rgb = gl_FragColor.rgb  * gl_FragColor.a;',
-        '   gl_FragColor = gl_FragColor * vColor;',
+      //  '   gl_FragColor = gl_FragColor * vColor;',
         '}'
     ];
 };

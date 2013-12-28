@@ -18,7 +18,7 @@ PIXI.WebGLSpriteBatch = function(gl)
     // 65535 is max index, so 65535 / 6 = 10922.
        
     //the total number of floats in our batch
-    var numVerts = this.size * 4 * 5;
+    var numVerts = this.size * 4 * 6;
     //the total number of indices in our batch
     var numIndices = this.size * 6;
 
@@ -63,7 +63,7 @@ PIXI.WebGLSpriteBatch.prototype.begin = function(renderSession)
 
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
 
-    var stride = 5 * 4;
+    var stride = 6 * 4;
 
     var projection = renderSession.projection;
 
@@ -71,9 +71,9 @@ PIXI.WebGLSpriteBatch.prototype.begin = function(renderSession)
 
     gl.vertexAttribPointer(PIXI.defaultShader.aVertexPosition, 2, gl.FLOAT, false, stride, 0);
     gl.vertexAttribPointer(PIXI.defaultShader.aTextureCoord, 2, gl.FLOAT, false, stride, 2 * 4);
-    gl.vertexAttribPointer(PIXI.defaultShader.colorAttribute, 1, gl.FLOAT, false, stride, 4 * 4);
+    gl.vertexAttribPointer(PIXI.defaultShader.colorAttribute, 2, gl.FLOAT, false, stride, 4 * 4);
 
-    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    this.currentBlendMode = 99999;
 }
 
 PIXI.WebGLSpriteBatch.prototype.end = function()
@@ -84,10 +84,17 @@ PIXI.WebGLSpriteBatch.prototype.end = function()
 
 PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
 {   
+    // check texture..
     if(sprite.texture.baseTexture !== this.currentBaseTexture || this.currentBatchSize >= this.size)
     {
         this.flush();
         this.currentBaseTexture = sprite.texture.baseTexture;
+    }
+
+    // check blend mode
+    if(sprite.blendMode !== this.currentBlendMode)
+    {
+        this.setBlendMode(sprite.blendMode);
     }
 
     // get the uvs for the texture
@@ -97,7 +104,7 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
 
     // get the sprites current alpha
     var alpha = sprite.worldAlpha;
-
+    var tint = sprite.tint;
 
     var  verticies = this.vertices;
 
@@ -113,7 +120,7 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
     var h0 = height * (1-aY);
     var h1 = height * -aY;
 
-    var index = this.currentBatchSize * 4 * 5;
+    var index = this.currentBatchSize * 4 * 6;
 
     worldTransform = sprite.worldTransform;
 
@@ -132,6 +139,7 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
     verticies[index++] = uvs[1];
     // color
     verticies[index++] = alpha;
+    verticies[index++] = tint;
 
     // xy
     verticies[index++] = a * w0 + c * h1 + tx;
@@ -141,6 +149,7 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
     verticies[index++] = uvs[3];
     // color
     verticies[index++] = alpha;
+    verticies[index++] = tint;
 
     // xy
     verticies[index++] = a * w0 + c * h0 + tx;
@@ -150,6 +159,7 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
     verticies[index++] = uvs[5];
     // color
     verticies[index++] = alpha;
+    verticies[index++] = tint;
 
     // xy
     verticies[index++] = a * w1 + c * h0 + tx;
@@ -159,9 +169,12 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
     verticies[index++] = uvs[7];
     // color
     verticies[index++] = alpha;
+    verticies[index++] = tint;
 
     // increment the batchs
     this.currentBatchSize++;
+
+
 }
 
 PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
@@ -174,6 +187,11 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
         this.currentBaseTexture = texture.baseTexture;
     }
 
+     // check blend mode
+    if(tilingSprite.blendMode !== this.currentBlendMode)
+    {
+        this.setBlendMode(tilingSprite.blendMode);
+    }
 
      // set the textures uvs temporarily
     // TODO create a seperate texture so that we can tile part of a texture
@@ -205,7 +223,7 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
    
     // get the tilingSprites current alpha
     var alpha = tilingSprite.worldAlpha;
-
+    var tint = tilingSprite.tint;
 
     var  verticies = this.vertices;
 
@@ -221,7 +239,7 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
     var h0 = height * (1-aY);
     var h1 = height * -aY;
 
-    var index = this.currentBatchSize * 4 * 5;
+    var index = this.currentBatchSize * 4 * 6;
 
     worldTransform = tilingSprite.worldTransform;
 
@@ -240,6 +258,7 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
     verticies[index++] = uvs[1];
     // color
     verticies[index++] = alpha;
+    verticies[index++] = tint;
 
     // xy
     verticies[index++] = a * w0 + c * h1 + tx;
@@ -249,7 +268,8 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
     verticies[index++] = uvs[3];
     // color
     verticies[index++] = alpha;
-
+    verticies[index++] = tint;
+    
     // xy
     verticies[index++] = a * w0 + c * h0 + tx;
     verticies[index++] = d * h0 + b * w0 + ty;
@@ -258,6 +278,7 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
     verticies[index++] = uvs[5];
     // color
     verticies[index++] = alpha;
+    verticies[index++] = tint;
 
     // xy
     verticies[index++] = a * w1 + c * h0 + tx;
@@ -267,7 +288,8 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
     verticies[index++] = uvs[7];
     // color
     verticies[index++] = alpha;
-    
+    verticies[index++] = tint;
+
     // increment the batchs
     this.currentBatchSize++;
 }
@@ -293,7 +315,7 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
     // this is faster (especially if you are not filling the entire batch)
     // but it could do with more testing. In theory it SHOULD be faster
     // since bufferData allocates memory, whereas this should not.
-    var view = this.vertices.subarray(0, this.currentBatchSize * 4 * 5);
+    var view = this.vertices.subarray(0, this.currentBatchSize * 4 * 6);
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, view);
     
     gl.drawElements(gl.TRIANGLES, this.currentBatchSize * 6, gl.UNSIGNED_SHORT, 0);
@@ -315,7 +337,7 @@ PIXI.WebGLSpriteBatch.prototype.start = function()
 
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
 
-    var stride = 5 * 4;
+    var stride = 6 * 4;
 
     var projection = this.renderSession.projection;
 
@@ -323,9 +345,24 @@ PIXI.WebGLSpriteBatch.prototype.start = function()
 
     gl.vertexAttribPointer(PIXI.defaultShader.aVertexPosition, 2, gl.FLOAT, false, stride, 0);
     gl.vertexAttribPointer(PIXI.defaultShader.aTextureCoord, 2, gl.FLOAT, false, stride, 2 * 4);
-    gl.vertexAttribPointer(PIXI.defaultShader.colorAttribute, 1, gl.FLOAT, false, stride, 4 * 4);
+    gl.vertexAttribPointer(PIXI.defaultShader.colorAttribute, 2, gl.FLOAT, false, stride, 4 * 4);
 
-    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+   
+    if(this.currentBlendMode !== PIXI.blendModes.NORMAL)
+    {
+        this.setBlendMode(PIXI.blendModes.NORMAL);
+    }
+}
+
+PIXI.WebGLSpriteBatch.prototype.setBlendMode = function(blendMode)
+{
+    this.flush();
+
+    this.currentBlendMode = blendMode;
+    
+    var blendModeWebGL = PIXI.blendModesWebGL[this.currentBlendMode];
+
+    this.gl.blendFunc(blendModeWebGL[0], blendModeWebGL[1]);
 }
 
 

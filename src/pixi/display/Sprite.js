@@ -3,14 +3,17 @@
  */
 
 PIXI.blendModes = {};
-PIXI.blendModes.NORMAL = 0;
-PIXI.blendModes.SCREEN = 1;
+PIXI.blendModes.NORMAL      = 0;
+PIXI.blendModes.ADD         = 1;
+PIXI.blendModes.MULTIPLY    = 2;
+PIXI.blendModes.SCREEN      = 3;
+
 
 
 /**
  * The SPrite object is the base for all textured objects that are rendered to the screen
  *
- * @class Sprite
+ * @class Sprite™
  * @extends DisplayObjectContainer
  * @constructor
  * @param texture {Texture} The texture for this sprite
@@ -65,6 +68,10 @@ PIXI.Sprite = function(texture)
      * @private
      */
     this._height = 0;
+
+    this.tint = 0xFFFFFF;// * Math.random();
+    
+    this.blendMode = PIXI.blendModes.NORMAL;
 
     if(texture.baseTexture.hasLoaded)
     {
@@ -285,6 +292,7 @@ PIXI.Sprite.prototype._renderWebGL = function(renderSession)
 
 PIXI.Sprite.prototype._renderCanvas = function(renderSession)
 {
+
     var frame = this.texture.frame;
     var context = renderSession.context;
 
@@ -296,6 +304,13 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
         var transform = this.worldTransform;
 
         context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
+
+        // check blend mode
+        if(this.blendMode !== renderSession.currentBlendMode)
+        {
+            renderSession.currentBlendMode = this.blendMode;   
+            context.globalCompositeOperation = PIXI.blendModesCanvas[renderSession.currentBlendMode];
+        }
 
         //if smoothingEnabled is supported and we need to change the smoothing property for this texture
      //   if(this.smoothProperty && this.scaleMode !== displayObject.texture.baseTexture.scaleMode) {

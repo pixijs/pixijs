@@ -251,6 +251,9 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
     // bind the buffer
     gl.bindFramebuffer(gl.FRAMEBUFFER, buffer );
 
+    // set the blend mode! 
+    //gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
+
     // set texture
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, texture.texture);

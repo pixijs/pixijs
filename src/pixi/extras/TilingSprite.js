@@ -39,6 +39,7 @@ PIXI.TilingSprite = function(texture, width, height)
 
     this.renderable = true;
 
+    this.tint = 0xFFFFFF;
     this.blendMode = PIXI.blendModes.NORMAL;
 };
 
@@ -126,7 +127,6 @@ PIXI.TilingSprite.prototype._renderWebGL = function(renderSession)
     }
     else
     {
-          console.log("!!")
         renderSession.spriteBatch.renderTilingSprite(this);
         
         // simple render children!
@@ -140,12 +140,21 @@ PIXI.TilingSprite.prototype._renderWebGL = function(renderSession)
 
 PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
 {
+    if(this.visible === false || this.alpha === 0)return;
+    
     var context = renderSession.context;
 
     context.globalAlpha = this.worldAlpha;
 
     if(!this.__tilePattern)
         this.__tilePattern = context.createPattern(this.texture.baseTexture.source, 'repeat');
+
+    // check blend mode
+    if(this.blendMode !== renderSession.currentBlendMode)
+    {
+        renderSession.currentBlendMode = this.blendMode;   
+        context.globalCompositeOperation = PIXI.blendModesCanvas[renderSession.currentBlendMode];
+    }
 
     context.beginPath();
 

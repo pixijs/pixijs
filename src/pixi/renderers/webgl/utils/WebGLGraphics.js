@@ -61,6 +61,9 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
     gl.uniform2f(PIXI.primitiveShader.projectionVector, projection.x, -projection.y);
     gl.uniform2f(PIXI.primitiveShader.offsetVector, -PIXI.offset.x, -PIXI.offset.y);
 
+    gl.uniform3fv(PIXI.primitiveShader.tintColor, PIXI.hex2rgb(graphics.tint));
+
+    gl.uniform1f(PIXI.primitiveShader.alpha, graphics.worldAlpha);
     gl.uniform1f(PIXI.primitiveShader.alpha, graphics.worldAlpha);
     gl.bindBuffer(gl.ARRAY_BUFFER, graphics._webGL.buffer);
 
@@ -69,7 +72,6 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
 
     // set the index buffer!
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, graphics._webGL.indexBuffer);
-
 
     gl.drawElements(gl.TRIANGLE_STRIP,  graphics._webGL.indices.length, gl.UNSIGNED_SHORT, 0 );
 

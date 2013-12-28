@@ -16,7 +16,7 @@ PIXI.CrossHatchFilter = function()
     this.fragmentSrc = [
         'precision mediump float;',
         'varying vec2 vTextureCoord;',
-        'varying float vColor;',
+        'varying vec4 vColor;',
         'uniform float blur;',
         'uniform sampler2D uSampler;',
 

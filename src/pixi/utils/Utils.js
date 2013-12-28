@@ -112,6 +112,32 @@ PIXI.AjaxRequest = function AjaxRequest()
     }
 };
 
+PIXI.packColorRGBA = function(r, g, b, a)//r, g, b, a)
+{
+  //  console.log(r, b, c, d)
+  return (Math.floor((r)*63) << 18) | (Math.floor((g)*63) << 12) | (Math.floor((b)*63) << 6)// | (Math.floor((a)*63))
+  //  i = i | (Math.floor((a)*63));
+   // return i;
+   // var r = (i / 262144.0 ) / 64;
+   // var g = (i / 4096.0)%64 / 64;
+  //  var b = (i / 64.0)%64 / 64;
+  //  var a = (i)%64 / 64;
+     
+  //  console.log(r, g, b, a);
+  //  return i;
+
+}
+
+PIXI.packColorRGB = function(r, g, b)//r, g, b, a)
+{
+    return (Math.floor((r)*255) << 16) | (Math.floor((g)*255) << 8) | (Math.floor((b)*255));
+}
+
+PIXI.unpackColorRGB = function(r, g, b)//r, g, b, a)
+{
+    return (Math.floor((r)*255) << 16) | (Math.floor((g)*255) << 8) | (Math.floor((b)*255));
+}
+
 /*
  * DEBUGGING ONLY
  */

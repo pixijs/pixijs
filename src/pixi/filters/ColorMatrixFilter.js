@@ -27,14 +27,14 @@ PIXI.ColorMatrixFilter = function()
     this.fragmentSrc = [
         'precision mediump float;',
         'varying vec2 vTextureCoord;',
-        'varying float vColor;',
+        'varying vec4 vColor;',
         'uniform float invert;',
         'uniform mat4 matrix;',
         'uniform sampler2D uSampler;',
 
         'void main(void) {',
         '   gl_FragColor = texture2D(uSampler, vTextureCoord) * matrix;',
-        '   gl_FragColor = gl_FragColor * vColor;',
+      //  '   gl_FragColor = gl_FragColor;',
         '}'
     ];
 };
