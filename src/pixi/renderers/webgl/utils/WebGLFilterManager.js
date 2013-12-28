@@ -53,7 +53,7 @@ PIXI.WebGLFilterManager.prototype.pushFilter = function(filterBlock)
     this.getBounds(filterBlock.target);
 
     filterBlock.target.filterArea = filterBlock.target.getBounds();
-    console.log(filterBlock.target.filterArea);
+   // console.log(filterBlock.target.filterArea);
     // addpadding?
     //displayObject.filterArea.x
 
@@ -310,6 +310,9 @@ PIXI.WebGLFilterManager.prototype.applyFilterPass = function(filter, filterArea,
     gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer);
     gl.vertexAttribPointer(shader.aTextureCoord, 2, gl.FLOAT, false, 0, 0);
 
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
+    gl.vertexAttribPointer(shader.colorAttribute, 1, gl.FLOAT, false, 0, 0);
+
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 
     // draw the filter...
@@ -323,7 +326,9 @@ PIXI.WebGLFilterManager.prototype.initShaderBuffers = function()
     // create some buffers
     this.vertexBuffer = gl.createBuffer();
     this.uvBuffer = gl.createBuffer();
+    this.colorBuffer = gl.createBuffer();
     this.indexBuffer = gl.createBuffer();
+
 
     // bind and upload the vertexs..
     // keep a refferance to the vertexFloatData..
@@ -351,6 +356,15 @@ PIXI.WebGLFilterManager.prototype.initShaderBuffers = function()
     this.uvArray,
     gl.STATIC_DRAW);
 
+    this.colorArray = new Float32Array([1.0, 1.0 , 1.0, 1.0]);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
+    gl.bufferData(
+    gl.ARRAY_BUFFER,
+    this.colorArray,
+    gl.STATIC_DRAW);
+
+    this.colorAttribute
     // bind and upload the index
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
     gl.bufferData(

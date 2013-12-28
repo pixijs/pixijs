@@ -96,7 +96,7 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
     if(!uvs)return;
 
     // get the sprites current alpha
-    var alpha = sprite.alpha;
+    var alpha = sprite.worldAlpha;
 
 
     var  verticies = this.vertices;
@@ -204,7 +204,7 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
    
    
     // get the tilingSprites current alpha
-    var alpha = tilingSprite.alpha;
+    var alpha = tilingSprite.worldAlpha;
 
 
     var  verticies = this.vertices;
@@ -267,7 +267,7 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
     verticies[index++] = uvs[7];
     // color
     verticies[index++] = alpha;
-
+    
     // increment the batchs
     this.currentBatchSize++;
 }

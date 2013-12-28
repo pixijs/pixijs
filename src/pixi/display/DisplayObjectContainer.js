@@ -30,7 +30,7 @@ PIXI.DisplayObjectContainer.prototype = Object.create( PIXI.DisplayObject.protot
 PIXI.DisplayObjectContainer.prototype.constructor = PIXI.DisplayObjectContainer;
 
 /**
- * The width of the sprite, setting this will actually modify the scale to acheive the value set
+ * The width of the displayObjectContainer, setting this will actually modify the scale to acheive the value set
  *
  * @property width
  * @type Number
@@ -46,7 +46,7 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'width', {
 });
 
 /**
- * The height of the sprite, setting this will actually modify the scale to acheive the value set
+ * The height of the displayObjectContainer, setting this will actually modify the scale to acheive the value set
  *
  * @property height
  * @type Number
@@ -187,9 +187,9 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
  */
 PIXI.DisplayObjectContainer.prototype.updateTransform = function()
 {
-    if(!this.visible)return;
-
     this._currentBounds = null;
+
+    if(!this.visible)return;
 
     PIXI.DisplayObject.prototype.updateTransform.call( this );
 
@@ -203,8 +203,8 @@ PIXI.DisplayObjectContainer.prototype.getBounds = function()
 {    
     if(this.children.length === 0)return PIXI.EmptyRectangle;
 
-    // the bounds have already been calculated this render session so return what we have
-    if(this._currentBounds)return this._currentBounds;
+    // TODO the bounds have already been calculated this render session so return what we have
+   
 
     var minX = Infinity;
     var minY = Infinity;
@@ -241,9 +241,9 @@ PIXI.DisplayObjectContainer.prototype.getBounds = function()
     bounds.width = maxX - minX;
     bounds.height = maxY - minY;
 
-    // store a refferance so that if this function gets called again in the render cycle we do not have to recacalculate
-    this._currentBounds = bounds;
-
+    // TODO: store a refferance so that if this function gets called again in the render cycle we do not have to recacalculate
+    //this._currentBounds = bounds;
+   
     return bounds;
 }
 

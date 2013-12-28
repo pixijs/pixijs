@@ -66,12 +66,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     }
 
     PIXI.initDefaultShaders();
-
-
-
-
-   // PIXI.activateDefaultShader();
-
+    
     var gl = this.gl;
 
     gl.useProgram(PIXI.defaultShader.program);

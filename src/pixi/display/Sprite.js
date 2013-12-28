@@ -160,6 +160,7 @@ PIXI.Sprite.prototype.onTextureUpdate = function()
 
 PIXI.Sprite.prototype.getBounds = function()
 {
+
     var width = this.texture.frame.width;
     var height = this.texture.frame.height;
 
@@ -223,6 +224,9 @@ PIXI.Sprite.prototype.getBounds = function()
 
     bounds.y = minY;
     bounds.height = maxY - minY;
+
+    // store a refferance so that if this function gets called again in the render cycle we do not have to recacalculate
+    this._currentBounds = bounds;
 
     return bounds;
 }

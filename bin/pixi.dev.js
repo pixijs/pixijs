@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-12-27
+ * Compiled: 2013-12-28
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -870,7 +870,6 @@ PIXI.DisplayObject = function()
     *
     */
     this._bounds = new PIXI.Rectangle(0, 0, 1, 1);
-    
     this._currentBounds = null;
 
     /*
@@ -992,32 +991,16 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'interactive', {
  * @type Graphics
  */
 Object.defineProperty(PIXI.DisplayObject.prototype, 'mask', {
+   
     get: function() {
+
         return this._mask;
+    
     },
     set: function(value) {
 
-        
-        if(value)
-        {
-            if(this._mask)
-            {
-                value.start = this._mask.start;
-                value.end = this._mask.end;
-            }
-            else
-            {
-                this.addFilter(value);
-                value.renderable = false;
-            }
-        }
-        else
-        {
-            this.removeFilter(this._mask);
-            this._mask.renderable = true;
-        }
-
         this._mask = value;
+
     }
 });
 
@@ -1036,9 +1019,6 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'filters', {
 
         if(value)
         {
-            if(this._filters)this.removeFilter(this._filters);
-            this.addFilter(value);
-
             // now put all the passes in one place..
             var passes = [];
             for (var i = 0; i < value.length; i++)
@@ -1049,173 +1029,16 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'filters', {
                     passes.push(filterPasses[j]);
                 }
             }
-            this._filterBlock = value.start;
+
+            // TODO change this as it is legacy
+            this._filterBlock = {target:this, filterPasses:passes};
             
-            value.start.filterPasses = passes;
-        }
-        else
-        {
-            if(this._filters) {
-                this.removeFilter(this._filters);
-            }
+           
         }
 
         this._filters = value;
     }
 });
-
-/*
- * Adds a filter to this displayObject
- *
- * @method addFilter
- * @param mask {Graphics} the graphics object to use as a filter
- * @private
- */
-PIXI.DisplayObject.prototype.addFilter = function(data)
-{
-    //if(this.filter)return;
-    //this.filter = true;
-//  data[0].target = this;
-
-
-    // insert a filter block..
-    // TODO Onject pool thease bad boys..
-    var start = new PIXI.FilterBlock();
-    var end = new PIXI.FilterBlock();
-
-    data.start = start;
-    data.end = end;
-
-    start.data = data;
-    end.data = data;
-
-    start.first = start.last =  this;
-    end.first = end.last = this;
-
-    start.open = true;
-
-    start.target = this;
-
-    /*
-     * insert start
-     */
-
-    var childFirst = start;
-    var childLast = start;
-    var nextObject;
-    var previousObject;
-
-    previousObject = this.first._iPrev;
-
-    if(previousObject)
-    {
-        nextObject = previousObject._iNext;
-        childFirst._iPrev = previousObject;
-        previousObject._iNext = childFirst;
-    }
-    else
-    {
-        nextObject = this;
-    }
-
-    if(nextObject)
-    {
-        nextObject._iPrev = childLast;
-        childLast._iNext = nextObject;
-    }
-
-    // now insert the end filter block..
-
-    /*
-     * insert end filter
-     */
-    childFirst = end;
-    childLast = end;
-    nextObject = null;
-    previousObject = null;
-
-    previousObject = this.last;
-    nextObject = previousObject._iNext;
-
-    if(nextObject)
-    {
-        nextObject._iPrev = childLast;
-        childLast._iNext = nextObject;
-    }
-
-    childFirst._iPrev = previousObject;
-    previousObject._iNext = childFirst;
-
-    var updateLast = this;
-
-    var prevLast = this.last;
-    while(updateLast)
-    {
-        if(updateLast.last === prevLast)
-        {
-            updateLast.last = end;
-        }
-        updateLast = updateLast.parent;
-    }
-
-    this.first = start;
-
-    // if webGL...
-    if(this.__renderGroup)
-    {
-        this.__renderGroup.addFilterBlocks(start, end);
-    }
-};
-
-/*
- * Removes the filter to this displayObject
- *
- * @method removeFilter
- * @private
- */
-PIXI.DisplayObject.prototype.removeFilter = function(data)
-{
-    //if(!this.filter)return;
-    //this.filter = false;
-    // console.log('YUOIO')
-    // modify the list..
-    var startBlock = data.start;
-
-
-    var nextObject = startBlock._iNext;
-    var previousObject = startBlock._iPrev;
-
-    if(nextObject)nextObject._iPrev = previousObject;
-    if(previousObject)previousObject._iNext = nextObject;
-
-    this.first = startBlock._iNext;
-
-    // remove the end filter
-    var lastBlock = data.end;
-
-    nextObject = lastBlock._iNext;
-    previousObject = lastBlock._iPrev;
-
-    if(nextObject)nextObject._iPrev = previousObject;
-    previousObject._iNext = nextObject;
-
-    // this is always true too!
-    var tempLast =  lastBlock._iPrev;
-    // need to make sure the parents last is updated too
-    var updateLast = this;
-    while(updateLast.last === lastBlock)
-    {
-        updateLast.last = tempLast;
-        updateLast = updateLast.parent;
-        if(!updateLast)break;
-    }
-
-    // if webGL...
-    if(this.__renderGroup)
-    {
-        this.__renderGroup.removeFilterBlocks(startBlock, lastBlock);
-    }
-};
 
 /*
  * Updates the object transform for rendering
@@ -1323,7 +1146,7 @@ PIXI.DisplayObjectContainer.prototype = Object.create( PIXI.DisplayObject.protot
 PIXI.DisplayObjectContainer.prototype.constructor = PIXI.DisplayObjectContainer;
 
 /**
- * The width of the sprite, setting this will actually modify the scale to acheive the value set
+ * The width of the displayObjectContainer, setting this will actually modify the scale to acheive the value set
  *
  * @property width
  * @type Number
@@ -1339,7 +1162,7 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'width', {
 });
 
 /**
- * The height of the sprite, setting this will actually modify the scale to acheive the value set
+ * The height of the displayObjectContainer, setting this will actually modify the scale to acheive the value set
  *
  * @property height
  * @type Number
@@ -1480,9 +1303,9 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
  */
 PIXI.DisplayObjectContainer.prototype.updateTransform = function()
 {
-    if(!this.visible)return;
-
     this._currentBounds = null;
+
+    if(!this.visible)return;
 
     PIXI.DisplayObject.prototype.updateTransform.call( this );
 
@@ -1496,8 +1319,8 @@ PIXI.DisplayObjectContainer.prototype.getBounds = function()
 {    
     if(this.children.length === 0)return PIXI.EmptyRectangle;
 
-    // the bounds have already been calculated this render session so return what we have
-    if(this._currentBounds)return this._currentBounds;
+    // TODO the bounds have already been calculated this render session so return what we have
+   
 
     var minX = Infinity;
     var minY = Infinity;
@@ -1534,9 +1357,9 @@ PIXI.DisplayObjectContainer.prototype.getBounds = function()
     bounds.width = maxX - minX;
     bounds.height = maxY - minY;
 
-    // store a refferance so that if this function gets called again in the render cycle we do not have to recacalculate
-    this._currentBounds = bounds;
-
+    // TODO: store a refferance so that if this function gets called again in the render cycle we do not have to recacalculate
+    //this._currentBounds = bounds;
+   
     return bounds;
 }
 
@@ -1790,6 +1613,7 @@ PIXI.Sprite.prototype.onTextureUpdate = function()
 
 PIXI.Sprite.prototype.getBounds = function()
 {
+
     var width = this.texture.frame.width;
     var height = this.texture.frame.height;
 
@@ -1853,6 +1677,9 @@ PIXI.Sprite.prototype.getBounds = function()
 
     bounds.y = minY;
     bounds.height = maxY - minY;
+
+    // store a refferance so that if this function gets called again in the render cycle we do not have to recacalculate
+    this._currentBounds = bounds;
 
     return bounds;
 }
@@ -4985,12 +4812,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     }
 
     PIXI.initDefaultShaders();
-
-
-
-
-   // PIXI.activateDefaultShader();
-
+    
     var gl = this.gl;
 
     gl.useProgram(PIXI.defaultShader.program);
@@ -5413,7 +5235,7 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
     if(!uvs)return;
 
     // get the sprites current alpha
-    var alpha = sprite.alpha;
+    var alpha = sprite.worldAlpha;
 
 
     var  verticies = this.vertices;
@@ -5521,7 +5343,7 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
    
    
     // get the tilingSprites current alpha
-    var alpha = tilingSprite.alpha;
+    var alpha = tilingSprite.worldAlpha;
 
 
     var  verticies = this.vertices;
@@ -5584,7 +5406,7 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
     verticies[index++] = uvs[7];
     // color
     verticies[index++] = alpha;
-
+    
     // increment the batchs
     this.currentBatchSize++;
 }
@@ -5702,7 +5524,7 @@ PIXI.WebGLFilterManager.prototype.pushFilter = function(filterBlock)
     this.getBounds(filterBlock.target);
 
     filterBlock.target.filterArea = filterBlock.target.getBounds();
-    console.log(filterBlock.target.filterArea);
+   // console.log(filterBlock.target.filterArea);
     // addpadding?
     //displayObject.filterArea.x
 
@@ -5959,6 +5781,9 @@ PIXI.WebGLFilterManager.prototype.applyFilterPass = function(filter, filterArea,
     gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer);
     gl.vertexAttribPointer(shader.aTextureCoord, 2, gl.FLOAT, false, 0, 0);
 
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
+    gl.vertexAttribPointer(shader.colorAttribute, 1, gl.FLOAT, false, 0, 0);
+
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 
     // draw the filter...
@@ -5972,7 +5797,9 @@ PIXI.WebGLFilterManager.prototype.initShaderBuffers = function()
     // create some buffers
     this.vertexBuffer = gl.createBuffer();
     this.uvBuffer = gl.createBuffer();
+    this.colorBuffer = gl.createBuffer();
     this.indexBuffer = gl.createBuffer();
+
 
     // bind and upload the vertexs..
     // keep a refferance to the vertexFloatData..
@@ -6000,6 +5827,15 @@ PIXI.WebGLFilterManager.prototype.initShaderBuffers = function()
     this.uvArray,
     gl.STATIC_DRAW);
 
+    this.colorArray = new Float32Array([1.0, 1.0 , 1.0, 1.0]);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
+    gl.bufferData(
+    gl.ARRAY_BUFFER,
+    this.colorArray,
+    gl.STATIC_DRAW);
+
+    this.colorAttribute
     // bind and upload the index
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
     gl.bufferData(
@@ -7602,7 +7438,7 @@ PIXI.TilingSprite.prototype._renderWebGL = function(renderSession)
     }
     else
     {
-          
+          console.log("!!")
         renderSession.spriteBatch.renderTilingSprite(this);
         
         // simple render children!

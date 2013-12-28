@@ -176,7 +176,6 @@ PIXI.DisplayObject = function()
     *
     */
     this._bounds = new PIXI.Rectangle(0, 0, 1, 1);
-    
     this._currentBounds = null;
 
     /*
@@ -298,32 +297,16 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'interactive', {
  * @type Graphics
  */
 Object.defineProperty(PIXI.DisplayObject.prototype, 'mask', {
+   
     get: function() {
+
         return this._mask;
+    
     },
     set: function(value) {
 
-        
-        if(value)
-        {
-            if(this._mask)
-            {
-                value.start = this._mask.start;
-                value.end = this._mask.end;
-            }
-            else
-            {
-                this.addFilter(value);
-                value.renderable = false;
-            }
-        }
-        else
-        {
-            this.removeFilter(this._mask);
-            this._mask.renderable = true;
-        }
-
         this._mask = value;
+
     }
 });
 
@@ -342,9 +325,6 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'filters', {
 
         if(value)
         {
-            if(this._filters)this.removeFilter(this._filters);
-            this.addFilter(value);
-
             // now put all the passes in one place..
             var passes = [];
             for (var i = 0; i < value.length; i++)
@@ -355,173 +335,16 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'filters', {
                     passes.push(filterPasses[j]);
                 }
             }
-            this._filterBlock = value.start;
+
+            // TODO change this as it is legacy
+            this._filterBlock = {target:this, filterPasses:passes};
             
-            value.start.filterPasses = passes;
-        }
-        else
-        {
-            if(this._filters) {
-                this.removeFilter(this._filters);
-            }
+           
         }
 
         this._filters = value;
     }
 });
-
-/*
- * Adds a filter to this displayObject
- *
- * @method addFilter
- * @param mask {Graphics} the graphics object to use as a filter
- * @private
- */
-PIXI.DisplayObject.prototype.addFilter = function(data)
-{
-    //if(this.filter)return;
-    //this.filter = true;
-//  data[0].target = this;
-
-
-    // insert a filter block..
-    // TODO Onject pool thease bad boys..
-    var start = new PIXI.FilterBlock();
-    var end = new PIXI.FilterBlock();
-
-    data.start = start;
-    data.end = end;
-
-    start.data = data;
-    end.data = data;
-
-    start.first = start.last =  this;
-    end.first = end.last = this;
-
-    start.open = true;
-
-    start.target = this;
-
-    /*
-     * insert start
-     */
-
-    var childFirst = start;
-    var childLast = start;
-    var nextObject;
-    var previousObject;
-
-    previousObject = this.first._iPrev;
-
-    if(previousObject)
-    {
-        nextObject = previousObject._iNext;
-        childFirst._iPrev = previousObject;
-        previousObject._iNext = childFirst;
-    }
-    else
-    {
-        nextObject = this;
-    }
-
-    if(nextObject)
-    {
-        nextObject._iPrev = childLast;
-        childLast._iNext = nextObject;
-    }
-
-    // now insert the end filter block..
-
-    /*
-     * insert end filter
-     */
-    childFirst = end;
-    childLast = end;
-    nextObject = null;
-    previousObject = null;
-
-    previousObject = this.last;
-    nextObject = previousObject._iNext;
-
-    if(nextObject)
-    {
-        nextObject._iPrev = childLast;
-        childLast._iNext = nextObject;
-    }
-
-    childFirst._iPrev = previousObject;
-    previousObject._iNext = childFirst;
-
-    var updateLast = this;
-
-    var prevLast = this.last;
-    while(updateLast)
-    {
-        if(updateLast.last === prevLast)
-        {
-            updateLast.last = end;
-        }
-        updateLast = updateLast.parent;
-    }
-
-    this.first = start;
-
-    // if webGL...
-    if(this.__renderGroup)
-    {
-        this.__renderGroup.addFilterBlocks(start, end);
-    }
-};
-
-/*
- * Removes the filter to this displayObject
- *
- * @method removeFilter
- * @private
- */
-PIXI.DisplayObject.prototype.removeFilter = function(data)
-{
-    //if(!this.filter)return;
-    //this.filter = false;
-    // console.log('YUOIO')
-    // modify the list..
-    var startBlock = data.start;
-
-
-    var nextObject = startBlock._iNext;
-    var previousObject = startBlock._iPrev;
-
-    if(nextObject)nextObject._iPrev = previousObject;
-    if(previousObject)previousObject._iNext = nextObject;
-
-    this.first = startBlock._iNext;
-
-    // remove the end filter
-    var lastBlock = data.end;
-
-    nextObject = lastBlock._iNext;
-    previousObject = lastBlock._iPrev;
-
-    if(nextObject)nextObject._iPrev = previousObject;
-    previousObject._iNext = nextObject;
-
-    // this is always true too!
-    var tempLast =  lastBlock._iPrev;
-    // need to make sure the parents last is updated too
-    var updateLast = this;
-    while(updateLast.last === lastBlock)
-    {
-        updateLast.last = tempLast;
-        updateLast = updateLast.parent;
-        if(!updateLast)break;
-    }
-
-    // if webGL...
-    if(this.__renderGroup)
-    {
-        this.__renderGroup.removeFilterBlocks(startBlock, lastBlock);
-    }
-};
 
 /*
  * Updates the object transform for rendering

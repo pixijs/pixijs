@@ -126,7 +126,7 @@ PIXI.TilingSprite.prototype._renderWebGL = function(renderSession)
     }
     else
     {
-          
+          console.log("!!")
         renderSession.spriteBatch.renderTilingSprite(this);
         
         // simple render children!
