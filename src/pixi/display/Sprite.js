@@ -8,8 +8,6 @@ PIXI.blendModes.ADD         = 1;
 PIXI.blendModes.MULTIPLY    = 2;
 PIXI.blendModes.SCREEN      = 3;
 
-
-
 /**
  * The SPrite object is the base for all textured objects that are rendered to the screen
  *
@@ -243,16 +241,16 @@ PIXI.Sprite.prototype._renderWebGL = function(renderSession)
 {
     if(this.visible === false || this.alpha === 0)return;
     
-    if(this.mask || this.filters)
+    if(this._mask || this._filters)
     {
-        if(this.mask)
+        if(this._mask)
         {
             renderSession.spriteBatch.stop();
             renderSession.maskManager.pushMask(this.mask, renderSession.projection);
             renderSession.spriteBatch.start();
         }
 
-        if(this.filters)
+        if(this._filters)
         {    
             renderSession.spriteBatch.flush();
             renderSession.filterManager.pushFilter(this._filterBlock);
@@ -269,8 +267,8 @@ PIXI.Sprite.prototype._renderWebGL = function(renderSession)
 
         renderSession.spriteBatch.stop();
 
-        if(this.filters)renderSession.filterManager.popFilter();
-        if(this.mask)renderSession.maskManager.popMask(renderSession.projection);
+        if(this._filters)renderSession.filterManager.popFilter();
+        if(this._mask)renderSession.maskManager.popMask(renderSession.projection);
         
         renderSession.spriteBatch.start();
     }
@@ -292,7 +290,11 @@ PIXI.Sprite.prototype._renderWebGL = function(renderSession)
 
 PIXI.Sprite.prototype._renderCanvas = function(renderSession)
 {
-
+     if(this._mask)
+    {
+        renderSession.maskManager.pushMask(this._mask, renderSession.context);
+    }
+    
     var frame = this.texture.frame;
     var context = renderSession.context;
 

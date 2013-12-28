@@ -274,16 +274,16 @@ PIXI.DisplayObjectContainer.prototype._renderWebGL = function(renderSession)
 {
     if(this.visible === false || this.alpha === 0)return;
 
-    if(this.mask || this.filters)
+    if(this._mask || this._filters)
     {
-        if(this.mask)
+        if(this._mask)
         {
             renderSession.spriteBatch.stop();
             renderSession.maskManager.pushMask(this.mask, renderSession.projection);
             renderSession.spriteBatch.start();
         }
 
-        if(this.filters)
+        if(this._filters)
         {    
             renderSession.spriteBatch.flush();
             renderSession.filterManager.pushFilter(this._filterBlock);
@@ -298,8 +298,8 @@ PIXI.DisplayObjectContainer.prototype._renderWebGL = function(renderSession)
 
         renderSession.spriteBatch.stop();
 
-        if(this.filters)renderSession.filterManager.popFilter();
-        if(this.mask)renderSession.maskManager.popMask(renderSession.projection);
+        if(this._filters)renderSession.filterManager.popFilter();
+        if(this._mask)renderSession.maskManager.popMask(renderSession.projection);
         
         renderSession.spriteBatch.start();
     }
@@ -318,9 +318,9 @@ PIXI.DisplayObjectContainer.prototype._renderCanvas = function(renderSession)
 {
     if(this.visible === false || this.alpha === 0)return;
 
-    if(this.mask)
+    if(this._mask)
     {
-        renderSession.maskManager.pushMask(this.mask, renderSession.context);
+        renderSession.maskManager.pushMask(this._mask, renderSession.context);
     }
 
     for(var i=0,j=this.children.length; i<j; i++)
