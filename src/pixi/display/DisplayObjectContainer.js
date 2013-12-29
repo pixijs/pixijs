@@ -329,7 +329,7 @@ PIXI.DisplayObjectContainer.prototype._renderCanvas = function(renderSession)
         child._renderCanvas(renderSession);
     }
 
-    if(this.mask)
+    if(this._mask)
     {
         renderSession.maskManager.popMask(renderSession.context);
     }

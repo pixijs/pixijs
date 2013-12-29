@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-12-28
+ * Compiled: 2013-12-29
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -1445,7 +1445,7 @@ PIXI.DisplayObjectContainer.prototype._renderCanvas = function(renderSession)
         child._renderCanvas(renderSession);
     }
 
-    if(this.mask)
+    if(this._mask)
     {
         renderSession.maskManager.popMask(renderSession.context);
     }
@@ -1692,38 +1692,44 @@ PIXI.Sprite.prototype.getBounds = function()
 
 PIXI.Sprite.prototype._renderWebGL = function(renderSession)
 {
+    // if the sprite is not visible or the alpha is 0 then no need to render this element
     if(this.visible === false || this.alpha === 0)return;
     
+    // do a quick check to see if this element has a mask or a filter.
     if(this._mask || this._filters)
     {
+        var spriteBatch =  renderSession.spriteBatch;
+
         if(this._mask)
         {
-            renderSession.spriteBatch.stop();
+            spriteBatch.stop();
             renderSession.maskManager.pushMask(this.mask, renderSession.projection);
-            renderSession.spriteBatch.start();
+            spriteBatch.start();
         }
 
         if(this._filters)
         {    
-            renderSession.spriteBatch.flush();
+            spriteBatch.flush();
             renderSession.filterManager.pushFilter(this._filterBlock);
         }
 
-        renderSession.spriteBatch.render(this);
+        // add this sprite to the batch
+        spriteBatch.render(this);
 
-        // simple render children!
+        // now loop through the children and make sure they get rendered
         for(var i=0,j=this.children.length; i<j; i++)
         {
             var child = this.children[i];
             child._renderWebGL(renderSession);
         }
 
-        renderSession.spriteBatch.stop();
+        // time to stop the sprite batch as either a mask element or a filter draw will happen next
+        spriteBatch.stop();
 
         if(this._filters)renderSession.filterManager.popFilter();
         if(this._mask)renderSession.maskManager.popMask(renderSession.projection);
         
-        renderSession.spriteBatch.start();
+        spriteBatch.start();
     }
     else
     {
@@ -1743,11 +1749,11 @@ PIXI.Sprite.prototype._renderWebGL = function(renderSession)
 
 PIXI.Sprite.prototype._renderCanvas = function(renderSession)
 {
-     if(this._mask)
+    if(this._mask)
     {
         renderSession.maskManager.pushMask(this._mask, renderSession.context);
     }
-    
+
     var frame = this.texture.frame;
     var context = renderSession.context;
 
@@ -1767,21 +1773,43 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
             context.globalCompositeOperation = PIXI.blendModesCanvas[renderSession.currentBlendMode];
         }
 
+
         //if smoothingEnabled is supported and we need to change the smoothing property for this texture
      //   if(this.smoothProperty && this.scaleMode !== displayObject.texture.baseTexture.scaleMode) {
        //     this.scaleMode = displayObject.texture.baseTexture.scaleMode;
          //   context[this.smoothProperty] = (this.scaleMode === PIXI.BaseTexture.SCALE_MODE.LINEAR);
         //}
 
-        context.drawImage(this.texture.baseTexture.source,
-                           frame.x,
-                           frame.y,
-                           frame.width,
-                           frame.height,
-                           (this.anchor.x) * -frame.width,
-                           (this.anchor.y) * -frame.height,
-                           frame.width,
-                           frame.height);
+        if(this.tint != 0xFFFFFF)
+        {
+            if(this.cachedTint !== this.tint)
+            {
+                this.cachedTint = this.tint;
+                this.tintedTexture = PIXI.CanvasTinter.getTintedTexture(this.texture, this.tint);
+            }
+
+            context.drawImage(this.tintedTexture,
+                               0,
+                               0,
+                               frame.width,
+                               frame.height,
+                               (this.anchor.x) * -frame.width,
+                               (this.anchor.y) * -frame.height,
+                               frame.width,
+                               frame.height);
+        }
+        else
+        {
+            context.drawImage(this.texture.baseTexture.source,
+                               frame.x,
+                               frame.y,
+                               frame.width,
+                               frame.height,
+                               (this.anchor.x) * -frame.width,
+                               (this.anchor.y) * -frame.height,
+                               frame.width,
+                               frame.height); 
+        }
     }
 
     // OVERWRITE
@@ -1789,6 +1817,11 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
     {
         var child = this.children[i];
         child._renderCanvas(renderSession);
+    }
+
+    if(this._mask)
+    {
+        renderSession.maskManager.popMask(renderSession.context);
     }
 }
 
@@ -6131,6 +6164,60 @@ PIXI.CanvasMaskManager.prototype.pushMask = function(maskData, context)
 PIXI.CanvasMaskManager.prototype.popMask = function(context)
 { 
     context.restore();
+}
+/**
+ * @author Mat Groves
+ * 
+ * 
+ */
+
+PIXI.CanvasTinter = function()
+{
+   /// this.textureCach
+}
+
+PIXI.CanvasTinter.getTintedTexture = function(texture, color)
+{ 
+    var stringColor = '#' + ('00000' + ( color | 0).toString(16)).substr(-6);
+    
+     // clone texture..
+    var canvas = document.createElement("canvas");
+    var context = canvas.getContext( '2d' );
+
+    var frame = texture.frame;
+
+    context.width = frame.width;
+    context.height = frame.height;
+
+    context.fillStyle = stringColor;
+    
+    context.fillRect(0, 0, frame.width, frame.height);
+    
+    context.globalCompositeOperation = 'multiply';
+
+    context.drawImage(texture.baseTexture.source,
+                           frame.x,
+                           frame.y,
+                           frame.width,
+                           frame.height,
+                           0,
+                           0,
+                           frame.width,
+                           frame.height);
+
+    context.globalCompositeOperation = 'destination-in';
+    
+    context.drawImage(texture.baseTexture.source,
+                           frame.x,
+                           frame.y,
+                           frame.width,
+                           frame.height,
+                           0,
+                           0,
+                           frame.width,
+                           frame.height);
+
+    return canvas;
 }
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
