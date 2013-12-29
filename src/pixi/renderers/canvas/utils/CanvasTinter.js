@@ -10,8 +10,7 @@ PIXI.CanvasTinter = function()
 }
 
 //PIXI.CanvasTinter.cachTint = true;
-PIXI.CanvasTinter.cacheStepsPerColorChannel = 8;
-PIXI.CanvasTinter.convertTintToImage = false;
+
 
 PIXI.CanvasTinter.getTintedTexture = function(sprite, color, canvas)
 {
@@ -34,6 +33,34 @@ PIXI.CanvasTinter.getTintedTexture = function(sprite, color, canvas)
 
      // clone texture..
     var canvas = PIXI.CanvasTinter.canvas || document.createElement("canvas");
+    
+    //PIXI.CanvasTinter.tintWithPerPixel(texture, stringColor, canvas);
+
+    
+    PIXI.CanvasTinter.tintMethod(texture, color, canvas);
+
+    if(PIXI.CanvasTinter.convertTintToImage)
+    {
+      // is this better?
+      var tintImage = new Image();
+      tintImage.src = canvas.toDataURL();
+              
+      texture.tintCache[stringColor] = tintImage;
+    }
+    else
+    {
+      
+      texture.tintCache[stringColor] = canvas;
+      // if we are not converting the texture to an image then we need to lose the refferance to the canvas
+      PIXI.CanvasTinter.canvas = null;
+
+    }
+
+    return canvas;
+}
+
+PIXI.CanvasTinter.tintWithMultiply = function(texture, color, canvas)
+{
     var context = canvas.getContext( '2d' );
 
     var frame = texture.frame;
@@ -41,7 +68,7 @@ PIXI.CanvasTinter.getTintedTexture = function(sprite, color, canvas)
     canvas.width = frame.width;
     canvas.height = frame.height;
 
-    context.fillStyle = stringColor;
+    context.fillStyle = '#' + ('00000' + ( color | 0).toString(16)).substr(-6);
     
     context.fillRect(0, 0, frame.width, frame.height);
     
@@ -67,29 +94,10 @@ PIXI.CanvasTinter.getTintedTexture = function(sprite, color, canvas)
                            0,
                            0,
                            frame.width,
-                           frame.height);
-    
-    if(PIXI.CanvasTinter.convertTintToImage)
-    {
-      // is this better?
-      var tintImage = new Image();
-      tintImage.src = canvas.toDataURL();
-              
-      texture.tintCache[stringColor] = tintImage;
-    }
-    else
-    {
-      
-      texture.tintCache[stringColor] = canvas;
-      // if we are not converting the texture to an image then we need to lose the refferance to the canvas
-      PIXI.CanvasTinter.canvas = null;
-
-    }
-
-    return canvas;
+                           frame.height); 
 }
 
-PIXI.CanvasTinter._getTintedTextureFast = function(texture, color, canvas)
+PIXI.CanvasTinter.tintWithOverlay = function(texture, color, canvas)
 { 
     var context = canvas.getContext( '2d' );
 
@@ -98,39 +106,64 @@ PIXI.CanvasTinter._getTintedTextureFast = function(texture, color, canvas)
     canvas.width = frame.width;
     canvas.height = frame.height;
 
-    context.fillStyle = stringColor;
-
+    
+    
+    context.globalCompositeOperation = 'copy';
+    context.fillStyle = '#' + ('00000' + ( color | 0).toString(16)).substr(-6); 
     context.fillRect(0, 0, frame.width, frame.height);
 
-    context.globalCompositeOperation = 'multiply';
-
+    context.globalCompositeOperation = 'destination-atop';
     context.drawImage(texture.baseTexture.source,
-                         frame.x,
-                         frame.y,
-                         frame.width,
-                         frame.height,
-                         0,
-                         0,
-                         frame.width,
-                         frame.height);
+                           frame.x,
+                           frame.y,
+                           frame.width,
+                           frame.height,
+                           0,
+                           0,
+                           frame.width,
+                           frame.height);
 
-    context.globalCompositeOperation = 'destination-in';
+    
+    //context.globalCompositeOperation = 'copy';
 
+}
+
+
+PIXI.CanvasTinter.tintWithPerPixel = function(texture, color, canvas)
+{ 
+    var context = canvas.getContext( '2d' );
+
+    var frame = texture.frame;
+
+    canvas.width = frame.width;
+    canvas.height = frame.height;
+  
+    context.globalCompositeOperation = 'copy';
     context.drawImage(texture.baseTexture.source,
-                         frame.x,
-                         frame.y,
-                         frame.width,
-                         frame.height,
-                         0,
-                         0,
-                         frame.width,
-                         frame.height);
+                           frame.x,
+                           frame.y,
+                           frame.width,
+                           frame.height,
+                           0,
+                           0,
+                           frame.width,
+                           frame.height);
 
+    var rgbValues = PIXI.hex2rgb(color);
+    var r = rgbValues[0], g = rgbValues[1], b = rgbValues[2];
 
+    var pixelData = context.getImageData(0, 0, frame.width, frame.height)
 
-    texture.tintCache[stringColor] = canvas;
+    var pixels = pixelData.data;
 
-    return canvas;
+    for (var i = 0; i < pixels.length; i += 4)
+    {
+          pixels[i+0] *= r;
+          pixels[i+1] *= g;
+          pixels[i+2] *= b;
+    }
+
+    context.putImageData(pixelData, 0, 0);
 }
 
 PIXI.CanvasTinter.roundColor = function(color)
@@ -189,3 +222,12 @@ PIXI.CanvasTinter._getTintedTextureFast = function(texture, color, canvas)
     
     return canvas;
 }
+
+PIXI.CanvasTinter.cacheStepsPerColorChannel = 8;
+PIXI.CanvasTinter.convertTintToImage = false;
+
+PIXI.CanvasTinter.canUseMultiply = PIXI.canUseNewCanvasBlendModes();
+
+PIXI.CanvasTinter.tintMethod = PIXI.CanvasTinter.canUseMultiply ? PIXI.CanvasTinter.tintWithMultiply :  PIXI.CanvasTinter.tintWithPerPixel;
+
+
