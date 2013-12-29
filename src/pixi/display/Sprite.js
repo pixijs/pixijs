@@ -144,6 +144,7 @@ PIXI.Sprite.prototype.setTexture = function(texture)
         this.texture = texture;
     }
 
+    this.cachedTint = 0xFFFFFF;
     this.updateFrame = true;
 };
 
@@ -159,6 +160,7 @@ PIXI.Sprite.prototype.onTextureUpdate = function()
     // so if _width is 0 then width was not set..
     if(this._width)this.scale.x = this._width / this.texture.frame.width;
     if(this._height)this.scale.y = this._height / this.texture.frame.height;
+
 
     this.updateFrame = true;
 };
@@ -327,16 +329,15 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
          //   context[this.smoothProperty] = (this.scaleMode === PIXI.BaseTexture.SCALE_MODE.LINEAR);
         //}
 
-        if(this.tint != 0xFFFFFF)
+        if(this.tint !== 0xFFFFFF)
         {
             if(this.cachedTint !== this.tint)
             {
                 this.cachedTint = this.tint;
                 
-                //TODO maybe add some cacheing?
-               // this.tintedTexture = null;
-                // create a new tinted texture..
-                this.tintedTexture = PIXI.CanvasTinter.getTintedTexture(this.texture, this.tint,  this.tintedTexture);
+                //TODO clean up cacheing - how to clean up the caches?
+                this.tintedTexture = PIXI.CanvasTinter.getTintedTexture(this, this.tint);
+
             }
 
             context.drawImage(this.tintedTexture,

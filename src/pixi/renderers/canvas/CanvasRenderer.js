@@ -20,10 +20,22 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
     if(!PIXI.blendModesCanvas)
     {
         PIXI.blendModesCanvas = [];
-        PIXI.blendModesCanvas[PIXI.blendModes.NORMAL]   = "source-over";
-        PIXI.blendModesCanvas[PIXI.blendModes.ADD]      = "lighter"; //IS THIS OK???
-        PIXI.blendModesCanvas[PIXI.blendModes.MULTIPLY] = "multiply";
-        PIXI.blendModesCanvas[PIXI.blendModes.SCREEN]   = "screen";
+        
+        if(PIXI.canUseNewCanvasBlendModes())
+        {     
+            PIXI.blendModesCanvas[PIXI.blendModes.NORMAL]   = "source-over";
+            PIXI.blendModesCanvas[PIXI.blendModes.ADD]      = "lighter"; //IS THIS OK???
+            PIXI.blendModesCanvas[PIXI.blendModes.MULTIPLY] = "multiply";
+            PIXI.blendModesCanvas[PIXI.blendModes.SCREEN]   = "screen";
+        }
+        else
+        {
+            // this means that the browser does not support the cool new blend modes in canvas "cough" ie "cough"
+            PIXI.blendModesCanvas[PIXI.blendModes.NORMAL]   = "source-over";
+            PIXI.blendModesCanvas[PIXI.blendModes.ADD]      = "lighter"; //IS THIS OK???
+            PIXI.blendModesCanvas[PIXI.blendModes.MULTIPLY] = "source-over";
+            PIXI.blendModesCanvas[PIXI.blendModes.SCREEN]   = "source-over";
+        }
     }
 
     /**

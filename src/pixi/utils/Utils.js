@@ -48,8 +48,13 @@ window.requestAnimFrame = window.requestAnimationFrame;
  * @method hex2rgb
  * @param hex {Number}
  */
-PIXI.hex2rgb = function hex2rgb(hex) {
+PIXI.hex2rgb = function(hex) {
     return [(hex >> 16 & 0xFF) / 255, ( hex >> 8 & 0xFF) / 255, (hex & 0xFF)/ 255];
+};
+
+
+PIXI.rgb2hex = function(rgb) {
+    return ((rgb[0]*255 << 16) + (rgb[1]*255 << 8) + rgb[2]*255);
 };
 
 /**
@@ -136,6 +141,20 @@ PIXI.packColorRGB = function(r, g, b)//r, g, b, a)
 PIXI.unpackColorRGB = function(r, g, b)//r, g, b, a)
 {
     return (Math.floor((r)*255) << 16) | (Math.floor((g)*255) << 8) | (Math.floor((b)*255));
+}
+
+PIXI.canUseNewCanvasBlendModes = function()
+{
+    var canvas = document.createElement('canvas');
+    canvas.width = 1;
+    canvas.height = 1;
+    var context = canvas.getContext('2d');
+    context.fillStyle = '#000';
+    context.fillRect(0,0,1,1);
+    context.globalCompositeOperation = 'multiply';
+    context.fillStyle = '#fff';
+    context.fillRect(0,0,1,1);
+    return context.getImageData(0,0,1,1).data[0] === 0;
 }
 
 /*
