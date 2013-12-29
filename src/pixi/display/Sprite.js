@@ -332,7 +332,11 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
             if(this.cachedTint !== this.tint)
             {
                 this.cachedTint = this.tint;
-                this.tintedTexture = PIXI.CanvasTinter.getTintedTexture(this.texture, this.tint);
+                
+                //TODO maybe add some cacheing?
+               // this.tintedTexture = null;
+                // create a new tinted texture..
+                this.tintedTexture = PIXI.CanvasTinter.getTintedTexture(this.texture, this.tint,  this.tintedTexture);
             }
 
             context.drawImage(this.tintedTexture,

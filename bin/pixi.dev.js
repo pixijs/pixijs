@@ -1785,7 +1785,11 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
             if(this.cachedTint !== this.tint)
             {
                 this.cachedTint = this.tint;
-                this.tintedTexture = PIXI.CanvasTinter.getTintedTexture(this.texture, this.tint);
+                
+                //TODO maybe add some cacheing?
+               // this.tintedTexture = null;
+                // create a new tinted texture..
+                this.tintedTexture = PIXI.CanvasTinter.getTintedTexture(this.texture, this.tint,  this.tintedTexture);
             }
 
             context.drawImage(this.tintedTexture,
@@ -5260,10 +5264,7 @@ PIXI.WebGLSpriteBatch = function(gl)
     //the total number of indices in our batch
     var numIndices = this.size * 6;
 
-    //TODO: use properties here
-    //current blend mode.. changing it flushes the batch
-    this.blendMode = PIXI.blendModes.NORMAL;
-
+    
     //vertex data
     this.vertices = new Float32Array(numVerts);
     //index data
@@ -5296,24 +5297,7 @@ PIXI.WebGLSpriteBatch = function(gl)
 PIXI.WebGLSpriteBatch.prototype.begin = function(renderSession)
 { 
     this.renderSession = renderSession;
-
-//    var gl = this.gl;
-
     this.start();
-    /*
-
-    var projection =renderSession.projection;
-    gl.uniform2f(PIXI.defaultShader.projectionVector, projection.x, projection.y);
-
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-
-    var stride =  this.vertSize * 4;
-    gl.vertexAttribPointer(PIXI.defaultShader.aVertexPosition, 2, gl.FLOAT, false, stride, 0);
-    gl.vertexAttribPointer(PIXI.defaultShader.aTextureCoord, 2, gl.FLOAT, false, stride, 2 * 4);
-    gl.vertexAttribPointer(PIXI.defaultShader.colorAttribute, 2, gl.FLOAT, false, stride, 4 * 4);
-*/
-  //  this.currentBlendMode = 99999;
 }
 
 PIXI.WebGLSpriteBatch.prototype.end = function()
@@ -5338,7 +5322,7 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
     }
 
     // get the uvs for the texture
-    var uvs = sprite.texture._uvs;
+    var uvs = sprite._uvs || sprite.texture._uvs;
     // if the uvs have not updated then no point rendering just yet!
     if(!uvs)return;
 
@@ -6178,12 +6162,12 @@ PIXI.CanvasTinter = function()
    /// this.textureCach
 }
 
-PIXI.CanvasTinter.getTintedTexture = function(texture, color)
+PIXI.CanvasTinter.getTintedTexture = function(texture, color, canvas)
 { 
     var stringColor = '#' + ('00000' + ( color | 0).toString(16)).substr(-6);
     
      // clone texture..
-    var canvas = document.createElement("canvas");
+    var canvas = canvas || document.createElement("canvas");
     var context = canvas.getContext( '2d' );
 
     var frame = texture.frame;
@@ -6218,7 +6202,7 @@ PIXI.CanvasTinter.getTintedTexture = function(texture, color)
                            0,
                            frame.width,
                            frame.height);
-
+    
     return canvas;
 }
 /**

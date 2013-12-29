@@ -9,12 +9,12 @@ PIXI.CanvasTinter = function()
    /// this.textureCach
 }
 
-PIXI.CanvasTinter.getTintedTexture = function(texture, color)
+PIXI.CanvasTinter.getTintedTexture = function(texture, color, canvas)
 { 
     var stringColor = '#' + ('00000' + ( color | 0).toString(16)).substr(-6);
     
      // clone texture..
-    var canvas = document.createElement("canvas");
+    var canvas = canvas || document.createElement("canvas");
     var context = canvas.getContext( '2d' );
 
     var frame = texture.frame;
@@ -49,6 +49,6 @@ PIXI.CanvasTinter.getTintedTexture = function(texture, color)
                            0,
                            frame.width,
                            frame.height);
-
+    
     return canvas;
 }
