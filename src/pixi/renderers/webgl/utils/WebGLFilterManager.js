@@ -18,8 +18,12 @@ PIXI.WebGLFilterManager = function(transparent)
 
 // API
 
-PIXI.WebGLFilterManager.prototype.begin = function(projection, buffer)
+PIXI.WebGLFilterManager.prototype.begin = function(renderSession, buffer)
 {
+    this.renderSession = renderSession;
+
+    var projection = this.renderSession.projection;
+
     this.width = projection.x * 2;
     this.height = -projection.y * 2;
     this.buffer = buffer;
@@ -28,6 +32,10 @@ PIXI.WebGLFilterManager.prototype.begin = function(projection, buffer)
 PIXI.WebGLFilterManager.prototype.pushFilter = function(filterBlock)
 {
     var gl = PIXI.gl;
+
+    var projection = this.renderSession.projection;
+    var offset = this.renderSession.offset;
+
 
     // filter program
     // OPTIMISATION - the first filter is free if its a simple color change?
@@ -53,6 +61,7 @@ PIXI.WebGLFilterManager.prototype.pushFilter = function(filterBlock)
     this.getBounds(filterBlock.target);
 
     filterBlock.target.filterArea = filterBlock.target.getBounds();
+
    // console.log(filterBlock.target.filterArea);
     // addpadding?
     //displayObject.filterArea.x
@@ -78,11 +87,11 @@ PIXI.WebGLFilterManager.prototype.pushFilter = function(filterBlock)
     // set view port
     gl.viewport(0, 0, filterArea.width, filterArea.height);
 
-    PIXI.projection.x = filterArea.width/2;
-    PIXI.projection.y = -filterArea.height/2;
+    projection.x = filterArea.width/2;
+    projection.y = -filterArea.height/2;
 
-    PIXI.offset.x = -filterArea.x;
-    PIXI.offset.y = -filterArea.y;
+    offset.x = -filterArea.x;
+    offset.y = -filterArea.y;
 
     //console.log(PIXI.defaultShader.projectionVector)
     // update projection
@@ -107,6 +116,8 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
     var filterBlock = this.filterStack.pop();
     var filterArea = filterBlock.target.filterArea;
     var texture = filterBlock._glFilterTexture;
+    var projection = this.renderSession.projection;
+    var offset = this.renderSession.offset;
 
     if(filterBlock.filterPasses.length > 1)
     {
@@ -209,11 +220,11 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
 
 
     // TODO need toremove thease global elements..
-    PIXI.projection.x = sizeX/2;
-    PIXI.projection.y = -sizeY/2;
+    projection.x = sizeX/2;
+    projection.y = -sizeY/2;
 
-    PIXI.offset.x = offsetX;
-    PIXI.offset.y = offsetY;
+    offset.x = offsetX;
+    offset.y = offsetY;
 
     filterArea = filterBlock.target.filterArea;
 

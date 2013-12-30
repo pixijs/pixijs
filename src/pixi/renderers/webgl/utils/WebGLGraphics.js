@@ -21,7 +21,7 @@ PIXI.WebGLGraphics = function()
  * @param graphics {Graphics}
  * @param projection {Object}
  */
-PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
+PIXI.WebGLGraphics.renderGraphics = function(graphics, projection, offset)
 {
     var gl = PIXI.gl;
 
@@ -59,7 +59,7 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
     gl.uniformMatrix3fv(PIXI.primitiveShader.translationMatrix, false, m);
 
     gl.uniform2f(PIXI.primitiveShader.projectionVector, projection.x, -projection.y);
-    gl.uniform2f(PIXI.primitiveShader.offsetVector, -PIXI.offset.x, -PIXI.offset.y);
+    gl.uniform2f(PIXI.primitiveShader.offsetVector, -offset.x, -offset.y);
 
     gl.uniform3fv(PIXI.primitiveShader.tintColor, PIXI.hex2rgb(graphics.tint));
 

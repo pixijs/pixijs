@@ -279,7 +279,7 @@ PIXI.DisplayObjectContainer.prototype._renderWebGL = function(renderSession)
         if(this._mask)
         {
             renderSession.spriteBatch.stop();
-            renderSession.maskManager.pushMask(this.mask, renderSession.projection);
+            renderSession.maskManager.pushMask(this.mask, renderSession);
             renderSession.spriteBatch.start();
         }
 
@@ -299,7 +299,7 @@ PIXI.DisplayObjectContainer.prototype._renderWebGL = function(renderSession)
         renderSession.spriteBatch.stop();
 
         if(this._filters)renderSession.filterManager.popFilter();
-        if(this._mask)renderSession.maskManager.popMask(renderSession.projection);
+        if(this._mask)renderSession.maskManager.popMask(renderSession);
         
         renderSession.spriteBatch.start();
     }

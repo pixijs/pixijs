@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-12-29
+ * Compiled: 2013-12-30
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -1095,6 +1095,7 @@ PIXI.DisplayObject.prototype.updateTransform = function()
     this.vcount = PIXI.visibleCount;
 };
 
+
 PIXI.DisplayObject.prototype.getBounds = function()
 {
     return PIXI.EmptyRectangle;
@@ -1395,7 +1396,7 @@ PIXI.DisplayObjectContainer.prototype._renderWebGL = function(renderSession)
         if(this._mask)
         {
             renderSession.spriteBatch.stop();
-            renderSession.maskManager.pushMask(this.mask, renderSession.projection);
+            renderSession.maskManager.pushMask(this.mask, renderSession);
             renderSession.spriteBatch.start();
         }
 
@@ -1415,7 +1416,7 @@ PIXI.DisplayObjectContainer.prototype._renderWebGL = function(renderSession)
         renderSession.spriteBatch.stop();
 
         if(this._filters)renderSession.filterManager.popFilter();
-        if(this._mask)renderSession.maskManager.popMask(renderSession.projection);
+        if(this._mask)renderSession.maskManager.popMask(renderSession);
         
         renderSession.spriteBatch.start();
     }
@@ -1705,7 +1706,7 @@ PIXI.Sprite.prototype._renderWebGL = function(renderSession)
         if(this._mask)
         {
             spriteBatch.stop();
-            renderSession.maskManager.pushMask(this.mask, renderSession.projection);
+            renderSession.maskManager.pushMask(this.mask, renderSession);
             spriteBatch.start();
         }
 
@@ -1729,7 +1730,7 @@ PIXI.Sprite.prototype._renderWebGL = function(renderSession)
         spriteBatch.stop();
 
         if(this._filters)renderSession.filterManager.popFilter();
-        if(this._mask)renderSession.maskManager.popMask(renderSession.projection);
+        if(this._mask)renderSession.maskManager.popMask(renderSession);
         
         spriteBatch.start();
     }
@@ -4349,7 +4350,7 @@ PIXI.WebGLGraphics = function()
  * @param graphics {Graphics}
  * @param projection {Object}
  */
-PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
+PIXI.WebGLGraphics.renderGraphics = function(graphics, projection, offset)
 {
     var gl = PIXI.gl;
 
@@ -4387,7 +4388,7 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection)
     gl.uniformMatrix3fv(PIXI.primitiveShader.translationMatrix, false, m);
 
     gl.uniform2f(PIXI.primitiveShader.projectionVector, projection.x, -projection.y);
-    gl.uniform2f(PIXI.primitiveShader.offsetVector, -PIXI.offset.x, -PIXI.offset.y);
+    gl.uniform2f(PIXI.primitiveShader.offsetVector, -offset.x, -offset.y);
 
     gl.uniform3fv(PIXI.primitiveShader.tintColor, PIXI.hex2rgb(graphics.tint));
 
@@ -4924,14 +4925,16 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     
     var gl = this.gl;
 
-    PIXI.blendModesWebGL = [];
+    if(!PIXI.blendModesWebGL)
+    {
+        PIXI.blendModesWebGL = [];
 
-    PIXI.blendModesWebGL[PIXI.blendModes.NORMAL]   = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-    PIXI.blendModesWebGL[PIXI.blendModes.ADD]      = [gl.SRC_ALPHA, gl.DST_ALPHA];
-    PIXI.blendModesWebGL[PIXI.blendModes.MULTIPLY] = [gl.DST_COLOR, gl.ONE_MINUS_SRC_ALPHA];
-    PIXI.blendModesWebGL[PIXI.blendModes.SCREEN]   = [gl.SRC_ALPHA, gl.ONE];
+        PIXI.blendModesWebGL[PIXI.blendModes.NORMAL]   = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+        PIXI.blendModesWebGL[PIXI.blendModes.ADD]      = [gl.SRC_ALPHA, gl.DST_ALPHA];
+        PIXI.blendModesWebGL[PIXI.blendModes.MULTIPLY] = [gl.DST_COLOR, gl.ONE_MINUS_SRC_ALPHA];
+        PIXI.blendModesWebGL[PIXI.blendModes.SCREEN]   = [gl.SRC_ALPHA, gl.ONE];
+    }
 
-    console.log( PIXI.blendModesWebGL[PIXI.blendModes.SCREEN])
     gl.useProgram(PIXI.defaultShader.program);
 
     PIXI.WebGLRenderer.gl = gl;
@@ -4942,13 +4945,14 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     gl.enable(gl.BLEND);
     gl.colorMask(true, true, true, this.transparent);
 
-    PIXI.projection = new PIXI.Point(400, 300);
-    PIXI.offset = new PIXI.Point(0, 0);
-    
+  
+    this.projection = new PIXI.Point(400, 300);
+    this.offset = new PIXI.Point(0, 0);
+
     this.resize(this.width, this.height);
     this.contextLost = false;
 
-    this.spriteBatch = new PIXI.WebGLSpriteBatch(gl)//this.gl, PIXI.WebGLRenderer.batchSize);
+    this.spriteBatch = new PIXI.WebGLSpriteBatch(gl);
     this.maskManager = new PIXI.WebGLMaskManager(gl);
     this.filterManager = new PIXI.WebGLFilterManager(this.transparent);
 
@@ -4999,19 +5003,23 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
     gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], !this.transparent);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-    PIXI.projection.x =  this.width/2;
-    PIXI.projection.y =  -this.height/2;
+
+    this.projection.x =  this.width/2;
+    this.projection.y =  -this.height/2;
+
 
     // reset the render session data..
     this.renderSession.drawCount = 0;
     this.renderSession.currentBlendMode = 9999;
-    this.renderSession.projection = PIXI.projection;
+
+    this.renderSession.projection = this.projection;
+    this.renderSession.offset = this.offset;
    
     // start the sprite batch
     this.spriteBatch.begin(this.renderSession);
 
     // start the filter manager
-    this.filterManager.begin(PIXI.projection, null);
+    this.filterManager.begin(this.renderSession, null);
 
     // render the scene!
     stage._renderWebGL(this.renderSession);
@@ -5029,6 +5037,27 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
             stage.interactionManager.setTarget(this);
         }
     }
+
+    //can simulate context loss in Chrome like so:
+    // this.view.onmousedown = function(ev) {
+    // console.dir(this.gl.getSupportedExtensions());
+    //    var ext = (
+    //        gl.getExtension("WEBGL_scompressed_texture_s3tc")
+    //   // gl.getExtension("WEBGL_compressed_texture_s3tc") ||
+    //   // gl.getExtension("MOZ_WEBGL_compressed_texture_s3tc") ||
+    //   // gl.getExtension("WEBKIT_WEBGL_compressed_texture_s3tc")
+    // );
+    // console.dir(ext);
+
+    //  var loseCtx = this.gl.getExtension("WEBGL_lose_context");
+    //  console.log("killing context");
+    //  loseCtx.loseContext();
+
+    //  setTimeout(function() {
+    //      console.log("restoring context...");
+    //      loseCtx.restoreContext();
+    //  }.bind(this), 1000);
+    // }.bind(this);
 };
 
 /**
@@ -5147,8 +5176,8 @@ PIXI.WebGLRenderer.prototype.resize = function(width, height)
 
     this.gl.viewport(0, 0, this.width, this.height);
     
-    PIXI.projection.x =  this.width/2;
-    PIXI.projection.y =  -this.height/2;
+    this.projection.x =  this.width/2;
+    this.projection.y =  -this.height/2;
 };
 
 /**
@@ -5211,7 +5240,7 @@ PIXI.WebGLMaskManager = function(gl)
     this.maskPosition = 0;
 }
 
-PIXI.WebGLMaskManager.prototype.pushMask = function(maskData, projection)
+PIXI.WebGLMaskManager.prototype.pushMask = function(maskData, renderSession)
 { 
     var gl = this.gl;
 
@@ -5221,19 +5250,21 @@ PIXI.WebGLMaskManager.prototype.pushMask = function(maskData, projection)
         gl.stencilFunc(gl.ALWAYS,1,1);
     }
     
+    maskData.visible = false;
+
     this.maskStack.push(maskData);
     
     gl.colorMask(false, false, false, false);
     gl.stencilOp(gl.KEEP,gl.KEEP,gl.INCR);
 
-    PIXI.WebGLGraphics.renderGraphics(maskData, projection);
+    PIXI.WebGLGraphics.renderGraphics(maskData, renderSession.projection, renderSession.offset);
 
     gl.colorMask(true, true, true, true);
     gl.stencilFunc(gl.NOTEQUAL,0, this.maskStack.length);
     gl.stencilOp(gl.KEEP,gl.KEEP,gl.KEEP);
 }
 
-PIXI.WebGLMaskManager.prototype.popMask = function(projection)
+PIXI.WebGLMaskManager.prototype.popMask = function(renderSession)
 { 
     var gl = this.gl;
 
@@ -5246,7 +5277,7 @@ PIXI.WebGLMaskManager.prototype.popMask = function(projection)
         //gl.stencilFunc(gl.ALWAYS,1,1);
         gl.stencilOp(gl.KEEP,gl.KEEP,gl.DECR);
 
-        PIXI.WebGLGraphics.renderGraphics(maskData, projection);
+        PIXI.WebGLGraphics.renderGraphics(maskData, renderSession.projection, renderSession.offset);
 
         gl.colorMask(true, true, true, true);
         gl.stencilFunc(gl.NOTEQUAL,0,this.maskStack.length);
@@ -5626,8 +5657,12 @@ PIXI.WebGLFilterManager = function(transparent)
 
 // API
 
-PIXI.WebGLFilterManager.prototype.begin = function(projection, buffer)
+PIXI.WebGLFilterManager.prototype.begin = function(renderSession, buffer)
 {
+    this.renderSession = renderSession;
+
+    var projection = this.renderSession.projection;
+
     this.width = projection.x * 2;
     this.height = -projection.y * 2;
     this.buffer = buffer;
@@ -5636,6 +5671,10 @@ PIXI.WebGLFilterManager.prototype.begin = function(projection, buffer)
 PIXI.WebGLFilterManager.prototype.pushFilter = function(filterBlock)
 {
     var gl = PIXI.gl;
+
+    var projection = this.renderSession.projection;
+    var offset = this.renderSession.offset;
+
 
     // filter program
     // OPTIMISATION - the first filter is free if its a simple color change?
@@ -5661,6 +5700,7 @@ PIXI.WebGLFilterManager.prototype.pushFilter = function(filterBlock)
     this.getBounds(filterBlock.target);
 
     filterBlock.target.filterArea = filterBlock.target.getBounds();
+
    // console.log(filterBlock.target.filterArea);
     // addpadding?
     //displayObject.filterArea.x
@@ -5686,11 +5726,11 @@ PIXI.WebGLFilterManager.prototype.pushFilter = function(filterBlock)
     // set view port
     gl.viewport(0, 0, filterArea.width, filterArea.height);
 
-    PIXI.projection.x = filterArea.width/2;
-    PIXI.projection.y = -filterArea.height/2;
+    projection.x = filterArea.width/2;
+    projection.y = -filterArea.height/2;
 
-    PIXI.offset.x = -filterArea.x;
-    PIXI.offset.y = -filterArea.y;
+    offset.x = -filterArea.x;
+    offset.y = -filterArea.y;
 
     //console.log(PIXI.defaultShader.projectionVector)
     // update projection
@@ -5715,6 +5755,8 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
     var filterBlock = this.filterStack.pop();
     var filterArea = filterBlock.target.filterArea;
     var texture = filterBlock._glFilterTexture;
+    var projection = this.renderSession.projection;
+    var offset = this.renderSession.offset;
 
     if(filterBlock.filterPasses.length > 1)
     {
@@ -5817,11 +5859,11 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
 
 
     // TODO need toremove thease global elements..
-    PIXI.projection.x = sizeX/2;
-    PIXI.projection.y = -sizeY/2;
+    projection.x = sizeX/2;
+    projection.y = -sizeY/2;
 
-    PIXI.offset.x = offsetX;
-    PIXI.offset.y = offsetY;
+    offset.x = offsetX;
+    offset.y = offsetY;
 
     filterArea = filterBlock.target.filterArea;
 
@@ -6151,7 +6193,7 @@ PIXI.CanvasMaskManager = function()
 PIXI.CanvasMaskManager.prototype.pushMask = function(maskData, context)
 { 
     context.save();
-
+    
     maskData.visible = false;
     maskData.alpha = 0;
     
@@ -7153,6 +7195,9 @@ PIXI.Graphics.prototype.clear = function()
 
 PIXI.Graphics.prototype._renderWebGL = function(renderSession)
 {
+    // if the sprite is not visible or the alpha is 0 then no need to render this element
+    if(this.visible === false || this.alpha === 0)return;
+    
     renderSession.spriteBatch.stop();
 
     // check blend mode
@@ -7163,13 +7208,16 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
         this.spriteBatch.gl.blendFunc(blendModeWebGL[0], blendModeWebGL[1]);
     }
 
-    PIXI.WebGLGraphics.renderGraphics(this, renderSession.projection);
+    PIXI.WebGLGraphics.renderGraphics(this, renderSession.projection, renderSession.offset);
     
     renderSession.spriteBatch.start();
 }
 
 PIXI.Graphics.prototype._renderCanvas = function(renderSession)
 {
+    // if the sprite is not visible or the alpha is 0 then no need to render this element
+    if(this.visible === false || this.alpha === 0)return;
+    
     var context = renderSession.context;
     var transform = this.worldTransform;
     

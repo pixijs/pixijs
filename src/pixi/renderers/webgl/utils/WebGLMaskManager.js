@@ -12,7 +12,7 @@ PIXI.WebGLMaskManager = function(gl)
     this.maskPosition = 0;
 }
 
-PIXI.WebGLMaskManager.prototype.pushMask = function(maskData, projection)
+PIXI.WebGLMaskManager.prototype.pushMask = function(maskData, renderSession)
 { 
     var gl = this.gl;
 
@@ -22,19 +22,21 @@ PIXI.WebGLMaskManager.prototype.pushMask = function(maskData, projection)
         gl.stencilFunc(gl.ALWAYS,1,1);
     }
     
+    maskData.visible = false;
+
     this.maskStack.push(maskData);
     
     gl.colorMask(false, false, false, false);
     gl.stencilOp(gl.KEEP,gl.KEEP,gl.INCR);
 
-    PIXI.WebGLGraphics.renderGraphics(maskData, projection);
+    PIXI.WebGLGraphics.renderGraphics(maskData, renderSession.projection, renderSession.offset);
 
     gl.colorMask(true, true, true, true);
     gl.stencilFunc(gl.NOTEQUAL,0, this.maskStack.length);
     gl.stencilOp(gl.KEEP,gl.KEEP,gl.KEEP);
 }
 
-PIXI.WebGLMaskManager.prototype.popMask = function(projection)
+PIXI.WebGLMaskManager.prototype.popMask = function(renderSession)
 { 
     var gl = this.gl;
 
@@ -47,7 +49,7 @@ PIXI.WebGLMaskManager.prototype.popMask = function(projection)
         //gl.stencilFunc(gl.ALWAYS,1,1);
         gl.stencilOp(gl.KEEP,gl.KEEP,gl.DECR);
 
-        PIXI.WebGLGraphics.renderGraphics(maskData, projection);
+        PIXI.WebGLGraphics.renderGraphics(maskData, renderSession.projection, renderSession.offset);
 
         gl.colorMask(true, true, true, true);
         gl.stencilFunc(gl.NOTEQUAL,0,this.maskStack.length);

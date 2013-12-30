@@ -69,14 +69,16 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     
     var gl = this.gl;
 
-    PIXI.blendModesWebGL = [];
+    if(!PIXI.blendModesWebGL)
+    {
+        PIXI.blendModesWebGL = [];
 
-    PIXI.blendModesWebGL[PIXI.blendModes.NORMAL]   = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-    PIXI.blendModesWebGL[PIXI.blendModes.ADD]      = [gl.SRC_ALPHA, gl.DST_ALPHA];
-    PIXI.blendModesWebGL[PIXI.blendModes.MULTIPLY] = [gl.DST_COLOR, gl.ONE_MINUS_SRC_ALPHA];
-    PIXI.blendModesWebGL[PIXI.blendModes.SCREEN]   = [gl.SRC_ALPHA, gl.ONE];
+        PIXI.blendModesWebGL[PIXI.blendModes.NORMAL]   = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+        PIXI.blendModesWebGL[PIXI.blendModes.ADD]      = [gl.SRC_ALPHA, gl.DST_ALPHA];
+        PIXI.blendModesWebGL[PIXI.blendModes.MULTIPLY] = [gl.DST_COLOR, gl.ONE_MINUS_SRC_ALPHA];
+        PIXI.blendModesWebGL[PIXI.blendModes.SCREEN]   = [gl.SRC_ALPHA, gl.ONE];
+    }
 
-    console.log( PIXI.blendModesWebGL[PIXI.blendModes.SCREEN])
     gl.useProgram(PIXI.defaultShader.program);
 
     PIXI.WebGLRenderer.gl = gl;
@@ -87,13 +89,14 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     gl.enable(gl.BLEND);
     gl.colorMask(true, true, true, this.transparent);
 
-    PIXI.projection = new PIXI.Point(400, 300);
-    PIXI.offset = new PIXI.Point(0, 0);
-    
+  
+    this.projection = new PIXI.Point(400, 300);
+    this.offset = new PIXI.Point(0, 0);
+
     this.resize(this.width, this.height);
     this.contextLost = false;
 
-    this.spriteBatch = new PIXI.WebGLSpriteBatch(gl)//this.gl, PIXI.WebGLRenderer.batchSize);
+    this.spriteBatch = new PIXI.WebGLSpriteBatch(gl);
     this.maskManager = new PIXI.WebGLMaskManager(gl);
     this.filterManager = new PIXI.WebGLFilterManager(this.transparent);
 
@@ -144,19 +147,23 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
     gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], !this.transparent);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-    PIXI.projection.x =  this.width/2;
-    PIXI.projection.y =  -this.height/2;
+
+    this.projection.x =  this.width/2;
+    this.projection.y =  -this.height/2;
+
 
     // reset the render session data..
     this.renderSession.drawCount = 0;
     this.renderSession.currentBlendMode = 9999;
-    this.renderSession.projection = PIXI.projection;
+
+    this.renderSession.projection = this.projection;
+    this.renderSession.offset = this.offset;
    
     // start the sprite batch
     this.spriteBatch.begin(this.renderSession);
 
     // start the filter manager
-    this.filterManager.begin(PIXI.projection, null);
+    this.filterManager.begin(this.renderSession, null);
 
     // render the scene!
     stage._renderWebGL(this.renderSession);
@@ -174,6 +181,27 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
             stage.interactionManager.setTarget(this);
         }
     }
+
+    //can simulate context loss in Chrome like so:
+    // this.view.onmousedown = function(ev) {
+    // console.dir(this.gl.getSupportedExtensions());
+    //    var ext = (
+    //        gl.getExtension("WEBGL_scompressed_texture_s3tc")
+    //   // gl.getExtension("WEBGL_compressed_texture_s3tc") ||
+    //   // gl.getExtension("MOZ_WEBGL_compressed_texture_s3tc") ||
+    //   // gl.getExtension("WEBKIT_WEBGL_compressed_texture_s3tc")
+    // );
+    // console.dir(ext);
+
+    //  var loseCtx = this.gl.getExtension("WEBGL_lose_context");
+    //  console.log("killing context");
+    //  loseCtx.loseContext();
+
+    //  setTimeout(function() {
+    //      console.log("restoring context...");
+    //      loseCtx.restoreContext();
+    //  }.bind(this), 1000);
+    // }.bind(this);
 };
 
 /**
@@ -292,8 +320,8 @@ PIXI.WebGLRenderer.prototype.resize = function(width, height)
 
     this.gl.viewport(0, 0, this.width, this.height);
     
-    PIXI.projection.x =  this.width/2;
-    PIXI.projection.y =  -this.height/2;
+    this.projection.x =  this.width/2;
+    this.projection.y =  -this.height/2;
 };
 
 /**

@@ -235,6 +235,9 @@ PIXI.Graphics.prototype.clear = function()
 
 PIXI.Graphics.prototype._renderWebGL = function(renderSession)
 {
+    // if the sprite is not visible or the alpha is 0 then no need to render this element
+    if(this.visible === false || this.alpha === 0)return;
+    
     renderSession.spriteBatch.stop();
 
     // check blend mode
@@ -245,13 +248,16 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
         this.spriteBatch.gl.blendFunc(blendModeWebGL[0], blendModeWebGL[1]);
     }
 
-    PIXI.WebGLGraphics.renderGraphics(this, renderSession.projection);
+    PIXI.WebGLGraphics.renderGraphics(this, renderSession.projection, renderSession.offset);
     
     renderSession.spriteBatch.start();
 }
 
 PIXI.Graphics.prototype._renderCanvas = function(renderSession)
 {
+    // if the sprite is not visible or the alpha is 0 then no need to render this element
+    if(this.visible === false || this.alpha === 0)return;
+    
     var context = renderSession.context;
     var transform = this.worldTransform;
     

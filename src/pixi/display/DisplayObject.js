@@ -401,6 +401,7 @@ PIXI.DisplayObject.prototype.updateTransform = function()
     this.vcount = PIXI.visibleCount;
 };
 
+
 PIXI.DisplayObject.prototype.getBounds = function()
 {
     return PIXI.EmptyRectangle;
