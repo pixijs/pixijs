@@ -305,16 +305,19 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
 
     var frame = this.texture.frame;
     var context = renderSession.context;
+    var texture = this.texture;
 
     //ignore null sources
-    if(frame && frame.width && frame.height && this.texture.baseTexture.source)
+    if(frame && frame.width && frame.height && texture.baseTexture.source)
     {
         context.globalAlpha = this.worldAlpha;
 
         var transform = this.worldTransform;
 
+        // alow for trimming
+       
         context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
-
+         
         // check blend mode
         if(this.blendMode !== renderSession.currentBlendMode)
         {
@@ -328,6 +331,7 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
        //     this.scaleMode = displayObject.texture.baseTexture.scaleMode;
          //   context[this.smoothProperty] = (this.scaleMode === PIXI.BaseTexture.SCALE_MODE.LINEAR);
         //}
+
 
         if(this.tint !== 0xFFFFFF)
         {
@@ -352,15 +356,37 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
         }
         else
         {
-            context.drawImage(this.texture.baseTexture.source,
+
+           
+
+            if(texture.trimmed)
+            {
+                var trim =  texture.trim;
+
+                context.drawImage(this.texture.baseTexture.source,
                                frame.x,
                                frame.y,
                                frame.width,
                                frame.height,
+                               trim.x - this.anchor.x * trim.realWidth,
+                               trim.y - this.anchor.y * trim.realHeight,
+                               frame.width,
+                               frame.height); 
+            }
+            else
+            {
+                context.drawImage(this.texture.baseTexture.source,
+                               frame.x,
+                               frame.y,
+                               frame.width,
+                               frame.height,
+                               0,0,
                                (this.anchor.x) * -frame.width,
                                (this.anchor.y) * -frame.height,
                                frame.width,
                                frame.height); 
+            }
+            
         }
     }
 

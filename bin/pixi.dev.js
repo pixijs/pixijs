@@ -1759,16 +1759,19 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
 
     var frame = this.texture.frame;
     var context = renderSession.context;
+    var texture = this.texture;
 
     //ignore null sources
-    if(frame && frame.width && frame.height && this.texture.baseTexture.source)
+    if(frame && frame.width && frame.height && texture.baseTexture.source)
     {
         context.globalAlpha = this.worldAlpha;
 
         var transform = this.worldTransform;
 
+        // alow for trimming
+       
         context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
-
+         
         // check blend mode
         if(this.blendMode !== renderSession.currentBlendMode)
         {
@@ -1782,6 +1785,7 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
        //     this.scaleMode = displayObject.texture.baseTexture.scaleMode;
          //   context[this.smoothProperty] = (this.scaleMode === PIXI.BaseTexture.SCALE_MODE.LINEAR);
         //}
+
 
         if(this.tint !== 0xFFFFFF)
         {
@@ -1806,15 +1810,37 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
         }
         else
         {
-            context.drawImage(this.texture.baseTexture.source,
+
+           
+
+            if(texture.trimmed)
+            {
+                var trim =  texture.trim;
+
+                context.drawImage(this.texture.baseTexture.source,
                                frame.x,
                                frame.y,
                                frame.width,
                                frame.height,
+                               trim.x - this.anchor.x * trim.realWidth,
+                               trim.y - this.anchor.y * trim.realHeight,
+                               frame.width,
+                               frame.height); 
+            }
+            else
+            {
+                context.drawImage(this.texture.baseTexture.source,
+                               frame.x,
+                               frame.y,
+                               frame.width,
+                               frame.height,
+                               0,0,
                                (this.anchor.x) * -frame.width,
                                (this.anchor.y) * -frame.height,
                                frame.width,
                                frame.height); 
+            }
+            
         }
     }
 
@@ -5387,13 +5413,30 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
     height = sprite.texture.frame.height;
 
     // TODO trim??
-    var aX = sprite.anchor.x; // - sprite.texture.trim.x
-    var aY = sprite.anchor.y; //- sprite.texture.trim.y
-    var w0 = width * (1-aX);
-    var w1 = width * -aX;
+    var aX = sprite.anchor.x;
+    var aY = sprite.anchor.y;
 
-    var h0 = height * (1-aY);
-    var h1 = height * -aY;
+    var w0, w1, h0, h1;
+        
+    if (sprite.texture.trimmed)
+    {
+        // if the sprite is trimmed then we need to add the extra space before transforming the sprite coords..
+        var trim = sprite.texture.trim;
+
+        w1 = trim.x - aX * trim.realWidth;
+        w0 = w1 + width;
+
+        h1 = trim.y - aY * trim.realHeight;
+        h0 = h1 + height;                          
+    }
+    else
+    {
+        var w0 = (width ) * (1-aX);
+        var w1 = (width ) * -aX;
+
+        var h0 = height * (1-aY);
+        var h1 = height * -aY;
+    }
 
     var index = this.currentBatchSize * 4 * this.vertSize;
 
@@ -10245,11 +10288,21 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
                             width: rect.w,
                             height: rect.h
                         });
+
+                        // check to see ifthe sprite ha been trimmed..
                         if (frameData[i].trimmed) {
-                            //var realSize = frameData[i].spriteSourceSize;
-                            PIXI.TextureCache[i].realSize = frameData[i].spriteSourceSize;
-                            PIXI.TextureCache[i].trim.x = 0; // (realSize.x / rect.w)
-                            // calculate the offset!
+
+                            var texture =  PIXI.TextureCache[i]
+                            
+                            texture.trimmed = true;
+
+                            var actualSize = frameData[i].sourceSize;
+                            var realSize = frameData[i].spriteSourceSize;
+
+                            texture.trim.x = realSize.x
+                            texture.trim.y = realSize.y
+                            texture.trim.realWidth = actualSize.w;
+                            texture.trim.realHeight = actualSize.h;
                         }
                     }
                 }
