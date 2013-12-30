@@ -1,10 +1,7 @@
 /**
- * @author Matt DesLauriers <mattdesl> https://github.com/mattdesl/
- * 
- * Heavily inspired by LibGDX's WebGLMaskManager:
- * https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/graphics/g2d/WebGLMaskManager.java
+ * @author Mat Groves http://matgroves.com/ @Doormat23
  */
-
+ 
 PIXI.WebGLMaskManager = function(gl)
 {
     this.gl = gl;
