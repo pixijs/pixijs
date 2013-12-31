@@ -1155,6 +1155,8 @@ PIXI.DisplayObjectContainer.prototype.constructor = PIXI.DisplayObjectContainer;
  * @property width
  * @type Number
  */
+
+/*
 Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'width', {
     get: function() {
         return this.scale.x * this.getBounds().width;
@@ -1164,13 +1166,15 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'width', {
         this._width = value;
     }
 });
-
+*/
 /**
  * The height of the displayObjectContainer, setting this will actually modify the scale to acheive the value set
  *
  * @property height
  * @type Number
  */
+
+ /*
 Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'height', {
     get: function() {
         return  this.scale.y * this.getBounds().height;
@@ -1180,6 +1184,7 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'height', {
         this._height = value;
     }
 });
+*/
 
 /**
  * Adds a child to the container.
@@ -1223,6 +1228,8 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
         }
 
         child.parent = this;
+
+        this.children.splice(index, 0, child);
 
         if(this.stage)this.setStageReference(this.stage)
     }
