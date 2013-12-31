@@ -5115,7 +5115,7 @@ PIXI.WebGLRenderer.prototype.renderDisplayObject = function(displayObject, proje
     this.filterManager.begin(this.renderSession, null);
 
     // render the scene!
-    stage._renderWebGL(this.renderSession);
+    displayObject._renderWebGL(this.renderSession);
 
     // finish the sprite batch
     this.spriteBatch.end();
