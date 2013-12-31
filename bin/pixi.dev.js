@@ -1756,6 +1756,9 @@ PIXI.Sprite.prototype._renderWebGL = function(renderSession)
 
 PIXI.Sprite.prototype._renderCanvas = function(renderSession)
 {
+    // if the sprite is not visible or the alpha is 0 then no need to render this element
+    if(this.visible === false || this.alpha === 0)return;
+    
     if(this._mask)
     {
         renderSession.maskManager.pushMask(this._mask, renderSession.context);

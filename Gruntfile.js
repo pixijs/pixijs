@@ -131,7 +131,7 @@ module.exports = function(grunt) {
         },
         jshint: {
             options: {
-                jshintrc: '.jshintrc'
+                jshintrc: './.jshintrc'
             },
             source: srcFiles.filter(function(v) { return v.match(/(Intro|Outro|Spine|Pixi)\.js$/) === null; }).concat('Gruntfile.js'),
             test: {
