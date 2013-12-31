@@ -4,25 +4,25 @@
 
 PIXI.initDefaultShaders = function()
 {
-    PIXI.primitiveShader = new PIXI.PrimitiveShader();
-    PIXI.primitiveShader.init();
+   // PIXI.primitiveShader = new PIXI.PrimitiveShader();
+  //  PIXI.primitiveShader.init();
 
     PIXI.stripShader = new PIXI.StripShader();
     PIXI.stripShader.init();
 
-    PIXI.defaultShader = new PIXI.PixiShader();
-    PIXI.defaultShader.init();
+  //  PIXI.defaultShader = new PIXI.PixiShader();
+//    PIXI.defaultShader.init();
 
-    var gl = PIXI.gl;
+  /*  var gl = PIXI.gl;
     var shaderProgram = PIXI.defaultShader.program;
 
     gl.useProgram(shaderProgram);
 
     gl.enableVertexAttribArray(PIXI.defaultShader.aVertexPosition);
     gl.enableVertexAttribArray(PIXI.defaultShader.colorAttribute);
-    gl.enableVertexAttribArray(PIXI.defaultShader.aTextureCoord);
+    gl.enableVertexAttribArray(PIXI.defaultShader.aTextureCoord);*/
 };
-
+/*
 PIXI.activatePrimitiveShader = function()
 {
     var gl = PIXI.gl;
@@ -50,7 +50,9 @@ PIXI.deactivatePrimitiveShader = function()
     gl.enableVertexAttribArray(PIXI.defaultShader.colorAttribute);
     gl.enableVertexAttribArray(PIXI.defaultShader.aTextureCoord);
 };
+*/
 
+/*
 PIXI.activateStripShader = function()
 {
     var gl = PIXI.gl;
@@ -66,7 +68,7 @@ PIXI.deactivateStripShader = function()
     gl.useProgram(PIXI.defaultShader.program);
     //gl.enableVertexAttribArray(PIXI.defaultShader.aTextureCoord);
 };
-
+*/
 /*
 
 SHADER COMPILER HELPERS
@@ -97,9 +99,9 @@ PIXI._CompileShader = function(gl, shaderSrc, shaderType)
     return shader;
 };
 
-PIXI.compileProgram = function(vertexSrc, fragmentSrc)
+PIXI.compileProgram = function(gl, vertexSrc, fragmentSrc)
 {
-    var gl = PIXI.gl;
+    //var gl = PIXI.gl;
     var fragmentShader = PIXI.CompileFragmentShader(gl, fragmentSrc);
     var vertexShader = PIXI.CompileVertexShader(gl, vertexSrc);
 

@@ -3,8 +3,9 @@
  */
 
 
-PIXI.WebGLFilterManager = function(transparent)
+PIXI.WebGLFilterManager = function(gl, transparent)
 {
+    this.gl = gl;
     this.transparent = transparent;
 
     this.filterStack = [];
@@ -21,6 +22,7 @@ PIXI.WebGLFilterManager = function(transparent)
 PIXI.WebGLFilterManager.prototype.begin = function(renderSession, buffer)
 {
     this.renderSession = renderSession;
+    this.defaultShader = renderSession.shaderManager.defaultShader;
 
     var projection = this.renderSession.projection;
 
@@ -31,7 +33,7 @@ PIXI.WebGLFilterManager.prototype.begin = function(renderSession, buffer)
 
 PIXI.WebGLFilterManager.prototype.pushFilter = function(filterBlock)
 {
-    var gl = PIXI.gl;
+    var gl = this.gl;
 
     var projection = this.renderSession.projection;
     var offset = this.renderSession.offset;
@@ -49,7 +51,7 @@ PIXI.WebGLFilterManager.prototype.pushFilter = function(filterBlock)
     var texture = this.texturePool.pop();
     if(!texture)
     {
-        texture = new PIXI.FilterTexture(this.width, this.height);
+        texture = new PIXI.FilterTexture(this.gl, this.width, this.height);
     }
     else
     {
@@ -95,8 +97,8 @@ PIXI.WebGLFilterManager.prototype.pushFilter = function(filterBlock)
 
     //console.log(PIXI.defaultShader.projectionVector)
     // update projection
-    gl.uniform2f(PIXI.defaultShader.projectionVector, filterArea.width/2, -filterArea.height/2);
-    gl.uniform2f(PIXI.defaultShader.offsetVector, -filterArea.x, -filterArea.y);
+    gl.uniform2f(this.defaultShader.projectionVector, filterArea.width/2, -filterArea.height/2);
+    gl.uniform2f(this.defaultShader.offsetVector, -filterArea.x, -filterArea.y);
     //PIXI.primitiveProgram
 
     gl.colorMask(true, true, true, true);
@@ -112,7 +114,7 @@ PIXI.WebGLFilterManager.prototype.pushFilter = function(filterBlock)
 
 PIXI.WebGLFilterManager.prototype.popFilter = function()
 {
-    var gl = PIXI.gl;
+    var gl = this.gl;
     var filterBlock = this.filterStack.pop();
     var filterArea = filterBlock.target.filterArea;
     var texture = filterBlock._glFilterTexture;
@@ -150,7 +152,7 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
 
         var inputTexture = texture;
         var outputTexture = this.texturePool.pop();
-        if(!outputTexture)outputTexture = new PIXI.FilterTexture(this.width, this.height);
+        if(!outputTexture)outputTexture = new PIXI.FilterTexture(this.gl, this.width, this.height);
 
         // need to clear this FBO as it may have some left over elements from a prvious filter.
         gl.bindFramebuffer(gl.FRAMEBUFFER, outputTexture.frameBuffer );
@@ -274,9 +276,9 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
     this.applyFilterPass(filter, filterArea, sizeX, sizeY);
 
     // now restore the regular shader..
-    gl.useProgram(PIXI.defaultShader.program);
-    gl.uniform2f(PIXI.defaultShader.projectionVector, sizeX/2, -sizeY/2);
-    gl.uniform2f(PIXI.defaultShader.offsetVector, -offsetX, -offsetY);
+    gl.useProgram(this.defaultShader.program);
+    gl.uniform2f(this.defaultShader.projectionVector, sizeX/2, -sizeY/2);
+    gl.uniform2f(this.defaultShader.offsetVector, -offsetX, -offsetY);
 
     // return the texture to the pool
     this.texturePool.push(texture);
@@ -286,12 +288,12 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
 PIXI.WebGLFilterManager.prototype.applyFilterPass = function(filter, filterArea, width, height)
 {
     // use program
-    var gl = PIXI.gl;
+    var gl = this.gl;
     var shader = filter.shader;
 
     if(!shader)
     {
-        shader = new PIXI.PixiShader();
+        shader = new PIXI.PixiShader(gl);
 
         shader.fragmentSrc = filter.fragmentSrc;
         shader.uniforms = filter.uniforms;
@@ -335,7 +337,7 @@ PIXI.WebGLFilterManager.prototype.applyFilterPass = function(filter, filterArea,
 
 PIXI.WebGLFilterManager.prototype.initShaderBuffers = function()
 {
-    var gl = PIXI.gl;
+    var gl = this.gl;
 
     // create some buffers
     this.vertexBuffer = gl.createBuffer();
@@ -505,9 +507,10 @@ PIXI.WebGLFilterManager.prototype.getBounds = function(displayObject)
     displayObject.filterArea.height = maxY - minY;
 };
 
-PIXI.FilterTexture = function(width, height)
+PIXI.FilterTexture = function(gl, width, height)
 {
-    var gl = PIXI.gl;
+   // var gl = PIXI.gl;
+    this.gl = gl;
 
     // next time to create a frame buffer and texture
     this.frameBuffer = gl.createFramebuffer();
@@ -526,6 +529,14 @@ PIXI.FilterTexture = function(width, height)
     this.resize(width, height);
 };
 
+PIXI.FilterTexture.prototype.clear = function()
+{
+    var gl = this.gl;
+    
+    gl.clearColor(0,0,0, 0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+}
+
 PIXI.FilterTexture.prototype.resize = function(width, height)
 {
     if(this.width === width && this.height === height) return;
@@ -533,7 +544,7 @@ PIXI.FilterTexture.prototype.resize = function(width, height)
     this.width = width;
     this.height = height;
 
-    var gl = PIXI.gl;
+    var gl = this.gl;
 
     gl.bindTexture(gl.TEXTURE_2D,  this.texture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);

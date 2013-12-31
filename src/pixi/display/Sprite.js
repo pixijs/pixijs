@@ -74,6 +74,7 @@ PIXI.Sprite = function(texture)
     if(texture.baseTexture.hasLoaded)
     {
         this.updateFrame = true;
+        this.onTextureUpdate();
     }
     else
     {
@@ -375,12 +376,12 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
             }
             else
             {
+               
                 context.drawImage(this.texture.baseTexture.source,
                                frame.x,
                                frame.y,
                                frame.width,
                                frame.height,
-                               0,0,
                                (this.anchor.x) * -frame.width,
                                (this.anchor.y) * -frame.height,
                                frame.width,

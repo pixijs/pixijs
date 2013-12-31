@@ -21,9 +21,12 @@ PIXI.WebGLGraphics = function()
  * @param graphics {Graphics}
  * @param projection {Object}
  */
-PIXI.WebGLGraphics.renderGraphics = function(graphics, projection, offset)
+PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projection, offset)
 {
-    var gl = PIXI.gl;
+    var gl = renderSession.gl;
+    var projection = renderSession.projection, 
+        offset = renderSession.offset;
+        shader = renderSession.shaderManager.primitiveShader;
 
     if(!graphics._webGL)graphics._webGL = {points:[], indices:[], lastIndex:0,
                                            buffer:gl.createBuffer(),
@@ -43,10 +46,10 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection, offset)
 
         }
 
-        PIXI.WebGLGraphics.updateGraphics(graphics);
+        PIXI.WebGLGraphics.updateGraphics(graphics, gl);
     }
 
-    PIXI.activatePrimitiveShader();
+    renderSession.shaderManager.activatePrimitiveShader();
 
     // This  could be speeded up fo sure!
     var m = PIXI.mat3.clone(graphics.worldTransform);
@@ -56,26 +59,26 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection, offset)
     // set the matrix transform for the
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
-    gl.uniformMatrix3fv(PIXI.primitiveShader.translationMatrix, false, m);
+    gl.uniformMatrix3fv(shader.translationMatrix, false, m);
 
-    gl.uniform2f(PIXI.primitiveShader.projectionVector, projection.x, -projection.y);
-    gl.uniform2f(PIXI.primitiveShader.offsetVector, -offset.x, -offset.y);
+    gl.uniform2f(shader.projectionVector, projection.x, -projection.y);
+    gl.uniform2f(shader.offsetVector, -offset.x, -offset.y);
 
-    gl.uniform3fv(PIXI.primitiveShader.tintColor, PIXI.hex2rgb(graphics.tint));
+    gl.uniform3fv(shader.tintColor, PIXI.hex2rgb(graphics.tint));
 
-    gl.uniform1f(PIXI.primitiveShader.alpha, graphics.worldAlpha);
-    gl.uniform1f(PIXI.primitiveShader.alpha, graphics.worldAlpha);
+    gl.uniform1f(shader.alpha, graphics.worldAlpha);
+    gl.uniform1f(shader.alpha, graphics.worldAlpha);
     gl.bindBuffer(gl.ARRAY_BUFFER, graphics._webGL.buffer);
 
-    gl.vertexAttribPointer(PIXI.primitiveShader.aVertexPosition, 2, gl.FLOAT, false, 4 * 6, 0);
-    gl.vertexAttribPointer(PIXI.primitiveShader.colorAttribute, 4, gl.FLOAT, false,4 * 6, 2 * 4);
+    gl.vertexAttribPointer(shader.aVertexPosition, 2, gl.FLOAT, false, 4 * 6, 0);
+    gl.vertexAttribPointer(shader.colorAttribute, 4, gl.FLOAT, false,4 * 6, 2 * 4);
 
     // set the index buffer!
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, graphics._webGL.indexBuffer);
 
     gl.drawElements(gl.TRIANGLE_STRIP,  graphics._webGL.indices.length, gl.UNSIGNED_SHORT, 0 );
 
-    PIXI.deactivatePrimitiveShader();
+    renderSession.shaderManager.deactivatePrimitiveShader();
 
     // return to default shader...
 //  PIXI.activateShader(PIXI.defaultShader);
@@ -89,7 +92,7 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, projection, offset)
  * @method updateGraphics
  * @param graphics {Graphics}
  */
-PIXI.WebGLGraphics.updateGraphics = function(graphics)
+PIXI.WebGLGraphics.updateGraphics = function(graphics, gl)
 {
     for (var i = graphics._webGL.lastIndex; i < graphics.graphicsData.length; i++)
     {
@@ -120,7 +123,7 @@ PIXI.WebGLGraphics.updateGraphics = function(graphics)
 
     graphics._webGL.lastIndex = graphics.graphicsData.length;
 
-    var gl = PIXI.gl;
+   
 
     graphics._webGL.glPoints = new Float32Array(graphics._webGL.points);
 

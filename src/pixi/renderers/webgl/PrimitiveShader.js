@@ -3,8 +3,10 @@
  */
 
 
-PIXI.PrimitiveShader = function()
+PIXI.PrimitiveShader = function(gl)
 {
+    this.gl = gl;
+
     // the webGL program..
     this.program = null;
 
@@ -34,14 +36,16 @@ PIXI.PrimitiveShader = function()
         '   vColor = aColor * vec4(tint * alpha, alpha);',
         '}'
     ];
+
+    this.init();
 };
 
 PIXI.PrimitiveShader.prototype.init = function()
 {
-    var program = PIXI.compileProgram(this.vertexSrc, this.fragmentSrc);
 
-    var gl = PIXI.gl;
+    var gl = this.gl;
 
+    var program = PIXI.compileProgram(gl, this.vertexSrc, this.fragmentSrc);
     gl.useProgram(program);
 
     // get and store the uniforms for the shader

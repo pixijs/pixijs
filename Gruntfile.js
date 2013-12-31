@@ -38,6 +38,7 @@ module.exports = function(grunt) {
             '<%= dirs.src %>/renderers/webgl/utils/WebGLGraphics.js',
             '<%= dirs.src %>/renderers/webgl/WebGLRenderer.js',
             '<%= dirs.src %>/renderers/webgl/utils/WebGLMaskManager.js',
+            '<%= dirs.src %>/renderers/webgl/utils/WebGLShaderManager.js',
             '<%= dirs.src %>/renderers/webgl/utils/WebGLSpriteBatch.js',
             '<%= dirs.src %>/renderers/webgl/WebGLBatch.js',
             '<%= dirs.src %>/renderers/webgl/WebGLRenderGroup.js',

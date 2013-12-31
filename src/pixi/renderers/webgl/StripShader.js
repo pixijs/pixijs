@@ -28,7 +28,7 @@ PIXI.StripShader = function()
         'uniform mat3 translationMatrix;',
         'uniform vec2 projectionVector;',
         'varying vec2 vTextureCoord;',
-        'varying vec2 offsetVector;',
+        'attribute vec2 offsetVector;',
         'varying float vColor;',
 
         'void main(void) {',
@@ -43,10 +43,10 @@ PIXI.StripShader = function()
 
 PIXI.StripShader.prototype.init = function()
 {
-    var program = PIXI.compileProgram(this.vertexSrc, this.fragmentSrc);
 
     var gl = PIXI.gl;
 
+    var program = PIXI.compileProgram(gl, this.vertexSrc, this.fragmentSrc);
     gl.useProgram(program);
 
     // get and store the uniforms for the shader

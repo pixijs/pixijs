@@ -15,6 +15,10 @@
  */
 PIXI.CanvasRenderer = function(width, height, view, transparent)
 {
+    PIXI.defaultRenderer = PIXI.defaultRenderer || this;
+
+    this.type = PIXI.CANVAS_RENDERER;
+
     this.transparent = transparent;
 
     if(!PIXI.blendModesCanvas)
@@ -172,12 +176,13 @@ PIXI.CanvasRenderer.prototype.resize = function(width, height)
  * @param displayObject {DisplayObject} The displayObject to render
  * @private
  */
-PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject)
+PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject, context)
 {
     // no loger recurrsive!
-    var transform;
-    var context = this.context;
+    //var transform;
+    //var context = this.context;
 
+    this.renderSession.context = context || this.context;
     displayObject._renderCanvas(this.renderSession);
 };
 
@@ -270,3 +275,28 @@ PIXI.CanvasRenderer.prototype.renderStrip = function(strip)
         context.restore();
     }
 };
+
+PIXI.CanvasBuffer = function(width, height)
+{
+    this.width = width;
+    this.height = height;
+
+    this.canvas = document.createElement( 'canvas' );
+    this.context = this.canvas.getContext( '2d' );
+
+//     this.context.f
+    this.canvas.width = width;
+    this.canvas.height = height;
+}
+
+PIXI.CanvasBuffer.prototype.clear = function()
+{
+    this.context.clearRect(0,0, this.width, this.height);
+}
+
+PIXI.CanvasBuffer.prototype.resize = function(width, height)
+{
+    this.width = this.canvas.width = width;
+    this.height = this.canvas.height = height;
+}
+

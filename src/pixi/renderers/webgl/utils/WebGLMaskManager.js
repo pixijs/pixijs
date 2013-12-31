@@ -26,7 +26,7 @@ PIXI.WebGLMaskManager.prototype.pushMask = function(maskData, renderSession)
     gl.colorMask(false, false, false, false);
     gl.stencilOp(gl.KEEP,gl.KEEP,gl.INCR);
 
-    PIXI.WebGLGraphics.renderGraphics(maskData, renderSession.projection, renderSession.offset);
+    PIXI.WebGLGraphics.renderGraphics(maskData, renderSession);
 
     gl.colorMask(true, true, true, true);
     gl.stencilFunc(gl.NOTEQUAL,0, this.maskStack.length);
@@ -46,7 +46,7 @@ PIXI.WebGLMaskManager.prototype.popMask = function(renderSession)
         //gl.stencilFunc(gl.ALWAYS,1,1);
         gl.stencilOp(gl.KEEP,gl.KEEP,gl.DECR);
 
-        PIXI.WebGLGraphics.renderGraphics(maskData, renderSession.projection, renderSession.offset);
+        PIXI.WebGLGraphics.renderGraphics(maskData, renderSession);
 
         gl.colorMask(true, true, true, true);
         gl.stencilFunc(gl.NOTEQUAL,0,this.maskStack.length);

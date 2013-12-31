@@ -60,6 +60,8 @@ PIXI.WebGLSpriteBatch = function(gl)
 PIXI.WebGLSpriteBatch.prototype.begin = function(renderSession)
 { 
     this.renderSession = renderSession;
+    this.shader = this.renderSession.shaderManager.defaultShader;
+
     this.start();
 }
 
@@ -77,6 +79,7 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
         this.flush();
         this.currentBaseTexture = sprite.texture.baseTexture;
     }
+
 
     // check blend mode
     if(sprite.blendMode !== this.currentBlendMode)
@@ -339,13 +342,13 @@ PIXI.WebGLSpriteBatch.prototype.start = function()
 
     // set the projection
     var projection = this.renderSession.projection;
-    gl.uniform2f(PIXI.defaultShader.projectionVector, projection.x, projection.y);
+    gl.uniform2f(this.shader.projectionVector, projection.x, projection.y);
 
     // set the pointers
     var stride =  this.vertSize * 4;
-    gl.vertexAttribPointer(PIXI.defaultShader.aVertexPosition, 2, gl.FLOAT, false, stride, 0);
-    gl.vertexAttribPointer(PIXI.defaultShader.aTextureCoord, 2, gl.FLOAT, false, stride, 2 * 4);
-    gl.vertexAttribPointer(PIXI.defaultShader.colorAttribute, 2, gl.FLOAT, false, stride, 4 * 4);
+    gl.vertexAttribPointer(this.shader.aVertexPosition, 2, gl.FLOAT, false, stride, 0);
+    gl.vertexAttribPointer(this.shader.aTextureCoord, 2, gl.FLOAT, false, stride, 2 * 4);
+    gl.vertexAttribPointer(this.shader.colorAttribute, 2, gl.FLOAT, false, stride, 4 * 4);
 
     // set the blend mode..
     if(this.currentBlendMode !== PIXI.blendModes.NORMAL)

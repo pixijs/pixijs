@@ -7,8 +7,10 @@
 * @class PIXI.PixiShader
 * @constructor
 */
-PIXI.PixiShader = function()
+PIXI.PixiShader = function(gl)
 {
+    this.gl = gl;
+
     /**
     * @property {any} program - The WebGL program.
     */
@@ -32,6 +34,9 @@ PIXI.PixiShader = function()
     * @property {number} textureCount - A local texture counter for multi-texture shaders.
     */
     this.textureCount = 0;
+
+
+    this.init();
 };
 
 /**
@@ -39,10 +44,11 @@ PIXI.PixiShader = function()
 */
 PIXI.PixiShader.prototype.init = function()
 {
-    var program = PIXI.compileProgram(this.vertexSrc || PIXI.PixiShader.defaultVertexSrc, this.fragmentSrc);
 
-    var gl = PIXI.gl;
+    var gl = this.gl;
 
+    var program = PIXI.compileProgram(gl, this.vertexSrc || PIXI.PixiShader.defaultVertexSrc, this.fragmentSrc);
+    
     gl.useProgram(program);
 
     // get and store the uniforms for the shader
@@ -78,7 +84,7 @@ PIXI.PixiShader.prototype.init = function()
 PIXI.PixiShader.prototype.initUniforms = function()
 {
     this.textureCount = 1;
-
+    var gl = this.gl
     var uniform;
 
     for (var key in this.uniforms)
@@ -104,21 +110,21 @@ PIXI.PixiShader.prototype.initUniforms = function()
 
             if (type === 'mat2')
             {
-                uniform.glFunc = PIXI.gl.uniformMatrix2fv;
+                uniform.glFunc = gl.uniformMatrix2fv;
             }
             else if (type === 'mat3')
             {
-                uniform.glFunc = PIXI.gl.uniformMatrix3fv;
+                uniform.glFunc = gl.uniformMatrix3fv;
             }
             else if (type === 'mat4')
             {
-                uniform.glFunc = PIXI.gl.uniformMatrix4fv;
+                uniform.glFunc = gl.uniformMatrix4fv;
             }
         }
         else
         {
             //  GL function reference
-            uniform.glFunc = PIXI.gl['uniform' + type];
+            uniform.glFunc = gl['uniform' + type];
 
             if (type === '2f' || type === '2i')
             {
@@ -153,8 +159,10 @@ PIXI.PixiShader.prototype.initSampler2D = function(uniform)
         return;
     }
 
-    PIXI.gl.activeTexture(PIXI.gl['TEXTURE' + this.textureCount]);
-    PIXI.gl.bindTexture(PIXI.gl.TEXTURE_2D, uniform.value.baseTexture._glTexture);
+    var gl = this.gl;
+
+    gl.activeTexture(gl['TEXTURE' + this.textureCount]);
+    gl.bindTexture(gl.TEXTURE_2D, uniform.value.baseTexture._glTexture);
 
     //  Extended texture data
     if (uniform.textureData)
@@ -171,19 +179,19 @@ PIXI.PixiShader.prototype.initSampler2D = function(uniform)
         //  magFilter can be: gl.LINEAR, gl.LINEAR_MIPMAP_LINEAR or gl.NEAREST
         //  wrapS/T can be: gl.CLAMP_TO_EDGE or gl.REPEAT
 
-        var magFilter = (data.magFilter) ? data.magFilter : PIXI.gl.LINEAR;
-        var minFilter = (data.minFilter) ? data.minFilter : PIXI.gl.LINEAR;
-        var wrapS = (data.wrapS) ? data.wrapS : PIXI.gl.CLAMP_TO_EDGE;
-        var wrapT = (data.wrapT) ? data.wrapT : PIXI.gl.CLAMP_TO_EDGE;
-        var format = (data.luminance) ? PIXI.gl.LUMINANCE : PIXI.gl.RGBA;
+        var magFilter = (data.magFilter) ? data.magFilter : gl.LINEAR;
+        var minFilter = (data.minFilter) ? data.minFilter : gl.LINEAR;
+        var wrapS = (data.wrapS) ? data.wrapS : gl.CLAMP_TO_EDGE;
+        var wrapT = (data.wrapT) ? data.wrapT : gl.CLAMP_TO_EDGE;
+        var format = (data.luminance) ? gl.LUMINANCE : gl.RGBA;
 
         if (data.repeat)
         {
-            wrapS = PIXI.gl.REPEAT;
-            wrapT = PIXI.gl.REPEAT;
+            wrapS = gl.REPEAT;
+            wrapT = gl.REPEAT;
         }
 
-        PIXI.gl.pixelStorei(PIXI.gl.UNPACK_FLIP_Y_WEBGL, false);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
 
         if (data.width)
         {
@@ -192,21 +200,21 @@ PIXI.PixiShader.prototype.initSampler2D = function(uniform)
             var border = (data.border) ? data.border : 0;
 
             // void texImage2D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, ArrayBufferView? pixels);
-            PIXI.gl.texImage2D(PIXI.gl.TEXTURE_2D, 0, format, width, height, border, format, PIXI.gl.UNSIGNED_BYTE, null);
+            gl.texImage2D(gl.TEXTURE_2D, 0, format, width, height, border, format, gl.UNSIGNED_BYTE, null);
         }
         else
         {
             //  void texImage2D(GLenum target, GLint level, GLenum internalformat, GLenum format, GLenum type, ImageData? pixels);
-            PIXI.gl.texImage2D(PIXI.gl.TEXTURE_2D, 0, format, PIXI.gl.RGBA, PIXI.gl.UNSIGNED_BYTE, uniform.value.baseTexture.source);
+            gl.texImage2D(gl.TEXTURE_2D, 0, format, gl.RGBA, gl.UNSIGNED_BYTE, uniform.value.baseTexture.source);
         }
 
-        PIXI.gl.texParameteri(PIXI.gl.TEXTURE_2D, PIXI.gl.TEXTURE_MAG_FILTER, magFilter);
-        PIXI.gl.texParameteri(PIXI.gl.TEXTURE_2D, PIXI.gl.TEXTURE_MIN_FILTER, minFilter);
-        PIXI.gl.texParameteri(PIXI.gl.TEXTURE_2D, PIXI.gl.TEXTURE_WRAP_S, wrapS);
-        PIXI.gl.texParameteri(PIXI.gl.TEXTURE_2D, PIXI.gl.TEXTURE_WRAP_T, wrapT);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, magFilter);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, minFilter);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, wrapS);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, wrapT);
     }
 
-    PIXI.gl.uniform1i(uniform.uniformLocation, this.textureCount);
+    gl.uniform1i(uniform.uniformLocation, this.textureCount);
 
     uniform._init = true;
 
@@ -223,6 +231,7 @@ PIXI.PixiShader.prototype.syncUniforms = function()
 {
     this.textureCount = 1;
     var uniform;
+    var gl = this.gl;
 
     //  This would probably be faster in an array and it would guarantee key order
     for (var key in this.uniforms)
@@ -234,32 +243,32 @@ PIXI.PixiShader.prototype.syncUniforms = function()
         {
             if (uniform.glMatrix === true)
             {
-                uniform.glFunc.call(PIXI.gl, uniform.uniformLocation, uniform.transpose, uniform.value);
+                uniform.glFunc.call(gl, uniform.uniformLocation, uniform.transpose, uniform.value);
             }
             else
             {
-                uniform.glFunc.call(PIXI.gl, uniform.uniformLocation, uniform.value);
+                uniform.glFunc.call(gl, uniform.uniformLocation, uniform.value);
             }
         }
         else if (uniform.glValueLength === 2)
         {
-            uniform.glFunc.call(PIXI.gl, uniform.uniformLocation, uniform.value.x, uniform.value.y);
+            uniform.glFunc.call(gl, uniform.uniformLocation, uniform.value.x, uniform.value.y);
         }
         else if (uniform.glValueLength === 3)
         {
-            uniform.glFunc.call(PIXI.gl, uniform.uniformLocation, uniform.value.x, uniform.value.y, uniform.value.z);
+            uniform.glFunc.call(gl, uniform.uniformLocation, uniform.value.x, uniform.value.y, uniform.value.z);
         }
         else if (uniform.glValueLength === 4)
         {
-            uniform.glFunc.call(PIXI.gl, uniform.uniformLocation, uniform.value.x, uniform.value.y, uniform.value.z, uniform.value.w);
+            uniform.glFunc.call(gl, uniform.uniformLocation, uniform.value.x, uniform.value.y, uniform.value.z, uniform.value.w);
         }
         else if (uniform.type === 'sampler2D')
         {
             if (uniform._init)
             {
-                PIXI.gl.activeTexture(PIXI.gl['TEXTURE' + this.textureCount]);
-                PIXI.gl.bindTexture(PIXI.gl.TEXTURE_2D, uniform.value.baseTexture._glTexture);
-                PIXI.gl.uniform1i(uniform.uniformLocation, this.textureCount);
+                gl.activeTexture(gl['TEXTURE' + this.textureCount]);
+                gl.bindTexture(gl.TEXTURE_2D, uniform.value.baseTexture._glTexture);
+                gl.uniform1i(uniform.uniformLocation, this.textureCount);
                 this.textureCount++;
             }
             else

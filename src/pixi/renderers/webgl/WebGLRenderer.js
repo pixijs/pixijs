@@ -27,8 +27,11 @@ PIXI.gl = null;
  */
 PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
 {
-    // do a catch.. only 1 webGL renderer..
+    if(!PIXI.defaultRenderer)PIXI.defaultRenderer = this;
 
+    this.type = PIXI.WEBGL_RENDERER;
+
+    // do a catch.. only 1 webGL renderer..
     this.transparent = !!transparent;
 
     this.width = width || 800;
@@ -54,19 +57,17 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
 
     //try 'experimental-webgl'
     try {
-        PIXI.gl = this.gl = this.view.getContext('experimental-webgl',  options);
+        this.gl = this.view.getContext('experimental-webgl',  options);
     } catch (e) {
         //try 'webgl'
         try {
-            PIXI.gl = this.gl = this.view.getContext('webgl',  options);
+           this.gl = this.view.getContext('webgl',  options);
         } catch (e2) {
             // fail, not able to get a context
             throw new Error(' This browser does not support webGL. Try using the canvas renderer' + this);
         }
     }
 
-    PIXI.initDefaultShaders();
-    
     var gl = this.gl;
 
     if(!PIXI.blendModesWebGL)
@@ -79,15 +80,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
         PIXI.blendModesWebGL[PIXI.blendModes.SCREEN]   = [gl.SRC_ALPHA, gl.ONE];
     }
 
-    gl.useProgram(PIXI.defaultShader.program);
-
-    PIXI.WebGLRenderer.gl = gl;
-
-    gl.disable(gl.DEPTH_TEST);
-    gl.disable(gl.CULL_FACE);
-
-    gl.enable(gl.BLEND);
-    gl.colorMask(true, true, true, this.transparent);
+    
 
   
     this.projection = new PIXI.Point(400, 300);
@@ -96,14 +89,30 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     this.resize(this.width, this.height);
     this.contextLost = false;
 
-    this.spriteBatch = new PIXI.WebGLSpriteBatch(gl);
-    this.maskManager = new PIXI.WebGLMaskManager(gl);
-    this.filterManager = new PIXI.WebGLFilterManager(this.transparent);
+    // time to create the render managers! each one focuses on managine a state in webGL
+    this.shaderManager = new PIXI.WebGLShaderManager(gl);                   // deals with managing the shader programs and their attribs
+    this.spriteBatch = new PIXI.WebGLSpriteBatch(gl);                       // manages the rendering of sprites
+    this.maskManager = new PIXI.WebGLMaskManager(gl);                       // manages the masks using the stencil buffer
+    this.filterManager = new PIXI.WebGLFilterManager(gl, this.transparent); // manages the filters
 
+    //
     this.renderSession = {};
+    this.renderSession.gl = this.gl;
+    this.renderSession.shaderManager = this.shaderManager;
     this.renderSession.maskManager = this.maskManager;
     this.renderSession.filterManager = this.filterManager;
     this.renderSession.spriteBatch = this.spriteBatch;
+
+
+    gl.useProgram(this.shaderManager.defaultShader.program);
+
+    PIXI.WebGLRenderer.gl = gl;
+
+    gl.disable(gl.DEPTH_TEST);
+    gl.disable(gl.CULL_FACE);
+
+    gl.enable(gl.BLEND);
+    gl.colorMask(true, true, true, this.transparent);
 };
 
 // constructor
@@ -151,25 +160,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
     this.projection.x =  this.width/2;
     this.projection.y =  -this.height/2;
 
-
-    // reset the render session data..
-    this.renderSession.drawCount = 0;
-    this.renderSession.currentBlendMode = 9999;
-
-    this.renderSession.projection = this.projection;
-    this.renderSession.offset = this.offset;
-   
-    // start the sprite batch
-    this.spriteBatch.begin(this.renderSession);
-
-    // start the filter manager
-    this.filterManager.begin(this.renderSession, null);
-
-    // render the scene!
-    stage._renderWebGL(this.renderSession);
-
-    // finish the sprite batch
-    this.spriteBatch.end();
+    this.renderDisplayObject( stage, this.projection);
 
     // interaction
     if(stage.interactive)
@@ -203,6 +194,28 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
     //  }.bind(this), 1000);
     // }.bind(this);
 };
+
+PIXI.WebGLRenderer.prototype.renderDisplayObject = function(displayObject, projection)
+{
+    // reset the render session data..
+    this.renderSession.drawCount = 0;
+    this.renderSession.currentBlendMode = 9999;
+
+    this.renderSession.projection = projection;
+    this.renderSession.offset = this.offset;
+   
+    // start the sprite batch
+    this.spriteBatch.begin(this.renderSession);
+
+    // start the filter manager
+    this.filterManager.begin(this.renderSession, null);
+
+    // render the scene!
+    stage._renderWebGL(this.renderSession);
+
+    // finish the sprite batch
+    this.spriteBatch.end();
+}
 
 /**
  * Updates the textures loaded into this webgl renderer
@@ -242,7 +255,7 @@ PIXI.WebGLRenderer.updateTextures = function()
 PIXI.WebGLRenderer.updateTexture = function(texture)
 {
     //TODO break this out into a texture manager...
-    var gl = PIXI.gl;
+    var gl = this.gl;
 
     if(!texture._glTexture)
     {

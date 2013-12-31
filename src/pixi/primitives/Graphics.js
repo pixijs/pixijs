@@ -248,7 +248,7 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
         this.spriteBatch.gl.blendFunc(blendModeWebGL[0], blendModeWebGL[1]);
     }
 
-    PIXI.WebGLGraphics.renderGraphics(this, renderSession.projection, renderSession.offset);
+    PIXI.WebGLGraphics.renderGraphics(this, renderSession);
     
     renderSession.spriteBatch.start();
 }
