@@ -380,7 +380,6 @@ PIXI.WebGLFilterManager.prototype.initShaderBuffers = function()
     this.colorArray,
     gl.STATIC_DRAW);
 
-    this.colorAttribute
     // bind and upload the index
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
     gl.bufferData(
@@ -535,7 +534,7 @@ PIXI.FilterTexture.prototype.clear = function()
     
     gl.clearColor(0,0,0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);
-}
+};
 
 PIXI.FilterTexture.prototype.resize = function(width, height)
 {

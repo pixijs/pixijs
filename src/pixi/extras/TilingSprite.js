@@ -56,7 +56,7 @@ PIXI.TilingSprite.prototype.constructor = PIXI.TilingSprite;
  */
 Object.defineProperty(PIXI.TilingSprite.prototype, 'width', {
     get: function() {
-        return this._width
+        return this._width;
     },
     set: function(value) {
         
@@ -72,7 +72,7 @@ Object.defineProperty(PIXI.TilingSprite.prototype, 'width', {
  */
 Object.defineProperty(PIXI.TilingSprite.prototype, 'height', {
     get: function() {
-        return  this._height
+        return  this._height;
     },
     set: function(value) {
         this._height = value;
@@ -93,6 +93,8 @@ PIXI.TilingSprite.prototype._renderWebGL = function(renderSession)
 
     if(this.visible === false || this.alpha === 0)return;
     
+    var i,j;
+
     if(this.mask || this.filters)
     {
         if(this.mask)
@@ -103,7 +105,7 @@ PIXI.TilingSprite.prototype._renderWebGL = function(renderSession)
         }
 
         if(this.filters)
-        {    
+        {
             renderSession.spriteBatch.flush();
             renderSession.filterManager.pushFilter(this._filterBlock);
         }
@@ -112,10 +114,9 @@ PIXI.TilingSprite.prototype._renderWebGL = function(renderSession)
         renderSession.spriteBatch.renderTilingSprite(this);
 
         // simple render children!
-        for(var i=0,j=this.children.length; i<j; i++)
+        for(i=0,j=this.children.length; i<j; i++)
         {
-            var child = this.children[i];
-            child._renderWebGL(renderSession);
+            this.children[i]._renderWebGL(renderSession);
         }
 
         renderSession.spriteBatch.stop();
@@ -130,13 +131,12 @@ PIXI.TilingSprite.prototype._renderWebGL = function(renderSession)
         renderSession.spriteBatch.renderTilingSprite(this);
         
         // simple render children!
-        for(var i=0,j=this.children.length; i<j; i++)
+        for(i=0,j=this.children.length; i<j; i++)
         {
-            var child = this.children[i];
-            child._renderWebGL(renderSession);
+            this.children[i]._renderWebGL(renderSession);
         }
     }
-}
+};
 
 PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
 {
@@ -152,7 +152,7 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
     // check blend mode
     if(this.blendMode !== renderSession.currentBlendMode)
     {
-        renderSession.currentBlendMode = this.blendMode;   
+        renderSession.currentBlendMode = this.blendMode;
         context.globalCompositeOperation = PIXI.blendModesCanvas[renderSession.currentBlendMode];
     }
 
@@ -172,4 +172,4 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
     context.translate(-tilePosition.x, -tilePosition.y);
 
     context.closePath();
-}
+};

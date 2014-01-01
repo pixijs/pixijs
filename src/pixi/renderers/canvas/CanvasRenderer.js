@@ -26,7 +26,7 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
         PIXI.blendModesCanvas = [];
         
         if(PIXI.canUseNewCanvasBlendModes())
-        {     
+        {
             PIXI.blendModesCanvas[PIXI.blendModes.NORMAL]   = "source-over";
             PIXI.blendModesCanvas[PIXI.blendModes.ADD]      = "lighter"; //IS THIS OK???
             PIXI.blendModesCanvas[PIXI.blendModes.MULTIPLY] = "multiply";
@@ -66,26 +66,26 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
      * @property view
      * @type Canvas
      */
-    this.view = view || document.createElement( 'canvas' );
+    this.view = view || document.createElement( "canvas" );
 
     /**
      * The canvas context that the everything is drawn to
      * @property context
      * @type Canvas 2d Context
      */
-    this.context = this.view.getContext( '2d' );
+    this.context = this.view.getContext( "2d" );
 
     //some filter variables
     this.smoothProperty = null;
 
-    if('imageSmoothingEnabled' in this.context)
-        this.smoothProperty = 'imageSmoothingEnabled';
-    else if('webkitImageSmoothingEnabled' in this.context)
-        this.smoothProperty = 'webkitImageSmoothingEnabled';
-    else if('mozImageSmoothingEnabled' in this.context)
-        this.smoothProperty = 'mozImageSmoothingEnabled';
-    else if('oImageSmoothingEnabled' in this.context)
-        this.smoothProperty = 'oImageSmoothingEnabled';
+    if("imageSmoothingEnabled" in this.context)
+        this.smoothProperty = "imageSmoothingEnabled";
+    else if("webkitImageSmoothingEnabled" in this.context)
+        this.smoothProperty = "webkitImageSmoothingEnabled";
+    else if("mozImageSmoothingEnabled" in this.context)
+        this.smoothProperty = "mozImageSmoothingEnabled";
+    else if("oImageSmoothingEnabled" in this.context)
+        this.smoothProperty = "oImageSmoothingEnabled";
 
     this.scaleMode = null;
 
@@ -215,7 +215,7 @@ PIXI.CanvasRenderer.prototype.renderStripFlat = function(strip)
         context.lineTo(x2, y2);
     }
 
-    context.fillStyle = '#FF0000';
+    context.fillStyle = "#FF0000";
     context.fill();
     context.closePath();
 };
@@ -281,22 +281,22 @@ PIXI.CanvasBuffer = function(width, height)
     this.width = width;
     this.height = height;
 
-    this.canvas = document.createElement( 'canvas' );
-    this.context = this.canvas.getContext( '2d' );
+    this.canvas = document.createElement( "canvas" );
+    this.context = this.canvas.getContext( "2d" );
 
 //     this.context.f
     this.canvas.width = width;
     this.canvas.height = height;
-}
+};
 
 PIXI.CanvasBuffer.prototype.clear = function()
 {
     this.context.clearRect(0,0, this.width, this.height);
-}
+};
 
 PIXI.CanvasBuffer.prototype.resize = function(width, height)
 {
     this.width = this.canvas.width = width;
     this.height = this.canvas.height = height;
-}
+};
 

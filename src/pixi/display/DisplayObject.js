@@ -405,18 +405,22 @@ PIXI.DisplayObject.prototype.updateTransform = function()
 PIXI.DisplayObject.prototype.getBounds = function()
 {
     return PIXI.EmptyRectangle;
-}
+};
 
 
 PIXI.DisplayObject.prototype._renderWebGL = function(renderSession)
 {
-    // OVERWRITE
-}
+    // OVERWRITE;
+    // this line is just here to pass jshinting :)
+    renderSession = renderSession;
+};
 
 PIXI.DisplayObject.prototype._renderCanvas = function(renderSession)
 {
-    // OVERWRITE
-}
+    // OVERWRITE;
+    // this line is just here to pass jshinting :)
+    renderSession = renderSession;
+};
 
 PIXI.EmptyRectangle = new PIXI.Rectangle(0,0,0,0);
 

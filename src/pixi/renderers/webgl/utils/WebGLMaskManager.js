@@ -7,10 +7,10 @@ PIXI.WebGLMaskManager = function(gl)
     this.gl = gl;
     this.maskStack = [];
     this.maskPosition = 0;
-}
+};
 
 PIXI.WebGLMaskManager.prototype.pushMask = function(maskData, renderSession)
-{ 
+{
     var gl = this.gl;
 
     if(this.maskStack.length === 0)
@@ -31,10 +31,10 @@ PIXI.WebGLMaskManager.prototype.pushMask = function(maskData, renderSession)
     gl.colorMask(true, true, true, true);
     gl.stencilFunc(gl.NOTEQUAL,0, this.maskStack.length);
     gl.stencilOp(gl.KEEP,gl.KEEP,gl.KEEP);
-}
+};
 
 PIXI.WebGLMaskManager.prototype.popMask = function(renderSession)
-{ 
+{
     var gl = this.gl;
 
     var maskData = this.maskStack.pop();
@@ -54,4 +54,4 @@ PIXI.WebGLMaskManager.prototype.popMask = function(renderSession)
     }
    
     if(this.maskStack.length === 0)gl.disable(gl.STENCIL_TEST);
-}
+};

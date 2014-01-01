@@ -237,7 +237,7 @@ PIXI.Sprite.prototype.getBounds = function()
     this._currentBounds = bounds;
 
     return bounds;
-}
+};
 
 
 PIXI.Sprite.prototype._renderWebGL = function(renderSession)
@@ -245,6 +245,8 @@ PIXI.Sprite.prototype._renderWebGL = function(renderSession)
     // if the sprite is not visible or the alpha is 0 then no need to render this element
     if(this.visible === false || this.alpha === 0)return;
     
+    var i,j;
+
     // do a quick check to see if this element has a mask or a filter.
     if(this._mask || this._filters)
     {
@@ -258,7 +260,7 @@ PIXI.Sprite.prototype._renderWebGL = function(renderSession)
         }
 
         if(this._filters)
-        {    
+        {
             spriteBatch.flush();
             renderSession.filterManager.pushFilter(this._filterBlock);
         }
@@ -267,10 +269,9 @@ PIXI.Sprite.prototype._renderWebGL = function(renderSession)
         spriteBatch.render(this);
 
         // now loop through the children and make sure they get rendered
-        for(var i=0,j=this.children.length; i<j; i++)
+        for(i=0,j=this.children.length; i<j; i++)
         {
-            var child = this.children[i];
-            child._renderWebGL(renderSession);
+            this.children[i]._renderWebGL(renderSession);
         }
 
         // time to stop the sprite batch as either a mask element or a filter draw will happen next
@@ -286,16 +287,15 @@ PIXI.Sprite.prototype._renderWebGL = function(renderSession)
         renderSession.spriteBatch.render(this);
 
         // simple render children!
-        for(var i=0,j=this.children.length; i<j; i++)
+        for(i=0,j=this.children.length; i<j; i++)
         {
-            var child = this.children[i];
-            child._renderWebGL(renderSession);
+            this.children[i]._renderWebGL(renderSession);
         }
     }
 
    
     //TODO check culling  
-}
+};
 
 PIXI.Sprite.prototype._renderCanvas = function(renderSession)
 {
@@ -325,7 +325,7 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
         // check blend mode
         if(this.blendMode !== renderSession.currentBlendMode)
         {
-            renderSession.currentBlendMode = this.blendMode;   
+            renderSession.currentBlendMode = this.blendMode;
             context.globalCompositeOperation = PIXI.blendModesCanvas[renderSession.currentBlendMode];
         }
 
@@ -375,7 +375,7 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
                                trim.x - this.anchor.x * trim.realWidth,
                                trim.y - this.anchor.y * trim.realHeight,
                                frame.width,
-                               frame.height); 
+                               frame.height);
             }
             else
             {
@@ -388,7 +388,7 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
                                (this.anchor.x) * -frame.width,
                                (this.anchor.y) * -frame.height,
                                frame.width,
-                               frame.height); 
+                               frame.height);
             }
             
         }
@@ -405,7 +405,7 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
     {
         renderSession.maskManager.popMask(renderSession.context);
     }
-}
+};
 
 // some helper functions..
 

@@ -24,8 +24,8 @@ PIXI.WebGLGraphics = function()
 PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projection, offset)
 {
     var gl = renderSession.gl;
-    var projection = renderSession.projection, 
-        offset = renderSession.offset;
+    var projection = renderSession.projection,
+        offset = renderSession.offset,
         shader = renderSession.shaderManager.primitiveShader;
 
     if(!graphics._webGL)graphics._webGL = {points:[], indices:[], lastIndex:0,

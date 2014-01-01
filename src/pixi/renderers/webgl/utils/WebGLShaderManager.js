@@ -24,7 +24,7 @@ PIXI.WebGLShaderManager = function(gl)
 
     // the final one is used for the rendering strips
     //this.stripShader = new PIXI.StripShader(gl);
-}
+};
 
 
 PIXI.WebGLShaderManager.prototype.activatePrimitiveShader = function()
@@ -54,14 +54,3 @@ PIXI.WebGLShaderManager.prototype.deactivatePrimitiveShader = function()
     gl.enableVertexAttribArray(this.defaultShader.colorAttribute);
     gl.enableVertexAttribArray(this.defaultShader.aTextureCoord);
 };
-
-
-PIXI.WebGLShaderManager.prototype.pushShader = function(maskData, renderSession)
-{ 
-    // push a shader onto the stack..
-}
-
-PIXI.WebGLShaderManager.prototype.popShader = function(renderSession)
-{
-    // push 
-}

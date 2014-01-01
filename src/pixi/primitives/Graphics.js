@@ -51,7 +51,7 @@ PIXI.Graphics = function()
      */
     this.graphicsData = [];
 
-    this.tint = 0xFFFFFF// * Math.random();
+    this.tint = 0xFFFFFF;// * Math.random();
 
     this.blendMode = PIXI.blendModes.NORMAL;
     
@@ -243,15 +243,15 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
     // check blend mode
     if(this.blendMode !== renderSession.spriteBatch.currentBlendMode)
     {
-        this.spriteBatch.currentBlendMode = sprite.blendMode;
-        var blendModeWebGL = PIXI.blendModesWebGL[renderSession.spriteBatch.currentBlendMode]; 
+        this.spriteBatch.currentBlendMode = this.blendMode;
+        var blendModeWebGL = PIXI.blendModesWebGL[renderSession.spriteBatch.currentBlendMode];
         this.spriteBatch.gl.blendFunc(blendModeWebGL[0], blendModeWebGL[1]);
     }
 
     PIXI.WebGLGraphics.renderGraphics(this, renderSession);
     
     renderSession.spriteBatch.start();
-}
+};
 
 PIXI.Graphics.prototype._renderCanvas = function(renderSession)
 {
@@ -263,13 +263,13 @@ PIXI.Graphics.prototype._renderCanvas = function(renderSession)
     
     if(this.blendMode !== renderSession.currentBlendMode)
     {
-        renderSession.currentBlendMode = this.blendMode;   
+        renderSession.currentBlendMode = this.blendMode;
         context.globalCompositeOperation = PIXI.blendModesCanvas[renderSession.currentBlendMode];
     }
 
     context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
     PIXI.CanvasGraphics.renderGraphics(this, context);
-}
+};
 
 PIXI.Graphics.prototype.getBounds = function()
 {
@@ -337,7 +337,7 @@ PIXI.Graphics.prototype.getBounds = function()
     bounds.height = maxY - minY;
 
     return bounds;
-}
+};
 
 PIXI.Graphics.prototype.updateBounds = function()
 {

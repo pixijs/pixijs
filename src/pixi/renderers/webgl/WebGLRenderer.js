@@ -61,7 +61,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     } catch (e) {
         //try 'webgl'
         try {
-           this.gl = this.view.getContext('webgl',  options);
+            this.gl = this.view.getContext('webgl',  options);
         } catch (e2) {
             // fail, not able to get a context
             throw new Error(' This browser does not support webGL. Try using the canvas renderer' + this);
@@ -217,7 +217,7 @@ PIXI.WebGLRenderer.prototype.renderDisplayObject = function(displayObject, proje
 
     // finish the sprite batch
     this.spriteBatch.end();
-}
+};
 
 /**
  * Updates the textures loaded into this webgl renderer
@@ -235,7 +235,7 @@ PIXI.WebGLRenderer.updateTextures = function()
         PIXI.WebGLRenderer.updateTexture(PIXI.texturesToUpdate[i]);
 
 
-    for (var i=0; i < PIXI.Texture.frameUpdates.length; i++)
+    for (i=0; i < PIXI.Texture.frameUpdates.length; i++)
         PIXI.WebGLRenderer.updateTextureFrame(PIXI.Texture.frameUpdates[i]);
 
     for (i = 0; i < PIXI.texturesToDestroy.length; i++)

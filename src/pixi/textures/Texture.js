@@ -125,7 +125,7 @@ PIXI.Texture.prototype.setFrame = function(frame)
 
 PIXI.Texture.prototype._updateWebGLuvs = function()
 {
-    if(!this._uvs)this._uvs = new Float32Array(8)
+    if(!this._uvs)this._uvs = new Float32Array(8);
 
     var frame = this.frame;
     var tw = this.baseTexture.width;
@@ -142,7 +142,7 @@ PIXI.Texture.prototype._updateWebGLuvs = function()
 
     this._uvs[6] = frame.x / tw;
     this._uvs[7] = (frame.y + frame.height) / th;
-}
+};
 
 /**
  * Helper function that returns a texture based on an image url

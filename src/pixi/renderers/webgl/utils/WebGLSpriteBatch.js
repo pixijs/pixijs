@@ -31,19 +31,19 @@ PIXI.WebGLSpriteBatch = function(gl)
     //vertex data
     this.vertices = new Float32Array(numVerts);
     //index data
-    this.indices = new Uint16Array(numIndices); 
+    this.indices = new Uint16Array(numIndices);
     
     this.lastIndexCount = 0;
 
-    for (var i=0, j=0; i < numIndices; i += 6, j += 4) 
+    for (var i=0, j=0; i < numIndices; i += 6, j += 4)
     {
-        this.indices[i + 0] = j + 0; 
+        this.indices[i + 0] = j + 0;
         this.indices[i + 1] = j + 1;
         this.indices[i + 2] = j + 2;
         this.indices[i + 3] = j + 0;
         this.indices[i + 4] = j + 2;
         this.indices[i + 5] = j + 3;
-    };
+    }
 
     //upload the index data
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
@@ -54,25 +54,25 @@ PIXI.WebGLSpriteBatch = function(gl)
 
     this.drawing = false;
     this.currentBatchSize = 0;
-    this.currentBaseTexture;
-}
+    this.currentBaseTexture = null;
+};
 
 PIXI.WebGLSpriteBatch.prototype.begin = function(renderSession)
-{ 
+{
     this.renderSession = renderSession;
     this.shader = this.renderSession.shaderManager.defaultShader;
 
     this.start();
-}
+};
 
 PIXI.WebGLSpriteBatch.prototype.end = function()
-{ 
+{
     this.flush();
-}
+};
 
 
 PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
-{   
+{
     // check texture..
     if(sprite.texture.baseTexture !== this.currentBaseTexture || this.currentBatchSize >= this.size)
     {
@@ -116,20 +116,20 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
         w0 = w1 + width;
 
         h1 = trim.y - aY * trim.realHeight;
-        h0 = h1 + height;                          
+        h0 = h1 + height;
     }
     else
     {
-        var w0 = (width ) * (1-aX);
-        var w1 = (width ) * -aX;
+        w0 = (width ) * (1-aX);
+        w1 = (width ) * -aX;
 
-        var h0 = height * (1-aY);
-        var h1 = height * -aY;
+        h0 = height * (1-aY);
+        h1 = height * -aY;
     }
 
     var index = this.currentBatchSize * 4 * this.vertSize;
 
-    worldTransform = sprite.worldTransform;
+    var worldTransform = sprite.worldTransform;
 
     var a = worldTransform[0];
     var b = worldTransform[3];
@@ -182,10 +182,10 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
     this.currentBatchSize++;
 
 
-}
+};
 
 PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
-{   
+{
     var texture = tilingSprite.texture;
 
     if(texture.baseTexture !== this.currentBaseTexture || this.currentBatchSize >= this.size)
@@ -202,7 +202,6 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
 
      // set the textures uvs temporarily
     // TODO create a seperate texture so that we can tile part of a texture
-    var tempUvs = texture._uvs;
 
     if(!tilingSprite._uvs)tilingSprite._uvs = new Float32Array(8);
 
@@ -247,7 +246,7 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
 
     var index = this.currentBatchSize * 4 * this.vertSize;
 
-    worldTransform = tilingSprite.worldTransform;
+    var worldTransform = tilingSprite.worldTransform;
 
     var a = worldTransform[0];
     var b = worldTransform[3];
@@ -298,7 +297,7 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
 
     // increment the batchs
     this.currentBatchSize++;
-}
+};
 
 PIXI.WebGLSpriteBatch.prototype.flush = function()
 {
@@ -322,12 +321,12 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
 
     // increment the draw count
     this.renderSession.drawCount++;
-}
+};
 
 PIXI.WebGLSpriteBatch.prototype.stop = function()
 {
     this.flush();
-}
+};
 
 PIXI.WebGLSpriteBatch.prototype.start = function()
 {
@@ -355,7 +354,7 @@ PIXI.WebGLSpriteBatch.prototype.start = function()
     {
         this.setBlendMode(PIXI.blendModes.NORMAL);
     }
-}
+};
 
 PIXI.WebGLSpriteBatch.prototype.setBlendMode = function(blendMode)
 {
@@ -365,6 +364,6 @@ PIXI.WebGLSpriteBatch.prototype.setBlendMode = function(blendMode)
     
     var blendModeWebGL = PIXI.blendModesWebGL[this.currentBlendMode];
     this.gl.blendFunc(blendModeWebGL[0], blendModeWebGL[1]);
-}
+};
 
 

@@ -7,10 +7,10 @@
 PIXI.CanvasMaskManager = function()
 {
     
-}
+};
 
 PIXI.CanvasMaskManager.prototype.pushMask = function(maskData, context)
-{ 
+{
     context.save();
     
     maskData.visible = false;
@@ -26,9 +26,9 @@ PIXI.CanvasMaskManager.prototype.pushMask = function(maskData, context)
     context.clip();
 
     maskData.worldAlpha = cacheAlpha;
-}
+};
 
 PIXI.CanvasMaskManager.prototype.popMask = function(context)
-{ 
+{
     context.restore();
-}
+};

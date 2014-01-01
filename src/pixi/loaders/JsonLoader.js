@@ -109,15 +109,15 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
                         // check to see ifthe sprite ha been trimmed..
                         if (frameData[i].trimmed) {
 
-                            var texture =  PIXI.TextureCache[i]
+                            var texture =  PIXI.TextureCache[i];
                             
                             texture.trimmed = true;
 
                             var actualSize = frameData[i].sourceSize;
                             var realSize = frameData[i].spriteSourceSize;
 
-                            texture.trim.x = realSize.x
-                            texture.trim.y = realSize.y
+                            texture.trim.x = realSize.x;
+                            texture.trim.y = realSize.y;
                             texture.trim.realWidth = actualSize.w;
                             texture.trim.realHeight = actualSize.h;
                         }

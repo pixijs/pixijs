@@ -116,11 +116,11 @@ PIXI.AjaxRequest = function AjaxRequest()
         return false;
     }
 };
-
+/*
 PIXI.packColorRGBA = function(r, g, b, a)//r, g, b, a)
 {
   //  console.log(r, b, c, d)
-  return (Math.floor((r)*63) << 18) | (Math.floor((g)*63) << 12) | (Math.floor((b)*63) << 6)// | (Math.floor((a)*63))
+  return (Math.floor((r)*63) << 18) | (Math.floor((g)*63) << 12) | (Math.floor((b)*63) << 6);// | (Math.floor((a)*63))
   //  i = i | (Math.floor((a)*63));
    // return i;
    // var r = (i / 262144.0 ) / 64;
@@ -131,17 +131,19 @@ PIXI.packColorRGBA = function(r, g, b, a)//r, g, b, a)
   //  console.log(r, g, b, a);
   //  return i;
 
-}
-
+};
+*/
+/*
 PIXI.packColorRGB = function(r, g, b)//r, g, b, a)
 {
     return (Math.floor((r)*255) << 16) | (Math.floor((g)*255) << 8) | (Math.floor((b)*255));
-}
+};
 
 PIXI.unpackColorRGB = function(r, g, b)//r, g, b, a)
 {
     return (Math.floor((r)*255) << 16) | (Math.floor((g)*255) << 8) | (Math.floor((b)*255));
-}
+};
+*/
 
 PIXI.canUseNewCanvasBlendModes = function()
 {
@@ -155,35 +157,6 @@ PIXI.canUseNewCanvasBlendModes = function()
     context.fillStyle = '#fff';
     context.fillRect(0,0,1,1);
     return context.getImageData(0,0,1,1).data[0] === 0;
-}
-
-/*
- * DEBUGGING ONLY
- */
-PIXI.runList = function(item)
-{
-    window.console.log('>>>>>>>>>');
-    window.console.log('_');
-    var safe = 0;
-    var tmp = item.first;
-    window.console.log(tmp);
-
-    while(tmp._iNext)
-    {
-        safe++;
-        tmp = tmp._iNext;
-        window.console.log(tmp);
-    //  console.log(tmp);
-
-        if(safe > 100)
-        {
-            window.console.log('BREAK');
-            break;
-        }
-    }
 };
-
-
-
 
 

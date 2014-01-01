@@ -87,7 +87,7 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 
     // update the stage refference..
 
-    if(this.stage)this.setStageReference(this.stage)
+    if(this.stage)this.setStageReference(this.stage);
 
 };
 
@@ -111,7 +111,7 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 
         this.children.splice(index, 0, child);
 
-        if(this.stage)this.setStageReference(this.stage)
+        if(this.stage)this.setStageReference(this.stage);
     }
     else
     {
@@ -141,7 +141,7 @@ PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
     }
 
     this.children[index1] = child2;
-    this.children[index2] = child1;
+    this.children[index2] = child;
     
 };
 
@@ -173,7 +173,7 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 {
     var index = this.children.indexOf( child );
     if ( index !== -1 )
-    {  
+    {
         // update the stage reference..
         if(this.stage)this.removeStageReference();
 
@@ -207,7 +207,7 @@ PIXI.DisplayObjectContainer.prototype.updateTransform = function()
 };
 
 PIXI.DisplayObjectContainer.prototype.getBounds = function()
-{    
+{
     if(this.children.length === 0)return PIXI.EmptyRectangle;
 
     // TODO the bounds have already been calculated this render session so return what we have
@@ -252,7 +252,7 @@ PIXI.DisplayObjectContainer.prototype.getBounds = function()
     //this._currentBounds = bounds;
    
     return bounds;
-}
+};
 
 PIXI.DisplayObjectContainer.prototype.setStageReference = function(stage)
 {
@@ -263,8 +263,8 @@ PIXI.DisplayObjectContainer.prototype.setStageReference = function(stage)
         var child = this.children[i];
         if(child.interactive)this.stage.dirty = true;
         child.setStageReference(stage);
-    }   
-}
+    }
+};
 
 PIXI.DisplayObjectContainer.prototype.removeStageReference = function()
 {
@@ -274,12 +274,14 @@ PIXI.DisplayObjectContainer.prototype.removeStageReference = function()
         if(child.interactive)this.stage.dirty = true;
         child.removeStageReference();
         child.stage = null;
-    }   
-}
+    }
+};
 
 PIXI.DisplayObjectContainer.prototype._renderWebGL = function(renderSession)
 {
     if(this.visible === false || this.alpha === 0)return;
+
+    var i,j;
 
     if(this._mask || this._filters)
     {
@@ -291,16 +293,15 @@ PIXI.DisplayObjectContainer.prototype._renderWebGL = function(renderSession)
         }
 
         if(this._filters)
-        {    
+        {
             renderSession.spriteBatch.flush();
             renderSession.filterManager.pushFilter(this._filterBlock);
         }
 
         // simple render children!
-        for(var i=0,j=this.children.length; i<j; i++)
+        for(i=0,j=this.children.length; i<j; i++)
         {
-            var child = this.children[i];
-            child._renderWebGL(renderSession);
+            this.children[i]._renderWebGL(renderSession);
         }
 
         renderSession.spriteBatch.stop();
@@ -313,13 +314,12 @@ PIXI.DisplayObjectContainer.prototype._renderWebGL = function(renderSession)
     else
     {
         // simple render children!
-        for(var i=0,j=this.children.length; i<j; i++)
+        for(i=0,j=this.children.length; i<j; i++)
         {
-            var child = this.children[i];
-            child._renderWebGL(renderSession);
+            this.children[i]._renderWebGL(renderSession);
         }
     }
-}
+};
 
 PIXI.DisplayObjectContainer.prototype._renderCanvas = function(renderSession)
 {
@@ -340,4 +340,4 @@ PIXI.DisplayObjectContainer.prototype._renderCanvas = function(renderSession)
     {
         renderSession.maskManager.popMask(renderSession.context);
     }
-}
+};
