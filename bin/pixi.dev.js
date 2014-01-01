@@ -6085,7 +6085,7 @@ PIXI.WebGLFilterManager.prototype.applyFilterPass = function(filter, filterArea,
 {
     // use program
     var gl = this.gl;
-    var shader = filter.shader;
+    var shader = filter.shaders[gl.id];
 
     if(!shader)
     {
@@ -6095,7 +6095,7 @@ PIXI.WebGLFilterManager.prototype.applyFilterPass = function(filter, filterArea,
         shader.uniforms = filter.uniforms;
         shader.init();
 
-        filter.shader = shader;
+        filter.shaders[gl.id] = shader;
     }
 
     // set the shader
@@ -11077,7 +11077,8 @@ PIXI.AbstractFilter = function(fragmentSrc, uniforms)
     */
     this.passes = [this];
 
-
+    this.shaders = [];
+    
     this.dirty = true;
     this.padding = 0;
 
