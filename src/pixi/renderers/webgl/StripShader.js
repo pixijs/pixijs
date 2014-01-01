@@ -28,7 +28,7 @@ PIXI.StripShader = function()
         'uniform mat3 translationMatrix;',
         'uniform vec2 projectionVector;',
         'varying vec2 vTextureCoord;',
-        'varying vec2 offsetVector;',
+        'uniform vec2 offsetVector;',
         'varying float vColor;',
 
         'void main(void) {',
