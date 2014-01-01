@@ -4385,9 +4385,11 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
         offset = renderSession.offset,
         shader = renderSession.shaderManager.primitiveShader;
 
-    if(!graphics._webGL)graphics._webGL = {points:[], indices:[], lastIndex:0,
+    if(!graphics._webGL[gl.id])graphics._webGL[gl.id] = {points:[], indices:[], lastIndex:0,
                                            buffer:gl.createBuffer(),
                                            indexBuffer:gl.createBuffer()};
+
+    var webGL = graphics._webGL[gl.id];
 
     if(graphics.dirty)
     {
@@ -4397,9 +4399,9 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
         {
             graphics.clearDirty = false;
 
-            graphics._webGL.lastIndex = 0;
-            graphics._webGL.points = [];
-            graphics._webGL.indices = [];
+            webGL.lastIndex = 0;
+            webGL.points = [];
+            webGL.indices = [];
 
         }
 
@@ -4425,15 +4427,15 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
 
     gl.uniform1f(shader.alpha, graphics.worldAlpha);
     gl.uniform1f(shader.alpha, graphics.worldAlpha);
-    gl.bindBuffer(gl.ARRAY_BUFFER, graphics._webGL.buffer);
+    gl.bindBuffer(gl.ARRAY_BUFFER, webGL.buffer);
 
     gl.vertexAttribPointer(shader.aVertexPosition, 2, gl.FLOAT, false, 4 * 6, 0);
     gl.vertexAttribPointer(shader.colorAttribute, 4, gl.FLOAT, false,4 * 6, 2 * 4);
 
     // set the index buffer!
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, graphics._webGL.indexBuffer);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, webGL.indexBuffer);
 
-    gl.drawElements(gl.TRIANGLE_STRIP,  graphics._webGL.indices.length, gl.UNSIGNED_SHORT, 0 );
+    gl.drawElements(gl.TRIANGLE_STRIP,  webGL.indices.length, gl.UNSIGNED_SHORT, 0 );
 
     renderSession.shaderManager.deactivatePrimitiveShader();
 
@@ -4451,7 +4453,9 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
  */
 PIXI.WebGLGraphics.updateGraphics = function(graphics, gl)
 {
-    for (var i = graphics._webGL.lastIndex; i < graphics.graphicsData.length; i++)
+    var webGL = graphics._webGL[gl.id];
+    
+    for (var i = webGL.lastIndex; i < graphics.graphicsData.length; i++)
     {
         var data = graphics.graphicsData[i];
 
@@ -4460,37 +4464,37 @@ PIXI.WebGLGraphics.updateGraphics = function(graphics, gl)
             if(data.fill)
             {
                 if(data.points.length>3)
-                    PIXI.WebGLGraphics.buildPoly(data, graphics._webGL);
+                    PIXI.WebGLGraphics.buildPoly(data, webGL);
             }
 
             if(data.lineWidth > 0)
             {
-                PIXI.WebGLGraphics.buildLine(data, graphics._webGL);
+                PIXI.WebGLGraphics.buildLine(data, webGL);
             }
         }
         else if(data.type === PIXI.Graphics.RECT)
         {
-            PIXI.WebGLGraphics.buildRectangle(data, graphics._webGL);
+            PIXI.WebGLGraphics.buildRectangle(data, webGL);
         }
         else if(data.type === PIXI.Graphics.CIRC || data.type === PIXI.Graphics.ELIP)
         {
-            PIXI.WebGLGraphics.buildCircle(data, graphics._webGL);
+            PIXI.WebGLGraphics.buildCircle(data, webGL);
         }
     }
 
-    graphics._webGL.lastIndex = graphics.graphicsData.length;
+    webGL.lastIndex = graphics.graphicsData.length;
 
    
 
-    graphics._webGL.glPoints = new Float32Array(graphics._webGL.points);
+    webGL.glPoints = new Float32Array(webGL.points);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, graphics._webGL.buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, graphics._webGL.glPoints, gl.STATIC_DRAW);
+    gl.bindBuffer(gl.ARRAY_BUFFER, webGL.buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, webGL.glPoints, gl.STATIC_DRAW);
 
-    graphics._webGL.glIndicies = new Uint16Array(graphics._webGL.indices);
+    webGL.glIndicies = new Uint16Array(webGL.indices);
 
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, graphics._webGL.indexBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, graphics._webGL.glIndicies, gl.STATIC_DRAW);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, webGL.indexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, webGL.glIndicies, gl.STATIC_DRAW);
 };
 
 /**
@@ -7175,6 +7179,8 @@ PIXI.Graphics = function()
      * @private
      */
     this.currentPath = {points:[]};
+
+    this._webGL = [];
 };
 
 // constructor

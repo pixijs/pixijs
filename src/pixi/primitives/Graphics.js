@@ -63,6 +63,8 @@ PIXI.Graphics = function()
      * @private
      */
     this.currentPath = {points:[]};
+
+    this._webGL = [];
 };
 
 // constructor
