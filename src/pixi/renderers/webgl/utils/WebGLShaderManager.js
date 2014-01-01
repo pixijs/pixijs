@@ -4,11 +4,21 @@
 
 PIXI.WebGLShaderManager = function(gl)
 {
+    this.setContext(gl);
+
+    // the final one is used for the rendering strips
+    //this.stripShader = new PIXI.StripShader(gl);
+};
+
+PIXI.WebGLShaderManager.prototype.setContext = function(gl)
+{
     this.gl = gl;
     
+    // the next one is used for rendering primatives
+    this.primitiveShader = new PIXI.PrimitiveShader(gl);
+
     // this shader is used for the default sprite rendering
     this.defaultShader = new PIXI.PixiShader(gl);
-    //PIXI.defaultShader = this.defaultShader;
 
     var shaderProgram = this.defaultShader.program;
 
@@ -18,14 +28,8 @@ PIXI.WebGLShaderManager = function(gl)
     gl.enableVertexAttribArray(this.defaultShader.colorAttribute);
     gl.enableVertexAttribArray(this.defaultShader.aTextureCoord);
 
-    // the next one is used for rendering primatives
-    this.primitiveShader = new PIXI.PrimitiveShader(gl);
-   
-
-    // the final one is used for the rendering strips
-    //this.stripShader = new PIXI.StripShader(gl);
-};
-
+    
+}
 
 PIXI.WebGLShaderManager.prototype.activatePrimitiveShader = function()
 {

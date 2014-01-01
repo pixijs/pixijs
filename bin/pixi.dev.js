@@ -1004,7 +1004,7 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'mask', {
 
         if(this._mask)this._mask.isMask = false;
         this._mask = value;
-        this._mask.isMask = true;
+        if(this._mask)this._mask.isMask = true;
     }
 });
 
@@ -4939,7 +4939,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
 
     this.batchs = [];
 
-    var options = {
+    this.options = {
         alpha: this.transparent,
         antialias:!!antialias, // SPEED UP??
         premultipliedAlpha:false,
@@ -4948,11 +4948,11 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
 
     //try 'experimental-webgl'
     try {
-        this.gl = this.view.getContext('experimental-webgl',  options);
+        this.gl = this.view.getContext('experimental-webgl',  this.options);
     } catch (e) {
         //try 'webgl'
         try {
-            this.gl = this.view.getContext('webgl',  options);
+            this.gl = this.view.getContext('webgl',  this.options);
         } catch (e2) {
             // fail, not able to get a context
             throw new Error(' This browser does not support webGL. Try using the canvas renderer' + this);
@@ -4960,7 +4960,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     }
 
     var gl = this.gl;
-    gl.id = PIXI.WebGLRenderer.glContextId ++;
+    this.glContextId = gl.id = PIXI.WebGLRenderer.glContextId ++;
 
     if(!PIXI.blendModesWebGL)
     {
@@ -5067,26 +5067,26 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
         }
     }
 
+    /*
     //can simulate context loss in Chrome like so:
-    // this.view.onmousedown = function(ev) {
-    // console.dir(this.gl.getSupportedExtensions());
-    //    var ext = (
-    //        gl.getExtension("WEBGL_scompressed_texture_s3tc")
-    //   // gl.getExtension("WEBGL_compressed_texture_s3tc") ||
-    //   // gl.getExtension("MOZ_WEBGL_compressed_texture_s3tc") ||
-    //   // gl.getExtension("WEBKIT_WEBGL_compressed_texture_s3tc")
-    // );
-    // console.dir(ext);
-
-    //  var loseCtx = this.gl.getExtension("WEBGL_lose_context");
-    //  console.log("killing context");
-    //  loseCtx.loseContext();
-
-    //  setTimeout(function() {
-    //      console.log("restoring context...");
-    //      loseCtx.restoreContext();
-    //  }.bind(this), 1000);
-    // }.bind(this);
+     this.view.onmousedown = function(ev) {
+     console.dir(this.gl.getSupportedExtensions());
+        var ext = (
+            gl.getExtension("WEBGL_scompressed_texture_s3tc")
+       // gl.getExtension("WEBGL_compressed_texture_s3tc") ||
+       // gl.getExtension("MOZ_WEBGL_compressed_texture_s3tc") ||
+       // gl.getExtension("WEBKIT_WEBGL_compressed_texture_s3tc")
+     );
+     console.dir(ext);
+     var loseCtx = this.gl.getExtension("WEBGL_lose_context");
+      console.log("killing context");
+      loseCtx.loseContext();
+     setTimeout(function() {
+          console.log("restoring context...");
+          loseCtx.restoreContext();
+      }.bind(this), 1000);
+     }.bind(this);
+     */
 };
 
 PIXI.WebGLRenderer.prototype.renderDisplayObject = function(displayObject, projection)
@@ -5288,28 +5288,50 @@ PIXI.WebGLRenderer.prototype.handleContextLost = function(event)
  */
 PIXI.WebGLRenderer.prototype.handleContextRestored = function()
 {
-    this.gl = this.view.getContext('experimental-webgl',  {
-        alpha: true
-    });
+   
+    //try 'experimental-webgl'
+    try {
+        this.gl = this.view.getContext('experimental-webgl',  this.options);
+    } catch (e) {
+        //try 'webgl'
+        try {
+            this.gl = this.view.getContext('webgl',  this.options);
+        } catch (e2) {
+            // fail, not able to get a context
+            throw new Error(' This browser does not support webGL. Try using the canvas renderer' + this);
+        }
+    }
 
-    this.initShaders();
+    var gl = this.gl;
+    gl.id = PIXI.WebGLRenderer.glContextId ++;
+
+
+
+    // need to set the context...
+    this.shaderManager.setContext(gl);                               
+    this.spriteBatch.setContext(gl);        
+    this.maskManager.setContext(gl);               
+    this.filterManager.setContext(gl);
+
+    
+    this.renderSession.gl = this.gl;
+    
+    gl.disable(gl.DEPTH_TEST);
+    gl.disable(gl.CULL_FACE);
+
+    gl.enable(gl.BLEND);
+    gl.colorMask(true, true, true, this.transparent);
+    
+    this.gl.viewport(0, 0, this.width, this.height);
 
     for(var key in PIXI.TextureCache)
     {
         var texture = PIXI.TextureCache[key].baseTexture;
-        texture._glTexture = null;
-        PIXI.WebGLRenderer.updateTexture(texture);
+        texture._glTextures = [];
     }
-
-    for (var i=0; i <  this.batchs.length; i++)
-    {
-        this.batchs[i].restoreLostContext(this.gl);
-        this.batchs[i].dirty = true;
-    }
-
-    PIXI._restoreBatchs(this.gl);
 
     this.contextLost = false;
+    
 };
 
 PIXI.WebGLRenderer.glContextId = 0;
@@ -5320,9 +5342,15 @@ PIXI.WebGLRenderer.glContextId = 0;
  
 PIXI.WebGLMaskManager = function(gl)
 {
-    this.gl = gl;
     this.maskStack = [];
     this.maskPosition = 0;
+
+    this.setContext(gl);
+};
+
+PIXI.WebGLMaskManager.prototype.setContext = function(gl)
+{
+    this.gl = gl;
 };
 
 PIXI.WebGLMaskManager.prototype.pushMask = function(maskData, renderSession)
@@ -5377,11 +5405,21 @@ PIXI.WebGLMaskManager.prototype.popMask = function(renderSession)
 
 PIXI.WebGLShaderManager = function(gl)
 {
+    this.setContext(gl);
+
+    // the final one is used for the rendering strips
+    //this.stripShader = new PIXI.StripShader(gl);
+};
+
+PIXI.WebGLShaderManager.prototype.setContext = function(gl)
+{
     this.gl = gl;
     
+    // the next one is used for rendering primatives
+    this.primitiveShader = new PIXI.PrimitiveShader(gl);
+
     // this shader is used for the default sprite rendering
     this.defaultShader = new PIXI.PixiShader(gl);
-    //PIXI.defaultShader = this.defaultShader;
 
     var shaderProgram = this.defaultShader.program;
 
@@ -5391,14 +5429,8 @@ PIXI.WebGLShaderManager = function(gl)
     gl.enableVertexAttribArray(this.defaultShader.colorAttribute);
     gl.enableVertexAttribArray(this.defaultShader.aTextureCoord);
 
-    // the next one is used for rendering primatives
-    this.primitiveShader = new PIXI.PrimitiveShader(gl);
-   
-
-    // the final one is used for the rendering strips
-    //this.stripShader = new PIXI.StripShader(gl);
-};
-
+    
+}
 
 PIXI.WebGLShaderManager.prototype.activatePrimitiveShader = function()
 {
@@ -5439,25 +5471,17 @@ PIXI.WebGLShaderManager.prototype.deactivatePrimitiveShader = function()
 
 PIXI.WebGLSpriteBatch = function(gl)
 {
-    this.gl = gl;
-
-    // create a couple of buffers
-    this.vertexBuffer = gl.createBuffer();
-    this.indexBuffer = gl.createBuffer();
-
+   
 
     this.size = 2000;
     this.vertSize = 6;
 
-    // 65535 is max index, so 65535 / 6 = 10922.
-       
     //the total number of floats in our batch
     var numVerts = this.size * 4 *  this.vertSize;
     //the total number of indices in our batch
     var numIndices = this.size * 6;
 
-    
-    //vertex data
+     //vertex data
     this.vertices = new Float32Array(numVerts);
     //index data
     this.indices = new Uint16Array(numIndices);
@@ -5474,6 +5498,29 @@ PIXI.WebGLSpriteBatch = function(gl)
         this.indices[i + 5] = j + 3;
     }
 
+
+    this.drawing = false;
+    this.currentBatchSize = 0;
+    this.currentBaseTexture = null;
+    
+    this.setContext(gl);
+};
+
+PIXI.WebGLSpriteBatch.prototype.setContext = function(gl)
+{
+    this.gl = gl;
+
+    // create a couple of buffers
+    this.vertexBuffer = gl.createBuffer();
+    this.indexBuffer = gl.createBuffer();
+
+    // 65535 is max index, so 65535 / 6 = 10922.
+    
+    //the total number of floats in our batch
+    var numVerts = this.size * 4 *  this.vertSize;
+    //the total number of indices in our batch
+    var numIndices = this.size * 6;
+
     //upload the index data
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW);
@@ -5481,10 +5528,8 @@ PIXI.WebGLSpriteBatch = function(gl)
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, this.vertices, gl.DYNAMIC_DRAW);
 
-    this.drawing = false;
-    this.currentBatchSize = 0;
-    this.currentBaseTexture = null;
-};
+    this.currentBlendMode = 99999;
+}
 
 PIXI.WebGLSpriteBatch.prototype.begin = function(renderSession)
 {
@@ -5805,19 +5850,25 @@ PIXI.WebGLSpriteBatch.prototype.setBlendMode = function(blendMode)
 
 PIXI.WebGLFilterManager = function(gl, transparent)
 {
-    this.gl = gl;
     this.transparent = transparent;
 
     this.filterStack = [];
-    this.texturePool = [];
-
+    
     this.offsetX = 0;
     this.offsetY = 0;
 
-    this.initShaderBuffers();
+    this.setContext(gl);
 };
 
 // API
+
+PIXI.WebGLFilterManager.prototype.setContext = function(gl)
+{
+    this.gl = gl;
+    this.texturePool = [];
+
+    this.initShaderBuffers();
+}
 
 PIXI.WebGLFilterManager.prototype.begin = function(renderSession, buffer)
 {

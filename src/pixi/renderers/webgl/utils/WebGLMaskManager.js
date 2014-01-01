@@ -4,9 +4,15 @@
  
 PIXI.WebGLMaskManager = function(gl)
 {
-    this.gl = gl;
     this.maskStack = [];
     this.maskPosition = 0;
+
+    this.setContext(gl);
+};
+
+PIXI.WebGLMaskManager.prototype.setContext = function(gl)
+{
+    this.gl = gl;
 };
 
 PIXI.WebGLMaskManager.prototype.pushMask = function(maskData, renderSession)

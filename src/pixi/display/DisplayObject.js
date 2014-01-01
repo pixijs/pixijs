@@ -307,7 +307,7 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'mask', {
 
         if(this._mask)this._mask.isMask = false;
         this._mask = value;
-        this._mask.isMask = true;
+        if(this._mask)this._mask.isMask = true;
     }
 });
 

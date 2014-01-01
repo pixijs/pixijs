@@ -5,19 +5,25 @@
 
 PIXI.WebGLFilterManager = function(gl, transparent)
 {
-    this.gl = gl;
     this.transparent = transparent;
 
     this.filterStack = [];
-    this.texturePool = [];
-
+    
     this.offsetX = 0;
     this.offsetY = 0;
 
-    this.initShaderBuffers();
+    this.setContext(gl);
 };
 
 // API
+
+PIXI.WebGLFilterManager.prototype.setContext = function(gl)
+{
+    this.gl = gl;
+    this.texturePool = [];
+
+    this.initShaderBuffers();
+}
 
 PIXI.WebGLFilterManager.prototype.begin = function(renderSession, buffer)
 {

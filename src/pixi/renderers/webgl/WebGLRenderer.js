@@ -48,7 +48,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
 
     this.batchs = [];
 
-    var options = {
+    this.options = {
         alpha: this.transparent,
         antialias:!!antialias, // SPEED UP??
         premultipliedAlpha:false,
@@ -57,11 +57,11 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
 
     //try 'experimental-webgl'
     try {
-        this.gl = this.view.getContext('experimental-webgl',  options);
+        this.gl = this.view.getContext('experimental-webgl',  this.options);
     } catch (e) {
         //try 'webgl'
         try {
-            this.gl = this.view.getContext('webgl',  options);
+            this.gl = this.view.getContext('webgl',  this.options);
         } catch (e2) {
             // fail, not able to get a context
             throw new Error(' This browser does not support webGL. Try using the canvas renderer' + this);
@@ -69,7 +69,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     }
 
     var gl = this.gl;
-    gl.id = PIXI.WebGLRenderer.glContextId ++;
+    this.glContextId = gl.id = PIXI.WebGLRenderer.glContextId ++;
 
     if(!PIXI.blendModesWebGL)
     {
@@ -176,26 +176,26 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
         }
     }
 
+    /*
     //can simulate context loss in Chrome like so:
-    // this.view.onmousedown = function(ev) {
-    // console.dir(this.gl.getSupportedExtensions());
-    //    var ext = (
-    //        gl.getExtension("WEBGL_scompressed_texture_s3tc")
-    //   // gl.getExtension("WEBGL_compressed_texture_s3tc") ||
-    //   // gl.getExtension("MOZ_WEBGL_compressed_texture_s3tc") ||
-    //   // gl.getExtension("WEBKIT_WEBGL_compressed_texture_s3tc")
-    // );
-    // console.dir(ext);
-
-    //  var loseCtx = this.gl.getExtension("WEBGL_lose_context");
-    //  console.log("killing context");
-    //  loseCtx.loseContext();
-
-    //  setTimeout(function() {
-    //      console.log("restoring context...");
-    //      loseCtx.restoreContext();
-    //  }.bind(this), 1000);
-    // }.bind(this);
+     this.view.onmousedown = function(ev) {
+     console.dir(this.gl.getSupportedExtensions());
+        var ext = (
+            gl.getExtension("WEBGL_scompressed_texture_s3tc")
+       // gl.getExtension("WEBGL_compressed_texture_s3tc") ||
+       // gl.getExtension("MOZ_WEBGL_compressed_texture_s3tc") ||
+       // gl.getExtension("WEBKIT_WEBGL_compressed_texture_s3tc")
+     );
+     console.dir(ext);
+     var loseCtx = this.gl.getExtension("WEBGL_lose_context");
+      console.log("killing context");
+      loseCtx.loseContext();
+     setTimeout(function() {
+          console.log("restoring context...");
+          loseCtx.restoreContext();
+      }.bind(this), 1000);
+     }.bind(this);
+     */
 };
 
 PIXI.WebGLRenderer.prototype.renderDisplayObject = function(displayObject, projection)
@@ -397,28 +397,50 @@ PIXI.WebGLRenderer.prototype.handleContextLost = function(event)
  */
 PIXI.WebGLRenderer.prototype.handleContextRestored = function()
 {
-    this.gl = this.view.getContext('experimental-webgl',  {
-        alpha: true
-    });
+   
+    //try 'experimental-webgl'
+    try {
+        this.gl = this.view.getContext('experimental-webgl',  this.options);
+    } catch (e) {
+        //try 'webgl'
+        try {
+            this.gl = this.view.getContext('webgl',  this.options);
+        } catch (e2) {
+            // fail, not able to get a context
+            throw new Error(' This browser does not support webGL. Try using the canvas renderer' + this);
+        }
+    }
 
-    this.initShaders();
+    var gl = this.gl;
+    gl.id = PIXI.WebGLRenderer.glContextId ++;
+
+
+
+    // need to set the context...
+    this.shaderManager.setContext(gl);                               
+    this.spriteBatch.setContext(gl);        
+    this.maskManager.setContext(gl);               
+    this.filterManager.setContext(gl);
+
+    
+    this.renderSession.gl = this.gl;
+    
+    gl.disable(gl.DEPTH_TEST);
+    gl.disable(gl.CULL_FACE);
+
+    gl.enable(gl.BLEND);
+    gl.colorMask(true, true, true, this.transparent);
+    
+    this.gl.viewport(0, 0, this.width, this.height);
 
     for(var key in PIXI.TextureCache)
     {
         var texture = PIXI.TextureCache[key].baseTexture;
-        texture._glTexture = null;
-        PIXI.WebGLRenderer.updateTexture(texture);
+        texture._glTextures = [];
     }
-
-    for (var i=0; i <  this.batchs.length; i++)
-    {
-        this.batchs[i].restoreLostContext(this.gl);
-        this.batchs[i].dirty = true;
-    }
-
-    PIXI._restoreBatchs(this.gl);
 
     this.contextLost = false;
+    
 };
 
 PIXI.WebGLRenderer.glContextId = 0;
