@@ -13,8 +13,8 @@ PIXI.CanvasMaskManager.prototype.pushMask = function(maskData, context)
 {
     context.save();
     
-    maskData.visible = false;
-    maskData.alpha = 0;
+    //maskData.visible = false;
+    // maskData.alpha = 0;
     
     var cacheAlpha = maskData.alpha;
     var transform = maskData.worldTransform;

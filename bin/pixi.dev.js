@@ -1002,8 +1002,9 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'mask', {
     },
     set: function(value) {
 
+        if(this._mask)this._mask.isMask = false;
         this._mask = value;
-
+        this._mask.isMask = true;
     }
 });
 
@@ -5330,7 +5331,7 @@ PIXI.WebGLMaskManager.prototype.pushMask = function(maskData, renderSession)
         gl.stencilFunc(gl.ALWAYS,1,1);
     }
     
-    maskData.visible = false;
+  //  maskData.visible = false;
 
     this.maskStack.push(maskData);
     
@@ -6360,8 +6361,8 @@ PIXI.CanvasMaskManager.prototype.pushMask = function(maskData, context)
 {
     context.save();
     
-    maskData.visible = false;
-    maskData.alpha = 0;
+    //maskData.visible = false;
+    // maskData.alpha = 0;
     
     var cacheAlpha = maskData.alpha;
     var transform = maskData.worldTransform;
@@ -7347,7 +7348,7 @@ PIXI.Graphics.prototype.clear = function()
 PIXI.Graphics.prototype._renderWebGL = function(renderSession)
 {
     // if the sprite is not visible or the alpha is 0 then no need to render this element
-    if(this.visible === false || this.alpha === 0)return;
+    if(this.visible === false || this.alpha === 0 || this.isMask === true)return;
     
     renderSession.spriteBatch.stop();
 
@@ -7367,7 +7368,7 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
 PIXI.Graphics.prototype._renderCanvas = function(renderSession)
 {
     // if the sprite is not visible or the alpha is 0 then no need to render this element
-    if(this.visible === false || this.alpha === 0)return;
+    if(this.visible === false || this.alpha === 0 || this.isMask === true)return;
     
     var context = renderSession.context;
     var transform = this.worldTransform;

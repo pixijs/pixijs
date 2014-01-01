@@ -19,7 +19,7 @@ PIXI.WebGLMaskManager.prototype.pushMask = function(maskData, renderSession)
         gl.stencilFunc(gl.ALWAYS,1,1);
     }
     
-    maskData.visible = false;
+  //  maskData.visible = false;
 
     this.maskStack.push(maskData);
     

@@ -236,7 +236,7 @@ PIXI.Graphics.prototype.clear = function()
 PIXI.Graphics.prototype._renderWebGL = function(renderSession)
 {
     // if the sprite is not visible or the alpha is 0 then no need to render this element
-    if(this.visible === false || this.alpha === 0)return;
+    if(this.visible === false || this.alpha === 0 || this.isMask === true)return;
     
     renderSession.spriteBatch.stop();
 
@@ -256,7 +256,7 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
 PIXI.Graphics.prototype._renderCanvas = function(renderSession)
 {
     // if the sprite is not visible or the alpha is 0 then no need to render this element
-    if(this.visible === false || this.alpha === 0)return;
+    if(this.visible === false || this.alpha === 0 || this.isMask === true)return;
     
     var context = renderSession.context;
     var transform = this.worldTransform;
