@@ -98,8 +98,8 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
 
     var  verticies = this.vertices;
 
-    width = sprite.texture.frame.width;
-    height = sprite.texture.frame.height;
+    var width = sprite.texture.frame.width;
+    var height = sprite.texture.frame.height;
 
     // TODO trim??
     var aX = sprite.anchor.x;
@@ -233,8 +233,8 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
 
     var  verticies = this.vertices;
 
-    width = tilingSprite.width;
-    height = tilingSprite.height;
+    var width = tilingSprite.width;
+    var height = tilingSprite.height;
 
     // TODO trim??
     var aX = tilingSprite.anchor.x; // - tilingSprite.texture.trim.x

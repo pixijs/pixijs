@@ -83,7 +83,10 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     
 
   
-    this.projection = new PIXI.Point(400, 300);
+    this.projection = new PIXI.Point();
+    this.projection.x =  this.width/2;
+    this.projection.y =  -this.height/2;
+
     this.offset = new PIXI.Point(0, 0);
 
     this.resize(this.width, this.height);
@@ -156,11 +159,10 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
     gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], !this.transparent);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
+  //  this.projection.x =  this.width/2;
+    //this.projection.y =  -this.height/2;
 
-    this.projection.x =  this.width/2;
-    this.projection.y =  -this.height/2;
-
-    this.renderDisplayObject( stage, this.projection);
+    this.renderDisplayObject( stage, this.projection );
 
     // interaction
     if(stage.interactive)

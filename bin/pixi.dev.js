@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2013-12-31
+ * Compiled: 2014-01-01
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -1314,7 +1314,7 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
  */
 PIXI.DisplayObjectContainer.prototype.updateTransform = function()
 {
-    this._currentBounds = null;
+    //this._currentBounds = null;
 
     if(!this.visible)return;
 
@@ -4997,7 +4997,10 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     
 
   
-    this.projection = new PIXI.Point(400, 300);
+    this.projection = new PIXI.Point();
+    this.projection.x =  this.width/2;
+    this.projection.y =  -this.height/2;
+
     this.offset = new PIXI.Point(0, 0);
 
     this.resize(this.width, this.height);
@@ -5070,11 +5073,10 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
     gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], !this.transparent);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
+  //  this.projection.x =  this.width/2;
+    //this.projection.y =  -this.height/2;
 
-    this.projection.x =  this.width/2;
-    this.projection.y =  -this.height/2;
-
-    this.renderDisplayObject( stage, this.projection);
+    this.renderDisplayObject( stage, this.projection );
 
     // interaction
     if(stage.interactive)
@@ -5521,8 +5523,8 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
 
     var  verticies = this.vertices;
 
-    width = sprite.texture.frame.width;
-    height = sprite.texture.frame.height;
+    var width = sprite.texture.frame.width;
+    var height = sprite.texture.frame.height;
 
     // TODO trim??
     var aX = sprite.anchor.x;
@@ -5656,8 +5658,8 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
 
     var  verticies = this.vertices;
 
-    width = tilingSprite.width;
-    height = tilingSprite.height;
+    var width = tilingSprite.width;
+    var height = tilingSprite.height;
 
     // TODO trim??
     var aX = tilingSprite.anchor.x; // - tilingSprite.texture.trim.x
