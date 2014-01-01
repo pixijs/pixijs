@@ -8,8 +8,11 @@ describe('pixi/display/Sprite', function () {
     it('Module exists', function () {
         expect(Sprite).to.be.a('function');
         expect(PIXI).to.have.deep.property('blendModes.NORMAL', 0);
-        expect(PIXI).to.have.deep.property('blendModes.SCREEN', 1);
+        expect(PIXI).to.have.deep.property('blendModes.ADD', 1);
+        expect(PIXI).to.have.deep.property('blendModes.MULTIPLY', 2);
+        expect(PIXI).to.have.deep.property('blendModes.SCREEN', 3);
     });
+
 
     it('Members exist',  function () {
         expect(Sprite).itself.to.respondTo('fromImage');
