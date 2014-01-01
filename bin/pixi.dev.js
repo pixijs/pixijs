@@ -1602,11 +1602,6 @@ PIXI.Sprite.prototype.setTexture = function(texture)
     {
         this.textureChange = true;
         this.texture = texture;
-
-        if(this.__renderGroup)
-        {
-            this.__renderGroup.updateTexture(this);
-        }
     }
     else
     {
@@ -4189,7 +4184,7 @@ PIXI.PixiShader.prototype.syncUniforms = function()
             if (uniform._init)
             {
                 gl.activeTexture(gl['TEXTURE' + this.textureCount]);
-                gl.bindTexture(gl.TEXTURE_2D, uniform.value.baseTexture._glTexture);
+                gl.bindTexture(gl.TEXTURE_2D, uniform.value.baseTexture._glTextures[gl.id] || PIXI.createWebGLTexture( uniform.value.baseTexture, gl));
                 gl.uniform1i(uniform.uniformLocation, this.textureCount);
                 this.textureCount++;
             }
@@ -4960,6 +4955,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     }
 
     var gl = this.gl;
+    gl.id = PIXI.WebGLRenderer.glContextId ++;
 
     if(!PIXI.blendModesWebGL)
     {
@@ -5122,8 +5118,8 @@ PIXI.WebGLRenderer.updateTextures = function()
     var i = 0;
 
     //TODO break this out into a texture manager...
-    for (i = 0; i < PIXI.texturesToUpdate.length; i++)
-        PIXI.WebGLRenderer.updateTexture(PIXI.texturesToUpdate[i]);
+    //for (i = 0; i < PIXI.texturesToUpdate.length; i++)
+    //    PIXI.WebGLRenderer.updateTexture(PIXI.texturesToUpdate[i]);
 
 
     for (i=0; i < PIXI.Texture.frameUpdates.length; i++)
@@ -5145,6 +5141,8 @@ PIXI.WebGLRenderer.updateTextures = function()
  * @param texture {Texture} The texture to update
  * @private
  */
+
+ /*
 PIXI.WebGLRenderer.updateTexture = function(texture)
 {
     //TODO break this out into a texture manager...
@@ -5180,6 +5178,7 @@ PIXI.WebGLRenderer.updateTexture = function(texture)
         gl.bindTexture(gl.TEXTURE_2D, null);
     }
 };
+*/
 
 /**
  * Destroys a loaded webgl texture
@@ -5230,6 +5229,38 @@ PIXI.WebGLRenderer.prototype.resize = function(width, height)
     this.projection.y =  -this.height/2;
 };
 
+PIXI.createWebGLTexture = function(texture, gl)
+{
+    
+
+    if(texture.hasLoaded)
+    {
+        texture._glTextures[gl.id] = gl.createTexture();
+        
+        gl.bindTexture(gl.TEXTURE_2D, texture._glTextures[gl.id]);
+        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.source);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, texture.scaleMode === PIXI.BaseTexture.SCALE_MODE.LINEAR ? gl.LINEAR : gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, texture.scaleMode === PIXI.BaseTexture.SCALE_MODE.LINEAR ? gl.LINEAR : gl.NEAREST);
+
+        // reguler...
+
+        if(!texture._powerOf2)
+        {
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        }
+        else
+        {
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+        }
+
+        gl.bindTexture(gl.TEXTURE_2D, null);
+    }
+};
+
 /**
  * Handles a lost webgl context
  *
@@ -5275,6 +5306,8 @@ PIXI.WebGLRenderer.prototype.handleContextRestored = function()
 
     this.contextLost = false;
 };
+
+PIXI.WebGLRenderer.glContextId = 0;
 
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
@@ -5698,7 +5731,7 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
     var gl = this.gl;
     
     // bind the current texture
-    gl.bindTexture(gl.TEXTURE_2D, this.currentBaseTexture._glTexture);
+    gl.bindTexture(gl.TEXTURE_2D, this.currentBaseTexture._glTextures[gl.id] || PIXI.createWebGLTexture(this.currentBaseTexture, gl));
 
     // upload the verts to the buffer
     var view = this.vertices.subarray(0, this.currentBatchSize * 4 * this.vertSize);
@@ -5713,6 +5746,7 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
     // increment the draw count
     this.renderSession.drawCount++;
 };
+
 
 PIXI.WebGLSpriteBatch.prototype.stop = function()
 {
@@ -9493,6 +9527,11 @@ PIXI.BaseTexture = function(source, scaleMode)
 
     this.imageUrl = null;
     this._powerOf2 = false;
+
+
+    // used for webGL
+    this._glTextures = [];
+
 };
 
 PIXI.BaseTexture.prototype.constructor = PIXI.BaseTexture;
@@ -9622,8 +9661,7 @@ PIXI.Texture = function(baseTexture, frame)
     if(baseTexture.hasLoaded)
     {
         if(this.noFrame)frame = new PIXI.Rectangle(0,0, baseTexture.width, baseTexture.height);
-        //console.log(frame)
-
+      
         this.setFrame(frame);
     }
     else
@@ -9843,9 +9881,10 @@ PIXI.RenderTexture = function(width, height, renderer)
     this.baseTexture = new PIXI.BaseTexture();
     this.baseTexture.width = this.width;
     this.baseTexture.height = this.height;
+    this.baseTexture._glTextures = [];
 
     this.baseTexture.hasLoaded = true;
-
+    
     // each render texture can only belong to one renderer at the moment if its webGL
     this.renderer = renderer || PIXI.defaultRenderer;
 
@@ -9854,8 +9893,8 @@ PIXI.RenderTexture = function(width, height, renderer)
         var gl = this.renderer.gl;
 
         this.textureBuffer = new PIXI.FilterTexture(gl, this.width, this.height);
-        this.baseTexture._glTexture =  this.textureBuffer.texture;
-        
+        this.baseTexture._glTextures[gl.id] =  this.textureBuffer.texture;
+
         this.render = this.renderWebGL;
         this.projection = new PIXI.Point(this.width/2 , -this.height/2);
     }
@@ -9885,8 +9924,8 @@ PIXI.RenderTexture.prototype.resize = function(width, height)
         this.projection.x = this.width / 2;
         this.projection.y = -this.height / 2;
 
-        var gl = PIXI.gl;
-        gl.bindTexture(gl.TEXTURE_2D, this.baseTexture._glTexture);
+        var gl = this.gl;
+        gl.bindTexture(gl.TEXTURE_2D, this.baseTexture._glTextures[gl.id]);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  this.width,  this.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
     }
     else

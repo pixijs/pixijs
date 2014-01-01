@@ -101,6 +101,11 @@ PIXI.BaseTexture = function(source, scaleMode)
 
     this.imageUrl = null;
     this._powerOf2 = false;
+
+
+    // used for webGL
+    this._glTextures = [];
+
 };
 
 PIXI.BaseTexture.prototype.constructor = PIXI.BaseTexture;

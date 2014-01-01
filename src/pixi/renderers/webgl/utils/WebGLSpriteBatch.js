@@ -307,7 +307,7 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
     var gl = this.gl;
     
     // bind the current texture
-    gl.bindTexture(gl.TEXTURE_2D, this.currentBaseTexture._glTexture);
+    gl.bindTexture(gl.TEXTURE_2D, this.currentBaseTexture._glTextures[gl.id] || PIXI.createWebGLTexture(this.currentBaseTexture, gl));
 
     // upload the verts to the buffer
     var view = this.vertices.subarray(0, this.currentBatchSize * 4 * this.vertSize);
@@ -322,6 +322,7 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
     // increment the draw count
     this.renderSession.drawCount++;
 };
+
 
 PIXI.WebGLSpriteBatch.prototype.stop = function()
 {

@@ -134,11 +134,6 @@ PIXI.Sprite.prototype.setTexture = function(texture)
     {
         this.textureChange = true;
         this.texture = texture;
-
-        if(this.__renderGroup)
-        {
-            this.__renderGroup.updateTexture(this);
-        }
     }
     else
     {

@@ -57,8 +57,7 @@ PIXI.Texture = function(baseTexture, frame)
     if(baseTexture.hasLoaded)
     {
         if(this.noFrame)frame = new PIXI.Rectangle(0,0, baseTexture.width, baseTexture.height);
-        //console.log(frame)
-
+      
         this.setFrame(frame);
     }
     else

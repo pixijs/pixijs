@@ -44,9 +44,10 @@ PIXI.RenderTexture = function(width, height, renderer)
     this.baseTexture = new PIXI.BaseTexture();
     this.baseTexture.width = this.width;
     this.baseTexture.height = this.height;
+    this.baseTexture._glTextures = [];
 
     this.baseTexture.hasLoaded = true;
-
+    
     // each render texture can only belong to one renderer at the moment if its webGL
     this.renderer = renderer || PIXI.defaultRenderer;
 
@@ -55,8 +56,8 @@ PIXI.RenderTexture = function(width, height, renderer)
         var gl = this.renderer.gl;
 
         this.textureBuffer = new PIXI.FilterTexture(gl, this.width, this.height);
-        this.baseTexture._glTexture =  this.textureBuffer.texture;
-        
+        this.baseTexture._glTextures[gl.id] =  this.textureBuffer.texture;
+
         this.render = this.renderWebGL;
         this.projection = new PIXI.Point(this.width/2 , -this.height/2);
     }
@@ -86,8 +87,8 @@ PIXI.RenderTexture.prototype.resize = function(width, height)
         this.projection.x = this.width / 2;
         this.projection.y = -this.height / 2;
 
-        var gl = PIXI.gl;
-        gl.bindTexture(gl.TEXTURE_2D, this.baseTexture._glTexture);
+        var gl = this.gl;
+        gl.bindTexture(gl.TEXTURE_2D, this.baseTexture._glTextures[gl.id]);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  this.width,  this.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
     }
     else

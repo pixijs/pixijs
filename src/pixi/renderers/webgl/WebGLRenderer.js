@@ -69,6 +69,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     }
 
     var gl = this.gl;
+    gl.id = PIXI.WebGLRenderer.glContextId ++;
 
     if(!PIXI.blendModesWebGL)
     {
@@ -231,8 +232,8 @@ PIXI.WebGLRenderer.updateTextures = function()
     var i = 0;
 
     //TODO break this out into a texture manager...
-    for (i = 0; i < PIXI.texturesToUpdate.length; i++)
-        PIXI.WebGLRenderer.updateTexture(PIXI.texturesToUpdate[i]);
+    //for (i = 0; i < PIXI.texturesToUpdate.length; i++)
+    //    PIXI.WebGLRenderer.updateTexture(PIXI.texturesToUpdate[i]);
 
 
     for (i=0; i < PIXI.Texture.frameUpdates.length; i++)
@@ -254,6 +255,8 @@ PIXI.WebGLRenderer.updateTextures = function()
  * @param texture {Texture} The texture to update
  * @private
  */
+
+ /*
 PIXI.WebGLRenderer.updateTexture = function(texture)
 {
     //TODO break this out into a texture manager...
@@ -289,6 +292,7 @@ PIXI.WebGLRenderer.updateTexture = function(texture)
         gl.bindTexture(gl.TEXTURE_2D, null);
     }
 };
+*/
 
 /**
  * Destroys a loaded webgl texture
@@ -339,6 +343,38 @@ PIXI.WebGLRenderer.prototype.resize = function(width, height)
     this.projection.y =  -this.height/2;
 };
 
+PIXI.createWebGLTexture = function(texture, gl)
+{
+    
+
+    if(texture.hasLoaded)
+    {
+        texture._glTextures[gl.id] = gl.createTexture();
+        
+        gl.bindTexture(gl.TEXTURE_2D, texture._glTextures[gl.id]);
+        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.source);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, texture.scaleMode === PIXI.BaseTexture.SCALE_MODE.LINEAR ? gl.LINEAR : gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, texture.scaleMode === PIXI.BaseTexture.SCALE_MODE.LINEAR ? gl.LINEAR : gl.NEAREST);
+
+        // reguler...
+
+        if(!texture._powerOf2)
+        {
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        }
+        else
+        {
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+        }
+
+        gl.bindTexture(gl.TEXTURE_2D, null);
+    }
+};
+
 /**
  * Handles a lost webgl context
  *
@@ -384,3 +420,5 @@ PIXI.WebGLRenderer.prototype.handleContextRestored = function()
 
     this.contextLost = false;
 };
+
+PIXI.WebGLRenderer.glContextId = 0;
