@@ -29,7 +29,7 @@ PIXI.WebGLShaderManager.prototype.setContext = function(gl)
     gl.enableVertexAttribArray(this.defaultShader.aTextureCoord);
 
     
-}
+};
 
 PIXI.WebGLShaderManager.prototype.activatePrimitiveShader = function()
 {

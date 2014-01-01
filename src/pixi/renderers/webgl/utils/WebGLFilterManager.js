@@ -23,7 +23,7 @@ PIXI.WebGLFilterManager.prototype.setContext = function(gl)
     this.texturePool = [];
 
     this.initShaderBuffers();
-}
+};
 
 PIXI.WebGLFilterManager.prototype.begin = function(renderSession, buffer)
 {
@@ -66,10 +66,10 @@ PIXI.WebGLFilterManager.prototype.pushFilter = function(filterBlock)
 
     gl.bindTexture(gl.TEXTURE_2D,  texture.texture);
 
-    this.getBounds(filterBlock.target);
+//    this.getBounds(filterBlock.target);
 
     filterBlock.target.filterArea = filterBlock.target.getBounds();
-
+   // console.log(filterBlock.target.filterArea)
    // console.log(filterBlock.target.filterArea);
     // addpadding?
     //displayObject.filterArea.x
@@ -323,7 +323,7 @@ PIXI.WebGLFilterManager.prototype.applyFilterPass = function(filter, filterArea,
         filter.uniforms.dimensions.value[3] = this.vertexArray[5];//filterArea.height;
     //  console.log(this.vertexArray[5])
     }
-
+    
     shader.syncUniforms();
 
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
@@ -393,7 +393,7 @@ PIXI.WebGLFilterManager.prototype.initShaderBuffers = function()
     new Uint16Array([0, 1, 2, 1, 3, 2]),
     gl.STATIC_DRAW);
 };
-
+/*
 PIXI.WebGLFilterManager.prototype.getBounds = function(displayObject)
 {
     // time to get the width and height of the object!
@@ -511,7 +511,7 @@ PIXI.WebGLFilterManager.prototype.getBounds = function(displayObject)
     displayObject.filterArea.width = maxX - minX;
     displayObject.filterArea.height = maxY - minY;
 };
-
+*/
 PIXI.FilterTexture = function(gl, width, height)
 {
    // var gl = PIXI.gl;

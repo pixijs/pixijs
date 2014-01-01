@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.3.0</em>
+            <em>API Docs for: 1.4.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -45,6 +45,8 @@
             
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
+                <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
                 <li><a href="../classes/BaseTexture.html">BaseTexture</a></li>
             
                 <li><a href="../classes/BitmapFontLoader.html">BitmapFontLoader</a></li>
@@ -61,7 +63,7 @@
             
                 <li><a href="../classes/ColorMatrixFilter.html">ColorMatrixFilter</a></li>
             
-                <li><a href="../classes/CustomRenderable.html">CustomRenderable</a></li>
+                <li><a href="../classes/ColorStepFilter.html">ColorStepFilter</a></li>
             
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
@@ -75,7 +77,7 @@
             
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
             
-                <li><a href="../classes/GreyFilter.html">GreyFilter</a></li>
+                <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
                 <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
             
@@ -86,6 +88,8 @@
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
+            
+                <li><a href="../classes/PIXI.PixiShader.html">PIXI.PixiShader</a></li>
             
                 <li><a href="../classes/Point.html">Point</a></li>
             
@@ -109,9 +113,9 @@
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
-                <li><a href="../classes/Sprite.html">Sprite</a></li>
-            
                 <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
+            
+                <li><a href="../classes/Sprite™.html">Sprite™</a></li>
             
                 <li><a href="../classes/Stage.html">Stage</a></li>
             
@@ -120,8 +124,6 @@
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
-            
-                <li><a href="../classes/WebGLBatch.html">WebGLBatch</a></li>
             
                 <li><a href="../classes/WebGLRenderer.html">WebGLRenderer</a></li>
             
@@ -175,10 +177,10 @@
  */
 
 /**
- * The xml loader is used to load in XML bitmap font data (&quot;xml&quot; or &quot;fnt&quot;)
+ * The xml loader is used to load in XML bitmap font data (&#x27;xml&#x27; or &#x27;fnt&#x27;)
  * To generate the data you can use http://www.angelcode.com/products/bmfont/
  * This loader will also load the image file as the data.
- * When loaded this class will dispatch a &quot;loaded&quot; event
+ * When loaded this class will dispatch a &#x27;loaded&#x27; event
  *
  * @class BitmapFontLoader
  * @uses EventTarget
@@ -191,7 +193,7 @@ PIXI.BitmapFontLoader = function(url, crossorigin)
     /*
      * i use texture packer to load the assets..
      * http://www.codeandweb.com/texturepacker
-     * make sure to set the format as &quot;JSON&quot;
+     * make sure to set the format as &#x27;JSON&#x27;
      */
     PIXI.EventTarget.call(this);
 
@@ -218,7 +220,7 @@ PIXI.BitmapFontLoader = function(url, crossorigin)
      * @type String
      * @readOnly
      */
-    this.baseUrl = url.replace(/[^\/]*$/, &quot;&quot;);
+    this.baseUrl = url.replace(/[^\/]*$/, &#x27;&#x27;);
 
     /**
      * [read-only] The texture of the bitmap font
@@ -246,9 +248,9 @@ PIXI.BitmapFontLoader.prototype.load = function()
         scope.onXMLLoaded();
     };
 
-    this.ajaxRequest.open(&quot;GET&quot;, this.url, true);
-    if (this.ajaxRequest.overrideMimeType) this.ajaxRequest.overrideMimeType(&quot;application/xml&quot;);
-    this.ajaxRequest.send(null)
+    this.ajaxRequest.open(&#x27;GET&#x27;, this.url, true);
+    if (this.ajaxRequest.overrideMimeType) this.ajaxRequest.overrideMimeType(&#x27;application/xml&#x27;);
+    this.ajaxRequest.send(null);
 };
 
 /**
@@ -259,40 +261,40 @@ PIXI.BitmapFontLoader.prototype.load = function()
  */
 PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
 {
-    if (this.ajaxRequest.readyState == 4)
+    if (this.ajaxRequest.readyState === 4)
     {
-        if (this.ajaxRequest.status == 200 || window.location.href.indexOf(&quot;http&quot;) == -1)
+        if (this.ajaxRequest.status === 200 || window.location.protocol.indexOf(&#x27;http&#x27;) === -1)
         {
-            var textureUrl = this.baseUrl + this.ajaxRequest.responseXML.getElementsByTagName(&quot;page&quot;)[0].attributes.getNamedItem(&quot;file&quot;).nodeValue;
+            var textureUrl = this.baseUrl + this.ajaxRequest.responseXML.getElementsByTagName(&#x27;page&#x27;)[0].attributes.getNamedItem(&#x27;file&#x27;).nodeValue;
             var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
             this.texture = image.texture.baseTexture;
 
             var data = {};
-            var info = this.ajaxRequest.responseXML.getElementsByTagName(&quot;info&quot;)[0];
-            var common = this.ajaxRequest.responseXML.getElementsByTagName(&quot;common&quot;)[0];
-            data.font = info.attributes.getNamedItem(&quot;face&quot;).nodeValue;
-            data.size = parseInt(info.attributes.getNamedItem(&quot;size&quot;).nodeValue, 10);
-            data.lineHeight = parseInt(common.attributes.getNamedItem(&quot;lineHeight&quot;).nodeValue, 10);
+            var info = this.ajaxRequest.responseXML.getElementsByTagName(&#x27;info&#x27;)[0];
+            var common = this.ajaxRequest.responseXML.getElementsByTagName(&#x27;common&#x27;)[0];
+            data.font = info.attributes.getNamedItem(&#x27;face&#x27;).nodeValue;
+            data.size = parseInt(info.attributes.getNamedItem(&#x27;size&#x27;).nodeValue, 10);
+            data.lineHeight = parseInt(common.attributes.getNamedItem(&#x27;lineHeight&#x27;).nodeValue, 10);
             data.chars = {};
 
             //parse letters
-            var letters = this.ajaxRequest.responseXML.getElementsByTagName(&quot;char&quot;);
+            var letters = this.ajaxRequest.responseXML.getElementsByTagName(&#x27;char&#x27;);
 
             for (var i = 0; i &lt; letters.length; i++)
             {
-                var charCode = parseInt(letters[i].attributes.getNamedItem(&quot;id&quot;).nodeValue, 10);
+                var charCode = parseInt(letters[i].attributes.getNamedItem(&#x27;id&#x27;).nodeValue, 10);
 
                 var textureRect = new PIXI.Rectangle(
-                    parseInt(letters[i].attributes.getNamedItem(&quot;x&quot;).nodeValue, 10),
-                    parseInt(letters[i].attributes.getNamedItem(&quot;y&quot;).nodeValue, 10),
-                    parseInt(letters[i].attributes.getNamedItem(&quot;width&quot;).nodeValue, 10),
-                    parseInt(letters[i].attributes.getNamedItem(&quot;height&quot;).nodeValue, 10)
+                    parseInt(letters[i].attributes.getNamedItem(&#x27;x&#x27;).nodeValue, 10),
+                    parseInt(letters[i].attributes.getNamedItem(&#x27;y&#x27;).nodeValue, 10),
+                    parseInt(letters[i].attributes.getNamedItem(&#x27;width&#x27;).nodeValue, 10),
+                    parseInt(letters[i].attributes.getNamedItem(&#x27;height&#x27;).nodeValue, 10)
                 );
 
                 data.chars[charCode] = {
-                    xOffset: parseInt(letters[i].attributes.getNamedItem(&quot;xoffset&quot;).nodeValue, 10),
-                    yOffset: parseInt(letters[i].attributes.getNamedItem(&quot;yoffset&quot;).nodeValue, 10),
-                    xAdvance: parseInt(letters[i].attributes.getNamedItem(&quot;xadvance&quot;).nodeValue, 10),
+                    xOffset: parseInt(letters[i].attributes.getNamedItem(&#x27;xoffset&#x27;).nodeValue, 10),
+                    yOffset: parseInt(letters[i].attributes.getNamedItem(&#x27;yoffset&#x27;).nodeValue, 10),
+                    xAdvance: parseInt(letters[i].attributes.getNamedItem(&#x27;xadvance&#x27;).nodeValue, 10),
                     kerning: {},
                     texture: PIXI.TextureCache[charCode] = new PIXI.Texture(this.texture, textureRect)
 
@@ -300,12 +302,12 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
             }
 
             //parse kernings
-            var kernings = this.ajaxRequest.responseXML.getElementsByTagName(&quot;kerning&quot;);
+            var kernings = this.ajaxRequest.responseXML.getElementsByTagName(&#x27;kerning&#x27;);
             for (i = 0; i &lt; kernings.length; i++)
             {
-               var first = parseInt(kernings[i].attributes.getNamedItem(&quot;first&quot;).nodeValue, 10);
-               var second = parseInt(kernings[i].attributes.getNamedItem(&quot;second&quot;).nodeValue, 10);
-               var amount = parseInt(kernings[i].attributes.getNamedItem(&quot;amount&quot;).nodeValue, 10);
+                var first = parseInt(kernings[i].attributes.getNamedItem(&#x27;first&#x27;).nodeValue, 10);
+                var second = parseInt(kernings[i].attributes.getNamedItem(&#x27;second&#x27;).nodeValue, 10);
+                var amount = parseInt(kernings[i].attributes.getNamedItem(&#x27;amount&#x27;).nodeValue, 10);
 
                 data.chars[second].kerning[first] = amount;
 
@@ -314,7 +316,7 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
             PIXI.BitmapText.fonts[data.font] = data;
 
             var scope = this;
-            image.addEventListener(&quot;loaded&quot;, function() {
+            image.addEventListener(&#x27;loaded&#x27;, function() {
                 scope.onLoaded();
             });
             image.load();
@@ -330,7 +332,7 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
  */
 PIXI.BitmapFontLoader.prototype.onLoaded = function()
 {
-    this.dispatchEvent({type: &quot;loaded&quot;, content: this});
+    this.dispatchEvent({type: &#x27;loaded&#x27;, content: this});
 };
 
     </pre>

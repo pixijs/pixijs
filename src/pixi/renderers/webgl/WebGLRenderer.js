@@ -417,9 +417,9 @@ PIXI.WebGLRenderer.prototype.handleContextRestored = function()
 
 
     // need to set the context...
-    this.shaderManager.setContext(gl);                               
-    this.spriteBatch.setContext(gl);        
-    this.maskManager.setContext(gl);               
+    this.shaderManager.setContext(gl);
+    this.spriteBatch.setContext(gl);
+    this.maskManager.setContext(gl);
     this.filterManager.setContext(gl);
 
     

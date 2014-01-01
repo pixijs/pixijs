@@ -159,4 +159,17 @@ PIXI.canUseNewCanvasBlendModes = function()
     return context.getImageData(0,0,1,1).data[0] === 0;
 };
 
+// this function is taken from Starling Framework as its pretty neat ;)
+PIXI.getNextPowerOfTwo = function(number)
+{
+    if (number > 0 && (number & (number - 1)) === 0) // see: http://goo.gl/D9kPj
+        return number;
+    else
+    {
+        var result = 1;
+        while (result < number) result <<= 1;
+        return result;
+    }
+};
+
 

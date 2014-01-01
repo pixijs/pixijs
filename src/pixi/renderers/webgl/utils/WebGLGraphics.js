@@ -69,7 +69,6 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
     gl.uniform3fv(shader.tintColor, PIXI.hex2rgb(graphics.tint));
 
     gl.uniform1f(shader.alpha, graphics.worldAlpha);
-    gl.uniform1f(shader.alpha, graphics.worldAlpha);
     gl.bindBuffer(gl.ARRAY_BUFFER, webGL.buffer);
 
     gl.vertexAttribPointer(shader.aVertexPosition, 2, gl.FLOAT, false, 4 * 6, 0);

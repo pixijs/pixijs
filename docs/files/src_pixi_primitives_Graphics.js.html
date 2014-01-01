@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.3.0</em>
+            <em>API Docs for: 1.4.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -45,6 +45,8 @@
             
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
+                <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
                 <li><a href="../classes/BaseTexture.html">BaseTexture</a></li>
             
                 <li><a href="../classes/BitmapFontLoader.html">BitmapFontLoader</a></li>
@@ -61,7 +63,7 @@
             
                 <li><a href="../classes/ColorMatrixFilter.html">ColorMatrixFilter</a></li>
             
-                <li><a href="../classes/CustomRenderable.html">CustomRenderable</a></li>
+                <li><a href="../classes/ColorStepFilter.html">ColorStepFilter</a></li>
             
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
@@ -75,7 +77,7 @@
             
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
             
-                <li><a href="../classes/GreyFilter.html">GreyFilter</a></li>
+                <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
                 <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
             
@@ -86,6 +88,8 @@
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
+            
+                <li><a href="../classes/PIXI.PixiShader.html">PIXI.PixiShader</a></li>
             
                 <li><a href="../classes/Point.html">Point</a></li>
             
@@ -109,9 +113,9 @@
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
-                <li><a href="../classes/Sprite.html">Sprite</a></li>
-            
                 <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
+            
+                <li><a href="../classes/Sprite™.html">Sprite™</a></li>
             
                 <li><a href="../classes/Stage.html">Stage</a></li>
             
@@ -120,8 +124,6 @@
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
-            
-                <li><a href="../classes/WebGLBatch.html">WebGLBatch</a></li>
             
                 <li><a href="../classes/WebGLRenderer.html">WebGLRenderer</a></li>
             
@@ -186,9 +188,9 @@
  */
 PIXI.Graphics = function()
 {
-	PIXI.DisplayObjectContainer.call( this );
+    PIXI.DisplayObjectContainer.call( this );
 
-	this.renderable = true;
+    this.renderable = true;
 
     /**
      * The alpha of the fill of this graphics object
@@ -196,7 +198,7 @@ PIXI.Graphics = function()
      * @property fillAlpha
      * @type Number
      */
-	this.fillAlpha = 1;
+    this.fillAlpha = 1;
 
     /**
      * The width of any lines drawn
@@ -204,7 +206,7 @@ PIXI.Graphics = function()
      * @property lineWidth
      * @type Number
      */
-	this.lineWidth = 0;
+    this.lineWidth = 0;
 
     /**
      * The color of any lines drawn
@@ -212,7 +214,7 @@ PIXI.Graphics = function()
      * @property lineColor
      * @type String
      */
-	this.lineColor = &quot;black&quot;;
+    this.lineColor = &quot;black&quot;;
 
     /**
      * Graphics data
@@ -221,8 +223,12 @@ PIXI.Graphics = function()
      * @type Array
      * @private
      */
-	this.graphicsData = [];
+    this.graphicsData = [];
 
+    this.tint = 0xFFFFFF;// * Math.random();
+
+    this.blendMode = PIXI.blendModes.NORMAL;
+    
     /**
      * Current path
      *
@@ -230,8 +236,10 @@ PIXI.Graphics = function()
      * @type Object
      * @private
      */
-	this.currentPath = {points:[]};
-}
+    this.currentPath = {points:[]};
+
+    this._webGL = [];
+};
 
 // constructor
 PIXI.Graphics.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
@@ -247,17 +255,17 @@ PIXI.Graphics.prototype.constructor = PIXI.Graphics;
  */
 PIXI.Graphics.prototype.lineStyle = function(lineWidth, color, alpha)
 {
-	if(this.currentPath.points.length == 0)this.graphicsData.pop();
+    if (!this.currentPath.points.length) this.graphicsData.pop();
 
-	this.lineWidth = lineWidth || 0;
-	this.lineColor = color || 0;
-	this.lineAlpha = (alpha == undefined) ? 1 : alpha;
+    this.lineWidth = lineWidth || 0;
+    this.lineColor = color || 0;
+    this.lineAlpha = (arguments.length &lt; 3) ? 1 : alpha;
 
-	this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha,
-						fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling, points:[], type:PIXI.Graphics.POLY};
+    this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha,
+                        fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling, points:[], type:PIXI.Graphics.POLY};
 
-	this.graphicsData.push(this.currentPath);
-}
+    this.graphicsData.push(this.currentPath);
+};
 
 /**
  * Moves the current drawing position to (x, y).
@@ -268,15 +276,15 @@ PIXI.Graphics.prototype.lineStyle = function(lineWidth, color, alpha)
  */
 PIXI.Graphics.prototype.moveTo = function(x, y)
 {
-	if(this.currentPath.points.length == 0)this.graphicsData.pop();
+    if (!this.currentPath.points.length) this.graphicsData.pop();
 
-	this.currentPath = this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha,
-						fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling, points:[], type:PIXI.Graphics.POLY};
+    this.currentPath = this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha,
+                        fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling, points:[], type:PIXI.Graphics.POLY};
 
-	this.currentPath.points.push(x, y);
+    this.currentPath.points.push(x, y);
 
-	this.graphicsData.push(this.currentPath);
-}
+    this.graphicsData.push(this.currentPath);
+};
 
 /**
  * Draws a line using the current line style from the current drawing position to (x, y);
@@ -288,9 +296,9 @@ PIXI.Graphics.prototype.moveTo = function(x, y)
  */
 PIXI.Graphics.prototype.lineTo = function(x, y)
 {
-	this.currentPath.points.push(x, y);
-	this.dirty = true;
-}
+    this.currentPath.points.push(x, y);
+    this.dirty = true;
+};
 
 /**
  * Specifies a simple one-color fill that subsequent calls to other Graphics methods
@@ -302,10 +310,11 @@ PIXI.Graphics.prototype.lineTo = function(x, y)
  */
 PIXI.Graphics.prototype.beginFill = function(color, alpha)
 {
-	this.filling = true;
-	this.fillColor = color || 0;
-	this.fillAlpha = (alpha == undefined) ? 1 : alpha;
-}
+
+    this.filling = true;
+    this.fillColor = color || 0;
+    this.fillAlpha = (arguments.length &lt; 2) ? 1 : alpha;
+};
 
 /**
  * Applies a fill to the lines and shapes that were added since the last call to the beginFill() method.
@@ -314,10 +323,10 @@ PIXI.Graphics.prototype.beginFill = function(color, alpha)
  */
 PIXI.Graphics.prototype.endFill = function()
 {
-	this.filling = false;
-	this.fillColor = null;
-	this.fillAlpha = 1;
-}
+    this.filling = false;
+    this.fillColor = null;
+    this.fillAlpha = 1;
+};
 
 /**
  * @method drawRect
@@ -329,15 +338,15 @@ PIXI.Graphics.prototype.endFill = function()
  */
 PIXI.Graphics.prototype.drawRect = function( x, y, width, height )
 {
-	if(this.currentPath.points.length == 0)this.graphicsData.pop();
+    if (!this.currentPath.points.length) this.graphicsData.pop();
 
-	this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha,
-						fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling,
-						points:[x, y, width, height], type:PIXI.Graphics.RECT};
+    this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha,
+                        fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling,
+                        points:[x, y, width, height], type:PIXI.Graphics.RECT};
 
-	this.graphicsData.push(this.currentPath);
-	this.dirty = true;
-}
+    this.graphicsData.push(this.currentPath);
+    this.dirty = true;
+};
 
 /**
  * Draws a circle.
@@ -349,15 +358,16 @@ PIXI.Graphics.prototype.drawRect = function( x, y, width, height )
  */
 PIXI.Graphics.prototype.drawCircle = function( x, y, radius)
 {
-	if(this.currentPath.points.length == 0)this.graphicsData.pop();
 
-	this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha,
-						fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling,
-						points:[x, y, radius, radius], type:PIXI.Graphics.CIRC};
+    if (!this.currentPath.points.length) this.graphicsData.pop();
 
-	this.graphicsData.push(this.currentPath);
-	this.dirty = true;
-}
+    this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha,
+                        fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling,
+                        points:[x, y, radius, radius], type:PIXI.Graphics.CIRC};
+
+    this.graphicsData.push(this.currentPath);
+    this.dirty = true;
+};
 
 /**
  * Draws an ellipse.
@@ -370,15 +380,16 @@ PIXI.Graphics.prototype.drawCircle = function( x, y, radius)
  */
 PIXI.Graphics.prototype.drawEllipse = function( x, y, width, height)
 {
-	if(this.currentPath.points.length == 0)this.graphicsData.pop();
 
-	this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha,
-						fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling,
-						points:[x, y, width, height], type:PIXI.Graphics.ELIP};
+    if (!this.currentPath.points.length) this.graphicsData.pop();
 
-	this.graphicsData.push(this.currentPath);
-	this.dirty = true;
-}
+    this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha,
+                        fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling,
+                        points:[x, y, width, height], type:PIXI.Graphics.ELIP};
+
+    this.graphicsData.push(this.currentPath);
+    this.dirty = true;
+};
 
 /**
  * Clears the graphics that were drawn to this Graphics object, and resets fill and line style settings.
@@ -387,88 +398,189 @@ PIXI.Graphics.prototype.drawEllipse = function( x, y, width, height)
  */
 PIXI.Graphics.prototype.clear = function()
 {
-	this.lineWidth = 0;
-	this.filling = false;
+    this.lineWidth = 0;
+    this.filling = false;
 
-	this.dirty = true;
-	this.clearDirty = true;
-	this.graphicsData = [];
+    this.dirty = true;
+    this.clearDirty = true;
+    this.graphicsData = [];
 
-	this.bounds = null//new PIXI.Rectangle();
-}
+    this.bounds = null; //new PIXI.Rectangle();
+};
 
 
-PIXI.Graphics.prototype.updateFilterBounds = function()
+PIXI.Graphics.prototype._renderWebGL = function(renderSession)
 {
-	if(!this.bounds)
-	{
-		var minX = Infinity;
-		var maxX = -Infinity;
+    // if the sprite is not visible or the alpha is 0 then no need to render this element
+    if(this.visible === false || this.alpha === 0 || this.isMask === true)return;
+    
+    renderSession.spriteBatch.stop();
 
-		var minY = Infinity;
-		var maxY = -Infinity;
+    // check blend mode
+    if(this.blendMode !== renderSession.spriteBatch.currentBlendMode)
+    {
+        this.spriteBatch.currentBlendMode = this.blendMode;
+        var blendModeWebGL = PIXI.blendModesWebGL[renderSession.spriteBatch.currentBlendMode];
+        this.spriteBatch.gl.blendFunc(blendModeWebGL[0], blendModeWebGL[1]);
+    }
 
-		var points, x, y;
+    PIXI.WebGLGraphics.renderGraphics(this, renderSession);
+    
+    renderSession.spriteBatch.start();
+};
 
-		for (var i = 0; i &lt; this.graphicsData.length; i++) {
-			
+PIXI.Graphics.prototype._renderCanvas = function(renderSession)
+{
+    // if the sprite is not visible or the alpha is 0 then no need to render this element
+    if(this.visible === false || this.alpha === 0 || this.isMask === true)return;
+    
+    var context = renderSession.context;
+    var transform = this.worldTransform;
+    
+    if(this.blendMode !== renderSession.currentBlendMode)
+    {
+        renderSession.currentBlendMode = this.blendMode;
+        context.globalCompositeOperation = PIXI.blendModesCanvas[renderSession.currentBlendMode];
+    }
 
-			var data = this.graphicsData[i];
-			var type = data.type;
-			var lineWidth = data.lineWidth;
+    context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
+    PIXI.CanvasGraphics.renderGraphics(this, context);
+};
 
-			points = data.points;
+PIXI.Graphics.prototype.getBounds = function()
+{
+    if(!this.bounds)this.updateBounds();
 
-			if(type === PIXI.Graphics.RECT)
-			{
-				x = points.x - lineWidth/2;
-				y = points.y - lineWidth/2;
-				var width = points.width + lineWidth;
-				var height = points.height + lineWidth;
+    var w0 = this.bounds.x;
+    var w1 = this.bounds.y;
 
-				minX = x &lt; minX ? x : minX;
-				maxX = x + width &gt; maxX ? x + width : maxX;
+    var h0 = this.bounds.width + this.bounds.x;
+    var h1 = this.bounds.height + this.bounds.y;
 
-				minY = y &lt; minY ? x : minY;
-				maxY = y + height &gt; maxY ? y + height : maxY;
-			}
-			else if(type === PIXI.Graphics.CIRC || type === PIXI.Graphics.ELIP)
-			{
-				x = points.x;
-				y = points.y;
-				var radius = points.radius + lineWidth/2;
-				
-				minX = x - radius &lt; minX ? x - radius : minX;
-				maxX = x + radius &gt; maxX ? x + radius : maxX;
+    var worldTransform = this.worldTransform;
 
-				minY = y - radius &lt; minY ? y - radius : minY;
-				maxY = y + radius &gt; maxY ? y + radius : maxY;
-			}
-			else
-			{
-				// POLY
-				for (var j = 0; j &lt; points.length; j+=2) 
-				{
-					
-					x = points[j];
-					y = points[j+1];
+    var a = worldTransform[0];
+    var b = worldTransform[3];
+    var c = worldTransform[1];
+    var d = worldTransform[4];
+    var tx = worldTransform[2];
+    var ty = worldTransform[5];
 
-					minX = x-lineWidth &lt; minX ? x-lineWidth : minX;
-					maxX = x+lineWidth &gt; maxX ? x+lineWidth : maxX;
+    var x1 = a * w1 + c * h1 + tx;
+    var y1 = d * h1 + b * w1 + ty;
 
-					minY = y-lineWidth &lt; minY ? y-lineWidth : minY;
-					maxY = y+lineWidth &gt; maxY ? y+lineWidth : maxY;
-				};
-			}
+    var x2 = a * w0 + c * h1 + tx;
+    var y2 = d * h1 + b * w0 + ty;
 
-		};
+    var x3 = a * w0 + c * h0 + tx;
+    var y3 = d * h0 + b * w0 + ty;
 
-		this.bounds = new PIXI.Rectangle(minX, minY, maxX - minX, maxY - minY);
+    var x4 =  a * w1 + c * h0 + tx;
+    var y4 =  d * h0 + b * w1 + ty;
 
-	}
+    var maxX = -Infinity;
+    var maxY = -Infinity;
 
-//	console.log(this.bounds);
-}
+    var minX = Infinity;
+    var minY = Infinity;
+
+    minX = x1 &lt; minX ? x1 : minX;
+    minX = x2 &lt; minX ? x2 : minX;
+    minX = x3 &lt; minX ? x3 : minX;
+    minX = x4 &lt; minX ? x4 : minX;
+
+    minY = y1 &lt; minY ? y1 : minY;
+    minY = y2 &lt; minY ? y2 : minY;
+    minY = y3 &lt; minY ? y3 : minY;
+    minY = y4 &lt; minY ? y4 : minY;
+
+    maxX = x1 &gt; maxX ? x1 : maxX;
+    maxX = x2 &gt; maxX ? x2 : maxX;
+    maxX = x3 &gt; maxX ? x3 : maxX;
+    maxX = x4 &gt; maxX ? x4 : maxX;
+
+    maxY = y1 &gt; maxY ? y1 : maxY;
+    maxY = y2 &gt; maxY ? y2 : maxY;
+    maxY = y3 &gt; maxY ? y3 : maxY;
+    maxY = y4 &gt; maxY ? y4 : maxY;
+
+    var bounds = this._bounds;
+
+    bounds.x = minX;
+    bounds.width = maxX - minX;
+
+    bounds.y = minY;
+    bounds.height = maxY - minY;
+
+    return bounds;
+};
+
+PIXI.Graphics.prototype.updateBounds = function()
+{
+    
+    
+    var minX = Infinity;
+    var maxX = -Infinity;
+
+    var minY = Infinity;
+    var maxY = -Infinity;
+
+    var points, x, y;
+
+    for (var i = 0; i &lt; this.graphicsData.length; i++) {
+        var data = this.graphicsData[i];
+        var type = data.type;
+        var lineWidth = data.lineWidth;
+
+        points = data.points;
+
+        if(type === PIXI.Graphics.RECT)
+        {
+            x = points.x - lineWidth/2;
+            y = points.y - lineWidth/2;
+            var width = points.width + lineWidth;
+            var height = points.height + lineWidth;
+
+            minX = x &lt; minX ? x : minX;
+            maxX = x + width &gt; maxX ? x + width : maxX;
+
+            minY = y &lt; minY ? x : minY;
+            maxY = y + height &gt; maxY ? y + height : maxY;
+        }
+        else if(type === PIXI.Graphics.CIRC || type === PIXI.Graphics.ELIP)
+        {
+            x = points.x;
+            y = points.y;
+            var radius = points.radius + lineWidth/2;
+
+            minX = x - radius &lt; minX ? x - radius : minX;
+            maxX = x + radius &gt; maxX ? x + radius : maxX;
+
+            minY = y - radius &lt; minY ? y - radius : minY;
+            maxY = y + radius &gt; maxY ? y + radius : maxY;
+        }
+        else
+        {
+            // POLY
+            for (var j = 0; j &lt; points.length; j+=2)
+            {
+
+                x = points[j];
+                y = points[j+1];
+
+                minX = x-lineWidth &lt; minX ? x-lineWidth : minX;
+                maxX = x+lineWidth &gt; maxX ? x+lineWidth : maxX;
+
+                minY = y-lineWidth &lt; minY ? y-lineWidth : minY;
+                maxY = y+lineWidth &gt; maxY ? y+lineWidth : maxY;
+            }
+        }
+    }
+
+    this.bounds = new PIXI.Rectangle(minX, minY, maxX - minX, maxY - minY);
+    
+//  console.log(this.bounds);
+};
 
 // SOME TYPES:
 PIXI.Graphics.POLY = 0;

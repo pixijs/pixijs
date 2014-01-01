@@ -240,8 +240,13 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
     // if the sprite is not visible or the alpha is 0 then no need to render this element
     if(this.visible === false || this.alpha === 0 || this.isMask === true)return;
     
+   
+
     renderSession.spriteBatch.stop();
 
+    if(this._mask)renderSession.maskManager.pushMask(this.mask, renderSession);
+    if(this._filters)renderSession.filterManager.pushFilter(this._filterBlock);
+  
     // check blend mode
     if(this.blendMode !== renderSession.spriteBatch.currentBlendMode)
     {
@@ -249,9 +254,13 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
         var blendModeWebGL = PIXI.blendModesWebGL[renderSession.spriteBatch.currentBlendMode];
         this.spriteBatch.gl.blendFunc(blendModeWebGL[0], blendModeWebGL[1]);
     }
-
+ 
     PIXI.WebGLGraphics.renderGraphics(this, renderSession);
     
+    if(this._filters)renderSession.filterManager.popFilter();
+    if(this._mask)renderSession.maskManager.popMask(renderSession);
+      
+
     renderSession.spriteBatch.start();
 };
 
@@ -278,9 +287,9 @@ PIXI.Graphics.prototype.getBounds = function()
     if(!this.bounds)this.updateBounds();
 
     var w0 = this.bounds.x;
-    var w1 = this.bounds.y;
+    var w1 = this.bounds.width + this.bounds.x;
 
-    var h0 = this.bounds.width + this.bounds.x;
+    var h0 = this.bounds.y;
     var h1 = this.bounds.height + this.bounds.y;
 
     var worldTransform = this.worldTransform;
@@ -344,7 +353,6 @@ PIXI.Graphics.prototype.getBounds = function()
 PIXI.Graphics.prototype.updateBounds = function()
 {
     
-    
     var minX = Infinity;
     var maxX = -Infinity;
 
@@ -393,7 +401,6 @@ PIXI.Graphics.prototype.updateBounds = function()
 
                 x = points[j];
                 y = points[j+1];
-
                 minX = x-lineWidth < minX ? x-lineWidth : minX;
                 maxX = x+lineWidth > maxX ? x+lineWidth : maxX;
 
@@ -404,8 +411,6 @@ PIXI.Graphics.prototype.updateBounds = function()
     }
 
     this.bounds = new PIXI.Rectangle(minX, minY, maxX - minX, maxY - minY);
-    
-//  console.log(this.bounds);
 };
 
 // SOME TYPES:

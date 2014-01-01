@@ -1536,8 +1536,23 @@ PIXI.Sprite = function(texture)
      */
     this._height = 0;
 
+
+    /**
+     * The tint applied to the sprite. This is a hex value
+     *
+     * @property tint
+     * @type Number
+     * @default 0xFFFFFF
+     */
     this.tint = 0xFFFFFF;// * Math.random();
     
+    /**
+     * The blend mode to be applied to the sprite
+     *
+     * @property blendMode
+     * @type Number
+     * @default PIXI.blendModes.NORMAL;
+     */
     this.blendMode = PIXI.blendModes.NORMAL;
 
     if(texture.baseTexture.hasLoaded)
@@ -3517,6 +3532,19 @@ PIXI.canUseNewCanvasBlendModes = function()
     return context.getImageData(0,0,1,1).data[0] === 0;
 };
 
+// this function is taken from Starling Framework as its pretty neat ;)
+PIXI.getNextPowerOfTwo = function(number)
+{
+    if (number > 0 && (number & (number - 1)) === 0) // see: http://goo.gl/D9kPj
+        return number;
+    else
+    {
+        var result = 1;
+        while (result < number) result <<= 1;
+        return result;
+    }
+};
+
 
 
 /**
@@ -4426,7 +4454,6 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
     gl.uniform3fv(shader.tintColor, PIXI.hex2rgb(graphics.tint));
 
     gl.uniform1f(shader.alpha, graphics.worldAlpha);
-    gl.uniform1f(shader.alpha, graphics.worldAlpha);
     gl.bindBuffer(gl.ARRAY_BUFFER, webGL.buffer);
 
     gl.vertexAttribPointer(shader.aVertexPosition, 2, gl.FLOAT, false, 4 * 6, 0);
@@ -5308,9 +5335,9 @@ PIXI.WebGLRenderer.prototype.handleContextRestored = function()
 
 
     // need to set the context...
-    this.shaderManager.setContext(gl);                               
-    this.spriteBatch.setContext(gl);        
-    this.maskManager.setContext(gl);               
+    this.shaderManager.setContext(gl);
+    this.spriteBatch.setContext(gl);
+    this.maskManager.setContext(gl);
     this.filterManager.setContext(gl);
 
     
@@ -5430,7 +5457,7 @@ PIXI.WebGLShaderManager.prototype.setContext = function(gl)
     gl.enableVertexAttribArray(this.defaultShader.aTextureCoord);
 
     
-}
+};
 
 PIXI.WebGLShaderManager.prototype.activatePrimitiveShader = function()
 {
@@ -5515,11 +5542,7 @@ PIXI.WebGLSpriteBatch.prototype.setContext = function(gl)
     this.indexBuffer = gl.createBuffer();
 
     // 65535 is max index, so 65535 / 6 = 10922.
-    
-    //the total number of floats in our batch
-    var numVerts = this.size * 4 *  this.vertSize;
-    //the total number of indices in our batch
-    var numIndices = this.size * 6;
+
 
     //upload the index data
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
@@ -5529,7 +5552,7 @@ PIXI.WebGLSpriteBatch.prototype.setContext = function(gl)
     gl.bufferData(gl.ARRAY_BUFFER, this.vertices, gl.DYNAMIC_DRAW);
 
     this.currentBlendMode = 99999;
-}
+};
 
 PIXI.WebGLSpriteBatch.prototype.begin = function(renderSession)
 {
@@ -5868,7 +5891,7 @@ PIXI.WebGLFilterManager.prototype.setContext = function(gl)
     this.texturePool = [];
 
     this.initShaderBuffers();
-}
+};
 
 PIXI.WebGLFilterManager.prototype.begin = function(renderSession, buffer)
 {
@@ -5911,10 +5934,10 @@ PIXI.WebGLFilterManager.prototype.pushFilter = function(filterBlock)
 
     gl.bindTexture(gl.TEXTURE_2D,  texture.texture);
 
-    this.getBounds(filterBlock.target);
+//    this.getBounds(filterBlock.target);
 
     filterBlock.target.filterArea = filterBlock.target.getBounds();
-
+   // console.log(filterBlock.target.filterArea)
    // console.log(filterBlock.target.filterArea);
     // addpadding?
     //displayObject.filterArea.x
@@ -6168,7 +6191,7 @@ PIXI.WebGLFilterManager.prototype.applyFilterPass = function(filter, filterArea,
         filter.uniforms.dimensions.value[3] = this.vertexArray[5];//filterArea.height;
     //  console.log(this.vertexArray[5])
     }
-
+    
     shader.syncUniforms();
 
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
@@ -6238,7 +6261,7 @@ PIXI.WebGLFilterManager.prototype.initShaderBuffers = function()
     new Uint16Array([0, 1, 2, 1, 3, 2]),
     gl.STATIC_DRAW);
 };
-
+/*
 PIXI.WebGLFilterManager.prototype.getBounds = function(displayObject)
 {
     // time to get the width and height of the object!
@@ -6356,7 +6379,7 @@ PIXI.WebGLFilterManager.prototype.getBounds = function(displayObject)
     displayObject.filterArea.width = maxX - minX;
     displayObject.filterArea.height = maxY - minY;
 };
-
+*/
 PIXI.FilterTexture = function(gl, width, height)
 {
    // var gl = PIXI.gl;
@@ -7407,8 +7430,13 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
     // if the sprite is not visible or the alpha is 0 then no need to render this element
     if(this.visible === false || this.alpha === 0 || this.isMask === true)return;
     
+   
+
     renderSession.spriteBatch.stop();
 
+    if(this._mask)renderSession.maskManager.pushMask(this.mask, renderSession);
+    if(this._filters)renderSession.filterManager.pushFilter(this._filterBlock);
+  
     // check blend mode
     if(this.blendMode !== renderSession.spriteBatch.currentBlendMode)
     {
@@ -7416,9 +7444,13 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
         var blendModeWebGL = PIXI.blendModesWebGL[renderSession.spriteBatch.currentBlendMode];
         this.spriteBatch.gl.blendFunc(blendModeWebGL[0], blendModeWebGL[1]);
     }
-
+ 
     PIXI.WebGLGraphics.renderGraphics(this, renderSession);
     
+    if(this._filters)renderSession.filterManager.popFilter();
+    if(this._mask)renderSession.maskManager.popMask(renderSession);
+      
+
     renderSession.spriteBatch.start();
 };
 
@@ -7445,9 +7477,9 @@ PIXI.Graphics.prototype.getBounds = function()
     if(!this.bounds)this.updateBounds();
 
     var w0 = this.bounds.x;
-    var w1 = this.bounds.y;
+    var w1 = this.bounds.width + this.bounds.x;
 
-    var h0 = this.bounds.width + this.bounds.x;
+    var h0 = this.bounds.y;
     var h1 = this.bounds.height + this.bounds.y;
 
     var worldTransform = this.worldTransform;
@@ -7511,7 +7543,6 @@ PIXI.Graphics.prototype.getBounds = function()
 PIXI.Graphics.prototype.updateBounds = function()
 {
     
-    
     var minX = Infinity;
     var maxX = -Infinity;
 
@@ -7560,7 +7591,6 @@ PIXI.Graphics.prototype.updateBounds = function()
 
                 x = points[j];
                 y = points[j+1];
-
                 minX = x-lineWidth < minX ? x-lineWidth : minX;
                 maxX = x+lineWidth > maxX ? x+lineWidth : maxX;
 
@@ -7571,8 +7601,6 @@ PIXI.Graphics.prototype.updateBounds = function()
     }
 
     this.bounds = new PIXI.Rectangle(minX, minY, maxX - minX, maxY - minY);
-    
-//  console.log(this.bounds);
 };
 
 // SOME TYPES:

@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.3.0</em>
+            <em>API Docs for: 1.4.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -45,6 +45,8 @@
             
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
+                <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
                 <li><a href="../classes/BaseTexture.html">BaseTexture</a></li>
             
                 <li><a href="../classes/BitmapFontLoader.html">BitmapFontLoader</a></li>
@@ -61,7 +63,7 @@
             
                 <li><a href="../classes/ColorMatrixFilter.html">ColorMatrixFilter</a></li>
             
-                <li><a href="../classes/CustomRenderable.html">CustomRenderable</a></li>
+                <li><a href="../classes/ColorStepFilter.html">ColorStepFilter</a></li>
             
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
@@ -75,7 +77,7 @@
             
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
             
-                <li><a href="../classes/GreyFilter.html">GreyFilter</a></li>
+                <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
                 <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
             
@@ -86,6 +88,8 @@
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
+            
+                <li><a href="../classes/PIXI.PixiShader.html">PIXI.PixiShader</a></li>
             
                 <li><a href="../classes/Point.html">Point</a></li>
             
@@ -109,9 +113,9 @@
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
-                <li><a href="../classes/Sprite.html">Sprite</a></li>
-            
                 <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
+            
+                <li><a href="../classes/Sprite™.html">Sprite™</a></li>
             
                 <li><a href="../classes/Stage.html">Stage</a></li>
             
@@ -120,8 +124,6 @@
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
-            
-                <li><a href="../classes/WebGLBatch.html">WebGLBatch</a></li>
             
                 <li><a href="../classes/WebGLRenderer.html">WebGLRenderer</a></li>
             
@@ -174,61 +176,73 @@
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
-
-PIXI.initDefaultShaders = function() 
+PIXI.initDefaultShaders = function()
 {
-	PIXI.primitiveShader = new PIXI.PrimitiveShader();
-  PIXI.primitiveShader.init();
+   // PIXI.primitiveShader = new PIXI.PrimitiveShader();
+  //  PIXI.primitiveShader.init();
 
-  PIXI.stripShader = new PIXI.StripShader();
-  PIXI.stripShader.init();
+    PIXI.stripShader = new PIXI.StripShader();
+    PIXI.stripShader.init();
 
-	PIXI.defaultShader = new PIXI.PixiShader();
-	PIXI.defaultShader.init();
+  //  PIXI.defaultShader = new PIXI.PixiShader();
+//    PIXI.defaultShader.init();
 
-  var gl = PIXI.gl; 
-  var shaderProgram = PIXI.defaultShader.program;
- 
+  /*  var gl = PIXI.gl;
+    var shaderProgram = PIXI.defaultShader.program;
 
-  gl.useProgram(shaderProgram);
-  
-  gl.enableVertexAttribArray(PIXI.defaultShader.aVertexPosition);
-  gl.enableVertexAttribArray(PIXI.defaultShader.colorAttribute);
-  gl.enableVertexAttribArray(PIXI.defaultShader.aTextureCoord);
-}
+    gl.useProgram(shaderProgram);
 
+    gl.enableVertexAttribArray(PIXI.defaultShader.aVertexPosition);
+    gl.enableVertexAttribArray(PIXI.defaultShader.colorAttribute);
+    gl.enableVertexAttribArray(PIXI.defaultShader.aTextureCoord);*/
+};
+/*
 PIXI.activatePrimitiveShader = function()
 {
-  var gl = PIXI.gl;
-  
-  gl.useProgram(PIXI.primitiveShader.program);
-  gl.disableVertexAttribArray(PIXI.defaultShader.aTextureCoord);
-} 
+    var gl = PIXI.gl;
+
+    gl.useProgram(PIXI.primitiveShader.program);
+
+    gl.disableVertexAttribArray(PIXI.defaultShader.aVertexPosition);
+    gl.disableVertexAttribArray(PIXI.defaultShader.colorAttribute);
+    gl.disableVertexAttribArray(PIXI.defaultShader.aTextureCoord);
+
+    gl.enableVertexAttribArray(PIXI.primitiveShader.aVertexPosition);
+    gl.enableVertexAttribArray(PIXI.primitiveShader.colorAttribute);
+};
 
 PIXI.deactivatePrimitiveShader = function()
 {
-  var gl = PIXI.gl;
+    var gl = PIXI.gl;
 
-  gl.useProgram(PIXI.defaultShader.program);
-  gl.enableVertexAttribArray(PIXI.defaultShader.aTextureCoord);
-}
+    gl.useProgram(PIXI.defaultShader.program);
 
+    gl.disableVertexAttribArray(PIXI.primitiveShader.aVertexPosition);
+    gl.disableVertexAttribArray(PIXI.primitiveShader.colorAttribute);
+
+    gl.enableVertexAttribArray(PIXI.defaultShader.aVertexPosition);
+    gl.enableVertexAttribArray(PIXI.defaultShader.colorAttribute);
+    gl.enableVertexAttribArray(PIXI.defaultShader.aTextureCoord);
+};
+*/
+
+/*
 PIXI.activateStripShader = function()
 {
-  var gl = PIXI.gl;
-  
-  gl.useProgram(PIXI.stripShader.program);
+    var gl = PIXI.gl;
+
+    gl.useProgram(PIXI.stripShader.program);
  // gl.disableVertexAttribArray(PIXI.defaultShader.aTextureCoord);
-} 
+};
 
 PIXI.deactivateStripShader = function()
 {
-  var gl = PIXI.gl;
+    var gl = PIXI.gl;
 
-  gl.useProgram(PIXI.defaultShader.program);
-  //gl.enableVertexAttribArray(PIXI.defaultShader.aTextureCoord);
-}
-
+    gl.useProgram(PIXI.defaultShader.program);
+    //gl.enableVertexAttribArray(PIXI.defaultShader.aTextureCoord);
+};
+*/
 /*
 
 SHADER COMPILER HELPERS
@@ -236,48 +250,47 @@ SHADER COMPILER HELPERS
 
 PIXI.CompileVertexShader = function(gl, shaderSrc)
 {
-  return PIXI._CompileShader(gl, shaderSrc, gl.VERTEX_SHADER);
-}
+    return PIXI._CompileShader(gl, shaderSrc, gl.VERTEX_SHADER);
+};
 
 PIXI.CompileFragmentShader = function(gl, shaderSrc)
 {
-  return PIXI._CompileShader(gl, shaderSrc, gl.FRAGMENT_SHADER);
-}
+    return PIXI._CompileShader(gl, shaderSrc, gl.FRAGMENT_SHADER);
+};
 
 PIXI._CompileShader = function(gl, shaderSrc, shaderType)
 {
-  var src = shaderSrc.join(&quot;\n&quot;);
-  var shader = gl.createShader(shaderType);
-  gl.shaderSource(shader, src);
-  gl.compileShader(shader);
+    var src = shaderSrc.join(&quot;\n&quot;);
+    var shader = gl.createShader(shaderType);
+    gl.shaderSource(shader, src);
+    gl.compileShader(shader);
 
-  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    console.log(gl.getShaderInfoLog(shader));
-    return null;
-  }
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        window.console.log(gl.getShaderInfoLog(shader));
+        return null;
+    }
 
-  return shader;
-}
+    return shader;
+};
 
-
-PIXI.compileProgram = function(vertexSrc, fragmentSrc)
+PIXI.compileProgram = function(gl, vertexSrc, fragmentSrc)
 {
-	var gl = PIXI.gl;
-	var fragmentShader = PIXI.CompileFragmentShader(gl, fragmentSrc);
-	var vertexShader = PIXI.CompileVertexShader(gl, vertexSrc);
-	
-	var shaderProgram = gl.createProgram();
-	
+    //var gl = PIXI.gl;
+    var fragmentShader = PIXI.CompileFragmentShader(gl, fragmentSrc);
+    var vertexShader = PIXI.CompileVertexShader(gl, vertexSrc);
+
+    var shaderProgram = gl.createProgram();
+
     gl.attachShader(shaderProgram, vertexShader);
     gl.attachShader(shaderProgram, fragmentShader);
     gl.linkProgram(shaderProgram);
 
     if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-        console.log(&quot;Could not initialise shaders&quot;);
+        window.console.log(&quot;Could not initialise shaders&quot;);
     }
 
-	return shaderProgram;
-} 
+    return shaderProgram;
+};
 
     </pre>
 </div>

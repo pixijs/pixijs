@@ -67,8 +67,23 @@ PIXI.Sprite = function(texture)
      */
     this._height = 0;
 
+
+    /**
+     * The tint applied to the sprite. This is a hex value
+     *
+     * @property tint
+     * @type Number
+     * @default 0xFFFFFF
+     */
     this.tint = 0xFFFFFF;// * Math.random();
     
+    /**
+     * The blend mode to be applied to the sprite
+     *
+     * @property blendMode
+     * @type Number
+     * @default PIXI.blendModes.NORMAL;
+     */
     this.blendMode = PIXI.blendModes.NORMAL;
 
     if(texture.baseTexture.hasLoaded)

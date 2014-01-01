@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.3.0</em>
+            <em>API Docs for: 1.4.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -45,6 +45,8 @@
             
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
+                <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
                 <li><a href="../classes/BaseTexture.html">BaseTexture</a></li>
             
                 <li><a href="../classes/BitmapFontLoader.html">BitmapFontLoader</a></li>
@@ -61,7 +63,7 @@
             
                 <li><a href="../classes/ColorMatrixFilter.html">ColorMatrixFilter</a></li>
             
-                <li><a href="../classes/CustomRenderable.html">CustomRenderable</a></li>
+                <li><a href="../classes/ColorStepFilter.html">ColorStepFilter</a></li>
             
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
@@ -75,7 +77,7 @@
             
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
             
-                <li><a href="../classes/GreyFilter.html">GreyFilter</a></li>
+                <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
                 <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
             
@@ -86,6 +88,8 @@
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
+            
+                <li><a href="../classes/PIXI.PixiShader.html">PIXI.PixiShader</a></li>
             
                 <li><a href="../classes/Point.html">Point</a></li>
             
@@ -109,9 +113,9 @@
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
-                <li><a href="../classes/Sprite.html">Sprite</a></li>
-            
                 <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
+            
+                <li><a href="../classes/Sprite™.html">Sprite™</a></li>
             
                 <li><a href="../classes/Stage.html">Stage</a></li>
             
@@ -120,8 +124,6 @@
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
-            
-                <li><a href="../classes/WebGLBatch.html">WebGLBatch</a></li>
             
                 <li><a href="../classes/WebGLRenderer.html">WebGLRenderer</a></li>
             
@@ -178,29 +180,29 @@
  * A Class that loads a bunch of images / sprite sheet / bitmap font files. Once the
  * assets have been loaded they are added to the PIXI Texture cache and can be accessed
  * easily through PIXI.Texture.fromImage() and PIXI.Sprite.fromImage()
- * When all items have been loaded this class will dispatch a &quot;onLoaded&quot; event
- * As each individual item is loaded this class will dispatch a &quot;onProgress&quot; event
+ * When all items have been loaded this class will dispatch a &#x27;onLoaded&#x27; event
+ * As each individual item is loaded this class will dispatch a &#x27;onProgress&#x27; event
  *
  * @class AssetLoader
  * @constructor
  * @uses EventTarget
  * @param {Array&lt;String&gt;} assetURLs an array of image/sprite sheet urls that you would like loaded
- *      supported. Supported image formats include &quot;jpeg&quot;, &quot;jpg&quot;, &quot;png&quot;, &quot;gif&quot;. Supported
- *      sprite sheet data formats only include &quot;JSON&quot; at this time. Supported bitmap font
- *      data formats include &quot;xml&quot; and &quot;fnt&quot;.
+ *      supported. Supported image formats include &#x27;jpeg&#x27;, &#x27;jpg&#x27;, &#x27;png&#x27;, &#x27;gif&#x27;. Supported
+ *      sprite sheet data formats only include &#x27;JSON&#x27; at this time. Supported bitmap font
+ *      data formats include &#x27;xml&#x27; and &#x27;fnt&#x27;.
  * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
  */
 PIXI.AssetLoader = function(assetURLs, crossorigin)
 {
-	PIXI.EventTarget.call(this);
+    PIXI.EventTarget.call(this);
 
-	/**
-	 * The array of asset URLs that are going to be loaded
+    /**
+     * The array of asset URLs that are going to be loaded
      *
-	 * @property assetURLs
-	 * @type Array&lt;String&gt;
-	 */
-	this.assetURLs = assetURLs;
+     * @property assetURLs
+     * @type Array&lt;String&gt;
+     */
+    this.assetURLs = assetURLs;
 
     /**
      * Whether the requests should be treated as cross origin
@@ -208,7 +210,7 @@ PIXI.AssetLoader = function(assetURLs, crossorigin)
      * @property crossorigin
      * @type Boolean
      */
-	this.crossorigin = crossorigin;
+    this.crossorigin = crossorigin;
 
     /**
      * Maps file extension to loader types
@@ -217,17 +219,16 @@ PIXI.AssetLoader = function(assetURLs, crossorigin)
      * @type Object
      */
     this.loadersByType = {
-        &quot;jpg&quot;:  PIXI.ImageLoader,
-        &quot;jpeg&quot;: PIXI.ImageLoader,
-        &quot;png&quot;:  PIXI.ImageLoader,
-        &quot;gif&quot;:  PIXI.ImageLoader,
-        &quot;json&quot;: PIXI.JsonLoader,
-        &quot;anim&quot;: PIXI.SpineLoader,
-        &quot;xml&quot;:  PIXI.BitmapFontLoader,
-        &quot;fnt&quot;:  PIXI.BitmapFontLoader
+        &#x27;jpg&#x27;:  PIXI.ImageLoader,
+        &#x27;jpeg&#x27;: PIXI.ImageLoader,
+        &#x27;png&#x27;:  PIXI.ImageLoader,
+        &#x27;gif&#x27;:  PIXI.ImageLoader,
+        &#x27;json&#x27;: PIXI.JsonLoader,
+        &#x27;atlas&#x27;: PIXI.AtlasLoader,
+        &#x27;anim&#x27;: PIXI.SpineLoader,
+        &#x27;xml&#x27;:  PIXI.BitmapFontLoader,
+        &#x27;fnt&#x27;:  PIXI.BitmapFontLoader
     };
-
-
 };
 
 /**
@@ -243,6 +244,34 @@ PIXI.AssetLoader = function(assetURLs, crossorigin)
 // constructor
 PIXI.AssetLoader.prototype.constructor = PIXI.AssetLoader;
 
+
+PIXI.AssetLoader.prototype._getDataType = function(str)
+{
+    var test = &#x27;data:&#x27;;
+    //starts with &#x27;data:&#x27;
+    var start = str.slice(0, test.length).toLowerCase();
+    if (start === test) {
+        var data = str.slice(test.length);
+
+        var sepIdx = data.indexOf(&#x27;,&#x27;);
+        if (sepIdx === -1) //malformed data URI scheme
+            return null;
+
+        //e.g. &#x27;image/gif;base64&#x27; =&gt; &#x27;image/gif&#x27;
+        var info = data.slice(0, sepIdx).split(&#x27;;&#x27;)[0];
+
+        //We might need to handle some special cases here...
+        //standardize text/plain to &#x27;txt&#x27; file extension
+        if (!info || info.toLowerCase() === &#x27;text/plain&#x27;)
+            return &#x27;txt&#x27;;
+
+        //User specified mime type, try splitting it by &#x27;/&#x27;
+        return info.split(&#x27;/&#x27;).pop().toLowerCase();
+    }
+
+    return null;
+};
+
 /**
  * Starts loading the assets sequentially
  *
@@ -252,25 +281,31 @@ PIXI.AssetLoader.prototype.load = function()
 {
     var scope = this;
 
-	this.loadCount = this.assetURLs.length;
+    function onLoad() {
+        scope.onAssetLoaded();
+    }
+
+    this.loadCount = this.assetURLs.length;
 
     for (var i=0; i &lt; this.assetURLs.length; i++)
-	{
-		var fileName = this.assetURLs[i];
-		var fileType = fileName.split(&quot;.&quot;).pop().toLowerCase();
+    {
+        var fileName = this.assetURLs[i];
+        //first see if we have a data URI scheme..
+        var fileType = this._getDataType(fileName);
 
-        var loaderClass = this.loadersByType[fileType];
-        if(!loaderClass)
-            throw new Error(fileType + &quot; is an unsupported file type&quot;);
+        //if not, assume it&#x27;s a file URI
+        if (!fileType)
+            fileType = fileName.split(&#x27;?&#x27;).shift().split(&#x27;.&#x27;).pop().toLowerCase();
 
-        var loader = new loaderClass(fileName, this.crossorigin);
+        var Constructor = this.loadersByType[fileType];
+        if(!Constructor)
+            throw new Error(fileType + &#x27; is an unsupported file type&#x27;);
 
-        loader.addEventListener(&quot;loaded&quot;, function()
-        {
-            scope.onAssetLoaded();
-        });
+        var loader = new Constructor(fileName, this.crossorigin);
+
+        loader.addEventListener(&#x27;loaded&#x27;, onLoad);
         loader.load();
-	}
+    }
 };
 
 /**
@@ -282,16 +317,15 @@ PIXI.AssetLoader.prototype.load = function()
 PIXI.AssetLoader.prototype.onAssetLoaded = function()
 {
     this.loadCount--;
-	this.dispatchEvent({type: &quot;onProgress&quot;, content: this});
-	if(this.onProgress) this.onProgress();
+    this.dispatchEvent({type: &#x27;onProgress&#x27;, content: this});
+    if (this.onProgress) this.onProgress();
 
-	if(this.loadCount == 0)
-	{
-		this.dispatchEvent({type: &quot;onComplete&quot;, content: this});
-		if(this.onComplete) this.onComplete();
-	}
+    if (!this.loadCount)
+    {
+        this.dispatchEvent({type: &#x27;onComplete&#x27;, content: this});
+        if(this.onComplete) this.onComplete();
+    }
 };
-
 
     </pre>
 </div>

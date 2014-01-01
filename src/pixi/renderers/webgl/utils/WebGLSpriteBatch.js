@@ -54,11 +54,7 @@ PIXI.WebGLSpriteBatch.prototype.setContext = function(gl)
     this.indexBuffer = gl.createBuffer();
 
     // 65535 is max index, so 65535 / 6 = 10922.
-    
-    //the total number of floats in our batch
-    var numVerts = this.size * 4 *  this.vertSize;
-    //the total number of indices in our batch
-    var numIndices = this.size * 6;
+
 
     //upload the index data
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
@@ -68,7 +64,7 @@ PIXI.WebGLSpriteBatch.prototype.setContext = function(gl)
     gl.bufferData(gl.ARRAY_BUFFER, this.vertices, gl.DYNAMIC_DRAW);
 
     this.currentBlendMode = 99999;
-}
+};
 
 PIXI.WebGLSpriteBatch.prototype.begin = function(renderSession)
 {

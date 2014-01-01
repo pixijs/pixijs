@@ -80,13 +80,13 @@
 
 
 	stage.addChild(graphics);
-
+/*
 	// lets create moving shape
 	var thing = new PIXI.Graphics();
 	stage.addChild(thing);
 	thing.position.x = 620/2;
 	thing.position.y = 380/2;
-
+*/
 	var count = 0;
 
 	stage.click = stage.tap = function()
@@ -98,6 +98,9 @@
 
 	requestAnimFrame(animate);
 
+	graphics.filters = [new PIXI.BlurFilter()];
+	
+	stage.addChild(PIXI.Sprite.fromImage("spinObj_02.png"));
 	function animate() {
 
 	/*	thing.clear();

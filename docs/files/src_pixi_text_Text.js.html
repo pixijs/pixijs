@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.3.0</em>
+            <em>API Docs for: 1.4.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -45,6 +45,8 @@
             
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
+                <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
                 <li><a href="../classes/BaseTexture.html">BaseTexture</a></li>
             
                 <li><a href="../classes/BitmapFontLoader.html">BitmapFontLoader</a></li>
@@ -61,7 +63,7 @@
             
                 <li><a href="../classes/ColorMatrixFilter.html">ColorMatrixFilter</a></li>
             
-                <li><a href="../classes/CustomRenderable.html">CustomRenderable</a></li>
+                <li><a href="../classes/ColorStepFilter.html">ColorStepFilter</a></li>
             
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
@@ -75,7 +77,7 @@
             
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
             
-                <li><a href="../classes/GreyFilter.html">GreyFilter</a></li>
+                <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
                 <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
             
@@ -86,6 +88,8 @@
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
+            
+                <li><a href="../classes/PIXI.PixiShader.html">PIXI.PixiShader</a></li>
             
                 <li><a href="../classes/Point.html">Point</a></li>
             
@@ -109,9 +113,9 @@
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
-                <li><a href="../classes/Sprite.html">Sprite</a></li>
-            
                 <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
+            
+                <li><a href="../classes/Sprite™.html">Sprite™</a></li>
             
                 <li><a href="../classes/Stage.html">Stage</a></li>
             
@@ -120,8 +124,6 @@
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
-            
-                <li><a href="../classes/WebGLBatch.html">WebGLBatch</a></li>
             
                 <li><a href="../classes/WebGLRenderer.html">WebGLRenderer</a></li>
             
@@ -175,25 +177,25 @@
  */
 
 /**
- * A Text Object will create a line(s) of text to split a line you can use &quot;\n&quot;
+ * A Text Object will create a line(s) of text to split a line you can use &#x27;\n&#x27;
  *
  * @class Text
  * @extends Sprite
  * @constructor
  * @param text {String} The copy that you would like the text to display
  * @param [style] {Object} The style parameters
- * @param [style.font] {String} default &quot;bold 20pt Arial&quot; The style and size of the font
- * @param [style.fill=&quot;black&quot;] {Object} A canvas fillstyle that will be used on the text eg &quot;red&quot;, &quot;#00FF00&quot;
- * @param [style.align=&quot;left&quot;] {String} An alignment of the multiline text (&quot;left&quot;, &quot;center&quot; or &quot;right&quot;)
- * @param [style.stroke] {String} A canvas fillstyle that will be used on the text stroke eg &quot;blue&quot;, &quot;#FCFF00&quot;
+ * @param [style.font] {String} default &#x27;bold 20pt Arial&#x27; The style and size of the font
+ * @param [style.fill=&#x27;black&#x27;] {Object} A canvas fillstyle that will be used on the text eg &#x27;red&#x27;, &#x27;#00FF00&#x27;
+ * @param [style.align=&#x27;left&#x27;] {String} An alignment of the multiline text (&#x27;left&#x27;, &#x27;center&#x27; or &#x27;right&#x27;)
+ * @param [style.stroke] {String} A canvas fillstyle that will be used on the text stroke eg &#x27;blue&#x27;, &#x27;#FCFF00&#x27;
  * @param [style.strokeThickness=0] {Number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
  * @param [style.wordWrap=false] {Boolean} Indicates if word wrap should be used
  * @param [style.wordWrapWidth=100] {Number} The width at which text will wrap
  */
 PIXI.Text = function(text, style)
 {
-    this.canvas = document.createElement(&quot;canvas&quot;);
-    this.context = this.canvas.getContext(&quot;2d&quot;);
+    this.canvas = document.createElement(&#x27;canvas&#x27;);
+    this.context = this.canvas.getContext(&#x27;2d&#x27;);
     PIXI.Sprite.call(this, PIXI.Texture.fromCanvas(this.canvas));
 
     this.setText(text);
@@ -212,10 +214,10 @@ PIXI.Text.prototype.constructor = PIXI.Text;
  *
  * @method setStyle
  * @param [style] {Object} The style parameters
- * @param [style.font=&quot;bold 20pt Arial&quot;] {String} The style and size of the font
- * @param [style.fill=&quot;black&quot;] {Object} A canvas fillstyle that will be used on the text eg &quot;red&quot;, &quot;#00FF00&quot;
- * @param [style.align=&quot;left&quot;] {String} An alignment of the multiline text (&quot;left&quot;, &quot;center&quot; or &quot;right&quot;)
- * @param [style.stroke=&quot;black&quot;] {String} A canvas fillstyle that will be used on the text stroke eg &quot;blue&quot;, &quot;#FCFF00&quot;
+ * @param [style.font=&#x27;bold 20pt Arial&#x27;] {String} The style and size of the font
+ * @param [style.fill=&#x27;black&#x27;] {Object} A canvas fillstyle that will be used on the text eg &#x27;red&#x27;, &#x27;#00FF00&#x27;
+ * @param [style.align=&#x27;left&#x27;] {String} An alignment of the multiline text (&#x27;left&#x27;, &#x27;center&#x27; or &#x27;right&#x27;)
+ * @param [style.stroke=&#x27;black&#x27;] {String} A canvas fillstyle that will be used on the text stroke eg &#x27;blue&#x27;, &#x27;#FCFF00&#x27;
  * @param [style.strokeThickness=0] {Number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
  * @param [style.wordWrap=false] {Boolean} Indicates if word wrap should be used
  * @param [style.wordWrapWidth=100] {Number} The width at which text will wrap
@@ -223,10 +225,10 @@ PIXI.Text.prototype.constructor = PIXI.Text;
 PIXI.Text.prototype.setStyle = function(style)
 {
     style = style || {};
-    style.font = style.font || &quot;bold 20pt Arial&quot;;
-    style.fill = style.fill || &quot;black&quot;;
-    style.align = style.align || &quot;left&quot;;
-    style.stroke = style.stroke || &quot;black&quot;; //provide a default, see: https://github.com/GoodBoyDigital/pixi.js/issues/136
+    style.font = style.font || &#x27;bold 20pt Arial&#x27;;
+    style.fill = style.fill || &#x27;black&#x27;;
+    style.align = style.align || &#x27;left&#x27;;
+    style.stroke = style.stroke || &#x27;black&#x27;; //provide a default, see: https://github.com/GoodBoyDigital/pixi.js/issues/136
     style.strokeThickness = style.strokeThickness || 0;
     style.wordWrap = style.wordWrap || false;
     style.wordWrapWidth = style.wordWrapWidth || 100;
@@ -235,14 +237,14 @@ PIXI.Text.prototype.setStyle = function(style)
 };
 
 /**
- * Set the copy for the text object. To split a line you can use &quot;\n&quot;
+ * Set the copy for the text object. To split a line you can use &#x27;\n&#x27;
  *
- * @methos setText
+ * @method setText
  * @param {String} text The copy that you would like the text to display
  */
 PIXI.Text.prototype.setText = function(text)
 {
-    this.text = text.toString() || &quot; &quot;;
+    this.text = text.toString() || &#x27; &#x27;;
     this.dirty = true;
 };
 
@@ -254,65 +256,65 @@ PIXI.Text.prototype.setText = function(text)
  */
 PIXI.Text.prototype.updateText = function()
 {
-	this.context.font = this.style.font;
+    this.context.font = this.style.font;
 
-	var outputText = this.text;
+    var outputText = this.text;
 
-	// word wrap
-	// preserve original text
-	if(this.style.wordWrap)outputText = this.wordWrap(this.text);
+    // word wrap
+    // preserve original text
+    if(this.style.wordWrap)outputText = this.wordWrap(this.text);
 
-	//split text into lines
-	var lines = outputText.split(/(?:\r\n|\r|\n)/);
+    //split text into lines
+    var lines = outputText.split(/(?:\r\n|\r|\n)/);
 
-	//calculate text width
-	var lineWidths = [];
-	var maxLineWidth = 0;
-	for (var i = 0; i &lt; lines.length; i++)
-	{
-		var lineWidth = this.context.measureText(lines[i]).width;
-		lineWidths[i] = lineWidth;
-		maxLineWidth = Math.max(maxLineWidth, lineWidth);
-	}
-	this.canvas.width = maxLineWidth + this.style.strokeThickness;
+    //calculate text width
+    var lineWidths = [];
+    var maxLineWidth = 0;
+    for (var i = 0; i &lt; lines.length; i++)
+    {
+        var lineWidth = this.context.measureText(lines[i]).width;
+        lineWidths[i] = lineWidth;
+        maxLineWidth = Math.max(maxLineWidth, lineWidth);
+    }
+    this.canvas.width = maxLineWidth + this.style.strokeThickness;
 
-	//calculate text height
-	var lineHeight = this.determineFontHeight(&quot;font: &quot; + this.style.font  + &quot;;&quot;) + this.style.strokeThickness;
-	this.canvas.height = lineHeight * lines.length;
+    //calculate text height
+    var lineHeight = this.determineFontHeight(&#x27;font: &#x27; + this.style.font  + &#x27;;&#x27;) + this.style.strokeThickness;
+    this.canvas.height = lineHeight * lines.length;
 
-	//set canvas text styles
-	this.context.fillStyle = this.style.fill;
-	this.context.font = this.style.font;
+    //set canvas text styles
+    this.context.fillStyle = this.style.fill;
+    this.context.font = this.style.font;
 
-	this.context.strokeStyle = this.style.stroke;
-	this.context.lineWidth = this.style.strokeThickness;
+    this.context.strokeStyle = this.style.stroke;
+    this.context.lineWidth = this.style.strokeThickness;
 
-	this.context.textBaseline = &quot;top&quot;;
+    this.context.textBaseline = &#x27;top&#x27;;
 
-	//draw lines line by line
-	for (i = 0; i &lt; lines.length; i++)
-	{
-		var linePosition = new PIXI.Point(this.style.strokeThickness / 2, this.style.strokeThickness / 2 + i * lineHeight);
+    //draw lines line by line
+    for (i = 0; i &lt; lines.length; i++)
+    {
+        var linePosition = new PIXI.Point(this.style.strokeThickness / 2, this.style.strokeThickness / 2 + i * lineHeight);
 
-		if(this.style.align == &quot;right&quot;)
-		{
-			linePosition.x += maxLineWidth - lineWidths[i];
-		}
-		else if(this.style.align == &quot;center&quot;)
-		{
-			linePosition.x += (maxLineWidth - lineWidths[i]) / 2;
-		}
+        if(this.style.align === &#x27;right&#x27;)
+        {
+            linePosition.x += maxLineWidth - lineWidths[i];
+        }
+        else if(this.style.align === &#x27;center&#x27;)
+        {
+            linePosition.x += (maxLineWidth - lineWidths[i]) / 2;
+        }
 
-		if(this.style.stroke &amp;&amp; this.style.strokeThickness)
-		{
-			this.context.strokeText(lines[i], linePosition.x, linePosition.y);
-		}
+        if(this.style.stroke &amp;&amp; this.style.strokeThickness)
+        {
+            this.context.strokeText(lines[i], linePosition.x, linePosition.y);
+        }
 
-		if(this.style.fill)
-		{
-			this.context.fillText(lines[i], linePosition.x, linePosition.y);
-		}
-	}
+        if(this.style.fill)
+        {
+            this.context.fillText(lines[i], linePosition.x, linePosition.y);
+        }
+    }
 
     this.updateTexture();
 };
@@ -330,7 +332,7 @@ PIXI.Text.prototype.updateTexture = function()
     this.texture.frame.width = this.canvas.width;
     this.texture.frame.height = this.canvas.height;
 
-  	this._width = this.canvas.width;
+    this._width = this.canvas.width;
     this._height = this.canvas.height;
 
     PIXI.texturesToUpdate.push(this.texture.baseTexture);
@@ -344,13 +346,13 @@ PIXI.Text.prototype.updateTexture = function()
  */
 PIXI.Text.prototype.updateTransform = function()
 {
-	if(this.dirty)
-	{
-		this.updateText();
-		this.dirty = false;
-	}
+    if(this.dirty)
+    {
+        this.updateText();
+        this.dirty = false;
+    }
 
-	PIXI.Sprite.prototype.updateTransform.call(this);
+    PIXI.Sprite.prototype.updateTransform.call(this);
 };
 
 /*
@@ -363,30 +365,31 @@ PIXI.Text.prototype.updateTransform = function()
  */
 PIXI.Text.prototype.determineFontHeight = function(fontStyle)
 {
-	// build a little reference dictionary so if the font style has been used return a
-	// cached version...
-	var result = PIXI.Text.heightCache[fontStyle];
+    // build a little reference dictionary so if the font style has been used return a
+    // cached version...
+    var result = PIXI.Text.heightCache[fontStyle];
 
-	if(!result)
-	{
-		var body = document.getElementsByTagName(&quot;body&quot;)[0];
-		var dummy = document.createElement(&quot;div&quot;);
-		var dummyText = document.createTextNode(&quot;M&quot;);
-		dummy.appendChild(dummyText);
-		dummy.setAttribute(&quot;style&quot;, fontStyle + &#x27;;position:absolute;top:0;left:0&#x27;);
-		body.appendChild(dummy);
+    if(!result)
+    {
+        var body = document.getElementsByTagName(&#x27;body&#x27;)[0];
+        var dummy = document.createElement(&#x27;div&#x27;);
+        var dummyText = document.createTextNode(&#x27;M&#x27;);
+        dummy.appendChild(dummyText);
+        dummy.setAttribute(&#x27;style&#x27;, fontStyle + &#x27;;position:absolute;top:0;left:0&#x27;);
+        body.appendChild(dummy);
 
-		result = dummy.offsetHeight;
-		PIXI.Text.heightCache[fontStyle] = result;
+        result = dummy.offsetHeight;
+        PIXI.Text.heightCache[fontStyle] = result;
 
-		body.removeChild(dummy);
-	}
+        body.removeChild(dummy);
+    }
 
-	return result;
+    return result;
 };
 
 /**
- * A Text Object will apply wordwrap
+ * Applies newlines to a string to have it optimally fit into the horizontal
+ * bounds set by the Text object&#x27;s wordWrapWidth property.
  *
  * @method wordWrap
  * @param text {String}
@@ -394,49 +397,38 @@ PIXI.Text.prototype.determineFontHeight = function(fontStyle)
  */
 PIXI.Text.prototype.wordWrap = function(text)
 {
-	// search good wrap position
-	var searchWrapPos = function(ctx, text, start, end, wrapWidth)
-	{
-		var p = Math.floor((end-start) / 2) + start;
-		if(p == start) {
-			return 1;
-		}
-
-		if(ctx.measureText(text.substring(0,p)).width &lt;= wrapWidth)
-		{
-			if(ctx.measureText(text.substring(0,p+1)).width &gt; wrapWidth)
-			{
-				return p;
-			}
-			else
-			{
-				return arguments.callee(ctx, text, p, end, wrapWidth);
-			}
-		}
-		else
-		{
-			return arguments.callee(ctx, text, start, p, wrapWidth);
-		}
-	};
-
-	var lineWrap = function(ctx, text, wrapWidth)
-	{
-		if(ctx.measureText(text).width &lt;= wrapWidth || text.length &lt; 1)
-		{
-			return text;
-		}
-		var pos = searchWrapPos(ctx, text, 0, text.length, wrapWidth);
-		return text.substring(0, pos) + &quot;\n&quot; + arguments.callee(ctx, text.substring(pos), wrapWidth);
-	};
-
-	var result = &quot;&quot;;
-	var lines = text.split(&quot;\n&quot;);
-	for (var i = 0; i &lt; lines.length; i++)
-	{
-		result += lineWrap(this.context, lines[i], this.style.wordWrapWidth) + &quot;\n&quot;;
-	}
-
-	return result;
+    // Greedy wrapping algorithm that will wrap words as the line grows longer
+    // than its horizontal bounds.
+    var result = &#x27;&#x27;;
+    var lines = text.split(&#x27;\n&#x27;);
+    for (var i = 0; i &lt; lines.length; i++)
+    {
+        var spaceLeft = this.style.wordWrapWidth;
+        var words = lines[i].split(&#x27; &#x27;);
+        for (var j = 0; j &lt; words.length; j++)
+        {
+            var wordWidth = this.context.measureText(words[j]).width;
+            var wordWidthWithSpace = wordWidth + this.context.measureText(&#x27; &#x27;).width;
+            if(wordWidthWithSpace &gt; spaceLeft)
+            {
+                // Skip printing the newline if it&#x27;s the first word of the line that is
+                // greater than the word wrap width.
+                if(j &gt; 0)
+                {
+                    result += &#x27;\n&#x27;;
+                }
+                result += words[j] + &#x27; &#x27;;
+                spaceLeft = this.style.wordWrapWidth - wordWidth;
+            }
+            else
+            {
+                spaceLeft -= wordWidthWithSpace;
+                result += words[j] + &#x27; &#x27;;
+            }
+        }
+        result += &#x27;\n&#x27;;
+    }
+    return result;
 };
 
 /**
@@ -447,10 +439,10 @@ PIXI.Text.prototype.wordWrap = function(text)
  */
 PIXI.Text.prototype.destroy = function(destroyTexture)
 {
-	if(destroyTexture)
-	{
-		this.texture.destroy();
-	}
+    if(destroyTexture)
+    {
+        this.texture.destroy();
+    }
 
 };
 

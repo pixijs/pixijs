@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.3.0</em>
+            <em>API Docs for: 1.4.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -45,6 +45,8 @@
             
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
+                <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
                 <li><a href="../classes/BaseTexture.html">BaseTexture</a></li>
             
                 <li><a href="../classes/BitmapFontLoader.html">BitmapFontLoader</a></li>
@@ -61,7 +63,7 @@
             
                 <li><a href="../classes/ColorMatrixFilter.html">ColorMatrixFilter</a></li>
             
-                <li><a href="../classes/CustomRenderable.html">CustomRenderable</a></li>
+                <li><a href="../classes/ColorStepFilter.html">ColorStepFilter</a></li>
             
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
@@ -75,7 +77,7 @@
             
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
             
-                <li><a href="../classes/GreyFilter.html">GreyFilter</a></li>
+                <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
                 <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
             
@@ -86,6 +88,8 @@
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
+            
+                <li><a href="../classes/PIXI.PixiShader.html">PIXI.PixiShader</a></li>
             
                 <li><a href="../classes/Point.html">Point</a></li>
             
@@ -109,9 +113,9 @@
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
-                <li><a href="../classes/Sprite.html">Sprite</a></li>
-            
                 <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
+            
+                <li><a href="../classes/Sprite™.html">Sprite™</a></li>
             
                 <li><a href="../classes/Stage.html">Stage</a></li>
             
@@ -120,8 +124,6 @@
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
-            
-                <li><a href="../classes/WebGLBatch.html">WebGLBatch</a></li>
             
                 <li><a href="../classes/WebGLRenderer.html">WebGLRenderer</a></li>
             
@@ -176,12 +178,12 @@
 
 /**
  * The sprite sheet loader is used to load in JSON sprite sheet data
- * To generate the data you can use http://www.codeandweb.com/texturepacker and publish the &quot;JSON&quot; format
+ * To generate the data you can use http://www.codeandweb.com/texturepacker and publish the &#x27;JSON&#x27; format
  * There is a free version so thats nice, although the paid version is great value for money.
- * It is highly recommended to use Sprite sheets (also know as texture atlas&quot;) as it means sprite&quot;s can be batched and drawn together for highly increased rendering speed.
+ * It is highly recommended to use Sprite sheets (also know as texture atlas&#x27;) as it means sprite&#x27;s can be batched and drawn together for highly increased rendering speed.
  * Once the data has been loaded the frames are stored in the PIXI texture cache and can be accessed though PIXI.Texture.fromFrameId() and PIXI.Sprite.fromFromeId()
  * This loader will also load the image file that the Spritesheet points to as well as the data.
- * When loaded this class will dispatch a &quot;loaded&quot; event
+ * When loaded this class will dispatch a &#x27;loaded&#x27; event
  *
  * @class SpriteSheetLoader
  * @uses EventTarget
@@ -189,39 +191,38 @@
  * @param url {String} The url of the sprite sheet JSON file
  * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
  */
-
 PIXI.SpriteSheetLoader = function (url, crossorigin) {
-	/*
-	 * i use texture packer to load the assets..
-	 * http://www.codeandweb.com/texturepacker
-	 * make sure to set the format as &quot;JSON&quot;
-	 */
-	PIXI.EventTarget.call(this);
+    /*
+     * i use texture packer to load the assets..
+     * http://www.codeandweb.com/texturepacker
+     * make sure to set the format as &#x27;JSON&#x27;
+     */
+    PIXI.EventTarget.call(this);
 
-	/**
-	 * The url of the bitmap font data
-	 *
-	 * @property url
-	 * @type String
-	 */
-	this.url = url;
+    /**
+     * The url of the bitmap font data
+     *
+     * @property url
+     * @type String
+     */
+    this.url = url;
 
-	/**
-	 * Whether the requests should be treated as cross origin
-	 *
-	 * @property crossorigin
-	 * @type Boolean
-	 */
-	this.crossorigin = crossorigin;
+    /**
+     * Whether the requests should be treated as cross origin
+     *
+     * @property crossorigin
+     * @type Boolean
+     */
+    this.crossorigin = crossorigin;
 
-	/**
-	 * [read-only] The base url of the bitmap font data
-	 *
-	 * @property baseUrl
-	 * @type String
-	 * @readOnly
-	 */
-	this.baseUrl = url.replace(/[^\/]*$/, &quot;&quot;);
+    /**
+     * [read-only] The base url of the bitmap font data
+     *
+     * @property baseUrl
+     * @type String
+     * @readOnly
+     */
+    this.baseUrl = url.replace(/[^\/]*$/, &#x27;&#x27;);
 
     /**
      * The texture being loaded
@@ -237,7 +238,7 @@ PIXI.SpriteSheetLoader = function (url, crossorigin) {
      * @property frames
      * @type Object
      */
-	this.frames = {};
+    this.frames = {};
 };
 
 // constructor
@@ -249,13 +250,13 @@ PIXI.SpriteSheetLoader.prototype.constructor = PIXI.SpriteSheetLoader;
  * @method load
  */
 PIXI.SpriteSheetLoader.prototype.load = function () {
-	var scope = this;
-	var jsonLoader = new PIXI.JsonLoader(this.url, this.crossorigin);
-	jsonLoader.addEventListener(&quot;loaded&quot;, function (event) {
-		scope.json = event.content.json;
-		scope.onJSONLoaded();
-	});
-	jsonLoader.load();
+    var scope = this;
+    var jsonLoader = new PIXI.JsonLoader(this.url, this.crossorigin);
+    jsonLoader.addEventListener(&#x27;loaded&#x27;, function (event) {
+        scope.json = event.content.json;
+        scope.onJSONLoaded();
+    });
+    jsonLoader.load();
 };
 
 /**
@@ -265,36 +266,37 @@ PIXI.SpriteSheetLoader.prototype.load = function () {
  * @private
  */
 PIXI.SpriteSheetLoader.prototype.onJSONLoaded = function () {
-	var scope = this;
-	var textureUrl = this.baseUrl + this.json.meta.image;
-	var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
-	var frameData = this.json.frames;
+    var scope = this;
+    var textureUrl = this.baseUrl + this.json.meta.image;
+    var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
+    var frameData = this.json.frames;
 
-	this.texture = image.texture.baseTexture;
-	image.addEventListener(&quot;loaded&quot;, function (event) {
-		scope.onLoaded();
-	});
+    this.texture = image.texture.baseTexture;
+    image.addEventListener(&#x27;loaded&#x27;, function () {
+        scope.onLoaded();
+    });
 
-	for (var i in frameData) {
-		var rect = frameData[i].frame;
-		if (rect) {
-			PIXI.TextureCache[i] = new PIXI.Texture(this.texture, {
-				x: rect.x,
-				y: rect.y,
-				width: rect.w,
-				height: rect.h
-			});
-			if (frameData[i].trimmed) {
-				//var realSize = frameData[i].spriteSourceSize;
-				PIXI.TextureCache[i].realSize = frameData[i].spriteSourceSize;
-				PIXI.TextureCache[i].trim.x = 0; // (realSize.x / rect.w)
-				// calculate the offset!
-			}
-		}
-	}
+    for (var i in frameData) {
+        var rect = frameData[i].frame;
+        if (rect) {
+            PIXI.TextureCache[i] = new PIXI.Texture(this.texture, {
+                x: rect.x,
+                y: rect.y,
+                width: rect.w,
+                height: rect.h
+            });
+            if (frameData[i].trimmed) {
+                //var realSize = frameData[i].spriteSourceSize;
+                PIXI.TextureCache[i].realSize = frameData[i].spriteSourceSize;
+                PIXI.TextureCache[i].trim.x = 0; // (realSize.x / rect.w)
+                // calculate the offset!
+            }
+        }
+    }
 
-	image.load();
+    image.load();
 };
+
 /**
  * Invoke when all files are loaded (json and texture)
  *
@@ -302,10 +304,10 @@ PIXI.SpriteSheetLoader.prototype.onJSONLoaded = function () {
  * @private
  */
 PIXI.SpriteSheetLoader.prototype.onLoaded = function () {
-	this.dispatchEvent({
-		type: &quot;loaded&quot;,
-		content: this
-	});
+    this.dispatchEvent({
+        type: &#x27;loaded&#x27;,
+        content: this
+    });
 };
 
     </pre>
