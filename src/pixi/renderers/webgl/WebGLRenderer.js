@@ -81,9 +81,9 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
         PIXI.blendModesWebGL[PIXI.blendModes.SCREEN]   = [gl.SRC_ALPHA, gl.ONE];
     }
 
-    
 
-  
+
+
     this.projection = new PIXI.Point();
     this.projection.x =  this.width/2;
     this.projection.y =  -this.height/2;
@@ -143,7 +143,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 
     // update any textures this includes uvs and uploading them to the gpu
     PIXI.WebGLRenderer.updateTextures();
- 
+
     // update the scene graph
     stage.updateTransform();
 
@@ -156,7 +156,6 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
     // make sure we are bound to the main frame buffer
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
-    
     gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], !this.transparent);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
@@ -206,7 +205,7 @@ PIXI.WebGLRenderer.prototype.renderDisplayObject = function(displayObject, proje
 
     this.renderSession.projection = projection;
     this.renderSession.offset = this.offset;
-   
+
     // start the sprite batch
     this.spriteBatch.begin(this.renderSession);
 
@@ -338,19 +337,19 @@ PIXI.WebGLRenderer.prototype.resize = function(width, height)
     this.view.height = height;
 
     this.gl.viewport(0, 0, this.width, this.height);
-    
+
     this.projection.x =  this.width/2;
     this.projection.y =  -this.height/2;
 };
 
 PIXI.createWebGLTexture = function(texture, gl)
 {
-    
+
 
     if(texture.hasLoaded)
     {
         texture._glTextures[gl.id] = gl.createTexture();
-        
+
         gl.bindTexture(gl.TEXTURE_2D, texture._glTextures[gl.id]);
         gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
 
@@ -397,7 +396,7 @@ PIXI.WebGLRenderer.prototype.handleContextLost = function(event)
  */
 PIXI.WebGLRenderer.prototype.handleContextRestored = function()
 {
-   
+
     //try 'experimental-webgl'
     try {
         this.gl = this.view.getContext('experimental-webgl',  this.options);
@@ -422,15 +421,15 @@ PIXI.WebGLRenderer.prototype.handleContextRestored = function()
     this.maskManager.setContext(gl);
     this.filterManager.setContext(gl);
 
-    
+
     this.renderSession.gl = this.gl;
-    
+
     gl.disable(gl.DEPTH_TEST);
     gl.disable(gl.CULL_FACE);
 
     gl.enable(gl.BLEND);
     gl.colorMask(true, true, true, this.transparent);
-    
+
     this.gl.viewport(0, 0, this.width, this.height);
 
     for(var key in PIXI.TextureCache)
@@ -440,7 +439,7 @@ PIXI.WebGLRenderer.prototype.handleContextRestored = function()
     }
 
     this.contextLost = false;
-    
+
 };
 
 PIXI.WebGLRenderer.glContextId = 0;
