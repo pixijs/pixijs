@@ -1206,7 +1206,7 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'height', {
  */
 PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 {
-    if(child.parent)
+    if(child.parent && child.parent !== this)
     {
         //// COULD BE THIS???
         child.parent.removeChild(child);
@@ -4303,7 +4303,7 @@ PIXI.StripShader = function()
         'uniform mat3 translationMatrix;',
         'uniform vec2 projectionVector;',
         'varying vec2 vTextureCoord;',
-        'attribute vec2 offsetVector;',
+        'uniform vec2 offsetVector;',
         'varying float vColor;',
 
         'void main(void) {',
@@ -5023,9 +5023,9 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
         PIXI.blendModesWebGL[PIXI.blendModes.SCREEN]   = [gl.SRC_ALPHA, gl.ONE];
     }
 
-    
 
-  
+
+
     this.projection = new PIXI.Point();
     this.projection.x =  this.width/2;
     this.projection.y =  -this.height/2;
@@ -5085,7 +5085,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 
     // update any textures this includes uvs and uploading them to the gpu
     PIXI.WebGLRenderer.updateTextures();
- 
+
     // update the scene graph
     stage.updateTransform();
 
@@ -5098,7 +5098,6 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
     // make sure we are bound to the main frame buffer
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
-    
     gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], !this.transparent);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
@@ -5148,7 +5147,7 @@ PIXI.WebGLRenderer.prototype.renderDisplayObject = function(displayObject, proje
 
     this.renderSession.projection = projection;
     this.renderSession.offset = this.offset;
-   
+
     // start the sprite batch
     this.spriteBatch.begin(this.renderSession);
 
@@ -5280,19 +5279,19 @@ PIXI.WebGLRenderer.prototype.resize = function(width, height)
     this.view.height = height;
 
     this.gl.viewport(0, 0, this.width, this.height);
-    
+
     this.projection.x =  this.width/2;
     this.projection.y =  -this.height/2;
 };
 
 PIXI.createWebGLTexture = function(texture, gl)
 {
-    
+
 
     if(texture.hasLoaded)
     {
         texture._glTextures[gl.id] = gl.createTexture();
-        
+
         gl.bindTexture(gl.TEXTURE_2D, texture._glTextures[gl.id]);
         gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
 
@@ -5339,7 +5338,7 @@ PIXI.WebGLRenderer.prototype.handleContextLost = function(event)
  */
 PIXI.WebGLRenderer.prototype.handleContextRestored = function()
 {
-   
+
     //try 'experimental-webgl'
     try {
         this.gl = this.view.getContext('experimental-webgl',  this.options);
@@ -5364,15 +5363,15 @@ PIXI.WebGLRenderer.prototype.handleContextRestored = function()
     this.maskManager.setContext(gl);
     this.filterManager.setContext(gl);
 
-    
+
     this.renderSession.gl = this.gl;
-    
+
     gl.disable(gl.DEPTH_TEST);
     gl.disable(gl.CULL_FACE);
 
     gl.enable(gl.BLEND);
     gl.colorMask(true, true, true, this.transparent);
-    
+
     this.gl.viewport(0, 0, this.width, this.height);
 
     for(var key in PIXI.TextureCache)
@@ -5382,7 +5381,7 @@ PIXI.WebGLRenderer.prototype.handleContextRestored = function()
     }
 
     this.contextLost = false;
-    
+
 };
 
 PIXI.WebGLRenderer.glContextId = 0;
@@ -8076,6 +8075,78 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
     context.closePath();
 };
 
+PIXI.TilingSprite.prototype.getBounds = function()
+{
+
+    var width = this._width;
+    var height = this._height;
+
+    var w0 = width * (1-this.anchor.x);
+    var w1 = width * -this.anchor.x;
+
+    var h0 = height * (1-this.anchor.y);
+    var h1 = height * -this.anchor.y;
+
+    var worldTransform = this.worldTransform;
+
+    var a = worldTransform[0];
+    var b = worldTransform[3];
+    var c = worldTransform[1];
+    var d = worldTransform[4];
+    var tx = worldTransform[2];
+    var ty = worldTransform[5];
+
+    var x1 = a * w1 + c * h1 + tx;
+    var y1 = d * h1 + b * w1 + ty;
+
+    var x2 = a * w0 + c * h1 + tx;
+    var y2 = d * h1 + b * w0 + ty;
+
+    var x3 = a * w0 + c * h0 + tx;
+    var y3 = d * h0 + b * w0 + ty;
+
+    var x4 =  a * w1 + c * h0 + tx;
+    var y4 =  d * h0 + b * w1 + ty;
+
+    var maxX = -Infinity;
+    var maxY = -Infinity;
+
+    var minX = Infinity;
+    var minY = Infinity;
+
+    minX = x1 < minX ? x1 : minX;
+    minX = x2 < minX ? x2 : minX;
+    minX = x3 < minX ? x3 : minX;
+    minX = x4 < minX ? x4 : minX;
+
+    minY = y1 < minY ? y1 : minY;
+    minY = y2 < minY ? y2 : minY;
+    minY = y3 < minY ? y3 : minY;
+    minY = y4 < minY ? y4 : minY;
+
+    maxX = x1 > maxX ? x1 : maxX;
+    maxX = x2 > maxX ? x2 : maxX;
+    maxX = x3 > maxX ? x3 : maxX;
+    maxX = x4 > maxX ? x4 : maxX;
+
+    maxY = y1 > maxY ? y1 : maxY;
+    maxY = y2 > maxY ? y2 : maxY;
+    maxY = y3 > maxY ? y3 : maxY;
+    maxY = y4 > maxY ? y4 : maxY;
+
+    var bounds = this._bounds;
+
+    bounds.x = minX;
+    bounds.width = maxX - minX;
+
+    bounds.y = minY;
+    bounds.height = maxY - minY;
+
+    // store a refferance so that if this function gets called again in the render cycle we do not have to recacalculate
+    this._currentBounds = bounds;
+
+    return bounds;
+};
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  * based on pixi impact spine implementation made by Eemeli Kelokorpi (@ekelokorpi) https://github.com/ekelokorpi
