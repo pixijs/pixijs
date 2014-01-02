@@ -151,3 +151,5 @@ It also copies the non-minified version to the examples.
 ```
 
 This content is released under the (http://opensource.org/licenses/MIT) MIT License.
+
+[![Analytics](https://ga-beacon.appspot.com/UA-39213431-2/GoodBoyDigital/pixi.js)](https://github.com/igrigorik/ga-beacon)
