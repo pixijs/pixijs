@@ -323,7 +323,7 @@ PIXI.WebGLFilterManager.prototype.applyFilterPass = function(filter, filterArea,
         filter.uniforms.dimensions.value[3] = this.vertexArray[5];//filterArea.height;
     //  console.log(this.vertexArray[5])
     }
-    
+
     shader.syncUniforms();
 
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
@@ -333,7 +333,7 @@ PIXI.WebGLFilterManager.prototype.applyFilterPass = function(filter, filterArea,
     gl.vertexAttribPointer(shader.aTextureCoord, 2, gl.FLOAT, false, 0, 0);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
-    gl.vertexAttribPointer(shader.colorAttribute, 1, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(shader.colorAttribute, 2, gl.FLOAT, false, 0, 0);
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 
@@ -378,7 +378,10 @@ PIXI.WebGLFilterManager.prototype.initShaderBuffers = function()
     this.uvArray,
     gl.STATIC_DRAW);
 
-    this.colorArray = new Float32Array([1.0, 1.0 , 1.0, 1.0]);
+    this.colorArray = new Float32Array([1.0, 0xFFFFFF,
+                                        1.0, 0xFFFFFF,
+                                        1.0, 0xFFFFFF,
+                                        1.0, 0xFFFFFF]);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
     gl.bufferData(

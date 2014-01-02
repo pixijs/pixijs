@@ -122,6 +122,13 @@ PIXI.DisplayObject = function()
      */
     this._interactive = false;
 
+    /**
+     * This is the curser that will be used when the mouse is over this object. To enable this the element must have interaction = true and buttonMode = true
+     * 
+     * @property defaultCursor
+     * @type String
+     *
+    */
     this.defaultCursor = 'pointer';
 
     /**

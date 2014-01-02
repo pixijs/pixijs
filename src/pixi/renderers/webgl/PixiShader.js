@@ -59,8 +59,22 @@ PIXI.PixiShader.prototype.init = function()
 
     // get and store the attributes
     this.aVertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
-    this.colorAttribute = gl.getAttribLocation(program, 'aColor');
     this.aTextureCoord = gl.getAttribLocation(program, 'aTextureCoord');
+    this.colorAttribute = gl.getAttribLocation(program, 'aColor');
+
+
+    // Begin worst hack eva //
+
+    // WHY??? ONLY on my chrome pixel the line above returns -1 when using filters?
+    // maybe its somthing to do with the current state of the gl context.
+    // Im convinced this is a bug in the chrome browser as there is NO reason why this should be returning -1 especially as it only manifests on my chrome pixel
+    // If theres any webGL people that know why could happen please help :)
+    if(this.colorAttribute === -1)
+    {
+        this.colorAttribute = 2;
+    }
+
+    // End worst hack eva //
 
     // add those custom shaders!
     for (var key in this.uniforms)
@@ -287,8 +301,8 @@ PIXI.PixiShader.defaultVertexSrc = [
 
     'uniform vec2 projectionVector;',
     'uniform vec2 offsetVector;',
-    'varying vec2 vTextureCoord;',
 
+    'varying vec2 vTextureCoord;',
     'varying vec4 vColor;',
 
     'const vec2 center = vec2(-1.0, 1.0);',
