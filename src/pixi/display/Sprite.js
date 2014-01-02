@@ -351,11 +351,14 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
         {
             if(this.cachedTint !== this.tint)
             {
+                // no point tinting an image that has not loaded yet!
+                if(!texture.baseTexture.hasLoaded)return;
+
                 this.cachedTint = this.tint;
                 
                 //TODO clean up cacheing - how to clean up the caches?
                 this.tintedTexture = PIXI.CanvasTinter.getTintedTexture(this, this.tint);
-
+                
             }
 
             context.drawImage(this.tintedTexture,

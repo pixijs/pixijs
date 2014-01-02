@@ -146,6 +146,14 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
 
     context.globalAlpha = this.worldAlpha;
 
+    
+    var transform = this.worldTransform;
+
+    // alow for trimming
+   
+    context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
+ 
+
     if(!this.__tilePattern)
         this.__tilePattern = context.createPattern(this.texture.baseTexture.source, 'repeat');
 

@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-01-01
+ * Compiled: 2014-01-02
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -1820,11 +1820,14 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
         {
             if(this.cachedTint !== this.tint)
             {
+                // no point tinting an image that has not loaded yet!
+                if(!texture.baseTexture.hasLoaded)return;
+
                 this.cachedTint = this.tint;
                 
                 //TODO clean up cacheing - how to clean up the caches?
                 this.tintedTexture = PIXI.CanvasTinter.getTintedTexture(this, this.tint);
-
+                
             }
 
             context.drawImage(this.tintedTexture,
@@ -8012,6 +8015,14 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
     var context = renderSession.context;
 
     context.globalAlpha = this.worldAlpha;
+
+    
+    var transform = this.worldTransform;
+
+    // alow for trimming
+   
+    context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
+ 
 
     if(!this.__tilePattern)
         this.__tilePattern = context.createPattern(this.texture.baseTexture.source, 'repeat');
