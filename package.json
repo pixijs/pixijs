@@ -1,9 +1,12 @@
 {
-    "name": "Pixi.JS",
+    "name": "pixi.js",
     "version": "1.4.0",
     "description": "Pixi.js is a fast lightweight 2D library that works across all devices.",
 
     "author": "Mat Groves",
+    "contributors": [
+        "Chad Engler <chad@pantherdev.com>"
+    ],
     "logo": "http://www.goodboydigital.com/pixijs/logo_small.png",
 
     "homepage": "http://goodboydigital.com/",
