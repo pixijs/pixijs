@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.3.0</em>
+            <em>API Docs for: 1.4.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -45,6 +45,8 @@
             
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
+                <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
                 <li><a href="../classes/BaseTexture.html">BaseTexture</a></li>
             
                 <li><a href="../classes/BitmapFontLoader.html">BitmapFontLoader</a></li>
@@ -61,7 +63,7 @@
             
                 <li><a href="../classes/ColorMatrixFilter.html">ColorMatrixFilter</a></li>
             
-                <li><a href="../classes/CustomRenderable.html">CustomRenderable</a></li>
+                <li><a href="../classes/ColorStepFilter.html">ColorStepFilter</a></li>
             
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
@@ -75,7 +77,7 @@
             
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
             
-                <li><a href="../classes/GreyFilter.html">GreyFilter</a></li>
+                <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
                 <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
             
@@ -86,6 +88,8 @@
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
+            
+                <li><a href="../classes/PIXI.PixiShader.html">PIXI.PixiShader</a></li>
             
                 <li><a href="../classes/Point.html">Point</a></li>
             
@@ -109,9 +113,9 @@
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
-                <li><a href="../classes/Sprite.html">Sprite</a></li>
-            
                 <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
+            
+                <li><a href="../classes/Sprite™.html">Sprite™</a></li>
             
                 <li><a href="../classes/Stage.html">Stage</a></li>
             
@@ -120,8 +124,6 @@
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
-            
-                <li><a href="../classes/WebGLBatch.html">WebGLBatch</a></li>
             
                 <li><a href="../classes/WebGLRenderer.html">WebGLRenderer</a></li>
             
@@ -186,85 +188,165 @@
  */
 PIXI.TilingSprite = function(texture, width, height)
 {
-	PIXI.DisplayObjectContainer.call( this );
+    PIXI.Sprite.call( this, texture);
 
-	/**
-	 * The texture that the sprite is using
-	 *
-	 * @property texture
-	 * @type Texture
-	 */
-	this.texture = texture;
+    this.width = width || 100;
+    this.height = height || 100;
 
-	/**
-	 * The width of the tiling sprite
-	 *
-	 * @property width
-	 * @type Number
-	 */
-	this.width = width;
+    texture.baseTexture._powerOf2 = true;
 
-	/**
-	 * The height of the tiling sprite
-	 *
-	 * @property height
-	 * @type Number
-	 */
-	this.height = height;
+    /**
+     * The scaling of the image that is being tiled
+     *
+     * @property tileScale
+     * @type Point
+     */
+    this.tileScale = new PIXI.Point(1,1);
 
-	/**
-	 * The scaling of the image that is being tiled
-	 *
-	 * @property tileScale
-	 * @type Point
-	 */
-	this.tileScale = new PIXI.Point(1,1);
+    /**
+     * The offset position of the image that is being tiled
+     *
+     * @property tilePosition
+     * @type Point
+     */
+    this.tilePosition = new PIXI.Point(0,0);
 
-	/**
-	 * The offset position of the image that is being tiled
-	 *
-	 * @property tilePosition
-	 * @type Point
-	 */
-	this.tilePosition = new PIXI.Point(0,0);
+    this.renderable = true;
 
-	this.renderable = true;
-
-	this.blendMode = PIXI.blendModes.NORMAL
-}
+    this.tint = 0xFFFFFF;
+    this.blendMode = PIXI.blendModes.NORMAL;
+};
 
 // constructor
-PIXI.TilingSprite.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
+PIXI.TilingSprite.prototype = Object.create( PIXI.Sprite.prototype );
 PIXI.TilingSprite.prototype.constructor = PIXI.TilingSprite;
 
-/**
- * Sets the texture of the tiling sprite
- *
- * @method setTexture
- * @param texture {Texture} The PIXI texture that is displayed by the sprite
- */
-PIXI.TilingSprite.prototype.setTexture = function(texture)
-{
-	//TODO SET THE TEXTURES
-	//TODO VISIBILITY
-
-	// stop current texture
-	this.texture = texture;
-	this.updateFrame = true;
-}
 
 /**
- * When the texture is updated, this event will fire to update the frame
+ * The width of the sprite, setting this will actually modify the scale to acheive the value set
  *
- * @method onTextureUpdate
- * @param event
- * @private
+ * @property width
+ * @type Number
  */
-PIXI.TilingSprite.prototype.onTextureUpdate = function(event)
-{
-	this.updateFrame = true;
-}
+Object.defineProperty(PIXI.TilingSprite.prototype, &#x27;width&#x27;, {
+    get: function() {
+        return this._width;
+    },
+    set: function(value) {
+        
+        this._width = value;
+    }
+});
 
+/**
+ * The height of the TilingSprite, setting this will actually modify the scale to acheive the value set
+ *
+ * @property height
+ * @type Number
+ */
+Object.defineProperty(PIXI.TilingSprite.prototype, &#x27;height&#x27;, {
+    get: function() {
+        return  this._height;
+    },
+    set: function(value) {
+        this._height = value;
+    }
+});
+
+PIXI.TilingSprite.prototype.onTextureUpdate = function()
+{
+    // so if _width is 0 then width was not set..
+    //if(this._width)this.scale.x = this._width / this.texture.frame.width;
+    //if(this._height)this.scale.y = this._height / this.texture.frame.height;
+   // alert(this._width)
+    this.updateFrame = true;
+};
+
+PIXI.TilingSprite.prototype._renderWebGL = function(renderSession)
+{
+
+    if(this.visible === false || this.alpha === 0)return;
+    
+    var i,j;
+
+    if(this.mask || this.filters)
+    {
+        if(this.mask)
+        {
+            renderSession.spriteBatch.stop();
+            renderSession.maskManager.pushMask(this.mask, renderSession.projection);
+            renderSession.spriteBatch.start();
+        }
+
+        if(this.filters)
+        {
+            renderSession.spriteBatch.flush();
+            renderSession.filterManager.pushFilter(this._filterBlock);
+        }
+
+
+        renderSession.spriteBatch.renderTilingSprite(this);
+
+        // simple render children!
+        for(i=0,j=this.children.length; i&lt;j; i++)
+        {
+            this.children[i]._renderWebGL(renderSession);
+        }
+
+        renderSession.spriteBatch.stop();
+
+        if(this.filters)renderSession.filterManager.popFilter();
+        if(this.mask)renderSession.maskManager.popMask(renderSession.projection);
+        
+        renderSession.spriteBatch.start();
+    }
+    else
+    {
+        renderSession.spriteBatch.renderTilingSprite(this);
+        
+        // simple render children!
+        for(i=0,j=this.children.length; i&lt;j; i++)
+        {
+            this.children[i]._renderWebGL(renderSession);
+        }
+    }
+};
+
+PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
+{
+    if(this.visible === false || this.alpha === 0)return;
+    
+    var context = renderSession.context;
+
+    context.globalAlpha = this.worldAlpha;
+
+    if(!this.__tilePattern)
+        this.__tilePattern = context.createPattern(this.texture.baseTexture.source, &#x27;repeat&#x27;);
+
+    // check blend mode
+    if(this.blendMode !== renderSession.currentBlendMode)
+    {
+        renderSession.currentBlendMode = this.blendMode;
+        context.globalCompositeOperation = PIXI.blendModesCanvas[renderSession.currentBlendMode];
+    }
+
+    context.beginPath();
+
+    var tilePosition = this.tilePosition;
+    var tileScale = this.tileScale;
+
+    // offset
+    context.scale(tileScale.x,tileScale.y);
+    context.translate(tilePosition.x, tilePosition.y);
+
+    context.fillStyle = this.__tilePattern;
+    context.fillRect(-tilePosition.x,-tilePosition.y,this.width / tileScale.x, this.height / tileScale.y);
+
+    context.scale(1/tileScale.x, 1/tileScale.y);
+    context.translate(-tilePosition.x, -tilePosition.y);
+
+    context.closePath();
+};
 
     </pre>
 </div>

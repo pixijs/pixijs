@@ -51,6 +51,10 @@ PIXI.Graphics = function()
      */
     this.graphicsData = [];
 
+    this.tint = 0xFFFFFF;// * Math.random();
+
+    this.blendMode = PIXI.blendModes.NORMAL;
+    
     /**
      * Current path
      *
@@ -59,6 +63,8 @@ PIXI.Graphics = function()
      * @private
      */
     this.currentPath = {points:[]};
+
+    this._webGL = [];
 };
 
 // constructor
@@ -130,6 +136,7 @@ PIXI.Graphics.prototype.lineTo = function(x, y)
  */
 PIXI.Graphics.prototype.beginFill = function(color, alpha)
 {
+
     this.filling = true;
     this.fillColor = color || 0;
     this.fillAlpha = (arguments.length < 2) ? 1 : alpha;
@@ -177,6 +184,7 @@ PIXI.Graphics.prototype.drawRect = function( x, y, width, height )
  */
 PIXI.Graphics.prototype.drawCircle = function( x, y, radius)
 {
+
     if (!this.currentPath.points.length) this.graphicsData.pop();
 
     this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha,
@@ -198,6 +206,7 @@ PIXI.Graphics.prototype.drawCircle = function( x, y, radius)
  */
 PIXI.Graphics.prototype.drawEllipse = function( x, y, width, height)
 {
+
     if (!this.currentPath.points.length) this.graphicsData.pop();
 
     this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha,
@@ -226,71 +235,182 @@ PIXI.Graphics.prototype.clear = function()
 };
 
 
-PIXI.Graphics.prototype.updateFilterBounds = function()
+PIXI.Graphics.prototype._renderWebGL = function(renderSession)
 {
-    if(!this.bounds)
+    // if the sprite is not visible or the alpha is 0 then no need to render this element
+    if(this.visible === false || this.alpha === 0 || this.isMask === true)return;
+    
+   
+
+    renderSession.spriteBatch.stop();
+
+    if(this._mask)renderSession.maskManager.pushMask(this.mask, renderSession);
+    if(this._filters)renderSession.filterManager.pushFilter(this._filterBlock);
+  
+    // check blend mode
+    if(this.blendMode !== renderSession.spriteBatch.currentBlendMode)
     {
-        var minX = Infinity;
-        var maxX = -Infinity;
+        this.spriteBatch.currentBlendMode = this.blendMode;
+        var blendModeWebGL = PIXI.blendModesWebGL[renderSession.spriteBatch.currentBlendMode];
+        this.spriteBatch.gl.blendFunc(blendModeWebGL[0], blendModeWebGL[1]);
+    }
+ 
+    PIXI.WebGLGraphics.renderGraphics(this, renderSession);
+    
+    if(this._filters)renderSession.filterManager.popFilter();
+    if(this._mask)renderSession.maskManager.popMask(renderSession);
+      
 
-        var minY = Infinity;
-        var maxY = -Infinity;
+    renderSession.spriteBatch.start();
+};
 
-        var points, x, y;
+PIXI.Graphics.prototype._renderCanvas = function(renderSession)
+{
+    // if the sprite is not visible or the alpha is 0 then no need to render this element
+    if(this.visible === false || this.alpha === 0 || this.isMask === true)return;
+    
+    var context = renderSession.context;
+    var transform = this.worldTransform;
+    
+    if(this.blendMode !== renderSession.currentBlendMode)
+    {
+        renderSession.currentBlendMode = this.blendMode;
+        context.globalCompositeOperation = PIXI.blendModesCanvas[renderSession.currentBlendMode];
+    }
 
-        for (var i = 0; i < this.graphicsData.length; i++) {
-            var data = this.graphicsData[i];
-            var type = data.type;
-            var lineWidth = data.lineWidth;
+    context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
+    PIXI.CanvasGraphics.renderGraphics(this, context);
+};
 
-            points = data.points;
+PIXI.Graphics.prototype.getBounds = function()
+{
+    if(!this.bounds)this.updateBounds();
 
-            if(type === PIXI.Graphics.RECT)
+    var w0 = this.bounds.x;
+    var w1 = this.bounds.width + this.bounds.x;
+
+    var h0 = this.bounds.y;
+    var h1 = this.bounds.height + this.bounds.y;
+
+    var worldTransform = this.worldTransform;
+
+    var a = worldTransform[0];
+    var b = worldTransform[3];
+    var c = worldTransform[1];
+    var d = worldTransform[4];
+    var tx = worldTransform[2];
+    var ty = worldTransform[5];
+
+    var x1 = a * w1 + c * h1 + tx;
+    var y1 = d * h1 + b * w1 + ty;
+
+    var x2 = a * w0 + c * h1 + tx;
+    var y2 = d * h1 + b * w0 + ty;
+
+    var x3 = a * w0 + c * h0 + tx;
+    var y3 = d * h0 + b * w0 + ty;
+
+    var x4 =  a * w1 + c * h0 + tx;
+    var y4 =  d * h0 + b * w1 + ty;
+
+    var maxX = -Infinity;
+    var maxY = -Infinity;
+
+    var minX = Infinity;
+    var minY = Infinity;
+
+    minX = x1 < minX ? x1 : minX;
+    minX = x2 < minX ? x2 : minX;
+    minX = x3 < minX ? x3 : minX;
+    minX = x4 < minX ? x4 : minX;
+
+    minY = y1 < minY ? y1 : minY;
+    minY = y2 < minY ? y2 : minY;
+    minY = y3 < minY ? y3 : minY;
+    minY = y4 < minY ? y4 : minY;
+
+    maxX = x1 > maxX ? x1 : maxX;
+    maxX = x2 > maxX ? x2 : maxX;
+    maxX = x3 > maxX ? x3 : maxX;
+    maxX = x4 > maxX ? x4 : maxX;
+
+    maxY = y1 > maxY ? y1 : maxY;
+    maxY = y2 > maxY ? y2 : maxY;
+    maxY = y3 > maxY ? y3 : maxY;
+    maxY = y4 > maxY ? y4 : maxY;
+
+    var bounds = this._bounds;
+
+    bounds.x = minX;
+    bounds.width = maxX - minX;
+
+    bounds.y = minY;
+    bounds.height = maxY - minY;
+
+    return bounds;
+};
+
+PIXI.Graphics.prototype.updateBounds = function()
+{
+    
+    var minX = Infinity;
+    var maxX = -Infinity;
+
+    var minY = Infinity;
+    var maxY = -Infinity;
+
+    var points, x, y;
+
+    for (var i = 0; i < this.graphicsData.length; i++) {
+        var data = this.graphicsData[i];
+        var type = data.type;
+        var lineWidth = data.lineWidth;
+
+        points = data.points;
+
+        if(type === PIXI.Graphics.RECT)
+        {
+            x = points.x - lineWidth/2;
+            y = points.y - lineWidth/2;
+            var width = points.width + lineWidth;
+            var height = points.height + lineWidth;
+
+            minX = x < minX ? x : minX;
+            maxX = x + width > maxX ? x + width : maxX;
+
+            minY = y < minY ? x : minY;
+            maxY = y + height > maxY ? y + height : maxY;
+        }
+        else if(type === PIXI.Graphics.CIRC || type === PIXI.Graphics.ELIP)
+        {
+            x = points.x;
+            y = points.y;
+            var radius = points.radius + lineWidth/2;
+
+            minX = x - radius < minX ? x - radius : minX;
+            maxX = x + radius > maxX ? x + radius : maxX;
+
+            minY = y - radius < minY ? y - radius : minY;
+            maxY = y + radius > maxY ? y + radius : maxY;
+        }
+        else
+        {
+            // POLY
+            for (var j = 0; j < points.length; j+=2)
             {
-                x = points.x - lineWidth/2;
-                y = points.y - lineWidth/2;
-                var width = points.width + lineWidth;
-                var height = points.height + lineWidth;
 
-                minX = x < minX ? x : minX;
-                maxX = x + width > maxX ? x + width : maxX;
+                x = points[j];
+                y = points[j+1];
+                minX = x-lineWidth < minX ? x-lineWidth : minX;
+                maxX = x+lineWidth > maxX ? x+lineWidth : maxX;
 
-                minY = y < minY ? x : minY;
-                maxY = y + height > maxY ? y + height : maxY;
-            }
-            else if(type === PIXI.Graphics.CIRC || type === PIXI.Graphics.ELIP)
-            {
-                x = points.x;
-                y = points.y;
-                var radius = points.radius + lineWidth/2;
-
-                minX = x - radius < minX ? x - radius : minX;
-                maxX = x + radius > maxX ? x + radius : maxX;
-
-                minY = y - radius < minY ? y - radius : minY;
-                maxY = y + radius > maxY ? y + radius : maxY;
-            }
-            else
-            {
-                // POLY
-                for (var j = 0; j < points.length; j+=2)
-                {
-
-                    x = points[j];
-                    y = points[j+1];
-
-                    minX = x-lineWidth < minX ? x-lineWidth : minX;
-                    maxX = x+lineWidth > maxX ? x+lineWidth : maxX;
-
-                    minY = y-lineWidth < minY ? y-lineWidth : minY;
-                    maxY = y+lineWidth > maxY ? y+lineWidth : maxY;
-                }
+                minY = y-lineWidth < minY ? y-lineWidth : minY;
+                maxY = y+lineWidth > maxY ? y+lineWidth : maxY;
             }
         }
-
-        this.bounds = new PIXI.Rectangle(minX, minY, maxX - minX, maxY - minY);
     }
-//  console.log(this.bounds);
+
+    this.bounds = new PIXI.Rectangle(minX, minY, maxX - minX, maxY - minY);
 };
 
 // SOME TYPES:

@@ -57,8 +57,7 @@ PIXI.Texture = function(baseTexture, frame)
     if(baseTexture.hasLoaded)
     {
         if(this.noFrame)frame = new PIXI.Rectangle(0,0, baseTexture.width, baseTexture.height);
-        //console.log(frame)
-
+      
         this.setFrame(frame);
     }
     else
@@ -83,9 +82,8 @@ PIXI.Texture.prototype.onBaseTextureLoaded = function()
     baseTexture.removeEventListener( 'loaded', this.onLoaded );
 
     if(this.noFrame)this.frame = new PIXI.Rectangle(0,0, baseTexture.width, baseTexture.height);
-    this.noFrame = false;
-    this.width = this.frame.width;
-    this.height = this.frame.height;
+    
+    this.setFrame(this.frame);
 
     this.scope.dispatchEvent( { type: 'update', content: this } );
 };
@@ -122,6 +120,27 @@ PIXI.Texture.prototype.setFrame = function(frame)
 
     PIXI.Texture.frameUpdates.push(this);
     //this.dispatchEvent( { type: 'update', content: this } );
+};
+
+PIXI.Texture.prototype._updateWebGLuvs = function()
+{
+    if(!this._uvs)this._uvs = new Float32Array(8);
+
+    var frame = this.frame;
+    var tw = this.baseTexture.width;
+    var th = this.baseTexture.height;
+
+    this._uvs[0] = frame.x / tw;
+    this._uvs[1] = frame.y / th;
+
+    this._uvs[2] = (frame.x + frame.width) / tw;
+    this._uvs[3] = frame.y / th;
+
+    this._uvs[4] = (frame.x + frame.width) / tw;
+    this._uvs[5] = (frame.y + frame.height) / th;
+
+    this._uvs[6] = frame.x / tw;
+    this._uvs[7] = (frame.y + frame.height) / th;
 };
 
 /**

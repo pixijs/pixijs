@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.3.0</em>
+            <em>API Docs for: 1.4.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -45,6 +45,8 @@
             
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
+                <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
                 <li><a href="../classes/BaseTexture.html">BaseTexture</a></li>
             
                 <li><a href="../classes/BitmapFontLoader.html">BitmapFontLoader</a></li>
@@ -61,7 +63,7 @@
             
                 <li><a href="../classes/ColorMatrixFilter.html">ColorMatrixFilter</a></li>
             
-                <li><a href="../classes/CustomRenderable.html">CustomRenderable</a></li>
+                <li><a href="../classes/ColorStepFilter.html">ColorStepFilter</a></li>
             
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
@@ -75,7 +77,7 @@
             
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
             
-                <li><a href="../classes/GreyFilter.html">GreyFilter</a></li>
+                <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
                 <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
             
@@ -86,6 +88,8 @@
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
+            
+                <li><a href="../classes/PIXI.PixiShader.html">PIXI.PixiShader</a></li>
             
                 <li><a href="../classes/Point.html">Point</a></li>
             
@@ -109,9 +113,9 @@
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
-                <li><a href="../classes/Sprite.html">Sprite</a></li>
-            
                 <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
+            
+                <li><a href="../classes/Sprite™.html">Sprite™</a></li>
             
                 <li><a href="../classes/Stage.html">Stage</a></li>
             
@@ -120,8 +124,6 @@
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
-            
-                <li><a href="../classes/WebGLBatch.html">WebGLBatch</a></li>
             
                 <li><a href="../classes/WebGLRenderer.html">WebGLRenderer</a></li>
             
@@ -201,8 +203,8 @@ PIXI.Polygon = function(points)
         points = p;
     }
 
-	this.points = points;
-}
+    this.points = points;
+};
 
 /**
  * Creates a clone of this polygon
@@ -212,13 +214,13 @@ PIXI.Polygon = function(points)
  */
 PIXI.Polygon.prototype.clone = function()
 {
-	var points = [];
-	for (var i=0; i&lt;this.points.length; i++) {
-		points.push(this.points[i].clone());
-	}
+    var points = [];
+    for (var i=0; i&lt;this.points.length; i++) {
+        points.push(this.points[i].clone());
+    }
 
-	return new PIXI.Polygon(points);
-}
+    return new PIXI.Polygon(points);
+};
 
 /**
  * Checks if the x, and y coords passed to this function are contained within this polygon
@@ -237,13 +239,13 @@ PIXI.Polygon.prototype.contains = function(x, y)
     for(var i = 0, j = this.points.length - 1; i &lt; this.points.length; j = i++) {
         var xi = this.points[i].x, yi = this.points[i].y,
             xj = this.points[j].x, yj = this.points[j].y,
-            intersect = ((yi &gt; y) != (yj &gt; y)) &amp;&amp; (x &lt; (xj - xi) * (y - yi) / (yj - yi) + xi);
+            intersect = ((yi &gt; y) !== (yj &gt; y)) &amp;&amp; (x &lt; (xj - xi) * (y - yi) / (yj - yi) + xi);
 
         if(intersect) inside = !inside;
     }
 
     return inside;
-}
+};
 
 // constructor
 PIXI.Polygon.prototype.constructor = PIXI.Polygon;

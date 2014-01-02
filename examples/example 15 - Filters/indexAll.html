@@ -136,7 +136,7 @@
 
 
 	// create an new instance of a pixi stage
-	var stage = new PIXI.Stage(0xFFFFFF, true);
+	var stage = new PIXI.Stage(0xFF0000, true);
 	
 	
 
@@ -181,7 +181,7 @@
 	};
 	
 	var overlay = new PIXI.TilingSprite(PIXI.Texture.fromImage("zeldaWaves.png"), 630, 410);
-	overlay.alpha = 0.2
+	overlay.alpha = 0.1//0.2
 	pondContainer.addChild(overlay);
 
 

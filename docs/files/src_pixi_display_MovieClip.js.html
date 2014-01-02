@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.3.0</em>
+            <em>API Docs for: 1.4.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -45,6 +45,8 @@
             
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
+                <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
                 <li><a href="../classes/BaseTexture.html">BaseTexture</a></li>
             
                 <li><a href="../classes/BitmapFontLoader.html">BitmapFontLoader</a></li>
@@ -61,7 +63,7 @@
             
                 <li><a href="../classes/ColorMatrixFilter.html">ColorMatrixFilter</a></li>
             
-                <li><a href="../classes/CustomRenderable.html">CustomRenderable</a></li>
+                <li><a href="../classes/ColorStepFilter.html">ColorStepFilter</a></li>
             
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
@@ -75,7 +77,7 @@
             
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
             
-                <li><a href="../classes/GreyFilter.html">GreyFilter</a></li>
+                <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
                 <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
             
@@ -86,6 +88,8 @@
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
+            
+                <li><a href="../classes/PIXI.PixiShader.html">PIXI.PixiShader</a></li>
             
                 <li><a href="../classes/Point.html">Point</a></li>
             
@@ -109,9 +113,9 @@
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
-                <li><a href="../classes/Sprite.html">Sprite</a></li>
-            
                 <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
+            
+                <li><a href="../classes/Sprite™.html">Sprite™</a></li>
             
                 <li><a href="../classes/Stage.html">Stage</a></li>
             
@@ -120,8 +124,6 @@
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
-            
-                <li><a href="../classes/WebGLBatch.html">WebGLBatch</a></li>
             
                 <li><a href="../classes/WebGLRenderer.html">WebGLRenderer</a></li>
             
@@ -184,61 +186,61 @@
  */
 PIXI.MovieClip = function(textures)
 {
-	PIXI.Sprite.call(this, textures[0]);
+    PIXI.Sprite.call(this, textures[0]);
 
-	/**
-	 * The array of textures that make up the animation
-	 *
-	 * @property textures
-	 * @type Array
-	 */
-	this.textures = textures;
+    /**
+     * The array of textures that make up the animation
+     *
+     * @property textures
+     * @type Array
+     */
+    this.textures = textures;
 
-	/**
-	 * The speed that the MovieClip will play at. Higher is faster, lower is slower
-	 *
-	 * @property animationSpeed
-	 * @type Number
-	 * @default 1
-	 */
-	this.animationSpeed = 1;
+    /**
+     * The speed that the MovieClip will play at. Higher is faster, lower is slower
+     *
+     * @property animationSpeed
+     * @type Number
+     * @default 1
+     */
+    this.animationSpeed = 1;
 
-	/**
-	 * Whether or not the movie clip repeats after playing.
-	 *
-	 * @property loop
-	 * @type Boolean
-	 * @default true
-	 */
-	this.loop = true;
+    /**
+     * Whether or not the movie clip repeats after playing.
+     *
+     * @property loop
+     * @type Boolean
+     * @default true
+     */
+    this.loop = true;
 
-	/**
-	 * Function to call when a MovieClip finishes playing
-	 *
-	 * @property onComplete
-	 * @type Function
-	 */
-	this.onComplete = null;
+    /**
+     * Function to call when a MovieClip finishes playing
+     *
+     * @property onComplete
+     * @type Function
+     */
+    this.onComplete = null;
 
-	/**
-	 * [read-only] The index MovieClips current frame (this may not have to be a whole number)
-	 *
-	 * @property currentFrame
-	 * @type Number
-	 * @default 0
-	 * @readOnly
-	 */
-	this.currentFrame = 0;
+    /**
+     * [read-only] The index MovieClips current frame (this may not have to be a whole number)
+     *
+     * @property currentFrame
+     * @type Number
+     * @default 0
+     * @readOnly
+     */
+    this.currentFrame = 0;
 
-	/**
-	 * [read-only] Indicates if the MovieClip is currently playing
-	 *
-	 * @property playing
-	 * @type Boolean
-	 * @readOnly
-	 */
-	this.playing = false;
-}
+    /**
+     * [read-only] Indicates if the MovieClip is currently playing
+     *
+     * @property playing
+     * @type Boolean
+     * @readOnly
+     */
+    this.playing = false;
+};
 
 // constructor
 PIXI.MovieClip.prototype = Object.create( PIXI.Sprite.prototype );
@@ -268,8 +270,8 @@ Object.defineProperty( PIXI.MovieClip.prototype, &#x27;totalFrames&#x27;, {
  */
 PIXI.MovieClip.prototype.stop = function()
 {
-	this.playing = false;
-}
+    this.playing = false;
+};
 
 /**
  * Plays the MovieClip
@@ -278,8 +280,8 @@ PIXI.MovieClip.prototype.stop = function()
  */
 PIXI.MovieClip.prototype.play = function()
 {
-	this.playing = true;
-}
+    this.playing = true;
+};
 
 /**
  * Stops the MovieClip and goes to a specific frame
@@ -289,11 +291,11 @@ PIXI.MovieClip.prototype.play = function()
  */
 PIXI.MovieClip.prototype.gotoAndStop = function(frameNumber)
 {
-	this.playing = false;
-	this.currentFrame = frameNumber;
-	var round = (this.currentFrame + 0.5) | 0;
-	this.setTexture(this.textures[round % this.textures.length]);
-}
+    this.playing = false;
+    this.currentFrame = frameNumber;
+    var round = (this.currentFrame + 0.5) | 0;
+    this.setTexture(this.textures[round % this.textures.length]);
+};
 
 /**
  * Goes to a specific frame and begins playing the MovieClip
@@ -303,9 +305,9 @@ PIXI.MovieClip.prototype.gotoAndStop = function(frameNumber)
  */
 PIXI.MovieClip.prototype.gotoAndPlay = function(frameNumber)
 {
-	this.currentFrame = frameNumber;
-	this.playing = true;
-}
+    this.currentFrame = frameNumber;
+    this.playing = true;
+};
 
 /*
  * Updates the object transform for rendering
@@ -315,27 +317,28 @@ PIXI.MovieClip.prototype.gotoAndPlay = function(frameNumber)
  */
 PIXI.MovieClip.prototype.updateTransform = function()
 {
-	PIXI.Sprite.prototype.updateTransform.call(this);
+    PIXI.Sprite.prototype.updateTransform.call(this);
 
-	if(!this.playing)return;
+    if(!this.playing)return;
 
-	this.currentFrame += this.animationSpeed;
+    this.currentFrame += this.animationSpeed;
 
-	var round = (this.currentFrame + 0.5) | 0;
+    var round = (this.currentFrame + 0.5) | 0;
 
-	if(this.loop || round &lt; this.textures.length)
-	{
-		this.setTexture(this.textures[round % this.textures.length]);
-	}
-	else if(round &gt;= this.textures.length)
-	{
-		this.gotoAndStop(this.textures.length - 1);
-		if(this.onComplete)
-		{
-			this.onComplete();
-		}
-	}
-}
+    if(this.loop || round &lt; this.textures.length)
+    {
+        this.setTexture(this.textures[round % this.textures.length]);
+    }
+    else if(round &gt;= this.textures.length)
+    {
+        this.gotoAndStop(this.textures.length - 1);
+        if(this.onComplete)
+        {
+            this.onComplete();
+        }
+    }
+};
+
     </pre>
 </div>
 

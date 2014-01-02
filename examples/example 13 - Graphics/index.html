@@ -70,9 +70,9 @@
 	graphics.drawRect(50, 250, 100, 100);
 
 	// draw a circle
-	graphics.lineStyle(0);
-	graphics.beginFill(0xFFFF0B, 0.5);
-	graphics.drawCircle(470, 200,100);
+///	graphics.lineStyle(0);
+//	graphics.beginFill(0xFFFF0B, 0.5);
+//	graphics.drawCircle(470, 200,100);
 
 	graphics.lineStyle(20, 0x33FF00);
 	graphics.moveTo(30,30);
@@ -80,13 +80,13 @@
 
 
 	stage.addChild(graphics);
-
+/*
 	// lets create moving shape
 	var thing = new PIXI.Graphics();
 	stage.addChild(thing);
 	thing.position.x = 620/2;
 	thing.position.y = 380/2;
-
+*/
 	var count = 0;
 
 	stage.click = stage.tap = function()
@@ -98,9 +98,12 @@
 
 	requestAnimFrame(animate);
 
+	graphics.filters = [new PIXI.BlurFilter()];
+	
+	stage.addChild(PIXI.Sprite.fromImage("spinObj_02.png"));
 	function animate() {
 
-		thing.clear();
+	/*	thing.clear();
 
 		count += 0.1;
 
@@ -114,7 +117,7 @@
 		thing.lineTo(-120 + Math.cos(count)* 20, 100 + Math.sin(count)* 20);
 		thing.lineTo(-120 + Math.sin(count) * 20, -100 + Math.cos(count)* 20);
 
-		thing.rotation = count * 0.1;
+		thing.rotation = count * 0.1;*/
 	    renderer.render(stage);
 	    requestAnimFrame( animate );
 	}

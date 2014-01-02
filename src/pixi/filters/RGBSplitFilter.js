@@ -19,7 +19,7 @@ PIXI.RGBSplitFilter = function()
     this.fragmentSrc = [
         'precision mediump float;',
         'varying vec2 vTextureCoord;',
-        'varying float vColor;',
+        'varying vec4 vColor;',
         'uniform vec2 red;',
         'uniform vec2 green;',
         'uniform vec2 blue;',

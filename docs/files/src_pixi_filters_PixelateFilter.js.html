@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.3.0</em>
+            <em>API Docs for: 1.4.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -45,6 +45,8 @@
             
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
+                <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
                 <li><a href="../classes/BaseTexture.html">BaseTexture</a></li>
             
                 <li><a href="../classes/BitmapFontLoader.html">BitmapFontLoader</a></li>
@@ -61,7 +63,7 @@
             
                 <li><a href="../classes/ColorMatrixFilter.html">ColorMatrixFilter</a></li>
             
-                <li><a href="../classes/CustomRenderable.html">CustomRenderable</a></li>
+                <li><a href="../classes/ColorStepFilter.html">ColorStepFilter</a></li>
             
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
@@ -75,7 +77,7 @@
             
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
             
-                <li><a href="../classes/GreyFilter.html">GreyFilter</a></li>
+                <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
                 <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
             
@@ -86,6 +88,8 @@
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
+            
+                <li><a href="../classes/PIXI.PixiShader.html">PIXI.PixiShader</a></li>
             
                 <li><a href="../classes/Point.html">Point</a></li>
             
@@ -109,9 +113,9 @@
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
-                <li><a href="../classes/Sprite.html">Sprite</a></li>
-            
                 <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
+            
+                <li><a href="../classes/Sprite™.html">Sprite™</a></li>
             
                 <li><a href="../classes/Stage.html">Stage</a></li>
             
@@ -120,8 +124,6 @@
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
-            
-                <li><a href="../classes/WebGLBatch.html">WebGLBatch</a></li>
             
                 <li><a href="../classes/WebGLRenderer.html">WebGLRenderer</a></li>
             
@@ -175,52 +177,49 @@
  */
 
 /**
- * 
- * This filter applies a pixlate effect making display objects appear &quot;blocky&quot;
+ *
+ * This filter applies a pixlate effect making display objects appear &#x27;blocky&#x27;
  * @class PixelateFilter
  * @contructor
  */
 PIXI.PixelateFilter = function()
 {
-	PIXI.AbstractFilter.call( this );
+    PIXI.AbstractFilter.call( this );
 
-	this.passes = [this];
-	
-	// set the uniforms
-	this.uniforms = {
-		invert: {type: &#x27;f&#x27;, value: 0},
-		dimensions: {type: &#x27;f4&#x27;, value:new Float32Array([10000, 100, 10, 10])},
-		pixelSize: {type: &#x27;f2&#x27;, value:{x:10, y:10}},
-	};
+    this.passes = [this];
 
-	this.fragmentSrc = [
-	  &quot;precision mediump float;&quot;,
-	  &quot;varying vec2 vTextureCoord;&quot;,
-	  &quot;varying float vColor;&quot;,
-	  &quot;uniform vec2 testDim;&quot;,
-	  &quot;uniform vec4 dimensions;&quot;,
-	  &quot;uniform vec2 pixelSize;&quot;,
-	  &quot;uniform sampler2D uSampler;&quot;,
-	  &quot;void main(void) {&quot;,
-	 	&quot;vec2 coord = vTextureCoord;&quot;,
+    // set the uniforms
+    this.uniforms = {
+        invert: {type: &#x27;1f&#x27;, value: 0},
+        dimensions: {type: &#x27;4fv&#x27;, value:new Float32Array([10000, 100, 10, 10])},
+        pixelSize: {type: &#x27;2f&#x27;, value:{x:10, y:10}},
+    };
 
-	 //	&quot;vec2 dim = testDim;&quot;,
-	 	&quot;vec2 size = dimensions.xy/pixelSize;&quot;,
+    this.fragmentSrc = [
+        &#x27;precision mediump float;&#x27;,
+        &#x27;varying vec2 vTextureCoord;&#x27;,
+        &#x27;varying vec4 vColor;&#x27;,
+        &#x27;uniform vec2 testDim;&#x27;,
+        &#x27;uniform vec4 dimensions;&#x27;,
+        &#x27;uniform vec2 pixelSize;&#x27;,
+        &#x27;uniform sampler2D uSampler;&#x27;,
 
-	 	&quot;vec2 color = floor( ( vTextureCoord * size ) ) / size + pixelSize/dimensions.xy * 0.5;&quot;,
-	// 	&quot;color += (mod(dimensions.xy, size)/dimensions.zw;&quot;,
-	    &quot;gl_FragColor = texture2D(uSampler, color);&quot;,
-	  &quot;}&quot;
-	];
-	
+        &#x27;void main(void) {&#x27;,
+        &#x27;   vec2 coord = vTextureCoord;&#x27;,
 
-}
+        &#x27;   vec2 size = dimensions.xy/pixelSize;&#x27;,
+
+        &#x27;   vec2 color = floor( ( vTextureCoord * size ) ) / size + pixelSize/dimensions.xy * 0.5;&#x27;,
+        &#x27;   gl_FragColor = texture2D(uSampler, color);&#x27;,
+        &#x27;}&#x27;
+    ];
+};
 
 PIXI.PixelateFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.PixelateFilter.prototype.constructor = PIXI.PixelateFilter;
 
 /**
- * 
+ *
  * This a point that describes the size of the blocs. x is the width of the block and y is the the height
  * @property size
  * @type Point
@@ -230,10 +229,11 @@ Object.defineProperty(PIXI.PixelateFilter.prototype, &#x27;size&#x27;, {
         return this.uniforms.pixelSize.value;
     },
     set: function(value) {
-    	this.dirty = true;
-    	this.uniforms.pixelSize.value = value;
+        this.dirty = true;
+        this.uniforms.pixelSize.value = value;
     }
 });
+
     </pre>
 </div>
 

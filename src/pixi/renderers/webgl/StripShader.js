@@ -43,10 +43,10 @@ PIXI.StripShader = function()
 
 PIXI.StripShader.prototype.init = function()
 {
-    var program = PIXI.compileProgram(this.vertexSrc, this.fragmentSrc);
 
     var gl = PIXI.gl;
 
+    var program = PIXI.compileProgram(gl, this.vertexSrc, this.fragmentSrc);
     gl.useProgram(program);
 
     // get and store the uniforms for the shader

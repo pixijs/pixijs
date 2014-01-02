@@ -25,7 +25,7 @@ PIXI.DotScreenFilter = function()
     this.fragmentSrc = [
         'precision mediump float;',
         'varying vec2 vTextureCoord;',
-        'varying float vColor;',
+        'varying vec4 vColor;',
         'uniform vec4 dimensions;',
         'uniform sampler2D uSampler;',
 

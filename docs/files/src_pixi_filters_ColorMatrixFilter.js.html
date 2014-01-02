@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.3.0</em>
+            <em>API Docs for: 1.4.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -45,6 +45,8 @@
             
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
+                <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
                 <li><a href="../classes/BaseTexture.html">BaseTexture</a></li>
             
                 <li><a href="../classes/BitmapFontLoader.html">BitmapFontLoader</a></li>
@@ -61,7 +63,7 @@
             
                 <li><a href="../classes/ColorMatrixFilter.html">ColorMatrixFilter</a></li>
             
-                <li><a href="../classes/CustomRenderable.html">CustomRenderable</a></li>
+                <li><a href="../classes/ColorStepFilter.html">ColorStepFilter</a></li>
             
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
@@ -75,7 +77,7 @@
             
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
             
-                <li><a href="../classes/GreyFilter.html">GreyFilter</a></li>
+                <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
                 <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
             
@@ -86,6 +88,8 @@
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
+            
+                <li><a href="../classes/PIXI.PixiShader.html">PIXI.PixiShader</a></li>
             
                 <li><a href="../classes/Point.html">Point</a></li>
             
@@ -109,9 +113,9 @@
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
-                <li><a href="../classes/Sprite.html">Sprite</a></li>
-            
                 <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
+            
+                <li><a href="../classes/Sprite™.html">Sprite™</a></li>
             
                 <li><a href="../classes/Stage.html">Stage</a></li>
             
@@ -120,8 +124,6 @@
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
-            
-                <li><a href="../classes/WebGLBatch.html">WebGLBatch</a></li>
             
                 <li><a href="../classes/WebGLRenderer.html">WebGLRenderer</a></li>
             
@@ -175,41 +177,41 @@
  */
 
 /**
- * 
- * The ColorMatrixFilter class lets you apply a 4x4 matrix transformation on the RGBA 
- * color and alpha values of every pixel on your displayObject to produce a result 
+ *
+ * The ColorMatrixFilter class lets you apply a 4x4 matrix transformation on the RGBA
+ * color and alpha values of every pixel on your displayObject to produce a result
  * with a new set of RGBA color and alpha values. Its pretty powerful!
  * @class ColorMatrixFilter
  * @contructor
  */
 PIXI.ColorMatrixFilter = function()
 {
-	PIXI.AbstractFilter.call( this );
-	
-	this.passes = [this];
-	
-	// set the uniforms
-	this.uniforms = {
-		matrix: {type: &#x27;mat4&#x27;, value: [1,0,0,0,
-									   0,1,0,0,
-									   0,0,1,0,
-									   0,0,0,1]},
-	};
-	
-	this.fragmentSrc = [
-	  &quot;precision mediump float;&quot;,
-	  &quot;varying vec2 vTextureCoord;&quot;,
-	  &quot;varying float vColor;&quot;,
-	  &quot;uniform float invert;&quot;,
-	  &quot;uniform mat4 matrix;&quot;,
-	  &quot;uniform sampler2D uSampler;&quot;,
-	  &quot;void main(void) {&quot;,
-	    &quot;gl_FragColor = texture2D(uSampler, vTextureCoord) * matrix;&quot;,
-	    &quot;gl_FragColor = gl_FragColor * vColor;&quot;,
-	  &quot;}&quot;
-	];
-	
-}
+    PIXI.AbstractFilter.call( this );
+
+    this.passes = [this];
+
+    // set the uniforms
+    this.uniforms = {
+        matrix: {type: &#x27;mat4&#x27;, value: [1,0,0,0,
+                                       0,1,0,0,
+                                       0,0,1,0,
+                                       0,0,0,1]},
+    };
+
+    this.fragmentSrc = [
+        &#x27;precision mediump float;&#x27;,
+        &#x27;varying vec2 vTextureCoord;&#x27;,
+        &#x27;varying vec4 vColor;&#x27;,
+        &#x27;uniform float invert;&#x27;,
+        &#x27;uniform mat4 matrix;&#x27;,
+        &#x27;uniform sampler2D uSampler;&#x27;,
+
+        &#x27;void main(void) {&#x27;,
+        &#x27;   gl_FragColor = texture2D(uSampler, vTextureCoord) * matrix;&#x27;,
+      //  &#x27;   gl_FragColor = gl_FragColor;&#x27;,
+        &#x27;}&#x27;
+    ];
+};
 
 PIXI.ColorMatrixFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.ColorMatrixFilter.prototype.constructor = PIXI.ColorMatrixFilter;
@@ -226,7 +228,7 @@ Object.defineProperty(PIXI.ColorMatrixFilter.prototype, &#x27;matrix&#x27;, {
         return this.uniforms.matrix.value;
     },
     set: function(value) {
-    	this.uniforms.matrix.value = value;
+        this.uniforms.matrix.value = value;
     }
 });
     </pre>

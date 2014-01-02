@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/pixi/extras/CustomRenderable.js - Pixi.JS</title>
+    <title>src/pixi/renderers/canvas/utils/CanvasTinter.js - Pixi.JS</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.3.0</em>
+            <em>API Docs for: 1.4.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -45,6 +45,8 @@
             
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
+                <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
                 <li><a href="../classes/BaseTexture.html">BaseTexture</a></li>
             
                 <li><a href="../classes/BitmapFontLoader.html">BitmapFontLoader</a></li>
@@ -61,7 +63,7 @@
             
                 <li><a href="../classes/ColorMatrixFilter.html">ColorMatrixFilter</a></li>
             
-                <li><a href="../classes/CustomRenderable.html">CustomRenderable</a></li>
+                <li><a href="../classes/ColorStepFilter.html">ColorStepFilter</a></li>
             
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
@@ -75,7 +77,7 @@
             
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
             
-                <li><a href="../classes/GreyFilter.html">GreyFilter</a></li>
+                <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
                 <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
             
@@ -86,6 +88,8 @@
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
+            
+                <li><a href="../classes/PIXI.PixiShader.html">PIXI.PixiShader</a></li>
             
                 <li><a href="../classes/Point.html">Point</a></li>
             
@@ -109,9 +113,9 @@
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
-                <li><a href="../classes/Sprite.html">Sprite</a></li>
-            
                 <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
+            
+                <li><a href="../classes/Sprite™.html">Sprite™</a></li>
             
                 <li><a href="../classes/Stage.html">Stage</a></li>
             
@@ -120,8 +124,6 @@
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
-            
-                <li><a href="../classes/WebGLBatch.html">WebGLBatch</a></li>
             
                 <li><a href="../classes/WebGLRenderer.html">WebGLRenderer</a></li>
             
@@ -166,66 +168,197 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/pixi/extras/CustomRenderable.js</h1>
+                        <h1 class="file-heading">File: src/pixi/renderers/canvas/utils/CanvasTinter.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
-/**
- * @author Mat Groves http://matgroves.com/ @Doormat23
- */
-
 
 /**
- * This object is one that will allow you to specify custom rendering functions based on render type
- *
- * @class CustomRenderable
- * @extends DisplayObject
- * @constructor
+ * @author Mat Groves
+ * 
+ * 
  */
-PIXI.CustomRenderable = function()
+
+PIXI.CanvasTinter = function()
 {
-	PIXI.DisplayObject.call( this );
-	
-	this.renderable = true;
-}
+    /// this.textureCach
+};
 
-// constructor
-PIXI.CustomRenderable.prototype = Object.create( PIXI.DisplayObject.prototype );
-PIXI.CustomRenderable.prototype.constructor = PIXI.CustomRenderable;
+//PIXI.CanvasTinter.cachTint = true;
+    
 
-/**
- * If this object is being rendered by a CanvasRenderer it will call this callback
- *
- * @method renderCanvas
- * @param renderer {CanvasRenderer} The renderer instance
- */
-PIXI.CustomRenderable.prototype.renderCanvas = function(renderer)
+PIXI.CanvasTinter.getTintedTexture = function(sprite, color)
 {
-	// override!
-}
+    //
+    // cach on sprite
+    // cach on texture
+    // no cache
 
-/**
- * If this object is being rendered by a WebGLRenderer it will call this callback to initialize
- *
- * @method initWebGL
- * @param renderer {WebGLRenderer} The renderer instance
- */
-PIXI.CustomRenderable.prototype.initWebGL = function(renderer)
-{
-	// override!
-}
+    var texture = sprite.texture;
 
-/**
- * If this object is being rendered by a WebGLRenderer it will call this callback
- *
- * @method renderWebGL
- * @param renderer {WebGLRenderer} The renderer instance
- */
-PIXI.CustomRenderable.prototype.renderWebGL = function(renderGroup, projectionMatrix)
+    color = PIXI.CanvasTinter.roundColor(color);
+
+    var stringColor = &quot;#&quot; + (&quot;00000&quot; + ( color | 0).toString(16)).substr(-6);
+   
+    texture.tintCache = texture.tintCache || {};
+
+    if(texture.tintCache[stringColor]) return texture.tintCache[stringColor];
+
+     // clone texture..
+    var canvas = PIXI.CanvasTinter.canvas || document.createElement(&quot;canvas&quot;);
+    
+    //PIXI.CanvasTinter.tintWithPerPixel(texture, stringColor, canvas);
+
+    
+    PIXI.CanvasTinter.tintMethod(texture, color, canvas);
+
+    if(PIXI.CanvasTinter.convertTintToImage)
+    {
+        // is this better?
+        var tintImage = new Image();
+        tintImage.src = canvas.toDataURL();
+
+        texture.tintCache[stringColor] = tintImage;
+    }
+    else
+    {
+      
+        texture.tintCache[stringColor] = canvas;
+        // if we are not converting the texture to an image then we need to lose the refferance to the canvas
+        PIXI.CanvasTinter.canvas = null;
+
+    }
+
+    return canvas;
+};
+
+PIXI.CanvasTinter.tintWithMultiply = function(texture, color, canvas)
 {
-	// not sure if both needed? but ya have for now!
-	// override!
-}
+    var context = canvas.getContext( &quot;2d&quot; );
+
+    var frame = texture.frame;
+
+    canvas.width = frame.width;
+    canvas.height = frame.height;
+
+    context.fillStyle = &quot;#&quot; + (&quot;00000&quot; + ( color | 0).toString(16)).substr(-6);
+    
+    context.fillRect(0, 0, frame.width, frame.height);
+    
+    context.globalCompositeOperation = &quot;multiply&quot;;
+
+    context.drawImage(texture.baseTexture.source,
+                           frame.x,
+                           frame.y,
+                           frame.width,
+                           frame.height,
+                           0,
+                           0,
+                           frame.width,
+                           frame.height);
+
+    context.globalCompositeOperation = &quot;destination-atop&quot;;
+    
+    context.drawImage(texture.baseTexture.source,
+                           frame.x,
+                           frame.y,
+                           frame.width,
+                           frame.height,
+                           0,
+                           0,
+                           frame.width,
+                           frame.height);
+};
+
+PIXI.CanvasTinter.tintWithOverlay = function(texture, color, canvas)
+{
+    var context = canvas.getContext( &quot;2d&quot; );
+
+    var frame = texture.frame;
+
+    canvas.width = frame.width;
+    canvas.height = frame.height;
+
+    
+    
+    context.globalCompositeOperation = &quot;copy&quot;;
+    context.fillStyle = &quot;#&quot; + (&quot;00000&quot; + ( color | 0).toString(16)).substr(-6);
+    context.fillRect(0, 0, frame.width, frame.height);
+
+    context.globalCompositeOperation = &quot;destination-atop&quot;;
+    context.drawImage(texture.baseTexture.source,
+                           frame.x,
+                           frame.y,
+                           frame.width,
+                           frame.height,
+                           0,
+                           0,
+                           frame.width,
+                           frame.height);
+
+    
+    //context.globalCompositeOperation = &quot;copy&quot;;
+
+};
+
+
+PIXI.CanvasTinter.tintWithPerPixel = function(texture, color, canvas)
+{
+    var context = canvas.getContext( &quot;2d&quot; );
+
+    var frame = texture.frame;
+
+    canvas.width = frame.width;
+    canvas.height = frame.height;
+  
+    context.globalCompositeOperation = &quot;copy&quot;;
+    context.drawImage(texture.baseTexture.source,
+                           frame.x,
+                           frame.y,
+                           frame.width,
+                           frame.height,
+                           0,
+                           0,
+                           frame.width,
+                           frame.height);
+
+    var rgbValues = PIXI.hex2rgb(color);
+    var r = rgbValues[0], g = rgbValues[1], b = rgbValues[2];
+
+    var pixelData = context.getImageData(0, 0, frame.width, frame.height);
+
+    var pixels = pixelData.data;
+
+    for (var i = 0; i &lt; pixels.length; i += 4)
+    {
+        pixels[i+0] *= r;
+        pixels[i+1] *= g;
+        pixels[i+2] *= b;
+    }
+
+    context.putImageData(pixelData, 0, 0);
+};
+
+PIXI.CanvasTinter.roundColor = function(color)
+{
+    var step = PIXI.CanvasTinter.cacheStepsPerColorChannel;
+
+    var rgbValues = PIXI.hex2rgb(color);
+
+    rgbValues[0] = Math.round(rgbValues[0] * step) / step;
+    rgbValues[1] = Math.round(rgbValues[1] * step) / step;
+    rgbValues[2] = Math.round(rgbValues[2] * step) / step;
+
+    return PIXI.rgb2hex(rgbValues);
+};
+
+PIXI.CanvasTinter.cacheStepsPerColorChannel = 8;
+PIXI.CanvasTinter.convertTintToImage = false;
+
+PIXI.CanvasTinter.canUseMultiply = PIXI.canUseNewCanvasBlendModes();
+
+PIXI.CanvasTinter.tintMethod = PIXI.CanvasTinter.canUseMultiply ? PIXI.CanvasTinter.tintWithMultiply :  PIXI.CanvasTinter.tintWithPerPixel;
+
 
 
     </pre>
