@@ -6230,6 +6230,8 @@ PIXI.WebGLFilterManager.prototype.applyFilterPass = function(filter, filterArea,
 
     // draw the filter...
     gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0 );
+
+    this.renderSession.drawCount++;
 };
 
 PIXI.WebGLFilterManager.prototype.initShaderBuffers = function()
@@ -6287,125 +6289,7 @@ PIXI.WebGLFilterManager.prototype.initShaderBuffers = function()
     new Uint16Array([0, 1, 2, 1, 3, 2]),
     gl.STATIC_DRAW);
 };
-/*
-PIXI.WebGLFilterManager.prototype.getBounds = function(displayObject)
-{
-    // time to get the width and height of the object!
-    var worldTransform, width, height, aX, aY, w0, w1, h0, h1, doTest;
-    var a, b, c, d, tx, ty, x1, x2, x3, x4, y1, y2, y3, y4;
 
-    var tempObject = displayObject.first;
-    var testObject = displayObject.last._iNext;
-
-    var maxX = -Infinity;
-    var maxY = -Infinity;
-
-    var minX = Infinity;
-    var minY = Infinity;
-
-    do
-    {
-        // TODO can be optimized! - what if there is no scale / rotation?
-
-        if(tempObject.visible)
-        {
-            if(tempObject instanceof PIXI.Sprite)
-            {
-                width = tempObject.texture.frame.width;
-                height = tempObject.texture.frame.height;
-
-                // TODO trim??
-                aX = tempObject.anchor.x;
-                aY = tempObject.anchor.y;
-                w0 = width * (1-aX);
-                w1 = width * -aX;
-
-                h0 = height * (1-aY);
-                h1 = height * -aY;
-
-                doTest = true;
-            }
-            else if(tempObject instanceof PIXI.Graphics)
-            {
-                tempObject.updateFilterBounds();
-
-                var bounds = tempObject.bounds;
-
-                width = bounds.width;
-                height = bounds.height;
-
-                w0 = bounds.x;
-                w1 = bounds.x + bounds.width;
-
-                h0 = bounds.y;
-                h1 = bounds.y + bounds.height;
-
-                doTest = true;
-            }
-        }
-
-        if(doTest)
-        {
-            worldTransform = tempObject.worldTransform;
-
-            a = worldTransform[0];
-            b = worldTransform[3];
-            c = worldTransform[1];
-            d = worldTransform[4];
-            tx = worldTransform[2];
-            ty = worldTransform[5];
-
-            x1 = a * w1 + c * h1 + tx;
-            y1 = d * h1 + b * w1 + ty;
-
-            x2 = a * w0 + c * h1 + tx;
-            y2 = d * h1 + b * w0 + ty;
-
-            x3 = a * w0 + c * h0 + tx;
-            y3 = d * h0 + b * w0 + ty;
-
-            x4 =  a * w1 + c * h0 + tx;
-            y4 =  d * h0 + b * w1 + ty;
-
-            minX = x1 < minX ? x1 : minX;
-            minX = x2 < minX ? x2 : minX;
-            minX = x3 < minX ? x3 : minX;
-            minX = x4 < minX ? x4 : minX;
-
-            minY = y1 < minY ? y1 : minY;
-            minY = y2 < minY ? y2 : minY;
-            minY = y3 < minY ? y3 : minY;
-            minY = y4 < minY ? y4 : minY;
-
-            maxX = x1 > maxX ? x1 : maxX;
-            maxX = x2 > maxX ? x2 : maxX;
-            maxX = x3 > maxX ? x3 : maxX;
-            maxX = x4 > maxX ? x4 : maxX;
-
-            maxY = y1 > maxY ? y1 : maxY;
-            maxY = y2 > maxY ? y2 : maxY;
-            maxY = y3 > maxY ? y3 : maxY;
-            maxY = y4 > maxY ? y4 : maxY;
-        }
-
-        doTest = false;
-        tempObject = tempObject._iNext;
-
-    }
-    while(tempObject !== testObject);
-
-    // maximum bounds is the size of the screen..
-    //minX = minX > 0 ? minX : 0;
-    //minY = minY > 0 ? minY : 0;
-
-    displayObject.filterArea.x = minX;
-    displayObject.filterArea.y = minY;
-
-//  console.log(maxX+ " : " + minX)
-    displayObject.filterArea.width = maxX - minX;
-    displayObject.filterArea.height = maxY - minY;
-};
-*/
 PIXI.FilterTexture = function(gl, width, height)
 {
    // var gl = PIXI.gl;
@@ -7476,6 +7360,7 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
     if(this._filters)renderSession.filterManager.popFilter();
     if(this._mask)renderSession.maskManager.popMask(renderSession);
       
+    renderSession.drawCount++;
 
     renderSession.spriteBatch.start();
 };

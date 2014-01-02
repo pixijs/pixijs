@@ -260,6 +260,7 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
     if(this._filters)renderSession.filterManager.popFilter();
     if(this._mask)renderSession.maskManager.popMask(renderSession);
       
+    renderSession.drawCount++;
 
     renderSession.spriteBatch.start();
 };
