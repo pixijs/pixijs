@@ -194,7 +194,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
         }
     }
 
-    // after rendering lets confirm all frames that have been uodated..
+    // after rendering lets confirm all frames that have been updated..
     if(PIXI.Texture.frameUpdates.length > 0)
     {
         for (var i=0; i < PIXI.Texture.frameUpdates.length; i++)
