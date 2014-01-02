@@ -1,11 +1,10 @@
-
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
 
 /*
- * the default suoer fast shader!
+ * the default super fast shader!
  */
 
 PIXI.shaderFragmentSrc = [
