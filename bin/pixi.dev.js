@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-01-02
+ * Compiled: 2014-01-03
  *
  * Pixi.JS is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -993,6 +993,28 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'interactive', {
 });
 
 /**
+ * [read-only] Indicates if the sprite is globaly visible.
+ *
+ * @property worldVisible
+ * @type Boolean
+ */
+Object.defineProperty(PIXI.DisplayObject.prototype, 'worldVisible', {
+    get: function() {
+        
+        var item = this;
+    
+        do
+        {
+            if(!item.visible)return false;
+            item = item.parent;
+        }
+        while(item.parent);
+
+        return true;
+    }
+});
+
+/**
  * Sets a mask for the displayObject. A mask is an object that limits the visibility of an object to the shape of the mask applied to it.
  * In PIXI a regular mask must be a PIXI.Ggraphics object. This allows for much faster masking in canvas as it utilises shape clipping.
  * To remove a mask, set this property to null.
@@ -1105,7 +1127,6 @@ PIXI.DisplayObject.prototype.updateTransform = function()
 
     this.vcount = PIXI.visibleCount;
 };
-
 
 PIXI.DisplayObject.prototype.getBounds = function()
 {
@@ -2970,8 +2991,10 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 {
     var global = interactionData.global;
 
-    if(item.vcount !== PIXI.visibleCount)return false;
+    if( !item.worldVisible )return false;
 
+    // temp fix for if the element is in a non visible
+   
     var isSprite = (item instanceof PIXI.Sprite),
         worldTransform = item.worldTransform,
         a00 = worldTransform[0], a01 = worldTransform[1], a02 = worldTransform[2],

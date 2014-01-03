@@ -418,8 +418,10 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 {
     var global = interactionData.global;
 
-    if(item.vcount !== PIXI.visibleCount)return false;
+    if( !item.worldVisible )return false;
 
+    // temp fix for if the element is in a non visible
+   
     var isSprite = (item instanceof PIXI.Sprite),
         worldTransform = item.worldTransform,
         a00 = worldTransform[0], a01 = worldTransform[1], a02 = worldTransform[2],

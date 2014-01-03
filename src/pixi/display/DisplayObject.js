@@ -296,6 +296,28 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'interactive', {
 });
 
 /**
+ * [read-only] Indicates if the sprite is globaly visible.
+ *
+ * @property worldVisible
+ * @type Boolean
+ */
+Object.defineProperty(PIXI.DisplayObject.prototype, 'worldVisible', {
+    get: function() {
+        
+        var item = this;
+    
+        do
+        {
+            if(!item.visible)return false;
+            item = item.parent;
+        }
+        while(item.parent);
+
+        return true;
+    }
+});
+
+/**
  * Sets a mask for the displayObject. A mask is an object that limits the visibility of an object to the shape of the mask applied to it.
  * In PIXI a regular mask must be a PIXI.Ggraphics object. This allows for much faster masking in canvas as it utilises shape clipping.
  * To remove a mask, set this property to null.
@@ -408,7 +430,6 @@ PIXI.DisplayObject.prototype.updateTransform = function()
 
     this.vcount = PIXI.visibleCount;
 };
-
 
 PIXI.DisplayObject.prototype.getBounds = function()
 {
