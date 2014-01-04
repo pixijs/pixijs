@@ -102,6 +102,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     //
     this.renderSession = {};
     this.renderSession.gl = this.gl;
+    this.renderSession.drawCount = 0;
     this.renderSession.shaderManager = this.shaderManager;
     this.renderSession.maskManager = this.maskManager;
     this.renderSession.filterManager = this.filterManager;

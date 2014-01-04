@@ -39,14 +39,15 @@ PIXI.DisplayObjectContainer.prototype.constructor = PIXI.DisplayObjectContainer;
 /*
 Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'width', {
     get: function() {
-        return this.scale.x * this.getBounds().width;
+        return this.scale.x * this.getLocalBounds().width;
     },
     set: function(value) {
-        this.scale.x = value / (this.getBounds().width/this.scale.x);
+        this.scale.x = value / (this.getLocalBounds().width/this.scale.x);
         this._width = value;
     }
 });
 */
+
 /**
  * The height of the displayObjectContainer, setting this will actually modify the scale to acheive the value set
  *
@@ -57,10 +58,10 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'width', {
  /*
 Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'height', {
     get: function() {
-        return  this.scale.y * this.getBounds().height;
+        return  this.scale.y * this.getLocalBounds().height;
     },
     set: function(value) {
-        this.scale.y = value / (this.getBounds().height/this.scale.y);
+        this.scale.y = value / (this.getLocalBounds().height/this.scale.y);
         this._height = value;
     }
 });
@@ -159,7 +160,7 @@ PIXI.DisplayObjectContainer.prototype.getChildAt = function(index)
     }
     else
     {
-        throw new Error('Both the supplied DisplayObjects must be a child of the caller ' + this);
+        throw new Error('The supplied DisplayObjects must be a child of the caller ' + this);
     }
 };
 
@@ -341,3 +342,5 @@ PIXI.DisplayObjectContainer.prototype._renderCanvas = function(renderSession)
         renderSession.maskManager.popMask(renderSession.context);
     }
 };
+
+

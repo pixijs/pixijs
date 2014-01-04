@@ -291,3 +291,5 @@ PIXI.mat4.multiply = function (mat, mat2, dest)
 
     return dest;
 };
+
+PIXI.identityMatrix = PIXI.mat3.create();

@@ -184,6 +184,7 @@ PIXI.DisplayObject = function()
     */
     this._bounds = new PIXI.Rectangle(0, 0, 1, 1);
     this._currentBounds = null;
+    this._mask = null;
 
     /*
      * MOUSE Callbacks
@@ -434,6 +435,21 @@ PIXI.DisplayObject.prototype.updateTransform = function()
 PIXI.DisplayObject.prototype.getBounds = function()
 {
     return PIXI.EmptyRectangle;
+};
+
+PIXI.DisplayObject.prototype.getLocalBounds = function()
+{
+    var matrixCache = this.worldTransform;
+
+    this.worldTransform = PIXI.identityMatrix;
+
+    this.updateTransform();
+
+    var bounds = this.getBounds();
+
+    this.worldTransform = matrixCache;
+
+    return bounds;
 };
 
 
