@@ -304,15 +304,14 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'interactive', {
  */
 Object.defineProperty(PIXI.DisplayObject.prototype, 'worldVisible', {
     get: function() {
-        
         var item = this;
-    
+
         do
         {
             if(!item.visible)return false;
             item = item.parent;
         }
-        while(item.parent);
+        while(item && item.parent);
 
         return true;
     }
@@ -327,11 +326,8 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'worldVisible', {
  * @type Graphics
  */
 Object.defineProperty(PIXI.DisplayObject.prototype, 'mask', {
-   
     get: function() {
-
         return this._mask;
-    
     },
     set: function(value) {
 
@@ -369,8 +365,6 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'filters', {
 
             // TODO change this as it is legacy
             this._filterBlock = {target:this, filterPasses:passes};
-            
-           
         }
 
         this._filters = value;

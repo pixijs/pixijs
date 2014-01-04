@@ -41,15 +41,6 @@ PIXI.Sprite = function(texture)
     this.texture = texture;
 
     /**
-     * The blend mode of sprite.
-     * currently supports PIXI.blendModes.NORMAL and PIXI.blendModes.SCREEN
-     *
-     * @property blendMode
-     * @type Number
-     */
-    this.blendMode = PIXI.blendModes.NORMAL;
-
-    /**
      * The width of the sprite (this is initially set by the texture)
      *
      * @property _width
@@ -88,7 +79,6 @@ PIXI.Sprite = function(texture)
 
     if(texture.baseTexture.hasLoaded)
     {
-        this.updateFrame = true;
         this.onTextureUpdate();
     }
     else
