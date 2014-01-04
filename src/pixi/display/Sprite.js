@@ -88,7 +88,6 @@ PIXI.Sprite = function(texture)
 
     if(texture.baseTexture.hasLoaded)
     {
-        this.updateFrame = true;
         this.onTextureUpdate();
     }
     else
