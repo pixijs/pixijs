@@ -20,6 +20,8 @@ function pixi_display_Sprite_confirmNew(obj, done) {
     expect(obj).to.have.property('width', 1); // TODO: is 1 expected
     expect(obj).to.have.property('height', 1); // TODO: is 1 expected
 
+    expect(obj).to.have.property('tint', 0xFFFFFF);
+
     // FIXME: Just make this a boolean that is always there
     expect(!!obj.updateFrame).to.equal(obj.texture.baseTexture.hasLoaded);
 

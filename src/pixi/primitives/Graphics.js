@@ -73,9 +73,12 @@ PIXI.Graphics = function()
 PIXI.Graphics.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
 PIXI.Graphics.prototype.constructor = PIXI.Graphics;
 
-Object.defineProperty(PIXI.Graphics.prototype, 'cacheAsBitmap', {
+/*
+*   Not yet implemented
+*/
+Object.defineProperty(PIXI.Graphics.prototype, "cacheAsBitmap", {
     get: function() {
-        return  this._cacheAsBitmap
+        return  this._cacheAsBitmap;
     },
     set: function(value) {
         this._cacheAsBitmap = value;
@@ -252,34 +255,28 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
     // if the sprite is not visible or the alpha is 0 then no need to render this element
     if(this.visible === false || this.alpha === 0 || this.isMask === true)return;
     
-    if(this._cacheAsBitmap)
-    {
+   
+    renderSession.spriteBatch.stop();
 
+    if(this._mask)renderSession.maskManager.pushMask(this.mask, renderSession);
+    if(this._filters)renderSession.filterManager.pushFilter(this._filterBlock);
+  
+    // check blend mode
+    if(this.blendMode !== renderSession.spriteBatch.currentBlendMode)
+    {
+        this.spriteBatch.currentBlendMode = this.blendMode;
+        var blendModeWebGL = PIXI.blendModesWebGL[renderSession.spriteBatch.currentBlendMode];
+        this.spriteBatch.gl.blendFunc(blendModeWebGL[0], blendModeWebGL[1]);
     }
-    else
-    {
-        renderSession.spriteBatch.stop();
-
-        if(this._mask)renderSession.maskManager.pushMask(this.mask, renderSession);
-        if(this._filters)renderSession.filterManager.pushFilter(this._filterBlock);
+ 
+    PIXI.WebGLGraphics.renderGraphics(this, renderSession);
+    
+    if(this._filters)renderSession.filterManager.popFilter();
+    if(this._mask)renderSession.maskManager.popMask(renderSession);
       
-        // check blend mode
-        if(this.blendMode !== renderSession.spriteBatch.currentBlendMode)
-        {
-            this.spriteBatch.currentBlendMode = this.blendMode;
-            var blendModeWebGL = PIXI.blendModesWebGL[renderSession.spriteBatch.currentBlendMode];
-            this.spriteBatch.gl.blendFunc(blendModeWebGL[0], blendModeWebGL[1]);
-        }
-     
-        PIXI.WebGLGraphics.renderGraphics(this, renderSession);
-        
-        if(this._filters)renderSession.filterManager.popFilter();
-        if(this._mask)renderSession.maskManager.popMask(renderSession);
-          
-        renderSession.drawCount++;
+    renderSession.drawCount++;
 
-        renderSession.spriteBatch.start();
-    }
+    renderSession.spriteBatch.start();
 };
 
 PIXI.Graphics.prototype._renderCanvas = function(renderSession)

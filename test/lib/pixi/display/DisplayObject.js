@@ -28,7 +28,7 @@ function pixi_display_DisplayObject_confirmNew(obj) {
     expect(obj).to.have.property('hitArea');
     expect(obj).to.have.property('interactive'); // TODO: Have a better default value
     expect('mask' in obj).to.be.true; // TODO: Have a better default value
-    expect(obj.mask).to.be.undefined;
+    expect(obj.mask).to.be.null;
 
     expect(obj).to.have.property('renderable');
     expect(obj).to.have.property('stage');

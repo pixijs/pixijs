@@ -1,12 +1,12 @@
 /**
  * @license
- * Pixi.JS - v1.4.0
+ * pixi.js - v1.4.0
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-01-03
+ * Compiled: 2014-01-05
  *
- * Pixi.JS is licensed under the MIT License.
+ * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
  */
 /**
@@ -695,6 +695,8 @@ PIXI.mat4.multiply = function (mat, mat2, dest)
     return dest;
 };
 
+PIXI.identityMatrix = PIXI.mat3.create();
+
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -881,6 +883,7 @@ PIXI.DisplayObject = function()
     */
     this._bounds = new PIXI.Rectangle(0, 0, 1, 1);
     this._currentBounds = null;
+    this._mask = null;
 
     /*
      * MOUSE Callbacks
@@ -1000,15 +1003,14 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'interactive', {
  */
 Object.defineProperty(PIXI.DisplayObject.prototype, 'worldVisible', {
     get: function() {
-        
         var item = this;
-    
+
         do
         {
             if(!item.visible)return false;
             item = item.parent;
         }
-        while(item.parent);
+        while(item && item.parent);
 
         return true;
     }
@@ -1023,11 +1025,8 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'worldVisible', {
  * @type Graphics
  */
 Object.defineProperty(PIXI.DisplayObject.prototype, 'mask', {
-   
     get: function() {
-
         return this._mask;
-    
     },
     set: function(value) {
 
@@ -1065,8 +1064,6 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'filters', {
 
             // TODO change this as it is legacy
             this._filterBlock = {target:this, filterPasses:passes};
-            
-           
         }
 
         this._filters = value;
@@ -1133,6 +1130,21 @@ PIXI.DisplayObject.prototype.getBounds = function()
     return PIXI.EmptyRectangle;
 };
 
+PIXI.DisplayObject.prototype.getLocalBounds = function()
+{
+    var matrixCache = this.worldTransform;
+
+    this.worldTransform = PIXI.identityMatrix;
+
+    this.updateTransform();
+
+    var bounds = this.getBounds();
+
+    this.worldTransform = matrixCache;
+
+    return bounds;
+};
+
 
 PIXI.DisplayObject.prototype._renderWebGL = function(renderSession)
 {
@@ -1151,6 +1163,7 @@ PIXI.DisplayObject.prototype._renderCanvas = function(renderSession)
 PIXI.EmptyRectangle = new PIXI.Rectangle(0,0,0,0);
 
 PIXI.visibleCount = 0;
+
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -1192,14 +1205,15 @@ PIXI.DisplayObjectContainer.prototype.constructor = PIXI.DisplayObjectContainer;
 /*
 Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'width', {
     get: function() {
-        return this.scale.x * this.getBounds().width;
+        return this.scale.x * this.getLocalBounds().width;
     },
     set: function(value) {
-        this.scale.x = value / (this.getBounds().width/this.scale.x);
+        this.scale.x = value / (this.getLocalBounds().width/this.scale.x);
         this._width = value;
     }
 });
 */
+
 /**
  * The height of the displayObjectContainer, setting this will actually modify the scale to acheive the value set
  *
@@ -1210,10 +1224,10 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'width', {
  /*
 Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'height', {
     get: function() {
-        return  this.scale.y * this.getBounds().height;
+        return  this.scale.y * this.getLocalBounds().height;
     },
     set: function(value) {
-        this.scale.y = value / (this.getBounds().height/this.scale.y);
+        this.scale.y = value / (this.getLocalBounds().height/this.scale.y);
         this._height = value;
     }
 });
@@ -1312,7 +1326,7 @@ PIXI.DisplayObjectContainer.prototype.getChildAt = function(index)
     }
     else
     {
-        throw new Error('Both the supplied DisplayObjects must be a child of the caller ' + this);
+        throw new Error('The supplied DisplayObjects must be a child of the caller ' + this);
     }
 };
 
@@ -1495,6 +1509,8 @@ PIXI.DisplayObjectContainer.prototype._renderCanvas = function(renderSession)
     }
 };
 
+
+
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -1538,15 +1554,6 @@ PIXI.Sprite = function(texture)
     this.texture = texture;
 
     /**
-     * The blend mode of sprite.
-     * currently supports PIXI.blendModes.NORMAL and PIXI.blendModes.SCREEN
-     *
-     * @property blendMode
-     * @type Number
-     */
-    this.blendMode = PIXI.blendModes.NORMAL;
-
-    /**
      * The width of the sprite (this is initially set by the texture)
      *
      * @property _width
@@ -1585,7 +1592,6 @@ PIXI.Sprite = function(texture)
 
     if(texture.baseTexture.hasLoaded)
     {
-        this.updateFrame = true;
         this.onTextureUpdate();
     }
     else
@@ -5067,6 +5073,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     //
     this.renderSession = {};
     this.renderSession.gl = this.gl;
+    this.renderSession.drawCount = 0;
     this.renderSession.shaderManager = this.shaderManager;
     this.renderSession.maskManager = this.maskManager;
     this.renderSession.filterManager = this.filterManager;
@@ -7188,11 +7195,26 @@ PIXI.Graphics = function()
     this.currentPath = {points:[]};
 
     this._webGL = [];
+
+    this.isMask = false;
 };
 
 // constructor
 PIXI.Graphics.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
 PIXI.Graphics.prototype.constructor = PIXI.Graphics;
+
+/*
+*   Not yet implemented
+*/
+Object.defineProperty(PIXI.Graphics.prototype, "cacheAsBitmap", {
+    get: function() {
+        return  this._cacheAsBitmap;
+    },
+    set: function(value) {
+        this._cacheAsBitmap = value;
+    }
+});
+
 
 /**
  * Specifies a line style used for subsequent calls to Graphics methods such as the lineTo() method or the drawCircle() method.
@@ -7364,7 +7386,6 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
     if(this.visible === false || this.alpha === 0 || this.isMask === true)return;
     
    
-
     renderSession.spriteBatch.stop();
 
     if(this._mask)renderSession.maskManager.pushMask(this.mask, renderSession);
