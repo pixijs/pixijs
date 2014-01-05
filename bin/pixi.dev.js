@@ -1440,8 +1440,9 @@ PIXI.DisplayObjectContainer.prototype.removeStageReference = function()
         var child = this.children[i];
         if(child.interactive)this.stage.dirty = true;
         child.removeStageReference();
-        child.stage = null;
     }
+
+    this.stage = null;
 };
 
 PIXI.DisplayObjectContainer.prototype._renderWebGL = function(renderSession)
