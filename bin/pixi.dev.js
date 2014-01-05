@@ -1164,7 +1164,6 @@ PIXI.EmptyRectangle = new PIXI.Rectangle(0,0,0,0);
 
 PIXI.visibleCount = 0;
 
-PIXI.visibleCount = 0;
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -2936,26 +2935,6 @@ PIXI.InteractionManager.prototype.onMouseOut = function()
         }
     }
 };
-
-
-PIXI.InteractionManager.prototype.onMouseOut = function(event)
-{
-	var length = this.interactiveItems.length;
-	
-	this.target.view.style.cursor = "default";	
-				
-	for (var i = 0; i < length; i++)
-	{
-		var item = this.interactiveItems[i];
-		
-		if(item.__isOver)
-		{
-			this.mouse.target = item;
-			if(item.mouseout)item.mouseout(this.mouse);
-			item.__isOver = false;	
-		}
-	}
-}
 
 /**
  * Is called when the mouse button is released on the renderer element
