@@ -5,7 +5,7 @@
     "main": "bin/pixi.js",
 
     "ignore": [
-        "**/.*"
+        "**/.*",
         "node_modules",
         "bower_components",
         "test"
