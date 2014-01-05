@@ -16,6 +16,8 @@ any breakthroughs will be posted up there too!
 
 ### Demos ###
 
+- [WebGL Filters!](<http://www.goodboydigital.com/pixijs/examples/15/indexAll.html>)
+
 - [Run pixi run](<http://www.goodboydigital.com/runpixierun/>)
 
 - [Fight for Everyone](<http://www.theleisuresociety.co.uk/fightforeveryone>)
