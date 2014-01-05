@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/pixi/extras/TilingSprite.js - Pixi.JS</title>
+    <title>src/pixi/extras/TilingSprite.js - pixi.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -15,7 +15,7 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
             
-                <h1><img src="http://www.goodboydigital.com/pixijs/logo_small.png" title="Pixi.JS"></h1>
+                <h1><img src="http://www.goodboydigital.com/pixijs/logo_small.png" title="pixi.js"></h1>
             
         </div>
         <div class="yui3-u-1-4 version">
@@ -42,6 +42,8 @@
             <ul id="api-classes" class="apis classes">
             
                 <li><a href="../classes/AbstractFilter.html">AbstractFilter</a></li>
+            
+                <li><a href="../classes/AlphaMaskFilter.html">AlphaMaskFilter</a></li>
             
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
@@ -320,6 +322,14 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
 
     context.globalAlpha = this.worldAlpha;
 
+    
+    var transform = this.worldTransform;
+
+    // alow for trimming
+   
+    context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
+ 
+
     if(!this.__tilePattern)
         this.__tilePattern = context.createPattern(this.texture.baseTexture.source, &#x27;repeat&#x27;);
 
@@ -348,6 +358,78 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
     context.closePath();
 };
 
+PIXI.TilingSprite.prototype.getBounds = function()
+{
+
+    var width = this._width;
+    var height = this._height;
+
+    var w0 = width * (1-this.anchor.x);
+    var w1 = width * -this.anchor.x;
+
+    var h0 = height * (1-this.anchor.y);
+    var h1 = height * -this.anchor.y;
+
+    var worldTransform = this.worldTransform;
+
+    var a = worldTransform[0];
+    var b = worldTransform[3];
+    var c = worldTransform[1];
+    var d = worldTransform[4];
+    var tx = worldTransform[2];
+    var ty = worldTransform[5];
+
+    var x1 = a * w1 + c * h1 + tx;
+    var y1 = d * h1 + b * w1 + ty;
+
+    var x2 = a * w0 + c * h1 + tx;
+    var y2 = d * h1 + b * w0 + ty;
+
+    var x3 = a * w0 + c * h0 + tx;
+    var y3 = d * h0 + b * w0 + ty;
+
+    var x4 =  a * w1 + c * h0 + tx;
+    var y4 =  d * h0 + b * w1 + ty;
+
+    var maxX = -Infinity;
+    var maxY = -Infinity;
+
+    var minX = Infinity;
+    var minY = Infinity;
+
+    minX = x1 &lt; minX ? x1 : minX;
+    minX = x2 &lt; minX ? x2 : minX;
+    minX = x3 &lt; minX ? x3 : minX;
+    minX = x4 &lt; minX ? x4 : minX;
+
+    minY = y1 &lt; minY ? y1 : minY;
+    minY = y2 &lt; minY ? y2 : minY;
+    minY = y3 &lt; minY ? y3 : minY;
+    minY = y4 &lt; minY ? y4 : minY;
+
+    maxX = x1 &gt; maxX ? x1 : maxX;
+    maxX = x2 &gt; maxX ? x2 : maxX;
+    maxX = x3 &gt; maxX ? x3 : maxX;
+    maxX = x4 &gt; maxX ? x4 : maxX;
+
+    maxY = y1 &gt; maxY ? y1 : maxY;
+    maxY = y2 &gt; maxY ? y2 : maxY;
+    maxY = y3 &gt; maxY ? y3 : maxY;
+    maxY = y4 &gt; maxY ? y4 : maxY;
+
+    var bounds = this._bounds;
+
+    bounds.x = minX;
+    bounds.width = maxX - minX;
+
+    bounds.y = minY;
+    bounds.height = maxY - minY;
+
+    // store a refferance so that if this function gets called again in the render cycle we do not have to recacalculate
+    this._currentBounds = bounds;
+
+    return bounds;
+};
     </pre>
 </div>
 

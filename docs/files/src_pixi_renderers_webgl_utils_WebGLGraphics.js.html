@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/pixi/renderers/webgl/utils/WebGLGraphics.js - Pixi.JS</title>
+    <title>src/pixi/renderers/webgl/utils/WebGLGraphics.js - pixi.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -15,7 +15,7 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
             
-                <h1><img src="http://www.goodboydigital.com/pixijs/logo_small.png" title="Pixi.JS"></h1>
+                <h1><img src="http://www.goodboydigital.com/pixijs/logo_small.png" title="pixi.js"></h1>
             
         </div>
         <div class="yui3-u-1-4 version">
@@ -42,6 +42,8 @@
             <ul id="api-classes" class="apis classes">
             
                 <li><a href="../classes/AbstractFilter.html">AbstractFilter</a></li>
+            
+                <li><a href="../classes/AlphaMaskFilter.html">AlphaMaskFilter</a></li>
             
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
@@ -242,7 +244,6 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
 
     gl.uniform3fv(shader.tintColor, PIXI.hex2rgb(graphics.tint));
 
-    gl.uniform1f(shader.alpha, graphics.worldAlpha);
     gl.uniform1f(shader.alpha, graphics.worldAlpha);
     gl.bindBuffer(gl.ARRAY_BUFFER, webGL.buffer);
 

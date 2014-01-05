@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/pixi/renderers/webgl/StripShader.js - Pixi.JS</title>
+    <title>AlphaMaskFilter - pixi.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -15,7 +15,7 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
             
-                <h1><img src="http://www.goodboydigital.com/pixijs/logo_small.png" title="Pixi.JS"></h1>
+                <h1><img src="http://www.goodboydigital.com/pixijs/logo_small.png" title="pixi.js"></h1>
             
         </div>
         <div class="yui3-u-1-4 version">
@@ -42,6 +42,8 @@
             <ul id="api-classes" class="apis classes">
             
                 <li><a href="../classes/AbstractFilter.html">AbstractFilter</a></li>
+            
+                <li><a href="../classes/AlphaMaskFilter.html">AlphaMaskFilter</a></li>
             
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
@@ -168,79 +170,241 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/pixi/renderers/webgl/StripShader.js</h1>
+                        <h1>AlphaMaskFilter Class</h1>
+<div class="box meta">
+    
 
-<div class="file">
-    <pre class="code prettyprint linenums">
-/**
- * @author Mat Groves http://matgroves.com/ @Doormat23
- */
+    
+
+    
+        <div class="foundat">
+            Defined in: <a href="../files/src_pixi_filters_AlphaMaskFilter.js.html#l5"><code>src&#x2F;pixi&#x2F;filters&#x2F;AlphaMaskFilter.js:5</code></a>
+        </div>
+    
+
+    
+        
+            Module: <a href="../modules/PIXI.html">PIXI</a>
+        
+    
+
+    
+</div>
 
 
-PIXI.StripShader = function()
-{
-    // the webGL program..
-    this.program = null;
 
-    this.fragmentSrc = [
-        &#x27;precision mediump float;&#x27;,
-        &#x27;varying vec2 vTextureCoord;&#x27;,
-        &#x27;varying float vColor;&#x27;,
-        &#x27;uniform float alpha;&#x27;,
-        &#x27;uniform sampler2D uSampler;&#x27;,
+<div class="box intro">
+    <p>The AlphaMaskFilter class uses the pixel values from the specified texture (called the displacement map) to perform a displacement of an object.
+ You can use this filter to apply all manor of crazy warping effects
+ Currently the r property of the texture is used offset the x and the g propery of the texture is used to offset the y.</p>
 
-        &#x27;void main(void) {&#x27;,
-        &#x27;   gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y));&#x27;,
-        &#x27;   gl_FragColor = gl_FragColor * alpha;&#x27;,
-        &#x27;}&#x27;
-    ];
+</div>
 
-    this.vertexSrc = [
-        &#x27;attribute vec2 aVertexPosition;&#x27;,
-        &#x27;attribute vec2 aTextureCoord;&#x27;,
-        &#x27;attribute float aColor;&#x27;,
-        &#x27;uniform mat3 translationMatrix;&#x27;,
-        &#x27;uniform vec2 projectionVector;&#x27;,
-        &#x27;varying vec2 vTextureCoord;&#x27;,
-        &#x27;attribute vec2 offsetVector;&#x27;,
-        &#x27;varying float vColor;&#x27;,
 
-        &#x27;void main(void) {&#x27;,
-        &#x27;   vec3 v = translationMatrix * vec3(aVertexPosition, 1.0);&#x27;,
-        &#x27;   v -= offsetVector.xyx;&#x27;,
-        &#x27;   gl_Position = vec4( v.x / projectionVector.x -1.0, v.y / projectionVector.y + 1.0 , 0.0, 1.0);&#x27;,
-        &#x27;   vTextureCoord = aTextureCoord;&#x27;,
-        &#x27;   vColor = aColor;&#x27;,
-        &#x27;}&#x27;
-    ];
-};
 
-PIXI.StripShader.prototype.init = function()
-{
+<div id="classdocs" class="tabview">
+    <ul class="api-class-tabs">
+        <li class="api-class-tab index"><a href="#index">Index</a></li>
 
-    var gl = PIXI.gl;
+        
+        
+            <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
+        
+        
+        
+    </ul>
 
-    var program = PIXI.compileProgram(gl, this.vertexSrc, this.fragmentSrc);
-    gl.useProgram(program);
+    <div>
+        <div id="index" class="api-class-tabpanel index">
+            <h2 class="off-left">Item Index</h2>
 
-    // get and store the uniforms for the shader
-    this.uSampler = gl.getUniformLocation(program, &#x27;uSampler&#x27;);
-    this.projectionVector = gl.getUniformLocation(program, &#x27;projectionVector&#x27;);
-    this.offsetVector = gl.getUniformLocation(program, &#x27;offsetVector&#x27;);
-    this.colorAttribute = gl.getAttribLocation(program, &#x27;aColor&#x27;);
-    //this.dimensions = gl.getUniformLocation(this.program, &#x27;dimensions&#x27;);
+            
 
-    // get and store the attributes
-    this.aVertexPosition = gl.getAttribLocation(program, &#x27;aVertexPosition&#x27;);
-    this.aTextureCoord = gl.getAttribLocation(program, &#x27;aTextureCoord&#x27;);
+            
+                <div class="index-section properties">
+                    <h3>Properties</h3>
 
-    this.translationMatrix = gl.getUniformLocation(program, &#x27;translationMatrix&#x27;);
-    this.alpha = gl.getUniformLocation(program, &#x27;alpha&#x27;);
+                    <ul class="index-list properties">
+                        
+                            <li class="index-item property">
+                                <a href="#property_map">map</a>
 
-    this.program = program;
-};
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_offset">offset</a>
 
-    </pre>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_scale">scale</a>
+
+                                
+                                
+                            </li>
+                        
+                    </ul>
+                </div>
+            
+
+            
+
+            
+        </div>
+
+        
+
+        
+            <div id="properties" class="api-class-tabpanel">
+                <h2 class="off-left">Properties</h2>
+
+                
+                    <div id="property_map" class="property item">
+    <h3 class="name"><code>map</code></h3>
+    <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_filters_AlphaMaskFilter.js.html#l86"><code>src&#x2F;pixi&#x2F;filters&#x2F;AlphaMaskFilter.js:86</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The texture used for the displacemtent map * must be power of 2 texture at the moment</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_offset" class="property item">
+    <h3 class="name"><code>offset</code></h3>
+    <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_filters_AlphaMaskFilter.js.html#l116"><code>src&#x2F;pixi&#x2F;filters&#x2F;AlphaMaskFilter.js:116</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The offset used to move the displacement map.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_scale" class="property item">
+    <h3 class="name"><code>scale</code></h3>
+    <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_filters_AlphaMaskFilter.js.html#l101"><code>src&#x2F;pixi&#x2F;filters&#x2F;AlphaMaskFilter.js:101</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The multiplier used to scale the displacement result from the map calculation.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+            </div>
+        
+
+        
+
+        
+    </div>
 </div>
 
                     </div>

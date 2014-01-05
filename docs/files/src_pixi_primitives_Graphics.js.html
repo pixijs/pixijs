@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/pixi/primitives/Graphics.js - Pixi.JS</title>
+    <title>src/pixi/primitives/Graphics.js - pixi.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -15,7 +15,7 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
             
-                <h1><img src="http://www.goodboydigital.com/pixijs/logo_small.png" title="Pixi.JS"></h1>
+                <h1><img src="http://www.goodboydigital.com/pixijs/logo_small.png" title="pixi.js"></h1>
             
         </div>
         <div class="yui3-u-1-4 version">
@@ -42,6 +42,8 @@
             <ul id="api-classes" class="apis classes">
             
                 <li><a href="../classes/AbstractFilter.html">AbstractFilter</a></li>
+            
+                <li><a href="../classes/AlphaMaskFilter.html">AlphaMaskFilter</a></li>
             
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
@@ -239,11 +241,26 @@ PIXI.Graphics = function()
     this.currentPath = {points:[]};
 
     this._webGL = [];
+
+    this.isMask = false;
 };
 
 // constructor
 PIXI.Graphics.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
 PIXI.Graphics.prototype.constructor = PIXI.Graphics;
+
+/*
+*   Not yet implemented
+*/
+Object.defineProperty(PIXI.Graphics.prototype, &quot;cacheAsBitmap&quot;, {
+    get: function() {
+        return  this._cacheAsBitmap;
+    },
+    set: function(value) {
+        this._cacheAsBitmap = value;
+    }
+});
+
 
 /**
  * Specifies a line style used for subsequent calls to Graphics methods such as the lineTo() method or the drawCircle() method.
@@ -414,8 +431,12 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
     // if the sprite is not visible or the alpha is 0 then no need to render this element
     if(this.visible === false || this.alpha === 0 || this.isMask === true)return;
     
+   
     renderSession.spriteBatch.stop();
 
+    if(this._mask)renderSession.maskManager.pushMask(this.mask, renderSession);
+    if(this._filters)renderSession.filterManager.pushFilter(this._filterBlock);
+  
     // check blend mode
     if(this.blendMode !== renderSession.spriteBatch.currentBlendMode)
     {
@@ -423,9 +444,14 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
         var blendModeWebGL = PIXI.blendModesWebGL[renderSession.spriteBatch.currentBlendMode];
         this.spriteBatch.gl.blendFunc(blendModeWebGL[0], blendModeWebGL[1]);
     }
-
+ 
     PIXI.WebGLGraphics.renderGraphics(this, renderSession);
     
+    if(this._filters)renderSession.filterManager.popFilter();
+    if(this._mask)renderSession.maskManager.popMask(renderSession);
+      
+    renderSession.drawCount++;
+
     renderSession.spriteBatch.start();
 };
 
@@ -452,9 +478,9 @@ PIXI.Graphics.prototype.getBounds = function()
     if(!this.bounds)this.updateBounds();
 
     var w0 = this.bounds.x;
-    var w1 = this.bounds.y;
+    var w1 = this.bounds.width + this.bounds.x;
 
-    var h0 = this.bounds.width + this.bounds.x;
+    var h0 = this.bounds.y;
     var h1 = this.bounds.height + this.bounds.y;
 
     var worldTransform = this.worldTransform;
@@ -518,7 +544,6 @@ PIXI.Graphics.prototype.getBounds = function()
 PIXI.Graphics.prototype.updateBounds = function()
 {
     
-    
     var minX = Infinity;
     var maxX = -Infinity;
 
@@ -567,7 +592,6 @@ PIXI.Graphics.prototype.updateBounds = function()
 
                 x = points[j];
                 y = points[j+1];
-
                 minX = x-lineWidth &lt; minX ? x-lineWidth : minX;
                 maxX = x+lineWidth &gt; maxX ? x+lineWidth : maxX;
 
@@ -578,8 +602,6 @@ PIXI.Graphics.prototype.updateBounds = function()
     }
 
     this.bounds = new PIXI.Rectangle(minX, minY, maxX - minX, maxY - minY);
-    
-//  console.log(this.bounds);
 };
 
 // SOME TYPES:

@@ -1,6 +1,6 @@
 {
     "project": {
-        "name": "Pixi.JS",
+        "name": "pixi.js",
         "description": "Pixi.js is a fast lightweight 2D library that works across all devices.",
         "version": "1.4.0",
         "url": "http://goodboydigital.com/",
@@ -132,6 +132,15 @@
             "modules": {},
             "classes": {
                 "AbstractFilter": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/pixi/filters/AlphaMaskFilter.js": {
+            "name": "src/pixi/filters/AlphaMaskFilter.js",
+            "modules": {},
+            "classes": {
+                "AlphaMaskFilter": 1
             },
             "fors": {},
             "namespaces": {}
@@ -366,6 +375,29 @@
             "fors": {},
             "namespaces": {}
         },
+        "src/pixi/renderers/webgl/shaders/PixiShader.js": {
+            "name": "src/pixi/renderers/webgl/shaders/PixiShader.js",
+            "modules": {},
+            "classes": {
+                "PIXI.PixiShader": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/pixi/renderers/webgl/shaders/PrimitiveShader.js": {
+            "name": "src/pixi/renderers/webgl/shaders/PrimitiveShader.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/pixi/renderers/webgl/shaders/StripShader.js": {
+            "name": "src/pixi/renderers/webgl/shaders/StripShader.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
         "src/pixi/renderers/webgl/utils/WebGLFilterManager.js": {
             "name": "src/pixi/renderers/webgl/utils/WebGLFilterManager.js",
             "modules": {},
@@ -396,31 +428,15 @@
             "fors": {},
             "namespaces": {}
         },
+        "src/pixi/renderers/webgl/utils/WebGLShaderUtils.js": {
+            "name": "src/pixi/renderers/webgl/utils/WebGLShaderUtils.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
         "src/pixi/renderers/webgl/utils/WebGLSpriteBatch.js": {
             "name": "src/pixi/renderers/webgl/utils/WebGLSpriteBatch.js",
-            "modules": {},
-            "classes": {},
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/pixi/renderers/webgl/PixiShader.js": {
-            "name": "src/pixi/renderers/webgl/PixiShader.js",
-            "modules": {},
-            "classes": {
-                "PIXI.PixiShader": 1
-            },
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/pixi/renderers/webgl/PrimitiveShader.js": {
-            "name": "src/pixi/renderers/webgl/PrimitiveShader.js",
-            "modules": {},
-            "classes": {},
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/pixi/renderers/webgl/StripShader.js": {
-            "name": "src/pixi/renderers/webgl/StripShader.js",
             "modules": {},
             "classes": {},
             "fors": {},
@@ -432,13 +448,6 @@
             "classes": {
                 "WebGLRenderer": 1
             },
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/pixi/renderers/webgl/WebGLShaders.js": {
-            "name": "src/pixi/renderers/webgl/WebGLShaders.js",
-            "modules": {},
-            "classes": {},
             "fors": {},
             "namespaces": {}
         },
@@ -576,6 +585,7 @@
                 "Spine": 1,
                 "TilingSprite": 1,
                 "AbstractFilter": 1,
+                "AlphaMaskFilter": 1,
                 "BlurFilter": 1,
                 "ColorMatrixFilter": 1,
                 "ColorStepFilter": 1,
@@ -611,7 +621,7 @@
             "namespaces": {},
             "tag": "module",
             "file": "src/pixi/InteractionManager.js",
-            "line": 638
+            "line": 640
         }
     },
     "classes": {
@@ -939,6 +949,27 @@
                 {
                     "name": "uniforms",
                     "description": ""
+                }
+            ]
+        },
+        "AlphaMaskFilter": {
+            "name": "AlphaMaskFilter",
+            "shortname": "AlphaMaskFilter",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "PIXI",
+            "file": "src/pixi/filters/AlphaMaskFilter.js",
+            "line": 5,
+            "description": "The AlphaMaskFilter class uses the pixel values from the specified texture (called the displacement map) to perform a displacement of an object.\n You can use this filter to apply all manor of crazy warping effects\n Currently the r property of the texture is used offset the x and the g propery of the texture is used to offset the y.",
+            "contructor": "",
+            "params": [
+                {
+                    "name": "texture",
+                    "description": "The texture used for the displacemtent map * must be power of 2 texture at the moment",
+                    "type": "Texture"
                 }
             ]
         },
@@ -1306,7 +1337,7 @@
             "plugin_for": [],
             "extension_for": [],
             "module": "PIXI",
-            "file": "src/pixi/renderers/webgl/PixiShader.js",
+            "file": "src/pixi/renderers/webgl/shaders/PixiShader.js",
             "line": 6,
             "is_constructor": 1
         },
@@ -1654,7 +1685,7 @@
             "module": "PIXI",
             "namespace": "PolyK",
             "file": "src/pixi/InteractionManager.js",
-            "line": 638,
+            "line": 640,
             "description": "Holds all information related to an Interaction event",
             "is_constructor": 1
         }
@@ -2094,7 +2125,16 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 127,
+            "line": 125,
+            "description": "This is the curser that will be used when the mouse is over this object. To enable this the element must have interaction = true and buttonMode = true",
+            "itemtype": "property",
+            "name": "defaultCursor",
+            "type": "String",
+            "class": "DisplayObject"
+        },
+        {
+            "file": "src/pixi/display/DisplayObject.js",
+            "line": 134,
             "description": "[read-only] Current transform of the object based on world (parent) factors",
             "itemtype": "property",
             "name": "worldTransform",
@@ -2106,7 +2146,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 137,
+            "line": 144,
             "description": "[read-only] Current transform of the object locally",
             "itemtype": "property",
             "name": "localTransform",
@@ -2118,7 +2158,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 147,
+            "line": 154,
             "description": "[NYI] Unkown",
             "itemtype": "property",
             "name": "color",
@@ -2129,7 +2169,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 156,
+            "line": 163,
             "description": "[NYI] Holds whether or not this object is dynamic, for rendering optimization",
             "itemtype": "property",
             "name": "dynamic",
@@ -2140,12 +2180,12 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 173,
+            "line": 180,
             "class": "DisplayObject"
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 185,
+            "line": 193,
             "description": "A callback that is used when the users clicks on the displayObject with their mouse",
             "itemtype": "method",
             "name": "click",
@@ -2160,7 +2200,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 191,
+            "line": 199,
             "description": "A callback that is used when the user clicks the mouse down over the sprite",
             "itemtype": "method",
             "name": "mousedown",
@@ -2175,7 +2215,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 197,
+            "line": 205,
             "description": "A callback that is used when the user releases the mouse that was over the displayObject\nfor this callback to be fired the mouse must have been pressed down over the displayObject",
             "itemtype": "method",
             "name": "mouseup",
@@ -2190,7 +2230,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 204,
+            "line": 212,
             "description": "A callback that is used when the user releases the mouse that was over the displayObject but is no longer over the displayObject\nfor this callback to be fired, The touch must have started over the displayObject",
             "itemtype": "method",
             "name": "mouseupoutside",
@@ -2205,7 +2245,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 211,
+            "line": 219,
             "description": "A callback that is used when the users mouse rolls over the displayObject",
             "itemtype": "method",
             "name": "mouseover",
@@ -2220,7 +2260,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 217,
+            "line": 225,
             "description": "A callback that is used when the users mouse leaves the displayObject",
             "itemtype": "method",
             "name": "mouseout",
@@ -2235,7 +2275,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 228,
+            "line": 236,
             "description": "A callback that is used when the users taps on the sprite with their finger\nbasically a touch version of click",
             "itemtype": "method",
             "name": "tap",
@@ -2250,7 +2290,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 235,
+            "line": 243,
             "description": "A callback that is used when the user touch's over the displayObject",
             "itemtype": "method",
             "name": "touchstart",
@@ -2265,7 +2305,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 241,
+            "line": 249,
             "description": "A callback that is used when the user releases a touch over the displayObject",
             "itemtype": "method",
             "name": "touchend",
@@ -2280,7 +2320,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 247,
+            "line": 255,
             "description": "A callback that is used when the user releases the touch that was over the displayObject\nfor this callback to be fired, The touch must have started over the sprite",
             "itemtype": "method",
             "name": "touchendoutside",
@@ -2295,7 +2335,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 258,
+            "line": 266,
             "description": "[Deprecated] Indicates if the sprite will have touch and mouse interactivity. It is false by default\nInstead of using this function you can now simply set the interactive property to true or false",
             "itemtype": "method",
             "name": "setInteractive",
@@ -2312,7 +2352,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 271,
+            "line": 279,
             "description": "Indicates if the sprite will have touch and mouse interactivity. It is false by default",
             "itemtype": "property",
             "name": "interactive",
@@ -2322,7 +2362,16 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 291,
+            "line": 299,
+            "description": "[read-only] Indicates if the sprite is globaly visible.",
+            "itemtype": "property",
+            "name": "worldVisible",
+            "type": "Boolean",
+            "class": "DisplayObject"
+        },
+        {
+            "file": "src/pixi/display/DisplayObject.js",
+            "line": 320,
             "description": "Sets a mask for the displayObject. A mask is an object that limits the visibility of an object to the shape of the mask applied to it.\nIn PIXI a regular mask must be a PIXI.Ggraphics object. This allows for much faster masking in canvas as it utilises shape clipping.\nTo remove a mask, set this property to null.",
             "itemtype": "property",
             "name": "mask",
@@ -2331,7 +2380,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 314,
+            "line": 340,
             "description": "Sets the filters for the displayObject.\n* IMPORTANT: This is a webGL only feature and will be ignored by the canvas renderer.\nTo remove filters simply set this property to 'null'",
             "itemtype": "property",
             "name": "filters",
@@ -2365,7 +2414,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObjectContainer.js",
-            "line": 50,
+            "line": 51,
             "description": "The height of the displayObjectContainer, setting this will actually modify the scale to acheive the value set",
             "itemtype": "property",
             "name": "height",
@@ -2374,7 +2423,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObjectContainer.js",
-            "line": 69,
+            "line": 70,
             "description": "Adds a child to the container.",
             "itemtype": "method",
             "name": "addChild",
@@ -2389,7 +2438,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObjectContainer.js",
-            "line": 94,
+            "line": 95,
             "description": "Adds a child to the container at a specified index. If the index is out of bounds an error will be thrown",
             "itemtype": "method",
             "name": "addChildAt",
@@ -2409,7 +2458,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObjectContainer.js",
-            "line": 122,
+            "line": 123,
             "description": "[NYI] Swaps the depth of 2 displayObjects",
             "itemtype": "method",
             "name": "swapChildren",
@@ -2431,7 +2480,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObjectContainer.js",
-            "line": 148,
+            "line": 149,
             "description": "Returns the Child at the specified index",
             "itemtype": "method",
             "name": "getChildAt",
@@ -2446,7 +2495,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObjectContainer.js",
-            "line": 166,
+            "line": 167,
             "description": "Removes a child from the container.",
             "itemtype": "method",
             "name": "removeChild",
@@ -2608,15 +2657,6 @@
         {
             "file": "src/pixi/display/Sprite.js",
             "line": 43,
-            "description": "The blend mode of sprite.\ncurrently supports PIXI.blendModes.NORMAL and PIXI.blendModes.SCREEN",
-            "itemtype": "property",
-            "name": "blendMode",
-            "type": "Number",
-            "class": "Sprite™"
-        },
-        {
-            "file": "src/pixi/display/Sprite.js",
-            "line": 52,
             "description": "The width of the sprite (this is initially set by the texture)",
             "itemtype": "property",
             "name": "_width",
@@ -2627,7 +2667,7 @@
         },
         {
             "file": "src/pixi/display/Sprite.js",
-            "line": 61,
+            "line": 52,
             "description": "The height of the sprite (this is initially set by the texture)",
             "itemtype": "property",
             "name": "_height",
@@ -2638,19 +2678,27 @@
         },
         {
             "file": "src/pixi/display/Sprite.js",
-            "line": 71,
+            "line": 62,
             "description": "The tint applied to the sprite. This is a hex value",
             "itemtype": "property",
             "name": "tint",
             "type": "Number",
             "default": "0xFFFFFF",
-            "access": "private",
-            "tagname": "",
             "class": "Sprite™"
         },
         {
             "file": "src/pixi/display/Sprite.js",
-            "line": 101,
+            "line": 71,
+            "description": "The blend mode to be applied to the sprite",
+            "itemtype": "property",
+            "name": "blendMode",
+            "type": "Number",
+            "default": "PIXI.blendModes.NORMAL;",
+            "class": "Sprite™"
+        },
+        {
+            "file": "src/pixi/display/Sprite.js",
+            "line": 97,
             "description": "The width of the sprite, setting this will actually modify the scale to acheive the value set",
             "itemtype": "property",
             "name": "width",
@@ -2659,7 +2707,7 @@
         },
         {
             "file": "src/pixi/display/Sprite.js",
-            "line": 117,
+            "line": 113,
             "description": "The height of the sprite, setting this will actually modify the scale to acheive the value set",
             "itemtype": "property",
             "name": "height",
@@ -2668,7 +2716,7 @@
         },
         {
             "file": "src/pixi/display/Sprite.js",
-            "line": 133,
+            "line": 129,
             "description": "Sets the texture of the sprite",
             "itemtype": "method",
             "name": "setTexture",
@@ -2683,7 +2731,7 @@
         },
         {
             "file": "src/pixi/display/Sprite.js",
-            "line": 156,
+            "line": 152,
             "description": "When the texture is updated, this event will fire to update the scale and frame",
             "itemtype": "method",
             "name": "onTextureUpdate",
@@ -2699,7 +2747,7 @@
         },
         {
             "file": "src/pixi/display/Sprite.js",
-            "line": 416,
+            "line": 415,
             "description": "Helper function that creates a sprite that will contain a texture from the TextureCache based on the frameId\n The frame ids are created when a Texture packer file has been loaded",
             "itemtype": "method",
             "name": "fromFrame",
@@ -2719,7 +2767,7 @@
         },
         {
             "file": "src/pixi/display/Sprite.js",
-            "line": 433,
+            "line": 432,
             "description": "Helper function that creates a sprite that will contain a texture based on an image url\n If the image is not in the texture cache it will be loaded",
             "itemtype": "method",
             "name": "fromImage",
@@ -3033,6 +3081,39 @@
             "access": "private",
             "tagname": "",
             "class": "AbstractFilter"
+        },
+        {
+            "file": "src/pixi/filters/AlphaMaskFilter.js",
+            "line": 1,
+            "author": "Mat Groves http://matgroves.com/ @Doormat23",
+            "class": "AlphaMaskFilter"
+        },
+        {
+            "file": "src/pixi/filters/AlphaMaskFilter.js",
+            "line": 86,
+            "description": "The texture used for the displacemtent map * must be power of 2 texture at the moment",
+            "itemtype": "property",
+            "name": "map",
+            "type": "Texture",
+            "class": "AlphaMaskFilter"
+        },
+        {
+            "file": "src/pixi/filters/AlphaMaskFilter.js",
+            "line": 101,
+            "description": "The multiplier used to scale the displacement result from the map calculation.",
+            "itemtype": "property",
+            "name": "scale",
+            "type": "Point",
+            "class": "AlphaMaskFilter"
+        },
+        {
+            "file": "src/pixi/filters/AlphaMaskFilter.js",
+            "line": 116,
+            "description": "The offset used to move the displacement map.",
+            "itemtype": "property",
+            "name": "offset",
+            "type": "Point",
+            "class": "AlphaMaskFilter"
         },
         {
             "file": "src/pixi/filters/BlurFilter.js",
@@ -3802,7 +3883,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 74,
+            "line": 89,
             "description": "Specifies a line style used for subsequent calls to Graphics methods such as the lineTo() method or the drawCircle() method.",
             "itemtype": "method",
             "name": "lineStyle",
@@ -3827,7 +3908,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 96,
+            "line": 111,
             "description": "Moves the current drawing position to (x, y).",
             "itemtype": "method",
             "name": "moveTo",
@@ -3847,7 +3928,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 115,
+            "line": 130,
             "description": "Draws a line using the current line style from the current drawing position to (x, y);\nthe current drawing position is then set to (x, y).",
             "itemtype": "method",
             "name": "lineTo",
@@ -3867,7 +3948,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 129,
+            "line": 144,
             "description": "Specifies a simple one-color fill that subsequent calls to other Graphics methods\n(such as lineTo() or drawCircle()) use when drawing.",
             "itemtype": "method",
             "name": "beginFill",
@@ -3887,7 +3968,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 145,
+            "line": 160,
             "description": "Applies a fill to the lines and shapes that were added since the last call to the beginFill() method.",
             "itemtype": "method",
             "name": "endFill",
@@ -3895,7 +3976,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 157,
+            "line": 172,
             "itemtype": "method",
             "name": "drawRect",
             "params": [
@@ -3924,7 +4005,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 177,
+            "line": 192,
             "description": "Draws a circle.",
             "itemtype": "method",
             "name": "drawCircle",
@@ -3949,7 +4030,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 198,
+            "line": 213,
             "description": "Draws an ellipse.",
             "itemtype": "method",
             "name": "drawEllipse",
@@ -3979,7 +4060,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 220,
+            "line": 235,
             "description": "Clears the graphics that were drawn to this Graphics object, and resets fill and line style settings.",
             "itemtype": "method",
             "name": "clear",
@@ -4134,6 +4215,79 @@
             "class": "CanvasRenderer"
         },
         {
+            "file": "src/pixi/renderers/webgl/shaders/PixiShader.js",
+            "line": 1,
+            "author": "Richard Davey http://www.photonstorm.com @photonstorm",
+            "class": "PIXI.PixiShader"
+        },
+        {
+            "file": "src/pixi/renderers/webgl/shaders/PixiShader.js",
+            "line": 14,
+            "itemtype": "property",
+            "name": "program - The WebGL program.",
+            "type": "Any",
+            "class": "PIXI.PixiShader"
+        },
+        {
+            "file": "src/pixi/renderers/webgl/shaders/PixiShader.js",
+            "line": 19,
+            "itemtype": "property",
+            "name": "fragmentSrc - The fragment shader.",
+            "type": "Array",
+            "class": "PIXI.PixiShader"
+        },
+        {
+            "file": "src/pixi/renderers/webgl/shaders/PixiShader.js",
+            "line": 33,
+            "itemtype": "property",
+            "name": "textureCount - A local texture counter for multi-texture shaders.",
+            "type": "Number",
+            "class": "PIXI.PixiShader"
+        },
+        {
+            "file": "src/pixi/renderers/webgl/shaders/PixiShader.js",
+            "line": 42,
+            "itemtype": "method",
+            "name": "PIXI.PixiShader#init",
+            "class": "PIXI.PixiShader"
+        },
+        {
+            "file": "src/pixi/renderers/webgl/shaders/PixiShader.js",
+            "line": 91,
+            "description": "Initialises the shader uniform values.\nUniforms are specified in the GLSL_ES Specification: http://www.khronos.org/registry/webgl/specs/latest/1.0/\nhttp://www.khronos.org/registry/gles/specs/2.0/GLSL_ES_Specification_1.0.17.pdf",
+            "itemtype": "method",
+            "name": "PIXI.PixiShader#initUniforms",
+            "class": "PIXI.PixiShader"
+        },
+        {
+            "file": "src/pixi/renderers/webgl/shaders/PixiShader.js",
+            "line": 164,
+            "description": "Initialises a Sampler2D uniform (which may only be available later on after initUniforms once the texture is has loaded)",
+            "itemtype": "method",
+            "name": "PIXI.PixiShader#initSampler2D",
+            "class": "PIXI.PixiShader"
+        },
+        {
+            "file": "src/pixi/renderers/webgl/shaders/PixiShader.js",
+            "line": 239,
+            "description": "Updates the shader uniform values.",
+            "itemtype": "method",
+            "name": "PIXI.PixiShader#syncUniforms",
+            "class": "PIXI.PixiShader"
+        },
+        {
+            "file": "src/pixi/renderers/webgl/shaders/PrimitiveShader.js",
+            "line": 1,
+            "author": "Mat Groves http://matgroves.com/ @Doormat23",
+            "class": "CanvasGraphics"
+        },
+        {
+            "file": "src/pixi/renderers/webgl/shaders/StripShader.js",
+            "line": 1,
+            "author": "Mat Groves http://matgroves.com/ @Doormat23",
+            "class": "CanvasGraphics"
+        },
+        {
             "file": "src/pixi/renderers/webgl/utils/WebGLFilterManager.js",
             "line": 1,
             "author": "Mat Groves http://matgroves.com/ @Doormat23",
@@ -4170,7 +4324,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/utils/WebGLGraphics.js",
-            "line": 89,
+            "line": 88,
             "description": "Updates the graphics object",
             "static": 1,
             "access": "private",
@@ -4188,7 +4342,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/utils/WebGLGraphics.js",
-            "line": 143,
+            "line": 142,
             "description": "Builds a rectangle to draw",
             "static": 1,
             "access": "private",
@@ -4211,7 +4365,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/utils/WebGLGraphics.js",
-            "line": 207,
+            "line": 206,
             "description": "Builds a circle to draw",
             "static": 1,
             "access": "private",
@@ -4234,7 +4388,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/utils/WebGLGraphics.js",
-            "line": 276,
+            "line": 275,
             "description": "Builds a line to draw",
             "static": 1,
             "access": "private",
@@ -4257,7 +4411,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/utils/WebGLGraphics.js",
-            "line": 486,
+            "line": 485,
             "description": "Builds a polygon to draw",
             "static": 1,
             "access": "private",
@@ -4282,91 +4436,24 @@
             "file": "src/pixi/renderers/webgl/utils/WebGLMaskManager.js",
             "line": 1,
             "author": "Mat Groves http://matgroves.com/ @Doormat23",
-            "class": "PIXI.PixiShader"
+            "class": "WebGLRenderer"
         },
         {
             "file": "src/pixi/renderers/webgl/utils/WebGLShaderManager.js",
             "line": 1,
             "author": "Mat Groves http://matgroves.com/ @Doormat23",
-            "class": "PIXI.PixiShader"
+            "class": "WebGLRenderer"
+        },
+        {
+            "file": "src/pixi/renderers/webgl/utils/WebGLShaderUtils.js",
+            "line": 1,
+            "author": "Mat Groves http://matgroves.com/ @Doormat23",
+            "class": "WebGLRenderer"
         },
         {
             "file": "src/pixi/renderers/webgl/utils/WebGLSpriteBatch.js",
             "line": 1,
             "author": "Mat Groves\n\nBig thanks to the very clever Matt DesLauriers <mattdesl> https://github.com/mattdesl/\nfor creating the original pixi version!\n\nHeavily inspired by LibGDX's WebGLSpriteBatch:\nhttps://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/graphics/g2d/WebGLSpriteBatch.java",
-            "class": "PIXI.PixiShader"
-        },
-        {
-            "file": "src/pixi/renderers/webgl/PixiShader.js",
-            "line": 1,
-            "author": "Richard Davey http://www.photonstorm.com @photonstorm",
-            "class": "PIXI.PixiShader"
-        },
-        {
-            "file": "src/pixi/renderers/webgl/PixiShader.js",
-            "line": 14,
-            "itemtype": "property",
-            "name": "program - The WebGL program.",
-            "type": "Any",
-            "class": "PIXI.PixiShader"
-        },
-        {
-            "file": "src/pixi/renderers/webgl/PixiShader.js",
-            "line": 19,
-            "itemtype": "property",
-            "name": "fragmentSrc - The fragment shader.",
-            "type": "Array",
-            "class": "PIXI.PixiShader"
-        },
-        {
-            "file": "src/pixi/renderers/webgl/PixiShader.js",
-            "line": 33,
-            "itemtype": "property",
-            "name": "textureCount - A local texture counter for multi-texture shaders.",
-            "type": "Number",
-            "class": "PIXI.PixiShader"
-        },
-        {
-            "file": "src/pixi/renderers/webgl/PixiShader.js",
-            "line": 42,
-            "itemtype": "method",
-            "name": "PIXI.PixiShader#init",
-            "class": "PIXI.PixiShader"
-        },
-        {
-            "file": "src/pixi/renderers/webgl/PixiShader.js",
-            "line": 77,
-            "description": "Initialises the shader uniform values.\nUniforms are specified in the GLSL_ES Specification: http://www.khronos.org/registry/webgl/specs/latest/1.0/\nhttp://www.khronos.org/registry/gles/specs/2.0/GLSL_ES_Specification_1.0.17.pdf",
-            "itemtype": "method",
-            "name": "PIXI.PixiShader#initUniforms",
-            "class": "PIXI.PixiShader"
-        },
-        {
-            "file": "src/pixi/renderers/webgl/PixiShader.js",
-            "line": 150,
-            "description": "Initialises a Sampler2D uniform (which may only be available later on after initUniforms once the texture is has loaded)",
-            "itemtype": "method",
-            "name": "PIXI.PixiShader#initSampler2D",
-            "class": "PIXI.PixiShader"
-        },
-        {
-            "file": "src/pixi/renderers/webgl/PixiShader.js",
-            "line": 225,
-            "description": "Updates the shader uniform values.",
-            "itemtype": "method",
-            "name": "PIXI.PixiShader#syncUniforms",
-            "class": "PIXI.PixiShader"
-        },
-        {
-            "file": "src/pixi/renderers/webgl/PrimitiveShader.js",
-            "line": 1,
-            "author": "Mat Groves http://matgroves.com/ @Doormat23",
-            "class": "WebGLRenderer"
-        },
-        {
-            "file": "src/pixi/renderers/webgl/StripShader.js",
-            "line": 1,
-            "author": "Mat Groves http://matgroves.com/ @Doormat23",
             "class": "WebGLRenderer"
         },
         {
@@ -4377,7 +4464,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 125,
+            "line": 126,
             "description": "Renders the stage to its webGL view",
             "itemtype": "method",
             "name": "render",
@@ -4489,12 +4576,6 @@
             "access": "private",
             "tagname": "",
             "class": "WebGLRenderer"
-        },
-        {
-            "file": "src/pixi/renderers/webgl/WebGLShaders.js",
-            "line": 1,
-            "author": "Mat Groves http://matgroves.com/ @Doormat23",
-            "class": "BitmapText"
         },
         {
             "file": "src/pixi/text/BitmapText.js",
@@ -5322,7 +5403,7 @@
         },
         {
             "file": "src/pixi/InteractionManager.js",
-            "line": 482,
+            "line": 484,
             "description": "Is called when a touch is moved accross the renderer element",
             "itemtype": "method",
             "name": "onTouchMove",
@@ -5340,7 +5421,7 @@
         },
         {
             "file": "src/pixi/InteractionManager.js",
-            "line": 516,
+            "line": 518,
             "description": "Is called when a touch is started on the renderer element",
             "itemtype": "method",
             "name": "onTouchStart",
@@ -5358,7 +5439,7 @@
         },
         {
             "file": "src/pixi/InteractionManager.js",
-            "line": 565,
+            "line": 567,
             "description": "Is called when a touch is ended on the renderer element",
             "itemtype": "method",
             "name": "onTouchEnd",
@@ -5376,7 +5457,7 @@
         },
         {
             "file": "src/pixi/InteractionManager.js",
-            "line": 646,
+            "line": 648,
             "description": "This point stores the global coords of where the touch/mouse event happened",
             "itemtype": "property",
             "name": "global",
@@ -5386,7 +5467,7 @@
         },
         {
             "file": "src/pixi/InteractionManager.js",
-            "line": 657,
+            "line": 659,
             "description": "The target Sprite that was interacted with",
             "itemtype": "property",
             "name": "target",
@@ -5396,7 +5477,7 @@
         },
         {
             "file": "src/pixi/InteractionManager.js",
-            "line": 665,
+            "line": 667,
             "description": "When passed to an event handler, this will be the original DOM Event that was captured",
             "itemtype": "property",
             "name": "originalEvent",
@@ -5406,7 +5487,7 @@
         },
         {
             "file": "src/pixi/InteractionManager.js",
-            "line": 674,
+            "line": 676,
             "description": "This will return the local coords of the specified displayObject for this InteractionData",
             "itemtype": "method",
             "name": "getLocalPosition",
@@ -5447,6 +5528,10 @@
         }
     ],
     "warnings": [
+        {
+            "message": "unknown tag: contructor",
+            "line": " src/pixi/filters/AlphaMaskFilter.js:5"
+        },
         {
             "message": "unknown tag: contructor",
             "line": " src/pixi/filters/BlurFilter.js:5"
@@ -5513,7 +5598,7 @@
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/display/DisplayObject.js:173"
+            "line": " src/pixi/display/DisplayObject.js:180"
         },
         {
             "message": "Missing item type",
@@ -5649,6 +5734,10 @@
         },
         {
             "message": "Missing item type",
+            "line": " src/pixi/filters/AlphaMaskFilter.js:1"
+        },
+        {
+            "message": "Missing item type",
             "line": " src/pixi/filters/BlurFilter.js:1"
         },
         {
@@ -5781,6 +5870,18 @@
         },
         {
             "message": "Missing item type",
+            "line": " src/pixi/renderers/webgl/shaders/PixiShader.js:1"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/pixi/renderers/webgl/shaders/PrimitiveShader.js:1"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/pixi/renderers/webgl/shaders/StripShader.js:1"
+        },
+        {
+            "message": "Missing item type",
             "line": " src/pixi/renderers/webgl/utils/WebGLFilterManager.js:1"
         },
         {
@@ -5797,27 +5898,15 @@
         },
         {
             "message": "Missing item type",
+            "line": " src/pixi/renderers/webgl/utils/WebGLShaderUtils.js:1"
+        },
+        {
+            "message": "Missing item type",
             "line": " src/pixi/renderers/webgl/utils/WebGLSpriteBatch.js:1"
         },
         {
             "message": "Missing item type",
-            "line": " src/pixi/renderers/webgl/PixiShader.js:1"
-        },
-        {
-            "message": "Missing item type",
-            "line": " src/pixi/renderers/webgl/PrimitiveShader.js:1"
-        },
-        {
-            "message": "Missing item type",
-            "line": " src/pixi/renderers/webgl/StripShader.js:1"
-        },
-        {
-            "message": "Missing item type",
             "line": " src/pixi/renderers/webgl/WebGLRenderer.js:1"
-        },
-        {
-            "message": "Missing item type",
-            "line": " src/pixi/renderers/webgl/WebGLShaders.js:1"
         },
         {
             "message": "Missing item type",

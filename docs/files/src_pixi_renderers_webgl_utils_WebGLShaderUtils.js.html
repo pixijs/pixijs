@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/pixi/renderers/webgl/PrimitiveShader.js - Pixi.JS</title>
+    <title>src/pixi/renderers/webgl/utils/WebGLShaderUtils.js - pixi.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -15,7 +15,7 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
             
-                <h1><img src="http://www.goodboydigital.com/pixijs/logo_small.png" title="Pixi.JS"></h1>
+                <h1><img src="http://www.goodboydigital.com/pixijs/logo_small.png" title="pixi.js"></h1>
             
         </div>
         <div class="yui3-u-1-4 version">
@@ -42,6 +42,8 @@
             <ul id="api-classes" class="apis classes">
             
                 <li><a href="../classes/AbstractFilter.html">AbstractFilter</a></li>
+            
+                <li><a href="../classes/AlphaMaskFilter.html">AlphaMaskFilter</a></li>
             
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
@@ -168,7 +170,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/pixi/renderers/webgl/PrimitiveShader.js</h1>
+                        <h1 class="file-heading">File: src/pixi/renderers/webgl/utils/WebGLShaderUtils.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
@@ -176,66 +178,56 @@
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
-
-PIXI.PrimitiveShader = function(gl)
+PIXI.initDefaultShaders = function()
 {
-    this.gl = gl;
+   
+  //  PIXI.stripShader = new PIXI.StripShader();
+//    PIXI.stripShader.init();
 
-    // the webGL program..
-    this.program = null;
-
-    this.fragmentSrc = [
-        &#x27;precision mediump float;&#x27;,
-        &#x27;varying vec4 vColor;&#x27;,
-
-        &#x27;void main(void) {&#x27;,
-        &#x27;   gl_FragColor = vColor;&#x27;,
-        &#x27;}&#x27;
-    ];
-
-    this.vertexSrc  = [
-        &#x27;attribute vec2 aVertexPosition;&#x27;,
-        &#x27;attribute vec4 aColor;&#x27;,
-        &#x27;uniform mat3 translationMatrix;&#x27;,
-        &#x27;uniform vec2 projectionVector;&#x27;,
-        &#x27;uniform vec2 offsetVector;&#x27;,
-        &#x27;uniform float alpha;&#x27;,
-        &#x27;uniform vec3 tint;&#x27;,
-        &#x27;varying vec4 vColor;&#x27;,
-
-        &#x27;void main(void) {&#x27;,
-        &#x27;   vec3 v = translationMatrix * vec3(aVertexPosition , 1.0);&#x27;,
-        &#x27;   v -= offsetVector.xyx;&#x27;,
-        &#x27;   gl_Position = vec4( v.x / projectionVector.x -1.0, v.y / -projectionVector.y + 1.0 , 0.0, 1.0);&#x27;,
-        &#x27;   vColor = aColor * vec4(tint * alpha, alpha);&#x27;,
-        &#x27;}&#x27;
-    ];
-
-    this.init();
 };
 
-PIXI.PrimitiveShader.prototype.init = function()
+PIXI.CompileVertexShader = function(gl, shaderSrc)
 {
+    return PIXI._CompileShader(gl, shaderSrc, gl.VERTEX_SHADER);
+};
 
-    var gl = this.gl;
+PIXI.CompileFragmentShader = function(gl, shaderSrc)
+{
+    return PIXI._CompileShader(gl, shaderSrc, gl.FRAGMENT_SHADER);
+};
 
-    var program = PIXI.compileProgram(gl, this.vertexSrc, this.fragmentSrc);
-    gl.useProgram(program);
+PIXI._CompileShader = function(gl, shaderSrc, shaderType)
+{
+    var src = shaderSrc.join(&quot;\n&quot;);
+    var shader = gl.createShader(shaderType);
+    gl.shaderSource(shader, src);
+    gl.compileShader(shader);
 
-    // get and store the uniforms for the shader
-    this.projectionVector = gl.getUniformLocation(program, &#x27;projectionVector&#x27;);
-    this.offsetVector = gl.getUniformLocation(program, &#x27;offsetVector&#x27;);
-    this.tintColor = gl.getUniformLocation(program, &#x27;tint&#x27;);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        window.console.log(gl.getShaderInfoLog(shader));
+        return null;
+    }
 
+    return shader;
+};
 
-    // get and store the attributes
-    this.aVertexPosition = gl.getAttribLocation(program, &#x27;aVertexPosition&#x27;);
-    this.colorAttribute = gl.getAttribLocation(program, &#x27;aColor&#x27;);
+PIXI.compileProgram = function(gl, vertexSrc, fragmentSrc)
+{
+    //var gl = PIXI.gl;
+    var fragmentShader = PIXI.CompileFragmentShader(gl, fragmentSrc);
+    var vertexShader = PIXI.CompileVertexShader(gl, vertexSrc);
 
-    this.translationMatrix = gl.getUniformLocation(program, &#x27;translationMatrix&#x27;);
-    this.alpha = gl.getUniformLocation(program, &#x27;alpha&#x27;);
+    var shaderProgram = gl.createProgram();
 
-    this.program = program;
+    gl.attachShader(shaderProgram, vertexShader);
+    gl.attachShader(shaderProgram, fragmentShader);
+    gl.linkProgram(shaderProgram);
+
+    if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+        window.console.log(&quot;Could not initialise shaders&quot;);
+    }
+
+    return shaderProgram;
 };
 
     </pre>
