@@ -401,7 +401,6 @@ PIXI.WebGLFilterManager.prototype.initShaderBuffers = function()
 
 PIXI.FilterTexture = function(gl, width, height)
 {
-   // var gl = PIXI.gl;
     this.gl = gl;
 
     // next time to create a frame buffer and texture

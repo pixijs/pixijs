@@ -3869,75 +3869,11 @@ PIXI.PolyK._convex = function(ax, ay, bx, by, cx, cy, sign)
 
 PIXI.initDefaultShaders = function()
 {
-   // PIXI.primitiveShader = new PIXI.PrimitiveShader();
-  //  PIXI.primitiveShader.init();
+   
+  //  PIXI.stripShader = new PIXI.StripShader();
+//    PIXI.stripShader.init();
 
-    PIXI.stripShader = new PIXI.StripShader();
-    PIXI.stripShader.init();
-
-  //  PIXI.defaultShader = new PIXI.PixiShader();
-//    PIXI.defaultShader.init();
-
-  /*  var gl = PIXI.gl;
-    var shaderProgram = PIXI.defaultShader.program;
-
-    gl.useProgram(shaderProgram);
-
-    gl.enableVertexAttribArray(PIXI.defaultShader.aVertexPosition);
-    gl.enableVertexAttribArray(PIXI.defaultShader.colorAttribute);
-    gl.enableVertexAttribArray(PIXI.defaultShader.aTextureCoord);*/
 };
-/*
-PIXI.activatePrimitiveShader = function()
-{
-    var gl = PIXI.gl;
-
-    gl.useProgram(PIXI.primitiveShader.program);
-
-    gl.disableVertexAttribArray(PIXI.defaultShader.aVertexPosition);
-    gl.disableVertexAttribArray(PIXI.defaultShader.colorAttribute);
-    gl.disableVertexAttribArray(PIXI.defaultShader.aTextureCoord);
-
-    gl.enableVertexAttribArray(PIXI.primitiveShader.aVertexPosition);
-    gl.enableVertexAttribArray(PIXI.primitiveShader.colorAttribute);
-};
-
-PIXI.deactivatePrimitiveShader = function()
-{
-    var gl = PIXI.gl;
-
-    gl.useProgram(PIXI.defaultShader.program);
-
-    gl.disableVertexAttribArray(PIXI.primitiveShader.aVertexPosition);
-    gl.disableVertexAttribArray(PIXI.primitiveShader.colorAttribute);
-
-    gl.enableVertexAttribArray(PIXI.defaultShader.aVertexPosition);
-    gl.enableVertexAttribArray(PIXI.defaultShader.colorAttribute);
-    gl.enableVertexAttribArray(PIXI.defaultShader.aTextureCoord);
-};
-*/
-
-/*
-PIXI.activateStripShader = function()
-{
-    var gl = PIXI.gl;
-
-    gl.useProgram(PIXI.stripShader.program);
- // gl.disableVertexAttribArray(PIXI.defaultShader.aTextureCoord);
-};
-
-PIXI.deactivateStripShader = function()
-{
-    var gl = PIXI.gl;
-
-    gl.useProgram(PIXI.defaultShader.program);
-    //gl.enableVertexAttribArray(PIXI.defaultShader.aTextureCoord);
-};
-*/
-/*
-
-SHADER COMPILER HELPERS
-*/
 
 PIXI.CompileVertexShader = function(gl, shaderSrc)
 {
@@ -6322,7 +6258,6 @@ PIXI.WebGLFilterManager.prototype.initShaderBuffers = function()
 
 PIXI.FilterTexture = function(gl, width, height)
 {
-   // var gl = PIXI.gl;
     this.gl = gl;
 
     // next time to create a frame buffer and texture
