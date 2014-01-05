@@ -272,7 +272,6 @@ PIXI.DisplayObjectContainer.prototype.removeStageReference = function()
     for(var i=0,j=this.children.length; i<j; i++)
     {
         var child = this.children[i];
-        if(child.interactive)this.stage.dirty = true;
         child.removeStageReference();
     }
 

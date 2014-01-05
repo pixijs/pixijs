@@ -72,6 +72,7 @@ PIXI.Text.prototype.setText = function(text)
 {
     this.text = text.toString() || ' ';
     this.dirty = true;
+
 };
 
 /**
@@ -161,7 +162,18 @@ PIXI.Text.prototype.updateTexture = function()
     this._width = this.canvas.width;
     this._height = this.canvas.height;
 
-    PIXI.texturesToUpdate.push(this.texture.baseTexture);
+    this.requiresUpdate =  true;
+};
+
+PIXI.Text.prototype._renderWebGL = function(renderSession)
+{
+    if(this.requiresUpdate)
+    {
+        this.requiresUpdate = false;
+        PIXI.updateWebGLTexture(this.texture.baseTexture, renderSession.gl);
+    }
+
+    PIXI.Sprite.prototype._renderWebGL.call(this, renderSession);
 };
 
 /**

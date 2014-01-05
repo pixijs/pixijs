@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/pixi/renderers/webgl/WebGLShaders.js - Pixi.JS</title>
+    <title>src/pixi/filters/AlphaMaskFilter.js - pixi.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -15,7 +15,7 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
             
-                <h1><img src="http://www.goodboydigital.com/pixijs/logo_small.png" title="Pixi.JS"></h1>
+                <h1><img src="http://www.goodboydigital.com/pixijs/logo_small.png" title="pixi.js"></h1>
             
         </div>
         <div class="yui3-u-1-4 version">
@@ -42,6 +42,8 @@
             <ul id="api-classes" class="apis classes">
             
                 <li><a href="../classes/AbstractFilter.html">AbstractFilter</a></li>
+            
+                <li><a href="../classes/AlphaMaskFilter.html">AlphaMaskFilter</a></li>
             
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
@@ -168,7 +170,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/pixi/renderers/webgl/WebGLShaders.js</h1>
+                        <h1 class="file-heading">File: src/pixi/filters/AlphaMaskFilter.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
@@ -176,121 +178,131 @@
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
-PIXI.initDefaultShaders = function()
+/**
+ *
+ * The AlphaMaskFilter class uses the pixel values from the specified texture (called the displacement map) to perform a displacement of an object.
+ * You can use this filter to apply all manor of crazy warping effects
+ * Currently the r property of the texture is used offset the x and the g propery of the texture is used to offset the y.
+ * @class AlphaMaskFilter
+ * @contructor
+ * @param texture {Texture} The texture used for the displacemtent map * must be power of 2 texture at the moment
+ */
+PIXI.AlphaMaskFilter = function(texture)
 {
-   // PIXI.primitiveShader = new PIXI.PrimitiveShader();
-  //  PIXI.primitiveShader.init();
+    PIXI.AbstractFilter.call( this );
 
-    PIXI.stripShader = new PIXI.StripShader();
-    PIXI.stripShader.init();
+    this.passes = [this];
+    texture.baseTexture._powerOf2 = true;
 
-  //  PIXI.defaultShader = new PIXI.PixiShader();
-//    PIXI.defaultShader.init();
+    // set the uniforms
+    //console.log()
+    this.uniforms = {
+        displacementMap: {type: &#x27;sampler2D&#x27;, value:texture},
+        scale:           {type: &#x27;2f&#x27;, value:{x:30, y:30}},
+        offset:          {type: &#x27;2f&#x27;, value:{x:0, y:0}},
+        mapDimensions:   {type: &#x27;2f&#x27;, value:{x:1, y:5112}},
+        dimensions:   {type: &#x27;4fv&#x27;, value:[0,0,0,0]}
+    };
 
-  /*  var gl = PIXI.gl;
-    var shaderProgram = PIXI.defaultShader.program;
+    if(texture.baseTexture.hasLoaded)
+    {
+        this.uniforms.mapDimensions.value.x = texture.width;
+        this.uniforms.mapDimensions.value.y = texture.height;
+    }
+    else
+    {
+        this.boundLoadedFunction = this.onTextureLoaded.bind(this);
 
-    gl.useProgram(shaderProgram);
-
-    gl.enableVertexAttribArray(PIXI.defaultShader.aVertexPosition);
-    gl.enableVertexAttribArray(PIXI.defaultShader.colorAttribute);
-    gl.enableVertexAttribArray(PIXI.defaultShader.aTextureCoord);*/
-};
-/*
-PIXI.activatePrimitiveShader = function()
-{
-    var gl = PIXI.gl;
-
-    gl.useProgram(PIXI.primitiveShader.program);
-
-    gl.disableVertexAttribArray(PIXI.defaultShader.aVertexPosition);
-    gl.disableVertexAttribArray(PIXI.defaultShader.colorAttribute);
-    gl.disableVertexAttribArray(PIXI.defaultShader.aTextureCoord);
-
-    gl.enableVertexAttribArray(PIXI.primitiveShader.aVertexPosition);
-    gl.enableVertexAttribArray(PIXI.primitiveShader.colorAttribute);
-};
-
-PIXI.deactivatePrimitiveShader = function()
-{
-    var gl = PIXI.gl;
-
-    gl.useProgram(PIXI.defaultShader.program);
-
-    gl.disableVertexAttribArray(PIXI.primitiveShader.aVertexPosition);
-    gl.disableVertexAttribArray(PIXI.primitiveShader.colorAttribute);
-
-    gl.enableVertexAttribArray(PIXI.defaultShader.aVertexPosition);
-    gl.enableVertexAttribArray(PIXI.defaultShader.colorAttribute);
-    gl.enableVertexAttribArray(PIXI.defaultShader.aTextureCoord);
-};
-*/
-
-/*
-PIXI.activateStripShader = function()
-{
-    var gl = PIXI.gl;
-
-    gl.useProgram(PIXI.stripShader.program);
- // gl.disableVertexAttribArray(PIXI.defaultShader.aTextureCoord);
-};
-
-PIXI.deactivateStripShader = function()
-{
-    var gl = PIXI.gl;
-
-    gl.useProgram(PIXI.defaultShader.program);
-    //gl.enableVertexAttribArray(PIXI.defaultShader.aTextureCoord);
-};
-*/
-/*
-
-SHADER COMPILER HELPERS
-*/
-
-PIXI.CompileVertexShader = function(gl, shaderSrc)
-{
-    return PIXI._CompileShader(gl, shaderSrc, gl.VERTEX_SHADER);
-};
-
-PIXI.CompileFragmentShader = function(gl, shaderSrc)
-{
-    return PIXI._CompileShader(gl, shaderSrc, gl.FRAGMENT_SHADER);
-};
-
-PIXI._CompileShader = function(gl, shaderSrc, shaderType)
-{
-    var src = shaderSrc.join(&quot;\n&quot;);
-    var shader = gl.createShader(shaderType);
-    gl.shaderSource(shader, src);
-    gl.compileShader(shader);
-
-    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        window.console.log(gl.getShaderInfoLog(shader));
-        return null;
+        texture.baseTexture.on(&#x27;loaded&#x27;, this.boundLoadedFunction);
     }
 
-    return shader;
+    this.fragmentSrc = [
+        &#x27;precision mediump float;&#x27;,
+        &#x27;varying vec2 vTextureCoord;&#x27;,
+        &#x27;varying vec4 vColor;&#x27;,
+        &#x27;uniform sampler2D displacementMap;&#x27;,
+        &#x27;uniform sampler2D uSampler;&#x27;,
+        &#x27;uniform vec2 scale;&#x27;,
+        &#x27;uniform vec2 offset;&#x27;,
+        &#x27;uniform vec4 dimensions;&#x27;,
+        &#x27;uniform vec2 mapDimensions;&#x27;,// = vec2(256.0, 256.0);&#x27;,
+        // &#x27;const vec2 textureDimensions = vec2(750.0, 750.0);&#x27;,
+
+        &#x27;void main(void) {&#x27;,
+        &#x27;   vec2 mapCords = vTextureCoord.xy;&#x27;,
+        //&#x27;   mapCords -= ;&#x27;,
+        &#x27;   mapCords += (dimensions.zw + offset)/ dimensions.xy ;&#x27;,
+        &#x27;   mapCords.y *= -1.0;&#x27;,
+        &#x27;   mapCords.y += 1.0;&#x27;,
+        &#x27;   vec2 matSample = texture2D(displacementMap, mapCords).xy;&#x27;,
+        &#x27;   matSample -= 0.5;&#x27;,
+        &#x27;   matSample *= scale;&#x27;,
+        &#x27;   matSample /= mapDimensions;&#x27;,
+        &#x27;   gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x + matSample.x, vTextureCoord.y + matSample.y));&#x27;,
+        &#x27;   gl_FragColor.rgb = mix( gl_FragColor.rgb, gl_FragColor.rgb, 1.0);&#x27;,
+        &#x27;   vec2 cord = vTextureCoord;&#x27;,
+
+        //&#x27;   gl_FragColor =  texture2D(displacementMap, cord);&#x27;,
+     //   &#x27;   gl_FragColor = gl_FragColor;&#x27;,
+        &#x27;}&#x27;
+    ];
 };
 
-PIXI.compileProgram = function(gl, vertexSrc, fragmentSrc)
+PIXI.AlphaMaskFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
+PIXI.AlphaMaskFilter.prototype.constructor = PIXI.AlphaMaskFilter;
+
+PIXI.AlphaMaskFilter.prototype.onTextureLoaded = function()
 {
-    //var gl = PIXI.gl;
-    var fragmentShader = PIXI.CompileFragmentShader(gl, fragmentSrc);
-    var vertexShader = PIXI.CompileVertexShader(gl, vertexSrc);
+    this.uniforms.mapDimensions.value.x = this.uniforms.displacementMap.value.width;
+    this.uniforms.mapDimensions.value.y = this.uniforms.displacementMap.value.height;
 
-    var shaderProgram = gl.createProgram();
-
-    gl.attachShader(shaderProgram, vertexShader);
-    gl.attachShader(shaderProgram, fragmentShader);
-    gl.linkProgram(shaderProgram);
-
-    if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-        window.console.log(&quot;Could not initialise shaders&quot;);
-    }
-
-    return shaderProgram;
+    this.uniforms.displacementMap.value.baseTexture.off(&#x27;loaded&#x27;, this.boundLoadedFunction);
 };
+
+/**
+ * The texture used for the displacemtent map * must be power of 2 texture at the moment
+ *
+ * @property map
+ * @type Texture
+ */
+Object.defineProperty(PIXI.AlphaMaskFilter.prototype, &#x27;map&#x27;, {
+    get: function() {
+        return this.uniforms.displacementMap.value;
+    },
+    set: function(value) {
+        this.uniforms.displacementMap.value = value;
+    }
+});
+
+/**
+ * The multiplier used to scale the displacement result from the map calculation.
+ *
+ * @property scale
+ * @type Point
+ */
+Object.defineProperty(PIXI.AlphaMaskFilter.prototype, &#x27;scale&#x27;, {
+    get: function() {
+        return this.uniforms.scale.value;
+    },
+    set: function(value) {
+        this.uniforms.scale.value = value;
+    }
+});
+
+/**
+ * The offset used to move the displacement map.
+ *
+ * @property offset
+ * @type Point
+ */
+Object.defineProperty(PIXI.AlphaMaskFilter.prototype, &#x27;offset&#x27;, {
+    get: function() {
+        return this.uniforms.offset.value;
+    },
+    set: function(value) {
+        this.uniforms.offset.value = value;
+    }
+});
 
     </pre>
 </div>

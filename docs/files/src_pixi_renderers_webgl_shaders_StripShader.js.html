@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>PolyK._PointInTriangle - pixi.js</title>
+    <title>src/pixi/renderers/webgl/shaders/StripShader.js - pixi.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -170,145 +170,79 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>PolyK._PointInTriangle Class</h1>
-<div class="box meta">
-    
+                        <h1 class="file-heading">File: src/pixi/renderers/webgl/shaders/StripShader.js</h1>
 
-    
-
-    
-        <div class="foundat">
-            Defined in: <a href="../files/src_pixi_utils_Polyk.js.html#l116"><code>src&#x2F;pixi&#x2F;utils&#x2F;Polyk.js:116</code></a>
-        </div>
-    
-
-    
-        
-            Module: <a href="../modules/PIXI.html">PIXI</a>
-        
-    
-
-    
-</div>
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
 
 
+PIXI.StripShader = function()
+{
+    // the webGL program..
+    this.program = null;
 
-<div class="box intro">
-    <p>Checks if a point is within a triangle</p>
+    this.fragmentSrc = [
+        &#x27;precision mediump float;&#x27;,
+        &#x27;varying vec2 vTextureCoord;&#x27;,
+        &#x27;varying float vColor;&#x27;,
+        &#x27;uniform float alpha;&#x27;,
+        &#x27;uniform sampler2D uSampler;&#x27;,
 
-</div>
+        &#x27;void main(void) {&#x27;,
+        &#x27;   gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y));&#x27;,
+        &#x27;   gl_FragColor = gl_FragColor * alpha;&#x27;,
+        &#x27;}&#x27;
+    ];
 
+    this.vertexSrc = [
+        &#x27;attribute vec2 aVertexPosition;&#x27;,
+        &#x27;attribute vec2 aTextureCoord;&#x27;,
+        &#x27;attribute float aColor;&#x27;,
+        &#x27;uniform mat3 translationMatrix;&#x27;,
+        &#x27;uniform vec2 projectionVector;&#x27;,
+        &#x27;varying vec2 vTextureCoord;&#x27;,
+        &#x27;uniform vec2 offsetVector;&#x27;,
+        &#x27;varying float vColor;&#x27;,
 
+        &#x27;void main(void) {&#x27;,
+        &#x27;   vec3 v = translationMatrix * vec3(aVertexPosition, 1.0);&#x27;,
+        &#x27;   v -= offsetVector.xyx;&#x27;,
+        &#x27;   gl_Position = vec4( v.x / projectionVector.x -1.0, v.y / projectionVector.y + 1.0 , 0.0, 1.0);&#x27;,
+        &#x27;   vTextureCoord = aTextureCoord;&#x27;,
+        &#x27;   vColor = aColor;&#x27;,
+        &#x27;}&#x27;
+    ];
+};
 
-<div id="classdocs" class="tabview">
-    <ul class="api-class-tabs">
-        <li class="api-class-tab index"><a href="#index">Index</a></li>
+PIXI.StripShader.prototype.init = function()
+{
 
-        
-            <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
-        
-        
-        
-        
-    </ul>
+    var gl = PIXI.gl;
 
-    <div>
-        <div id="index" class="api-class-tabpanel index">
-            <h2 class="off-left">Item Index</h2>
+    var program = PIXI.compileProgram(gl, this.vertexSrc, this.fragmentSrc);
+    gl.useProgram(program);
 
-            
-                <div class="index-section methods">
-                    <h3>Methods</h3>
+    // get and store the uniforms for the shader
+    this.uSampler = gl.getUniformLocation(program, &#x27;uSampler&#x27;);
+    this.projectionVector = gl.getUniformLocation(program, &#x27;projectionVector&#x27;);
+    this.offsetVector = gl.getUniformLocation(program, &#x27;offsetVector&#x27;);
+    this.colorAttribute = gl.getAttribLocation(program, &#x27;aColor&#x27;);
+    //this.dimensions = gl.getUniformLocation(this.program, &#x27;dimensions&#x27;);
 
-                    <ul class="index-list methods">
-                        
-                            <li class="index-item method">
-                                <a href="#method_Triangulate">Triangulate</a>
+    // get and store the attributes
+    this.aVertexPosition = gl.getAttribLocation(program, &#x27;aVertexPosition&#x27;);
+    this.aTextureCoord = gl.getAttribLocation(program, &#x27;aTextureCoord&#x27;);
 
-                                
-                                
-                            </li>
-                        
-                    </ul>
-                </div>
-            
+    this.translationMatrix = gl.getUniformLocation(program, &#x27;translationMatrix&#x27;);
+    this.alpha = gl.getUniformLocation(program, &#x27;alpha&#x27;);
 
-            
+    this.program = program;
+};
 
-            
-
-            
-        </div>
-
-        
-            <div id="methods" class="api-class-tabpanel">
-                <h2 class="off-left">Methods</h2>
-
-                
-                    <div id="method_Triangulate" class="method item">
-    <h3 class="name"><code>Triangulate</code></h3>
-
-    
-        <span class="paren">()</span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_pixi_utils_Polyk.js.html#l36"><code>src&#x2F;pixi&#x2F;utils&#x2F;Polyk.js:36</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Triangulates shapes for webGL graphic fills</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-            </div>
-        
-
-        
-
-        
-
-        
-    </div>
+    </pre>
 </div>
 
                     </div>

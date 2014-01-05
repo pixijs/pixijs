@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/pixi/renderers/webgl/PixiShader.js - Pixi.JS</title>
+    <title>src/pixi/renderers/webgl/shaders/PixiShader.js - pixi.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -15,7 +15,7 @@
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
             
-                <h1><img src="http://www.goodboydigital.com/pixijs/logo_small.png" title="Pixi.JS"></h1>
+                <h1><img src="http://www.goodboydigital.com/pixijs/logo_small.png" title="pixi.js"></h1>
             
         </div>
         <div class="yui3-u-1-4 version">
@@ -42,6 +42,8 @@
             <ul id="api-classes" class="apis classes">
             
                 <li><a href="../classes/AbstractFilter.html">AbstractFilter</a></li>
+            
+                <li><a href="../classes/AlphaMaskFilter.html">AlphaMaskFilter</a></li>
             
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
@@ -168,7 +170,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/pixi/renderers/webgl/PixiShader.js</h1>
+                        <h1 class="file-heading">File: src/pixi/renderers/webgl/shaders/PixiShader.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
@@ -233,8 +235,22 @@ PIXI.PixiShader.prototype.init = function()
 
     // get and store the attributes
     this.aVertexPosition = gl.getAttribLocation(program, &#x27;aVertexPosition&#x27;);
-    this.colorAttribute = gl.getAttribLocation(program, &#x27;aColor&#x27;);
     this.aTextureCoord = gl.getAttribLocation(program, &#x27;aTextureCoord&#x27;);
+    this.colorAttribute = gl.getAttribLocation(program, &#x27;aColor&#x27;);
+
+
+    // Begin worst hack eva //
+
+    // WHY??? ONLY on my chrome pixel the line above returns -1 when using filters?
+    // maybe its somthing to do with the current state of the gl context.
+    // Im convinced this is a bug in the chrome browser as there is NO reason why this should be returning -1 especially as it only manifests on my chrome pixel
+    // If theres any webGL people that know why could happen please help :)
+    if(this.colorAttribute === -1)
+    {
+        this.colorAttribute = 2;
+    }
+
+    // End worst hack eva //
 
     // add those custom shaders!
     for (var key in this.uniforms)
@@ -461,8 +477,8 @@ PIXI.PixiShader.defaultVertexSrc = [
 
     &#x27;uniform vec2 projectionVector;&#x27;,
     &#x27;uniform vec2 offsetVector;&#x27;,
-    &#x27;varying vec2 vTextureCoord;&#x27;,
 
+    &#x27;varying vec2 vTextureCoord;&#x27;,
     &#x27;varying vec4 vColor;&#x27;,
 
     &#x27;const vec2 center = vec2(-1.0, 1.0);&#x27;,
