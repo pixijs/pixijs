@@ -1,0 +1,17 @@
+language: node_js
+node_js:
+    - "0.10"
+
+branches:
+    only:
+        - master
+        - dev
+
+install:
+    - npm install -g grunt-cli
+    - export DISPLAY=:99.0
+    - sh -e /etc/init.d/xvfb start
+    - npm install
+
+script:
+    - grunt travis

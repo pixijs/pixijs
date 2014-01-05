@@ -1,0 +1,162 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>pixi.js example 15 - Filters</title>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			background-color: #000000;
+		}
+	</style>
+	
+	<script src="../../bin/pixi.dev.js"></script>
+	<script src="pixi.js"></script>
+</head>
+<body>
+	<script>
+	
+	var renderer = PIXI.autoDetectRenderer(630, 410);
+	renderer.view.style.position = "absolute"
+	renderer.view.style.width = window.innerWidth + "px";
+	renderer.view.style.height = window.innerHeight + "px";
+	renderer.view.style.display = "block";
+	
+	// add render view to DOM
+	document.body.appendChild(renderer.view);
+
+	// create an new instance of a pixi stage
+	var stage = new PIXI.Stage(0xFFFFFF, true);
+	
+	var pondContainer = new PIXI.DisplayObjectContainer();
+	stage.addChild(pondContainer);
+
+	stage.interactive = true;
+	
+	var bg = PIXI.Sprite.fromImage("displacement_BG.jpg");
+	pondContainer.addChild(bg);
+
+	//var fish = PIXI.Sprite.fromImage("displacement_fish2.jpg");//
+	//littleDudes.position.y = 100;
+	var padding = 100;
+	var bounds = new PIXI.Rectangle(-padding, -padding, 630 + padding * 2, 410 + padding * 2)
+	var fishs = [];
+
+
+	for (var i = 0; i < 20; i++) 
+	{
+		var fishId = i % 4;
+		fishId += 1;
+
+		//console.log("displacement_fish"+fishId+".png")
+		var fish =  PIXI.Sprite.fromImage("displacement_fish"+fishId+".png");
+		fish.anchor.x = fish.anchor.y = 0.5;
+		pondContainer.addChild(fish);
+
+		//var direction 
+		//var speed = 
+		fish.direction = Math.random() * Math.PI * 2;
+		fish.speed = 2 + Math.random() * 2;
+		fish.turnSpeed = Math.random() - 0.8;
+
+		fish.position.x = Math.random() * bounds.width;
+		fish.position.y = Math.random() * bounds.height;
+		//fish.speed = new PIXI.Point(0,0)
+
+		fish.scale.x = fish.scale.y = 0.8 + Math.random() * 0.3;
+		fishs.push(fish);
+
+	};
+	
+	var overlay = new PIXI.TilingSprite(PIXI.Texture.fromImage("zeldaWaves.png"), 630, 410);
+	overlay.alpha = 0.2
+	pondContainer.addChild(overlay);
+
+
+	var displacementTexture = PIXI.Texture.fromImage("displacement_map.jpg");
+	var displacementFilter = new PIXI.DisplacementFilter(displacementTexture);
+
+	var pixelFilter = new PIXI.PixelateFilter();
+	pixelFilter.size.x = pixelFilter.size.y = 3;
+	pondContainer.filters = [displacementFilter, pixelFilter];
+
+	
+
+	displacementFilter.scale.x = 50;
+	displacementFilter.scale.y = 50;
+
+	
+
+	
+	
+	
+	
+	var count = 0;
+	var switchy = false;
+	
+	/*
+	 * Add a pixi Logo!
+	 */
+	var logo = PIXI.Sprite.fromImage("../../logo_small.png")
+	stage.addChild(logo);
+	
+	logo.anchor.x = 1;
+	logo.anchor.y = 1;
+
+	logo.position.x = 630
+	logo.scale.x = logo.scale.y = 0.5;
+	logo.position.y = 400;
+	logo.interactive = true;
+	logo.buttonMode = true;
+	
+	logo.click = logo.tap = function()
+	{
+		window.open("https://github.com/GoodBoyDigital/pixi.js", "_blank")
+	}
+	
+	
+	requestAnimFrame(animate);
+
+	function animate() {
+		
+		count += 0.1;
+		
+		var blurAmount = Math.cos(count) ;
+		var blurAmount2 = Math.sin(count * 0.8)  ;
+
+		
+
+		for (var i = 0; i < fishs.length; i++) 
+		{
+			var fish = fishs[i];
+
+			fish.direction += fish.turnSpeed * 0.01;
+			fish.position.x += Math.sin(fish.direction) * fish.speed;
+			fish.position.y += Math.cos(fish.direction) * fish.speed;
+
+			fish.rotation = -fish.direction - Math.PI/2;
+
+			// wrap..
+
+			if(fish.position.x < bounds.x)fish.position.x += bounds.width;
+			if(fish.position.x > bounds.x + bounds.width)fish.position.x -= bounds.width
+
+			if(fish.position.y < bounds.y)fish.position.y += bounds.height;
+			if(fish.position.y > bounds.y + bounds.height)fish.position.y -= bounds.height
+		}
+
+	
+		displacementFilter.offset.x = count * 10//blurAmount * 40;
+		displacementFilter.offset.y = count * 10
+		
+		overlay.tilePosition.x = count * -10//blurAmount * 40;
+		overlay.tilePosition.y = count * -10
+		
+	    renderer.render(stage);
+	    requestAnimFrame( animate );
+	}
+
+	</script>
+
+	</body>
+</html>

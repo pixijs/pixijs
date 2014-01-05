@@ -4,4 +4,4 @@
 
 (function(){
 
-	var root = this;
+    var root = this;

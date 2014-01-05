@@ -1,4 +1,4 @@
-Pixi Renderer
+Pixi Renderer [![Build Status](https://travis-ci.org/GoodBoyDigital/pixi.js.png?branch=dev)](https://travis-ci.org/GoodBoyDigital/pixi.js)
 =============
 
 ![pixi.js logo](http://www.goodboydigital.com/pixijs/logo_small.png)
@@ -23,6 +23,10 @@ any breakthroughs will be posted up there too!
 - [Flash vs HTML](<http://flashvhtml.com>)
 
 - [Bunny Demo](<http://www.goodboydigital.com/pixijs/bunnymark>)
+ 
+- [Storm Brewing](<http://www.goodboydigital.com/pixijs/storm/>)
+
+- [Filters Demo](<http://www.goodboydigital.com/pixijs/examples/15/indexAll.html>)
 
 - [Render Texture Demo](<http://www.goodboydigital.com/pixijs/examples/11/>)
 
@@ -53,7 +57,6 @@ last 2 examples and allowing us to share the source code :)
 ### Road Map ###
 
 * Create a Typescript definition file for Pixi.js
-* Implement Filters (currently being worked on by @GoodBoyDigital)
 * Implement Flash animation to pixi
 * Update Loader so that it support XHR2 if it is available
 * Improve the Documentation of the Project
@@ -65,6 +68,9 @@ last 2 examples and allowing us to share the source code :)
 
 Want to be part of the pixi.js project? Great! All are welcome! We will get there quicker together :)
 Whether you find a bug, have a great feature request or you fancy owning a task from the road map above feel free to get in touch.
+
+Make sure to read the [Contributing Guide](https://github.com/GoodBoyDigital/pixi.js/blob/master/CONTRIBUTING.md)
+before submitting changes.
 
 ### How to build ###
 
@@ -88,16 +94,16 @@ $> grunt
 
 This will create a minified version at bin/pixi.js and a non-minified version at bin/pixi.dev.js.
 
-It also copies the non-minified version to the examples. 
+It also copies the non-minified version to the examples.
 
 ### Current features ###
 
-- WebGL renderer (with automatic smart batching allowing for REALLY fast performance) 
+- WebGL renderer (with automatic smart batching allowing for REALLY fast performance)
 - Canvas renderer (Fastest in town!)
-- Full scene graph 
-- Super easy to use API (similar to the flash display list API) 
-- Support for texture atlases 
-- Asset loader / sprite sheet loader 
+- Full scene graph
+- Super easy to use API (similar to the flash display list API)
+- Support for texture atlases
+- Asset loader / sprite sheet loader
 - Auto-detect which renderer should be used
 - Full Mouse and Multi-touch Interaction
 - Text
@@ -107,45 +113,37 @@ It also copies the non-minified version to the examples.
 - Spine support
 - Primitive Drawing
 - Masking
-
-### Coming soon ###
-
-- Filters ( wip : [storm brewing](<http://www.goodboydigital.com/pixijs/storm/>) )
-
-
-### Coming later ###
-
-- Awesome Post processing effects
+- Filters
 
 ### Usage ###
 
 ```javascript
-	
+
 	// You can use either PIXI.WebGLRenderer or PIXI.CanvasRenderer
-	var renderer = new PIXI.WebGLRenderer(800, 600); 
+	var renderer = new PIXI.WebGLRenderer(800, 600);
 
 	document.body.appendChild(renderer.view);
-	
+
 	var stage = new PIXI.Stage;
 
 	var bunnyTexture = PIXI.Texture.fromImage("bunny.png");
 	var bunny = new PIXI.Sprite(bunnyTexture);
-	
+
 	bunny.position.x = 400;
 	bunny.position.y = 300;
-	
+
 	bunny.scale.x = 2;
 	bunny.scale.y = 2;
-	
+
 	stage.addChild(bunny);
-	
+
 	requestAnimationFrame(animate);
-	
+
 	function animate() {
 		bunny.rotation += 0.01;
-		
+
 		renderer.render(stage);
-		
+
 		requestAnimationFrame(animate);
 	}
 ```

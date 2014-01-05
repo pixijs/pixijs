@@ -1,14 +1,15 @@
 module.exports = function(grunt) {
+    grunt.loadNpmTasks('grunt-concat-sourcemap');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-connect');
-    grunt.loadNpmTasks('grunt-contrib-qunit');
     grunt.loadNpmTasks('grunt-contrib-yuidoc');
+    grunt.loadNpmTasks('grunt-contrib-watch');
 
-    var root = 'src/pixi/',
-        debug = 'bin/pixi.dev.js',
-        srcFiles = [
+    grunt.loadTasks('tasks');
+
+    var srcFiles = [
             '<%= dirs.src %>/Intro.js',
             '<%= dirs.src %>/Pixi.js',
             '<%= dirs.src %>/core/Point.js',
@@ -30,11 +31,18 @@ module.exports = function(grunt) {
             '<%= dirs.src %>/utils/EventTarget.js',
             '<%= dirs.src %>/utils/Detector.js',
             '<%= dirs.src %>/utils/Polyk.js',
-            '<%= dirs.src %>/renderers/webgl/WebGLShaders.js',
-            '<%= dirs.src %>/renderers/webgl/WebGLGraphics.js',
+            '<%= dirs.src %>/renderers/webgl/utils/WebGLShaderUtils.js',
+            '<%= dirs.src %>/renderers/webgl/shaders/PixiShader.js',
+            '<%= dirs.src %>/renderers/webgl/shaders/StripShader.js',
+            '<%= dirs.src %>/renderers/webgl/shaders/PrimitiveShader.js',
+            '<%= dirs.src %>/renderers/webgl/utils/WebGLGraphics.js',
             '<%= dirs.src %>/renderers/webgl/WebGLRenderer.js',
-            '<%= dirs.src %>/renderers/webgl/WebGLBatch.js',
-            '<%= dirs.src %>/renderers/webgl/WebGLRenderGroup.js',
+            '<%= dirs.src %>/renderers/webgl/utils/WebGLMaskManager.js',
+            '<%= dirs.src %>/renderers/webgl/utils/WebGLShaderManager.js',
+            '<%= dirs.src %>/renderers/webgl/utils/WebGLSpriteBatch.js',
+            '<%= dirs.src %>/renderers/webgl/utils/WebGLFilterManager.js',
+            '<%= dirs.src %>/renderers/canvas/utils/CanvasMaskManager.js',
+            '<%= dirs.src %>/renderers/canvas/utils/CanvasTinter.js',
             '<%= dirs.src %>/renderers/canvas/CanvasRenderer.js',
             '<%= dirs.src %>/renderers/canvas/CanvasGraphics.js',
             '<%= dirs.src %>/primitives/Graphics.js',
@@ -42,18 +50,34 @@ module.exports = function(grunt) {
             '<%= dirs.src %>/extras/Rope.js',
             '<%= dirs.src %>/extras/TilingSprite.js',
             '<%= dirs.src %>/extras/Spine.js',
-            '<%= dirs.src %>/extras/CustomRenderable.js',
             '<%= dirs.src %>/textures/BaseTexture.js',
             '<%= dirs.src %>/textures/Texture.js',
             '<%= dirs.src %>/textures/RenderTexture.js',
             '<%= dirs.src %>/loaders/AssetLoader.js',
             '<%= dirs.src %>/loaders/JsonLoader.js',
+            '<%= dirs.src %>/loaders/AtlasLoader.js',
             '<%= dirs.src %>/loaders/SpriteSheetLoader.js',
             '<%= dirs.src %>/loaders/ImageLoader.js',
             '<%= dirs.src %>/loaders/BitmapFontLoader.js',
             '<%= dirs.src %>/loaders/SpineLoader.js',
+            '<%= dirs.src %>/filters/AbstractFilter.js',
+            '<%= dirs.src %>/filters/ColorMatrixFilter.js',
+            '<%= dirs.src %>/filters/GrayFilter.js',
+            '<%= dirs.src %>/filters/DisplacementFilter.js',
+            '<%= dirs.src %>/filters/PixelateFilter.js',
+            '<%= dirs.src %>/filters/BlurXFilter.js',
+            '<%= dirs.src %>/filters/BlurYFilter.js',
+            '<%= dirs.src %>/filters/BlurFilter.js',
+            '<%= dirs.src %>/filters/InvertFilter.js',
+            '<%= dirs.src %>/filters/SepiaFilter.js',
+            '<%= dirs.src %>/filters/TwistFilter.js',
+            '<%= dirs.src %>/filters/ColorStepFilter.js',
+            '<%= dirs.src %>/filters/DotScreenFilter.js',
+            '<%= dirs.src %>/filters/CrossHatchFilter.js',
+            '<%= dirs.src %>/filters/RGBSplitFilter.js',
             '<%= dirs.src %>/Outro.js'
-        ], banner = [
+        ],
+        banner = [
             '/**',
             ' * @license',
             ' * <%= pkg.name %> - v<%= pkg.version %>',
@@ -73,13 +97,12 @@ module.exports = function(grunt) {
         dirs: {
             build: 'bin',
             docs: 'docs',
-            examples: 'examples',
             src: 'src/pixi',
             test: 'test'
         },
         files: {
             srcBlob: '<%= dirs.src %>/**/*.js',
-            testBlob: '<%= dirs.test %>/unit/**/*.js',
+            testBlob: '<%= dirs.test %>/{functional,lib/pixi,unit/pixi}/**/*.js',
             build: '<%= dirs.build %>/pixi.dev.js',
             buildMin: '<%= dirs.build %>/pixi.js'
         },
@@ -92,12 +115,30 @@ module.exports = function(grunt) {
                 dest: '<%= files.build %>'
             }
         },
+        /* jshint -W106 */
+        concat_sourcemap: {
+            dev: {
+                files: {
+                    '<%= files.build %>': srcFiles
+                },
+                options: {
+                    sourceRoot: '../'
+                }
+            }
+        },
         jshint: {
-            beforeconcat: srcFiles,
-            test: ['<%= files.testBlob %>'],
             options: {
-                asi: true,
-                smarttabs: true
+                jshintrc: './.jshintrc'
+            },
+            source: srcFiles.filter(function(v) { return v.match(/(Intro|Outro|Spine|Pixi)\.js$/) === null; }).concat('Gruntfile.js'),
+            test: {
+                src: ['<%= files.testBlob %>'],
+                options: {
+                    jshintrc: undefined, //don't use jshintrc for tests
+                    expr: true,
+                    undef: false,
+                    camelcase: false
+                }
             }
         },
         uglify: {
@@ -109,43 +150,12 @@ module.exports = function(grunt) {
                 dest: '<%= files.buildMin %>'
             }
         },
-        distribute: {
-            examples: [
-                'examples/example 1 - Basics',
-                'examples/example 2 - SpriteSheet',
-                'examples/example 3 - MovieClip',
-                'examples/example 4 - Balls',
-                'examples/example 5 - Morph',
-                'examples/example 6 - Interactivity',
-                'examples/example 7 - Transparent Background',
-                'examples/example 8 - Dragging',
-                'examples/example 9 - Tiling Texture',
-                'examples/example 10 - Text',
-                'examples/example 11 - RenderTexture',
-                'examples/example 12 - Spine',
-                'examples/example 13 - Graphics',
-                'examples/example 14 - Masking'
-            ]
-        },
         connect: {
-            qunit: {
-                options: {
-                    port: grunt.option('port-test') || 9002,
-                    base: './'
-                }
-            },
             test: {
                 options: {
                     port: grunt.option('port-test') || 9002,
                     base: './',
                     keepalive: true
-                }
-            }
-        },
-        qunit: {
-            all: {
-                options: {
-                    urls: ['http://localhost:' + (grunt.option('port-test') || 9002) + '/test/index.html']
                 }
             }
         },
@@ -161,30 +171,36 @@ module.exports = function(grunt) {
                     outdir: '<%= dirs.docs %>'
                 }
             }
+        },
+        watch: {
+            scripts: {
+                files: ['<%= dirs.src %>/**/*.js'],
+                tasks: ['concat'],
+                options: {
+                    spawn: false,
+                }
+            }
+        },
+        karma: {
+            unit: {
+                configFile: 'test/karma.conf.js',
+                // browsers: ['Chrome'],
+                singleRun: true
+            }
         }
     });
 
-    grunt.registerMultiTask(
-        'distribute',
-        'Copy built file to examples',
-        function(){
-            var pixi = grunt.file.read( debug );
+    grunt.registerTask('default', ['build', 'test']);
 
-            var dests = this.data;
+    grunt.registerTask('build', ['jshint:source', 'concat', 'uglify']);
+    grunt.registerTask('build-debug', ['concat_sourcemap', 'uglify']);
 
-            dests.forEach(function(filepath){
+    grunt.registerTask('test', ['concat', 'jshint:test', 'karma']);
 
-                grunt.file.write(filepath + '/pixi.js', pixi);
-
-            });
-
-            grunt.log.writeln('Pixi copied to examples.');
-        }
-    )
-
-    grunt.registerTask('default', ['concat', 'uglify', 'distribute']);
-    grunt.registerTask('build', ['concat', 'uglify', 'distribute']);
-    grunt.registerTask('test', ['build', 'connect:qunit', 'qunit']);
     grunt.registerTask('docs', ['yuidoc']);
+    grunt.registerTask('travis', ['build', 'test']);
 
-}
+    grunt.registerTask('default', ['build', 'test']);
+
+    grunt.registerTask('debug-watch', ['concat', 'watch']);
+};

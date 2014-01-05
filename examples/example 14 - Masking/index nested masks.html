@@ -1,0 +1,137 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>pixi.js example 14 - Masking</title>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			background-color: #000000;
+		}
+	</style>
+
+	<script src="../../bin/pixi.dev.js"></script>
+</head>
+<body>
+	<script>
+
+	// create an new instance of a pixi stage
+	var stage = new PIXI.Stage(0xFFFFFF, true);
+
+	stage.interactive = true;
+
+	var bg = PIXI.Sprite.fromImage("BGrotate.jpg");
+	bg.anchor.x = 0.5;
+	bg.anchor.y = 0.5;
+
+	bg.position.x = 620/2;
+	bg.position.y = 380/2;
+
+	//stage.addChild(bg);
+
+
+	
+	//stage.addChild(bgFront);
+
+	// create a renderer instance
+	var renderer = PIXI.autoDetectRenderer(620, 380);
+
+	renderer.view.style.position = "absolute"
+	renderer.view.style.marginLeft = "-310px";
+	renderer.view.style.marginTop = "-190px";
+	renderer.view.style.top = "50%";
+	renderer.view.style.left = "50%";
+	renderer.view.style.display = "block";
+
+	// add render view to DOM
+	document.body.appendChild(renderer.view);
+
+	// lets create moving shape
+
+
+
+	var mask2 = new PIXI.Graphics();
+	mask2.beginFill(0);
+	mask2.drawCircle(620/2, 380/2, 300)
+
+	var container = new PIXI.DisplayObjectContainer();
+	stage.addChild(container);
+	container.addChild(bg);
+
+
+
+	container.mask = mask2;
+
+
+
+	for (var i = 0; i < 4; i++) 
+	{
+		var bear = PIXI.Sprite.fromImage("panda.png");
+		
+		var mask1 = new PIXI.Graphics();
+		mask1.beginFill(0);
+		mask1.drawRect(20, 40, 100, 100)
+		bear.mask = mask1;
+		bear.addChild(mask1);
+		container.addChild(bear);
+
+		bear.position.x = i * 50;
+	};
+	
+
+
+	var count = 0;
+
+	stage.click = stage.tap = function()
+	{
+		if(!container.filter)
+		{
+			container.mask = thing;
+		}
+		else
+		{
+			container.mask = null;
+		}
+	}
+
+	/*
+	 * Add a pixi Logo!
+	 */
+	var logo = PIXI.Sprite.fromImage("../../logo_small.png")
+	stage.addChild(logo);
+
+	logo.anchor.x = 1;
+	logo.position.x = 620
+	logo.scale.x = logo.scale.y = 0.5;
+	logo.position.y = 320
+	logo.interactive = true;
+	logo.buttonMode = true;
+
+	logo.click = logo.tap = function()
+	{
+		window.open("https://github.com/GoodBoyDigital/pixi.js", "_blank")
+	}
+
+	var help = new PIXI.Text("Click to turn masking on / off.", {font:"bold 12pt Arial", fill:"white"});
+	help.position.y = 350;
+	help.position.x = 10;
+	stage.addChild(help);
+
+	requestAnimFrame(animate);
+
+	function animate() {
+
+		bg.rotation += 0.01;
+	
+		count += 0.1;
+
+
+
+	    renderer.render(stage);
+	    requestAnimFrame( animate );
+	}
+
+	</script>
+
+	</body>
+</html>
