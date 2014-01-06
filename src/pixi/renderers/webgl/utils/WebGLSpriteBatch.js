@@ -195,7 +195,7 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
 
 PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
 {
-    var texture = tilingSprite.texture;
+    var texture = tilingSprite.tilingTexture;
 
     if(texture.baseTexture !== this.currentBaseTexture || this.currentBatchSize >= this.size)
     {
@@ -219,8 +219,8 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
     var offsetX =  tilingSprite.tilePosition.x/texture.baseTexture.width;
     var offsetY =  tilingSprite.tilePosition.y/texture.baseTexture.height;
 
-    var scaleX =  (tilingSprite.width / texture.baseTexture.width)  / tilingSprite.tileScale.x;
-    var scaleY =  (tilingSprite.height / texture.baseTexture.height) / tilingSprite.tileScale.y;
+    var scaleX =  (tilingSprite.width / texture.baseTexture.width)  / (tilingSprite.tileScale.x * tilingSprite.tileScaleOffset.x);
+    var scaleY =  (tilingSprite.height / texture.baseTexture.height) / (tilingSprite.tileScale.y * tilingSprite.tileScaleOffset.y);
 
     uvs[0] = 0 - offsetX;
     uvs[1] = 0 - offsetY;

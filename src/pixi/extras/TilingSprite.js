@@ -19,8 +19,6 @@ PIXI.TilingSprite = function(texture, width, height)
     this.width = width || 100;
     this.height = height || 100;
 
-    texture.baseTexture._powerOf2 = true;
-
     /**
      * The scaling of the image that is being tiled
      *
@@ -29,6 +27,9 @@ PIXI.TilingSprite = function(texture, width, height)
      */
     this.tileScale = new PIXI.Point(1,1);
 
+
+    this.tileScaleOffset = new PIXI.Point(1,1);
+    
     /**
      * The offset position of the image that is being tiled
      *
@@ -82,9 +83,9 @@ Object.defineProperty(PIXI.TilingSprite.prototype, 'height', {
 PIXI.TilingSprite.prototype.onTextureUpdate = function()
 {
     // so if _width is 0 then width was not set..
-    //if(this._width)this.scale.x = this._width / this.texture.frame.width;
-    //if(this._height)this.scale.y = this._height / this.texture.frame.height;
-   // alert(this._width)
+    //console.log("HI MUM")
+   
+
     this.updateFrame = true;
 };
 
@@ -110,8 +111,8 @@ PIXI.TilingSprite.prototype._renderWebGL = function(renderSession)
             renderSession.filterManager.pushFilter(this._filterBlock);
         }
 
-
-        renderSession.spriteBatch.renderTilingSprite(this);
+        if(!this.tilingTexture)this.generateTilingTexture(true);
+        else renderSession.spriteBatch.renderTilingSprite(this);
 
         // simple render children!
         for(i=0,j=this.children.length; i<j; i++)
@@ -128,7 +129,8 @@ PIXI.TilingSprite.prototype._renderWebGL = function(renderSession)
     }
     else
     {
-        renderSession.spriteBatch.renderTilingSprite(this);
+        if(!this.tilingTexture)this.generateTilingTexture(true);
+        else renderSession.spriteBatch.renderTilingSprite(this);
         
         // simple render children!
         for(i=0,j=this.children.length; i<j; i++)
@@ -137,6 +139,7 @@ PIXI.TilingSprite.prototype._renderWebGL = function(renderSession)
         }
     }
 };
+
 
 PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
 {
@@ -155,7 +158,15 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
  
 
     if(!this.__tilePattern)
-        this.__tilePattern = context.createPattern(this.texture.baseTexture.source, 'repeat');
+    {
+        this.generateTilingTexture(false);
+        
+        if(this.tilingTexture)
+        {
+            this.__tilePattern = context.createPattern(this.tilingTexture.baseTexture.source, 'repeat');
+        }
+
+    }
 
     // check blend mode
     if(this.blendMode !== renderSession.currentBlendMode)
@@ -168,7 +179,7 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
 
     var tilePosition = this.tilePosition;
     var tileScale = this.tileScale;
-
+   // console.log(tileScale.x)
     // offset
     context.scale(tileScale.x,tileScale.y);
     context.translate(tilePosition.x, tilePosition.y);
@@ -253,4 +264,66 @@ PIXI.TilingSprite.prototype.getBounds = function()
     this._currentBounds = bounds;
 
     return bounds;
+};
+
+
+PIXI.TilingSprite.prototype.generateTilingTexture = function(forcePowerOfTwo)
+{
+    var texture = this.texture;
+
+    if(!texture.baseTexture.hasLoaded)return;
+
+    var baseTexture = texture.baseTexture;
+    var frame = texture.frame;
+
+    var targetWidth, targetHeight;
+
+    // check that the frame is the same size as the base texture.
+    
+    var isFrame = frame.width !== baseTexture.width || frame.height !== baseTexture.height;
+
+    this.tilingTexture = texture;
+
+    var newTextureRequired = false;
+
+    if(!forcePowerOfTwo)
+    {
+        if(isFrame)
+        {
+            targetWidth = frame.width;
+            targetHeight = frame.height;
+            
+            newTextureRequired = true;
+        }
+    }
+    else
+    {
+        targetWidth = PIXI.getNextPowerOfTwo(texture.frame.width);
+        targetHeight = PIXI.getNextPowerOfTwo(texture.frame.height);
+
+        if(frame.width !== targetWidth && frame.height !== targetHeight)newTextureRequired = true;
+    }
+
+    if(newTextureRequired)
+    {
+        var canvasBuffer = new PIXI.CanvasBuffer(targetWidth, targetHeight);
+        
+        canvasBuffer.context.drawImage(texture.baseTexture.source,
+                                       frame.x,
+                                       frame.y,
+                                       frame.width,
+                                       frame.height,
+                                       0,
+                                       0,
+                                       targetWidth,
+                                       targetHeight);
+
+        this.tilingTexture = PIXI.Texture.fromCanvas(canvasBuffer.canvas);
+
+        this.tileScaleOffset.x = frame.width / targetWidth;
+        this.tileScaleOffset.y = frame.height / targetHeight;
+    }
+
+   
+    this.tilingTexture.baseTexture._powerOf2 = true;
 };

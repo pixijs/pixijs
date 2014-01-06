@@ -404,7 +404,6 @@ PIXI.updateWebGLTexture = function(texture, gl)
     
 };
 
-
 /**
  * Handles a lost webgl context
  *
