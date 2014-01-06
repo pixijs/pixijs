@@ -176,7 +176,7 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
     if ( index !== -1 )
     {
         // update the stage reference..
-        if(this.stage)this.removeStageReference();
+        if(this.stage)child.removeStageReference();
 
         child.parent = undefined;
         this.children.splice( index, 1 );
@@ -258,24 +258,27 @@ PIXI.DisplayObjectContainer.prototype.getBounds = function()
 PIXI.DisplayObjectContainer.prototype.setStageReference = function(stage)
 {
     this.stage = stage;
+    if(this.interactive)this.stage.dirty = true;
 
     for(var i=0,j=this.children.length; i<j; i++)
     {
         var child = this.children[i];
-        if(child.interactive)this.stage.dirty = true;
+        
         child.setStageReference(stage);
     }
 };
 
 PIXI.DisplayObjectContainer.prototype.removeStageReference = function()
 {
+
     for(var i=0,j=this.children.length; i<j; i++)
     {
         var child = this.children[i];
-        if(child.interactive)this.stage.dirty = true;
         child.removeStageReference();
     }
 
+    if(this.interactive)this.stage.dirty = true;
+  
     this.stage = null;
 };
 
