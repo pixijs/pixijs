@@ -1145,6 +1145,11 @@ PIXI.DisplayObject.prototype.getLocalBounds = function()
     return bounds;
 };
 
+PIXI.DisplayObject.prototype.setStageReference = function(stage)
+{
+    this.stage = stage;
+    if(this._interactive)this.stage.dirty = true;
+};
 
 PIXI.DisplayObject.prototype._renderWebGL = function(renderSession)
 {
@@ -4925,12 +4930,6 @@ PIXI.WebGLGraphics.buildPoly = function(graphicsData, webGLData)
  */
 
 PIXI._defaultFrame = new PIXI.Rectangle(0,0,1,1);
-
-// an instance of the gl context..
-// only one at the moment :/
-PIXI.gl = null;
-
-
 
 /**
  * the WebGLRenderer is draws the stage and all its content onto a webGL enabled canvas. This renderer

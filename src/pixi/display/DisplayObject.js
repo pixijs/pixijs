@@ -446,6 +446,11 @@ PIXI.DisplayObject.prototype.getLocalBounds = function()
     return bounds;
 };
 
+PIXI.DisplayObject.prototype.setStageReference = function(stage)
+{
+    this.stage = stage;
+    if(this._interactive)this.stage.dirty = true;
+};
 
 PIXI.DisplayObject.prototype._renderWebGL = function(renderSession)
 {
