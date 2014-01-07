@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-01-06
+ * Compiled: 2014-01-07
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -1010,7 +1010,7 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'worldVisible', {
             if(!item.visible)return false;
             item = item.parent;
         }
-        while(item && item.parent);
+        while(item);
 
         return true;
     }
@@ -1254,7 +1254,7 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 
     // update the stage refference..
 
-    if(this.stage)this.setStageReference(this.stage);
+    if(this.stage)child.setStageReference(this.stage);
 
 };
 
@@ -1278,7 +1278,7 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 
         this.children.splice(index, 0, child);
 
-        if(this.stage)this.setStageReference(this.stage);
+        if(this.stage)child.setStageReference(this.stage);
     }
     else
     {
@@ -1424,12 +1424,11 @@ PIXI.DisplayObjectContainer.prototype.getBounds = function()
 PIXI.DisplayObjectContainer.prototype.setStageReference = function(stage)
 {
     this.stage = stage;
-    if(this.interactive)this.stage.dirty = true;
+    if(this._interactive)this.stage.dirty = true;
 
     for(var i=0,j=this.children.length; i<j; i++)
     {
         var child = this.children[i];
-        
         child.setStageReference(stage);
     }
 };
@@ -1443,8 +1442,8 @@ PIXI.DisplayObjectContainer.prototype.removeStageReference = function()
         child.removeStageReference();
     }
 
-    if(this.interactive)this.stage.dirty = true;
-  
+    if(this._interactive)this.stage.dirty = true;
+    
     this.stage = null;
 };
 

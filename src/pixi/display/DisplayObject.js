@@ -311,7 +311,7 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'worldVisible', {
             if(!item.visible)return false;
             item = item.parent;
         }
-        while(item && item.parent);
+        while(item);
 
         return true;
     }
