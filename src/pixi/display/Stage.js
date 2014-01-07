@@ -50,9 +50,6 @@ PIXI.Stage = function(backgroundColor)
      */
     this.dirty = true;
 
-    this.__childrenAdded = [];
-    this.__childrenRemoved = [];
-
     //the stage is it's own stage
     this.stage = this;
 

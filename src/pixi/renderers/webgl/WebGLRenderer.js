@@ -40,8 +40,6 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     this.view.addEventListener('webglcontextlost', function(event) { scope.handleContextLost(event); }, false);
     this.view.addEventListener('webglcontextrestored', function(event) { scope.handleContextRestored(event); }, false);
 
-    this.batchs = [];
-
     this.options = {
         alpha: this.transparent,
         antialias:!!antialias, // SPEED UP??

@@ -3348,9 +3348,6 @@ PIXI.Stage = function(backgroundColor)
      */
     this.dirty = true;
 
-    this.__childrenAdded = [];
-    this.__childrenRemoved = [];
-
     //the stage is it's own stage
     this.stage = this;
 
@@ -4967,8 +4964,6 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     this.view.addEventListener('webglcontextlost', function(event) { scope.handleContextLost(event); }, false);
     this.view.addEventListener('webglcontextrestored', function(event) { scope.handleContextRestored(event); }, false);
 
-    this.batchs = [];
-
     this.options = {
         alpha: this.transparent,
         antialias:!!antialias, // SPEED UP??
@@ -5033,8 +5028,6 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
 
 
     gl.useProgram(this.shaderManager.defaultShader.program);
-
-    PIXI.WebGLRenderer.gl = gl;
 
     gl.disable(gl.DEPTH_TEST);
     gl.disable(gl.CULL_FACE);
@@ -6648,8 +6641,8 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
     //stage.__childrenRemoved = [];
 
     // update textures if need be
-    PIXI.texturesToUpdate = [];
-    PIXI.texturesToDestroy = [];
+    PIXI.texturesToUpdate.length = 0;
+    PIXI.texturesToDestroy.length = 0;
 
     PIXI.visibleCount++;
     stage.updateTransform();
@@ -6677,7 +6670,7 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
     // remove frame updates..
     if(PIXI.Texture.frameUpdates.length > 0)
     {
-        PIXI.Texture.frameUpdates = [];
+        PIXI.Texture.frameUpdates.length = 0;
     }
 };
 
