@@ -67,21 +67,44 @@ PIXI.Graphics = function()
     this._webGL = [];
 
     this.isMask = false;
+
+    this.bounds = null;
+
+    this.boundsPadding = 10;
 };
 
 // constructor
 PIXI.Graphics.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
 PIXI.Graphics.prototype.constructor = PIXI.Graphics;
 
-/*
-*   Not yet implemented
-*/
+/**
+ * If cacheAsBitmap is true the graphics object will then be rendered as if it was a sprite.
+ * This is useful if your graphics element does not change often as it will speed up the rendering of the object
+ * It is also usful as the graphics object will always be aliased because it will be rendered using canvas
+ * Not recommended if you are conastanly redrawing the graphics element.
+ *
+ * @property cacheAsBitmap
+ * @default false
+ * @type Boolean
+ * @private
+ */
 Object.defineProperty(PIXI.Graphics.prototype, "cacheAsBitmap", {
     get: function() {
         return  this._cacheAsBitmap;
     },
     set: function(value) {
         this._cacheAsBitmap = value;
+
+        if(this._cacheAsBitmap)
+        {
+            this._generateCachedSprite();
+        }
+        else
+        {
+            this.destroyCachedSprite();
+            this.dirty = true;
+        }
+
     }
 });
 
@@ -249,34 +272,72 @@ PIXI.Graphics.prototype.clear = function()
     this.bounds = null; //new PIXI.Rectangle();
 };
 
+/**
+ * Useful function that returns a texture of the graphics object that can then be used to create sprites
+ * This can be quite useful if your geometry is complicated and needs to be reused multiple times.
+ *
+ * @method generateTexture
+ * @return {Texture} a texture of the graphics object
+ */
+PIXI.Graphics.prototype.generateTexture = function()
+{
+    var bounds = this.getBounds();
+
+    var canvasBuffer = new PIXI.CanvasBuffer(bounds.width, bounds.height);
+    var texture = PIXI.Texture.fromCanvas(canvasBuffer.canvas);
+
+    canvasBuffer.context.translate(-bounds.x,-bounds.y);
+    
+    PIXI.CanvasGraphics.renderGraphics(this, canvasBuffer.context);
+
+    return texture;
+};
 
 PIXI.Graphics.prototype._renderWebGL = function(renderSession)
 {
     // if the sprite is not visible or the alpha is 0 then no need to render this element
     if(this.visible === false || this.alpha === 0 || this.isMask === true)return;
     
-   
-    renderSession.spriteBatch.stop();
-
-    if(this._mask)renderSession.maskManager.pushMask(this.mask, renderSession);
-    if(this._filters)renderSession.filterManager.pushFilter(this._filterBlock);
-  
-    // check blend mode
-    if(this.blendMode !== renderSession.spriteBatch.currentBlendMode)
+    if(this._cacheAsBitmap)
     {
-        this.spriteBatch.currentBlendMode = this.blendMode;
-        var blendModeWebGL = PIXI.blendModesWebGL[renderSession.spriteBatch.currentBlendMode];
-        this.spriteBatch.gl.blendFunc(blendModeWebGL[0], blendModeWebGL[1]);
-    }
- 
-    PIXI.WebGLGraphics.renderGraphics(this, renderSession);
-    
-    if(this._filters)renderSession.filterManager.popFilter();
-    if(this._mask)renderSession.maskManager.popMask(renderSession);
-      
-    renderSession.drawCount++;
+       
+        if(this.dirty)
+        {
+            this._generateCachedSprite();
+            // we will also need to update the texture on the gpu too!
+            PIXI.updateWebGLTexture(this._cachedSprite.texture.baseTexture, renderSession.gl);
+            
+            this.dirty =  false;
+        }
 
-    renderSession.spriteBatch.start();
+        PIXI.Sprite.prototype._renderWebGL.call(this._cachedSprite, renderSession);
+
+        return;
+    }
+    else
+    {
+        renderSession.spriteBatch.stop();
+
+        if(this._mask)renderSession.maskManager.pushMask(this.mask, renderSession);
+        if(this._filters)renderSession.filterManager.pushFilter(this._filterBlock);
+      
+        // check blend mode
+        if(this.blendMode !== renderSession.spriteBatch.currentBlendMode)
+        {
+            this.spriteBatch.currentBlendMode = this.blendMode;
+            var blendModeWebGL = PIXI.blendModesWebGL[renderSession.spriteBatch.currentBlendMode];
+            this.spriteBatch.gl.blendFunc(blendModeWebGL[0], blendModeWebGL[1]);
+        }
+     
+        PIXI.WebGLGraphics.renderGraphics(this, renderSession);
+        
+        if(this._filters)renderSession.filterManager.popFilter();
+        if(this._mask)renderSession.maskManager.popMask(renderSession);
+          
+        renderSession.drawCount++;
+
+        renderSession.spriteBatch.start();
+    }
 };
 
 PIXI.Graphics.prototype._renderCanvas = function(renderSession)
@@ -425,8 +486,49 @@ PIXI.Graphics.prototype.updateBounds = function()
         }
     }
 
-    this.bounds = new PIXI.Rectangle(minX, minY, maxX - minX, maxY - minY);
+    var padding = this.boundsPadding;
+    this.bounds = new PIXI.Rectangle(minX - padding, minY - padding, (maxX - minX) + padding * 2, (maxY - minY) + padding * 2);
 };
+
+PIXI.Graphics.prototype._generateCachedSprite = function()
+{
+    var bounds = this.getBounds();
+
+    if(!this._cachedSprite)
+    {
+        var canvasBuffer = new PIXI.CanvasBuffer(bounds.width, bounds.height);
+        var texture = PIXI.Texture.fromCanvas(canvasBuffer.canvas);
+        
+        this._cachedSprite = new PIXI.Sprite(texture);
+        this._cachedSprite.buffer = canvasBuffer;
+
+        this._cachedSprite.worldTransform = this.worldTransform;
+    }
+    else
+    {
+        this._cachedSprite.buffer.resize(bounds.width, bounds.height);
+    }
+
+    // leverage the anchor to account for the offest of the element
+    this._cachedSprite.anchor.x = -( bounds.x / bounds.width );
+    this._cachedSprite.anchor.y = -( bounds.y / bounds.height );
+
+   // this._cachedSprite.buffer.context.save();
+    this._cachedSprite.buffer.context.translate(-bounds.x,-bounds.y);
+    
+    PIXI.CanvasGraphics.renderGraphics(this, this._cachedSprite.buffer.context);
+   // this._cachedSprite.buffer.context.restore();
+};
+
+PIXI.Graphics.prototype.destroyCachedSprite = function()
+{
+    this._cachedSprite.texture.destroy(true);
+
+    // let the gc collect the unused sprite
+    // TODO could be object pooled!
+    this._cachedSprite = null;
+};
+
 
 // SOME TYPES:
 PIXI.Graphics.POLY = 0;
