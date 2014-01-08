@@ -215,10 +215,10 @@ module.exports = function(grunt) {
             }
         },
         karma: {
-            unit: {
-                configFile: 'test/karma.conf.js',
+            coverage: {
+                // singleRun: false,
                 // browsers: ['Chrome'],
-                singleRun: true
+                configFile: 'test/karma.conf.js'
             }
         }
     });
