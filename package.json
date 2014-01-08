@@ -35,7 +35,7 @@
         "grunt-concat-sourcemap": "~0.4",
         "grunt-contrib-concat": "~0.3",
         "grunt-coveralls": "~0.1",
-        "istanbul": "~0.2",
+        "istanbul": "0.1.46",
         "mocha": "~1.15",
         "chai": "~1.8",
         "karma": "~0.10",
