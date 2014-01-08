@@ -261,7 +261,7 @@ PIXI.WebGLRenderer.destroyTexture = function(texture)
         }
     }
 
-    texture._glTextures = [];
+    texture._glTextures.length = 0;
 };
 
 PIXI.WebGLRenderer.updateTextureFrame = function(texture)
