@@ -234,9 +234,9 @@ PIXI.WebGLRenderer.updateTextures = function()
     for (i = 0; i < PIXI.texturesToDestroy.length; i++)
         PIXI.WebGLRenderer.destroyTexture(PIXI.texturesToDestroy[i]);
 
-    PIXI.texturesToUpdate = [];
-    PIXI.texturesToDestroy = [];
-    PIXI.Texture.frameUpdates = [];
+    PIXI.texturesToUpdate.length = 0;
+    PIXI.texturesToDestroy.length = 0;
+    PIXI.Texture.frameUpdates.length = 0;
 };
 
 /**

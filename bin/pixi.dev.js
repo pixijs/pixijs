@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-01-07
+ * Compiled: 2014-01-08
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -3355,7 +3355,6 @@ PIXI.Stage = function(backgroundColor)
     this.stage.hitArea = new PIXI.Rectangle(0,0,100000, 100000);
 
     this.setBackgroundColor(backgroundColor);
-    this.worldVisible = true;
 };
 
 // constructor
@@ -5158,9 +5157,9 @@ PIXI.WebGLRenderer.updateTextures = function()
     for (i = 0; i < PIXI.texturesToDestroy.length; i++)
         PIXI.WebGLRenderer.destroyTexture(PIXI.texturesToDestroy[i]);
 
-    PIXI.texturesToUpdate = [];
-    PIXI.texturesToDestroy = [];
-    PIXI.Texture.frameUpdates = [];
+    PIXI.texturesToUpdate.length = 0;
+    PIXI.texturesToDestroy.length = 0;
+    PIXI.Texture.frameUpdates.length = 0;
 };
 
 /**

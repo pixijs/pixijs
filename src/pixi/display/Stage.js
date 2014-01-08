@@ -57,7 +57,6 @@ PIXI.Stage = function(backgroundColor)
     this.stage.hitArea = new PIXI.Rectangle(0,0,100000, 100000);
 
     this.setBackgroundColor(backgroundColor);
-    this.worldVisible = true;
 };
 
 // constructor
