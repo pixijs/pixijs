@@ -61,6 +61,7 @@ module.exports = function(grunt) {
             '<%= dirs.src %>/loaders/BitmapFontLoader.js',
             '<%= dirs.src %>/loaders/SpineLoader.js',
             '<%= dirs.src %>/filters/AbstractFilter.js',
+            '<%= dirs.src %>/filters/AlphaMaskFilter.js',
             '<%= dirs.src %>/filters/ColorMatrixFilter.js',
             '<%= dirs.src %>/filters/GrayFilter.js',
             '<%= dirs.src %>/filters/DisplacementFilter.js',

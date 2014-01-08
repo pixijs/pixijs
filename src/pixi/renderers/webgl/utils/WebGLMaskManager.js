@@ -29,7 +29,7 @@ PIXI.WebGLMaskManager.prototype.pushMask = function(maskData, renderSession)
 
     this.maskStack.push(maskData);
     
-    gl.colorMask(false, false, false, false);
+    gl.colorMask(false, false, false, true);
     gl.stencilOp(gl.KEEP,gl.KEEP,gl.INCR);
 
     PIXI.WebGLGraphics.renderGraphics(maskData, renderSession);
