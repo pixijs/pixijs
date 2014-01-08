@@ -1,3 +1,4 @@
+/*global process*/
 module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-concat-sourcemap');
     grunt.loadNpmTasks('grunt-contrib-concat');
@@ -6,6 +7,18 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-connect');
     grunt.loadNpmTasks('grunt-contrib-yuidoc');
     grunt.loadNpmTasks('grunt-contrib-watch');
+
+    // Only load this task if we have a repo token.
+    // It is required to be an ENV variable for this project.
+    if (process.env.COVERALLS_REPO_TOKEN) {
+        grunt.loadNpmTasks('grunt-coveralls');
+    // Otherwise just show a warning message
+    } else {
+        grunt.registerMultiTask('coveralls', 'Mock coveralls task.', function () {
+            grunt.log.error('Repo token could not be determined, not submitting.');
+            grunt.log.notverbose.writeln('Use --verbose to see files that would be submitted.');
+        });
+    }
 
     grunt.loadTasks('tasks');
 
@@ -91,7 +104,9 @@ module.exports = function(grunt) {
             ' * <%= pkg.licenseUrl %>',
             ' */',
             ''
-        ].join('\n');
+        ].join('\n'),
+        Instrumenter = require('istanbul').Instrumenter,
+        instrumenter = new Instrumenter();
 
     grunt.initConfig({
         pkg : grunt.file.readJSON('package.json'),
@@ -99,13 +114,15 @@ module.exports = function(grunt) {
             build: 'bin',
             docs: 'docs',
             src: 'src/pixi',
-            test: 'test'
+            test: 'test',
+            coverage: 'coverage'
         },
         files: {
             srcBlob: '<%= dirs.src %>/**/*.js',
             testBlob: '<%= dirs.test %>/{functional,lib/pixi,unit/pixi}/**/*.js',
             build: '<%= dirs.build %>/pixi.dev.js',
-            buildMin: '<%= dirs.build %>/pixi.js'
+            buildMin: '<%= dirs.build %>/pixi.js',
+            buildInstrumented: '<%= dirs.coverage %>/pixi.instrumented.js'
         },
         concat: {
             options: {
@@ -114,6 +131,16 @@ module.exports = function(grunt) {
             dist: {
                 src: srcFiles,
                 dest: '<%= files.build %>'
+            },
+            instrument: {
+                options: {
+                    process: function processInstrument(src, filepath) {
+                        return (filepath.match(/(Intro|Outro)\.js$/) === null) ?
+                            instrumenter.instrumentSync(src, filepath) : src;
+                    }
+                },
+                src: srcFiles,
+                dest: '<%= files.buildInstrumented %>'
             }
         },
         /* jshint -W106 */
@@ -125,6 +152,11 @@ module.exports = function(grunt) {
                 options: {
                     sourceRoot: '../'
                 }
+            }
+        },
+        coveralls: {
+            coverage: {
+                src: '<%= dirs.coverage %>/**/lcov.info'
             }
         },
         jshint: {
@@ -176,7 +208,7 @@ module.exports = function(grunt) {
         watch: {
             scripts: {
                 files: ['<%= dirs.src %>/**/*.js'],
-                tasks: ['concat'],
+                tasks: ['concat:dist'],
                 options: {
                     spawn: false,
                 }
@@ -193,15 +225,15 @@ module.exports = function(grunt) {
 
     grunt.registerTask('default', ['build', 'test']);
 
-    grunt.registerTask('build', ['jshint:source', 'concat', 'uglify']);
+    grunt.registerTask('build', ['jshint:source', 'concat:dist', 'uglify']);
     grunt.registerTask('build-debug', ['concat_sourcemap', 'uglify']);
 
-    grunt.registerTask('test', ['concat', 'jshint:test', 'karma']);
+    grunt.registerTask('test', ['jshint:test', 'concat:instrument', 'karma']);
 
     grunt.registerTask('docs', ['yuidoc']);
-    grunt.registerTask('travis', ['build', 'test']);
+    grunt.registerTask('travis', ['build', 'test', 'coveralls']);
 
     grunt.registerTask('default', ['build', 'test']);
+    grunt.registerTask('debug-watch', ['concat:dist', 'watch']);
 
-    grunt.registerTask('debug-watch', ['concat', 'watch']);
 };

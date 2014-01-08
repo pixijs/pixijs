@@ -34,9 +34,12 @@
         "grunt-contrib-yuidoc": "~0.5",
         "grunt-concat-sourcemap": "~0.4",
         "grunt-contrib-concat": "~0.3",
+        "grunt-coveralls": "~0.1",
+        "istanbul": "~0.2",
         "mocha": "~1.15",
         "chai": "~1.8",
         "karma": "~0.10",
+        "karma-coverage": "~0.1",
         "karma-firefox-launcher": "~0.1",
         "karma-mocha": "~0.1"
     }
