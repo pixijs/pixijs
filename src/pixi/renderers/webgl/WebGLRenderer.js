@@ -373,6 +373,8 @@ PIXI.createWebGLTexture = function(texture, gl)
 
         gl.bindTexture(gl.TEXTURE_2D, null);
     }
+
+    return  texture._glTextures[gl.id];
 };
 
 PIXI.updateWebGLTexture = function(texture, gl)
