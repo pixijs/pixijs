@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-01-07
+ * Compiled: 2014-01-09
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -1145,6 +1145,11 @@ PIXI.DisplayObject.prototype.getLocalBounds = function()
     return bounds;
 };
 
+PIXI.DisplayObject.prototype.setStageReference = function(stage)
+{
+    this.stage = stage;
+    if(this._interactive)this.stage.dirty = true;
+};
 
 PIXI.DisplayObject.prototype._renderWebGL = function(renderSession)
 {
@@ -3343,9 +3348,6 @@ PIXI.Stage = function(backgroundColor)
      */
     this.dirty = true;
 
-    this.__childrenAdded = [];
-    this.__childrenRemoved = [];
-
     //the stage is it's own stage
     this.stage = this;
 
@@ -3353,7 +3355,6 @@ PIXI.Stage = function(backgroundColor)
     this.stage.hitArea = new PIXI.Rectangle(0,0,100000, 100000);
 
     this.setBackgroundColor(backgroundColor);
-    this.worldVisible = true;
 };
 
 // constructor
@@ -3706,13 +3707,15 @@ PIXI.autoDetectRenderer = function(width, height, view, transparent, antialias)
                                 }
                             } )();
 
-    if(webgl)
+    // used to detect ie 11 - no longer required
+    /*  if(webgl)
     {
         var ie =  (navigator.userAgent.toLowerCase().indexOf('trident') !== -1);
         webgl = !ie;
     }
+    */
 
-    //console.log(webgl);
+
     if( webgl )
     {
         return new PIXI.WebGLRenderer(width, height, view, transparent, antialias);
@@ -4582,13 +4585,18 @@ PIXI.WebGLGraphics.buildRectangle = function(graphicsData, webGLData)
 
     if(graphicsData.lineWidth)
     {
+        var tempPoints = graphicsData.points;
+
         graphicsData.points = [x, y,
                   x + width, y,
                   x + width, y + height,
                   x, y + height,
                   x, y];
 
+
         PIXI.WebGLGraphics.buildLine(graphicsData, webGLData);
+
+        graphicsData.points = tempPoints;
     }
 };
 
@@ -4649,6 +4657,8 @@ PIXI.WebGLGraphics.buildCircle = function(graphicsData, webGLData)
 
     if(graphicsData.lineWidth)
     {
+        var tempPoints = graphicsData.points;
+
         graphicsData.points = [];
 
         for (i = 0; i < totalSegs + 1; i++)
@@ -4658,6 +4668,8 @@ PIXI.WebGLGraphics.buildCircle = function(graphicsData, webGLData)
         }
 
         PIXI.WebGLGraphics.buildLine(graphicsData, webGLData);
+
+        graphicsData.points = tempPoints;
     }
 };
 
@@ -4924,13 +4936,7 @@ PIXI.WebGLGraphics.buildPoly = function(graphicsData, webGLData)
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
-PIXI._defaultFrame = new PIXI.Rectangle(0,0,1,1);
-
-// an instance of the gl context..
-// only one at the moment :/
-PIXI.gl = null;
-
-
+PIXI.glContexts = []; // this is where we store the webGL contexts for easy access.
 
 /**
  * the WebGLRenderer is draws the stage and all its content onto a webGL enabled canvas. This renderer
@@ -4968,8 +4974,6 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     this.view.addEventListener('webglcontextlost', function(event) { scope.handleContextLost(event); }, false);
     this.view.addEventListener('webglcontextrestored', function(event) { scope.handleContextRestored(event); }, false);
 
-    this.batchs = [];
-
     this.options = {
         alpha: this.transparent,
         antialias:!!antialias, // SPEED UP??
@@ -4992,6 +4996,8 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
 
     var gl = this.gl;
     this.glContextId = gl.id = PIXI.WebGLRenderer.glContextId ++;
+
+    PIXI.glContexts[this.glContextId] = gl;
 
     if(!PIXI.blendModesWebGL)
     {
@@ -5032,8 +5038,6 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
 
 
     gl.useProgram(this.shaderManager.defaultShader.program);
-
-    PIXI.WebGLRenderer.gl = gl;
 
     gl.disable(gl.DEPTH_TEST);
     gl.disable(gl.CULL_FACE);
@@ -5164,57 +5168,10 @@ PIXI.WebGLRenderer.updateTextures = function()
     for (i = 0; i < PIXI.texturesToDestroy.length; i++)
         PIXI.WebGLRenderer.destroyTexture(PIXI.texturesToDestroy[i]);
 
-    PIXI.texturesToUpdate = [];
-    PIXI.texturesToDestroy = [];
-    PIXI.Texture.frameUpdates = [];
+    PIXI.texturesToUpdate.length = 0;
+    PIXI.texturesToDestroy.length = 0;
+    PIXI.Texture.frameUpdates.length = 0;
 };
-
-/**
- * Updates a loaded webgl texture
- *
- * @static
- * @method updateTexture
- * @param texture {Texture} The texture to update
- * @private
- */
-
- /*
-PIXI.WebGLRenderer.updateTexture = function(texture)
-{
-    //TODO break this out into a texture manager...
-    var gl = this.gl;
-
-    if(!texture._glTexture)
-    {
-        texture._glTexture = gl.createTexture();
-    }
-
-    if(texture.hasLoaded)
-    {
-        gl.bindTexture(gl.TEXTURE_2D, texture._glTexture);
-        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
-
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.source);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, texture.scaleMode === PIXI.BaseTexture.SCALE_MODE.LINEAR ? gl.LINEAR : gl.NEAREST);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, texture.scaleMode === PIXI.BaseTexture.SCALE_MODE.LINEAR ? gl.LINEAR : gl.NEAREST);
-
-        // reguler...
-
-        if(!texture._powerOf2)
-        {
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        }
-        else
-        {
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-        }
-
-        gl.bindTexture(gl.TEXTURE_2D, null);
-    }
-};
-*/
 
 /**
  * Destroys a loaded webgl texture
@@ -5226,13 +5183,19 @@ PIXI.WebGLRenderer.updateTexture = function(texture)
 PIXI.WebGLRenderer.destroyTexture = function(texture)
 {
     //TODO break this out into a texture manager...
-    var gl = PIXI.gl;
 
-    if(texture._glTexture)
+    for (var i = texture._glTextures.length - 1; i >= 0; i--)
     {
-        texture._glTexture = gl.createTexture();
-        gl.deleteTexture(gl.TEXTURE_2D, texture._glTexture);
+        var glTexture = texture._glTextures[i];
+        var gl = PIXI.glContexts[i];
+
+        if(gl && glTexture)
+        {
+            gl.deleteTexture(glTexture);
+        }
     }
+
+    texture._glTextures.length = 0;
 };
 
 PIXI.WebGLRenderer.updateTextureFrame = function(texture)
@@ -5295,6 +5258,8 @@ PIXI.createWebGLTexture = function(texture, gl)
 
         gl.bindTexture(gl.TEXTURE_2D, null);
     }
+
+    return  texture._glTextures[gl.id];
 };
 
 PIXI.updateWebGLTexture = function(texture, gl)
@@ -5427,7 +5392,7 @@ PIXI.WebGLMaskManager.prototype.pushMask = function(maskData, renderSession)
 
     this.maskStack.push(maskData);
     
-    gl.colorMask(false, false, false, false);
+    gl.colorMask(false, false, false, true);
     gl.stencilOp(gl.KEEP,gl.KEEP,gl.INCR);
 
     PIXI.WebGLGraphics.renderGraphics(maskData, renderSession);
@@ -6688,8 +6653,8 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
     //stage.__childrenRemoved = [];
 
     // update textures if need be
-    PIXI.texturesToUpdate = [];
-    PIXI.texturesToDestroy = [];
+    PIXI.texturesToUpdate.length = 0;
+    PIXI.texturesToDestroy.length = 0;
 
     PIXI.visibleCount++;
     stage.updateTransform();
@@ -6717,7 +6682,7 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
     // remove frame updates..
     if(PIXI.Texture.frameUpdates.length > 0)
     {
-        PIXI.Texture.frameUpdates = [];
+        PIXI.Texture.frameUpdates.length = 0;
     }
 };
 
@@ -7176,21 +7141,44 @@ PIXI.Graphics = function()
     this._webGL = [];
 
     this.isMask = false;
+
+    this.bounds = null;
+
+    this.boundsPadding = 10;
 };
 
 // constructor
 PIXI.Graphics.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
 PIXI.Graphics.prototype.constructor = PIXI.Graphics;
 
-/*
-*   Not yet implemented
-*/
+/**
+ * If cacheAsBitmap is true the graphics object will then be rendered as if it was a sprite.
+ * This is useful if your graphics element does not change often as it will speed up the rendering of the object
+ * It is also usful as the graphics object will always be aliased because it will be rendered using canvas
+ * Not recommended if you are conastanly redrawing the graphics element.
+ *
+ * @property cacheAsBitmap
+ * @default false
+ * @type Boolean
+ * @private
+ */
 Object.defineProperty(PIXI.Graphics.prototype, "cacheAsBitmap", {
     get: function() {
         return  this._cacheAsBitmap;
     },
     set: function(value) {
         this._cacheAsBitmap = value;
+
+        if(this._cacheAsBitmap)
+        {
+            this._generateCachedSprite();
+        }
+        else
+        {
+            this.destroyCachedSprite();
+            this.dirty = true;
+        }
+
     }
 });
 
@@ -7358,34 +7346,72 @@ PIXI.Graphics.prototype.clear = function()
     this.bounds = null; //new PIXI.Rectangle();
 };
 
+/**
+ * Useful function that returns a texture of the graphics object that can then be used to create sprites
+ * This can be quite useful if your geometry is complicated and needs to be reused multiple times.
+ *
+ * @method generateTexture
+ * @return {Texture} a texture of the graphics object
+ */
+PIXI.Graphics.prototype.generateTexture = function()
+{
+    var bounds = this.getBounds();
+
+    var canvasBuffer = new PIXI.CanvasBuffer(bounds.width, bounds.height);
+    var texture = PIXI.Texture.fromCanvas(canvasBuffer.canvas);
+
+    canvasBuffer.context.translate(-bounds.x,-bounds.y);
+    
+    PIXI.CanvasGraphics.renderGraphics(this, canvasBuffer.context);
+
+    return texture;
+};
 
 PIXI.Graphics.prototype._renderWebGL = function(renderSession)
 {
     // if the sprite is not visible or the alpha is 0 then no need to render this element
     if(this.visible === false || this.alpha === 0 || this.isMask === true)return;
     
-   
-    renderSession.spriteBatch.stop();
-
-    if(this._mask)renderSession.maskManager.pushMask(this.mask, renderSession);
-    if(this._filters)renderSession.filterManager.pushFilter(this._filterBlock);
-  
-    // check blend mode
-    if(this.blendMode !== renderSession.spriteBatch.currentBlendMode)
+    if(this._cacheAsBitmap)
     {
-        this.spriteBatch.currentBlendMode = this.blendMode;
-        var blendModeWebGL = PIXI.blendModesWebGL[renderSession.spriteBatch.currentBlendMode];
-        this.spriteBatch.gl.blendFunc(blendModeWebGL[0], blendModeWebGL[1]);
-    }
- 
-    PIXI.WebGLGraphics.renderGraphics(this, renderSession);
-    
-    if(this._filters)renderSession.filterManager.popFilter();
-    if(this._mask)renderSession.maskManager.popMask(renderSession);
-      
-    renderSession.drawCount++;
+       
+        if(this.dirty)
+        {
+            this._generateCachedSprite();
+            // we will also need to update the texture on the gpu too!
+            PIXI.updateWebGLTexture(this._cachedSprite.texture.baseTexture, renderSession.gl);
+            
+            this.dirty =  false;
+        }
 
-    renderSession.spriteBatch.start();
+        PIXI.Sprite.prototype._renderWebGL.call(this._cachedSprite, renderSession);
+
+        return;
+    }
+    else
+    {
+        renderSession.spriteBatch.stop();
+
+        if(this._mask)renderSession.maskManager.pushMask(this.mask, renderSession);
+        if(this._filters)renderSession.filterManager.pushFilter(this._filterBlock);
+      
+        // check blend mode
+        if(this.blendMode !== renderSession.spriteBatch.currentBlendMode)
+        {
+            this.spriteBatch.currentBlendMode = this.blendMode;
+            var blendModeWebGL = PIXI.blendModesWebGL[renderSession.spriteBatch.currentBlendMode];
+            this.spriteBatch.gl.blendFunc(blendModeWebGL[0], blendModeWebGL[1]);
+        }
+     
+        PIXI.WebGLGraphics.renderGraphics(this, renderSession);
+        
+        if(this._filters)renderSession.filterManager.popFilter();
+        if(this._mask)renderSession.maskManager.popMask(renderSession);
+          
+        renderSession.drawCount++;
+
+        renderSession.spriteBatch.start();
+    }
 };
 
 PIXI.Graphics.prototype._renderCanvas = function(renderSession)
@@ -7534,8 +7560,49 @@ PIXI.Graphics.prototype.updateBounds = function()
         }
     }
 
-    this.bounds = new PIXI.Rectangle(minX, minY, maxX - minX, maxY - minY);
+    var padding = this.boundsPadding;
+    this.bounds = new PIXI.Rectangle(minX - padding, minY - padding, (maxX - minX) + padding * 2, (maxY - minY) + padding * 2);
 };
+
+PIXI.Graphics.prototype._generateCachedSprite = function()
+{
+    var bounds = this.getBounds();
+
+    if(!this._cachedSprite)
+    {
+        var canvasBuffer = new PIXI.CanvasBuffer(bounds.width, bounds.height);
+        var texture = PIXI.Texture.fromCanvas(canvasBuffer.canvas);
+        
+        this._cachedSprite = new PIXI.Sprite(texture);
+        this._cachedSprite.buffer = canvasBuffer;
+
+        this._cachedSprite.worldTransform = this.worldTransform;
+    }
+    else
+    {
+        this._cachedSprite.buffer.resize(bounds.width, bounds.height);
+    }
+
+    // leverage the anchor to account for the offest of the element
+    this._cachedSprite.anchor.x = -( bounds.x / bounds.width );
+    this._cachedSprite.anchor.y = -( bounds.y / bounds.height );
+
+   // this._cachedSprite.buffer.context.save();
+    this._cachedSprite.buffer.context.translate(-bounds.x,-bounds.y);
+    
+    PIXI.CanvasGraphics.renderGraphics(this, this._cachedSprite.buffer.context);
+   // this._cachedSprite.buffer.context.restore();
+};
+
+PIXI.Graphics.prototype.destroyCachedSprite = function()
+{
+    this._cachedSprite.texture.destroy(true);
+
+    // let the gc collect the unused sprite
+    // TODO could be object pooled!
+    this._cachedSprite = null;
+};
+
 
 // SOME TYPES:
 PIXI.Graphics.POLY = 0;
@@ -10794,47 +10861,9 @@ PIXI.SpriteSheetLoader.prototype.load = function () {
     var jsonLoader = new PIXI.JsonLoader(this.url, this.crossorigin);
     jsonLoader.addEventListener('loaded', function (event) {
         scope.json = event.content.json;
-        scope.onJSONLoaded();
-    });
-    jsonLoader.load();
-};
-
-/**
- * Invoke when JSON file is loaded
- *
- * @method onJSONLoaded
- * @private
- */
-PIXI.SpriteSheetLoader.prototype.onJSONLoaded = function () {
-    var scope = this;
-    var textureUrl = this.baseUrl + this.json.meta.image;
-    var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
-    var frameData = this.json.frames;
-
-    this.texture = image.texture.baseTexture;
-    image.addEventListener('loaded', function () {
         scope.onLoaded();
     });
-
-    for (var i in frameData) {
-        var rect = frameData[i].frame;
-        if (rect) {
-            PIXI.TextureCache[i] = new PIXI.Texture(this.texture, {
-                x: rect.x,
-                y: rect.y,
-                width: rect.w,
-                height: rect.h
-            });
-            if (frameData[i].trimmed) {
-                //var realSize = frameData[i].spriteSourceSize;
-                PIXI.TextureCache[i].realSize = frameData[i].spriteSourceSize;
-                PIXI.TextureCache[i].trim.x = 0; // (realSize.x / rect.w)
-                // calculate the offset!
-            }
-        }
-    }
-
-    image.load();
+    jsonLoader.load();
 };
 
 /**
@@ -11194,24 +11223,9 @@ PIXI.SpineLoader.prototype.load = function () {
     var jsonLoader = new PIXI.JsonLoader(this.url, this.crossorigin);
     jsonLoader.addEventListener("loaded", function (event) {
         scope.json = event.content.json;
-        scope.onJSONLoaded();
+        scope.onLoaded();
     });
     jsonLoader.load();
-};
-
-/**
- * Invoke when JSON file is loaded
- *
- * @method onJSONLoaded
- * @private
- */
-PIXI.SpineLoader.prototype.onJSONLoaded = function () {
-    var spineJsonParser = new spine.SkeletonJson();
-    var skeletonData = spineJsonParser.readSkeletonData(this.json);
-
-    PIXI.AnimCache[this.url] = skeletonData;
-
-    this.onLoaded();
 };
 
 /**
@@ -11262,6 +11276,100 @@ PIXI.AbstractFilter = function(fragmentSrc, uniforms)
 
     this.fragmentSrc = fragmentSrc || [];
 };
+
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+/**
+ *
+ * The AlphaMaskFilter class uses the pixel values from the specified texture (called the displacement map) to perform a displacement of an object.
+ * You can use this filter to apply all manor of crazy warping effects
+ * Currently the r property of the texture is used offset the x and the g propery of the texture is used to offset the y.
+ * @class AlphaMaskFilter
+ * @contructor
+ * @param texture {Texture} The texture used for the displacemtent map * must be power of 2 texture at the moment
+ */
+PIXI.AlphaMaskFilter = function(texture)
+{
+    PIXI.AbstractFilter.call( this );
+
+    this.passes = [this];
+    texture.baseTexture._powerOf2 = true;
+
+    // set the uniforms
+    //console.log()
+    this.uniforms = {
+        mask: {type: 'sampler2D', value:texture},
+        mapDimensions:   {type: '2f', value:{x:1, y:5112}},
+        dimensions:   {type: '4fv', value:[0,0,0,0]}
+    };
+
+    if(texture.baseTexture.hasLoaded)
+    {
+        this.uniforms.mask.value.x = texture.width;
+        this.uniforms.mask.value.y = texture.height;
+    }
+    else
+    {
+        this.boundLoadedFunction = this.onTextureLoaded.bind(this);
+
+        texture.baseTexture.on('loaded', this.boundLoadedFunction);
+    }
+
+    this.fragmentSrc = [
+        'precision mediump float;',
+        'varying vec2 vTextureCoord;',
+        'varying vec4 vColor;',
+        'uniform sampler2D mask;',
+        'uniform sampler2D uSampler;',
+        'uniform vec2 offset;',
+        'uniform vec4 dimensions;',
+        'uniform vec2 mapDimensions;',
+
+        'void main(void) {',
+        '   vec2 mapCords = vTextureCoord.xy;',
+        '   mapCords += (dimensions.zw + offset)/ dimensions.xy ;',
+        '   mapCords.y *= -1.0;',
+        '   mapCords.y += 1.0;',
+        '   mapCords *= dimensions.xy / mapDimensions;',
+
+        '   vec4 original =  texture2D(uSampler, vTextureCoord);',
+        '   float maskAlpha =  texture2D(mask, mapCords).r;',
+        '   original *= maskAlpha;',
+        //'   original.rgb *= maskAlpha;',
+        '   gl_FragColor =  original;',
+        //'   gl_FragColor = gl_FragColor;',
+        '}'
+    ];
+};
+
+PIXI.AlphaMaskFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
+PIXI.AlphaMaskFilter.prototype.constructor = PIXI.AlphaMaskFilter;
+
+PIXI.AlphaMaskFilter.prototype.onTextureLoaded = function()
+{
+    this.uniforms.mapDimensions.value.x = this.uniforms.mask.value.width;
+    this.uniforms.mapDimensions.value.y = this.uniforms.mask.value.height;
+
+    this.uniforms.mask.value.baseTexture.off('loaded', this.boundLoadedFunction);
+};
+
+/**
+ * The texture used for the displacemtent map * must be power of 2 texture at the moment
+ *
+ * @property map
+ * @type Texture
+ */
+Object.defineProperty(PIXI.AlphaMaskFilter.prototype, 'map', {
+    get: function() {
+        return this.uniforms.mask.value;
+    },
+    set: function(value) {
+        this.uniforms.mask.value = value;
+    }
+});
+
 
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
