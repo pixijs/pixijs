@@ -193,13 +193,18 @@ PIXI.WebGLGraphics.buildRectangle = function(graphicsData, webGLData)
 
     if(graphicsData.lineWidth)
     {
+        var tempPoints = graphicsData.points;
+
         graphicsData.points = [x, y,
                   x + width, y,
                   x + width, y + height,
                   x, y + height,
                   x, y];
 
+
         PIXI.WebGLGraphics.buildLine(graphicsData, webGLData);
+
+        graphicsData.points = tempPoints;
     }
 };
 
@@ -260,6 +265,8 @@ PIXI.WebGLGraphics.buildCircle = function(graphicsData, webGLData)
 
     if(graphicsData.lineWidth)
     {
+        var tempPoints = graphicsData.points;
+
         graphicsData.points = [];
 
         for (i = 0; i < totalSegs + 1; i++)
@@ -269,6 +276,8 @@ PIXI.WebGLGraphics.buildCircle = function(graphicsData, webGLData)
         }
 
         PIXI.WebGLGraphics.buildLine(graphicsData, webGLData);
+
+        graphicsData.points = tempPoints;
     }
 };
 

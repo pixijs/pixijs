@@ -64,24 +64,9 @@ PIXI.SpineLoader.prototype.load = function () {
     var jsonLoader = new PIXI.JsonLoader(this.url, this.crossorigin);
     jsonLoader.addEventListener("loaded", function (event) {
         scope.json = event.content.json;
-        scope.onJSONLoaded();
+        scope.onLoaded();
     });
     jsonLoader.load();
-};
-
-/**
- * Invoke when JSON file is loaded
- *
- * @method onJSONLoaded
- * @private
- */
-PIXI.SpineLoader.prototype.onJSONLoaded = function () {
-    var spineJsonParser = new spine.SkeletonJson();
-    var skeletonData = spineJsonParser.readSkeletonData(this.json);
-
-    PIXI.AnimCache[this.url] = skeletonData;
-
-    this.onLoaded();
 };
 
 /**

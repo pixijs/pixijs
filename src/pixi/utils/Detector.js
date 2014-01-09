@@ -31,13 +31,15 @@ PIXI.autoDetectRenderer = function(width, height, view, transparent, antialias)
                                 }
                             } )();
 
-    if(webgl)
+    // used to detect ie 11 - no longer required
+    /*  if(webgl)
     {
         var ie =  (navigator.userAgent.toLowerCase().indexOf('trident') !== -1);
         webgl = !ie;
     }
+    */
 
-    //console.log(webgl);
+
     if( webgl )
     {
         return new PIXI.WebGLRenderer(width, height, view, transparent, antialias);

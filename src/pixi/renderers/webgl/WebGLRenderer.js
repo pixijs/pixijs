@@ -2,13 +2,7 @@
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
-PIXI._defaultFrame = new PIXI.Rectangle(0,0,1,1);
-
-// an instance of the gl context..
-// only one at the moment :/
-PIXI.gl = null;
-
-
+PIXI.glContexts = []; // this is where we store the webGL contexts for easy access.
 
 /**
  * the WebGLRenderer is draws the stage and all its content onto a webGL enabled canvas. This renderer
@@ -46,8 +40,6 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     this.view.addEventListener('webglcontextlost', function(event) { scope.handleContextLost(event); }, false);
     this.view.addEventListener('webglcontextrestored', function(event) { scope.handleContextRestored(event); }, false);
 
-    this.batchs = [];
-
     this.options = {
         alpha: this.transparent,
         antialias:!!antialias, // SPEED UP??
@@ -70,6 +62,8 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
 
     var gl = this.gl;
     this.glContextId = gl.id = PIXI.WebGLRenderer.glContextId ++;
+
+    PIXI.glContexts[this.glContextId] = gl;
 
     if(!PIXI.blendModesWebGL)
     {
@@ -110,8 +104,6 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
 
 
     gl.useProgram(this.shaderManager.defaultShader.program);
-
-    PIXI.WebGLRenderer.gl = gl;
 
     gl.disable(gl.DEPTH_TEST);
     gl.disable(gl.CULL_FACE);
@@ -242,57 +234,10 @@ PIXI.WebGLRenderer.updateTextures = function()
     for (i = 0; i < PIXI.texturesToDestroy.length; i++)
         PIXI.WebGLRenderer.destroyTexture(PIXI.texturesToDestroy[i]);
 
-    PIXI.texturesToUpdate = [];
-    PIXI.texturesToDestroy = [];
-    PIXI.Texture.frameUpdates = [];
+    PIXI.texturesToUpdate.length = 0;
+    PIXI.texturesToDestroy.length = 0;
+    PIXI.Texture.frameUpdates.length = 0;
 };
-
-/**
- * Updates a loaded webgl texture
- *
- * @static
- * @method updateTexture
- * @param texture {Texture} The texture to update
- * @private
- */
-
- /*
-PIXI.WebGLRenderer.updateTexture = function(texture)
-{
-    //TODO break this out into a texture manager...
-    var gl = this.gl;
-
-    if(!texture._glTexture)
-    {
-        texture._glTexture = gl.createTexture();
-    }
-
-    if(texture.hasLoaded)
-    {
-        gl.bindTexture(gl.TEXTURE_2D, texture._glTexture);
-        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
-
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.source);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, texture.scaleMode === PIXI.BaseTexture.SCALE_MODE.LINEAR ? gl.LINEAR : gl.NEAREST);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, texture.scaleMode === PIXI.BaseTexture.SCALE_MODE.LINEAR ? gl.LINEAR : gl.NEAREST);
-
-        // reguler...
-
-        if(!texture._powerOf2)
-        {
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        }
-        else
-        {
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-        }
-
-        gl.bindTexture(gl.TEXTURE_2D, null);
-    }
-};
-*/
 
 /**
  * Destroys a loaded webgl texture
@@ -304,13 +249,19 @@ PIXI.WebGLRenderer.updateTexture = function(texture)
 PIXI.WebGLRenderer.destroyTexture = function(texture)
 {
     //TODO break this out into a texture manager...
-    var gl = PIXI.gl;
 
-    if(texture._glTexture)
+    for (var i = texture._glTextures.length - 1; i >= 0; i--)
     {
-        texture._glTexture = gl.createTexture();
-        gl.deleteTexture(gl.TEXTURE_2D, texture._glTexture);
+        var glTexture = texture._glTextures[i];
+        var gl = PIXI.glContexts[i];
+
+        if(gl && glTexture)
+        {
+            gl.deleteTexture(glTexture);
+        }
     }
+
+    texture._glTextures.length = 0;
 };
 
 PIXI.WebGLRenderer.updateTextureFrame = function(texture)
@@ -373,6 +324,8 @@ PIXI.createWebGLTexture = function(texture, gl)
 
         gl.bindTexture(gl.TEXTURE_2D, null);
     }
+
+    return  texture._glTextures[gl.id];
 };
 
 PIXI.updateWebGLTexture = function(texture, gl)
