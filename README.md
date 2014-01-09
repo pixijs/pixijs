@@ -3,6 +3,7 @@ Pixi Renderer [![Build Status](https://travis-ci.org/GoodBoyDigital/pixi.js.png?
 
 ![pixi.js logo](http://www.goodboydigital.com/pixijs/logo_small.png)
 
+[<img src="http://www.pixijs.com/wp-content/uploads/2013/05/headerPanel_projects-898x342.jpg">](http://www.pixijs.com/projects)
 #### JavaScript 2D Renderer ####
 
 The aim of this project is to provide a fast lightweight 2D library that works
