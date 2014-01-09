@@ -109,6 +109,8 @@ PIXI.Text.prototype.updateText = function()
     var lineHeight = this.determineFontHeight('font: ' + this.style.font  + ';') + this.style.strokeThickness;
     this.canvas.height = lineHeight * lines.length;
 
+    if(navigator.isCocoonJS) this.context.clearRect(0,0,this.canvas.width,this.canvas.height);
+    
     //set canvas text styles
     this.context.fillStyle = this.style.fill;
     this.context.font = this.style.font;
