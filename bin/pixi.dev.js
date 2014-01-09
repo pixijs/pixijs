@@ -1,6 +1,6 @@
 /**
  * @license
- * pixi.js - v1.4.1
+ * pixi.js - v1.4.2
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
