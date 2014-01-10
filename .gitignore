@@ -3,3 +3,4 @@ node_modules
 .project
 *.sublime-*
 *.log
+/coverage
