@@ -49,7 +49,7 @@ PIXI.Point.prototype.clone = function()
 PIXI.Point.sub = function (B)
 {
 	return new PIXI.Point(this.x - B.x,this.y - B.y);
-}
+};
 
 /**
  *
@@ -62,7 +62,7 @@ PIXI.Point.sub = function (B)
 PIXI.Point.add = function (B)
 {
 	return new PIXI.Point(this.x + B.x,this.y + B.y);
-}
+};
 
 /**
  *
@@ -75,7 +75,7 @@ PIXI.Point.add = function (B)
 PIXI.Point.mul = function (B)
 {
 	return new PIXI.Point(this.x * B,this.y * B);
-}
+};
 
 /**
  *
@@ -88,7 +88,7 @@ PIXI.Point.mul = function (B)
 PIXI.Point.div = function (B)
 {
 	return new PIXI.Point(this.x / B,this.y / B);
-}
+};
 
 /**
  *
@@ -101,7 +101,7 @@ PIXI.Point.div = function (B)
 PIXI.Point.dot = function (B)
 {
 	return (this.x*B.x)+(this.y*B.y);
-}
+};
 
 /**
  *
@@ -113,7 +113,7 @@ PIXI.Point.dot = function (B)
 PIXI.Point.magnitude = function()
 {
 	return Math.sqrt(this.x^2 + this.y^2);
-}
+};
 
 /**
  *
@@ -125,7 +125,7 @@ PIXI.Point.magnitude = function()
 PIXI.Point.unit = function()
 {
 	return this.Div(this.Magnitude());
-}
+};
 
 // constructor
 PIXI.Point.prototype.constructor = PIXI.Point;
