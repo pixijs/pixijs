@@ -124,7 +124,7 @@ PIXI.Point.prototype.magnitude = function()
  */
 PIXI.Point.prototype.unit = function()
 {
-	return this.Div(this.Magnitude());
+	return this.div(this.Magnitude());
 };
 
 // constructor
