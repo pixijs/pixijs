@@ -504,6 +504,10 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
         // update the touch position
         touchData.global.x = (touchEvent.clientX - rect.left) * (this.target.width / rect.width);
         touchData.global.y = (touchEvent.clientY - rect.top)  * (this.target.height / rect.height);
+        if(navigator.isCocoonJS) {
+            touchData.global.x = touchEvent.clientX;
+            touchData.global.y = touchEvent.clientY;
+        }
     }
 
     var length = this.interactiveItems.length;
@@ -539,6 +543,10 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
         this.touchs[touchEvent.identifier] = touchData;
         touchData.global.x = (touchEvent.clientX - rect.left) * (this.target.width / rect.width);
         touchData.global.y = (touchEvent.clientY - rect.top)  * (this.target.height / rect.height);
+        if(navigator.isCocoonJS) {
+            touchData.global.x = touchEvent.clientX;
+            touchData.global.y = touchEvent.clientY;
+        }
 
         var length = this.interactiveItems.length;
 
@@ -584,6 +592,10 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
         var up = false;
         touchData.global.x = (touchEvent.clientX - rect.left) * (this.target.width / rect.width);
         touchData.global.y = (touchEvent.clientY - rect.top)  * (this.target.height / rect.height);
+        if(navigator.isCocoonJS) {
+            touchData.global.x = touchEvent.clientX;
+            touchData.global.y = touchEvent.clientY;
+        }
 
         var length = this.interactiveItems.length;
         for (var j = 0; j < length; j++)
