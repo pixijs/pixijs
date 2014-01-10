@@ -46,7 +46,7 @@ PIXI.Point.prototype.clone = function()
  * @param B {Point} (Point/Vector) to do element wise subtraction
  * @return {Point} A new Point resultant of the subtraction of B
  */
-PIXI.Point.sub = function (B)
+PIXI.Point.prototype.sub = function (B)
 {
 	return new PIXI.Point(this.x - B.x,this.y - B.y);
 };
@@ -59,7 +59,7 @@ PIXI.Point.sub = function (B)
  * @param B {Point} (Point/Vector) to do element wise addition
  * @return {Point} A new Point resultant of the addition of B
  */
-PIXI.Point.add = function (B)
+PIXI.Point.prototype.add = function (B)
 {
 	return new PIXI.Point(this.x + B.x,this.y + B.y);
 };
@@ -72,7 +72,7 @@ PIXI.Point.add = function (B)
  * @param B {Scalar} Number to do element wise multiplication
  * @return {Point} A new Point resultant of the multiplication of B
  */
-PIXI.Point.mul = function (B)
+PIXI.Point.prototype.mul = function (B)
 {
 	return new PIXI.Point(this.x * B,this.y * B);
 };
@@ -85,7 +85,7 @@ PIXI.Point.mul = function (B)
  * @param B {Scalar} Number to do element wise division
  * @return {Point} A new Point resultant of the division of B
  */
-PIXI.Point.div = function (B)
+PIXI.Point.prototype.div = function (B)
 {
 	return new PIXI.Point(this.x / B,this.y / B);
 };
@@ -98,7 +98,7 @@ PIXI.Point.div = function (B)
  * @param B {Point} (Point/Vector) to project along
  * @return {Scalar} Number resultant of the projection onto B
  */
-PIXI.Point.dot = function (B)
+PIXI.Point.prototype.dot = function (B)
 {
 	return (this.x*B.x)+(this.y*B.y);
 };
@@ -110,7 +110,7 @@ PIXI.Point.dot = function (B)
  * @method magnitude
  * @return {Scalar} Number equivelant to the scalar length of the point
  */
-PIXI.Point.magnitude = function()
+PIXI.Point.prototype.magnitude = function()
 {
 	return Math.sqrt(this.x^2 + this.y^2);
 };
@@ -122,7 +122,7 @@ PIXI.Point.magnitude = function()
  * @method unit
  * @return {Point} A new Point with a length(magnitude) of one
  */
-PIXI.Point.unit = function()
+PIXI.Point.prototype.unit = function()
 {
 	return this.Div(this.Magnitude());
 };
