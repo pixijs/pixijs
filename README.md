@@ -17,6 +17,8 @@ any breakthroughs will be posted up there too!
 
 ### Demos ###
 
+- [WebGL Filters!](<http://www.goodboydigital.com/pixijs/examples/15/indexAll.html>)
+
 - [Run pixi run](<http://www.goodboydigital.com/runpixierun/>)
 
 - [Fight for Everyone](<http://www.theleisuresociety.co.uk/fightforeveryone>)
@@ -150,3 +152,5 @@ It also copies the non-minified version to the examples.
 ```
 
 This content is released under the (http://opensource.org/licenses/MIT) MIT License.
+
+[![Analytics](https://ga-beacon.appspot.com/UA-39213431-2/pixi.js/index)](https://github.com/igrigorik/ga-beacon)
