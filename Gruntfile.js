@@ -1,4 +1,6 @@
 module.exports = function(grunt) {
+    'use strict';
+
     grunt.loadNpmTasks('grunt-concat-sourcemap');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-jshint');
@@ -204,15 +206,13 @@ module.exports = function(grunt) {
             }
         },
         karma: {
-            unit: {
-                configFile: '<%= files.testConf %>',
+            coverage: {
+                // singleRun: false,
                 // browsers: ['Chrome'],
-                singleRun: true
+                configFile: '<%= files.testConf %>'
             }
         }
     });
-
-    grunt.registerTask('default', ['build', 'test']);
 
     grunt.registerTask('build', ['jshint:source', 'concat:dist', 'uglify']);
     grunt.registerTask('build-debug', ['concat_sourcemap', 'uglify']);
@@ -220,9 +220,10 @@ module.exports = function(grunt) {
     grunt.registerTask('test', ['jshint:test', 'concat:instrument', 'karma']);
 
     grunt.registerTask('docs', ['yuidoc']);
+
+    grunt.registerTask('debug-watch', ['concat:dist', 'watch']);
+
     grunt.registerTask('travis', ['build', 'test']);
 
     grunt.registerTask('default', ['build', 'test']);
-    grunt.registerTask('debug-watch', ['concat:dist', 'watch']);
-
 };
