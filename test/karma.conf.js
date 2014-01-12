@@ -78,6 +78,7 @@ module.exports = function(config) {
         // already instrumented code, and let Karma use that.
         preprocessors : {
             //    '**/client/js/*.js': 'coverage'
+        },
 
         coverageReporter : {
             type: 'lcov',
