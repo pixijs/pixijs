@@ -103,7 +103,8 @@ module.exports = function(grunt) {
         },
         files: {
             srcBlob: '<%= dirs.src %>/**/*.js',
-            testBlob: '<%= dirs.test %>/{functional,lib/pixi,unit/pixi}/**/*.js',
+            testBlob: '<%= dirs.test %>/**/*.js',
+            testConf: '<%= dirs.test %>/karma.conf.js',
             build: '<%= dirs.build %>/pixi.dev.js',
             buildMin: '<%= dirs.build %>/pixi.js'
         },
@@ -131,10 +132,16 @@ module.exports = function(grunt) {
             options: {
                 jshintrc: './.jshintrc'
             },
-            source: srcFiles.filter(function(v) { return v.match(/(Intro|Outro|Spine|Pixi)\.js$/) === null; }).concat('Gruntfile.js'),
+            source: {
+                src: srcFiles.concat('Gruntfile.js'),
+                options: {
+                    ignores: '<%= dirs.src %>/**/{Intro,Outro,Spine,Pixi}.js'
+                }
+            },
             test: {
                 src: ['<%= files.testBlob %>'],
                 options: {
+                    ignores: '<%= dirs.test %>/lib/resemble.js',
                     jshintrc: undefined, //don't use jshintrc for tests
                     expr: true,
                     undef: false,
@@ -184,7 +191,7 @@ module.exports = function(grunt) {
         },
         karma: {
             unit: {
-                configFile: 'test/karma.conf.js',
+                configFile: '<%= files.testConf %>',
                 // browsers: ['Chrome'],
                 singleRun: true
             }
