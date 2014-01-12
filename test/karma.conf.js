@@ -17,12 +17,12 @@ module.exports = function(config) {
         ],
 
         // list of files to exclude
-        exclude : [],
+        //exclude : [],
 
         // use dolts reporter, as travis terminal does not support escaping sequences
         // possible values: 'dots', 'progress', 'junit', 'teamcity'
         // CLI --reporters progress
-        reporters : ['progress'],
+        reporters : ['spec'],
 
         // web server port
         // CLI --port 9876
@@ -39,7 +39,7 @@ module.exports = function(config) {
         // level of logging
         // possible values: karma.LOG_DISABLE || karma.LOG_ERROR || karma.LOG_WARN || karma.LOG_INFO || karma.LOG_DEBUG
         // CLI --log-level debug
-        logLevel : config.LOG_DEBUG,
+        logLevel : config.LOG_INFO,
 
         // enable / disable watching file and executing tests whenever any file changes
         // CLI --auto-watch --no-auto-watch
@@ -69,14 +69,15 @@ module.exports = function(config) {
         reportSlowerThan : 500,
 
         preprocessors : {
-            //    '**/client/js/*.js': 'coverage'
+        //    '**/client/js/*.js': 'coverage'
         },
 
         plugins : [
-            'karma-mocha',
-            // 'karma-chrome-launcher',
+            'karma-chrome-launcher',
             'karma-firefox-launcher',
+            'karma-mocha',
             // 'karma-phantomjs-launcher'
+            'karma-spec-reporter'
         ]
     });
 };
