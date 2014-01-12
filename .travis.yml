@@ -7,11 +7,17 @@ branches:
         - master
         - dev
 
-install:
-    - npm install -g grunt-cli
+before_install:
     - export DISPLAY=:99.0
     - sh -e /etc/init.d/xvfb start
+
+install:
+    - npm install grunt-cli
     - npm install
 
+cache:
+    directories:
+        - node_modules
+
 script:
-    - grunt travis
+    - ./node_modules/.bin/grunt travis
