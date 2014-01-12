@@ -91,7 +91,9 @@ module.exports = function(grunt) {
             ' * <%= pkg.licenseUrl %>',
             ' */',
             ''
-        ].join('\n');
+        ].join('\n'),
+        Instrumenter = require('istanbul').Instrumenter,
+        instrumenter = new Instrumenter();
 
     grunt.initConfig({
         pkg : grunt.file.readJSON('package.json'),
@@ -99,14 +101,16 @@ module.exports = function(grunt) {
             build: 'bin',
             docs: 'docs',
             src: 'src/pixi',
-            test: 'test'
+            test: 'test',
+            coverage: 'coverage'
         },
         files: {
             srcBlob: '<%= dirs.src %>/**/*.js',
             testBlob: '<%= dirs.test %>/**/*.js',
             testConf: '<%= dirs.test %>/karma.conf.js',
             build: '<%= dirs.build %>/pixi.dev.js',
-            buildMin: '<%= dirs.build %>/pixi.js'
+            buildMin: '<%= dirs.build %>/pixi.js',
+            buildInstrumented: '<%= dirs.coverage %>/pixi.instrumented.js'
         },
         concat: {
             options: {
@@ -115,6 +119,16 @@ module.exports = function(grunt) {
             dist: {
                 src: srcFiles,
                 dest: '<%= files.build %>'
+            },
+            instrument: {
+                options: {
+                    process: function processInstrument(src, filepath) {
+                        return (filepath.match(/(Intro|Outro)\.js$/) === null) ?
+                            instrumenter.instrumentSync(src, filepath) : src;
+                    }
+                },
+                src: srcFiles,
+                dest: '<%= files.buildInstrumented %>'
             }
         },
         /* jshint -W106 */
@@ -183,7 +197,7 @@ module.exports = function(grunt) {
         watch: {
             scripts: {
                 files: ['<%= dirs.src %>/**/*.js'],
-                tasks: ['concat'],
+                tasks: ['concat:dist'],
                 options: {
                     spawn: false,
                 }
@@ -200,15 +214,15 @@ module.exports = function(grunt) {
 
     grunt.registerTask('default', ['build', 'test']);
 
-    grunt.registerTask('build', ['jshint:source', 'concat', 'uglify']);
+    grunt.registerTask('build', ['jshint:source', 'concat:dist', 'uglify']);
     grunt.registerTask('build-debug', ['concat_sourcemap', 'uglify']);
 
-    grunt.registerTask('test', ['concat', 'jshint:test', 'karma']);
+    grunt.registerTask('test', ['jshint:test', 'concat:instrument', 'karma']);
 
     grunt.registerTask('docs', ['yuidoc']);
     grunt.registerTask('travis', ['build', 'test']);
 
     grunt.registerTask('default', ['build', 'test']);
+    grunt.registerTask('debug-watch', ['concat:dist', 'watch']);
 
-    grunt.registerTask('debug-watch', ['concat', 'watch']);
 };
