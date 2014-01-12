@@ -37,7 +37,9 @@
         "mocha": "~1.15",
         "chai": "~1.8",
         "karma": "~0.10",
+        "karma-chrome-launcher": "~0.1",
         "karma-firefox-launcher": "~0.1",
-        "karma-mocha": "~0.1"
+        "karma-mocha": "~0.1",
+        "karma-spec-reporter": "~0.0.6"
     }
 }

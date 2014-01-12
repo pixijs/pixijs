@@ -1,27 +1,22 @@
-'use strict';
-
-var path   = require('path');
-var server = require('karma').server;
-
 module.exports = function (grunt) {
-    grunt.registerMultiTask('karma', 'run karma.', function() {
-        var done = this.async();
-        var options = this.options({
-            background: false
-        });
-        var data = this.data;
+    'use strict';
 
-        //merge options onto data, with data taking precedence
-        data = grunt.util._.merge(options, data);
-        data.configFile = path.resolve(data.configFile);
-        if (data.configFile) {
-            data.configFile = grunt.template.process(data.configFile);
+    var path   = require('path');
+    var server = require('karma').server;
+
+    grunt.registerMultiTask('karma', 'run karma.', function(target) {
+        //merge data onto options, with data taking precedence
+        var options = grunt.util._.merge(this.options(), this.data),
+            done = this.async();
+
+        if (options.configFile) {
+            options.configFile = grunt.template.process(options.configFile);
+            options.configFile = path.resolve(options.configFile);
         }
 
-        server.start(
-            data,
-            function(code) {
-                done(!code);
-            });
+        done = this.async();
+        server.start(options, function(code) {
+            done(!code);
+        });
     });
 };
