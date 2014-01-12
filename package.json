@@ -28,7 +28,7 @@
     "dependencies": {},
     "devDependencies": {
         "grunt": "~0.4.1",
-        "grunt-contrib-jshint": "git+https://github.com/englercj/grunt-contrib-jshint.git",
+        "grunt-contrib-jshint": "~0.8",
         "grunt-contrib-uglify": "~0.2",
         "grunt-contrib-connect": "~0.5",
         "grunt-contrib-yuidoc": "~0.5",
