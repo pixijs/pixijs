@@ -131,7 +131,12 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
         this.view.style.backgroundColor = stage.backgroundColorString;
 
     this.context.setTransform(1,0,0,1,0,0);
-    this.context.clearRect(0, 0, this.width, this.height);
+    if(navigator.isCocoonJS) {
+        this.context.fillStyle = stage.backgroundColorString;
+        this.context.fillRect(0, 0, this.width, this.height);
+    } else {
+        this.context.clearRect(0, 0, this.width, this.height);
+    }
     this.renderDisplayObject(stage);
     //as
 
