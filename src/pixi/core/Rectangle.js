@@ -55,6 +55,8 @@ PIXI.Rectangle.prototype.clone = function()
 };
 
 /**
+ * TODO: This method does not work as expected, see unit test
+ *
  * Checks if the x, and y coords passed to this function are contained within this Rectangle
  *
  * @method contains
