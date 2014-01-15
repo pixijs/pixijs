@@ -11,7 +11,7 @@ PIXI.blendModes.SCREEN      = 3;
 /**
  * The SPrite object is the base for all textured objects that are rendered to the screen
  *
- * @class Sprite™
+ * @class Sprite
  * @extends DisplayObjectContainer
  * @constructor
  * @param texture {Texture} The texture for this sprite
