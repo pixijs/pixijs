@@ -75,7 +75,7 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'height', {
  */
 PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 {
-    if(child.parent && child.parent !== this)
+    if(child.parent && child !== this)
     {
         //// COULD BE THIS???
         child.parent.removeChild(child);

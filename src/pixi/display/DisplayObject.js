@@ -422,8 +422,6 @@ PIXI.DisplayObject.prototype.updateTransform = function()
     // because we are using affine transformation, we can optimise the matrix concatenation process.. wooo!
     // mat3.multiply(this.localTransform, this.parent.worldTransform, this.worldTransform);
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
-
-    this.vcount = PIXI.visibleCount;
 };
 
 PIXI.DisplayObject.prototype.getBounds = function()
@@ -468,4 +466,3 @@ PIXI.DisplayObject.prototype._renderCanvas = function(renderSession)
 
 PIXI.EmptyRectangle = new PIXI.Rectangle(0,0,0,0);
 
-PIXI.visibleCount = 0;

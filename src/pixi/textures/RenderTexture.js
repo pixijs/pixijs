@@ -135,9 +135,6 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, position, cle
         displayObject.worldTransform[5] -= position.y;
     }
 
-    PIXI.visibleCount++;
-    displayObject.vcount = PIXI.visibleCount;
-
     for(var i=0,j=children.length; i<j; i++)
     {
         children[i].updateTransform();

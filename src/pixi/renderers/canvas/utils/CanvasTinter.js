@@ -171,9 +171,9 @@ PIXI.CanvasTinter.roundColor = function(color)
 
     var rgbValues = PIXI.hex2rgb(color);
 
-    rgbValues[0] = Math.round(rgbValues[0] * step) / step;
-    rgbValues[1] = Math.round(rgbValues[1] * step) / step;
-    rgbValues[2] = Math.round(rgbValues[2] * step) / step;
+    rgbValues[0] = Math.min(255, Math.round(rgbValues[0] / step) * step);
+    rgbValues[1] = Math.min(255, Math.round(rgbValues[1] / step) * step);
+    rgbValues[2] = Math.min(255, Math.round(rgbValues[2] / step) * step);
 
     return PIXI.rgb2hex(rgbValues);
 };

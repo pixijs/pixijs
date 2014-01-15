@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-01-10
+ * Compiled: 2014-01-15
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -1121,8 +1121,6 @@ PIXI.DisplayObject.prototype.updateTransform = function()
     // because we are using affine transformation, we can optimise the matrix concatenation process.. wooo!
     // mat3.multiply(this.localTransform, this.parent.worldTransform, this.worldTransform);
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
-
-    this.vcount = PIXI.visibleCount;
 };
 
 PIXI.DisplayObject.prototype.getBounds = function()
@@ -1167,7 +1165,6 @@ PIXI.DisplayObject.prototype._renderCanvas = function(renderSession)
 
 PIXI.EmptyRectangle = new PIXI.Rectangle(0,0,0,0);
 
-PIXI.visibleCount = 0;
 
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
@@ -1246,17 +1243,18 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'height', {
  */
 PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 {
-    if(child.parent && child.parent !== this)
+    if(child.parent && child !== this)
     {
         //// COULD BE THIS???
         child.parent.removeChild(child);
         //  return;
     }
 
+   // console.log("ADDING")
     child.parent = this;
 
     this.children.push(child);
-
+   // console.log( this.children.length);
     // update the stage refference..
 
     if(this.stage)child.setStageReference(this.stage);
@@ -3396,7 +3394,6 @@ PIXI.Stage.prototype.setInteractionDelegate = function(domElement)
 PIXI.Stage.prototype.updateTransform = function()
 {
     this.worldAlpha = 1;
-    this.vcount = PIXI.visibleCount;
 
     for(var i=0,j=this.children.length; i<j; i++)
     {
@@ -6529,9 +6526,9 @@ PIXI.CanvasTinter.roundColor = function(color)
 
     var rgbValues = PIXI.hex2rgb(color);
 
-    rgbValues[0] = Math.round(rgbValues[0] * step) / step;
-    rgbValues[1] = Math.round(rgbValues[1] * step) / step;
-    rgbValues[2] = Math.round(rgbValues[2] * step) / step;
+    rgbValues[0] = Math.min(255, Math.round(rgbValues[0] / step) * step);
+    rgbValues[1] = Math.min(255, Math.round(rgbValues[1] / step) * step);
+    rgbValues[2] = Math.min(255, Math.round(rgbValues[2] / step) * step);
 
     return PIXI.rgb2hex(rgbValues);
 };
@@ -6670,7 +6667,6 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
     PIXI.texturesToUpdate.length = 0;
     PIXI.texturesToDestroy.length = 0;
 
-    PIXI.visibleCount++;
     stage.updateTransform();
 
     // update the background color
@@ -7419,6 +7415,20 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
      
         PIXI.WebGLGraphics.renderGraphics(this, renderSession);
         
+        // only rende rif it has children!
+        if(this.children.length)
+        {
+            renderSession.spriteBatch.start();
+
+             // simple render children!
+            for(var i=0, j=this.children.length; i<j; i++)
+            {
+                this.children[i]._renderWebGL(renderSession);
+            }
+
+            renderSession.spriteBatch.stop();
+        }
+
         if(this._filters)renderSession.filterManager.popFilter();
         if(this._mask)renderSession.maskManager.popMask(renderSession);
           
@@ -7444,6 +7454,12 @@ PIXI.Graphics.prototype._renderCanvas = function(renderSession)
 
     context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
     PIXI.CanvasGraphics.renderGraphics(this, context);
+
+     // simple render children!
+    for(var i=0, j=this.children.length; i<j; i++)
+    {
+        this.children[i]._renderCanvas(renderSession);
+    }
 };
 
 PIXI.Graphics.prototype.getBounds = function()
@@ -10225,9 +10241,6 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, position, cle
         displayObject.worldTransform[2] = position.x;
         displayObject.worldTransform[5] -= position.y;
     }
-
-    PIXI.visibleCount++;
-    displayObject.vcount = PIXI.visibleCount;
 
     for(var i=0,j=children.length; i<j; i++)
     {
