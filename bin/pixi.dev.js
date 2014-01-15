@@ -1,6 +1,6 @@
 /**
  * @license
- * pixi.js - v1.4.0
+ * pixi.js - v1.4.2
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
@@ -6525,9 +6525,9 @@ PIXI.CanvasTinter.roundColor = function(color)
 
     var rgbValues = PIXI.hex2rgb(color);
 
-    rgbValues[0] = Math.round(rgbValues[0] * step) / step;
-    rgbValues[1] = Math.round(rgbValues[1] * step) / step;
-    rgbValues[2] = Math.round(rgbValues[2] * step) / step;
+    rgbValues[0] = Math.min(255, Math.round(rgbValues[0] / step) * step);
+    rgbValues[1] = Math.min(255, Math.round(rgbValues[1] / step) * step);
+    rgbValues[2] = Math.min(255, Math.round(rgbValues[2] / step) * step);
 
     return PIXI.rgb2hex(rgbValues);
 };
@@ -7414,6 +7414,16 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
      
         PIXI.WebGLGraphics.renderGraphics(this, renderSession);
         
+        renderSession.spriteBatch.start();
+
+         // simple render children!
+        for(var i=0, j=this.children.length; i<j; i++)
+        {
+            this.children[i]._renderWebGL(renderSession);
+        }
+
+        renderSession.spriteBatch.stop();
+
         if(this._filters)renderSession.filterManager.popFilter();
         if(this._mask)renderSession.maskManager.popMask(renderSession);
           
@@ -7439,6 +7449,12 @@ PIXI.Graphics.prototype._renderCanvas = function(renderSession)
 
     context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
     PIXI.CanvasGraphics.renderGraphics(this, context);
+
+     // simple render children!
+    for(var i=0, j=this.children.length; i<j; i++)
+    {
+        this.children[i]._renderCanvas(renderSession);
+    }
 };
 
 PIXI.Graphics.prototype.getBounds = function()
