@@ -331,15 +331,20 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
      
         PIXI.WebGLGraphics.renderGraphics(this, renderSession);
         
-        renderSession.spriteBatch.start();
-
-         // simple render children!
-        for(var i=0, j=this.children.length; i<j; i++)
+        // only rende rif it has children!
+        if(this.children.length)
         {
-            this.children[i]._renderWebGL(renderSession);
-        }
+            renderSession.spriteBatch.start();
 
-        renderSession.spriteBatch.stop();
+             // simple render children!
+            for(var i=0, j=this.children.length; i<j; i++)
+            {
+                this.children[i]._renderWebGL(renderSession);
+            }
+
+            renderSession.spriteBatch.stop();
+
+        }
 
         if(this._filters)renderSession.filterManager.popFilter();
         if(this._mask)renderSession.maskManager.popMask(renderSession);
