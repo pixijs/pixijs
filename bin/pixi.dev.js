@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-01-08
+ * Compiled: 2014-01-15
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -1121,8 +1121,6 @@ PIXI.DisplayObject.prototype.updateTransform = function()
     // because we are using affine transformation, we can optimise the matrix concatenation process.. wooo!
     // mat3.multiply(this.localTransform, this.parent.worldTransform, this.worldTransform);
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
-
-    this.vcount = PIXI.visibleCount;
 };
 
 PIXI.DisplayObject.prototype.getBounds = function()
@@ -1167,7 +1165,6 @@ PIXI.DisplayObject.prototype._renderCanvas = function(renderSession)
 
 PIXI.EmptyRectangle = new PIXI.Rectangle(0,0,0,0);
 
-PIXI.visibleCount = 0;
 
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
@@ -2256,6 +2253,8 @@ PIXI.Text.prototype.updateText = function()
     var lineHeight = this.determineFontHeight('font: ' + this.style.font  + ';') + this.style.strokeThickness;
     this.canvas.height = lineHeight * lines.length;
 
+    if(navigator.isCocoonJS) this.context.clearRect(0,0,this.canvas.width,this.canvas.height);
+    
     //set canvas text styles
     this.context.fillStyle = this.style.fill;
     this.context.font = this.style.font;
@@ -3103,6 +3102,10 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
         // update the touch position
         touchData.global.x = (touchEvent.clientX - rect.left) * (this.target.width / rect.width);
         touchData.global.y = (touchEvent.clientY - rect.top)  * (this.target.height / rect.height);
+        if(navigator.isCocoonJS) {
+            touchData.global.x = touchEvent.clientX;
+            touchData.global.y = touchEvent.clientY;
+        }
     }
 
     var length = this.interactiveItems.length;
@@ -3138,6 +3141,10 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
         this.touchs[touchEvent.identifier] = touchData;
         touchData.global.x = (touchEvent.clientX - rect.left) * (this.target.width / rect.width);
         touchData.global.y = (touchEvent.clientY - rect.top)  * (this.target.height / rect.height);
+        if(navigator.isCocoonJS) {
+            touchData.global.x = touchEvent.clientX;
+            touchData.global.y = touchEvent.clientY;
+        }
 
         var length = this.interactiveItems.length;
 
@@ -3183,6 +3190,10 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
         var up = false;
         touchData.global.x = (touchEvent.clientX - rect.left) * (this.target.width / rect.width);
         touchData.global.y = (touchEvent.clientY - rect.top)  * (this.target.height / rect.height);
+        if(navigator.isCocoonJS) {
+            touchData.global.x = touchEvent.clientX;
+            touchData.global.y = touchEvent.clientY;
+        }
 
         var length = this.interactiveItems.length;
         for (var j = 0; j < length; j++)
@@ -3382,7 +3393,6 @@ PIXI.Stage.prototype.setInteractionDelegate = function(domElement)
 PIXI.Stage.prototype.updateTransform = function()
 {
     this.worldAlpha = 1;
-    this.vcount = PIXI.visibleCount;
 
     for(var i=0,j=this.children.length; i<j; i++)
     {
@@ -6656,7 +6666,6 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
     PIXI.texturesToUpdate.length = 0;
     PIXI.texturesToDestroy.length = 0;
 
-    PIXI.visibleCount++;
     stage.updateTransform();
 
     // update the background color
@@ -10212,9 +10221,6 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, position, cle
         displayObject.worldTransform[5] -= position.y;
     }
 
-    PIXI.visibleCount++;
-    displayObject.vcount = PIXI.visibleCount;
-
     for(var i=0,j=children.length; i<j; i++)
     {
         children[i].updateTransform();
@@ -11087,36 +11093,48 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
     {
         if (this.ajaxRequest.status === 200 || window.location.protocol.indexOf('http') === -1)
         {
-            var textureUrl = this.baseUrl + this.ajaxRequest.responseXML.getElementsByTagName('page')[0].attributes.getNamedItem('file').nodeValue;
+            var responseXML = this.ajaxRequest.responseXML;
+            if(!responseXML || /MSIE 9/i.test(navigator.userAgent) || navigator.isCocoonJS) {
+                if(typeof(window.DOMParser) === 'function') {
+                    var domparser = new DOMParser();
+                    responseXML = domparser.parseFromString(this.ajaxRequest.responseText, 'text/xml');
+                } else {
+                    var div = document.createElement('div');
+                    div.innerHTML = this.ajaxRequest.responseText;
+                    responseXML = div;
+                }
+            }
+
+            var textureUrl = this.baseUrl + responseXML.getElementsByTagName('page')[0].getAttribute('file');
             var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
             this.texture = image.texture.baseTexture;
 
             var data = {};
-            var info = this.ajaxRequest.responseXML.getElementsByTagName('info')[0];
-            var common = this.ajaxRequest.responseXML.getElementsByTagName('common')[0];
-            data.font = info.attributes.getNamedItem('face').nodeValue;
-            data.size = parseInt(info.attributes.getNamedItem('size').nodeValue, 10);
-            data.lineHeight = parseInt(common.attributes.getNamedItem('lineHeight').nodeValue, 10);
+            var info = responseXML.getElementsByTagName('info')[0];
+            var common = responseXML.getElementsByTagName('common')[0];
+            data.font = info.getAttribute('face');
+            data.size = parseInt(info.getAttribute('size'), 10);
+            data.lineHeight = parseInt(common.getAttribute('lineHeight'), 10);
             data.chars = {};
 
             //parse letters
-            var letters = this.ajaxRequest.responseXML.getElementsByTagName('char');
+            var letters = responseXML.getElementsByTagName('char');
 
             for (var i = 0; i < letters.length; i++)
             {
-                var charCode = parseInt(letters[i].attributes.getNamedItem('id').nodeValue, 10);
+                var charCode = parseInt(letters[i].getAttribute('id'), 10);
 
                 var textureRect = new PIXI.Rectangle(
-                    parseInt(letters[i].attributes.getNamedItem('x').nodeValue, 10),
-                    parseInt(letters[i].attributes.getNamedItem('y').nodeValue, 10),
-                    parseInt(letters[i].attributes.getNamedItem('width').nodeValue, 10),
-                    parseInt(letters[i].attributes.getNamedItem('height').nodeValue, 10)
+                    parseInt(letters[i].getAttribute('x'), 10),
+                    parseInt(letters[i].getAttribute('y'), 10),
+                    parseInt(letters[i].getAttribute('width'), 10),
+                    parseInt(letters[i].getAttribute('height'), 10)
                 );
 
                 data.chars[charCode] = {
-                    xOffset: parseInt(letters[i].attributes.getNamedItem('xoffset').nodeValue, 10),
-                    yOffset: parseInt(letters[i].attributes.getNamedItem('yoffset').nodeValue, 10),
-                    xAdvance: parseInt(letters[i].attributes.getNamedItem('xadvance').nodeValue, 10),
+                    xOffset: parseInt(letters[i].getAttribute('xoffset'), 10),
+                    yOffset: parseInt(letters[i].getAttribute('yoffset'), 10),
+                    xAdvance: parseInt(letters[i].getAttribute('xadvance'), 10),
                     kerning: {},
                     texture: PIXI.TextureCache[charCode] = new PIXI.Texture(this.texture, textureRect)
 
@@ -11124,12 +11142,12 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
             }
 
             //parse kernings
-            var kernings = this.ajaxRequest.responseXML.getElementsByTagName('kerning');
+            var kernings = responseXML.getElementsByTagName('kerning');
             for (i = 0; i < kernings.length; i++)
             {
-                var first = parseInt(kernings[i].attributes.getNamedItem('first').nodeValue, 10);
-                var second = parseInt(kernings[i].attributes.getNamedItem('second').nodeValue, 10);
-                var amount = parseInt(kernings[i].attributes.getNamedItem('amount').nodeValue, 10);
+                var first = parseInt(kernings[i].getAttribute('first'), 10);
+                var second = parseInt(kernings[i].getAttribute('second'), 10);
+                var amount = parseInt(kernings[i].getAttribute('amount'), 10);
 
                 data.chars[second].kerning[first] = amount;
 
