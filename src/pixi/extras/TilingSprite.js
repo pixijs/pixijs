@@ -177,18 +177,20 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
 
     context.beginPath();
 
-    var tilePosition = this.tilePosition;
+    var tilePositionX = this.tilePosition.x % this.tilingTexture.width;
+    var tilePositionY = this.tilePosition.y % this.tilingTexture.height;
+
     var tileScale = this.tileScale;
    // console.log(tileScale.x)
     // offset
     context.scale(tileScale.x,tileScale.y);
-    context.translate(tilePosition.x, tilePosition.y);
+    context.translate(tilePositionX, tilePositionY);
 
     context.fillStyle = this.__tilePattern;
-    context.fillRect(-tilePosition.x,-tilePosition.y,this.width / tileScale.x, this.height / tileScale.y);
+    context.fillRect(-tilePositionX,-tilePositionY,this.width / tileScale.x, this.height / tileScale.y);
 
     context.scale(1/tileScale.x, 1/tileScale.y);
-    context.translate(-tilePosition.x, -tilePosition.y);
+    context.translate(-tilePositionX, -tilePositionY);
 
     context.closePath();
 };
