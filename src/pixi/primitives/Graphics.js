@@ -343,7 +343,6 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
             }
 
             renderSession.spriteBatch.stop();
-
         }
 
         if(this._filters)renderSession.filterManager.popFilter();

@@ -1243,17 +1243,18 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'height', {
  */
 PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 {
-    if(child.parent && child.parent !== this)
+    if(child.parent && child !== this)
     {
         //// COULD BE THIS???
         child.parent.removeChild(child);
         //  return;
     }
 
+   // console.log("ADDING")
     child.parent = this;
 
     this.children.push(child);
-
+   // console.log( this.children.length);
     // update the stage refference..
 
     if(this.stage)child.setStageReference(this.stage);
@@ -7426,7 +7427,6 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
             }
 
             renderSession.spriteBatch.stop();
-
         }
 
         if(this._filters)renderSession.filterManager.popFilter();
