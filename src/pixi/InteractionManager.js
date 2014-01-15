@@ -59,7 +59,7 @@ PIXI.InteractionManager = function(stage)
     this.onTouchMove = this.onTouchMove.bind(this);
     this.last = 0;
 
-    this.currentCursor = "inherit";
+    this.currentCursor = 'inherit';
 };
 
 // constructor

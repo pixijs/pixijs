@@ -1250,11 +1250,10 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
         //  return;
     }
 
-   // console.log("ADDING")
     child.parent = this;
 
     this.children.push(child);
-   // console.log( this.children.length);
+
     // update the stage refference..
 
     if(this.stage)child.setStageReference(this.stage);
@@ -2657,6 +2656,8 @@ PIXI.InteractionManager = function(stage)
     this.onTouchEnd = this.onTouchEnd.bind(this);
     this.onTouchMove = this.onTouchMove.bind(this);
     this.last = 0;
+
+    this.currentCursor = 'inherit';
 };
 
 // constructor
@@ -2818,8 +2819,8 @@ PIXI.InteractionManager.prototype.update = function()
 
     // loop through interactive objects!
     var length = this.interactiveItems.length;
-
-    this.interactionDOMElement.style.cursor = 'inherit';
+   
+   // return;
 
     for (i = 0; i < length; i++)
     {
@@ -2842,7 +2843,7 @@ PIXI.InteractionManager.prototype.update = function()
             // loks like there was a hit!
             if(item.__hit)
             {
-                if(item.buttonMode) this.interactionDOMElement.style.cursor = item.defaultCursor;
+                if(item.buttonMode) this.currentCursor = item.defaultCursor;
 
                 if(!item.__isOver)
                 {
@@ -2862,6 +2863,12 @@ PIXI.InteractionManager.prototype.update = function()
             }
         }
         // --->
+    }
+
+
+    if(this.currentCursor !== this.interactionDOMElement.style.cursor)
+    {
+        this.interactionDOMElement.style.cursor = this.currentCursor;
     }
 };
 
@@ -2941,7 +2948,7 @@ PIXI.InteractionManager.prototype.onMouseOut = function()
 {
     var length = this.interactiveItems.length;
 
-    this.interactionDOMElement.style.cursor = 'inherit';
+    this.currentCursor = 'inherit';
 
     for (var i = 0; i < length; i++)
     {
@@ -8075,18 +8082,20 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
 
     context.beginPath();
 
-    var tilePosition = this.tilePosition;
+    var tilePositionX = this.tilePosition.x % this.tilingTexture.width;
+    var tilePositionY = this.tilePosition.y % this.tilingTexture.height;
+
     var tileScale = this.tileScale;
    // console.log(tileScale.x)
     // offset
     context.scale(tileScale.x,tileScale.y);
-    context.translate(tilePosition.x, tilePosition.y);
+    context.translate(tilePositionX, tilePositionY);
 
     context.fillStyle = this.__tilePattern;
-    context.fillRect(-tilePosition.x,-tilePosition.y,this.width / tileScale.x, this.height / tileScale.y);
+    context.fillRect(-tilePositionX,-tilePositionY,this.width / tileScale.x, this.height / tileScale.y);
 
     context.scale(1/tileScale.x, 1/tileScale.y);
-    context.translate(-tilePosition.x, -tilePosition.y);
+    context.translate(-tilePositionX, -tilePositionY);
 
     context.closePath();
 };
