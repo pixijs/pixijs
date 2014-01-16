@@ -1,10 +1,10 @@
 /**
  * @license
- * pixi.js - v1.4.2
+ * pixi.js - v1.4.3
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-01-15
+ * Compiled: 2014-01-16
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -71,6 +71,12 @@ PIXI.Point.prototype.clone = function()
 
 // constructor
 PIXI.Point.prototype.constructor = PIXI.Point;
+
+PIXI.Point.prototype.set = function(x, y)
+{
+    this.x = x || 0;
+    this.y = y || (y !== 0) ? x : 0 ;
+};
 
 
 /**
@@ -1250,11 +1256,10 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
         //  return;
     }
 
-   // console.log("ADDING")
     child.parent = this;
 
     this.children.push(child);
-   // console.log( this.children.length);
+
     // update the stage refference..
 
     if(this.stage)child.setStageReference(this.stage);
@@ -1530,7 +1535,7 @@ PIXI.blendModes.SCREEN      = 3;
 /**
  * The SPrite object is the base for all textured objects that are rendered to the screen
  *
- * @class Sprite™
+ * @class Sprite
  * @extends DisplayObjectContainer
  * @constructor
  * @param texture {Texture} The texture for this sprite
@@ -7999,7 +8004,7 @@ PIXI.TilingSprite.prototype._renderWebGL = function(renderSession)
         if(this.mask)
         {
             renderSession.spriteBatch.stop();
-            renderSession.maskManager.pushMask(this.mask, renderSession.projection);
+            renderSession.maskManager.pushMask(this.mask, renderSession);
             renderSession.spriteBatch.start();
         }
 
@@ -8021,7 +8026,7 @@ PIXI.TilingSprite.prototype._renderWebGL = function(renderSession)
         renderSession.spriteBatch.stop();
 
         if(this.filters)renderSession.filterManager.popFilter();
-        if(this.mask)renderSession.maskManager.popMask(renderSession.projection);
+        if(this.mask)renderSession.maskManager.popMask(renderSession);
         
         renderSession.spriteBatch.start();
     }
