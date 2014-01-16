@@ -101,7 +101,7 @@ PIXI.TilingSprite.prototype._renderWebGL = function(renderSession)
         if(this.mask)
         {
             renderSession.spriteBatch.stop();
-            renderSession.maskManager.pushMask(this.mask, renderSession.projection);
+            renderSession.maskManager.pushMask(this.mask, renderSession);
             renderSession.spriteBatch.start();
         }
 
@@ -123,7 +123,7 @@ PIXI.TilingSprite.prototype._renderWebGL = function(renderSession)
         renderSession.spriteBatch.stop();
 
         if(this.filters)renderSession.filterManager.popFilter();
-        if(this.mask)renderSession.maskManager.popMask(renderSession.projection);
+        if(this.mask)renderSession.maskManager.popMask(renderSession);
         
         renderSession.spriteBatch.start();
     }
