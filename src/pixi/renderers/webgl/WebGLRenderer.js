@@ -73,19 +73,19 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
         PIXI.blendModesWebGL[PIXI.blendModes.ADD]      = [gl.SRC_ALPHA, gl.DST_ALPHA];
         PIXI.blendModesWebGL[PIXI.blendModes.MULTIPLY] = [gl.DST_COLOR, gl.ONE_MINUS_SRC_ALPHA];
         PIXI.blendModesWebGL[PIXI.blendModes.SCREEN]   = [gl.SRC_ALPHA, gl.ONE];
-        PIXI.blendModesCanvas[PIXI.blendModes.OVERLAY]  = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        PIXI.blendModesCanvas[PIXI.blendModes.DARKEN]   = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        PIXI.blendModesCanvas[PIXI.blendModes.LIGHTEN]  = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        PIXI.blendModesCanvas[PIXI.blendModes.COLOR_DODGE] = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        PIXI.blendModesCanvas[PIXI.blendModes.COLOR_BURN] = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        PIXI.blendModesCanvas[PIXI.blendModes.HARD_LIGHT] = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        PIXI.blendModesCanvas[PIXI.blendModes.SOFT_LIGHT] = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        PIXI.blendModesCanvas[PIXI.blendModes.DIFFERENCE] = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        PIXI.blendModesCanvas[PIXI.blendModes.EXCLUSION] = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        PIXI.blendModesCanvas[PIXI.blendModes.HUE]       = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        PIXI.blendModesCanvas[PIXI.blendModes.SATURATION] = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        PIXI.blendModesCanvas[PIXI.blendModes.COLOR]      = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        PIXI.blendModesCanvas[PIXI.blendModes.LUMINOSITY] = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+        PIXI.blendModesCanvas[PIXI.blendModes.OVERLAY] = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+        PIXI.blendModesCanvas[PIXI.blendModes.DARKEN]  = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+        PIXI.blendModesCanvas[PIXI.blendModes.LIGHTEN] = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+        PIXI.blendModesCanvas[PIXI.blendModes.COLOR_DODGE] = [gl.ONE,   gl.ONE_MINUS_SRC_ALPHA];
+        PIXI.blendModesCanvas[PIXI.blendModes.COLOR_BURN] = [gl.ONE,    gl.ONE_MINUS_SRC_ALPHA];
+        PIXI.blendModesCanvas[PIXI.blendModes.HARD_LIGHT] = [gl.ONE,    gl.ONE_MINUS_SRC_ALPHA];
+        PIXI.blendModesCanvas[PIXI.blendModes.SOFT_LIGHT] = [gl.ONE,    gl.ONE_MINUS_SRC_ALPHA];
+        PIXI.blendModesCanvas[PIXI.blendModes.DIFFERENCE] = [gl.ONE,    gl.ONE_MINUS_SRC_ALPHA];
+        PIXI.blendModesCanvas[PIXI.blendModes.EXCLUSION] = [gl.ONE,     gl.ONE_MINUS_SRC_ALPHA];
+        PIXI.blendModesCanvas[PIXI.blendModes.HUE]     = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+        PIXI.blendModesCanvas[PIXI.blendModes.SATURATION] = [gl.ONE,    gl.ONE_MINUS_SRC_ALPHA];
+        PIXI.blendModesCanvas[PIXI.blendModes.COLOR]   = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+        PIXI.blendModesCanvas[PIXI.blendModes.LUMINOSITY] = [gl.ONE,    gl.ONE_MINUS_SRC_ALPHA];
     }
 
 
