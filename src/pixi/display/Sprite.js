@@ -7,6 +7,19 @@ PIXI.blendModes.NORMAL      = 0;
 PIXI.blendModes.ADD         = 1;
 PIXI.blendModes.MULTIPLY    = 2;
 PIXI.blendModes.SCREEN      = 3;
+PIXI.blendModes.OVERLAY 	= 4;
+PIXI.blendModes.DARKEN	 	= 5;
+PIXI.blendModes.LIGHTEN	 	= 6;
+PIXI.blendModes.COLOR_DODGE = 7;
+PIXI.blendModes.COLOR_BURN	= 8;
+PIXI.blendModes.HARD_LIGHT	= 9;
+PIXI.blendModes.SOFT_LIGHT	= 10;
+PIXI.blendModes.DIFFERENCE	= 11;
+PIXI.blendModes.EXCLUSION	= 12;
+PIXI.blendModes.HUE			= 13;
+PIXI.blendModes.SATURATION	= 14;
+PIXI.blendModes.COLOR		= 15;
+PIXI.blendModes.LUMINOSITY	= 16;
 
 /**
  * The SPrite object is the base for all textured objects that are rendered to the screen

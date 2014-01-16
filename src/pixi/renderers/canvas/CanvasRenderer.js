@@ -31,6 +31,19 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
             PIXI.blendModesCanvas[PIXI.blendModes.ADD]      = "lighter"; //IS THIS OK???
             PIXI.blendModesCanvas[PIXI.blendModes.MULTIPLY] = "multiply";
             PIXI.blendModesCanvas[PIXI.blendModes.SCREEN]   = "screen";
+            PIXI.blendModesCanvas[PIXI.blendModes.OVERLAY] 	= "overlay";
+            PIXI.blendModesCanvas[PIXI.blendModes.DARKEN] 	= "darken";
+            PIXI.blendModesCanvas[PIXI.blendModes.LIGHTEN] 	= "lighten";
+            PIXI.blendModesCanvas[PIXI.blendModes.COLOR_DODGE] = "color-dodge";
+            PIXI.blendModesCanvas[PIXI.blendModes.COLOR_BURN] = "color-burn";
+            PIXI.blendModesCanvas[PIXI.blendModes.HARD_LIGHT] = "hard-light";
+            PIXI.blendModesCanvas[PIXI.blendModes.SOFT_LIGHT] = "soft-light";
+            PIXI.blendModesCanvas[PIXI.blendModes.DIFFERENCE] = "difference";
+            PIXI.blendModesCanvas[PIXI.blendModes.EXCLUSION] = "exclusion";
+            PIXI.blendModesCanvas[PIXI.blendModes.HUE] 		= "hue";
+            PIXI.blendModesCanvas[PIXI.blendModes.SATURATION] = "saturation";
+            PIXI.blendModesCanvas[PIXI.blendModes.COLOR] 	= "color";
+            PIXI.blendModesCanvas[PIXI.blendModes.LUMINOSITY] = "luminosity";
         }
         else
         {
