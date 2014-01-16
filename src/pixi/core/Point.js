@@ -41,3 +41,9 @@ PIXI.Point.prototype.clone = function()
 // constructor
 PIXI.Point.prototype.constructor = PIXI.Point;
 
+PIXI.Point.prototype.set = function(x, y)
+{
+    this.x = x || 0;
+    this.y = y || (y !== 0) ? x : 0 ;
+};
+
