@@ -147,6 +147,11 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
     
     var context = renderSession.context;
 
+    if(this._mask)
+    {
+        renderSession.maskManager.pushMask(this._mask, context);
+    }
+
     context.globalAlpha = this.worldAlpha;
 
     
@@ -191,6 +196,11 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
     context.translate(-tilePosition.x, -tilePosition.y);
 
     context.closePath();
+
+    if(this._mask)
+    {
+        renderSession.maskManager.popMask(renderSession.context);
+    }
 };
 
 PIXI.TilingSprite.prototype.getBounds = function()
