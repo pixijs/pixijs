@@ -58,6 +58,8 @@ PIXI.PrimitiveShader.prototype.init = function()
     this.aVertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
     this.colorAttribute = gl.getAttribLocation(program, 'aColor');
 
+    this.attributes = [this.aVertexPosition, this.colorAttribute];
+
     this.translationMatrix = gl.getUniformLocation(program, 'translationMatrix');
     this.alpha = gl.getUniformLocation(program, 'alpha');
 

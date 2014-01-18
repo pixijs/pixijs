@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-01-16
+ * Compiled: 2014-01-18
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -75,7 +75,7 @@ PIXI.Point.prototype.constructor = PIXI.Point;
 PIXI.Point.prototype.set = function(x, y)
 {
     this.x = x || 0;
-    this.y = y || (y !== 0) ? x : 0 ;
+    this.y = y || ( (y !== 0) ? this.x : 0 ) ;
 };
 
 
@@ -1968,6 +1968,75 @@ PIXI.Sprite.fromImage = function(imageId)
     var texture = PIXI.Texture.fromImage(imageId);
     return new PIXI.Sprite(texture);
 };
+
+
+
+PIXI.SpriteBatch = function(texture)
+{
+    PIXI.DisplayObjectContainer.call( this);
+
+    this.textureThing = texture;
+
+    this.ready = false;
+};
+
+PIXI.SpriteBatch.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
+PIXI.SpriteBatch.constructor = PIXI.SpriteBatch;
+
+PIXI.SpriteBatch.prototype.initWebGL = function(gl)
+{
+   
+
+    this.fastSpriteBatch = new PIXI.WebGLFastSpriteBatch(gl);
+
+    this.ready = true;
+  //  alert("!")
+};
+
+PIXI.SpriteBatch.prototype.updateTransform = function()
+{
+   // dont need to!
+        
+  //  PIXI.DisplayObjectContainer.prototype.updateTransform.call( this );
+};
+
+PIXI.SpriteBatch.prototype._renderWebGL = function(renderSession)
+{
+    if(!this.visible)return;
+
+  //  renderSession.shaderManager.deactivateDefaultShader()
+    if(!this.ready)this.initWebGL( renderSession.gl );
+    
+    renderSession.spriteBatch.stop();
+    
+    renderSession.shaderManager.activateShader(renderSession.shaderManager.fastShader);
+
+    this.fastSpriteBatch.begin(renderSession);
+    this.fastSpriteBatch.render(this.children);
+
+    //console.log("!!")
+
+//  renderSession.shaderManager.activateDefaultShader()
+    
+    renderSession.shaderManager.activateShader(renderSession.shaderManager.defaultShader);
+
+    renderSession.spriteBatch.start();
+  /*
+  gl.useProgram(PIXI.defaultShader.program);
+
+  gl.enableVertexAttribArray(PIXI.defaultShader.aVertexPosition);
+  gl.enableVertexAttribArray(PIXI.defaultShader.colorAttribute);
+  gl.enableVertexAttribArray(PIXI.defaultShader.aTextureCoord);
+*/
+   
+};
+
+PIXI.SpriteBatch.prototype._renderCanvas = function(renderSession)
+{
+    PIXI.DisplayObjectContainer.prototype.updateTransform.call( this );
+    PIXI.DisplayObjectContainer.prototype._renderCanvas.call(this, renderSession);
+};
+
 
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
@@ -3990,6 +4059,7 @@ PIXI.PixiShader = function(gl)
     */
     this.textureCount = 0;
 
+    this.attributes = [];
 
     this.init();
 };
@@ -4028,6 +4098,8 @@ PIXI.PixiShader.prototype.init = function()
     {
         this.colorAttribute = 2;
     }
+
+    this.attributes = [this.aVertexPosition, this.aTextureCoord, this.colorAttribute];
 
     // End worst hack eva //
 
@@ -4274,6 +4346,129 @@ PIXI.PixiShader.defaultVertexSrc = [
 
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
+ * @author Richard Davey http://www.photonstorm.com @photonstorm
+ */
+
+/**
+* @class PIXI.PixiFastShader
+* @constructor
+*/
+PIXI.PixiFastShader = function(gl)
+{
+    this.gl = gl;
+
+    /**
+    * @property {any} program - The WebGL program.
+    */
+    this.program = null;
+
+    /**
+    * @property {array} fragmentSrc - The fragment shader.
+    */
+    this.fragmentSrc = [
+        'precision lowp float;',
+        'varying vec2 vTextureCoord;',
+        'varying float vColor;',
+        'uniform sampler2D uSampler;',
+        'void main(void) {',
+        '   gl_FragColor = texture2D(uSampler, vTextureCoord) * vColor ;',
+        '}'
+    ];
+
+    this.vertexSrc = [
+        'attribute vec2 aVertexPosition;',
+        'attribute vec2 aPositionCoord;',
+        'attribute vec2 aScale;',
+        'attribute float aRotation;',
+        'attribute vec2 aTextureCoord;',
+        'attribute float aColor;',
+
+        'uniform vec2 projectionVector;',
+        'uniform vec2 offsetVector;',
+        'uniform mat3 uMatrix;',
+
+        'varying vec2 vTextureCoord;',
+        'varying float vColor;',
+
+        'const vec2 center = vec2(-1.0, 1.0);',
+
+        'void main(void) {',
+        '   vec2 v;',
+        '   vec2 sv = aVertexPosition * aScale;',
+        '   v.x = (sv.x) * cos(aRotation) - (sv.y) * sin(aRotation);',
+        '   v.y = (sv.x) * sin(aRotation) + (sv.y) * cos(aRotation);',
+        '   v = ( uMatrix * vec3(v + aPositionCoord , 1.0) ).xy ;',
+        '   gl_Position = vec4( ( v / projectionVector) + center , 0.0, 1.0);',
+        '   vTextureCoord = aTextureCoord;',
+      //  '   vec3 color = mod(vec3(aColor.y/65536.0, aColor.y/256.0, aColor.y), 256.0) / 256.0;',
+        '   vColor = aColor;',
+        '}'
+    ];
+
+
+    /**
+    * @property {number} textureCount - A local texture counter for multi-texture shaders.
+    */
+    this.textureCount = 0;
+
+
+    this.init();
+};
+
+/**
+* @method PIXI.PixiFastShader#init
+*/
+PIXI.PixiFastShader.prototype.init = function()
+{
+
+    var gl = this.gl;
+
+    var program = PIXI.compileProgram(gl, this.vertexSrc, this.fragmentSrc);
+    
+    gl.useProgram(program);
+
+    // get and store the uniforms for the shader
+    this.uSampler = gl.getUniformLocation(program, 'uSampler');
+
+    this.projectionVector = gl.getUniformLocation(program, 'projectionVector');
+    this.offsetVector = gl.getUniformLocation(program, 'offsetVector');
+    this.dimensions = gl.getUniformLocation(program, 'dimensions');
+    this.uMatrix = gl.getUniformLocation(program, 'uMatrix');
+
+    // get and store the attributes
+    this.aVertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
+    this.aPositionCoord = gl.getAttribLocation(program, 'aPositionCoord');
+
+    this.aScale = gl.getAttribLocation(program, 'aScale');
+    this.aRotation = gl.getAttribLocation(program, 'aRotation');
+
+    this.aTextureCoord = gl.getAttribLocation(program, 'aTextureCoord');
+    this.colorAttribute = gl.getAttribLocation(program, 'aColor');
+   
+
+   
+    // Begin worst hack eva //
+
+    // WHY??? ONLY on my chrome pixel the line above returns -1 when using filters?
+    // maybe its somthing to do with the current state of the gl context.
+    // Im convinced this is a bug in the chrome browser as there is NO reason why this should be returning -1 especially as it only manifests on my chrome pixel
+    // If theres any webGL people that know why could happen please help :)
+    if(this.colorAttribute === -1)
+    {
+        this.colorAttribute = 2;
+    }
+
+    this.attributes = [this.aVertexPosition, this.aPositionCoord,  this.aScale, this.aRotation, this.aTextureCoord, this.colorAttribute];
+    
+    // End worst hack eva //
+
+
+    this.program = program;
+};
+
+
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
 
@@ -4399,6 +4594,8 @@ PIXI.PrimitiveShader.prototype.init = function()
     // get and store the attributes
     this.aVertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
     this.colorAttribute = gl.getAttribLocation(program, 'aColor');
+
+    this.attributes = [this.aVertexPosition, this.colorAttribute];
 
     this.translationMatrix = gl.getUniformLocation(program, 'translationMatrix');
     this.alpha = gl.getUniformLocation(program, 'alpha');
@@ -5446,8 +5643,16 @@ PIXI.WebGLMaskManager.prototype.popMask = function(renderSession)
 
 PIXI.WebGLShaderManager = function(gl)
 {
-    this.setContext(gl);
 
+    this.maxAttibs = 10;
+    this.attribState = [];
+    this.tempAttribState = [];
+
+    for (var i = 0; i < this.maxAttibs; i++) {
+        this.attribState[i] = false;
+    }
+
+    this.setContext(gl);
     // the final one is used for the rendering strips
     //this.stripShader = new PIXI.StripShader(gl);
 };
@@ -5462,15 +5667,80 @@ PIXI.WebGLShaderManager.prototype.setContext = function(gl)
     // this shader is used for the default sprite rendering
     this.defaultShader = new PIXI.PixiShader(gl);
 
-    var shaderProgram = this.defaultShader.program;
+    // this shader is used for the fast sprite rendering
+    this.fastShader = new PIXI.PixiFastShader(gl);
 
+//    var shaderProgram = this.defaultShader.program;
+
+    this.activateShader(this.defaultShader);
+/*
     gl.useProgram(shaderProgram);
 
     gl.enableVertexAttribArray(this.defaultShader.aVertexPosition);
     gl.enableVertexAttribArray(this.defaultShader.colorAttribute);
     gl.enableVertexAttribArray(this.defaultShader.aTextureCoord);
+ //   console.log(">>")
+    //
+ //    alert(this.defaultShader.aPositionCoord)
+    gl.enableVertexAttribArray(this.defaultShader.aPositionCoord);
+    gl.enableVertexAttribArray(this.defaultShader.aScale);
+    gl.enableVertexAttribArray(this.defaultShader.aRotation);*/
 
-    
+};
+
+
+PIXI.WebGLShaderManager.prototype.setAttribs = function(attribs)
+{
+    // reset temp state
+
+    var i;
+
+    for (i = 0; i < this.tempAttribState.length; i++)
+    {
+        this.tempAttribState[i] = false;
+    }
+
+    // set the new attribs
+    for (i = 0; i < attribs.length; i++)
+    {
+        var attribId = attribs[i];
+        this.tempAttribState[attribId] = true;
+    }
+
+    var gl = this.gl;
+
+    for (i = 0; i < this.attribState.length; i++)
+    {
+
+        if(this.attribState[i] !== this.tempAttribState[i])
+        {
+            this.attribState[i] = this.tempAttribState[i];
+
+            if(this.tempAttribState[i])
+            {
+                gl.enableVertexAttribArray(i);
+            }
+            else
+            {
+                gl.disableVertexAttribArray(i);
+            }
+        }
+    }
+
+  //  console.log(this.tempAttribState)
+};
+
+PIXI.WebGLShaderManager.prototype.activateShader = function(shader)
+{
+    //if(this.currentShader == shader)return;
+
+    this.currentShader = shader;
+ //  console.log(shader.program)
+    this.gl.useProgram(shader.program);
+    this.setAttribs(shader.attributes);
+
+   // console.log(shader.attributes)
+  
 };
 
 PIXI.WebGLShaderManager.prototype.activatePrimitiveShader = function()
@@ -5479,12 +5749,14 @@ PIXI.WebGLShaderManager.prototype.activatePrimitiveShader = function()
 
     gl.useProgram(this.primitiveShader.program);
 
+    this.setAttribs(this.primitiveShader.attributes);
+    /*
     gl.disableVertexAttribArray(this.defaultShader.aVertexPosition);
     gl.disableVertexAttribArray(this.defaultShader.colorAttribute);
     gl.disableVertexAttribArray(this.defaultShader.aTextureCoord);
 
     gl.enableVertexAttribArray(this.primitiveShader.aVertexPosition);
-    gl.enableVertexAttribArray(this.primitiveShader.colorAttribute);
+    gl.enableVertexAttribArray(this.primitiveShader.colorAttribute);*/
 };
 
 PIXI.WebGLShaderManager.prototype.deactivatePrimitiveShader = function()
@@ -5493,12 +5765,16 @@ PIXI.WebGLShaderManager.prototype.deactivatePrimitiveShader = function()
 
     gl.useProgram(this.defaultShader.program);
 
+    this.setAttribs(this.defaultShader.attributes);
+/*
     gl.disableVertexAttribArray(this.primitiveShader.aVertexPosition);
     gl.disableVertexAttribArray(this.primitiveShader.colorAttribute);
 
     gl.enableVertexAttribArray(this.defaultShader.aVertexPosition);
     gl.enableVertexAttribArray(this.defaultShader.colorAttribute);
     gl.enableVertexAttribArray(this.defaultShader.aTextureCoord);
+
+    gl.enableVertexAttribArray(this.defaultShader.aPositionCoord);*/
 };
 /**
  * @author Mat Groves
@@ -5514,9 +5790,10 @@ PIXI.WebGLSpriteBatch = function(gl)
 {
    
 
-    this.size = 2000;
     this.vertSize = 6;
+    this.size = 10000;//Math.pow(2, 16) /  this.vertSize;
 
+ //   console.log(this.size);
     //the total number of floats in our batch
     var numVerts = this.size * 4 *  this.vertSize;
     //the total number of indices in our batch
@@ -5869,6 +6146,344 @@ PIXI.WebGLSpriteBatch.prototype.start = function()
 };
 
 PIXI.WebGLSpriteBatch.prototype.setBlendMode = function(blendMode)
+{
+    this.flush();
+
+    this.currentBlendMode = blendMode;
+    
+    var blendModeWebGL = PIXI.blendModesWebGL[this.currentBlendMode];
+    this.gl.blendFunc(blendModeWebGL[0], blendModeWebGL[1]);
+};
+
+
+
+/**
+ * @author Mat Groves
+ * 
+ * Big thanks to the very clever Matt DesLauriers <mattdesl> https://github.com/mattdesl/
+ * for creating the original pixi version!
+ *
+ * Heavily inspired by LibGDX's WebGLSpriteBatch:
+ * https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/graphics/g2d/WebGLSpriteBatch.java
+ */
+
+PIXI.WebGLFastSpriteBatch = function(gl)
+{
+   
+
+    this.vertSize = 10;
+    this.maxSize = 6000;//Math.pow(2, 16) /  this.vertSize;
+    this.size = this.maxSize;
+
+ //   console.log(this.size);
+    //the total number of floats in our batch
+    var numVerts = this.size * 4 *  this.vertSize;
+    //the total number of indices in our batch
+    var numIndices = this.maxSize * 6;
+
+     //vertex data
+    this.vertices = new Float32Array(numVerts);
+    //index data
+    this.indices = new Uint16Array(numIndices);
+    
+    this.vertexBuffer = null;
+    this.indexBuffer = null;
+
+    this.lastIndexCount = 0;
+
+    for (var i=0, j=0; i < numIndices; i += 6, j += 4)
+    {
+        this.indices[i + 0] = j + 0;
+        this.indices[i + 1] = j + 1;
+        this.indices[i + 2] = j + 2;
+        this.indices[i + 3] = j + 0;
+        this.indices[i + 4] = j + 2;
+        this.indices[i + 5] = j + 3;
+    }
+
+    this.drawing = false;
+    this.currentBatchSize = 0;
+    this.currentBaseTexture = null;
+   
+    this.currentBlendMode = 0;
+    this.renderSession = null;
+    
+
+    this.shader = null;
+
+    this.tempMatrix = PIXI.mat3.create();
+    PIXI.mat3.transpose( this.tempMatrix);
+
+    this.setContext(gl);
+};
+
+PIXI.WebGLFastSpriteBatch.prototype.setContext = function(gl)
+{
+    this.gl = gl;
+
+    // create a couple of buffers
+    this.vertexBuffer = gl.createBuffer();
+    this.indexBuffer = gl.createBuffer();
+
+    // 65535 is max index, so 65535 / 6 = 10922.
+
+
+    //upload the index data
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, this.vertices, gl.DYNAMIC_DRAW);
+
+    this.currentBlendMode = 99999;
+};
+
+PIXI.WebGLFastSpriteBatch.prototype.begin = function(renderSession)
+{
+    this.renderSession = renderSession;
+    this.shader = this.renderSession.shaderManager.fastShader;
+
+    this.start();
+};
+
+PIXI.WebGLFastSpriteBatch.prototype.end = function()
+{
+    this.flush();
+};
+
+
+PIXI.WebGLFastSpriteBatch.prototype.render = function(children)
+{
+    var sprite = children[0];
+
+    // if the uvs have not updated then no point rendering just yet!
+    if(!sprite.texture._uvs)return;
+    // check texture.
+    
+    this.currentBaseTexture = sprite.texture.baseTexture;
+    // check blend mode
+    if(sprite.blendMode !== this.currentBlendMode)
+    {
+        this.setBlendMode(sprite.blendMode);
+    }
+    
+    for(var i=0,j= children.length; i<j; i++)
+    {
+        this.renderSprite(children[i]);
+    }
+
+    this.flush();
+};
+
+PIXI.WebGLFastSpriteBatch.prototype.renderSprite = function(sprite)
+{
+    //sprite = children[i];
+    var uvs, verticies = this.vertices, width, height, w0, w1, h0, h1, index;
+
+
+    uvs = sprite.texture._uvs;
+
+    width = sprite.texture.frame.width;
+    height = sprite.texture.frame.height;
+
+    // TODO trim??
+
+    if (sprite.texture.trimmed)
+    {
+        // if the sprite is trimmed then we need to add the extra space before transforming the sprite coords..
+        var trim = sprite.texture.trim;
+
+        w1 = trim.x - sprite.anchor.x * trim.realWidth;
+        w0 = w1 + sprite.texture.frame.width;
+
+        h1 = trim.y - sprite.anchor.y * trim.realHeight;
+        h0 = h1 + sprite.texture.frame.height;
+    }
+    else
+    {
+        w0 = (sprite.texture.frame.width ) * (1-sprite.anchor.x);
+        w1 = (sprite.texture.frame.width ) * -sprite.anchor.x;
+
+        h0 = sprite.texture.frame.height * (1-sprite.anchor.y);
+        h1 = sprite.texture.frame.height * -sprite.anchor.y;
+    }
+
+    index = this.currentBatchSize * 4 * this.vertSize;
+
+    // xy
+    verticies[index++] = w1;
+    verticies[index++] = h1;
+
+    verticies[index++] = sprite.position.x;
+    verticies[index++] = sprite.position.y;
+
+    //scale
+    verticies[index++] = sprite.scale.x;
+    verticies[index++] = sprite.scale.y;
+
+    //rotation
+    verticies[index++] = sprite.rotation;
+
+    // uv
+    verticies[index++] = uvs[0];
+    verticies[index++] = uvs[1];
+    // color
+    verticies[index++] = sprite.alpha;
+ 
+
+    // xy
+    verticies[index++] = w0;
+    verticies[index++] = h1;
+
+    verticies[index++] = sprite.position.x;
+    verticies[index++] = sprite.position.y;
+
+    //scale
+    verticies[index++] = sprite.scale.x;
+    verticies[index++] = sprite.scale.y;
+
+     //rotation
+    verticies[index++] = sprite.rotation;
+
+    // uv
+    verticies[index++] = uvs[2];
+    verticies[index++] = uvs[3];
+    // color
+    verticies[index++] = sprite.alpha;
+  
+
+    // xy
+    verticies[index++] = w0;
+    verticies[index++] = h0;
+
+    verticies[index++] = sprite.position.x;
+    verticies[index++] = sprite.position.y;
+
+    //scale
+    verticies[index++] = sprite.scale.x;
+    verticies[index++] = sprite.scale.y;
+
+     //rotation
+    verticies[index++] = sprite.rotation;
+
+    // uv
+    verticies[index++] = uvs[4];
+    verticies[index++] = uvs[5];
+    // color
+    verticies[index++] = sprite.alpha;
+ 
+
+
+
+    // xy
+    verticies[index++] = w1;
+    verticies[index++] = h0;
+
+    verticies[index++] = sprite.position.x;
+    verticies[index++] = sprite.position.y;
+
+    //scale
+    verticies[index++] = sprite.scale.x;
+    verticies[index++] = sprite.scale.y;
+
+     //rotation
+    verticies[index++] = sprite.rotation;
+
+    // uv
+    verticies[index++] = uvs[6];
+    verticies[index++] = uvs[7];
+    // color
+    verticies[index++] = sprite.alpha;
+
+    // increment the batchs
+    this.currentBatchSize++;
+
+    if(this.currentBatchSize >= this.size)
+    {
+        this.flush();
+    }
+};
+
+PIXI.WebGLFastSpriteBatch.prototype.flush = function()
+{
+    // If the batch is length 0 then return as there is nothing to draw
+    if (this.currentBatchSize===0)return;
+
+    var gl = this.gl;
+    
+    // bind the current texture
+
+    if(!this.currentBaseTexture._glTextures[gl.id])PIXI.createWebGLTexture(this.currentBaseTexture, gl);
+
+    gl.bindTexture(gl.TEXTURE_2D, this.currentBaseTexture._glTextures[gl.id]);// || PIXI.createWebGLTexture(this.currentBaseTexture, gl));
+
+    // upload the verts to the buffer
+
+   
+    if(this.currentBatchSize > ( this.size * 0.5 ) )
+    {
+        gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vertices);
+    }
+    else
+    {
+        var view = this.vertices.subarray(0, this.currentBatchSize * 4 * this.vertSize);
+
+        gl.bufferSubData(gl.ARRAY_BUFFER, 0, view);
+    }
+    
+    
+    // now draw those suckas!
+    gl.drawElements(gl.TRIANGLES, this.currentBatchSize * 6, gl.UNSIGNED_SHORT, 0);
+   
+    // then reset the batch!
+    this.currentBatchSize = 0;
+
+    // increment the draw count
+    this.renderSession.drawCount++;
+};
+
+
+PIXI.WebGLFastSpriteBatch.prototype.stop = function()
+{
+    this.flush();
+};
+
+PIXI.WebGLFastSpriteBatch.prototype.start = function()
+{
+    var gl = this.gl;
+
+    // bind the main texture
+    gl.activeTexture(gl.TEXTURE0);
+
+    // bind the buffers
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+
+    // set the projection
+    var projection = this.renderSession.projection;
+    gl.uniform2f(this.shader.projectionVector, projection.x, projection.y);
+
+    // set the matrix
+    gl.uniformMatrix3fv(this.shader.uMatrix, false, this.tempMatrix);
+
+    // set the pointers
+    var stride =  this.vertSize * 4;
+
+    gl.vertexAttribPointer(this.shader.aVertexPosition, 2, gl.FLOAT, false, stride, 0);
+    gl.vertexAttribPointer(this.shader.aPositionCoord, 2, gl.FLOAT, false, stride, 2 * 4);
+    gl.vertexAttribPointer(this.shader.aScale, 2, gl.FLOAT, false, stride, 4 * 4);
+    gl.vertexAttribPointer(this.shader.aRotation, 1, gl.FLOAT, false, stride, 6 * 4);
+    gl.vertexAttribPointer(this.shader.aTextureCoord, 2, gl.FLOAT, false, stride, 7 * 4);
+    gl.vertexAttribPointer(this.shader.colorAttribute, 1, gl.FLOAT, false, stride, 9 * 4);
+
+    // set the blend mode..
+    if(this.currentBlendMode !== PIXI.blendModes.NORMAL)
+    {
+        this.setBlendMode(PIXI.blendModes.NORMAL);
+    }
+};
+
+PIXI.WebGLFastSpriteBatch.prototype.setBlendMode = function(blendMode)
 {
     this.flush();
 
@@ -10067,7 +10682,7 @@ PIXI.Texture.fromImage = function(imageUrl, crossorigin, scaleMode)
 PIXI.Texture.fromFrame = function(frameId)
 {
     var texture = PIXI.TextureCache[frameId];
-    if(!texture) throw new Error('The frameId "' + frameId + '" does not exist in the texture cache ' + this);
+    if(!texture) throw new Error('The frameId "' + frameId + '" does not exist in the texture cache ');
     return texture;
 };
 

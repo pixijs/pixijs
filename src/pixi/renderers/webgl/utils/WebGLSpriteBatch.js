@@ -12,9 +12,10 @@ PIXI.WebGLSpriteBatch = function(gl)
 {
    
 
-    this.size = 2000;
     this.vertSize = 6;
+    this.size = 10000;//Math.pow(2, 16) /  this.vertSize;
 
+ //   console.log(this.size);
     //the total number of floats in our batch
     var numVerts = this.size * 4 *  this.vertSize;
     //the total number of indices in our batch

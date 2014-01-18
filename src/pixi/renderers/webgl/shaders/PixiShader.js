@@ -35,6 +35,7 @@ PIXI.PixiShader = function(gl)
     */
     this.textureCount = 0;
 
+    this.attributes = [];
 
     this.init();
 };
@@ -73,6 +74,8 @@ PIXI.PixiShader.prototype.init = function()
     {
         this.colorAttribute = 2;
     }
+
+    this.attributes = [this.aVertexPosition, this.aTextureCoord, this.colorAttribute];
 
     // End worst hack eva //
 
