@@ -65,7 +65,7 @@ PIXI.PixiFastShader = function(gl)
     */
     this.textureCount = 0;
 
-
+    
     this.init();
 };
 

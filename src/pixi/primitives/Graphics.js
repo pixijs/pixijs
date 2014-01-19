@@ -555,3 +555,5 @@ PIXI.Graphics.POLY = 0;
 PIXI.Graphics.RECT = 1;
 PIXI.Graphics.CIRC = 2;
 PIXI.Graphics.ELIP = 3;
+
+PIXI.tempMatrix = PIXI.mat3.create();

@@ -53,7 +53,6 @@ PIXI.WebGLFastSpriteBatch = function(gl)
     this.shader = null;
 
     this.tempMatrix = PIXI.mat3.create();
-    PIXI.mat3.transpose( this.tempMatrix);
 
     this.setContext(gl);
 };
@@ -79,11 +78,14 @@ PIXI.WebGLFastSpriteBatch.prototype.setContext = function(gl)
     this.currentBlendMode = 99999;
 };
 
-PIXI.WebGLFastSpriteBatch.prototype.begin = function(renderSession)
+PIXI.WebGLFastSpriteBatch.prototype.begin = function(spriteBatch, renderSession)
 {
     this.renderSession = renderSession;
     this.shader = this.renderSession.shaderManager.fastShader;
+     
+    PIXI.mat3.transpose(spriteBatch.worldTransform, this.tempMatrix);
 
+   // console.log(this.tempMatrix)
     this.start();
 };
 
@@ -93,14 +95,17 @@ PIXI.WebGLFastSpriteBatch.prototype.end = function()
 };
 
 
-PIXI.WebGLFastSpriteBatch.prototype.render = function(children)
+PIXI.WebGLFastSpriteBatch.prototype.render = function(spriteBatch)
 {
+
+    var children = spriteBatch.children;
     var sprite = children[0];
 
     // if the uvs have not updated then no point rendering just yet!
-    if(!sprite.texture._uvs)return;
-    // check texture.
     
+    // check texture.
+    if(!sprite.texture._uvs)return;
+   
     this.currentBaseTexture = sprite.texture.baseTexture;
     // check blend mode
     if(sprite.blendMode !== this.currentBlendMode)
@@ -119,15 +124,23 @@ PIXI.WebGLFastSpriteBatch.prototype.render = function(children)
 PIXI.WebGLFastSpriteBatch.prototype.renderSprite = function(sprite)
 {
     //sprite = children[i];
-    var uvs, verticies = this.vertices, width, height, w0, w1, h0, h1, index;
+    
+    // TODO trim??
+    if(sprite.texture.baseTexture !== this.currentBaseTexture)
+    {
+        this.currentBaseTexture = sprite.texture.baseTexture;
+        this.flush();
 
+        if(!sprite.texture._uvs)return;
+    }
+
+    var uvs, verticies = this.vertices, width, height, w0, w1, h0, h1, index;
 
     uvs = sprite.texture._uvs;
 
+
     width = sprite.texture.frame.width;
     height = sprite.texture.frame.height;
-
-    // TODO trim??
 
     if (sprite.texture.trimmed)
     {
