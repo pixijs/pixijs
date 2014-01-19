@@ -142,7 +142,7 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, position, cle
 
 
     // 
-    this.renderer.renderDisplayObject(displayObject, this.projection);
+    this.renderer.renderDisplayObject(displayObject, this.projection, this.textureBuffer.frameBuffer);
 
     displayObject.worldTransform = originalWorldTransform;
 };

@@ -144,7 +144,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 
     // -- Does this need to be set every frame? -- //
     //gl.colorMask(true, true, true, this.transparent);
-    //gl.viewport(0, 0, this.width, this.height);
+    gl.viewport(0, 0, this.width, this.height);
 
     // make sure we are bound to the main frame buffer
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
@@ -190,7 +190,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
      */
 };
 
-PIXI.WebGLRenderer.prototype.renderDisplayObject = function(displayObject, projection)
+PIXI.WebGLRenderer.prototype.renderDisplayObject = function(displayObject, projection, buffer)
 {
     // reset the render session data..
     this.renderSession.drawCount = 0;
@@ -203,7 +203,7 @@ PIXI.WebGLRenderer.prototype.renderDisplayObject = function(displayObject, proje
     this.spriteBatch.begin(this.renderSession);
 
     // start the filter manager
-    this.filterManager.begin(this.renderSession, null);
+    this.filterManager.begin(this.renderSession, buffer);
 
     // render the scene!
     displayObject._renderWebGL(this.renderSession);
