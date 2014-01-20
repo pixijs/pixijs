@@ -132,7 +132,6 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
     this.context.setTransform(1,0,0,1,0,0);
     this.context.clearRect(0, 0, this.width, this.height);
     this.renderDisplayObject(stage);
-    //as
 
     // run interaction!
     if(stage.interactive)
@@ -177,7 +176,7 @@ PIXI.CanvasRenderer.prototype.resize = function(width, height)
  */
 PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject, context)
 {
-    // no loger recurrsive!
+    // no longer recurrsive!
     //var transform;
     //var context = this.context;
 
@@ -283,7 +282,6 @@ PIXI.CanvasBuffer = function(width, height)
     this.canvas = document.createElement( "canvas" );
     this.context = this.canvas.getContext( "2d" );
 
-//     this.context.f
     this.canvas.width = width;
     this.canvas.height = height;
 };

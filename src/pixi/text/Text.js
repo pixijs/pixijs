@@ -3,7 +3,7 @@
  */
 
 /**
- * A Text Object will create a line(s) of text to split a line you can use '\n'
+ * A Text Object will create a line(s) of text. To split a line you can use '\n'
  *
  * @class Text
  * @extends Sprite
@@ -12,7 +12,7 @@
  * @param [style] {Object} The style parameters
  * @param [style.font] {String} default 'bold 20pt Arial' The style and size of the font
  * @param [style.fill='black'] {Object} A canvas fillstyle that will be used on the text eg 'red', '#00FF00'
- * @param [style.align='left'] {String} An alignment of the multiline text ('left', 'center' or 'right')
+ * @param [style.align='left'] {String} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
  * @param [style.stroke] {String} A canvas fillstyle that will be used on the text stroke eg 'blue', '#FCFF00'
  * @param [style.strokeThickness=0] {Number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
  * @param [style.wordWrap=false] {Boolean} Indicates if word wrap should be used
@@ -42,7 +42,7 @@ PIXI.Text.prototype.constructor = PIXI.Text;
  * @param [style] {Object} The style parameters
  * @param [style.font='bold 20pt Arial'] {String} The style and size of the font
  * @param [style.fill='black'] {Object} A canvas fillstyle that will be used on the text eg 'red', '#00FF00'
- * @param [style.align='left'] {String} An alignment of the multiline text ('left', 'center' or 'right')
+ * @param [style.align='left'] {String} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
  * @param [style.stroke='black'] {String} A canvas fillstyle that will be used on the text stroke eg 'blue', '#FCFF00'
  * @param [style.strokeThickness=0] {Number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
  * @param [style.wordWrap=false] {Boolean} Indicates if word wrap should be used
@@ -179,7 +179,7 @@ PIXI.Text.prototype._renderWebGL = function(renderSession)
 };
 
 /**
- * Updates the transfor of this object
+ * Updates the transform of this object
  *
  * @method updateTransform
  * @private

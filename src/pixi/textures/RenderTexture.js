@@ -5,7 +5,7 @@
 /**
  A RenderTexture is a special texture that allows any pixi displayObject to be rendered to it.
 
- __Hint__: All DisplayObjects (exmpl. Sprites) that renders on RenderTexture should be preloaded.
+ __Hint__: All DisplayObjects (exmpl. Sprites) that render on RenderTexture should be preloaded.
  Otherwise black rectangles will be drawn instead.
 
  RenderTexture takes snapshot of DisplayObject passed to render method. If DisplayObject is passed to render method, position and rotation of it will be ignored. For example:

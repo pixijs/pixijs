@@ -5,8 +5,8 @@
 PIXI.glContexts = []; // this is where we store the webGL contexts for easy access.
 
 /**
- * the WebGLRenderer is draws the stage and all its content onto a webGL enabled canvas. This renderer
- * should be used for browsers support webGL. This Render works by automatically managing webGLBatchs.
+ * the WebGLRenderer draws the stage and all its content onto a webGL enabled canvas. This renderer
+ * should be used for browsers that support webGL. This Render works by automatically managing webGLBatch's.
  * So no need for Sprite Batch's or Sprite Cloud's
  * Dont forget to add the view to your DOM or you will not see anything :)
  *
@@ -15,7 +15,7 @@ PIXI.glContexts = []; // this is where we store the webGL contexts for easy acce
  * @param width=0 {Number} the width of the canvas view
  * @param height=0 {Number} the height of the canvas view
  * @param view {Canvas} the canvas to use as a view, optional
- * @param transparent=false {Boolean} the transparency of the render view, default false
+ * @param transparent=false {Boolean} If the render view is transparent, default false
  * @param antialias=false {Boolean} sets antialias (only applicable in chrome at the moment)
  *
  */
@@ -126,7 +126,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
     if(this.contextLost)return;
 
 
-    // if rendering a new stage clear the batchs..
+    // if rendering a new stage clear the batches..
     if(this.__stage !== stage)
     {
         // TODO make this work

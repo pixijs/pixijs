@@ -3,9 +3,9 @@
  */
 
 /**
- * The json file loader is used to load in JSON data and parsing it
+ * The json file loader is used to load in JSON data and parse it
  * When loaded this class will dispatch a 'loaded' event
- * If load failed this class will dispatch a 'error' event
+ * If loading fails this class will dispatch an 'error' event
  *
  * @class JsonLoader
  * @uses EventTarget

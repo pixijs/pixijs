@@ -9,7 +9,7 @@ PIXI.blendModes.MULTIPLY    = 2;
 PIXI.blendModes.SCREEN      = 3;
 
 /**
- * The SPrite object is the base for all textured objects that are rendered to the screen
+ * The Sprite object is the base for all textured objects that are rendered to the screen
  *
  * @class Sprite
  * @extends DisplayObjectContainer
@@ -95,7 +95,7 @@ PIXI.Sprite.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
 PIXI.Sprite.prototype.constructor = PIXI.Sprite;
 
 /**
- * The width of the sprite, setting this will actually modify the scale to acheive the value set
+ * The width of the sprite, setting this will actually modify the scale to achieve the value set
  *
  * @property width
  * @type Number
@@ -111,7 +111,7 @@ Object.defineProperty(PIXI.Sprite.prototype, 'width', {
 });
 
 /**
- * The height of the sprite, setting this will actually modify the scale to acheive the value set
+ * The height of the sprite, setting this will actually modify the scale to achieve the value set
  *
  * @property height
  * @type Number
@@ -233,7 +233,7 @@ PIXI.Sprite.prototype.getBounds = function()
     bounds.y = minY;
     bounds.height = maxY - minY;
 
-    // store a refferance so that if this function gets called again in the render cycle we do not have to recacalculate
+    // store a reference so that if this function gets called again in the render cycle we do not have to recalculate
     this._currentBounds = bounds;
 
     return bounds;
@@ -318,7 +318,7 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
 
         var transform = this.worldTransform;
 
-        // alow for trimming
+        // allow for trimming
        
         context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
          
@@ -347,7 +347,7 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
 
                 this.cachedTint = this.tint;
                 
-                //TODO clean up cacheing - how to clean up the caches?
+                //TODO clean up caching - how to clean up the caches?
                 this.tintedTexture = PIXI.CanvasTinter.getTintedTexture(this, this.tint);
                 
             }

@@ -50,7 +50,7 @@ PIXI.Stage = function(backgroundColor)
      */
     this.dirty = true;
 
-    //the stage is it's own stage
+    //the stage is its own stage
     this.stage = this;
 
     //optimize hit detection a bit
@@ -65,7 +65,7 @@ PIXI.Stage.prototype.constructor = PIXI.Stage;
 
 /**
  * Sets another DOM element which can receive mouse/touch interactions instead of the default Canvas element.
- * This is useful for when you have other DOM elements ontop of the Canvas element.
+ * This is useful for when you have other DOM elements on top of the Canvas element.
  *
  * @method setInteractionDelegate
  * @param domElement {DOMElement} This new domElement which will receive mouse/touch events

@@ -67,7 +67,7 @@ PIXI.PixiShader.prototype.init = function()
     // Begin worst hack eva //
 
     // WHY??? ONLY on my chrome pixel the line above returns -1 when using filters?
-    // maybe its somthing to do with the current state of the gl context.
+    // maybe its something to do with the current state of the gl context.
     // Im convinced this is a bug in the chrome browser as there is NO reason why this should be returning -1 especially as it only manifests on my chrome pixel
     // If theres any webGL people that know why could happen please help :)
     if(this.colorAttribute === -1)
@@ -165,7 +165,7 @@ PIXI.PixiShader.prototype.initUniforms = function()
 };
 
 /**
-* Initialises a Sampler2D uniform (which may only be available later on after initUniforms once the texture is has loaded)
+* Initialises a Sampler2D uniform (which may only be available later on after initUniforms once the texture has loaded)
 *
 * @method PIXI.PixiShader#initSampler2D
 */

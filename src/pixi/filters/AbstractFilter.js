@@ -3,7 +3,7 @@
  */
 
 /**
- * This is the base class for  creating a pixi.js filter. Currently only webGL supports filters.
+ * This is the base class for creating a pixi.js filter. Currently only webGL supports filters.
  * If you want to make a custom filter this should be your base class.
  * @class AbstractFilter
  * @constructor

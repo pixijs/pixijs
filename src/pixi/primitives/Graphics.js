@@ -80,8 +80,8 @@ PIXI.Graphics.prototype.constructor = PIXI.Graphics;
 /**
  * If cacheAsBitmap is true the graphics object will then be rendered as if it was a sprite.
  * This is useful if your graphics element does not change often as it will speed up the rendering of the object
- * It is also usful as the graphics object will always be aliased because it will be rendered using canvas
- * Not recommended if you are conastanly redrawing the graphics element.
+ * It is also usful as the graphics object will always be antialiased because it will be rendered using canvas
+ * Not recommended if you are constanly redrawing the graphics element.
  *
  * @property cacheAsBitmap
  * @default false
@@ -331,7 +331,7 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
      
         PIXI.WebGLGraphics.renderGraphics(this, renderSession);
         
-        // only rende rif it has children!
+        // only render if it has children!
         if(this.children.length)
         {
             renderSession.spriteBatch.start();
@@ -529,7 +529,7 @@ PIXI.Graphics.prototype._generateCachedSprite = function()
         this._cachedSprite.buffer.resize(bounds.width, bounds.height);
     }
 
-    // leverage the anchor to account for the offest of the element
+    // leverage the anchor to account for the offset of the element
     this._cachedSprite.anchor.x = -( bounds.x / bounds.width );
     this._cachedSprite.anchor.y = -( bounds.y / bounds.height );
 

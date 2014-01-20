@@ -13,7 +13,7 @@
 PIXI.InteractionManager = function(stage)
 {
     /**
-     * a refference to the stage
+     * a reference to the stage
      *
      * @property stage
      * @type Stage
@@ -199,7 +199,7 @@ PIXI.InteractionManager.prototype.update = function()
 
     // ok.. so mouse events??
     // yes for now :)
-    // OPTIMSE - how often to check??
+    // OPTIMISE - how often to check??
     if(this.dirty)
     {
         this.dirty = false;
@@ -240,7 +240,7 @@ PIXI.InteractionManager.prototype.update = function()
             item.__hit = this.hitTest(item, this.mouse);
             this.mouse.target = item;
             // ok so deal with interactions..
-            // loks like there was a hit!
+            // looks like there was a hit!
             if(item.__hit)
             {
                 if(item.buttonMode) this.interactionDOMElement.style.cursor = item.defaultCursor;
@@ -267,7 +267,7 @@ PIXI.InteractionManager.prototype.update = function()
 };
 
 /**
- * Is called when the mouse moves accross the renderer element
+ * Is called when the mouse moves across the renderer element
  *
  * @method onMouseMove
  * @param event {Event} The DOM event of the mouse moving
@@ -307,7 +307,7 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
 {
     this.mouse.originalEvent = event || window.event; //IE uses window.event
 
-    // loop through inteaction tree...
+    // loop through interaction tree...
     // hit test each item! ->
     // get interactive items under point??
     //stage.__i
@@ -411,7 +411,7 @@ PIXI.InteractionManager.prototype.onMouseUp = function(event)
  *
  * @method hitTest
  * @param item {DisplayObject} The displayObject to test for a hit
- * @param interactionData {InteractionData} The interactiondata object to update in the case of a hit
+ * @param interactionData {InteractionData} The interactionData object to update in the case of a hit
  * @private
  */
 PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
@@ -482,10 +482,10 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 };
 
 /**
- * Is called when a touch is moved accross the renderer element
+ * Is called when a touch is moved across the renderer element
  *
  * @method onTouchMove
- * @param event {Event} The DOM event of a touch moving accross the renderer view
+ * @param event {Event} The DOM event of a touch moving across the renderer view
  * @private
  */
 PIXI.InteractionManager.prototype.onTouchMove = function(event)

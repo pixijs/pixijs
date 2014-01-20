@@ -188,7 +188,7 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
     verticies[index++] = alpha;
     verticies[index++] = tint;
 
-    // increment the batchs
+    // increment the batchsize
     this.currentBatchSize++;
 
 
@@ -211,7 +211,7 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
     }
 
      // set the textures uvs temporarily
-    // TODO create a seperate texture so that we can tile part of a texture
+    // TODO create a separate texture so that we can tile part of a texture
 
     if(!tilingSprite._uvs)tilingSprite._uvs = new Float32Array(8);
 
