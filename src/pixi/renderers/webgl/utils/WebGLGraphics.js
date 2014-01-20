@@ -53,12 +53,12 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
 
     renderSession.shaderManager.activatePrimitiveShader();
 
-    // This  could be speeded up fo sure!
+    // This  could be speeded up for sure!
   //  var m = PIXI.mat3.clone(graphics.worldTransform);
 
     PIXI.mat3.transpose(graphics.worldTransform, PIXI.tempMatrix);
 
-    // set the matrix transform for the
+    // set the matrix transform
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
     gl.uniformMatrix3fv(shader.translationMatrix, false, PIXI.tempMatrix);
@@ -310,7 +310,7 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
     var firstPoint = new PIXI.Point( points[0], points[1] );
     var lastPoint = new PIXI.Point( points[points.length - 2], points[points.length - 1] );
 
-    // if the first point is the last point - goona have issues :)
+    // if the first point is the last point - gonna have issues :)
     if(firstPoint.x === lastPoint.x && firstPoint.y === lastPoint.y)
     {
         points.pop();

@@ -3,7 +3,7 @@
  */
 
 /**
- * The Ellipse object can be used to specify a hit area for displayobjects
+ * The Ellipse object can be used to specify a hit area for displayObjects
  *
  * @class Ellipse
  * @constructor
@@ -55,7 +55,7 @@ PIXI.Ellipse.prototype.clone = function()
 };
 
 /**
- * Checks if the x, and y coords passed to this function are contained within this ellipse
+ * Checks if the x and y coords passed to this function are contained within this ellipse
  *
  * @method contains
  * @param x {Number} The X coord of the point to test

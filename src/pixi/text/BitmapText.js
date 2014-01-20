@@ -14,7 +14,7 @@
  * @param text {String} The copy that you would like the text to display
  * @param style {Object} The style parameters
  * @param style.font {String} The size (optional) and bitmap font id (required) eq 'Arial' or '20px Arial' (must have loaded previously)
- * @param [style.align='left'] {String} An alignment of the multiline text ('left', 'center' or 'right')
+ * @param [style.align='left'] {String} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
  */
 PIXI.BitmapText = function(text, style)
 {
@@ -48,7 +48,7 @@ PIXI.BitmapText.prototype.setText = function(text)
  * @method setStyle
  * @param style {Object} The style parameters
  * @param style.font {String} The size (optional) and bitmap font id (required) eq 'Arial' or '20px Arial' (must have loaded previously)
- * @param [style.align='left'] {String} An alignment of the multiline text ('left', 'center' or 'right')
+ * @param [style.align='left'] {String} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
  */
 PIXI.BitmapText.prototype.setStyle = function(style)
 {
@@ -139,7 +139,7 @@ PIXI.BitmapText.prototype.updateText = function()
 };
 
 /**
- * Updates the transfor of this object
+ * Updates the transform of this object
  *
  * @method updateTransform
  * @private

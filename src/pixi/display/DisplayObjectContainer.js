@@ -30,7 +30,7 @@ PIXI.DisplayObjectContainer.prototype = Object.create( PIXI.DisplayObject.protot
 PIXI.DisplayObjectContainer.prototype.constructor = PIXI.DisplayObjectContainer;
 
 /**
- * The width of the displayObjectContainer, setting this will actually modify the scale to acheive the value set
+ * The width of the displayObjectContainer, setting this will actually modify the scale to achieve the value set
  *
  * @property width
  * @type Number
@@ -49,7 +49,7 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'width', {
 */
 
 /**
- * The height of the displayObjectContainer, setting this will actually modify the scale to acheive the value set
+ * The height of the displayObjectContainer, setting this will actually modify the scale to achieve the value set
  *
  * @property height
  * @type Number
@@ -86,7 +86,7 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 
     this.children.push(child);
 
-    // update the stage refference..
+    // update the stage reference..
 
     if(this.stage)child.setStageReference(this.stage);
 
@@ -147,7 +147,7 @@ PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
 };
 
 /**
- * Returns the Child at the specified index
+ * Returns the child at the specified index
  *
  * @method getChildAt
  * @param index {Number} The index to get the child from
@@ -188,7 +188,7 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 };
 
 /*
- * Updates the container's children's transform for rendering
+ * Updates the container's childrens transform for rendering
  *
  * @method updateTransform
  * @private
@@ -249,7 +249,7 @@ PIXI.DisplayObjectContainer.prototype.getBounds = function()
     bounds.width = maxX - minX;
     bounds.height = maxY - minY;
 
-    // TODO: store a refferance so that if this function gets called again in the render cycle we do not have to recacalculate
+    // TODO: store a reference so that if this function gets called again in the render cycle we do not have to recalculate
     //this._currentBounds = bounds;
    
     return bounds;

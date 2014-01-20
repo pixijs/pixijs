@@ -16,8 +16,8 @@ PIXI.CanvasTinter = function()
 PIXI.CanvasTinter.getTintedTexture = function(sprite, color)
 {
     //
-    // cach on sprite
-    // cach on texture
+    // cache on sprite
+    // cache on texture
     // no cache
 
     var texture = sprite.texture;
@@ -50,7 +50,7 @@ PIXI.CanvasTinter.getTintedTexture = function(sprite, color)
     {
       
         texture.tintCache[stringColor] = canvas;
-        // if we are not converting the texture to an image then we need to lose the refferance to the canvas
+        // if we are not converting the texture to an image then we need to lose the reference to the canvas
         PIXI.CanvasTinter.canvas = null;
 
     }

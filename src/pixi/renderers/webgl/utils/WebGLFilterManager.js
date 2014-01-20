@@ -148,7 +148,7 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
         gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vertexArray);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer);
-        // nnow set the uvs..
+        // now set the uvs..
         this.uvArray[2] = filterArea.width/this.width;
         this.uvArray[5] = filterArea.height/this.height;
         this.uvArray[6] = filterArea.width/this.width;
@@ -160,7 +160,7 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
         var outputTexture = this.texturePool.pop();
         if(!outputTexture)outputTexture = new PIXI.FilterTexture(this.gl, this.width, this.height);
 
-        // need to clear this FBO as it may have some left over elements from a prvious filter.
+        // need to clear this FBO as it may have some left over elements from a previous filter.
         gl.bindFramebuffer(gl.FRAMEBUFFER, outputTexture.frameBuffer );
         gl.clear(gl.COLOR_BUFFER_BIT);
 
@@ -355,7 +355,7 @@ PIXI.WebGLFilterManager.prototype.initShaderBuffers = function()
 
 
     // bind and upload the vertexs..
-    // keep a refferance to the vertexFloatData..
+    // keep a reference to the vertexFloatData..
     this.vertexArray = new Float32Array([0.0, 0.0,
                                          1.0, 0.0,
                                          0.0, 1.0,

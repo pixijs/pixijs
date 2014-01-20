@@ -55,7 +55,7 @@ PIXI.Rectangle.prototype.clone = function()
 };
 
 /**
- * Checks if the x, and y coords passed to this function are contained within this Rectangle
+ * Checks if the x and y coords passed to this function are contained within this Rectangle
  *
  * @method contains
  * @param x {Number} The X coord of the point to test

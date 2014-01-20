@@ -3,7 +3,7 @@
  */
 
 /**
- * The Circle object can be used to specify a hit area for displayobjects
+ * The Circle object can be used to specify a hit area for displayObjects
  *
  * @class Circle
  * @constructor

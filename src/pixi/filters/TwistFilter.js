@@ -4,8 +4,8 @@
 
 /**
  *
- * This filter applies a pixlate effect making display objects appear 'blocky'
- * @class PixelateFilter
+ * This filter applies a twist effect making display objects appear twisted in the given direction
+ * @class TwistFilter
  * @contructor
  */
 PIXI.TwistFilter = function()

@@ -104,7 +104,7 @@ PIXI.DisplayObject = function()
     this.stage = null;
 
     /**
-     * [read-only] The multiplied alpha of the displayobject
+     * [read-only] The multiplied alpha of the displayObject
      *
      * @property worldAlpha
      * @type Number
@@ -123,7 +123,7 @@ PIXI.DisplayObject = function()
     this._interactive = false;
 
     /**
-     * This is the curser that will be used when the mouse is over this object. To enable this the element must have interaction = true and buttonMode = true
+     * This is the cursor that will be used when the mouse is over this object. To enable this the element must have interaction = true and buttonMode = true
      * 
      * @property defaultCursor
      * @type String
@@ -152,7 +152,7 @@ PIXI.DisplayObject = function()
     this.localTransform = PIXI.mat3.create(); //mat3.identity();
 
     /**
-     * [NYI] Unkown
+     * [NYI] Unknown
      *
      * @property color
      * @type Array<>
@@ -169,7 +169,7 @@ PIXI.DisplayObject = function()
      */
     this.dynamic = true;
 
-    // chach that puppy!
+    // cached sin rotation and cos rotation
     this._sr = 0;
     this._cr = 1;
 
@@ -177,11 +177,6 @@ PIXI.DisplayObject = function()
     this.filterArea = new PIXI.Rectangle(0,0,1,1);
 
 
-    /**
-    *
-    *      
-    *
-    */
     this._bounds = new PIXI.Rectangle(0, 0, 1, 1);
     this._currentBounds = null;
     this._mask = null;
@@ -241,7 +236,7 @@ PIXI.DisplayObject = function()
      */
 
     /**
-     * A callback that is used when the user touch's over the displayObject
+     * A callback that is used when the user touches over the displayObject
      * @method touchstart
      * @param interactionData {InteractionData}
      */
@@ -319,7 +314,7 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'worldVisible', {
 
 /**
  * Sets a mask for the displayObject. A mask is an object that limits the visibility of an object to the shape of the mask applied to it.
- * In PIXI a regular mask must be a PIXI.Ggraphics object. This allows for much faster masking in canvas as it utilises shape clipping.
+ * In PIXI a regular mask must be a PIXI.Graphics object. This allows for much faster masking in canvas as it utilises shape clipping.
  * To remove a mask, set this property to null.
  *
  * @property mask

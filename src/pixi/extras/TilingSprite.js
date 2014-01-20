@@ -50,7 +50,7 @@ PIXI.TilingSprite.prototype.constructor = PIXI.TilingSprite;
 
 
 /**
- * The width of the sprite, setting this will actually modify the scale to acheive the value set
+ * The width of the sprite, setting this will actually modify the scale to achieve the value set
  *
  * @property width
  * @type Number
@@ -66,7 +66,7 @@ Object.defineProperty(PIXI.TilingSprite.prototype, 'width', {
 });
 
 /**
- * The height of the TilingSprite, setting this will actually modify the scale to acheive the value set
+ * The height of the TilingSprite, setting this will actually modify the scale to achieve the value set
  *
  * @property height
  * @type Number
@@ -157,10 +157,10 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
     
     var transform = this.worldTransform;
 
-    // alow for trimming
-   
+    // allow for trimming
+
     context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
- 
+
 
     if(!this.__tilePattern)
     {
@@ -270,7 +270,7 @@ PIXI.TilingSprite.prototype.getBounds = function()
     bounds.y = minY;
     bounds.height = maxY - minY;
 
-    // store a refferance so that if this function gets called again in the render cycle we do not have to recacalculate
+    // store a reference so that if this function gets called again in the render cycle we do not have to recalculate
     this._currentBounds = bounds;
 
     return bounds;

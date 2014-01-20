@@ -143,7 +143,7 @@ PIXI.BaseTexture.prototype.updateSourceImage = function(newSrc)
 
 /**
  * Helper function that returns a base texture based on an image url
- * If the image is not in the base texture cache it will be  created and loaded
+ * If the image is not in the base texture cache it will be created and loaded
  *
  * @static
  * @method fromImage
