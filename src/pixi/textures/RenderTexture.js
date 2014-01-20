@@ -37,7 +37,7 @@ PIXI.RenderTexture = function(width, height, renderer)
     this.width = width || 100;
     this.height = height || 100;
 
-    this.indetityMatrix = PIXI.mat3.create();
+    this.identityMatrix = PIXI.mat3.create();
 
     this.frame = new PIXI.Rectangle(0, 0, this.width, this.height);
 
@@ -124,7 +124,7 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, position, cle
 
     //TODO -? create a new one??? dont think so!
     var originalWorldTransform = displayObject.worldTransform;
-    displayObject.worldTransform = PIXI.mat3.create();//sthis.indetityMatrix;
+    displayObject.worldTransform = PIXI.mat3.create();//this.identityMatrix;
     // modify to flip...
     displayObject.worldTransform[4] = -1;
     displayObject.worldTransform[5] = this.projection.y * -2;
