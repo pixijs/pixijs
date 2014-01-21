@@ -222,6 +222,8 @@ PIXI.InteractionManager.prototype.update = function()
 
     this.interactionDOMElement.style.cursor = 'inherit';
 
+    var over = false;
+
     for (i = 0; i < length; i++)
     {
         var item = this.interactiveItems[i];
@@ -234,6 +236,7 @@ PIXI.InteractionManager.prototype.update = function()
         // hit-test the clip!
 
 
+
         if(item.mouseover || item.mouseout || item.buttonMode)
         {
             // ok so there are some functions so lets hit test it..
@@ -241,16 +244,24 @@ PIXI.InteractionManager.prototype.update = function()
             this.mouse.target = item;
             // ok so deal with interactions..
             // looks like there was a hit!
-            if(item.__hit)
+            if(item.__hit && !over)
             {
                 if(item.buttonMode) this.interactionDOMElement.style.cursor = item.defaultCursor;
+
+                if(!item.interactiveChildren)over = true;
 
                 if(!item.__isOver)
                 {
 
                     if(item.mouseover)item.mouseover(this.mouse);
                     item.__isOver = true;
+
+                    // just the one!
+                    //break;
+                    
+
                 }
+                //break;
             }
             else
             {
