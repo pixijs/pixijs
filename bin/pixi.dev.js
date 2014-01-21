@@ -1452,8 +1452,8 @@ PIXI.DisplayObjectContainer.prototype.removeStageReference = function()
 
 PIXI.DisplayObjectContainer.prototype._renderWebGL = function(renderSession)
 {
-    if(this.visible === false || this.alpha === 0)return;
-
+    if(!this.visible || this.alpha <= 0)return;
+    
     var i,j;
 
     if(this._mask || this._filters)
@@ -1775,7 +1775,7 @@ PIXI.Sprite.prototype.getBounds = function()
 PIXI.Sprite.prototype._renderWebGL = function(renderSession)
 {
     // if the sprite is not visible or the alpha is 0 then no need to render this element
-    if(this.visible === false || this.alpha === 0)return;
+    if(!this.visible || this.alpha <= 0)return;
     
     var i,j;
 
@@ -2011,7 +2011,7 @@ PIXI.SpriteBatch.prototype.updateTransform = function()
 
 PIXI.SpriteBatch.prototype._renderWebGL = function(renderSession)
 {
-    if(!this.visible)return;
+    if(!this.visible || this.alpha <= 0 || !this.children.length)return;
 
     if(!this.ready)this.initWebGL( renderSession.gl );
     

@@ -31,7 +31,7 @@ PIXI.SpriteBatch.prototype.updateTransform = function()
 
 PIXI.SpriteBatch.prototype._renderWebGL = function(renderSession)
 {
-    if(!this.visible)return;
+    if(!this.visible || this.alpha <= 0 || !this.children.length)return;
 
     if(!this.ready)this.initWebGL( renderSession.gl );
     

@@ -283,8 +283,8 @@ PIXI.DisplayObjectContainer.prototype.removeStageReference = function()
 
 PIXI.DisplayObjectContainer.prototype._renderWebGL = function(renderSession)
 {
-    if(this.visible === false || this.alpha === 0)return;
-
+    if(!this.visible || this.alpha <= 0)return;
+    
     var i,j;
 
     if(this._mask || this._filters)
