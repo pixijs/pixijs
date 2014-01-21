@@ -29,6 +29,37 @@ var PIXI = PIXI || {};
 PIXI.WEBGL_RENDERER = 0;
 PIXI.CANVAS_RENDERER = 1;
 
+// useful for testing against if your lib is using pixi.
+PIXI.VERSION = "v1.4.4";
+
+// the various blend modes supported by pixi
+PIXI.blendModes = {
+    NORMAL:0,
+    ADD:1,
+    MULTIPLY:2,
+    SCREEN:3,
+    OVERLAY:4,
+    DARKEN:5,
+    LIGHTEN:6,
+    COLOR_DODGE:7,
+    COLOR_BURN:8,
+    HARD_LIGHT:9,
+    SOFT_LIGHT:10,
+    DIFFERENCE:11,
+    EXCLUSION:12,
+    HUE:13,
+    SATURATION:14,
+    COLOR:15,
+    LUMINOSITY:16
+};
+
+// the scale modes
+PIXI.scaleModes = {
+    DEFAULT:0,
+    LINEAR:0,
+    NEAREST:1
+};
+
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -1517,28 +1548,7 @@ PIXI.DisplayObjectContainer.prototype._renderCanvas = function(renderSession)
 
 
 
-/**
- * @author Mat Groves http://matgroves.com/ @Doormat23
- */
 
-PIXI.blendModes = {};
-PIXI.blendModes.NORMAL      = 0;
-PIXI.blendModes.ADD         = 1;
-PIXI.blendModes.MULTIPLY    = 2;
-PIXI.blendModes.SCREEN      = 3;
-PIXI.blendModes.OVERLAY     = 4;
-PIXI.blendModes.DARKEN      = 5;
-PIXI.blendModes.LIGHTEN     = 6;
-PIXI.blendModes.COLOR_DODGE = 7;
-PIXI.blendModes.COLOR_BURN  = 8;
-PIXI.blendModes.HARD_LIGHT  = 9;
-PIXI.blendModes.SOFT_LIGHT  = 10;
-PIXI.blendModes.DIFFERENCE  = 11;
-PIXI.blendModes.EXCLUSION   = 12;
-PIXI.blendModes.HUE         = 13;
-PIXI.blendModes.SATURATION  = 14;
-PIXI.blendModes.COLOR       = 15;
-PIXI.blendModes.LUMINOSITY  = 16;
 
 /**
  * The Sprite object is the base for all textured objects that are rendered to the screen
@@ -5523,8 +5533,8 @@ PIXI.createWebGLTexture = function(texture, gl)
         gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
 
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.source);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, texture.scaleMode === PIXI.BaseTexture.SCALE_MODE.LINEAR ? gl.LINEAR : gl.NEAREST);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, texture.scaleMode === PIXI.BaseTexture.SCALE_MODE.LINEAR ? gl.LINEAR : gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, texture.scaleMode === PIXI.scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, texture.scaleMode === PIXI.scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
 
         // reguler...
 
@@ -10488,7 +10498,7 @@ PIXI.BaseTexture = function(source, scaleMode)
      * @type PIXI.BaseTexture.SCALE_MODE
      * @default PIXI.BaseTexture.SCALE_MODE.LINEAR
      */
-    this.scaleMode = scaleMode || PIXI.BaseTexture.SCALE_MODE.DEFAULT;
+    this.scaleMode = scaleMode || PIXI.scaleModes.DEFAULT;
 
     /**
      * [read-only] Describes if the base texture has loaded or not
@@ -10617,11 +10627,6 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
     return baseTexture;
 };
 
-PIXI.BaseTexture.SCALE_MODE = {
-    DEFAULT: 0, //default to LINEAR
-    LINEAR: 0,
-    NEAREST: 1
-};
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */

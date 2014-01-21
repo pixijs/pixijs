@@ -42,7 +42,7 @@ PIXI.BaseTexture = function(source, scaleMode)
      * @type PIXI.BaseTexture.SCALE_MODE
      * @default PIXI.BaseTexture.SCALE_MODE.LINEAR
      */
-    this.scaleMode = scaleMode || PIXI.BaseTexture.SCALE_MODE.DEFAULT;
+    this.scaleMode = scaleMode || PIXI.scaleModes.DEFAULT;
 
     /**
      * [read-only] Describes if the base texture has loaded or not
@@ -169,10 +169,4 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
     }
 
     return baseTexture;
-};
-
-PIXI.BaseTexture.SCALE_MODE = {
-    DEFAULT: 0, //default to LINEAR
-    LINEAR: 0,
-    NEAREST: 1
 };
