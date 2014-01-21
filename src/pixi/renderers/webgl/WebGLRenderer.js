@@ -162,7 +162,10 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
     // make sure we are bound to the main frame buffer
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
-    gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], !this.transparent);
+    if(this.transparent)gl.clearColor(0, 0, 0, 0);
+    else gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], 1);
+
+
     gl.clear(gl.COLOR_BUFFER_BIT);
 
   //  this.projection.x =  this.width/2;
