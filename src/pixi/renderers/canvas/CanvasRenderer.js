@@ -19,7 +19,7 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
 
     this.type = PIXI.CANVAS_RENDERER;
 
-    this.transparent = transparent;
+    this.transparent = !!transparent;
 
     if(!PIXI.blendModesCanvas)
     {
@@ -73,7 +73,7 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
      * @property context
      * @type Canvas 2d Context
      */
-    this.context = this.view.getContext( "2d" );
+    this.context = this.view.getContext( "2d" , { alpha: this.transparent } );
 
     //some filter variables
     this.smoothProperty = null;
