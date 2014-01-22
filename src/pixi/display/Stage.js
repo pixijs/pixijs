@@ -10,6 +10,13 @@
  * @constructor
  * @param backgroundColor {Number} the background color of the stage, easiest way to pass this in is in hex format
  *      like: 0xFFFFFF for white
+ * 
+ * Creating a stage is a mandatory process when you use Pixi, which is as simple as this : 
+ * var stage = new PIXI.Stage(0xFFFFFF);
+ * where the parameter given is the background colour of the stage, in hex
+ * you will use this stage instance to add your sprites to it and therefore to the renderer
+ * Here is how to add a sprite to the stage : 
+ * stage.addChild(sprite);
  */
 PIXI.Stage = function(backgroundColor)
 {
@@ -65,7 +72,7 @@ PIXI.Stage.prototype.constructor = PIXI.Stage;
 
 /**
  * Sets another DOM element which can receive mouse/touch interactions instead of the default Canvas element.
- * This is useful for when you have other DOM elements ontop of the Canvas element.
+ * This is useful for when you have other DOM elements on top of the Canvas element.
  *
  * @method setInteractionDelegate
  * @param domElement {DOMElement} This new domElement which will receive mouse/touch events
