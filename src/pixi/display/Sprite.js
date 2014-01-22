@@ -294,14 +294,22 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
     // if the sprite is not visible or the alpha is 0 then no need to render this element
     if(this.visible === false || this.alpha === 0)return;
     
+    var frame = this.texture.frame;
+    var context = renderSession.context;
+    var texture = this.texture;
+
+    if(this.blendMode !== renderSession.currentBlendMode)
+    {
+        renderSession.currentBlendMode = this.blendMode;
+        context.globalCompositeOperation = PIXI.blendModesCanvas[renderSession.currentBlendMode];
+    }
+
     if(this._mask)
     {
         renderSession.maskManager.pushMask(this._mask, renderSession.context);
     }
 
-    var frame = this.texture.frame;
-    var context = renderSession.context;
-    var texture = this.texture;
+    
 
     //ignore null sources
     if(frame && frame.width && frame.height && texture.baseTexture.source)
@@ -313,14 +321,6 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
         // allow for trimming
        
         context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
-         
-        // check blend mode
-        if(this.blendMode !== renderSession.currentBlendMode)
-        {
-            renderSession.currentBlendMode = this.blendMode;
-            context.globalCompositeOperation = PIXI.blendModesCanvas[renderSession.currentBlendMode];
-        }
-
 
         //if smoothingEnabled is supported and we need to change the smoothing property for this texture
      //   if(this.smoothProperty && this.scaleMode !== displayObject.texture.baseTexture.scaleMode) {

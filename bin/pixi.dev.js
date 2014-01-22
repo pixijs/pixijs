@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-01-21
+ * Compiled: 2014-01-22
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -1844,14 +1844,22 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
     // if the sprite is not visible or the alpha is 0 then no need to render this element
     if(this.visible === false || this.alpha === 0)return;
     
+    var frame = this.texture.frame;
+    var context = renderSession.context;
+    var texture = this.texture;
+
+    if(this.blendMode !== renderSession.currentBlendMode)
+    {
+        renderSession.currentBlendMode = this.blendMode;
+        context.globalCompositeOperation = PIXI.blendModesCanvas[renderSession.currentBlendMode];
+    }
+
     if(this._mask)
     {
         renderSession.maskManager.pushMask(this._mask, renderSession.context);
     }
 
-    var frame = this.texture.frame;
-    var context = renderSession.context;
-    var texture = this.texture;
+    
 
     //ignore null sources
     if(frame && frame.width && frame.height && texture.baseTexture.source)
@@ -1863,14 +1871,6 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
         // allow for trimming
        
         context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
-         
-        // check blend mode
-        if(this.blendMode !== renderSession.currentBlendMode)
-        {
-            renderSession.currentBlendMode = this.blendMode;
-            context.globalCompositeOperation = PIXI.blendModesCanvas[renderSession.currentBlendMode];
-        }
-
 
         //if smoothingEnabled is supported and we need to change the smoothing property for this texture
      //   if(this.smoothProperty && this.scaleMode !== displayObject.texture.baseTexture.scaleMode) {
@@ -5376,8 +5376,14 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
     // make sure we are bound to the main frame buffer
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
-    if(this.transparent)gl.clearColor(0, 0, 0, 0);
-    else gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], 1);
+    if(this.transparent)
+    {
+        gl.clearColor(0, 0, 0, 0);
+    }
+    else
+    {
+        gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], 1);
+    }
 
 
     gl.clear(gl.COLOR_BUFFER_BIT);
@@ -7291,7 +7297,7 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
 
     this.type = PIXI.CANVAS_RENDERER;
 
-    this.transparent = transparent;
+    this.transparent = !!transparent;
 
     if(!PIXI.blendModesCanvas)
     {
@@ -7371,7 +7377,7 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
      * @property context
      * @type Canvas 2d Context
      */
-    this.context = this.view.getContext( "2d" , { alpha: this.transparent } );
+    this.context = this.view.getContext( "2d" )// , { alpha: this.transparent } );
     //some filter variables
     this.smoothProperty = null;
 
@@ -7426,6 +7432,7 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
     if(this.view.style.backgroundColor !== stage.backgroundColorString && !this.transparent)
         this.view.style.backgroundColor = stage.backgroundColorString;
 
+    //console.log(this.view.style.backgroundColor)
     this.context.setTransform(1,0,0,1,0,0);
     this.context.clearRect(0, 0, this.width, this.height);
     this.renderDisplayObject(stage);
