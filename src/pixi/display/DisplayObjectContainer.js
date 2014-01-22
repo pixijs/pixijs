@@ -207,6 +207,14 @@ PIXI.DisplayObjectContainer.prototype.updateTransform = function()
     }
 };
 
+
+/**
+ * Retrieves the bounds of the displayObjectContainer as a rectangle bound object 
+ *
+ * @method getBounds
+ * @private
+ * @return {Rectangle} the rectangular bounding area
+ */
 PIXI.DisplayObjectContainer.prototype.getBounds = function()
 {
     if(this.children.length === 0)return PIXI.EmptyRectangle;
@@ -249,12 +257,18 @@ PIXI.DisplayObjectContainer.prototype.getBounds = function()
     bounds.width = maxX - minX;
     bounds.height = maxY - minY;
 
-    // TODO: store a refferance so that if this function gets called again in the render cycle we do not have to recacalculate
+    // TODO: store a reference so that if this function gets called again in the render cycle we do not have to recalculate
     //this._currentBounds = bounds;
    
     return bounds;
 };
 
+/**
+ * Sets the object's stage reference, the stage this object is connected to
+ *
+ * @method setStageReference
+ * @param stage {Stage} the stage that the object will have as its current stage reference
+ */
 PIXI.DisplayObjectContainer.prototype.setStageReference = function(stage)
 {
     this.stage = stage;
@@ -267,6 +281,11 @@ PIXI.DisplayObjectContainer.prototype.setStageReference = function(stage)
     }
 };
 
+/**
+ * removes the current stage reference of the object
+ *
+ * @method removeStageReference
+ */
 PIXI.DisplayObjectContainer.prototype.removeStageReference = function()
 {
 
@@ -281,6 +300,13 @@ PIXI.DisplayObjectContainer.prototype.removeStageReference = function()
     this.stage = null;
 };
 
+/**
+ * Renders the sprite using the WebGL renderer
+ *
+ * @method _renderWebGL
+ * @param renderSession {RenderSession} 
+ * @private
+ */
 PIXI.DisplayObjectContainer.prototype._renderWebGL = function(renderSession)
 {
     if(this.visible === false || this.alpha === 0)return;
@@ -325,6 +351,13 @@ PIXI.DisplayObjectContainer.prototype._renderWebGL = function(renderSession)
     }
 };
 
+/**
+ * Renders the sprite using the Canvas renderer
+ *
+ * @method _renderCanvas
+ * @param renderSession {RenderSession} 
+ * @private
+ */
 PIXI.DisplayObjectContainer.prototype._renderCanvas = function(renderSession)
 {
     if(this.visible === false || this.alpha === 0)return;

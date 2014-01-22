@@ -1,19 +1,37 @@
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
 
 
 /*
- * A lighter version of the rad gl-matrix created by Brandon Jones, Colin MacKenzie IV
- * you both rock!
- */
-
-function determineMatrixArrayType() {
-    PIXI.Matrix = (typeof Float32Array !== 'undefined') ? Float32Array : Array;
-    return PIXI.Matrix;
+* @class Matrix
+* The Matrix class will choose the best type of Array to use between
+*  a regular javascript array and a Float32Array if the latter is available
+* 
+*/
+PIXI.determineMatrixArrayType = function() {
+   return (typeof Float32Array !== 'undefined') ? Float32Array : Array;
 }
 
-determineMatrixArrayType();
+PIXI.Matrix = PIXI.determineMatrixArrayType();
+
+
+/**
+ * A lighter version of the rad gl-matrix created by Brandon Jones, Colin MacKenzie IV
+ * you both rock!
+ *
+ * @class mat3
+ * @static
+*/
 
 PIXI.mat3 = {};
 
+/* 
+* Creates a mat3 object
+* 
+* @method mat3.create
+* @static
+*/
 PIXI.mat3.create = function()
 {
     var matrix = new PIXI.Matrix(9);
@@ -31,7 +49,14 @@ PIXI.mat3.create = function()
     return matrix;
 };
 
-
+/* 
+* Creates a mat3 identity matrix
+* 
+* @method mat3.indentity
+* @static
+* @param matrix {Array|Float32Array}
+*
+*/
 PIXI.mat3.identity = function(matrix)
 {
     matrix[0] = 1;
@@ -47,33 +72,14 @@ PIXI.mat3.identity = function(matrix)
     return matrix;
 };
 
-
-PIXI.mat4 = {};
-
-PIXI.mat4.create = function()
-{
-    var matrix = new PIXI.Matrix(16);
-
-    matrix[0] = 1;
-    matrix[1] = 0;
-    matrix[2] = 0;
-    matrix[3] = 0;
-    matrix[4] = 0;
-    matrix[5] = 1;
-    matrix[6] = 0;
-    matrix[7] = 0;
-    matrix[8] = 0;
-    matrix[9] = 0;
-    matrix[10] = 1;
-    matrix[11] = 0;
-    matrix[12] = 0;
-    matrix[13] = 0;
-    matrix[14] = 0;
-    matrix[15] = 1;
-
-    return matrix;
-};
-
+/* 
+* Multiplies the matrices given as parameters by themselves
+* 
+* @method mat3.multiply
+* @static
+* @param mat {Array|Float32Array}
+*
+*/
 PIXI.mat3.multiply = function (mat, mat2, dest)
 {
     if (!dest) { dest = mat; }
@@ -102,6 +108,14 @@ PIXI.mat3.multiply = function (mat, mat2, dest)
     return dest;
 };
 
+/* 
+* Makes a copy of the matrix given in parameter
+* 
+* @method mat3.clone
+* @static
+* @param mat {Array|Float32Array}
+*
+*/
 PIXI.mat3.clone = function(mat)
 {
     var matrix = new PIXI.Matrix(9);
@@ -119,6 +133,14 @@ PIXI.mat3.clone = function(mat)
     return matrix;
 };
 
+/* 
+* Re-arranges the matrix
+*
+* @method mat3.transpose
+* @static
+* @param mat {Array|Float32Array}
+*
+*/
 PIXI.mat3.transpose = function (mat, dest)
 {
     // If we are transposing ourselves we can skip a few steps but have to cache some values
@@ -147,6 +169,16 @@ PIXI.mat3.transpose = function (mat, dest)
     return dest;
 };
 
+PIXI.mat4 = {};
+
+/* 
+* Appends the mat3 into a mat4, therefore making it a regular mat4 object
+* 
+* @method mat3.toMat4
+* @static
+* @param mat {Array|Float32Array} 
+*
+*/
 PIXI.mat3.toMat4 = function (mat, dest)
 {
     if (!dest) { dest = PIXI.mat4.create(); }
@@ -175,9 +207,13 @@ PIXI.mat3.toMat4 = function (mat, dest)
 };
 
 
-/////
-
-
+/* 
+* Creates a new mat4 matrix
+* 
+* @method mat4.create
+* @static
+*
+*/
 PIXI.mat4.create = function()
 {
     var matrix = new PIXI.Matrix(16);
@@ -202,6 +238,15 @@ PIXI.mat4.create = function()
     return matrix;
 };
 
+/* 
+* Re-arranges the matrix
+* 
+*
+* @method mat4.transpose
+* @static
+* @param mat {Array|Float32Array}
+*
+*/
 PIXI.mat4.transpose = function (mat, dest)
 {
     // If we are transposing ourselves we can skip a few steps but have to cache some values
@@ -245,6 +290,14 @@ PIXI.mat4.transpose = function (mat, dest)
     return dest;
 };
 
+/* 
+* Multiplies the matrices given as parameters by themselves
+* 
+* @method mat4.multiply
+* @static
+* @param mat {Array|Float32Array}
+*
+*/
 PIXI.mat4.multiply = function (mat, mat2, dest)
 {
     if (!dest) { dest = mat; }

@@ -173,8 +173,14 @@ PIXI.DisplayObject = function()
     this._sr = 0;
     this._cr = 1;
 
-
+    /**
+     * The area on which the filter is applied to 
+     *
+     * @property filterArea
+     * @type Rectangle
+     */
     this.filterArea = new PIXI.Rectangle(0,0,1,1);
+
 
 
     /**
@@ -424,11 +430,25 @@ PIXI.DisplayObject.prototype.updateTransform = function()
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
 };
 
+/**
+ * Retrieves the bounds of the displayObject as a rectangle bound object
+ *
+ * @method getBounds
+ * @private
+ * @return {Rectangle} the rectangular bounding area
+ */
 PIXI.DisplayObject.prototype.getBounds = function()
 {
     return PIXI.EmptyRectangle;
 };
 
+/**
+ * Retrieves the local bounds of the displayObject as a rectangle bound object
+ *
+ * @method getLocalBounds
+ * @private
+ * @return {Rectangle} the rectangular bounding area
+ */
 PIXI.DisplayObject.prototype.getLocalBounds = function()
 {
     var matrixCache = this.worldTransform;
@@ -444,12 +464,26 @@ PIXI.DisplayObject.prototype.getLocalBounds = function()
     return bounds;
 };
 
+/**
+ * Sets the object's stage reference, the stage this object is connected to
+ *
+ * @method setStageReference
+ * @param stage {Stage} the stage that the object will have as its current stage reference
+ */
 PIXI.DisplayObject.prototype.setStageReference = function(stage)
 {
     this.stage = stage;
     if(this._interactive)this.stage.dirty = true;
 };
 
+
+/**
+ * Renders the sprite using the WebGL renderer
+ *
+ * @method _renderWebGL
+ * @param renderSession {RenderSession} 
+ * @private
+ */
 PIXI.DisplayObject.prototype._renderWebGL = function(renderSession)
 {
     // OVERWRITE;
@@ -457,12 +491,16 @@ PIXI.DisplayObject.prototype._renderWebGL = function(renderSession)
     renderSession = renderSession;
 };
 
+/**
+ * Renders the sprite using the Canvas renderer
+ *
+ * @method _renderCanvas
+ * @param renderSession {RenderSession} 
+ * @private
+ */
 PIXI.DisplayObject.prototype._renderCanvas = function(renderSession)
 {
     // OVERWRITE;
     // this line is just here to pass jshinting :)
     renderSession = renderSession;
 };
-
-PIXI.EmptyRectangle = new PIXI.Rectangle(0,0,0,0);
-

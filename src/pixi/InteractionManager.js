@@ -4,6 +4,7 @@
 
  /**
  * The interaction manager deals with mouse and touch events. Any DisplayObject can be interactive
+ * if its interactive parameter is set to true
  * This manager also supports multitouch.
  *
  * @class InteractionManager
@@ -131,12 +132,12 @@ PIXI.InteractionManager.prototype.setTarget = function(target)
 
 
 /**
- * Sets the dom element which will receive mouse/touch events. This is useful for when you have other DOM
- * elements ontop of the renderers Canvas element. With this you'll be able to delegate another dom element
+ * Sets the DOM element which will receive mouse/touch events. This is useful for when you have other DOM
+ * elements on top of the renderers Canvas element. With this you'll be able to delegate another DOM element
  * to receive those events
  *
  * @method setTargetDomElement
- * @param domElement {DOMElement} the dom element which will receive mouse and touch events
+ * @param domElement {DOMElement} the DOM element which will receive mouse and touch events
  * @private
  */
 PIXI.InteractionManager.prototype.setTargetDomElement = function(domElement)
@@ -345,6 +346,13 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
     }
 };
 
+/**
+ * Is called when the mouse button is moved out of the renderer element
+ *
+ * @method onMouseDown
+ * @param event {Event} The DOM event of a mouse button being moved out
+ * @private
+ */
 
 PIXI.InteractionManager.prototype.onMouseOut = function()
 {
@@ -415,11 +423,11 @@ PIXI.InteractionManager.prototype.onMouseUp = function(event)
 };
 
 /**
- * Tests if the current mouse coords hit a sprite
+ * Tests if the current mouse coordinates hit a sprite
  *
  * @method hitTest
  * @param item {DisplayObject} The displayObject to test for a hit
- * @param interactionData {InteractionData} The interactiondata object to update in the case of a hit
+ * @param interactionData {InteractionData} The interactiondata object to update in case there is a hit
  * @private
  */
 PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
