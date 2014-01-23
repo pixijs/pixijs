@@ -2964,41 +2964,41 @@ PIXI.InteractionManager.prototype.update = function()
         // OK so.. does the object have any other interactive functions?
         // hit-test the clip!
        // if(item.mouseover || item.mouseout || item.buttonMode)
+       // {
+        // ok so there are some functions so lets hit test it..
+        item.__hit = this.hitTest(item, this.mouse);
+        this.mouse.target = item;
+        // ok so deal with interactions..
+        // looks like there was a hit!
+        if(item.__hit && !over)
         {
-            // ok so there are some functions so lets hit test it..
-            item.__hit = this.hitTest(item, this.mouse);
-            this.mouse.target = item;
-            // ok so deal with interactions..
-            // looks like there was a hit!
-            if(item.__hit && !over)
+            if(item.buttonMode) this.interactionDOMElement.style.cursor = item.defaultCursor;
+
+            if(!item.interactiveChildren)over = true;
+
+            if(!item.__isOver)
             {
-                if(item.buttonMode) this.interactionDOMElement.style.cursor = item.defaultCursor;
 
-                if(!item.interactiveChildren)over = true;
+                if(item.mouseover)item.mouseover(this.mouse);
+                item.__isOver = true;
 
-                if(!item.__isOver)
-                {
-
-                    if(item.mouseover)item.mouseover(this.mouse);
-                    item.__isOver = true;
-
-                    // just the one!
-                    //break;
-                    
-
-                }
+                // just the one!
                 //break;
+                
+
             }
-            else
+            //break;
+        }
+        else
+        {
+            if(item.__isOver)
             {
-                if(item.__isOver)
-                {
-                    // roll out!
-                    if(item.mouseout)item.mouseout(this.mouse);
-                    item.__isOver = false;
-                }
+                // roll out!
+                if(item.mouseout)item.mouseout(this.mouse);
+                item.__isOver = false;
             }
         }
+     //   }
         // --->
     }
 };
@@ -3112,34 +3112,34 @@ PIXI.InteractionManager.prototype.onMouseUp = function(event)
     {
         var item = this.interactiveItems[i];
 
-        if(item.mouseup || item.mouseupoutside || item.click)
+        //if(item.mouseup || item.mouseupoutside || item.click)
+        //{
+        item.__hit = this.hitTest(item, this.mouse);
+
+        if(item.__hit && !up)
         {
-            item.__hit = this.hitTest(item, this.mouse);
-
-            if(item.__hit && !up)
+            //call the function!
+            if(item.mouseup)
             {
-                //call the function!
-                if(item.mouseup)
-                {
-                    item.mouseup(this.mouse);
-                }
-                if(item.__isDown)
-                {
-                    if(item.click)item.click(this.mouse);
-                }
-
-                if(!item.interactiveChildren)up = true;
+                item.mouseup(this.mouse);
             }
-            else
+            if(item.__isDown)
             {
-                if(item.__isDown)
-                {
-                    if(item.mouseupoutside)item.mouseupoutside(this.mouse);
-                }
+                if(item.click)item.click(this.mouse);
             }
 
-            item.__isDown = false;
+            if(!item.interactiveChildren)up = true;
         }
+        else
+        {
+            if(item.__isDown)
+            {
+                if(item.mouseupoutside)item.mouseupoutside(this.mouse);
+            }
+        }
+
+        item.__isDown = false;
+        //}
     }
 };
 
