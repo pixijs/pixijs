@@ -403,7 +403,7 @@ PIXI.WebGLFilterManager.prototype.destroy = function()
 {
     var gl = this.gl;
 
-    this.filterStack = null
+    this.filterStack = null;
     
     this.offsetX = 0;
     this.offsetY = 0;
@@ -411,7 +411,8 @@ PIXI.WebGLFilterManager.prototype.destroy = function()
     // destroy textures
     for (var i = 0; i < this.texturePool.length; i++) {
         this.texturePool.destroy();
-    };
+    }
+    
     this.texturePool = null;
 
     //destroy buffers..
@@ -419,7 +420,7 @@ PIXI.WebGLFilterManager.prototype.destroy = function()
     gl.deleteBuffer(this.uvBuffer);
     gl.deleteBuffer(this.colorBuffer);
     gl.deleteBuffer(this.indexBuffer);
-}
+};
 
 PIXI.FilterTexture = function(gl, width, height)
 {

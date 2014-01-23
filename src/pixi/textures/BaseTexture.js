@@ -179,15 +179,14 @@ PIXI.BaseTexture.fromCanvas = function(canvas, scaleMode)
 {
     if(!canvas._pixiId)
     {
-        canvas._pixiId = "canvas_" + PIXI.TextureCacheIdGenerator++;
+        canvas._pixiId = 'canvas_' + PIXI.TextureCacheIdGenerator++;
     }
 
     var baseTexture = PIXI.BaseTextureCache[canvas._pixiId];
 
     if(!baseTexture)
     {
-        var baseTexture = new PIXI.BaseTexture(canvas, scaleMode);
-        baseTexture = new PIXI.Texture(baseTexture);
+        baseTexture = new PIXI.BaseTexture(canvas, scaleMode);
         PIXI.BaseTextureCache[canvas._pixiId] = baseTexture;
     }
 

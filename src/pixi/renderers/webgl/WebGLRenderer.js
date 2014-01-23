@@ -36,7 +36,6 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     this.view.height = this.height;
 
     // deal with losing context..
-    var scope = this;
 
     this.contextLost = this.handleContextLost.bind(this);
     this.contextRestoredLost = this.handleContextRestored.bind(this);
@@ -455,7 +454,6 @@ PIXI.WebGLRenderer.prototype.destroy = function()
 {
 
     // deal with losing context..
-    var scope = this;
     
     // remove listeners
     this.view.removeEventListener('webglcontextlost', this.contextLost);
@@ -475,7 +473,7 @@ PIXI.WebGLRenderer.prototype.destroy = function()
     this.gl = null;
     //
     this.renderSession = null;
-}
+};
 
 
 PIXI.WebGLRenderer.glContextId = 0;

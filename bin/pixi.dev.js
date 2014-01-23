@@ -5246,7 +5246,6 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     this.view.height = this.height;
 
     // deal with losing context..
-    var scope = this;
 
     this.contextLost = this.handleContextLost.bind(this);
     this.contextRestoredLost = this.handleContextRestored.bind(this);
@@ -5665,7 +5664,6 @@ PIXI.WebGLRenderer.prototype.destroy = function()
 {
 
     // deal with losing context..
-    var scope = this;
     
     // remove listeners
     this.view.removeEventListener('webglcontextlost', this.contextLost);
@@ -5685,7 +5683,7 @@ PIXI.WebGLRenderer.prototype.destroy = function()
     this.gl = null;
     //
     this.renderSession = null;
-}
+};
 
 
 PIXI.WebGLRenderer.glContextId = 0;
@@ -7041,7 +7039,7 @@ PIXI.WebGLFilterManager.prototype.destroy = function()
 {
     var gl = this.gl;
 
-    this.filterStack = null
+    this.filterStack = null;
     
     this.offsetX = 0;
     this.offsetY = 0;
@@ -7049,7 +7047,8 @@ PIXI.WebGLFilterManager.prototype.destroy = function()
     // destroy textures
     for (var i = 0; i < this.texturePool.length; i++) {
         this.texturePool.destroy();
-    };
+    }
+    
     this.texturePool = null;
 
     //destroy buffers..
@@ -7057,7 +7056,7 @@ PIXI.WebGLFilterManager.prototype.destroy = function()
     gl.deleteBuffer(this.uvBuffer);
     gl.deleteBuffer(this.colorBuffer);
     gl.deleteBuffer(this.indexBuffer);
-}
+};
 
 PIXI.FilterTexture = function(gl, width, height)
 {
@@ -10711,15 +10710,14 @@ PIXI.BaseTexture.fromCanvas = function(canvas, scaleMode)
 {
     if(!canvas._pixiId)
     {
-        canvas._pixiId = "canvas_" + PIXI.TextureCacheIdGenerator++;
+        canvas._pixiId = 'canvas_' + PIXI.TextureCacheIdGenerator++;
     }
 
     var baseTexture = PIXI.BaseTextureCache[canvas._pixiId];
 
     if(!baseTexture)
     {
-        var baseTexture = new PIXI.BaseTexture(canvas, scaleMode);
-        baseTexture = new PIXI.Texture(baseTexture);
+        baseTexture = new PIXI.BaseTexture(canvas, scaleMode);
         PIXI.BaseTextureCache[canvas._pixiId] = baseTexture;
     }
 
@@ -10929,7 +10927,7 @@ PIXI.Texture.fromCanvas = function(canvas, scaleMode)
 {
     var baseTexture = PIXI.BaseTexture.fromCanvas(canvas, scaleMode);
 
-   return new PIXI.Texture( baseTexture );
+    return new PIXI.Texture( baseTexture );
 
 };
 
