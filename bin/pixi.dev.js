@@ -11105,6 +11105,8 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, position, cle
         children[i].updateTransform();
     }
 
+    // update the textures!
+    PIXI.WebGLRenderer.updateTextures();
 
     // 
     this.renderer.renderDisplayObject(displayObject, this.projection, this.textureBuffer.frameBuffer);
