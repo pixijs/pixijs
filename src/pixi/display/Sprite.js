@@ -323,7 +323,7 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
         context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
 
         //if smoothingEnabled is supported and we need to change the smoothing property for this texture
-        if(renderSession.smoothProperty && renderSession.scaleMode !== displayObject.texture.baseTexture.scaleMode) {
+        if(renderSession.smoothProperty && renderSession.scaleMode !== this.texture.baseTexture.scaleMode) {
             renderSession.scaleMode = this.texture.baseTexture.scaleMode;
             context[renderSession.smoothProperty] = (renderSession.scaleMode === PIXI.BaseTexture.SCALE_MODE.LINEAR);
         }
