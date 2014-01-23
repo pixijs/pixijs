@@ -99,7 +99,7 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
      * @property context
      * @type Canvas 2d Context
      */
-    this.context = this.view.getContext( "2d" );// , { alpha: this.transparent } );
+    this.context = this.view.getContext( "2d", { alpha: this.transparent } );
     //some filter variables
     this.smoothProperty = null;
 
@@ -151,12 +151,20 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
     stage.updateTransform();
 
     // update the background color
+  /*  if(this.view.style.backgroundColor !== stage.backgroundColorString && !this.transparent)
+        this.view.style.backgroundColor = stage.backgroundColorString; */
+
+    this.context.setTransform(1,0,0,1,0,0);
+
     if(this.view.style.backgroundColor !== stage.backgroundColorString && !this.transparent)
-        this.view.style.backgroundColor = stage.backgroundColorString;
+    {
+        this.context.fillStyle = stage.backgroundColorString;
+        this.context.fillRect(0, 0, this.width, this.height);
+       // this.context.clearRect(0, 0, this.width, this.height);
+    }
 
     //console.log(this.view.style.backgroundColor)
-    this.context.setTransform(1,0,0,1,0,0);
-    this.context.clearRect(0, 0, this.width, this.height);
+   
     this.renderDisplayObject(stage);
 
     // run interaction!

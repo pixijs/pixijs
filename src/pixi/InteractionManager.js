@@ -234,10 +234,7 @@ PIXI.InteractionManager.prototype.update = function()
         // OPTIMISATION - only calculate every time if the mousemove function exists..
         // OK so.. does the object have any other interactive functions?
         // hit-test the clip!
-
-
-
-        if(item.mouseover || item.mouseout || item.buttonMode)
+       // if(item.mouseover || item.mouseout || item.buttonMode)
         {
             // ok so there are some functions so lets hit test it..
             item.__hit = this.hitTest(item, this.mouse);

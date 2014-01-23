@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-01-22
+ * Compiled: 2014-01-23
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -2963,10 +2963,7 @@ PIXI.InteractionManager.prototype.update = function()
         // OPTIMISATION - only calculate every time if the mousemove function exists..
         // OK so.. does the object have any other interactive functions?
         // hit-test the clip!
-
-
-
-        if(item.mouseover || item.mouseout || item.buttonMode)
+       // if(item.mouseover || item.mouseout || item.buttonMode)
         {
             // ok so there are some functions so lets hit test it..
             item.__hit = this.hitTest(item, this.mouse);
@@ -7377,7 +7374,7 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
      * @property context
      * @type Canvas 2d Context
      */
-    this.context = this.view.getContext( "2d" );// , { alpha: this.transparent } );
+    this.context = this.view.getContext( "2d", { alpha: this.transparent } );
     //some filter variables
     this.smoothProperty = null;
 
@@ -7429,12 +7426,20 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
     stage.updateTransform();
 
     // update the background color
+  /*  if(this.view.style.backgroundColor !== stage.backgroundColorString && !this.transparent)
+        this.view.style.backgroundColor = stage.backgroundColorString; */
+
+    this.context.setTransform(1,0,0,1,0,0);
+
     if(this.view.style.backgroundColor !== stage.backgroundColorString && !this.transparent)
-        this.view.style.backgroundColor = stage.backgroundColorString;
+    {
+        this.context.fillStyle = stage.backgroundColorString;
+        this.context.fillRect(0, 0, this.width, this.height);
+       // this.context.clearRect(0, 0, this.width, this.height);
+    }
 
     //console.log(this.view.style.backgroundColor)
-    this.context.setTransform(1,0,0,1,0,0);
-    this.context.clearRect(0, 0, this.width, this.height);
+   
     this.renderDisplayObject(stage);
 
     // run interaction!
