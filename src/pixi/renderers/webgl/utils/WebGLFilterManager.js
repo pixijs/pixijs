@@ -399,6 +399,28 @@ PIXI.WebGLFilterManager.prototype.initShaderBuffers = function()
     gl.STATIC_DRAW);
 };
 
+PIXI.WebGLFilterManager.prototype.destroy = function()
+{
+    var gl = this.gl;
+
+    this.filterStack = null
+    
+    this.offsetX = 0;
+    this.offsetY = 0;
+
+    // destroy textures
+    for (var i = 0; i < this.texturePool.length; i++) {
+        this.texturePool.destroy();
+    };
+    this.texturePool = null;
+
+    //destroy buffers..
+    gl.deleteBuffer(this.vertexBuffer);
+    gl.deleteBuffer(this.uvBuffer);
+    gl.deleteBuffer(this.colorBuffer);
+    gl.deleteBuffer(this.indexBuffer);
+}
+
 PIXI.FilterTexture = function(gl, width, height)
 {
     this.gl = gl;
@@ -441,3 +463,14 @@ PIXI.FilterTexture.prototype.resize = function(width, height)
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
 
 };
+
+PIXI.FilterTexture.prototype.destroy = function()
+{
+    var gl = this.gl;
+    gl.deleteFramebuffer( this.frameBuffer );
+    gl.deleteTexture( this.texture );
+
+    this.frameBuffer = null;
+    this.texture = null;
+};
+

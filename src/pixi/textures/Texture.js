@@ -121,6 +121,8 @@ PIXI.Texture.prototype.setFrame = function(frame)
     this.updateFrame = true;
 
     PIXI.Texture.frameUpdates.push(this);
+
+
     //this.dispatchEvent( { type: 'update', content: this } );
 };
 
@@ -195,21 +197,10 @@ PIXI.Texture.fromFrame = function(frameId)
  */
 PIXI.Texture.fromCanvas = function(canvas, scaleMode)
 {
-    if(!canvas._pixiId)
-    {
-        canvas._pixiId = "canvas_" + PIXI.TextureCacheIdGenerator++;
-    }
+    var baseTexture = PIXI.BaseTexture.fromCanvas(canvas, scaleMode);
 
-    var texture = PIXI.TextureCache[canvas._pixiId];
+   return new PIXI.Texture( baseTexture );
 
-    if(!texture)
-    {
-        var baseTexture = new PIXI.BaseTexture(canvas, scaleMode);
-        texture = new PIXI.Texture(baseTexture);
-        PIXI.TextureCache[canvas._pixiId] = texture;
-    }
-
-    return texture;
 };
 
 

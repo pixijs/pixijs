@@ -5247,8 +5247,12 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
 
     // deal with losing context..
     var scope = this;
-    this.view.addEventListener('webglcontextlost', function(event) { scope.handleContextLost(event); }, false);
-    this.view.addEventListener('webglcontextrestored', function(event) { scope.handleContextRestored(event); }, false);
+
+    this.contextLost = this.handleContextLost.bind(this);
+    this.contextRestoredLost = this.handleContextRestored.bind(this);
+ //   console.log(this.handleContextRestored)
+    this.view.addEventListener('webglcontextlost', this.contextLost, false);
+    this.view.addEventListener('webglcontextrestored', this.contextRestoredLost, false);
 
     this.options = {
         alpha: this.transparent,
@@ -5656,6 +5660,33 @@ PIXI.WebGLRenderer.prototype.handleContextRestored = function()
     this.contextLost = false;
 
 };
+
+PIXI.WebGLRenderer.prototype.destroy = function()
+{
+
+    // deal with losing context..
+    var scope = this;
+    
+    // remove listeners
+    this.view.removeEventListener('webglcontextlost', this.contextLost);
+    this.view.removeEventListener('webglcontextrestored', this.contextRestoredLost);
+
+    PIXI.glContexts[this.glContextId] = null;
+
+    this.projection = null;
+    this.offset = null;
+
+    // time to create the render managers! each one focuses on managine a state in webGL
+   // this.shaderManager.destroy();
+   // this.spriteBatch.destroy();
+   // this.maskManager.destroy();
+    this.filterManager.destroy();
+
+    this.gl = null;
+    //
+    this.renderSession = null;
+}
+
 
 PIXI.WebGLRenderer.glContextId = 0;
 
@@ -7006,6 +7037,28 @@ PIXI.WebGLFilterManager.prototype.initShaderBuffers = function()
     gl.STATIC_DRAW);
 };
 
+PIXI.WebGLFilterManager.prototype.destroy = function()
+{
+    var gl = this.gl;
+
+    this.filterStack = null
+    
+    this.offsetX = 0;
+    this.offsetY = 0;
+
+    // destroy textures
+    for (var i = 0; i < this.texturePool.length; i++) {
+        this.texturePool.destroy();
+    };
+    this.texturePool = null;
+
+    //destroy buffers..
+    gl.deleteBuffer(this.vertexBuffer);
+    gl.deleteBuffer(this.uvBuffer);
+    gl.deleteBuffer(this.colorBuffer);
+    gl.deleteBuffer(this.indexBuffer);
+}
+
 PIXI.FilterTexture = function(gl, width, height)
 {
     this.gl = gl;
@@ -7048,6 +7101,17 @@ PIXI.FilterTexture.prototype.resize = function(width, height)
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
 
 };
+
+PIXI.FilterTexture.prototype.destroy = function()
+{
+    var gl = this.gl;
+    gl.deleteFramebuffer( this.frameBuffer );
+    gl.deleteTexture( this.texture );
+
+    this.frameBuffer = null;
+    this.texture = null;
+};
+
 
 /**
  * @author Mat Groves
@@ -10474,6 +10538,8 @@ PIXI.BaseTextureCache = {};
 PIXI.texturesToUpdate = [];
 PIXI.texturesToDestroy = [];
 
+PIXI.BaseTextureCacheIdGenerator = 0;
+
 /**
  * A texture stores the information that represents an image. All textures have a base texture
  *
@@ -10570,6 +10636,8 @@ PIXI.BaseTexture = function(source, scaleMode)
     this.imageUrl = null;
     this._powerOf2 = false;
 
+    //TODO will be used for futer pixi 1.5...
+    this.id = PIXI.BaseTextureCacheIdGenerator++;
 
     // used for webGL
     this._glTextures = [];
@@ -10638,6 +10706,27 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
 
     return baseTexture;
 };
+
+PIXI.BaseTexture.fromCanvas = function(canvas, scaleMode)
+{
+    if(!canvas._pixiId)
+    {
+        canvas._pixiId = "canvas_" + PIXI.TextureCacheIdGenerator++;
+    }
+
+    var baseTexture = PIXI.BaseTextureCache[canvas._pixiId];
+
+    if(!baseTexture)
+    {
+        var baseTexture = new PIXI.BaseTexture(canvas, scaleMode);
+        baseTexture = new PIXI.Texture(baseTexture);
+        PIXI.BaseTextureCache[canvas._pixiId] = baseTexture;
+    }
+
+    return baseTexture;
+};
+
+
 
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
@@ -10762,6 +10851,8 @@ PIXI.Texture.prototype.setFrame = function(frame)
     this.updateFrame = true;
 
     PIXI.Texture.frameUpdates.push(this);
+
+
     //this.dispatchEvent( { type: 'update', content: this } );
 };
 
@@ -10836,21 +10927,10 @@ PIXI.Texture.fromFrame = function(frameId)
  */
 PIXI.Texture.fromCanvas = function(canvas, scaleMode)
 {
-    if(!canvas._pixiId)
-    {
-        canvas._pixiId = "canvas_" + PIXI.TextureCacheIdGenerator++;
-    }
+    var baseTexture = PIXI.BaseTexture.fromCanvas(canvas, scaleMode);
 
-    var texture = PIXI.TextureCache[canvas._pixiId];
+   return new PIXI.Texture( baseTexture );
 
-    if(!texture)
-    {
-        var baseTexture = new PIXI.BaseTexture(canvas, scaleMode);
-        texture = new PIXI.Texture(baseTexture);
-        PIXI.TextureCache[canvas._pixiId] = texture;
-    }
-
-    return texture;
 };
 
 

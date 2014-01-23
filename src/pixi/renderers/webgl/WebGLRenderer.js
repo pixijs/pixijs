@@ -37,8 +37,12 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
 
     // deal with losing context..
     var scope = this;
-    this.view.addEventListener('webglcontextlost', function(event) { scope.handleContextLost(event); }, false);
-    this.view.addEventListener('webglcontextrestored', function(event) { scope.handleContextRestored(event); }, false);
+
+    this.contextLost = this.handleContextLost.bind(this);
+    this.contextRestoredLost = this.handleContextRestored.bind(this);
+ //   console.log(this.handleContextRestored)
+    this.view.addEventListener('webglcontextlost', this.contextLost, false);
+    this.view.addEventListener('webglcontextrestored', this.contextRestoredLost, false);
 
     this.options = {
         alpha: this.transparent,
@@ -446,5 +450,32 @@ PIXI.WebGLRenderer.prototype.handleContextRestored = function()
     this.contextLost = false;
 
 };
+
+PIXI.WebGLRenderer.prototype.destroy = function()
+{
+
+    // deal with losing context..
+    var scope = this;
+    
+    // remove listeners
+    this.view.removeEventListener('webglcontextlost', this.contextLost);
+    this.view.removeEventListener('webglcontextrestored', this.contextRestoredLost);
+
+    PIXI.glContexts[this.glContextId] = null;
+
+    this.projection = null;
+    this.offset = null;
+
+    // time to create the render managers! each one focuses on managine a state in webGL
+   // this.shaderManager.destroy();
+   // this.spriteBatch.destroy();
+   // this.maskManager.destroy();
+    this.filterManager.destroy();
+
+    this.gl = null;
+    //
+    this.renderSession = null;
+}
+
 
 PIXI.WebGLRenderer.glContextId = 0;

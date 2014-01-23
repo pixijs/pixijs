@@ -6,6 +6,8 @@ PIXI.BaseTextureCache = {};
 PIXI.texturesToUpdate = [];
 PIXI.texturesToDestroy = [];
 
+PIXI.BaseTextureCacheIdGenerator = 0;
+
 /**
  * A texture stores the information that represents an image. All textures have a base texture
  *
@@ -102,6 +104,8 @@ PIXI.BaseTexture = function(source, scaleMode)
     this.imageUrl = null;
     this._powerOf2 = false;
 
+    //TODO will be used for futer pixi 1.5...
+    this.id = PIXI.BaseTextureCacheIdGenerator++;
 
     // used for webGL
     this._glTextures = [];
@@ -170,3 +174,24 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
 
     return baseTexture;
 };
+
+PIXI.BaseTexture.fromCanvas = function(canvas, scaleMode)
+{
+    if(!canvas._pixiId)
+    {
+        canvas._pixiId = "canvas_" + PIXI.TextureCacheIdGenerator++;
+    }
+
+    var baseTexture = PIXI.BaseTextureCache[canvas._pixiId];
+
+    if(!baseTexture)
+    {
+        var baseTexture = new PIXI.BaseTexture(canvas, scaleMode);
+        baseTexture = new PIXI.Texture(baseTexture);
+        PIXI.BaseTextureCache[canvas._pixiId] = baseTexture;
+    }
+
+    return baseTexture;
+};
+
+
