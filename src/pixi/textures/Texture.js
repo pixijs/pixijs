@@ -228,5 +228,3 @@ PIXI.Texture.removeTextureFromCache = function(id)
 
 // this is more for webGL.. it contains updated frames..
 PIXI.Texture.frameUpdates = [];
-
-PIXI.Texture.SCALE_MODE = PIXI.BaseTexture.SCALE_MODE;

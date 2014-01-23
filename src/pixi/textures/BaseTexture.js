@@ -39,8 +39,8 @@ PIXI.BaseTexture = function(source, scaleMode)
     /**
      * The scale mode to apply when scaling this texture
      * @property scaleMode
-     * @type PIXI.BaseTexture.SCALE_MODE
-     * @default PIXI.BaseTexture.SCALE_MODE.LINEAR
+     * @type PIXI.scaleModes
+     * @default PIXI.scaleModes.LINEAR
      */
     this.scaleMode = scaleMode || PIXI.scaleModes.DEFAULT;
 
