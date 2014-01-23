@@ -100,19 +100,6 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
      * @type Canvas 2d Context
      */
     this.context = this.view.getContext( "2d", { alpha: this.transparent } );
-    //some filter variables
-    this.smoothProperty = null;
-
-    if("imageSmoothingEnabled" in this.context)
-        this.smoothProperty = "imageSmoothingEnabled";
-    else if("webkitImageSmoothingEnabled" in this.context)
-        this.smoothProperty = "webkitImageSmoothingEnabled";
-    else if("mozImageSmoothingEnabled" in this.context)
-        this.smoothProperty = "mozImageSmoothingEnabled";
-    else if("oImageSmoothingEnabled" in this.context)
-        this.smoothProperty = "oImageSmoothingEnabled";
-
-    this.scaleMode = null;
 
     this.refresh = true;
     // hack to enable some hardware acceleration!
@@ -124,10 +111,21 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
 
     this.maskManager = new PIXI.CanvasMaskManager();
 
-    this.renderSession = {};
-    this.renderSession.context = this.context;
-    this.renderSession.maskManager = this.maskManager;
-    
+    this.renderSession = {
+        context: this.context,
+        maskManager: this.maskManager,
+        scaleMode: null,
+        smoothProperty: null
+    };
+
+    if("imageSmoothingEnabled" in this.context)
+        this.renderSession.smoothProperty = "imageSmoothingEnabled";
+    else if("webkitImageSmoothingEnabled" in this.context)
+        this.renderSession.smoothProperty = "webkitImageSmoothingEnabled";
+    else if("mozImageSmoothingEnabled" in this.context)
+        this.renderSession.smoothProperty = "mozImageSmoothingEnabled";
+    else if("oImageSmoothingEnabled" in this.context)
+        this.renderSession.smoothProperty = "oImageSmoothingEnabled";
 };
 
 // constructor
