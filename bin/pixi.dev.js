@@ -1873,11 +1873,10 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
         context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
 
         //if smoothingEnabled is supported and we need to change the smoothing property for this texture
-     //   if(this.smoothProperty && this.scaleMode !== displayObject.texture.baseTexture.scaleMode) {
-       //     this.scaleMode = displayObject.texture.baseTexture.scaleMode;
-         //   context[this.smoothProperty] = (this.scaleMode === PIXI.BaseTexture.SCALE_MODE.LINEAR);
-        //}
-
+        if(renderSession.smoothProperty && renderSession.scaleMode !== this.texture.baseTexture.scaleMode) {
+            renderSession.scaleMode = this.texture.baseTexture.scaleMode;
+            context[renderSession.smoothProperty] = (renderSession.scaleMode === PIXI.scaleModes.LINEAR);
+        }
 
         if(this.tint !== 0xFFFFFF)
         {
@@ -7375,19 +7374,6 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
      * @type Canvas 2d Context
      */
     this.context = this.view.getContext( "2d", { alpha: this.transparent } );
-    //some filter variables
-    this.smoothProperty = null;
-
-    if("imageSmoothingEnabled" in this.context)
-        this.smoothProperty = "imageSmoothingEnabled";
-    else if("webkitImageSmoothingEnabled" in this.context)
-        this.smoothProperty = "webkitImageSmoothingEnabled";
-    else if("mozImageSmoothingEnabled" in this.context)
-        this.smoothProperty = "mozImageSmoothingEnabled";
-    else if("oImageSmoothingEnabled" in this.context)
-        this.smoothProperty = "oImageSmoothingEnabled";
-
-    this.scaleMode = null;
 
     this.refresh = true;
     // hack to enable some hardware acceleration!
@@ -7399,10 +7385,21 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
 
     this.maskManager = new PIXI.CanvasMaskManager();
 
-    this.renderSession = {};
-    this.renderSession.context = this.context;
-    this.renderSession.maskManager = this.maskManager;
-    
+    this.renderSession = {
+        context: this.context,
+        maskManager: this.maskManager,
+        scaleMode: null,
+        smoothProperty: null
+    };
+
+    if("imageSmoothingEnabled" in this.context)
+        this.renderSession.smoothProperty = "imageSmoothingEnabled";
+    else if("webkitImageSmoothingEnabled" in this.context)
+        this.renderSession.smoothProperty = "webkitImageSmoothingEnabled";
+    else if("mozImageSmoothingEnabled" in this.context)
+        this.renderSession.smoothProperty = "mozImageSmoothingEnabled";
+    else if("oImageSmoothingEnabled" in this.context)
+        this.renderSession.smoothProperty = "oImageSmoothingEnabled";
 };
 
 // constructor
@@ -10510,8 +10507,8 @@ PIXI.BaseTexture = function(source, scaleMode)
     /**
      * The scale mode to apply when scaling this texture
      * @property scaleMode
-     * @type PIXI.BaseTexture.SCALE_MODE
-     * @default PIXI.BaseTexture.SCALE_MODE.LINEAR
+     * @type PIXI.scaleModes
+     * @default PIXI.scaleModes.LINEAR
      */
     this.scaleMode = scaleMode || PIXI.scaleModes.DEFAULT;
 
@@ -10648,6 +10645,8 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
 
 PIXI.TextureCache = {};
 PIXI.FrameCache = {};
+
+PIXI.TextureCacheIdGenerator = 0;
 
 /**
  * A texture stores the information that represents an image or part of an image. It cannot be added
@@ -10837,8 +10836,21 @@ PIXI.Texture.fromFrame = function(frameId)
  */
 PIXI.Texture.fromCanvas = function(canvas, scaleMode)
 {
-    var baseTexture = new PIXI.BaseTexture(canvas, scaleMode);
-    return new PIXI.Texture(baseTexture);
+    if(!canvas._pixiId)
+    {
+        canvas._pixiId = "canvas_" + PIXI.TextureCacheIdGenerator++;
+    }
+
+    var texture = PIXI.TextureCache[canvas._pixiId];
+
+    if(!texture)
+    {
+        var baseTexture = new PIXI.BaseTexture(canvas, scaleMode);
+        texture = new PIXI.Texture(baseTexture);
+        PIXI.TextureCache[canvas._pixiId] = texture;
+    }
+
+    return texture;
 };
 
 
@@ -10872,8 +10884,6 @@ PIXI.Texture.removeTextureFromCache = function(id)
 
 // this is more for webGL.. it contains updated frames..
 PIXI.Texture.frameUpdates = [];
-
-PIXI.Texture.SCALE_MODE = PIXI.BaseTexture.SCALE_MODE;
 
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23

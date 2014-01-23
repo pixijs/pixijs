@@ -5,6 +5,8 @@
 PIXI.TextureCache = {};
 PIXI.FrameCache = {};
 
+PIXI.TextureCacheIdGenerator = 0;
+
 /**
  * A texture stores the information that represents an image or part of an image. It cannot be added
  * to the display list directly. To do this use PIXI.Sprite. If no frame is provided then the whole image is used
@@ -193,8 +195,21 @@ PIXI.Texture.fromFrame = function(frameId)
  */
 PIXI.Texture.fromCanvas = function(canvas, scaleMode)
 {
-    var baseTexture = new PIXI.BaseTexture(canvas, scaleMode);
-    return new PIXI.Texture(baseTexture);
+    if(!canvas._pixiId)
+    {
+        canvas._pixiId = "canvas_" + PIXI.TextureCacheIdGenerator++;
+    }
+
+    var texture = PIXI.TextureCache[canvas._pixiId];
+
+    if(!texture)
+    {
+        var baseTexture = new PIXI.BaseTexture(canvas, scaleMode);
+        texture = new PIXI.Texture(baseTexture);
+        PIXI.TextureCache[canvas._pixiId] = texture;
+    }
+
+    return texture;
 };
 
 
