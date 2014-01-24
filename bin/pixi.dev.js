@@ -7531,11 +7531,17 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 
     this.context.setTransform(1,0,0,1,0,0);
 
-    if(this.view.style.backgroundColor !== stage.backgroundColorString && !this.transparent)
+    if(this.view.style.backgroundColor !== stage.backgroundColorString )
     {
-        this.context.fillStyle = stage.backgroundColorString;
-        this.context.fillRect(0, 0, this.width, this.height);
-       // this.context.clearRect(0, 0, this.width, this.height);
+        if(!this.transparent)
+        {
+            this.context.fillStyle = stage.backgroundColorString;
+            this.context.fillRect(0, 0, this.width, this.height);
+        }
+        else
+        {
+            this.context.clearRect(0, 0, this.width, this.height);
+        }
     }
 
     //console.log(this.view.style.backgroundColor)
