@@ -315,6 +315,8 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
 {
     this.mouse.originalEvent = event || window.event; //IE uses window.event
 
+    if(PIXI.AUTO_PREVENT_DEFULT)this.mouse.originalEvent.preventDefault();
+
     // loop through interaction tree...
     // hit test each item! ->
     // get interactive items under point??
@@ -374,6 +376,7 @@ PIXI.InteractionManager.prototype.onMouseOut = function()
  */
 PIXI.InteractionManager.prototype.onMouseUp = function(event)
 {
+
     this.mouse.originalEvent = event || window.event; //IE uses window.event
 
     var length = this.interactiveItems.length;
@@ -538,6 +541,8 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
 {
     var rect = this.interactionDOMElement.getBoundingClientRect();
 
+    if(PIXI.AUTO_PREVENT_DEFULT)event.preventDefault();
+    
     var changedTouches = event.changedTouches;
     for (var i=0; i < changedTouches.length; i++)
     {
