@@ -46,7 +46,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     this.options = {
         alpha: this.transparent,
         antialias:!!antialias, // SPEED UP??
-        premultipliedAlpha:false,
+        premultipliedAlpha:!!transparent,
         stencil:true
     };
 
