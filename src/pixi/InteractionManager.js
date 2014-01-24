@@ -190,7 +190,7 @@ PIXI.InteractionManager.prototype.update = function()
     // frequency of 30fps??
     var now = Date.now();
     var diff = now - this.last;
-    diff = (diff * 30) / 1000;
+    diff = (diff * PIXI.INTERACTION_FREQUENCY ) / 1000;
     if(diff < 1)return;
     this.last = now;
     //

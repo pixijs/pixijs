@@ -40,3 +40,6 @@ PIXI.scaleModes = {
     LINEAR:0,
     NEAREST:1
 };
+
+// interaction frequancy 
+PIXI.INTERACTION_FREQUENCY = 30;
