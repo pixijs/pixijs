@@ -74,22 +74,8 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'height', {
  * @param child {DisplayObject} The DisplayObject to add to the container
  */
 PIXI.DisplayObjectContainer.prototype.addChild = function(child)
-{
-    if(child.parent && child !== this)
-    {
-        //// COULD BE THIS???
-        child.parent.removeChild(child);
-        //  return;
-    }
-
-    child.parent = this;
-
-    this.children.push(child);
-
-    // update the stage refference..
-
-    if(this.stage)child.setStageReference(this.stage);
-
+{   
+    this.addChildAt(child, this.children.length);
 };
 
 /**
