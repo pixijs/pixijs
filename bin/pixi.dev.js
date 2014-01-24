@@ -4387,11 +4387,11 @@ PIXI.PixiShader.prototype.syncUniforms = function()
 PIXI.PixiShader.prototype.destroy = function()
 {
     this.gl.deleteProgram( this.program );
-    this.uniforms = null
+    this.uniforms = null;
     this.gl = null;
 
-    this.attributes = null
-}
+    this.attributes = null;
+};
 
 PIXI.PixiShader.defaultVertexSrc = [
     'attribute vec2 aVertexPosition;',
@@ -4543,11 +4543,11 @@ PIXI.PixiFastShader.prototype.init = function()
 PIXI.PixiFastShader.prototype.destroy = function()
 {
     this.gl.deleteProgram( this.program );
-    this.uniforms = null
+    this.uniforms = null;
     this.gl = null;
 
-    this.attributes = null
-}
+    this.attributes = null;
+};
 
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
@@ -4688,11 +4688,10 @@ PIXI.PrimitiveShader.prototype.init = function()
 PIXI.PrimitiveShader.prototype.destroy = function()
 {
     this.gl.deleteProgram( this.program );
-    this.uniforms = null
+    this.uniforms = null;
     this.gl = null;
 
-
-    this.attribute = null
+    this.attribute = null;
 };
 
 /**
@@ -5790,7 +5789,7 @@ PIXI.WebGLMaskManager.prototype.destroy = function()
 {
     this.maskStack = null;
     this.gl = null;
-}
+};
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -5902,19 +5901,19 @@ PIXI.WebGLShaderManager.prototype.deactivatePrimitiveShader = function()
     this.setAttribs(this.defaultShader.attributes);
 };
 
-PIXI.WebGLShaderManager.prototype.destroy = function(gl)
+PIXI.WebGLShaderManager.prototype.destroy = function()
 {
     this.attribState = null;
-    
+
     this.tempAttribState = null;
 
-    this.primitiveShader.destroy()
+    this.primitiveShader.destroy();
 
-    this.defaultShader.destroy()
+    this.defaultShader.destroy();
 
-    this.fastShader.destroy()
+    this.fastShader.destroy();
 
-    this.gl = null
+    this.gl = null;
 };
 
 
@@ -6320,29 +6319,9 @@ PIXI.WebGLSpriteBatch.prototype.destroy = function()
     
     this.currentBaseTexture = null;
     
-    this.gl = null
+    this.gl = null;
 };
 
-PIXI.WebGLSpriteBatch.prototype.setContext = function(gl)
-{
-    this.gl = gl;
-
-    // create a couple of buffers
-    this.vertexBuffer = gl.createBuffer();
-    this.indexBuffer = gl.createBuffer();
-
-    // 65535 is max index, so 65535 / 6 = 10922.
-
-
-    //upload the index data
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, this.vertices, gl.DYNAMIC_DRAW);
-
-    this.currentBlendMode = 99999;
-}
 
 /**
  * @author Mat Groves

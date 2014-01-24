@@ -109,18 +109,18 @@ PIXI.WebGLShaderManager.prototype.deactivatePrimitiveShader = function()
     this.setAttribs(this.defaultShader.attributes);
 };
 
-PIXI.WebGLShaderManager.prototype.destroy = function(gl)
+PIXI.WebGLShaderManager.prototype.destroy = function()
 {
     this.attribState = null;
-    
+
     this.tempAttribState = null;
 
-    this.primitiveShader.destroy()
+    this.primitiveShader.destroy();
 
-    this.defaultShader.destroy()
+    this.defaultShader.destroy();
 
-    this.fastShader.destroy()
+    this.fastShader.destroy();
 
-    this.gl = null
+    this.gl = null;
 };
 

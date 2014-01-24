@@ -66,4 +66,4 @@ PIXI.WebGLMaskManager.prototype.destroy = function()
 {
     this.maskStack = null;
     this.gl = null;
-}
+};

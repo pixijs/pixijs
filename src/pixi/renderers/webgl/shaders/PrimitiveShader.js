@@ -69,9 +69,8 @@ PIXI.PrimitiveShader.prototype.init = function()
 PIXI.PrimitiveShader.prototype.destroy = function()
 {
     this.gl.deleteProgram( this.program );
-    this.uniforms = null
+    this.uniforms = null;
     this.gl = null;
 
-
-    this.attribute = null
+    this.attribute = null;
 };

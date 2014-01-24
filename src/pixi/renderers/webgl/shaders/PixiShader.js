@@ -300,11 +300,11 @@ PIXI.PixiShader.prototype.syncUniforms = function()
 PIXI.PixiShader.prototype.destroy = function()
 {
     this.gl.deleteProgram( this.program );
-    this.uniforms = null
+    this.uniforms = null;
     this.gl = null;
 
-    this.attributes = null
-}
+    this.attributes = null;
+};
 
 PIXI.PixiShader.defaultVertexSrc = [
     'attribute vec2 aVertexPosition;',

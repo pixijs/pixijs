@@ -123,8 +123,8 @@ PIXI.PixiFastShader.prototype.init = function()
 PIXI.PixiFastShader.prototype.destroy = function()
 {
     this.gl.deleteProgram( this.program );
-    this.uniforms = null
+    this.uniforms = null;
     this.gl = null;
 
-    this.attributes = null
-}
+    this.attributes = null;
+};
