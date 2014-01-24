@@ -31,22 +31,8 @@ PIXI.WebGLShaderManager.prototype.setContext = function(gl)
     // this shader is used for the fast sprite rendering
     this.fastShader = new PIXI.PixiFastShader(gl);
 
-//    var shaderProgram = this.defaultShader.program;
 
     this.activateShader(this.defaultShader);
-/*
-    gl.useProgram(shaderProgram);
-
-    gl.enableVertexAttribArray(this.defaultShader.aVertexPosition);
-    gl.enableVertexAttribArray(this.defaultShader.colorAttribute);
-    gl.enableVertexAttribArray(this.defaultShader.aTextureCoord);
- //   console.log(">>")
-    //
- //    alert(this.defaultShader.aPositionCoord)
-    gl.enableVertexAttribArray(this.defaultShader.aPositionCoord);
-    gl.enableVertexAttribArray(this.defaultShader.aScale);
-    gl.enableVertexAttribArray(this.defaultShader.aRotation);*/
-
 };
 
 
@@ -111,13 +97,7 @@ PIXI.WebGLShaderManager.prototype.activatePrimitiveShader = function()
     gl.useProgram(this.primitiveShader.program);
 
     this.setAttribs(this.primitiveShader.attributes);
-    /*
-    gl.disableVertexAttribArray(this.defaultShader.aVertexPosition);
-    gl.disableVertexAttribArray(this.defaultShader.colorAttribute);
-    gl.disableVertexAttribArray(this.defaultShader.aTextureCoord);
-
-    gl.enableVertexAttribArray(this.primitiveShader.aVertexPosition);
-    gl.enableVertexAttribArray(this.primitiveShader.colorAttribute);*/
+    
 };
 
 PIXI.WebGLShaderManager.prototype.deactivatePrimitiveShader = function()
@@ -127,13 +107,20 @@ PIXI.WebGLShaderManager.prototype.deactivatePrimitiveShader = function()
     gl.useProgram(this.defaultShader.program);
 
     this.setAttribs(this.defaultShader.attributes);
-/*
-    gl.disableVertexAttribArray(this.primitiveShader.aVertexPosition);
-    gl.disableVertexAttribArray(this.primitiveShader.colorAttribute);
-
-    gl.enableVertexAttribArray(this.defaultShader.aVertexPosition);
-    gl.enableVertexAttribArray(this.defaultShader.colorAttribute);
-    gl.enableVertexAttribArray(this.defaultShader.aTextureCoord);
-
-    gl.enableVertexAttribArray(this.defaultShader.aPositionCoord);*/
 };
+
+PIXI.WebGLShaderManager.prototype.destroy = function(gl)
+{
+    this.attribState = null;
+    
+    this.tempAttribState = null;
+
+    this.primitiveShader.destroy()
+
+    this.defaultShader.destroy()
+
+    this.fastShader.destroy()
+
+    this.gl = null
+};
+

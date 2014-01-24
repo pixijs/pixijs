@@ -61,3 +61,9 @@ PIXI.WebGLMaskManager.prototype.popMask = function(renderSession)
    
     if(this.maskStack.length === 0)gl.disable(gl.STENCIL_TEST);
 };
+
+PIXI.WebGLMaskManager.prototype.destroy = function()
+{
+    this.maskStack = null;
+    this.gl = null;
+}

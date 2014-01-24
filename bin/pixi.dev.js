@@ -4,7 +4,7 @@
  * Copyright (c) 2012, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-01-23
+ * Compiled: 2014-01-24
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -4384,6 +4384,15 @@ PIXI.PixiShader.prototype.syncUniforms = function()
 
 };
 
+PIXI.PixiShader.prototype.destroy = function()
+{
+    this.gl.deleteProgram( this.program );
+    this.uniforms = null
+    this.gl = null;
+
+    this.attributes = null
+}
+
 PIXI.PixiShader.defaultVertexSrc = [
     'attribute vec2 aVertexPosition;',
     'attribute vec2 aTextureCoord;',
@@ -4404,6 +4413,8 @@ PIXI.PixiShader.defaultVertexSrc = [
     '   vColor = vec4(color * aColor.x, aColor.x);',
     '}'
 ];
+
+
 
 
 
@@ -4529,6 +4540,14 @@ PIXI.PixiFastShader.prototype.init = function()
     this.program = program;
 };
 
+PIXI.PixiFastShader.prototype.destroy = function()
+{
+    this.gl.deleteProgram( this.program );
+    this.uniforms = null
+    this.gl = null;
+
+    this.attributes = null
+}
 
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
@@ -4664,6 +4683,16 @@ PIXI.PrimitiveShader.prototype.init = function()
     this.alpha = gl.getUniformLocation(program, 'alpha');
 
     this.program = program;
+};
+
+PIXI.PrimitiveShader.prototype.destroy = function()
+{
+    this.gl.deleteProgram( this.program );
+    this.uniforms = null
+    this.gl = null;
+
+
+    this.attribute = null
 };
 
 /**
@@ -5675,11 +5704,16 @@ PIXI.WebGLRenderer.prototype.destroy = function()
     this.offset = null;
 
     // time to create the render managers! each one focuses on managine a state in webGL
-   // this.shaderManager.destroy();
-   // this.spriteBatch.destroy();
-   // this.maskManager.destroy();
+    this.shaderManager.destroy();
+    this.spriteBatch.destroy();
+    this.maskManager.destroy();
     this.filterManager.destroy();
 
+    this.shaderManager = null;
+    this.spriteBatch = null;
+    this.maskManager = null;
+    this.filterManager = null;
+    
     this.gl = null;
     //
     this.renderSession = null;
@@ -5751,6 +5785,12 @@ PIXI.WebGLMaskManager.prototype.popMask = function(renderSession)
    
     if(this.maskStack.length === 0)gl.disable(gl.STENCIL_TEST);
 };
+
+PIXI.WebGLMaskManager.prototype.destroy = function()
+{
+    this.maskStack = null;
+    this.gl = null;
+}
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -5784,22 +5824,8 @@ PIXI.WebGLShaderManager.prototype.setContext = function(gl)
     // this shader is used for the fast sprite rendering
     this.fastShader = new PIXI.PixiFastShader(gl);
 
-//    var shaderProgram = this.defaultShader.program;
 
     this.activateShader(this.defaultShader);
-/*
-    gl.useProgram(shaderProgram);
-
-    gl.enableVertexAttribArray(this.defaultShader.aVertexPosition);
-    gl.enableVertexAttribArray(this.defaultShader.colorAttribute);
-    gl.enableVertexAttribArray(this.defaultShader.aTextureCoord);
- //   console.log(">>")
-    //
- //    alert(this.defaultShader.aPositionCoord)
-    gl.enableVertexAttribArray(this.defaultShader.aPositionCoord);
-    gl.enableVertexAttribArray(this.defaultShader.aScale);
-    gl.enableVertexAttribArray(this.defaultShader.aRotation);*/
-
 };
 
 
@@ -5864,13 +5890,7 @@ PIXI.WebGLShaderManager.prototype.activatePrimitiveShader = function()
     gl.useProgram(this.primitiveShader.program);
 
     this.setAttribs(this.primitiveShader.attributes);
-    /*
-    gl.disableVertexAttribArray(this.defaultShader.aVertexPosition);
-    gl.disableVertexAttribArray(this.defaultShader.colorAttribute);
-    gl.disableVertexAttribArray(this.defaultShader.aTextureCoord);
-
-    gl.enableVertexAttribArray(this.primitiveShader.aVertexPosition);
-    gl.enableVertexAttribArray(this.primitiveShader.colorAttribute);*/
+    
 };
 
 PIXI.WebGLShaderManager.prototype.deactivatePrimitiveShader = function()
@@ -5880,16 +5900,24 @@ PIXI.WebGLShaderManager.prototype.deactivatePrimitiveShader = function()
     gl.useProgram(this.defaultShader.program);
 
     this.setAttribs(this.defaultShader.attributes);
-/*
-    gl.disableVertexAttribArray(this.primitiveShader.aVertexPosition);
-    gl.disableVertexAttribArray(this.primitiveShader.colorAttribute);
-
-    gl.enableVertexAttribArray(this.defaultShader.aVertexPosition);
-    gl.enableVertexAttribArray(this.defaultShader.colorAttribute);
-    gl.enableVertexAttribArray(this.defaultShader.aTextureCoord);
-
-    gl.enableVertexAttribArray(this.defaultShader.aPositionCoord);*/
 };
+
+PIXI.WebGLShaderManager.prototype.destroy = function(gl)
+{
+    this.attribState = null;
+    
+    this.tempAttribState = null;
+
+    this.primitiveShader.destroy()
+
+    this.defaultShader.destroy()
+
+    this.fastShader.destroy()
+
+    this.gl = null
+};
+
+
 /**
  * @author Mat Groves
  * 
@@ -6281,7 +6309,40 @@ PIXI.WebGLSpriteBatch.prototype.setBlendMode = function(blendMode)
     this.gl.blendFunc(blendModeWebGL[0], blendModeWebGL[1]);
 };
 
+PIXI.WebGLSpriteBatch.prototype.destroy = function()
+{
 
+    this.vertices = null;
+    this.indices = null;
+    
+    this.gl.deleteBuffer( this.vertexBuffer );
+    this.gl.deleteBuffer( this.indexBuffer );
+    
+    this.currentBaseTexture = null;
+    
+    this.gl = null
+};
+
+PIXI.WebGLSpriteBatch.prototype.setContext = function(gl)
+{
+    this.gl = gl;
+
+    // create a couple of buffers
+    this.vertexBuffer = gl.createBuffer();
+    this.indexBuffer = gl.createBuffer();
+
+    // 65535 is max index, so 65535 / 6 = 10922.
+
+
+    //upload the index data
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, this.vertices, gl.DYNAMIC_DRAW);
+
+    this.currentBlendMode = 99999;
+}
 
 /**
  * @author Mat Groves

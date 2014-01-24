@@ -297,6 +297,15 @@ PIXI.PixiShader.prototype.syncUniforms = function()
 
 };
 
+PIXI.PixiShader.prototype.destroy = function()
+{
+    this.gl.deleteProgram( this.program );
+    this.uniforms = null
+    this.gl = null;
+
+    this.attributes = null
+}
+
 PIXI.PixiShader.defaultVertexSrc = [
     'attribute vec2 aVertexPosition;',
     'attribute vec2 aTextureCoord;',
@@ -317,5 +326,7 @@ PIXI.PixiShader.defaultVertexSrc = [
     '   vColor = vec4(color * aColor.x, aColor.x);',
     '}'
 ];
+
+
 
 

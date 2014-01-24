@@ -465,11 +465,16 @@ PIXI.WebGLRenderer.prototype.destroy = function()
     this.offset = null;
 
     // time to create the render managers! each one focuses on managine a state in webGL
-   // this.shaderManager.destroy();
-   // this.spriteBatch.destroy();
-   // this.maskManager.destroy();
+    this.shaderManager.destroy();
+    this.spriteBatch.destroy();
+    this.maskManager.destroy();
     this.filterManager.destroy();
 
+    this.shaderManager = null;
+    this.spriteBatch = null;
+    this.maskManager = null;
+    this.filterManager = null;
+    
     this.gl = null;
     //
     this.renderSession = null;
