@@ -319,7 +319,6 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
         var transform = this.worldTransform;
 
         // allow for trimming
-       
         context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
 
         //if smoothingEnabled is supported and we need to change the smoothing property for this texture

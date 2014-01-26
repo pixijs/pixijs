@@ -63,6 +63,12 @@ PIXI.BaseTexture = function(source, scaleMode)
      */
     this.source = source;
 
+    //TODO will be used for futer pixi 1.5...
+    this.id = PIXI.BaseTextureCacheIdGenerator++;
+
+    // used for webGL
+    this._glTextures = [];
+    
     if(!source)return;
 
     if(this.source instanceof Image || this.source instanceof HTMLImageElement)
@@ -104,11 +110,7 @@ PIXI.BaseTexture = function(source, scaleMode)
     this.imageUrl = null;
     this._powerOf2 = false;
 
-    //TODO will be used for futer pixi 1.5...
-    this.id = PIXI.BaseTextureCacheIdGenerator++;
-
-    // used for webGL
-    this._glTextures = [];
+    
 
 };
 

@@ -183,7 +183,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
     this.renderDisplayObject( stage, this.projection );
 
     // interaction
-    if(stage.interactive)
+    if(stage._interactive)
     {
         //need to add some events!
         if(!stage._interactiveEventsAdded)
@@ -226,7 +226,7 @@ PIXI.WebGLRenderer.prototype.renderDisplayObject = function(displayObject, proje
 
     // start the sprite batch
     this.spriteBatch.begin(this.renderSession);
-
+    
     // start the filter manager
     this.filterManager.begin(this.renderSession, buffer);
 

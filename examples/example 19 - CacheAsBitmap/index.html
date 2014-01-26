@@ -1,0 +1,90 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+
+	<title>Sprite Batch</title>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			background-color: #000000;
+		}
+
+		.rendererView {
+			position: absolute;
+			display: block;
+			width: 100%;
+			height: 100%;
+		}
+	</style>
+	
+	<script src="pixi.js"></script>
+	<script src="../../bin/pixi.dev.js"></script>
+
+
+</head>
+<body>
+
+	<script>
+	
+	var viewWidth = 800;
+	var viewHeight = 600;
+
+	// Create a pixi renderer
+//	var renderer = PIXI.autoDetectRenderer(viewWidth, viewHeight);
+	var renderer = new PIXI.CanvasRenderer(viewWidth, viewHeight);
+	//renderer.view.className = "rendererView";
+	
+	// add render view to DOM
+	document.body.appendChild(renderer.view);
+
+	// create an new instance of a pixi stage
+	var stage = new PIXI.Stage(0xFFFFFF);
+
+
+	var temp = new PIXI.DisplayObjectContainer();
+	var bunny = PIXI.Sprite.fromImage("bunny.png");
+	var bunny2 = PIXI.Sprite.fromImage("bunny.png");
+	bunny2.rotation += 1;
+	bunny2.position.set(30);
+	temp.addChild(bunny);
+	temp.addChild(bunny2);
+
+	//temp.filters = [new PIXI.BlurFilter()];
+	stage.addChild(temp);
+
+	temp.position.set(300);
+
+	stage.click = function(){
+		//console.log("<>")
+	//	var sprite = new PIXI.Sprite(temp.generateTexture(renderer.renderSession));
+		temp.cacheAsBitmap = !temp.cacheAsBitmap;
+
+	//	stage.addChild(sprite);
+
+	//	sprite.position.x = Math.random() * 800;
+	//	sprite.position.y = Math.random() * 600;
+
+	//	console.log("!")
+	};
+	// create a displacment map
+
+
+	var tick = 0;
+	requestAnimationFrame(animate);
+
+	function animate() 
+	{
+		temp.rotation += 0.01;
+
+		// time to render the state!
+	    renderer.render(stage);
+	    
+	    // request another animation frame..
+	    requestAnimationFrame( animate );
+	}
+
+	</script>
+
+	</body>
+</html>

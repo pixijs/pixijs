@@ -25,6 +25,8 @@
 </head>
 <body>
 
+	<a href="http://www.pixijs.com/" ><img src="logo_small.png" style="position:absolute; right:0px; bottom:10px; z-index:10;"/></a>
+	
 	<script>
 	
 	var viewWidth = 800;
@@ -126,8 +128,9 @@
 		for (var i = 0; i < dudeArray.length; i++) 
 		{
 			var dude = dudeArray[i];
-			dude.scale.y = 0.95 + Math.sin(tick + dude.offset) * 0.05
-			dude.direction += dude.turningSpeed * 0.01;
+			dude.scale.y = 0.95 + Math.sin(tick + dude.offset) * 0.5
+			dude.turningSpeed += 0.3
+			dude.direction += Math.sin(dude.turningSpeed) * 0.01;
 			dude.position.x += Math.sin(dude.direction) * (dude.speed * dude.scale.y);
 			dude.position.y += Math.cos(dude.direction) * (dude.speed *dude.scale.y );
 			dude.rotation = -dude.direction + Math.PI;

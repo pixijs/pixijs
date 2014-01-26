@@ -187,6 +187,8 @@ PIXI.DisplayObjectContainer.prototype.updateTransform = function()
 
     PIXI.DisplayObject.prototype.updateTransform.call( this );
 
+    if(this._cacheAsBitmap)return;
+
     for(var i=0,j=this.children.length; i<j; i++)
     {
         this.children[i].updateTransform();
@@ -241,6 +243,24 @@ PIXI.DisplayObjectContainer.prototype.getBounds = function()
     return bounds;
 };
 
+PIXI.DisplayObjectContainer.prototype.getLocalBounds = function()
+{
+    var matrixCache = this.worldTransform;
+
+    this.worldTransform = PIXI.identityMatrix;
+
+    for(var i=0,j=this.children.length; i<j; i++)
+    {
+        this.children[i].updateTransform();
+    }
+
+    var bounds = this.getBounds();
+  
+    this.worldTransform = matrixCache;
+
+    return bounds;
+};
+
 PIXI.DisplayObjectContainer.prototype.setStageReference = function(stage)
 {
     this.stage = stage;
@@ -270,6 +290,12 @@ PIXI.DisplayObjectContainer.prototype.removeStageReference = function()
 PIXI.DisplayObjectContainer.prototype._renderWebGL = function(renderSession)
 {
     if(!this.visible || this.alpha <= 0)return;
+    
+    if(this._cacheAsBitmap)
+    {
+        this._renderCachedSprite(renderSession);
+        return;
+    }
     
     var i,j;
 
@@ -314,6 +340,13 @@ PIXI.DisplayObjectContainer.prototype._renderWebGL = function(renderSession)
 PIXI.DisplayObjectContainer.prototype._renderCanvas = function(renderSession)
 {
     if(this.visible === false || this.alpha === 0)return;
+
+    if(this._cacheAsBitmap)
+    {
+
+        this._renderCachedSprite(renderSession);
+        return;
+    }
 
     if(this._mask)
     {

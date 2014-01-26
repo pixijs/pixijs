@@ -13,7 +13,7 @@ PIXI.WebGLSpriteBatch = function(gl)
    
 
     this.vertSize = 6;
-    this.size = 10000;//Math.pow(2, 16) /  this.vertSize;
+    this.size = 6000;//Math.pow(2, 16) /  this.vertSize;
 
  //   console.log(this.size);
     //the total number of floats in our batch
@@ -83,11 +83,13 @@ PIXI.WebGLSpriteBatch.prototype.end = function()
 
 PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
 {
+    var texture = sprite.texture;
+
     // check texture..
-    if(sprite.texture.baseTexture !== this.currentBaseTexture || this.currentBatchSize >= this.size)
+    if(texture.baseTexture !== this.currentBaseTexture || this.currentBatchSize >= this.size)
     {
         this.flush();
-        this.currentBaseTexture = sprite.texture.baseTexture;
+        this.currentBaseTexture = texture.baseTexture;
     }
 
 
@@ -108,8 +110,6 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
 
     var  verticies = this.vertices;
 
-    var width = sprite.texture.frame.width;
-    var height = sprite.texture.frame.height;
 
     // TODO trim??
     var aX = sprite.anchor.x;
@@ -117,24 +117,22 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
 
     var w0, w1, h0, h1;
         
-    if (sprite.texture.trimmed)
+    if (texture.trimmed)
     {
         // if the sprite is trimmed then we need to add the extra space before transforming the sprite coords..
-        var trim = sprite.texture.trim;
+        w1 = texture.trim.x - aX * texture.trim.realWidth;
+        w0 = w1 + texture.frame.width;
 
-        w1 = trim.x - aX * trim.realWidth;
-        w0 = w1 + width;
-
-        h1 = trim.y - aY * trim.realHeight;
-        h0 = h1 + height;
+        h1 = texture.trim.y - aY * texture.trim.realHeight;
+        h0 = h1 + texture.frame.height;
     }
     else
     {
-        w0 = (width ) * (1-aX);
-        w1 = (width ) * -aX;
+        w0 = (texture.frame.width ) * (1-aX);
+        w1 = (texture.frame.width ) * -aX;
 
-        h0 = height * (1-aY);
-        h1 = height * -aY;
+        h0 = texture.frame.height * (1-aY);
+        h1 = texture.frame.height * -aY;
     }
 
     var index = this.currentBatchSize * 4 * this.vertSize;
