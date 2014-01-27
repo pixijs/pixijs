@@ -7,13 +7,11 @@
  * WebGL is the preferred renderer as it is a lot faster. If webGL is not supported by
  * the browser then this function will return a canvas renderer
  *
- * @method autoDetectRenderer
- * @static
- * @param width {Number} the width of the renderers view
- * @param height {Number} the height of the renderers view
- * @param view {Canvas} the canvas to use as a view, optional
- * @param transparent=false {Boolean} the transparency of the render view, default false
- * @param antialias=false {Boolean} sets antialias (only applicable in webGL chrome at the moment)
+ * @param width=800 {Number} the width of the renderers view
+ * @param height=600 {Number} the height of the renderers view
+ * @param [view] {Canvas} the canvas to use as a view, optional
+ * @param [transparent=false] {Boolean} the transparency of the render view, default false
+ * @param [antialias=false] {Boolean} sets antialias (only applicable in webGL chrome at the moment)
  *
  * antialias
  */

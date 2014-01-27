@@ -70,7 +70,12 @@ PIXI.AssetLoader = function(assetURLs, crossorigin)
 // constructor
 PIXI.AssetLoader.prototype.constructor = PIXI.AssetLoader;
 
-
+/**
+ * Given a filename, returns its extension, wil
+ *
+ * @method _getDataType
+ * @param str {String} the name of the asset
+ */
 PIXI.AssetLoader.prototype._getDataType = function(str)
 {
     var test = 'data:';

@@ -41,6 +41,6 @@ PIXI.scaleModes = {
     NEAREST:1
 };
 
-// interaction frequancy 
+// interaction frequency 
 PIXI.INTERACTION_FREQUENCY = 30;
-PIXI.AUTO_PREVENT_DEFULT = true;
+PIXI.AUTO_PREVENT_DEFAULT = true;

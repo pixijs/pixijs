@@ -1,4 +1,6 @@
-
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
 
 /**
  * The Sprite object is the base for all textured objects that are rendered to the screen
@@ -7,7 +9,11 @@
  * @extends DisplayObjectContainer
  * @constructor
  * @param texture {Texture} The texture for this sprite
- * @type String
+ * 
+ * A sprite can be created directly from an image like this : 
+ * var sprite = nex PIXI.Sprite.FromImage('assets/image.png');
+ * yourStage.addChild(sprite);
+ * then obviously don't forget to add it to the stage you have already created
  */
 PIXI.Sprite = function(texture)
 {
@@ -15,9 +21,9 @@ PIXI.Sprite = function(texture)
 
     /**
      * The anchor sets the origin point of the texture.
-     * The default is 0,0 this means the textures origin is the top left
-     * Setting than anchor to 0.5,0.5 means the textures origin is centered
-     * Setting the anchor to 1,1 would mean the textures origin points will be the bottom right
+     * The default is 0,0 this means the texture's origin is the top left
+     * Setting than anchor to 0.5,0.5 means the textures origin is centred
+     * Setting the anchor to 1,1 would mean the textures origin points will be the bottom right corner
      *
      * @property anchor
      * @type Point
@@ -158,6 +164,12 @@ PIXI.Sprite.prototype.onTextureUpdate = function()
     this.updateFrame = true;
 };
 
+/**
+ * Retrieves the bounds of the sprite as a rectangle object
+ *
+ * @method getBounds
+ * @return {Rectangle} the rectangular bounding area
+ */
 PIXI.Sprite.prototype.getBounds = function()
 {
 
@@ -231,7 +243,13 @@ PIXI.Sprite.prototype.getBounds = function()
     return bounds;
 };
 
-
+/**
+* Renders the object using the WebGL renderer
+*
+* @method _renderWebGL
+* @param renderSession {RenderSession} 
+* @private
+*/
 PIXI.Sprite.prototype._renderWebGL = function(renderSession)
 {
     // if the sprite is not visible or the alpha is 0 then no need to render this element
@@ -289,6 +307,13 @@ PIXI.Sprite.prototype._renderWebGL = function(renderSession)
     //TODO check culling  
 };
 
+/**
+* Renders the object using the Canvas renderer
+*
+* @method _renderCanvas
+* @param renderSession {RenderSession} 
+* @private
+*/
 PIXI.Sprite.prototype._renderCanvas = function(renderSession)
 {
     // if the sprite is not visible or the alpha is 0 then no need to render this element

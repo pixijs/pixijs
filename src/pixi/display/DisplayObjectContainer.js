@@ -193,6 +193,12 @@ PIXI.DisplayObjectContainer.prototype.updateTransform = function()
     }
 };
 
+/**
+ * Retrieves the bounds of the displayObjectContainer as a rectangle object
+ *
+ * @method getBounds
+ * @return {Rectangle} the rectangular bounding area
+ */
 PIXI.DisplayObjectContainer.prototype.getBounds = function()
 {
     if(this.children.length === 0)return PIXI.EmptyRectangle;
@@ -241,6 +247,12 @@ PIXI.DisplayObjectContainer.prototype.getBounds = function()
     return bounds;
 };
 
+/**
+ * Sets the container's stage reference, the stage this object is connected to
+ *
+ * @method setStageReference
+ * @param stage {Stage} the stage that the container will have as its current stage reference
+ */
 PIXI.DisplayObjectContainer.prototype.setStageReference = function(stage)
 {
     this.stage = stage;
@@ -253,6 +265,11 @@ PIXI.DisplayObjectContainer.prototype.setStageReference = function(stage)
     }
 };
 
+/**
+ * removes the current stage reference of the container
+ *
+ * @method removeStageReference
+ */
 PIXI.DisplayObjectContainer.prototype.removeStageReference = function()
 {
 
@@ -267,6 +284,13 @@ PIXI.DisplayObjectContainer.prototype.removeStageReference = function()
     this.stage = null;
 };
 
+/**
+* Renders the object using the WebGL renderer
+*
+* @method _renderWebGL
+* @param renderSession {RenderSession} 
+* @private
+*/
 PIXI.DisplayObjectContainer.prototype._renderWebGL = function(renderSession)
 {
     if(!this.visible || this.alpha <= 0)return;
@@ -311,6 +335,13 @@ PIXI.DisplayObjectContainer.prototype._renderWebGL = function(renderSession)
     }
 };
 
+/**
+* Renders the object using the Canvas renderer
+*
+* @method _renderCanvas
+* @param renderSession {RenderSession} 
+* @private
+*/
 PIXI.DisplayObjectContainer.prototype._renderCanvas = function(renderSession)
 {
     if(this.visible === false || this.alpha === 0)return;
@@ -331,5 +362,4 @@ PIXI.DisplayObjectContainer.prototype._renderCanvas = function(renderSession)
         renderSession.maskManager.popMask(renderSession.context);
     }
 };
-
 

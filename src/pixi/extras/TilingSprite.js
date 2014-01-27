@@ -16,7 +16,19 @@ PIXI.TilingSprite = function(texture, width, height)
 {
     PIXI.Sprite.call( this, texture);
 
+    /**
+     * The with of the tiling sprite
+     *
+     * @property width
+     * @type Number
+     */
     this.width = width || 100;
+    /**
+     * The height of the tiling sprite
+     *
+     * @property height
+     * @type Number
+     */
     this.height = height || 100;
 
     /**
@@ -27,7 +39,12 @@ PIXI.TilingSprite = function(texture, width, height)
      */
     this.tileScale = new PIXI.Point(1,1);
 
-
+    /**
+     * 
+     *
+     * @property tileScaleOffset
+     * @type Point
+     */
     this.tileScaleOffset = new PIXI.Point(1,1);
     
     /**
@@ -40,7 +57,22 @@ PIXI.TilingSprite = function(texture, width, height)
 
     this.renderable = true;
 
+    /**
+     * The tint applied to the sprite. This is a hex value
+     *
+     * @property tint
+     * @type Number
+     * @default 0xFFFFFF
+     */
     this.tint = 0xFFFFFF;
+    
+    /**
+     * The blend mode to be applied to the sprite
+     *
+     * @property blendMode
+     * @type Number
+     * @default PIXI.blendModes.NORMAL;
+     */
     this.blendMode = PIXI.blendModes.NORMAL;
 };
 
@@ -80,6 +112,13 @@ Object.defineProperty(PIXI.TilingSprite.prototype, 'height', {
     }
 });
 
+/**
+ * When the texture is updated, this event will fire to update the scale and frame
+ *
+ * @method onTextureUpdate
+ * @param event
+ * @private
+ */
 PIXI.TilingSprite.prototype.onTextureUpdate = function()
 {
     // so if _width is 0 then width was not set..

@@ -173,12 +173,37 @@ PIXI.DisplayObject = function()
     this._sr = 0;
     this._cr = 1;
 
-
+    /**
+     * The area the filter is applied to 
+     *
+     * @property filterArea
+     * @type Rectangle
+     */
     this.filterArea = new PIXI.Rectangle(0,0,1,1);
 
-
+    /**
+     * The original, cached bounds of the object
+     *
+     * @property _bounds
+     * @type Rectangle
+     * @private
+     */
     this._bounds = new PIXI.Rectangle(0, 0, 1, 1);
+    /**
+     * The most up-to-date bounds of the object
+     *
+     * @property _currentBounds
+     * @type Rectangle
+     * @private
+     */
     this._currentBounds = null;
+    /**
+     * The original, cached mask of the object
+     *
+     * @property _currentBounds
+     * @type Rectangle
+     * @private
+     */
     this._mask = null;
 
     /*
@@ -419,11 +444,23 @@ PIXI.DisplayObject.prototype.updateTransform = function()
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
 };
 
+/**
+ * Retrieves the bounds of the displayObject as a rectangle object
+ *
+ * @method getBounds
+ * @return {Rectangle} the rectangular bounding area
+ */
 PIXI.DisplayObject.prototype.getBounds = function()
 {
     return PIXI.EmptyRectangle;
 };
 
+/**
+ * Retrieves the local bounds of the displayObject as a rectangle object
+ *
+ * @method getLocalBounds
+ * @return {Rectangle} the rectangular bounding area
+ */
 PIXI.DisplayObject.prototype.getLocalBounds = function()
 {
     var matrixCache = this.worldTransform;
@@ -439,12 +476,25 @@ PIXI.DisplayObject.prototype.getLocalBounds = function()
     return bounds;
 };
 
+/**
+ * Sets the object's stage reference, the stage this object is connected to
+ *
+ * @method setStageReference
+ * @param stage {Stage} the stage that the object will have as its current stage reference
+ */
 PIXI.DisplayObject.prototype.setStageReference = function(stage)
 {
     this.stage = stage;
     if(this._interactive)this.stage.dirty = true;
 };
 
+/**
+* Renders the object using the WebGL renderer
+*
+* @method _renderWebGL
+* @param renderSession {RenderSession} 
+* @private
+*/
 PIXI.DisplayObject.prototype._renderWebGL = function(renderSession)
 {
     // OVERWRITE;
@@ -452,12 +502,16 @@ PIXI.DisplayObject.prototype._renderWebGL = function(renderSession)
     renderSession = renderSession;
 };
 
+/**
+* Renders the object using the Canvas renderer
+*
+* @method _renderCanvas
+* @param renderSession {RenderSession} 
+* @private
+*/
 PIXI.DisplayObject.prototype._renderCanvas = function(renderSession)
 {
     // OVERWRITE;
     // this line is just here to pass jshinting :)
     renderSession = renderSession;
 };
-
-PIXI.EmptyRectangle = new PIXI.Rectangle(0,0,0,0);
-

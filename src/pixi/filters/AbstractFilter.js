@@ -21,16 +21,26 @@ PIXI.AbstractFilter = function(fragmentSrc, uniforms)
     */
     this.passes = [this];
 
+    /**
+    * @property shaders
+    * @type Array an array of shaders
+    * @private
+    */
     this.shaders = [];
     
     this.dirty = true;
     this.padding = 0;
 
     /**
-    @property uniforms
-    @private
+    * @property uniforms
+    * @type object
+    * @private
     */
     this.uniforms = uniforms || {};
-
+    /**
+    * @property fragmentSrc
+    * @type Array
+    * @private
+    */
     this.fragmentSrc = fragmentSrc || [];
 };

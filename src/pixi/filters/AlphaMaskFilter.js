@@ -6,7 +6,7 @@
  *
  * The AlphaMaskFilter class uses the pixel values from the specified texture (called the displacement map) to perform a displacement of an object.
  * You can use this filter to apply all manor of crazy warping effects
- * Currently the r property of the texture is used offset the x and the g propery of the texture is used to offset the y.
+ * Currently the r property of the texture is used to offset the x and the g propery of the texture is used to offset the y.
  * @class AlphaMaskFilter
  * @contructor
  * @param texture {Texture} The texture used for the displacemtent map * must be power of 2 texture at the moment

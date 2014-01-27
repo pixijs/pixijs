@@ -14,7 +14,7 @@ PIXI.glContexts = []; // this is where we store the webGL contexts for easy acce
  * @constructor
  * @param width=0 {Number} the width of the canvas view
  * @param height=0 {Number} the height of the canvas view
- * @param view {Canvas} the canvas to use as a view, optional
+ * @param view {HTMLCanvasElement} the canvas to use as a view, optional
  * @param transparent=false {Boolean} If the render view is transparent, default false
  * @param antialias=false {Boolean} sets antialias (only applicable in chrome at the moment)
  *
@@ -26,17 +26,44 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     this.type = PIXI.WEBGL_RENDERER;
 
     // do a catch.. only 1 webGL renderer..
+    /**
+     * Whether the render view is transparent
+     *
+     * @property transparent
+     * @type Boolean
+     */
     this.transparent = !!transparent;
 
+    /**
+     * The width of the canvas view
+     *
+     * @property width
+     * @type Number
+     * @default 800
+     */
     this.width = width || 800;
+
+    /**
+     * The height of the canvas view
+     *
+     * @property height
+     * @type Number
+     * @default 600
+     */
     this.height = height || 600;
 
+    /**
+     * The canvas element that everything is drawn to
+     *
+     * @property view
+     * @type HTMLCanvasElement
+     */
     this.view = view || document.createElement( 'canvas' );
     this.view.width = this.width;
     this.view.height = this.height;
 
     // deal with losing context..
-
+    // TODO-Alvin
     this.contextLost = this.handleContextLost.bind(this);
     this.contextRestoredLost = this.handleContextRestored.bind(this);
  //   console.log(this.handleContextRestored)
@@ -215,6 +242,14 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
      */
 };
 
+/**
+ * Renders a display Object
+ *
+ * @method renderDIsplayObject
+ * @param displayObject {DisplayObject} The DisplayObject to render
+ * @param projection {Point} 
+ * @param buffer {Array} buffer TODO-Alvin
+ */
 PIXI.WebGLRenderer.prototype.renderDisplayObject = function(displayObject, projection, buffer)
 {
     // reset the render session data..
@@ -289,6 +324,13 @@ PIXI.WebGLRenderer.destroyTexture = function(texture)
     texture._glTextures.length = 0;
 };
 
+/**
+ * TODO-Alvin
+ *
+ * @method updateTextureFrame
+ * @param texture {Texture} The texture to update the frame from
+ * @private
+ */
 PIXI.WebGLRenderer.updateTextureFrame = function(texture)
 {
     texture.updateFrame = false;
@@ -319,6 +361,14 @@ PIXI.WebGLRenderer.prototype.resize = function(width, height)
     this.projection.y =  -this.height/2;
 };
 
+/**
+ * Creates a WebGL texture
+ *
+ * @method createWebGLTexture
+ * @param texture {Texture} the texture to render
+ * @param gl {webglContext} the WebGL context
+ * @static
+ */
 PIXI.createWebGLTexture = function(texture, gl)
 {
 
@@ -353,6 +403,14 @@ PIXI.createWebGLTexture = function(texture, gl)
     return  texture._glTextures[gl.id];
 };
 
+/**
+ * Updates a WebGL texture
+ *
+ * @method updateWebGLTexture
+ * @param texture {Texture} the texture to update
+ * @param gl {webglContext} the WebGL context
+ * @private
+ */
 PIXI.updateWebGLTexture = function(texture, gl)
 {
     if( texture._glTextures[gl.id] )
@@ -446,10 +504,20 @@ PIXI.WebGLRenderer.prototype.handleContextRestored = function()
         texture._glTextures = [];
     }
 
+    /**
+     * Whether the context was lost 
+     * @property contextLost
+     * @type Boolean
+     */
     this.contextLost = false;
 
 };
 
+/**
+ * Destroy TODO-Alvin
+ *
+ * @method destroy
+ */
 PIXI.WebGLRenderer.prototype.destroy = function()
 {
 
