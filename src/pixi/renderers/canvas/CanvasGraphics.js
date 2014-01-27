@@ -20,8 +20,8 @@ PIXI.CanvasGraphics = function()
  * @static
  * @private
  * @method renderGraphics
- * @param graphics {Graphics}
- * @param context {Context2D}
+ * @param graphics {Graphics} the actual graphics object to render
+ * @param context {Context2D} the 2d drawing method of the canvas
  */
 PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 {
@@ -154,8 +154,8 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
  * @static
  * @private
  * @method renderGraphicsMask
- * @param graphics {Graphics}
- * @param context {Context2D}
+ * @param graphics {Graphics} the graphics which will be used as a mask
+ * @param context {Context2D} the context 2d method of the canvas
  */
 PIXI.CanvasGraphics.renderGraphicsMask = function(graphics, context)
 {

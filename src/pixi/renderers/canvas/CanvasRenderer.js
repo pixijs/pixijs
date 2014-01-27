@@ -8,9 +8,9 @@
  *
  * @class CanvasRenderer
  * @constructor
- * @param width=0 {Number} the width of the canvas view
- * @param height=0 {Number} the height of the canvas view
- * @param view {Canvas} the canvas to use as a view, optional
+ * @param width=800 {Number} the width of the canvas view
+ * @param height=600 {Number} the height of the canvas view
+ * @param view {{HTMLCanvasElement}} the canvas to use as a view, optional
  * @param transparent=false {Boolean} the transparency of the render view, default false
  */
 PIXI.CanvasRenderer = function(width, height, view, transparent)
@@ -19,6 +19,13 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
 
     this.type = PIXI.CANVAS_RENDERER;
 
+
+    /**
+     * Whether the render view is transparent
+     *
+     * @property transparent
+     * @type Boolean
+     */
     this.transparent = !!transparent;
 
     if(!PIXI.blendModesCanvas)
@@ -87,17 +94,17 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
     this.height = height || 600;
 
     /**
-     * The canvas element that the everything is drawn to
+     * The canvas element that everything is drawn to
      *
      * @property view
-     * @type Canvas
+     * @type {HTMLCanvasElement}
      */
     this.view = view || document.createElement( "canvas" );
 
     /**
-     * The canvas context that the everything is drawn to
+     * The canvas 2d context that everything is drawn to
      * @property context
-     * @type Canvas 2d Context
+     * @type HTMLCanvasElement 2d Context
      */
     this.context = this.view.getContext( "2d", { alpha: this.transparent } );
 
@@ -109,6 +116,11 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
     this.view.height = this.height;
     this.count = 0;
 
+    /**
+     * Instance of a PIXI.CanvasMaskManager, handles masking when using the canvas renderer
+     * @property CanvasMaskManager
+     * @type CanvasMaskManager
+     */
     this.maskManager = new PIXI.CanvasMaskManager();
 
     this.renderSession = {
@@ -190,7 +202,7 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 };
 
 /**
- * resizes the canvas view to the specified width and height
+ * Resizes the canvas view to the specified width and height
  *
  * @method resize
  * @param width {Number} the new width of the canvas view
@@ -210,11 +222,12 @@ PIXI.CanvasRenderer.prototype.resize = function(width, height)
  *
  * @method renderDisplayObject
  * @param displayObject {DisplayObject} The displayObject to render
+ * @param context {Context2D} the context 2d method of the canvas
  * @private
  */
 PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject, context)
 {
-    // no longer recurrsive!
+    // no longer recursive!
     //var transform;
     //var context = this.context;
 
@@ -312,6 +325,15 @@ PIXI.CanvasRenderer.prototype.renderStrip = function(strip)
     }
 };
 
+/**
+ * Creates a Canvas element of the given size
+ *
+ * @method CanvasBuffer
+ * @param width {Number} the width for the newly created canvas
+ * @param height {Number} the height for the newly created canvas
+ * @static
+ * @private
+ */
 PIXI.CanvasBuffer = function(width, height)
 {
     this.width = width;
@@ -324,10 +346,25 @@ PIXI.CanvasBuffer = function(width, height)
     this.canvas.height = height;
 };
 
+/**
+ * Clears the canvas that was created by the CanvasBuffer class
+ *
+ * @method clear
+ * @private
+ */
 PIXI.CanvasBuffer.prototype.clear = function()
 {
     this.context.clearRect(0,0, this.width, this.height);
 };
+
+/**
+ * Resizes the canvas that was created by the CanvasBuffer class to the specified width and height
+ *
+ * @method resize
+ * @param width {Number} the new width of the canvas
+ * @param height {Number} the new height of the canvas
+ * @private
+ */
 
 PIXI.CanvasBuffer.prototype.resize = function(width, height)
 {

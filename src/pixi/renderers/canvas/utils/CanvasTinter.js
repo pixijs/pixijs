@@ -5,6 +5,11 @@
  * 
  */
 
+/**
+ * @class CanvasTinter
+ * @constructor
+ * @static
+ */
 PIXI.CanvasTinter = function()
 {
     /// this.textureCach
@@ -13,6 +18,12 @@ PIXI.CanvasTinter = function()
 //PIXI.CanvasTinter.cachTint = true;
     
 
+/**
+ * TODO-Alvin
+ * @method getTintedTexture 
+ * @param sprite {Sprite} the sprite to tint
+ * @param color {Number} the color to use to tint the sprite with
+ */
 PIXI.CanvasTinter.getTintedTexture = function(sprite, color)
 {
     //
@@ -58,6 +69,13 @@ PIXI.CanvasTinter.getTintedTexture = function(sprite, color)
     return canvas;
 };
 
+/**
+ * Tint a texture using the "multiply" operation
+ * @method tintWithMultiply
+ * @param texture {texture} the texture to tint
+ * @param color {Number} the color to use to tint the sprite with
+ * @param canvas {HTMLCanvasElement} the current canvas
+ */
 PIXI.CanvasTinter.tintWithMultiply = function(texture, color, canvas)
 {
     var context = canvas.getContext( "2d" );
@@ -96,6 +114,13 @@ PIXI.CanvasTinter.tintWithMultiply = function(texture, color, canvas)
                            frame.height);
 };
 
+/**
+ * Tint a texture using the "overlay" operation
+ * @method tintWithOverlay
+ * @param texture {texture} the texture to tint
+ * @param color {Number} the color to use to tint the sprite with
+ * @param canvas {HTMLCanvasElement} the current canvas
+ */
 PIXI.CanvasTinter.tintWithOverlay = function(texture, color, canvas)
 {
     var context = canvas.getContext( "2d" );
@@ -127,7 +152,13 @@ PIXI.CanvasTinter.tintWithOverlay = function(texture, color, canvas)
 
 };
 
-
+/**
+ * Tint a texture pixel per pixel
+ * @method tintPerPixel
+ * @param texture {texture} the texture to tint
+ * @param color {Number} the color to use to tint the sprite with
+ * @param canvas {HTMLCanvasElement} the current canvas
+ */
 PIXI.CanvasTinter.tintWithPerPixel = function(texture, color, canvas)
 {
     var context = canvas.getContext( "2d" );
@@ -165,6 +196,11 @@ PIXI.CanvasTinter.tintWithPerPixel = function(texture, color, canvas)
     context.putImageData(pixelData, 0, 0);
 };
 
+/**
+ * Rounds the specified color according to the PIXI.CanvasTinter.cacheStepsPerColorChannel
+ * @method roundColor
+ * @param color {number} the color to round, should be a hex color
+ */
 PIXI.CanvasTinter.roundColor = function(color)
 {
     var step = PIXI.CanvasTinter.cacheStepsPerColorChannel;
@@ -178,11 +214,30 @@ PIXI.CanvasTinter.roundColor = function(color)
     return PIXI.rgb2hex(rgbValues);
 };
 
+/**
+ * 
+ * Number of steps which will be used as a cap when rounding colors
+ *
+ * @property cacheStepsPerColorChannel
+ * @type Number
+ */
 PIXI.CanvasTinter.cacheStepsPerColorChannel = 8;
+/**
+ * 
+ * Number of steps which will be used as a cap when rounding colors
+ *
+ * @property convertTintToImage
+ * @type Boolean
+ */
 PIXI.CanvasTinter.convertTintToImage = false;
 
+/**
+ * Whether or not the Canvas BlendModes are supported, consequently the ability to tint using the multiply method
+ *
+ * @property canUseMultiply
+ * @type Boolean
+ */
 PIXI.CanvasTinter.canUseMultiply = PIXI.canUseNewCanvasBlendModes();
 
 PIXI.CanvasTinter.tintMethod = PIXI.CanvasTinter.canUseMultiply ? PIXI.CanvasTinter.tintWithMultiply :  PIXI.CanvasTinter.tintWithPerPixel;
-
 
