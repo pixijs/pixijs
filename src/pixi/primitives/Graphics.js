@@ -77,17 +77,7 @@ PIXI.Graphics = function()
 PIXI.Graphics.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
 PIXI.Graphics.prototype.constructor = PIXI.Graphics;
 
-/**
- * If cacheAsBitmap is true the graphics object will then be rendered as if it was a sprite.
- * This is useful if your graphics element does not change often as it will speed up the rendering of the object
- * It is also usful as the graphics object will always be antialiased because it will be rendered using canvas
- * Not recommended if you are constanly redrawing the graphics element.
- *
- * @property cacheAsBitmap
- * @default false
- * @type Boolean
- * @private
- */
+/*
 Object.defineProperty(PIXI.Graphics.prototype, "cacheAsBitmap", {
     get: function() {
         return  this._cacheAsBitmap;
@@ -106,7 +96,7 @@ Object.defineProperty(PIXI.Graphics.prototype, "cacheAsBitmap", {
         }
 
     }
-});
+});*/
 
 
 /**

@@ -182,6 +182,7 @@ PIXI.DisplayObject = function()
     this._mask = null;
 
     this._cacheAsBitmap = false;
+    this._cacheIsDirty = false;
     /*
      * MOUSE Callbacks
      */
@@ -377,6 +378,7 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'cacheAsBitmap', {
 
         if(value)
         {
+            //this._cacheIsDirty = true;
             this._generateCachedSprite();
         }
         else
@@ -470,11 +472,12 @@ PIXI.DisplayObject.prototype.generateTexture = function(renderer)
 
 PIXI.DisplayObject.prototype._renderCachedSprite = function(renderSession)
 {
-    if(this.dirty)
+ //   console.log(this._cacheIsDirty)
+   /* if(this._cacheIsDirty)
     {
-        this._generateCachedSprite();
-        this.dirty =  false;
-    }
+       //this._generateCachedSprite(renderSession)
+        //this._cacheIsDirty = false;a
+    }*/
 
     if(renderSession.gl)
     {
@@ -486,15 +489,14 @@ PIXI.DisplayObject.prototype._renderCachedSprite = function(renderSession)
     }
 };
 
-PIXI.DisplayObject.prototype._generateCachedSprite = function(renderer)
+PIXI.DisplayObject.prototype._generateCachedSprite = function()//renderSession)
 {
+    this._cacheAsBitmap = false;
     var bounds = this.getLocalBounds();
-  //   console.log(bounds.width);
-  //  console.log(bounds )
- //   console.log("generate sprite " + this._cachedSprite)
+   
     if(!this._cachedSprite)
     {
-        var renderTexture = new PIXI.RenderTexture(bounds.width | 0, bounds.height | 0, renderer);
+        var renderTexture = new PIXI.RenderTexture(bounds.width | 0, bounds.height | 0);//, renderSession.renderer);
         
         this._cachedSprite = new PIXI.Sprite(renderTexture);
         this._cachedSprite.worldTransform = this.worldTransform;
@@ -504,13 +506,17 @@ PIXI.DisplayObject.prototype._generateCachedSprite = function(renderer)
         this._cachedSprite.texture.resize(bounds.width | 0, bounds.height | 0);
     }
 
+
     this._cachedSprite.texture.render(this);
-   // document.body.appendChild(renderTexture.baseTexture.source)
-   // this._cachedSprite.buffer.context.restore();
+
+
+    this._cacheAsBitmap = true;
 };
 
 PIXI.DisplayObject.prototype._destroyCachedSprite = function()
 {
+    if(!this._cachedSprite)return;
+
     this._cachedSprite.texture.destroy(true);
   //  console.log("DESTROY")
     // let the gc collect the unused sprite

@@ -117,7 +117,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     this.renderSession.maskManager = this.maskManager;
     this.renderSession.filterManager = this.filterManager;
     this.renderSession.spriteBatch = this.spriteBatch;
-
+    this.renderSession.renderer = this;
 
     gl.useProgram(this.shaderManager.defaultShader.program);
 
@@ -156,6 +156,18 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
     // update the scene graph
     stage.updateTransform();
 
+
+    // interaction
+    if(stage._interactive)
+    {
+        //need to add some events!
+        if(!stage._interactiveEventsAdded)
+        {
+            stage._interactiveEventsAdded = true;
+            stage.interactionManager.setTarget(this);
+        }
+    }
+    
     var gl = this.gl;
 
     // -- Does this need to be set every frame? -- //
@@ -182,16 +194,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 
     this.renderDisplayObject( stage, this.projection );
 
-    // interaction
-    if(stage._interactive)
-    {
-        //need to add some events!
-        if(!stage._interactiveEventsAdded)
-        {
-            stage._interactiveEventsAdded = true;
-            stage.interactionManager.setTarget(this);
-        }
-    }
+    
 
     /*
     //can simulate context loss in Chrome like so:
@@ -226,7 +229,7 @@ PIXI.WebGLRenderer.prototype.renderDisplayObject = function(displayObject, proje
 
     // start the sprite batch
     this.spriteBatch.begin(this.renderSession);
-    
+
     // start the filter manager
     this.filterManager.begin(this.renderSession, buffer);
 
