@@ -1,5 +1,14 @@
+/**
+ * @author Mat Groves http://matgroves.com/
+ */
 
-
+/**
+ * TODO-Alvin
+ *
+ * @class SpriteBatch
+ * @constructor
+ * @param texture {Texture}
+ */
 PIXI.SpriteBatch = function(texture)
 {
     PIXI.DisplayObjectContainer.call( this);
@@ -22,6 +31,12 @@ PIXI.SpriteBatch.prototype.initWebGL = function(gl)
   //  alert("!")
 };
 
+/*
+ * Updates the object transform for rendering
+ *
+ * @method updateTransform
+ * @private
+ */
 PIXI.SpriteBatch.prototype.updateTransform = function()
 {
    // dont need to!
@@ -29,6 +44,13 @@ PIXI.SpriteBatch.prototype.updateTransform = function()
   //  PIXI.DisplayObjectContainer.prototype.updateTransform.call( this );
 };
 
+/**
+* Renders the object using the WebGL renderer
+*
+* @method _renderWebGL
+* @param renderSession {RenderSession} 
+* @private
+*/
 PIXI.SpriteBatch.prototype._renderWebGL = function(renderSession)
 {
     if(!this.visible || this.alpha <= 0 || !this.children.length)return;
@@ -48,6 +70,13 @@ PIXI.SpriteBatch.prototype._renderWebGL = function(renderSession)
  
 };
 
+/**
+* Renders the object using the Canvas renderer
+*
+* @method _renderCanvas
+* @param renderSession {RenderSession} 
+* @private
+*/
 PIXI.SpriteBatch.prototype._renderCanvas = function(renderSession)
 {
     var context = renderSession.context;

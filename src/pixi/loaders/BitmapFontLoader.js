@@ -17,7 +17,7 @@
 PIXI.BitmapFontLoader = function(url, crossorigin)
 {
     /*
-     * i use texture packer to load the assets..
+     * I use texture packer to load the assets..
      * http://www.codeandweb.com/texturepacker
      * make sure to set the format as 'JSON'
      */

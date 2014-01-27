@@ -1,7 +1,14 @@
-/**
- * @author Mat Groves http://matgroves.com/
+/* @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
+/**
+ * 
+ * @class Rope
+ * @constructor
+ * @param texture {Texture} TODO-Alvin
+ * @param y {Array} TODO-Alvin
+ * 
+ */
 PIXI.Rope = function(texture, points)
 {
     PIXI.Strip.call( this, texture );
@@ -30,6 +37,11 @@ PIXI.Rope = function(texture, points)
 PIXI.Rope.prototype = Object.create( PIXI.Strip.prototype );
 PIXI.Rope.prototype.constructor = PIXI.Rope;
 
+/*
+ * Refreshes TODO-Alvin
+ *
+ * @method refresh
+ */
 PIXI.Rope.prototype.refresh = function()
 {
     var points = this.points;
@@ -96,6 +108,12 @@ PIXI.Rope.prototype.refresh = function()
     }
 };
 
+/*
+ * Updates the object transform for rendering
+ *
+ * @method updateTransform
+ * @private
+ */
 PIXI.Rope.prototype.updateTransform = function()
 {
 
@@ -157,7 +175,13 @@ PIXI.Rope.prototype.updateTransform = function()
 
     PIXI.DisplayObjectContainer.prototype.updateTransform.call( this );
 };
-
+/*
+ * Sets the texture that the Rope will use 
+ * TODO-Alvin
+ *
+ * @method setTexture
+ * @param texture {Texture} the texture that will be used
+ */
 PIXI.Rope.prototype.setTexture = function(texture)
 {
     // stop current texture

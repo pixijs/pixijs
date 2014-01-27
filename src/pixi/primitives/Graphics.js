@@ -5,8 +5,8 @@
 
 /**
  * The Graphics class contains a set of methods that you can use to create primitive shapes and lines.
- * It is important to know that with the webGL renderer only simple polys can be filled at this stage
- * Complex polys will not be filled. Heres an example of a complex poly: http://www.goodboydigital.com/wp-content/uploads/2013/06/complexPolygon.png
+ * It is important to know that with the webGL renderer only simple polygons can be filled at this stage
+ * Complex polygons will not be filled. Heres an example of a complex polygon: http://www.goodboydigital.com/wp-content/uploads/2013/06/complexPolygon.png
  *
  * @class Graphics
  * @extends DisplayObjectContainer
@@ -51,8 +51,23 @@ PIXI.Graphics = function()
      */
     this.graphicsData = [];
 
-    this.tint = 0xFFFFFF;// * Math.random();
 
+    /**
+     * The tint applied to the graphic shape. This is a hex value
+     *
+     * @property tint
+     * @type Number
+     * @default 0xFFFFFF
+     */
+    this.tint = 0xFFFFFF;// * Math.random();
+    
+    /**
+     * The blend mode to be applied to the graphic shape
+     *
+     * @property blendMode
+     * @type Number
+     * @default PIXI.blendModes.NORMAL;
+     */
     this.blendMode = PIXI.blendModes.NORMAL;
     
     /**
@@ -64,12 +79,37 @@ PIXI.Graphics = function()
      */
     this.currentPath = {points:[]};
 
+    /**
+     * WebGL lines ? TODO-Alvin
+     *
+     * @property _webGL
+     * @type Array
+     * @private
+     */
     this._webGL = [];
 
+    /**
+     * Whether this shape is used as a mask
+     *
+     * @property isMask
+     * @type isMask
+     */
     this.isMask = false;
 
+    /**
+     * The bounds of the graphic shape as rectangle object
+     *
+     * @property bounds
+     * @type Rectangle
+     */
     this.bounds = null;
 
+    /**
+     * the bound padding TODO-Alvin
+     *
+     * @property bounds
+     * @type Number
+     */
     this.boundsPadding = 10;
 };
 
@@ -110,7 +150,7 @@ Object.defineProperty(PIXI.Graphics.prototype, "cacheAsBitmap", {
 
 
 /**
- * Specifies a line style used for subsequent calls to Graphics methods such as the lineTo() method or the drawCircle() method.
+ * Specifies the line style used for subsequent calls to Graphics methods such as the lineTo() method or the drawCircle() method.
  *
  * @method lineStyle
  * @param lineWidth {Number} width of the line to draw, will update the object's stored style
@@ -135,8 +175,8 @@ PIXI.Graphics.prototype.lineStyle = function(lineWidth, color, alpha)
  * Moves the current drawing position to (x, y).
  *
  * @method moveTo
- * @param x {Number} the X coord to move to
- * @param y {Number} the Y coord to move to
+ * @param x {Number} the X coordinate to move to
+ * @param y {Number} the Y coordinate to move to
  */
 PIXI.Graphics.prototype.moveTo = function(x, y)
 {
@@ -155,8 +195,8 @@ PIXI.Graphics.prototype.moveTo = function(x, y)
  * the current drawing position is then set to (x, y).
  *
  * @method lineTo
- * @param x {Number} the X coord to draw to
- * @param y {Number} the Y coord to draw to
+ * @param x {Number} the X coordinate to draw to
+ * @param y {Number} the Y coordinate to draw to
  */
 PIXI.Graphics.prototype.lineTo = function(x, y)
 {
@@ -169,8 +209,8 @@ PIXI.Graphics.prototype.lineTo = function(x, y)
  * (such as lineTo() or drawCircle()) use when drawing.
  *
  * @method beginFill
- * @param color {uint} the color of the fill
- * @param alpha {Number} the alpha
+ * @param color {Number} the color of the fill
+ * @param alpha {Number} the alpha of the fill
  */
 PIXI.Graphics.prototype.beginFill = function(color, alpha)
 {
@@ -216,8 +256,8 @@ PIXI.Graphics.prototype.drawRect = function( x, y, width, height )
  * Draws a circle.
  *
  * @method drawCircle
- * @param x {Number} The X coord of the center of the circle
- * @param y {Number} The Y coord of the center of the circle
+ * @param x {Number} The X coordinate of the center of the circle
+ * @param y {Number} The Y coordinate of the center of the circle
  * @param radius {Number} The radius of the circle
  */
 PIXI.Graphics.prototype.drawCircle = function( x, y, radius)
@@ -237,10 +277,10 @@ PIXI.Graphics.prototype.drawCircle = function( x, y, radius)
  * Draws an ellipse.
  *
  * @method drawEllipse
- * @param x {Number}
- * @param y {Number}
- * @param width {Number}
- * @param height {Number}
+ * @param x {Number} The X coordinate of the upper-left corner of the framing rectangle of this ellipse
+ * @param y {Number} The Y coordinate of the upper-left corner of the framing rectangle of this ellipse
+ * @param width {Number} The width of the ellipse
+ * @param height {Number} The height of the ellipse
  */
 PIXI.Graphics.prototype.drawEllipse = function( x, y, width, height)
 {
@@ -293,6 +333,13 @@ PIXI.Graphics.prototype.generateTexture = function()
     return texture;
 };
 
+/**
+* Renders the object using the WebGL renderer
+*
+* @method _renderWebGL
+* @param renderSession {RenderSession} 
+* @private
+*/
 PIXI.Graphics.prototype._renderWebGL = function(renderSession)
 {
     // if the sprite is not visible or the alpha is 0 then no need to render this element
@@ -354,6 +401,13 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
     }
 };
 
+/**
+* Renders the object using the Canvas renderer
+*
+* @method _renderCanvas
+* @param renderSession {RenderSession} 
+* @private
+*/
 PIXI.Graphics.prototype._renderCanvas = function(renderSession)
 {
     // if the sprite is not visible or the alpha is 0 then no need to render this element
@@ -378,6 +432,12 @@ PIXI.Graphics.prototype._renderCanvas = function(renderSession)
     }
 };
 
+/**
+ * Retrieves the bounds of the graphic shape as a rectangle object
+ *
+ * @method getBounds
+ * @return {Rectangle} the rectangular bounding area
+ */
 PIXI.Graphics.prototype.getBounds = function()
 {
     if(!this.bounds)this.updateBounds();
@@ -446,6 +506,11 @@ PIXI.Graphics.prototype.getBounds = function()
     return bounds;
 };
 
+/**
+ * Update the bounds of the object
+ *
+ * @method updateBounds
+ */
 PIXI.Graphics.prototype.updateBounds = function()
 {
     
@@ -510,6 +575,13 @@ PIXI.Graphics.prototype.updateBounds = function()
     this.bounds = new PIXI.Rectangle(minX - padding, minY - padding, (maxX - minX) + padding * 2, (maxY - minY) + padding * 2);
 };
 
+
+/**
+ * Generates the cached sprite that was made using the generate TODO-Alvin
+ *
+ * @method _generateCachedSprite
+ * @private
+ */
 PIXI.Graphics.prototype._generateCachedSprite = function()
 {
     var bounds = this.getBounds();
@@ -555,5 +627,3 @@ PIXI.Graphics.POLY = 0;
 PIXI.Graphics.RECT = 1;
 PIXI.Graphics.CIRC = 2;
 PIXI.Graphics.ELIP = 3;
-
-PIXI.tempMatrix = PIXI.mat3.create();

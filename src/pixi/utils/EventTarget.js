@@ -1,4 +1,8 @@
 /**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+ 
+/**
  * https://github.com/mrdoob/eventtarget.js/
  * THankS mr DOob!
  */
