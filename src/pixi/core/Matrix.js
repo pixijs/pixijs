@@ -9,8 +9,8 @@
 * 
 */
 PIXI.determineMatrixArrayType = function() {
-   return (typeof Float32Array !== 'undefined') ? Float32Array : Array;
-}
+    return (typeof Float32Array !== 'undefined') ? Float32Array : Array;
+};
 
 PIXI.Matrix = PIXI.determineMatrixArrayType();
 

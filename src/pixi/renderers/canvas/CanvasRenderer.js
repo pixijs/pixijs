@@ -10,8 +10,8 @@
  * @constructor
  * @param width=800 {Number} the width of the canvas view
  * @param height=600 {Number} the height of the canvas view
- * @param view {{HTMLCanvasElement}} the canvas to use as a view, optional
- * @param transparent=false {Boolean} the transparency of the render view, default false
+ * @param [view] {HTMLCanvasElement} the canvas to use as a view, optional
+ * @param [transparent=false] {Boolean} the transparency of the render view, default false
  */
 PIXI.CanvasRenderer = function(width, height, view, transparent)
 {
@@ -97,7 +97,7 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
      * The canvas element that everything is drawn to
      *
      * @property view
-     * @type {HTMLCanvasElement}
+     * @type HTMLCanvasElement
      */
     this.view = view || document.createElement( "canvas" );
 
@@ -123,6 +123,11 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
      */
     this.maskManager = new PIXI.CanvasMaskManager();
 
+    /**
+     * RenderSession TODO-Alvin
+     * @property renderSession
+     * @type Object
+     */
     this.renderSession = {
         context: this.context,
         maskManager: this.maskManager,

@@ -26,6 +26,7 @@ module.exports = function(grunt) {
             '<%= dirs.src %>/filters/FilterBlock.js',
             '<%= dirs.src %>/text/Text.js',
             '<%= dirs.src %>/text/BitmapText.js',
+            '<%= dirs.src %>/InteractionData.js',
             '<%= dirs.src %>/InteractionManager.js',
             '<%= dirs.src %>/display/Stage.js',
             '<%= dirs.src %>/utils/Utils.js',
