@@ -6,19 +6,25 @@
 /**
 * @class PIXI.PixiFastShader
 * @constructor
+* @param gl {WebGLContext} the current WebGL drawing context
 */
 PIXI.PixiFastShader = function(gl)
 {
+
+    /**
+     * @property gl
+     * @type WebGLContext
+     */
     this.gl = gl;
 
     /**
-    * @property {any} program - The WebGL program.
-    */
+     * @property {any} program - The WebGL program.
+     */
     this.program = null;
 
     /**
-    * @property {array} fragmentSrc - The fragment shader.
-    */
+     * @property {array} fragmentSrc - The fragment shader.
+     */
     this.fragmentSrc = [
         'precision lowp float;',
         'varying vec2 vTextureCoord;',
@@ -29,6 +35,9 @@ PIXI.PixiFastShader = function(gl)
         '}'
     ];
 
+    /**
+    * @property {array} vertexSrc - The vertex shader
+    */
     this.vertexSrc = [
         'attribute vec2 aVertexPosition;',
         'attribute vec2 aPositionCoord;',
@@ -70,7 +79,9 @@ PIXI.PixiFastShader = function(gl)
 };
 
 /**
-* @method PIXI.PixiFastShader#init
+* Initialises the shader
+* @method init
+*
 */
 PIXI.PixiFastShader.prototype.init = function()
 {
@@ -120,6 +131,11 @@ PIXI.PixiFastShader.prototype.init = function()
     this.program = program;
 };
 
+/**
+* Destroys the shader
+* @method destroy
+*
+*/
 PIXI.PixiFastShader.prototype.destroy = function()
 {
     this.gl.deleteProgram( this.program );

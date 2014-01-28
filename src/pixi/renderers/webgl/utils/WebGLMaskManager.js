@@ -2,6 +2,13 @@
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
  
+
+/**
+* @class WebGLMaskManager
+* @constructor
+* @param gl {WebGLContext} the current WebGL drawing context
+* @private
+*/
 PIXI.WebGLMaskManager = function(gl)
 {
     this.maskStack = [];
@@ -10,11 +17,22 @@ PIXI.WebGLMaskManager = function(gl)
     this.setContext(gl);
 };
 
+/**
+* Sets the drawing context to the one given in parameter
+* @method setContext 
+* @param gl {WebGLContext} the current WebGL drawing context
+*/
 PIXI.WebGLMaskManager.prototype.setContext = function(gl)
 {
     this.gl = gl;
 };
 
+/**
+* Applies the Mask and adds it to the current filter stack
+* @method pushMask
+* @param maskData {Array}
+* @param renderSession {RenderSession}
+*/
 PIXI.WebGLMaskManager.prototype.pushMask = function(maskData, renderSession)
 {
     var gl = this.gl;
@@ -39,6 +57,12 @@ PIXI.WebGLMaskManager.prototype.pushMask = function(maskData, renderSession)
     gl.stencilOp(gl.KEEP,gl.KEEP,gl.KEEP);
 };
 
+/**
+* Removes the last filter from the filter stack and doesn't return it
+* @method popMask
+*
+* @param renderSession {RenderSession} TODO-Alvin
+*/
 PIXI.WebGLMaskManager.prototype.popMask = function(renderSession)
 {
     var gl = this.gl;
@@ -62,6 +86,10 @@ PIXI.WebGLMaskManager.prototype.popMask = function(renderSession)
     if(this.maskStack.length === 0)gl.disable(gl.STENCIL_TEST);
 };
 
+/**
+* TODO-Alvin
+* @method destroy
+*/
 PIXI.WebGLMaskManager.prototype.destroy = function()
 {
     this.maskStack = null;

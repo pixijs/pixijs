@@ -20,8 +20,21 @@
  */
 PIXI.Text = function(text, style)
 {
+    /**
+     * The canvas element that everything is drawn to
+     *
+     * @property canvas
+     * @type HTMLCanvasElement
+     */
     this.canvas = document.createElement('canvas');
+
+    /**
+     * The canvas 2d context that everything is drawn with
+     * @property context
+     * @type HTMLCanvasElement 2d Context
+     */
     this.context = this.canvas.getContext('2d');
+
     PIXI.Sprite.call(this, PIXI.Texture.fromCanvas(this.canvas));
 
     this.setText(text);
@@ -167,6 +180,13 @@ PIXI.Text.prototype.updateTexture = function()
     this.requiresUpdate =  true;
 };
 
+/**
+* Renders the object using the WebGL renderer
+*
+* @method _renderWebGL
+* @param renderSession {RenderSession} 
+* @private
+*/
 PIXI.Text.prototype._renderWebGL = function(renderSession)
 {
     if(this.requiresUpdate)
@@ -198,6 +218,7 @@ PIXI.Text.prototype.updateTransform = function()
 /*
  * http://stackoverflow.com/users/34441/ellisbben
  * great solution to the problem!
+ * returns the height of the given font
  *
  * @method determineFontHeight
  * @param fontStyle {Object}
