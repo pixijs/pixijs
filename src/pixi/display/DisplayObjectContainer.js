@@ -216,11 +216,15 @@ PIXI.DisplayObjectContainer.prototype.getBounds = function()
     var childMaxX;
     var childMaxY;
 
+    var childVisible = false;
+
     for(var i=0,j=this.children.length; i<j; i++)
     {
         var child = this.children[i];
         
         if(!child.visible)continue;
+
+        childVisible = true;
 
         childBounds = this.children[i].getBounds();
      
@@ -233,6 +237,9 @@ PIXI.DisplayObjectContainer.prototype.getBounds = function()
         maxX = maxX > childMaxX ? maxX : childMaxX;
         maxY = maxY > childMaxY ? maxY : childMaxY;
     }
+
+    if(!childVisible)
+        return PIXI.EmptyRectangle;
 
     var bounds = this._bounds;
 
