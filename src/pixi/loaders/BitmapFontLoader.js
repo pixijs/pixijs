@@ -67,7 +67,7 @@ PIXI.BitmapFontLoader.prototype.constructor = PIXI.BitmapFontLoader;
  */
 PIXI.BitmapFontLoader.prototype.load = function()
 {
-    this.ajaxRequest = new XMLHttpRequest();
+    this.ajaxRequest = new PIXI.ajaxRequest();
     var scope = this;
     this.ajaxRequest.onreadystatechange = function()
     {
@@ -80,7 +80,7 @@ PIXI.BitmapFontLoader.prototype.load = function()
 };
 
 /**
- * Invoked when XML file is loaded, parses the data
+ * Invoked when the XML file is loaded, parses the data
  *
  * @method onXMLLoaded
  * @private

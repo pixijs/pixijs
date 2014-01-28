@@ -102,7 +102,7 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
     this.view = view || document.createElement( "canvas" );
 
     /**
-     * The canvas 2d context that everything is drawn to
+     * The canvas 2d context that everything is drawn with
      * @property context
      * @type HTMLCanvasElement 2d Context
      */

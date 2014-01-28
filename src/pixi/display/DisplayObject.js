@@ -515,3 +515,33 @@ PIXI.DisplayObject.prototype._renderCanvas = function(renderSession)
     // this line is just here to pass jshinting :)
     renderSession = renderSession;
 };
+
+/**
+ * The position of the displayObject on the x axis relative to the local coordinates of the parent.
+ *
+ * @property x
+ * @type Number
+ */
+Object.defineProperty(PIXI.DisplayObject.prototype, 'x', {
+    get: function() {
+        return  this.position.x;
+    },
+    set: function(value) {
+        this.position.x = value;
+    }
+});
+
+/**
+ * The position of the displayObject on the y axis relative to the local coordinates of the parent.
+ *
+ * @property y
+ * @type Number
+ */
+Object.defineProperty(PIXI.DisplayObject.prototype, 'y', {
+    get: function() {
+        return  this.position.y;
+    },
+    set: function(value) {
+        this.position.y = value;
+    }
+});
