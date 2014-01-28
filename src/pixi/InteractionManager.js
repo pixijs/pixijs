@@ -173,7 +173,6 @@ PIXI.InteractionManager.prototype.removeEvents = function()
 {
     if(!this.interactionDOMElement)return;
 
-    console.log( this.interactionDOMElement)
     this.interactionDOMElement.style['-ms-content-zooming'] = '';
     this.interactionDOMElement.style['-ms-touch-action'] = '';
 
