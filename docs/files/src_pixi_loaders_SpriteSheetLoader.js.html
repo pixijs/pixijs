@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.4.0</em>
+            <em>API Docs for: 1.4.3</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -73,6 +73,8 @@
             
                 <li><a href="../classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
             
+                <li><a href="../classes/DotScreenFilter.html">DotScreenFilter</a></li>
+            
                 <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
@@ -90,6 +92,8 @@
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
+            
+                <li><a href="../classes/PIXI.PixiFastShader.html">PIXI.PixiFastShader</a></li>
             
                 <li><a href="../classes/PIXI.PixiShader.html">PIXI.PixiShader</a></li>
             
@@ -115,9 +119,9 @@
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
-                <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
+                <li><a href="../classes/Sprite.html">Sprite</a></li>
             
-                <li><a href="../classes/Sprite™.html">Sprite™</a></li>
+                <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
             
                 <li><a href="../classes/Stage.html">Stage</a></li>
             
@@ -126,6 +130,8 @@
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
+            
+                <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
             
                 <li><a href="../classes/WebGLRenderer.html">WebGLRenderer</a></li>
             
@@ -180,11 +186,11 @@
 
 /**
  * The sprite sheet loader is used to load in JSON sprite sheet data
- * To generate the data you can use http://www.codeandweb.com/texturepacker and publish the &#x27;JSON&#x27; format
+ * To generate the data you can use http://www.codeandweb.com/texturepacker and publish in the &#x27;JSON&#x27; format
  * There is a free version so thats nice, although the paid version is great value for money.
- * It is highly recommended to use Sprite sheets (also know as texture atlas&#x27;) as it means sprite&#x27;s can be batched and drawn together for highly increased rendering speed.
- * Once the data has been loaded the frames are stored in the PIXI texture cache and can be accessed though PIXI.Texture.fromFrameId() and PIXI.Sprite.fromFromeId()
- * This loader will also load the image file that the Spritesheet points to as well as the data.
+ * It is highly recommended to use Sprite sheets (also know as a &#x27;texture atlas&#x27;) as it means sprites can be batched and drawn together for highly increased rendering speed.
+ * Once the data has been loaded the frames are stored in the PIXI texture cache and can be accessed though PIXI.Texture.fromFrameId() and PIXI.Sprite.fromFrameId()
+ * This loader will load the image file that the Spritesheet points to as well as the data.
  * When loaded this class will dispatch a &#x27;loaded&#x27; event
  *
  * @class SpriteSheetLoader
@@ -256,47 +262,9 @@ PIXI.SpriteSheetLoader.prototype.load = function () {
     var jsonLoader = new PIXI.JsonLoader(this.url, this.crossorigin);
     jsonLoader.addEventListener(&#x27;loaded&#x27;, function (event) {
         scope.json = event.content.json;
-        scope.onJSONLoaded();
-    });
-    jsonLoader.load();
-};
-
-/**
- * Invoke when JSON file is loaded
- *
- * @method onJSONLoaded
- * @private
- */
-PIXI.SpriteSheetLoader.prototype.onJSONLoaded = function () {
-    var scope = this;
-    var textureUrl = this.baseUrl + this.json.meta.image;
-    var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
-    var frameData = this.json.frames;
-
-    this.texture = image.texture.baseTexture;
-    image.addEventListener(&#x27;loaded&#x27;, function () {
         scope.onLoaded();
     });
-
-    for (var i in frameData) {
-        var rect = frameData[i].frame;
-        if (rect) {
-            PIXI.TextureCache[i] = new PIXI.Texture(this.texture, {
-                x: rect.x,
-                y: rect.y,
-                width: rect.w,
-                height: rect.h
-            });
-            if (frameData[i].trimmed) {
-                //var realSize = frameData[i].spriteSourceSize;
-                PIXI.TextureCache[i].realSize = frameData[i].spriteSourceSize;
-                PIXI.TextureCache[i].trim.x = 0; // (realSize.x / rect.w)
-                // calculate the offset!
-            }
-        }
-    }
-
-    image.load();
+    jsonLoader.load();
 };
 
 /**

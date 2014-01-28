@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.4.0</em>
+            <em>API Docs for: 1.4.3</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -73,6 +73,8 @@
             
                 <li><a href="../classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
             
+                <li><a href="../classes/DotScreenFilter.html">DotScreenFilter</a></li>
+            
                 <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
@@ -90,6 +92,8 @@
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
+            
+                <li><a href="../classes/PIXI.PixiFastShader.html">PIXI.PixiFastShader</a></li>
             
                 <li><a href="../classes/PIXI.PixiShader.html">PIXI.PixiShader</a></li>
             
@@ -115,9 +119,9 @@
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
-                <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
+                <li><a href="../classes/Sprite.html">Sprite</a></li>
             
-                <li><a href="../classes/Sprite™.html">Sprite™</a></li>
+                <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
             
                 <li><a href="../classes/Stage.html">Stage</a></li>
             
@@ -126,6 +130,8 @@
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
+            
+                <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
             
                 <li><a href="../classes/WebGLRenderer.html">WebGLRenderer</a></li>
             
@@ -280,7 +286,7 @@ PIXI.DisplayObject = function()
     this.stage = null;
 
     /**
-     * [read-only] The multiplied alpha of the displayobject
+     * [read-only] The multiplied alpha of the displayObject
      *
      * @property worldAlpha
      * @type Number
@@ -299,7 +305,7 @@ PIXI.DisplayObject = function()
     this._interactive = false;
 
     /**
-     * This is the curser that will be used when the mouse is over this object. To enable this the element must have interaction = true and buttonMode = true
+     * This is the cursor that will be used when the mouse is over this object. To enable this the element must have interaction = true and buttonMode = true
      * 
      * @property defaultCursor
      * @type String
@@ -328,7 +334,7 @@ PIXI.DisplayObject = function()
     this.localTransform = PIXI.mat3.create(); //mat3.identity();
 
     /**
-     * [NYI] Unkown
+     * [NYI] Unknown
      *
      * @property color
      * @type Array&lt;&gt;
@@ -345,7 +351,7 @@ PIXI.DisplayObject = function()
      */
     this.dynamic = true;
 
-    // chach that puppy!
+    // cached sin rotation and cos rotation
     this._sr = 0;
     this._cr = 1;
 
@@ -353,11 +359,6 @@ PIXI.DisplayObject = function()
     this.filterArea = new PIXI.Rectangle(0,0,1,1);
 
 
-    /**
-    *
-    *      
-    *
-    */
     this._bounds = new PIXI.Rectangle(0, 0, 1, 1);
     this._currentBounds = null;
     this._mask = null;
@@ -417,7 +418,7 @@ PIXI.DisplayObject = function()
      */
 
     /**
-     * A callback that is used when the user touch&#x27;s over the displayObject
+     * A callback that is used when the user touches over the displayObject
      * @method touchstart
      * @param interactionData {InteractionData}
      */
@@ -487,7 +488,7 @@ Object.defineProperty(PIXI.DisplayObject.prototype, &#x27;worldVisible&#x27;, {
             if(!item.visible)return false;
             item = item.parent;
         }
-        while(item &amp;&amp; item.parent);
+        while(item);
 
         return true;
     }
@@ -495,7 +496,7 @@ Object.defineProperty(PIXI.DisplayObject.prototype, &#x27;worldVisible&#x27;, {
 
 /**
  * Sets a mask for the displayObject. A mask is an object that limits the visibility of an object to the shape of the mask applied to it.
- * In PIXI a regular mask must be a PIXI.Ggraphics object. This allows for much faster masking in canvas as it utilises shape clipping.
+ * In PIXI a regular mask must be a PIXI.Graphics object. This allows for much faster masking in canvas as it utilises shape clipping.
  * To remove a mask, set this property to null.
  *
  * @property mask
@@ -598,8 +599,6 @@ PIXI.DisplayObject.prototype.updateTransform = function()
     // because we are using affine transformation, we can optimise the matrix concatenation process.. wooo!
     // mat3.multiply(this.localTransform, this.parent.worldTransform, this.worldTransform);
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
-
-    this.vcount = PIXI.visibleCount;
 };
 
 PIXI.DisplayObject.prototype.getBounds = function()
@@ -622,6 +621,11 @@ PIXI.DisplayObject.prototype.getLocalBounds = function()
     return bounds;
 };
 
+PIXI.DisplayObject.prototype.setStageReference = function(stage)
+{
+    this.stage = stage;
+    if(this._interactive)this.stage.dirty = true;
+};
 
 PIXI.DisplayObject.prototype._renderWebGL = function(renderSession)
 {
@@ -639,7 +643,6 @@ PIXI.DisplayObject.prototype._renderCanvas = function(renderSession)
 
 PIXI.EmptyRectangle = new PIXI.Rectangle(0,0,0,0);
 
-PIXI.visibleCount = 0;
 
     </pre>
 </div>

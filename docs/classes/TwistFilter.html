@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>SpriteSheetLoader - pixi.js</title>
+    <title>TwistFilter - pixi.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -176,24 +176,15 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>SpriteSheetLoader Class</h1>
+                        <h1>TwistFilter Class</h1>
 <div class="box meta">
-    
-        <div class="uses">
-            Uses
-            <ul class="inline commas">
-                
-                    <li><a href="EventTarget.html">EventTarget</a></li>
-                
-            </ul>
-        </div>
     
 
     
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_pixi_loaders_SpriteSheetLoader.js.html#l5"><code>src&#x2F;pixi&#x2F;loaders&#x2F;SpriteSheetLoader.js:5</code></a>
+            Defined in: <a href="../files/src_pixi_filters_TwistFilter.js.html#l5"><code>src&#x2F;pixi&#x2F;filters&#x2F;TwistFilter.js:5</code></a>
         </div>
     
 
@@ -209,137 +200,16 @@
 
 
 <div class="box intro">
-    <p>The sprite sheet loader is used to load in JSON sprite sheet data
-To generate the data you can use <a href="http://www.codeandweb.com/texturepacker">http://www.codeandweb.com/texturepacker</a> and publish in the &#39;JSON&#39; format
-There is a free version so thats nice, although the paid version is great value for money.
-It is highly recommended to use Sprite sheets (also know as a &#39;texture atlas&#39;) as it means sprites can be batched and drawn together for highly increased rendering speed.
-Once the data has been loaded the frames are stored in the PIXI texture cache and can be accessed though PIXI.Texture.fromFrameId() and PIXI.Sprite.fromFrameId()
-This loader will load the image file that the Spritesheet points to as well as the data.
-When loaded this class will dispatch a &#39;loaded&#39; event</p>
+    <p>This filter applies a twist effect making display objects appear twisted in the given direction</p>
 
 </div>
 
-
-    <div class="constructor">
-        <h2>Constructor</h2>
-        <div id="method_SpriteSheetLoader" class="method item">
-    <h3 class="name"><code>SpriteSheetLoader</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>url</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>crossorigin</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_pixi_loaders_SpriteSheetLoader.js.html#l5"><code>src&#x2F;pixi&#x2F;loaders&#x2F;SpriteSheetLoader.js:5</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">url</code>
-                        <span class="type">String</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>The url of the sprite sheet JSON file</p>
-
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">crossorigin</code>
-                        <span class="type">Boolean</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>Whether requests should be treated as crossorigin</p>
-
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-    </div>
 
 
 <div id="classdocs" class="tabview">
     <ul class="api-class-tabs">
         <li class="api-class-tab index"><a href="#index">Index</a></li>
 
-        
-            <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
         
         
             <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
@@ -353,28 +223,6 @@ When loaded this class will dispatch a &#39;loaded&#39; event</p>
             <h2 class="off-left">Item Index</h2>
 
             
-                <div class="index-section methods">
-                    <h3>Methods</h3>
-
-                    <ul class="index-list methods">
-                        
-                            <li class="index-item method">
-                                <a href="#method_load">load</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method private">
-                                <a href="#method_onLoaded">onLoaded</a>
-
-                                
-                                
-                            </li>
-                        
-                    </ul>
-                </div>
-            
 
             
                 <div class="index-section properties">
@@ -383,35 +231,21 @@ When loaded this class will dispatch a &#39;loaded&#39; event</p>
                     <ul class="index-list properties">
                         
                             <li class="index-item property">
-                                <a href="#property_baseUrl">baseUrl</a>
+                                <a href="#property_angle">angle</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_crossorigin">crossorigin</a>
+                                <a href="#property_size">size</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_frames">frames</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_texture">texture</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_url">url</a>
+                                <a href="#property_size">size</a>
 
                                 
                                 
@@ -427,133 +261,15 @@ When loaded this class will dispatch a &#39;loaded&#39; event</p>
         </div>
 
         
-            <div id="methods" class="api-class-tabpanel">
-                <h2 class="off-left">Methods</h2>
-
-                
-                    <div id="method_load" class="method item">
-    <h3 class="name"><code>load</code></h3>
-
-    
-        <span class="paren">()</span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_pixi_loaders_SpriteSheetLoader.js.html#l73"><code>src&#x2F;pixi&#x2F;loaders&#x2F;SpriteSheetLoader.js:73</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>This will begin loading the JSON file</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_onLoaded" class="method item private">
-    <h3 class="name"><code>onLoaded</code></h3>
-
-    
-        <span class="paren">()</span>
-    
-
-    
-
-    
-
-    
-        <span class="flag private">private</span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_pixi_loaders_SpriteSheetLoader.js.html#l88"><code>src&#x2F;pixi&#x2F;loaders&#x2F;SpriteSheetLoader.js:88</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Invoke when all files are loaded (json and texture)</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-            </div>
-        
 
         
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
                 
-                    <div id="property_baseUrl" class="property item">
-    <h3 class="name"><code>baseUrl</code></h3>
-    <span class="type">String</span>
+                    <div id="property_angle" class="property item">
+    <h3 class="name"><code>angle</code></h3>
+    <span class="type">Number</span>
 
     
 
@@ -574,7 +290,7 @@ When loaded this class will dispatch a &#39;loaded&#39; event</p>
             
         
         
-        <a href="../files/src_pixi_loaders_SpriteSheetLoader.js.html#l44"><code>src&#x2F;pixi&#x2F;loaders&#x2F;SpriteSheetLoader.js:44</code></a>
+        <a href="../files/src_pixi_filters_TwistFilter.js.html#l87"><code>src&#x2F;pixi&#x2F;filters&#x2F;TwistFilter.js:87</code></a>
         
         </p>
 
@@ -584,7 +300,7 @@ When loaded this class will dispatch a &#39;loaded&#39; event</p>
     </div>
 
     <div class="description">
-        <p>[read-only] The base url of the bitmap font data</p>
+        <p>This radius describes angle of the twist</p>
 
     </div>
 
@@ -596,9 +312,9 @@ When loaded this class will dispatch a &#39;loaded&#39; event</p>
 </div>
 
                 
-                    <div id="property_crossorigin" class="property item">
-    <h3 class="name"><code>crossorigin</code></h3>
-    <span class="type">Boolean</span>
+                    <div id="property_size" class="property item">
+    <h3 class="name"><code>size</code></h3>
+    <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>
 
     
 
@@ -619,7 +335,7 @@ When loaded this class will dispatch a &#39;loaded&#39; event</p>
             
         
         
-        <a href="../files/src_pixi_loaders_SpriteSheetLoader.js.html#l36"><code>src&#x2F;pixi&#x2F;loaders&#x2F;SpriteSheetLoader.js:36</code></a>
+        <a href="../files/src_pixi_filters_TwistFilter.js.html#l55"><code>src&#x2F;pixi&#x2F;filters&#x2F;TwistFilter.js:55</code></a>
         
         </p>
 
@@ -629,7 +345,7 @@ When loaded this class will dispatch a &#39;loaded&#39; event</p>
     </div>
 
     <div class="description">
-        <p>Whether the requests should be treated as cross origin</p>
+        <p>This point describes the the offset of the twist</p>
 
     </div>
 
@@ -641,9 +357,9 @@ When loaded this class will dispatch a &#39;loaded&#39; event</p>
 </div>
 
                 
-                    <div id="property_frames" class="property item">
-    <h3 class="name"><code>frames</code></h3>
-    <span class="type">Object</span>
+                    <div id="property_size" class="property item">
+    <h3 class="name"><code>size</code></h3>
+    <span class="type">Number</span>
 
     
 
@@ -664,7 +380,7 @@ When loaded this class will dispatch a &#39;loaded&#39; event</p>
             
         
         
-        <a href="../files/src_pixi_loaders_SpriteSheetLoader.js.html#l61"><code>src&#x2F;pixi&#x2F;loaders&#x2F;SpriteSheetLoader.js:61</code></a>
+        <a href="../files/src_pixi_filters_TwistFilter.js.html#l71"><code>src&#x2F;pixi&#x2F;filters&#x2F;TwistFilter.js:71</code></a>
         
         </p>
 
@@ -674,97 +390,7 @@ When loaded this class will dispatch a &#39;loaded&#39; event</p>
     </div>
 
     <div class="description">
-        <p>The frames of the sprite sheet</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_texture" class="property item">
-    <h3 class="name"><code>texture</code></h3>
-    <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_pixi_loaders_SpriteSheetLoader.js.html#l53"><code>src&#x2F;pixi&#x2F;loaders&#x2F;SpriteSheetLoader.js:53</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>The texture being loaded</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_url" class="property item">
-    <h3 class="name"><code>url</code></h3>
-    <span class="type">String</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_pixi_loaders_SpriteSheetLoader.js.html#l28"><code>src&#x2F;pixi&#x2F;loaders&#x2F;SpriteSheetLoader.js:28</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>The url of the bitmap font data</p>
+        <p>This radius describes size of the twist</p>
 
     </div>
 

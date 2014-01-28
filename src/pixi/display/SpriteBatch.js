@@ -95,6 +95,8 @@ PIXI.SpriteBatch.prototype._renderCanvas = function(renderSession)
         var texture = child.texture;
         var frame = texture.frame;
 
+        context.globalAlpha = this.worldAlpha * child.alpha;
+
         if(child.rotation % (Math.PI * 2) === 0)
         {
           

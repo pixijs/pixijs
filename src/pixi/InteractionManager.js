@@ -125,7 +125,7 @@ PIXI.InteractionManager.prototype.setTarget = function(target)
         this.setTargetDomElement( target.view );
     }
 
-    document.body.addEventListener('mouseup',  this.onMouseUp, true);
+    
 };
 
 
@@ -141,20 +141,8 @@ PIXI.InteractionManager.prototype.setTarget = function(target)
 PIXI.InteractionManager.prototype.setTargetDomElement = function(domElement)
 {
     //remove previouse listeners
-    if( this.interactionDOMElement !== null )
-    {
-        this.interactionDOMElement.style['-ms-content-zooming'] = '';
-        this.interactionDOMElement.style['-ms-touch-action'] = '';
 
-        this.interactionDOMElement.removeEventListener('mousemove',  this.onMouseMove, true);
-        this.interactionDOMElement.removeEventListener('mousedown',  this.onMouseDown, true);
-        this.interactionDOMElement.removeEventListener('mouseout',   this.onMouseOut, true);
-
-        // aint no multi touch just yet!
-        this.interactionDOMElement.removeEventListener('touchstart', this.onTouchStart, true);
-        this.interactionDOMElement.removeEventListener('touchend', this.onTouchEnd, true);
-        this.interactionDOMElement.removeEventListener('touchmove', this.onTouchMove, true);
-    }
+    this.removeEvents();
 
 
     if (window.navigator.msPointerEnabled)
@@ -176,6 +164,31 @@ PIXI.InteractionManager.prototype.setTargetDomElement = function(domElement)
     domElement.addEventListener('touchstart', this.onTouchStart, true);
     domElement.addEventListener('touchend', this.onTouchEnd, true);
     domElement.addEventListener('touchmove', this.onTouchMove, true);
+
+    document.body.addEventListener('mouseup',  this.onMouseUp, true);
+};
+
+
+PIXI.InteractionManager.prototype.removeEvents = function()
+{
+    if(!this.interactionDOMElement)return;
+
+    console.log( this.interactionDOMElement)
+    this.interactionDOMElement.style['-ms-content-zooming'] = '';
+    this.interactionDOMElement.style['-ms-touch-action'] = '';
+
+    this.interactionDOMElement.removeEventListener('mousemove',  this.onMouseMove, true);
+    this.interactionDOMElement.removeEventListener('mousedown',  this.onMouseDown, true);
+    this.interactionDOMElement.removeEventListener('mouseout',   this.onMouseOut, true);
+
+    // aint no multi touch just yet!
+    this.interactionDOMElement.removeEventListener('touchstart', this.onTouchStart, true);
+    this.interactionDOMElement.removeEventListener('touchend', this.onTouchEnd, true);
+    this.interactionDOMElement.removeEventListener('touchmove', this.onTouchMove, true);
+
+    this.interactionDOMElement = null;
+
+    document.body.removeEventListener('mouseup',  this.onMouseUp, true);
 };
 
 /**

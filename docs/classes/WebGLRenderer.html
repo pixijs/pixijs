@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.4.0</em>
+            <em>API Docs for: 1.4.3</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -73,6 +73,8 @@
             
                 <li><a href="../classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
             
+                <li><a href="../classes/DotScreenFilter.html">DotScreenFilter</a></li>
+            
                 <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
@@ -90,6 +92,8 @@
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
+            
+                <li><a href="../classes/PIXI.PixiFastShader.html">PIXI.PixiFastShader</a></li>
             
                 <li><a href="../classes/PIXI.PixiShader.html">PIXI.PixiShader</a></li>
             
@@ -115,9 +119,9 @@
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
-                <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
+                <li><a href="../classes/Sprite.html">Sprite</a></li>
             
-                <li><a href="../classes/Sprite™.html">Sprite™</a></li>
+                <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
             
                 <li><a href="../classes/Stage.html">Stage</a></li>
             
@@ -126,6 +130,8 @@
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
+            
+                <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
             
                 <li><a href="../classes/WebGLRenderer.html">WebGLRenderer</a></li>
             
@@ -178,7 +184,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_pixi_renderers_webgl_WebGLRenderer.js.html#l13"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;WebGLRenderer.js:13</code></a>
+            Defined in: <a href="../files/src_pixi_renderers_webgl_WebGLRenderer.js.html#l7"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;WebGLRenderer.js:7</code></a>
         </div>
     
 
@@ -194,8 +200,8 @@
 
 
 <div class="box intro">
-    <p>the WebGLRenderer is draws the stage and all its content onto a webGL enabled canvas. This renderer
-should be used for browsers support webGL. This Render works by automatically managing webGLBatchs.
+    <p>the WebGLRenderer draws the stage and all its content onto a webGL enabled canvas. This renderer
+should be used for browsers that support webGL. This Render works by automatically managing webGLBatch&#39;s.
 So no need for Sprite Batch&#39;s or Sprite Cloud&#39;s
 Dont forget to add the view to your DOM or you will not see anything :)</p>
 
@@ -270,7 +276,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
         
         
-        <a href="../files/src_pixi_renderers_webgl_WebGLRenderer.js.html#l13"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;WebGLRenderer.js:13</code></a>
+        <a href="../files/src_pixi_renderers_webgl_WebGLRenderer.js.html#l7"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;WebGLRenderer.js:7</code></a>
         
         </p>
 
@@ -347,7 +353,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
                     
 
                     <div class="param-description">
-                        <p>the transparency of the render view, default false</p>
+                        <p>If the render view is transparent, default false</p>
 
                     </div>
 
@@ -440,15 +446,6 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
                             </li>
                         
                             <li class="index-item method private">
-                                <a href="#method_updateTexture">updateTexture</a>
-
-                                
-                                    <span class="flag static">static</span>
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method private">
                                 <a href="#method_updateTextures">updateTextures</a>
 
                                 
@@ -517,7 +514,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
         
         
-        <a href="../files/src_pixi_renderers_webgl_WebGLRenderer.js.html#l297"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;WebGLRenderer.js:297</code></a>
+        <a href="../files/src_pixi_renderers_webgl_WebGLRenderer.js.html#l267"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;WebGLRenderer.js:267</code></a>
         
         </p>
 
@@ -608,7 +605,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
         
         
-        <a href="../files/src_pixi_renderers_webgl_WebGLRenderer.js.html#l378"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;WebGLRenderer.js:378</code></a>
+        <a href="../files/src_pixi_renderers_webgl_WebGLRenderer.js.html#l385"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;WebGLRenderer.js:385</code></a>
         
         </p>
 
@@ -698,7 +695,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
         
         
-        <a href="../files/src_pixi_renderers_webgl_WebGLRenderer.js.html#l391"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;WebGLRenderer.js:391</code></a>
+        <a href="../files/src_pixi_renderers_webgl_WebGLRenderer.js.html#l398"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;WebGLRenderer.js:398</code></a>
         
         </p>
 
@@ -786,7 +783,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
         
         
-        <a href="../files/src_pixi_renderers_webgl_WebGLRenderer.js.html#l126"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;WebGLRenderer.js:126</code></a>
+        <a href="../files/src_pixi_renderers_webgl_WebGLRenderer.js.html#l134"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;WebGLRenderer.js:134</code></a>
         
         </p>
 
@@ -881,7 +878,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
         
         
-        <a href="../files/src_pixi_renderers_webgl_WebGLRenderer.js.html#l325"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;WebGLRenderer.js:325</code></a>
+        <a href="../files/src_pixi_renderers_webgl_WebGLRenderer.js.html#l301"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;WebGLRenderer.js:301</code></a>
         
         </p>
 
@@ -944,99 +941,6 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
 </div>
 
                 
-                    <div id="method_updateTexture" class="method item private">
-    <h3 class="name"><code>updateTexture</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>texture</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-        <span class="flag private">private</span>
-    
-
-    
-
-    
-        <span class="flag static">static</span>
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_pixi_renderers_webgl_WebGLRenderer.js.html#l250"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;WebGLRenderer.js:250</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Updates a loaded webgl texture</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">texture</code>
-                        <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>The texture to update</p>
-
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
                     <div id="method_updateTextures" class="method item private">
     <h3 class="name"><code>updateTextures</code></h3>
 
@@ -1073,7 +977,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
         
         
-        <a href="../files/src_pixi_renderers_webgl_WebGLRenderer.js.html#l223"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;WebGLRenderer.js:223</code></a>
+        <a href="../files/src_pixi_renderers_webgl_WebGLRenderer.js.html#l240"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;WebGLRenderer.js:240</code></a>
         
         </p>
 
