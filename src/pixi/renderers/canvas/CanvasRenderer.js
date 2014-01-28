@@ -175,6 +175,7 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
     {
         if(!this.transparent)
         {
+            this.context.globalAlpha = 1;
             this.context.fillStyle = stage.backgroundColorString;
             this.context.fillRect(0, 0, this.width, this.height);
         }
