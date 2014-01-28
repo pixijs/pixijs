@@ -208,7 +208,7 @@ PIXI.PixiShader.prototype.initSampler2D = function(uniform)
             wrapT = gl.REPEAT;
         }
 
-        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, !!data.flipY);
 
         if (data.width)
         {
