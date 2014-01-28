@@ -21,6 +21,13 @@ PIXI.SpriteBatch = function(texture)
 PIXI.SpriteBatch.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
 PIXI.SpriteBatch.constructor = PIXI.SpriteBatch;
 
+
+/*
+ * Initialises the spriteBatch
+ *
+ * @method initWebGL
+ * @param gl {WebGLContext} the current WebGL drawing context
+ */
 PIXI.SpriteBatch.prototype.initWebGL = function(gl)
 {
    

@@ -5,9 +5,14 @@
 
 PIXI.StripShader = function()
 {
-    // the webGL program..
+    /**
+    * @property {any} program - The WebGL program.
+    */
     this.program = null;
 
+    /**
+     * @property {array} fragmentSrc - The fragment shader.
+     */
     this.fragmentSrc = [
         'precision mediump float;',
         'varying vec2 vTextureCoord;',
@@ -21,6 +26,9 @@ PIXI.StripShader = function()
         '}'
     ];
 
+    /**
+    * @property {array} fragmentSrc - The fragment shader.
+    */
     this.vertexSrc = [
         'attribute vec2 aVertexPosition;',
         'attribute vec2 aTextureCoord;',
@@ -41,6 +49,11 @@ PIXI.StripShader = function()
     ];
 };
 
+/**
+* Initialises the shader
+* @method init
+*
+*/
 PIXI.StripShader.prototype.init = function()
 {
 

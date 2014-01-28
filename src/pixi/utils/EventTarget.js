@@ -11,7 +11,7 @@
  * Adds event emitter functionality to a class
  *
  * @class EventTarget
- * @example
+ * 
  *      function MyEmitter() {
  *          PIXI.EventTarget.call(this); //mixes in event target stuff
  *      }
@@ -21,8 +21,21 @@
  */
 PIXI.EventTarget = function () {
 
+    /**
+     * Holds all the listeners
+     *
+     * @property listeneners
+     * @type Object
+     */
     var listeners = {};
 
+    /**
+     * Adds a listener for a specific event
+     *
+     * @method addEventListener
+     * @param type {string} A string representing the event type to listen for.
+     * @param listener {function} The callback function that will be fired when the event occurs
+     */
     this.addEventListener = this.on = function ( type, listener ) {
 
 
@@ -39,6 +52,12 @@ PIXI.EventTarget = function () {
 
     };
 
+    /**
+     * Fires the event, ie pretends that the event has happened
+     *
+     * @method dispatchEvent
+     * @param event {Event} the event object
+     */
     this.dispatchEvent = this.emit = function ( event ) {
 
         if ( !listeners[ event.type ] || !listeners[ event.type ].length ) {
@@ -55,6 +74,13 @@ PIXI.EventTarget = function () {
 
     };
 
+    /**
+     * Removes the specified listener that was assigned to the specified event type
+     *
+     * @method removeEventListener
+     * @param type {string} A string representing the event type which will have its listener removed
+     * @param listener {function} The callback function that was be fired when the event occured
+     */
     this.removeEventListener = this.off = function ( type, listener ) {
 
         var index = listeners[ type ].indexOf( listener );
@@ -67,6 +93,12 @@ PIXI.EventTarget = function () {
 
     };
 
+    /**
+     * Removes all the listeners that were active for the specified event type
+     *
+     * @method removeAllEventListeners
+     * @param type {string} A string representing the event type which will have all its listeners removed
+     */
 	this.removeAllEventListeners = function( type ) {
 		var a = listeners[type];
 		if (a)

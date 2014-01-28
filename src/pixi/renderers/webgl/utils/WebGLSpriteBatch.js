@@ -8,11 +8,30 @@
  * https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/graphics/g2d/WebGLSpriteBatch.java
  */
 
+ /**
+ *
+ * @class WebGLSpriteBatch
+ * @private
+ * @constructor
+ * @param gl {WebGLContext} the current WebGL drawing context
+ *
+ */
 PIXI.WebGLSpriteBatch = function(gl)
 {
-   
 
+    /**
+     * TODO-Alvin
+     *
+     * @property vertSize
+     * @type Number
+     */
     this.vertSize = 6;
+
+    /**
+     * TODO-Alvin
+     * @property size
+     * @type Number
+     */
     this.size = 10000;//Math.pow(2, 16) /  this.vertSize;
 
  //   console.log(this.size);
@@ -21,9 +40,23 @@ PIXI.WebGLSpriteBatch = function(gl)
     //the total number of indices in our batch
     var numIndices = this.size * 6;
 
-     //vertex data
+    //vertex data
+
+    /**
+    * Holds the vertices
+    *
+    * @property vertices
+    * @type Float32Array
+    */
     this.vertices = new Float32Array(numVerts);
+
     //index data
+    /**
+     * Holds the indices
+     *
+     * @property indices
+     * @type Uint16Array
+     */
     this.indices = new Uint16Array(numIndices);
     
     this.lastIndexCount = 0;
@@ -46,6 +79,12 @@ PIXI.WebGLSpriteBatch = function(gl)
     this.setContext(gl);
 };
 
+/**
+* 
+* @method setContext
+*
+* @param gl {WebGLContext} the current WebGL drawing context
+*/
 PIXI.WebGLSpriteBatch.prototype.setContext = function(gl)
 {
     this.gl = gl;
@@ -67,6 +106,12 @@ PIXI.WebGLSpriteBatch.prototype.setContext = function(gl)
     this.currentBlendMode = 99999;
 };
 
+/**
+* 
+* @method begin
+*
+* @param renderSession {RenderSession} the RenderSession
+*/
 PIXI.WebGLSpriteBatch.prototype.begin = function(renderSession)
 {
     this.renderSession = renderSession;
@@ -75,12 +120,22 @@ PIXI.WebGLSpriteBatch.prototype.begin = function(renderSession)
     this.start();
 };
 
+/**
+* 
+* @method end
+*
+*/
 PIXI.WebGLSpriteBatch.prototype.end = function()
 {
     this.flush();
 };
 
-
+/**
+* 
+* @method render
+* 
+* @param sprite {Sprite} the sprite to render TODO-Alvin
+*/
 PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
 {
     // check texture..
@@ -194,6 +249,12 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
 
 };
 
+/**
+* 
+* @method renderTilingSprite
+* 
+* @param sprite {TilingSprite} the sprite to render TODO-Alvin
+*/
 PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
 {
     var texture = tilingSprite.tilingTexture;
@@ -309,6 +370,13 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
     this.currentBatchSize++;
 };
 
+
+/**
+* 
+*
+* @method flush TODO-Alvin
+* 
+*/
 PIXI.WebGLSpriteBatch.prototype.flush = function()
 {
     // If the batch is length 0 then return as there is nothing to draw
@@ -345,12 +413,21 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
     this.renderSession.drawCount++;
 };
 
-
+/**
+* 
+* @method stop
+*
+*/
 PIXI.WebGLSpriteBatch.prototype.stop = function()
 {
     this.flush();
 };
 
+/**
+* 
+* @method start
+*
+*/
 PIXI.WebGLSpriteBatch.prototype.start = function()
 {
     var gl = this.gl;
@@ -379,6 +456,13 @@ PIXI.WebGLSpriteBatch.prototype.start = function()
     }
 };
 
+/**
+* 
+* @method setBlendMode 
+*
+* @param blendMode {Number} the blendMode, should be a Pixi const, such as PIXI.BlendModes.ADD
+* TODO-Alvin
+*/
 PIXI.WebGLSpriteBatch.prototype.setBlendMode = function(blendMode)
 {
     this.flush();
@@ -389,6 +473,10 @@ PIXI.WebGLSpriteBatch.prototype.setBlendMode = function(blendMode)
     this.gl.blendFunc(blendModeWebGL[0], blendModeWebGL[1]);
 };
 
+/**
+* Destroys the SpriteBatch
+* @method destroy
+*/
 PIXI.WebGLSpriteBatch.prototype.destroy = function()
 {
 

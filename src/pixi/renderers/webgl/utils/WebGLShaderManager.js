@@ -2,6 +2,12 @@
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
+/**
+* @class WebGLShaderManager
+* @constructor
+* @param gl {WebGLContext} the current WebGL drawing context
+* @private
+*/
 PIXI.WebGLShaderManager = function(gl)
 {
 
@@ -18,6 +24,13 @@ PIXI.WebGLShaderManager = function(gl)
     //this.stripShader = new PIXI.StripShader(gl);
 };
 
+
+/**
+* Initialises the context and the properties
+* @method setContext 
+* @param gl {WebGLContext} the current WebGL drawing context
+* @param transparent {Boolean} Whether or not the drawing context should be transparent
+*/
 PIXI.WebGLShaderManager.prototype.setContext = function(gl)
 {
     this.gl = gl;
@@ -36,6 +49,11 @@ PIXI.WebGLShaderManager.prototype.setContext = function(gl)
 };
 
 
+/**
+* Initialises the context and the properties
+* @method setAttribs
+* @param attribs {Array} TODO-Alvin
+*/
 PIXI.WebGLShaderManager.prototype.setAttribs = function(attribs)
 {
     // reset temp state
@@ -77,6 +95,11 @@ PIXI.WebGLShaderManager.prototype.setAttribs = function(attribs)
   //  console.log(this.tempAttribState)
 };
 
+/**
+* TODO-Alvin
+* @method activateShader
+* @param shader {Object} the shader that is going to be activated
+*/
 PIXI.WebGLShaderManager.prototype.activateShader = function(shader)
 {
     //if(this.currentShader == shader)return;
@@ -90,6 +113,10 @@ PIXI.WebGLShaderManager.prototype.activateShader = function(shader)
   
 };
 
+/**
+* Triggers the primitive shader
+* @method activatePrimitiveShader
+*/
 PIXI.WebGLShaderManager.prototype.activatePrimitiveShader = function()
 {
     var gl = this.gl;
@@ -100,6 +127,10 @@ PIXI.WebGLShaderManager.prototype.activatePrimitiveShader = function()
     
 };
 
+/**
+* Disable the primitive shader
+* @method deactivatePrimitiveShader
+*/
 PIXI.WebGLShaderManager.prototype.deactivatePrimitiveShader = function()
 {
     var gl = this.gl;
@@ -109,6 +140,10 @@ PIXI.WebGLShaderManager.prototype.deactivatePrimitiveShader = function()
     this.setAttribs(this.defaultShader.attributes);
 };
 
+/**
+* Destroys
+* @method destroy
+*/
 PIXI.WebGLShaderManager.prototype.destroy = function()
 {
     this.attribState = null;

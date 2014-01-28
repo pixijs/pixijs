@@ -44,11 +44,11 @@ PIXI.BitmapText.prototype.setText = function(text)
 
 /**
  * Set the style of the text
+ * style.font {String} The size (optional) and bitmap font id (required) eq 'Arial' or '20px Arial' (must have loaded previously)
+ * [style.align='left'] {String} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
  *
  * @method setStyle
- * @param style {Object} The style parameters
- * @param style.font {String} The size (optional) and bitmap font id (required) eq 'Arial' or '20px Arial' (must have loaded previously)
- * @param [style.align='left'] {String} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
+ * @param style {Object} The style parameters, contained as properties of an object
  */
 PIXI.BitmapText.prototype.setStyle = function(style)
 {
