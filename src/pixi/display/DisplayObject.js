@@ -549,7 +549,7 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'y', {
 /**
  * The x scale factor of the object.
  *
- * @property x
+ * @property scaleX
  * @type Number
  */
 Object.defineProperty(PIXI.DisplayObject.prototype, 'scaleX', {
@@ -564,7 +564,7 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'scaleX', {
 /**
  * The y scale factor of the object.
  *
- * @property y
+ * @property scaleY
  * @type Number
  */
 Object.defineProperty(PIXI.DisplayObject.prototype, 'scaleY', {
