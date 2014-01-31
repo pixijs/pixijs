@@ -30,7 +30,7 @@ PIXI.CanvasMaskManager.prototype.pushMask = function(maskData, context)
     var cacheAlpha = maskData.alpha;
     var transform = maskData.worldTransform;
 
-    context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
+    context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
 
     PIXI.CanvasGraphics.renderGraphicsMask(maskData, context);
 

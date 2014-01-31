@@ -59,6 +59,8 @@ PIXI.InteractionManager = function(stage)
     this.onTouchEnd = this.onTouchEnd.bind(this);
     this.onTouchMove = this.onTouchMove.bind(this);
     this.last = 0;
+
+    this.currentCursorStyle = "inherit";
 };
 
 // constructor
@@ -233,8 +235,9 @@ PIXI.InteractionManager.prototype.update = function()
     // loop through interactive objects!
     var length = this.interactiveItems.length;
 
-    this.interactionDOMElement.style.cursor = 'inherit';
+    
 
+    var cursor = 'inherit'
     var over = false;
 
     for (i = 0; i < length; i++)
@@ -256,7 +259,7 @@ PIXI.InteractionManager.prototype.update = function()
         // looks like there was a hit!
         if(item.__hit && !over)
         {
-            if(item.buttonMode) this.interactionDOMElement.style.cursor = item.defaultCursor;
+            if(item.buttonMode) cursor = item.defaultCursor;
 
             if(!item.interactiveChildren)over = true;
 
@@ -285,6 +288,13 @@ PIXI.InteractionManager.prototype.update = function()
      //   }
         // --->
     }
+
+    if( this.currentCursorStyle != cursor )
+    {
+        this.currentCursorStyle = cursor;
+        this.interactionDOMElement.style.cursor = cursor;
+    }
+
 };
 
 /**
@@ -454,8 +464,8 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
    
     var isSprite = (item instanceof PIXI.Sprite),
         worldTransform = item.worldTransform,
-        a00 = worldTransform[0], a01 = worldTransform[1], a02 = worldTransform[2],
-        a10 = worldTransform[3], a11 = worldTransform[4], a12 = worldTransform[5],
+        a00 = worldTransform.a, a01 = worldTransform.b, a02 = worldTransform.tx,
+        a10 = worldTransform.c, a11 = worldTransform.d, a12 = worldTransform.ty,
         id = 1 / (a00 * a11 + a01 * -a10),
         x = a11 * id * global.x + -a01 * id * global.y + (a12 * a01 - a02 * a11) * id,
         y = a00 * id * global.y + -a10 * id * global.x + (-a12 * a00 + a02 * a10) * id;

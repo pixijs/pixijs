@@ -184,12 +184,12 @@ PIXI.Sprite.prototype.getBounds = function()
 
     var worldTransform = this.worldTransform;
 
-    var a = worldTransform[0];
-    var b = worldTransform[3];
-    var c = worldTransform[1];
-    var d = worldTransform[4];
-    var tx = worldTransform[2];
-    var ty = worldTransform[5];
+    var a = worldTransform.a;
+    var b = worldTransform.c;
+    var c = worldTransform.b;
+    var d = worldTransform.d;
+    var tx = worldTransform.tx;
+    var ty = worldTransform.ty;
 
     var x1 = a * w1 + c * h1 + tx;
     var y1 = d * h1 + b * w1 + ty;
@@ -345,7 +345,7 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
 
         // allow for trimming
        
-        context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
+        context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
 
         //if smoothingEnabled is supported and we need to change the smoothing property for this texture
         if(renderSession.smoothProperty && renderSession.scaleMode !== this.texture.baseTexture.scaleMode) {

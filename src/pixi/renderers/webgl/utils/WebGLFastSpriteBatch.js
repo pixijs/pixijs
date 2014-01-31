@@ -52,7 +52,7 @@ PIXI.WebGLFastSpriteBatch = function(gl)
 
     this.shader = null;
 
-    this.tempMatrix = PIXI.mat3.create();
+    this.matrix = null;
 
     this.setContext(gl);
 };
@@ -82,8 +82,10 @@ PIXI.WebGLFastSpriteBatch.prototype.begin = function(spriteBatch, renderSession)
 {
     this.renderSession = renderSession;
     this.shader = this.renderSession.shaderManager.fastShader;
-     
-    PIXI.mat3.transpose(spriteBatch.worldTransform, this.tempMatrix);
+    
+  //  PIXI.mat3.transpose(spriteBatch.worldTransform.toArray(), this.tempMatrix);
+
+    this.matrix = spriteBatch.worldTransform.toArray(true);
 
    // console.log(this.tempMatrix)
     this.start();
@@ -179,8 +181,8 @@ PIXI.WebGLFastSpriteBatch.prototype.renderSprite = function(sprite)
     verticies[index++] = sprite.rotation;
 
     // uv
-    verticies[index++] = uvs[0];
-    verticies[index++] = uvs[1];
+    verticies[index++] = uvs.x0;
+    verticies[index++] = uvs.y1;
     // color
     verticies[index++] = sprite.alpha;
  
@@ -200,8 +202,8 @@ PIXI.WebGLFastSpriteBatch.prototype.renderSprite = function(sprite)
     verticies[index++] = sprite.rotation;
 
     // uv
-    verticies[index++] = uvs[2];
-    verticies[index++] = uvs[3];
+    verticies[index++] = uvs.x1;
+    verticies[index++] = uvs.y1;
     // color
     verticies[index++] = sprite.alpha;
   
@@ -221,8 +223,8 @@ PIXI.WebGLFastSpriteBatch.prototype.renderSprite = function(sprite)
     verticies[index++] = sprite.rotation;
 
     // uv
-    verticies[index++] = uvs[4];
-    verticies[index++] = uvs[5];
+    verticies[index++] = uvs.x2;
+    verticies[index++] = uvs.y2;
     // color
     verticies[index++] = sprite.alpha;
  
@@ -244,8 +246,8 @@ PIXI.WebGLFastSpriteBatch.prototype.renderSprite = function(sprite)
     verticies[index++] = sprite.rotation;
 
     // uv
-    verticies[index++] = uvs[6];
-    verticies[index++] = uvs[7];
+    verticies[index++] = uvs.x3;
+    verticies[index++] = uvs.y3;
     // color
     verticies[index++] = sprite.alpha;
 
@@ -260,6 +262,7 @@ PIXI.WebGLFastSpriteBatch.prototype.renderSprite = function(sprite)
 
 PIXI.WebGLFastSpriteBatch.prototype.flush = function()
 {
+
     // If the batch is length 0 then return as there is nothing to draw
     if (this.currentBatchSize===0)return;
 
@@ -318,7 +321,7 @@ PIXI.WebGLFastSpriteBatch.prototype.start = function()
     gl.uniform2f(this.shader.projectionVector, projection.x, projection.y);
 
     // set the matrix
-    gl.uniformMatrix3fv(this.shader.uMatrix, false, this.tempMatrix);
+    gl.uniformMatrix3fv(this.shader.uMatrix, false, this.matrix);
 
     // set the pointers
     var stride =  this.vertSize * 4;

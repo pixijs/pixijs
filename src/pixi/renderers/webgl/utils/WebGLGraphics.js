@@ -58,12 +58,10 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
     // This  could be speeded up for sure!
   //  var m = PIXI.mat3.clone(graphics.worldTransform);
 
-    PIXI.mat3.transpose(graphics.worldTransform, PIXI.tempMatrix);
-
     // set the matrix transform
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
-    gl.uniformMatrix3fv(shader.translationMatrix, false, PIXI.tempMatrix);
+    gl.uniformMatrix3fv(shader.translationMatrix, false, graphics.worldTransform.toArray(true));
 
     gl.uniform2f(shader.projectionVector, projection.x, -projection.y);
     gl.uniform2f(shader.offsetVector, -offset.x, -offset.y);
