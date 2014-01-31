@@ -30,8 +30,6 @@ PIXI.SpriteBatch.constructor = PIXI.SpriteBatch;
  */
 PIXI.SpriteBatch.prototype.initWebGL = function(gl)
 {
-   
-
     this.fastSpriteBatch = new PIXI.WebGLFastSpriteBatch(gl);
 
     this.ready = true;
@@ -123,7 +121,22 @@ PIXI.SpriteBatch.prototype._renderCanvas = function(renderSession)
             PIXI.DisplayObject.prototype.updateTransform.call(child);
            
             transform = child.localTransform;
-            context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
+
+            if(this.rotation !== this.rotationCache)
+            {
+                this.rotationCache = this.rotation;
+                this._sr =  Math.sin(this.rotation);
+                this._cr =  Math.cos(this.rotation);
+            }
+
+            var a = child._cr * child.scale.x,
+                b = -child._sr * child.scale.y,
+                c = child._sr * child.scale.x,
+                d = child._cr * child.scale.y;
+                
+            context.setTransform(a, c, b, d, child.position.x, child.position.y);
+
+            //context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
             
             context.drawImage(texture.baseTexture.source,
                                  frame.x,

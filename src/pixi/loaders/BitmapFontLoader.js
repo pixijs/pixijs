@@ -67,7 +67,7 @@ PIXI.BitmapFontLoader.prototype.constructor = PIXI.BitmapFontLoader;
  */
 PIXI.BitmapFontLoader.prototype.load = function()
 {
-    this.ajaxRequest = new PIXI.ajaxRequest();
+    this.ajaxRequest = new PIXI.AjaxRequest();
     var scope = this;
     this.ajaxRequest.onreadystatechange = function()
     {
