@@ -59,6 +59,8 @@ PIXI.InteractionManager = function(stage)
     this.onTouchEnd = this.onTouchEnd.bind(this);
     this.onTouchMove = this.onTouchMove.bind(this);
     this.last = 0;
+
+    this.currentCursorStyle = "inherit";
 };
 
 // constructor
@@ -233,8 +235,9 @@ PIXI.InteractionManager.prototype.update = function()
     // loop through interactive objects!
     var length = this.interactiveItems.length;
 
-    this.interactionDOMElement.style.cursor = 'inherit';
+    
 
+    var cursor = 'inherit'
     var over = false;
 
     for (i = 0; i < length; i++)
@@ -256,7 +259,7 @@ PIXI.InteractionManager.prototype.update = function()
         // looks like there was a hit!
         if(item.__hit && !over)
         {
-            if(item.buttonMode) this.interactionDOMElement.style.cursor = item.defaultCursor;
+            if(item.buttonMode) cursor = item.defaultCursor;
 
             if(!item.interactiveChildren)over = true;
 
@@ -285,6 +288,13 @@ PIXI.InteractionManager.prototype.update = function()
      //   }
         // --->
     }
+
+    if( this.currentCursorStyle != cursor )
+    {
+        this.currentCursorStyle = cursor;
+        this.interactionDOMElement.style.cursor = cursor;
+    }
+
 };
 
 /**
