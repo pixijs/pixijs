@@ -52,7 +52,7 @@ PIXI.WebGLFastSpriteBatch = function(gl)
 
     this.shader = null;
 
-    this.matrix
+    this.matrix = null;
 
     this.setContext(gl);
 };
@@ -85,7 +85,7 @@ PIXI.WebGLFastSpriteBatch.prototype.begin = function(spriteBatch, renderSession)
     
   //  PIXI.mat3.transpose(spriteBatch.worldTransform.toArray(), this.tempMatrix);
 
-    this.matrix = spriteBatch.worldTransform.toArray(true)
+    this.matrix = spriteBatch.worldTransform.toArray(true);
 
    // console.log(this.tempMatrix)
     this.start();

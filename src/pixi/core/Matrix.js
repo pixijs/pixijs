@@ -361,7 +361,7 @@ PIXI.Matrix = function()
     this.ty = 0;
 
     
-}
+};
 
 PIXI.Matrix.prototype.fromArray = function(array)
 {
@@ -373,7 +373,7 @@ PIXI.Matrix.prototype.fromArray = function(array)
     this.tx = array[2];
     this.ty = array[5];
     
-}
+};
 
 PIXI.Matrix.prototype.toArray = function(transpose)
 {
@@ -406,4 +406,4 @@ PIXI.Matrix.prototype.toArray = function(transpose)
     }
     
     return array;//[this.a, this.b, this.tx, this.c, this.d, this.ty, 0, 0, 1];
-}
+};

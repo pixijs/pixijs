@@ -30,7 +30,7 @@ PIXI.Stage = function(backgroundColor)
      * @readOnly
      * @private
      */
-    this.worldTransform = new PIXI.Matrix()//PIXI.mat3.create();
+    this.worldTransform = new PIXI.Matrix();//PIXI.mat3.create();
 
     /**
      * Whether or not the stage is interactive

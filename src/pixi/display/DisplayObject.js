@@ -139,7 +139,7 @@ PIXI.DisplayObject = function()
      * @readOnly
      * @private
      */
-    this.worldTransform = new PIXI.Matrix()//PIXI.mat3.create(); //mat3.identity();
+    this.worldTransform = new PIXI.Matrix();//PIXI.mat3.create(); //mat3.identity();
 
     /**
      * [read-only] Current transform of the object locally
@@ -149,7 +149,7 @@ PIXI.DisplayObject = function()
      * @readOnly
      * @private
      */
-    this.localTransform = new PIXI.Matrix()//PIXI.mat3.create(); //mat3.identity();
+   // this.localTransform = new PIXI.Matrix()//PIXI.mat3.create(); //mat3.identity();
 
     /**
      * [NYI] Unknown
@@ -408,8 +408,8 @@ PIXI.DisplayObject.prototype.updateTransform = function()
     }
 
    // var localTransform = this.localTransform//.toArray();
-    var parentTransform = this.parent.worldTransform//.toArray();
-    var worldTransform = this.worldTransform//.toArray();
+    var parentTransform = this.parent.worldTransform;//.toArray();
+    var worldTransform = this.worldTransform;//.toArray();
     //console.log(localTransform)
     var px = this.pivot.x;
     var py = this.pivot.y;

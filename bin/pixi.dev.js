@@ -4,7 +4,7 @@
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-01-30
+ * Compiled: 2014-01-31
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -810,7 +810,7 @@ PIXI.Matrix = function()
     this.ty = 0;
 
     
-}
+};
 
 PIXI.Matrix.prototype.fromArray = function(array)
 {
@@ -822,7 +822,7 @@ PIXI.Matrix.prototype.fromArray = function(array)
     this.tx = array[2];
     this.ty = array[5];
     
-}
+};
 
 PIXI.Matrix.prototype.toArray = function(transpose)
 {
@@ -855,7 +855,7 @@ PIXI.Matrix.prototype.toArray = function(transpose)
     }
     
     return array;//[this.a, this.b, this.tx, this.c, this.d, this.ty, 0, 0, 1];
-}
+};
 
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
@@ -998,7 +998,7 @@ PIXI.DisplayObject = function()
      * @readOnly
      * @private
      */
-    this.worldTransform = new PIXI.Matrix()//PIXI.mat3.create(); //mat3.identity();
+    this.worldTransform = new PIXI.Matrix();//PIXI.mat3.create(); //mat3.identity();
 
     /**
      * [read-only] Current transform of the object locally
@@ -1008,7 +1008,7 @@ PIXI.DisplayObject = function()
      * @readOnly
      * @private
      */
-    this.localTransform = new PIXI.Matrix()//PIXI.mat3.create(); //mat3.identity();
+   // this.localTransform = new PIXI.Matrix()//PIXI.mat3.create(); //mat3.identity();
 
     /**
      * [NYI] Unknown
@@ -1267,8 +1267,8 @@ PIXI.DisplayObject.prototype.updateTransform = function()
     }
 
    // var localTransform = this.localTransform//.toArray();
-    var parentTransform = this.parent.worldTransform//.toArray();
-    var worldTransform = this.worldTransform//.toArray();
+    var parentTransform = this.parent.worldTransform;//.toArray();
+    var worldTransform = this.worldTransform;//.toArray();
     //console.log(localTransform)
     var px = this.pivot.x;
     var py = this.pivot.y;
@@ -3806,7 +3806,7 @@ PIXI.Stage = function(backgroundColor)
      * @readOnly
      * @private
      */
-    this.worldTransform = new PIXI.Matrix()//PIXI.mat3.create();
+    this.worldTransform = new PIXI.Matrix();//PIXI.mat3.create();
 
     /**
      * Whether or not the stage is interactive
@@ -6736,12 +6736,12 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
 
     var worldTransform = sprite.worldTransform;//.toArray();
 
-    var a = worldTransform.a//[0];
-    var b = worldTransform.c//[3];
-    var c = worldTransform.b//[1];
-    var d = worldTransform.d//[4];
-    var tx = worldTransform.tx//[2];
-    var ty = worldTransform.ty///[5];
+    var a = worldTransform.a;//[0];
+    var b = worldTransform.c;//[3];
+    var c = worldTransform.b;//[1];
+    var d = worldTransform.d;//[4];
+    var tx = worldTransform.tx;//[2];
+    var ty = worldTransform.ty;///[5];
 
     // xy
     verticies[index++] = a * w1 + c * h1 + tx;
@@ -7086,7 +7086,7 @@ PIXI.WebGLFastSpriteBatch = function(gl)
 
     this.shader = null;
 
-    this.matrix
+    this.matrix = null;
 
     this.setContext(gl);
 };
@@ -7119,7 +7119,7 @@ PIXI.WebGLFastSpriteBatch.prototype.begin = function(spriteBatch, renderSession)
     
   //  PIXI.mat3.transpose(spriteBatch.worldTransform.toArray(), this.tempMatrix);
 
-    this.matrix = spriteBatch.worldTransform.toArray(true)
+    this.matrix = spriteBatch.worldTransform.toArray(true);
 
    // console.log(this.tempMatrix)
     this.start();
@@ -12084,7 +12084,7 @@ PIXI.TextureUvs = function()
     this.y4 = 0;
 
 
-}
+};
 
 
 
@@ -12162,6 +12162,8 @@ PIXI.RenderTexture = function(width, height, renderer)
     }
 
     PIXI.Texture.frameUpdates.push(this);
+
+
 };
 
 PIXI.RenderTexture.prototype = Object.create( PIXI.Texture.prototype );
@@ -12217,15 +12219,15 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, position, cle
 
     //TODO -? create a new one??? dont think so!
     var originalWorldTransform = displayObject.worldTransform;
-    displayObject.worldTransform = PIXI.mat3.create();//this.identityMatrix;
+    displayObject.worldTransform = PIXI.RenderTexture.tempMatrix;
     // modify to flip...
-    displayObject.worldTransform[4] = -1;
-    displayObject.worldTransform[5] = this.projection.y * -2;
+    displayObject.worldTransform.d = -1;
+    displayObject.worldTransform.ty = this.projection.y * -2;
 
     if(position)
     {
-        displayObject.worldTransform[2] = position.x;
-        displayObject.worldTransform[5] -= position.y;
+        displayObject.worldTransform.tx = position.x;
+        displayObject.worldTransform.ty -= position.y;
     }
 
     for(var i=0,j=children.length; i<j; i++)
@@ -12256,12 +12258,12 @@ PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, position, cl
     //console.log("!!")
     var children = displayObject.children;
 
-    displayObject.worldTransform = PIXI.mat3.create();
+    displayObject.worldTransform = PIXI.RenderTexture.tempMatrix;
 
     if(position)
     {
-        displayObject.worldTransform[2] = position.x;
-        displayObject.worldTransform[5] = position.y;
+        displayObject.worldTransform.tx = position.x;
+        displayObject.worldTransform.ty = position.y;
     }
 
     for(var i = 0, j = children.length; i < j; i++)
@@ -12276,8 +12278,10 @@ PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, position, cl
     this.renderer.renderDisplayObject(displayObject, context);
 
     context.setTransform(1,0,0,1,0,0);
-
 };
+
+PIXI.RenderTexture.tempMatrix = new PIXI.Matrix();
+
 
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23

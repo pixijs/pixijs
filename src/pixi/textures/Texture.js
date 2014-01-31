@@ -250,7 +250,7 @@ PIXI.TextureUvs = function()
     this.y4 = 0;
 
 
-}
+};
 
 
 
