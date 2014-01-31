@@ -93,7 +93,7 @@ PIXI.SpriteBatch.prototype._renderCanvas = function(renderSession)
 
     // alow for trimming
        
-    context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
+    context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
     context.save();
 
     for (var i = 0; i < this.children.length; i++) {
@@ -123,7 +123,7 @@ PIXI.SpriteBatch.prototype._renderCanvas = function(renderSession)
             PIXI.DisplayObject.prototype.updateTransform.call(child);
            
             transform = child.localTransform;
-            context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
+            context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
             
             context.drawImage(texture.baseTexture.source,
                                  frame.x,
