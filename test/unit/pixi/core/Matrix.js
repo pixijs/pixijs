@@ -5,11 +5,11 @@ describe('pixi/core/Matrix', function () {
     var mat3 = PIXI.mat3;
     var mat4 = PIXI.mat4;
     var Matrix = PIXI.Matrix;
-
+/*
     it('Ensure determineMatrixArrayType works', function () {
         expect(Matrix).to.be.a('function');
     });
-
+*/
     it('mat3 exists', function () {
         expect(mat3).to.be.an('object');
     });

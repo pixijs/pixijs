@@ -60,7 +60,7 @@ PIXI.InteractionManager = function(stage)
     this.onTouchMove = this.onTouchMove.bind(this);
     this.last = 0;
 
-    this.currentCursorStyle = "inherit";
+    this.currentCursorStyle = 'inherit';
 };
 
 // constructor
@@ -237,7 +237,7 @@ PIXI.InteractionManager.prototype.update = function()
 
     
 
-    var cursor = 'inherit'
+    var cursor = 'inherit';
     var over = false;
 
     for (i = 0; i < length; i++)
@@ -289,7 +289,7 @@ PIXI.InteractionManager.prototype.update = function()
         // --->
     }
 
-    if( this.currentCursorStyle != cursor )
+    if( this.currentCursorStyle !== cursor )
     {
         this.currentCursorStyle = cursor;
         this.interactionDOMElement.style.cursor = cursor;

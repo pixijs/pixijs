@@ -284,17 +284,17 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
     var scaleX =  (tilingSprite.width / texture.baseTexture.width)  / (tilingSprite.tileScale.x * tilingSprite.tileScaleOffset.x);
     var scaleY =  (tilingSprite.height / texture.baseTexture.height) / (tilingSprite.tileScale.y * tilingSprite.tileScaleOffset.y);
 
-    uvs[0] = 0 - offsetX;
-    uvs[1] = 0 - offsetY;
+    uvs.x0 = 0 - offsetX;
+    uvs.y0 = 0 - offsetY;
 
-    uvs[2] = (1 * scaleX) - offsetX;
-    uvs[3] = 0 - offsetY;
+    uvs.x1 = (1 * scaleX) - offsetX;
+    uvs.y1 = 0 - offsetY;
 
-    uvs[4] = (1 * scaleX) - offsetX;
-    uvs[5] = (1 * scaleY) - offsetY;
+    uvs.x2 = (1 * scaleX) - offsetX;
+    uvs.y2 = (1 * scaleY) - offsetY;
 
-    uvs[6] = 0 - offsetX;
-    uvs[7] = (1 *scaleY) - offsetY;
+    uvs.x3 = 0 - offsetX;
+    uvs.y3 = (1 *scaleY) - offsetY;
 
    
     // get the tilingSprites current alpha
@@ -319,19 +319,19 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
 
     var worldTransform = tilingSprite.worldTransform;
 
-    var a = worldTransform[0];
-    var b = worldTransform[3];
-    var c = worldTransform[1];
-    var d = worldTransform[4];
-    var tx = worldTransform[2];
-    var ty = worldTransform[5];
+    var a = worldTransform.a;//[0];
+    var b = worldTransform.c;//[3];
+    var c = worldTransform.b;//[1];
+    var d = worldTransform.d;//[4];
+    var tx = worldTransform.tx;//[2];
+    var ty = worldTransform.ty;///[5];
 
     // xy
     verticies[index++] = a * w1 + c * h1 + tx;
     verticies[index++] = d * h1 + b * w1 + ty;
     // uv
-    verticies[index++] = uvs[0];
-    verticies[index++] = uvs[1];
+    verticies[index++] = uvs.x0;
+    verticies[index++] = uvs.y0;
     // color
     verticies[index++] = alpha;
     verticies[index++] = tint;
@@ -340,8 +340,8 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
     verticies[index++] = a * w0 + c * h1 + tx;
     verticies[index++] = d * h1 + b * w0 + ty;
     // uv
-    verticies[index++] = uvs[2];
-    verticies[index++] = uvs[3];
+    verticies[index++] = uvs.x1;
+    verticies[index++] = uvs.y1;
     // color
     verticies[index++] = alpha;
     verticies[index++] = tint;
@@ -350,8 +350,8 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
     verticies[index++] = a * w0 + c * h0 + tx;
     verticies[index++] = d * h0 + b * w0 + ty;
     // uv
-    verticies[index++] = uvs[4];
-    verticies[index++] = uvs[5];
+    verticies[index++] = uvs.x2;
+    verticies[index++] = uvs.y2;
     // color
     verticies[index++] = alpha;
     verticies[index++] = tint;
@@ -360,8 +360,8 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
     verticies[index++] = a * w1 + c * h0 + tx;
     verticies[index++] = d * h0 + b * w1 + ty;
     // uv
-    verticies[index++] = uvs[6];
-    verticies[index++] = uvs[7];
+    verticies[index++] = uvs.x3;
+    verticies[index++] = uvs.y3;
     // color
     verticies[index++] = alpha;
     verticies[index++] = tint;
