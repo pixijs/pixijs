@@ -535,3 +535,33 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'y', {
         this.position.y = value;
     }
 });
+
+/**
+ * The x scale factor of the object.
+ *
+ * @property scaleX
+ * @type Number
+ */
+Object.defineProperty(PIXI.DisplayObject.prototype, 'scaleX', {
+    get: function() {
+        return this.scale.x;
+    },
+    set: function(value) {
+        this.scale.x = value;
+    }
+});
+
+/**
+ * The y scale factor of the object.
+ *
+ * @property scaleY
+ * @type Number
+ */
+Object.defineProperty(PIXI.DisplayObject.prototype, 'scaleY', {
+    get: function() {
+        return this.scale.y;
+    },
+    set: function(value) {
+        this.scale.y = value;
+    }
+});
