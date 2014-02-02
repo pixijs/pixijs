@@ -56,7 +56,6 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
     renderSession.shaderManager.activatePrimitiveShader();
 
     // This  could be speeded up for sure!
-  //  var m = PIXI.mat3.clone(graphics.worldTransform);
 
     // set the matrix transform
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);

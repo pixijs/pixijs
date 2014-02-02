@@ -37,8 +37,6 @@ PIXI.RenderTexture = function(width, height, renderer)
     this.width = width || 100;
     this.height = height || 100;
 
-    this.identityMatrix = PIXI.mat3.create();
-
     this.frame = new PIXI.Rectangle(0, 0, this.width, this.height);
 
     this.baseTexture = new PIXI.BaseTexture();
@@ -47,7 +45,7 @@ PIXI.RenderTexture = function(width, height, renderer)
     this.baseTexture._glTextures = [];
 
     this.baseTexture.hasLoaded = true;
-    
+
     // each render texture can only belong to one renderer at the moment if its webGL
     this.renderer = renderer || PIXI.defaultRenderer;
 

@@ -82,8 +82,6 @@ PIXI.WebGLFastSpriteBatch.prototype.begin = function(spriteBatch, renderSession)
 {
     this.renderSession = renderSession;
     this.shader = this.renderSession.shaderManager.fastShader;
-    
-  //  PIXI.mat3.transpose(spriteBatch.worldTransform.toArray(), this.tempMatrix);
 
     this.matrix = spriteBatch.worldTransform.toArray(true);
 

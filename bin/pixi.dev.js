@@ -4,7 +4,7 @@
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-01-31
+ * Compiled: 2014-02-02
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -455,350 +455,13 @@ PIXI.Ellipse.prototype.constructor = PIXI.Ellipse;
 * @class Matrix
 * The Matrix class will choose the best type of array to use between
 * a regular javascript Array and a Float32Array if the latter is available
-* 
+*
 */
 PIXI.determineMatrixArrayType = function() {
     return (typeof Float32Array !== 'undefined') ? Float32Array : Array;
 };
 
 PIXI.Matrix2 = PIXI.determineMatrixArrayType();
-
-
-/**
- * A lighter version of the rad gl-matrix created by Brandon Jones, Colin MacKenzie IV
- * you both rock!
- *
- * @class mat3
- * @static
-*/
-
-PIXI.mat3 = {};
-
-/* 
-* Creates a mat3 object
-* 
-* @method mat3.create
-* @static
-*/
-PIXI.mat3.create = function()
-{
-    var matrix = new PIXI.Matrix2(9);
-
-    matrix[0] = 1;
-    matrix[1] = 0;
-    matrix[2] = 0;
-    matrix[3] = 0;
-    matrix[4] = 1;
-    matrix[5] = 0;
-    matrix[6] = 0;
-    matrix[7] = 0;
-    matrix[8] = 1;
-
-    return matrix;
-};
-
-/* 
-* Creates a mat3 identity matrix
-* 
-* @method mat3.indentity
-* @static
-* @param matrix {Array|Float32Array}
-*
-*/
-PIXI.mat3.identity = function(matrix)
-{
-    matrix[0] = 1;
-    matrix[1] = 0;
-    matrix[2] = 0;
-    matrix[3] = 0;
-    matrix[4] = 1;
-    matrix[5] = 0;
-    matrix[6] = 0;
-    matrix[7] = 0;
-    matrix[8] = 1;
-
-    return matrix;
-};
-
-/* 
-* Multiplies the matrices given as parameters by themselves
-* 
-* @method mat3.multiply
-* @static
-* @param mat {Array|Float32Array} the first operand (matrix)
-* @param mat2 {Array|Float32Array} the second operand (matrix)
-* @param [dest] {Array|Float32Array} the matrix which will hold the resulting matrix
-*/
-PIXI.mat3.multiply = function (mat, mat2, dest)
-{
-    if (!dest) { dest = mat; }
-
-    // Cache the matrix values (makes for huge speed increases!)
-    var a00 = mat[0], a01 = mat[1], a02 = mat[2],
-        a10 = mat[3], a11 = mat[4], a12 = mat[5],
-        a20 = mat[6], a21 = mat[7], a22 = mat[8],
-
-        b00 = mat2[0], b01 = mat2[1], b02 = mat2[2],
-        b10 = mat2[3], b11 = mat2[4], b12 = mat2[5],
-        b20 = mat2[6], b21 = mat2[7], b22 = mat2[8];
-
-    dest[0] = b00 * a00 + b01 * a10 + b02 * a20;
-    dest[1] = b00 * a01 + b01 * a11 + b02 * a21;
-    dest[2] = b00 * a02 + b01 * a12 + b02 * a22;
-
-    dest[3] = b10 * a00 + b11 * a10 + b12 * a20;
-    dest[4] = b10 * a01 + b11 * a11 + b12 * a21;
-    dest[5] = b10 * a02 + b11 * a12 + b12 * a22;
-
-    dest[6] = b20 * a00 + b21 * a10 + b22 * a20;
-    dest[7] = b20 * a01 + b21 * a11 + b22 * a21;
-    dest[8] = b20 * a02 + b21 * a12 + b22 * a22;
-
-    return dest;
-};
-
-/* 
-* Makes a copy of the matrix given in parameter
-* 
-* @method mat3.clone
-* @static
-* @param mat {Array|Float32Array}
-*
-*/
-PIXI.mat3.clone = function(mat)
-{
-    var matrix = new PIXI.Matrix2(9);
-
-    matrix[0] = mat[0];
-    matrix[1] = mat[1];
-    matrix[2] = mat[2];
-    matrix[3] = mat[3];
-    matrix[4] = mat[4];
-    matrix[5] = mat[5];
-    matrix[6] = mat[6];
-    matrix[7] = mat[7];
-    matrix[8] = mat[8];
-
-    return matrix;
-};
-
-/* 
-* Re-arranges the matrix
-*
-* @method mat3.transpose
-* @static
-* @param mat {Array|Float32Array}
-* @param [dest] {Array|Float32Array} the matrix which will hold the resulting matrix
-*/
-PIXI.mat3.transpose = function (mat, dest)
-{
-    // If we are transposing ourselves we can skip a few steps but have to cache some values
-    if (!dest || mat === dest) {
-        var a01 = mat[1], a02 = mat[2],
-            a12 = mat[5];
-
-        mat[1] = mat[3];
-        mat[2] = mat[6];
-        mat[3] = a01;
-        mat[5] = mat[7];
-        mat[6] = a02;
-        mat[7] = a12;
-        return mat;
-    }
-
-    dest[0] = mat[0];
-    dest[1] = mat[3];
-    dest[2] = mat[6];
-    dest[3] = mat[1];
-    dest[4] = mat[4];
-    dest[5] = mat[7];
-    dest[6] = mat[2];
-    dest[7] = mat[5];
-    dest[8] = mat[8];
-    return dest;
-};
-
-PIXI.mat4 = {};
-
-/* 
-* Appends the mat3 into a mat4, therefore making it a regular mat4 object
-* 
-* @method mat3.toMat4
-* @static
-* @param mat {Array|Float32Array} 
-* @param [dest] {Array|Float32Array} the matrix which will hold the resulting matrix
-*
-*/
-PIXI.mat3.toMat4 = function (mat, dest)
-{
-    if (!dest) { dest = PIXI.mat4.create(); }
-
-    dest[15] = 1;
-    dest[14] = 0;
-    dest[13] = 0;
-    dest[12] = 0;
-
-    dest[11] = 0;
-    dest[10] = mat[8];
-    dest[9] = mat[7];
-    dest[8] = mat[6];
-
-    dest[7] = 0;
-    dest[6] = mat[5];
-    dest[5] = mat[4];
-    dest[4] = mat[3];
-
-    dest[3] = 0;
-    dest[2] = mat[2];
-    dest[1] = mat[1];
-    dest[0] = mat[0];
-
-    return dest;
-};
-
-
-/* 
-* Creates a new mat4 matrix
-* 
-* @method mat4.create
-* @static
-*
-*/
-PIXI.mat4.create = function()
-{
-    var matrix = new PIXI.Matrix2(16);
-
-    matrix[0] = 1;
-    matrix[1] = 0;
-    matrix[2] = 0;
-    matrix[3] = 0;
-    matrix[4] = 0;
-    matrix[5] = 1;
-    matrix[6] = 0;
-    matrix[7] = 0;
-    matrix[8] = 0;
-    matrix[9] = 0;
-    matrix[10] = 1;
-    matrix[11] = 0;
-    matrix[12] = 0;
-    matrix[13] = 0;
-    matrix[14] = 0;
-    matrix[15] = 1;
-
-    return matrix;
-};
-
-/* 
-* Re-arranges the matrix
-* 
-*
-* @method mat4.transpose
-* @static
-* @param mat {Array|Float32Array}
-* @param [dest] {Array|Float32Array} the matrix which will hold the resulting matrix
-*
-*/
-PIXI.mat4.transpose = function (mat, dest)
-{
-    // If we are transposing ourselves we can skip a few steps but have to cache some values
-    if (!dest || mat === dest)
-    {
-        var a01 = mat[1], a02 = mat[2], a03 = mat[3],
-            a12 = mat[6], a13 = mat[7],
-            a23 = mat[11];
-
-        mat[1] = mat[4];
-        mat[2] = mat[8];
-        mat[3] = mat[12];
-        mat[4] = a01;
-        mat[6] = mat[9];
-        mat[7] = mat[13];
-        mat[8] = a02;
-        mat[9] = a12;
-        mat[11] = mat[14];
-        mat[12] = a03;
-        mat[13] = a13;
-        mat[14] = a23;
-        return mat;
-    }
-
-    dest[0] = mat[0];
-    dest[1] = mat[4];
-    dest[2] = mat[8];
-    dest[3] = mat[12];
-    dest[4] = mat[1];
-    dest[5] = mat[5];
-    dest[6] = mat[9];
-    dest[7] = mat[13];
-    dest[8] = mat[2];
-    dest[9] = mat[6];
-    dest[10] = mat[10];
-    dest[11] = mat[14];
-    dest[12] = mat[3];
-    dest[13] = mat[7];
-    dest[14] = mat[11];
-    dest[15] = mat[15];
-    return dest;
-};
-
-/* 
-* Multiplies the matrices given as parameters by themselves
-* 
-* @method mat4.multiply
-* @static
-* @param mat {Array|Float32Array} the first operand (matrix)
-* @param mat2 {Array|Float32Array} the second operand (matrix)
-* @param [dest] {Array|Float32Array} the matrix which will hold the resulting matrix
-*/
-PIXI.mat4.multiply = function (mat, mat2, dest)
-{
-    if (!dest) { dest = mat; }
-
-    // Cache the matrix values (makes for huge speed increases!)
-    var a00 = mat[ 0], a01 = mat[ 1], a02 = mat[ 2], a03 = mat[3];
-    var a10 = mat[ 4], a11 = mat[ 5], a12 = mat[ 6], a13 = mat[7];
-    var a20 = mat[ 8], a21 = mat[ 9], a22 = mat[10], a23 = mat[11];
-    var a30 = mat[12], a31 = mat[13], a32 = mat[14], a33 = mat[15];
-
-    // Cache only the current line of the second matrix
-    var b0  = mat2[0], b1 = mat2[1], b2 = mat2[2], b3 = mat2[3];
-    dest[0] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
-    dest[1] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
-    dest[2] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
-    dest[3] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
-
-    b0 = mat2[4];
-    b1 = mat2[5];
-    b2 = mat2[6];
-    b3 = mat2[7];
-    dest[4] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
-    dest[5] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
-    dest[6] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
-    dest[7] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
-
-    b0 = mat2[8];
-    b1 = mat2[9];
-    b2 = mat2[10];
-    b3 = mat2[11];
-    dest[8] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
-    dest[9] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
-    dest[10] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
-    dest[11] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
-
-    b0 = mat2[12];
-    b1 = mat2[13];
-    b2 = mat2[14];
-    b3 = mat2[15];
-    dest[12] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
-    dest[13] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
-    dest[14] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
-    dest[15] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
-
-    return dest;
-};
-
-PIXI.identityMatrix = PIXI.mat3.create();
-PIXI.tempMatrix = PIXI.mat3.create();
 
 PIXI.Matrix = function()
 {
@@ -808,25 +471,21 @@ PIXI.Matrix = function()
     this.d = 1;
     this.tx = 0;
     this.ty = 0;
-
-    
 };
 
 PIXI.Matrix.prototype.fromArray = function(array)
 {
-
     this.a = array[0];
     this.b = array[1];
     this.c = array[3];
     this.d = array[4];
     this.tx = array[2];
     this.ty = array[5];
-    
 };
 
 PIXI.Matrix.prototype.toArray = function(transpose)
 {
-    if(!this.array)this.array = new Float32Array(9);
+    if(!this.array) this.array = new Float32Array(9);
     var array = this.array;
 
     if(transpose)
@@ -853,10 +512,11 @@ PIXI.Matrix.prototype.toArray = function(transpose)
         this.array[7] = 0;
         this.array[8] = 1;
     }
-    
+
     return array;//[this.a, this.b, this.tx, this.c, this.d, this.ty, 0, 0, 1];
 };
 
+PIXI.identityMatrix = new PIXI.Matrix();
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -998,17 +658,7 @@ PIXI.DisplayObject = function()
      * @readOnly
      * @private
      */
-    this.worldTransform = new PIXI.Matrix();//PIXI.mat3.create(); //mat3.identity();
-
-    /**
-     * [read-only] Current transform of the object locally
-     *
-     * @property localTransform
-     * @type Mat3
-     * @readOnly
-     * @private
-     */
-   // this.localTransform = new PIXI.Matrix()//PIXI.mat3.create(); //mat3.identity();
+    this.worldTransform = new PIXI.Matrix();
 
     /**
      * [NYI] Unknown
@@ -3146,7 +2796,6 @@ PIXI.InteractionManager = function(stage)
 
     // helpers
     this.tempPoint = new PIXI.Point();
-    //this.tempMatrix =  mat3.create();
 
     this.mouseoverEnabled = true;
 
@@ -3829,7 +3478,7 @@ PIXI.Stage = function(backgroundColor)
      * @readOnly
      * @private
      */
-    this.worldTransform = new PIXI.Matrix();//PIXI.mat3.create();
+    this.worldTransform = new PIXI.Matrix();
 
     /**
      * Whether or not the stage is interactive
@@ -5254,7 +4903,6 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
     renderSession.shaderManager.activatePrimitiveShader();
 
     // This  could be speeded up for sure!
-  //  var m = PIXI.mat3.clone(graphics.worldTransform);
 
     // set the matrix transform
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
@@ -7139,8 +6787,6 @@ PIXI.WebGLFastSpriteBatch.prototype.begin = function(spriteBatch, renderSession)
 {
     this.renderSession = renderSession;
     this.shader = this.renderSession.shaderManager.fastShader;
-    
-  //  PIXI.mat3.transpose(spriteBatch.worldTransform.toArray(), this.tempMatrix);
 
     this.matrix = spriteBatch.worldTransform.toArray(true);
 
@@ -9246,9 +8892,9 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
         // check blend mode
         if(this.blendMode !== renderSession.spriteBatch.currentBlendMode)
         {
-            this.spriteBatch.currentBlendMode = this.blendMode;
+            renderSession.spriteBatch.currentBlendMode = this.blendMode;
             var blendModeWebGL = PIXI.blendModesWebGL[renderSession.spriteBatch.currentBlendMode];
-            this.spriteBatch.gl.blendFunc(blendModeWebGL[0], blendModeWebGL[1]);
+            renderSession.spriteBatch.gl.blendFunc(blendModeWebGL[0], blendModeWebGL[1]);
         }
      
         PIXI.WebGLGraphics.renderGraphics(this, renderSession);
@@ -12153,8 +11799,6 @@ PIXI.RenderTexture = function(width, height, renderer)
     this.width = width || 100;
     this.height = height || 100;
 
-    this.identityMatrix = PIXI.mat3.create();
-
     this.frame = new PIXI.Rectangle(0, 0, this.width, this.height);
 
     this.baseTexture = new PIXI.BaseTexture();
@@ -12163,7 +11807,7 @@ PIXI.RenderTexture = function(width, height, renderer)
     this.baseTexture._glTextures = [];
 
     this.baseTexture.hasLoaded = true;
-    
+
     // each render texture can only belong to one renderer at the moment if its webGL
     this.renderer = renderer || PIXI.defaultRenderer;
 

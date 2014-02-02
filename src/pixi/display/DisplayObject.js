@@ -139,17 +139,7 @@ PIXI.DisplayObject = function()
      * @readOnly
      * @private
      */
-    this.worldTransform = new PIXI.Matrix();//PIXI.mat3.create(); //mat3.identity();
-
-    /**
-     * [read-only] Current transform of the object locally
-     *
-     * @property localTransform
-     * @type Mat3
-     * @readOnly
-     * @private
-     */
-   // this.localTransform = new PIXI.Matrix()//PIXI.mat3.create(); //mat3.identity();
+    this.worldTransform = new PIXI.Matrix();
 
     /**
      * [NYI] Unknown
