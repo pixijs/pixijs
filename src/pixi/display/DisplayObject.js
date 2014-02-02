@@ -402,6 +402,9 @@ PIXI.DisplayObject.prototype.updateTransform = function()
     // TODO OPTIMIZE THIS!! with dirty
     if(this.rotation !== this.rotationCache)
     {
+        if(isNaN(parseFloat(this.rotation)))
+            throw new Error('DisplayObject rotation values must be numeric.');
+
         this.rotationCache = this.rotation;
         this._sr =  Math.sin(this.rotation);
         this._cr =  Math.cos(this.rotation);
