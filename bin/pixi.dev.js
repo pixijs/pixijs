@@ -4,7 +4,7 @@
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-02-02
+ * Compiled: 2014-02-04
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -911,6 +911,9 @@ PIXI.DisplayObject.prototype.updateTransform = function()
     // TODO OPTIMIZE THIS!! with dirty
     if(this.rotation !== this.rotationCache)
     {
+        if(isNaN(parseFloat(this.rotation)))
+            throw new Error('DisplayObject rotation values must be numeric.');
+
         this.rotationCache = this.rotation;
         this._sr =  Math.sin(this.rotation);
         this._cr =  Math.cos(this.rotation);
@@ -1044,6 +1047,7 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'y', {
         this.position.y = value;
     }
 });
+
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -2550,6 +2554,8 @@ PIXI.BitmapText = function(text, style)
 {
     PIXI.DisplayObjectContainer.call(this);
 
+    this._pool = [];
+
     this.setText(text);
     this.setStyle(style);
     this.updateText();
@@ -2655,13 +2661,28 @@ PIXI.BitmapText.prototype.updateText = function()
         lineAlignOffsets.push(alignOffset);
     }
 
-    for(i = 0; i < chars.length; i++)
+    var lenChildren = this.children.length;
+    var lenChars = chars.length;
+    for(i = 0; i < lenChars; i++)
     {
-        var c = new PIXI.Sprite(chars[i].texture); //PIXI.Sprite.fromFrame(chars[i].charCode);
+        var c = i < lenChildren ? this.children[i] : this._pool.pop(); // get old child if have. if not - take from pool.
+
+        if (c) c.setTexture(chars[i].texture); // check if got one before.
+        else c = new PIXI.Sprite(chars[i].texture); // if no create new one.
+
         c.position.x = (chars[i].position.x + lineAlignOffsets[chars[i].line]) * scale;
         c.position.y = chars[i].position.y * scale;
         c.scale.x = c.scale.y = scale;
-        this.addChild(c);
+        if (!c.parent) this.addChild(c);
+    }
+
+    // remove unnecessary children.
+    // and put their into the pool.
+    while(this.children.length > lenChars)
+    {
+        var child = this.getChildAt(this.children.length - 1);
+        this._pool.push(child);
+        this.removeChild(child);
     }
 
     this.width = maxLineWidth * scale;
@@ -2678,12 +2699,7 @@ PIXI.BitmapText.prototype.updateTransform = function()
 {
     if(this.dirty)
     {
-        while(this.children.length > 0)
-        {
-            this.removeChild(this.getChildAt(0));
-        }
         this.updateText();
-
         this.dirty = false;
     }
 
@@ -2817,6 +2833,8 @@ PIXI.InteractionManager = function(stage)
     this.last = 0;
 
     this.currentCursorStyle = 'inherit';
+
+    this.mouseOut = false;
 };
 
 // constructor
@@ -3142,7 +3160,6 @@ PIXI.InteractionManager.prototype.onMouseOut = function()
     for (var i = 0; i < length; i++)
     {
         var item = this.interactiveItems[i];
-
         if(item.__isOver)
         {
             this.mouse.target = item;
@@ -3150,6 +3167,12 @@ PIXI.InteractionManager.prototype.onMouseOut = function()
             item.__isOver = false;
         }
     }
+
+    this.mouseOut = true;
+
+    // move the mouse to an impossible position
+    this.mouse.global.x = -10000;
+    this.mouse.global.y = -10000;
 };
 
 /**
@@ -6489,6 +6512,9 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
 
     var uvs = tilingSprite._uvs;
 
+    tilingSprite.tilePosition.x %= texture.baseTexture.width;
+    tilingSprite.tilePosition.y %= texture.baseTexture.height;
+
     var offsetX =  tilingSprite.tilePosition.x/texture.baseTexture.width;
     var offsetY =  tilingSprite.tilePosition.y/texture.baseTexture.height;
 
@@ -9679,6 +9705,10 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
 
     var tilePosition = this.tilePosition;
     var tileScale = this.tileScale;
+
+    tilePosition.x %= this.tilingTexture.baseTexture.width;
+    tilePosition.y %= this.tilingTexture.baseTexture.height;
+
    // console.log(tileScale.x)
     // offset
     context.scale(tileScale.x,tileScale.y);
@@ -11369,40 +11399,29 @@ PIXI.BaseTexture = function(source, scaleMode)
 
     if(!source)return;
 
-    if(this.source instanceof Image || this.source instanceof HTMLImageElement)
-    {
-        if(this.source.complete)
-        {
-            this.hasLoaded = true;
-            this.width = this.source.width;
-            this.height = this.source.height;
-
-            PIXI.texturesToUpdate.push(this);
-        }
-        else
-        {
-
-            var scope = this;
-            this.source.onload = function() {
-
-                scope.hasLoaded = true;
-                scope.width = scope.source.width;
-                scope.height = scope.source.height;
-
-                // add it to somewhere...
-                PIXI.texturesToUpdate.push(scope);
-                scope.dispatchEvent( { type: 'loaded', content: scope } );
-            };
-            //this.image.src = imageUrl;
-        }
-    }
-    else
+    if(this.source.complete || this.source.getContext)
     {
         this.hasLoaded = true;
         this.width = this.source.width;
         this.height = this.source.height;
 
         PIXI.texturesToUpdate.push(this);
+    }
+    else
+    {
+
+        var scope = this;
+        this.source.onload = function() {
+
+            scope.hasLoaded = true;
+            scope.width = scope.source.width;
+            scope.height = scope.source.height;
+
+            // add it to somewhere...
+            PIXI.texturesToUpdate.push(scope);
+            scope.dispatchEvent( { type: 'loaded', content: scope } );
+        };
+        //this.image.src = imageUrl;
     }
 
     this.imageUrl = null;
@@ -11425,10 +11444,9 @@ PIXI.BaseTexture.prototype.constructor = PIXI.BaseTexture;
  */
 PIXI.BaseTexture.prototype.destroy = function()
 {
-    if(this.source instanceof Image)
+    if(this.imageUrl)
     {
-        if (this.imageUrl in PIXI.BaseTextureCache)
-            delete PIXI.BaseTextureCache[this.imageUrl];
+        delete PIXI.BaseTextureCache[this.imageUrl];
         this.imageUrl = null;
         this.source.src = null;
     }
@@ -12173,7 +12191,7 @@ PIXI.JsonLoader.prototype.constructor = PIXI.JsonLoader;
  * @method load
  */
 PIXI.JsonLoader.prototype.load = function () {
-    this.ajaxRequest = new PIXI.AjaxRequest();
+    this.ajaxRequest = new PIXI.AjaxRequest(this.crossorigin);
     var scope = this;
     this.ajaxRequest.onreadystatechange = function () {
         scope.onJSONLoaded();
