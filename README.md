@@ -1,4 +1,4 @@
-Pixi Renderer 
+Pixi Renderer [![Build Status](https://travis-ci.org/GoodBoyDigital/pixi.js.png?branch=dev)](https://travis-ci.org/GoodBoyDigital/pixi.js)
 =============
 
 ![pixi.js logo](http://www.goodboydigital.com/pixijs/logo_small.png)
