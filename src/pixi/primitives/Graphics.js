@@ -520,7 +520,7 @@ PIXI.Graphics.prototype.updateBounds = function()
     var minY = Infinity;
     var maxY = -Infinity;
 
-    var points, x, y;
+    var points, x, y, w, h;
 
     for (var i = 0; i < this.graphicsData.length; i++) {
         var data = this.graphicsData[i];
@@ -531,28 +531,29 @@ PIXI.Graphics.prototype.updateBounds = function()
 
         if(type === PIXI.Graphics.RECT)
         {
-            x = points.x - lineWidth/2;
-            y = points.y - lineWidth/2;
-            var width = points.width + lineWidth;
-            var height = points.height + lineWidth;
+            x = points[0] - lineWidth/2;
+            y = points[1] - lineWidth/2;
+            w = points[2] + lineWidth;
+            h = points[3] + lineWidth;
 
             minX = x < minX ? x : minX;
-            maxX = x + width > maxX ? x + width : maxX;
+            maxX = x + w > maxX ? x + w : maxX;
 
             minY = y < minY ? x : minY;
-            maxY = y + height > maxY ? y + height : maxY;
+            maxY = y + h > maxY ? y + h : maxY;
         }
         else if(type === PIXI.Graphics.CIRC || type === PIXI.Graphics.ELIP)
         {
-            x = points.x;
-            y = points.y;
-            var radius = points.radius + lineWidth/2;
+            x = points[0];
+            y = points[1];
+            w = points[2] + lineWidth/2;
+            h = points[3] + lineWidth/2;
 
-            minX = x - radius < minX ? x - radius : minX;
-            maxX = x + radius > maxX ? x + radius : maxX;
+            minX = x - w < minX ? x - w : minX;
+            maxX = x + w > maxX ? x + w : maxX;
 
-            minY = y - radius < minY ? y - radius : minY;
-            maxY = y + radius > maxY ? y + radius : maxY;
+            minY = y - h < minY ? y - h : minY;
+            maxY = y + h > maxY ? y + h : maxY;
         }
         else
         {
