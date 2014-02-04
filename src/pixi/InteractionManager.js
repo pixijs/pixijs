@@ -61,6 +61,8 @@ PIXI.InteractionManager = function(stage)
     this.last = 0;
 
     this.currentCursorStyle = 'inherit';
+
+    this.mouseOut = false;
 };
 
 // constructor
@@ -386,7 +388,6 @@ PIXI.InteractionManager.prototype.onMouseOut = function()
     for (var i = 0; i < length; i++)
     {
         var item = this.interactiveItems[i];
-
         if(item.__isOver)
         {
             this.mouse.target = item;
@@ -394,6 +395,12 @@ PIXI.InteractionManager.prototype.onMouseOut = function()
             item.__isOver = false;
         }
     }
+
+    this.mouseOut = true;
+
+    // move the mouse to an impossible position
+    this.mouse.global.x = -10000;
+    this.mouse.global.y = -10000;
 };
 
 /**
