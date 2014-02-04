@@ -278,6 +278,9 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
 
     var uvs = tilingSprite._uvs;
 
+    tilingSprite.tilePosition.x %= texture.baseTexture.width;
+    tilingSprite.tilePosition.y %= texture.baseTexture.height;
+
     var offsetX =  tilingSprite.tilePosition.x/texture.baseTexture.width;
     var offsetY =  tilingSprite.tilePosition.y/texture.baseTexture.height;
 

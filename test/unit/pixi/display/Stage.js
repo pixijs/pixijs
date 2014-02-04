@@ -20,7 +20,7 @@ describe('pixi/display/Stage', function () {
         expect(obj).to.respondTo('setBackgroundColor');
         expect(obj).to.respondTo('getMousePosition');
         // FIXME: duplicate member in DisplayObject
-        pixi_core_Matrix_confirmNewMat3(obj.worldTransform);
+        pixi_core_Matrix_confirmNewMatrix(obj.worldTransform);
         // FIXME: convert arg to bool in constructor
         expect(obj).to.have.property('interactive', true);
 

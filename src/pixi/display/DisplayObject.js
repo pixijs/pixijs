@@ -139,17 +139,7 @@ PIXI.DisplayObject = function()
      * @readOnly
      * @private
      */
-    this.worldTransform = new PIXI.Matrix();//PIXI.mat3.create(); //mat3.identity();
-
-    /**
-     * [read-only] Current transform of the object locally
-     *
-     * @property localTransform
-     * @type Mat3
-     * @readOnly
-     * @private
-     */
-   // this.localTransform = new PIXI.Matrix()//PIXI.mat3.create(); //mat3.identity();
+    this.worldTransform = new PIXI.Matrix();
 
     /**
      * [NYI] Unknown
@@ -402,6 +392,9 @@ PIXI.DisplayObject.prototype.updateTransform = function()
     // TODO OPTIMIZE THIS!! with dirty
     if(this.rotation !== this.rotationCache)
     {
+        if(isNaN(parseFloat(this.rotation)))
+            throw new Error('DisplayObject rotation values must be numeric.');
+
         this.rotationCache = this.rotation;
         this._sr =  Math.sin(this.rotation);
         this._cr =  Math.cos(this.rotation);

@@ -371,9 +371,9 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
         // check blend mode
         if(this.blendMode !== renderSession.spriteBatch.currentBlendMode)
         {
-            this.spriteBatch.currentBlendMode = this.blendMode;
+            renderSession.spriteBatch.currentBlendMode = this.blendMode;
             var blendModeWebGL = PIXI.blendModesWebGL[renderSession.spriteBatch.currentBlendMode];
-            this.spriteBatch.gl.blendFunc(blendModeWebGL[0], blendModeWebGL[1]);
+            renderSession.spriteBatch.gl.blendFunc(blendModeWebGL[0], blendModeWebGL[1]);
         }
      
         PIXI.WebGLGraphics.renderGraphics(this, renderSession);

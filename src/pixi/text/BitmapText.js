@@ -20,6 +20,8 @@ PIXI.BitmapText = function(text, style)
 {
     PIXI.DisplayObjectContainer.call(this);
 
+    this._pool = [];
+
     this.setText(text);
     this.setStyle(style);
     this.updateText();
@@ -125,13 +127,28 @@ PIXI.BitmapText.prototype.updateText = function()
         lineAlignOffsets.push(alignOffset);
     }
 
-    for(i = 0; i < chars.length; i++)
+    var lenChildren = this.children.length;
+    var lenChars = chars.length;
+    for(i = 0; i < lenChars; i++)
     {
-        var c = new PIXI.Sprite(chars[i].texture); //PIXI.Sprite.fromFrame(chars[i].charCode);
+        var c = i < lenChildren ? this.children[i] : this._pool.pop(); // get old child if have. if not - take from pool.
+
+        if (c) c.setTexture(chars[i].texture); // check if got one before.
+        else c = new PIXI.Sprite(chars[i].texture); // if no create new one.
+
         c.position.x = (chars[i].position.x + lineAlignOffsets[chars[i].line]) * scale;
         c.position.y = chars[i].position.y * scale;
         c.scale.x = c.scale.y = scale;
-        this.addChild(c);
+        if (!c.parent) this.addChild(c);
+    }
+
+    // remove unnecessary children.
+    // and put their into the pool.
+    while(this.children.length > lenChars)
+    {
+        var child = this.getChildAt(this.children.length - 1);
+        this._pool.push(child);
+        this.removeChild(child);
     }
 
     this.width = maxLineWidth * scale;
@@ -148,12 +165,7 @@ PIXI.BitmapText.prototype.updateTransform = function()
 {
     if(this.dirty)
     {
-        while(this.children.length > 0)
-        {
-            this.removeChild(this.getChildAt(0));
-        }
         this.updateText();
-
         this.dirty = false;
     }
 
