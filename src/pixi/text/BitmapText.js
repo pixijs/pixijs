@@ -174,7 +174,7 @@ PIXI.BitmapText.prototype.updateTransform = function()
         this.dirty = false;
     }
 
-    PIXI.DisplayObjectContainer.prototype.updateTransform.call(this);
+    PIXI.SpriteBatch.prototype.updateTransform.call(this);
 };
 
 PIXI.BitmapText.fonts = {};
