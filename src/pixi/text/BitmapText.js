@@ -9,7 +9,7 @@
  * http://www.bmglyph.com/ for mac.
  *
  * @class BitmapText
- * @extends DisplayObjectContainer
+ * @extends SpriteBatch
  * @constructor
  * @param text {String} The copy that you would like the text to display
  * @param style {Object} The style parameters
@@ -18,7 +18,7 @@
  */
 PIXI.BitmapText = function(text, style)
 {
-    PIXI.DisplayObjectContainer.call(this);
+    PIXI.SpriteBatch.call(this);
 
     this._pool = [];
 
@@ -29,7 +29,7 @@ PIXI.BitmapText = function(text, style)
 };
 
 // constructor
-PIXI.BitmapText.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
+PIXI.BitmapText.prototype = Object.create(PIXI.SpriteBatch.prototype);
 PIXI.BitmapText.prototype.constructor = PIXI.BitmapText;
 
 /**
