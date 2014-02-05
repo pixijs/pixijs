@@ -63,6 +63,7 @@ PIXI.BitmapText.prototype.setStyle = function(style)
     this.fontSize = font.length >= 2 ? parseInt(font[font.length - 2], 10) : PIXI.BitmapText.fonts[this.fontName].size;
 
     this.dirty = true;
+    this.tint = style.tint;
 };
 
 /**
@@ -81,6 +82,8 @@ PIXI.BitmapText.prototype.updateText = function()
     var lineWidths = [];
     var line = 0;
     var scale = this.fontSize / data.size;
+    
+
     for(var i = 0; i < this.text.length; i++)
     {
         var charCode = this.text.charCodeAt(i);
@@ -129,6 +132,7 @@ PIXI.BitmapText.prototype.updateText = function()
 
     var lenChildren = this.children.length;
     var lenChars = chars.length;
+    var tint = this.tint || 0xFFFFFF;
     for(i = 0; i < lenChars; i++)
     {
         var c = i < lenChildren ? this.children[i] : this._pool.pop(); // get old child if have. if not - take from pool.
@@ -139,6 +143,7 @@ PIXI.BitmapText.prototype.updateText = function()
         c.position.x = (chars[i].position.x + lineAlignOffsets[chars[i].line]) * scale;
         c.position.y = chars[i].position.y * scale;
         c.scale.x = c.scale.y = scale;
+        c.tint = tint;
         if (!c.parent) this.addChild(c);
     }
 
