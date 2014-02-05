@@ -23,7 +23,9 @@ PIXI.BitmapText = function(text, style)
     this._pool = [];
 
     this.setText(text);
-    this.setStyle(style); //this will call updateText for us
+    this.setStyle(style);
+    this.updateText();
+    this.dirty = false;
 };
 
 // constructor
@@ -39,7 +41,7 @@ PIXI.BitmapText.prototype.constructor = PIXI.BitmapText;
 PIXI.BitmapText.prototype.setText = function(text)
 {
     this.text = text || ' ';
-    this.updateText();
+    this.dirty = true;
 };
 
 /**
@@ -59,9 +61,9 @@ PIXI.BitmapText.prototype.setStyle = function(style)
     var font = style.font.split(' ');
     this.fontName = font[font.length - 1];
     this.fontSize = font.length >= 2 ? parseInt(font[font.length - 2], 10) : PIXI.BitmapText.fonts[this.fontName].size;
-    this.tint = style.tint;
 
-    this.updateText();
+    this.dirty = true;
+    this.tint = style.tint;
 };
 
 /**
@@ -156,6 +158,23 @@ PIXI.BitmapText.prototype.updateText = function()
 
     this.width = maxLineWidth * scale;
     this.height = (pos.y + data.lineHeight) * scale;
+};
+
+/**
+ * Updates the transform of this object
+ *
+ * @method updateTransform
+ * @private
+ */
+PIXI.BitmapText.prototype.updateTransform = function()
+{
+    if(this.dirty)
+    {
+        this.updateText();
+        this.dirty = false;
+    }
+
+    PIXI.DisplayObjectContainer.prototype.updateTransform.call(this);
 };
 
 PIXI.BitmapText.fonts = {};
