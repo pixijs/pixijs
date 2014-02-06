@@ -14,7 +14,6 @@
  * @param [transparent=false] {Boolean} the transparency of the render view, default false
  * @param [antialias=false] {Boolean} sets antialias (only applicable in webGL chrome at the moment)
  *
- * antialias
  */
 PIXI.autoDetectRenderer = function(width, height, view, transparent, antialias)
 {
@@ -29,14 +28,6 @@ PIXI.autoDetectRenderer = function(width, height, view, transparent, antialias)
                                     return false;
                                 }
                             } )();
-
-    // used to detect ie 11 - no longer required
-    /*  if(webgl)
-    {
-        var ie =  (navigator.userAgent.toLowerCase().indexOf('trident') !== -1);
-        webgl = !ie;
-    }
-    */
 
 
     if( webgl )

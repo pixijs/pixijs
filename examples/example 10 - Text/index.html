@@ -71,27 +71,31 @@
         // use callback
         loader.onComplete = onAssetsLoaded;
 
-        //begin load
+        
 
-        	// create an new instance of a pixi stage
+        // create an new instance of a pixi stage
 		var stage = new PIXI.Stage(0x66FF99);
 
+		// begin load
         loader.load();
+
+
         function onAssetsLoaded()
         {
             var bitmapFontText = new PIXI.BitmapText("bitmap fonts are\n now supported!", {font: "35px Desyrel", align: "right"});
             bitmapFontText.position.x = 620 - bitmapFontText.width - 20;
             bitmapFontText.position.y = 20;
 
-			runList(bitmapFontText)
-	           stage.addChild(bitmapFontText);
+			runList(bitmapFontText);
+
+	        stage.addChild(bitmapFontText);
 
 
         }
 
 
 
-		// add a shiney background..
+		// add a shiny background...
 		var background = PIXI.Sprite.fromImage("textDemoBG.jpg");
 		stage.addChild(background);
 
@@ -109,6 +113,7 @@
 
 		// create a text object with a nice stroke
 		var spinningText = new PIXI.Text("I'm fun!", {font: "bold 60px Podkova", fill: "#cc00ff", align: "center", stroke: "#FFFFFF", strokeThickness: 6});
+
 		// setting the anchor point to 0.5 will center align the text... great for spinning!
 		spinningText.anchor.x = spinningText.anchor.y = 0.5;
 		spinningText.position.x = 620 / 2;
@@ -129,8 +134,10 @@
 
 		function animate() {
 
-		    requestAnimFrame( animate );
+		    requestAnimFrame(animate);
+
 			count++;
+			
 			if(count == 50)
 			{
 				count = 0;
@@ -139,7 +146,7 @@
 				countingText.setText("COUNT 4EVAR: " + score);
 
 			}
-		    // just for fun, lets rotate the text
+		    // just for fun, let's rotate the text
 		    spinningText.rotation += 0.03;
 
 		    // render the stage

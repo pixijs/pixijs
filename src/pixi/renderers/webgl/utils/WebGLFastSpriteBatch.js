@@ -16,7 +16,6 @@ PIXI.WebGLFastSpriteBatch = function(gl)
     this.maxSize = 6000;//Math.pow(2, 16) /  this.vertSize;
     this.size = this.maxSize;
 
- //   console.log(this.size);
     //the total number of floats in our batch
     var numVerts = this.size * 4 *  this.vertSize;
     //the total number of indices in our batch
@@ -85,7 +84,6 @@ PIXI.WebGLFastSpriteBatch.prototype.begin = function(spriteBatch, renderSession)
 
     this.matrix = spriteBatch.worldTransform.toArray(true);
 
-   // console.log(this.tempMatrix)
     this.start();
 };
 

@@ -2,6 +2,9 @@
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
+// TODO-Alvin ???
+// Should we eventually create a Utils class ? 
+// Or just move this file to the pixi.js file ?
 PIXI.initDefaultShaders = function()
 {
    

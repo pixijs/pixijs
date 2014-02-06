@@ -39,15 +39,7 @@
 
 	// create an new instance of a pixi stage
 	var stage = new PIXI.Stage(0xFFFFFF);
-
-	// create a background texture
-	var pondFloorTexture = PIXI.Texture.fromImage("BGrotate.jpg");
-	// create a new background sprite
-//	var pondFloorSprite = new PIXI.Sprite(pondFloorTexture);
-	//stage.addChild(pondFloorSprite);
-
 	
-	var particles = new PIXI.DisplayObjectContainer()//
 	var particles = new PIXI.SpriteBatch(PIXI.Texture.fromImage("eggHead.png"));
 
 	stage.addChild(particles);
@@ -56,7 +48,7 @@
 	// create an array to store a refference to the fish in the pond
 	var dudeArray = [];
 	 
-	var totalDude = renderer instanceof PIXI.WebGLRenderer ? 10000 : 100//.view.className = "rendererView";
+	var totalDudes = renderer instanceof PIXI.WebGLRenderer ? 10000 : 100//.view.className = "rendererView";
 
 	var tints = [0xFFFFFF,
 				0xfffbee,
@@ -64,11 +56,13 @@
 					0xfadeed,
 					0xe8d4cd];
 
-	for (var i = 0; i < totalDude; i++) 
+	for (var i = 0; i < totalDudes; i++) 
 	{
 
 		// create a new Sprite that uses the image name that we just generated as its source
 		var dude =  PIXI.Sprite.fromImage("tinyMaggot.png");
+
+		dude.tint = Math.random() * 0xe8d4cd;
 
 		// set the anchor point so the the dude texture is centerd on the sprite
 		dude.anchor.x = dude.anchor.y = 0.5;
@@ -77,15 +71,12 @@
 		dude.scale.x = dude.scale.y = 0.8 + Math.random() * 0.3;
 		
 		// finally lets set the dude to be a random position..
-		dude.position.x = Math.random() * viewWidth;
-		dude.position.y = Math.random() * viewHeight;
-	
-		// time to add the dude to the pond container!
-	//	stage.addChild(dude);
+		dude.x = Math.random() * viewWidth;
+		dude.y = Math.random() * viewHeight;
 
-		// create some extra properties that will control movment
+		// create some extra properties that will control movement
 
-	
+		dude.tint = Math.random() * 0x808080;
 
 		//dude.tint = i > 3000 ? 0x977d76 : tints[i % tints.length];//Math.random() * 0xFFFFFF;
 
