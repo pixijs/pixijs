@@ -87,7 +87,7 @@ PIXI.RenderTexture.prototype.resize = function(width, height)
         this.projection.x = this.width / 2;
         this.projection.y = -this.height / 2;
 
-        var gl = this.gl;
+        var gl = this.renderer.gl;
         gl.bindTexture(gl.TEXTURE_2D, this.baseTexture._glTextures[gl.id]);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  this.width,  this.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
     }
