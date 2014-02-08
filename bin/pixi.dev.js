@@ -4,7 +4,7 @@
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-02-04
+ * Compiled: 2014-02-08
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -911,9 +911,6 @@ PIXI.DisplayObject.prototype.updateTransform = function()
     // TODO OPTIMIZE THIS!! with dirty
     if(this.rotation !== this.rotationCache)
     {
-        if(isNaN(parseFloat(this.rotation)))
-            throw new Error('DisplayObject rotation values must be numeric.');
-
         this.rotationCache = this.rotation;
         this._sr =  Math.sin(this.rotation);
         this._cr =  Math.cos(this.rotation);
@@ -932,16 +929,16 @@ PIXI.DisplayObject.prototype.updateTransform = function()
         a11 = this._cr * this.scale.y,
         a02 = this.position.x + a00 * px - py * a01,
         a12 = this.position.y + a11 * py - px * a10,
-        b00 = parentTransform.a, b01 = parentTransform.b, b02 = parentTransform.tx,
-        b10 = parentTransform.c, b11 = parentTransform.d, b12 = parentTransform.ty;
+        b00 = parentTransform.a, b01 = parentTransform.b,
+        b10 = parentTransform.c, b11 = parentTransform.d;
 
     worldTransform.a = b00 * a00 + b01 * a10;
     worldTransform.b = b00 * a01 + b01 * a11;
-    worldTransform.tx = b00 * a02 + b01 * a12 + b02;
+    worldTransform.tx = b00 * a02 + b01 * a12 + parentTransform.tx;
 
     worldTransform.c = b10 * a00 + b11 * a10;
     worldTransform.d = b10 * a01 + b11 * a11;
-    worldTransform.ty = b10 * a02 + b11 * a12 + b12;
+    worldTransform.ty = b10 * a02 + b11 * a12 + parentTransform.ty;
 
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
 };
@@ -952,8 +949,9 @@ PIXI.DisplayObject.prototype.updateTransform = function()
  * @method getBounds
  * @return {Rectangle} the rectangular bounding area
  */
-PIXI.DisplayObject.prototype.getBounds = function()
+PIXI.DisplayObject.prototype.getBounds = function( matrix )
 {
+    matrix = matrix;//just to get passed js hinting (and preserve inheritance)
     return PIXI.EmptyRectangle;
 };
 
@@ -965,17 +963,9 @@ PIXI.DisplayObject.prototype.getBounds = function()
  */
 PIXI.DisplayObject.prototype.getLocalBounds = function()
 {
-    var matrixCache = this.worldTransform;
+    //var matrixCache = this.worldTransform;
 
-    this.worldTransform = PIXI.identityMatrix;
-
-    this.updateTransform();
-
-    var bounds = this.getBounds();
-
-    this.worldTransform = matrixCache;
-
-    return bounds;
+    return this.getBounds(PIXI.identityMatrix);///PIXI.EmptyRectangle();
 };
 
 /**
@@ -1249,12 +1239,18 @@ PIXI.DisplayObjectContainer.prototype.updateTransform = function()
  * @method getBounds
  * @return {Rectangle} the rectangular bounding area
  */
-PIXI.DisplayObjectContainer.prototype.getBounds = function()
+PIXI.DisplayObjectContainer.prototype.getBounds = function(matrix)
 {
     if(this.children.length === 0)return PIXI.EmptyRectangle;
 
     // TODO the bounds have already been calculated this render session so return what we have
-   
+    if(matrix)
+    {
+        var matrixCache = this.worldTransform;
+        this.worldTransform = matrix;
+        this.updateTransform();
+        this.worldTransform = matrixCache;
+    }
 
     var minX = Infinity;
     var minY = Infinity;
@@ -1276,7 +1272,7 @@ PIXI.DisplayObjectContainer.prototype.getBounds = function()
 
         childVisible = true;
 
-        childBounds = this.children[i].getBounds();
+        childBounds = this.children[i].getBounds( matrix );
      
         minX = minX < childBounds.x ? minX : childBounds.x;
         minY = minY < childBounds.y ? minY : childBounds.y;
@@ -1301,6 +1297,24 @@ PIXI.DisplayObjectContainer.prototype.getBounds = function()
     // TODO: store a reference so that if this function gets called again in the render cycle we do not have to recalculate
     //this._currentBounds = bounds;
    
+    return bounds;
+};
+
+PIXI.DisplayObjectContainer.prototype.getLocalBounds = function()
+{
+    var matrixCache = this.worldTransform;
+
+    this.worldTransform = PIXI.identityMatrix;
+
+    for(var i=0,j=this.children.length; i<j; i++)
+    {
+        this.children[i].updateTransform();
+    }
+
+    var bounds = this.getBounds();
+
+    this.worldTransform = matrixCache;
+
     return bounds;
 };
 
@@ -1593,7 +1607,7 @@ PIXI.Sprite.prototype.onTextureUpdate = function()
  * @method getBounds
  * @return {Rectangle} the rectangular bounding area
  */
-PIXI.Sprite.prototype.getBounds = function()
+PIXI.Sprite.prototype.getBounds = function( matrix )
 {
 
     var width = this.texture.frame.width;
@@ -1605,7 +1619,7 @@ PIXI.Sprite.prototype.getBounds = function()
     var h0 = height * (1-this.anchor.y);
     var h1 = height * -this.anchor.y;
 
-    var worldTransform = this.worldTransform;
+    var worldTransform = matrix || this.worldTransform ;
 
     var a = worldTransform.a;
     var b = worldTransform.c;
@@ -1849,6 +1863,7 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
         renderSession.maskManager.popMask(renderSession.context);
     }
 };
+
 
 // some helper functions..
 
@@ -2543,7 +2558,7 @@ PIXI.Text.heightCache = {};
  * http://www.bmglyph.com/ for mac.
  *
  * @class BitmapText
- * @extends DisplayObjectContainer
+ * @extends SpriteBatch
  * @constructor
  * @param text {String} The copy that you would like the text to display
  * @param style {Object} The style parameters
@@ -2552,7 +2567,7 @@ PIXI.Text.heightCache = {};
  */
 PIXI.BitmapText = function(text, style)
 {
-    PIXI.DisplayObjectContainer.call(this);
+    PIXI.SpriteBatch.call(this);
 
     this._pool = [];
 
@@ -2563,7 +2578,7 @@ PIXI.BitmapText = function(text, style)
 };
 
 // constructor
-PIXI.BitmapText.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
+PIXI.BitmapText.prototype = Object.create(PIXI.SpriteBatch.prototype);
 PIXI.BitmapText.prototype.constructor = PIXI.BitmapText;
 
 /**
@@ -2597,6 +2612,7 @@ PIXI.BitmapText.prototype.setStyle = function(style)
     this.fontSize = font.length >= 2 ? parseInt(font[font.length - 2], 10) : PIXI.BitmapText.fonts[this.fontName].size;
 
     this.dirty = true;
+    this.tint = style.tint;
 };
 
 /**
@@ -2615,6 +2631,8 @@ PIXI.BitmapText.prototype.updateText = function()
     var lineWidths = [];
     var line = 0;
     var scale = this.fontSize / data.size;
+    
+
     for(var i = 0; i < this.text.length; i++)
     {
         var charCode = this.text.charCodeAt(i);
@@ -2663,6 +2681,7 @@ PIXI.BitmapText.prototype.updateText = function()
 
     var lenChildren = this.children.length;
     var lenChars = chars.length;
+    var tint = this.tint || 0xFFFFFF;
     for(i = 0; i < lenChars; i++)
     {
         var c = i < lenChildren ? this.children[i] : this._pool.pop(); // get old child if have. if not - take from pool.
@@ -2673,6 +2692,7 @@ PIXI.BitmapText.prototype.updateText = function()
         c.position.x = (chars[i].position.x + lineAlignOffsets[chars[i].line]) * scale;
         c.position.y = chars[i].position.y * scale;
         c.scale.x = c.scale.y = scale;
+        c.tint = tint;
         if (!c.parent) this.addChild(c);
     }
 
@@ -2703,7 +2723,7 @@ PIXI.BitmapText.prototype.updateTransform = function()
         this.dirty = false;
     }
 
-    PIXI.DisplayObjectContainer.prototype.updateTransform.call(this);
+    PIXI.SpriteBatch.prototype.updateTransform.call(this);
 };
 
 PIXI.BitmapText.fonts = {};
@@ -8985,7 +9005,7 @@ PIXI.Graphics.prototype._renderCanvas = function(renderSession)
  * @method getBounds
  * @return {Rectangle} the rectangular bounding area
  */
-PIXI.Graphics.prototype.getBounds = function()
+PIXI.Graphics.prototype.getBounds = function( matrix )
 {
     if(!this.bounds)this.updateBounds();
 
@@ -8995,7 +9015,7 @@ PIXI.Graphics.prototype.getBounds = function()
     var h0 = this.bounds.y;
     var h1 = this.bounds.height + this.bounds.y;
 
-    var worldTransform = this.worldTransform;
+    var worldTransform = matrix || this.worldTransform;
 
     var a = worldTransform.a;
     var b = worldTransform.c;
@@ -9067,7 +9087,7 @@ PIXI.Graphics.prototype.updateBounds = function()
     var minY = Infinity;
     var maxY = -Infinity;
 
-    var points, x, y;
+    var points, x, y, w, h;
 
     for (var i = 0; i < this.graphicsData.length; i++) {
         var data = this.graphicsData[i];
@@ -9078,28 +9098,29 @@ PIXI.Graphics.prototype.updateBounds = function()
 
         if(type === PIXI.Graphics.RECT)
         {
-            x = points.x - lineWidth/2;
-            y = points.y - lineWidth/2;
-            var width = points.width + lineWidth;
-            var height = points.height + lineWidth;
+            x = points[0] - lineWidth/2;
+            y = points[1] - lineWidth/2;
+            w = points[2] + lineWidth;
+            h = points[3] + lineWidth;
 
             minX = x < minX ? x : minX;
-            maxX = x + width > maxX ? x + width : maxX;
+            maxX = x + w > maxX ? x + w : maxX;
 
             minY = y < minY ? x : minY;
-            maxY = y + height > maxY ? y + height : maxY;
+            maxY = y + h > maxY ? y + h : maxY;
         }
         else if(type === PIXI.Graphics.CIRC || type === PIXI.Graphics.ELIP)
         {
-            x = points.x;
-            y = points.y;
-            var radius = points.radius + lineWidth/2;
+            x = points[0];
+            y = points[1];
+            w = points[2] + lineWidth/2;
+            h = points[3] + lineWidth/2;
 
-            minX = x - radius < minX ? x - radius : minX;
-            maxX = x + radius > maxX ? x + radius : maxX;
+            minX = x - w < minX ? x - w : minX;
+            maxX = x + w > maxX ? x + w : maxX;
 
-            minY = y - radius < minY ? y - radius : minY;
-            maxY = y + radius > maxY ? y + radius : maxY;
+            minY = y - h < minY ? y - h : minY;
+            maxY = y + h > maxY ? y + h : maxY;
         }
         else
         {
@@ -9131,7 +9152,7 @@ PIXI.Graphics.prototype.updateBounds = function()
  */
 PIXI.Graphics.prototype._generateCachedSprite = function()
 {
-    var bounds = this.getBounds();
+    var bounds = this.getLocalBounds();
 
     if(!this._cachedSprite)
     {
@@ -11867,7 +11888,7 @@ PIXI.RenderTexture.prototype.resize = function(width, height)
         this.projection.x = this.width / 2;
         this.projection.y = -this.height / 2;
 
-        var gl = this.gl;
+        var gl = this.renderer.gl;
         gl.bindTexture(gl.TEXTURE_2D, this.baseTexture._glTextures[gl.id]);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  this.width,  this.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
     }

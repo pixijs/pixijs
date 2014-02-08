@@ -170,7 +170,7 @@ PIXI.Sprite.prototype.onTextureUpdate = function()
  * @method getBounds
  * @return {Rectangle} the rectangular bounding area
  */
-PIXI.Sprite.prototype.getBounds = function()
+PIXI.Sprite.prototype.getBounds = function( matrix )
 {
 
     var width = this.texture.frame.width;
@@ -182,7 +182,7 @@ PIXI.Sprite.prototype.getBounds = function()
     var h0 = height * (1-this.anchor.y);
     var h1 = height * -this.anchor.y;
 
-    var worldTransform = this.worldTransform;
+    var worldTransform = matrix || this.worldTransform ;
 
     var a = worldTransform.a;
     var b = worldTransform.c;
@@ -426,6 +426,7 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
         renderSession.maskManager.popMask(renderSession.context);
     }
 };
+
 
 // some helper functions..
 
