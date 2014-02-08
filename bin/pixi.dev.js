@@ -6879,9 +6879,9 @@ PIXI.WebGLFastSpriteBatch.prototype.renderSprite = function(sprite)
     // TODO trim??
     if(sprite.texture.baseTexture !== this.currentBaseTexture)
     {
-        this.currentBaseTexture = sprite.texture.baseTexture;
         this.flush();
-
+        this.currentBaseTexture = sprite.texture.baseTexture;
+        
         if(!sprite.texture._uvs)return;
     }
 
