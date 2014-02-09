@@ -345,7 +345,15 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
 
         // allow for trimming
        
-        context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
+        if (PIXI.canvas.PX_ROUND)
+        {
+            context.setTransform(transform.a, transform.c, transform.b, transform.d, Math.floor(transform.tx), Math.floor(transform.ty));
+        }
+        else
+        {
+            context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
+        }
+
 
         //if smoothingEnabled is supported and we need to change the smoothing property for this texture
         if(renderSession.smoothProperty && renderSession.scaleMode !== this.texture.baseTexture.scaleMode) {

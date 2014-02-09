@@ -156,37 +156,25 @@ PIXI.CanvasRenderer.prototype.constructor = PIXI.CanvasRenderer;
  */
 PIXI.CanvasRenderer.prototype.render = function(stage)
 {
-    //stage.__childrenAdded = [];
-    //stage.__childrenRemoved = [];
-
     // update textures if need be
     PIXI.texturesToUpdate.length = 0;
     PIXI.texturesToDestroy.length = 0;
 
     stage.updateTransform();
 
-    // update the background color
-  /*  if(this.view.style.backgroundColor !== stage.backgroundColorString && !this.transparent)
-        this.view.style.backgroundColor = stage.backgroundColorString; */
-
     this.context.setTransform(1,0,0,1,0,0);
+    this.context.globalAlpha = 1;
 
-    if(this.view.style.backgroundColor !== stage.backgroundColorString )
+    if (!this.transparent && PIXI.canvas.FILL_RECT)
     {
-        if(!this.transparent)
-        {
-            this.context.globalAlpha = 1;
-            this.context.fillStyle = stage.backgroundColorString;
-            this.context.fillRect(0, 0, this.width, this.height);
-        }
-        else
-        {
-            this.context.clearRect(0, 0, this.width, this.height);
-        }
+        this.context.fillStyle = stage.backgroundColorString;
+        this.context.fillRect(0, 0, this.width, this.height);
+    }
+    else if (this.transparent && PIXI.canvas.CLEAR_RECT)
+    {
+        this.context.clearRect(0, 0, this.width, this.height);
     }
 
-    //console.log(this.view.style.backgroundColor)
-   
     this.renderDisplayObject(stage);
 
     // run interaction!

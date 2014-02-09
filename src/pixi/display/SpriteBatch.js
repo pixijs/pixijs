@@ -91,7 +91,15 @@ PIXI.SpriteBatch.prototype._renderCanvas = function(renderSession)
 
     // alow for trimming
        
-    context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
+    if (PIXI.canvas.PX_ROUND)
+    {
+        context.setTransform(transform.a, transform.c, transform.b, transform.d, Math.floor(transform.tx), Math.floor(transform.ty));
+    }
+    else
+    {
+        context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
+    }
+
     context.save();
 
     for (var i = 0; i < this.children.length; i++) {
