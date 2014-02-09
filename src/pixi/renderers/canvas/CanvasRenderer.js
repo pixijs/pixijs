@@ -19,6 +19,27 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
 
     this.type = PIXI.CANVAS_RENDERER;
 
+    /**
+     * This sets if the CanvasRenderer will clear the canvas or not before the new render pass.
+     * If the Stage is NOT transparent Pixi will use a canvas sized fillRect operation every frame to set the canvas background color.
+     * If the Stage is transparent Pixi will use clearRect to clear the canvas every frame.
+     * Disable this by setting this to false. For example if your game has a canvas filling background image you often don't need this set.
+     *
+     * @property clearBeforeRender
+     * @type Boolean
+     * @default
+     */
+    this.clearBeforeRender = true;
+
+    /**
+     * If true Pixi will Math.floor() x/y values when rendering, stopping pixel interpolation.
+     * Handy for crisp pixel art and speed on legacy devices.
+     *
+     * @property roundPixels
+     * @type Boolean
+     * @default
+     */
+    this.roundPixels = false;
 
     /**
      * Whether the render view is transparent
@@ -156,37 +177,25 @@ PIXI.CanvasRenderer.prototype.constructor = PIXI.CanvasRenderer;
  */
 PIXI.CanvasRenderer.prototype.render = function(stage)
 {
-    //stage.__childrenAdded = [];
-    //stage.__childrenRemoved = [];
-
     // update textures if need be
     PIXI.texturesToUpdate.length = 0;
     PIXI.texturesToDestroy.length = 0;
 
     stage.updateTransform();
 
-    // update the background color
-  /*  if(this.view.style.backgroundColor !== stage.backgroundColorString && !this.transparent)
-        this.view.style.backgroundColor = stage.backgroundColorString; */
-
     this.context.setTransform(1,0,0,1,0,0);
+    this.context.globalAlpha = 1;
 
-    if(this.view.style.backgroundColor !== stage.backgroundColorString )
+    if (!this.transparent && this.clearBeforeRender)
     {
-        if(!this.transparent)
-        {
-            this.context.globalAlpha = 1;
-            this.context.fillStyle = stage.backgroundColorString;
-            this.context.fillRect(0, 0, this.width, this.height);
-        }
-        else
-        {
-            this.context.clearRect(0, 0, this.width, this.height);
-        }
+        this.context.fillStyle = stage.backgroundColorString;
+        this.context.fillRect(0, 0, this.width, this.height);
+    }
+    else if (this.transparent && this.clearBeforeRender)
+    {
+        this.context.clearRect(0, 0, this.width, this.height);
     }
 
-    //console.log(this.view.style.backgroundColor)
-   
     this.renderDisplayObject(stage);
 
     // run interaction!
