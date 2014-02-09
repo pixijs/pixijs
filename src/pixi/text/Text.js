@@ -287,7 +287,11 @@ PIXI.Text.prototype.wordWrap = function(text)
                 result += words[j] + ' ';
             }
         }
-        result += '\n';
+
+        if (i < lines.length-1)
+        {
+            result += '\n';
+        }
     }
     return result;
 };
