@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<!-- saved from url=(0067)http://localhost:8888/pixi.js/examples/example%2013%20-%20Graphics/ -->
+<html><script>(function main() {
+    // Create enabled event
+    function fireEnabledEvent() {
+        // If gli exists, then we are already present and shouldn't do anything
+        if (!window.gli) {
+            setTimeout(function () {
+                var enabledEvent = document.createEvent("Event");
+                enabledEvent.initEvent("WebGLEnabledEvent", true, true);
+                document.dispatchEvent(enabledEvent);
+            }, 0);
+        } else {
+            //console.log("WebGL Inspector already embedded on the page - disabling extension");
+        }
+    };
+
+    // Grab the path root from the extension
+    document.addEventListener("WebGLInspectorReadyEvent", function (e) {
+        var pathElement = document.getElementById("__webglpathroot");
+        if (window["gliloader"]) {
+            gliloader.pathRoot = pathElement.innerText;
+        } else {
+            // TODO: more?
+            window.gliCssUrl = pathElement.innerText + "gli.all.css";
+        }
+    }, false);
+
+    // Rewrite getContext to snoop for webgl
+    var originalGetContext = HTMLCanvasElement.prototype.getContext;
+    if (!HTMLCanvasElement.prototype.getContextRaw) {
+        HTMLCanvasElement.prototype.getContextRaw = originalGetContext;
+    }
+    HTMLCanvasElement.prototype.getContext = function () {
+        var ignoreCanvas = this.internalInspectorSurface;
+        if (ignoreCanvas) {
+            return originalGetContext.apply(this, arguments);
+        }
+
+        var result = originalGetContext.apply(this, arguments);
+        if (result == null) {
+            return null;
+        }
+
+        var contextNames = ["moz-webgl", "webkit-3d", "experimental-webgl", "webgl", "3d"];
+        var requestingWebGL = contextNames.indexOf(arguments[0]) != -1;
+        if (requestingWebGL) {
+            // Page is requesting a WebGL context!
+            fireEnabledEvent(this);
+
+            // If we are injected, inspect this context
+            if (window.gli) {
+                if (gli.host.inspectContext) {
+                    // TODO: pull options from extension
+                    result = gli.host.inspectContext(this, result);
+                    // NOTE: execute in a timeout so that if the dom is not yet
+                    // loaded this won't error out.
+                    window.setTimeout(function() {
+                        var hostUI = new gli.host.HostUI(result);
+                        result.hostUI = hostUI; // just so we can access it later for debugging
+                    }, 0);
+                }
+            }
+        }
+
+        return result;
+    };
+})();</script><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+	<title>pixi.js example 13 - Graphics</title>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			background-color: #000000;
+		}
+	</style>
+
+	<script src="./pixi.js example 13 - Graphics_files/pixi.dev.js"></script>
+
+</head>
+<body>
+	<script>
+
+
+	// create an new instance of a pixi stage
+	var stage = new PIXI.Stage(0xFFFFFF, true);
+
+	stage.setInteractive(true);
+
+	// create a renderer instance
+	// the 5the parameter is the anti aliasing
+	var renderer = PIXI.autoDetectRenderer(620, 380, null, false, true);
+
+	// set the canvas width and height to fill the screen
+	//renderer.view.style.width = window.innerWidth + "px";
+	//renderer.view.style.height = window.innerHeight + "px";
+	renderer.view.style.display = "block";
+
+	// add render view to DOM
+	document.body.appendChild(renderer.view);
+
+	var graphics = new PIXI.Graphics();
+
+	// set a fill and line style
+	graphics.beginFill(0xFF3300);
+	graphics.lineStyle(10, 0xffd900, 1);
+
+	// draw a shape
+	graphics.moveTo(50,50);
+	graphics.lineTo(250, 50);
+	graphics.lineTo(100, 100);
+	graphics.lineTo(250, 220);
+	graphics.lineTo(50, 220);
+	graphics.lineTo(50, 50);
+	graphics.endFill();
+
+	// set a fill and line style again
+	graphics.lineStyle(10, 0xFF0000, 0.8);
+	graphics.beginFill(0xFF700B, 1);
+
+	// draw a second shape
+	graphics.moveTo(210,300);
+	graphics.lineTo(450,320);
+	graphics.lineTo(570,350);
+	graphics.lineTo(580,20);
+	graphics.lineTo(330,120);
+	graphics.lineTo(410,200);
+	graphics.lineTo(210,300);
+	graphics.endFill();
+
+	// draw a rectangel
+	graphics.lineStyle(2, 0x0000FF, 1);
+	graphics.drawRect(50, 250, 100, 100);
+
+	// draw a circle
+///	graphics.lineStyle(0);
+//	graphics.beginFill(0xFFFF0B, 0.5);
+//	graphics.drawCircle(470, 200,100);
+
+	graphics.lineStyle(20, 0x33FF00);
+	graphics.moveTo(30,30);
+	graphics.lineTo(600, 300);
+
+
+	stage.addChild(graphics);
+/*
+	// lets create moving shape
+	var thing = new PIXI.Graphics();
+	stage.addChild(thing);
+	thing.position.x = 620/2;
+	thing.position.y = 380/2;
+*/
+	var count = 0;
+/*
+	stage.click = stage.tap = function()
+	{
+		graphics.lineStyle(Math.random() * 30, Math.random() * 0xFFFFFF, 1);
+	    graphics.moveTo(Math.random() * 620,Math.random() * 380);
+		graphics.lineTo(Math.random() * 620,Math.random() * 380);
+	}*/
+
+
+	var graphic = new PIXI.Graphics();
+
+	graphic.beginFill(0x0000FF);
+	graphic.drawEllipse(100, 100, 50, 100);
+//	graphic.hitArea = new PIXI.Rectangle(0,0, 300, 300)//
+	graphic.hitArea = new PIXI.Ellipse(100, 100, 50, 100);
+	graphic.setInteractive(true);
+
+	graphic.mousedown = function() {
+	    console.log("Graphic clicked");
+	}
+
+	stage.addChild(graphic);
+
+renderer.render(stage);
+
+setTimeout(function()
+           {
+               renderer.render(stage);
+           }, 0
+           );
+ 
+
+	requestAnimFrame(animate);
+
+	graphics.filters = [new PIXI.BlurFilter()];
+	
+	stage.addChild(PIXI.Sprite.fromImage("spinObj_02.png"));
+	function animate() {
+
+	/*	thing.clear();
+
+		count += 0.1;
+
+		thing.clear();
+		thing.lineStyle(30, 0xff0000, 1);
+		thing.beginFill(0xffFF00, 0.5);
+
+		thing.moveTo(-120 + Math.sin(count) * 20, -100 + Math.cos(count)* 20);
+		thing.lineTo(120 + Math.cos(count) * 20, -100 + Math.sin(count)* 20);
+		thing.lineTo(120 + Math.sin(count) * 20, 100 + Math.cos(count)* 20);
+		thing.lineTo(-120 + Math.cos(count)* 20, 100 + Math.sin(count)* 20);
+		thing.lineTo(-120 + Math.sin(count) * 20, -100 + Math.cos(count)* 20);
+
+		thing.rotation = count * 0.1;*/
+	    renderer.render(stage);
+	    requestAnimFrame( animate );
+	}
+
+	</script><canvas width="620" height="380" style="display: block; cursor: inherit;"></canvas>
+
+	
+
+</body></html>

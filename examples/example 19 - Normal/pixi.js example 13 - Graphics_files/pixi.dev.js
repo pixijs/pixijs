@@ -423,8 +423,9 @@ PIXI.Ellipse.prototype.contains = function(x, y)
         return false;
 
     //normalize the coords to an ellipse with center 0,0
-    var normx = ((x - this.x) / this.width),
-        normy = ((y - this.y) / this.height);
+    //and a radius of 0.5
+    var normx = ((x - this.x) / this.width);// - 0.5,
+        normy = ((y - this.y) / this.height);// - 0.5;
 
     normx *= normx;
     normy *= normy;
