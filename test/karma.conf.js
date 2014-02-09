@@ -9,7 +9,7 @@ module.exports = function(config) {
         // list of files / patterns to load in the browser
         files : [
             'node_modules/chai/chai.js',
-            'bin/pixi.dev.js',
+            'coverage/pixi.instrumented.js',
             'test/lib/**/*.js',
             'test/unit/**/*.js',
             // 'test/functional/**/*.js',
@@ -22,7 +22,10 @@ module.exports = function(config) {
         // use dolts reporter, as travis terminal does not support escaping sequences
         // possible values: 'dots', 'progress', 'junit', 'teamcity'
         // CLI --reporters progress
-        reporters : ['spec'],
+        reporters : [
+            'spec',
+            'coverage'
+        ],
 
         // web server port
         // CLI --port 9876
@@ -68,12 +71,23 @@ module.exports = function(config) {
         // CLI --report-slower-than 500
         reportSlowerThan : 500,
 
+        // FIXME: Currently we are instrumenting as a separate
+        // task before running Karma. This is because we must
+        // test against a concatenated script.
+        // In order to instrument correctly, we must concatenate
+        // already instrumented code, and let Karma cover that.
         preprocessors : {
         //    '**/client/js/*.js': 'coverage'
         },
 
+        coverageReporter : {
+            type: 'lcov',
+            dir: 'coverage/'
+        },
+
         plugins : [
             'karma-chrome-launcher',
+            'karma-coverage',
             'karma-firefox-launcher',
             'karma-mocha',
             // 'karma-phantomjs-launcher'
