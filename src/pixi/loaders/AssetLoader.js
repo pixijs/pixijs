@@ -112,8 +112,8 @@ PIXI.AssetLoader.prototype.load = function()
 {
     var scope = this;
 
-    function onLoad() {
-        scope.onAssetLoaded();
+    function onLoad(evt) {
+        scope.onAssetLoaded(evt.loader);
     }
 
     this.loadCount = this.assetURLs.length;
@@ -145,11 +145,11 @@ PIXI.AssetLoader.prototype.load = function()
  * @method onAssetLoaded
  * @private
  */
-PIXI.AssetLoader.prototype.onAssetLoaded = function()
+PIXI.AssetLoader.prototype.onAssetLoaded = function(loader)
 {
     this.loadCount--;
-    this.dispatchEvent({type: 'onProgress', content: this});
-    if (this.onProgress) this.onProgress();
+    this.dispatchEvent({ type: 'onProgress', content: this, loader: loader });
+    if (this.onProgress) this.onProgress(loader);
 
     if (!this.loadCount)
     {
