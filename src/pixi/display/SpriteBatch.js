@@ -91,7 +91,7 @@ PIXI.SpriteBatch.prototype._renderCanvas = function(renderSession)
 
     // alow for trimming
        
-    if (PIXI.canvas.PX_ROUND)
+    if (renderSession.roundPixels)
     {
         context.setTransform(transform.a, transform.c, transform.b, transform.d, Math.floor(transform.tx), Math.floor(transform.ty));
     }
