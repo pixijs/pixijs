@@ -20,24 +20,16 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
     this.type = PIXI.CANVAS_RENDERER;
 
     /**
+     * This sets if the CanvasRenderer will clear the canvas or not before the new render pass.
      * If the Stage is NOT transparent Pixi will use a canvas sized fillRect operation every frame to set the canvas background color.
-     * Disable this by setting this to false. For example if your game has a canvas filling background image you often don't need this set.
-     *
-     * @property useFillRect
-     * @type Boolean
-     * @default
-     */
-    this.useFillRect = true;
-
-    /**
      * If the Stage is transparent Pixi will use clearRect to clear the canvas every frame.
      * Disable this by setting this to false. For example if your game has a canvas filling background image you often don't need this set.
      *
-     * @property useClearRect
+     * @property clearBeforeRender
      * @type Boolean
      * @default
      */
-    this.useClearRect = true;
+    this.clearBeforeRender = true;
 
     /**
      * If true Pixi will Math.floor() x/y values when rendering, stopping pixel interpolation.
@@ -194,12 +186,12 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
     this.context.setTransform(1,0,0,1,0,0);
     this.context.globalAlpha = 1;
 
-    if (!this.transparent && this.useFillRect)
+    if (!this.transparent && this.clearBeforeRender)
     {
         this.context.fillStyle = stage.backgroundColorString;
         this.context.fillRect(0, 0, this.width, this.height);
     }
-    else if (this.transparent && this.useClearRect)
+    else if (this.transparent && this.clearBeforeRender)
     {
         this.context.clearRect(0, 0, this.width, this.height);
     }
