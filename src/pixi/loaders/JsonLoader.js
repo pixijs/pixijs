@@ -111,15 +111,10 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
 
                             var texture =  PIXI.TextureCache[i];
                             
-                            texture.trimmed = true;
-
                             var actualSize = frameData[i].sourceSize;
                             var realSize = frameData[i].spriteSourceSize;
 
-                            texture.trim.x = realSize.x;
-                            texture.trim.y = realSize.y;
-                            texture.trim.realWidth = actualSize.w;
-                            texture.trim.realHeight = actualSize.h;
+                            texture.trim = new PIXI.Rectangle(realSize.x, realSize.y, actualSize.w, actualSize.h);
                         }
                     }
                 }

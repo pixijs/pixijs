@@ -109,6 +109,7 @@ PIXI.RenderTexture.prototype.resize = function(width, height)
  */
 PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, position, clear)
 {
+    //TOOD replace position with matrix..
     var gl = this.renderer.gl;
 
     gl.colorMask(true, true, true, true);

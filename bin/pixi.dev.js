@@ -4,7 +4,7 @@
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-02-08
+ * Compiled: 2014-02-09
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -1782,7 +1782,15 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
 
         // allow for trimming
        
-        context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
+        if (renderSession.roundPixels)
+        {
+            context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx || 0, transform.ty || 0);
+        }
+        else
+        {
+            context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
+        }
+
 
         //if smoothingEnabled is supported and we need to change the smoothing property for this texture
         if(renderSession.smoothProperty && renderSession.scaleMode !== this.texture.baseTexture.scaleMode) {
@@ -1820,7 +1828,7 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
 
            
 
-            if(texture.trimmed)
+            if(texture.trim)
             {
                 var trim =  texture.trim;
 
@@ -1829,8 +1837,8 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
                                frame.y,
                                frame.width,
                                frame.height,
-                               trim.x - this.anchor.x * trim.realWidth,
-                               trim.y - this.anchor.y * trim.realHeight,
+                               trim.x - this.anchor.x * trim.width,
+                               trim.y - this.anchor.y * trim.height,
                                frame.width,
                                frame.height);
             }
@@ -1932,6 +1940,7 @@ PIXI.SpriteBatch.constructor = PIXI.SpriteBatch;
  */
 PIXI.SpriteBatch.prototype.initWebGL = function(gl)
 {
+    // TODO only one needed for the whole engine really?
     this.fastSpriteBatch = new PIXI.WebGLFastSpriteBatch(gl);
 
     this.ready = true;
@@ -1993,7 +2002,15 @@ PIXI.SpriteBatch.prototype._renderCanvas = function(renderSession)
 
     // alow for trimming
        
-    context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
+    if (renderSession.roundPixels)
+    {
+        context.setTransform(transform.a, transform.c, transform.b, transform.d, Math.floor(transform.tx), Math.floor(transform.ty));
+    }
+    else
+    {
+        context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
+    }
+
     context.save();
 
     for (var i = 0; i < this.children.length; i++) {
@@ -6426,15 +6443,15 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
 
     var w0, w1, h0, h1;
         
-    if (sprite.texture.trimmed)
+    if (sprite.texture.trim)
     {
         // if the sprite is trimmed then we need to add the extra space before transforming the sprite coords..
         var trim = sprite.texture.trim;
 
-        w1 = trim.x - aX * trim.realWidth;
+        w1 = trim.x - aX * trim.width;
         w0 = w1 + width;
 
-        h1 = trim.y - aY * trim.realHeight;
+        h1 = trim.y - aY * trim.height;
         h0 = h1 + height;
     }
     else
@@ -6893,15 +6910,15 @@ PIXI.WebGLFastSpriteBatch.prototype.renderSprite = function(sprite)
     width = sprite.texture.frame.width;
     height = sprite.texture.frame.height;
 
-    if (sprite.texture.trimmed)
+    if (sprite.texture.trim)
     {
         // if the sprite is trimmed then we need to add the extra space before transforming the sprite coords..
         var trim = sprite.texture.trim;
 
-        w1 = trim.x - sprite.anchor.x * trim.realWidth;
+        w1 = trim.x - sprite.anchor.x * trim.width;
         w0 = w1 + sprite.texture.frame.width;
 
-        h1 = trim.y - sprite.anchor.y * trim.realHeight;
+        h1 = trim.y - sprite.anchor.y * trim.height;
         h0 = h1 + sprite.texture.frame.height;
     }
     else
@@ -7967,6 +7984,27 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
 
     this.type = PIXI.CANVAS_RENDERER;
 
+    /**
+     * This sets if the CanvasRenderer will clear the canvas or not before the new render pass.
+     * If the Stage is NOT transparent Pixi will use a canvas sized fillRect operation every frame to set the canvas background color.
+     * If the Stage is transparent Pixi will use clearRect to clear the canvas every frame.
+     * Disable this by setting this to false. For example if your game has a canvas filling background image you often don't need this set.
+     *
+     * @property clearBeforeRender
+     * @type Boolean
+     * @default
+     */
+    this.clearBeforeRender = true;
+
+    /**
+     * If true Pixi will Math.floor() x/y values when rendering, stopping pixel interpolation.
+     * Handy for crisp pixel art and speed on legacy devices.
+     *
+     * @property roundPixels
+     * @type Boolean
+     * @default
+     */
+    this.roundPixels = false;
 
     /**
      * Whether the render view is transparent
@@ -8104,37 +8142,25 @@ PIXI.CanvasRenderer.prototype.constructor = PIXI.CanvasRenderer;
  */
 PIXI.CanvasRenderer.prototype.render = function(stage)
 {
-    //stage.__childrenAdded = [];
-    //stage.__childrenRemoved = [];
-
     // update textures if need be
     PIXI.texturesToUpdate.length = 0;
     PIXI.texturesToDestroy.length = 0;
 
     stage.updateTransform();
 
-    // update the background color
-  /*  if(this.view.style.backgroundColor !== stage.backgroundColorString && !this.transparent)
-        this.view.style.backgroundColor = stage.backgroundColorString; */
-
     this.context.setTransform(1,0,0,1,0,0);
+    this.context.globalAlpha = 1;
 
-    if(this.view.style.backgroundColor !== stage.backgroundColorString )
+    if (!this.transparent && this.clearBeforeRender)
     {
-        if(!this.transparent)
-        {
-            this.context.globalAlpha = 1;
-            this.context.fillStyle = stage.backgroundColorString;
-            this.context.fillRect(0, 0, this.width, this.height);
-        }
-        else
-        {
-            this.context.clearRect(0, 0, this.width, this.height);
-        }
+        this.context.fillStyle = stage.backgroundColorString;
+        this.context.fillRect(0, 0, this.width, this.height);
+    }
+    else if (this.transparent && this.clearBeforeRender)
+    {
+        this.context.clearRect(0, 0, this.width, this.height);
     }
 
-    //console.log(this.view.style.backgroundColor)
-   
     this.renderDisplayObject(stage);
 
     // run interaction!
@@ -11592,10 +11618,10 @@ PIXI.Texture = function(baseTexture, frame)
      * The trim point
      *
      * @property trim
-     * @type Point
+     * @type Rectangle
      */
-    this.trim = new PIXI.Point();
-
+    this.trim = null;
+  
     this.scope = this;
 
     if(baseTexture.hasLoaded)
@@ -11795,10 +11821,6 @@ PIXI.TextureUvs = function()
 };
 
 
-
-
-
-
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -11910,6 +11932,7 @@ PIXI.RenderTexture.prototype.resize = function(width, height)
  */
 PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, position, clear)
 {
+    //TOOD replace position with matrix..
     var gl = this.renderer.gl;
 
     gl.colorMask(true, true, true, true);
@@ -12262,15 +12285,10 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
 
                             var texture =  PIXI.TextureCache[i];
                             
-                            texture.trimmed = true;
-
                             var actualSize = frameData[i].sourceSize;
                             var realSize = frameData[i].spriteSourceSize;
 
-                            texture.trim.x = realSize.x;
-                            texture.trim.y = realSize.y;
-                            texture.trim.realWidth = actualSize.w;
-                            texture.trim.realHeight = actualSize.h;
+                            texture.trim = new PIXI.Rectangle(realSize.x, realSize.y, actualSize.w, actualSize.h);
                         }
                     }
                 }

@@ -142,15 +142,15 @@ PIXI.WebGLFastSpriteBatch.prototype.renderSprite = function(sprite)
     width = sprite.texture.frame.width;
     height = sprite.texture.frame.height;
 
-    if (sprite.texture.trimmed)
+    if (sprite.texture.trim)
     {
         // if the sprite is trimmed then we need to add the extra space before transforming the sprite coords..
         var trim = sprite.texture.trim;
 
-        w1 = trim.x - sprite.anchor.x * trim.realWidth;
+        w1 = trim.x - sprite.anchor.x * trim.width;
         w0 = w1 + sprite.texture.frame.width;
 
-        h1 = trim.y - sprite.anchor.y * trim.realHeight;
+        h1 = trim.y - sprite.anchor.y * trim.height;
         h0 = h1 + sprite.texture.frame.height;
     }
     else

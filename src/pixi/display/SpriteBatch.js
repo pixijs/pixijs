@@ -30,6 +30,7 @@ PIXI.SpriteBatch.constructor = PIXI.SpriteBatch;
  */
 PIXI.SpriteBatch.prototype.initWebGL = function(gl)
 {
+    // TODO only one needed for the whole engine really?
     this.fastSpriteBatch = new PIXI.WebGLFastSpriteBatch(gl);
 
     this.ready = true;

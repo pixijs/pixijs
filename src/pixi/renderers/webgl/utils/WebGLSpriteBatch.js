@@ -172,15 +172,15 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
 
     var w0, w1, h0, h1;
         
-    if (sprite.texture.trimmed)
+    if (sprite.texture.trim)
     {
         // if the sprite is trimmed then we need to add the extra space before transforming the sprite coords..
         var trim = sprite.texture.trim;
 
-        w1 = trim.x - aX * trim.realWidth;
+        w1 = trim.x - aX * trim.width;
         w0 = w1 + width;
 
-        h1 = trim.y - aY * trim.realHeight;
+        h1 = trim.y - aY * trim.height;
         h0 = h1 + height;
     }
     else
