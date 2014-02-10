@@ -8,9 +8,6 @@ function pixi_display_DisplayObject_confirmNew(obj) {
     //expect(obj).to.respondTo('removeFilter');
     expect(obj).to.respondTo('updateTransform');
 
-    expect(obj).to.have.property('last', obj);
-    expect(obj).to.have.property('first', obj);
-
     expect(obj).to.contain.property('position');
     pixi_core_Point_confirm(obj.position, 0, 0);
     expect(obj).to.contain.property('scale');

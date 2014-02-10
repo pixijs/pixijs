@@ -34,7 +34,6 @@ PIXI.SpriteBatch.prototype.initWebGL = function(gl)
     this.fastSpriteBatch = new PIXI.WebGLFastSpriteBatch(gl);
 
     this.ready = true;
-  //  alert("!")
 };
 
 /*

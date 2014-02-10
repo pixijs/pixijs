@@ -5,13 +5,13 @@
  /**
  * 
  * @class Strip
+ * @extends DisplayObjectContainer
  * @constructor
  * @param texture {Texture} TODO-Alvin
  * @param width {Number} the width of the TODO-Alvin
  * @param height {Number} the height of the TODO-Alvin
  * 
  */
-
 PIXI.Strip = function(texture, width, height)
 {
     PIXI.DisplayObjectContainer.call( this );
@@ -56,6 +56,7 @@ PIXI.Strip = function(texture, width, height)
     this.colors = new Float32Array()
     this.indices = new Uint16Array()
     */
+    
     this.width = width;
     this.height = height;
 
@@ -76,7 +77,7 @@ PIXI.Strip = function(texture, width, height)
 };
 
 // constructor
-PIXI.Strip.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
+PIXI.Strip.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
 PIXI.Strip.prototype.constructor = PIXI.Strip;
 
 /*

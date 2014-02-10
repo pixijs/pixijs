@@ -34,7 +34,6 @@ PIXI.WebGLSpriteBatch = function(gl)
      */
     this.size = 10000;//Math.pow(2, 16) /  this.vertSize;
 
- //   console.log(this.size);
     //the total number of floats in our batch
     var numVerts = this.size * 4 *  this.vertSize;
     //the total number of indices in our batch
@@ -161,7 +160,7 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
     var alpha = sprite.worldAlpha;
     var tint = sprite.tint;
 
-    var  verticies = this.vertices;
+    var verticies = this.vertices;
 
     var width = sprite.texture.frame.width;
     var height = sprite.texture.frame.height;

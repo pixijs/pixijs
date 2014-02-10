@@ -18,8 +18,6 @@
 		}
 	</style>
 
-
-
 	<script src="../../bin/pixi.dev.js"></script>
 </head>
 <body>
@@ -36,12 +34,12 @@
 	// add the renderer view element to the DOM
 	document.body.appendChild(renderer.view);
 
-	requestAnimFrame( animate );
+	requestAnimFrame(animate);
 
 	// create a background..
 	var background = PIXI.Sprite.fromImage("button_test_BG.jpg");
 
-	// add background to stage..
+	// add background to stage...
 	stage.addChild(background);
 
 	// create some textures from an image path
@@ -121,7 +119,6 @@
 		button.tap = function(data){
 			// click!
 			console.log("TAP!!");
-			//this.alpha = 0.5;
 		}
 
 		// add it to the stage
@@ -131,7 +128,7 @@
 		buttons.push(button);
 	};
 
-	// set some silly values..
+	// set some silly values...
 
 	buttons[0].scale.x = 1.2;
 
@@ -145,14 +142,12 @@
 	buttons[4].scale.x = 0.8;
 	buttons[4].scale.y = 1.2;
 	buttons[4].rotation = Math.PI;
-	// var button1 =
+
 	function animate() {
 
-	    requestAnimFrame( animate );
+	    requestAnimFrame(animate);
+
 	    // render the stage
-
-	    // do a test..
-
 	    renderer.render(stage);
 	}
 
@@ -160,14 +155,16 @@
 	var pixiLogo = PIXI.Sprite.fromImage("pixi.png");
 	stage.addChild(pixiLogo);
 
+	pixiLogo.buttonMode = true;
+
 	pixiLogo.position.x = 620 - 56;
-	pixiLogo.position.y = 400- 32;
+	pixiLogo.position.y = 400 - 32;
 
 	pixiLogo.setInteractive(true);
 
 	pixiLogo.click = pixiLogo.tap = function(){
 
-		var win=window.open("https://github.com/GoodBoyDigital/pixi.js", '_blank');
+		var win=window.open("http://www.pixijs.com", '_blank');
 
 	}
 	</script>

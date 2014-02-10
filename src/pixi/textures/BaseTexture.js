@@ -88,7 +88,6 @@ PIXI.BaseTexture = function(source, scaleMode)
             PIXI.texturesToUpdate.push(scope);
             scope.dispatchEvent( { type: 'loaded', content: scope } );
         };
-        //this.image.src = imageUrl;
     }
 
     this.imageUrl = null;
@@ -122,11 +121,11 @@ PIXI.BaseTexture.prototype.destroy = function()
 };
 
 /**
+ * Changes the source image of the texture
  *
- *
- * @method destroy
+ * @method updateSourceImage
+ * @param newSrc {String} the path of the image
  */
-
 PIXI.BaseTexture.prototype.updateSourceImage = function(newSrc)
 {
     this.hasLoaded = false;
@@ -141,6 +140,8 @@ PIXI.BaseTexture.prototype.updateSourceImage = function(newSrc)
  * @static
  * @method fromImage
  * @param imageUrl {String} The image url of the texture
+ * @param crossorigin {Boolean} 
+ * @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
  * @return BaseTexture
  */
 PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)

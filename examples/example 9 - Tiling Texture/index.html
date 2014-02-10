@@ -1,17 +1,13 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-	<title>pixi.js example 8 Dragging</title>
+	<title>pixi.js example 9 Tiling Texture</title>
 	<style>
 		body {
 			margin: 0;
 			padding: 0;
 			background-color: #FFFFFF;
 
-		}
-
-		.textHolder{
-			width: 400px;
 		}
 	</style>
 	<script src="../../bin/pixi.dev.js"></script>
@@ -30,7 +26,8 @@
 	renderer.view.style.position = "absolute";
 	renderer.view.style.top = "0px";
 	renderer.view.style.left = "0px";
-	requestAnimFrame( animate );
+
+	requestAnimFrame(animate);
 
 	// create a texture from an image path
 	var texture = PIXI.Texture.fromImage("p2.jpeg");
@@ -46,7 +43,7 @@
 
 	function animate() {
 
-	    requestAnimFrame( animate );
+	    requestAnimFrame(animate);
 
 
 		count += 0.005
@@ -56,8 +53,6 @@
 		tilingSprite.tilePosition.x += 1;
 		tilingSprite.tilePosition.y += 1;
 
-	    // just for fun, lets rotate mr rabbit a little
-		//stage.interactionManager.update();
 	    // render the stage
 	    renderer.render(stage);
 	}
