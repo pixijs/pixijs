@@ -3,9 +3,9 @@
  */
 
 /**
- * The atlas file loader is used to load in Atlas data and parsing it
+ * The atlas file loader is used to load in Atlas data and parse it
  * When loaded this class will dispatch a 'loaded' event
- * If load failed this class will dispatch a 'error' event
+ * If loading fails this class will dispatch an 'error' event
  * @class AtlasLoader
  * @extends EventTarget
  * @constructor
@@ -25,8 +25,11 @@ PIXI.AtlasLoader = function (url, crossorigin) {
 // constructor
 PIXI.AtlasLoader.constructor = PIXI.AtlasLoader;
 
-/**
- * This will begin loading the JSON file
+
+ /**
+ * Starts loading the JSON file
+ *
+ * @method load
  */
 PIXI.AtlasLoader.prototype.load = function () {
     this.ajaxRequest = new PIXI.AjaxRequest();
@@ -39,6 +42,7 @@ PIXI.AtlasLoader.prototype.load = function () {
 
 /**
  * Invoke when JSON file is loaded
+ * @method onAtlasLoaded
  * @private
  */
 PIXI.AtlasLoader.prototype.onAtlasLoaded = function () {
@@ -156,7 +160,8 @@ PIXI.AtlasLoader.prototype.onAtlasLoaded = function () {
 };
 
 /**
- * Invoke when json file loaded
+ * Invoke when json file has loaded
+ * @method onLoaded
  * @private
  */
 PIXI.AtlasLoader.prototype.onLoaded = function () {
@@ -174,6 +179,7 @@ PIXI.AtlasLoader.prototype.onLoaded = function () {
 
 /**
  * Invoke when error occured
+ * @method onError
  * @private
  */
 PIXI.AtlasLoader.prototype.onError = function () {

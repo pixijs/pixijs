@@ -70,7 +70,12 @@ PIXI.AssetLoader = function(assetURLs, crossorigin)
 // constructor
 PIXI.AssetLoader.prototype.constructor = PIXI.AssetLoader;
 
-
+/**
+ * Given a filename, returns its extension, wil
+ *
+ * @method _getDataType
+ * @param str {String} the name of the asset
+ */
 PIXI.AssetLoader.prototype._getDataType = function(str)
 {
     var test = 'data:';
@@ -107,8 +112,8 @@ PIXI.AssetLoader.prototype.load = function()
 {
     var scope = this;
 
-    function onLoad() {
-        scope.onAssetLoaded();
+    function onLoad(evt) {
+        scope.onAssetLoaded(evt.loader);
     }
 
     this.loadCount = this.assetURLs.length;
@@ -140,11 +145,11 @@ PIXI.AssetLoader.prototype.load = function()
  * @method onAssetLoaded
  * @private
  */
-PIXI.AssetLoader.prototype.onAssetLoaded = function()
+PIXI.AssetLoader.prototype.onAssetLoaded = function(loader)
 {
     this.loadCount--;
-    this.dispatchEvent({type: 'onProgress', content: this});
-    if (this.onProgress) this.onProgress();
+    this.dispatchEvent({ type: 'onProgress', content: this, loader: loader });
+    if (this.onProgress) this.onProgress(loader);
 
     if (!this.loadCount)
     {

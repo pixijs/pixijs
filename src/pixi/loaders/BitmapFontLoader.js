@@ -17,7 +17,7 @@
 PIXI.BitmapFontLoader = function(url, crossorigin)
 {
     /*
-     * i use texture packer to load the assets..
+     * I use texture packer to load the assets..
      * http://www.codeandweb.com/texturepacker
      * make sure to set the format as 'JSON'
      */
@@ -67,7 +67,7 @@ PIXI.BitmapFontLoader.prototype.constructor = PIXI.BitmapFontLoader;
  */
 PIXI.BitmapFontLoader.prototype.load = function()
 {
-    this.ajaxRequest = new XMLHttpRequest();
+    this.ajaxRequest = new PIXI.AjaxRequest();
     var scope = this;
     this.ajaxRequest.onreadystatechange = function()
     {
@@ -80,7 +80,7 @@ PIXI.BitmapFontLoader.prototype.load = function()
 };
 
 /**
- * Invoked when XML file is loaded, parses the data
+ * Invoked when the XML file is loaded, parses the data
  *
  * @method onXMLLoaded
  * @private

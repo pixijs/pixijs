@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.4.0</em>
+            <em>API Docs for: 1.4.3</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -73,6 +73,8 @@
             
                 <li><a href="../classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
             
+                <li><a href="../classes/DotScreenFilter.html">DotScreenFilter</a></li>
+            
                 <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
@@ -90,6 +92,8 @@
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
+            
+                <li><a href="../classes/PIXI.PixiFastShader.html">PIXI.PixiFastShader</a></li>
             
                 <li><a href="../classes/PIXI.PixiShader.html">PIXI.PixiShader</a></li>
             
@@ -115,9 +119,9 @@
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
-                <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
+                <li><a href="../classes/Sprite.html">Sprite</a></li>
             
-                <li><a href="../classes/Sprite™.html">Sprite™</a></li>
+                <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
             
                 <li><a href="../classes/Stage.html">Stage</a></li>
             
@@ -126,6 +130,8 @@
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
+            
+                <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
             
                 <li><a href="../classes/WebGLRenderer.html">WebGLRenderer</a></li>
             
@@ -188,9 +194,10 @@ PIXI.WebGLSpriteBatch = function(gl)
 {
    
 
-    this.size = 2000;
     this.vertSize = 6;
+    this.size = 10000;//Math.pow(2, 16) /  this.vertSize;
 
+ //   console.log(this.size);
     //the total number of floats in our batch
     var numVerts = this.size * 4 *  this.vertSize;
     //the total number of indices in our batch
@@ -363,7 +370,7 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
     verticies[index++] = alpha;
     verticies[index++] = tint;
 
-    // increment the batchs
+    // increment the batchsize
     this.currentBatchSize++;
 
 
@@ -371,7 +378,7 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
 
 PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
 {
-    var texture = tilingSprite.texture;
+    var texture = tilingSprite.tilingTexture;
 
     if(texture.baseTexture !== this.currentBaseTexture || this.currentBatchSize &gt;= this.size)
     {
@@ -386,7 +393,7 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
     }
 
      // set the textures uvs temporarily
-    // TODO create a seperate texture so that we can tile part of a texture
+    // TODO create a separate texture so that we can tile part of a texture
 
     if(!tilingSprite._uvs)tilingSprite._uvs = new Float32Array(8);
 
@@ -395,8 +402,8 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
     var offsetX =  tilingSprite.tilePosition.x/texture.baseTexture.width;
     var offsetY =  tilingSprite.tilePosition.y/texture.baseTexture.height;
 
-    var scaleX =  (tilingSprite.width / texture.baseTexture.width)  / tilingSprite.tileScale.x;
-    var scaleY =  (tilingSprite.height / texture.baseTexture.height) / tilingSprite.tileScale.y;
+    var scaleX =  (tilingSprite.width / texture.baseTexture.width)  / (tilingSprite.tileScale.x * tilingSprite.tileScaleOffset.x);
+    var scaleY =  (tilingSprite.height / texture.baseTexture.height) / (tilingSprite.tileScale.y * tilingSprite.tileScaleOffset.y);
 
     uvs[0] = 0 - offsetX;
     uvs[1] = 0 - offsetY;
@@ -495,8 +502,20 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
     gl.bindTexture(gl.TEXTURE_2D, this.currentBaseTexture._glTextures[gl.id] || PIXI.createWebGLTexture(this.currentBaseTexture, gl));
 
     // upload the verts to the buffer
-    var view = this.vertices.subarray(0, this.currentBatchSize * 4 * this.vertSize);
-    gl.bufferSubData(gl.ARRAY_BUFFER, 0, view);
+    
+    if(this.currentBatchSize &gt; ( this.size * 0.5 ) )
+    {
+        gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vertices);
+    }
+    else
+    {
+        var view = this.vertices.subarray(0, this.currentBatchSize * 4 * this.vertSize);
+
+        gl.bufferSubData(gl.ARRAY_BUFFER, 0, view);
+    }
+
+   // var view = this.vertices.subarray(0, this.currentBatchSize * 4 * this.vertSize);
+    //gl.bufferSubData(gl.ARRAY_BUFFER, 0, view);
     
     // now draw those suckas!
     gl.drawElements(gl.TRIANGLES, this.currentBatchSize * 6, gl.UNSIGNED_SHORT, 0);
@@ -552,6 +571,19 @@ PIXI.WebGLSpriteBatch.prototype.setBlendMode = function(blendMode)
     this.gl.blendFunc(blendModeWebGL[0], blendModeWebGL[1]);
 };
 
+PIXI.WebGLSpriteBatch.prototype.destroy = function()
+{
+
+    this.vertices = null;
+    this.indices = null;
+    
+    this.gl.deleteBuffer( this.vertexBuffer );
+    this.gl.deleteBuffer( this.indexBuffer );
+    
+    this.currentBaseTexture = null;
+    
+    this.gl = null;
+};
 
 
     </pre>

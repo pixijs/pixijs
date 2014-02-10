@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.4.0</em>
+            <em>API Docs for: 1.4.3</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -73,6 +73,8 @@
             
                 <li><a href="../classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
             
+                <li><a href="../classes/DotScreenFilter.html">DotScreenFilter</a></li>
+            
                 <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
@@ -90,6 +92,8 @@
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
+            
+                <li><a href="../classes/PIXI.PixiFastShader.html">PIXI.PixiFastShader</a></li>
             
                 <li><a href="../classes/PIXI.PixiShader.html">PIXI.PixiShader</a></li>
             
@@ -115,9 +119,9 @@
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
-                <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
+                <li><a href="../classes/Sprite.html">Sprite</a></li>
             
-                <li><a href="../classes/Sprite™.html">Sprite™</a></li>
+                <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
             
                 <li><a href="../classes/Stage.html">Stage</a></li>
             
@@ -126,6 +130,8 @@
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
+            
+                <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
             
                 <li><a href="../classes/WebGLRenderer.html">WebGLRenderer</a></li>
             
@@ -324,7 +330,7 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
         gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vertexArray);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer);
-        // nnow set the uvs..
+        // now set the uvs..
         this.uvArray[2] = filterArea.width/this.width;
         this.uvArray[5] = filterArea.height/this.height;
         this.uvArray[6] = filterArea.width/this.width;
@@ -336,7 +342,7 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
         var outputTexture = this.texturePool.pop();
         if(!outputTexture)outputTexture = new PIXI.FilterTexture(this.gl, this.width, this.height);
 
-        // need to clear this FBO as it may have some left over elements from a prvious filter.
+        // need to clear this FBO as it may have some left over elements from a previous filter.
         gl.bindFramebuffer(gl.FRAMEBUFFER, outputTexture.frameBuffer );
         gl.clear(gl.COLOR_BUFFER_BIT);
 
@@ -531,7 +537,7 @@ PIXI.WebGLFilterManager.prototype.initShaderBuffers = function()
 
 
     // bind and upload the vertexs..
-    // keep a refferance to the vertexFloatData..
+    // keep a reference to the vertexFloatData..
     this.vertexArray = new Float32Array([0.0, 0.0,
                                          1.0, 0.0,
                                          0.0, 1.0,
@@ -573,6 +579,29 @@ PIXI.WebGLFilterManager.prototype.initShaderBuffers = function()
     gl.ELEMENT_ARRAY_BUFFER,
     new Uint16Array([0, 1, 2, 1, 3, 2]),
     gl.STATIC_DRAW);
+};
+
+PIXI.WebGLFilterManager.prototype.destroy = function()
+{
+    var gl = this.gl;
+
+    this.filterStack = null;
+    
+    this.offsetX = 0;
+    this.offsetY = 0;
+
+    // destroy textures
+    for (var i = 0; i &lt; this.texturePool.length; i++) {
+        this.texturePool.destroy();
+    }
+    
+    this.texturePool = null;
+
+    //destroy buffers..
+    gl.deleteBuffer(this.vertexBuffer);
+    gl.deleteBuffer(this.uvBuffer);
+    gl.deleteBuffer(this.colorBuffer);
+    gl.deleteBuffer(this.indexBuffer);
 };
 
 PIXI.FilterTexture = function(gl, width, height)
@@ -617,6 +646,17 @@ PIXI.FilterTexture.prototype.resize = function(width, height)
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
 
 };
+
+PIXI.FilterTexture.prototype.destroy = function()
+{
+    var gl = this.gl;
+    gl.deleteFramebuffer( this.frameBuffer );
+    gl.deleteTexture( this.texture );
+
+    this.frameBuffer = null;
+    this.texture = null;
+};
+
 
     </pre>
 </div>

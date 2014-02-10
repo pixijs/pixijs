@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.4.0</em>
+            <em>API Docs for: 1.4.3</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -73,6 +73,8 @@
             
                 <li><a href="../classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
             
+                <li><a href="../classes/DotScreenFilter.html">DotScreenFilter</a></li>
+            
                 <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
@@ -90,6 +92,8 @@
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
+            
+                <li><a href="../classes/PIXI.PixiFastShader.html">PIXI.PixiFastShader</a></li>
             
                 <li><a href="../classes/PIXI.PixiShader.html">PIXI.PixiShader</a></li>
             
@@ -115,9 +119,9 @@
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
-                <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
+                <li><a href="../classes/Sprite.html">Sprite</a></li>
             
-                <li><a href="../classes/Sprite™.html">Sprite™</a></li>
+                <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
             
                 <li><a href="../classes/Stage.html">Stage</a></li>
             
@@ -126,6 +130,8 @@
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
+            
+                <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
             
                 <li><a href="../classes/WebGLRenderer.html">WebGLRenderer</a></li>
             
@@ -189,7 +195,7 @@
 PIXI.InteractionManager = function(stage)
 {
     /**
-     * a refference to the stage
+     * a reference to the stage
      *
      * @property stage
      * @type Stage
@@ -366,7 +372,7 @@ PIXI.InteractionManager.prototype.update = function()
     // frequency of 30fps??
     var now = Date.now();
     var diff = now - this.last;
-    diff = (diff * 30) / 1000;
+    diff = (diff * PIXI.INTERACTION_FREQUENCY ) / 1000;
     if(diff &lt; 1)return;
     this.last = now;
     //
@@ -375,7 +381,7 @@ PIXI.InteractionManager.prototype.update = function()
 
     // ok.. so mouse events??
     // yes for now :)
-    // OPTIMSE - how often to check??
+    // OPTIMISE - how often to check??
     if(this.dirty)
     {
         this.dirty = false;
@@ -398,6 +404,8 @@ PIXI.InteractionManager.prototype.update = function()
 
     this.interactionDOMElement.style.cursor = &#x27;inherit&#x27;;
 
+    var over = false;
+
     for (i = 0; i &lt; length; i++)
     {
         var item = this.interactiveItems[i];
@@ -408,42 +416,48 @@ PIXI.InteractionManager.prototype.update = function()
         // OPTIMISATION - only calculate every time if the mousemove function exists..
         // OK so.. does the object have any other interactive functions?
         // hit-test the clip!
-
-
-        if(item.mouseover || item.mouseout || item.buttonMode)
+       // if(item.mouseover || item.mouseout || item.buttonMode)
+       // {
+        // ok so there are some functions so lets hit test it..
+        item.__hit = this.hitTest(item, this.mouse);
+        this.mouse.target = item;
+        // ok so deal with interactions..
+        // looks like there was a hit!
+        if(item.__hit &amp;&amp; !over)
         {
-            // ok so there are some functions so lets hit test it..
-            item.__hit = this.hitTest(item, this.mouse);
-            this.mouse.target = item;
-            // ok so deal with interactions..
-            // loks like there was a hit!
-            if(item.__hit)
+            if(item.buttonMode) this.interactionDOMElement.style.cursor = item.defaultCursor;
+
+            if(!item.interactiveChildren)over = true;
+
+            if(!item.__isOver)
             {
-                if(item.buttonMode) this.interactionDOMElement.style.cursor = item.defaultCursor;
 
-                if(!item.__isOver)
-                {
+                if(item.mouseover)item.mouseover(this.mouse);
+                item.__isOver = true;
 
-                    if(item.mouseover)item.mouseover(this.mouse);
-                    item.__isOver = true;
-                }
+                // just the one!
+                //break;
+                
+
             }
-            else
+            //break;
+        }
+        else
+        {
+            if(item.__isOver)
             {
-                if(item.__isOver)
-                {
-                    // roll out!
-                    if(item.mouseout)item.mouseout(this.mouse);
-                    item.__isOver = false;
-                }
+                // roll out!
+                if(item.mouseout)item.mouseout(this.mouse);
+                item.__isOver = false;
             }
         }
+     //   }
         // ---&gt;
     }
 };
 
 /**
- * Is called when the mouse moves accross the renderer element
+ * Is called when the mouse moves across the renderer element
  *
  * @method onMouseMove
  * @param event {Event} The DOM event of the mouse moving
@@ -483,7 +497,9 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
 {
     this.mouse.originalEvent = event || window.event; //IE uses window.event
 
-    // loop through inteaction tree...
+    if(PIXI.AUTO_PREVENT_DEFULT)this.mouse.originalEvent.preventDefault();
+
+    // loop through interaction tree...
     // hit test each item! -&gt;
     // get interactive items under point??
     //stage.__i
@@ -542,6 +558,7 @@ PIXI.InteractionManager.prototype.onMouseOut = function()
  */
 PIXI.InteractionManager.prototype.onMouseUp = function(event)
 {
+
     this.mouse.originalEvent = event || window.event; //IE uses window.event
 
     var length = this.interactiveItems.length;
@@ -551,34 +568,34 @@ PIXI.InteractionManager.prototype.onMouseUp = function(event)
     {
         var item = this.interactiveItems[i];
 
-        if(item.mouseup || item.mouseupoutside || item.click)
+        //if(item.mouseup || item.mouseupoutside || item.click)
+        //{
+        item.__hit = this.hitTest(item, this.mouse);
+
+        if(item.__hit &amp;&amp; !up)
         {
-            item.__hit = this.hitTest(item, this.mouse);
-
-            if(item.__hit &amp;&amp; !up)
+            //call the function!
+            if(item.mouseup)
             {
-                //call the function!
-                if(item.mouseup)
-                {
-                    item.mouseup(this.mouse);
-                }
-                if(item.__isDown)
-                {
-                    if(item.click)item.click(this.mouse);
-                }
-
-                if(!item.interactiveChildren)up = true;
+                item.mouseup(this.mouse);
             }
-            else
+            if(item.__isDown)
             {
-                if(item.__isDown)
-                {
-                    if(item.mouseupoutside)item.mouseupoutside(this.mouse);
-                }
+                if(item.click)item.click(this.mouse);
             }
 
-            item.__isDown = false;
+            if(!item.interactiveChildren)up = true;
         }
+        else
+        {
+            if(item.__isDown)
+            {
+                if(item.mouseupoutside)item.mouseupoutside(this.mouse);
+            }
+        }
+
+        item.__isDown = false;
+        //}
     }
 };
 
@@ -587,7 +604,7 @@ PIXI.InteractionManager.prototype.onMouseUp = function(event)
  *
  * @method hitTest
  * @param item {DisplayObject} The displayObject to test for a hit
- * @param interactionData {InteractionData} The interactiondata object to update in the case of a hit
+ * @param interactionData {InteractionData} The interactionData object to update in the case of a hit
  * @private
  */
 PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
@@ -658,10 +675,10 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 };
 
 /**
- * Is called when a touch is moved accross the renderer element
+ * Is called when a touch is moved across the renderer element
  *
  * @method onTouchMove
- * @param event {Event} The DOM event of a touch moving accross the renderer view
+ * @param event {Event} The DOM event of a touch moving across the renderer view
  * @private
  */
 PIXI.InteractionManager.prototype.onTouchMove = function(event)
@@ -680,6 +697,10 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
         // update the touch position
         touchData.global.x = (touchEvent.clientX - rect.left) * (this.target.width / rect.width);
         touchData.global.y = (touchEvent.clientY - rect.top)  * (this.target.height / rect.height);
+        if(navigator.isCocoonJS) {
+            touchData.global.x = touchEvent.clientX;
+            touchData.global.y = touchEvent.clientY;
+        }
     }
 
     var length = this.interactiveItems.length;
@@ -702,6 +723,8 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
 {
     var rect = this.interactionDOMElement.getBoundingClientRect();
 
+    if(PIXI.AUTO_PREVENT_DEFULT)event.preventDefault();
+    
     var changedTouches = event.changedTouches;
     for (var i=0; i &lt; changedTouches.length; i++)
     {
@@ -715,6 +738,10 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
         this.touchs[touchEvent.identifier] = touchData;
         touchData.global.x = (touchEvent.clientX - rect.left) * (this.target.width / rect.width);
         touchData.global.y = (touchEvent.clientY - rect.top)  * (this.target.height / rect.height);
+        if(navigator.isCocoonJS) {
+            touchData.global.x = touchEvent.clientX;
+            touchData.global.y = touchEvent.clientY;
+        }
 
         var length = this.interactiveItems.length;
 
@@ -760,6 +787,10 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
         var up = false;
         touchData.global.x = (touchEvent.clientX - rect.left) * (this.target.width / rect.width);
         touchData.global.y = (touchEvent.clientY - rect.top)  * (this.target.height / rect.height);
+        if(navigator.isCocoonJS) {
+            touchData.global.x = touchEvent.clientX;
+            touchData.global.y = touchEvent.clientY;
+        }
 
         var length = this.interactiveItems.length;
         for (var j = 0; j &lt; length; j++)

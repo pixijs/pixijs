@@ -5,7 +5,9 @@
 /**
  * A set of functions used by the webGL renderer to draw the primitive graphics data
  *
- * @class CanvasGraphics
+ * @class WebGLGraphics
+ * @private
+ * @static
  */
 PIXI.WebGLGraphics = function()
 {
@@ -19,7 +21,7 @@ PIXI.WebGLGraphics = function()
  * @private
  * @method renderGraphics
  * @param graphics {Graphics}
- * @param projection {Object}
+ * @param renderSession {Object}
  */
 PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projection, offset)
 {
@@ -53,15 +55,12 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
 
     renderSession.shaderManager.activatePrimitiveShader();
 
-    // This  could be speeded up fo sure!
-    var m = PIXI.mat3.clone(graphics.worldTransform);
+    // This  could be speeded up for sure!
 
-    PIXI.mat3.transpose(m);
-
-    // set the matrix transform for the
+    // set the matrix transform
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
-    gl.uniformMatrix3fv(shader.translationMatrix, false, m);
+    gl.uniformMatrix3fv(shader.translationMatrix, false, graphics.worldTransform.toArray(true));
 
     gl.uniform2f(shader.projectionVector, projection.x, -projection.y);
     gl.uniform2f(shader.offsetVector, -offset.x, -offset.y);
@@ -91,7 +90,8 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
  * @static
  * @private
  * @method updateGraphics
- * @param graphics {Graphics}
+ * @param graphicsData {Graphics} The graphics object to update
+ * @param gl {WebGLContext} the current WebGL drawing context
  */
 PIXI.WebGLGraphics.updateGraphics = function(graphics, gl)
 {
@@ -145,7 +145,7 @@ PIXI.WebGLGraphics.updateGraphics = function(graphics, gl)
  * @static
  * @private
  * @method buildRectangle
- * @param graphics {Graphics}
+ * @param graphicsData {Graphics} The graphics object containing all the necessary properties
  * @param webGLData {Object}
  */
 PIXI.WebGLGraphics.buildRectangle = function(graphicsData, webGLData)
@@ -214,14 +214,13 @@ PIXI.WebGLGraphics.buildRectangle = function(graphicsData, webGLData)
  * @static
  * @private
  * @method buildCircle
- * @param graphics {Graphics}
+ * @param graphicsData {Graphics} The graphics object to draw
  * @param webGLData {Object}
  */
 PIXI.WebGLGraphics.buildCircle = function(graphicsData, webGLData)
 {
-    // --- //
+    
     // need to convert points to a nice regular data
-    //
     var rectData = graphicsData.points;
     var x = rectData[0];
     var y = rectData[1];
@@ -287,7 +286,7 @@ PIXI.WebGLGraphics.buildCircle = function(graphicsData, webGLData)
  * @static
  * @private
  * @method buildLine
- * @param graphics {Graphics}
+ * @param graphicsData {Graphics} The graphics object containing all the necessary properties
  * @param webGLData {Object}
  */
 PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
@@ -310,7 +309,7 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
     var firstPoint = new PIXI.Point( points[0], points[1] );
     var lastPoint = new PIXI.Point( points[points.length - 2], points[points.length - 1] );
 
-    // if the first point is the last point - goona have issues :)
+    // if the first point is the last point - gonna have issues :)
     if(firstPoint.x === lastPoint.x && firstPoint.y === lastPoint.y)
     {
         points.pop();
@@ -497,7 +496,7 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
  * @static
  * @private
  * @method buildPoly
- * @param graphics {Graphics}
+ * @param graphicsData {Graphics} The graphics object containing all the necessary properties
  * @param webGLData {Object}
  */
 PIXI.WebGLGraphics.buildPoly = function(graphicsData, webGLData)

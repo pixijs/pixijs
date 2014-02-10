@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.4.0</em>
+            <em>API Docs for: 1.4.3</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -73,6 +73,8 @@
             
                 <li><a href="../classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
             
+                <li><a href="../classes/DotScreenFilter.html">DotScreenFilter</a></li>
+            
                 <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
@@ -90,6 +92,8 @@
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
+            
+                <li><a href="../classes/PIXI.PixiFastShader.html">PIXI.PixiFastShader</a></li>
             
                 <li><a href="../classes/PIXI.PixiShader.html">PIXI.PixiShader</a></li>
             
@@ -115,9 +119,9 @@
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
-                <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
+                <li><a href="../classes/Sprite.html">Sprite</a></li>
             
-                <li><a href="../classes/Sprite™.html">Sprite™</a></li>
+                <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
             
                 <li><a href="../classes/Stage.html">Stage</a></li>
             
@@ -126,6 +130,8 @@
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
+            
+                <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
             
                 <li><a href="../classes/WebGLRenderer.html">WebGLRenderer</a></li>
             
@@ -185,7 +191,7 @@
 
 /**
  * The Spine loader is used to load in JSON spine data
- * To generate the data you need to use http://esotericsoftware.com/ and export the &quot;JSON&quot; format
+ * To generate the data you need to use http://esotericsoftware.com/ and export in the &quot;JSON&quot; format
  * Due to a clash of names  You will need to change the extension of the spine file from *.json to *.anim for it to load
  * See example 12 (http://www.goodboydigital.com/pixijs/examples/12/) to see a working example and check out the source
  * You will need to generate a sprite sheet to accompany the spine data
@@ -240,24 +246,9 @@ PIXI.SpineLoader.prototype.load = function () {
     var jsonLoader = new PIXI.JsonLoader(this.url, this.crossorigin);
     jsonLoader.addEventListener(&quot;loaded&quot;, function (event) {
         scope.json = event.content.json;
-        scope.onJSONLoaded();
+        scope.onLoaded();
     });
     jsonLoader.load();
-};
-
-/**
- * Invoke when JSON file is loaded
- *
- * @method onJSONLoaded
- * @private
- */
-PIXI.SpineLoader.prototype.onJSONLoaded = function () {
-    var spineJsonParser = new spine.SkeletonJson();
-    var skeletonData = spineJsonParser.readSkeletonData(this.json);
-
-    PIXI.AnimCache[this.url] = skeletonData;
-
-    this.onLoaded();
 };
 
 /**

@@ -5,7 +5,7 @@
 /**
  A RenderTexture is a special texture that allows any pixi displayObject to be rendered to it.
 
- __Hint__: All DisplayObjects (exmpl. Sprites) that renders on RenderTexture should be preloaded.
+ __Hint__: All DisplayObjects (exmpl. Sprites) that render on RenderTexture should be preloaded.
  Otherwise black rectangles will be drawn instead.
 
  RenderTexture takes snapshot of DisplayObject passed to render method. If DisplayObject is passed to render method, position and rotation of it will be ignored. For example:
@@ -24,30 +24,52 @@
     doc.addChild(sprite);
     renderTexture.render(doc);  // Renders to center of renderTexture
 
- @class RenderTexture
- @extends Texture
- @constructor
- @param width {Number} The width of the render texture
- @param height {Number} The height of the render texture
+ * @class RenderTexture
+ * @extends Texture
+ * @constructor
+ * @param width {Number} The width of the render texture
+ * @param height {Number} The height of the render texture
  */
 PIXI.RenderTexture = function(width, height, renderer)
 {
     PIXI.EventTarget.call( this );
 
+    /**
+     * The with of the render texture
+     *
+     * @property width
+     * @type Number
+     */
     this.width = width || 100;
+    /**
+     * The height of the render texture
+     *
+     * @property height
+     * @type Number
+     */
     this.height = height || 100;
 
-    this.indetityMatrix = PIXI.mat3.create();
-
+    /**
+     * The framing rectangle of the render texture
+     *
+     * @property frame
+     * @type Rectangle
+     */
     this.frame = new PIXI.Rectangle(0, 0, this.width, this.height);
 
+    /**
+     * The base texture object that this texture uses
+     *
+     * @property baseTexture
+     * @type BaseTexture
+     */
     this.baseTexture = new PIXI.BaseTexture();
     this.baseTexture.width = this.width;
     this.baseTexture.height = this.height;
     this.baseTexture._glTextures = [];
 
     this.baseTexture.hasLoaded = true;
-    
+
     // each render texture can only belong to one renderer at the moment if its webGL
     this.renderer = renderer || PIXI.defaultRenderer;
 
@@ -69,9 +91,11 @@ PIXI.RenderTexture = function(width, height, renderer)
     }
 
     PIXI.Texture.frameUpdates.push(this);
+
+
 };
 
-PIXI.RenderTexture.prototype = Object.create( PIXI.Texture.prototype );
+PIXI.RenderTexture.prototype = Object.create(PIXI.Texture.prototype);
 PIXI.RenderTexture.prototype.constructor = PIXI.RenderTexture;
 
 PIXI.RenderTexture.prototype.resize = function(width, height)
@@ -87,7 +111,7 @@ PIXI.RenderTexture.prototype.resize = function(width, height)
         this.projection.x = this.width / 2;
         this.projection.y = -this.height / 2;
 
-        var gl = this.gl;
+        var gl = this.renderer.gl;
         gl.bindTexture(gl.TEXTURE_2D, this.baseTexture._glTextures[gl.id]);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  this.width,  this.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
     }
@@ -109,6 +133,7 @@ PIXI.RenderTexture.prototype.resize = function(width, height)
  */
 PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, position, clear)
 {
+    //TOOD replace position with matrix..
     var gl = this.renderer.gl;
 
     gl.colorMask(true, true, true, true);
@@ -124,15 +149,15 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, position, cle
 
     //TODO -? create a new one??? dont think so!
     var originalWorldTransform = displayObject.worldTransform;
-    displayObject.worldTransform = PIXI.mat3.create();//sthis.indetityMatrix;
+    displayObject.worldTransform = PIXI.RenderTexture.tempMatrix;
     // modify to flip...
-    displayObject.worldTransform[4] = -1;
-    displayObject.worldTransform[5] = this.projection.y * -2;
+    displayObject.worldTransform.d = -1;
+    displayObject.worldTransform.ty = this.projection.y * -2;
 
     if(position)
     {
-        displayObject.worldTransform[2] = position.x;
-        displayObject.worldTransform[5] -= position.y;
+        displayObject.worldTransform.tx = position.x;
+        displayObject.worldTransform.ty -= position.y;
     }
 
     for(var i=0,j=children.length; i<j; i++)
@@ -140,9 +165,11 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, position, cle
         children[i].updateTransform();
     }
 
+    // update the textures!
+    PIXI.WebGLRenderer.updateTextures();
 
     // 
-    this.renderer.renderDisplayObject(displayObject, this.projection);
+    this.renderer.renderDisplayObject(displayObject, this.projection, this.textureBuffer.frameBuffer);
 
     displayObject.worldTransform = originalWorldTransform;
 };
@@ -158,15 +185,14 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, position, cle
  */
 PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, position, clear)
 {
-    //console.log("!!")
     var children = displayObject.children;
 
-    displayObject.worldTransform = PIXI.mat3.create();
+    displayObject.worldTransform = PIXI.RenderTexture.tempMatrix;
 
     if(position)
     {
-        displayObject.worldTransform[2] = position.x;
-        displayObject.worldTransform[5] = position.y;
+        displayObject.worldTransform.tx = position.x;
+        displayObject.worldTransform.ty = position.y;
     }
 
     for(var i = 0, j = children.length; i < j; i++)
@@ -181,5 +207,6 @@ PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, position, cl
     this.renderer.renderDisplayObject(displayObject, context);
 
     context.setTransform(1,0,0,1,0,0);
-
 };
+
+PIXI.RenderTexture.tempMatrix = new PIXI.Matrix();

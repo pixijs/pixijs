@@ -24,10 +24,11 @@
 	// add the renderer view element to the DOM
 	document.body.appendChild(renderer.view);
 
-	requestAnimFrame( animate );
+	requestAnimFrame(animate);
 
 	// create a texture from an image path
 	var texture = PIXI.Texture.fromImage("bunny.png");
+
 	// create a new Sprite using the texture
 	var bunny = new PIXI.Sprite(texture);
 
@@ -45,10 +46,9 @@
 
 	    requestAnimFrame( animate );
 
-	    // just for fun, lets rotate mr rabbit a little
+	    // just for fun, let's rotate mr rabbit a little
 	    bunny.rotation += 0.1;
 
-//	    console.log(stage.getBounds().width);
 	    // render the stage
 	    renderer.render(stage);
 	}

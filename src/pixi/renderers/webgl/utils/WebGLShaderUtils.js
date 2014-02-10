@@ -2,6 +2,9 @@
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
+// TODO Alvin and Mat
+// Should we eventually create a Utils class ? 
+// Or just move this file to the pixi.js file ?
 PIXI.initDefaultShaders = function()
 {
    
@@ -37,7 +40,6 @@ PIXI._CompileShader = function(gl, shaderSrc, shaderType)
 
 PIXI.compileProgram = function(gl, vertexSrc, fragmentSrc)
 {
-    //var gl = PIXI.gl;
     var fragmentShader = PIXI.CompileFragmentShader(gl, fragmentSrc);
     var vertexShader = PIXI.CompileVertexShader(gl, vertexSrc);
 

@@ -8,10 +8,10 @@
  *
  * @class CanvasRenderer
  * @constructor
- * @param width=0 {Number} the width of the canvas view
- * @param height=0 {Number} the height of the canvas view
- * @param view {Canvas} the canvas to use as a view, optional
- * @param transparent=false {Boolean} the transparency of the render view, default false
+ * @param width=800 {Number} the width of the canvas view
+ * @param height=600 {Number} the height of the canvas view
+ * @param [view] {HTMLCanvasElement} the canvas to use as a view, optional
+ * @param [transparent=false] {Boolean} the transparency of the render view, default false
  */
 PIXI.CanvasRenderer = function(width, height, view, transparent)
 {
@@ -19,6 +19,34 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
 
     this.type = PIXI.CANVAS_RENDERER;
 
+    /**
+     * This sets if the CanvasRenderer will clear the canvas or not before the new render pass.
+     * If the Stage is NOT transparent Pixi will use a canvas sized fillRect operation every frame to set the canvas background color.
+     * If the Stage is transparent Pixi will use clearRect to clear the canvas every frame.
+     * Disable this by setting this to false. For example if your game has a canvas filling background image you often don't need this set.
+     *
+     * @property clearBeforeRender
+     * @type Boolean
+     * @default
+     */
+    this.clearBeforeRender = true;
+
+    /**
+     * If true Pixi will Math.floor() x/y values when rendering, stopping pixel interpolation.
+     * Handy for crisp pixel art and speed on legacy devices.
+     *
+     * @property roundPixels
+     * @type Boolean
+     * @default
+     */
+    this.roundPixels = false;
+
+    /**
+     * Whether the render view is transparent
+     *
+     * @property transparent
+     * @type Boolean
+     */
     this.transparent = !!transparent;
 
     if(!PIXI.blendModesCanvas)
@@ -31,6 +59,19 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
             PIXI.blendModesCanvas[PIXI.blendModes.ADD]      = "lighter"; //IS THIS OK???
             PIXI.blendModesCanvas[PIXI.blendModes.MULTIPLY] = "multiply";
             PIXI.blendModesCanvas[PIXI.blendModes.SCREEN]   = "screen";
+            PIXI.blendModesCanvas[PIXI.blendModes.OVERLAY]  = "overlay";
+            PIXI.blendModesCanvas[PIXI.blendModes.DARKEN]   = "darken";
+            PIXI.blendModesCanvas[PIXI.blendModes.LIGHTEN]  = "lighten";
+            PIXI.blendModesCanvas[PIXI.blendModes.COLOR_DODGE] = "color-dodge";
+            PIXI.blendModesCanvas[PIXI.blendModes.COLOR_BURN] = "color-burn";
+            PIXI.blendModesCanvas[PIXI.blendModes.HARD_LIGHT] = "hard-light";
+            PIXI.blendModesCanvas[PIXI.blendModes.SOFT_LIGHT] = "soft-light";
+            PIXI.blendModesCanvas[PIXI.blendModes.DIFFERENCE] = "difference";
+            PIXI.blendModesCanvas[PIXI.blendModes.EXCLUSION] = "exclusion";
+            PIXI.blendModesCanvas[PIXI.blendModes.HUE]       = "hue";
+            PIXI.blendModesCanvas[PIXI.blendModes.SATURATION] = "saturation";
+            PIXI.blendModesCanvas[PIXI.blendModes.COLOR]      = "color";
+            PIXI.blendModesCanvas[PIXI.blendModes.LUMINOSITY] = "luminosity";
         }
         else
         {
@@ -39,6 +80,19 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
             PIXI.blendModesCanvas[PIXI.blendModes.ADD]      = "lighter"; //IS THIS OK???
             PIXI.blendModesCanvas[PIXI.blendModes.MULTIPLY] = "source-over";
             PIXI.blendModesCanvas[PIXI.blendModes.SCREEN]   = "source-over";
+            PIXI.blendModesCanvas[PIXI.blendModes.OVERLAY]  = "source-over";
+            PIXI.blendModesCanvas[PIXI.blendModes.DARKEN]   = "source-over";
+            PIXI.blendModesCanvas[PIXI.blendModes.LIGHTEN]  = "source-over";
+            PIXI.blendModesCanvas[PIXI.blendModes.COLOR_DODGE] = "source-over";
+            PIXI.blendModesCanvas[PIXI.blendModes.COLOR_BURN] = "source-over";
+            PIXI.blendModesCanvas[PIXI.blendModes.HARD_LIGHT] = "source-over";
+            PIXI.blendModesCanvas[PIXI.blendModes.SOFT_LIGHT] = "source-over";
+            PIXI.blendModesCanvas[PIXI.blendModes.DIFFERENCE] = "source-over";
+            PIXI.blendModesCanvas[PIXI.blendModes.EXCLUSION] = "source-over";
+            PIXI.blendModesCanvas[PIXI.blendModes.HUE]       = "source-over";
+            PIXI.blendModesCanvas[PIXI.blendModes.SATURATION] = "source-over";
+            PIXI.blendModesCanvas[PIXI.blendModes.COLOR]      = "source-over";
+            PIXI.blendModesCanvas[PIXI.blendModes.LUMINOSITY] = "source-over";
         }
     }
 
@@ -61,33 +115,19 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
     this.height = height || 600;
 
     /**
-     * The canvas element that the everything is drawn to
+     * The canvas element that everything is drawn to
      *
      * @property view
-     * @type Canvas
+     * @type HTMLCanvasElement
      */
     this.view = view || document.createElement( "canvas" );
 
     /**
-     * The canvas context that the everything is drawn to
+     * The canvas 2d context that everything is drawn with
      * @property context
-     * @type Canvas 2d Context
+     * @type HTMLCanvasElement 2d Context
      */
-    this.context = this.view.getContext( "2d" , { alpha: this.transparent } );
-
-    //some filter variables
-    this.smoothProperty = null;
-
-    if("imageSmoothingEnabled" in this.context)
-        this.smoothProperty = "imageSmoothingEnabled";
-    else if("webkitImageSmoothingEnabled" in this.context)
-        this.smoothProperty = "webkitImageSmoothingEnabled";
-    else if("mozImageSmoothingEnabled" in this.context)
-        this.smoothProperty = "mozImageSmoothingEnabled";
-    else if("oImageSmoothingEnabled" in this.context)
-        this.smoothProperty = "oImageSmoothingEnabled";
-
-    this.scaleMode = null;
+    this.context = this.view.getContext( "2d", { alpha: this.transparent } );
 
     this.refresh = true;
     // hack to enable some hardware acceleration!
@@ -97,12 +137,33 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
     this.view.height = this.height;
     this.count = 0;
 
+    /**
+     * Instance of a PIXI.CanvasMaskManager, handles masking when using the canvas renderer
+     * @property CanvasMaskManager
+     * @type CanvasMaskManager
+     */
     this.maskManager = new PIXI.CanvasMaskManager();
 
-    this.renderSession = {};
-    this.renderSession.context = this.context;
-    this.renderSession.maskManager = this.maskManager;
-    
+    /**
+     * The render session is just a bunch of parameter used for rendering
+     * @property renderSession
+     * @type Object
+     */
+    this.renderSession = {
+        context: this.context,
+        maskManager: this.maskManager,
+        scaleMode: null,
+        smoothProperty: null
+    };
+
+    if("imageSmoothingEnabled" in this.context)
+        this.renderSession.smoothProperty = "imageSmoothingEnabled";
+    else if("webkitImageSmoothingEnabled" in this.context)
+        this.renderSession.smoothProperty = "webkitImageSmoothingEnabled";
+    else if("mozImageSmoothingEnabled" in this.context)
+        this.renderSession.smoothProperty = "mozImageSmoothingEnabled";
+    else if("oImageSmoothingEnabled" in this.context)
+        this.renderSession.smoothProperty = "oImageSmoothingEnabled";
 };
 
 // constructor
@@ -116,23 +177,26 @@ PIXI.CanvasRenderer.prototype.constructor = PIXI.CanvasRenderer;
  */
 PIXI.CanvasRenderer.prototype.render = function(stage)
 {
-    //stage.__childrenAdded = [];
-    //stage.__childrenRemoved = [];
-
     // update textures if need be
     PIXI.texturesToUpdate.length = 0;
     PIXI.texturesToDestroy.length = 0;
 
     stage.updateTransform();
 
-    // update the background color
-    if(this.view.style.backgroundColor !== stage.backgroundColorString && !this.transparent)
-        this.view.style.backgroundColor = stage.backgroundColorString;
-
     this.context.setTransform(1,0,0,1,0,0);
-    this.context.clearRect(0, 0, this.width, this.height);
+    this.context.globalAlpha = 1;
+
+    if (!this.transparent && this.clearBeforeRender)
+    {
+        this.context.fillStyle = stage.backgroundColorString;
+        this.context.fillRect(0, 0, this.width, this.height);
+    }
+    else if (this.transparent && this.clearBeforeRender)
+    {
+        this.context.clearRect(0, 0, this.width, this.height);
+    }
+
     this.renderDisplayObject(stage);
-    //as
 
     // run interaction!
     if(stage.interactive)
@@ -153,7 +217,7 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 };
 
 /**
- * resizes the canvas view to the specified width and height
+ * Resizes the canvas view to the specified width and height
  *
  * @method resize
  * @param width {Number} the new width of the canvas view
@@ -173,11 +237,12 @@ PIXI.CanvasRenderer.prototype.resize = function(width, height)
  *
  * @method renderDisplayObject
  * @param displayObject {DisplayObject} The displayObject to render
+ * @param context {Context2D} the context 2d method of the canvas
  * @private
  */
 PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject, context)
 {
-    // no loger recurrsive!
+    // no longer recursive!
     //var transform;
     //var context = this.context;
 
@@ -275,6 +340,15 @@ PIXI.CanvasRenderer.prototype.renderStrip = function(strip)
     }
 };
 
+/**
+ * Creates a Canvas element of the given size
+ *
+ * @method CanvasBuffer
+ * @param width {Number} the width for the newly created canvas
+ * @param height {Number} the height for the newly created canvas
+ * @static
+ * @private
+ */
 PIXI.CanvasBuffer = function(width, height)
 {
     this.width = width;
@@ -283,15 +357,29 @@ PIXI.CanvasBuffer = function(width, height)
     this.canvas = document.createElement( "canvas" );
     this.context = this.canvas.getContext( "2d" );
 
-//     this.context.f
     this.canvas.width = width;
     this.canvas.height = height;
 };
 
+/**
+ * Clears the canvas that was created by the CanvasBuffer class
+ *
+ * @method clear
+ * @private
+ */
 PIXI.CanvasBuffer.prototype.clear = function()
 {
     this.context.clearRect(0,0, this.width, this.height);
 };
+
+/**
+ * Resizes the canvas that was created by the CanvasBuffer class to the specified width and height
+ *
+ * @method resize
+ * @param width {Number} the new width of the canvas
+ * @param height {Number} the new height of the canvas
+ * @private
+ */
 
 PIXI.CanvasBuffer.prototype.resize = function(width, height)
 {

@@ -4,11 +4,15 @@
  */
 
 /**
-* @class PIXI.PixiShader
+* @class PixiShader
 * @constructor
 */
 PIXI.PixiShader = function(gl)
 {
+    /**
+     * @property gl
+     * @type WebGLContext
+     */
     this.gl = gl;
 
     /**
@@ -35,12 +39,15 @@ PIXI.PixiShader = function(gl)
     */
     this.textureCount = 0;
 
+    this.attributes = [];
 
     this.init();
 };
 
 /**
-* @method PIXI.PixiShader#init
+* Initialises the shader
+* @method init
+*
 */
 PIXI.PixiShader.prototype.init = function()
 {
@@ -66,13 +73,15 @@ PIXI.PixiShader.prototype.init = function()
     // Begin worst hack eva //
 
     // WHY??? ONLY on my chrome pixel the line above returns -1 when using filters?
-    // maybe its somthing to do with the current state of the gl context.
+    // maybe its something to do with the current state of the gl context.
     // Im convinced this is a bug in the chrome browser as there is NO reason why this should be returning -1 especially as it only manifests on my chrome pixel
     // If theres any webGL people that know why could happen please help :)
     if(this.colorAttribute === -1)
     {
         this.colorAttribute = 2;
     }
+
+    this.attributes = [this.aVertexPosition, this.aTextureCoord, this.colorAttribute];
 
     // End worst hack eva //
 
@@ -93,7 +102,7 @@ PIXI.PixiShader.prototype.init = function()
 * Uniforms are specified in the GLSL_ES Specification: http://www.khronos.org/registry/webgl/specs/latest/1.0/
 * http://www.khronos.org/registry/gles/specs/2.0/GLSL_ES_Specification_1.0.17.pdf
 *
-* @method PIXI.PixiShader#initUniforms
+* @method initUniforms
 */
 PIXI.PixiShader.prototype.initUniforms = function()
 {
@@ -162,9 +171,9 @@ PIXI.PixiShader.prototype.initUniforms = function()
 };
 
 /**
-* Initialises a Sampler2D uniform (which may only be available later on after initUniforms once the texture is has loaded)
+* Initialises a Sampler2D uniform (which may only be available later on after initUniforms once the texture has loaded)
 *
-* @method PIXI.PixiShader#initSampler2D
+* @method initSampler2D
 */
 PIXI.PixiShader.prototype.initSampler2D = function(uniform)
 {
@@ -205,7 +214,7 @@ PIXI.PixiShader.prototype.initSampler2D = function(uniform)
             wrapT = gl.REPEAT;
         }
 
-        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, !!data.flipY);
 
         if (data.width)
         {
@@ -239,7 +248,7 @@ PIXI.PixiShader.prototype.initSampler2D = function(uniform)
 /**
 * Updates the shader uniform values.
 *
-* @method PIXI.PixiShader#syncUniforms
+* @method syncUniforms
 */
 PIXI.PixiShader.prototype.syncUniforms = function()
 {
@@ -294,6 +303,25 @@ PIXI.PixiShader.prototype.syncUniforms = function()
 
 };
 
+/**
+* Destroys the shader
+* @method destroy
+*
+*/
+PIXI.PixiShader.prototype.destroy = function()
+{
+    this.gl.deleteProgram( this.program );
+    this.uniforms = null;
+    this.gl = null;
+
+    this.attributes = null;
+};
+
+/**
+*
+* @property defaultVertexSrc
+* @type String
+*/
 PIXI.PixiShader.defaultVertexSrc = [
     'attribute vec2 aVertexPosition;',
     'attribute vec2 aTextureCoord;',
@@ -314,5 +342,7 @@ PIXI.PixiShader.defaultVertexSrc = [
     '   vColor = vec4(color * aColor.x, aColor.x);',
     '}'
 ];
+
+
 
 

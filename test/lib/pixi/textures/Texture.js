@@ -18,9 +18,6 @@ function pixi_textures_Texture_confirmNew(obj, done) {
 
     expect(obj).to.have.property('scope', obj);
 
-    expect(obj).to.have.property('trim');
-    pixi_core_Point_confirm(obj.trim, 0, 0);
-
     expect(obj).to.have.property('frame');
     if (obj.baseTexture.hasLoaded) {
         confirmFrameDone();

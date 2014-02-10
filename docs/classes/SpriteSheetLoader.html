@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.4.0</em>
+            <em>API Docs for: 1.4.3</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -73,6 +73,8 @@
             
                 <li><a href="../classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
             
+                <li><a href="../classes/DotScreenFilter.html">DotScreenFilter</a></li>
+            
                 <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
@@ -90,6 +92,8 @@
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
+            
+                <li><a href="../classes/PIXI.PixiFastShader.html">PIXI.PixiFastShader</a></li>
             
                 <li><a href="../classes/PIXI.PixiShader.html">PIXI.PixiShader</a></li>
             
@@ -115,9 +119,9 @@
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
-                <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
+                <li><a href="../classes/Sprite.html">Sprite</a></li>
             
-                <li><a href="../classes/Sprite™.html">Sprite™</a></li>
+                <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
             
                 <li><a href="../classes/Stage.html">Stage</a></li>
             
@@ -126,6 +130,8 @@
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
+            
+                <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
             
                 <li><a href="../classes/WebGLRenderer.html">WebGLRenderer</a></li>
             
@@ -204,11 +210,11 @@
 
 <div class="box intro">
     <p>The sprite sheet loader is used to load in JSON sprite sheet data
-To generate the data you can use <a href="http://www.codeandweb.com/texturepacker">http://www.codeandweb.com/texturepacker</a> and publish the &#39;JSON&#39; format
+To generate the data you can use <a href="http://www.codeandweb.com/texturepacker">http://www.codeandweb.com/texturepacker</a> and publish in the &#39;JSON&#39; format
 There is a free version so thats nice, although the paid version is great value for money.
-It is highly recommended to use Sprite sheets (also know as texture atlas&#39;) as it means sprite&#39;s can be batched and drawn together for highly increased rendering speed.
-Once the data has been loaded the frames are stored in the PIXI texture cache and can be accessed though PIXI.Texture.fromFrameId() and PIXI.Sprite.fromFromeId()
-This loader will also load the image file that the Spritesheet points to as well as the data.
+It is highly recommended to use Sprite sheets (also know as a &#39;texture atlas&#39;) as it means sprites can be batched and drawn together for highly increased rendering speed.
+Once the data has been loaded the frames are stored in the PIXI texture cache and can be accessed though PIXI.Texture.fromFrameId() and PIXI.Sprite.fromFrameId()
+This loader will load the image file that the Spritesheet points to as well as the data.
 When loaded this class will dispatch a &#39;loaded&#39; event</p>
 
 </div>
@@ -360,13 +366,6 @@ When loaded this class will dispatch a &#39;loaded&#39; event</p>
                             </li>
                         
                             <li class="index-item method private">
-                                <a href="#method_onJSONLoaded">onJSONLoaded</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method private">
                                 <a href="#method_onLoaded">onLoaded</a>
 
                                 
@@ -487,63 +486,6 @@ When loaded this class will dispatch a &#39;loaded&#39; event</p>
 </div>
 
                 
-                    <div id="method_onJSONLoaded" class="method item private">
-    <h3 class="name"><code>onJSONLoaded</code></h3>
-
-    
-        <span class="paren">()</span>
-    
-
-    
-
-    
-
-    
-        <span class="flag private">private</span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_pixi_loaders_SpriteSheetLoader.js.html#l88"><code>src&#x2F;pixi&#x2F;loaders&#x2F;SpriteSheetLoader.js:88</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Invoke when JSON file is loaded</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
                     <div id="method_onLoaded" class="method item private">
     <h3 class="name"><code>onLoaded</code></h3>
 
@@ -578,7 +520,7 @@ When loaded this class will dispatch a &#39;loaded&#39; event</p>
             
         
         
-        <a href="../files/src_pixi_loaders_SpriteSheetLoader.js.html#l126"><code>src&#x2F;pixi&#x2F;loaders&#x2F;SpriteSheetLoader.js:126</code></a>
+        <a href="../files/src_pixi_loaders_SpriteSheetLoader.js.html#l88"><code>src&#x2F;pixi&#x2F;loaders&#x2F;SpriteSheetLoader.js:88</code></a>
         
         </p>
 

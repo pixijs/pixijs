@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.4.0</em>
+            <em>API Docs for: 1.4.3</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -73,6 +73,8 @@
             
                 <li><a href="../classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
             
+                <li><a href="../classes/DotScreenFilter.html">DotScreenFilter</a></li>
+            
                 <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
@@ -90,6 +92,8 @@
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
+            
+                <li><a href="../classes/PIXI.PixiFastShader.html">PIXI.PixiFastShader</a></li>
             
                 <li><a href="../classes/PIXI.PixiShader.html">PIXI.PixiShader</a></li>
             
@@ -115,9 +119,9 @@
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
-                <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
+                <li><a href="../classes/Sprite.html">Sprite</a></li>
             
-                <li><a href="../classes/Sprite™.html">Sprite™</a></li>
+                <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
             
                 <li><a href="../classes/Stage.html">Stage</a></li>
             
@@ -126,6 +130,8 @@
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
+            
+                <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
             
                 <li><a href="../classes/WebGLRenderer.html">WebGLRenderer</a></li>
             
@@ -226,17 +232,13 @@ PIXI.Stage = function(backgroundColor)
      */
     this.dirty = true;
 
-    this.__childrenAdded = [];
-    this.__childrenRemoved = [];
-
-    //the stage is it&#x27;s own stage
+    //the stage is its own stage
     this.stage = this;
 
     //optimize hit detection a bit
     this.stage.hitArea = new PIXI.Rectangle(0,0,100000, 100000);
 
     this.setBackgroundColor(backgroundColor);
-    this.worldVisible = true;
 };
 
 // constructor
@@ -245,7 +247,7 @@ PIXI.Stage.prototype.constructor = PIXI.Stage;
 
 /**
  * Sets another DOM element which can receive mouse/touch interactions instead of the default Canvas element.
- * This is useful for when you have other DOM elements ontop of the Canvas element.
+ * This is useful for when you have other DOM elements on top of the Canvas element.
  *
  * @method setInteractionDelegate
  * @param domElement {DOMElement} This new domElement which will receive mouse/touch events
@@ -264,7 +266,6 @@ PIXI.Stage.prototype.setInteractionDelegate = function(domElement)
 PIXI.Stage.prototype.updateTransform = function()
 {
     this.worldAlpha = 1;
-    this.vcount = PIXI.visibleCount;
 
     for(var i=0,j=this.children.length; i&lt;j; i++)
     {

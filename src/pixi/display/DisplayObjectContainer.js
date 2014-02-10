@@ -16,7 +16,7 @@ PIXI.DisplayObjectContainer = function()
     PIXI.DisplayObject.call( this );
 
     /**
-     * [read-only] The of children of this container.
+     * [read-only] The array of children of this container.
      *
      * @property children
      * @type Array<DisplayObject>
@@ -30,13 +30,13 @@ PIXI.DisplayObjectContainer.prototype = Object.create( PIXI.DisplayObject.protot
 PIXI.DisplayObjectContainer.prototype.constructor = PIXI.DisplayObjectContainer;
 
 /**
- * The width of the displayObjectContainer, setting this will actually modify the scale to acheive the value set
+ * The width of the displayObjectContainer, setting this will actually modify the scale to achieve the value set
  *
  * @property width
  * @type Number
  */
 
-/*
+ /*
 Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'width', {
     get: function() {
         return this.scale.x * this.getLocalBounds().width;
@@ -49,13 +49,13 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'width', {
 */
 
 /**
- * The height of the displayObjectContainer, setting this will actually modify the scale to acheive the value set
+ * The height of the displayObjectContainer, setting this will actually modify the scale to achieve the value set
  *
  * @property height
  * @type Number
  */
 
- /*
+/*
 Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'height', {
     get: function() {
         return  this.scale.y * this.getLocalBounds().height;
@@ -75,21 +75,7 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'height', {
  */
 PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 {
-    if(child.parent && child !== this)
-    {
-        //// COULD BE THIS???
-        child.parent.removeChild(child);
-        //  return;
-    }
-
-    child.parent = this;
-
-    this.children.push(child);
-
-    // update the stage refference..
-
-    if(this.stage)child.setStageReference(this.stage);
-
+    this.addChildAt(child, this.children.length);
 };
 
 /**
@@ -147,7 +133,7 @@ PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
 };
 
 /**
- * Returns the Child at the specified index
+ * Returns the child at the specified index
  *
  * @method getChildAt
  * @param index {Number} The index to get the child from
@@ -187,8 +173,26 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
     }
 };
 
+
+/**
+* Removes all the children 
+*
+* @method removeAll
+* NOT tested yet
+*/
+/* PIXI.DisplayObjectContainer.prototype.removeAll = function()
+{
+
+
+    for(var i = 0 , j = this.children.length; i < j; i++)
+    {
+        this.removeChild(this.children[i]);
+    }
+    
+};
+*/
 /*
- * Updates the container's children's transform for rendering
+ * Updates the container's childrens transform for rendering
  *
  * @method updateTransform
  * @private
@@ -207,12 +211,24 @@ PIXI.DisplayObjectContainer.prototype.updateTransform = function()
     }
 };
 
-PIXI.DisplayObjectContainer.prototype.getBounds = function()
+/**
+ * Retrieves the bounds of the displayObjectContainer as a rectangle object
+ *
+ * @method getBounds
+ * @return {Rectangle} the rectangular bounding area
+ */
+PIXI.DisplayObjectContainer.prototype.getBounds = function(matrix)
 {
     if(this.children.length === 0)return PIXI.EmptyRectangle;
 
     // TODO the bounds have already been calculated this render session so return what we have
-   
+    if(matrix)
+    {
+        var matrixCache = this.worldTransform;
+        this.worldTransform = matrix;
+        this.updateTransform();
+        this.worldTransform = matrixCache;
+    }
 
     var minX = Infinity;
     var minY = Infinity;
@@ -224,13 +240,17 @@ PIXI.DisplayObjectContainer.prototype.getBounds = function()
     var childMaxX;
     var childMaxY;
 
+    var childVisible = false;
+
     for(var i=0,j=this.children.length; i<j; i++)
     {
         var child = this.children[i];
         
         if(!child.visible)continue;
 
-        childBounds = this.children[i].getBounds();
+        childVisible = true;
+
+        childBounds = this.children[i].getBounds( matrix );
      
         minX = minX < childBounds.x ? minX : childBounds.x;
         minY = minY < childBounds.y ? minY : childBounds.y;
@@ -242,6 +262,9 @@ PIXI.DisplayObjectContainer.prototype.getBounds = function()
         maxY = maxY > childMaxY ? maxY : childMaxY;
     }
 
+    if(!childVisible)
+        return PIXI.EmptyRectangle;
+
     var bounds = this._bounds;
 
     bounds.x = minX;
@@ -249,12 +272,36 @@ PIXI.DisplayObjectContainer.prototype.getBounds = function()
     bounds.width = maxX - minX;
     bounds.height = maxY - minY;
 
-    // TODO: store a refferance so that if this function gets called again in the render cycle we do not have to recacalculate
+    // TODO: store a reference so that if this function gets called again in the render cycle we do not have to recalculate
     //this._currentBounds = bounds;
    
     return bounds;
 };
 
+PIXI.DisplayObjectContainer.prototype.getLocalBounds = function()
+{
+    var matrixCache = this.worldTransform;
+
+    this.worldTransform = PIXI.identityMatrix;
+
+    for(var i=0,j=this.children.length; i<j; i++)
+    {
+        this.children[i].updateTransform();
+    }
+
+    var bounds = this.getBounds();
+
+    this.worldTransform = matrixCache;
+
+    return bounds;
+};
+
+/**
+ * Sets the container's stage reference, the stage this object is connected to
+ *
+ * @method setStageReference
+ * @param stage {Stage} the stage that the container will have as its current stage reference
+ */
 PIXI.DisplayObjectContainer.prototype.setStageReference = function(stage)
 {
     this.stage = stage;
@@ -267,6 +314,11 @@ PIXI.DisplayObjectContainer.prototype.setStageReference = function(stage)
     }
 };
 
+/**
+ * removes the current stage reference of the container
+ *
+ * @method removeStageReference
+ */
 PIXI.DisplayObjectContainer.prototype.removeStageReference = function()
 {
 
@@ -281,10 +333,17 @@ PIXI.DisplayObjectContainer.prototype.removeStageReference = function()
     this.stage = null;
 };
 
+/**
+* Renders the object using the WebGL renderer
+*
+* @method _renderWebGL
+* @param renderSession {RenderSession} 
+* @private
+*/
 PIXI.DisplayObjectContainer.prototype._renderWebGL = function(renderSession)
 {
-    if(this.visible === false || this.alpha === 0)return;
-
+    if(!this.visible || this.alpha <= 0)return;
+    
     var i,j;
 
     if(this._mask || this._filters)
@@ -325,6 +384,13 @@ PIXI.DisplayObjectContainer.prototype._renderWebGL = function(renderSession)
     }
 };
 
+/**
+* Renders the object using the Canvas renderer
+*
+* @method _renderCanvas
+* @param renderSession {RenderSession} 
+* @private
+*/
 PIXI.DisplayObjectContainer.prototype._renderCanvas = function(renderSession)
 {
     if(this.visible === false || this.alpha === 0)return;
@@ -345,5 +411,3 @@ PIXI.DisplayObjectContainer.prototype._renderCanvas = function(renderSession)
         renderSession.maskManager.popMask(renderSession.context);
     }
 };
-
-

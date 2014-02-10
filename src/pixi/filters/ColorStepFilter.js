@@ -4,7 +4,7 @@
 
 /**
  *
- * This turns your displayObjects to black and white.
+ * This lowers the color depth of your image by the given amount, producing an image with a smaller palette.
  * @class ColorStepFilter
  * @contructor
  */

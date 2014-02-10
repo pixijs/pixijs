@@ -5,7 +5,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-connect');
     grunt.loadNpmTasks('grunt-contrib-yuidoc');
-    grunt.loadNpmTasks('grunt-contrib-watch');
 
     grunt.loadTasks('tasks');
 
@@ -21,10 +20,12 @@ module.exports = function(grunt) {
             '<%= dirs.src %>/display/DisplayObject.js',
             '<%= dirs.src %>/display/DisplayObjectContainer.js',
             '<%= dirs.src %>/display/Sprite.js',
+            '<%= dirs.src %>/display/SpriteBatch.js',
             '<%= dirs.src %>/display/MovieClip.js',
             '<%= dirs.src %>/filters/FilterBlock.js',
             '<%= dirs.src %>/text/Text.js',
             '<%= dirs.src %>/text/BitmapText.js',
+            '<%= dirs.src %>/InteractionData.js',
             '<%= dirs.src %>/InteractionManager.js',
             '<%= dirs.src %>/display/Stage.js',
             '<%= dirs.src %>/utils/Utils.js',
@@ -33,6 +34,7 @@ module.exports = function(grunt) {
             '<%= dirs.src %>/utils/Polyk.js',
             '<%= dirs.src %>/renderers/webgl/utils/WebGLShaderUtils.js',
             '<%= dirs.src %>/renderers/webgl/shaders/PixiShader.js',
+            '<%= dirs.src %>/renderers/webgl/shaders/PixiFastShader.js',
             '<%= dirs.src %>/renderers/webgl/shaders/StripShader.js',
             '<%= dirs.src %>/renderers/webgl/shaders/PrimitiveShader.js',
             '<%= dirs.src %>/renderers/webgl/utils/WebGLGraphics.js',
@@ -40,7 +42,9 @@ module.exports = function(grunt) {
             '<%= dirs.src %>/renderers/webgl/utils/WebGLMaskManager.js',
             '<%= dirs.src %>/renderers/webgl/utils/WebGLShaderManager.js',
             '<%= dirs.src %>/renderers/webgl/utils/WebGLSpriteBatch.js',
+            '<%= dirs.src %>/renderers/webgl/utils/WebGLFastSpriteBatch.js',
             '<%= dirs.src %>/renderers/webgl/utils/WebGLFilterManager.js',
+			'<%= dirs.src %>/renderers/webgl/utils/FilterTexture.js',
             '<%= dirs.src %>/renderers/canvas/utils/CanvasMaskManager.js',
             '<%= dirs.src %>/renderers/canvas/utils/CanvasTinter.js',
             '<%= dirs.src %>/renderers/canvas/CanvasRenderer.js',
@@ -82,7 +86,7 @@ module.exports = function(grunt) {
             '/**',
             ' * @license',
             ' * <%= pkg.name %> - v<%= pkg.version %>',
-            ' * Copyright (c) 2012, Mat Groves',
+            ' * Copyright (c) 2012-2014, Mat Groves',
             ' * <%= pkg.homepage %>',
             ' *',
             ' * Compiled: <%= grunt.template.today("yyyy-mm-dd") %>',

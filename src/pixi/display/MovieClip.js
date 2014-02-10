@@ -49,7 +49,7 @@ PIXI.MovieClip = function(textures)
     this.onComplete = null;
 
     /**
-     * [read-only] The index MovieClips current frame (this may not have to be a whole number)
+     * [read-only] The MovieClips current frame index (this may not have to be a whole number)
      *
      * @property currentFrame
      * @type Number

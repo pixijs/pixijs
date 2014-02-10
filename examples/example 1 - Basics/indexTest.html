@@ -1,0 +1,85 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>pixi.js example 1</title>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			background-color: #000000;
+		}
+	</style>
+	<script src="../../bin/pixi.dev.js"></script>
+
+</head>
+<body>
+	<script>
+
+	// create an new instance of a pixi stage
+	var stage = new PIXI.Stage(0x66FF99);
+
+	// create a renderer instance
+	var renderer = PIXI.autoDetectRenderer(400, 300);
+
+	// add the renderer view element to the DOM
+	document.body.appendChild(renderer.view);
+
+	requestAnimFrame( animate );
+
+	// create a texture from an image path
+	var texture = PIXI.Texture.fromImage("bunny.png");
+	// create a new Sprite using the texture
+	var bunny = new PIXI.Sprite(texture);
+
+	// center the sprites anchor point
+	bunny.anchor.x = 0.5;
+	bunny.anchor.y = 0.5;
+
+	// move the sprite t the center of the screen
+	bunny.position.x = 200;
+	bunny.position.y = 150;
+
+	stage.addChild(bunny);
+
+
+	source = {};
+
+        source.Canvas = document.createElement("canvas")// $('<canvas></canvas>')[0];
+        source.Canvas.width = 256; source.Canvas.height = 256;
+        source.Canvas.context = source.Canvas.getContext('2d');
+        source.Canvas.context.fillStyle = "#FF0000";
+        source.Canvas.context.fillRect(0,0,256,256)
+        //Split Canvas into multiple textures
+        source.Frames = [];
+
+
+        for(i=0;i<4;i++)
+            for(ii=0;ii<4;ii++) {
+                var tex = PIXI.Texture.fromCanvas(source.Canvas);
+                tex.setFrame({x:ii*32,y:i*32,width:32,height:32});
+                source.Frames[(ii+(i*4))] = tex;
+            }
+        source.Sprite = new PIXI.MovieClip(source.Frames);
+        source.Sprite.animationSpeed = 0.1;
+        source.Sprite.currentFrame = 0;
+        source.Sprite.play();
+        stage.addChild(source.Sprite);
+    
+   
+
+	function animate() {
+
+	    requestAnimFrame( animate );
+
+	    // just for fun, lets rotate mr rabbit a little
+	    bunny.rotation += 0.1;
+
+//	    console.log(stage.getBounds().width);
+	    // render the stage
+	    renderer.render(stage);
+	}
+
+	</script>
+
+	</body>
+</html>

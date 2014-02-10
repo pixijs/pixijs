@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.4.0</em>
+            <em>API Docs for: 1.4.3</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -73,6 +73,8 @@
             
                 <li><a href="../classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
             
+                <li><a href="../classes/DotScreenFilter.html">DotScreenFilter</a></li>
+            
                 <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
@@ -90,6 +92,8 @@
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
+            
+                <li><a href="../classes/PIXI.PixiFastShader.html">PIXI.PixiFastShader</a></li>
             
                 <li><a href="../classes/PIXI.PixiShader.html">PIXI.PixiShader</a></li>
             
@@ -115,9 +119,9 @@
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
-                <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
+                <li><a href="../classes/Sprite.html">Sprite</a></li>
             
-                <li><a href="../classes/Sprite™.html">Sprite™</a></li>
+                <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
             
                 <li><a href="../classes/Stage.html">Stage</a></li>
             
@@ -126,6 +130,8 @@
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
+            
+                <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
             
                 <li><a href="../classes/WebGLRenderer.html">WebGLRenderer</a></li>
             
@@ -174,20 +180,12 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-/**
- * @author Mat Groves http://matgroves.com/ @Doormat23
- */
 
-PIXI.blendModes = {};
-PIXI.blendModes.NORMAL      = 0;
-PIXI.blendModes.ADD         = 1;
-PIXI.blendModes.MULTIPLY    = 2;
-PIXI.blendModes.SCREEN      = 3;
 
 /**
- * The SPrite object is the base for all textured objects that are rendered to the screen
+ * The Sprite object is the base for all textured objects that are rendered to the screen
  *
- * @class Sprite™
+ * @class Sprite
  * @extends DisplayObjectContainer
  * @constructor
  * @param texture {Texture} The texture for this sprite
@@ -271,7 +269,7 @@ PIXI.Sprite.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
 PIXI.Sprite.prototype.constructor = PIXI.Sprite;
 
 /**
- * The width of the sprite, setting this will actually modify the scale to acheive the value set
+ * The width of the sprite, setting this will actually modify the scale to achieve the value set
  *
  * @property width
  * @type Number
@@ -287,7 +285,7 @@ Object.defineProperty(PIXI.Sprite.prototype, &#x27;width&#x27;, {
 });
 
 /**
- * The height of the sprite, setting this will actually modify the scale to acheive the value set
+ * The height of the sprite, setting this will actually modify the scale to achieve the value set
  *
  * @property height
  * @type Number
@@ -409,7 +407,7 @@ PIXI.Sprite.prototype.getBounds = function()
     bounds.y = minY;
     bounds.height = maxY - minY;
 
-    // store a refferance so that if this function gets called again in the render cycle we do not have to recacalculate
+    // store a reference so that if this function gets called again in the render cycle we do not have to recalculate
     this._currentBounds = bounds;
 
     return bounds;
@@ -419,7 +417,7 @@ PIXI.Sprite.prototype.getBounds = function()
 PIXI.Sprite.prototype._renderWebGL = function(renderSession)
 {
     // if the sprite is not visible or the alpha is 0 then no need to render this element
-    if(this.visible === false || this.alpha === 0)return;
+    if(!this.visible || this.alpha &lt;= 0)return;
     
     var i,j;
 
@@ -478,14 +476,22 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
     // if the sprite is not visible or the alpha is 0 then no need to render this element
     if(this.visible === false || this.alpha === 0)return;
     
+    var frame = this.texture.frame;
+    var context = renderSession.context;
+    var texture = this.texture;
+
+    if(this.blendMode !== renderSession.currentBlendMode)
+    {
+        renderSession.currentBlendMode = this.blendMode;
+        context.globalCompositeOperation = PIXI.blendModesCanvas[renderSession.currentBlendMode];
+    }
+
     if(this._mask)
     {
         renderSession.maskManager.pushMask(this._mask, renderSession.context);
     }
 
-    var frame = this.texture.frame;
-    var context = renderSession.context;
-    var texture = this.texture;
+    
 
     //ignore null sources
     if(frame &amp;&amp; frame.width &amp;&amp; frame.height &amp;&amp; texture.baseTexture.source)
@@ -494,27 +500,19 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
 
         var transform = this.worldTransform;
 
-        // alow for trimming
+        // allow for trimming
        
         context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
-         
-        // check blend mode
-        if(this.blendMode !== renderSession.currentBlendMode)
-        {
-            renderSession.currentBlendMode = this.blendMode;
-            context.globalCompositeOperation = PIXI.blendModesCanvas[renderSession.currentBlendMode];
-        }
-
 
         //if smoothingEnabled is supported and we need to change the smoothing property for this texture
-     //   if(this.smoothProperty &amp;&amp; this.scaleMode !== displayObject.texture.baseTexture.scaleMode) {
-       //     this.scaleMode = displayObject.texture.baseTexture.scaleMode;
-         //   context[this.smoothProperty] = (this.scaleMode === PIXI.BaseTexture.SCALE_MODE.LINEAR);
-        //}
-
+        if(renderSession.smoothProperty &amp;&amp; renderSession.scaleMode !== this.texture.baseTexture.scaleMode) {
+            renderSession.scaleMode = this.texture.baseTexture.scaleMode;
+            context[renderSession.smoothProperty] = (renderSession.scaleMode === PIXI.scaleModes.LINEAR);
+        }
 
         if(this.tint !== 0xFFFFFF)
         {
+            
             if(this.cachedTint !== this.tint)
             {
                 // no point tinting an image that has not loaded yet!
@@ -522,7 +520,7 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
 
                 this.cachedTint = this.tint;
                 
-                //TODO clean up cacheing - how to clean up the caches?
+                //TODO clean up caching - how to clean up the caches?
                 this.tintedTexture = PIXI.CanvasTinter.getTintedTexture(this, this.tint);
                 
             }

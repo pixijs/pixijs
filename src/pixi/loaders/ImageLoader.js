@@ -4,7 +4,7 @@
 
 /**
  * The image loader class is responsible for loading images file formats ('jpeg', 'jpg', 'png' and 'gif')
- * Once the image has been loaded it is stored in the PIXI texture cache and can be accessed though PIXI.Texture.fromFrameId() and PIXI.Sprite.fromFromeId()
+ * Once the image has been loaded it is stored in the PIXI texture cache and can be accessed though PIXI.Texture.fromFrameId() and PIXI.Sprite.fromFrameId()
  * When loaded this class will dispatch a 'loaded' event
  *
  * @class ImageLoader
@@ -73,7 +73,7 @@ PIXI.ImageLoader.prototype.onLoaded = function()
  *
  *
  * @method loadFramedSpriteSheet
- * @param frameWidth {Number} with of each frame
+ * @param frameWidth {Number} width of each frame
  * @param frameHeight {Number} height of each frame
  * @param textureName {String} if given, the frames will be cached in <textureName>-<ord> format
  */

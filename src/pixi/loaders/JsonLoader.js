@@ -3,9 +3,9 @@
  */
 
 /**
- * The json file loader is used to load in JSON data and parsing it
+ * The json file loader is used to load in JSON data and parse it
  * When loaded this class will dispatch a 'loaded' event
- * If load failed this class will dispatch a 'error' event
+ * If loading fails this class will dispatch an 'error' event
  *
  * @class JsonLoader
  * @uses EventTarget
@@ -61,7 +61,7 @@ PIXI.JsonLoader.prototype.constructor = PIXI.JsonLoader;
  * @method load
  */
 PIXI.JsonLoader.prototype.load = function () {
-    this.ajaxRequest = new PIXI.AjaxRequest();
+    this.ajaxRequest = new PIXI.AjaxRequest(this.crossorigin);
     var scope = this;
     this.ajaxRequest.onreadystatechange = function () {
         scope.onJSONLoaded();
@@ -111,15 +111,10 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
 
                             var texture =  PIXI.TextureCache[i];
                             
-                            texture.trimmed = true;
-
                             var actualSize = frameData[i].sourceSize;
                             var realSize = frameData[i].spriteSourceSize;
 
-                            texture.trim.x = realSize.x;
-                            texture.trim.y = realSize.y;
-                            texture.trim.realWidth = actualSize.w;
-                            texture.trim.realHeight = actualSize.h;
+                            texture.trim = new PIXI.Rectangle(realSize.x, realSize.y, actualSize.w, actualSize.h);
                         }
                     }
                 }

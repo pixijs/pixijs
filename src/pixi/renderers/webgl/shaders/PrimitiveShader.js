@@ -2,14 +2,28 @@
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
-
+/**
+* @class PrimitiveShader
+* @constructor
+* @param gl {WebGLContext} the current WebGL drawing context
+*/
 PIXI.PrimitiveShader = function(gl)
 {
+    /**
+     * @property gl
+     * @type WebGLContext
+     */
     this.gl = gl;
 
-    // the webGL program..
+    /**
+    * @property {any} program - The WebGL program.
+    */
     this.program = null;
 
+    /**
+     * @property fragmentSrc
+     * @type Array
+     */
     this.fragmentSrc = [
         'precision mediump float;',
         'varying vec4 vColor;',
@@ -19,6 +33,10 @@ PIXI.PrimitiveShader = function(gl)
         '}'
     ];
 
+    /**
+     * @property vertexSrc
+     * @type Array
+     */
     this.vertexSrc  = [
         'attribute vec2 aVertexPosition;',
         'attribute vec4 aColor;',
@@ -40,6 +58,11 @@ PIXI.PrimitiveShader = function(gl)
     this.init();
 };
 
+/**
+* Initialises the shader
+* @method init
+*
+*/
 PIXI.PrimitiveShader.prototype.init = function()
 {
 
@@ -58,8 +81,24 @@ PIXI.PrimitiveShader.prototype.init = function()
     this.aVertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
     this.colorAttribute = gl.getAttribLocation(program, 'aColor');
 
+    this.attributes = [this.aVertexPosition, this.colorAttribute];
+
     this.translationMatrix = gl.getUniformLocation(program, 'translationMatrix');
     this.alpha = gl.getUniformLocation(program, 'alpha');
 
     this.program = program;
+};
+
+/**
+* Destroys the shader
+* @method destroy
+*
+*/
+PIXI.PrimitiveShader.prototype.destroy = function()
+{
+    this.gl.deleteProgram( this.program );
+    this.uniforms = null;
+    this.gl = null;
+
+    this.attribute = null;
 };

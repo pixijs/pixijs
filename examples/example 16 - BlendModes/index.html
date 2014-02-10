@@ -41,6 +41,7 @@
 
 	// create a background texture
 	var pondFloorTexture = PIXI.Texture.fromImage("BGrotate.jpg");
+	
 	// create a new background sprite
 	var pondFloorSprite = new PIXI.Sprite(pondFloorTexture);
 	stage.addChild(pondFloorSprite);
@@ -64,14 +65,14 @@
 		// set a random scale for the dude - no point them all being the same size!
 		dude.scale.x = dude.scale.y = 0.8 + Math.random() * 0.3;
 		
-		// finally lets set the dude to be a random position..
+		// finally let's set the dude to be a random position..
 		dude.position.x = Math.random() * viewWidth;
 		dude.position.y = Math.random() * viewHeight;
 	
 		// time to add the dude to the pond container!
 		stage.addChild(dude);
 
-		// create some extra properties that will control movment
+		// create some extra properties that will control movement
 
 		dude.blendMode = PIXI.blendModes.ADD
 		// create a random direction in radians. This is a number between 0 and PI*2 which is the equivalent of 0 - 360 degrees
@@ -90,22 +91,20 @@
 
 	// create a bounding box box for the little dudes 
 	var dudeBoundsPadding = 100;
+
 	var dudeBounds = new PIXI.Rectangle(-dudeBoundsPadding,
 										-dudeBoundsPadding, 
 										viewWidth + dudeBoundsPadding * 2, 
 										viewHeight + dudeBoundsPadding * 2);
 
-	
-
-	// create a displacment map
-
 
 	var tick = 0;
+
 	requestAnimationFrame(animate);
 
 	function animate() 
 	{
-		// iterate through the dude and update the positiond
+		// iterate through the dudes and update the positions
 		for (var i = 0; i < dudeArray.length; i++) 
 		{
 			var dude = dudeArray[i];
@@ -127,11 +126,11 @@
 		
 		
 		
-		// time to render the state!
+		// time to render the stage !
 	    renderer.render(stage);
 	    
-	    // request another animation frame..
-	    requestAnimationFrame( animate );
+	    // request another animation frame...
+	    requestAnimationFrame(animate);
 	}
 
 	</script>

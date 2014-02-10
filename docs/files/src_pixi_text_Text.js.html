@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.4.0</em>
+            <em>API Docs for: 1.4.3</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -73,6 +73,8 @@
             
                 <li><a href="../classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
             
+                <li><a href="../classes/DotScreenFilter.html">DotScreenFilter</a></li>
+            
                 <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
@@ -90,6 +92,8 @@
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
+            
+                <li><a href="../classes/PIXI.PixiFastShader.html">PIXI.PixiFastShader</a></li>
             
                 <li><a href="../classes/PIXI.PixiShader.html">PIXI.PixiShader</a></li>
             
@@ -115,9 +119,9 @@
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
-                <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
+                <li><a href="../classes/Sprite.html">Sprite</a></li>
             
-                <li><a href="../classes/Sprite™.html">Sprite™</a></li>
+                <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
             
                 <li><a href="../classes/Stage.html">Stage</a></li>
             
@@ -126,6 +130,8 @@
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
+            
+                <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
             
                 <li><a href="../classes/WebGLRenderer.html">WebGLRenderer</a></li>
             
@@ -179,7 +185,7 @@
  */
 
 /**
- * A Text Object will create a line(s) of text to split a line you can use &#x27;\n&#x27;
+ * A Text Object will create a line(s) of text. To split a line you can use &#x27;\n&#x27;
  *
  * @class Text
  * @extends Sprite
@@ -188,7 +194,7 @@
  * @param [style] {Object} The style parameters
  * @param [style.font] {String} default &#x27;bold 20pt Arial&#x27; The style and size of the font
  * @param [style.fill=&#x27;black&#x27;] {Object} A canvas fillstyle that will be used on the text eg &#x27;red&#x27;, &#x27;#00FF00&#x27;
- * @param [style.align=&#x27;left&#x27;] {String} An alignment of the multiline text (&#x27;left&#x27;, &#x27;center&#x27; or &#x27;right&#x27;)
+ * @param [style.align=&#x27;left&#x27;] {String} Alignment for multiline text (&#x27;left&#x27;, &#x27;center&#x27; or &#x27;right&#x27;), does not affect single line text
  * @param [style.stroke] {String} A canvas fillstyle that will be used on the text stroke eg &#x27;blue&#x27;, &#x27;#FCFF00&#x27;
  * @param [style.strokeThickness=0] {Number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
  * @param [style.wordWrap=false] {Boolean} Indicates if word wrap should be used
@@ -218,7 +224,7 @@ PIXI.Text.prototype.constructor = PIXI.Text;
  * @param [style] {Object} The style parameters
  * @param [style.font=&#x27;bold 20pt Arial&#x27;] {String} The style and size of the font
  * @param [style.fill=&#x27;black&#x27;] {Object} A canvas fillstyle that will be used on the text eg &#x27;red&#x27;, &#x27;#00FF00&#x27;
- * @param [style.align=&#x27;left&#x27;] {String} An alignment of the multiline text (&#x27;left&#x27;, &#x27;center&#x27; or &#x27;right&#x27;)
+ * @param [style.align=&#x27;left&#x27;] {String} Alignment for multiline text (&#x27;left&#x27;, &#x27;center&#x27; or &#x27;right&#x27;), does not affect single line text
  * @param [style.stroke=&#x27;black&#x27;] {String} A canvas fillstyle that will be used on the text stroke eg &#x27;blue&#x27;, &#x27;#FCFF00&#x27;
  * @param [style.strokeThickness=0] {Number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
  * @param [style.wordWrap=false] {Boolean} Indicates if word wrap should be used
@@ -248,6 +254,7 @@ PIXI.Text.prototype.setText = function(text)
 {
     this.text = text.toString() || &#x27; &#x27;;
     this.dirty = true;
+
 };
 
 /**
@@ -284,6 +291,8 @@ PIXI.Text.prototype.updateText = function()
     var lineHeight = this.determineFontHeight(&#x27;font: &#x27; + this.style.font  + &#x27;;&#x27;) + this.style.strokeThickness;
     this.canvas.height = lineHeight * lines.length;
 
+    if(navigator.isCocoonJS) this.context.clearRect(0,0,this.canvas.width,this.canvas.height);
+    
     //set canvas text styles
     this.context.fillStyle = this.style.fill;
     this.context.font = this.style.font;
@@ -337,11 +346,22 @@ PIXI.Text.prototype.updateTexture = function()
     this._width = this.canvas.width;
     this._height = this.canvas.height;
 
-    PIXI.texturesToUpdate.push(this.texture.baseTexture);
+    this.requiresUpdate =  true;
+};
+
+PIXI.Text.prototype._renderWebGL = function(renderSession)
+{
+    if(this.requiresUpdate)
+    {
+        this.requiresUpdate = false;
+        PIXI.updateWebGLTexture(this.texture.baseTexture, renderSession.gl);
+    }
+
+    PIXI.Sprite.prototype._renderWebGL.call(this, renderSession);
 };
 
 /**
- * Updates the transfor of this object
+ * Updates the transform of this object
  *
  * @method updateTransform
  * @private

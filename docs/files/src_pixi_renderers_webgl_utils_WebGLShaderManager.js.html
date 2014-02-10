@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.4.0</em>
+            <em>API Docs for: 1.4.3</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -73,6 +73,8 @@
             
                 <li><a href="../classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
             
+                <li><a href="../classes/DotScreenFilter.html">DotScreenFilter</a></li>
+            
                 <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
@@ -90,6 +92,8 @@
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
+            
+                <li><a href="../classes/PIXI.PixiFastShader.html">PIXI.PixiFastShader</a></li>
             
                 <li><a href="../classes/PIXI.PixiShader.html">PIXI.PixiShader</a></li>
             
@@ -115,9 +119,9 @@
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
-                <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
+                <li><a href="../classes/Sprite.html">Sprite</a></li>
             
-                <li><a href="../classes/Sprite™.html">Sprite™</a></li>
+                <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
             
                 <li><a href="../classes/Stage.html">Stage</a></li>
             
@@ -126,6 +130,8 @@
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
+            
+                <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
             
                 <li><a href="../classes/WebGLRenderer.html">WebGLRenderer</a></li>
             
@@ -180,8 +186,16 @@
 
 PIXI.WebGLShaderManager = function(gl)
 {
-    this.setContext(gl);
 
+    this.maxAttibs = 10;
+    this.attribState = [];
+    this.tempAttribState = [];
+
+    for (var i = 0; i &lt; this.maxAttibs; i++) {
+        this.attribState[i] = false;
+    }
+
+    this.setContext(gl);
     // the final one is used for the rendering strips
     //this.stripShader = new PIXI.StripShader(gl);
 };
@@ -196,15 +210,66 @@ PIXI.WebGLShaderManager.prototype.setContext = function(gl)
     // this shader is used for the default sprite rendering
     this.defaultShader = new PIXI.PixiShader(gl);
 
-    var shaderProgram = this.defaultShader.program;
+    // this shader is used for the fast sprite rendering
+    this.fastShader = new PIXI.PixiFastShader(gl);
 
-    gl.useProgram(shaderProgram);
 
-    gl.enableVertexAttribArray(this.defaultShader.aVertexPosition);
-    gl.enableVertexAttribArray(this.defaultShader.colorAttribute);
-    gl.enableVertexAttribArray(this.defaultShader.aTextureCoord);
+    this.activateShader(this.defaultShader);
+};
 
-    
+
+PIXI.WebGLShaderManager.prototype.setAttribs = function(attribs)
+{
+    // reset temp state
+
+    var i;
+
+    for (i = 0; i &lt; this.tempAttribState.length; i++)
+    {
+        this.tempAttribState[i] = false;
+    }
+
+    // set the new attribs
+    for (i = 0; i &lt; attribs.length; i++)
+    {
+        var attribId = attribs[i];
+        this.tempAttribState[attribId] = true;
+    }
+
+    var gl = this.gl;
+
+    for (i = 0; i &lt; this.attribState.length; i++)
+    {
+
+        if(this.attribState[i] !== this.tempAttribState[i])
+        {
+            this.attribState[i] = this.tempAttribState[i];
+
+            if(this.tempAttribState[i])
+            {
+                gl.enableVertexAttribArray(i);
+            }
+            else
+            {
+                gl.disableVertexAttribArray(i);
+            }
+        }
+    }
+
+  //  console.log(this.tempAttribState)
+};
+
+PIXI.WebGLShaderManager.prototype.activateShader = function(shader)
+{
+    //if(this.currentShader == shader)return;
+
+    this.currentShader = shader;
+ //  console.log(shader.program)
+    this.gl.useProgram(shader.program);
+    this.setAttribs(shader.attributes);
+
+   // console.log(shader.attributes)
+  
 };
 
 PIXI.WebGLShaderManager.prototype.activatePrimitiveShader = function()
@@ -213,12 +278,8 @@ PIXI.WebGLShaderManager.prototype.activatePrimitiveShader = function()
 
     gl.useProgram(this.primitiveShader.program);
 
-    gl.disableVertexAttribArray(this.defaultShader.aVertexPosition);
-    gl.disableVertexAttribArray(this.defaultShader.colorAttribute);
-    gl.disableVertexAttribArray(this.defaultShader.aTextureCoord);
-
-    gl.enableVertexAttribArray(this.primitiveShader.aVertexPosition);
-    gl.enableVertexAttribArray(this.primitiveShader.colorAttribute);
+    this.setAttribs(this.primitiveShader.attributes);
+    
 };
 
 PIXI.WebGLShaderManager.prototype.deactivatePrimitiveShader = function()
@@ -227,13 +288,25 @@ PIXI.WebGLShaderManager.prototype.deactivatePrimitiveShader = function()
 
     gl.useProgram(this.defaultShader.program);
 
-    gl.disableVertexAttribArray(this.primitiveShader.aVertexPosition);
-    gl.disableVertexAttribArray(this.primitiveShader.colorAttribute);
-
-    gl.enableVertexAttribArray(this.defaultShader.aVertexPosition);
-    gl.enableVertexAttribArray(this.defaultShader.colorAttribute);
-    gl.enableVertexAttribArray(this.defaultShader.aTextureCoord);
+    this.setAttribs(this.defaultShader.attributes);
 };
+
+PIXI.WebGLShaderManager.prototype.destroy = function()
+{
+    this.attribState = null;
+
+    this.tempAttribState = null;
+
+    this.primitiveShader.destroy();
+
+    this.defaultShader.destroy();
+
+    this.fastShader.destroy();
+
+    this.gl = null;
+};
+
+
     </pre>
 </div>
 

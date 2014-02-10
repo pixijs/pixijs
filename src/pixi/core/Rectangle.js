@@ -55,12 +55,12 @@ PIXI.Rectangle.prototype.clone = function()
 };
 
 /**
- * Checks if the x, and y coords passed to this function are contained within this Rectangle
+ * Checks whether the x and y coordinates passed to this function are contained within this Rectangle
  *
  * @method contains
- * @param x {Number} The X coord of the point to test
- * @param y {Number} The Y coord of the point to test
- * @return {Boolean} if the x/y coords are within this Rectangle
+ * @param x {Number} The X coordinate of the point to test
+ * @param y {Number} The Y coordinate of the point to test
+ * @return {Boolean} Whether the x/y coords are within this Rectangle
  */
 PIXI.Rectangle.prototype.contains = function(x, y)
 {
@@ -84,3 +84,4 @@ PIXI.Rectangle.prototype.contains = function(x, y)
 // constructor
 PIXI.Rectangle.prototype.constructor = PIXI.Rectangle;
 
+PIXI.EmptyRectangle = new PIXI.Rectangle(0,0,0,0);

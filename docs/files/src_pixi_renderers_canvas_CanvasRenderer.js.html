@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.4.0</em>
+            <em>API Docs for: 1.4.3</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -73,6 +73,8 @@
             
                 <li><a href="../classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
             
+                <li><a href="../classes/DotScreenFilter.html">DotScreenFilter</a></li>
+            
                 <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
@@ -90,6 +92,8 @@
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
+            
+                <li><a href="../classes/PIXI.PixiFastShader.html">PIXI.PixiFastShader</a></li>
             
                 <li><a href="../classes/PIXI.PixiShader.html">PIXI.PixiShader</a></li>
             
@@ -115,9 +119,9 @@
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
-                <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
+                <li><a href="../classes/Sprite.html">Sprite</a></li>
             
-                <li><a href="../classes/Sprite™.html">Sprite™</a></li>
+                <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
             
                 <li><a href="../classes/Stage.html">Stage</a></li>
             
@@ -126,6 +130,8 @@
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
+            
+                <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
             
                 <li><a href="../classes/WebGLRenderer.html">WebGLRenderer</a></li>
             
@@ -195,7 +201,7 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
 
     this.type = PIXI.CANVAS_RENDERER;
 
-    this.transparent = transparent;
+    this.transparent = !!transparent;
 
     if(!PIXI.blendModesCanvas)
     {
@@ -207,6 +213,19 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
             PIXI.blendModesCanvas[PIXI.blendModes.ADD]      = &quot;lighter&quot;; //IS THIS OK???
             PIXI.blendModesCanvas[PIXI.blendModes.MULTIPLY] = &quot;multiply&quot;;
             PIXI.blendModesCanvas[PIXI.blendModes.SCREEN]   = &quot;screen&quot;;
+            PIXI.blendModesCanvas[PIXI.blendModes.OVERLAY]  = &quot;overlay&quot;;
+            PIXI.blendModesCanvas[PIXI.blendModes.DARKEN]   = &quot;darken&quot;;
+            PIXI.blendModesCanvas[PIXI.blendModes.LIGHTEN]  = &quot;lighten&quot;;
+            PIXI.blendModesCanvas[PIXI.blendModes.COLOR_DODGE] = &quot;color-dodge&quot;;
+            PIXI.blendModesCanvas[PIXI.blendModes.COLOR_BURN] = &quot;color-burn&quot;;
+            PIXI.blendModesCanvas[PIXI.blendModes.HARD_LIGHT] = &quot;hard-light&quot;;
+            PIXI.blendModesCanvas[PIXI.blendModes.SOFT_LIGHT] = &quot;soft-light&quot;;
+            PIXI.blendModesCanvas[PIXI.blendModes.DIFFERENCE] = &quot;difference&quot;;
+            PIXI.blendModesCanvas[PIXI.blendModes.EXCLUSION] = &quot;exclusion&quot;;
+            PIXI.blendModesCanvas[PIXI.blendModes.HUE]       = &quot;hue&quot;;
+            PIXI.blendModesCanvas[PIXI.blendModes.SATURATION] = &quot;saturation&quot;;
+            PIXI.blendModesCanvas[PIXI.blendModes.COLOR]      = &quot;color&quot;;
+            PIXI.blendModesCanvas[PIXI.blendModes.LUMINOSITY] = &quot;luminosity&quot;;
         }
         else
         {
@@ -215,6 +234,19 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
             PIXI.blendModesCanvas[PIXI.blendModes.ADD]      = &quot;lighter&quot;; //IS THIS OK???
             PIXI.blendModesCanvas[PIXI.blendModes.MULTIPLY] = &quot;source-over&quot;;
             PIXI.blendModesCanvas[PIXI.blendModes.SCREEN]   = &quot;source-over&quot;;
+            PIXI.blendModesCanvas[PIXI.blendModes.OVERLAY]  = &quot;source-over&quot;;
+            PIXI.blendModesCanvas[PIXI.blendModes.DARKEN]   = &quot;source-over&quot;;
+            PIXI.blendModesCanvas[PIXI.blendModes.LIGHTEN]  = &quot;source-over&quot;;
+            PIXI.blendModesCanvas[PIXI.blendModes.COLOR_DODGE] = &quot;source-over&quot;;
+            PIXI.blendModesCanvas[PIXI.blendModes.COLOR_BURN] = &quot;source-over&quot;;
+            PIXI.blendModesCanvas[PIXI.blendModes.HARD_LIGHT] = &quot;source-over&quot;;
+            PIXI.blendModesCanvas[PIXI.blendModes.SOFT_LIGHT] = &quot;source-over&quot;;
+            PIXI.blendModesCanvas[PIXI.blendModes.DIFFERENCE] = &quot;source-over&quot;;
+            PIXI.blendModesCanvas[PIXI.blendModes.EXCLUSION] = &quot;source-over&quot;;
+            PIXI.blendModesCanvas[PIXI.blendModes.HUE]       = &quot;source-over&quot;;
+            PIXI.blendModesCanvas[PIXI.blendModes.SATURATION] = &quot;source-over&quot;;
+            PIXI.blendModesCanvas[PIXI.blendModes.COLOR]      = &quot;source-over&quot;;
+            PIXI.blendModesCanvas[PIXI.blendModes.LUMINOSITY] = &quot;source-over&quot;;
         }
     }
 
@@ -249,21 +281,7 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
      * @property context
      * @type Canvas 2d Context
      */
-    this.context = this.view.getContext( &quot;2d&quot; );
-
-    //some filter variables
-    this.smoothProperty = null;
-
-    if(&quot;imageSmoothingEnabled&quot; in this.context)
-        this.smoothProperty = &quot;imageSmoothingEnabled&quot;;
-    else if(&quot;webkitImageSmoothingEnabled&quot; in this.context)
-        this.smoothProperty = &quot;webkitImageSmoothingEnabled&quot;;
-    else if(&quot;mozImageSmoothingEnabled&quot; in this.context)
-        this.smoothProperty = &quot;mozImageSmoothingEnabled&quot;;
-    else if(&quot;oImageSmoothingEnabled&quot; in this.context)
-        this.smoothProperty = &quot;oImageSmoothingEnabled&quot;;
-
-    this.scaleMode = null;
+    this.context = this.view.getContext( &quot;2d&quot;, { alpha: this.transparent } );
 
     this.refresh = true;
     // hack to enable some hardware acceleration!
@@ -275,10 +293,21 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
 
     this.maskManager = new PIXI.CanvasMaskManager();
 
-    this.renderSession = {};
-    this.renderSession.context = this.context;
-    this.renderSession.maskManager = this.maskManager;
-    
+    this.renderSession = {
+        context: this.context,
+        maskManager: this.maskManager,
+        scaleMode: null,
+        smoothProperty: null
+    };
+
+    if(&quot;imageSmoothingEnabled&quot; in this.context)
+        this.renderSession.smoothProperty = &quot;imageSmoothingEnabled&quot;;
+    else if(&quot;webkitImageSmoothingEnabled&quot; in this.context)
+        this.renderSession.smoothProperty = &quot;webkitImageSmoothingEnabled&quot;;
+    else if(&quot;mozImageSmoothingEnabled&quot; in this.context)
+        this.renderSession.smoothProperty = &quot;mozImageSmoothingEnabled&quot;;
+    else if(&quot;oImageSmoothingEnabled&quot; in this.context)
+        this.renderSession.smoothProperty = &quot;oImageSmoothingEnabled&quot;;
 };
 
 // constructor
@@ -296,20 +325,33 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
     //stage.__childrenRemoved = [];
 
     // update textures if need be
-    PIXI.texturesToUpdate = [];
-    PIXI.texturesToDestroy = [];
+    PIXI.texturesToUpdate.length = 0;
+    PIXI.texturesToDestroy.length = 0;
 
-    PIXI.visibleCount++;
     stage.updateTransform();
 
     // update the background color
-    if(this.view.style.backgroundColor !== stage.backgroundColorString &amp;&amp; !this.transparent)
-        this.view.style.backgroundColor = stage.backgroundColorString;
+  /*  if(this.view.style.backgroundColor !== stage.backgroundColorString &amp;&amp; !this.transparent)
+        this.view.style.backgroundColor = stage.backgroundColorString; */
 
     this.context.setTransform(1,0,0,1,0,0);
-    this.context.clearRect(0, 0, this.width, this.height);
+
+    if(this.view.style.backgroundColor !== stage.backgroundColorString )
+    {
+        if(!this.transparent)
+        {
+            this.context.fillStyle = stage.backgroundColorString;
+            this.context.fillRect(0, 0, this.width, this.height);
+        }
+        else
+        {
+            this.context.clearRect(0, 0, this.width, this.height);
+        }
+    }
+
+    //console.log(this.view.style.backgroundColor)
+   
     this.renderDisplayObject(stage);
-    //as
 
     // run interaction!
     if(stage.interactive)
@@ -325,7 +367,7 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
     // remove frame updates..
     if(PIXI.Texture.frameUpdates.length &gt; 0)
     {
-        PIXI.Texture.frameUpdates = [];
+        PIXI.Texture.frameUpdates.length = 0;
     }
 };
 
@@ -354,7 +396,7 @@ PIXI.CanvasRenderer.prototype.resize = function(width, height)
  */
 PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject, context)
 {
-    // no loger recurrsive!
+    // no longer recurrsive!
     //var transform;
     //var context = this.context;
 
@@ -460,7 +502,6 @@ PIXI.CanvasBuffer = function(width, height)
     this.canvas = document.createElement( &quot;canvas&quot; );
     this.context = this.canvas.getContext( &quot;2d&quot; );
 
-//     this.context.f
     this.canvas.width = width;
     this.canvas.height = height;
 };

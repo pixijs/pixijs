@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.4.0</em>
+            <em>API Docs for: 1.4.3</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -73,6 +73,8 @@
             
                 <li><a href="../classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
             
+                <li><a href="../classes/DotScreenFilter.html">DotScreenFilter</a></li>
+            
                 <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
@@ -90,6 +92,8 @@
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
+            
+                <li><a href="../classes/PIXI.PixiFastShader.html">PIXI.PixiFastShader</a></li>
             
                 <li><a href="../classes/PIXI.PixiShader.html">PIXI.PixiShader</a></li>
             
@@ -115,9 +119,9 @@
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
-                <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
+                <li><a href="../classes/Sprite.html">Sprite</a></li>
             
-                <li><a href="../classes/Sprite™.html">Sprite™</a></li>
+                <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
             
                 <li><a href="../classes/Stage.html">Stage</a></li>
             
@@ -126,6 +130,8 @@
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
+            
+                <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
             
                 <li><a href="../classes/WebGLRenderer.html">WebGLRenderer</a></li>
             
@@ -206,7 +212,7 @@ PIXI.DisplayObjectContainer.prototype = Object.create( PIXI.DisplayObject.protot
 PIXI.DisplayObjectContainer.prototype.constructor = PIXI.DisplayObjectContainer;
 
 /**
- * The width of the displayObjectContainer, setting this will actually modify the scale to acheive the value set
+ * The width of the displayObjectContainer, setting this will actually modify the scale to achieve the value set
  *
  * @property width
  * @type Number
@@ -225,7 +231,7 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, &#x27;width&#x27;, 
 */
 
 /**
- * The height of the displayObjectContainer, setting this will actually modify the scale to acheive the value set
+ * The height of the displayObjectContainer, setting this will actually modify the scale to achieve the value set
  *
  * @property height
  * @type Number
@@ -251,21 +257,7 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, &#x27;height&#x27;,
  */
 PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 {
-    if(child.parent &amp;&amp; child.parent !== this)
-    {
-        //// COULD BE THIS???
-        child.parent.removeChild(child);
-        //  return;
-    }
-
-    child.parent = this;
-
-    this.children.push(child);
-
-    // update the stage refference..
-
-    if(this.stage)this.setStageReference(this.stage);
-
+    this.addChildAt(child, this.children.length);
 };
 
 /**
@@ -288,7 +280,7 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 
         this.children.splice(index, 0, child);
 
-        if(this.stage)this.setStageReference(this.stage);
+        if(this.stage)child.setStageReference(this.stage);
     }
     else
     {
@@ -323,7 +315,7 @@ PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
 };
 
 /**
- * Returns the Child at the specified index
+ * Returns the child at the specified index
  *
  * @method getChildAt
  * @param index {Number} The index to get the child from
@@ -352,7 +344,7 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
     if ( index !== -1 )
     {
         // update the stage reference..
-        if(this.stage)this.removeStageReference();
+        if(this.stage)child.removeStageReference();
 
         child.parent = undefined;
         this.children.splice( index, 1 );
@@ -364,7 +356,7 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 };
 
 /*
- * Updates the container&#x27;s children&#x27;s transform for rendering
+ * Updates the container&#x27;s childrens transform for rendering
  *
  * @method updateTransform
  * @private
@@ -425,7 +417,7 @@ PIXI.DisplayObjectContainer.prototype.getBounds = function()
     bounds.width = maxX - minX;
     bounds.height = maxY - minY;
 
-    // TODO: store a refferance so that if this function gets called again in the render cycle we do not have to recacalculate
+    // TODO: store a reference so that if this function gets called again in the render cycle we do not have to recalculate
     //this._currentBounds = bounds;
    
     return bounds;
@@ -434,30 +426,33 @@ PIXI.DisplayObjectContainer.prototype.getBounds = function()
 PIXI.DisplayObjectContainer.prototype.setStageReference = function(stage)
 {
     this.stage = stage;
+    if(this._interactive)this.stage.dirty = true;
 
     for(var i=0,j=this.children.length; i&lt;j; i++)
     {
         var child = this.children[i];
-        if(child.interactive)this.stage.dirty = true;
         child.setStageReference(stage);
     }
 };
 
 PIXI.DisplayObjectContainer.prototype.removeStageReference = function()
 {
+
     for(var i=0,j=this.children.length; i&lt;j; i++)
     {
         var child = this.children[i];
         child.removeStageReference();
     }
 
+    if(this._interactive)this.stage.dirty = true;
+    
     this.stage = null;
 };
 
 PIXI.DisplayObjectContainer.prototype._renderWebGL = function(renderSession)
 {
-    if(this.visible === false || this.alpha === 0)return;
-
+    if(!this.visible || this.alpha &lt;= 0)return;
+    
     var i,j;
 
     if(this._mask || this._filters)

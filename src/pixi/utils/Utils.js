@@ -1,3 +1,7 @@
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+ 
 // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
 // http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
 
@@ -7,6 +11,8 @@
 
 /**
  * A polyfill for requestAnimationFrame
+ * You can actually use both requestAnimationFrame and requestAnimFrame, 
+ * you will still benefit from the polyfill
  *
  * @method requestAnimationFrame
  */
@@ -52,7 +58,12 @@ PIXI.hex2rgb = function(hex) {
     return [(hex >> 16 & 0xFF) / 255, ( hex >> 8 & 0xFF) / 255, (hex & 0xFF)/ 255];
 };
 
-
+/**
+ * Converts a color as an [R, G, B] array to a hex number
+ *
+ * @method rgb2hex
+ * @param rgb {Array}
+ */
 PIXI.rgb2hex = function(rgb) {
     return ((rgb[0]*255 << 16) + (rgb[1]*255 << 8) + rgb[2]*255);
 };
@@ -91,7 +102,7 @@ if (typeof Function.prototype.bind !== 'function') {
  * @class AjaxRequest
  * @constructor
  */
-PIXI.AjaxRequest = function AjaxRequest()
+PIXI.AjaxRequest = function()
 {
     var activexmodes = ['Msxml2.XMLHTTP.6.0', 'Msxml2.XMLHTTP.3.0', 'Microsoft.XMLHTTP']; //activeX versions to check for in IE
 
@@ -145,6 +156,12 @@ PIXI.unpackColorRGB = function(r, g, b)//r, g, b, a)
 };
 */
 
+/**
+ * Checks whether the Canvas BlendModes are supported by the current browser
+ *
+ * @method canUseNewCanvasBlendModes
+ * @return {Boolean} whether they are supported
+ */
 PIXI.canUseNewCanvasBlendModes = function()
 {
     var canvas = document.createElement('canvas');
@@ -159,7 +176,14 @@ PIXI.canUseNewCanvasBlendModes = function()
     return context.getImageData(0,0,1,1).data[0] === 0;
 };
 
-// this function is taken from Starling Framework as its pretty neat ;)
+/**
+ * Given a number, this function returns the closest number that is a power of two
+ * this function is taken from Starling Framework as its pretty neat ;)
+ *
+ * @method getNextPowerOfTwo
+ * @param number {Number}
+ * @return {Number} the closest number that is a power of two
+ */
 PIXI.getNextPowerOfTwo = function(number)
 {
     if (number > 0 && (number & (number - 1)) === 0) // see: http://goo.gl/D9kPj
@@ -171,5 +195,3 @@ PIXI.getNextPowerOfTwo = function(number)
         return result;
     }
 };
-
-

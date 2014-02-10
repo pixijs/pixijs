@@ -7,8 +7,8 @@
  *
  * @class Point
  * @constructor
- * @param x {Number} position of the point
- * @param y {Number} position of the point
+ * @param x {Number} position of the point on the x axis
+ * @param y {Number} position of the point on the y axis
  */
 PIXI.Point = function(x, y)
 {
@@ -40,4 +40,10 @@ PIXI.Point.prototype.clone = function()
 
 // constructor
 PIXI.Point.prototype.constructor = PIXI.Point;
+
+PIXI.Point.prototype.set = function(x, y)
+{
+    this.x = x || 0;
+    this.y = y || ( (y !== 0) ? this.x : 0 ) ;
+};
 

@@ -2,6 +2,16 @@
  * @author Mat Groves http://matgroves.com/
  */
 
+ /**
+ * 
+ * @class Strip
+ * @extends DisplayObjectContainer
+ * @constructor
+ * @param texture {Texture} The texture to use
+ * @param width {Number} the width 
+ * @param height {Number} the height
+ * 
+ */
 PIXI.Strip = function(texture, width, height)
 {
     PIXI.DisplayObjectContainer.call( this );
@@ -46,6 +56,7 @@ PIXI.Strip = function(texture, width, height)
     this.colors = new Float32Array()
     this.indices = new Uint16Array()
     */
+    
     this.width = width;
     this.height = height;
 
@@ -66,9 +77,16 @@ PIXI.Strip = function(texture, width, height)
 };
 
 // constructor
-PIXI.Strip.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
+PIXI.Strip.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
 PIXI.Strip.prototype.constructor = PIXI.Strip;
 
+/*
+ * Sets the texture that the Strip will use 
+ *
+ * @method setTexture
+ * @param texture {Texture} the texture that will be used
+ * @private
+ */
 PIXI.Strip.prototype.setTexture = function(texture)
 {
     //TODO SET THE TEXTURES
@@ -81,8 +99,14 @@ PIXI.Strip.prototype.setTexture = function(texture)
     this.updateFrame = true;
 };
 
+/**
+ * When the texture is updated, this event will fire to update the scale and frame
+ *
+ * @method onTextureUpdate
+ * @param event
+ * @private
+ */
 PIXI.Strip.prototype.onTextureUpdate = function()
 {
     this.updateFrame = true;
 };
-// some helper functions..
