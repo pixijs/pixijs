@@ -173,6 +173,24 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
     }
 };
 
+
+/**
+* Removes all the children 
+*
+* @method removeAll
+* NOT tested yet
+*/
+/* PIXI.DisplayObjectContainer.prototype.removeAll = function()
+{
+
+
+    for(var i = 0 , j = this.children.length; i < j; i++)
+    {
+        this.removeChild(this.children[i]);
+    }
+    
+};
+*/
 /*
  * Updates the container's childrens transform for rendering
  *
@@ -393,4 +411,3 @@ PIXI.DisplayObjectContainer.prototype._renderCanvas = function(renderSession)
         renderSession.maskManager.popMask(renderSession.context);
     }
 };
-

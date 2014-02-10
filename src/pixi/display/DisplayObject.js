@@ -399,7 +399,6 @@ PIXI.DisplayObject.prototype.updateTransform = function()
    // var localTransform = this.localTransform//.toArray();
     var parentTransform = this.parent.worldTransform;//.toArray();
     var worldTransform = this.worldTransform;//.toArray();
-    //console.log(localTransform)
     var px = this.pivot.x;
     var py = this.pivot.y;
 

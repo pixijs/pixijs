@@ -3,7 +3,6 @@
  */
 
 
-
 PIXI.FilterBlock = function()
 {
     this.visible = true;

@@ -40,7 +40,7 @@ PIXI.TilingSprite = function(texture, width, height)
     this.tileScale = new PIXI.Point(1,1);
 
     /**
-     * 
+     * A point that represents the scale of the texture object
      *
      * @property tileScaleOffset
      * @type Point
@@ -55,6 +55,14 @@ PIXI.TilingSprite = function(texture, width, height)
      */
     this.tilePosition = new PIXI.Point(0,0);
 
+
+    /**
+     * Whether this sprite is renderable or not
+     *
+     * @property renderable
+     * @type Boolean
+     * @default true
+     */
     this.renderable = true;
 
     /**
@@ -77,7 +85,7 @@ PIXI.TilingSprite = function(texture, width, height)
 };
 
 // constructor
-PIXI.TilingSprite.prototype = Object.create( PIXI.Sprite.prototype );
+PIXI.TilingSprite.prototype = Object.create(PIXI.Sprite.prototype);
 PIXI.TilingSprite.prototype.constructor = PIXI.TilingSprite;
 
 
@@ -113,7 +121,7 @@ Object.defineProperty(PIXI.TilingSprite.prototype, 'height', {
 });
 
 /**
- * When the texture is updated, this event will fire to update the scale and frame
+ * When the texture is updated, this event will be fired to update the scale and frame
  *
  * @method onTextureUpdate
  * @param event
@@ -121,13 +129,16 @@ Object.defineProperty(PIXI.TilingSprite.prototype, 'height', {
  */
 PIXI.TilingSprite.prototype.onTextureUpdate = function()
 {
-    // so if _width is 0 then width was not set..
-    //console.log("HI MUM")
-   
-
     this.updateFrame = true;
 };
 
+/**
+* Renders the object using the WebGL renderer
+*
+* @method _renderWebGL
+* @param renderSession {RenderSession} 
+* @private
+*/
 PIXI.TilingSprite.prototype._renderWebGL = function(renderSession)
 {
 
@@ -179,7 +190,13 @@ PIXI.TilingSprite.prototype._renderWebGL = function(renderSession)
     }
 };
 
-
+/**
+* Renders the object using the Canvas renderer
+*
+* @method _renderCanvas
+* @param renderSession {RenderSession} 
+* @private
+*/
 PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
 {
     if(this.visible === false || this.alpha === 0)return;
@@ -227,7 +244,6 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
     tilePosition.x %= this.tilingTexture.baseTexture.width;
     tilePosition.y %= this.tilingTexture.baseTexture.height;
 
-   // console.log(tileScale.x)
     // offset
     context.scale(tileScale.x,tileScale.y);
     context.translate(tilePosition.x, tilePosition.y);
@@ -246,6 +262,13 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
     }
 };
 
+
+/**
+* Returns the framing rectangle of the sprite as a PIXI.Rectangle object
+*
+* @method getBounds
+* @return {Rectangle} the framing rectangle
+*/
 PIXI.TilingSprite.prototype.getBounds = function()
 {
 
@@ -319,7 +342,12 @@ PIXI.TilingSprite.prototype.getBounds = function()
     return bounds;
 };
 
-
+/**
+* 
+* @method generateTilingTexture
+* 
+* @param forcePowerOfTwo {Boolean} Whether we want to force the texture to be a power of two
+*/
 PIXI.TilingSprite.prototype.generateTilingTexture = function(forcePowerOfTwo)
 {
     var texture = this.texture;

@@ -19,7 +19,6 @@ PIXI.AlphaMaskFilter = function(texture)
     texture.baseTexture._powerOf2 = true;
 
     // set the uniforms
-    //console.log()
     this.uniforms = {
         mask: {type: 'sampler2D', value:texture},
         mapDimensions:   {type: '2f', value:{x:1, y:5112}},

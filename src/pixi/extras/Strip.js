@@ -7,9 +7,9 @@
  * @class Strip
  * @extends DisplayObjectContainer
  * @constructor
- * @param texture {Texture} TODO-Alvin
- * @param width {Number} the width of the TODO-Alvin
- * @param height {Number} the height of the TODO-Alvin
+ * @param texture {Texture} The texture to use
+ * @param width {Number} the width 
+ * @param height {Number} the height
  * 
  */
 PIXI.Strip = function(texture, width, height)
@@ -82,7 +82,6 @@ PIXI.Strip.prototype.constructor = PIXI.Strip;
 
 /*
  * Sets the texture that the Strip will use 
- * TODO-Alvin
  *
  * @method setTexture
  * @param texture {Texture} the texture that will be used
@@ -111,4 +110,3 @@ PIXI.Strip.prototype.onTextureUpdate = function()
 {
     this.updateFrame = true;
 };
-// some helper functions..

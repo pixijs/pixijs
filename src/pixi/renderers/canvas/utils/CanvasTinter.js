@@ -19,17 +19,15 @@ PIXI.CanvasTinter = function()
     
 
 /**
- * TODO-Alvin
+ * Basically this method just needs a sprite and a color and tints the sprite 
+ * with the given color
+ * 
  * @method getTintedTexture 
  * @param sprite {Sprite} the sprite to tint
  * @param color {Number} the color to use to tint the sprite with
  */
 PIXI.CanvasTinter.getTintedTexture = function(sprite, color)
 {
-    //
-    // cache on sprite
-    // cache on texture
-    // no cache
 
     var texture = sprite.texture;
 

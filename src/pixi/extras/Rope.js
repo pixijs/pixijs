@@ -5,8 +5,8 @@
  * 
  * @class Rope
  * @constructor
- * @param texture {Texture} TODO-Alvin
- * @param y {Array} TODO-Alvin
+ * @param texture {Texture} The texture to use
+ * @param points {Array}
  * 
  */
 PIXI.Rope = function(texture, points)
@@ -38,7 +38,7 @@ PIXI.Rope.prototype = Object.create( PIXI.Strip.prototype );
 PIXI.Rope.prototype.constructor = PIXI.Rope;
 
 /*
- * Refreshes TODO-Alvin
+ * Refreshes 
  *
  * @method refresh
  */
@@ -177,7 +177,6 @@ PIXI.Rope.prototype.updateTransform = function()
 };
 /*
  * Sets the texture that the Rope will use 
- * TODO-Alvin
  *
  * @method setTexture
  * @param texture {Texture} the texture that will be used

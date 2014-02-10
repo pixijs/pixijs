@@ -4,7 +4,7 @@
  */
 
 /**
-* @class PIXI.PixiShader
+* @class PixiShader
 * @constructor
 */
 PIXI.PixiShader = function(gl)

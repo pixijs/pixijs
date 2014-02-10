@@ -50,9 +50,9 @@ PIXI.WebGLShaderManager.prototype.setContext = function(gl)
 
 
 /**
-* Initialises the context and the properties
+* Takes the attributes given in parameters 
 * @method setAttribs
-* @param attribs {Array} TODO-Alvin
+* @param attribs {Array} attribs 
 */
 PIXI.WebGLShaderManager.prototype.setAttribs = function(attribs)
 {
@@ -91,12 +91,11 @@ PIXI.WebGLShaderManager.prototype.setAttribs = function(attribs)
             }
         }
     }
-
-  //  console.log(this.tempAttribState)
 };
 
 /**
-* TODO-Alvin
+* Sets-up the given shader 
+*
 * @method activateShader
 * @param shader {Object} the shader that is going to be activated
 */
@@ -105,11 +104,9 @@ PIXI.WebGLShaderManager.prototype.activateShader = function(shader)
     //if(this.currentShader == shader)return;
 
     this.currentShader = shader;
- //  console.log(shader.program)
+
     this.gl.useProgram(shader.program);
     this.setAttribs(shader.attributes);
-
-   // console.log(shader.attributes)
   
 };
 

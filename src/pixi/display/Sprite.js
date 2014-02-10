@@ -165,12 +165,13 @@ PIXI.Sprite.prototype.onTextureUpdate = function()
 };
 
 /**
- * Retrieves the bounds of the sprite as a rectangle object
- *
- * @method getBounds
- * @return {Rectangle} the rectangular bounding area
- */
-PIXI.Sprite.prototype.getBounds = function( matrix )
+* Returns the framing rectangle of the sprite as a PIXI.Rectangle object
+*
+* @method getBounds
+* @param matrix {Matrix} the transformation matrix of the sprite
+* @return {Rectangle} the framing rectangle
+*/
+PIXI.Sprite.prototype.getBounds = function(matrix)
 {
 
     var width = this.texture.frame.width;

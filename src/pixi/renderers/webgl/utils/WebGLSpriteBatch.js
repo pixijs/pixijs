@@ -20,7 +20,7 @@ PIXI.WebGLSpriteBatch = function(gl)
 {
 
     /**
-     * TODO-Alvin
+     * 
      *
      * @property vertSize
      * @type Number
@@ -28,7 +28,7 @@ PIXI.WebGLSpriteBatch = function(gl)
     this.vertSize = 6;
 
     /**
-     * TODO-Alvin
+     * The number of images in the SpriteBatch before it flushes
      * @property size
      * @type Number
      */
@@ -133,7 +133,7 @@ PIXI.WebGLSpriteBatch.prototype.end = function()
 * 
 * @method render
 * 
-* @param sprite {Sprite} the sprite to render TODO-Alvin
+* @param sprite {Sprite} the sprite to render when using this spritebatch
 */
 PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
 {
@@ -249,10 +249,10 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
 };
 
 /**
-* 
+* Renders a tilingSprite using the spriteBatch
 * @method renderTilingSprite
 * 
-* @param sprite {TilingSprite} the sprite to render TODO-Alvin
+* @param sprite {TilingSprite} the tilingSprite to render
 */
 PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
 {
@@ -374,9 +374,9 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
 
 
 /**
-* 
+* Renders the content and empties the current batch
 *
-* @method flush TODO-Alvin
+* @method flush
 * 
 */
 PIXI.WebGLSpriteBatch.prototype.flush = function()
@@ -459,11 +459,10 @@ PIXI.WebGLSpriteBatch.prototype.start = function()
 };
 
 /**
-* 
+* Sets-up the given blendMode from WebGL's point of view
 * @method setBlendMode 
 *
 * @param blendMode {Number} the blendMode, should be a Pixi const, such as PIXI.BlendModes.ADD
-* TODO-Alvin
 */
 PIXI.WebGLSpriteBatch.prototype.setBlendMode = function(blendMode)
 {

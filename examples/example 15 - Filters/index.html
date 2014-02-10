@@ -100,8 +100,7 @@
 	/*
 	 * Add a pixi Logo!
 	 */
-	var logo = PIXI.Sprite.fromImage("../../logo_small.png")
-//	stage.addChild(logo);
+	var logo = PIXI.Sprite.fromImage("../../logo_small.png");
 	
 	logo.anchor.x = 1;
 	logo.position.x = 620
@@ -112,16 +111,13 @@
 	
 	logo.click = logo.tap = function()
 	{
-		window.open("https://github.com/GoodBoyDigital/pixi.js", "_blank")
+		window.open("https://github.com/GoodBoyDigital/pixi.js", "_blank");
 	}
 	
 	var help = new PIXI.Text("Click to turn filters on / off.", {font:"bold 12pt Arial", fill:"white"});
 	help.position.y = 350;
 	help.position.x = 10;
 	stage.addChild(help);
-	
-	//stage.filters = [filter];
-	
 	
 	
 	requestAnimFrame(animate);

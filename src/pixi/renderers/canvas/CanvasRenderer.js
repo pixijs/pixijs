@@ -145,7 +145,7 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
     this.maskManager = new PIXI.CanvasMaskManager();
 
     /**
-     * RenderSession TODO-Alvin
+     * The render session is just a bunch of parameter used for rendering
      * @property renderSession
      * @type Object
      */
