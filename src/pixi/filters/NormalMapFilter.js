@@ -20,7 +20,6 @@ PIXI.NormalMapFilter = function(texture)
 	texture.baseTexture._powerOf2 = true;
 
 	// set the uniforms
-	//console.log()
 	this.uniforms = {
 		displacementMap: {type: 'sampler2D', value:texture},
 		scale:			 {type: '2f', value:{x:15, y:15}},

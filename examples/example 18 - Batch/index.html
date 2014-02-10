@@ -103,10 +103,6 @@
 										viewWidth + dudeBoundsPadding * 2, 
 										viewHeight + dudeBoundsPadding * 2);
 
-	
-
-	// create a displacment map
-
 
 	var tick = 0;
 	requestAnimationFrame(animate);
@@ -124,7 +120,7 @@
 			dude.rotation = -dude.direction + Math.PI;
 
 
-			// wrap the dudes by testing there bounds..
+			// wrap the dudes by testing their bounds..
 			if(dude.position.x < dudeBounds.x)dude.position.x += dudeBounds.width;
 			else if(dude.position.x > dudeBounds.x + dudeBounds.width)dude.position.x -= dudeBounds.width
 			
@@ -137,7 +133,7 @@
 		
 		
 		
-		// time to render the state!
+		// time to render the stage !
 	    renderer.render(stage);
 	    
 	    // request another animation frame..

@@ -8,9 +8,9 @@
 var PIXI = PIXI || {};
 
 /* 
-* TODO-Alvin
-* Create a const class just for the sake of documenting them under one hat ?
 * 
+* This file contains a lot of pixi consts which are used across the rendering engine
+* @class Consts
 */
 PIXI.WEBGL_RENDERER = 0;
 PIXI.CANVAS_RENDERER = 1;

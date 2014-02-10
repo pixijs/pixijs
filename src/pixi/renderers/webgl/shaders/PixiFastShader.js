@@ -4,7 +4,7 @@
  */
 
 /**
-* @class PIXI.PixiFastShader
+* @class PixiFastShader
 * @constructor
 * @param gl {WebGLContext} the current WebGL drawing context
 */
