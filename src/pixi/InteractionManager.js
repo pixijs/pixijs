@@ -401,7 +401,7 @@ PIXI.InteractionManager.prototype.onMouseOut = function()
 {
     var length = this.interactiveItems.length;
 
-    this.currentCursor = 'inherit';
+    this.interactionDOMElement.style.cursor = 'inherit';
 
     for (var i = 0; i < length; i++)
     {

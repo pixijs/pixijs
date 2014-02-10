@@ -238,9 +238,7 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
 
     context.beginPath();
 
-    var tilePositionX = this.tilePosition.x % this.tilingTexture.width;
-    var tilePositionY = this.tilePosition.y % this.tilingTexture.height;
-
+    var tilePosition = this.tilePosition;
     var tileScale = this.tileScale;
 
     tilePosition.x %= this.tilingTexture.baseTexture.width;
@@ -248,13 +246,13 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
 
     // offset
     context.scale(tileScale.x,tileScale.y);
-    context.translate(tilePositionX, tilePositionY);
+    context.translate(tilePosition.x, tilePosition.y);
 
     context.fillStyle = this.__tilePattern;
-    context.fillRect(-tilePositionX,-tilePositionY,this.width / tileScale.x, this.height / tileScale.y);
+    context.fillRect(-tilePosition.x,-tilePosition.y,this.width / tileScale.x, this.height / tileScale.y);
 
     context.scale(1/tileScale.x, 1/tileScale.y);
-    context.translate(-tilePositionX, -tilePositionY);
+    context.translate(-tilePosition.x, -tilePosition.y);
 
     context.closePath();
 
