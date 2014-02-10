@@ -41,17 +41,14 @@
 
 	function runList(item)
 	{
-		console.log(">>>>>>>>>")
 		console.log("_")
 		var safe = 0;
 		var tmp = item;
 		while(tmp._iNext)
 		{
 			safe++;
-	//		console.log(tmp.childIndex + tmp);
 			tmp = tmp._iNext;
 			console.log(tmp);//.childIndex);
-		//	console.log(tmp);
 
 			if(safe > 100)
 			{
@@ -83,7 +80,7 @@
         function onAssetsLoaded()
         {
             var bitmapFontText = new PIXI.BitmapText("bitmap fonts are\n now supported!", {font: "35px Desyrel", align: "right"});
-            bitmapFontText.position.x = 620 - bitmapFontText.width - 20;
+            bitmapFontText.position.x = 620 - bitmapFontText.textWidth - 20;
             bitmapFontText.position.y = 20;
 
 			runList(bitmapFontText);
@@ -131,26 +128,31 @@
 
 		var count = 0;
 		var score = 0;
+		var remaining = 10;
+
+		stage.removeAll();
+
+
 
 		function animate() {
 
-		    requestAnimFrame(animate);
+		 //    requestAnimFrame(animate);
 
-			count++;
+			// count++;
 			
-			if(count == 50)
-			{
-				count = 0;
-				score++;
-				// update the text...
-				countingText.setText("COUNT 4EVAR: " + score);
+			// if(count == 50)
+			// {
+			// 	count = 0;
+			// 	score++;
+			// 	// update the text...
+			// 	countingText.setText("COUNT 4EVAR: " + score);
 
-			}
-		    // just for fun, let's rotate the text
-		    spinningText.rotation += 0.03;
+			// }
+		 //    // just for fun, let's rotate the text
+		 //    spinningText.rotation += 0.03;
 
-		    // render the stage
-		    renderer.render(stage);
+		 //    // render the stage
+		 //    renderer.render(stage);
 		}
 	}
 

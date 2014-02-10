@@ -61,7 +61,7 @@ PIXI.WebGLMaskManager.prototype.pushMask = function(maskData, renderSession)
 * Removes the last filter from the filter stack and doesn't return it
 * @method popMask
 *
-* @param renderSession {RenderSession} TODO-Alvin
+* @param renderSession {RenderSession} an object containing all the useful parameters
 */
 PIXI.WebGLMaskManager.prototype.popMask = function(renderSession)
 {
@@ -87,7 +87,7 @@ PIXI.WebGLMaskManager.prototype.popMask = function(renderSession)
 };
 
 /**
-* TODO-Alvin
+* Destroys the mask stack
 * @method destroy
 */
 PIXI.WebGLMaskManager.prototype.destroy = function()

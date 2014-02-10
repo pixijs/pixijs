@@ -63,10 +63,9 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     this.view.height = this.height;
 
     // deal with losing context..
-    // TODO-Alvin
     this.contextLost = this.handleContextLost.bind(this);
     this.contextRestoredLost = this.handleContextRestored.bind(this);
- //   console.log(this.handleContextRestored)
+    
     this.view.addEventListener('webglcontextlost', this.contextLost, false);
     this.view.addEventListener('webglcontextrestored', this.contextRestoredLost, false);
 
@@ -136,7 +135,6 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     this.maskManager = new PIXI.WebGLMaskManager(gl);                       // manages the masks using the stencil buffer
     this.filterManager = new PIXI.WebGLFilterManager(gl, this.transparent); // manages the filters
 
-    //
     this.renderSession = {};
     this.renderSession.gl = this.gl;
     this.renderSession.drawCount = 0;
@@ -206,9 +204,6 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-  //  this.projection.x =  this.width/2;
-    //this.projection.y =  -this.height/2;
-
     this.renderDisplayObject( stage, this.projection );
 
     // interaction
@@ -257,8 +252,8 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
  *
  * @method renderDIsplayObject
  * @param displayObject {DisplayObject} The DisplayObject to render
- * @param projection {Point} 
- * @param buffer {Array} buffer TODO-Alvin
+ * @param projection {Point} The projection
+ * @param buffer {Array} a standard WebGL buffer 
  */
 PIXI.WebGLRenderer.prototype.renderDisplayObject = function(displayObject, projection, buffer)
 {
@@ -335,7 +330,6 @@ PIXI.WebGLRenderer.destroyTexture = function(texture)
 };
 
 /**
- * TODO-Alvin
  *
  * @method updateTextureFrame
  * @param texture {Texture} The texture to update the frame from
@@ -524,7 +518,7 @@ PIXI.WebGLRenderer.prototype.handleContextRestored = function()
 };
 
 /**
- * Destroy TODO-Alvin
+ * Removes everything from the renderer (event listeners, spritebatch, etc...)
  *
  * @method destroy
  */

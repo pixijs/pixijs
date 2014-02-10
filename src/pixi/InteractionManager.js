@@ -57,9 +57,10 @@ PIXI.InteractionManager = function(stage)
     this.pool = [];
 
     /**
-     * TODO-Alvin
+     * An array containing all the iterative items from the our interactive tree
      * @property interactiveItems
      * @type Array
+     * @private
      *
      */
     this.interactiveItems = [];
@@ -84,8 +85,20 @@ PIXI.InteractionManager = function(stage)
 
     this.last = 0;
 
+    /**
+     * The css style of the cursor that is being used
+     * @property currentCursorStyle
+     * @type String
+     * 
+     */
     this.currentCursorStyle = 'inherit';
 
+    /**
+     * Is set to true when the mouse is moved out of the canvas
+     * @property mouseOut
+     * @type Boolean
+     * 
+     */
     this.mouseOut = false;
 };
 
@@ -97,7 +110,7 @@ PIXI.InteractionManager.prototype.constructor = PIXI.InteractionManager;
  *
  * @method collectInteractiveSprite
  * @param displayObject {DisplayObject} the displayObject to collect
- * @param iParent {DisplayObject}
+ * @param iParent {DisplayObject} the display object's parent
  * @private
  */
 PIXI.InteractionManager.prototype.collectInteractiveSprite = function(displayObject, iParent)
@@ -385,7 +398,7 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
 /**
  * Is called when the mouse button is moved out of the renderer element
  *
- * @method onMouseDown
+ * @method onMouseOut
  * @param event {Event} The DOM event of a mouse button being moved out
  * @private 
  */

@@ -80,7 +80,7 @@ PIXI.Graphics = function()
     this.currentPath = {points:[]};
 
     /**
-     * WebGL lines ? TODO-Alvin
+     * Array containing some WebGL-related properties used by the WebGL renderer
      *
      * @property _webGL
      * @type Array
@@ -89,7 +89,7 @@ PIXI.Graphics = function()
     this._webGL = [];
 
     /**
-     * Whether this shape is used as a mask
+     * Whether this shape is being used as a mask
      *
      * @property isMask
      * @type isMask
@@ -105,7 +105,7 @@ PIXI.Graphics = function()
     this.bounds = null;
 
     /**
-     * the bound padding TODO-Alvin
+     * the bounds' padding used for bounds calculation
      *
      * @property bounds
      * @type Number
@@ -578,7 +578,7 @@ PIXI.Graphics.prototype.updateBounds = function()
 
 
 /**
- * Generates the cached sprite that was made using the generate TODO-Alvin
+ * Generates the cached sprite when the sprite has cacheAsBitmap = true
  *
  * @method _generateCachedSprite
  * @private
