@@ -103,6 +103,36 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
                 }
             }
 
+            if (!responseXML.getElementsByTagName) {
+                responseXML = {};
+                responseXML.getElementsByTagName = function (name) {
+                    var node = [],
+                        tagRegex =  new RegExp('<'+name+'(.*)/>','g'),
+                        tagArray = this.match(tagRegex);
+
+                    tagArray.forEach(function(tag) {
+                        var propertyString = tag.replace('<'+name,'').replace(/'/g, '').replace(' ', '').replace('/>',''),
+                            propertyListArray = propertyString.split(' '),
+                            propertyArray = {};
+
+                        propertyListArray.forEach(function (property) {
+                            var split = property.split('=');
+
+                            propertyArray[split[0]] = split[1];
+                        });
+
+                        node.push({
+                            getAttribute: function (name) {
+                                return propertyArray[name].replace('"','');
+                            }
+                        });
+                    });
+                    
+                    return node;
+
+                }.bind(this.ajaxRequest.responseText);
+            }
+
             var textureUrl = this.baseUrl + responseXML.getElementsByTagName('page')[0].getAttribute('file');
             var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
             this.texture = image.texture.baseTexture;
