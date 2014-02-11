@@ -89,7 +89,7 @@ PIXI.InteractionManager = function(stage)
      * The css style of the cursor that is being used
      * @property currentCursorStyle
      * @type String
-     * 
+     *
      */
     this.currentCursorStyle = 'inherit';
 
@@ -97,7 +97,7 @@ PIXI.InteractionManager = function(stage)
      * Is set to true when the mouse is moved out of the canvas
      * @property mouseOut
      * @type Boolean
-     * 
+     *
      */
     this.mouseOut = false;
 };
@@ -270,9 +270,6 @@ PIXI.InteractionManager.prototype.update = function()
 
     // loop through interactive objects!
     var length = this.interactiveItems.length;
-
-    
-
     var cursor = 'inherit';
     var over = false;
 
@@ -298,7 +295,6 @@ PIXI.InteractionManager.prototype.update = function()
 
             if(!item.__isOver)
             {
-
                 if(item.mouseover)item.mouseover(this.mouse);
                 item.__isOver = true;
             }
@@ -319,7 +315,6 @@ PIXI.InteractionManager.prototype.update = function()
         this.currentCursorStyle = cursor;
         this.interactionDOMElement.style.cursor = cursor;
     }
-
 };
 
 /**
