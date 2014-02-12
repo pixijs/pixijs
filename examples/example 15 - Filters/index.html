@@ -34,7 +34,6 @@
 						0,0,1,0,
 						0,0,0,1];
 						
-						
 	var filter = new PIXI.ColorMatrixFilter();
 	
 	var container = new PIXI.DisplayObjectContainer();
@@ -61,13 +60,11 @@
 	panda.anchor.x = 0.5;
 	panda.anchor.y = 0.5;
 	
-	
 	container.addChild(panda);
 	
 	stage.addChild(container);
 	
 	// create a renderer instance
-	
 	renderer.view.style.position = "absolute"
 	renderer.view.style.width = window.innerWidth + "px";
 	renderer.view.style.height = window.innerHeight + "px";
@@ -75,7 +72,6 @@
 	
 	// add render view to DOM
 	document.body.appendChild(renderer.view);
-	
 	
 	stage.filters = [filter];
 	
@@ -94,7 +90,6 @@
 		{
 			stage.filters = null;
 		}
-		
 	}
 	
 	/*
@@ -119,11 +114,9 @@
 	help.position.x = 10;
 	stage.addChild(help);
 	
-	
 	requestAnimFrame(animate);
 
 	function animate() {
-		
 		bg.rotation += 0.01;
 		bgFront.rotation -= 0.01;
 		
@@ -138,12 +131,10 @@
 		colorMatrix[1] = Math.sin(count) * 3;
 		colorMatrix[2] = Math.cos(count);
 		colorMatrix[3] = Math.cos(count) * 1.5;
-		colorMatrix[4] = Math.sin(count/3) * 2;
-		colorMatrix[5] = Math.sin(count/2);
-		colorMatrix[6] = Math.sin(count/4);
+		colorMatrix[4] = Math.sin(count / 3) * 2;
+		colorMatrix[5] = Math.sin(count / 2);
+		colorMatrix[6] = Math.sin(count / 4);
 		filter.matrix = colorMatrix;
-		
-		
 
 	    renderer.render(stage);
 	    requestAnimFrame( animate );

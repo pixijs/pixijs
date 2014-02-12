@@ -45,8 +45,6 @@
 	// create a new background sprite
 	var pondFloorSprite = new PIXI.Sprite(pondFloorTexture);
 	stage.addChild(pondFloorSprite);
-
-	
 	
 	// create an array to store a refference to the dude in the pond
 	var dudeArray = [];
@@ -55,7 +53,6 @@
 
 	for (var i = 0; i < totaldude; i++) 
 	{
-
 		// create a new Sprite that uses the image name that we just generated as its source
 		var dude =  PIXI.Sprite.fromImage("flowerTop.png");
 
@@ -86,7 +83,6 @@
 
 		// finally we push the dude into the dudeArray so it it can be easily accessed later
 		dudeArray.push(dude);
-
 	}
 
 	// create a bounding box box for the little dudes 
@@ -96,7 +92,6 @@
 										-dudeBoundsPadding, 
 										viewWidth + dudeBoundsPadding * 2, 
 										viewHeight + dudeBoundsPadding * 2);
-
 
 	var tick = 0;
 
@@ -114,17 +109,15 @@
 			dude.rotation = -dude.direction - Math.PI/2;
 
 			// wrap the dudes by testing there bounds..
-			if(dude.position.x < dudeBounds.x)dude.position.x += dudeBounds.width;
-			else if(dude.position.x > dudeBounds.x + dudeBounds.width)dude.position.x -= dudeBounds.width
+			if (dude.position.x < dudeBounds.x)dude.position.x += dudeBounds.width;
+			else if (dude.position.x > dudeBounds.x + dudeBounds.width)dude.position.x -= dudeBounds.width;
 			
-			if(dude.position.y < dudeBounds.y)dude.position.y += dudeBounds.height;
-			else if(dude.position.y > dudeBounds.y + dudeBounds.height)dude.position.y -= dudeBounds.height
+			if (dude.position.y < dudeBounds.y)dude.position.y += dudeBounds.height;
+			else if (dude.position.y > dudeBounds.y + dudeBounds.height)dude.position.y -= dudeBounds.height;
 		}
 		
 		// increment the ticker
 		tick += 0.1;
-		
-		
 		
 		// time to render the stage !
 	    renderer.render(stage);

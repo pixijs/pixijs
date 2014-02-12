@@ -1,7 +1,6 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-	<!--<link href='http://fonts.googleapis.com/css?family=Snippet|Arvo:700italic|Podkova' rel='stylesheet' type='text/css'>-->
 	<title>pixi.js example 10 Text</title>
 	<style>
 		body {
@@ -11,13 +10,12 @@
 		}
 	</style>
 
-
 	<script src="../../bin/pixi.dev.js"></script>
 </head>
 <body>
 	<script>
 
-  	// Load them google fonts before starting...!
+  // Load them google fonts before starting...!
 	WebFontConfig = {
 	  google: {
 	    families: [ 'Snippet', 'Arvo:700italic', 'Podkova:700' ]
@@ -27,7 +25,6 @@
 	    // do something
 	    init();
 	  }
-
 	};
 	(function() {
         var wf = document.createElement('script');
@@ -41,14 +38,14 @@
 
 	function runList(item)
 	{
-		console.log("_")
+		console.log("_");
 		var safe = 0;
 		var tmp = item;
 		while(tmp._iNext)
 		{
 			safe++;
 			tmp = tmp._iNext;
-			console.log(tmp);//.childIndex);
+			console.log(tmp);
 
 			if(safe > 100)
 			{
@@ -68,14 +65,11 @@
         // use callback
         loader.onComplete = onAssetsLoaded;
 
-        
-
         // create an new instance of a pixi stage
 		var stage = new PIXI.Stage(0x66FF99);
 
 		// begin load
         loader.load();
-
 
         function onAssetsLoaded()
         {
@@ -86,11 +80,7 @@
 			runList(bitmapFontText);
 
 	        stage.addChild(bitmapFontText);
-
-
         }
-
-
 
 		// add a shiny background...
 		var background = PIXI.Sprite.fromImage("textDemoBG.jpg");
@@ -132,27 +122,8 @@
 
 		stage.removeAll();
 
-
-
 		function animate() {
 
-		 //    requestAnimFrame(animate);
-
-			// count++;
-			
-			// if(count == 50)
-			// {
-			// 	count = 0;
-			// 	score++;
-			// 	// update the text...
-			// 	countingText.setText("COUNT 4EVAR: " + score);
-
-			// }
-		 //    // just for fun, let's rotate the text
-		 //    spinningText.rotation += 0.03;
-
-		 //    // render the stage
-		 //    renderer.render(stage);
 		}
 	}
 

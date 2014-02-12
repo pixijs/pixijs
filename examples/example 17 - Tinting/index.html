@@ -48,7 +48,6 @@
 
 	for (var i = 0; i < totalDudes; i++) 
 	{
-
 		// create a new Sprite that uses the image name that we just generated as its source
 		var dude =  PIXI.Sprite.fromImage("eggHead.png");
 
@@ -80,7 +79,6 @@
 
 		// finally we push the dude into the dudeArray so it it can be easily accessed later
 		dudeArray.push(dude);
-
 	}
 
 	// create a bounding box box for the little dudes 
@@ -103,26 +101,24 @@
 			dude.direction += dude.turningSpeed * 0.01;
 			dude.position.x += Math.sin(dude.direction) * dude.speed;
 			dude.position.y += Math.cos(dude.direction) * dude.speed;
-			dude.rotation = -dude.direction - Math.PI/2;
+			dude.rotation = -dude.direction - Math.PI / 2;
 
 			// wrap the dudes by testing their bounds..
-			if(dude.position.x < dudeBounds.x)dude.position.x += dudeBounds.width;
-			else if(dude.position.x > dudeBounds.x + dudeBounds.width)dude.position.x -= dudeBounds.width
+			if (dude.position.x < dudeBounds.x)dude.position.x += dudeBounds.width;
+			else if (dude.position.x > dudeBounds.x + dudeBounds.width)dude.position.x -= dudeBounds.width;
 			
-			if(dude.position.y < dudeBounds.y)dude.position.y += dudeBounds.height;
-			else if(dude.position.y > dudeBounds.y + dudeBounds.height)dude.position.y -= dudeBounds.height
+			if (dude.position.y < dudeBounds.y)dude.position.y += dudeBounds.height;
+			else if (dude.position.y > dudeBounds.y + dudeBounds.height)dude.position.y -= dudeBounds.height;
 		}
 		
 		// increment the ticker
 		tick += 0.1;
 		
-		
-		
 		// time to render the state!
 	    renderer.render(stage);
 	    
 	    // request another animation frame..
-	    requestAnimationFrame( animate );
+	    requestAnimationFrame(animate);
 	}
 
 	</script>
