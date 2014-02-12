@@ -1,7 +1,7 @@
 Pixi Renderer 
 =============
 
-![pixi.js logo](http://www.goodboydigital.com/pixijs/logo_small.png)
+![pixi.js logo](http://www.goodboydigital.com/pixijs/logo_small.png) 
 
 [<img src="http://www.pixijs.com/wp-content/uploads/2013/05/headerPanel_projects-898x342.jpg">](http://www.pixijs.com/projects)
 #### JavaScript 2D Renderer ####
@@ -14,6 +14,8 @@ If you’re interested in pixi.js then feel free to follow me on twitter
 ([@doormat23](https://twitter.com/doormat23)) and I will keep you posted!  And
 of course check back on [our site](<http://www.goodboydigital.com/blog/>) as
 any breakthroughs will be posted up there too!
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/GoodBoyDigital/pixi.js/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
 ### Demos ###
 
