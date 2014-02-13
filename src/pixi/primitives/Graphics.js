@@ -169,6 +169,8 @@ PIXI.Graphics.prototype.lineStyle = function(lineWidth, color, alpha)
                         fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling, points:[], type:PIXI.Graphics.POLY};
 
     this.graphicsData.push(this.currentPath);
+
+    return this;
 };
 
 /**
@@ -188,6 +190,8 @@ PIXI.Graphics.prototype.moveTo = function(x, y)
     this.currentPath.points.push(x, y);
 
     this.graphicsData.push(this.currentPath);
+
+    return this;
 };
 
 /**
@@ -202,6 +206,8 @@ PIXI.Graphics.prototype.lineTo = function(x, y)
 {
     this.currentPath.points.push(x, y);
     this.dirty = true;
+
+    return this;
 };
 
 /**
@@ -218,6 +224,8 @@ PIXI.Graphics.prototype.beginFill = function(color, alpha)
     this.filling = true;
     this.fillColor = color || 0;
     this.fillAlpha = (arguments.length < 2) ? 1 : alpha;
+
+    return this;
 };
 
 /**
@@ -230,6 +238,8 @@ PIXI.Graphics.prototype.endFill = function()
     this.filling = false;
     this.fillColor = null;
     this.fillAlpha = 1;
+
+    return this;
 };
 
 /**
@@ -250,6 +260,8 @@ PIXI.Graphics.prototype.drawRect = function( x, y, width, height )
 
     this.graphicsData.push(this.currentPath);
     this.dirty = true;
+
+    return this;
 };
 
 /**
@@ -271,6 +283,8 @@ PIXI.Graphics.prototype.drawCircle = function( x, y, radius)
 
     this.graphicsData.push(this.currentPath);
     this.dirty = true;
+
+    return this;
 };
 
 /**
@@ -293,6 +307,8 @@ PIXI.Graphics.prototype.drawEllipse = function( x, y, width, height)
 
     this.graphicsData.push(this.currentPath);
     this.dirty = true;
+
+    return this;
 };
 
 /**
@@ -310,6 +326,8 @@ PIXI.Graphics.prototype.clear = function()
     this.graphicsData = [];
 
     this.bounds = null; //new PIXI.Rectangle();
+
+    return this;
 };
 
 /**
