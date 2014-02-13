@@ -11,7 +11,7 @@
  * Adds event emitter functionality to a class
  *
  * @class EventTarget
- * 
+ * @example
  *      function MyEmitter() {
  *          PIXI.EventTarget.call(this); //mixes in event target stuff
  *      }

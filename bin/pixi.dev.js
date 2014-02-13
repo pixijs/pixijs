@@ -4,7 +4,7 @@
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-02-10
+ * Compiled: 2014-02-12
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -954,8 +954,8 @@ PIXI.DisplayObject.prototype.updateTransform = function()
         a01 = -this._sr * this.scale.y,
         a10 = this._sr * this.scale.x,
         a11 = this._cr * this.scale.y,
-        a02 = this.position.x + a00 * px - py * a01,
-        a12 = this.position.y + a11 * py - px * a10,
+        a02 = this.position.x - a00 * px - py * a01,
+        a12 = this.position.y - a11 * py - px * a10,
         b00 = parentTransform.a, b01 = parentTransform.b,
         b10 = parentTransform.c, b11 = parentTransform.d;
 
