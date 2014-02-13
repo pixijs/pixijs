@@ -371,8 +371,16 @@ PIXI.TilingSprite.prototype.generateTilingTexture = function(forcePowerOfTwo)
     {
         if(isFrame)
         {
-            targetWidth = frame.width;
-            targetHeight = frame.height;
+            if (texture.trim)
+            {
+                targetWidth = texture.trim.width;
+                targetHeight = texture.trim.height;
+            }
+            else
+            {
+                targetWidth = frame.width;
+                targetHeight = frame.height;
+            }
             
             newTextureRequired = true;
         }
