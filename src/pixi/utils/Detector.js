@@ -11,11 +11,11 @@
  * @param width=800 {Number} the width of the renderers view
  * @param height=600 {Number} the height of the renderers view
  * @param [view] {Canvas} the canvas to use as a view, optional 
- * @param [antialias=false] {Boolean} sets antialias (only applicable in webGL chrome at the moment)
  * @param [transparent=false] {Boolean} the transparency of the render view, default false
+ * @param [antialias=false] {Boolean} sets antialias (only applicable in webGL chrome at the moment)
  *
  */
-PIXI.autoDetectRenderer = function(width, height, view,antialias,transparent)
+PIXI.autoDetectRenderer = function(width, height, view, transparent, antialias)
 {
     if(!width)width = 800;
     if(!height)height = 600;
