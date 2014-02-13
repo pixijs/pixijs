@@ -2,7 +2,7 @@
 <html>
 <head>
 
-	<title>Pixi.js Blendmodes</title>
+	<title>Pixi.js Blend Modes</title>
 	<style>
 		body {
 			margin: 0;
@@ -17,15 +17,12 @@
 			height: 100%;
 		}
 	</style>
-	
-	<script src="pixi.js"></script>
 	<script src="../../bin/pixi.js"></script>
 
 </head>
 <body>
 
 	<script>
-	
 	var viewWidth = 630;
 	var viewHeight = 410;
 
@@ -45,17 +42,13 @@
 	// create a new background sprite
 	var pondFloorSprite = new PIXI.Sprite(pondFloorTexture);
 	stage.addChild(pondFloorSprite);
-
-	
 	
 	// create an array to store a refference to the dude in the pond
 	var dudeArray = [];
 	 
 	var totaldude = 20;
-
 	for (var i = 0; i < totaldude; i++) 
 	{
-
 		// create a new Sprite that uses the image name that we just generated as its source
 		var dude =  PIXI.Sprite.fromImage("flowerTop.png");
 
@@ -72,9 +65,9 @@
 		// time to add the dude to the pond container!
 		stage.addChild(dude);
 
-		// create some extra properties that will control movement
-
 		dude.blendMode = PIXI.blendModes.ADD
+
+		// create some extra properties that will control movement
 		// create a random direction in radians. This is a number between 0 and PI*2 which is the equivalent of 0 - 360 degrees
 		dude.direction = Math.random() * Math.PI * 2;
 
@@ -86,7 +79,6 @@
 
 		// finally we push the dude into the dudeArray so it it can be easily accessed later
 		dudeArray.push(dude);
-
 	}
 
 	// create a bounding box box for the little dudes 
@@ -97,11 +89,7 @@
 										viewWidth + dudeBoundsPadding * 2, 
 										viewHeight + dudeBoundsPadding * 2);
 
-
 	var tick = 0;
-
-	requestAnimationFrame(animate);
-
 	function animate() 
 	{
 		// iterate through the dudes and update the positions
@@ -111,20 +99,22 @@
 			dude.direction += dude.turningSpeed * 0.01;
 			dude.position.x += Math.sin(dude.direction) * dude.speed;
 			dude.position.y += Math.cos(dude.direction) * dude.speed;
-			dude.rotation = -dude.direction - Math.PI/2;
+			dude.rotation = -dude.direction - Math.PI / 2;
 
 			// wrap the dudes by testing there bounds..
-			if(dude.position.x < dudeBounds.x)dude.position.x += dudeBounds.width;
-			else if(dude.position.x > dudeBounds.x + dudeBounds.width)dude.position.x -= dudeBounds.width
+			if (dude.position.x < dudeBounds.x)
+				dude.position.x += dudeBounds.width;
+			else if (dude.position.x > dudeBounds.x + dudeBounds.width)
+				dude.position.x -= dudeBounds.width;
 			
-			if(dude.position.y < dudeBounds.y)dude.position.y += dudeBounds.height;
-			else if(dude.position.y > dudeBounds.y + dudeBounds.height)dude.position.y -= dudeBounds.height
+			if (dude.position.y < dudeBounds.y)
+				dude.position.y += dudeBounds.height;
+			else if (dude.position.y > dudeBounds.y + dudeBounds.height)
+				dude.position.y -= dudeBounds.height;
 		}
 		
 		// increment the ticker
 		tick += 0.1;
-		
-		
 		
 		// time to render the stage !
 	    renderer.render(stage);
@@ -132,7 +122,7 @@
 	    // request another animation frame...
 	    requestAnimationFrame(animate);
 	}
-
+	requestAnimationFrame(animate);
 	</script>
 
 	</body>
