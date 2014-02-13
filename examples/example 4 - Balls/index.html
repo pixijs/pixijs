@@ -16,7 +16,6 @@
 	<div id="sx">SX: 0<br />SY: 0</div>
 
 	<script>
-
 	$(window).resize(resize)
 	window.onorientationchange = resize;
 
@@ -31,14 +30,13 @@
 	var slideX = w / 2;
 	var slideY = h / 2;
 	var stars = [];
+	var renderer;
+	var stage;
 
 	function start() {
-
 		var ballTexture = new PIXI.Texture.fromImage("assets/bubble_32x32.png");
-
 		renderer = PIXI.autoDetectRenderer(w, h);
-
-		stage = new PIXI.Stage;
+		stage = new PIXI.Stage();
 
 		document.body.appendChild(renderer.view);
 
@@ -62,15 +60,12 @@
 		resize();
 
 		requestAnimFrame(update);
-
 	}
 
 	function newWave () {
-
 		sx = 1.0 + (Math.random() / 20);
 		sy = 1.0 + (Math.random() / 20);
 		document.getElementById('sx').innerHTML = 'SX: ' + sx + '<br />SY: ' + sy;
-
 	}
 
 	function resize()
@@ -116,7 +111,6 @@
 
 		requestAnimFrame(update);
 	}
-
 	</script>
 
 	</body>

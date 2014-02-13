@@ -37,10 +37,10 @@
 	// create an new instance of a pixi stage
 	var stage = new PIXI.Stage(0xFFFFFF);
 	
-	var particles = new PIXI.SpriteBatch(PIXI.Texture.fromImage("eggHead.png"));
-	stage.addChild(particles);
+	var sprites = new PIXI.SpriteBatch();
+	stage.addChild(sprites);
 	
-	var tints = [0XFFFFFF, 0XFFFBEE, 0XFFEEEE, 0XFADEED, 0XE8D4CD];
+	var tints = [0xFFFFFF, 0xFFFBEE, 0xFFEEEE, 0xFADEED, 0xE8D4CD];
 
 	// create an array to store a refference to the fish in the pond
 	var dudeArray = [];
@@ -51,7 +51,7 @@
 		// create a new Sprite that uses the image name that we just generated as its source
 		var dude =  PIXI.Sprite.fromImage("tinyMaggot.png");
 
-		dude.tint = Math.random() * 0XE8D4CD;
+		dude.tint = Math.random() * 0xE8D4CD;
 
 		// set the anchor point so the the dude texture is centerd on the sprite
 		dude.anchor.x = dude.anchor.y = 0.5;
@@ -80,7 +80,7 @@
 		// finally we push the dude into the dudeArray so it it can be easily accessed later
 		dudeArray.push(dude);
 
-		particles.addChild(dude);
+		sprites.addChild(dude);
 	}
 
 	// create a bounding box box for the little dudes 
@@ -91,8 +91,6 @@
 										viewHeight + dudeBoundsPadding * 2);
 
 	var tick = 0;
-	requestAnimationFrame(animate);
-
 	function animate() 
 	{
 		// iterate through the dude and update the position
@@ -126,6 +124,8 @@
 	    // request another animation frame..
 	    requestAnimationFrame(animate);
 	}
+
+	requestAnimationFrame(animate);
 	</script>
 
 	</body>

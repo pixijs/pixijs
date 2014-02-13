@@ -111,8 +111,6 @@
 	help.position.x = 10;
 	stage.addChild(help);
 	
-	requestAnimFrame(animate);
-
 	function animate() {
 		bg.rotation += 0.01;
 		bgFront.rotation -= 0.01;
@@ -136,6 +134,8 @@
 	    renderer.render(stage);
 	    requestAnimFrame(animate);
 	}
+
+	requestAnimFrame(animate);
 	</script>
 
 	</body>

@@ -14,9 +14,8 @@
 </head>
 <body>
 	<script>
-
 	// create an new instance of a pixi stage
-	var stage = new PIXI.Stage(0x97c56e, true);
+	var stage = new PIXI.Stage(0x97C56E, true);
 
 	// create a renderer instance
 	var renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight, null);
@@ -31,7 +30,7 @@
 	// create a texture from an image path
 	var texture = PIXI.Texture.fromImage("bunny.png");
 
-	for (var i=0; i < 10; i++)
+	for (var i = 0; i < 10; i++)
 	{
 		createBunny(Math.random() * window.innerWidth, Math.random() * window.innerHeight)
 	};

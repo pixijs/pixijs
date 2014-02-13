@@ -14,7 +14,6 @@
 	<a href="http://www.html5gamedevs.com/topic/59-pixijs-has-landed/"><img src="assets/pixi.png" width="56" height="22" id="pixi" title="pixi.js" /></a>
 
 	<script>
-
 	$(window).resize(resize)
 	window.onorientationchange = resize;
 
@@ -37,13 +36,12 @@
 	var tpoint2 = [];
 	var tpoint3 = [];
 	var balls = [];
+	var renderer;
+	var stage;
 
 	function start() {
-
 		var ballTexture = new PIXI.Texture.fromImage("assets/pixel.png");
-
 		renderer = PIXI.autoDetectRenderer(w, h);
-
 		stage = new PIXI.Stage;
 
 		document.body.appendChild(renderer.view);
@@ -70,32 +68,25 @@
 		setTimeout(nextObject, 5000);
 
 		requestAnimFrame(update);
-
 	}
 
-	function nextObject () {
-
+	function nextObject() {
 		current++;
-
 		if (current > objs)
 		{
 			current = 0;
 		}
 
 		makeObject(current);
-
 		setTimeout(nextObject, 8000);
-
 	}
 
-	function makeObject ( t ) {
-
+	function makeObject(t) {
 		var xd;
 
 		switch (t)
 		{
 			case 0:
-
 				for (var i = 0; i < n; i++)
 				{
 					points1[i] = -50 + Math.round(Math.random() * 100);
@@ -103,9 +94,7 @@
 					points3[i] = 0;
 				}
 				break;
-
 			case 1:
-
 				for (var i = 0; i < n; i++)
 				{
 					xd = -90 + Math.round(Math.random() * 180);
@@ -114,9 +103,7 @@
 					points3[i] = Math.sin(xd) * 100;
 				}
 				break;
-
 			case 2:
-
 				for (var i = 0; i < n; i++)
 				{
 					xd = -90 + Math.round(Math.random() * 180);
@@ -125,7 +112,6 @@
 					points3[i] = Math.sin(i * 360 / n) * 100;
 				}
 				break;
-
 			case 3:
 
 				for (var i = 0; i < n; i++)
@@ -136,7 +122,6 @@
 					points3[i] = Math.sin(xd) * 100;
 				}
 				break;
-
 			case 4:
 
 				for (var i = 0; i < n; i++)
@@ -147,7 +132,6 @@
 					points3[i] = Math.sin(i * 360 / n) * 100;
 				}
 				break;
-
 			case 5:
 
 				for (var i = 0; i < n; i++)
@@ -158,7 +142,6 @@
 					points3[i] = Math.sin(i * 360 / n) * 100;
 				}
 				break;
-
 			case 6:
 
 				for (var i = 0; i < n; i++)
@@ -169,7 +152,6 @@
 					points3[i] = Math.sin(i * 360 / n) * 100;
 				}
 				break;
-
 			case 7:
 
 				for (var i = 0; i < n; i++)
@@ -180,7 +162,6 @@
 					points3[i] = Math.sin(i * 360 / n) * 100;
 				}
 				break;
-
 			case 8:
 
 				for (var i = 0; i < n; i++)
@@ -191,7 +172,6 @@
 					points3[i] = Math.sin(xd) * 100;
 				}
 				break;
-
 			case 9:
 
 				for (var i = 0; i < n; i++)
@@ -202,9 +182,7 @@
 					points3[i] = Math.sin(xd) * 100;
 				}
 				break;
-
 			case 10:
-
 				for (var i = 0; i < n; i++)
 				{
 					xd = -90 + Math.round(Math.random() * 180);
@@ -213,9 +191,7 @@
 					points3[i] = Math.sin(i * 360 / n) * 100;
 				}
 				break;
-
 			case 11:
-
 				for (var i = 0; i < n; i++)
 				{
 					xd = -90 + Math.round(Math.random() * 180);
@@ -224,9 +200,7 @@
 					points3[i] = Math.sin(xd) * 100;
 				}
 				break;
-
 			case 12:
-
 				for (var i = 0; i < n; i++)
 				{
 					xd = -90 + Math.round(Math.random() * 180);
@@ -235,9 +209,7 @@
 					points3[i] = Math.sin(i * 360 / n) * 100;
 				}
 				break;
-
 			case 13:
-
 				for (var i = 0; i < n; i++)
 				{
 					xd = -90 + Math.round(Math.random() * 180);
@@ -246,9 +218,7 @@
 					points3[i] = Math.sin(i * 360 / n) * 100;
 				}
 				break;
-
 			case 14:
-
 				for (var i = 0; i < n; i++)
 				{
 					xd = -90 + Math.round(Math.random() * 180);
@@ -257,9 +227,7 @@
 					points3[i] = Math.sin(i * 360 / n) * 100;
 				}
 				break;
-
 			case 15:
-
 				for (var i = 0; i < n; i++)
 				{
 					xd = -90 + Math.round(Math.random() * 180);
@@ -268,9 +236,7 @@
 					points3[i] = Math.sin(i * 360 / n) * 100;
 				}
 				break;
-
 			case 16:
-
 				for (var i = 0; i < n; i++)
 				{
 					xd = -90 + Math.round(Math.random() * 180);
@@ -279,9 +245,7 @@
 					points3[i] = Math.sin(xd) * 100;
 				}
 				break;
-
 			case 17:
-
 				for (var i = 0; i < n; i++)
 				{
 					xd = -90 + Math.round(Math.random() * 180);
@@ -291,7 +255,6 @@
 				}
 				break;
 		}
-
 	}
 
 	function resize()
@@ -338,14 +301,12 @@
 
 			balls[i].position.x = (512 * tx) / (d - tz) + w / 2;
 			balls[i].position.y = (h/2) - (512 * ty) / (d - tz);
-
 		}
 
 		renderer.render(stage);
 
 		requestAnimFrame(update);
 	}
-
 	</script>
 
 	</body>

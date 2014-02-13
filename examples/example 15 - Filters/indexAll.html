@@ -16,7 +16,6 @@
 </head>
 <body>
 	<script>
-	
 	var renderer = PIXI.autoDetectRenderer(630, 410);
 	renderer.view.style.position = "absolute"
 	renderer.view.style.width = window.innerWidth + "px";
@@ -248,7 +247,6 @@
 			fish.rotation = -fish.direction - Math.PI/2;
 
 			// wrap..
-
 			if(fish.position.x < bounds.x)fish.position.x += bounds.width;
 			if(fish.position.x > bounds.x + bounds.width)fish.position.x -= bounds.width
 
@@ -257,11 +255,11 @@
 		}
 
 	
-		displacementFilter.offset.x = count * 10//blurAmount * 40;
-		displacementFilter.offset.y = count * 10
+		displacementFilter.offset.x = count * 10;
+		displacementFilter.offset.y = count * 10;
 		
-		overlay.tilePosition.x = count * -10//blurAmount * 40;
-		overlay.tilePosition.y = count * -10
+		overlay.tilePosition.x = count * -10;
+		overlay.tilePosition.y = count * -10;
 
 	    renderer.render(stage);
 	    requestAnimFrame( animate );
