@@ -74,10 +74,11 @@ PIXI.InteractionManager = function(stage)
     this.interactionDOMElement = null;
 
     //this will make it so that you dont have to call bind all the time
-    this.onMouseMove = this.onMouseMove.bind( this );
+    this.onMouseMove = this.onMouseMove.bind(this);
     this.onMouseDown = this.onMouseDown.bind(this);
     this.onMouseOut = this.onMouseOut.bind(this);
     this.onMouseUp = this.onMouseUp.bind(this);
+    this.onMouseWheel = this.onMouseWheel.bind(this);
 
     this.onTouchStart = this.onTouchStart.bind(this);
     this.onTouchEnd = this.onTouchEnd.bind(this);
@@ -198,6 +199,7 @@ PIXI.InteractionManager.prototype.setTargetDomElement = function(domElement)
     domElement.addEventListener('mousemove',  this.onMouseMove, true);
     domElement.addEventListener('mousedown',  this.onMouseDown, true);
     domElement.addEventListener('mouseout',   this.onMouseOut, true);
+    domElement.addEventListener('mousewheel', this.onMouseWheel, true);
 
     // aint no multi touch just yet!
     domElement.addEventListener('touchstart', this.onTouchStart, true);
@@ -218,6 +220,7 @@ PIXI.InteractionManager.prototype.removeEvents = function()
     this.interactionDOMElement.removeEventListener('mousemove',  this.onMouseMove, true);
     this.interactionDOMElement.removeEventListener('mousedown',  this.onMouseDown, true);
     this.interactionDOMElement.removeEventListener('mouseout',   this.onMouseOut, true);
+    this.interactionDOMElement.removeEventListener('mousewheel', this.onMouseWheel, true);
 
     // aint no multi touch just yet!
     this.interactionDOMElement.removeEventListener('touchstart', this.onTouchStart, true);
@@ -343,6 +346,47 @@ PIXI.InteractionManager.prototype.onMouseMove = function(event)
         {
             //call the function!
             item.mousemove(this.mouse);
+        }
+    }
+};
+
+/**
+ * Is called when the mouse wheel is scrolled
+ *
+ * @method onMouseWheel
+ * @param event {Event} The DOM mouse wheel event
+ * @private
+ */
+PIXI.InteractionManager.prototype.onMouseWheel = function(event)
+{
+    this.mouse.originalEvent = event || window.event;
+    var rect = this.interactionDOMElement.getBoundingClientRect();
+
+    this.mouse.global.x = (event.clientX - rect.left) * (this.target.width / rect.width);
+    this.mouse.global.y = (event.clientY - rect.top) * ( this.target.height / rect.height);
+
+    var scrollAmount;
+    if (event.detail) {
+        var deltaDetail = event.wheelDelta / event.detail;
+        scrollAmount = (event.wheelDelta && deltaDetail) ? (event.detail / deltaDetail) : (-event.detail / 1.35);
+    } else {
+        scrollAmount = event.wheelDelta / 120;
+    }
+
+    if (scrollAmount < 1) {
+        scrollAmount = (scrollAmount < -1) ? ((-Math.pow(scrollAmount, 2) - 224) / 225) : (scrollAmount);
+    } else {
+        scrollAmount = (Math.pow(scrollAmount, 2) + 224) / 225;
+    }
+
+    this.mouse.scrollAmount = Math.min(Math.max(scrollAmount / 2, -1), 1);
+
+    for (var i = 0; i < this.interactiveItems.length; i++)
+    {
+        var item = this.interactiveItems[i];
+        if (item.mousewheel)
+        {
+            item.mousewheel(this.mouse);
         }
     }
 };
