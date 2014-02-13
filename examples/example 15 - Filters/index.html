@@ -14,7 +14,6 @@
 </head>
 <body>
 	<script>
-	
 	var renderer = PIXI.autoDetectRenderer(620, 380);
 	
 	// create an new instance of a pixi stage
@@ -26,8 +25,8 @@
 	bg.anchor.x = 0.5;
 	bg.anchor.y = 0.5;
 	 
-	bg.position.x = 620/2;
-	bg.position.y = 380/2;
+	bg.position.x = 620 / 2;
+	bg.position.y = 380 / 2;
 	
 	var colorMatrix =  [1,0,0,0,
 						0,1,0,0,
@@ -37,8 +36,8 @@
 	var filter = new PIXI.ColorMatrixFilter();
 	
 	var container = new PIXI.DisplayObjectContainer();
-	container.position.x = 620/2;
-	container.position.y = 380/2;
+	container.position.x = 620 / 2;
+	container.position.y = 380 / 2;
 	
 	var bgFront = PIXI.Sprite.fromImage("SceneRotate.jpg");
 	bgFront.anchor.x = 0.5;
@@ -92,9 +91,7 @@
 		}
 	}
 	
-	/*
-	 * Add a pixi Logo!
-	 */
+	// Add a pixi Logo!
 	var logo = PIXI.Sprite.fromImage("../../logo_small.png");
 	
 	logo.anchor.x = 1;
@@ -109,7 +106,7 @@
 		window.open("https://github.com/GoodBoyDigital/pixi.js", "_blank");
 	}
 	
-	var help = new PIXI.Text("Click to turn filters on / off.", {font:"bold 12pt Arial", fill:"white"});
+	var help = new PIXI.Text("Click to turn filters on / off.", { font: "bold 12pt Arial", fill: "white" });
 	help.position.y = 350;
 	help.position.x = 10;
 	stage.addChild(help);
@@ -137,9 +134,8 @@
 		filter.matrix = colorMatrix;
 
 	    renderer.render(stage);
-	    requestAnimFrame( animate );
+	    requestAnimFrame(animate);
 	}
-
 	</script>
 
 	</body>

@@ -18,15 +18,12 @@
 		}
 	</style>
 	
-	<script src="pixi.js"></script>
 	<script src="../../bin/pixi.dev.js"></script>
-
 
 </head>
 <body>
 
 	<script>
-	
 	var viewWidth = 800;
 	var viewHeight = 600;
 
@@ -41,28 +38,20 @@
 	var stage = new PIXI.Stage(0xFFFFFF);
 	
 	var particles = new PIXI.SpriteBatch(PIXI.Texture.fromImage("eggHead.png"));
-
 	stage.addChild(particles);
 	
+	var tints = [0XFFFFFF, 0XFFFBEE, 0XFFEEEE, 0XFADEED, 0XE8D4CD];
 
 	// create an array to store a refference to the fish in the pond
 	var dudeArray = [];
-	 
-	var totalDudes = renderer instanceof PIXI.WebGLRenderer ? 10000 : 100//.view.className = "rendererView";
 
-	var tints = [0xFFFFFF,
-				0xfffbee,
-					0xffeeee,
-					0xfadeed,
-					0xe8d4cd];
-
+	var totalDudes = renderer instanceof PIXI.WebGLRenderer ? 10000 : 100;
 	for (var i = 0; i < totalDudes; i++) 
 	{
-
 		// create a new Sprite that uses the image name that we just generated as its source
 		var dude =  PIXI.Sprite.fromImage("tinyMaggot.png");
 
-		dude.tint = Math.random() * 0xe8d4cd;
+		dude.tint = Math.random() * 0XE8D4CD;
 
 		// set the anchor point so the the dude texture is centerd on the sprite
 		dude.anchor.x = dude.anchor.y = 0.5;
@@ -75,10 +64,7 @@
 		dude.y = Math.random() * viewHeight;
 
 		// create some extra properties that will control movement
-
 		dude.tint = Math.random() * 0x808080;
-
-		//dude.tint = i > 3000 ? 0x977d76 : tints[i % tints.length];//Math.random() * 0xFFFFFF;
 
 		// create a random direction in radians. This is a number between 0 and PI*2 which is the equivalent of 0 - 360 degrees
 		dude.direction = Math.random() * Math.PI * 2;
@@ -90,6 +76,7 @@
 		dude.speed = (2 + Math.random() * 2) * 0.2;	
 
 		dude.offset = Math.random() * 100;
+
 		// finally we push the dude into the dudeArray so it it can be easily accessed later
 		dudeArray.push(dude);
 
@@ -103,43 +90,42 @@
 										viewWidth + dudeBoundsPadding * 2, 
 										viewHeight + dudeBoundsPadding * 2);
 
-
 	var tick = 0;
 	requestAnimationFrame(animate);
 
 	function animate() 
 	{
-		// iterate through the dude and update the positiond
+		// iterate through the dude and update the position
 		for (var i = 0; i < dudeArray.length; i++) 
 		{
 			var dude = dudeArray[i];
 			dude.scale.y = 0.95 + Math.sin(tick + dude.offset) * 0.05
 			dude.direction += dude.turningSpeed * 0.01;
 			dude.position.x += Math.sin(dude.direction) * (dude.speed * dude.scale.y);
-			dude.position.y += Math.cos(dude.direction) * (dude.speed *dude.scale.y );
+			dude.position.y += Math.cos(dude.direction) * (dude.speed * dude.scale.y);
 			dude.rotation = -dude.direction + Math.PI;
 
-
 			// wrap the dudes by testing their bounds..
-			if(dude.position.x < dudeBounds.x)dude.position.x += dudeBounds.width;
-			else if(dude.position.x > dudeBounds.x + dudeBounds.width)dude.position.x -= dudeBounds.width
+			if (dude.position.x < dudeBounds.x)
+				dude.position.x += dudeBounds.width;
+			else if (dude.position.x > dudeBounds.x + dudeBounds.width)
+				dude.position.x -= dudeBounds.width;
 			
-			if(dude.position.y < dudeBounds.y)dude.position.y += dudeBounds.height;
-			else if(dude.position.y > dudeBounds.y + dudeBounds.height)dude.position.y -= dudeBounds.height
+			if (dude.position.y < dudeBounds.y)
+				dude.position.y += dudeBounds.height;
+			else if (dude.position.y > dudeBounds.y + dudeBounds.height)
+				dude.position.y -= dudeBounds.height;
 		}
 		
 		// increment the ticker
 		tick += 0.1;
 		
-		
-		
 		// time to render the stage !
 	    renderer.render(stage);
 	    
 	    // request another animation frame..
-	    requestAnimationFrame( animate );
+	    requestAnimationFrame(animate);
 	}
-
 	</script>
 
 	</body>

@@ -24,7 +24,6 @@
 <body>
 
 	<script>
-	
 	var viewWidth = 630;
 	var viewHeight = 410;
 
@@ -43,9 +42,8 @@
 	
 	// create an array to store a reference to the fish in the pond
 	var dudeArray = [];
-	 
+	
 	var totalDudes = 20;
-
 	for (var i = 0; i < totalDudes; i++) 
 	{
 		// create a new Sprite that uses the image name that we just generated as its source
@@ -67,7 +65,6 @@
 		dude.tint = Math.random() * 0xFFFFFF;
 
 		// create some extra properties that will control movement
-
 		// create a random direction in radians. This is a number between 0 and PI*2 which is the equivalent of 0 - 360 degrees
 		dude.direction = Math.random() * Math.PI * 2;
 
@@ -88,7 +85,6 @@
 										viewWidth + dudeBoundsPadding * 2, 
 										viewHeight + dudeBoundsPadding * 2);
 
-
 	var tick = 0;
 	requestAnimationFrame(animate);
 
@@ -104,11 +100,15 @@
 			dude.rotation = -dude.direction - Math.PI / 2;
 
 			// wrap the dudes by testing their bounds..
-			if (dude.position.x < dudeBounds.x)dude.position.x += dudeBounds.width;
-			else if (dude.position.x > dudeBounds.x + dudeBounds.width)dude.position.x -= dudeBounds.width;
+			if (dude.position.x < dudeBounds.x)
+				dude.position.x += dudeBounds.width;
+			else if (dude.position.x > dudeBounds.x + dudeBounds.width)
+				dude.position.x -= dudeBounds.width;
 			
-			if (dude.position.y < dudeBounds.y)dude.position.y += dudeBounds.height;
-			else if (dude.position.y > dudeBounds.y + dudeBounds.height)dude.position.y -= dudeBounds.height;
+			if (dude.position.y < dudeBounds.y)
+				dude.position.y += dudeBounds.height;
+			else if (dude.position.y > dudeBounds.y + dudeBounds.height)
+				dude.position.y -= dudeBounds.height;
 		}
 		
 		// increment the ticker
@@ -120,7 +120,6 @@
 	    // request another animation frame..
 	    requestAnimationFrame(animate);
 	}
-
 	</script>
 
 	</body>
