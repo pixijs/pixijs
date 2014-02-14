@@ -15,15 +15,12 @@
 </head>
 <body>
 	<script>
-	
 
 	// create an new instance of a pixi stage
 	var stage = new PIXI.Stage(0xFFFFFF, true);
 	
 	stage.setInteractive(true);
 	
-	var sprite = PIXI.Sprite.fromImage("spinObj_02.png");
-
 	var renderer = PIXI.autoDetectRenderer(620, 380);
 	
 	renderer.view.style.display = "block";
@@ -32,7 +29,6 @@
 	document.body.appendChild(renderer.view);
 	
 	var graphics = new PIXI.Graphics();
-	
 	
 	// set a fill and line style
 	graphics.beginFill(0xFF3300);
@@ -73,7 +69,6 @@
 	graphics.lineStyle(20, 0x33FF00);
 	graphics.moveTo(30,30);
 	graphics.lineTo(600, 300);
-		
 		
 	stage.addChild(graphics);
 	

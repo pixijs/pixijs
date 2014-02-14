@@ -14,7 +14,6 @@
 </head>
 <body>
 	<script>
-
 	// create an new instance of a pixi stage
 	var stage = new PIXI.Stage(0x66FF99);
 
@@ -43,8 +42,7 @@
 	stage.addChild(bunny);
 
 	function animate() {
-
-	    requestAnimFrame( animate );
+	    requestAnimFrame(animate);
 
 	    // just for fun, let's rotate mr rabbit a little
 	    bunny.rotation += 0.1;
@@ -52,7 +50,6 @@
 	    // render the stage
 	    renderer.render(stage);
 	}
-
 	</script>
 
 	</body>
