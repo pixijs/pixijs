@@ -204,7 +204,7 @@ PIXI.InteractionManager.prototype.setTargetDomElement = function(domElement)
     domElement.addEventListener('touchend', this.onTouchEnd, true);
     domElement.addEventListener('touchmove', this.onTouchMove, true);
 
-    document.body.addEventListener('mouseup',  this.onMouseUp, true);
+    window.addEventListener('mouseup',  this.onMouseUp, true);
 };
 
 
@@ -226,7 +226,7 @@ PIXI.InteractionManager.prototype.removeEvents = function()
 
     this.interactionDOMElement = null;
 
-    document.body.removeEventListener('mouseup',  this.onMouseUp, true);
+    window.removeEventListener('mouseup',  this.onMouseUp, true);
 };
 
 /**
