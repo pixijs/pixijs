@@ -31,8 +31,8 @@
 	var viewHeight = 600;
 
 	// Create a pixi renderer
-//	var renderer = PIXI.autoDetectRenderer(viewWidth, viewHeight);
-	var renderer = new PIXI.CanvasRenderer(viewWidth, viewHeight);
+	var renderer = PIXI.autoDetectRenderer(viewWidth, viewHeight);
+	//var renderer = new PIXI.CanvasRenderer(viewWidth, viewHeight);
 	//renderer.view.className = "rendererView";
 	
 	// add render view to DOM
@@ -41,6 +41,7 @@
 	// create an new instance of a pixi stage
 	var stage = new PIXI.Stage(0xFFFFFF);
 
+	stage.addChild(PIXI.Sprite.fromImage("BGrotate.jpg"));
 
 	var temp = new PIXI.DisplayObjectContainer();
 	var bunny = PIXI.Sprite.fromImage("bunny.png");
@@ -50,7 +51,7 @@
 	temp.addChild(bunny);
 	temp.addChild(bunny2);
 
-	//temp.filters = [new PIXI.BlurFilter()];
+	temp.filters = [new PIXI.GrayFilter(), new PIXI.GrayFilter()];
 	stage.addChild(temp);
 
 	temp.position.set(300);
