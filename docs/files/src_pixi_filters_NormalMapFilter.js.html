@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>src/pixi/filters/NormalMapFilter.js - pixi.js</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="http://www.goodboydigital.com/pixijs/logo_small.png" title="pixi.js"></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 1.5.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/AbstractFilter.html">AbstractFilter</a></li>
+            
+                <li><a href="../classes/AjaxRequest.html">AjaxRequest</a></li>
+            
+                <li><a href="../classes/AlphaMaskFilter.html">AlphaMaskFilter</a></li>
+            
+                <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
+            
+                <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
+                <li><a href="../classes/autoDetectRenderer.html">autoDetectRenderer</a></li>
+            
+                <li><a href="../classes/BaseTexture.html">BaseTexture</a></li>
+            
+                <li><a href="../classes/BitmapFontLoader.html">BitmapFontLoader</a></li>
+            
+                <li><a href="../classes/BitmapText.html">BitmapText</a></li>
+            
+                <li><a href="../classes/BlurFilter.html">BlurFilter</a></li>
+            
+                <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
+            
+                <li><a href="../classes/CanvasMaskManager.html">CanvasMaskManager</a></li>
+            
+                <li><a href="../classes/CanvasRenderer.html">CanvasRenderer</a></li>
+            
+                <li><a href="../classes/CanvasTinter.html">CanvasTinter</a></li>
+            
+                <li><a href="../classes/Circle.html">Circle</a></li>
+            
+                <li><a href="../classes/ColorMatrixFilter.html">ColorMatrixFilter</a></li>
+            
+                <li><a href="../classes/ColorStepFilter.html">ColorStepFilter</a></li>
+            
+                <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
+            
+                <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
+            
+                <li><a href="../classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
+            
+                <li><a href="../classes/DotScreenFilter.html">DotScreenFilter</a></li>
+            
+                <li><a href="../classes/Ellipse.html">Ellipse</a></li>
+            
+                <li><a href="../classes/EventTarget.html">EventTarget</a></li>
+            
+                <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
+            
+                <li><a href="../classes/Graphics.html">Graphics</a></li>
+            
+                <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
+            
+                <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
+            
+                <li><a href="../classes/InteractionData.html">InteractionData</a></li>
+            
+                <li><a href="../classes/InteractionManager.html">InteractionManager</a></li>
+            
+                <li><a href="../classes/InvertFilter.html">InvertFilter</a></li>
+            
+                <li><a href="../classes/JsonLoader.html">JsonLoader</a></li>
+            
+                <li><a href="../classes/MovieClip.html">MovieClip</a></li>
+            
+                <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
+            
+                <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
+            
+                <li><a href="../classes/PixiFastShader.html">PixiFastShader</a></li>
+            
+                <li><a href="../classes/PixiShader.html">PixiShader</a></li>
+            
+                <li><a href="../classes/Point.html">Point</a></li>
+            
+                <li><a href="../classes/Polygon.html">Polygon</a></li>
+            
+                <li><a href="../classes/PolyK.html">PolyK</a></li>
+            
+                <li><a href="../classes/PrimitiveShader.html">PrimitiveShader</a></li>
+            
+                <li><a href="../classes/Rectangle.html">Rectangle</a></li>
+            
+                <li><a href="../classes/Rope.html">Rope</a></li>
+            
+                <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
+            
+                <li><a href="../classes/Spine.html">Spine</a></li>
+            
+                <li><a href="../classes/Sprite.html">Sprite</a></li>
+            
+                <li><a href="../classes/SpriteBatch.html">SpriteBatch</a></li>
+            
+                <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
+            
+                <li><a href="../classes/Stage.html">Stage</a></li>
+            
+                <li><a href="../classes/Strip.html">Strip</a></li>
+            
+                <li><a href="../classes/Text.html">Text</a></li>
+            
+                <li><a href="../classes/Texture.html">Texture</a></li>
+            
+                <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
+            
+                <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
+            
+                <li><a href="../classes/WebGLFilterManager.html">WebGLFilterManager</a></li>
+            
+                <li><a href="../classes/WebGLGraphics.html">WebGLGraphics</a></li>
+            
+                <li><a href="../classes/WebGLMaskManager.html">WebGLMaskManager</a></li>
+            
+                <li><a href="../classes/WebGLRenderer.html">WebGLRenderer</a></li>
+            
+                <li><a href="../classes/WebGLShaderManager.html">WebGLShaderManager</a></li>
+            
+                <li><a href="../classes/WebGLSpriteBatch.html">WebGLSpriteBatch</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="../modules/PIXI.html">PIXI</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: src/pixi/filters/NormalMapFilter.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+ * @author Mat Groves http://matgroves.com/ @Doormat23
+ */
+
+
+/**
+ * 
+ * The NormalMapFilter class uses the pixel values from the specified texture (called the displacement map) to perform a displacement of an object. 
+ * You can use this filter to apply all manor of crazy warping effects
+ * Currently the r property of the texture is used offset the x and the g propery of the texture is used to offset the y.
+ * @class NormalMapFilter
+ * @contructor
+ * @param texture {Texture} The texture used for the displacemtent map * must be power of 2 texture at the moment
+ */
+PIXI.NormalMapFilter = function(texture)
+{
+	PIXI.AbstractFilter.call( this );
+	
+	this.passes = [this];
+	texture.baseTexture._powerOf2 = true;
+
+	// set the uniforms
+	this.uniforms = {
+		displacementMap: {type: &#x27;sampler2D&#x27;, value:texture},
+		scale:			 {type: &#x27;2f&#x27;, value:{x:15, y:15}},
+		offset:			 {type: &#x27;2f&#x27;, value:{x:0, y:0}},
+		mapDimensions:   {type: &#x27;2f&#x27;, value:{x:1, y:1}},
+		dimensions:   {type: &#x27;4f&#x27;, value:[0,0,0,0]},
+	//	LightDir: {type: &#x27;f3&#x27;, value:[0, 1, 0]},
+		LightPos: {type: &#x27;3f&#x27;, value:[0, 1, 0]}
+	};
+	
+
+	if(texture.baseTexture.hasLoaded)
+	{
+		this.uniforms.mapDimensions.value.x = texture.width;
+		this.uniforms.mapDimensions.value.y = texture.height;
+	}
+	else
+	{
+		this.boundLoadedFunction = this.onTextureLoaded.bind(this);
+
+		texture.baseTexture.on(&quot;loaded&quot;, this.boundLoadedFunction);
+	}
+
+	this.fragmentSrc = [
+	  &quot;precision mediump float;&quot;,
+	  &quot;varying vec2 vTextureCoord;&quot;,
+	  &quot;varying float vColor;&quot;,
+	  &quot;uniform sampler2D displacementMap;&quot;,
+	  &quot;uniform sampler2D uSampler;&quot;,
+	 
+	  &quot;uniform vec4 dimensions;&quot;,
+	  
+		&quot;const vec2 Resolution = vec2(1.0,1.0);&quot;,      //resolution of screen
+		&quot;uniform vec3 LightPos;&quot;,    //light position, normalized
+		&quot;const vec4 LightColor = vec4(1.0, 1.0, 1.0, 1.0);&quot;,      //light RGBA -- alpha is intensity
+		&quot;const vec4 AmbientColor = vec4(1.0, 1.0, 1.0, 0.5);&quot;,    //ambient RGBA -- alpha is intensity 
+		&quot;const vec3 Falloff = vec3(0.0, 1.0, 0.2);&quot;,         //attenuation coefficients
+
+		&quot;uniform vec3 LightDir;&quot;,//&quot; = vec3(1.0, 0.0, 1.0);&quot;,
+
+
+	  &quot;uniform vec2 mapDimensions;&quot;,// = vec2(256.0, 256.0);&quot;,
+	 
+
+	  &quot;void main(void) {&quot;,
+	  	&quot;vec2 mapCords = vTextureCoord.xy;&quot;,
+
+	  	&quot;vec4 color = texture2D(uSampler, vTextureCoord.st);&quot;,
+        &quot;vec3 nColor = texture2D(displacementMap, vTextureCoord.st).rgb;&quot;,
+ 
+
+	  	&quot;mapCords *= vec2(dimensions.x/512.0, dimensions.y/512.0);&quot;,
+	  
+	  	&quot;mapCords.y *= -1.0;&quot;,
+	 	&quot;mapCords.y += 1.0;&quot;,
+
+	 	//RGBA of our diffuse color
+		&quot;vec4 DiffuseColor = texture2D(uSampler, vTextureCoord);&quot;,
+
+		//RGB of our normal map
+		&quot;vec3 NormalMap = texture2D(displacementMap, mapCords).rgb;&quot;,
+
+		//The delta position of light
+		//&quot;vec3 LightDir = vec3(LightPos.xy - (gl_FragCoord.xy / Resolution.xy), LightPos.z);&quot;,
+		&quot;vec3 LightDir = vec3(LightPos.xy - (mapCords.xy), LightPos.z);&quot;,
+		//Correct for aspect ratio
+		//&quot;LightDir.x *= Resolution.x / Resolution.y;&quot;,
+
+		//Determine distance (used for attenuation) BEFORE we normalize our LightDir
+		&quot;float D = length(LightDir);&quot;,
+
+		//normalize our vectors
+		&quot;vec3 N = normalize(NormalMap * 2.0 - 1.0);&quot;,
+		&quot;vec3 L = normalize(LightDir);&quot;,
+
+		//Pre-multiply light color with intensity
+		//Then perform &quot;N dot L&quot; to determine our diffuse term
+		&quot;vec3 Diffuse = (LightColor.rgb * LightColor.a) * max(dot(N, L), 0.0);&quot;,
+
+		//pre-multiply ambient color with intensity
+		&quot;vec3 Ambient = AmbientColor.rgb * AmbientColor.a;&quot;,
+
+		//calculate attenuation
+		&quot;float Attenuation = 1.0 / ( Falloff.x + (Falloff.y*D) + (Falloff.z*D*D) );&quot;,
+
+		//the calculation which brings it all together
+		&quot;vec3 Intensity = Ambient + Diffuse * Attenuation;&quot;,
+		&quot;vec3 FinalColor = DiffuseColor.rgb * Intensity;&quot;,
+		&quot;gl_FragColor = vColor * vec4(FinalColor, DiffuseColor.a);&quot;,
+		//&quot;gl_FragColor = vec4(1.0, 0.0, 0.0, Attenuation);&quot;,//vColor * vec4(FinalColor, DiffuseColor.a);&quot;,
+	/*
+	 	// normalise color
+	 	&quot;vec3 normal = normalize(nColor * 2.0 - 1.0);&quot;,
+	 	
+	 	&quot;vec3 deltaPos = vec3( (light.xy - gl_FragCoord.xy) / resolution.xy, light.z );&quot;,
+
+	 	&quot;float lambert = clamp(dot(normal, lightDir), 0.0, 1.0);&quot;,
+
+	 	&quot;float d = sqrt(dot(deltaPos, deltaPos));&quot;, 
+        &quot;float att = 1.0 / ( attenuation.x + (attenuation.y*d) + (attenuation.z*d*d) );&quot;,
+
+        &quot;vec3 result = (ambientColor * ambientIntensity) + (lightColor.rgb * lambert) * att;&quot;,
+        &quot;result *= color.rgb;&quot;,
+       
+        &quot;gl_FragColor = vec4(result, 1.0);&quot;,*/
+
+	  	
+
+	  &quot;}&quot;
+	];
+	
+}
+
+/*
+void main() {
+        //sample color &amp; normals from our textures
+        vec4 color = texture2D(u_texture, v_texCoords.st);
+        vec3 nColor = texture2D(u_normals, v_texCoords.st).rgb;
+ 
+        //some bump map programs will need the Y value flipped..
+        nColor.g = yInvert ? 1.0 - nColor.g : nColor.g;
+ 
+        //this is for debugging purposes, allowing us to lower the intensity of our bump map
+        vec3 nBase = vec3(0.5, 0.5, 1.0);
+        nColor = mix(nBase, nColor, strength);
+ 
+        //normals need to be converted to [-1.0, 1.0] range and normalized
+        vec3 normal = normalize(nColor * 2.0 - 1.0);
+ 
+        //here we do a simple distance calculation
+        vec3 deltaPos = vec3( (light.xy - gl_FragCoord.xy) / resolution.xy, light.z );
+ 
+        vec3 lightDir = normalize(deltaPos);
+        float lambert = useNormals ? clamp(dot(normal, lightDir), 0.0, 1.0) : 1.0;
+       
+        //now let&#x27;s get a nice little falloff
+        float d = sqrt(dot(deltaPos, deltaPos));       
+        float att = useShadow ? 1.0 / ( attenuation.x + (attenuation.y*d) + (attenuation.z*d*d) ) : 1.0;
+       
+        vec3 result = (ambientColor * ambientIntensity) + (lightColor.rgb * lambert) * att;
+        result *= color.rgb;
+       
+        gl_FragColor = v_color * vec4(result, color.a);
+}
+*/
+PIXI.NormalMapFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
+PIXI.NormalMapFilter.prototype.constructor = PIXI.NormalMapFilter;
+
+PIXI.NormalMapFilter.prototype.onTextureLoaded = function()
+{
+	
+	this.uniforms.mapDimensions.value.x = this.uniforms.displacementMap.value.width;
+	this.uniforms.mapDimensions.value.y = this.uniforms.displacementMap.value.height;
+
+	this.uniforms.displacementMap.value.baseTexture.off(&quot;loaded&quot;, this.boundLoadedFunction)
+
+}
+
+/**
+ * The texture used for the displacemtent map * must be power of 2 texture at the moment
+ *
+ * @property map
+ * @type Texture
+ */
+Object.defineProperty(PIXI.NormalMapFilter.prototype, &#x27;map&#x27;, {
+    get: function() {
+        return this.uniforms.displacementMap.value;
+    },
+    set: function(value) {
+    	this.uniforms.displacementMap.value = value;
+    }
+});
+
+/**
+ * The multiplier used to scale the displacement result from the map calculation.
+ *
+ * @property scale
+ * @type Point
+ */
+Object.defineProperty(PIXI.NormalMapFilter.prototype, &#x27;scale&#x27;, {
+    get: function() {
+        return this.uniforms.scale.value;
+    },
+    set: function(value) {
+    	this.uniforms.scale.value = value;
+    }
+});
+
+/**
+ * The offset used to move the displacement map.
+ *
+ * @property offset
+ * @type Point
+ */
+Object.defineProperty(PIXI.NormalMapFilter.prototype, &#x27;offset&#x27;, {
+    get: function() {
+        return this.uniforms.offset.value;
+    },
+    set: function(value) {
+    	this.uniforms.offset.value = value;
+    }
+});
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

@@ -4,7 +4,7 @@
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-02-12
+ * Compiled: 2014-02-15
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -35,7 +35,7 @@ PIXI.WEBGL_RENDERER = 0;
 PIXI.CANVAS_RENDERER = 1;
 
 // useful for testing against if your lib is using pixi.
-PIXI.VERSION = "v1.4.4";
+PIXI.VERSION = "v1.5.0";
 
 // the various blend modes supported by pixi
 PIXI.blendModes = {
@@ -1946,9 +1946,9 @@ PIXI.Sprite.fromFrame = function(frameId)
  * @param imageId {String} The image url of the texture
  * @return {Sprite} A new Sprite using a texture from the texture cache matching the image id
  */
-PIXI.Sprite.fromImage = function(imageId)
+PIXI.Sprite.fromImage = function(imageId, crossorigin, scaleMode)
 {
-    var texture = PIXI.Texture.fromImage(imageId);
+    var texture = PIXI.Texture.fromImage(imageId, crossorigin, scaleMode);
     return new PIXI.Sprite(texture);
 };
 
@@ -2053,20 +2053,12 @@ PIXI.SpriteBatch.prototype._renderCanvas = function(renderSession)
     var context = renderSession.context;
     context.globalAlpha = this.worldAlpha;
 
-    var transform = this.worldTransform;
+    PIXI.DisplayObject.prototype.updateTransform.call(this);
 
+    var transform = this.worldTransform;
     // alow for trimming
        
-    if (renderSession.roundPixels)
-    {
-        context.setTransform(transform.a, transform.c, transform.b, transform.d, Math.floor(transform.tx), Math.floor(transform.ty));
-    }
-    else
-    {
-        context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
-    }
-
-    context.save();
+    var isRotated = true;
 
     for (var i = 0; i < this.children.length; i++) {
        
@@ -2078,8 +2070,13 @@ PIXI.SpriteBatch.prototype._renderCanvas = function(renderSession)
 
         if(child.rotation % (Math.PI * 2) === 0)
         {
-          
-          // this is the fastest  way to optimise! - if rotation is 0 then we can avoid any kind of setTransform call
+            if(isRotated)
+            {
+                context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
+                isRotated = false;
+            }
+
+            // this is the fastest  way to optimise! - if rotation is 0 then we can avoid any kind of setTransform call
             context.drawImage(texture.baseTexture.source,
                                  frame.x,
                                  frame.y,
@@ -2092,24 +2089,23 @@ PIXI.SpriteBatch.prototype._renderCanvas = function(renderSession)
         }
         else
         {
+            if(!isRotated)isRotated = true;
+    
             PIXI.DisplayObject.prototype.updateTransform.call(child);
            
-            transform = child.localTransform;
+            var childTransform = child.worldTransform;
 
-            if(this.rotation !== this.rotationCache)
+            // allow for trimming
+           
+            if (renderSession.roundPixels)
             {
-                this.rotationCache = this.rotation;
-                this._sr =  Math.sin(this.rotation);
-                this._cr =  Math.cos(this.rotation);
+                context.setTransform(childTransform.a, childTransform.c, childTransform.b, childTransform.d, childTransform.tx || 0, childTransform.ty || 0);
+            }
+            else
+            {
+                context.setTransform(childTransform.a, childTransform.c, childTransform.b, childTransform.d, childTransform.tx, childTransform.ty);
             }
 
-            var a = child._cr * child.scale.x,
-                b = -child._sr * child.scale.y,
-                c = child._sr * child.scale.x,
-                d = child._cr * child.scale.y;
-                
-            context.setTransform(a, c, b, d, child.position.x, child.position.y);
-            
             context.drawImage(texture.baseTexture.source,
                                  frame.x,
                                  frame.y,
@@ -2119,11 +2115,14 @@ PIXI.SpriteBatch.prototype._renderCanvas = function(renderSession)
                                  ((child.anchor.y) * (-frame.height) + 0.5) | 0,
                                  frame.width,
                                  frame.height);
+           
 
         }
+
+       // context.restore();
     }
 
-    context.restore();
+//    context.restore();
 };
 
 
@@ -3945,7 +3944,7 @@ PIXI.getNextPowerOfTwo = function(number)
  * Adds event emitter functionality to a class
  *
  * @class EventTarget
- * 
+ * @example
  *      function MyEmitter() {
  *          PIXI.EventTarget.call(this); //mixes in event target stuff
  *      }
@@ -4053,11 +4052,11 @@ PIXI.EventTarget = function () {
  * @param width=800 {Number} the width of the renderers view
  * @param height=600 {Number} the height of the renderers view
  * @param [view] {Canvas} the canvas to use as a view, optional 
- * @param [antialias=false] {Boolean} sets antialias (only applicable in webGL chrome at the moment)
  * @param [transparent=false] {Boolean} the transparency of the render view, default false
+ * @param [antialias=false] {Boolean} sets antialias (only applicable in webGL chrome at the moment)
  *
  */
-PIXI.autoDetectRenderer = function(width, height, view,antialias,transparent)
+PIXI.autoDetectRenderer = function(width, height, view, transparent, antialias)
 {
     if(!width)width = 800;
     if(!height)height = 600;
@@ -6619,15 +6618,15 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
      // set the textures uvs temporarily
     // TODO create a separate texture so that we can tile part of a texture
 
-    if(!tilingSprite._uvs)tilingSprite._uvs = new Float32Array(8);
+    if(!tilingSprite._uvs)tilingSprite._uvs = new PIXI.TextureUvs();
 
     var uvs = tilingSprite._uvs;
 
-    tilingSprite.tilePosition.x %= texture.baseTexture.width;
-    tilingSprite.tilePosition.y %= texture.baseTexture.height;
+    tilingSprite.tilePosition.x %= texture.baseTexture.width * tilingSprite.tileScaleOffset.x;
+    tilingSprite.tilePosition.y %= texture.baseTexture.height * tilingSprite.tileScaleOffset.y;
 
-    var offsetX =  tilingSprite.tilePosition.x/texture.baseTexture.width;
-    var offsetY =  tilingSprite.tilePosition.y/texture.baseTexture.height;
+    var offsetX =  tilingSprite.tilePosition.x/(texture.baseTexture.width*tilingSprite.tileScaleOffset.x);
+    var offsetY =  tilingSprite.tilePosition.y/(texture.baseTexture.height*tilingSprite.tileScaleOffset.y);
 
     var scaleX =  (tilingSprite.width / texture.baseTexture.width)  / (tilingSprite.tileScale.x * tilingSprite.tileScaleOffset.x);
     var scaleY =  (tilingSprite.height / texture.baseTexture.height) / (tilingSprite.tileScale.y * tilingSprite.tileScaleOffset.y);
@@ -6644,7 +6643,6 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
     uvs.x3 = 0 - offsetX;
     uvs.y3 = (1 *scaleY) - offsetY;
 
-   
     // get the tilingSprites current alpha
     var alpha = tilingSprite.worldAlpha;
     var tint = tilingSprite.tint;
@@ -8814,6 +8812,8 @@ PIXI.Graphics.prototype.lineStyle = function(lineWidth, color, alpha)
                         fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling, points:[], type:PIXI.Graphics.POLY};
 
     this.graphicsData.push(this.currentPath);
+
+    return this;
 };
 
 /**
@@ -8833,6 +8833,8 @@ PIXI.Graphics.prototype.moveTo = function(x, y)
     this.currentPath.points.push(x, y);
 
     this.graphicsData.push(this.currentPath);
+
+    return this;
 };
 
 /**
@@ -8847,6 +8849,8 @@ PIXI.Graphics.prototype.lineTo = function(x, y)
 {
     this.currentPath.points.push(x, y);
     this.dirty = true;
+
+    return this;
 };
 
 /**
@@ -8863,6 +8867,8 @@ PIXI.Graphics.prototype.beginFill = function(color, alpha)
     this.filling = true;
     this.fillColor = color || 0;
     this.fillAlpha = (arguments.length < 2) ? 1 : alpha;
+
+    return this;
 };
 
 /**
@@ -8875,6 +8881,8 @@ PIXI.Graphics.prototype.endFill = function()
     this.filling = false;
     this.fillColor = null;
     this.fillAlpha = 1;
+
+    return this;
 };
 
 /**
@@ -8895,6 +8903,8 @@ PIXI.Graphics.prototype.drawRect = function( x, y, width, height )
 
     this.graphicsData.push(this.currentPath);
     this.dirty = true;
+
+    return this;
 };
 
 /**
@@ -8916,6 +8926,8 @@ PIXI.Graphics.prototype.drawCircle = function( x, y, radius)
 
     this.graphicsData.push(this.currentPath);
     this.dirty = true;
+
+    return this;
 };
 
 /**
@@ -8938,6 +8950,8 @@ PIXI.Graphics.prototype.drawEllipse = function( x, y, width, height)
 
     this.graphicsData.push(this.currentPath);
     this.dirty = true;
+
+    return this;
 };
 
 /**
@@ -8955,6 +8969,8 @@ PIXI.Graphics.prototype.clear = function()
     this.graphicsData = [];
 
     this.bounds = null; //new PIXI.Rectangle();
+
+    return this;
 };
 
 /**
@@ -9710,6 +9726,36 @@ PIXI.TilingSprite.prototype.onTextureUpdate = function()
     this.updateFrame = true;
 };
 
+PIXI.TilingSprite.prototype.setTexture = function(texture)
+{
+    if(this.texture === texture)return;
+
+    this.texture = texture;
+
+    this.refreshTexture = true;
+    /*
+    if(this.tilingTexture)
+    {
+        this.generateTilingTexture(true);
+    }
+*/
+
+    /*
+    // stop current texture;
+    if(this.texture.baseTexture !== texture.baseTexture)
+    {
+        this.textureChange = true;
+        this.texture = texture;
+    }
+    else
+    {
+        this.texture = texture;
+    }
+
+    this.updateFrame = true;*/
+    this.cachedTint = 0xFFFFFF;
+};
+
 /**
 * Renders the object using the WebGL renderer
 *
@@ -9739,7 +9785,7 @@ PIXI.TilingSprite.prototype._renderWebGL = function(renderSession)
             renderSession.filterManager.pushFilter(this._filterBlock);
         }
 
-        if(!this.tilingTexture)this.generateTilingTexture(true);
+        if(!this.tilingTexture || this.refreshTexture)this.generateTilingTexture(true);
         else renderSession.spriteBatch.renderTilingSprite(this);
 
         // simple render children!
@@ -9757,7 +9803,17 @@ PIXI.TilingSprite.prototype._renderWebGL = function(renderSession)
     }
     else
     {
-        if(!this.tilingTexture)this.generateTilingTexture(true);
+        if(!this.tilingTexture || this.refreshTexture)
+        {
+            this.generateTilingTexture(true);
+            if(this.tilingTexture.needsUpdate)
+            {
+                //TODO - tweaking
+                PIXI.updateWebGLTexture(this.tilingTexture.baseTexture, renderSession.gl);
+                this.tilingTexture.needsUpdate = false;
+               // this.tilingTexture._uvs = null;
+            }
+        }
         else renderSession.spriteBatch.renderTilingSprite(this);
         
         // simple render children!
@@ -9796,10 +9852,10 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
     context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
 
 
-    if(!this.__tilePattern)
+    if(!this.__tilePattern ||  this.refreshTexture)
     {
         this.generateTilingTexture(false);
-        
+    
         if(this.tilingTexture)
         {
             this.__tilePattern = context.createPattern(this.tilingTexture.baseTexture.source, 'repeat');
@@ -9938,10 +9994,7 @@ PIXI.TilingSprite.prototype.generateTilingTexture = function(forcePowerOfTwo)
     var targetWidth, targetHeight;
 
     // check that the frame is the same size as the base texture.
-    
     var isFrame = frame.width !== baseTexture.width || frame.height !== baseTexture.height;
-
-    this.tilingTexture = texture;
 
     var newTextureRequired = false;
 
@@ -9951,39 +10004,69 @@ PIXI.TilingSprite.prototype.generateTilingTexture = function(forcePowerOfTwo)
         {
             targetWidth = frame.width;
             targetHeight = frame.height;
-            
+           
             newTextureRequired = true;
+            
         }
     }
     else
     {
-        targetWidth = PIXI.getNextPowerOfTwo(texture.frame.width);
-        targetHeight = PIXI.getNextPowerOfTwo(texture.frame.height);
-
+        targetWidth = PIXI.getNextPowerOfTwo(frame.width);
+        targetHeight = PIXI.getNextPowerOfTwo(frame.height);
         if(frame.width !== targetWidth && frame.height !== targetHeight)newTextureRequired = true;
     }
 
     if(newTextureRequired)
     {
-        var canvasBuffer = new PIXI.CanvasBuffer(targetWidth, targetHeight);
+        var canvasBuffer;
+
+        if(this.tilingTexture && this.tilingTexture.isTiling)
+        {
+            canvasBuffer = this.tilingTexture.canvasBuffer;
+            canvasBuffer.resize(targetWidth, targetHeight);
+            this.tilingTexture.baseTexture.width = targetWidth;
+            this.tilingTexture.baseTexture.height = targetHeight;
+            this.tilingTexture.needsUpdate = true;
+        }
+        else
+        {
+            canvasBuffer = new PIXI.CanvasBuffer(targetWidth, targetHeight);
+
+            this.tilingTexture = PIXI.Texture.fromCanvas(canvasBuffer.canvas);
+            this.tilingTexture.canvasBuffer = canvasBuffer;
+            this.tilingTexture.isTiling = true;
+
+        }
         
         canvasBuffer.context.drawImage(texture.baseTexture.source,
-                                       frame.x,
-                                       frame.y,
-                                       frame.width,
-                                       frame.height,
-                                       0,
-                                       0,
-                                       targetWidth,
-                                       targetHeight);
-
-        this.tilingTexture = PIXI.Texture.fromCanvas(canvasBuffer.canvas);
+                                           frame.x,
+                                           frame.y,
+                                           frame.width,
+                                           frame.height,
+                                           0,
+                                           0,
+                                           targetWidth,
+                                           targetHeight);
 
         this.tileScaleOffset.x = frame.width / targetWidth;
         this.tileScaleOffset.y = frame.height / targetHeight;
-    }
 
-   
+    }
+    else
+    {
+        //TODO - switching?
+        if(this.tilingTexture && this.tilingTexture.isTiling)
+        {
+            // destroy the tiling texture!
+            // TODO could store this somewhere?
+            this.tilingTexture.destroy(true);
+        }
+
+        this.tileScaleOffset.x = 1;
+        this.tileScaleOffset.y = 1;
+        this.tilingTexture = texture;
+    }
+    this.refreshTexture = false;
     this.tilingTexture.baseTexture._powerOf2 = true;
 };
 /**
@@ -11704,6 +11787,8 @@ PIXI.Texture = function(baseTexture, frame)
   
     this.scope = this;
 
+    this._uvs = null;
+    
     if(baseTexture.hasLoaded)
     {
         if(this.noFrame)frame = new PIXI.Rectangle(0,0, baseTexture.width, baseTexture.height);
