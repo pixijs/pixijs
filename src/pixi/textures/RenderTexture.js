@@ -187,6 +187,8 @@ PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, position, cl
 {
     var children = displayObject.children;
 
+    var originalWorldTransform = displayObject.worldTransform;
+
     displayObject.worldTransform = PIXI.RenderTexture.tempMatrix;
 
     if(position)
@@ -207,6 +209,9 @@ PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, position, cl
     this.renderer.renderDisplayObject(displayObject, context);
 
     context.setTransform(1,0,0,1,0,0);
+
+    displayObject.worldTransform = originalWorldTransform;
 };
 
 PIXI.RenderTexture.tempMatrix = new PIXI.Matrix();
+
