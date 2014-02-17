@@ -196,6 +196,8 @@ PIXI.DisplayObject = function()
 
     this._cacheAsBitmap = false;
     this._cacheIsDirty = false;
+
+
     /*
      * MOUSE Callbacks
      */
@@ -493,15 +495,13 @@ PIXI.DisplayObject.prototype.generateTexture = function(renderer)
     return renderTexture;
 };
 
+PIXI.DisplayObject.prototype.updateCache = function()
+{
+    this._generateCachedSprite();
+};
+
 PIXI.DisplayObject.prototype._renderCachedSprite = function(renderSession)
 {
- //   console.log(this._cacheIsDirty)
-   /* if(this._cacheIsDirty)
-    {
-       //this._generateCachedSprite(renderSession)
-        //this._cacheIsDirty = false;a
-    }*/
-
     if(renderSession.gl)
     {
         PIXI.Sprite.prototype._renderWebGL.call(this._cachedSprite, renderSession);
@@ -529,9 +529,14 @@ PIXI.DisplayObject.prototype._generateCachedSprite = function()//renderSession)
         this._cachedSprite.texture.resize(bounds.width | 0, bounds.height | 0);
     }
 
+    //REMOVE filter!
+    var tempFilters = this._filters;
+    this._filters = null;
 
+    this._cachedSprite.filters = tempFilters;
     this._cachedSprite.texture.render(this);
 
+    this._filters = tempFilters;
 
     this._cacheAsBitmap = true;
 };

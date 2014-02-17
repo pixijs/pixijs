@@ -744,6 +744,8 @@ PIXI.DisplayObject = function()
 
     this._cacheAsBitmap = false;
     this._cacheIsDirty = false;
+
+
     /*
      * MOUSE Callbacks
      */
@@ -1041,15 +1043,13 @@ PIXI.DisplayObject.prototype.generateTexture = function(renderer)
     return renderTexture;
 };
 
+PIXI.DisplayObject.prototype.updateCache = function()
+{
+    this._generateCachedSprite();
+};
+
 PIXI.DisplayObject.prototype._renderCachedSprite = function(renderSession)
 {
- //   console.log(this._cacheIsDirty)
-   /* if(this._cacheIsDirty)
-    {
-       //this._generateCachedSprite(renderSession)
-        //this._cacheIsDirty = false;a
-    }*/
-
     if(renderSession.gl)
     {
         PIXI.Sprite.prototype._renderWebGL.call(this._cachedSprite, renderSession);
@@ -1077,9 +1077,14 @@ PIXI.DisplayObject.prototype._generateCachedSprite = function()//renderSession)
         this._cachedSprite.texture.resize(bounds.width | 0, bounds.height | 0);
     }
 
+    //REMOVE filter!
+    var tempFilters = this._filters;
+    this._filters = null;
 
+    this._cachedSprite.filters = tempFilters;
     this._cachedSprite.texture.render(this);
 
+    this._filters = tempFilters;
 
     this._cacheAsBitmap = true;
 };
@@ -6637,10 +6642,10 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
         var trim = sprite.texture.trim;
 
         w1 = trim.x - aX * trim.width;
-        w0 = w1 + width;
+        w0 = w1 + texture.frame.width;
 
         h1 = trim.y - aY * trim.height;
-        h0 = h1 + height;
+        h0 = h1 + texture.frame.height;
 
     }
     else
@@ -9894,58 +9899,46 @@ PIXI.TilingSprite.prototype._renderWebGL = function(renderSession)
     
     var i,j;
 
-    if(this.mask || this.filters)
+    if(this.mask)
     {
-        if(this.mask)
-        {
-            renderSession.spriteBatch.stop();
-            renderSession.maskManager.pushMask(this.mask, renderSession);
-            renderSession.spriteBatch.start();
-        }
-
-        if(this.filters)
-        {
-            renderSession.spriteBatch.flush();
-            renderSession.filterManager.pushFilter(this._filterBlock);
-        }
-
-        if(!this.tilingTexture || this.refreshTexture)this.generateTilingTexture(true);
-        else renderSession.spriteBatch.renderTilingSprite(this);
-
-        // simple render children!
-        for(i=0,j=this.children.length; i<j; i++)
-        {
-            this.children[i]._renderWebGL(renderSession);
-        }
-
         renderSession.spriteBatch.stop();
-
-        if(this.filters)renderSession.filterManager.popFilter();
-        if(this.mask)renderSession.maskManager.popMask(renderSession);
-        
+        renderSession.maskManager.pushMask(this.mask, renderSession);
         renderSession.spriteBatch.start();
     }
-    else
+
+    if(this.filters)
     {
-        if(!this.tilingTexture || this.refreshTexture)
+        renderSession.spriteBatch.flush();
+        renderSession.filterManager.pushFilter(this._filterBlock);
+    }
+
+
+    if(!this.tilingTexture || this.refreshTexture)
+    {
+        this.generateTilingTexture(true);
+        if(this.tilingTexture && this.tilingTexture.needsUpdate)
         {
-            this.generateTilingTexture(true);
-            if(this.tilingTexture.needsUpdate)
-            {
-                //TODO - tweaking
-                PIXI.updateWebGLTexture(this.tilingTexture.baseTexture, renderSession.gl);
-                this.tilingTexture.needsUpdate = false;
-               // this.tilingTexture._uvs = null;
-            }
-        }
-        else renderSession.spriteBatch.renderTilingSprite(this);
-        
-        // simple render children!
-        for(i=0,j=this.children.length; i<j; i++)
-        {
-            this.children[i]._renderWebGL(renderSession);
+            //TODO - tweaking
+            PIXI.updateWebGLTexture(this.tilingTexture.baseTexture, renderSession.gl);
+            this.tilingTexture.needsUpdate = false;
+           // this.tilingTexture._uvs = null;
         }
     }
+    else renderSession.spriteBatch.renderTilingSprite(this);
+    
+
+    // simple render children!
+    for(i=0,j=this.children.length; i<j; i++)
+    {
+        this.children[i]._renderWebGL(renderSession);
+    }
+
+    renderSession.spriteBatch.stop();
+
+    if(this.filters)renderSession.filterManager.popFilter();
+    if(this.mask)renderSession.maskManager.popMask(renderSession);
+    
+    renderSession.spriteBatch.start();
 };
 
 /**
