@@ -205,6 +205,8 @@ PIXI.DisplayObjectContainer.prototype.updateTransform = function()
 
     PIXI.DisplayObject.prototype.updateTransform.call( this );
 
+    if(this._cacheAsBitmap)return;
+
     for(var i=0,j=this.children.length; i<j; i++)
     {
         this.children[i].updateTransform();
@@ -344,6 +346,12 @@ PIXI.DisplayObjectContainer.prototype._renderWebGL = function(renderSession)
 {
     if(!this.visible || this.alpha <= 0)return;
     
+    if(this._cacheAsBitmap)
+    {
+        this._renderCachedSprite(renderSession);
+        return;
+    }
+    
     var i,j;
 
     if(this._mask || this._filters)
@@ -394,6 +402,13 @@ PIXI.DisplayObjectContainer.prototype._renderWebGL = function(renderSession)
 PIXI.DisplayObjectContainer.prototype._renderCanvas = function(renderSession)
 {
     if(this.visible === false || this.alpha === 0)return;
+
+    if(this._cacheAsBitmap)
+    {
+
+        this._renderCachedSprite(renderSession);
+        return;
+    }
 
     if(this._mask)
     {

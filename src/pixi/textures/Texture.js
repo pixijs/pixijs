@@ -230,7 +230,8 @@ PIXI.Texture.addTextureToCache = function(texture, id)
 PIXI.Texture.removeTextureFromCache = function(id)
 {
     var texture = PIXI.TextureCache[id];
-    PIXI.TextureCache[id] = null;
+    delete PIXI.TextureCache[id];
+    delete PIXI.BaseTextureCache[id];
     return texture;
 };
 
