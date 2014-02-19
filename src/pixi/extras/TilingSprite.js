@@ -260,6 +260,11 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
     {
         renderSession.maskManager.popMask(renderSession.context);
     }
+    
+    for(i=0,j=this.children.length; i<j; i++)
+    {
+        this.children[i]._renderCanvas(renderSession);
+    }
 };
 
 
