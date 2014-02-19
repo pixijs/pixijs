@@ -202,7 +202,9 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
     if(this.visible === false || this.alpha === 0)return;
     
     var context = renderSession.context;
-
+    
+    var i,j;
+    
     if(this._mask)
     {
         renderSession.maskManager.pushMask(this._mask, context);
@@ -259,6 +261,11 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
     if(this._mask)
     {
         renderSession.maskManager.popMask(renderSession.context);
+    }
+    
+    for(i=0,j=this.children.length; i<j; i++)
+    {
+        this.children[i]._renderCanvas(renderSession);
     }
 };
 
