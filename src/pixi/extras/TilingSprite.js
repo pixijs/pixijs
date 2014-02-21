@@ -6,7 +6,7 @@
  * A tiling sprite is a fast way of rendering a tiling image
  *
  * @class TilingSprite
- * @extends DisplayObjectContainer
+ * @extends Sprite
  * @constructor
  * @param texture {Texture} the texture of the tiling sprite
  * @param width {Number}  the width of the tiling sprite
@@ -23,6 +23,7 @@ PIXI.TilingSprite = function(texture, width, height)
      * @type Number
      */
     this.width = width || 100;
+
     /**
      * The height of the tiling sprite
      *
