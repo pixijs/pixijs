@@ -109,6 +109,9 @@ PIXI.SpriteBatch.prototype._renderCanvas = function(renderSession)
     for (var i = 0; i < this.children.length; i++) {
        
         var child = this.children[i];
+
+        if(!child.visible)continue;
+
         var texture = child.texture;
         var frame = texture.frame;
 

@@ -4,7 +4,7 @@
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-02-17
+ * Compiled: 2014-02-23
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -2171,6 +2171,9 @@ PIXI.SpriteBatch.prototype._renderCanvas = function(renderSession)
     for (var i = 0; i < this.children.length; i++) {
        
         var child = this.children[i];
+
+        if(!child.visible)continue;
+
         var texture = child.texture;
         var frame = texture.frame;
 
@@ -7082,6 +7085,7 @@ PIXI.WebGLFastSpriteBatch.prototype.render = function(spriteBatch)
 PIXI.WebGLFastSpriteBatch.prototype.renderSprite = function(sprite)
 {
     //sprite = children[i];
+    if(!sprite.visible)return;
     
     // TODO trim??
     if(sprite.texture.baseTexture !== this.currentBaseTexture)
@@ -12080,7 +12084,8 @@ PIXI.Texture.addTextureToCache = function(texture, id)
 PIXI.Texture.removeTextureFromCache = function(id)
 {
     var texture = PIXI.TextureCache[id];
-    PIXI.TextureCache[id] = null;
+    delete PIXI.TextureCache[id];
+    delete PIXI.BaseTextureCache[id];
     return texture;
 };
 

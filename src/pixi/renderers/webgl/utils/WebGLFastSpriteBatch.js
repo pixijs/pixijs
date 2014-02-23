@@ -122,6 +122,7 @@ PIXI.WebGLFastSpriteBatch.prototype.render = function(spriteBatch)
 PIXI.WebGLFastSpriteBatch.prototype.renderSprite = function(sprite)
 {
     //sprite = children[i];
+    if(!sprite.visible)return;
     
     // TODO trim??
     if(sprite.texture.baseTexture !== this.currentBaseTexture)
