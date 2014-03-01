@@ -1,0 +1,98 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+
+	<title>Transparency-based hitArea</title>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			background-color: #000000;
+		}
+    </style>
+
+    <meta charset="utf-8" />
+	
+	<script src="../../bin/pixi.dev.js"></script>
+
+</head>
+<body>
+
+    <script>
+
+    /*
+    This is a demo showing a transparency-based hit area. That means, the click event
+    is only called when the user clicks into a non-transparent (opaque) area of the sprite.
+    Clicks to a transparent area bubble further as if this sprite weren't interactive.
+
+    Note there will be problems if a sprite using transparency-based hit area contains other sprites.
+    The problems origin in the fact that the interaction manager doesn't allow a situation that
+    the parent sprite tells "hit: false", but its child tells "hit: true". This could be overcome 
+    by rewriting the interaction manager in such a way that it descends from children to parents.
+    */
+
+	var viewWidth = 400;
+	var viewHeight = 400;
+
+	// Create a pixi renderer
+	var renderer = PIXI.autoDetectRenderer(viewWidth, viewHeight);
+	
+	// add render view to DOM
+	document.body.appendChild(renderer.view);
+
+	// create an new instance of a pixi stage
+	var stage = new PIXI.Stage(0xFFFFFF);
+
+    // create a texture from an image path
+	var texture = PIXI.Texture.fromImage("eggHead.png");
+
+    // create a new Sprite that uses the created texture
+    var dude = new PIXI.Sprite(texture);
+
+    // position the dude
+    dude.anchor.x = dude.anchor.y = 0.5;
+    dude.position.x = viewWidth/2;
+    dude.position.y = viewHeight/2;
+
+    // make dude clickable
+    dude.interactive = true;
+    dude.click = function () {
+        console.log('Dude clicked!');
+        var min = 0, max = 0xFFFFFF;
+        var randColor = Math.floor((Math.random() * ((max*1.0 + 1) - min)) + min);
+        stage.setBackgroundColor(randColor);
+    };
+
+    // decide whether we can use WebGL (you should prefer it over Canvas if available)
+    var useWebGL = renderer instanceof PIXI.WebGLRenderer;
+    useWebGL = false;
+
+    // when creating the transparency-based hit area, the sprite's texture has already to be loaded
+    // in production code you would probably use some kind of loader to ensure the texture is prepared
+    setTimeout(function () {
+        /////////////////////////////////////////////
+        // YOU ARE LOOKING FOR THE FOLLOWING LINE :)
+        /////////////////////////////////////////////
+
+        // set the hitArea to the sprite; note it is needed to tell the TransparencyHitArea whether to use WebGL or not
+        dude.hitArea = PIXI.TransparencyHitArea.create(dude, useWebGL);
+        console.log('hitArea initialized, ready to handle click events!');
+    }, 1000);
+
+    // add the sprite to the stage
+    stage.addChild(dude);
+	
+	requestAnimationFrame(animate);
+
+	function animate() 
+	{
+		// time to render the state!
+	    renderer.render(stage);
+	    
+	    // request another animation frame..
+	    requestAnimationFrame(animate);
+	}
+	</script>
+
+	</body>
+</html>
