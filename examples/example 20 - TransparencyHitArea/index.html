@@ -2,18 +2,18 @@
 <html>
 <head>
 
-	<title>Transparency-based hitArea</title>
-	<style>
-		body {
-			margin: 0;
-			padding: 0;
-			background-color: #000000;
-		}
+    <title>Transparency-based hitArea</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000000;
+        }
     </style>
 
     <meta charset="utf-8" />
-	
-	<script src="../../bin/pixi.dev.js"></script>
+
+    <script src="../../bin/pixi.dev.js"></script>
 
 </head>
 <body>
@@ -27,24 +27,24 @@
 
     Note there will be problems if a sprite using transparency-based hit area contains other sprites.
     The problems origin in the fact that the interaction manager doesn't allow a situation that
-    the parent sprite tells "hit: false", but its child tells "hit: true". This could be overcome 
+    the parent sprite tells "hit: false", but its child tells "hit: true". This could be overcome
     by rewriting the interaction manager in such a way that it descends from children to parents.
     */
 
-	var viewWidth = 400;
-	var viewHeight = 400;
+    var viewWidth = 400;
+    var viewHeight = 400;
 
-	// Create a pixi renderer
-	var renderer = PIXI.autoDetectRenderer(viewWidth, viewHeight);
-	
-	// add render view to DOM
-	document.body.appendChild(renderer.view);
+    // Create a pixi renderer
+    var renderer = PIXI.autoDetectRenderer(viewWidth, viewHeight);
 
-	// create an new instance of a pixi stage
-	var stage = new PIXI.Stage(0xFFFFFF);
+    // add render view to DOM
+    document.body.appendChild(renderer.view);
+
+    // create an new instance of a pixi stage
+    var stage = new PIXI.Stage(0xFFFFFF);
 
     // create a texture from an image path
-	var texture = PIXI.Texture.fromImage("eggHead.png");
+    var texture = PIXI.Texture.fromImage("eggHead.png");
 
     // create a new Sprite that uses the created texture
     var dude = new PIXI.Sprite(texture);
@@ -81,18 +81,18 @@
 
     // add the sprite to the stage
     stage.addChild(dude);
-	
-	requestAnimationFrame(animate);
 
-	function animate() 
-	{
-		// time to render the state!
-	    renderer.render(stage);
-	    
-	    // request another animation frame..
-	    requestAnimationFrame(animate);
-	}
-	</script>
+    requestAnimationFrame(animate);
 
-	</body>
+    function animate()
+    {
+        // time to render the state!
+        renderer.render(stage);
+
+        // request another animation frame..
+        requestAnimationFrame(animate);
+    }
+    </script>
+
+    </body>
 </html>
