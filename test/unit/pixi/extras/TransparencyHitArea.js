@@ -46,6 +46,12 @@ describe('pixi/extras/TransparencyHitArea', function () {
     });
 
     it('Confirm new WebGL instance', function (done) {
+        // TODO Travis doesn't support WebGL yet, so we skip this test there.
+        if (process.env.TRAVIS !== undefined) {
+            done();
+            return;
+        }
+
         var texture = PIXI.Texture.fromImage('/base/test/textures/bunny.png');
 
         var testWhenLoaded = function () {
