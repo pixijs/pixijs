@@ -347,7 +347,7 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
         // allow for trimming
         if (renderSession.roundPixels)
         {
-            context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx || 0, transform.ty || 0);
+            context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx | 0, transform.ty | 0);
         }
         else
         {

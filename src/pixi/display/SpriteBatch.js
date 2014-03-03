@@ -148,7 +148,7 @@ PIXI.SpriteBatch.prototype._renderCanvas = function(renderSession)
            
             if (renderSession.roundPixels)
             {
-                context.setTransform(childTransform.a, childTransform.c, childTransform.b, childTransform.d, childTransform.tx || 0, childTransform.ty || 0);
+                context.setTransform(childTransform.a, childTransform.c, childTransform.b, childTransform.d, childTransform.tx | 0, childTransform.ty | 0);
             }
             else
             {
