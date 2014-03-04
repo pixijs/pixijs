@@ -132,6 +132,7 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
             }
             else
             {
+                PIXI.JsonCache[this.url] = this.json;
                 this.onLoaded();
             }
         }
@@ -168,3 +169,5 @@ PIXI.JsonLoader.prototype.onError = function () {
         content: this
     });
 };
+
+PIXI.JsonCache = {};
