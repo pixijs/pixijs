@@ -185,10 +185,11 @@ module.exports = function(grunt) {
                 }
             }
         },
+        //Watches and builds for _development_ (source maps)
         watch: {
             scripts: {
                 files: ['<%= dirs.src %>/**/*.js'],
-                tasks: ['concat'],
+                tasks: ['concat_sourcemap'],
                 options: {
                     spawn: false,
                 }
@@ -214,6 +215,6 @@ module.exports = function(grunt) {
     grunt.registerTask('travis', ['build', 'test']);
 
     grunt.registerTask('default', ['build', 'test']);
-
-    grunt.registerTask('debug-watch', ['concat', 'watch']);
+    
+    grunt.registerTask('debug-watch', ['concat_sourcemap', 'watch:debug']);
 };
