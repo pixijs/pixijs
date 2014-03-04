@@ -149,7 +149,6 @@ PIXI.BaseTexture.prototype.updateSourceImage = function(newSrc)
 PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
 {
     var baseTexture = PIXI.BaseTextureCache[imageUrl];
-    crossorigin = !crossorigin;
 
     if(!baseTexture)
     {

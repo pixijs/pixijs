@@ -4,7 +4,7 @@
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-03-01
+ * Compiled: 2014-03-04
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -1937,7 +1937,7 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
         // allow for trimming
         if (renderSession.roundPixels)
         {
-            context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx || 0, transform.ty || 0);
+            context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx | 0, transform.ty | 0);
         }
         else
         {
@@ -2210,7 +2210,7 @@ PIXI.SpriteBatch.prototype._renderCanvas = function(renderSession)
            
             if (renderSession.roundPixels)
             {
-                context.setTransform(childTransform.a, childTransform.c, childTransform.b, childTransform.d, childTransform.tx || 0, childTransform.ty || 0);
+                context.setTransform(childTransform.a, childTransform.c, childTransform.b, childTransform.d, childTransform.tx | 0, childTransform.ty | 0);
             }
             else
             {
@@ -11805,7 +11805,6 @@ PIXI.BaseTexture.prototype.updateSourceImage = function(newSrc)
 PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
 {
     var baseTexture = PIXI.BaseTextureCache[imageUrl];
-    crossorigin = !crossorigin;
 
     if(!baseTexture)
     {
