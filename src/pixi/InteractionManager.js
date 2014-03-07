@@ -273,7 +273,7 @@ PIXI.InteractionManager.prototype.update = function()
     var cursor = 'inherit';
     var over = false;
 
-    for (i = 0; i < length; i++)
+    for (i = length-1; i >= 0; i--)
     {
         var item = this.interactiveItems[i];
 
@@ -335,7 +335,7 @@ PIXI.InteractionManager.prototype.onMouseMove = function(event)
 
     var length = this.interactiveItems.length;
 
-    for (var i = 0; i < length; i++)
+    for (var i = length-1; i >= 0; i--)
     {
         var item = this.interactiveItems[i];
 
@@ -368,7 +368,7 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
 
     // while
     // hit test
-    for (var i = 0; i < length; i++)
+    for (var i = length-1; i >= 0; i--)
     {
         var item = this.interactiveItems[i];
 
@@ -403,7 +403,7 @@ PIXI.InteractionManager.prototype.onMouseOut = function()
 
     this.interactionDOMElement.style.cursor = 'inherit';
 
-    for (var i = 0; i < length; i++)
+    for (var i = length-1; i >= 0; i--)
     {
         var item = this.interactiveItems[i];
         if(item.__isOver)
@@ -436,7 +436,7 @@ PIXI.InteractionManager.prototype.onMouseUp = function(event)
     var length = this.interactiveItems.length;
     var up = false;
 
-    for (var i = 0; i < length; i++)
+    for (var i = length-1; i >= 0; i--)
     {
         var item = this.interactiveItems[i];
 
@@ -495,6 +495,20 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 
     interactionData.target = item;
 
+    var length = item.children.length;
+
+    for (var i = length-1; i >= 0; i--)
+    {
+        var tempItem = item.children[i];
+        var hit = this.hitTest(tempItem, interactionData);
+        if(hit)
+        {
+            // hmm.. TODO SET CORRECT TARGET?
+            interactionData.target = item;
+            return true;
+        }
+    }
+
     //a sprite or display object with a hit area defined
     if(item.hitArea && item.hitArea.contains) {
         if(item.hitArea.contains(x, y)) {
@@ -527,19 +541,6 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
         }
     }
 
-    var length = item.children.length;
-
-    for (var i = 0; i < length; i++)
-    {
-        var tempItem = item.children[i];
-        var hit = this.hitTest(tempItem, interactionData);
-        if(hit)
-        {
-            // hmm.. TODO SET CORRECT TARGET?
-            interactionData.target = item;
-            return true;
-        }
-    }
 
     return false;
 };
@@ -574,7 +575,7 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
     }
 
     var length = this.interactiveItems.length;
-    for (i = 0; i < length; i++)
+    for (i = length-1; i >= 0; i--)
     {
         var item = this.interactiveItems[i];
         if(item.touchmove)
@@ -615,7 +616,7 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
 
         var length = this.interactiveItems.length;
 
-        for (var j = 0; j < length; j++)
+        for (var j = length-1; j >= 0; j--)
         {
             var item = this.interactiveItems[j];
 
@@ -663,7 +664,7 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
         }
 
         var length = this.interactiveItems.length;
-        for (var j = 0; j < length; j++)
+        for (var j = length-1; j >= 0; j--)
         {
             var item = this.interactiveItems[j];
             var itemTouchData = item.__touchData; // <-- Here!
