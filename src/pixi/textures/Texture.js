@@ -194,6 +194,7 @@ PIXI.Texture.fromFrame = function(frameId)
  * @static
  * @method fromCanvas
  * @param canvas {Canvas} The canvas element source of the texture
+ * @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
  * @return Texture
  */
 PIXI.Texture.fromCanvas = function(canvas, scaleMode)
