@@ -28,6 +28,7 @@ PIXI.InteractionManager = function(stage)
      * @type InteractionData
      */
     this.mouse = new PIXI.InteractionData();
+    this.mouse.global.x = this.mouse.global.y = -10000;
 
     /**
      * an object that stores current touches (InteractionData) by id reference
@@ -480,7 +481,8 @@ PIXI.InteractionManager.prototype.onMouseUp = function(event)
 PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 {
     var global = interactionData.global;
-
+    if(global.x === -10000 && global.y === -10000) return false;
+    
     if( !item.worldVisible )return false;
 
     // temp fix for if the element is in a non visible
