@@ -297,6 +297,7 @@ PIXI.InteractionManager.prototype.update = function()
             if(!item.__isOver)
             {
                 if(item.mouseover)item.mouseover(this.mouse);
+                else if(item.touchover) item.touchover(this.mouse);
                 item.__isOver = true;
             }
         }
@@ -306,6 +307,7 @@ PIXI.InteractionManager.prototype.update = function()
             {
                 // roll out!
                 if(item.mouseout)item.mouseout(this.mouse);
+                else if(item.touchout) item.touchout(this.mouse);
                 item.__isOver = false;
             }
         }
@@ -482,7 +484,7 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 {
     var global = interactionData.global;
     if(global.x === -10000 && global.y === -10000) return false;
-    
+
     if( !item.worldVisible )return false;
 
     // temp fix for if the element is in a non visible
@@ -573,6 +575,8 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
             touchData.global.x = touchEvent.clientX;
             touchData.global.y = touchEvent.clientY;
         }
+        this.mouse.global.x = touchData.global.x;
+        this.mouse.global.y = touchData.global.y;
     }
 
     var length = this.interactiveItems.length;
