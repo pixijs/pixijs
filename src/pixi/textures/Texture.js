@@ -155,6 +155,7 @@ PIXI.Texture.prototype._updateWebGLuvs = function()
  * @method fromImage
  * @param imageUrl {String} The image url of the texture
  * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
+ * @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
  * @return Texture
  */
 PIXI.Texture.fromImage = function(imageUrl, crossorigin, scaleMode)
