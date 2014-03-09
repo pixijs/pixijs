@@ -495,20 +495,6 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 
     interactionData.target = item;
 
-    var length = item.children.length;
-
-    for (var i = length-1; i >= 0; i--)
-    {
-        var tempItem = item.children[i];
-        var hit = this.hitTest(tempItem, interactionData);
-        if(hit)
-        {
-            // hmm.. TODO SET CORRECT TARGET?
-            interactionData.target = item;
-            return true;
-        }
-    }
-
     //a sprite or display object with a hit area defined
     if(item.hitArea && item.hitArea.contains) {
         if(item.hitArea.contains(x, y)) {
@@ -540,6 +526,22 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
             }
         }
     }
+    
+    var length = item.children.length;
+
+    for (var i = length-1; i >= 0; i--)
+    {
+        var tempItem = item.children[i];
+        var hit = this.hitTest(tempItem, interactionData);
+        if(hit)
+        {
+            // hmm.. TODO SET CORRECT TARGET?
+            interactionData.target = item;
+            return true;
+        }
+    }
+
+    
 
 
     return false;
