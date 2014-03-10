@@ -178,19 +178,14 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 * Removes all the children 
 *
 * @method removeAll
-* NOT tested yet
 */
-/* PIXI.DisplayObjectContainer.prototype.removeAll = function()
+PIXI.DisplayObjectContainer.prototype.removeAll = function()
 {
-
-
-    for(var i = 0 , j = this.children.length; i < j; i++)
-    {
+    for (var i = this.children.length - 1; i >= 0; i--) {
         this.removeChild(this.children[i]);
-    }
-    
+    };
 };
-*/
+
 /*
  * Updates the container's childrens transform for rendering
  *
