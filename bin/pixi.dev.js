@@ -4,7 +4,7 @@
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-03-09
+ * Compiled: 2014-03-12
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -710,12 +710,13 @@ PIXI.DisplayObject = function()
     this._cr = 1;
 
     /**
-     * The area the filter is applied to 
+     * The area the filter is applied to like the hitArea this is used as more of an optimisation
+     * rather than figuring out the dimensions of the displayObject each frame you can set this rectangle
      *
      * @property filterArea
      * @type Rectangle
      */
-    this.filterArea = new PIXI.Rectangle(0,0,1,1);
+    this.filterArea = null;//new PIXI.Rectangle(0,0,1,1);
 
     /**
      * The original, cached bounds of the object
@@ -3267,7 +3268,7 @@ PIXI.InteractionManager.prototype.update = function()
     var cursor = 'inherit';
     var over = false;
 
-    for (i = length-1; i >= 0; i--)
+    for (i = 0; i < length; i++)
     {
         var item = this.interactiveItems[i];
 
@@ -3329,7 +3330,7 @@ PIXI.InteractionManager.prototype.onMouseMove = function(event)
 
     var length = this.interactiveItems.length;
 
-    for (var i = length-1; i >= 0; i--)
+    for (var i = 0; i < length; i++)
     {
         var item = this.interactiveItems[i];
 
@@ -3362,7 +3363,7 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
 
     // while
     // hit test
-    for (var i = length-1; i >= 0; i--)
+    for (var i = 0; i < length; i++)
     {
         var item = this.interactiveItems[i];
 
@@ -3397,7 +3398,7 @@ PIXI.InteractionManager.prototype.onMouseOut = function()
 
     this.interactionDOMElement.style.cursor = 'inherit';
 
-    for (var i = length-1; i >= 0; i--)
+    for (var i = 0; i < length; i++)
     {
         var item = this.interactiveItems[i];
         if(item.__isOver)
@@ -3430,7 +3431,7 @@ PIXI.InteractionManager.prototype.onMouseUp = function(event)
     var length = this.interactiveItems.length;
     var up = false;
 
-    for (var i = length-1; i >= 0; i--)
+    for (var i = 0; i < length; i++)
     {
         var item = this.interactiveItems[i];
 
@@ -3520,10 +3521,10 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
             }
         }
     }
-    
+
     var length = item.children.length;
 
-    for (var i = length-1; i >= 0; i--)
+    for (var i = 0; i < length; i++)
     {
         var tempItem = item.children[i];
         var hit = this.hitTest(tempItem, interactionData);
@@ -3534,9 +3535,6 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
             return true;
         }
     }
-
-    
-
 
     return false;
 };
@@ -3571,7 +3569,7 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
     }
 
     var length = this.interactiveItems.length;
-    for (i = length-1; i >= 0; i--)
+    for (i = 0; i < length; i++)
     {
         var item = this.interactiveItems[i];
         if(item.touchmove)
@@ -3612,7 +3610,7 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
 
         var length = this.interactiveItems.length;
 
-        for (var j = length-1; j >= 0; j--)
+        for (var j = 0; j < length; j++)
         {
             var item = this.interactiveItems[j];
 
@@ -3660,7 +3658,7 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
         }
 
         var length = this.interactiveItems.length;
-        for (var j = length-1; j >= 0; j--)
+        for (var j = 0; j < length; j++)
         {
             var item = this.interactiveItems[j];
             var itemTouchData = item.__touchData; // <-- Here!
@@ -7374,6 +7372,8 @@ PIXI.WebGLFilterManager.prototype.pushFilter = function(filterBlock)
     var projection = this.renderSession.projection;
     var offset = this.renderSession.offset;
 
+    filterBlock._filterArea = filterBlock.target.filterArea || filterBlock.target.getBounds();
+
 
     // filter program
     // OPTIMISATION - the first filter is free if its a simple color change?
@@ -7381,8 +7381,8 @@ PIXI.WebGLFilterManager.prototype.pushFilter = function(filterBlock)
 
     var filter = filterBlock.filterPasses[0];
 
-    this.offsetX += filterBlock.target.filterArea.x;
-    this.offsetY += filterBlock.target.filterArea.y;
+    this.offsetX += filterBlock._filterArea.x;
+    this.offsetY += filterBlock._filterArea.y;
 
     var texture = this.texturePool.pop();
     if(!texture)
@@ -7396,9 +7396,7 @@ PIXI.WebGLFilterManager.prototype.pushFilter = function(filterBlock)
 
     gl.bindTexture(gl.TEXTURE_2D,  texture.texture);
 
-    filterBlock.target.filterArea = filterBlock.target.getBounds();
-
-    var filterArea = filterBlock.target.filterArea;
+    var filterArea = filterBlock._filterArea;// filterBlock.target.getBounds();///filterBlock.target.filterArea;
 
     var padidng = filter.padding;
     filterArea.x -= padidng;
@@ -7445,7 +7443,7 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
 {
     var gl = this.gl;
     var filterBlock = this.filterStack.pop();
-    var filterArea = filterBlock.target.filterArea;
+    var filterArea = filterBlock._filterArea;
     var texture = filterBlock._glFilterTexture;
     var projection = this.renderSession.projection;
     var offset = this.renderSession.offset;
@@ -7538,7 +7536,7 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
     else
     {
         var currentFilter = this.filterStack[this.filterStack.length-1];
-        filterArea = currentFilter.target.filterArea;
+        filterArea = currentFilter._filterArea;
 
         sizeX = filterArea.width;
         sizeY = filterArea.height;
@@ -7558,7 +7556,7 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
     offset.x = offsetX;
     offset.y = offsetY;
 
-    filterArea = filterBlock.target.filterArea;
+    filterArea = filterBlock._filterArea;
 
     var x = filterArea.x-offsetX;
     var y = filterArea.y-offsetY;

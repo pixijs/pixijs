@@ -162,12 +162,13 @@ PIXI.DisplayObject = function()
     this._cr = 1;
 
     /**
-     * The area the filter is applied to 
+     * The area the filter is applied to like the hitArea this is used as more of an optimisation
+     * rather than figuring out the dimensions of the displayObject each frame you can set this rectangle
      *
      * @property filterArea
      * @type Rectangle
      */
-    this.filterArea = new PIXI.Rectangle(0,0,1,1);
+    this.filterArea = null;//new PIXI.Rectangle(0,0,1,1);
 
     /**
      * The original, cached bounds of the object
