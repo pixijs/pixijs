@@ -170,7 +170,7 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 PIXI.DisplayObjectContainer.prototype.removeChildAt = function(index)
 {
     var child = this.getChildAt( index );
-    if( this.stage )
+    if(this.stage)
         child.removeStageReference();
 
     child.parent = undefined;
