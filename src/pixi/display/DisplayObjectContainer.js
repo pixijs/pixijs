@@ -146,7 +146,7 @@ PIXI.DisplayObjectContainer.prototype.getChildAt = function(index)
     }
     else
     {
-        throw new Error('Supplied index does not exist in the child list');
+        throw new Error('Supplied index does not exist in the child list, or the supplied DisplayObject must be a child of the caller');
     }
 };
 
@@ -158,15 +158,7 @@ PIXI.DisplayObjectContainer.prototype.getChildAt = function(index)
  */
 PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 {
-    var index = this.children.indexOf( child );
-    if ( index !== -1 )
-    {
-        this.removeChildAt( index );
-    }
-    else
-    {
-        throw new Error(child + ' The supplied DisplayObject must be a child of the caller ' + this);
-    }
+    return this.removeChildAt( this.children.indexOf( child ) );
 };
 
 /**
@@ -178,22 +170,41 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 PIXI.DisplayObjectContainer.prototype.removeChildAt = function(index)
 {
     var child = this.getChildAt( index );
-    if(this.stage)child.removeStageReference();
+    if( this.stage )
+        child.removeStageReference();
 
     child.parent = undefined;
     this.children.splice( index, 1 );
+    return child;
 };
 
 /**
 * Removes all child instances from the child list of the container.
 *
 * @method removeChildren
+* @param beginIndex {Number} The beginning position. Predefined value is 0.
+* @param endIndex {Number} The ending position. Predefined value is children's array length.
 */
-PIXI.DisplayObjectContainer.prototype.removeChildren = function()
+PIXI.DisplayObjectContainer.prototype.removeChildren = function(beginIndex, endIndex)
 {
-    for(var i = 0; i < this.children.length; i++)
+    var begin = beginIndex || 0;
+    var end = endIndex || this.children.length;
+    var range = end - begin;
+
+    if (range > 0 && range <= end)
     {
-        this.removeChildAt( 0 );
+        var removed = this.children.splice(begin, range);
+        for (var i = 0; i < removed.length; i++) {
+            var child = removed[i];
+            if(this.stage)
+                child.removeStageReference();
+            child.parent = undefined;
+        }
+        return removed;
+    }
+    else
+    {
+        throw new Error( 'Range Error, numeric values are outside the acceptable range' );
     }
 };
 
