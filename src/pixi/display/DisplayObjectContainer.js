@@ -146,7 +146,7 @@ PIXI.DisplayObjectContainer.prototype.getChildAt = function(index)
     }
     else
     {
-        throw new Error('The supplied DisplayObjects must be a child of the caller ' + this);
+        throw new Error('Supplied index does not exist in the child list');
     }
 };
 
@@ -161,11 +161,7 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
     var index = this.children.indexOf( child );
     if ( index !== -1 )
     {
-        // update the stage reference..
-        if(this.stage)child.removeStageReference();
-
-        child.parent = undefined;
-        this.children.splice( index, 1 );
+        this.removeChildAt( index );
     }
     else
     {
@@ -181,35 +177,26 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
  */
 PIXI.DisplayObjectContainer.prototype.removeChildAt = function(index)
 {
-    var child = this.getChildAt(index);
-    if ( child !== -1)
-    {
-        this.removeChild( child );
-    }
-    else
-    {
-        throw new Error('Supplied index does not exist in the child list');
-    }
-};
+    var child = this.getChildAt( index );
+    if(this.stage)child.removeStageReference();
 
+    child.parent = undefined;
+    this.children.splice( index, 1 );
+};
 
 /**
-* Removes all the children 
+* Removes all child instances from the child list of the container.
 *
-* @method removeAll
-* NOT tested yet
+* @method removeChildren
 */
-/* PIXI.DisplayObjectContainer.prototype.removeAll = function()
+PIXI.DisplayObjectContainer.prototype.removeChildren = function()
 {
-
-
-    for(var i = 0 , j = this.children.length; i < j; i++)
+    for(var i = 0; i < this.children.length; i++)
     {
-        this.removeChild(this.children[i]);
+        this.removeChildAt( 0 );
     }
-    
 };
-*/
+
 /*
  * Updates the container's childrens transform for rendering
  *
