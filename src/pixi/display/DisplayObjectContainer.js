@@ -173,6 +173,25 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
     }
 };
 
+/**
+ * Removes a child from the specified index position in the child list of the container.
+ *
+ * @method removeChildAt
+ * @param index {Number} The index to get the child from
+ */
+PIXI.DisplayObjectContainer.prototype.removeChildAt = function(index)
+{
+    var child = this.getChildAt(index);
+    if ( child !== -1)
+    {
+        this.removeChild( child );
+    }
+    else
+    {
+        throw new Error('Supplied index does not exist in the child list');
+    }
+};
+
 
 /**
 * Removes all the children 
