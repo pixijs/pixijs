@@ -24,7 +24,7 @@ PIXI.EventTarget = function () {
     /**
      * Holds all the listeners
      *
-     * @property listeneners
+     * @property listeners
      * @type Object
      */
     var listeners = {};
