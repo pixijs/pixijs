@@ -188,7 +188,7 @@ PIXI.DisplayObjectContainer.prototype.removeChildAt = function(index)
 PIXI.DisplayObjectContainer.prototype.removeChildren = function(beginIndex, endIndex)
 {
     var begin = beginIndex || 0;
-    var end = endIndex || this.children.length;
+    var end = typeof endIndex === 'number' ? endIndex : this.children.length;
     var range = end - begin;
 
     if (range > 0 && range <= end)
