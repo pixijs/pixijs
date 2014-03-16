@@ -124,7 +124,9 @@ PIXI.Text.prototype.updateText = function()
     var lineHeight = this.determineFontHeight('font: ' + this.style.font  + ';') + this.style.strokeThickness;
     this.canvas.height = lineHeight * lines.length;
 
-    if(navigator.isCocoonJS) this.context.clearRect(0,0,this.canvas.width,this.canvas.height);
+    if (navigator.isCocoonJS) {
+      lineHeight = (this.determineFontHeightInPixels(this.style.font) * 1.5) + this.style.strokeThickness;
+    }
     
     //set canvas text styles
     this.context.fillStyle = this.style.fill;
@@ -247,6 +249,61 @@ PIXI.Text.prototype.determineFontHeight = function(fontStyle)
         body.removeChild(dummy);
     }
 
+    return result;
+};
+
+/*
+ * http://stackoverflow.com/posts/13730758/revisions
+ * Determines exact height in pixels of 'gM' in given font and size
+ *
+ * @method determineFontHeightInPixels
+ * @param font {String}
+ * @private
+ */
+PIXI.Text.prototype.determineFontHeightInPixels = function(fontStyle)
+{
+    var result = PIXI.Text.heightCache[fontStyle];
+
+    if (!result) 
+    {
+        var fontDraw = document.createElement("canvas");
+        var ctx = fontDraw.getContext('2d');
+        ctx.fillRect(0, 0, fontDraw.width, fontDraw.height);
+        ctx.textBaseline = 'top';
+        ctx.fillStyle = 'white';
+        ctx.font = fontStyle;
+        ctx.fillText('gM', 0, 0);
+        var pixels = ctx.getImageData(0, 0, fontDraw.width, fontDraw.height).data;
+        var start = -1;
+        var end = -1;
+        for (var row = 0; row < fontDraw.height; row++) 
+        {
+            for (var column = 0; column < fontDraw.width; column++) 
+            {
+                var index = (row * fontDraw.width + column) * 4;
+                if (pixels[index] === 0) 
+                {
+                    if (column === fontDraw.width - 1 && start !== -1) 
+                    {
+                        end = row;
+                        row = fontDraw.height;
+                        break;
+                    }
+                    continue;
+                }
+                else 
+                {
+                    if (start === -1) 
+                    {
+                        start = row;
+                    }
+                    break;
+                }
+            }
+        }
+        result = end - start;
+        PIXI.Text.heightCache[fontStyle] = result;
+    }
     return result;
 };
 
