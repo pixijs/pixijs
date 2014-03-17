@@ -243,8 +243,11 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
     var transform = this.worldTransform;
 
     // allow for trimming
+//(this.anchor.x) * -frame.width,
+//                               (this.anchor.y) * -frame.height,
 
-    context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
+         
+    context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx , transform.ty);
 
 
     if(!this.__tilePattern ||  this.refreshTexture)
@@ -278,7 +281,10 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
     context.translate(tilePosition.x, tilePosition.y);
 
     context.fillStyle = this.__tilePattern;
-    context.fillRect(-tilePosition.x,-tilePosition.y,this.width / tileScale.x, this.height / tileScale.y);
+
+    // make sure to account for the anchor point..
+    context.fillRect(-tilePosition.x + (this.anchor.x * -this._width),-tilePosition.y + (this.anchor.y * -this._height),
+                        this._width / tileScale.x, this._height / tileScale.y);
 
     context.scale(1/tileScale.x, 1/tileScale.y);
     context.translate(-tilePosition.x, -tilePosition.y);

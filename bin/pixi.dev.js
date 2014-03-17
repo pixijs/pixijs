@@ -4,7 +4,7 @@
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-03-12
+ * Compiled: 2014-03-17
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -1308,7 +1308,7 @@ PIXI.DisplayObjectContainer.prototype.getChildAt = function(index)
     }
     else
     {
-        throw new Error('The supplied DisplayObjects must be a child of the caller ' + this);
+        throw new Error('Supplied index does not exist in the child list, or the supplied DisplayObject must be a child of the caller');
     }
 };
 
@@ -1320,39 +1320,56 @@ PIXI.DisplayObjectContainer.prototype.getChildAt = function(index)
  */
 PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 {
-    var index = this.children.indexOf( child );
-    if ( index !== -1 )
-    {
-        // update the stage reference..
-        if(this.stage)child.removeStageReference();
+    return this.removeChildAt( this.children.indexOf( child ) );
+};
 
-        child.parent = undefined;
-        this.children.splice( index, 1 );
+/**
+ * Removes a child from the specified index position in the child list of the container.
+ *
+ * @method removeChildAt
+ * @param index {Number} The index to get the child from
+ */
+PIXI.DisplayObjectContainer.prototype.removeChildAt = function(index)
+{
+    var child = this.getChildAt( index );
+    if(this.stage)
+        child.removeStageReference();
+
+    child.parent = undefined;
+    this.children.splice( index, 1 );
+    return child;
+};
+
+/**
+* Removes all child instances from the child list of the container.
+*
+* @method removeChildren
+* @param beginIndex {Number} The beginning position. Predefined value is 0.
+* @param endIndex {Number} The ending position. Predefined value is children's array length.
+*/
+PIXI.DisplayObjectContainer.prototype.removeChildren = function(beginIndex, endIndex)
+{
+    var begin = beginIndex || 0;
+    var end = typeof endIndex === 'number' ? endIndex : this.children.length;
+    var range = end - begin;
+
+    if (range > 0 && range <= end)
+    {
+        var removed = this.children.splice(begin, range);
+        for (var i = 0; i < removed.length; i++) {
+            var child = removed[i];
+            if(this.stage)
+                child.removeStageReference();
+            child.parent = undefined;
+        }
+        return removed;
     }
     else
     {
-        throw new Error(child + ' The supplied DisplayObject must be a child of the caller ' + this);
+        throw new Error( 'Range Error, numeric values are outside the acceptable range' );
     }
 };
 
-
-/**
-* Removes all the children 
-*
-* @method removeAll
-* NOT tested yet
-*/
-/* PIXI.DisplayObjectContainer.prototype.removeAll = function()
-{
-
-
-    for(var i = 0 , j = this.children.length; i < j; i++)
-    {
-        this.removeChild(this.children[i]);
-    }
-    
-};
-*/
 /*
  * Updates the container's childrens transform for rendering
  *
@@ -4069,7 +4086,7 @@ PIXI.EventTarget = function () {
     /**
      * Holds all the listeners
      *
-     * @property listeneners
+     * @property listeners
      * @type Object
      */
     var listeners = {};
@@ -9963,8 +9980,11 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
     var transform = this.worldTransform;
 
     // allow for trimming
+//(this.anchor.x) * -frame.width,
+//                               (this.anchor.y) * -frame.height,
 
-    context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
+         
+    context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx , transform.ty);
 
 
     if(!this.__tilePattern ||  this.refreshTexture)
@@ -9998,7 +10018,10 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
     context.translate(tilePosition.x, tilePosition.y);
 
     context.fillStyle = this.__tilePattern;
-    context.fillRect(-tilePosition.x,-tilePosition.y,this.width / tileScale.x, this.height / tileScale.y);
+
+    // make sure to account for the anchor point..
+    context.fillRect(-tilePosition.x + (this.anchor.x * -this._width),-tilePosition.y + (this.anchor.y * -this._height),
+                        this._width / tileScale.x, this._height / tileScale.y);
 
     context.scale(1/tileScale.x, 1/tileScale.y);
     context.translate(-tilePosition.x, -tilePosition.y);
