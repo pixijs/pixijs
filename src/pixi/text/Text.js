@@ -36,6 +36,14 @@ PIXI.Text = function(text, style)
      * @type HTMLCanvasElement 2d Context
      */
     this.context = this.canvas.getContext('2d');
+    
+    /**
+     * The lineHeightBuffer for drawing 'gM'
+     *
+     * @property object
+     * @type PIXI.CanvasBuffer
+     */
+    this.lineHeightBuffer = new PIXI.CanvasBuffer(300, 150);
 
     PIXI.Sprite.call(this, PIXI.Texture.fromCanvas(this.canvas));
 
@@ -125,7 +133,7 @@ PIXI.Text.prototype.updateText = function()
     this.canvas.height = lineHeight * lines.length;
 
     if (navigator.isCocoonJS) {
-      lineHeight = (this.determineFontHeightInPixels(this.style.font) * 1.5) + this.style.strokeThickness;
+        lineHeight = (this.determineFontHeightInPixels(this.style.font) * 1.2) + this.style.strokeThickness;
     }
     
     //set canvas text styles
@@ -266,34 +274,36 @@ PIXI.Text.prototype.determineFontHeightInPixels = function(fontStyle)
 
     if (!result) 
     {
-        var fontDraw = document.createElement("canvas");
-        var ctx = fontDraw.getContext('2d');
-        ctx.fillRect(0, 0, fontDraw.width, fontDraw.height);
+        this.lineHeightBuffer.clear();
+        var ctx = this.lineHeightBuffer.context;
+        var width = this.lineHeightBuffer.width;
+        var height = this.lineHeightBuffer.height;
+        ctx.fillRect(0, 0, width, height);
         ctx.textBaseline = 'top';
         ctx.fillStyle = 'white';
         ctx.font = fontStyle;
         ctx.fillText('gM', 0, 0);
-        var pixels = ctx.getImageData(0, 0, fontDraw.width, fontDraw.height).data;
+        var pixels = ctx.getImageData(0, 0, width, height).data;
         var start = -1;
         var end = -1;
-        for (var row = 0; row < fontDraw.height; row++) 
+        for (var row = 0; row < height; row++)
         {
-            for (var column = 0; column < fontDraw.width; column++) 
+            for (var column = 0; column < width; column++)
             {
-                var index = (row * fontDraw.width + column) * 4;
-                if (pixels[index] === 0) 
+                var index = (row * width + column) * 4;
+                if (pixels[index] === 0)
                 {
-                    if (column === fontDraw.width - 1 && start !== -1) 
+                    if (column === width - 1 && start !== -1)
                     {
                         end = row;
-                        row = fontDraw.height;
+                        row = height;
                         break;
                     }
                     continue;
                 }
-                else 
+                else
                 {
-                    if (start === -1) 
+                    if (start === -1)
                     {
                         start = row;
                     }
