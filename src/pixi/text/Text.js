@@ -132,8 +132,10 @@ PIXI.Text.prototype.updateText = function()
     var lineHeight = this.determineFontHeight('font: ' + this.style.font  + ';') + this.style.strokeThickness;
     this.canvas.height = lineHeight * lines.length;
 
-    if (navigator.isCocoonJS) {
+    if (navigator.isCocoonJS)
+    {
         lineHeight = (this.determineFontHeightInPixels(this.style.font) * 1.2) + this.style.strokeThickness;
+        this.context.clearRect(0,0,this.canvas.width,this.canvas.height);
     }
     
     //set canvas text styles
@@ -272,7 +274,7 @@ PIXI.Text.prototype.determineFontHeightInPixels = function(fontStyle)
 {
     var result = PIXI.Text.heightCache[fontStyle];
 
-    if (!result) 
+    if (!result)
     {
         this.lineHeightBuffer.clear();
         var ctx = this.lineHeightBuffer.context;
