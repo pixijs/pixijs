@@ -36,6 +36,14 @@ PIXI.Text = function(text, style)
      * @type HTMLCanvasElement 2d Context
      */
     this.context = this.canvas.getContext('2d');
+    
+    /**
+     * The lineHeightBuffer for drawing 'gM'
+     *
+     * @property object
+     * @type PIXI.CanvasBuffer
+     */
+    this.lineHeightBuffer = new PIXI.CanvasBuffer(300, 150);
 
     PIXI.Sprite.call(this, PIXI.Texture.fromCanvas(this.canvas));
 
@@ -122,11 +130,15 @@ PIXI.Text.prototype.updateText = function()
 
     //calculate text height
     var lineHeight = this.determineFontHeight('font: ' + this.style.font  + ';') + this.style.strokeThickness;
-    this.canvas.height = lineHeight * lines.length;
 
-    if(navigator.isCocoonJS) this.context.clearRect(0,0,this.canvas.width,this.canvas.height);
+    if (navigator.isCocoonJS)
+    {
+        lineHeight = (this.determineFontHeightInPixels(this.style.font) * 1.2) + this.style.strokeThickness;
+        this.context.clearRect(0,0,this.canvas.width,this.canvas.height);
+    }
     
     //set canvas text styles
+    this.canvas.height = lineHeight * lines.length;
     this.context.fillStyle = this.style.fill;
     this.context.font = this.style.font;
 
@@ -247,6 +259,63 @@ PIXI.Text.prototype.determineFontHeight = function(fontStyle)
         body.removeChild(dummy);
     }
 
+    return result;
+};
+
+/*
+ * http://stackoverflow.com/posts/13730758/revisions
+ * Determines exact height in pixels of 'gM' in given font and size
+ *
+ * @method determineFontHeightInPixels
+ * @param font {String}
+ * @private
+ */
+PIXI.Text.prototype.determineFontHeightInPixels = function(fontStyle)
+{
+    var result = PIXI.Text.heightCache[fontStyle];
+
+    if (!result)
+    {
+        this.lineHeightBuffer.clear();
+        var ctx = this.lineHeightBuffer.context;
+        var width = this.lineHeightBuffer.width;
+        var height = this.lineHeightBuffer.height;
+        ctx.fillRect(0, 0, width, height);
+        ctx.textBaseline = 'top';
+        ctx.fillStyle = 'white';
+        ctx.font = fontStyle;
+        ctx.fillText('gM', 0, 0);
+        var pixels = ctx.getImageData(0, 0, width, height).data;
+        var start = -1;
+        var end = -1;
+        for (var row = 0; row < height; row++)
+        {
+            for (var column = 0; column < width; column++)
+            {
+                var index = (row * width + column) * 4;
+                if (pixels[index] === 0)
+                {
+                    if (column === width - 1 && start !== -1)
+                    {
+                        end = row;
+                        row = height;
+                        break;
+                    }
+                    continue;
+                }
+                else
+                {
+                    if (start === -1)
+                    {
+                        start = row;
+                    }
+                    break;
+                }
+            }
+        }
+        result = end - start;
+        PIXI.Text.heightCache[fontStyle] = result;
+    }
     return result;
 };
 
