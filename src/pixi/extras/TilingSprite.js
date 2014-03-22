@@ -258,7 +258,10 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
         {
             this.__tilePattern = context.createPattern(this.tilingTexture.baseTexture.source, 'repeat');
         }
-
+        else
+        {
+            return;
+        }
     }
 
     // check blend mode
