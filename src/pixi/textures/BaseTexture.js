@@ -19,8 +19,6 @@ PIXI.BaseTextureCacheIdGenerator = 0;
  */
 PIXI.BaseTexture = function(source, scaleMode)
 {
-    PIXI.EventTarget.call( this );
-
     /**
      * [read-only] The width of the base texture set when the image has loaded
      *
@@ -104,6 +102,8 @@ PIXI.BaseTexture = function(source, scaleMode)
 };
 
 PIXI.BaseTexture.prototype.constructor = PIXI.BaseTexture;
+
+PIXI.EventTarget.mixin(PIXI.BaseTexture.prototype);
 
 /**
  * Destroys this base texture

@@ -26,14 +26,13 @@
 
  * @class RenderTexture
  * @extends Texture
+ * @uses EventTarget
  * @constructor
  * @param width {Number} The width of the render texture
  * @param height {Number} The height of the render texture
  */
 PIXI.RenderTexture = function(width, height, renderer)
 {
-    PIXI.EventTarget.call( this );
-
     /**
      * The with of the render texture
      *
@@ -97,6 +96,8 @@ PIXI.RenderTexture = function(width, height, renderer)
 
 PIXI.RenderTexture.prototype = Object.create(PIXI.Texture.prototype);
 PIXI.RenderTexture.prototype.constructor = PIXI.RenderTexture;
+
+PIXI.EventTarget.mixin(PIXI.RenderTexture.prototype);
 
 PIXI.RenderTexture.prototype.resize = function(width, height)
 {

@@ -23,7 +23,6 @@ PIXI.SpriteSheetLoader = function (url, crossorigin) {
      * http://www.codeandweb.com/texturepacker
      * make sure to set the format as 'JSON'
      */
-    PIXI.EventTarget.call(this);
 
     /**
      * The url of the bitmap font data
@@ -69,6 +68,8 @@ PIXI.SpriteSheetLoader = function (url, crossorigin) {
 
 // constructor
 PIXI.SpriteSheetLoader.prototype.constructor = PIXI.SpriteSheetLoader;
+
+PIXI.EventTarget.mixin(PIXI.SpriteSheetLoader.prototype);
 
 /**
  * This will begin loading the JSON file

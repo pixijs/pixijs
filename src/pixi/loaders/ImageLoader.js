@@ -15,8 +15,6 @@
  */
 PIXI.ImageLoader = function(url, crossorigin)
 {
-    PIXI.EventTarget.call(this);
-
     /**
      * The texture being loaded
      *
@@ -35,6 +33,8 @@ PIXI.ImageLoader = function(url, crossorigin)
 
 // constructor
 PIXI.ImageLoader.prototype.constructor = PIXI.ImageLoader;
+
+PIXI.EventTarget.mixin(PIXI.ImageLoader.prototype);
 
 /**
  * Loads image or takes it from cache

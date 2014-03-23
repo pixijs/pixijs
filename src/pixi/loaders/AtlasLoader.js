@@ -7,14 +7,13 @@
  * When loaded this class will dispatch a 'loaded' event
  * If loading fails this class will dispatch an 'error' event
  * @class AtlasLoader
- * @extends EventTarget
+ * @uses EventTarget
  * @constructor
  * @param {String} url the url of the JSON file
  * @param {Boolean} crossorigin
  */
 
 PIXI.AtlasLoader = function (url, crossorigin) {
-    PIXI.EventTarget.call(this);
     this.url = url;
     this.baseUrl = url.replace(/[^\/]*$/, '');
     this.crossorigin = crossorigin;
@@ -25,6 +24,7 @@ PIXI.AtlasLoader = function (url, crossorigin) {
 // constructor
 PIXI.AtlasLoader.constructor = PIXI.AtlasLoader;
 
+PIXI.EventTarget.mixin(PIXI.AtlasLoader.prototype);
 
  /**
  * Starts loading the JSON file

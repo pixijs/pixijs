@@ -5,13 +5,13 @@ describe('pixi/utils/EventTarget', function () {
     var EventTarget = PIXI.EventTarget;
 
     it('Module exists', function () {
-        expect(EventTarget).to.be.a('function');
+        expect(EventTarget).to.be.an('object');
     });
 
     it('Confirm new instance', function () {
         var obj = {};
 
-        EventTarget.call(obj);
+        EventTarget.mixin(obj);
         pixi_utils_EventTarget_like(obj);
     });
 
@@ -19,7 +19,7 @@ describe('pixi/utils/EventTarget', function () {
         var myData = {},
             obj = {};
 
-        EventTarget.call(obj);
+        EventTarget.mixin(obj);
 
         obj.on('myevent', function (event) {
             expect(event).to.be.an.instanceOf(PIXI.Event);
@@ -44,7 +44,7 @@ describe('pixi/utils/EventTarget', function () {
         var called = 0,
             obj = {};
 
-        EventTarget.call(obj);
+        EventTarget.mixin(obj);
 
         obj.once('myevent', function() { called++; });
 
@@ -60,7 +60,7 @@ describe('pixi/utils/EventTarget', function () {
     it('simple off case works', function (done) {
         var obj = {};
 
-        EventTarget.call(obj);
+        EventTarget.mixin(obj);
 
         function onMyEvent() {
             done(new Error('Event listener should not have been called'));
@@ -78,8 +78,8 @@ describe('pixi/utils/EventTarget', function () {
             pobj = {},
             obj = { parent: pobj };
 
-        EventTarget.call(pobj);
-        EventTarget.call(obj);
+        EventTarget.mixin(pobj);
+        EventTarget.mixin(obj);
 
         pobj.on('myevent', function () {
             done();
@@ -93,8 +93,8 @@ describe('pixi/utils/EventTarget', function () {
             pobj = {},
             obj = { parent: pobj };
 
-        EventTarget.call(pobj);
-        EventTarget.call(obj);
+        EventTarget.mixin(pobj);
+        EventTarget.mixin(obj);
 
         pobj.on('myevent', function () {
             done(new Error('Event listener should not have been called on the parent element'));
@@ -114,8 +114,8 @@ describe('pixi/utils/EventTarget', function () {
             pobj = {},
             obj = { parent: pobj };
 
-        EventTarget.call(pobj);
-        EventTarget.call(obj);
+        EventTarget.mixin(pobj);
+        EventTarget.mixin(obj);
 
         pobj.on('myevent', function () {
             done(new Error('Event listener should not have been called on the parent'));
@@ -138,7 +138,7 @@ describe('pixi/utils/EventTarget', function () {
         var called = 0,
             obj = {};
 
-        EventTarget.call(obj);
+        EventTarget.mixin(obj);
 
         function onMyEvent() {
             called++;
@@ -156,7 +156,7 @@ describe('pixi/utils/EventTarget', function () {
         var called = 0,
             obj = {};
 
-        EventTarget.call(obj);
+        EventTarget.mixin(obj);
 
         function onMyEvent() {
             called++;
@@ -175,7 +175,7 @@ describe('pixi/utils/EventTarget', function () {
         var called = 0,
             obj = {};
 
-        EventTarget.call(obj);
+        EventTarget.mixin(obj);
 
         function onMyEvent() {
             called++;

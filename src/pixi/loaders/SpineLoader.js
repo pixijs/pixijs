@@ -23,8 +23,6 @@
  */
 PIXI.SpineLoader = function(url, crossorigin)
 {
-    PIXI.EventTarget.call(this);
-
     /**
      * The url of the bitmap font data
      *
@@ -52,6 +50,8 @@ PIXI.SpineLoader = function(url, crossorigin)
 };
 
 PIXI.SpineLoader.prototype.constructor = PIXI.SpineLoader;
+
+PIXI.EventTarget.mixin(PIXI.SpineLoader.prototype);
 
 /**
  * Loads the JSON data

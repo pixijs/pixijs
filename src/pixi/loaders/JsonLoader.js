@@ -14,8 +14,6 @@
  * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
  */
 PIXI.JsonLoader = function (url, crossorigin) {
-    PIXI.EventTarget.call(this);
-
     /**
      * The url of the bitmap font data
      *
@@ -54,6 +52,8 @@ PIXI.JsonLoader = function (url, crossorigin) {
 
 // constructor
 PIXI.JsonLoader.prototype.constructor = PIXI.JsonLoader;
+
+PIXI.EventTarget.mixin(PIXI.JsonLoader.prototype);
 
 /**
  * Loads the JSON data

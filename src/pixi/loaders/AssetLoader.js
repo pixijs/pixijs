@@ -20,8 +20,6 @@
  */
 PIXI.AssetLoader = function(assetURLs, crossorigin)
 {
-    PIXI.EventTarget.call(this);
-
     /**
      * The array of asset URLs that are going to be loaded
      *
@@ -56,6 +54,8 @@ PIXI.AssetLoader = function(assetURLs, crossorigin)
         'fnt':  PIXI.BitmapFontLoader
     };
 };
+
+PIXI.EventTarget.mixin(PIXI.AssetLoader.prototype);
 
 /**
  * Fired when an item has loaded
