@@ -1,0 +1,11 @@
+/**
+ * @license
+ * <%= package.name %> - v<%= package.version %>
+ * Copyright (c) 2012-2014, Mat Groves
+ * <%= package.homepage %>
+ *
+ * Compiled: <%= grunt.template.today("yyyy-mm-dd") %>
+ *
+ * <%= package.name %> is licensed under the <%= package.license %> License.
+ * <%= package.licenseUrl %>
+ */

@@ -41,6 +41,7 @@
         "karma-firefox-launcher": "~0.1",
         "karma-mocha": "~0.1",
         "karma-spec-reporter": "~0.0.6",
-        "grunt-contrib-watch": "~0.5.3"
+        "grunt-contrib-watch": "~0.5.3",
+        "load-grunt-config": "^0.7.2"
     }
 }

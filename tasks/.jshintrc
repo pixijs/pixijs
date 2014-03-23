@@ -1,0 +1,23 @@
+{
+    "node" : true,
+    "browser": false,
+    "boss" : true,
+    "curly": true,
+    "debug": false,
+    "devel": false,
+    "eqeqeq": true,
+    "eqnull": true,
+    "forin": false,
+    "immed": false,
+    "laxbreak": false,
+    "newcap": true,
+    "noarg": true,
+    "noempty": true,
+    "nonew": true,
+    "plusplus": false,
+    "strict": false,
+    "sub": true,
+    "trailing": true,
+    "undef": true,
+    "white": false
+}
