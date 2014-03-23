@@ -195,16 +195,16 @@ PIXI.InteractionManager.prototype.setTargetDomElement = function(domElement)
 
     this.interactionDOMElement = domElement;
 
-    domElement.on('mousemove',  this.onMouseMove, true);
-    domElement.on('mousedown',  this.onMouseDown, true);
-    domElement.on('mouseout',   this.onMouseOut, true);
+    domElement.addEventListener('mousemove',  this.onMouseMove, true);
+    domElement.addEventListener('mousedown',  this.onMouseDown, true);
+    domElement.addEventListener('mouseout',   this.onMouseOut, true);
 
     // aint no multi touch just yet!
-    domElement.on('touchstart', this.onTouchStart, true);
-    domElement.on('touchend', this.onTouchEnd, true);
-    domElement.on('touchmove', this.onTouchMove, true);
+    domElement.addEventListener('touchstart', this.onTouchStart, true);
+    domElement.addEventListener('touchend', this.onTouchEnd, true);
+    domElement.addEventListener('touchmove', this.onTouchMove, true);
 
-    window.on('mouseup',  this.onMouseUp, true);
+    window.addEventListener('mouseup',  this.onMouseUp, true);
 };
 
 

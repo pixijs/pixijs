@@ -79,7 +79,7 @@ PIXI.SpriteSheetLoader.prototype.load = function () {
     var scope = this;
     var jsonLoader = new PIXI.JsonLoader(this.url, this.crossorigin);
     jsonLoader.on('loaded', function (event) {
-        scope.json = event.content.json;
+        scope.json = event.data.content.json;
         scope.onLoaded();
     });
     jsonLoader.load();

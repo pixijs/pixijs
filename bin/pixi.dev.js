@@ -1690,7 +1690,7 @@ PIXI.Sprite = function(texture)
     else
     {
         this.onTextureUpdateBind = this.onTextureUpdate.bind(this);
-        this.texture.addEventListener( 'update', this.onTextureUpdateBind );
+        this.texture.on( 'update', this.onTextureUpdateBind );
     }
 
     this.renderable = true;
@@ -3280,18 +3280,18 @@ PIXI.InteractionManager.prototype.removeEvents = function()
     this.interactionDOMElement.style['-ms-content-zooming'] = '';
     this.interactionDOMElement.style['-ms-touch-action'] = '';
 
-    this.interactionDOMElement.removeEventListener('mousemove',  this.onMouseMove, true);
-    this.interactionDOMElement.removeEventListener('mousedown',  this.onMouseDown, true);
-    this.interactionDOMElement.removeEventListener('mouseout',   this.onMouseOut, true);
+    this.interactionDOMElement.off('mousemove',  this.onMouseMove, true);
+    this.interactionDOMElement.off('mousedown',  this.onMouseDown, true);
+    this.interactionDOMElement.off('mouseout',   this.onMouseOut, true);
 
     // aint no multi touch just yet!
-    this.interactionDOMElement.removeEventListener('touchstart', this.onTouchStart, true);
-    this.interactionDOMElement.removeEventListener('touchend', this.onTouchEnd, true);
-    this.interactionDOMElement.removeEventListener('touchmove', this.onTouchMove, true);
+    this.interactionDOMElement.off('touchstart', this.onTouchStart, true);
+    this.interactionDOMElement.off('touchend', this.onTouchEnd, true);
+    this.interactionDOMElement.off('touchmove', this.onTouchMove, true);
 
     this.interactionDOMElement = null;
 
-    window.removeEventListener('mouseup',  this.onMouseUp, true);
+    window.off('mouseup',  this.onMouseUp, true);
 };
 
 /**
@@ -4115,15 +4115,16 @@ PIXI.getNextPowerOfTwo = function(number)
 
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
- */
- 
-/**
- * https://github.com/mrdoob/eventtarget.js/
- * THankS mr DOob!
+ * @author Chad Engler https://github.com/englercj @Rolnaaba
  */
 
 /**
- * Adds event emitter functionality to a class
+ * Originally based on https://github.com/mrdoob/eventtarget.js/ from mr DOob.
+ * Currently takes inspiration from the nodejs EventEmitter, and EventEmitter3
+ */
+
+/**
+ * Mixins event emitter functionality to a class
  *
  * @class EventTarget
  * @example
@@ -4132,93 +4133,154 @@ PIXI.getNextPowerOfTwo = function(number)
  *      }
  *
  *      var em = new MyEmitter();
- *      em.emit({ type: 'eventName', data: 'some data' });
+ *      em.emit('eventName', 'some data', 'some moar data', {}, null, ...);
  */
-PIXI.EventTarget = function () {
+PIXI.EventTarget = function() {
+    this._listeners = this._listeners || {};
 
     /**
-     * Holds all the listeners
+     * Return a list of assigned event listeners.
      *
-     * @property listeners
-     * @type Object
+     * @param eventName {String} The events that should be listed.
+     * @returns {Array}
+     * @api public
      */
-    var listeners = {};
-
-    /**
-     * Adds a listener for a specific event
-     *
-     * @method addEventListener
-     * @param type {string} A string representing the event type to listen for.
-     * @param listener {function} The callback function that will be fired when the event occurs
-     */
-    this.addEventListener = this.on = function ( type, listener ) {
-
-
-        if ( listeners[ type ] === undefined ) {
-
-            listeners[ type ] = [];
-
-        }
-
-        if ( listeners[ type ].indexOf( listener ) === - 1 ) {
-
-            listeners[ type ].push( listener );
-        }
-
+    this.listeners = function listeners(eventName) {
+        return Array.apply(this, this._listeners[eventName] || []);
     };
 
     /**
-     * Fires the event, ie pretends that the event has happened
+     * Emit an event to all registered event listeners.
      *
-     * @method dispatchEvent
-     * @param event {Event} the event object
+     * @param eventName {String} The name of the event.
+     * @returns {Boolean} Indication if we've emitted an event.
+     * @api public
      */
-    this.dispatchEvent = this.emit = function ( event ) {
+    this.emit = function emit(eventName, data) {
+        if(!data || data.__isEventObject !== true)
+            data = new PIXI.Event(this, eventName, data);
 
-        if ( !listeners[ event.type ] || !listeners[ event.type ].length ) {
+        if(this._listeners && this._listeners[eventName]) {
+            var listeners = this._listeners[eventName],
+                length = listeners.length,
+                fn = listeners[0],
+                i;
 
-            return;
+            for(i = 0; i < length; fn = listeners[++i]) {
+                //call the event listener
+                fn.call(this, data);
 
+                //remove the listener if this is a "once" event
+                if(fn.__isOnce)
+                    this.off(eventName, fn);
+
+                //if "stopImmediatePropagation" is called, stop calling all events
+                if(data.stoppedImmediate)
+                    return;
+            }
+
+            //if "stopPropagation" is called then don't bubble the event
+            if(data.stopped)
+                return;
         }
 
-        for(var i = 0, l = listeners[ event.type ].length; i < l; i++) {
-
-            listeners[ event.type ][ i ]( event );
-
+        if(this.parent && this.parent.emit) {
+            this.parent.emit.call(this.parent, eventName, data);
         }
 
+        return true;
     };
 
     /**
-     * Removes the specified listener that was assigned to the specified event type
+     * Register a new EventListener for the given event.
      *
-     * @method removeEventListener
-     * @param type {string} A string representing the event type which will have its listener removed
-     * @param listener {function} The callback function that was be fired when the event occured
+     * @param eventName {String} Name of the event.
+     * @param callback {Functon} fn Callback function.
+     * @api public
      */
-    this.removeEventListener = this.off = function ( type, listener ) {
+    this.on = function on(eventName, fn) {
+        if(!this._listeners[eventName])
+            this._listeners[eventName] = [];
 
-        var index = listeners[ type ].indexOf( listener );
+        this._listeners[eventName].push(fn);
 
-        if ( index !== - 1 ) {
-
-            listeners[ type ].splice( index, 1 );
-
-        }
-
+        return this;
     };
 
     /**
-     * Removes all the listeners that were active for the specified event type
+     * Add an EventListener that's only called once.
      *
-     * @method removeAllEventListeners
-     * @param type {string} A string representing the event type which will have all its listeners removed
+     * @param eventName {String} Name of the event.
+     * @param callback {Function} Callback function.
+     * @api public
      */
-	this.removeAllEventListeners = function( type ) {
-		var a = listeners[type];
-		if (a)
-			a.length = 0;
-	};
+    this.once = function once(eventName, fn) {
+        fn.__isOnce = true;
+        return this.on(eventName, fn);
+    };
+
+    /**
+     * Remove event listeners.
+     *
+     * @param eventName {String} The event we want to remove.
+     * @param callback {Function} The listener that we need to find.
+     * @api public
+     */
+    this.off = function off(eventName, fn) {
+        if(!this._listeners[eventName])
+            return this;
+
+        var index = this._listeners[eventName].indexOf(fn);
+
+        if(index !== -1) {
+            this._listeners[eventName].splice(index, 1);
+        }
+
+        return this;
+    };
+
+    /**
+     * Remove all listeners or only the listeners for the specified event.
+     *
+     * @param eventName {String} The event want to remove all listeners for.
+     * @api public
+     */
+    this.removeAllListeners = function removeAllListeners(eventName) {
+        if(!this._listeners[eventName])
+            return this;
+
+        this._listeners[eventName].length = 0;
+
+        return this;
+    };
+
+    /**
+     * Alias methods names because people roll like that.
+     */
+    this.removeEventListener = this.off;
+    this.addEventListener = this.on;
+    this.dispatchEvent = this.emit;
+};
+
+PIXI.Event = function(target, name, data) {
+    this.__isEventObject = true;
+
+    this.stopped = false;
+    this.stoppedImmediate = false;
+
+    this.target = target;
+    this.type = name;
+    this.data = data;
+
+    this.timeStamp = Date.now();
+};
+
+PIXI.Event.prototype.stopPropagation = function() {
+    this.stopped = true;
+};
+
+PIXI.Event.prototype.stopImmediatePropagation = function() {
+    this.stoppedImmediate = true;
 };
 
 /**
@@ -6246,8 +6308,8 @@ PIXI.WebGLRenderer.prototype.destroy = function()
     // deal with losing context..
     
     // remove listeners
-    this.view.removeEventListener('webglcontextlost', this.contextLost);
-    this.view.removeEventListener('webglcontextrestored', this.contextRestoredLost);
+    this.view.off('webglcontextlost', this.contextLost);
+    this.view.off('webglcontextrestored', this.contextRestoredLost);
 
     PIXI.glContexts[this.glContextId] = null;
 
@@ -9558,7 +9620,7 @@ PIXI.Strip = function(texture, width, height)
     else
     {
         this.onTextureUpdateBind = this.onTextureUpdate.bind(this);
-        this.texture.addEventListener( 'update', this.onTextureUpdateBind );
+        this.texture.on( 'update', this.onTextureUpdateBind );
     }
 
     this.renderable = true;
@@ -11828,7 +11890,7 @@ PIXI.BaseTexture = function(source, scaleMode)
 
             // add it to somewhere...
             PIXI.texturesToUpdate.push(scope);
-            scope.dispatchEvent( { type: 'loaded', content: scope } );
+            scope.emit('loaded', { content: scope });
         };
     }
 
@@ -11995,7 +12057,7 @@ PIXI.Texture = function(baseTexture, frame)
     else
     {
         var scope = this;
-        baseTexture.addEventListener('loaded', function(){ scope.onBaseTextureLoaded(); });
+        baseTexture.on('loaded', function(){ scope.onBaseTextureLoaded(); });
     }
 };
 
@@ -12011,13 +12073,13 @@ PIXI.Texture.prototype.constructor = PIXI.Texture;
 PIXI.Texture.prototype.onBaseTextureLoaded = function()
 {
     var baseTexture = this.baseTexture;
-    baseTexture.removeEventListener( 'loaded', this.onLoaded );
+    baseTexture.off( 'loaded', this.onLoaded );
 
     if(this.noFrame)this.frame = new PIXI.Rectangle(0,0, baseTexture.width, baseTexture.height);
     
     this.setFrame(this.frame);
 
-    this.scope.dispatchEvent( { type: 'update', content: this } );
+    this.scope.emit('update', { content: this });
 };
 
 /**
@@ -12053,7 +12115,7 @@ PIXI.Texture.prototype.setFrame = function(frame)
     PIXI.Texture.frameUpdates.push(this);
 
 
-    //this.dispatchEvent( { type: 'update', content: this } );
+    //this.emit('update', { content: this });
 };
 
 PIXI.Texture.prototype._updateWebGLuvs = function()
@@ -12517,7 +12579,7 @@ PIXI.AssetLoader.prototype.load = function()
     var scope = this;
 
     function onLoad(evt) {
-        scope.onAssetLoaded(evt.content);
+        scope.onAssetLoaded(evt.data.content);
     }
 
     this.loadCount = this.assetURLs.length;
@@ -12538,7 +12600,7 @@ PIXI.AssetLoader.prototype.load = function()
 
         var loader = new Constructor(fileName, this.crossorigin);
 
-        loader.addEventListener('loaded', onLoad);
+        loader.on('loaded', onLoad);
         loader.load();
     }
 };
@@ -12552,12 +12614,12 @@ PIXI.AssetLoader.prototype.load = function()
 PIXI.AssetLoader.prototype.onAssetLoaded = function(loader)
 {
     this.loadCount--;
-    this.dispatchEvent({ type: 'onProgress', content: this, loader: loader });
+    this.emit('onProgress', { content: this, loader: loader });
     if (this.onProgress) this.onProgress(loader);
 
     if (!this.loadCount)
     {
-        this.dispatchEvent({type: 'onComplete', content: this});
+        this.emit('onComplete', { content: this });
         if(this.onComplete) this.onComplete();
     }
 };
@@ -12656,7 +12718,7 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
                 var frameData = this.json.frames;
 
                 this.texture = image.texture.baseTexture;
-                image.addEventListener('loaded', function() {
+                image.on('loaded', function() {
                     scope.onLoaded();
                 });
 
@@ -12714,8 +12776,7 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
  */
 PIXI.JsonLoader.prototype.onLoaded = function () {
     this.loaded = true;
-    this.dispatchEvent({
-        type: 'loaded',
+    this.emit('loaded', {
         content: this
     });
 };
@@ -12727,8 +12788,7 @@ PIXI.JsonLoader.prototype.onLoaded = function () {
  * @private
  */
 PIXI.JsonLoader.prototype.onError = function () {
-    this.dispatchEvent({
-        type: 'error',
+    this.emit('error', {
         content: this
     });
 };
@@ -12879,7 +12939,7 @@ PIXI.AtlasLoader.prototype.onAtlasLoaded = function () {
 
                 this.currentImageId = 0;
                 for (j = 0; j < this.images.length; j++) {
-                    this.images[j].addEventListener('loaded', selfOnLoaded);
+                    this.images[j].on('loaded', selfOnLoaded);
                 }
                 this.images[this.currentImageId].load();
 
@@ -12904,10 +12964,7 @@ PIXI.AtlasLoader.prototype.onLoaded = function () {
         this.images[this.currentImageId].load();
     } else {
         this.loaded = true;
-        this.dispatchEvent({
-            type: 'loaded',
-            content: this
-        });
+        this.emit('loaded', { content: this });
     }
 };
 
@@ -12917,10 +12974,7 @@ PIXI.AtlasLoader.prototype.onLoaded = function () {
  * @private
  */
 PIXI.AtlasLoader.prototype.onError = function () {
-    this.dispatchEvent({
-        type: 'error',
-        content: this
-    });
+    this.emit('error', { content: this });
 };
 
 /**
@@ -13003,8 +13057,8 @@ PIXI.SpriteSheetLoader.prototype.constructor = PIXI.SpriteSheetLoader;
 PIXI.SpriteSheetLoader.prototype.load = function () {
     var scope = this;
     var jsonLoader = new PIXI.JsonLoader(this.url, this.crossorigin);
-    jsonLoader.addEventListener('loaded', function (event) {
-        scope.json = event.content.json;
+    jsonLoader.on('loaded', function (event) {
+        scope.json = event.data.content.json;
         scope.onLoaded();
     });
     jsonLoader.load();
@@ -13017,8 +13071,7 @@ PIXI.SpriteSheetLoader.prototype.load = function () {
  * @private
  */
 PIXI.SpriteSheetLoader.prototype.onLoaded = function () {
-    this.dispatchEvent({
-        type: 'loaded',
+    this.emit('loaded', {
         content: this
     });
 };
@@ -13071,7 +13124,7 @@ PIXI.ImageLoader.prototype.load = function()
     if(!this.texture.baseTexture.hasLoaded)
     {
         var scope = this;
-        this.texture.baseTexture.addEventListener('loaded', function()
+        this.texture.baseTexture.on('loaded', function()
         {
             scope.onLoaded();
         });
@@ -13090,7 +13143,7 @@ PIXI.ImageLoader.prototype.load = function()
  */
 PIXI.ImageLoader.prototype.onLoaded = function()
 {
-    this.dispatchEvent({type: 'loaded', content: this});
+    this.emit('loaded', { content: this });
 };
 
 /**
@@ -13128,7 +13181,7 @@ PIXI.ImageLoader.prototype.loadFramedSpriteSheet = function(frameWidth, frameHei
     if(!this.texture.baseTexture.hasLoaded)
     {
         var scope = this;
-        this.texture.baseTexture.addEventListener('loaded', function() {
+        this.texture.baseTexture.on('loaded', function() {
             scope.onLoaded();
         });
     }
@@ -13294,7 +13347,7 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
             PIXI.BitmapText.fonts[data.font] = data;
 
             var scope = this;
-            image.addEventListener('loaded', function() {
+            image.on('loaded', function() {
                 scope.onLoaded();
             });
             image.load();
@@ -13310,7 +13363,7 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
  */
 PIXI.BitmapFontLoader.prototype.onLoaded = function()
 {
-    this.dispatchEvent({type: 'loaded', content: this});
+    this.emit('loaded', { content: this });
 };
 
 /**
@@ -13377,8 +13430,8 @@ PIXI.SpineLoader.prototype.load = function () {
 
     var scope = this;
     var jsonLoader = new PIXI.JsonLoader(this.url, this.crossorigin);
-    jsonLoader.addEventListener("loaded", function (event) {
-        scope.json = event.content.json;
+    jsonLoader.on('loaded', function (event) {
+        scope.json = event.data.content.json;
         scope.onLoaded();
     });
     jsonLoader.load();
@@ -13392,7 +13445,7 @@ PIXI.SpineLoader.prototype.load = function () {
  */
 PIXI.SpineLoader.prototype.onLoaded = function () {
     this.loaded = true;
-    this.dispatchEvent({type: "loaded", content: this});
+    this.emit('loaded', { content: this });
 };
 
 
