@@ -21,8 +21,6 @@
  *      em.emit('eventName', 'some data', 'some moar data', {}, null, ...);
  */
 PIXI.EventTarget = function() {
-    this._listeners = this._listeners || {};
-
     /**
      * Return a list of assigned event listeners.
      *
@@ -84,6 +82,9 @@ PIXI.EventTarget = function() {
      * @api public
      */
     this.on = function on(eventName, fn) {
+        if(!this._listeners)
+            this._listeners = {};
+
         if(!this._listeners[eventName])
             this._listeners[eventName] = [];
 
