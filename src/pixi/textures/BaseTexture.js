@@ -92,7 +92,7 @@ PIXI.BaseTexture = function(source, scaleMode)
 
             // add it to somewhere...
             PIXI.texturesToUpdate.push(scope);
-            scope.dispatchEvent( { type: 'loaded', content: scope } );
+            scope.emit('loaded', { content: scope });
         };
     }
 

@@ -145,7 +145,7 @@ PIXI.AtlasLoader.prototype.onAtlasLoaded = function () {
 
                 this.currentImageId = 0;
                 for (j = 0; j < this.images.length; j++) {
-                    this.images[j].addEventListener('loaded', selfOnLoaded);
+                    this.images[j].on('loaded', selfOnLoaded);
                 }
                 this.images[this.currentImageId].load();
 
@@ -170,10 +170,7 @@ PIXI.AtlasLoader.prototype.onLoaded = function () {
         this.images[this.currentImageId].load();
     } else {
         this.loaded = true;
-        this.dispatchEvent({
-            type: 'loaded',
-            content: this
-        });
+        this.emit('loaded', { content: this });
     }
 };
 
@@ -183,8 +180,5 @@ PIXI.AtlasLoader.prototype.onLoaded = function () {
  * @private
  */
 PIXI.AtlasLoader.prototype.onError = function () {
-    this.dispatchEvent({
-        type: 'error',
-        content: this
-    });
+    this.emit('error', { content: this });
 };

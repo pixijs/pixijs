@@ -134,7 +134,7 @@ PIXI.AssetLoader.prototype.load = function()
 
         var loader = new Constructor(fileName, this.crossorigin);
 
-        loader.addEventListener('loaded', onLoad);
+        loader.on('loaded', onLoad);
         loader.load();
     }
 };
@@ -148,12 +148,12 @@ PIXI.AssetLoader.prototype.load = function()
 PIXI.AssetLoader.prototype.onAssetLoaded = function(loader)
 {
     this.loadCount--;
-    this.dispatchEvent({ type: 'onProgress', content: this, loader: loader });
+    this.emit('onProgress', { content: this, loader: loader });
     if (this.onProgress) this.onProgress(loader);
 
     if (!this.loadCount)
     {
-        this.dispatchEvent({type: 'onComplete', content: this});
+        this.emit('onComplete', { content: this });
         if(this.onComplete) this.onComplete();
     }
 };

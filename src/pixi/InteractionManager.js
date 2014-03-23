@@ -195,16 +195,16 @@ PIXI.InteractionManager.prototype.setTargetDomElement = function(domElement)
 
     this.interactionDOMElement = domElement;
 
-    domElement.addEventListener('mousemove',  this.onMouseMove, true);
-    domElement.addEventListener('mousedown',  this.onMouseDown, true);
-    domElement.addEventListener('mouseout',   this.onMouseOut, true);
+    domElement.on('mousemove',  this.onMouseMove, true);
+    domElement.on('mousedown',  this.onMouseDown, true);
+    domElement.on('mouseout',   this.onMouseOut, true);
 
     // aint no multi touch just yet!
-    domElement.addEventListener('touchstart', this.onTouchStart, true);
-    domElement.addEventListener('touchend', this.onTouchEnd, true);
-    domElement.addEventListener('touchmove', this.onTouchMove, true);
+    domElement.on('touchstart', this.onTouchStart, true);
+    domElement.on('touchend', this.onTouchEnd, true);
+    domElement.on('touchmove', this.onTouchMove, true);
 
-    window.addEventListener('mouseup',  this.onMouseUp, true);
+    window.on('mouseup',  this.onMouseUp, true);
 };
 
 
@@ -215,18 +215,18 @@ PIXI.InteractionManager.prototype.removeEvents = function()
     this.interactionDOMElement.style['-ms-content-zooming'] = '';
     this.interactionDOMElement.style['-ms-touch-action'] = '';
 
-    this.interactionDOMElement.removeEventListener('mousemove',  this.onMouseMove, true);
-    this.interactionDOMElement.removeEventListener('mousedown',  this.onMouseDown, true);
-    this.interactionDOMElement.removeEventListener('mouseout',   this.onMouseOut, true);
+    this.interactionDOMElement.off('mousemove',  this.onMouseMove, true);
+    this.interactionDOMElement.off('mousedown',  this.onMouseDown, true);
+    this.interactionDOMElement.off('mouseout',   this.onMouseOut, true);
 
     // aint no multi touch just yet!
-    this.interactionDOMElement.removeEventListener('touchstart', this.onTouchStart, true);
-    this.interactionDOMElement.removeEventListener('touchend', this.onTouchEnd, true);
-    this.interactionDOMElement.removeEventListener('touchmove', this.onTouchMove, true);
+    this.interactionDOMElement.off('touchstart', this.onTouchStart, true);
+    this.interactionDOMElement.off('touchend', this.onTouchEnd, true);
+    this.interactionDOMElement.off('touchmove', this.onTouchMove, true);
 
     this.interactionDOMElement = null;
 
-    window.removeEventListener('mouseup',  this.onMouseUp, true);
+    window.off('mouseup',  this.onMouseUp, true);
 };
 
 /**

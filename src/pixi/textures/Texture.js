@@ -67,7 +67,7 @@ PIXI.Texture = function(baseTexture, frame)
     else
     {
         var scope = this;
-        baseTexture.addEventListener('loaded', function(){ scope.onBaseTextureLoaded(); });
+        baseTexture.on('loaded', function(){ scope.onBaseTextureLoaded(); });
     }
 };
 
@@ -83,13 +83,13 @@ PIXI.Texture.prototype.constructor = PIXI.Texture;
 PIXI.Texture.prototype.onBaseTextureLoaded = function()
 {
     var baseTexture = this.baseTexture;
-    baseTexture.removeEventListener( 'loaded', this.onLoaded );
+    baseTexture.off( 'loaded', this.onLoaded );
 
     if(this.noFrame)this.frame = new PIXI.Rectangle(0,0, baseTexture.width, baseTexture.height);
     
     this.setFrame(this.frame);
 
-    this.scope.dispatchEvent( { type: 'update', content: this } );
+    this.scope.emit('update', { content: this });
 };
 
 /**
@@ -125,7 +125,7 @@ PIXI.Texture.prototype.setFrame = function(frame)
     PIXI.Texture.frameUpdates.push(this);
 
 
-    //this.dispatchEvent( { type: 'update', content: this } );
+    //this.emit('update', { content: this });
 };
 
 PIXI.Texture.prototype._updateWebGLuvs = function()

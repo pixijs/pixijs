@@ -78,7 +78,7 @@ PIXI.SpriteSheetLoader.prototype.constructor = PIXI.SpriteSheetLoader;
 PIXI.SpriteSheetLoader.prototype.load = function () {
     var scope = this;
     var jsonLoader = new PIXI.JsonLoader(this.url, this.crossorigin);
-    jsonLoader.addEventListener('loaded', function (event) {
+    jsonLoader.on('loaded', function (event) {
         scope.json = event.content.json;
         scope.onLoaded();
     });
@@ -92,8 +92,7 @@ PIXI.SpriteSheetLoader.prototype.load = function () {
  * @private
  */
 PIXI.SpriteSheetLoader.prototype.onLoaded = function () {
-    this.dispatchEvent({
-        type: 'loaded',
+    this.emit('loaded', {
         content: this
     });
 };

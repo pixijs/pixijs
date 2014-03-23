@@ -70,7 +70,7 @@ PIXI.Strip = function(texture, width, height)
     else
     {
         this.onTextureUpdateBind = this.onTextureUpdate.bind(this);
-        this.texture.addEventListener( 'update', this.onTextureUpdateBind );
+        this.texture.on( 'update', this.onTextureUpdateBind );
     }
 
     this.renderable = true;

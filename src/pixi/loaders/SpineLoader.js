@@ -62,7 +62,7 @@ PIXI.SpineLoader.prototype.load = function () {
 
     var scope = this;
     var jsonLoader = new PIXI.JsonLoader(this.url, this.crossorigin);
-    jsonLoader.addEventListener("loaded", function (event) {
+    jsonLoader.on("loaded", function (event) {
         scope.json = event.content.json;
         scope.onLoaded();
     });
@@ -77,6 +77,6 @@ PIXI.SpineLoader.prototype.load = function () {
  */
 PIXI.SpineLoader.prototype.onLoaded = function () {
     this.loaded = true;
-    this.dispatchEvent({type: "loaded", content: this});
+    this.emit('loaded', { content: this });
 };
 

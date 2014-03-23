@@ -92,7 +92,7 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
                 var frameData = this.json.frames;
 
                 this.texture = image.texture.baseTexture;
-                image.addEventListener('loaded', function() {
+                image.on('loaded', function() {
                     scope.onLoaded();
                 });
 
@@ -150,8 +150,7 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
  */
 PIXI.JsonLoader.prototype.onLoaded = function () {
     this.loaded = true;
-    this.dispatchEvent({
-        type: 'loaded',
+    this.emit('loaded', {
         content: this
     });
 };
@@ -163,8 +162,7 @@ PIXI.JsonLoader.prototype.onLoaded = function () {
  * @private
  */
 PIXI.JsonLoader.prototype.onError = function () {
-    this.dispatchEvent({
-        type: 'error',
+    this.emit('error', {
         content: this
     });
 };
