@@ -1,5 +1,6 @@
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
+ * - Modified by Tom Slezakowski http://www.tomslezakowski.com @TomSlezakowski (24/03/2014) - Added dropShadowColor.
  */
 
 /**
@@ -20,6 +21,7 @@
  * @param [style.wordWrap=false] {Boolean} Indicates if word wrap should be used
  * @param [style.wordWrapWidth=100] {Number} The width at which text will wrap, it needs wordWrap to be set to true
  * @param [style.dropShadow=false] {Boolean} Set a drop shadow for the text
+ * @param [style.dropShadowColor='#000000'] {String} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
  * @param [style.dropShadowAngle=Math.PI/4] {Number} Set a angle of the drop shadow
  * @param [style.dropShadowDistance=5] {Number} Set a distance of the drop shadow
  */
@@ -66,6 +68,7 @@ PIXI.Text.prototype.constructor = PIXI.Text;
  * @param [style.wordWrap=false] {Boolean} Indicates if word wrap should be used
  * @param [style.wordWrapWidth=100] {Number} The width at which text will wrap
  * @param [style.dropShadow=false] {Boolean} Set a drop shadow for the text
+ * @param [style.dropShadowColor='#000000'] {String} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
  * @param [style.dropShadowAngle=Math.PI/4] {Number} Set a angle of the drop shadow
  * @param [style.dropShadowDistance=5] {Number} Set a distance of the drop shadow
  */
@@ -84,6 +87,7 @@ PIXI.Text.prototype.setStyle = function(style)
     style.dropShadow = style.dropShadow || false;
     style.dropShadowAngle = style.dropShadowAngle || Math.PI / 6;
     style.dropShadowDistance = style.dropShadowDistance || 4;
+    style.dropShadowColor = style.dropShadowColor || 'black';
 
     this.style = style;
     this.dirty = true;
@@ -148,7 +152,7 @@ PIXI.Text.prototype.updateText = function()
 
     if(this.style.dropShadow)
     {
-        this.context.fillStyle = '#000000';
+        this.context.fillStyle = this.style.dropShadowColor;
 
         var xShadowOffset = Math.sin(this.style.dropShadowAngle) * this.style.dropShadowDistance;
         var yShadowOffset = Math.cos(this.style.dropShadowAngle) * this.style.dropShadowDistance;
@@ -179,11 +183,6 @@ PIXI.Text.prototype.updateText = function()
     //set canvas text styles
     this.context.fillStyle = this.style.fill;
     
-
-    
-
-    
-
     //draw lines line by line
     for (i = 0; i < lines.length; i++)
     {
