@@ -130,11 +130,18 @@ PIXI.Text.prototype.updateText = function()
         lineWidths[i] = lineWidth;
         maxLineWidth = Math.max(maxLineWidth, lineWidth);
     }
-    this.canvas.width = maxLineWidth + this.style.strokeThickness;
 
+    var width = maxLineWidth + this.style.strokeThickness;
+    if(this.style.dropShadow)width += this.style.dropShadowDistance;
+
+    this.canvas.width = width;
     //calculate text height
     var lineHeight = this.determineFontHeight('font: ' + this.style.font  + ';') + this.style.strokeThickness;
-    this.canvas.height = lineHeight * lines.length;
+    
+    var height = lineHeight * lines.length;
+    if(this.style.dropShadow)height += this.style.dropShadowDistance;
+
+    this.canvas.height = height;
 
     if(navigator.isCocoonJS) this.context.clearRect(0,0,this.canvas.width,this.canvas.height);
     
