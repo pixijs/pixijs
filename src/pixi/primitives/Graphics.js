@@ -375,6 +375,7 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
             this.dirty =  false;
         }
 
+        this._cachedSprite.alpha = this.alpha;
         PIXI.Sprite.prototype._renderWebGL.call(this._cachedSprite, renderSession);
 
         return;
@@ -628,6 +629,8 @@ PIXI.Graphics.prototype._generateCachedSprite = function()
     this._cachedSprite.buffer.context.translate(-bounds.x,-bounds.y);
     
     PIXI.CanvasGraphics.renderGraphics(this, this._cachedSprite.buffer.context);
+    this._cachedSprite.alpha = this.alpha;
+
    // this._cachedSprite.buffer.context.restore();
 };
 

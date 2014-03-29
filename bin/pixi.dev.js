@@ -4,7 +4,7 @@
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-03-22
+ * Compiled: 2014-03-29
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -2435,6 +2435,7 @@ PIXI.FilterBlock = function()
 
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
+ * - Modified by Tom Slezakowski http://www.tomslezakowski.com @TomSlezakowski (24/03/2014) - Added dropShadowColor.
  */
 
 /**
@@ -2455,6 +2456,7 @@ PIXI.FilterBlock = function()
  * @param [style.wordWrap=false] {Boolean} Indicates if word wrap should be used
  * @param [style.wordWrapWidth=100] {Number} The width at which text will wrap, it needs wordWrap to be set to true
  * @param [style.dropShadow=false] {Boolean} Set a drop shadow for the text
+ * @param [style.dropShadowColor='#000000'] {String} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
  * @param [style.dropShadowAngle=Math.PI/4] {Number} Set a angle of the drop shadow
  * @param [style.dropShadowDistance=5] {Number} Set a distance of the drop shadow
  */
@@ -2501,6 +2503,7 @@ PIXI.Text.prototype.constructor = PIXI.Text;
  * @param [style.wordWrap=false] {Boolean} Indicates if word wrap should be used
  * @param [style.wordWrapWidth=100] {Number} The width at which text will wrap
  * @param [style.dropShadow=false] {Boolean} Set a drop shadow for the text
+ * @param [style.dropShadowColor='#000000'] {String} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
  * @param [style.dropShadowAngle=Math.PI/4] {Number} Set a angle of the drop shadow
  * @param [style.dropShadowDistance=5] {Number} Set a distance of the drop shadow
  */
@@ -2519,6 +2522,7 @@ PIXI.Text.prototype.setStyle = function(style)
     style.dropShadow = style.dropShadow || false;
     style.dropShadowAngle = style.dropShadowAngle || Math.PI / 6;
     style.dropShadowDistance = style.dropShadowDistance || 4;
+    style.dropShadowColor = style.dropShadowColor || 'black';
 
     this.style = style;
     this.dirty = true;
@@ -2565,11 +2569,18 @@ PIXI.Text.prototype.updateText = function()
         lineWidths[i] = lineWidth;
         maxLineWidth = Math.max(maxLineWidth, lineWidth);
     }
-    this.canvas.width = maxLineWidth + this.style.strokeThickness;
 
+    var width = maxLineWidth + this.style.strokeThickness;
+    if(this.style.dropShadow)width += this.style.dropShadowDistance;
+
+    this.canvas.width = width;
     //calculate text height
     var lineHeight = this.determineFontHeight('font: ' + this.style.font  + ';') + this.style.strokeThickness;
-    this.canvas.height = lineHeight * lines.length;
+    
+    var height = lineHeight * lines.length;
+    if(this.style.dropShadow)height += this.style.dropShadowDistance;
+
+    this.canvas.height = height;
 
     if(navigator.isCocoonJS) this.context.clearRect(0,0,this.canvas.width,this.canvas.height);
     
@@ -2583,7 +2594,7 @@ PIXI.Text.prototype.updateText = function()
 
     if(this.style.dropShadow)
     {
-        this.context.fillStyle = '#000000';
+        this.context.fillStyle = this.style.dropShadowColor;
 
         var xShadowOffset = Math.sin(this.style.dropShadowAngle) * this.style.dropShadowDistance;
         var yShadowOffset = Math.cos(this.style.dropShadowAngle) * this.style.dropShadowDistance;
@@ -2614,11 +2625,6 @@ PIXI.Text.prototype.updateText = function()
     //set canvas text styles
     this.context.fillStyle = this.style.fill;
     
-
-    
-
-    
-
     //draw lines line by line
     for (i = 0; i < lines.length; i++)
     {
@@ -9214,6 +9220,7 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
             this.dirty =  false;
         }
 
+        this._cachedSprite.alpha = this.alpha;
         PIXI.Sprite.prototype._renderWebGL.call(this._cachedSprite, renderSession);
 
         return;
@@ -9467,6 +9474,8 @@ PIXI.Graphics.prototype._generateCachedSprite = function()
     this._cachedSprite.buffer.context.translate(-bounds.x,-bounds.y);
     
     PIXI.CanvasGraphics.renderGraphics(this, this._cachedSprite.buffer.context);
+    this._cachedSprite.alpha = this.alpha;
+
    // this._cachedSprite.buffer.context.restore();
 };
 
@@ -12625,15 +12634,40 @@ PIXI.JsonLoader.prototype.constructor = PIXI.JsonLoader;
  * @method load
  */
 PIXI.JsonLoader.prototype.load = function () {
-    this.ajaxRequest = new PIXI.AjaxRequest(this.crossorigin);
+
+
+    if(window.XDomainRequest)
+    {
+        this.ajaxRequest = new window.XDomainRequest();
+    }
+    else if (window.XMLHttpRequest)
+    {
+        this.ajaxRequest = new window.XMLHttpRequest();
+    }
+    else
+    {
+        this.ajaxRequest = new window.ActiveXObject('Microsoft.XMLHTTP');
+    }
+
+    
+
+
+   // this.ajaxRequest = new PIXI.AjaxRequest(this.crossorigin);
     var scope = this;
-    this.ajaxRequest.onreadystatechange = function () {
+    
+
+    
+
+    this.ajaxRequest.onload = function () {
         scope.onJSONLoaded();
     };
 
-    this.ajaxRequest.open('GET', this.url, true);
-    if (this.ajaxRequest.overrideMimeType) this.ajaxRequest.overrideMimeType('application/json');
-    this.ajaxRequest.send(null);
+   // this.ajaxRequest.open('GET', this.url, true);
+  //  if (this.ajaxRequest.overrideMimeType) this.ajaxRequest.overrideMimeType('application/json');
+  //  this.ajaxRequest.send(null);
+
+    this.ajaxRequest.open('GET',this.url,false);
+    this.ajaxRequest.send();
 };
 
 /**
@@ -12643,67 +12677,67 @@ PIXI.JsonLoader.prototype.load = function () {
  * @private
  */
 PIXI.JsonLoader.prototype.onJSONLoaded = function () {
-    if (this.ajaxRequest.readyState === 4) {
-        if (this.ajaxRequest.status === 200 || window.location.protocol.indexOf('http') === -1) {
-            this.json = JSON.parse(this.ajaxRequest.responseText);
+   // if (this.ajaxRequest.readyState === 4) {
+     //   if (this.ajaxRequest.status === 200 || window.location.protocol.indexOf('http') === -1) {
+    this.json = JSON.parse(this.ajaxRequest.responseText);
 
-            if(this.json.frames)
-            {
-                // sprite sheet
-                var scope = this;
-                var textureUrl = this.baseUrl + this.json.meta.image;
-                var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
-                var frameData = this.json.frames;
+    if(this.json.frames)
+    {
+        // sprite sheet
+        var scope = this;
+        var textureUrl = this.baseUrl + this.json.meta.image;
+        var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
+        var frameData = this.json.frames;
 
-                this.texture = image.texture.baseTexture;
-                image.addEventListener('loaded', function() {
-                    scope.onLoaded();
+        this.texture = image.texture.baseTexture;
+        image.addEventListener('loaded', function() {
+            scope.onLoaded();
+        });
+
+        for (var i in frameData) {
+            var rect = frameData[i].frame;
+            if (rect) {
+                PIXI.TextureCache[i] = new PIXI.Texture(this.texture, {
+                    x: rect.x,
+                    y: rect.y,
+                    width: rect.w,
+                    height: rect.h
                 });
 
-                for (var i in frameData) {
-                    var rect = frameData[i].frame;
-                    if (rect) {
-                        PIXI.TextureCache[i] = new PIXI.Texture(this.texture, {
-                            x: rect.x,
-                            y: rect.y,
-                            width: rect.w,
-                            height: rect.h
-                        });
+                // check to see ifthe sprite ha been trimmed..
+                if (frameData[i].trimmed) {
 
-                        // check to see ifthe sprite ha been trimmed..
-                        if (frameData[i].trimmed) {
+                    var texture =  PIXI.TextureCache[i];
+                    
+                    var actualSize = frameData[i].sourceSize;
+                    var realSize = frameData[i].spriteSourceSize;
 
-                            var texture =  PIXI.TextureCache[i];
-                            
-                            var actualSize = frameData[i].sourceSize;
-                            var realSize = frameData[i].spriteSourceSize;
-
-                            texture.trim = new PIXI.Rectangle(realSize.x, realSize.y, actualSize.w, actualSize.h);
-                        }
-                    }
+                    texture.trim = new PIXI.Rectangle(realSize.x, realSize.y, actualSize.w, actualSize.h);
                 }
-
-                image.load();
-
-            }
-            else if(this.json.bones)
-            {
-                // spine animation
-                var spineJsonParser = new spine.SkeletonJson();
-                var skeletonData = spineJsonParser.readSkeletonData(this.json);
-                PIXI.AnimCache[this.url] = skeletonData;
-                this.onLoaded();
-            }
-            else
-            {
-                this.onLoaded();
             }
         }
-        else
-        {
-            this.onError();
-        }
+
+        image.load();
+
     }
+    else if(this.json.bones)
+    {
+        // spine animation
+        var spineJsonParser = new spine.SkeletonJson();
+        var skeletonData = spineJsonParser.readSkeletonData(this.json);
+        PIXI.AnimCache[this.url] = skeletonData;
+        this.onLoaded();
+    }
+    else
+    {
+        this.onLoaded();
+    }
+     //   }
+      //  else
+        //{
+          //  this.onError();
+       // / }
+   // }
 };
 
 /**
