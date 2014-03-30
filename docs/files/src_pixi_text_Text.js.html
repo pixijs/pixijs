@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.4.3</em>
+            <em>API Docs for: 1.5.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -43,11 +43,15 @@
             
                 <li><a href="../classes/AbstractFilter.html">AbstractFilter</a></li>
             
+                <li><a href="../classes/AjaxRequest.html">AjaxRequest</a></li>
+            
                 <li><a href="../classes/AlphaMaskFilter.html">AlphaMaskFilter</a></li>
             
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
                 <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
+                <li><a href="../classes/autoDetectRenderer.html">autoDetectRenderer</a></li>
             
                 <li><a href="../classes/BaseTexture.html">BaseTexture</a></li>
             
@@ -59,7 +63,11 @@
             
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
+                <li><a href="../classes/CanvasMaskManager.html">CanvasMaskManager</a></li>
+            
                 <li><a href="../classes/CanvasRenderer.html">CanvasRenderer</a></li>
+            
+                <li><a href="../classes/CanvasTinter.html">CanvasTinter</a></li>
             
                 <li><a href="../classes/Circle.html">Circle</a></li>
             
@@ -79,11 +87,17 @@
             
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
+                <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
+            
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
             
                 <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
                 <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
+            
+                <li><a href="../classes/InteractionData.html">InteractionData</a></li>
+            
+                <li><a href="../classes/InteractionManager.html">InteractionManager</a></li>
             
                 <li><a href="../classes/InvertFilter.html">InvertFilter</a></li>
             
@@ -91,29 +105,25 @@
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
+                <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
+            
                 <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
             
-                <li><a href="../classes/PIXI.PixiFastShader.html">PIXI.PixiFastShader</a></li>
+                <li><a href="../classes/PixiFastShader.html">PixiFastShader</a></li>
             
-                <li><a href="../classes/PIXI.PixiShader.html">PIXI.PixiShader</a></li>
+                <li><a href="../classes/PixiShader.html">PixiShader</a></li>
             
                 <li><a href="../classes/Point.html">Point</a></li>
             
                 <li><a href="../classes/Polygon.html">Polygon</a></li>
             
-                <li><a href="../classes/PolyK._convex.html">PolyK._convex</a></li>
+                <li><a href="../classes/PolyK.html">PolyK</a></li>
             
-                <li><a href="../classes/PolyK._PointInTriangle.html">PolyK._PointInTriangle</a></li>
-            
-                <li><a href="../classes/PolyK.AjaxRequest.html">PolyK.AjaxRequest</a></li>
-            
-                <li><a href="../classes/PolyK.InteractionData.html">PolyK.InteractionData</a></li>
-            
-                <li><a href="../classes/PolyK.InteractionManager.html">PolyK.InteractionManager</a></li>
+                <li><a href="../classes/PrimitiveShader.html">PrimitiveShader</a></li>
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
-                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
+                <li><a href="../classes/Rope.html">Rope</a></li>
             
                 <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
             
@@ -121,9 +131,13 @@
             
                 <li><a href="../classes/Sprite.html">Sprite</a></li>
             
+                <li><a href="../classes/SpriteBatch.html">SpriteBatch</a></li>
+            
                 <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
             
                 <li><a href="../classes/Stage.html">Stage</a></li>
+            
+                <li><a href="../classes/Strip.html">Strip</a></li>
             
                 <li><a href="../classes/Text.html">Text</a></li>
             
@@ -133,7 +147,17 @@
             
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
             
+                <li><a href="../classes/WebGLFilterManager.html">WebGLFilterManager</a></li>
+            
+                <li><a href="../classes/WebGLGraphics.html">WebGLGraphics</a></li>
+            
+                <li><a href="../classes/WebGLMaskManager.html">WebGLMaskManager</a></li>
+            
                 <li><a href="../classes/WebGLRenderer.html">WebGLRenderer</a></li>
+            
+                <li><a href="../classes/WebGLShaderManager.html">WebGLShaderManager</a></li>
+            
+                <li><a href="../classes/WebGLSpriteBatch.html">WebGLSpriteBatch</a></li>
             
             </ul>
 
@@ -182,28 +206,48 @@
     <pre class="code prettyprint linenums">
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
+ * - Modified by Tom Slezakowski http://www.tomslezakowski.com @TomSlezakowski (24/03/2014) - Added dropShadowColor.
  */
 
 /**
- * A Text Object will create a line(s) of text. To split a line you can use &#x27;\n&#x27;
+ * A Text Object will create a line(s) of text. To split a line you can use &#x27;\n&#x27; 
+ * or add a wordWrap property set to true and and wordWrapWidth property with a value
+ * in the style object
  *
  * @class Text
  * @extends Sprite
  * @constructor
  * @param text {String} The copy that you would like the text to display
  * @param [style] {Object} The style parameters
- * @param [style.font] {String} default &#x27;bold 20pt Arial&#x27; The style and size of the font
- * @param [style.fill=&#x27;black&#x27;] {Object} A canvas fillstyle that will be used on the text eg &#x27;red&#x27;, &#x27;#00FF00&#x27;
+ * @param [style.font] {String} default &#x27;bold 20px Arial&#x27; The style and size of the font
+ * @param [style.fill=&#x27;black&#x27;] {String|Number} A canvas fillstyle that will be used on the text e.g &#x27;red&#x27;, &#x27;#00FF00&#x27;
  * @param [style.align=&#x27;left&#x27;] {String} Alignment for multiline text (&#x27;left&#x27;, &#x27;center&#x27; or &#x27;right&#x27;), does not affect single line text
- * @param [style.stroke] {String} A canvas fillstyle that will be used on the text stroke eg &#x27;blue&#x27;, &#x27;#FCFF00&#x27;
+ * @param [style.stroke] {String|Number} A canvas fillstyle that will be used on the text stroke e.g &#x27;blue&#x27;, &#x27;#FCFF00&#x27;
  * @param [style.strokeThickness=0] {Number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
  * @param [style.wordWrap=false] {Boolean} Indicates if word wrap should be used
- * @param [style.wordWrapWidth=100] {Number} The width at which text will wrap
+ * @param [style.wordWrapWidth=100] {Number} The width at which text will wrap, it needs wordWrap to be set to true
+ * @param [style.dropShadow=false] {Boolean} Set a drop shadow for the text
+ * @param [style.dropShadowColor=&#x27;#000000&#x27;] {String} A fill style to be used on the dropshadow e.g &#x27;red&#x27;, &#x27;#00FF00&#x27;
+ * @param [style.dropShadowAngle=Math.PI/4] {Number} Set a angle of the drop shadow
+ * @param [style.dropShadowDistance=5] {Number} Set a distance of the drop shadow
  */
 PIXI.Text = function(text, style)
 {
+    /**
+     * The canvas element that everything is drawn to
+     *
+     * @property canvas
+     * @type HTMLCanvasElement
+     */
     this.canvas = document.createElement(&#x27;canvas&#x27;);
+
+    /**
+     * The canvas 2d context that everything is drawn with
+     * @property context
+     * @type HTMLCanvasElement 2d Context
+     */
     this.context = this.canvas.getContext(&#x27;2d&#x27;);
+
     PIXI.Sprite.call(this, PIXI.Texture.fromCanvas(this.canvas));
 
     this.setText(text);
@@ -229,6 +273,10 @@ PIXI.Text.prototype.constructor = PIXI.Text;
  * @param [style.strokeThickness=0] {Number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
  * @param [style.wordWrap=false] {Boolean} Indicates if word wrap should be used
  * @param [style.wordWrapWidth=100] {Number} The width at which text will wrap
+ * @param [style.dropShadow=false] {Boolean} Set a drop shadow for the text
+ * @param [style.dropShadowColor=&#x27;#000000&#x27;] {String} A fill style to be used on the dropshadow e.g &#x27;red&#x27;, &#x27;#00FF00&#x27;
+ * @param [style.dropShadowAngle=Math.PI/4] {Number} Set a angle of the drop shadow
+ * @param [style.dropShadowDistance=5] {Number} Set a distance of the drop shadow
  */
 PIXI.Text.prototype.setStyle = function(style)
 {
@@ -240,6 +288,13 @@ PIXI.Text.prototype.setStyle = function(style)
     style.strokeThickness = style.strokeThickness || 0;
     style.wordWrap = style.wordWrap || false;
     style.wordWrapWidth = style.wordWrapWidth || 100;
+    style.wordWrapWidth = style.wordWrapWidth || 100;
+    
+    style.dropShadow = style.dropShadow || false;
+    style.dropShadowAngle = style.dropShadowAngle || Math.PI / 6;
+    style.dropShadowDistance = style.dropShadowDistance || 4;
+    style.dropShadowColor = style.dropShadowColor || &#x27;black&#x27;;
+
     this.style = style;
     this.dirty = true;
 };
@@ -258,7 +313,7 @@ PIXI.Text.prototype.setText = function(text)
 };
 
 /**
- * Renders text
+ * Renders text and updates it when needed
  *
  * @method updateText
  * @private
@@ -285,47 +340,90 @@ PIXI.Text.prototype.updateText = function()
         lineWidths[i] = lineWidth;
         maxLineWidth = Math.max(maxLineWidth, lineWidth);
     }
-    this.canvas.width = maxLineWidth + this.style.strokeThickness;
 
+    var width = maxLineWidth + this.style.strokeThickness;
+    if(this.style.dropShadow)width += this.style.dropShadowDistance;
+
+    this.canvas.width = width;
     //calculate text height
     var lineHeight = this.determineFontHeight(&#x27;font: &#x27; + this.style.font  + &#x27;;&#x27;) + this.style.strokeThickness;
-    this.canvas.height = lineHeight * lines.length;
+    
+    var height = lineHeight * lines.length;
+    if(this.style.dropShadow)height += this.style.dropShadowDistance;
+
+    this.canvas.height = height;
 
     if(navigator.isCocoonJS) this.context.clearRect(0,0,this.canvas.width,this.canvas.height);
     
-    //set canvas text styles
-    this.context.fillStyle = this.style.fill;
     this.context.font = this.style.font;
-
     this.context.strokeStyle = this.style.stroke;
     this.context.lineWidth = this.style.strokeThickness;
-
     this.context.textBaseline = &#x27;top&#x27;;
 
+    var linePositionX;
+    var linePositionY;
+
+    if(this.style.dropShadow)
+    {
+        this.context.fillStyle = this.style.dropShadowColor;
+
+        var xShadowOffset = Math.sin(this.style.dropShadowAngle) * this.style.dropShadowDistance;
+        var yShadowOffset = Math.cos(this.style.dropShadowAngle) * this.style.dropShadowDistance;
+
+        for (i = 0; i &lt; lines.length; i++)
+        {
+            linePositionX = this.style.strokeThickness / 2;
+            linePositionY = this.style.strokeThickness / 2 + i * lineHeight;
+
+            if(this.style.align === &#x27;right&#x27;)
+            {
+                linePositionX += maxLineWidth - lineWidths[i];
+            }
+            else if(this.style.align === &#x27;center&#x27;)
+            {
+                linePositionX += (maxLineWidth - lineWidths[i]) / 2;
+            }
+
+            if(this.style.fill)
+            {
+                this.context.fillText(lines[i], linePositionX + xShadowOffset, linePositionY + yShadowOffset);
+            }
+
+          //  if(dropShadow)
+        }
+    }
+
+    //set canvas text styles
+    this.context.fillStyle = this.style.fill;
+    
     //draw lines line by line
     for (i = 0; i &lt; lines.length; i++)
     {
-        var linePosition = new PIXI.Point(this.style.strokeThickness / 2, this.style.strokeThickness / 2 + i * lineHeight);
+        linePositionX = this.style.strokeThickness / 2;
+        linePositionY = this.style.strokeThickness / 2 + i * lineHeight;
 
         if(this.style.align === &#x27;right&#x27;)
         {
-            linePosition.x += maxLineWidth - lineWidths[i];
+            linePositionX += maxLineWidth - lineWidths[i];
         }
         else if(this.style.align === &#x27;center&#x27;)
         {
-            linePosition.x += (maxLineWidth - lineWidths[i]) / 2;
+            linePositionX += (maxLineWidth - lineWidths[i]) / 2;
         }
 
         if(this.style.stroke &amp;&amp; this.style.strokeThickness)
         {
-            this.context.strokeText(lines[i], linePosition.x, linePosition.y);
+            this.context.strokeText(lines[i], linePositionX, linePositionY);
         }
 
         if(this.style.fill)
         {
-            this.context.fillText(lines[i], linePosition.x, linePosition.y);
+            this.context.fillText(lines[i], linePositionX, linePositionY);
         }
+
+      //  if(dropShadow)
     }
+
 
     this.updateTexture();
 };
@@ -349,6 +447,13 @@ PIXI.Text.prototype.updateTexture = function()
     this.requiresUpdate =  true;
 };
 
+/**
+* Renders the object using the WebGL renderer
+*
+* @method _renderWebGL
+* @param renderSession {RenderSession} 
+* @private
+*/
 PIXI.Text.prototype._renderWebGL = function(renderSession)
 {
     if(this.requiresUpdate)
@@ -380,6 +485,7 @@ PIXI.Text.prototype.updateTransform = function()
 /*
  * http://stackoverflow.com/users/34441/ellisbben
  * great solution to the problem!
+ * returns the height of the given font
  *
  * @method determineFontHeight
  * @param fontStyle {Object}
@@ -448,7 +554,11 @@ PIXI.Text.prototype.wordWrap = function(text)
                 result += words[j] + &#x27; &#x27;;
             }
         }
-        result += &#x27;\n&#x27;;
+
+        if (i &lt; lines.length-1)
+        {
+            result += &#x27;\n&#x27;;
+        }
     }
     return result;
 };

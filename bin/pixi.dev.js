@@ -1,15 +1,4 @@
 /**
- * @license
- * pixi.js - v1.5.0
- * Copyright (c) 2012-2014, Mat Groves
- * http://goodboydigital.com/
- *
- * Compiled: 2014-03-29
- *
- * pixi.js is licensed under the MIT License.
- * http://www.opensource.org/licenses/mit-license.php
- */
-/**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
@@ -932,6 +921,13 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'filters', {
     }
 });
 
+/**
+ * Set weather or not a the display objects is cached as a bitmap.
+ * This basically takes a snap shot of the display object as it is at that moment. It can provide a performance benefit for complex static displayObjects
+ * To remove filters simply set this property to 'null'
+ * @property cacheAsBitmap
+ * @type Boolean
+ */
 Object.defineProperty(PIXI.DisplayObject.prototype, 'cacheAsBitmap', {
     get: function() {
         return  this._cacheAsBitmap;
@@ -14359,7 +14355,7 @@ PIXI.DotScreenFilter = function()
     ];
 };
 
-PIXI.DotScreenFilter.prototype = Object.create( PIXI.DotScreenFilter.prototype );
+PIXI.DotScreenFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.DotScreenFilter.prototype.constructor = PIXI.DotScreenFilter;
 
 /**
@@ -14393,6 +14389,7 @@ Object.defineProperty(PIXI.DotScreenFilter.prototype, 'angle', {
         this.uniforms.angle.value = value;
     }
 });
+
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -14525,3 +14522,4 @@ Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'angle', {
         root.PIXI = PIXI;
     }
 }).call(this);
+//# sourceMappingURL=pixi.dev.js.map

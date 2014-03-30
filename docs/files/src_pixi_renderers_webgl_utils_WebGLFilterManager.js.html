@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.4.3</em>
+            <em>API Docs for: 1.5.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -43,11 +43,15 @@
             
                 <li><a href="../classes/AbstractFilter.html">AbstractFilter</a></li>
             
+                <li><a href="../classes/AjaxRequest.html">AjaxRequest</a></li>
+            
                 <li><a href="../classes/AlphaMaskFilter.html">AlphaMaskFilter</a></li>
             
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
                 <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
+                <li><a href="../classes/autoDetectRenderer.html">autoDetectRenderer</a></li>
             
                 <li><a href="../classes/BaseTexture.html">BaseTexture</a></li>
             
@@ -59,7 +63,11 @@
             
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
+                <li><a href="../classes/CanvasMaskManager.html">CanvasMaskManager</a></li>
+            
                 <li><a href="../classes/CanvasRenderer.html">CanvasRenderer</a></li>
+            
+                <li><a href="../classes/CanvasTinter.html">CanvasTinter</a></li>
             
                 <li><a href="../classes/Circle.html">Circle</a></li>
             
@@ -79,11 +87,17 @@
             
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
+                <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
+            
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
             
                 <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
                 <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
+            
+                <li><a href="../classes/InteractionData.html">InteractionData</a></li>
+            
+                <li><a href="../classes/InteractionManager.html">InteractionManager</a></li>
             
                 <li><a href="../classes/InvertFilter.html">InvertFilter</a></li>
             
@@ -91,29 +105,25 @@
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
+                <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
+            
                 <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
             
-                <li><a href="../classes/PIXI.PixiFastShader.html">PIXI.PixiFastShader</a></li>
+                <li><a href="../classes/PixiFastShader.html">PixiFastShader</a></li>
             
-                <li><a href="../classes/PIXI.PixiShader.html">PIXI.PixiShader</a></li>
+                <li><a href="../classes/PixiShader.html">PixiShader</a></li>
             
                 <li><a href="../classes/Point.html">Point</a></li>
             
                 <li><a href="../classes/Polygon.html">Polygon</a></li>
             
-                <li><a href="../classes/PolyK._convex.html">PolyK._convex</a></li>
+                <li><a href="../classes/PolyK.html">PolyK</a></li>
             
-                <li><a href="../classes/PolyK._PointInTriangle.html">PolyK._PointInTriangle</a></li>
-            
-                <li><a href="../classes/PolyK.AjaxRequest.html">PolyK.AjaxRequest</a></li>
-            
-                <li><a href="../classes/PolyK.InteractionData.html">PolyK.InteractionData</a></li>
-            
-                <li><a href="../classes/PolyK.InteractionManager.html">PolyK.InteractionManager</a></li>
+                <li><a href="../classes/PrimitiveShader.html">PrimitiveShader</a></li>
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
-                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
+                <li><a href="../classes/Rope.html">Rope</a></li>
             
                 <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
             
@@ -121,9 +131,13 @@
             
                 <li><a href="../classes/Sprite.html">Sprite</a></li>
             
+                <li><a href="../classes/SpriteBatch.html">SpriteBatch</a></li>
+            
                 <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
             
                 <li><a href="../classes/Stage.html">Stage</a></li>
+            
+                <li><a href="../classes/Strip.html">Strip</a></li>
             
                 <li><a href="../classes/Text.html">Text</a></li>
             
@@ -133,7 +147,17 @@
             
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
             
+                <li><a href="../classes/WebGLFilterManager.html">WebGLFilterManager</a></li>
+            
+                <li><a href="../classes/WebGLGraphics.html">WebGLGraphics</a></li>
+            
+                <li><a href="../classes/WebGLMaskManager.html">WebGLMaskManager</a></li>
+            
                 <li><a href="../classes/WebGLRenderer.html">WebGLRenderer</a></li>
+            
+                <li><a href="../classes/WebGLShaderManager.html">WebGLShaderManager</a></li>
+            
+                <li><a href="../classes/WebGLSpriteBatch.html">WebGLSpriteBatch</a></li>
             
             </ul>
 
@@ -184,7 +208,13 @@
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
-
+/**
+* @class WebGLFilterManager
+* @constructor
+* @param gl {WebGLContext} the current WebGL drawing context
+* @param transparent {Boolean} Whether or not the drawing context should be transparent
+* @private
+*/
 PIXI.WebGLFilterManager = function(gl, transparent)
 {
     this.transparent = transparent;
@@ -198,7 +228,11 @@ PIXI.WebGLFilterManager = function(gl, transparent)
 };
 
 // API
-
+/**
+* Initialises the context and the properties
+* @method setContext 
+* @param gl {WebGLContext} the current WebGL drawing context
+*/
 PIXI.WebGLFilterManager.prototype.setContext = function(gl)
 {
     this.gl = gl;
@@ -207,24 +241,37 @@ PIXI.WebGLFilterManager.prototype.setContext = function(gl)
     this.initShaderBuffers();
 };
 
+/**
+* 
+* @method begin
+* @param renderSession {RenderSession} 
+* @param buffer {ArrayBuffer} 
+*/
 PIXI.WebGLFilterManager.prototype.begin = function(renderSession, buffer)
 {
     this.renderSession = renderSession;
     this.defaultShader = renderSession.shaderManager.defaultShader;
 
     var projection = this.renderSession.projection;
-
+   // console.log(this.width)
     this.width = projection.x * 2;
     this.height = -projection.y * 2;
     this.buffer = buffer;
 };
 
+/**
+* Applies the filter and adds it to the current filter stack
+* @method pushFilter
+* @param filterBlock {Object} the filter that will be pushed to the current filter stack
+*/
 PIXI.WebGLFilterManager.prototype.pushFilter = function(filterBlock)
 {
     var gl = this.gl;
 
     var projection = this.renderSession.projection;
     var offset = this.renderSession.offset;
+
+    filterBlock._filterArea = filterBlock.target.filterArea || filterBlock.target.getBounds();
 
 
     // filter program
@@ -233,8 +280,8 @@ PIXI.WebGLFilterManager.prototype.pushFilter = function(filterBlock)
 
     var filter = filterBlock.filterPasses[0];
 
-    this.offsetX += filterBlock.target.filterArea.x;
-    this.offsetY += filterBlock.target.filterArea.y;
+    this.offsetX += filterBlock._filterArea.x;
+    this.offsetY += filterBlock._filterArea.y;
 
     var texture = this.texturePool.pop();
     if(!texture)
@@ -248,15 +295,7 @@ PIXI.WebGLFilterManager.prototype.pushFilter = function(filterBlock)
 
     gl.bindTexture(gl.TEXTURE_2D,  texture.texture);
 
-//    this.getBounds(filterBlock.target);
-
-    filterBlock.target.filterArea = filterBlock.target.getBounds();
-   // console.log(filterBlock.target.filterArea)
-   // console.log(filterBlock.target.filterArea);
-    // addpadding?
-    //displayObject.filterArea.x
-
-    var filterArea = filterBlock.target.filterArea;
+    var filterArea = filterBlock._filterArea;// filterBlock.target.getBounds();///filterBlock.target.filterArea;
 
     var padidng = filter.padding;
     filterArea.x -= padidng;
@@ -273,7 +312,6 @@ PIXI.WebGLFilterManager.prototype.pushFilter = function(filterBlock)
     //gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  filterArea.width, filterArea.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
     gl.bindFramebuffer(gl.FRAMEBUFFER, texture.frameBuffer);
 
-    //console.log(filterArea)
     // set view port
     gl.viewport(0, 0, filterArea.width, filterArea.height);
 
@@ -283,28 +321,28 @@ PIXI.WebGLFilterManager.prototype.pushFilter = function(filterBlock)
     offset.x = -filterArea.x;
     offset.y = -filterArea.y;
 
-    //console.log(PIXI.defaultShader.projectionVector)
     // update projection
     gl.uniform2f(this.defaultShader.projectionVector, filterArea.width/2, -filterArea.height/2);
     gl.uniform2f(this.defaultShader.offsetVector, -filterArea.x, -filterArea.y);
-    //PIXI.primitiveProgram
 
     gl.colorMask(true, true, true, true);
     gl.clearColor(0,0,0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-    //filter.texture = texture;
     filterBlock._glFilterTexture = texture;
 
-    //console.log(&quot;PUSH&quot;)
 };
 
 
+/**
+* Removes the last filter from the filter stack and doesn&#x27;t return it
+* @method popFilter
+*/
 PIXI.WebGLFilterManager.prototype.popFilter = function()
 {
     var gl = this.gl;
     var filterBlock = this.filterStack.pop();
-    var filterArea = filterBlock.target.filterArea;
+    var filterArea = filterBlock._filterArea;
     var texture = filterBlock._glFilterTexture;
     var projection = this.renderSession.projection;
     var offset = this.renderSession.offset;
@@ -341,6 +379,7 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
         var inputTexture = texture;
         var outputTexture = this.texturePool.pop();
         if(!outputTexture)outputTexture = new PIXI.FilterTexture(this.gl, this.width, this.height);
+        outputTexture.resize(this.width, this.height);
 
         // need to clear this FBO as it may have some left over elements from a previous filter.
         gl.bindFramebuffer(gl.FRAMEBUFFER, outputTexture.frameBuffer );
@@ -391,12 +430,12 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
     // time to render the filters texture to the previous scene
     if(this.filterStack.length === 0)
     {
-        gl.colorMask(true, true, true, this.transparent);
+        gl.colorMask(true, true, true, true);//this.transparent);
     }
     else
     {
         var currentFilter = this.filterStack[this.filterStack.length-1];
-        filterArea = currentFilter.target.filterArea;
+        filterArea = currentFilter._filterArea;
 
         sizeX = filterArea.width;
         sizeY = filterArea.height;
@@ -416,7 +455,7 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
     offset.x = offsetX;
     offset.y = offsetY;
 
-    filterArea = filterBlock.target.filterArea;
+    filterArea = filterBlock._filterArea;
 
     var x = filterArea.x-offsetX;
     var y = filterArea.y-offsetY;
@@ -448,7 +487,12 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
 
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.uvArray);
 
+   //console.log(this.vertexArray)
+   //console.log(this.uvArray)
+    //console.log(sizeX + &quot; : &quot; + sizeY)
+
     gl.viewport(0, 0, sizeX, sizeY);
+
     // bind the buffer
     gl.bindFramebuffer(gl.FRAMEBUFFER, buffer );
 
@@ -460,7 +504,6 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
     gl.bindTexture(gl.TEXTURE_2D, texture.texture);
 
     // apply!
-    //filter.applyFilterPass(sizeX, sizeY);
     this.applyFilterPass(filter, filterArea, sizeX, sizeY);
 
     // now restore the regular shader..
@@ -473,6 +516,15 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
     filterBlock._glFilterTexture = null;
 };
 
+
+/**
+* Applies the filter to the specified area
+* @method applyFilterPass
+* @param filter {AbstractFilter} the filter that needs to be applied
+* @param filterArea {texture} TODO - might need an update
+* @param width {Number} the horizontal range of the filter
+* @param height {Number} the vertical range of the filter
+*/
 PIXI.WebGLFilterManager.prototype.applyFilterPass = function(filter, filterArea, width, height)
 {
     // use program
@@ -498,14 +550,13 @@ PIXI.WebGLFilterManager.prototype.applyFilterPass = function(filter, filterArea,
 
     if(filter.uniforms.dimensions)
     {
-        //console.log(filter.uniforms.dimensions)
         filter.uniforms.dimensions.value[0] = this.width;//width;
         filter.uniforms.dimensions.value[1] = this.height;//height;
         filter.uniforms.dimensions.value[2] = this.vertexArray[0];
         filter.uniforms.dimensions.value[3] = this.vertexArray[5];//filterArea.height;
-    //  console.log(this.vertexArray[5])
     }
 
+  //  console.log(this.uvArray )
     shader.syncUniforms();
 
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
@@ -525,6 +576,10 @@ PIXI.WebGLFilterManager.prototype.applyFilterPass = function(filter, filterArea,
     this.renderSession.drawCount++;
 };
 
+/**
+* Initialises the shader buffers
+* @method initShaderBuffers
+*/
 PIXI.WebGLFilterManager.prototype.initShaderBuffers = function()
 {
     var gl = this.gl;
@@ -581,6 +636,10 @@ PIXI.WebGLFilterManager.prototype.initShaderBuffers = function()
     gl.STATIC_DRAW);
 };
 
+/**
+* Destroys the filter and removes it from the filter stack
+* @method destroy
+*/
 PIXI.WebGLFilterManager.prototype.destroy = function()
 {
     var gl = this.gl;
@@ -603,60 +662,6 @@ PIXI.WebGLFilterManager.prototype.destroy = function()
     gl.deleteBuffer(this.colorBuffer);
     gl.deleteBuffer(this.indexBuffer);
 };
-
-PIXI.FilterTexture = function(gl, width, height)
-{
-    this.gl = gl;
-
-    // next time to create a frame buffer and texture
-    this.frameBuffer = gl.createFramebuffer();
-    this.texture = gl.createTexture();
-
-    gl.bindTexture(gl.TEXTURE_2D,  this.texture);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer );
-
-    gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer );
-    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.texture, 0);
-
-    this.resize(width, height);
-};
-
-PIXI.FilterTexture.prototype.clear = function()
-{
-    var gl = this.gl;
-    
-    gl.clearColor(0,0,0, 0);
-    gl.clear(gl.COLOR_BUFFER_BIT);
-};
-
-PIXI.FilterTexture.prototype.resize = function(width, height)
-{
-    if(this.width === width &amp;&amp; this.height === height) return;
-
-    this.width = width;
-    this.height = height;
-
-    var gl = this.gl;
-
-    gl.bindTexture(gl.TEXTURE_2D,  this.texture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
-
-};
-
-PIXI.FilterTexture.prototype.destroy = function()
-{
-    var gl = this.gl;
-    gl.deleteFramebuffer( this.frameBuffer );
-    gl.deleteTexture( this.texture );
-
-    this.frameBuffer = null;
-    this.texture = null;
-};
-
 
     </pre>
 </div>
