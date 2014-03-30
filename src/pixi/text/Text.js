@@ -1,5 +1,6 @@
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
+ * - Modified by Tom Slezakowski http://www.tomslezakowski.com @TomSlezakowski (24/03/2014) - Added dropShadowColor.
  */
 
 /**
@@ -19,6 +20,10 @@
  * @param [style.strokeThickness=0] {Number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
  * @param [style.wordWrap=false] {Boolean} Indicates if word wrap should be used
  * @param [style.wordWrapWidth=100] {Number} The width at which text will wrap, it needs wordWrap to be set to true
+ * @param [style.dropShadow=false] {Boolean} Set a drop shadow for the text
+ * @param [style.dropShadowColor='#000000'] {String} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
+ * @param [style.dropShadowAngle=Math.PI/4] {Number} Set a angle of the drop shadow
+ * @param [style.dropShadowDistance=5] {Number} Set a distance of the drop shadow
  */
 PIXI.Text = function(text, style)
 {
@@ -62,6 +67,10 @@ PIXI.Text.prototype.constructor = PIXI.Text;
  * @param [style.strokeThickness=0] {Number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
  * @param [style.wordWrap=false] {Boolean} Indicates if word wrap should be used
  * @param [style.wordWrapWidth=100] {Number} The width at which text will wrap
+ * @param [style.dropShadow=false] {Boolean} Set a drop shadow for the text
+ * @param [style.dropShadowColor='#000000'] {String} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
+ * @param [style.dropShadowAngle=Math.PI/4] {Number} Set a angle of the drop shadow
+ * @param [style.dropShadowDistance=5] {Number} Set a distance of the drop shadow
  */
 PIXI.Text.prototype.setStyle = function(style)
 {
@@ -73,6 +82,13 @@ PIXI.Text.prototype.setStyle = function(style)
     style.strokeThickness = style.strokeThickness || 0;
     style.wordWrap = style.wordWrap || false;
     style.wordWrapWidth = style.wordWrapWidth || 100;
+    style.wordWrapWidth = style.wordWrapWidth || 100;
+    
+    style.dropShadow = style.dropShadow || false;
+    style.dropShadowAngle = style.dropShadowAngle || Math.PI / 6;
+    style.dropShadowDistance = style.dropShadowDistance || 4;
+    style.dropShadowColor = style.dropShadowColor || 'black';
+
     this.style = style;
     this.dirty = true;
 };
@@ -118,47 +134,90 @@ PIXI.Text.prototype.updateText = function()
         lineWidths[i] = lineWidth;
         maxLineWidth = Math.max(maxLineWidth, lineWidth);
     }
-    this.canvas.width = maxLineWidth + this.style.strokeThickness;
 
+    var width = maxLineWidth + this.style.strokeThickness;
+    if(this.style.dropShadow)width += this.style.dropShadowDistance;
+
+    this.canvas.width = width;
     //calculate text height
     var lineHeight = this.determineFontHeight('font: ' + this.style.font  + ';') + this.style.strokeThickness;
-    this.canvas.height = lineHeight * lines.length;
+    
+    var height = lineHeight * lines.length;
+    if(this.style.dropShadow)height += this.style.dropShadowDistance;
+
+    this.canvas.height = height;
 
     if(navigator.isCocoonJS) this.context.clearRect(0,0,this.canvas.width,this.canvas.height);
     
-    //set canvas text styles
-    this.context.fillStyle = this.style.fill;
     this.context.font = this.style.font;
-
     this.context.strokeStyle = this.style.stroke;
     this.context.lineWidth = this.style.strokeThickness;
-
     this.context.textBaseline = 'top';
 
+    var linePositionX;
+    var linePositionY;
+
+    if(this.style.dropShadow)
+    {
+        this.context.fillStyle = this.style.dropShadowColor;
+
+        var xShadowOffset = Math.sin(this.style.dropShadowAngle) * this.style.dropShadowDistance;
+        var yShadowOffset = Math.cos(this.style.dropShadowAngle) * this.style.dropShadowDistance;
+
+        for (i = 0; i < lines.length; i++)
+        {
+            linePositionX = this.style.strokeThickness / 2;
+            linePositionY = this.style.strokeThickness / 2 + i * lineHeight;
+
+            if(this.style.align === 'right')
+            {
+                linePositionX += maxLineWidth - lineWidths[i];
+            }
+            else if(this.style.align === 'center')
+            {
+                linePositionX += (maxLineWidth - lineWidths[i]) / 2;
+            }
+
+            if(this.style.fill)
+            {
+                this.context.fillText(lines[i], linePositionX + xShadowOffset, linePositionY + yShadowOffset);
+            }
+
+          //  if(dropShadow)
+        }
+    }
+
+    //set canvas text styles
+    this.context.fillStyle = this.style.fill;
+    
     //draw lines line by line
     for (i = 0; i < lines.length; i++)
     {
-        var linePosition = new PIXI.Point(this.style.strokeThickness / 2, this.style.strokeThickness / 2 + i * lineHeight);
+        linePositionX = this.style.strokeThickness / 2;
+        linePositionY = this.style.strokeThickness / 2 + i * lineHeight;
 
         if(this.style.align === 'right')
         {
-            linePosition.x += maxLineWidth - lineWidths[i];
+            linePositionX += maxLineWidth - lineWidths[i];
         }
         else if(this.style.align === 'center')
         {
-            linePosition.x += (maxLineWidth - lineWidths[i]) / 2;
+            linePositionX += (maxLineWidth - lineWidths[i]) / 2;
         }
 
         if(this.style.stroke && this.style.strokeThickness)
         {
-            this.context.strokeText(lines[i], linePosition.x, linePosition.y);
+            this.context.strokeText(lines[i], linePositionX, linePositionY);
         }
 
         if(this.style.fill)
         {
-            this.context.fillText(lines[i], linePosition.x, linePosition.y);
+            this.context.fillText(lines[i], linePositionX, linePositionY);
         }
+
+      //  if(dropShadow)
     }
+
 
     this.updateTexture();
 };

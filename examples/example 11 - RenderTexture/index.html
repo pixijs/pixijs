@@ -10,7 +10,6 @@
 		}
 	</style>
 
-
 	<script src="../../bin/pixi.dev.js"></script>
 </head>
 <body>
@@ -40,8 +39,8 @@
 	var outputSprite = new PIXI.Sprite(currentTexture);
 
 	// align the sprite
-	outputSprite.position.x = 800/2;
-	outputSprite.position.y = 600/2;
+	outputSprite.position.x = 800 / 2;
+	outputSprite.position.y = 600 / 2;
 	outputSprite.anchor.x = 0.5;
 	outputSprite.anchor.y = 0.5;
 
@@ -50,8 +49,8 @@
 
 	var stuffContainer = new PIXI.DisplayObjectContainer();
 
-	stuffContainer.position.x = 800/2;
-	stuffContainer.position.y = 600/2
+	stuffContainer.position.x = 800 / 2;
+	stuffContainer.position.y = 600 / 2
 
 	stage.addChild(stuffContainer);
 
@@ -82,14 +81,13 @@
 	// used for spinning!
 	var count = 0;
 
-
 	requestAnimFrame(animate);
 
 	function animate() {
 
 	    requestAnimFrame( animate );
 
-		for (var i=0; i < items.length; i++)
+		for (var i = 0; i < items.length; i++)
 		{
 			// rotate each item
 			var item = items[i];
@@ -103,13 +101,12 @@
 		renderTexture = renderTexture2;
 		renderTexture2 = temp;
 
-
 		// set the new texture
 		outputSprite.setTexture(renderTexture);
 
 		// twist this up!
 		stuffContainer.rotation -= 0.01
-		outputSprite.scale.x = outputSprite.scale.y  = 1 + Math.sin(count) * 0.2;
+		outputSprite.scale.x = outputSprite.scale.y = 1 + Math.sin(count) * 0.2;
 
 		// render the stage to the texture
 		// the true clears the texture before content is rendered

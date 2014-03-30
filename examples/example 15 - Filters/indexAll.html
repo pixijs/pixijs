@@ -12,12 +12,10 @@
 	
 	<script src="../../bin/pixi.dev.js"></script>
 	<script src="dat.gui.min.js"></script>
-	
-	<!-- <script src="pixi.js"></script> -->
+
 </head>
 <body>
 	<script>
-	
 	var renderer = PIXI.autoDetectRenderer(630, 410);
 	renderer.view.style.position = "absolute"
 	renderer.view.style.width = window.innerWidth + "px";
@@ -29,11 +27,7 @@
 	// add render view to DOM
 	document.body.appendChild(renderer.view);
 
-	var gui = new dat.GUI({
-    //height : 5 * 32 - 1,
-    
-    //width : 350
-	});
+	var gui = new dat.GUI({});
 	
 	//// 
 
@@ -253,7 +247,6 @@
 			fish.rotation = -fish.direction - Math.PI/2;
 
 			// wrap..
-
 			if(fish.position.x < bounds.x)fish.position.x += bounds.width;
 			if(fish.position.x > bounds.x + bounds.width)fish.position.x -= bounds.width
 
@@ -262,11 +255,11 @@
 		}
 
 	
-		displacementFilter.offset.x = count * 10//blurAmount * 40;
-		displacementFilter.offset.y = count * 10
+		displacementFilter.offset.x = count * 10;
+		displacementFilter.offset.y = count * 10;
 		
-		overlay.tilePosition.x = count * -10//blurAmount * 40;
-		overlay.tilePosition.y = count * -10
+		overlay.tilePosition.x = count * -10;
+		overlay.tilePosition.y = count * -10;
 
 	    renderer.render(stage);
 	    requestAnimFrame( animate );

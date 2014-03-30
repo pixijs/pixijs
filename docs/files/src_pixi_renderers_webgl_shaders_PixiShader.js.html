@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.4.3</em>
+            <em>API Docs for: 1.5.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -43,11 +43,15 @@
             
                 <li><a href="../classes/AbstractFilter.html">AbstractFilter</a></li>
             
+                <li><a href="../classes/AjaxRequest.html">AjaxRequest</a></li>
+            
                 <li><a href="../classes/AlphaMaskFilter.html">AlphaMaskFilter</a></li>
             
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
                 <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
+                <li><a href="../classes/autoDetectRenderer.html">autoDetectRenderer</a></li>
             
                 <li><a href="../classes/BaseTexture.html">BaseTexture</a></li>
             
@@ -59,7 +63,11 @@
             
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
+                <li><a href="../classes/CanvasMaskManager.html">CanvasMaskManager</a></li>
+            
                 <li><a href="../classes/CanvasRenderer.html">CanvasRenderer</a></li>
+            
+                <li><a href="../classes/CanvasTinter.html">CanvasTinter</a></li>
             
                 <li><a href="../classes/Circle.html">Circle</a></li>
             
@@ -79,11 +87,17 @@
             
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
+                <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
+            
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
             
                 <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
                 <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
+            
+                <li><a href="../classes/InteractionData.html">InteractionData</a></li>
+            
+                <li><a href="../classes/InteractionManager.html">InteractionManager</a></li>
             
                 <li><a href="../classes/InvertFilter.html">InvertFilter</a></li>
             
@@ -91,29 +105,25 @@
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
+                <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
+            
                 <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
             
-                <li><a href="../classes/PIXI.PixiFastShader.html">PIXI.PixiFastShader</a></li>
+                <li><a href="../classes/PixiFastShader.html">PixiFastShader</a></li>
             
-                <li><a href="../classes/PIXI.PixiShader.html">PIXI.PixiShader</a></li>
+                <li><a href="../classes/PixiShader.html">PixiShader</a></li>
             
                 <li><a href="../classes/Point.html">Point</a></li>
             
                 <li><a href="../classes/Polygon.html">Polygon</a></li>
             
-                <li><a href="../classes/PolyK._convex.html">PolyK._convex</a></li>
+                <li><a href="../classes/PolyK.html">PolyK</a></li>
             
-                <li><a href="../classes/PolyK._PointInTriangle.html">PolyK._PointInTriangle</a></li>
-            
-                <li><a href="../classes/PolyK.AjaxRequest.html">PolyK.AjaxRequest</a></li>
-            
-                <li><a href="../classes/PolyK.InteractionData.html">PolyK.InteractionData</a></li>
-            
-                <li><a href="../classes/PolyK.InteractionManager.html">PolyK.InteractionManager</a></li>
+                <li><a href="../classes/PrimitiveShader.html">PrimitiveShader</a></li>
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
-                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
+                <li><a href="../classes/Rope.html">Rope</a></li>
             
                 <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
             
@@ -121,9 +131,13 @@
             
                 <li><a href="../classes/Sprite.html">Sprite</a></li>
             
+                <li><a href="../classes/SpriteBatch.html">SpriteBatch</a></li>
+            
                 <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
             
                 <li><a href="../classes/Stage.html">Stage</a></li>
+            
+                <li><a href="../classes/Strip.html">Strip</a></li>
             
                 <li><a href="../classes/Text.html">Text</a></li>
             
@@ -133,7 +147,17 @@
             
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
             
+                <li><a href="../classes/WebGLFilterManager.html">WebGLFilterManager</a></li>
+            
+                <li><a href="../classes/WebGLGraphics.html">WebGLGraphics</a></li>
+            
+                <li><a href="../classes/WebGLMaskManager.html">WebGLMaskManager</a></li>
+            
                 <li><a href="../classes/WebGLRenderer.html">WebGLRenderer</a></li>
+            
+                <li><a href="../classes/WebGLShaderManager.html">WebGLShaderManager</a></li>
+            
+                <li><a href="../classes/WebGLSpriteBatch.html">WebGLSpriteBatch</a></li>
             
             </ul>
 
@@ -186,11 +210,15 @@
  */
 
 /**
-* @class PIXI.PixiShader
+* @class PixiShader
 * @constructor
 */
 PIXI.PixiShader = function(gl)
 {
+    /**
+     * @property gl
+     * @type WebGLContext
+     */
     this.gl = gl;
 
     /**
@@ -211,7 +239,6 @@ PIXI.PixiShader = function(gl)
         &#x27;}&#x27;
     ];
 
-
     /**
     * @property {number} textureCount - A local texture counter for multi-texture shaders.
     */
@@ -223,11 +250,12 @@ PIXI.PixiShader = function(gl)
 };
 
 /**
-* @method PIXI.PixiShader#init
+* Initialises the shader
+* @method init
+*
 */
 PIXI.PixiShader.prototype.init = function()
 {
-
     var gl = this.gl;
 
     var program = PIXI.compileProgram(gl, this.vertexSrc || PIXI.PixiShader.defaultVertexSrc, this.fragmentSrc);
@@ -278,7 +306,7 @@ PIXI.PixiShader.prototype.init = function()
 * Uniforms are specified in the GLSL_ES Specification: http://www.khronos.org/registry/webgl/specs/latest/1.0/
 * http://www.khronos.org/registry/gles/specs/2.0/GLSL_ES_Specification_1.0.17.pdf
 *
-* @method PIXI.PixiShader#initUniforms
+* @method initUniforms
 */
 PIXI.PixiShader.prototype.initUniforms = function()
 {
@@ -349,7 +377,7 @@ PIXI.PixiShader.prototype.initUniforms = function()
 /**
 * Initialises a Sampler2D uniform (which may only be available later on after initUniforms once the texture has loaded)
 *
-* @method PIXI.PixiShader#initSampler2D
+* @method initSampler2D
 */
 PIXI.PixiShader.prototype.initSampler2D = function(uniform)
 {
@@ -361,7 +389,7 @@ PIXI.PixiShader.prototype.initSampler2D = function(uniform)
     var gl = this.gl;
 
     gl.activeTexture(gl[&#x27;TEXTURE&#x27; + this.textureCount]);
-    gl.bindTexture(gl.TEXTURE_2D, uniform.value.baseTexture._glTexture);
+    gl.bindTexture(gl.TEXTURE_2D, uniform.value.baseTexture._glTextures[gl.id]);
 
     //  Extended texture data
     if (uniform.textureData)
@@ -390,7 +418,7 @@ PIXI.PixiShader.prototype.initSampler2D = function(uniform)
             wrapT = gl.REPEAT;
         }
 
-        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, !!data.flipY);
 
         if (data.width)
         {
@@ -424,7 +452,7 @@ PIXI.PixiShader.prototype.initSampler2D = function(uniform)
 /**
 * Updates the shader uniform values.
 *
-* @method PIXI.PixiShader#syncUniforms
+* @method syncUniforms
 */
 PIXI.PixiShader.prototype.syncUniforms = function()
 {
@@ -435,7 +463,6 @@ PIXI.PixiShader.prototype.syncUniforms = function()
     //  This would probably be faster in an array and it would guarantee key order
     for (var key in this.uniforms)
     {
-
         uniform = this.uniforms[key];
 
         if (uniform.glValueLength === 1)
@@ -479,6 +506,10 @@ PIXI.PixiShader.prototype.syncUniforms = function()
 
 };
 
+/**
+* Destroys the shader
+* @method destroy
+*/
 PIXI.PixiShader.prototype.destroy = function()
 {
     this.gl.deleteProgram( this.program );
@@ -488,6 +519,11 @@ PIXI.PixiShader.prototype.destroy = function()
     this.attributes = null;
 };
 
+/**
+* The Default Vertex shader source
+* @property defaultVertexSrc
+* @type String
+*/
 PIXI.PixiShader.defaultVertexSrc = [
     &#x27;attribute vec2 aVertexPosition;&#x27;,
     &#x27;attribute vec2 aTextureCoord;&#x27;,
@@ -508,10 +544,6 @@ PIXI.PixiShader.defaultVertexSrc = [
     &#x27;   vColor = vec4(color * aColor.x, aColor.x);&#x27;,
     &#x27;}&#x27;
 ];
-
-
-
-
 
     </pre>
 </div>

@@ -24,14 +24,14 @@
 	bg.anchor.x = 0.5;
 	bg.anchor.y = 0.5;
 
-	bg.position.x = 620/2;
-	bg.position.y = 380/2;
+	bg.position.x = 620 / 2;
+	bg.position.y = 380 / 2;
 
 	stage.addChild(bg);
 
 	var container = new PIXI.DisplayObjectContainer();
-	container.position.x = 620/2;
-	container.position.y = 380/2;
+	container.position.x = 620 / 2;
+	container.position.y = 380 / 2;
 
 	var bgFront = PIXI.Sprite.fromImage("SceneRotate.jpg");
 	bgFront.anchor.x = 0.5;
@@ -73,8 +73,8 @@
 	// lets create moving shape
 	var thing = new PIXI.Graphics();
 	stage.addChild(thing);
-	thing.position.x = 620/2;
-	thing.position.y = 380/2;
+	thing.position.x = 620 / 2;
+	thing.position.y = 380 / 2;
 	thing.lineStyle(0);
 
 	container.mask = thing;
@@ -109,7 +109,7 @@
 
 	logo.click = logo.tap = function()
 	{
-		window.open("https://github.com/GoodBoyDigital/pixi.js", "_blank")
+		window.open("https://github.com/GoodBoyDigital/pixi.js", "_blank");
 	}
 
 	var help = new PIXI.Text("Click to turn masking on / off.", {font:"bold 12pt Arial", fill:"white"});
@@ -120,7 +120,6 @@
 	requestAnimFrame(animate);
 
 	function animate() {
-
 		bg.rotation += 0.01;
 		bgFront.rotation -= 0.01;
 
@@ -144,7 +143,7 @@
 	
 
 	    renderer.render(stage);
-	    requestAnimFrame( animate );
+	    requestAnimFrame(animate);
 	}
 
 	</script>

@@ -26,13 +26,11 @@
 	   blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
 	    blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah</div>
 	<script>
-
 	// create an new instance of a pixi stage
 	var stage = new PIXI.Stage(0x66FF99);
 
 	// create a renderer instance
-
-	var renderer = PIXI.autoDetectRenderer(400, 300,false,true);
+	var renderer = PIXI.autoDetectRenderer(400, 300, null, true, true);
 
 	// add the renderer view element to the DOM
 	document.body.appendChild(renderer.view);
@@ -40,10 +38,9 @@
 	renderer.view.style.top = "0px";
 	renderer.view.style.left = "0px";
 
-	requestAnimFrame(animate);
-
 	// create a texture from an image path
 	var texture = PIXI.Texture.fromImage("bunny.png");
+
 	// create a new Sprite using the texture
 	var bunny = new PIXI.Sprite(texture);
 
@@ -58,7 +55,6 @@
 	stage.addChild(bunny);
 
 	function animate() {
-
 	    requestAnimFrame(animate);
 
 	    // just for fun, lets rotate mr rabbit a little
@@ -68,6 +64,7 @@
 	    renderer.render(stage);
 	}
 
+	requestAnimFrame(animate);
 	</script>
 
 	</body>

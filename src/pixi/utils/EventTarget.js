@@ -11,7 +11,7 @@
  * Adds event emitter functionality to a class
  *
  * @class EventTarget
- * 
+ * @example
  *      function MyEmitter() {
  *          PIXI.EventTarget.call(this); //mixes in event target stuff
  *      }
@@ -24,7 +24,7 @@ PIXI.EventTarget = function () {
     /**
      * Holds all the listeners
      *
-     * @property listeneners
+     * @property listeners
      * @type Object
      */
     var listeners = {};

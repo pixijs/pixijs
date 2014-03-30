@@ -50,7 +50,7 @@ PIXI.DotScreenFilter = function()
     ];
 };
 
-PIXI.DotScreenFilter.prototype = Object.create( PIXI.DotScreenFilter.prototype );
+PIXI.DotScreenFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.DotScreenFilter.prototype.constructor = PIXI.DotScreenFilter;
 
 /**

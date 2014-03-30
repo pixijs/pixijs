@@ -345,16 +345,14 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
         var transform = this.worldTransform;
 
         // allow for trimming
-       
         if (renderSession.roundPixels)
         {
-            context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx || 0, transform.ty || 0);
+            context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx | 0, transform.ty | 0);
         }
         else
         {
             context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
         }
-
 
         //if smoothingEnabled is supported and we need to change the smoothing property for this texture
         if(renderSession.smoothProperty && renderSession.scaleMode !== this.texture.baseTexture.scaleMode) {
@@ -466,8 +464,8 @@ PIXI.Sprite.fromFrame = function(frameId)
  * @param imageId {String} The image url of the texture
  * @return {Sprite} A new Sprite using a texture from the texture cache matching the image id
  */
-PIXI.Sprite.fromImage = function(imageId)
+PIXI.Sprite.fromImage = function(imageId, crossorigin, scaleMode)
 {
-    var texture = PIXI.Texture.fromImage(imageId);
+    var texture = PIXI.Texture.fromImage(imageId, crossorigin, scaleMode);
     return new PIXI.Sprite(texture);
 };

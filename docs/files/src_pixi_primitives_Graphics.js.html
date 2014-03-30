@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.4.3</em>
+            <em>API Docs for: 1.5.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -43,11 +43,15 @@
             
                 <li><a href="../classes/AbstractFilter.html">AbstractFilter</a></li>
             
+                <li><a href="../classes/AjaxRequest.html">AjaxRequest</a></li>
+            
                 <li><a href="../classes/AlphaMaskFilter.html">AlphaMaskFilter</a></li>
             
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
                 <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
+                <li><a href="../classes/autoDetectRenderer.html">autoDetectRenderer</a></li>
             
                 <li><a href="../classes/BaseTexture.html">BaseTexture</a></li>
             
@@ -59,7 +63,11 @@
             
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
+                <li><a href="../classes/CanvasMaskManager.html">CanvasMaskManager</a></li>
+            
                 <li><a href="../classes/CanvasRenderer.html">CanvasRenderer</a></li>
+            
+                <li><a href="../classes/CanvasTinter.html">CanvasTinter</a></li>
             
                 <li><a href="../classes/Circle.html">Circle</a></li>
             
@@ -79,11 +87,17 @@
             
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
+                <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
+            
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
             
                 <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
                 <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
+            
+                <li><a href="../classes/InteractionData.html">InteractionData</a></li>
+            
+                <li><a href="../classes/InteractionManager.html">InteractionManager</a></li>
             
                 <li><a href="../classes/InvertFilter.html">InvertFilter</a></li>
             
@@ -91,29 +105,25 @@
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
+                <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
+            
                 <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
             
-                <li><a href="../classes/PIXI.PixiFastShader.html">PIXI.PixiFastShader</a></li>
+                <li><a href="../classes/PixiFastShader.html">PixiFastShader</a></li>
             
-                <li><a href="../classes/PIXI.PixiShader.html">PIXI.PixiShader</a></li>
+                <li><a href="../classes/PixiShader.html">PixiShader</a></li>
             
                 <li><a href="../classes/Point.html">Point</a></li>
             
                 <li><a href="../classes/Polygon.html">Polygon</a></li>
             
-                <li><a href="../classes/PolyK._convex.html">PolyK._convex</a></li>
+                <li><a href="../classes/PolyK.html">PolyK</a></li>
             
-                <li><a href="../classes/PolyK._PointInTriangle.html">PolyK._PointInTriangle</a></li>
-            
-                <li><a href="../classes/PolyK.AjaxRequest.html">PolyK.AjaxRequest</a></li>
-            
-                <li><a href="../classes/PolyK.InteractionData.html">PolyK.InteractionData</a></li>
-            
-                <li><a href="../classes/PolyK.InteractionManager.html">PolyK.InteractionManager</a></li>
+                <li><a href="../classes/PrimitiveShader.html">PrimitiveShader</a></li>
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
-                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
+                <li><a href="../classes/Rope.html">Rope</a></li>
             
                 <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
             
@@ -121,9 +131,13 @@
             
                 <li><a href="../classes/Sprite.html">Sprite</a></li>
             
+                <li><a href="../classes/SpriteBatch.html">SpriteBatch</a></li>
+            
                 <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
             
                 <li><a href="../classes/Stage.html">Stage</a></li>
+            
+                <li><a href="../classes/Strip.html">Strip</a></li>
             
                 <li><a href="../classes/Text.html">Text</a></li>
             
@@ -133,7 +147,17 @@
             
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
             
+                <li><a href="../classes/WebGLFilterManager.html">WebGLFilterManager</a></li>
+            
+                <li><a href="../classes/WebGLGraphics.html">WebGLGraphics</a></li>
+            
+                <li><a href="../classes/WebGLMaskManager.html">WebGLMaskManager</a></li>
+            
                 <li><a href="../classes/WebGLRenderer.html">WebGLRenderer</a></li>
+            
+                <li><a href="../classes/WebGLShaderManager.html">WebGLShaderManager</a></li>
+            
+                <li><a href="../classes/WebGLSpriteBatch.html">WebGLSpriteBatch</a></li>
             
             </ul>
 
@@ -187,8 +211,8 @@
 
 /**
  * The Graphics class contains a set of methods that you can use to create primitive shapes and lines.
- * It is important to know that with the webGL renderer only simple polys can be filled at this stage
- * Complex polys will not be filled. Heres an example of a complex poly: http://www.goodboydigital.com/wp-content/uploads/2013/06/complexPolygon.png
+ * It is important to know that with the webGL renderer only simple polygons can be filled at this stage
+ * Complex polygons will not be filled. Heres an example of a complex polygon: http://www.goodboydigital.com/wp-content/uploads/2013/06/complexPolygon.png
  *
  * @class Graphics
  * @extends DisplayObjectContainer
@@ -233,8 +257,23 @@ PIXI.Graphics = function()
      */
     this.graphicsData = [];
 
-    this.tint = 0xFFFFFF;// * Math.random();
 
+    /**
+     * The tint applied to the graphic shape. This is a hex value
+     *
+     * @property tint
+     * @type Number
+     * @default 0xFFFFFF
+     */
+    this.tint = 0xFFFFFF;// * Math.random();
+    
+    /**
+     * The blend mode to be applied to the graphic shape
+     *
+     * @property blendMode
+     * @type Number
+     * @default PIXI.blendModes.NORMAL;
+     */
     this.blendMode = PIXI.blendModes.NORMAL;
     
     /**
@@ -246,12 +285,37 @@ PIXI.Graphics = function()
      */
     this.currentPath = {points:[]};
 
+    /**
+     * Array containing some WebGL-related properties used by the WebGL renderer
+     *
+     * @property _webGL
+     * @type Array
+     * @private
+     */
     this._webGL = [];
 
+    /**
+     * Whether this shape is being used as a mask
+     *
+     * @property isMask
+     * @type isMask
+     */
     this.isMask = false;
 
+    /**
+     * The bounds of the graphic shape as rectangle object
+     *
+     * @property bounds
+     * @type Rectangle
+     */
     this.bounds = null;
 
+    /**
+     * the bounds&#x27; padding used for bounds calculation
+     *
+     * @property bounds
+     * @type Number
+     */
     this.boundsPadding = 10;
 };
 
@@ -292,7 +356,7 @@ Object.defineProperty(PIXI.Graphics.prototype, &quot;cacheAsBitmap&quot;, {
 
 
 /**
- * Specifies a line style used for subsequent calls to Graphics methods such as the lineTo() method or the drawCircle() method.
+ * Specifies the line style used for subsequent calls to Graphics methods such as the lineTo() method or the drawCircle() method.
  *
  * @method lineStyle
  * @param lineWidth {Number} width of the line to draw, will update the object&#x27;s stored style
@@ -311,14 +375,16 @@ PIXI.Graphics.prototype.lineStyle = function(lineWidth, color, alpha)
                         fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling, points:[], type:PIXI.Graphics.POLY};
 
     this.graphicsData.push(this.currentPath);
+
+    return this;
 };
 
 /**
  * Moves the current drawing position to (x, y).
  *
  * @method moveTo
- * @param x {Number} the X coord to move to
- * @param y {Number} the Y coord to move to
+ * @param x {Number} the X coordinate to move to
+ * @param y {Number} the Y coordinate to move to
  */
 PIXI.Graphics.prototype.moveTo = function(x, y)
 {
@@ -330,6 +396,8 @@ PIXI.Graphics.prototype.moveTo = function(x, y)
     this.currentPath.points.push(x, y);
 
     this.graphicsData.push(this.currentPath);
+
+    return this;
 };
 
 /**
@@ -337,13 +405,15 @@ PIXI.Graphics.prototype.moveTo = function(x, y)
  * the current drawing position is then set to (x, y).
  *
  * @method lineTo
- * @param x {Number} the X coord to draw to
- * @param y {Number} the Y coord to draw to
+ * @param x {Number} the X coordinate to draw to
+ * @param y {Number} the Y coordinate to draw to
  */
 PIXI.Graphics.prototype.lineTo = function(x, y)
 {
     this.currentPath.points.push(x, y);
     this.dirty = true;
+
+    return this;
 };
 
 /**
@@ -351,8 +421,8 @@ PIXI.Graphics.prototype.lineTo = function(x, y)
  * (such as lineTo() or drawCircle()) use when drawing.
  *
  * @method beginFill
- * @param color {uint} the color of the fill
- * @param alpha {Number} the alpha
+ * @param color {Number} the color of the fill
+ * @param alpha {Number} the alpha of the fill
  */
 PIXI.Graphics.prototype.beginFill = function(color, alpha)
 {
@@ -360,6 +430,8 @@ PIXI.Graphics.prototype.beginFill = function(color, alpha)
     this.filling = true;
     this.fillColor = color || 0;
     this.fillAlpha = (arguments.length &lt; 2) ? 1 : alpha;
+
+    return this;
 };
 
 /**
@@ -372,6 +444,8 @@ PIXI.Graphics.prototype.endFill = function()
     this.filling = false;
     this.fillColor = null;
     this.fillAlpha = 1;
+
+    return this;
 };
 
 /**
@@ -392,14 +466,16 @@ PIXI.Graphics.prototype.drawRect = function( x, y, width, height )
 
     this.graphicsData.push(this.currentPath);
     this.dirty = true;
+
+    return this;
 };
 
 /**
  * Draws a circle.
  *
  * @method drawCircle
- * @param x {Number} The X coord of the center of the circle
- * @param y {Number} The Y coord of the center of the circle
+ * @param x {Number} The X coordinate of the center of the circle
+ * @param y {Number} The Y coordinate of the center of the circle
  * @param radius {Number} The radius of the circle
  */
 PIXI.Graphics.prototype.drawCircle = function( x, y, radius)
@@ -413,16 +489,18 @@ PIXI.Graphics.prototype.drawCircle = function( x, y, radius)
 
     this.graphicsData.push(this.currentPath);
     this.dirty = true;
+
+    return this;
 };
 
 /**
  * Draws an ellipse.
  *
  * @method drawEllipse
- * @param x {Number}
- * @param y {Number}
- * @param width {Number}
- * @param height {Number}
+ * @param x {Number} The X coordinate of the upper-left corner of the framing rectangle of this ellipse
+ * @param y {Number} The Y coordinate of the upper-left corner of the framing rectangle of this ellipse
+ * @param width {Number} The width of the ellipse
+ * @param height {Number} The height of the ellipse
  */
 PIXI.Graphics.prototype.drawEllipse = function( x, y, width, height)
 {
@@ -435,6 +513,8 @@ PIXI.Graphics.prototype.drawEllipse = function( x, y, width, height)
 
     this.graphicsData.push(this.currentPath);
     this.dirty = true;
+
+    return this;
 };
 
 /**
@@ -452,6 +532,8 @@ PIXI.Graphics.prototype.clear = function()
     this.graphicsData = [];
 
     this.bounds = null; //new PIXI.Rectangle();
+
+    return this;
 };
 
 /**
@@ -475,6 +557,13 @@ PIXI.Graphics.prototype.generateTexture = function()
     return texture;
 };
 
+/**
+* Renders the object using the WebGL renderer
+*
+* @method _renderWebGL
+* @param renderSession {RenderSession} 
+* @private
+*/
 PIXI.Graphics.prototype._renderWebGL = function(renderSession)
 {
     // if the sprite is not visible or the alpha is 0 then no need to render this element
@@ -492,6 +581,7 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
             this.dirty =  false;
         }
 
+        this._cachedSprite.alpha = this.alpha;
         PIXI.Sprite.prototype._renderWebGL.call(this._cachedSprite, renderSession);
 
         return;
@@ -506,9 +596,9 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
         // check blend mode
         if(this.blendMode !== renderSession.spriteBatch.currentBlendMode)
         {
-            this.spriteBatch.currentBlendMode = this.blendMode;
+            renderSession.spriteBatch.currentBlendMode = this.blendMode;
             var blendModeWebGL = PIXI.blendModesWebGL[renderSession.spriteBatch.currentBlendMode];
-            this.spriteBatch.gl.blendFunc(blendModeWebGL[0], blendModeWebGL[1]);
+            renderSession.spriteBatch.gl.blendFunc(blendModeWebGL[0], blendModeWebGL[1]);
         }
      
         PIXI.WebGLGraphics.renderGraphics(this, renderSession);
@@ -536,6 +626,13 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
     }
 };
 
+/**
+* Renders the object using the Canvas renderer
+*
+* @method _renderCanvas
+* @param renderSession {RenderSession} 
+* @private
+*/
 PIXI.Graphics.prototype._renderCanvas = function(renderSession)
 {
     // if the sprite is not visible or the alpha is 0 then no need to render this element
@@ -550,7 +647,7 @@ PIXI.Graphics.prototype._renderCanvas = function(renderSession)
         context.globalCompositeOperation = PIXI.blendModesCanvas[renderSession.currentBlendMode];
     }
 
-    context.setTransform(transform[0], transform[3], transform[1], transform[4], transform[2], transform[5]);
+    context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
     PIXI.CanvasGraphics.renderGraphics(this, context);
 
      // simple render children!
@@ -560,7 +657,13 @@ PIXI.Graphics.prototype._renderCanvas = function(renderSession)
     }
 };
 
-PIXI.Graphics.prototype.getBounds = function()
+/**
+ * Retrieves the bounds of the graphic shape as a rectangle object
+ *
+ * @method getBounds
+ * @return {Rectangle} the rectangular bounding area
+ */
+PIXI.Graphics.prototype.getBounds = function( matrix )
 {
     if(!this.bounds)this.updateBounds();
 
@@ -570,14 +673,14 @@ PIXI.Graphics.prototype.getBounds = function()
     var h0 = this.bounds.y;
     var h1 = this.bounds.height + this.bounds.y;
 
-    var worldTransform = this.worldTransform;
+    var worldTransform = matrix || this.worldTransform;
 
-    var a = worldTransform[0];
-    var b = worldTransform[3];
-    var c = worldTransform[1];
-    var d = worldTransform[4];
-    var tx = worldTransform[2];
-    var ty = worldTransform[5];
+    var a = worldTransform.a;
+    var b = worldTransform.c;
+    var c = worldTransform.b;
+    var d = worldTransform.d;
+    var tx = worldTransform.tx;
+    var ty = worldTransform.ty;
 
     var x1 = a * w1 + c * h1 + tx;
     var y1 = d * h1 + b * w1 + ty;
@@ -628,6 +731,11 @@ PIXI.Graphics.prototype.getBounds = function()
     return bounds;
 };
 
+/**
+ * Update the bounds of the object
+ *
+ * @method updateBounds
+ */
 PIXI.Graphics.prototype.updateBounds = function()
 {
     
@@ -637,7 +745,7 @@ PIXI.Graphics.prototype.updateBounds = function()
     var minY = Infinity;
     var maxY = -Infinity;
 
-    var points, x, y;
+    var points, x, y, w, h;
 
     for (var i = 0; i &lt; this.graphicsData.length; i++) {
         var data = this.graphicsData[i];
@@ -648,28 +756,29 @@ PIXI.Graphics.prototype.updateBounds = function()
 
         if(type === PIXI.Graphics.RECT)
         {
-            x = points.x - lineWidth/2;
-            y = points.y - lineWidth/2;
-            var width = points.width + lineWidth;
-            var height = points.height + lineWidth;
+            x = points[0] - lineWidth/2;
+            y = points[1] - lineWidth/2;
+            w = points[2] + lineWidth;
+            h = points[3] + lineWidth;
 
             minX = x &lt; minX ? x : minX;
-            maxX = x + width &gt; maxX ? x + width : maxX;
+            maxX = x + w &gt; maxX ? x + w : maxX;
 
             minY = y &lt; minY ? x : minY;
-            maxY = y + height &gt; maxY ? y + height : maxY;
+            maxY = y + h &gt; maxY ? y + h : maxY;
         }
         else if(type === PIXI.Graphics.CIRC || type === PIXI.Graphics.ELIP)
         {
-            x = points.x;
-            y = points.y;
-            var radius = points.radius + lineWidth/2;
+            x = points[0];
+            y = points[1];
+            w = points[2] + lineWidth/2;
+            h = points[3] + lineWidth/2;
 
-            minX = x - radius &lt; minX ? x - radius : minX;
-            maxX = x + radius &gt; maxX ? x + radius : maxX;
+            minX = x - w &lt; minX ? x - w : minX;
+            maxX = x + w &gt; maxX ? x + w : maxX;
 
-            minY = y - radius &lt; minY ? y - radius : minY;
-            maxY = y + radius &gt; maxY ? y + radius : maxY;
+            minY = y - h &lt; minY ? y - h : minY;
+            maxY = y + h &gt; maxY ? y + h : maxY;
         }
         else
         {
@@ -692,9 +801,16 @@ PIXI.Graphics.prototype.updateBounds = function()
     this.bounds = new PIXI.Rectangle(minX - padding, minY - padding, (maxX - minX) + padding * 2, (maxY - minY) + padding * 2);
 };
 
+
+/**
+ * Generates the cached sprite when the sprite has cacheAsBitmap = true
+ *
+ * @method _generateCachedSprite
+ * @private
+ */
 PIXI.Graphics.prototype._generateCachedSprite = function()
 {
-    var bounds = this.getBounds();
+    var bounds = this.getLocalBounds();
 
     if(!this._cachedSprite)
     {
@@ -719,6 +835,8 @@ PIXI.Graphics.prototype._generateCachedSprite = function()
     this._cachedSprite.buffer.context.translate(-bounds.x,-bounds.y);
     
     PIXI.CanvasGraphics.renderGraphics(this, this._cachedSprite.buffer.context);
+    this._cachedSprite.alpha = this.alpha;
+
    // this._cachedSprite.buffer.context.restore();
 };
 
@@ -737,8 +855,6 @@ PIXI.Graphics.POLY = 0;
 PIXI.Graphics.RECT = 1;
 PIXI.Graphics.CIRC = 2;
 PIXI.Graphics.ELIP = 3;
-
-PIXI.tempMatrix = PIXI.mat3.create();
 
     </pre>
 </div>

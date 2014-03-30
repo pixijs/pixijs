@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>RenderTexture - pixi.js</title>
+    <title>CanvasTinter - pixi.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.4.3</em>
+            <em>API Docs for: 1.5.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -43,11 +43,15 @@
             
                 <li><a href="../classes/AbstractFilter.html">AbstractFilter</a></li>
             
+                <li><a href="../classes/AjaxRequest.html">AjaxRequest</a></li>
+            
                 <li><a href="../classes/AlphaMaskFilter.html">AlphaMaskFilter</a></li>
             
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
                 <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
+                <li><a href="../classes/autoDetectRenderer.html">autoDetectRenderer</a></li>
             
                 <li><a href="../classes/BaseTexture.html">BaseTexture</a></li>
             
@@ -59,7 +63,11 @@
             
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
+                <li><a href="../classes/CanvasMaskManager.html">CanvasMaskManager</a></li>
+            
                 <li><a href="../classes/CanvasRenderer.html">CanvasRenderer</a></li>
+            
+                <li><a href="../classes/CanvasTinter.html">CanvasTinter</a></li>
             
                 <li><a href="../classes/Circle.html">Circle</a></li>
             
@@ -79,11 +87,17 @@
             
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
+                <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
+            
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
             
                 <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
                 <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
+            
+                <li><a href="../classes/InteractionData.html">InteractionData</a></li>
+            
+                <li><a href="../classes/InteractionManager.html">InteractionManager</a></li>
             
                 <li><a href="../classes/InvertFilter.html">InvertFilter</a></li>
             
@@ -91,29 +105,25 @@
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
+                <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
+            
                 <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
             
-                <li><a href="../classes/PIXI.PixiFastShader.html">PIXI.PixiFastShader</a></li>
+                <li><a href="../classes/PixiFastShader.html">PixiFastShader</a></li>
             
-                <li><a href="../classes/PIXI.PixiShader.html">PIXI.PixiShader</a></li>
+                <li><a href="../classes/PixiShader.html">PixiShader</a></li>
             
                 <li><a href="../classes/Point.html">Point</a></li>
             
                 <li><a href="../classes/Polygon.html">Polygon</a></li>
             
-                <li><a href="../classes/PolyK._convex.html">PolyK._convex</a></li>
+                <li><a href="../classes/PolyK.html">PolyK</a></li>
             
-                <li><a href="../classes/PolyK._PointInTriangle.html">PolyK._PointInTriangle</a></li>
-            
-                <li><a href="../classes/PolyK.AjaxRequest.html">PolyK.AjaxRequest</a></li>
-            
-                <li><a href="../classes/PolyK.InteractionData.html">PolyK.InteractionData</a></li>
-            
-                <li><a href="../classes/PolyK.InteractionManager.html">PolyK.InteractionManager</a></li>
+                <li><a href="../classes/PrimitiveShader.html">PrimitiveShader</a></li>
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
-                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
+                <li><a href="../classes/Rope.html">Rope</a></li>
             
                 <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
             
@@ -121,9 +131,13 @@
             
                 <li><a href="../classes/Sprite.html">Sprite</a></li>
             
+                <li><a href="../classes/SpriteBatch.html">SpriteBatch</a></li>
+            
                 <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
             
                 <li><a href="../classes/Stage.html">Stage</a></li>
+            
+                <li><a href="../classes/Strip.html">Strip</a></li>
             
                 <li><a href="../classes/Text.html">Text</a></li>
             
@@ -133,7 +147,17 @@
             
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
             
+                <li><a href="../classes/WebGLFilterManager.html">WebGLFilterManager</a></li>
+            
+                <li><a href="../classes/WebGLGraphics.html">WebGLGraphics</a></li>
+            
+                <li><a href="../classes/WebGLMaskManager.html">WebGLMaskManager</a></li>
+            
                 <li><a href="../classes/WebGLRenderer.html">WebGLRenderer</a></li>
+            
+                <li><a href="../classes/WebGLShaderManager.html">WebGLShaderManager</a></li>
+            
+                <li><a href="../classes/WebGLSpriteBatch.html">WebGLSpriteBatch</a></li>
             
             </ul>
 
@@ -176,19 +200,15 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>RenderTexture Class</h1>
+                        <h1>CanvasTinter Class</h1>
 <div class="box meta">
     
 
     
-        <div class="extends">
-            Extends <a href="../classes/Texture.html" class="crosslink">Texture</a>
-        </div>
-    
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_pixi_textures_RenderTexture.js.html#l5"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:5</code></a>
+            Defined in: <a href="../files/src_pixi_renderers_canvas_utils_CanvasTinter.js.html#l8"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;utils&#x2F;CanvasTinter.js:8</code></a>
         </div>
     
 
@@ -204,48 +224,17 @@
 
 
 <div class="box intro">
-    <p>A RenderTexture is a special texture that allows any pixi displayObject to be rendered to it.</p>
-<p><strong>Hint</strong>: All DisplayObjects (exmpl. Sprites) that render on RenderTexture should be preloaded.
-Otherwise black rectangles will be drawn instead.</p>
-<p>RenderTexture takes snapshot of DisplayObject passed to render method. If DisplayObject is passed to render method, position and rotation of it will be ignored. For example:</p>
-<p>   var renderTexture = new PIXI.RenderTexture(800, 600);
-   var sprite = PIXI.Sprite.fromImage(&quot;spinObj_01.png&quot;);
-   sprite.position.x = 800/2;
-   sprite.position.y = 600/2;
-   sprite.anchor.x = 0.5;
-   sprite.anchor.y = 0.5;
-   renderTexture.render(sprite);</p>
-<p>Sprite in this case will be rendered to 0,0 position. To render this sprite at center DisplayObjectContainer should be used:</p>
-<p>   var doc = new PIXI.DisplayObjectContainer();
-   doc.addChild(sprite);
-   renderTexture.render(doc);  // Renders to center of renderTexture</p>
-
+    
 </div>
 
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_RenderTexture" class="method item">
-    <h3 class="name"><code>RenderTexture</code></h3>
+        <div id="method_CanvasTinter" class="method item">
+    <h3 class="name"><code>CanvasTinter</code></h3>
 
     
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>width</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>height</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
+        <span class="paren">()</span>
     
 
     
@@ -256,6 +245,8 @@ Otherwise black rectangles will be drawn instead.</p>
 
     
 
+    
+        <span class="flag static">static</span>
     
 
     
@@ -273,7 +264,7 @@ Otherwise black rectangles will be drawn instead.</p>
             
         
         
-        <a href="../files/src_pixi_textures_RenderTexture.js.html#l5"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:5</code></a>
+        <a href="../files/src_pixi_renderers_canvas_utils_CanvasTinter.js.html#l8"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;utils&#x2F;CanvasTinter.js:8</code></a>
         
         </p>
 
@@ -287,46 +278,6 @@ Otherwise black rectangles will be drawn instead.</p>
         
     </div>
 
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">width</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>The width of the render texture</p>
-
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">height</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>The height of the render texture</p>
-
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
     
 
     
@@ -359,38 +310,38 @@ Otherwise black rectangles will be drawn instead.</p>
                 <div class="index-section methods">
                     <h3>Methods</h3>
 
-                    <ul class="index-list methods extends">
+                    <ul class="index-list methods">
                         
-                            <li class="index-item method inherited">
-                                <a href="#method_destroy">destroy</a>
+                            <li class="index-item method">
+                                <a href="#method_getTintedTexture">getTintedTexture</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item method private inherited">
-                                <a href="#method_onBaseTextureLoaded">onBaseTextureLoaded</a>
+                            <li class="index-item method">
+                                <a href="#method_roundColor">roundColor</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item method private">
-                                <a href="#method_renderCanvas">renderCanvas</a>
+                            <li class="index-item method">
+                                <a href="#method_tintPerPixel">tintPerPixel</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item method private">
-                                <a href="#method_renderWebGL">renderWebGL</a>
+                            <li class="index-item method">
+                                <a href="#method_tintWithMultiply">tintWithMultiply</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item method inherited">
-                                <a href="#method_setFrame">setFrame</a>
+                            <li class="index-item method">
+                                <a href="#method_tintWithOverlay">tintWithOverlay</a>
 
                                 
                                 
@@ -404,24 +355,24 @@ Otherwise black rectangles will be drawn instead.</p>
                 <div class="index-section properties">
                     <h3>Properties</h3>
 
-                    <ul class="index-list properties extends">
+                    <ul class="index-list properties">
                         
-                            <li class="index-item property inherited">
-                                <a href="#property_baseTexture">baseTexture</a>
+                            <li class="index-item property">
+                                <a href="#property_cacheStepsPerColorChannel">cacheStepsPerColorChannel</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item property inherited">
-                                <a href="#property_frame">frame</a>
+                            <li class="index-item property">
+                                <a href="#property_canUseMultiply">canUseMultiply</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item property inherited">
-                                <a href="#property_trim">trim</a>
+                            <li class="index-item property">
+                                <a href="#property_convertTintToImage">convertTintToImage</a>
 
                                 
                                 
@@ -441,8 +392,8 @@ Otherwise black rectangles will be drawn instead.</p>
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_destroy" class="method item inherited">
-    <h3 class="name"><code>destroy</code></h3>
+                    <div id="method_getTintedTexture" class="method item">
+    <h3 class="name"><code>getTintedTexture</code></h3>
 
     
         <div class="args">
@@ -450,7 +401,13 @@ Otherwise black rectangles will be drawn instead.</p>
             
                 <li class="arg">
                     
-                        <code>destroyBase</code>
+                        <code>sprite</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>color</code>
                     
                 </li>
             
@@ -462,187 +419,6 @@ Otherwise black rectangles will be drawn instead.</p>
 
     
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Texture.html#method_destroy">Texture</a>:
-            
-        
-        
-        <a href="../files/src_pixi_textures_Texture.js.html#l93"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:93</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Destroys this texture</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">destroyBase</code>
-                        <span class="type">Boolean</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>Whether to destroy the base texture as well</p>
-
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_onBaseTextureLoaded" class="method item private inherited">
-    <h3 class="name"><code>onBaseTextureLoaded</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>event</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-        <span class="flag private">private</span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/Texture.html#method_onBaseTextureLoaded">Texture</a>:
-            
-        
-        
-        <a href="../files/src_pixi_textures_Texture.js.html#l74"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:74</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Called when the base texture is loaded</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">event</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_renderCanvas" class="method item private">
-    <h3 class="name"><code>renderCanvas</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>displayObject</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>clear</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-        <span class="flag private">private</span>
     
 
     
@@ -664,7 +440,7 @@ Otherwise black rectangles will be drawn instead.</p>
             
         
         
-        <a href="../files/src_pixi_textures_RenderTexture.js.html#l153"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:153</code></a>
+        <a href="../files/src_pixi_renderers_canvas_utils_CanvasTinter.js.html#l21"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;utils&#x2F;CanvasTinter.js:21</code></a>
         
         </p>
 
@@ -675,7 +451,8 @@ Otherwise black rectangles will be drawn instead.</p>
     </div>
 
     <div class="description">
-        <p>This function will draw the display object to the texture.</p>
+        <p>Basically this method just needs a sprite and a color and tints the sprite 
+with the given color</p>
 
     </div>
 
@@ -687,14 +464,14 @@ Otherwise black rectangles will be drawn instead.</p>
             
                 <li class="param">
                     
-                        <code class="param-name">displayObject</code>
-                        <span class="type"><a href="../classes/DisplayObject.html" class="crosslink">DisplayObject</a></span>
+                        <code class="param-name">sprite</code>
+                        <span class="type"><a href="../classes/Sprite.html" class="crosslink">Sprite</a></span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>The display object to render this texture on</p>
+                        <p>the sprite to tint</p>
 
                     </div>
 
@@ -703,14 +480,14 @@ Otherwise black rectangles will be drawn instead.</p>
             
                 <li class="param">
                     
-                        <code class="param-name">clear</code>
-                        <span class="type">Boolean</span>
+                        <code class="param-name">color</code>
+                        <span class="type">Number</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>If true the texture will be cleared before the displayObject is drawn</p>
+                        <p>the color to use to tint the sprite with</p>
 
                     </div>
 
@@ -727,8 +504,8 @@ Otherwise black rectangles will be drawn instead.</p>
 </div>
 
                 
-                    <div id="method_renderWebGL" class="method item private">
-    <h3 class="name"><code>renderWebGL</code></h3>
+                    <div id="method_roundColor" class="method item">
+    <h3 class="name"><code>roundColor</code></h3>
 
     
         <div class="args">
@@ -736,13 +513,7 @@ Otherwise black rectangles will be drawn instead.</p>
             
                 <li class="arg">
                     
-                        <code>displayObject</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>clear</code>
+                        <code>color</code>
                     
                 </li>
             
@@ -754,8 +525,6 @@ Otherwise black rectangles will be drawn instead.</p>
 
     
 
-    
-        <span class="flag private">private</span>
     
 
     
@@ -777,7 +546,7 @@ Otherwise black rectangles will be drawn instead.</p>
             
         
         
-        <a href="../files/src_pixi_textures_RenderTexture.js.html#l102"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:102</code></a>
+        <a href="../files/src_pixi_renderers_canvas_utils_CanvasTinter.js.html#l197"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;utils&#x2F;CanvasTinter.js:197</code></a>
         
         </p>
 
@@ -788,7 +557,7 @@ Otherwise black rectangles will be drawn instead.</p>
     </div>
 
     <div class="description">
-        <p>This function will draw the display object to the texture.</p>
+        <p>Rounds the specified color according to the PIXI.CanvasTinter.cacheStepsPerColorChannel</p>
 
     </div>
 
@@ -800,30 +569,14 @@ Otherwise black rectangles will be drawn instead.</p>
             
                 <li class="param">
                     
-                        <code class="param-name">displayObject</code>
-                        <span class="type"><a href="../classes/DisplayObject.html" class="crosslink">DisplayObject</a></span>
+                        <code class="param-name">color</code>
+                        <span class="type">Number</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>The display object to render this texture on</p>
-
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">clear</code>
-                        <span class="type">Boolean</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>If true the texture will be cleared before the displayObject is drawn</p>
+                        <p>the color to round, should be a hex color</p>
 
                     </div>
 
@@ -840,8 +593,8 @@ Otherwise black rectangles will be drawn instead.</p>
 </div>
 
                 
-                    <div id="method_setFrame" class="method item inherited">
-    <h3 class="name"><code>setFrame</code></h3>
+                    <div id="method_tintPerPixel" class="method item">
+    <h3 class="name"><code>tintPerPixel</code></h3>
 
     
         <div class="args">
@@ -849,7 +602,19 @@ Otherwise black rectangles will be drawn instead.</p>
             
                 <li class="arg">
                     
-                        <code>frame</code>
+                        <code>texture</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>color</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>canvas</code>
                     
                 </li>
             
@@ -874,12 +639,15 @@ Otherwise black rectangles will be drawn instead.</p>
     <div class="meta">
         
             
-                <p>Inherited from
-                <a href="../classes/Texture.html#method_setFrame">Texture</a>:
+                
+                <p>
+                
+                Defined in
+                
             
         
         
-        <a href="../files/src_pixi_textures_Texture.js.html#l104"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:104</code></a>
+        <a href="../files/src_pixi_renderers_canvas_utils_CanvasTinter.js.html#l153"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;utils&#x2F;CanvasTinter.js:153</code></a>
         
         </p>
 
@@ -890,7 +658,7 @@ Otherwise black rectangles will be drawn instead.</p>
     </div>
 
     <div class="description">
-        <p>Specifies the rectangle region of the baseTexture</p>
+        <p>Tint a texture pixel per pixel</p>
 
     </div>
 
@@ -902,14 +670,312 @@ Otherwise black rectangles will be drawn instead.</p>
             
                 <li class="param">
                     
-                        <code class="param-name">frame</code>
-                        <span class="type"><a href="../classes/Rectangle.html" class="crosslink">Rectangle</a></span>
+                        <code class="param-name">texture</code>
+                        <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>The frame of the texture to set it to</p>
+                        <p>the texture to tint</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">color</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the color to use to tint the sprite with</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">canvas</code>
+                        <span class="type">HTMLCanvasElement</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the current canvas</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_tintWithMultiply" class="method item">
+    <h3 class="name"><code>tintWithMultiply</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>texture</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>color</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>canvas</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_renderers_canvas_utils_CanvasTinter.js.html#l70"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;utils&#x2F;CanvasTinter.js:70</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Tint a texture using the &quot;multiply&quot; operation</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">texture</code>
+                        <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the texture to tint</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">color</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the color to use to tint the sprite with</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">canvas</code>
+                        <span class="type">HTMLCanvasElement</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the current canvas</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_tintWithOverlay" class="method item">
+    <h3 class="name"><code>tintWithOverlay</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>texture</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>color</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>canvas</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_renderers_canvas_utils_CanvasTinter.js.html#l115"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;utils&#x2F;CanvasTinter.js:115</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Tint a texture using the &quot;overlay&quot; operation</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">texture</code>
+                        <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the texture to tint</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">color</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the color to use to tint the sprite with</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">canvas</code>
+                        <span class="type">HTMLCanvasElement</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the current canvas</p>
 
                     </div>
 
@@ -934,9 +1000,9 @@ Otherwise black rectangles will be drawn instead.</p>
                 <h2 class="off-left">Properties</h2>
 
                 
-                    <div id="property_baseTexture" class="property item inherited">
-    <h3 class="name"><code>baseTexture</code></h3>
-    <span class="type"><a href="../classes/BaseTexture.html" class="crosslink">BaseTexture</a></span>
+                    <div id="property_cacheStepsPerColorChannel" class="property item">
+    <h3 class="name"><code>cacheStepsPerColorChannel</code></h3>
+    <span class="type">Number</span>
 
     
 
@@ -949,12 +1015,15 @@ Otherwise black rectangles will be drawn instead.</p>
     <div class="meta">
         
             
-                <p>Inherited from
-                <a href="../classes/Texture.html#property_baseTexture">Texture</a>:
+                
+                <p>
+                
+                Defined in
+                
             
         
         
-        <a href="../files/src_pixi_textures_Texture.js.html#l33"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:33</code></a>
+        <a href="../files/src_pixi_renderers_canvas_utils_CanvasTinter.js.html#l215"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;utils&#x2F;CanvasTinter.js:215</code></a>
         
         </p>
 
@@ -964,7 +1033,7 @@ Otherwise black rectangles will be drawn instead.</p>
     </div>
 
     <div class="description">
-        <p>The base texture of this texture</p>
+        <p>Number of steps which will be used as a cap when rounding colors</p>
 
     </div>
 
@@ -976,9 +1045,9 @@ Otherwise black rectangles will be drawn instead.</p>
 </div>
 
                 
-                    <div id="property_frame" class="property item inherited">
-    <h3 class="name"><code>frame</code></h3>
-    <span class="type"><a href="../classes/Rectangle.html" class="crosslink">Rectangle</a></span>
+                    <div id="property_canUseMultiply" class="property item">
+    <h3 class="name"><code>canUseMultiply</code></h3>
+    <span class="type">Boolean</span>
 
     
 
@@ -991,12 +1060,15 @@ Otherwise black rectangles will be drawn instead.</p>
     <div class="meta">
         
             
-                <p>Inherited from
-                <a href="../classes/Texture.html#property_frame">Texture</a>:
+                
+                <p>
+                
+                Defined in
+                
             
         
         
-        <a href="../files/src_pixi_textures_Texture.js.html#l41"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:41</code></a>
+        <a href="../files/src_pixi_renderers_canvas_utils_CanvasTinter.js.html#l232"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;utils&#x2F;CanvasTinter.js:232</code></a>
         
         </p>
 
@@ -1006,7 +1078,7 @@ Otherwise black rectangles will be drawn instead.</p>
     </div>
 
     <div class="description">
-        <p>The frame specifies the region of the base texture that this texture uses</p>
+        <p>Whether or not the Canvas BlendModes are supported, consequently the ability to tint using the multiply method</p>
 
     </div>
 
@@ -1018,9 +1090,9 @@ Otherwise black rectangles will be drawn instead.</p>
 </div>
 
                 
-                    <div id="property_trim" class="property item inherited">
-    <h3 class="name"><code>trim</code></h3>
-    <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>
+                    <div id="property_convertTintToImage" class="property item">
+    <h3 class="name"><code>convertTintToImage</code></h3>
+    <span class="type">Boolean</span>
 
     
 
@@ -1033,12 +1105,15 @@ Otherwise black rectangles will be drawn instead.</p>
     <div class="meta">
         
             
-                <p>Inherited from
-                <a href="../classes/Texture.html#property_trim">Texture</a>:
+                
+                <p>
+                
+                Defined in
+                
             
         
         
-        <a href="../files/src_pixi_textures_Texture.js.html#l49"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:49</code></a>
+        <a href="../files/src_pixi_renderers_canvas_utils_CanvasTinter.js.html#l223"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;utils&#x2F;CanvasTinter.js:223</code></a>
         
         </p>
 
@@ -1048,7 +1123,7 @@ Otherwise black rectangles will be drawn instead.</p>
     </div>
 
     <div class="description">
-        <p>The trim point</p>
+        <p>Number of steps which will be used as a cap when rounding colors</p>
 
     </div>
 

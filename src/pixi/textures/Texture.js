@@ -56,6 +56,8 @@ PIXI.Texture = function(baseTexture, frame)
   
     this.scope = this;
 
+    this._uvs = null;
+    
     if(baseTexture.hasLoaded)
     {
         if(this.noFrame)frame = new PIXI.Rectangle(0,0, baseTexture.width, baseTexture.height);
@@ -228,7 +230,8 @@ PIXI.Texture.addTextureToCache = function(texture, id)
 PIXI.Texture.removeTextureFromCache = function(id)
 {
     var texture = PIXI.TextureCache[id];
-    PIXI.TextureCache[id] = null;
+    delete PIXI.TextureCache[id];
+    delete PIXI.BaseTextureCache[id];
     return texture;
 };
 

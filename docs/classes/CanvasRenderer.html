@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.4.3</em>
+            <em>API Docs for: 1.5.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -43,11 +43,15 @@
             
                 <li><a href="../classes/AbstractFilter.html">AbstractFilter</a></li>
             
+                <li><a href="../classes/AjaxRequest.html">AjaxRequest</a></li>
+            
                 <li><a href="../classes/AlphaMaskFilter.html">AlphaMaskFilter</a></li>
             
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
                 <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
+                <li><a href="../classes/autoDetectRenderer.html">autoDetectRenderer</a></li>
             
                 <li><a href="../classes/BaseTexture.html">BaseTexture</a></li>
             
@@ -59,7 +63,11 @@
             
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
+                <li><a href="../classes/CanvasMaskManager.html">CanvasMaskManager</a></li>
+            
                 <li><a href="../classes/CanvasRenderer.html">CanvasRenderer</a></li>
+            
+                <li><a href="../classes/CanvasTinter.html">CanvasTinter</a></li>
             
                 <li><a href="../classes/Circle.html">Circle</a></li>
             
@@ -79,11 +87,17 @@
             
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
+                <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
+            
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
             
                 <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
                 <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
+            
+                <li><a href="../classes/InteractionData.html">InteractionData</a></li>
+            
+                <li><a href="../classes/InteractionManager.html">InteractionManager</a></li>
             
                 <li><a href="../classes/InvertFilter.html">InvertFilter</a></li>
             
@@ -91,29 +105,25 @@
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
+                <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
+            
                 <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
             
-                <li><a href="../classes/PIXI.PixiFastShader.html">PIXI.PixiFastShader</a></li>
+                <li><a href="../classes/PixiFastShader.html">PixiFastShader</a></li>
             
-                <li><a href="../classes/PIXI.PixiShader.html">PIXI.PixiShader</a></li>
+                <li><a href="../classes/PixiShader.html">PixiShader</a></li>
             
                 <li><a href="../classes/Point.html">Point</a></li>
             
                 <li><a href="../classes/Polygon.html">Polygon</a></li>
             
-                <li><a href="../classes/PolyK._convex.html">PolyK._convex</a></li>
+                <li><a href="../classes/PolyK.html">PolyK</a></li>
             
-                <li><a href="../classes/PolyK._PointInTriangle.html">PolyK._PointInTriangle</a></li>
-            
-                <li><a href="../classes/PolyK.AjaxRequest.html">PolyK.AjaxRequest</a></li>
-            
-                <li><a href="../classes/PolyK.InteractionData.html">PolyK.InteractionData</a></li>
-            
-                <li><a href="../classes/PolyK.InteractionManager.html">PolyK.InteractionManager</a></li>
+                <li><a href="../classes/PrimitiveShader.html">PrimitiveShader</a></li>
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
-                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
+                <li><a href="../classes/Rope.html">Rope</a></li>
             
                 <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
             
@@ -121,9 +131,13 @@
             
                 <li><a href="../classes/Sprite.html">Sprite</a></li>
             
+                <li><a href="../classes/SpriteBatch.html">SpriteBatch</a></li>
+            
                 <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
             
                 <li><a href="../classes/Stage.html">Stage</a></li>
+            
+                <li><a href="../classes/Strip.html">Strip</a></li>
             
                 <li><a href="../classes/Text.html">Text</a></li>
             
@@ -133,7 +147,17 @@
             
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
             
+                <li><a href="../classes/WebGLFilterManager.html">WebGLFilterManager</a></li>
+            
+                <li><a href="../classes/WebGLGraphics.html">WebGLGraphics</a></li>
+            
+                <li><a href="../classes/WebGLMaskManager.html">WebGLMaskManager</a></li>
+            
                 <li><a href="../classes/WebGLRenderer.html">WebGLRenderer</a></li>
+            
+                <li><a href="../classes/WebGLShaderManager.html">WebGLShaderManager</a></li>
+            
+                <li><a href="../classes/WebGLSpriteBatch.html">WebGLSpriteBatch</a></li>
             
             </ul>
 
@@ -217,25 +241,25 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
                 <li class="arg">
                     
-                        <code>width=0</code>
+                        <code>width=800</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>height=0</code>
+                        <code>height=600</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>view</code>
+                        <code class="optional">[view]</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>transparent=false</code>
+                        <code class="optional">[transparent=false]</code>
                     
                 </li>
             
@@ -290,7 +314,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
                 <li class="param">
                     
-                        <code class="param-name">width=0</code>
+                        <code class="param-name">width=800</code>
                         <span class="type">Number</span>
                     
 
@@ -306,7 +330,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
                 <li class="param">
                     
-                        <code class="param-name">height=0</code>
+                        <code class="param-name">height=600</code>
                         <span class="type">Number</span>
                     
 
@@ -322,8 +346,9 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
                 <li class="param">
                     
-                        <code class="param-name">view</code>
-                        <span class="type">Canvas</span>
+                        <code class="param-name optional">[view]</code>
+                        <span class="type">HTMLCanvasElement</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
                     
 
                     
@@ -338,8 +363,9 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
                 <li class="param">
                     
-                        <code class="param-name">transparent=false</code>
+                        <code class="param-name optional">[transparent=false]</code>
                         <span class="type">Boolean</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
                     
 
                     
@@ -388,6 +414,22 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
 
                     <ul class="index-list methods">
                         
+                            <li class="index-item method private">
+                                <a href="#method_CanvasBuffer">CanvasBuffer</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method private">
+                                <a href="#method_clear">clear</a>
+
+                                
+                                
+                            </li>
+                        
                             <li class="index-item method">
                                 <a href="#method_render">render</a>
 
@@ -423,6 +465,13 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
                                 
                             </li>
                         
+                            <li class="index-item method private">
+                                <a href="#method_resize">resize</a>
+
+                                
+                                
+                            </li>
+                        
                     </ul>
                 </div>
             
@@ -434,6 +483,20 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
                     <ul class="index-list properties">
                         
                             <li class="index-item property">
+                                <a href="#property_CanvasMaskManager">CanvasMaskManager</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_clearBeforeRender">clearBeforeRender</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
                                 <a href="#property_context">context</a>
 
                                 
@@ -442,6 +505,27 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
                         
                             <li class="index-item property">
                                 <a href="#property_height">height</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_renderSession">renderSession</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_roundPixels">roundPixels</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_transparent">transparent</a>
 
                                 
                                 
@@ -473,6 +557,178 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
         
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
+
+                
+                    <div id="method_CanvasBuffer" class="method item private">
+    <h3 class="name"><code>CanvasBuffer</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>width</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>height</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l343"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:343</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Creates a Canvas element of the given size</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">width</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the width for the newly created canvas</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">height</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the height for the newly created canvas</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_clear" class="method item private">
+    <h3 class="name"><code>clear</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l364"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:364</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Clears the canvas that was created by the CanvasBuffer class</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
 
                 
                     <div id="method_render" class="method item">
@@ -517,7 +773,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l134"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:134</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l172"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:172</code></a>
         
         </p>
 
@@ -577,6 +833,12 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
                     
                 </li>
             
+                <li class="arg">
+                    
+                        <code>context</code>
+                    
+                </li>
+            
             </ul><span class="paren">)</span>
         </div>
     
@@ -608,7 +870,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l208"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:208</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l235"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:235</code></a>
         
         </p>
 
@@ -639,6 +901,22 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
 
                     <div class="param-description">
                         <p>The displayObject to render</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">context</code>
+                        <span class="type">Context2D</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the context 2d method of the canvas</p>
 
                     </div>
 
@@ -699,7 +977,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l259"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:259</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l287"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:287</code></a>
         
         </p>
 
@@ -723,7 +1001,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
                 <li class="param">
                     
                         <code class="param-name">strip</code>
-                        <span class="type">Strip</span>
+                        <span class="type"><a href="../classes/Strip.html" class="crosslink">Strip</a></span>
                     
 
                     
@@ -790,7 +1068,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l225"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:225</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l253"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:253</code></a>
         
         </p>
 
@@ -814,7 +1092,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
                 <li class="param">
                     
                         <code class="param-name">strip</code>
-                        <span class="type">Strip</span>
+                        <span class="type"><a href="../classes/Strip.html" class="crosslink">Strip</a></span>
                     
 
                     
@@ -885,7 +1163,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l192"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:192</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l219"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:219</code></a>
         
         </p>
 
@@ -896,7 +1174,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
     </div>
 
     <div class="description">
-        <p>resizes the canvas view to the specified width and height</p>
+        <p>Resizes the canvas view to the specified width and height</p>
 
     </div>
 
@@ -948,17 +1226,36 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
 </div>
 
                 
-            </div>
-        
+                    <div id="method_resize" class="method item private">
+    <h3 class="name"><code>resize</code></h3>
 
-        
-            <div id="properties" class="api-class-tabpanel">
-                <h2 class="off-left">Properties</h2>
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>width</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>height</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
 
-                
-                    <div id="property_context" class="property item">
-    <h3 class="name"><code>context</code></h3>
-    <span class="type">Canvas 2d Context</span>
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
 
     
 
@@ -979,7 +1276,101 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l97"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:97</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l375"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:375</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Resizes the canvas that was created by the CanvasBuffer class to the specified width and height</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">width</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the new width of the canvas</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">height</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the new height of the canvas</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+            </div>
+        
+
+        
+            <div id="properties" class="api-class-tabpanel">
+                <h2 class="off-left">Properties</h2>
+
+                
+                    <div id="property_CanvasMaskManager" class="property item">
+    <h3 class="name"><code>CanvasMaskManager</code></h3>
+    <span class="type"><a href="../classes/CanvasMaskManager.html" class="crosslink">CanvasMaskManager</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l140"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:140</code></a>
         
         </p>
 
@@ -989,7 +1380,100 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
     </div>
 
     <div class="description">
-        <p>The canvas context that the everything is drawn to</p>
+        <p>Instance of a PIXI.CanvasMaskManager, handles masking when using the canvas renderer</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_clearBeforeRender" class="property item">
+    <h3 class="name"><code>clearBeforeRender</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l22"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:22</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This sets if the CanvasRenderer will clear the canvas or not before the new render pass.
+If the Stage is NOT transparent Pixi will use a canvas sized fillRect operation every frame to set the canvas background color.
+If the Stage is transparent Pixi will use clearRect to clear the canvas every frame.
+Disable this by setting this to false. For example if your game has a canvas filling background image you often don&#39;t need this set.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_context" class="property item">
+    <h3 class="name"><code>context</code></h3>
+    <span class="type">HTMLCanvasElement 2d Context</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l125"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:125</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The canvas 2d context that everything is drawn with</p>
 
     </div>
 
@@ -1024,7 +1508,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l80"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:80</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l108"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:108</code></a>
         
         </p>
 
@@ -1048,9 +1532,9 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
 </div>
 
                 
-                    <div id="property_view" class="property item">
-    <h3 class="name"><code>view</code></h3>
-    <span class="type">Canvas</span>
+                    <div id="property_renderSession" class="property item">
+    <h3 class="name"><code>renderSession</code></h3>
+    <span class="type">Object</span>
 
     
 
@@ -1071,7 +1555,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l89"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:89</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l147"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:147</code></a>
         
         </p>
 
@@ -1081,7 +1565,143 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
     </div>
 
     <div class="description">
-        <p>The canvas element that the everything is drawn to</p>
+        <p>The render session is just a bunch of parameter used for rendering</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_roundPixels" class="property item">
+    <h3 class="name"><code>roundPixels</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l34"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:34</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>If true Pixi will Math.floor() x/y values when rendering, stopping pixel interpolation.
+Handy for crisp pixel art and speed on legacy devices.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_transparent" class="property item">
+    <h3 class="name"><code>transparent</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l44"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:44</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Whether the render view is transparent</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_view" class="property item">
+    <h3 class="name"><code>view</code></h3>
+    <span class="type">HTMLCanvasElement</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l117"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:117</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The canvas element that everything is drawn to</p>
 
     </div>
 
@@ -1116,7 +1736,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l71"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:71</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l99"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:99</code></a>
         
         </p>
 

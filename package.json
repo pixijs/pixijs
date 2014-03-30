@@ -1,6 +1,6 @@
 {
     "name": "pixi.js",
-    "version": "1.5.0",
+    "version": "1.5.2",
     "description": "Pixi.js is a fast lightweight 2D library that works across all devices.",
 
     "author": "Mat Groves",
@@ -36,10 +36,11 @@
         "grunt-contrib-concat": "~0.3",
         "mocha": "~1.15",
         "chai": "~1.8",
-        "karma": "~0.10",
+        "karma": "~0.12",
         "karma-chrome-launcher": "~0.1",
         "karma-firefox-launcher": "~0.1",
         "karma-mocha": "~0.1",
-        "karma-spec-reporter": "~0.0.6"
+        "karma-spec-reporter": "~0.0.6",
+        "grunt-contrib-watch": "~0.5.3"
     }
 }

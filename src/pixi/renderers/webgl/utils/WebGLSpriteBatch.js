@@ -32,7 +32,7 @@ PIXI.WebGLSpriteBatch = function(gl)
      * @property size
      * @type Number
      */
-    this.size = 10000;//Math.pow(2, 16) /  this.vertSize;
+    this.size = 2000;//Math.pow(2, 16) /  this.vertSize;
 
     //the total number of floats in our batch
     var numVerts = this.size * 4 *  this.vertSize;
@@ -137,11 +137,13 @@ PIXI.WebGLSpriteBatch.prototype.end = function()
 */
 PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
 {
+    var texture = sprite.texture;
+
     // check texture..
-    if(sprite.texture.baseTexture !== this.currentBaseTexture || this.currentBatchSize >= this.size)
+    if(texture.baseTexture !== this.currentBaseTexture || this.currentBatchSize >= this.size)
     {
         this.flush();
-        this.currentBaseTexture = sprite.texture.baseTexture;
+        this.currentBaseTexture = texture.baseTexture;
     }
 
 
@@ -162,8 +164,6 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
 
     var verticies = this.vertices;
 
-    var width = sprite.texture.frame.width;
-    var height = sprite.texture.frame.height;
 
     // TODO trim??
     var aX = sprite.anchor.x;
@@ -177,18 +177,19 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
         var trim = sprite.texture.trim;
 
         w1 = trim.x - aX * trim.width;
-        w0 = w1 + width;
+        w0 = w1 + texture.frame.width;
 
         h1 = trim.y - aY * trim.height;
-        h0 = h1 + height;
+        h0 = h1 + texture.frame.height;
+
     }
     else
     {
-        w0 = (width ) * (1-aX);
-        w1 = (width ) * -aX;
+        w0 = (texture.frame.width ) * (1-aX);
+        w1 = (texture.frame.width ) * -aX;
 
-        h0 = height * (1-aY);
-        h1 = height * -aY;
+        h0 = texture.frame.height * (1-aY);
+        h1 = texture.frame.height * -aY;
     }
 
     var index = this.currentBatchSize * 4 * this.vertSize;
@@ -273,15 +274,15 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
      // set the textures uvs temporarily
     // TODO create a separate texture so that we can tile part of a texture
 
-    if(!tilingSprite._uvs)tilingSprite._uvs = new Float32Array(8);
+    if(!tilingSprite._uvs)tilingSprite._uvs = new PIXI.TextureUvs();
 
     var uvs = tilingSprite._uvs;
 
-    tilingSprite.tilePosition.x %= texture.baseTexture.width;
-    tilingSprite.tilePosition.y %= texture.baseTexture.height;
+    tilingSprite.tilePosition.x %= texture.baseTexture.width * tilingSprite.tileScaleOffset.x;
+    tilingSprite.tilePosition.y %= texture.baseTexture.height * tilingSprite.tileScaleOffset.y;
 
-    var offsetX =  tilingSprite.tilePosition.x/texture.baseTexture.width;
-    var offsetY =  tilingSprite.tilePosition.y/texture.baseTexture.height;
+    var offsetX =  tilingSprite.tilePosition.x/(texture.baseTexture.width*tilingSprite.tileScaleOffset.x);
+    var offsetY =  tilingSprite.tilePosition.y/(texture.baseTexture.height*tilingSprite.tileScaleOffset.y);
 
     var scaleX =  (tilingSprite.width / texture.baseTexture.width)  / (tilingSprite.tileScale.x * tilingSprite.tileScaleOffset.x);
     var scaleY =  (tilingSprite.height / texture.baseTexture.height) / (tilingSprite.tileScale.y * tilingSprite.tileScaleOffset.y);
@@ -298,7 +299,6 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
     uvs.x3 = 0 - offsetX;
     uvs.y3 = (1 *scaleY) - offsetY;
 
-   
     // get the tilingSprites current alpha
     var alpha = tilingSprite.worldAlpha;
     var tint = tilingSprite.tint;

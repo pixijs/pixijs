@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.4.3</em>
+            <em>API Docs for: 1.5.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -43,11 +43,15 @@
             
                 <li><a href="../classes/AbstractFilter.html">AbstractFilter</a></li>
             
+                <li><a href="../classes/AjaxRequest.html">AjaxRequest</a></li>
+            
                 <li><a href="../classes/AlphaMaskFilter.html">AlphaMaskFilter</a></li>
             
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
                 <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
+                <li><a href="../classes/autoDetectRenderer.html">autoDetectRenderer</a></li>
             
                 <li><a href="../classes/BaseTexture.html">BaseTexture</a></li>
             
@@ -59,7 +63,11 @@
             
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
+                <li><a href="../classes/CanvasMaskManager.html">CanvasMaskManager</a></li>
+            
                 <li><a href="../classes/CanvasRenderer.html">CanvasRenderer</a></li>
+            
+                <li><a href="../classes/CanvasTinter.html">CanvasTinter</a></li>
             
                 <li><a href="../classes/Circle.html">Circle</a></li>
             
@@ -79,11 +87,17 @@
             
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
+                <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
+            
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
             
                 <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
                 <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
+            
+                <li><a href="../classes/InteractionData.html">InteractionData</a></li>
+            
+                <li><a href="../classes/InteractionManager.html">InteractionManager</a></li>
             
                 <li><a href="../classes/InvertFilter.html">InvertFilter</a></li>
             
@@ -91,29 +105,25 @@
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
+                <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
+            
                 <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
             
-                <li><a href="../classes/PIXI.PixiFastShader.html">PIXI.PixiFastShader</a></li>
+                <li><a href="../classes/PixiFastShader.html">PixiFastShader</a></li>
             
-                <li><a href="../classes/PIXI.PixiShader.html">PIXI.PixiShader</a></li>
+                <li><a href="../classes/PixiShader.html">PixiShader</a></li>
             
                 <li><a href="../classes/Point.html">Point</a></li>
             
                 <li><a href="../classes/Polygon.html">Polygon</a></li>
             
-                <li><a href="../classes/PolyK._convex.html">PolyK._convex</a></li>
+                <li><a href="../classes/PolyK.html">PolyK</a></li>
             
-                <li><a href="../classes/PolyK._PointInTriangle.html">PolyK._PointInTriangle</a></li>
-            
-                <li><a href="../classes/PolyK.AjaxRequest.html">PolyK.AjaxRequest</a></li>
-            
-                <li><a href="../classes/PolyK.InteractionData.html">PolyK.InteractionData</a></li>
-            
-                <li><a href="../classes/PolyK.InteractionManager.html">PolyK.InteractionManager</a></li>
+                <li><a href="../classes/PrimitiveShader.html">PrimitiveShader</a></li>
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
-                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
+                <li><a href="../classes/Rope.html">Rope</a></li>
             
                 <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
             
@@ -121,9 +131,13 @@
             
                 <li><a href="../classes/Sprite.html">Sprite</a></li>
             
+                <li><a href="../classes/SpriteBatch.html">SpriteBatch</a></li>
+            
                 <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
             
                 <li><a href="../classes/Stage.html">Stage</a></li>
+            
+                <li><a href="../classes/Strip.html">Strip</a></li>
             
                 <li><a href="../classes/Text.html">Text</a></li>
             
@@ -133,7 +147,17 @@
             
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
             
+                <li><a href="../classes/WebGLFilterManager.html">WebGLFilterManager</a></li>
+            
+                <li><a href="../classes/WebGLGraphics.html">WebGLGraphics</a></li>
+            
+                <li><a href="../classes/WebGLMaskManager.html">WebGLMaskManager</a></li>
+            
                 <li><a href="../classes/WebGLRenderer.html">WebGLRenderer</a></li>
+            
+                <li><a href="../classes/WebGLShaderManager.html">WebGLShaderManager</a></li>
+            
+                <li><a href="../classes/WebGLSpriteBatch.html">WebGLSpriteBatch</a></li>
             
             </ul>
 
@@ -287,8 +311,36 @@
 
                     <ul class="index-list methods">
                         
+                            <li class="index-item method private">
+                                <a href="#method__renderCanvas">_renderCanvas</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method private">
+                                <a href="#method__renderWebGL">_renderWebGL</a>
+
+                                
+                                
+                            </li>
+                        
                             <li class="index-item method">
                                 <a href="#method_click">click</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_getBounds">getBounds</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_getLocalBounds">getLocalBounds</a>
 
                                 
                                 
@@ -339,6 +391,13 @@
                             </li>
                         
                             <li class="index-item method">
+                                <a href="#method_setStageReference">setStageReference</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
                                 <a href="#method_tap">tap</a>
 
                                 
@@ -377,6 +436,27 @@
                     <ul class="index-list properties">
                         
                             <li class="index-item property private">
+                                <a href="#property__bounds">_bounds</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property private">
+                                <a href="#property__currentBounds">_currentBounds</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property private">
+                                <a href="#property__currentBounds">_currentBounds</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property private">
                                 <a href="#property__interactive">_interactive</a>
 
                                 
@@ -392,6 +472,13 @@
                         
                             <li class="index-item property">
                                 <a href="#property_buttonMode">buttonMode</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_cacheAsBitmap">cacheAsBitmap</a>
 
                                 
                                 
@@ -419,6 +506,13 @@
                             </li>
                         
                             <li class="index-item property">
+                                <a href="#property_filterArea">filterArea</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
                                 <a href="#property_filters">filters</a>
 
                                 
@@ -434,13 +528,6 @@
                         
                             <li class="index-item property">
                                 <a href="#property_interactive">interactive</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property private">
-                                <a href="#property_localTransform">localTransform</a>
 
                                 
                                 
@@ -530,6 +617,20 @@
                                 
                             </li>
                         
+                            <li class="index-item property">
+                                <a href="#property_x">x</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_y">y</a>
+
+                                
+                                
+                            </li>
+                        
                     </ul>
                 </div>
             
@@ -542,6 +643,186 @@
         
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
+
+                
+                    <div id="method__renderCanvas" class="method item private">
+    <h3 class="name"><code>_renderCanvas</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>renderSession</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l578"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:578</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Renders the object using the Canvas renderer</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">renderSession</code>
+                        <span class="type">RenderSession</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method__renderWebGL" class="method item private">
+    <h3 class="name"><code>_renderWebGL</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>renderSession</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l552"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:552</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Renders the object using the WebGL renderer</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">renderSession</code>
+                        <span class="type">RenderSession</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
 
                 
                     <div id="method_click" class="method item">
@@ -586,7 +867,7 @@
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l188"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:188</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l206"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:206</code></a>
         
         </p>
 
@@ -610,7 +891,7 @@
                 <li class="param">
                     
                         <code class="param-name">interactionData</code>
-                        <span class="type">InteractionData</span>
+                        <span class="type"><a href="../classes/InteractionData.html" class="crosslink">InteractionData</a></span>
                     
 
                     
@@ -626,6 +907,152 @@
         </div>
     
 
+    
+
+    
+</div>
+
+                
+                    <div id="method_getBounds" class="method item">
+    <h3 class="name"><code>getBounds</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Rectangle.html" class="crosslink">Rectangle</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l460"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:460</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Retrieves the bounds of the displayObject as a rectangle object</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/Rectangle.html" class="crosslink">Rectangle</a></span>:
+                    
+                    <p>the rectangular bounding area</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_getLocalBounds" class="method item">
+    <h3 class="name"><code>getLocalBounds</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Rectangle.html" class="crosslink">Rectangle</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l472"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:472</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Retrieves the local bounds of the displayObject as a rectangle object</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/Rectangle.html" class="crosslink">Rectangle</a></span>:
+                    
+                    <p>the rectangular bounding area</p>
+
+                
+            </div>
+        </div>
     
 
     
@@ -674,7 +1101,7 @@
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l194"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:194</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l212"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:212</code></a>
         
         </p>
 
@@ -698,7 +1125,7 @@
                 <li class="param">
                     
                         <code class="param-name">interactionData</code>
-                        <span class="type">InteractionData</span>
+                        <span class="type"><a href="../classes/InteractionData.html" class="crosslink">InteractionData</a></span>
                     
 
                     
@@ -762,7 +1189,7 @@
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l220"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:220</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l238"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:238</code></a>
         
         </p>
 
@@ -786,7 +1213,7 @@
                 <li class="param">
                     
                         <code class="param-name">interactionData</code>
-                        <span class="type">InteractionData</span>
+                        <span class="type"><a href="../classes/InteractionData.html" class="crosslink">InteractionData</a></span>
                     
 
                     
@@ -850,7 +1277,7 @@
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l214"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:214</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l232"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:232</code></a>
         
         </p>
 
@@ -874,7 +1301,7 @@
                 <li class="param">
                     
                         <code class="param-name">interactionData</code>
-                        <span class="type">InteractionData</span>
+                        <span class="type"><a href="../classes/InteractionData.html" class="crosslink">InteractionData</a></span>
                     
 
                     
@@ -938,7 +1365,7 @@
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l200"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:200</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l218"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:218</code></a>
         
         </p>
 
@@ -963,7 +1390,7 @@ for this callback to be fired the mouse must have been pressed down over the dis
                 <li class="param">
                     
                         <code class="param-name">interactionData</code>
-                        <span class="type">InteractionData</span>
+                        <span class="type"><a href="../classes/InteractionData.html" class="crosslink">InteractionData</a></span>
                     
 
                     
@@ -1027,7 +1454,7 @@ for this callback to be fired the mouse must have been pressed down over the dis
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l207"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:207</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l225"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:225</code></a>
         
         </p>
 
@@ -1052,7 +1479,7 @@ for this callback to be fired, The touch must have started over the displayObjec
                 <li class="param">
                     
                         <code class="param-name">interactionData</code>
-                        <span class="type">InteractionData</span>
+                        <span class="type"><a href="../classes/InteractionData.html" class="crosslink">InteractionData</a></span>
                     
 
                     
@@ -1118,7 +1545,7 @@ for this callback to be fired, The touch must have started over the displayObjec
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l261"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:261</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l279"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:279</code></a>
         
         </p>
 
@@ -1152,6 +1579,95 @@ Instead of using this function you can now simply set the interactive property t
 
                     <div class="param-description">
                          
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_setStageReference" class="method item">
+    <h3 class="name"><code>setStageReference</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>stage</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l484"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:484</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Sets the object&#39;s stage reference, the stage this object is connected to</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">stage</code>
+                        <span class="type"><a href="../classes/Stage.html" class="crosslink">Stage</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the stage that the object will have as its current stage reference</p>
+
                     </div>
 
                     
@@ -1209,7 +1725,7 @@ Instead of using this function you can now simply set the interactive property t
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l231"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:231</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l249"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:249</code></a>
         
         </p>
 
@@ -1234,7 +1750,7 @@ basically a touch version of click</p>
                 <li class="param">
                     
                         <code class="param-name">interactionData</code>
-                        <span class="type">InteractionData</span>
+                        <span class="type"><a href="../classes/InteractionData.html" class="crosslink">InteractionData</a></span>
                     
 
                     
@@ -1298,7 +1814,7 @@ basically a touch version of click</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l244"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:244</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l262"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:262</code></a>
         
         </p>
 
@@ -1322,7 +1838,7 @@ basically a touch version of click</p>
                 <li class="param">
                     
                         <code class="param-name">interactionData</code>
-                        <span class="type">InteractionData</span>
+                        <span class="type"><a href="../classes/InteractionData.html" class="crosslink">InteractionData</a></span>
                     
 
                     
@@ -1386,7 +1902,7 @@ basically a touch version of click</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l250"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:250</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l268"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:268</code></a>
         
         </p>
 
@@ -1411,7 +1927,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
                 <li class="param">
                     
                         <code class="param-name">interactionData</code>
-                        <span class="type">InteractionData</span>
+                        <span class="type"><a href="../classes/InteractionData.html" class="crosslink">InteractionData</a></span>
                     
 
                     
@@ -1475,7 +1991,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l238"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:238</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l256"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:256</code></a>
         
         </p>
 
@@ -1499,7 +2015,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
                 <li class="param">
                     
                         <code class="param-name">interactionData</code>
-                        <span class="type">InteractionData</span>
+                        <span class="type"><a href="../classes/InteractionData.html" class="crosslink">InteractionData</a></span>
                     
 
                     
@@ -1529,6 +2045,147 @@ for this callback to be fired, The touch must have started over the sprite</p>
                 <h2 class="off-left">Properties</h2>
 
                 
+                    <div id="property__bounds" class="property item private">
+    <h3 class="name"><code>_bounds</code></h3>
+    <span class="type"><a href="../classes/Rectangle.html" class="crosslink">Rectangle</a></span>
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l173"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:173</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The original, cached bounds of the object</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property__currentBounds" class="property item private">
+    <h3 class="name"><code>_currentBounds</code></h3>
+    <span class="type"><a href="../classes/Rectangle.html" class="crosslink">Rectangle</a></span>
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l189"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:189</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The original, cached mask of the object</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property__currentBounds" class="property item private">
+    <h3 class="name"><code>_currentBounds</code></h3>
+    <span class="type"><a href="../classes/Rectangle.html" class="crosslink">Rectangle</a></span>
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l181"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:181</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The most up-to-date bounds of the object</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
                     <div id="property__interactive" class="property item private">
     <h3 class="name"><code>_interactive</code></h3>
     <span class="type">Boolean</span>
@@ -1554,7 +2211,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l115"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:115</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l113"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:113</code></a>
         
         </p>
 
@@ -1599,7 +2256,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l47"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:47</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l45"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:45</code></a>
         
         </p>
 
@@ -1644,7 +2301,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l72"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:72</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l70"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:70</code></a>
         
         </p>
 
@@ -1655,6 +2312,53 @@ for this callback to be fired, The touch must have started over the sprite</p>
 
     <div class="description">
         <p>This is used to indicate if the displayObject should display a mouse hand cursor on rollover</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_cacheAsBitmap" class="property item">
+    <h3 class="name"><code>cacheAsBitmap</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l387"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:387</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Set weather or not a the display objects is cached as a bitmap.
+This basically takes a snap shot of the display object as it is at that moment. It can provide a performance benefit for complex static displayObjects
+To remove filters simply set this property to &#39;null&#39;</p>
 
     </div>
 
@@ -1691,7 +2395,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l154"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:154</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l142"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:142</code></a>
         
         </p>
 
@@ -1736,7 +2440,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l125"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:125</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l123"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:123</code></a>
         
         </p>
 
@@ -1783,7 +2487,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l163"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:163</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l151"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:151</code></a>
         
         </p>
 
@@ -1794,6 +2498,52 @@ for this callback to be fired, The touch must have started over the sprite</p>
 
     <div class="description">
         <p>[NYI] Holds whether or not this object is dynamic, for rendering optimization</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_filterArea" class="property item">
+    <h3 class="name"><code>filterArea</code></h3>
+    <span class="type"><a href="../classes/Rectangle.html" class="crosslink">Rectangle</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l164"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:164</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The area the filter is applied to like the hitArea this is used as more of an optimisation
+rather than figuring out the dimensions of the displayObject each frame you can set this rectangle</p>
 
     </div>
 
@@ -1828,7 +2578,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l335"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:335</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l353"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:353</code></a>
         
         </p>
 
@@ -1877,7 +2627,7 @@ To remove filters simply set this property to &#39;null&#39;</li>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l63"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:63</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l61"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:61</code></a>
         
         </p>
 
@@ -1923,7 +2673,7 @@ Setting it is a neat way of optimising the hitTest function that the interaction
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l274"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:274</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l292"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:292</code></a>
         
         </p>
 
@@ -1939,53 +2689,6 @@ Setting it is a neat way of optimising the hitTest function that the interaction
 
     
         <p><strong>Default:</strong> false</p>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_localTransform" class="property item private">
-    <h3 class="name"><code>localTransform</code></h3>
-    <span class="type">Mat3</span>
-
-    
-
-    
-        <span class="flag private">private</span>
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l144"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:144</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>[read-only] Current transform of the object locally</p>
-
-    </div>
-
     
 
     
@@ -2017,7 +2720,7 @@ Setting it is a neat way of optimising the hitTest function that the interaction
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l315"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:315</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l333"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:333</code></a>
         
         </p>
 
@@ -2064,7 +2767,7 @@ To remove a mask, set this property to null.</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l88"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:88</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l86"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:86</code></a>
         
         </p>
 
@@ -2109,7 +2812,7 @@ To remove a mask, set this property to null.</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l31"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:31</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l29"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:29</code></a>
         
         </p>
 
@@ -2154,7 +2857,7 @@ To remove a mask, set this property to null.</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l15"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:15</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l13"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:13</code></a>
         
         </p>
 
@@ -2199,7 +2902,7 @@ To remove a mask, set this property to null.</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l80"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:80</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l78"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:78</code></a>
         
         </p>
 
@@ -2244,7 +2947,7 @@ To remove a mask, set this property to null.</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l39"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:39</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l37"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:37</code></a>
         
         </p>
 
@@ -2289,7 +2992,7 @@ To remove a mask, set this property to null.</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l23"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:23</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l21"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:21</code></a>
         
         </p>
 
@@ -2334,7 +3037,7 @@ To remove a mask, set this property to null.</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l97"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:97</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l95"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:95</code></a>
         
         </p>
 
@@ -2379,7 +3082,7 @@ To remove a mask, set this property to null.</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l55"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:55</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l53"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:53</code></a>
         
         </p>
 
@@ -2424,7 +3127,7 @@ To remove a mask, set this property to null.</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l106"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:106</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l104"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:104</code></a>
         
         </p>
 
@@ -2471,7 +3174,7 @@ To remove a mask, set this property to null.</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l134"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:134</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l132"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:132</code></a>
         
         </p>
 
@@ -2516,7 +3219,7 @@ To remove a mask, set this property to null.</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l294"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:294</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l312"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:312</code></a>
         
         </p>
 
@@ -2527,6 +3230,96 @@ To remove a mask, set this property to null.</p>
 
     <div class="description">
         <p>[read-only] Indicates if the sprite is globaly visible.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_x" class="property item">
+    <h3 class="name"><code>x</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l592"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:592</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The position of the displayObject on the x axis relative to the local coordinates of the parent.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_y" class="property item">
+    <h3 class="name"><code>y</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l607"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:607</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The position of the displayObject on the y axis relative to the local coordinates of the parent.</p>
 
     </div>
 

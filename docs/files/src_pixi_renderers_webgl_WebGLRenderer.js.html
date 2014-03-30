@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.4.3</em>
+            <em>API Docs for: 1.5.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -43,11 +43,15 @@
             
                 <li><a href="../classes/AbstractFilter.html">AbstractFilter</a></li>
             
+                <li><a href="../classes/AjaxRequest.html">AjaxRequest</a></li>
+            
                 <li><a href="../classes/AlphaMaskFilter.html">AlphaMaskFilter</a></li>
             
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
                 <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
+                <li><a href="../classes/autoDetectRenderer.html">autoDetectRenderer</a></li>
             
                 <li><a href="../classes/BaseTexture.html">BaseTexture</a></li>
             
@@ -59,7 +63,11 @@
             
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
+                <li><a href="../classes/CanvasMaskManager.html">CanvasMaskManager</a></li>
+            
                 <li><a href="../classes/CanvasRenderer.html">CanvasRenderer</a></li>
+            
+                <li><a href="../classes/CanvasTinter.html">CanvasTinter</a></li>
             
                 <li><a href="../classes/Circle.html">Circle</a></li>
             
@@ -79,11 +87,17 @@
             
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
+                <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
+            
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
             
                 <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
                 <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
+            
+                <li><a href="../classes/InteractionData.html">InteractionData</a></li>
+            
+                <li><a href="../classes/InteractionManager.html">InteractionManager</a></li>
             
                 <li><a href="../classes/InvertFilter.html">InvertFilter</a></li>
             
@@ -91,29 +105,25 @@
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
+                <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
+            
                 <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
             
-                <li><a href="../classes/PIXI.PixiFastShader.html">PIXI.PixiFastShader</a></li>
+                <li><a href="../classes/PixiFastShader.html">PixiFastShader</a></li>
             
-                <li><a href="../classes/PIXI.PixiShader.html">PIXI.PixiShader</a></li>
+                <li><a href="../classes/PixiShader.html">PixiShader</a></li>
             
                 <li><a href="../classes/Point.html">Point</a></li>
             
                 <li><a href="../classes/Polygon.html">Polygon</a></li>
             
-                <li><a href="../classes/PolyK._convex.html">PolyK._convex</a></li>
+                <li><a href="../classes/PolyK.html">PolyK</a></li>
             
-                <li><a href="../classes/PolyK._PointInTriangle.html">PolyK._PointInTriangle</a></li>
-            
-                <li><a href="../classes/PolyK.AjaxRequest.html">PolyK.AjaxRequest</a></li>
-            
-                <li><a href="../classes/PolyK.InteractionData.html">PolyK.InteractionData</a></li>
-            
-                <li><a href="../classes/PolyK.InteractionManager.html">PolyK.InteractionManager</a></li>
+                <li><a href="../classes/PrimitiveShader.html">PrimitiveShader</a></li>
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
-                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
+                <li><a href="../classes/Rope.html">Rope</a></li>
             
                 <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
             
@@ -121,9 +131,13 @@
             
                 <li><a href="../classes/Sprite.html">Sprite</a></li>
             
+                <li><a href="../classes/SpriteBatch.html">SpriteBatch</a></li>
+            
                 <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
             
                 <li><a href="../classes/Stage.html">Stage</a></li>
+            
+                <li><a href="../classes/Strip.html">Strip</a></li>
             
                 <li><a href="../classes/Text.html">Text</a></li>
             
@@ -133,7 +147,17 @@
             
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
             
+                <li><a href="../classes/WebGLFilterManager.html">WebGLFilterManager</a></li>
+            
+                <li><a href="../classes/WebGLGraphics.html">WebGLGraphics</a></li>
+            
+                <li><a href="../classes/WebGLMaskManager.html">WebGLMaskManager</a></li>
+            
                 <li><a href="../classes/WebGLRenderer.html">WebGLRenderer</a></li>
+            
+                <li><a href="../classes/WebGLShaderManager.html">WebGLShaderManager</a></li>
+            
+                <li><a href="../classes/WebGLSpriteBatch.html">WebGLSpriteBatch</a></li>
             
             </ul>
 
@@ -196,7 +220,7 @@ PIXI.glContexts = []; // this is where we store the webGL contexts for easy acce
  * @constructor
  * @param width=0 {Number} the width of the canvas view
  * @param height=0 {Number} the height of the canvas view
- * @param view {Canvas} the canvas to use as a view, optional
+ * @param view {HTMLCanvasElement} the canvas to use as a view, optional
  * @param transparent=false {Boolean} If the render view is transparent, default false
  * @param antialias=false {Boolean} sets antialias (only applicable in chrome at the moment)
  *
@@ -208,20 +232,46 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     this.type = PIXI.WEBGL_RENDERER;
 
     // do a catch.. only 1 webGL renderer..
+    /**
+     * Whether the render view is transparent
+     *
+     * @property transparent
+     * @type Boolean
+     */
     this.transparent = !!transparent;
 
+    /**
+     * The width of the canvas view
+     *
+     * @property width
+     * @type Number
+     * @default 800
+     */
     this.width = width || 800;
+
+    /**
+     * The height of the canvas view
+     *
+     * @property height
+     * @type Number
+     * @default 600
+     */
     this.height = height || 600;
 
+    /**
+     * The canvas element that everything is drawn to
+     *
+     * @property view
+     * @type HTMLCanvasElement
+     */
     this.view = view || document.createElement( &#x27;canvas&#x27; );
     this.view.width = this.width;
     this.view.height = this.height;
 
     // deal with losing context..
-
     this.contextLost = this.handleContextLost.bind(this);
     this.contextRestoredLost = this.handleContextRestored.bind(this);
- //   console.log(this.handleContextRestored)
+    
     this.view.addEventListener(&#x27;webglcontextlost&#x27;, this.contextLost, false);
     this.view.addEventListener(&#x27;webglcontextrestored&#x27;, this.contextRestoredLost, false);
 
@@ -291,7 +341,6 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     this.maskManager = new PIXI.WebGLMaskManager(gl);                       // manages the masks using the stencil buffer
     this.filterManager = new PIXI.WebGLFilterManager(gl, this.transparent); // manages the filters
 
-    //
     this.renderSession = {};
     this.renderSession.gl = this.gl;
     this.renderSession.drawCount = 0;
@@ -299,7 +348,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     this.renderSession.maskManager = this.maskManager;
     this.renderSession.filterManager = this.filterManager;
     this.renderSession.spriteBatch = this.spriteBatch;
-
+    this.renderSession.renderer = this;
 
     gl.useProgram(this.shaderManager.defaultShader.program);
 
@@ -327,6 +376,8 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
     // if rendering a new stage clear the batches..
     if(this.__stage !== stage)
     {
+        if(stage.interactive)stage.interactionManager.removeEvents();
+
         // TODO make this work
         // dont think this is needed any more?
         this.__stage = stage;
@@ -338,6 +389,18 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
     // update the scene graph
     stage.updateTransform();
 
+
+    // interaction
+    if(stage._interactive)
+    {
+        //need to add some events!
+        if(!stage._interactiveEventsAdded)
+        {
+            stage._interactiveEventsAdded = true;
+            stage.interactionManager.setTarget(this);
+        }
+    }
+    
     var gl = this.gl;
 
     // -- Does this need to be set every frame? -- //
@@ -359,9 +422,6 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-  //  this.projection.x =  this.width/2;
-    //this.projection.y =  -this.height/2;
-
     this.renderDisplayObject( stage, this.projection );
 
     // interaction
@@ -371,6 +431,14 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
         if(!stage._interactiveEventsAdded)
         {
             stage._interactiveEventsAdded = true;
+            stage.interactionManager.setTarget(this);
+        }
+    }
+    else
+    {
+        if(stage._interactiveEventsAdded)
+        {
+            stage._interactiveEventsAdded = false;
             stage.interactionManager.setTarget(this);
         }
     }
@@ -397,6 +465,14 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
      */
 };
 
+/**
+ * Renders a display Object
+ *
+ * @method renderDIsplayObject
+ * @param displayObject {DisplayObject} The DisplayObject to render
+ * @param projection {Point} The projection
+ * @param buffer {Array} a standard WebGL buffer 
+ */
 PIXI.WebGLRenderer.prototype.renderDisplayObject = function(displayObject, projection, buffer)
 {
     // reset the render session data..
@@ -471,6 +547,12 @@ PIXI.WebGLRenderer.destroyTexture = function(texture)
     texture._glTextures.length = 0;
 };
 
+/**
+ *
+ * @method updateTextureFrame
+ * @param texture {Texture} The texture to update the frame from
+ * @private
+ */
 PIXI.WebGLRenderer.updateTextureFrame = function(texture)
 {
     texture.updateFrame = false;
@@ -501,6 +583,14 @@ PIXI.WebGLRenderer.prototype.resize = function(width, height)
     this.projection.y =  -this.height/2;
 };
 
+/**
+ * Creates a WebGL texture
+ *
+ * @method createWebGLTexture
+ * @param texture {Texture} the texture to render
+ * @param gl {webglContext} the WebGL context
+ * @static
+ */
 PIXI.createWebGLTexture = function(texture, gl)
 {
 
@@ -535,6 +625,14 @@ PIXI.createWebGLTexture = function(texture, gl)
     return  texture._glTextures[gl.id];
 };
 
+/**
+ * Updates a WebGL texture
+ *
+ * @method updateWebGLTexture
+ * @param texture {Texture} the texture to update
+ * @param gl {webglContext} the WebGL context
+ * @private
+ */
 PIXI.updateWebGLTexture = function(texture, gl)
 {
     if( texture._glTextures[gl.id] )
@@ -628,10 +726,20 @@ PIXI.WebGLRenderer.prototype.handleContextRestored = function()
         texture._glTextures = [];
     }
 
+    /**
+     * Whether the context was lost 
+     * @property contextLost
+     * @type Boolean
+     */
     this.contextLost = false;
 
 };
 
+/**
+ * Removes everything from the renderer (event listeners, spritebatch, etc...)
+ *
+ * @method destroy
+ */
 PIXI.WebGLRenderer.prototype.destroy = function()
 {
 

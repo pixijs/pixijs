@@ -1,0 +1,4291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Strip - pixi.js</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="http://www.goodboydigital.com/pixijs/logo_small.png" title="pixi.js"></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 1.5.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/AbstractFilter.html">AbstractFilter</a></li>
+            
+                <li><a href="../classes/AjaxRequest.html">AjaxRequest</a></li>
+            
+                <li><a href="../classes/AlphaMaskFilter.html">AlphaMaskFilter</a></li>
+            
+                <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
+            
+                <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
+                <li><a href="../classes/autoDetectRenderer.html">autoDetectRenderer</a></li>
+            
+                <li><a href="../classes/BaseTexture.html">BaseTexture</a></li>
+            
+                <li><a href="../classes/BitmapFontLoader.html">BitmapFontLoader</a></li>
+            
+                <li><a href="../classes/BitmapText.html">BitmapText</a></li>
+            
+                <li><a href="../classes/BlurFilter.html">BlurFilter</a></li>
+            
+                <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
+            
+                <li><a href="../classes/CanvasMaskManager.html">CanvasMaskManager</a></li>
+            
+                <li><a href="../classes/CanvasRenderer.html">CanvasRenderer</a></li>
+            
+                <li><a href="../classes/CanvasTinter.html">CanvasTinter</a></li>
+            
+                <li><a href="../classes/Circle.html">Circle</a></li>
+            
+                <li><a href="../classes/ColorMatrixFilter.html">ColorMatrixFilter</a></li>
+            
+                <li><a href="../classes/ColorStepFilter.html">ColorStepFilter</a></li>
+            
+                <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
+            
+                <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
+            
+                <li><a href="../classes/DisplayObjectContainer.html">DisplayObjectContainer</a></li>
+            
+                <li><a href="../classes/DotScreenFilter.html">DotScreenFilter</a></li>
+            
+                <li><a href="../classes/Ellipse.html">Ellipse</a></li>
+            
+                <li><a href="../classes/EventTarget.html">EventTarget</a></li>
+            
+                <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
+            
+                <li><a href="../classes/Graphics.html">Graphics</a></li>
+            
+                <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
+            
+                <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
+            
+                <li><a href="../classes/InteractionData.html">InteractionData</a></li>
+            
+                <li><a href="../classes/InteractionManager.html">InteractionManager</a></li>
+            
+                <li><a href="../classes/InvertFilter.html">InvertFilter</a></li>
+            
+                <li><a href="../classes/JsonLoader.html">JsonLoader</a></li>
+            
+                <li><a href="../classes/MovieClip.html">MovieClip</a></li>
+            
+                <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
+            
+                <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
+            
+                <li><a href="../classes/PixiFastShader.html">PixiFastShader</a></li>
+            
+                <li><a href="../classes/PixiShader.html">PixiShader</a></li>
+            
+                <li><a href="../classes/Point.html">Point</a></li>
+            
+                <li><a href="../classes/Polygon.html">Polygon</a></li>
+            
+                <li><a href="../classes/PolyK.html">PolyK</a></li>
+            
+                <li><a href="../classes/PrimitiveShader.html">PrimitiveShader</a></li>
+            
+                <li><a href="../classes/Rectangle.html">Rectangle</a></li>
+            
+                <li><a href="../classes/Rope.html">Rope</a></li>
+            
+                <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
+            
+                <li><a href="../classes/Spine.html">Spine</a></li>
+            
+                <li><a href="../classes/Sprite.html">Sprite</a></li>
+            
+                <li><a href="../classes/SpriteBatch.html">SpriteBatch</a></li>
+            
+                <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
+            
+                <li><a href="../classes/Stage.html">Stage</a></li>
+            
+                <li><a href="../classes/Strip.html">Strip</a></li>
+            
+                <li><a href="../classes/Text.html">Text</a></li>
+            
+                <li><a href="../classes/Texture.html">Texture</a></li>
+            
+                <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
+            
+                <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
+            
+                <li><a href="../classes/WebGLFilterManager.html">WebGLFilterManager</a></li>
+            
+                <li><a href="../classes/WebGLGraphics.html">WebGLGraphics</a></li>
+            
+                <li><a href="../classes/WebGLMaskManager.html">WebGLMaskManager</a></li>
+            
+                <li><a href="../classes/WebGLRenderer.html">WebGLRenderer</a></li>
+            
+                <li><a href="../classes/WebGLShaderManager.html">WebGLShaderManager</a></li>
+            
+                <li><a href="../classes/WebGLSpriteBatch.html">WebGLSpriteBatch</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="../modules/PIXI.html">PIXI</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1>Strip Class</h1>
+<div class="box meta">
+    
+
+    
+        <div class="extends">
+            Extends <a href="../classes/DisplayObjectContainer.html" class="crosslink">DisplayObjectContainer</a>
+        </div>
+    
+
+    
+        <div class="foundat">
+            Defined in: <a href="../files/src_pixi_extras_Strip.js.html#l5"><code>src&#x2F;pixi&#x2F;extras&#x2F;Strip.js:5</code></a>
+        </div>
+    
+
+    
+        
+            Module: <a href="../modules/PIXI.html">PIXI</a>
+        
+    
+
+    
+</div>
+
+
+
+<div class="box intro">
+    
+</div>
+
+
+    <div class="constructor">
+        <h2>Constructor</h2>
+        <div id="method_Strip" class="method item">
+    <h3 class="name"><code>Strip</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>texture</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>width</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>height</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_extras_Strip.js.html#l5"><code>src&#x2F;pixi&#x2F;extras&#x2F;Strip.js:5</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">texture</code>
+                        <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The texture to use</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">width</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the width</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">height</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the height</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+    </div>
+
+
+<div id="classdocs" class="tabview">
+    <ul class="api-class-tabs">
+        <li class="api-class-tab index"><a href="#index">Index</a></li>
+
+        
+            <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
+        
+        
+            <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
+        
+        
+        
+    </ul>
+
+    <div>
+        <div id="index" class="api-class-tabpanel index">
+            <h2 class="off-left">Item Index</h2>
+
+            
+                <div class="index-section methods">
+                    <h3>Methods</h3>
+
+                    <ul class="index-list methods extends">
+                        
+                            <li class="index-item method private inherited inherited">
+                                <a href="#method__renderCanvas">_renderCanvas</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method private inherited inherited">
+                                <a href="#method__renderWebGL">_renderWebGL</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_addChild">addChild</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_addChildAt">addChildAt</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_click">click</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited inherited">
+                                <a href="#method_getBounds">getBounds</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_getChildAt">getChildAt</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_getLocalBounds">getLocalBounds</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_mousedown">mousedown</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_mouseout">mouseout</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_mouseover">mouseover</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_mouseup">mouseup</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_mouseupoutside">mouseupoutside</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method private">
+                                <a href="#method_onTextureUpdate">onTextureUpdate</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_removeChild">removeChild</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_removeChildAt">removeChildAt</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_removeChildren">removeChildren</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_removeStageReference">removeStageReference</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method deprecated inherited">
+                                <a href="#method_setInteractive">setInteractive</a>
+
+                                
+                                
+                                    <span class="flag deprecated">deprecated</span>
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited inherited">
+                                <a href="#method_setStageReference">setStageReference</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method private inherited">
+                                <a href="#method_swapChildren">swapChildren</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_tap">tap</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_touchend">touchend</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_touchendoutside">touchendoutside</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_touchstart">touchstart</a>
+
+                                
+                                
+                            </li>
+                        
+                    </ul>
+                </div>
+            
+
+            
+                <div class="index-section properties">
+                    <h3>Properties</h3>
+
+                    <ul class="index-list properties extends">
+                        
+                            <li class="index-item property private inherited">
+                                <a href="#property__bounds">_bounds</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property private inherited inherited">
+                                <a href="#property__currentBounds">_currentBounds</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property private inherited">
+                                <a href="#property__interactive">_interactive</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_alpha">alpha</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_buttonMode">buttonMode</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_cacheAsBitmap">cacheAsBitmap</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_children">children</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property private inherited">
+                                <a href="#property_color">color</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_defaultCursor">defaultCursor</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property private inherited">
+                                <a href="#property_dynamic">dynamic</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_filterArea">filterArea</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_filters">filters</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_height">height</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_hitArea">hitArea</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_interactive">interactive</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_mask">mask</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_parent">parent</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_pivot">pivot</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_position">position</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_renderable">renderable</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_rotation">rotation</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_scale">scale</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_stage">stage</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_visible">visible</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_width">width</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_worldAlpha">worldAlpha</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property private inherited">
+                                <a href="#property_worldTransform">worldTransform</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_worldVisible">worldVisible</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_x">x</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_y">y</a>
+
+                                
+                                
+                            </li>
+                        
+                    </ul>
+                </div>
+            
+
+            
+
+            
+        </div>
+
+        
+            <div id="methods" class="api-class-tabpanel">
+                <h2 class="off-left">Methods</h2>
+
+                
+                    <div id="method__renderCanvas" class="method item private inherited">
+    <h3 class="name"><code>_renderCanvas</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>renderSession</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            <p>Inherited from
+            <a href="../classes/DisplayObject.html#method__renderCanvas">
+                DisplayObject
+            </a>
+            
+            but overwritten in
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l412"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:412</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Renders the object using the Canvas renderer</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">renderSession</code>
+                        <span class="type">RenderSession</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method__renderWebGL" class="method item private inherited">
+    <h3 class="name"><code>_renderWebGL</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>renderSession</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            <p>Inherited from
+            <a href="../classes/DisplayObject.html#method__renderWebGL">
+                DisplayObject
+            </a>
+            
+            but overwritten in
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l355"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:355</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Renders the object using the WebGL renderer</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">renderSession</code>
+                        <span class="type">RenderSession</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_addChild" class="method item inherited">
+    <h3 class="name"><code>addChild</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>child</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObjectContainer.html#method_addChild">DisplayObjectContainer</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l70"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:70</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Adds a child to the container.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">child</code>
+                        <span class="type"><a href="../classes/DisplayObject.html" class="crosslink">DisplayObject</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The DisplayObject to add to the container</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_addChildAt" class="method item inherited">
+    <h3 class="name"><code>addChildAt</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>child</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>index</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObjectContainer.html#method_addChildAt">DisplayObjectContainer</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l81"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:81</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Adds a child to the container at a specified index. If the index is out of bounds an error will be thrown</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">child</code>
+                        <span class="type"><a href="../classes/DisplayObject.html" class="crosslink">DisplayObject</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The child to add</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">index</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The index to place the child in</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_click" class="method item inherited">
+    <h3 class="name"><code>click</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>interactionData</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#method_click">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l206"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:206</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>A callback that is used when the users clicks on the displayObject with their mouse</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">interactionData</code>
+                        <span class="type"><a href="../classes/InteractionData.html" class="crosslink">InteractionData</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_getBounds" class="method item inherited">
+    <h3 class="name"><code>getBounds</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Rectangle.html" class="crosslink">Rectangle</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            <p>Inherited from
+            <a href="../classes/DisplayObject.html#method_getBounds">
+                DisplayObject
+            </a>
+            
+            but overwritten in
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l233"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:233</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Retrieves the bounds of the displayObjectContainer as a rectangle object</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/Rectangle.html" class="crosslink">Rectangle</a></span>:
+                    
+                    <p>the rectangular bounding area</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_getChildAt" class="method item inherited">
+    <h3 class="name"><code>getChildAt</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>index</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObjectContainer.html#method_getChildAt">DisplayObjectContainer</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l135"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:135</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Returns the child at the specified index</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">index</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The index to get the child from</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_getLocalBounds" class="method item inherited">
+    <h3 class="name"><code>getLocalBounds</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Rectangle.html" class="crosslink">Rectangle</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#method_getLocalBounds">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l472"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:472</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Retrieves the local bounds of the displayObject as a rectangle object</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/Rectangle.html" class="crosslink">Rectangle</a></span>:
+                    
+                    <p>the rectangular bounding area</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_mousedown" class="method item inherited">
+    <h3 class="name"><code>mousedown</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>interactionData</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#method_mousedown">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l212"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:212</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>A callback that is used when the user clicks the mouse down over the sprite</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">interactionData</code>
+                        <span class="type"><a href="../classes/InteractionData.html" class="crosslink">InteractionData</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_mouseout" class="method item inherited">
+    <h3 class="name"><code>mouseout</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>interactionData</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#method_mouseout">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l238"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:238</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>A callback that is used when the users mouse leaves the displayObject</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">interactionData</code>
+                        <span class="type"><a href="../classes/InteractionData.html" class="crosslink">InteractionData</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_mouseover" class="method item inherited">
+    <h3 class="name"><code>mouseover</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>interactionData</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#method_mouseover">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l232"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:232</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>A callback that is used when the users mouse rolls over the displayObject</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">interactionData</code>
+                        <span class="type"><a href="../classes/InteractionData.html" class="crosslink">InteractionData</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_mouseup" class="method item inherited">
+    <h3 class="name"><code>mouseup</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>interactionData</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#method_mouseup">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l218"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:218</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>A callback that is used when the user releases the mouse that was over the displayObject
+for this callback to be fired the mouse must have been pressed down over the displayObject</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">interactionData</code>
+                        <span class="type"><a href="../classes/InteractionData.html" class="crosslink">InteractionData</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_mouseupoutside" class="method item inherited">
+    <h3 class="name"><code>mouseupoutside</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>interactionData</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#method_mouseupoutside">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l225"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:225</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>A callback that is used when the user releases the mouse that was over the displayObject but is no longer over the displayObject
+for this callback to be fired, The touch must have started over the displayObject</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">interactionData</code>
+                        <span class="type"><a href="../classes/InteractionData.html" class="crosslink">InteractionData</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_onTextureUpdate" class="method item private">
+    <h3 class="name"><code>onTextureUpdate</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>event</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_extras_Strip.js.html#l102"><code>src&#x2F;pixi&#x2F;extras&#x2F;Strip.js:102</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>When the texture is updated, this event will fire to update the scale and frame</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">event</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_removeChild" class="method item inherited">
+    <h3 class="name"><code>removeChild</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>child</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObjectContainer.html#method_removeChild">DisplayObjectContainer</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l153"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:153</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Removes a child from the container.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">child</code>
+                        <span class="type"><a href="../classes/DisplayObject.html" class="crosslink">DisplayObject</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The DisplayObject to remove</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_removeChildAt" class="method item inherited">
+    <h3 class="name"><code>removeChildAt</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>index</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObjectContainer.html#method_removeChildAt">DisplayObjectContainer</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l164"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:164</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Removes a child from the specified index position in the child list of the container.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">index</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The index to get the child from</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_removeChildren" class="method item inherited">
+    <h3 class="name"><code>removeChildren</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>beginIndex</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>endIndex</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObjectContainer.html#method_removeChildren">DisplayObjectContainer</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l181"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:181</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Removes all child instances from the child list of the container.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">beginIndex</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The beginning position. Predefined value is 0.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">endIndex</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The ending position. Predefined value is children&#39;s array length.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_removeStageReference" class="method item inherited">
+    <h3 class="name"><code>removeStageReference</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObjectContainer.html#method_removeStageReference">DisplayObjectContainer</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l336"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:336</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>removes the current stage reference of the container</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_setInteractive" class="method item deprecated inherited">
+    <h3 class="name"><code>setInteractive</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>interactive</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+        <span class="flag deprecated" title="Simply set the &#x60;interactive&#x60; property directly">deprecated</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#method_setInteractive">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l279"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:279</code></a>
+        
+        </p>
+
+
+        
+            <p>Deprecated: Simply set the &#x60;interactive&#x60; property directly</p>
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>[Deprecated] Indicates if the sprite will have touch and mouse interactivity. It is false by default
+Instead of using this function you can now simply set the interactive property to true or false</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">interactive</code>
+                        <span class="type">Boolean</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_setStageReference" class="method item inherited">
+    <h3 class="name"><code>setStageReference</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>stage</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            <p>Inherited from
+            <a href="../classes/DisplayObject.html#method_setStageReference">
+                DisplayObject
+            </a>
+            
+            but overwritten in
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l318"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:318</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Sets the container&#39;s stage reference, the stage this object is connected to</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">stage</code>
+                        <span class="type"><a href="../classes/Stage.html" class="crosslink">Stage</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the stage that the container will have as its current stage reference</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_swapChildren" class="method item private inherited">
+    <h3 class="name"><code>swapChildren</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>child</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>child2</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObjectContainer.html#method_swapChildren">DisplayObjectContainer</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l109"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:109</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>[NYI] Swaps the depth of 2 displayObjects</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">child</code>
+                        <span class="type"><a href="../classes/DisplayObject.html" class="crosslink">DisplayObject</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">child2</code>
+                        <span class="type"><a href="../classes/DisplayObject.html" class="crosslink">DisplayObject</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_tap" class="method item inherited">
+    <h3 class="name"><code>tap</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>interactionData</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#method_tap">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l249"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:249</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>A callback that is used when the users taps on the sprite with their finger
+basically a touch version of click</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">interactionData</code>
+                        <span class="type"><a href="../classes/InteractionData.html" class="crosslink">InteractionData</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_touchend" class="method item inherited">
+    <h3 class="name"><code>touchend</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>interactionData</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#method_touchend">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l262"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:262</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>A callback that is used when the user releases a touch over the displayObject</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">interactionData</code>
+                        <span class="type"><a href="../classes/InteractionData.html" class="crosslink">InteractionData</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_touchendoutside" class="method item inherited">
+    <h3 class="name"><code>touchendoutside</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>interactionData</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#method_touchendoutside">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l268"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:268</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>A callback that is used when the user releases the touch that was over the displayObject
+for this callback to be fired, The touch must have started over the sprite</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">interactionData</code>
+                        <span class="type"><a href="../classes/InteractionData.html" class="crosslink">InteractionData</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_touchstart" class="method item inherited">
+    <h3 class="name"><code>touchstart</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>interactionData</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#method_touchstart">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l256"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:256</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>A callback that is used when the user touches over the displayObject</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">interactionData</code>
+                        <span class="type"><a href="../classes/InteractionData.html" class="crosslink">InteractionData</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+            </div>
+        
+
+        
+            <div id="properties" class="api-class-tabpanel">
+                <h2 class="off-left">Properties</h2>
+
+                
+                    <div id="property__bounds" class="property item private inherited">
+    <h3 class="name"><code>_bounds</code></h3>
+    <span class="type"><a href="../classes/Rectangle.html" class="crosslink">Rectangle</a></span>
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#property__bounds">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l173"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:173</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The original, cached bounds of the object</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property__currentBounds" class="property item private inherited">
+    <h3 class="name"><code>_currentBounds</code></h3>
+    <span class="type"><a href="../classes/Rectangle.html" class="crosslink">Rectangle</a></span>
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            <p>Inherited from
+            <a href="../classes/DisplayObject.html#property__currentBounds">
+                DisplayObject
+            </a>
+            
+            but overwritten in
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l181"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:181</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The most up-to-date bounds of the object</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property__interactive" class="property item private inherited">
+    <h3 class="name"><code>_interactive</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#property__interactive">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l113"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:113</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>[read-only] Whether or not the object is interactive, do not toggle directly! use the <code>interactive</code> property</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_alpha" class="property item inherited">
+    <h3 class="name"><code>alpha</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#property_alpha">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l45"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:45</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The opacity of the object.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_buttonMode" class="property item inherited">
+    <h3 class="name"><code>buttonMode</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#property_buttonMode">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l70"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:70</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This is used to indicate if the displayObject should display a mouse hand cursor on rollover</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_cacheAsBitmap" class="property item inherited">
+    <h3 class="name"><code>cacheAsBitmap</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#property_cacheAsBitmap">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l387"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:387</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Set weather or not a the display objects is cached as a bitmap.
+This basically takes a snap shot of the display object as it is at that moment. It can provide a performance benefit for complex static displayObjects
+To remove filters simply set this property to &#39;null&#39;</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_children" class="property item inherited">
+    <h3 class="name"><code>children</code></h3>
+    <span class="type">Array<DisplayObject></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObjectContainer.html#property_children">DisplayObjectContainer</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l18"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:18</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>[read-only] The array of children of this container.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_color" class="property item private inherited">
+    <h3 class="name"><code>color</code></h3>
+    <span class="type">Array<></span>
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#property_color">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l142"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:142</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>[NYI] Unknown</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_defaultCursor" class="property item inherited">
+    <h3 class="name"><code>defaultCursor</code></h3>
+    <span class="type">String</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#property_defaultCursor">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l123"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:123</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This is the cursor that will be used when the mouse is over this object. To enable this the element must have interaction = true and buttonMode = true</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_dynamic" class="property item private inherited">
+    <h3 class="name"><code>dynamic</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#property_dynamic">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l151"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:151</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>[NYI] Holds whether or not this object is dynamic, for rendering optimization</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_filterArea" class="property item inherited">
+    <h3 class="name"><code>filterArea</code></h3>
+    <span class="type"><a href="../classes/Rectangle.html" class="crosslink">Rectangle</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#property_filterArea">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l164"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:164</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The area the filter is applied to like the hitArea this is used as more of an optimisation
+rather than figuring out the dimensions of the displayObject each frame you can set this rectangle</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_filters" class="property item inherited">
+    <h3 class="name"><code>filters</code></h3>
+    <span class="type">Array An array of filters</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#property_filters">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l353"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:353</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p><p>Sets the filters for the displayObject.</p></p>
+<ul>
+<li>IMPORTANT: This is a webGL only feature and will be ignored by the canvas renderer.
+To remove filters simply set this property to &#39;null&#39;</li>
+</ul>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_height" class="property item inherited">
+    <h3 class="name"><code>height</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObjectContainer.html#property_height">DisplayObjectContainer</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l51"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:51</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The height of the displayObjectContainer, setting this will actually modify the scale to achieve the value set</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_hitArea" class="property item inherited">
+    <h3 class="name"><code>hitArea</code></h3>
+    <span class="type"><a href="../classes/Rectangle.html" class="crosslink">Rectangle</a> | <a href="../classes/Circle.html" class="crosslink">Circle</a> | <a href="../classes/Ellipse.html" class="crosslink">Ellipse</a> | <a href="../classes/Polygon.html" class="crosslink">Polygon</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#property_hitArea">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l61"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:61</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This is the defined area that will pick up mouse / touch events. It is null by default.
+Setting it is a neat way of optimising the hitTest function that the interactionManager will use (as it will not need to hit test all the children)</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_interactive" class="property item inherited">
+    <h3 class="name"><code>interactive</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#property_interactive">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l292"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:292</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Indicates if the sprite will have touch and mouse interactivity. It is false by default</p>
+
+    </div>
+
+    
+        <p><strong>Default:</strong> false</p>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_mask" class="property item inherited">
+    <h3 class="name"><code>mask</code></h3>
+    <span class="type"><a href="../classes/Graphics.html" class="crosslink">Graphics</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#property_mask">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l333"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:333</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Sets a mask for the displayObject. A mask is an object that limits the visibility of an object to the shape of the mask applied to it.
+In PIXI a regular mask must be a PIXI.Graphics object. This allows for much faster masking in canvas as it utilises shape clipping.
+To remove a mask, set this property to null.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_parent" class="property item inherited">
+    <h3 class="name"><code>parent</code></h3>
+    <span class="type"><a href="../classes/DisplayObjectContainer.html" class="crosslink">DisplayObjectContainer</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#property_parent">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l86"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:86</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>[read-only] The display object container that contains this display object.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_pivot" class="property item inherited">
+    <h3 class="name"><code>pivot</code></h3>
+    <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#property_pivot">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l29"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:29</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The pivot point of the displayObject that it rotates around</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_position" class="property item inherited">
+    <h3 class="name"><code>position</code></h3>
+    <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#property_position">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l13"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:13</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The coordinate of the object relative to the local coordinates of the parent.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_renderable" class="property item inherited">
+    <h3 class="name"><code>renderable</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#property_renderable">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l78"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:78</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Can this object be rendered</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_rotation" class="property item inherited">
+    <h3 class="name"><code>rotation</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#property_rotation">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l37"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:37</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The rotation of the object in radians.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_scale" class="property item inherited">
+    <h3 class="name"><code>scale</code></h3>
+    <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#property_scale">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l21"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:21</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The scale factor of the object.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_stage" class="property item inherited">
+    <h3 class="name"><code>stage</code></h3>
+    <span class="type"><a href="../classes/Stage.html" class="crosslink">Stage</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#property_stage">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l95"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:95</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>[read-only] The stage the display object is connected to, or undefined if it is not connected to the stage.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_visible" class="property item inherited">
+    <h3 class="name"><code>visible</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#property_visible">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l53"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:53</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The visibility of the object.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_width" class="property item inherited">
+    <h3 class="name"><code>width</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObjectContainer.html#property_width">DisplayObjectContainer</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l32"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:32</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The width of the displayObjectContainer, setting this will actually modify the scale to achieve the value set</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_worldAlpha" class="property item inherited">
+    <h3 class="name"><code>worldAlpha</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#property_worldAlpha">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l104"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:104</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>[read-only] The multiplied alpha of the displayObject</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_worldTransform" class="property item private inherited">
+    <h3 class="name"><code>worldTransform</code></h3>
+    <span class="type">Mat3</span>
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#property_worldTransform">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l132"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:132</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>[read-only] Current transform of the object based on world (parent) factors</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_worldVisible" class="property item inherited">
+    <h3 class="name"><code>worldVisible</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#property_worldVisible">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l312"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:312</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>[read-only] Indicates if the sprite is globaly visible.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_x" class="property item inherited">
+    <h3 class="name"><code>x</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#property_x">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l592"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:592</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The position of the displayObject on the x axis relative to the local coordinates of the parent.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_y" class="property item inherited">
+    <h3 class="name"><code>y</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#property_y">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l607"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:607</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The position of the displayObject on the y axis relative to the local coordinates of the parent.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+            </div>
+        
+
+        
+
+        
+    </div>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>
