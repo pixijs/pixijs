@@ -1,4 +1,15 @@
 /**
+ * @license
+ * pixi.js - v1.5.2
+ * Copyright (c) 2012-2014, Mat Groves
+ * http://goodboydigital.com/
+ *
+ * Compiled: 2014-03-31
+ *
+ * pixi.js is licensed under the MIT License.
+ * http://www.opensource.org/licenses/mit-license.php
+ */
+/**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
@@ -1035,7 +1046,7 @@ PIXI.DisplayObject.prototype.generateTexture = function(renderer)
     var bounds = this.getLocalBounds();
 
     var renderTexture = new PIXI.RenderTexture(bounds.width | 0, bounds.height | 0, renderer);
-    renderTexture.render(this);
+    renderTexture.render(this, new PIXI.Point(-bounds.x, -bounds.y) );
 
     return renderTexture;
 };
@@ -1079,7 +1090,7 @@ PIXI.DisplayObject.prototype._generateCachedSprite = function()//renderSession)
     this._filters = null;
 
     this._cachedSprite.filters = tempFilters;
-    this._cachedSprite.texture.render(this);
+    this._cachedSprite.texture.render(this, new PIXI.Point(-bounds.x, -bounds.y) );
 
     this._filters = tempFilters;
 
@@ -14534,4 +14545,3 @@ Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'angle', {
         root.PIXI = PIXI;
     }
 }).call(this);
-//# sourceMappingURL=pixi.dev.js.map
