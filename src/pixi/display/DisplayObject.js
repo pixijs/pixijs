@@ -498,7 +498,7 @@ PIXI.DisplayObject.prototype.generateTexture = function(renderer)
     var bounds = this.getLocalBounds();
 
     var renderTexture = new PIXI.RenderTexture(bounds.width | 0, bounds.height | 0, renderer);
-    renderTexture.render(this);
+    renderTexture.render(this, new PIXI.Point(-bounds.x, -bounds.y) );
 
     return renderTexture;
 };
@@ -542,7 +542,7 @@ PIXI.DisplayObject.prototype._generateCachedSprite = function()//renderSession)
     this._filters = null;
 
     this._cachedSprite.filters = tempFilters;
-    this._cachedSprite.texture.render(this);
+    this._cachedSprite.texture.render(this, new PIXI.Point(-bounds.x, -bounds.y) );
 
     this._filters = tempFilters;
 

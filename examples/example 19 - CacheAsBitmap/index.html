@@ -1,0 +1,114 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>pixi.js example 2 loading a sprite sheet</title>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			background-color: #000000;
+		}
+	</style>
+	<script src="../../bin/pixi.dev.js"></script>
+</head>
+<body>
+	<script>
+	// create an array of assets to load
+	var assetsToLoader = [ "SpriteSheet.json"];
+
+	// create a new loader
+	loader = new PIXI.AssetLoader(assetsToLoader);
+
+	// use callback
+	loader.onComplete = onAssetsLoaded
+
+	//begin load
+	loader.load();
+
+	// holder to store aliens
+	var aliens = [];
+	var alienFrames = ["eggHead.png", "flowerTop.png", "helmlok.png", "skully.png"];
+
+	var count = 0;
+
+	// create an new instance of a pixi stage
+	var stage = new PIXI.Stage(0xFFFFFF);
+
+	// create a renderer instance.
+	var renderer = PIXI.autoDetectRenderer(800, 600);
+
+	// add the renderer view element to the DOM
+	document.body.appendChild(renderer.view);
+
+	// create an empty container
+	var alienContainer = new PIXI.DisplayObjectContainer();
+	alienContainer.position.x = 400;
+	alienContainer.position.y = 300;
+
+	stage.addChild(alienContainer);
+
+
+
+	function onAssetsLoaded()
+	{
+		// add a bunch of aliens with textures from image paths
+		for (var i = 0; i < 100; i++)
+		{
+			var frameName = alienFrames[i % 4];
+
+			// create an alien using the frame name..
+			var alien = PIXI.Sprite.fromFrame(frameName);
+			alien.tint = Math.random() * 0xFFFFFF;
+
+			/*
+			 * fun fact for the day :)
+			 * another way of doing the above would be
+			 * var texture = PIXI.Texture.fromFrame(frameName);
+			 * var alien = new PIXI.Sprite(texture);
+			 */
+			alien.position.x = Math.random() * 800 - 400;
+			alien.position.y = Math.random() * 600 - 300;
+			alien.anchor.x = 0.5;
+			alien.anchor.y = 0.5;
+			aliens.push(alien);
+			alienContainer.addChild(alien);
+		}
+		
+		// start animating
+		requestAnimFrame(animate);
+	}
+
+	stage.mousedown = stage.touchstart = function()
+	{
+alienContainer.cacheAsBitmap = !alienContainer.cacheAsBitmap
+		console.log(alienContainer.getLocalBounds())
+
+//		var sprite = new PIXI.Sprite(alienContainer.generateTexture());
+//		stage.addChild(sprite);
+	//sprite.position.x = 800/2;
+//		sprite.position.y = 600/2;
+	}
+
+	function animate() {
+	    // just for fun, lets rotate mr rabbit a little
+	    for (var i = 0; i < 100; i++)
+		{
+			var alien = aliens[i];
+			alien.rotation += 0.1;
+		}
+
+		count += 0.01;
+		alienContainer.scale.x = Math.sin(count);
+		alienContainer.scale.y = Math.sin(count);
+
+		alienContainer.rotation += 0.01;
+	    
+	    // render the stage
+	    renderer.render(stage);
+
+	    requestAnimFrame(animate);
+	}
+	</script>
+
+	</body>
+</html>
