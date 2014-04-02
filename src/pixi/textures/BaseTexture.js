@@ -150,8 +150,7 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
 {
     var baseTexture = PIXI.BaseTextureCache[imageUrl];
     
-    if(crossorigin === undefined)crossorigin = true;
-    if(imageUrl.indexOf('data:') !== -1) crossorigin = false;
+    if(crossorigin === undefined && imageUrl.indexOf('data:') === -1) crossorigin = true;
 
     if(!baseTexture)
     {
