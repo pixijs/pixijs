@@ -107,7 +107,7 @@ PIXI.Graphics = function()
     /**
      * the bounds' padding used for bounds calculation
      *
-     * @property bounds
+     * @property boundsPadding
      * @type Number
      */
     this.boundsPadding = 10;
