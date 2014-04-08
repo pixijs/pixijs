@@ -666,7 +666,7 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
         {
             var item = this.interactiveItems[j];
 
-            if(item.__touchData[touchEvent.identifier]) {
+            if(item.__touchData && item.__touchData[touchEvent.identifier]) {
 
                 item.__hit = this.hitTest(item, item.__touchData[touchEvent.identifier]);
 
