@@ -177,7 +177,7 @@ PIXI.Text.prototype.updateText = function()
             this.context.shadowOffsetX = Math.sin(this.style.dropShadowAngle) * this.style.dropShadowDistance;
             this.context.shadowOffsetY = Math.cos(this.style.dropShadowAngle) * this.style.dropShadowDistance;
 
-            if(this.style.dropShadowBlur != 0)
+            if(this.style.dropShadowBlur !== 0)
             {
                 this.context.shadowBlur = this.style.dropShadowBlur;
             }
