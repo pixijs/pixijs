@@ -163,8 +163,6 @@ PIXI.Text.prototype.updateText = function()
     //set canvas text styles
     this.context.fillStyle = this.style.fill;
     
-    var xShadowOffset = Math.sin(this.style.dropShadowAngle) * this.style.dropShadowDistance;
-    var yShadowOffset = Math.cos(this.style.dropShadowAngle) * this.style.dropShadowDistance;
     
     //draw lines line by line
     for (i = 0; i < lines.length; i++)
@@ -176,9 +174,13 @@ PIXI.Text.prototype.updateText = function()
         if(this.style.dropShadow)
         {
             this.context.shadowColor = this.style.dropShadowColor;
-            this.context.shadowOffsetX = xShadowOffset;
-            this.context.shadowOffsetY = yShadowOffset;
-            this.context.shadowBlur = this.style.dropShadowBlur;
+            this.context.shadowOffsetX = Math.sin(this.style.dropShadowAngle) * this.style.dropShadowDistance;
+            this.context.shadowOffsetY = Math.cos(this.style.dropShadowAngle) * this.style.dropShadowDistance;
+
+            if(this.style.dropShadowBlur != 0)
+            {
+                this.context.shadowBlur = this.style.dropShadowBlur;
+            }
         }
 
         if(this.style.align === 'right')
