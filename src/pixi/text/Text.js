@@ -331,7 +331,7 @@ PIXI.Text.prototype.wordWrap = function(text)
         {
             var wordWidth = this.context.measureText(words[j]).width;
             var wordWidthWithSpace = wordWidth + this.context.measureText(' ').width;
-            if(wordWidthWithSpace > spaceLeft)
+            if(j === 0 || wordWidthWithSpace > spaceLeft)
             {
                 // Skip printing the newline if it's the first word of the line that is
                 // greater than the word wrap width.
@@ -339,13 +339,13 @@ PIXI.Text.prototype.wordWrap = function(text)
                 {
                     result += '\n';
                 }
-                result += words[j] + ' ';
+                result += words[j];
                 spaceLeft = this.style.wordWrapWidth - wordWidth;
             }
             else
             {
                 spaceLeft -= wordWidthWithSpace;
-                result += words[j] + ' ';
+                result += ' ' + words[j];
             }
         }
 
