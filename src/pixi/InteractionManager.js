@@ -626,7 +626,7 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
                     //call the function!
                     if(item.touchstart)item.touchstart(touchData);
                     item.__isDown = true;
-                    item.__touchData = item.__touchData || {};
+                    item.__touchData = item.__touchData || {};
                     item.__touchData[touchEvent.identifier] = touchData;
 
                     if(!item.interactiveChildren)break;
