@@ -29,8 +29,10 @@ PIXI.autoDetectRenderer = function(width, height, view, transparent, antialias)
                                 }
                             } )();
 
+    // IE11 is still a little to unstable to be the recommended renderer
+    var isIE11 = !!navigator.userAgent.match(/Trident.*rv[ :]*11\./);
 
-    if( webgl )
+    if( webgl && !isIE1 )
     {
         return new PIXI.WebGLRenderer(width, height, view, transparent, antialias);
     }
