@@ -73,4 +73,4 @@ PIXI.autoDetectRecommendedRenderer = function(width, height, view, transparent, 
     }
 
     return  new PIXI.CanvasRenderer(width, height, view, transparent);
-}
+};
