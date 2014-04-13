@@ -76,24 +76,14 @@ PIXI.JsonLoader.prototype.load = function () {
         this.ajaxRequest = new window.ActiveXObject('Microsoft.XMLHTTP');
     }
 
-    
-
-
-   // this.ajaxRequest = new PIXI.AjaxRequest(this.crossorigin);
     var scope = this;
-    
-
-    
 
     this.ajaxRequest.onload = function () {
         scope.onJSONLoaded();
     };
 
-   // this.ajaxRequest.open('GET', this.url, true);
-  //  if (this.ajaxRequest.overrideMimeType) this.ajaxRequest.overrideMimeType('application/json');
-  //  this.ajaxRequest.send(null);
+    this.ajaxRequest.open('GET',this.url,true);
 
-    this.ajaxRequest.open('GET',this.url,false);
     this.ajaxRequest.send();
 };
 
@@ -104,8 +94,13 @@ PIXI.JsonLoader.prototype.load = function () {
  * @private
  */
 PIXI.JsonLoader.prototype.onJSONLoaded = function () {
-   // if (this.ajaxRequest.readyState === 4) {
-     //   if (this.ajaxRequest.status === 200 || window.location.protocol.indexOf('http') === -1) {
+
+    if(this.ajaxRequest.status !== 200)
+    {
+        this.onError();
+        return;
+    }
+
     this.json = JSON.parse(this.ajaxRequest.responseText);
 
     if(this.json.frames)
@@ -159,12 +154,6 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
     {
         this.onLoaded();
     }
-     //   }
-      //  else
-        //{
-          //  this.onError();
-       // / }
-   // }
 };
 
 /**

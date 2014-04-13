@@ -4,7 +4,7 @@
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-03-31
+ * Compiled: 2014-04-11
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -3037,9 +3037,7 @@ PIXI.InteractionData = function()
      */
     this.global = new PIXI.Point();
 
-    // this is here for legacy... but will remove
-    this.local = new PIXI.Point();
-
+   
     /**
      * The target Sprite that was interacted with
      *
@@ -3653,14 +3651,12 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
             touchData.global.x = touchEvent.clientX;
             touchData.global.y = touchEvent.clientY;
         }
-    }
 
-    var length = this.interactiveItems.length;
-    for (i = 0; i < length; i++)
-    {
-        var item = this.interactiveItems[i];
-        if(item.touchmove)
-            item.touchmove(touchData);
+        for (var j = 0; j < this.interactiveItems.length; j++)
+        {
+            var item = this.interactiveItems[j];
+            if(item.touchmove && item.__touchData[touchEvent.identifier]) item.touchmove(touchData);
+        }
     }
 };
 
@@ -3710,7 +3706,8 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
                     //call the function!
                     if(item.touchstart)item.touchstart(touchData);
                     item.__isDown = true;
-                    item.__touchData = touchData;
+                    item.__touchData = item.__touchData || {};
+                    item.__touchData[touchEvent.identifier] = touchData;
 
                     if(!item.interactiveChildren)break;
                 }
@@ -3748,11 +3745,11 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
         for (var j = 0; j < length; j++)
         {
             var item = this.interactiveItems[j];
-            var itemTouchData = item.__touchData; // <-- Here!
-            item.__hit = this.hitTest(item, touchData);
 
-            if(itemTouchData === touchData)
-            {
+            if(item.__touchData && item.__touchData[touchEvent.identifier]) {
+
+                item.__hit = this.hitTest(item, item.__touchData[touchEvent.identifier]);
+
                 // so this one WAS down...
                 touchData.originalEvent = event || window.event;
                 // hitTest??
@@ -3780,15 +3777,8 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
                     item.__isDown = false;
                 }
 
-                item.__touchData = null;
-
+                item.__touchData[touchEvent.identifier] = null;
             }
-            /*
-            else
-            {
-
-            }
-            */
         }
         // remove the touch..
         this.pool.push(touchData);
@@ -7885,6 +7875,11 @@ PIXI.FilterTexture = function(gl, width, height)
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer );
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.texture, 0);
 
+    // required for masking a mask??
+    this.renderBuffer = gl.createRenderbuffer();
+    gl.bindRenderbuffer(gl.RENDERBUFFER, this.renderBuffer);
+    gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, this.renderBuffer);
+  
     this.resize(width, height);
 };
 
@@ -7920,6 +7915,9 @@ PIXI.FilterTexture.prototype.resize = function(width, height)
     gl.bindTexture(gl.TEXTURE_2D,  this.texture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
 
+    // update the stencil buffer width and height
+    gl.bindRenderbuffer(gl.RENDERBUFFER, this.renderBuffer);
+    gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, width, height);
 };
 
 /**
@@ -8963,7 +8961,7 @@ PIXI.Graphics = function()
     /**
      * the bounds' padding used for bounds calculation
      *
-     * @property bounds
+     * @property boundsPadding
      * @type Number
      */
     this.boundsPadding = 10;
@@ -9522,7 +9520,9 @@ PIXI.Graphics.ELIP = 3;
  */
 PIXI.Strip = function(texture, width, height)
 {
-    PIXI.DisplayObjectContainer.call( this );
+    PIXI.Sprite.call( this, texture );
+    this.width =width;
+    this.height = height;
     this.texture = texture;
     this.blendMode = PIXI.blendModes.NORMAL;
 
@@ -9565,10 +9565,11 @@ PIXI.Strip = function(texture, width, height)
     this.indices = new Uint16Array()
     */
     
-    this.width = width;
-    this.height = height;
+  //  this.width = width;
+   // this.height = height;
 
     // load the texture!
+
     if(texture.baseTexture.hasLoaded)
     {
         this.width   = this.texture.frame.width;
@@ -9585,7 +9586,7 @@ PIXI.Strip = function(texture, width, height)
 };
 
 // constructor
-PIXI.Strip.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
+PIXI.Strip.prototype = Object.create(PIXI.Sprite.prototype);
 PIXI.Strip.prototype.constructor = PIXI.Strip;
 
 /*
@@ -9595,6 +9596,8 @@ PIXI.Strip.prototype.constructor = PIXI.Strip;
  * @param texture {Texture} the texture that will be used
  * @private
  */
+
+/*
 PIXI.Strip.prototype.setTexture = function(texture)
 {
     //TODO SET THE TEXTURES
@@ -9606,6 +9609,7 @@ PIXI.Strip.prototype.setTexture = function(texture)
     this.height  = texture.frame.height;
     this.updateFrame = true;
 };
+*/
 
 /**
  * When the texture is updated, this event will fire to update the scale and frame
@@ -9614,6 +9618,7 @@ PIXI.Strip.prototype.setTexture = function(texture)
  * @param event
  * @private
  */
+
 PIXI.Strip.prototype.onTextureUpdate = function()
 {
     this.updateFrame = true;
@@ -11828,7 +11833,7 @@ PIXI.BaseTexture = function(source, scaleMode)
     
     if(!source)return;
 
-    if(this.source.complete || this.source.getContext)
+    if((this.source.complete || this.source.getContext) && this.source.width && this.source.height)
     {
         this.hasLoaded = true;
         this.width = this.source.width;
@@ -11906,7 +11911,7 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
 {
     var baseTexture = PIXI.BaseTextureCache[imageUrl];
     
-    if(crossorigin === undefined)crossorigin = true;
+    if(crossorigin === undefined && imageUrl.indexOf('data:') === -1) crossorigin = true;
 
     if(!baseTexture)
     {
@@ -12660,24 +12665,14 @@ PIXI.JsonLoader.prototype.load = function () {
         this.ajaxRequest = new window.ActiveXObject('Microsoft.XMLHTTP');
     }
 
-    
-
-
-   // this.ajaxRequest = new PIXI.AjaxRequest(this.crossorigin);
     var scope = this;
-    
-
-    
 
     this.ajaxRequest.onload = function () {
         scope.onJSONLoaded();
     };
 
-   // this.ajaxRequest.open('GET', this.url, true);
-  //  if (this.ajaxRequest.overrideMimeType) this.ajaxRequest.overrideMimeType('application/json');
-  //  this.ajaxRequest.send(null);
+    this.ajaxRequest.open('GET',this.url,true);
 
-    this.ajaxRequest.open('GET',this.url,false);
     this.ajaxRequest.send();
 };
 
@@ -12688,8 +12683,13 @@ PIXI.JsonLoader.prototype.load = function () {
  * @private
  */
 PIXI.JsonLoader.prototype.onJSONLoaded = function () {
-   // if (this.ajaxRequest.readyState === 4) {
-     //   if (this.ajaxRequest.status === 200 || window.location.protocol.indexOf('http') === -1) {
+
+    if(this.ajaxRequest.status !== 200)
+    {
+        this.onError();
+        return;
+    }
+
     this.json = JSON.parse(this.ajaxRequest.responseText);
 
     if(this.json.frames)
@@ -12743,12 +12743,6 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
     {
         this.onLoaded();
     }
-     //   }
-      //  else
-        //{
-          //  this.onError();
-       // / }
-   // }
 };
 
 /**
