@@ -7,8 +7,8 @@
  *
  * @class Circle
  * @constructor
- * @param x {Number} The X coordinate of the upper-left corner of the framing rectangle of this circle
- * @param y {Number} The Y coordinate of the upper-left corner of the framing rectangle of this circle
+ * @param x {Number} The X coordinate of the center of this circle
+ * @param y {Number} The Y coordinate of the center of this circle
  * @param radius {Number} The radius of the circle
  */
 PIXI.Circle = function(x, y, radius)
