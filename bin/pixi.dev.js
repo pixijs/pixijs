@@ -1,4 +1,15 @@
 /**
+ * @license
+ * pixi.js - v1.5.2
+ * Copyright (c) 2012-2014, Mat Groves
+ * http://goodboydigital.com/
+ *
+ * Compiled: 2014-04-23
+ *
+ * pixi.js is licensed under the MIT License.
+ * http://www.opensource.org/licenses/mit-license.php
+ */
+/**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
@@ -12736,7 +12747,7 @@ PIXI.JsonLoader.prototype.load = function () {
     this.ajaxRequest.onload = function(){
 
         scope.onJSONLoaded();
-    }
+    };
 
     this.ajaxRequest.open('GET',this.url,true);
 
@@ -12833,7 +12844,6 @@ PIXI.JsonLoader.prototype.onLoaded = function () {
  * @private
  */
 PIXI.JsonLoader.prototype.onError = function () {
-    console.log("JSON FILE LOAD FAILED");
 
     this.dispatchEvent({
         type: 'error',
@@ -14600,4 +14610,3 @@ Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'angle', {
         root.PIXI = PIXI;
     }
 }).call(this);
-//# sourceMappingURL=pixi.dev.js.map

@@ -81,7 +81,7 @@ PIXI.JsonLoader.prototype.load = function () {
     this.ajaxRequest.onload = function(){
 
         scope.onJSONLoaded();
-    }
+    };
 
     this.ajaxRequest.open('GET',this.url,true);
 
@@ -178,7 +178,6 @@ PIXI.JsonLoader.prototype.onLoaded = function () {
  * @private
  */
 PIXI.JsonLoader.prototype.onError = function () {
-    console.log("JSON FILE LOAD FAILED");
 
     this.dispatchEvent({
         type: 'error',
