@@ -78,9 +78,10 @@ PIXI.JsonLoader.prototype.load = function () {
 
     var scope = this;
 
-    this.ajaxRequest.onload = function () {
+    this.ajaxRequest.onload = function(){
+
         scope.onJSONLoaded();
-    };
+    }
 
     this.ajaxRequest.open('GET',this.url,true);
 
@@ -94,13 +95,13 @@ PIXI.JsonLoader.prototype.load = function () {
  * @private
  */
 PIXI.JsonLoader.prototype.onJSONLoaded = function () {
-
-    if(this.ajaxRequest.status !== 200)
+    
+    if(!this.ajaxRequest.responseText )
     {
         this.onError();
         return;
     }
-
+   
     this.json = JSON.parse(this.ajaxRequest.responseText);
 
     if(this.json.frames)
@@ -177,6 +178,8 @@ PIXI.JsonLoader.prototype.onLoaded = function () {
  * @private
  */
 PIXI.JsonLoader.prototype.onError = function () {
+    console.log("JSON FILE LOAD FAILED");
+
     this.dispatchEvent({
         type: 'error',
         content: this

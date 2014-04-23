@@ -284,8 +284,8 @@ PIXI.Polygon.prototype.constructor = PIXI.Polygon;
  *
  * @class Circle
  * @constructor
- * @param x {Number} The X coordinate of the upper-left corner of the framing rectangle of this circle
- * @param y {Number} The Y coordinate of the upper-left corner of the framing rectangle of this circle
+ * @param x {Number} The X coordinate of the center of this circle
+ * @param y {Number} The Y coordinate of the center of this circle
  * @param radius {Number} The radius of the circle
  */
 PIXI.Circle = function(x, y, radius)
@@ -540,7 +540,8 @@ PIXI.identityMatrix = new PIXI.Matrix();
  */
 
 /**
- * The base class for all objects that are rendered on the screen.
+ * The base class for all objects that are rendered on the screen. 
+ * This is an abstract class and should not be used on its own rather it should be extended.
  *
  * @class DisplayObject
  * @constructor
@@ -7914,9 +7915,10 @@ PIXI.WebGLFilterManager.prototype.destroy = function()
 * @param gl {WebGLContext} the current WebGL drawing context
 * @param width {Number} the horizontal range of the filter
 * @param height {Number} the vertical range of the filter
+* @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
 * @private
 */
-PIXI.FilterTexture = function(gl, width, height)
+PIXI.FilterTexture = function(gl, width, height, scaleMode)
 {
     /**
      * @property gl
@@ -7928,9 +7930,11 @@ PIXI.FilterTexture = function(gl, width, height)
     this.frameBuffer = gl.createFramebuffer();
     this.texture = gl.createTexture();
 
+    scaleMode = scaleMode || PIXI.scaleModes.DEFAULT;
+
     gl.bindTexture(gl.TEXTURE_2D,  this.texture);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, scaleMode === PIXI.scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, scaleMode === PIXI.scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer );
@@ -9405,28 +9409,24 @@ PIXI.Graphics.prototype.getBounds = function( matrix )
     var x4 =  a * w1 + c * h0 + tx;
     var y4 =  d * h0 + b * w1 + ty;
 
-    var maxX = -Infinity;
-    var maxY = -Infinity;
+    var maxX = x1;
+    var maxY = y1;
 
-    var minX = Infinity;
-    var minY = Infinity;
+    var minX = x1;
+    var minY = y1;
 
-    minX = x1 < minX ? x1 : minX;
     minX = x2 < minX ? x2 : minX;
     minX = x3 < minX ? x3 : minX;
     minX = x4 < minX ? x4 : minX;
 
-    minY = y1 < minY ? y1 : minY;
     minY = y2 < minY ? y2 : minY;
     minY = y3 < minY ? y3 : minY;
     minY = y4 < minY ? y4 : minY;
 
-    maxX = x1 > maxX ? x1 : maxX;
     maxX = x2 > maxX ? x2 : maxX;
     maxX = x3 > maxX ? x3 : maxX;
     maxX = x4 > maxX ? x4 : maxX;
 
-    maxY = y1 > maxY ? y1 : maxY;
     maxY = y2 > maxY ? y2 : maxY;
     maxY = y3 > maxY ? y3 : maxY;
     maxY = y4 > maxY ? y4 : maxY;
@@ -12303,8 +12303,9 @@ PIXI.TextureUvs = function()
  * @constructor
  * @param width {Number} The width of the render texture
  * @param height {Number} The height of the render texture
+ * @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
  */
-PIXI.RenderTexture = function(width, height, renderer)
+PIXI.RenderTexture = function(width, height, renderer, scaleMode)
 {
     PIXI.EventTarget.call( this );
 
@@ -12342,6 +12343,8 @@ PIXI.RenderTexture = function(width, height, renderer)
     this.baseTexture.height = this.height;
     this.baseTexture._glTextures = [];
 
+    this.baseTexture.scaleMode = scaleMode || PIXI.scaleModes.DEFAULT;
+
     this.baseTexture.hasLoaded = true;
 
     // each render texture can only belong to one renderer at the moment if its webGL
@@ -12351,7 +12354,7 @@ PIXI.RenderTexture = function(width, height, renderer)
     {
         var gl = this.renderer.gl;
 
-        this.textureBuffer = new PIXI.FilterTexture(gl, this.width, this.height);
+        this.textureBuffer = new PIXI.FilterTexture(gl, this.width, this.height, this.baseTexture.scaleMode);
         this.baseTexture._glTextures[gl.id] =  this.textureBuffer.texture;
 
         this.render = this.renderWebGL;
@@ -12730,9 +12733,10 @@ PIXI.JsonLoader.prototype.load = function () {
 
     var scope = this;
 
-    this.ajaxRequest.onload = function () {
+    this.ajaxRequest.onload = function(){
+
         scope.onJSONLoaded();
-    };
+    }
 
     this.ajaxRequest.open('GET',this.url,true);
 
@@ -12746,13 +12750,13 @@ PIXI.JsonLoader.prototype.load = function () {
  * @private
  */
 PIXI.JsonLoader.prototype.onJSONLoaded = function () {
-
-    if(this.ajaxRequest.status !== 200)
+    
+    if(!this.ajaxRequest.responseText )
     {
         this.onError();
         return;
     }
-
+   
     this.json = JSON.parse(this.ajaxRequest.responseText);
 
     if(this.json.frames)
@@ -12829,6 +12833,8 @@ PIXI.JsonLoader.prototype.onLoaded = function () {
  * @private
  */
 PIXI.JsonLoader.prototype.onError = function () {
+    console.log("JSON FILE LOAD FAILED");
+
     this.dispatchEvent({
         type: 'error',
         content: this
