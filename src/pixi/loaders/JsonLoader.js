@@ -62,10 +62,27 @@ PIXI.JsonLoader.prototype.constructor = PIXI.JsonLoader;
  */
 PIXI.JsonLoader.prototype.load = function () {
 
+    var scope = this;
 
     if(window.XDomainRequest)
     {
         this.ajaxRequest = new window.XDomainRequest();
+
+        // XDomainRequest has a few querks. Occasionally it will abort requests
+        // A way to avoid this is to make sure ALL callbacks are set even if not used
+        // More info here: http://stackoverflow.com/questions/15786966/xdomainrequest-aborts-post-on-ie-9
+        this.ajaxRequest.timeout = 3000;
+
+        this.ajaxRequest.onerror = function () {
+            scope.onError();
+        };
+           
+        this.ajaxRequest.ontimeout = function () {
+            scope.onError();
+        };
+
+        this.ajaxRequest.onprogress = function() {};
+
     }
     else if (window.XMLHttpRequest)
     {
@@ -76,7 +93,7 @@ PIXI.JsonLoader.prototype.load = function () {
         this.ajaxRequest = new window.ActiveXObject('Microsoft.XMLHTTP');
     }
 
-    var scope = this;
+    
 
     this.ajaxRequest.onload = function(){
 
