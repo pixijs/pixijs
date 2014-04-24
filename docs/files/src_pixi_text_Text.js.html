@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.5.0</em>
+            <em>API Docs for: 1.5.3</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -88,6 +88,8 @@
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
+            
+                <li><a href="../classes/getRecommendedRenderer.html">getRecommendedRenderer</a></li>
             
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
             
@@ -344,7 +346,7 @@ PIXI.Text.prototype.updateText = function()
     var width = maxLineWidth + this.style.strokeThickness;
     if(this.style.dropShadow)width += this.style.dropShadowDistance;
 
-    this.canvas.width = width;
+    this.canvas.width = width + this.context.lineWidth;
     //calculate text height
     var lineHeight = this.determineFontHeight(&#x27;font: &#x27; + this.style.font  + &#x27;;&#x27;) + this.style.strokeThickness;
     
@@ -537,7 +539,7 @@ PIXI.Text.prototype.wordWrap = function(text)
         {
             var wordWidth = this.context.measureText(words[j]).width;
             var wordWidthWithSpace = wordWidth + this.context.measureText(&#x27; &#x27;).width;
-            if(wordWidthWithSpace &gt; spaceLeft)
+            if(j === 0 || wordWidthWithSpace &gt; spaceLeft)
             {
                 // Skip printing the newline if it&#x27;s the first word of the line that is
                 // greater than the word wrap width.
@@ -545,13 +547,13 @@ PIXI.Text.prototype.wordWrap = function(text)
                 {
                     result += &#x27;\n&#x27;;
                 }
-                result += words[j] + &#x27; &#x27;;
+                result += words[j];
                 spaceLeft = this.style.wordWrapWidth - wordWidth;
             }
             else
             {
                 spaceLeft -= wordWidthWithSpace;
-                result += words[j] + &#x27; &#x27;;
+                result += &#x27; &#x27; + words[j];
             }
         }
 
