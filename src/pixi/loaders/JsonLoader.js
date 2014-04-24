@@ -62,10 +62,27 @@ PIXI.JsonLoader.prototype.constructor = PIXI.JsonLoader;
  */
 PIXI.JsonLoader.prototype.load = function () {
 
+    var scope = this;
 
     if(window.XDomainRequest)
     {
         this.ajaxRequest = new window.XDomainRequest();
+
+        // XDomainRequest has a few querks. Occasionally it will abort requests
+        // A way to avoid this is to make sure ALL callbacks are set even if not used
+        // More info here: http://stackoverflow.com/questions/15786966/xdomainrequest-aborts-post-on-ie-9
+        this.ajaxRequest.timeout = 3000;
+
+        this.ajaxRequest.onerror = function () {
+            scope.onError();
+        };
+           
+        this.ajaxRequest.ontimeout = function () {
+            scope.onError();
+        };
+
+        this.ajaxRequest.onprogress = function() {};
+
     }
     else if (window.XMLHttpRequest)
     {
@@ -78,22 +95,13 @@ PIXI.JsonLoader.prototype.load = function () {
 
     
 
+    this.ajaxRequest.onload = function(){
 
-   // this.ajaxRequest = new PIXI.AjaxRequest(this.crossorigin);
-    var scope = this;
-    
-
-    
-
-    this.ajaxRequest.onload = function () {
         scope.onJSONLoaded();
     };
 
-   // this.ajaxRequest.open('GET', this.url, true);
-  //  if (this.ajaxRequest.overrideMimeType) this.ajaxRequest.overrideMimeType('application/json');
-  //  this.ajaxRequest.send(null);
+    this.ajaxRequest.open('GET',this.url,true);
 
-    this.ajaxRequest.open('GET',this.url,false);
     this.ajaxRequest.send();
 };
 
@@ -104,8 +112,13 @@ PIXI.JsonLoader.prototype.load = function () {
  * @private
  */
 PIXI.JsonLoader.prototype.onJSONLoaded = function () {
-   // if (this.ajaxRequest.readyState === 4) {
-     //   if (this.ajaxRequest.status === 200 || window.location.protocol.indexOf('http') === -1) {
+    
+    if(!this.ajaxRequest.responseText )
+    {
+        this.onError();
+        return;
+    }
+   
     this.json = JSON.parse(this.ajaxRequest.responseText);
 
     if(this.json.frames)
@@ -159,12 +172,6 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
     {
         this.onLoaded();
     }
-     //   }
-      //  else
-        //{
-          //  this.onError();
-       // / }
-   // }
 };
 
 /**
@@ -188,6 +195,7 @@ PIXI.JsonLoader.prototype.onLoaded = function () {
  * @private
  */
 PIXI.JsonLoader.prototype.onError = function () {
+
     this.dispatchEvent({
         type: 'error',
         content: this

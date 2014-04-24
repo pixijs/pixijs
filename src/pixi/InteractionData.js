@@ -18,9 +18,7 @@ PIXI.InteractionData = function()
      */
     this.global = new PIXI.Point();
 
-    // this is here for legacy... but will remove
-    this.local = new PIXI.Point();
-
+   
     /**
      * The target Sprite that was interacted with
      *
