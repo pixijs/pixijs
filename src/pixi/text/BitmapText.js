@@ -98,18 +98,18 @@ PIXI.BitmapText.parseColors = function (text)
         {
             // looks like we have a code, so parse as appropriate
             if (currentToken[1] === '')
-            { 
+            {
                 // matches a {#} (revert) code
                 output.push({ tint: -1, alpha: 1 });
             }
             else {
                 if (currentToken[1].length === 6)
-                { 
+                {
                     // matches a {#ffffff} (RGB) code
                     output.push({ tint: parseInt(currentToken[1], 16), alpha: 1 });
                 }
                 else if (currentToken[1].length === 8)
-                { 
+                {
                     // matches a {#ffffffff} (RGBA) code
                     output.push({
                         tint: parseInt(currentToken[1].substr(0, 6), 16),
