@@ -67,13 +67,79 @@ PIXI.BitmapText.prototype.setStyle = function(style)
 };
 
 /**
+ * Parses the text string for color codes into an array containing either individual characters, or objects with tint and alpha values.
+ * 
+ * Text can contain color codes in the format:
+ * {#ffffff} (RGB)
+ * {#ffffffff} (RGBA)
+ * {#} (revert to default colors)
+ * These will be parsed and applied if any are detected, otherwise the text will behave
+ * as normal. Codes contained within the text setting tint colors will override the
+ * overall tint value if set, hence the need for the {#} 'revert' code.
+ * 
+ * Example: "The following text is {#ff0000}RED{#}, and the following text is {#00ff007c}GREEN{#} and (approximately) half opacity."
+ * 
+ * @method parseColors
+ * @param input {String} The text to be split into a colored character array.
+ * @return {Array} An array of tint/alpha objects and nulls, one per character of the original stripped text.
+ * @static
+ */
+
+PIXI.BitmapText.parseColors = function (text)
+{
+    var output = [];
+    var textTokenized = text.split(/({#[0-9a-fA-F]{0,8}})/); // split the text into normal strings and codes
+    var currentToken;
+    
+    for (var i = 0; i < textTokenized.length; i++)
+    {
+        currentToken = textTokenized[i].match(/^{#([0-9a-fA-F]{0,8})}$/); // extract the value from the code
+        if (currentToken && currentToken.length > 0)
+        {
+            // looks like we have a code, so parse as appropriate
+            if (currentToken[1] === '')
+            { 
+                // matches a {#} (revert) code
+                output.push({ tint: -1, alpha: 1 });
+            }
+            else {
+                if (currentToken[1].length === 6)
+                { 
+                    // matches a {#ffffff} (RGB) code
+                    output.push({ tint: parseInt(currentToken[1], 16), alpha: 1 });
+                }
+                else if (currentToken[1].length === 8)
+                { 
+                    // matches a {#ffffffff} (RGBA) code
+                    output.push({
+                        tint: parseInt(currentToken[1].substr(0, 6), 16),
+                        alpha: parseInt(currentToken[1].substr(6, 2), 16) / 255
+                    });
+                }
+            }
+        }
+        else {
+            // doesn't seem to be a code, so just fill out the array with nulls (one per character), making sure to skip newlines
+            for (var j = 0; j < textTokenized[i].length; j++) {
+                if (/(?:\r\n|\r|\n)/.test(textTokenized[i].charAt(j)))
+                {
+                    continue;
+                }
+                output.push(null);
+            }
+        }
+    }
+
+    return output;
+};
+
+/**
  * Renders text and updates it when needed
  *
  * @method updateText
  * @private
  */
-PIXI.BitmapText.prototype.updateText = function()
-{
+PIXI.BitmapText.prototype.updateText = function () {
     var data = PIXI.BitmapText.fonts[this.fontName];
     var pos = new PIXI.Point();
     var prevCharCode = null;
@@ -82,12 +148,20 @@ PIXI.BitmapText.prototype.updateText = function()
     var lineWidths = [];
     var line = 0;
     var scale = this.fontSize / data.size;
-    
+    var parsedTextArray = [];
+    var text = this.text;
 
-    for(var i = 0; i < this.text.length; i++)
+    if (text && /{#[0-9a-fA-F]{0,8}}/.test(text))
     {
-        var charCode = this.text.charCodeAt(i);
-        if(/(?:\r\n|\r|\n)/.test(this.text.charAt(i)))
+        // looks like this text contains at least one color code, so parse the codes and strip them from the final text
+        parsedTextArray = PIXI.BitmapText.parseColors(text);
+        text = text.replace(/{#[0-9a-fA-F]{0,8}}/g, '');
+    }
+
+    for (var i = 0; i < text.length; i++)
+    {
+        var charCode = text.charCodeAt(i);
+        if (/(?:\r\n|\r|\n)/.test(text.charAt(i)))
         {
             lineWidths.push(pos.x);
             maxLineWidth = Math.max(maxLineWidth, pos.x);
@@ -100,13 +174,13 @@ PIXI.BitmapText.prototype.updateText = function()
         }
 
         var charData = data.chars[charCode];
-        if(!charData) continue;
+        if (!charData) continue;
 
-        if(prevCharCode && charData[prevCharCode])
+        if (prevCharCode && charData[prevCharCode])
         {
             pos.x += charData.kerning[prevCharCode];
         }
-        chars.push({texture:charData.texture, line: line, charCode: charCode, position: new PIXI.Point(pos.x + charData.xOffset, pos.y + charData.yOffset)});
+        chars.push({ texture: charData.texture, line: line, charCode: charCode, position: new PIXI.Point(pos.x + charData.xOffset, pos.y + charData.yOffset) });
         pos.x += charData.xAdvance;
 
         prevCharCode = charCode;
@@ -116,14 +190,14 @@ PIXI.BitmapText.prototype.updateText = function()
     maxLineWidth = Math.max(maxLineWidth, pos.x);
 
     var lineAlignOffsets = [];
-    for(i = 0; i <= line; i++)
+    for (i = 0; i <= line; i++)
     {
         var alignOffset = 0;
-        if(this.style.align === 'right')
+        if (this.style.align === 'right')
         {
             alignOffset = maxLineWidth - lineWidths[i];
         }
-        else if(this.style.align === 'center')
+        else if (this.style.align === 'center')
         {
             alignOffset = (maxLineWidth - lineWidths[i]) / 2;
         }
@@ -133,7 +207,9 @@ PIXI.BitmapText.prototype.updateText = function()
     var lenChildren = this.children.length;
     var lenChars = chars.length;
     var tint = this.tint || 0xFFFFFF;
-    for(i = 0; i < lenChars; i++)
+    var alpha = 1;
+    var codeIndex = 0;
+    for (i = 0; i < lenChars; i++)
     {
         var c = i < lenChildren ? this.children[i] : this._pool.pop(); // get old child if have. if not - take from pool.
 
@@ -143,13 +219,23 @@ PIXI.BitmapText.prototype.updateText = function()
         c.position.x = (chars[i].position.x + lineAlignOffsets[chars[i].line]) * scale;
         c.position.y = chars[i].position.y * scale;
         c.scale.x = c.scale.y = scale;
+        if (parsedTextArray[codeIndex])
+        {
+            // we have color information for this character, so change the default tint and alpha from now until the next code or the end of the text
+            tint = (parsedTextArray[codeIndex].tint === -1 ? (this.tint || 0xFFFFFF) : parsedTextArray[codeIndex].tint); // if the tint is -1, reset tint to default
+            alpha = parsedTextArray[codeIndex].alpha;
+            ++codeIndex; // increase the code index twice to skip the code's place in the array (which does not map to a specific character)
+        }
         c.tint = tint;
+        c.alpha = alpha;
+        // c.alpha = parsedTextArray[i].alpha || 1;
         if (!c.parent) this.addChild(c);
+        ++codeIndex;
     }
 
     // remove unnecessary children.
     // and put their into the pool.
-    while(this.children.length > lenChars)
+    while (this.children.length > lenChars)
     {
         var child = this.getChildAt(this.children.length - 1);
         this._pool.push(child);
