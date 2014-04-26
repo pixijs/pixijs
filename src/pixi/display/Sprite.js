@@ -11,7 +11,7 @@
  * @param texture {Texture} The texture for this sprite
  * 
  * A sprite can be created directly from an image like this : 
- * var sprite = nex PIXI.Sprite.FromImage('assets/image.png');
+ * var sprite = new PIXI.Sprite.fromImage('assets/image.png');
  * yourStage.addChild(sprite);
  * then obviously don't forget to add it to the stage you have already created
  */
