@@ -1,4 +1,15 @@
 /**
+ * @license
+ * pixi.js - v1.5.2
+ * Copyright (c) 2012-2014, Mat Groves
+ * http://goodboydigital.com/
+ *
+ * Compiled: 2014-04-29
+ *
+ * pixi.js is licensed under the MIT License.
+ * http://www.opensource.org/licenses/mit-license.php
+ */
+/**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
@@ -53,6 +64,9 @@ PIXI.scaleModes = {
     LINEAR:0,
     NEAREST:1
 };
+
+PIXI.Float32Array = Float32Array || Array;
+PIXI.Uint16Array = Uint16Array || Array;
 
 // interaction frequency 
 PIXI.INTERACTION_FREQUENCY = 30;
@@ -508,30 +522,30 @@ PIXI.Matrix.prototype.toArray = function(transpose)
 
     if(transpose)
     {
-        this.array[0] = this.a;
-        this.array[1] = this.c;
-        this.array[2] = 0;
-        this.array[3] = this.b;
-        this.array[4] = this.d;
-        this.array[5] = 0;
-        this.array[6] = this.tx;
-        this.array[7] = this.ty;
-        this.array[8] = 1;
+        array[0] = this.a;
+        array[1] = this.c;
+        array[2] = 0;
+        array[3] = this.b;
+        array[4] = this.d;
+        array[5] = 0;
+        array[6] = this.tx;
+        array[7] = this.ty;
+        array[8] = 1;
     }
     else
     {
-        this.array[0] = this.a;
-        this.array[1] = this.b;
-        this.array[2] = this.tx;
-        this.array[3] = this.c;
-        this.array[4] = this.d;
-        this.array[5] = this.ty;
-        this.array[6] = 0;
-        this.array[7] = 0;
-        this.array[8] = 1;
+        array[0] = this.a;
+        array[1] = this.b;
+        array[2] = this.tx;
+        array[3] = this.c;
+        array[4] = this.d;
+        array[5] = this.ty;
+        array[6] = 0;
+        array[7] = 0;
+        array[8] = 1;
     }
 
-    return array;//[this.a, this.b, this.tx, this.c, this.d, this.ty, 0, 0, 1];
+    return array;
 };
 
 PIXI.identityMatrix = new PIXI.Matrix();
@@ -5053,8 +5067,10 @@ PIXI.PixiFastShader.prototype.destroy = function()
  */
 
 
-PIXI.StripShader = function()
+PIXI.StripShader = function(gl)
 {
+    this.gl = gl;
+
     /**
     * @property {any} program - The WebGL program.
     */
@@ -5066,37 +5082,40 @@ PIXI.StripShader = function()
     this.fragmentSrc = [
         'precision mediump float;',
         'varying vec2 vTextureCoord;',
-        'varying float vColor;',
+     //   'varying float vColor;',
         'uniform float alpha;',
         'uniform sampler2D uSampler;',
 
         'void main(void) {',
         '   gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y));',
-        '   gl_FragColor = gl_FragColor * alpha;',
+      //  '   gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);',//gl_FragColor * alpha;',
         '}'
     ];
 
-    /**
+     /**
     * @property {array} fragmentSrc - The fragment shader.
     */
-    this.vertexSrc = [
+    this.vertexSrc  = [
         'attribute vec2 aVertexPosition;',
         'attribute vec2 aTextureCoord;',
-        'attribute float aColor;',
         'uniform mat3 translationMatrix;',
         'uniform vec2 projectionVector;',
-        'varying vec2 vTextureCoord;',
         'uniform vec2 offsetVector;',
-        'varying float vColor;',
+      //  'uniform float alpha;',
+       // 'uniform vec3 tint;',
+        'varying vec2 vTextureCoord;',
+      //  'varying vec4 vColor;',
 
         'void main(void) {',
-        '   vec3 v = translationMatrix * vec3(aVertexPosition, 1.0);',
+        '   vec3 v = translationMatrix * vec3(aVertexPosition , 1.0);',
         '   v -= offsetVector.xyx;',
-        '   gl_Position = vec4( v.x / projectionVector.x -1.0, v.y / projectionVector.y + 1.0 , 0.0, 1.0);',
+        '   gl_Position = vec4( v.x / projectionVector.x -1.0, v.y / -projectionVector.y + 1.0 , 0.0, 1.0);',
         '   vTextureCoord = aTextureCoord;',
-        '   vColor = aColor;',
+       // '   vColor = aColor * vec4(tint * alpha, alpha);',
         '}'
     ];
+
+    this.init();
 };
 
 /**
@@ -5106,8 +5125,7 @@ PIXI.StripShader = function()
 */
 PIXI.StripShader.prototype.init = function()
 {
-
-    var gl = PIXI.gl;
+    var gl = this.gl;
 
     var program = PIXI.compileProgram(gl, this.vertexSrc, this.fragmentSrc);
     gl.useProgram(program);
@@ -5122,6 +5140,8 @@ PIXI.StripShader.prototype.init = function()
     // get and store the attributes
     this.aVertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
     this.aTextureCoord = gl.getAttribLocation(program, 'aTextureCoord');
+
+    this.attributes = [this.aVertexPosition, this.aTextureCoord];
 
     this.translationMatrix = gl.getUniformLocation(program, 'translationMatrix');
     this.alpha = gl.getUniformLocation(program, 'alpha');
@@ -6487,6 +6507,8 @@ PIXI.WebGLShaderManager.prototype.setContext = function(gl)
     // this shader is used for the fast sprite rendering
     this.fastShader = new PIXI.PixiFastShader(gl);
 
+    // the next one is used for rendering triangle strips
+    this.stripShader = new PIXI.StripShader(gl);
 
     this.activateShader(this.defaultShader);
 };
@@ -6519,7 +6541,6 @@ PIXI.WebGLShaderManager.prototype.setAttribs = function(attribs)
 
     for (i = 0; i < this.attribState.length; i++)
     {
-
         if(this.attribState[i] !== this.tempAttribState[i])
         {
             this.attribState[i] = this.tempAttribState[i];
@@ -6557,6 +6578,20 @@ PIXI.WebGLShaderManager.prototype.activateShader = function(shader)
 * Triggers the primitive shader
 * @method activatePrimitiveShader
 */
+PIXI.WebGLShaderManager.prototype.activateDefaultShader = function()
+{
+    var gl = this.gl;
+
+    gl.useProgram(this.defaultShader.program);
+
+    this.setAttribs(this.defaultShader.attributes);
+    
+};
+
+/**
+* Triggers the primitive shader
+* @method activatePrimitiveShader
+*/
 PIXI.WebGLShaderManager.prototype.activatePrimitiveShader = function()
 {
     var gl = this.gl;
@@ -6564,6 +6599,21 @@ PIXI.WebGLShaderManager.prototype.activatePrimitiveShader = function()
     gl.useProgram(this.primitiveShader.program);
 
     this.setAttribs(this.primitiveShader.attributes);
+    
+};
+
+
+/**
+* Triggers the primitive shader
+* @method activatePrimitiveShader
+*/
+PIXI.WebGLShaderManager.prototype.activateStripShader = function()
+{
+    var gl = this.gl;
+
+    gl.useProgram(this.stripShader.program);
+
+    this.setAttribs(this.stripShader.attributes);
     
 };
 
@@ -6595,6 +6645,8 @@ PIXI.WebGLShaderManager.prototype.destroy = function()
     this.defaultShader.destroy();
 
     this.fastShader.destroy();
+
+    this.stripShader.destroy();
 
     this.gl = null;
 };
@@ -7539,11 +7591,11 @@ PIXI.WebGLFilterManager.prototype.pushFilter = function(filterBlock)
 
     var filterArea = filterBlock._filterArea;// filterBlock.target.getBounds();///filterBlock.target.filterArea;
 
-    var padidng = filter.padding;
-    filterArea.x -= padidng;
-    filterArea.y -= padidng;
-    filterArea.width += padidng * 2;
-    filterArea.height += padidng * 2;
+    var padding = filter.padding;
+    filterArea.x -= padding;
+    filterArea.y -= padding;
+    filterArea.width += padding * 2;
+    filterArea.height += padding * 2;
 
     // cap filter to screen size..
     if(filterArea.x < 0)filterArea.x = 0;
@@ -9581,76 +9633,146 @@ PIXI.Graphics.ELIP = 3;
  * @param height {Number} the height
  * 
  */
-PIXI.Strip = function(texture, width, height)
+PIXI.Strip = function(texture)
 {
-    PIXI.Sprite.call( this, texture );
-    this.width =width;
-    this.height = height;
-    this.texture = texture;
-    this.blendMode = PIXI.blendModes.NORMAL;
-
-    try
-    {
-        this.uvs = new Float32Array([0, 1,
-                1, 1,
-                1, 0, 0,1]);
-
-        this.verticies = new Float32Array([0, 0,
-                          0,0,
-                          0,0, 0,
-                          0, 0]);
-
-        this.colors = new Float32Array([1, 1, 1, 1]);
-
-        this.indices = new Uint16Array([0, 1, 2, 3]);
-    }
-    catch(error)
-    {
-        this.uvs = [0, 1,
-                1, 1,
-                1, 0, 0,1];
-
-        this.verticies = [0, 0,
-                          0,0,
-                          0,0, 0,
-                          0, 0];
-
-        this.colors = [1, 1, 1, 1];
-
-        this.indices = [0, 1, 2, 3];
-    }
-
-
-    /*
-    this.uvs = new Float32Array()
-    this.verticies = new Float32Array()
-    this.colors = new Float32Array()
-    this.indices = new Uint16Array()
-    */
+    PIXI.DisplayObjectContainer.call( this );
     
-  //  this.width = width;
-   // this.height = height;
+    this.texture = texture;
 
-    // load the texture!
+    // set up the main bits..
+    this.uvs = new PIXI.Float32Array([0, 1,
+                                    1, 1,
+                                    1, 0,
+                                    0,1]);
 
-    if(texture.baseTexture.hasLoaded)
-    {
-        this.width   = this.texture.frame.width;
-        this.height  = this.texture.frame.height;
-        this.updateFrame = true;
-    }
-    else
-    {
-        this.onTextureUpdateBind = this.onTextureUpdate.bind(this);
-        this.texture.addEventListener( 'update', this.onTextureUpdateBind );
-    }
+    this.verticies = new PIXI.Float32Array([0, 0,
+                      100,0,
+                      100,100,
+                      0, 100]);
 
-    this.renderable = true;
+    this.colors = new PIXI.Float32Array([1, 1, 1, 1]);
+
+    this.indices = new PIXI.Uint16Array([0, 1, 2, 3]);
+    
+
+    this.dirty = true;
 };
 
 // constructor
-PIXI.Strip.prototype = Object.create(PIXI.Sprite.prototype);
+PIXI.Strip.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
 PIXI.Strip.prototype.constructor = PIXI.Strip;
+
+PIXI.Strip.prototype._renderWebGL = function(renderSession)
+{
+    // if the sprite is not visible or the alpha is 0 then no need to render this element
+    if(!this.visible || this.alpha <= 0)return;
+    // render triangle strip..
+
+    renderSession.spriteBatch.stop();
+
+    // init! init!
+    if(!this._vertexBuffer)this._initWebGL(renderSession);
+    
+    renderSession.shaderManager.activateStripShader();
+
+    this._renderStrip(renderSession);
+
+    renderSession.shaderManager.activateDefaultShader();
+
+    renderSession.spriteBatch.start();
+
+    //TODO check culling  
+};
+
+PIXI.Strip.prototype._initWebGL = function(renderSession)
+{
+    // build the strip!
+    var gl = renderSession.gl;
+    
+    this._vertexBuffer = gl.createBuffer();
+    this._indexBuffer = gl.createBuffer();
+    this._uvBuffer = gl.createBuffer();
+    this._colorBuffer = gl.createBuffer();
+    
+    gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, this.verticies, gl.DYNAMIC_DRAW);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, this._uvBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER,  this.uvs, gl.STATIC_DRAW);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, this._colorBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, this.colors, gl.STATIC_DRAW);
+ 
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW);
+};
+
+PIXI.Strip.prototype._renderStrip = function(renderSession)
+{
+    var gl = renderSession.gl;
+    var projection = renderSession.projection,
+        offset = renderSession.offset,
+        shader = renderSession.shaderManager.stripShader;
+
+
+    // gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mat4Real);
+
+    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+
+    // set uniforms
+    gl.uniformMatrix3fv(shader.translationMatrix, false, this.worldTransform.toArray(true));
+    gl.uniform2f(shader.projectionVector, projection.x, -projection.y);
+    gl.uniform2f(shader.offsetVector, -offset.x, -offset.y);
+    gl.uniform1f(shader.alpha, 1);
+
+    if(!this.dirty)
+    {
+        
+        gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
+        gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.verticies);
+        gl.vertexAttribPointer(shader.aVertexPosition, 2, gl.FLOAT, false, 0, 0);
+        
+        // update the uvs
+        gl.bindBuffer(gl.ARRAY_BUFFER, this._uvBuffer);
+        gl.vertexAttribPointer(shader.aTextureCoord, 2, gl.FLOAT, false, 0, 0);
+            
+        gl.activeTexture(gl.TEXTURE0);
+         // bind the current texture
+        gl.bindTexture(gl.TEXTURE_2D, this.texture.baseTexture._glTextures[gl.id] || PIXI.createWebGLTexture(this.texture.baseTexture, gl));
+    
+        // dont need to upload!
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
+    
+    
+    }
+    else
+    {
+
+        this.dirty = false;
+        gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, this.verticies, gl.STATIC_DRAW);
+        gl.vertexAttribPointer(shader.aVertexPosition, 2, gl.FLOAT, false, 0, 0);
+        
+        // update the uvs
+        gl.bindBuffer(gl.ARRAY_BUFFER, this._uvBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, this.uvs, gl.STATIC_DRAW);
+        gl.vertexAttribPointer(shader.aTextureCoord, 2, gl.FLOAT, false, 0, 0);
+            
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, this.texture.baseTexture._glTextures[gl.id] || PIXI.createWebGLTexture(this.texture.baseTexture, gl));
+    
+        // dont need to upload!
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW);
+        
+    }
+    //console.log(gl.TRIANGLE_STRIP)
+    //
+    //
+    gl.drawElements(gl.TRIANGLE_STRIP, this.indices.length, gl.UNSIGNED_SHORT, 0);
+    
+  
+};
 
 /*
  * Sets the texture that the Strip will use 
@@ -9702,20 +9824,11 @@ PIXI.Rope = function(texture, points)
     PIXI.Strip.call( this, texture );
     this.points = points;
 
-    try
-    {
-        this.verticies = new Float32Array(points.length * 4);
-        this.uvs = new Float32Array(points.length * 4);
-        this.colors = new Float32Array(points.length * 2);
-        this.indices = new Uint16Array(points.length * 2);
-    }
-    catch(error)
-    {
-        this.verticies = new Array(points.length * 4);
-        this.uvs = new Array(points.length * 4);
-        this.colors = new Array(points.length * 2);
-        this.indices = new Array(points.length * 2);
-    }
+    this.verticies = new PIXI.Float32Array(points.length * 4);
+    this.uvs = new PIXI.Float32Array(points.length * 4);
+    this.colors = new PIXI.Float32Array(points.length * 2);
+    this.indices = new PIXI.Uint16Array(points.length * 2);
+   
 
     this.refresh();
 };
@@ -9743,9 +9856,8 @@ PIXI.Rope.prototype.refresh = function()
 
     this.count-=0.2;
 
-
     uvs[0] = 0;
-    uvs[1] = 1;
+    uvs[1] = 0;
     uvs[2] = 0;
     uvs[3] = 1;
 
@@ -9760,7 +9872,6 @@ PIXI.Rope.prototype.refresh = function()
 
     for (var i = 1; i < total; i++)
     {
-
         point = points[i];
         index = i * 4;
         // time to do some smart drawing!
@@ -9773,7 +9884,6 @@ PIXI.Rope.prototype.refresh = function()
 
             uvs[index+2] = amount;
             uvs[index+3] = 1;
-
         }
         else
         {
@@ -9815,16 +9925,10 @@ PIXI.Rope.prototype.updateTransform = function()
     this.count-=0.2;
 
     var verticies = this.verticies;
-    verticies[0] = lastPoint.x + perp.x;
-    verticies[1] = lastPoint.y + perp.y; //+ 200
-    verticies[2] = lastPoint.x - perp.x;
-    verticies[3] = lastPoint.y - perp.y;//+200
-    // time to do some smart drawing!
-
     var total = points.length,
         point, index, ratio, perpLength, num;
 
-    for (var i = 1; i < total; i++)
+    for (var i = 0; i < total; i++)
     {
         point = points[i];
         index = i * 4;
@@ -14616,4 +14720,3 @@ Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'angle', {
         root.PIXI = PIXI;
     }
 }).call(this);
-//# sourceMappingURL=pixi.dev.js.map

@@ -44,6 +44,8 @@ PIXI.WebGLShaderManager.prototype.setContext = function(gl)
     // this shader is used for the fast sprite rendering
     this.fastShader = new PIXI.PixiFastShader(gl);
 
+    // the next one is used for rendering triangle strips
+    this.stripShader = new PIXI.StripShader(gl);
 
     this.activateShader(this.defaultShader);
 };
@@ -76,7 +78,6 @@ PIXI.WebGLShaderManager.prototype.setAttribs = function(attribs)
 
     for (i = 0; i < this.attribState.length; i++)
     {
-
         if(this.attribState[i] !== this.tempAttribState[i])
         {
             this.attribState[i] = this.tempAttribState[i];
@@ -114,6 +115,20 @@ PIXI.WebGLShaderManager.prototype.activateShader = function(shader)
 * Triggers the primitive shader
 * @method activatePrimitiveShader
 */
+PIXI.WebGLShaderManager.prototype.activateDefaultShader = function()
+{
+    var gl = this.gl;
+
+    gl.useProgram(this.defaultShader.program);
+
+    this.setAttribs(this.defaultShader.attributes);
+    
+};
+
+/**
+* Triggers the primitive shader
+* @method activatePrimitiveShader
+*/
 PIXI.WebGLShaderManager.prototype.activatePrimitiveShader = function()
 {
     var gl = this.gl;
@@ -121,6 +136,21 @@ PIXI.WebGLShaderManager.prototype.activatePrimitiveShader = function()
     gl.useProgram(this.primitiveShader.program);
 
     this.setAttribs(this.primitiveShader.attributes);
+    
+};
+
+
+/**
+* Triggers the primitive shader
+* @method activatePrimitiveShader
+*/
+PIXI.WebGLShaderManager.prototype.activateStripShader = function()
+{
+    var gl = this.gl;
+
+    gl.useProgram(this.stripShader.program);
+
+    this.setAttribs(this.stripShader.attributes);
     
 };
 
@@ -152,6 +182,8 @@ PIXI.WebGLShaderManager.prototype.destroy = function()
     this.defaultShader.destroy();
 
     this.fastShader.destroy();
+
+    this.stripShader.destroy();
 
     this.gl = null;
 };
