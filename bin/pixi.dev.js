@@ -5313,9 +5313,12 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
 
     // This  could be speeded up for sure!
 
-    // set the matrix transform
-    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-
+    // TODO blend mode needs to be broken out into its own manager..
+    if(graphics.blendMode !== renderSession.spriteBatch.currentBlendMode)
+    {
+        renderSession.spriteBatch.setBlendMode(graphics.blendMode);
+    }
+    
     gl.uniformMatrix3fv(shader.translationMatrix, false, graphics.worldTransform.toArray(true));
 
     gl.uniform2f(shader.projectionVector, projection.x, -projection.y);
