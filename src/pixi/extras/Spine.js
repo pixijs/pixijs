@@ -413,7 +413,7 @@ spine.ColorTimeline.prototype = {
     getFrameCount: function () {
         return this.frames.length / 2;
     },
-    setFrame: function (frameIndex, time, x, y) {
+    setFrame: function (frameIndex, time, r, g, b, a) {
         frameIndex *= 5;
         this.frames[frameIndex] = time;
         this.frames[frameIndex + 1] = r;
