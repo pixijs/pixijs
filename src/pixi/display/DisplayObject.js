@@ -442,8 +442,8 @@ PIXI.DisplayObject.prototype.updateTransform = function()
         a01 = -this._sr * this.scale.y,
         a10 = this._sr * this.scale.x,
         a11 = this._cr * this.scale.y,
-        a02 = this.position.x - a00 * px - py * a01,
-        a12 = this.position.y - a11 * py - px * a10,
+        a02 = (this.position.x + px) - a00 * px - py * a01,
+        a12 = (this.position.y +  py) - a11 * py - px * a10,
         b00 = parentTransform.a, b01 = parentTransform.b,
         b10 = parentTransform.c, b11 = parentTransform.d;
 
@@ -547,7 +547,6 @@ PIXI.DisplayObject.prototype._generateCachedSprite = function()//renderSession)
 
     this._cachedSprite.anchor.x = -( bounds.x / bounds.width );
     this._cachedSprite.anchor.y = -( bounds.y / bounds.height );
-
 
     this._filters = tempFilters;
 
