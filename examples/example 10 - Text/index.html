@@ -117,10 +117,11 @@
 		var score = 0;
 		var remaining = 10;
 
-		stage.removeAll();
+		//stage.removeAll();
 
 		function animate() {
-
+			requestAnimFrame(animate);
+			renderer.render(stage);
 		}
 
         requestAnimFrame(animate);

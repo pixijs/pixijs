@@ -4,7 +4,7 @@
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-05-01
+ * Compiled: 2014-05-06
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -1213,7 +1213,7 @@ PIXI.DisplayObjectContainer.prototype.constructor = PIXI.DisplayObjectContainer;
  * @type Number
  */
 
- /*
+ 
 Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'width', {
     get: function() {
         return this.scale.x * this.getLocalBounds().width;
@@ -1223,7 +1223,7 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'width', {
         this._width = value;
     }
 });
-*/
+
 
 /**
  * The height of the displayObjectContainer, setting this will actually modify the scale to achieve the value set
@@ -1232,7 +1232,6 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'width', {
  * @type Number
  */
 
-/*
 Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'height', {
     get: function() {
         return  this.scale.y * this.getLocalBounds().height;
@@ -1242,7 +1241,7 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'height', {
         this._height = value;
     }
 });
-*/
+
 
 /**
  * Adds a child to the container.
