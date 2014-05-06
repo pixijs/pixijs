@@ -11251,6 +11251,7 @@ spine.AnimationState = function (stateData) {
     this.queue = [];
 };
 spine.AnimationState.prototype = {
+    animationSpeed: 1,
     current: null,
     previous: null,
     currentTime: 0,
@@ -11260,7 +11261,7 @@ spine.AnimationState.prototype = {
     mixTime: 0,
     mixDuration: 0,
     update: function (delta) {
-        this.currentTime += delta;
+        this.currentTime += (delta * this.animationSpeed); //timeScale: Multiply delta by the speed of animation required.
         this.previousTime += delta;
         this.mixTime += delta;
 
