@@ -77,21 +77,16 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     };
 
     var gl = null;
-    //try 'experimental-webgl'
-    try {
-        gl = this.view.getContext('experimental-webgl',  this.options);
-    } catch (e) {
-    }
-    if (!gl) {
-        //try 'webgl'
+
+    ['experimental-webgl', 'webgl'].forEach(function(name) {
         try {
-            gl = this.view.getContext('webgl',  this.options);
-        } catch (e) {
-        }
-        if (!gl) {
-            // fail, not able to get a context
-            throw new Error(' This browser does not support webGL. Try using the canvas renderer' + this);
-        }
+            gl = this.view.getContext(name,  this.options);
+        } catch(e) {}
+    }, this);
+
+    if (!gl) {
+        // fail, not able to get a context
+        throw new Error('This browser does not support webGL. Try using the canvas renderer' + this);
     }
 
     this.gl = gl;
