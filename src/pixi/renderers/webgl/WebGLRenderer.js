@@ -76,20 +76,25 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
         stencil:true
     };
 
+    var gl = null;
     //try 'experimental-webgl'
     try {
-        this.gl = this.view.getContext('experimental-webgl',  this.options);
+        gl = this.view.getContext('experimental-webgl',  this.options);
     } catch (e) {
+    }
+    if (!gl) {
         //try 'webgl'
         try {
-            this.gl = this.view.getContext('webgl',  this.options);
-        } catch (e2) {
+            gl = this.view.getContext('webgl',  this.options);
+        } catch (e) {
+        }
+        if (!gl) {
             // fail, not able to get a context
             throw new Error(' This browser does not support webGL. Try using the canvas renderer' + this);
         }
     }
 
-    var gl = this.gl;
+    this.gl = gl;
     this.glContextId = gl.id = PIXI.WebGLRenderer.glContextId ++;
 
     PIXI.glContexts[this.glContextId] = gl;
