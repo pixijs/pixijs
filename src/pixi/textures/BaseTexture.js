@@ -115,8 +115,13 @@ PIXI.BaseTexture.prototype.destroy = function()
     if(this.imageUrl)
     {
         delete PIXI.BaseTextureCache[this.imageUrl];
+        delete PIXI.TextureCache[this.imageUrl];
         this.imageUrl = null;
         this.source.src = null;
+    }
+    else if (this.source && this.source._pixiId)
+    {
+        delete PIXI.BaseTextureCache[this.source._pixiId];
     }
     this.source = null;
     PIXI.texturesToDestroy.push(this);
