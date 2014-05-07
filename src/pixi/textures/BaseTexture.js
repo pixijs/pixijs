@@ -95,7 +95,7 @@ PIXI.BaseTexture = function(source, scaleMode)
             scope.dispatchEvent( { type: 'loaded', content: scope } );
         };
         this.source.onerror = function() {
-            scope.dispatchEvent( {type: 'error', content: scope } );
+            scope.dispatchEvent( { type: 'error', content: scope } );
         };
     }
 
