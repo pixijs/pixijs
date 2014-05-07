@@ -242,6 +242,8 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
     
     var transform = this.worldTransform;
 
+    var i,j;
+
     // allow for trimming
 //(this.anchor.x) * -frame.width,
 //                               (this.anchor.y) * -frame.height,
@@ -297,6 +299,11 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
     if(this._mask)
     {
         renderSession.maskManager.popMask(renderSession.context);
+    }
+
+    for(i=0,j=this.children.length; i<j; i++)
+    {
+        this.children[i]._renderCanvas(renderSession);
     }
 };
 
