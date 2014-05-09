@@ -80,7 +80,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
 
     ['experimental-webgl', 'webgl'].forEach(function(name) {
         try {
-            gl = this.view.getContext(name,  this.options);
+            gl = gl || this.view.getContext(name,  this.options);
         } catch(e) {}
     }, this);
 
