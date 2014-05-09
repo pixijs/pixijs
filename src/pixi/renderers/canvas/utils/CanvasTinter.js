@@ -130,27 +130,25 @@ PIXI.CanvasTinter.tintWithOverlay = function(texture, color, canvas)
 {
     var context = canvas.getContext( "2d" );
 
-    var frame = texture.frame;
-
-    canvas.width = frame.width;
-    canvas.height = frame.height;
+    canvas.width = texture.baseTexture.width;
+    canvas.height = texture.baseTexture.height;
 
     
     
     context.globalCompositeOperation = "copy";
     context.fillStyle = "#" + ("00000" + ( color | 0).toString(16)).substr(-6);
-    context.fillRect(0, 0, frame.width, frame.height);
+    context.fillRect(0, 0, canvas.width, canvas.height);
 
     context.globalCompositeOperation = "destination-atop";
     context.drawImage(texture.baseTexture.source,
-                           frame.x,
-                           frame.y,
-                           frame.width,
-                           frame.height,
                            0,
                            0,
-                           frame.width,
-                           frame.height);
+                           canvas.width,
+                           canvas.height,
+                           0,
+                           0,
+                           canvas.width,
+                           canvas.height);
 
     
     //context.globalCompositeOperation = "copy";
@@ -168,26 +166,24 @@ PIXI.CanvasTinter.tintWithPerPixel = function(texture, color, canvas)
 {
     var context = canvas.getContext( "2d" );
 
-    var frame = texture.frame;
-
-    canvas.width = frame.width;
-    canvas.height = frame.height;
+    canvas.width = texture.baseTexture.width;
+    canvas.height = texture.baseTexture.height;
   
     context.globalCompositeOperation = "copy";
     context.drawImage(texture.baseTexture.source,
-                           frame.x,
-                           frame.y,
-                           frame.width,
-                           frame.height,
                            0,
                            0,
-                           frame.width,
-                           frame.height);
-
+                           canvas.width,
+                           canvas.height,
+                           0,
+                           0,
+                           canvas.width,
+                           canvas.height);
+                           
     var rgbValues = PIXI.hex2rgb(color);
     var r = rgbValues[0], g = rgbValues[1], b = rgbValues[2];
 
-    var pixelData = context.getImageData(0, 0, frame.width, frame.height);
+    var pixelData = context.getImageData(0, 0, canvas.width, canvas.height);
 
     var pixels = pixelData.data;
 
