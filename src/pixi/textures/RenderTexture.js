@@ -138,6 +138,21 @@ PIXI.RenderTexture.prototype.resize = function(width, height, updateBase)
 };
 
 /**
+ * Clears the RenderTexture.
+ *
+ * @method clear
+ */
+PIXI.RenderTexture.prototype.clear = function()
+{
+    if (this.renderer.type === PIXI.WEBGL_RENDERER)
+    {
+        this.renderer.gl.bindFramebuffer(this.renderer.gl.FRAMEBUFFER, this.textureBuffer.frameBuffer);
+    }
+    
+    this.textureBuffer.clear();
+};
+
+/**
  * This function will draw the display object to the texture.
  *
  * @method renderWebGL
