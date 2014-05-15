@@ -211,6 +211,29 @@ PIXI.Graphics.prototype.lineTo = function(x, y)
 };
 
 /**
+ * Draws a line using the current line style from the current drawing position to (x, y);
+ * the current drawing position is then set to (x, y).
+ *
+ * @method lineTo
+ * @param x {Number} the X coordinate to draw to
+ * @param y {Number} the Y coordinate to draw to
+ */
+PIXI.Graphics.prototype.drawPath = function(path)
+{
+    if (!this.currentPath.points.length) this.graphicsData.pop();
+
+    this.currentPath = this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha,
+                        fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling, points:[], type:PIXI.Graphics.POLY};
+
+    this.graphicsData.push(this.currentPath);
+
+    this.currentPath.points = this.currentPath.points.concat(path);
+    this.dirty = true;
+
+    return this;
+};
+
+/**
  * Specifies a simple one-color fill that subsequent calls to other Graphics methods
  * (such as lineTo() or drawCircle()) use when drawing.
  *
@@ -394,7 +417,12 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
             var blendModeWebGL = PIXI.blendModesWebGL[renderSession.spriteBatch.currentBlendMode];
             renderSession.spriteBatch.gl.blendFunc(blendModeWebGL[0], blendModeWebGL[1]);
         }
-     
+        
+      //  for (var i = this.graphicsData.length - 1; i >= 0; i--) {
+        //    this.graphicsData[i]
+            
+//        };
+
         PIXI.WebGLGraphics.renderGraphics(this, renderSession);
         
         // only render if it has children!
