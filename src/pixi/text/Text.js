@@ -365,7 +365,11 @@ PIXI.Text.prototype.wordWrap = function(text)
  */
 PIXI.Text.prototype.destroy = function(destroyBaseTexture)
 {
-    this.texture.destroy(destroyBaseTexture);
+    // make sure to reset the the context and canvas.. dont want this hanging around in memory!
+    this.context = null;
+    this.canvas = null;
+
+    this.texture.destroy(destroyBaseTexture === undefined ? true : destroyBaseTexture);
 };
 
 PIXI.Text.heightCache = {};

@@ -4,7 +4,7 @@
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-05-16
+ * Compiled: 2014-05-27
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -114,16 +114,22 @@ PIXI.Point.prototype.clone = function()
     return new PIXI.Point(this.x, this.y);
 };
 
-// constructor
-PIXI.Point.prototype.constructor = PIXI.Point;
-
+/**
+ * Sets the point to a new x and y position.
+ * If y is ommited, both x and y will be set to x.
+ * 
+ * @method set
+ * @param [x=0] {Number} position of the point on the x axis
+ * @param [y=0] {Number} position of the point on the y axis
+ */
 PIXI.Point.prototype.set = function(x, y)
 {
     this.x = x || 0;
     this.y = y || ( (y !== 0) ? this.x : 0 ) ;
 };
 
-
+// constructor
+PIXI.Point.prototype.constructor = PIXI.Point;
 /**
  * @author Mat Groves http://matgroves.com/
  */
@@ -461,27 +467,16 @@ PIXI.Ellipse.prototype.constructor = PIXI.Ellipse;
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
-PIXI.determineMatrixArrayType = function() {
-    return (typeof Float32Array !== 'undefined') ? Float32Array : Array;
-};
-
-/*
-* @class Matrix2
-* The Matrix2 class will choose the best type of array to use between
-* a regular javascript Array and a Float32Array if the latter is available
-*
-*/
-PIXI.Matrix2 = PIXI.determineMatrixArrayType();
-
-/*
-* @class Matrix
-* The Matrix class is now an object, which makes it a lot faster, 
-* here is a representation of it : 
-* | a | b | tx|
-* | c | c | ty|
-* | 0 | 0 | 1 |
-*
-*/
+/**
+ * The Matrix class is now an object, which makes it a lot faster, 
+ * here is a representation of it : 
+ * | a | b | tx|
+ * | c | c | ty|
+ * | 0 | 0 | 1 |
+ *
+ * @class Matrix
+ * @constructor
+ */
 PIXI.Matrix = function()
 {
     this.a = 1;
@@ -513,7 +508,7 @@ PIXI.Matrix.prototype.fromArray = function(array)
  *
  * @method toArray
  * @param transpose {Boolean} Whether we need to transpose the matrix or not
- * @return array {Array} the newly created array which contains the matrix
+ * @return {Array} the newly created array which contains the matrix
  */
 PIXI.Matrix.prototype.toArray = function(transpose)
 {
@@ -549,6 +544,20 @@ PIXI.Matrix.prototype.toArray = function(transpose)
 };
 
 PIXI.identityMatrix = new PIXI.Matrix();
+
+PIXI.determineMatrixArrayType = function() {
+    return (typeof Float32Array !== 'undefined') ? Float32Array : Array;
+};
+
+/**
+ * The Matrix2 class will choose the best type of array to use between
+ * a regular javascript Array and a Float32Array if the latter is available
+ *
+ * @class Matrix2
+ * @constructor
+ */
+PIXI.Matrix2 = PIXI.determineMatrixArrayType();
+
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -2856,7 +2865,11 @@ PIXI.Text.prototype.wordWrap = function(text)
  */
 PIXI.Text.prototype.destroy = function(destroyBaseTexture)
 {
-    this.texture.destroy(destroyBaseTexture);
+    // make sure to reset the the context and canvas.. dont want this hanging around in memory!
+    this.context = null;
+    this.canvas = null;
+
+    this.texture.destroy(destroyBaseTexture === undefined ? true : destroyBaseTexture);
 };
 
 PIXI.Text.heightCache = {};
@@ -9777,6 +9790,68 @@ PIXI.Strip.prototype._renderStrip = function(renderSession)
   
 };
 
+PIXI.Strip.prototype._renderCanvas = function(renderSession)
+{
+    var context = renderSession.context;
+    
+    var transform = this.worldTransform;
+
+    if (renderSession.roundPixels)
+    {
+        context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx | 0, transform.ty | 0);
+    }
+    else
+    {
+        context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
+    }
+        
+    var strip = this;
+    // draw triangles!!
+    var verticies = strip.verticies;
+    var uvs = strip.uvs;
+
+    var length = verticies.length/2;
+    this.count++;
+
+    for (var i = 0; i < length-2; i++)
+    {
+        // draw some triangles!
+        var index = i*2;
+
+        var x0 = verticies[index],   x1 = verticies[index+2], x2 = verticies[index+4];
+        var y0 = verticies[index+1], y1 = verticies[index+3], y2 = verticies[index+5];
+
+        var u0 = uvs[index] * strip.texture.width,   u1 = uvs[index+2] * strip.texture.width, u2 = uvs[index+4]* strip.texture.width;
+        var v0 = uvs[index+1]* strip.texture.height, v1 = uvs[index+3] * strip.texture.height, v2 = uvs[index+5]* strip.texture.height;
+
+        context.save();
+        context.beginPath();
+        context.moveTo(x0, y0);
+        context.lineTo(x1, y1);
+        context.lineTo(x2, y2);
+        context.closePath();
+
+        context.clip();
+
+        // Compute matrix transform
+        var delta = u0*v1 + v0*u2 + u1*v2 - v1*u2 - v0*u1 - u0*v2;
+        var deltaA = x0*v1 + v0*x2 + x1*v2 - v1*x2 - v0*x1 - x0*v2;
+        var deltaB = u0*x1 + x0*u2 + u1*x2 - x1*u2 - x0*u1 - u0*x2;
+        var deltaC = u0*v1*x2 + v0*x1*u2 + x0*u1*v2 - x0*v1*u2 - v0*u1*x2 - u0*x1*v2;
+        var deltaD = y0*v1 + v0*y2 + y1*v2 - v1*y2 - v0*y1 - y0*v2;
+        var deltaE = u0*y1 + y0*u2 + u1*y2 - y1*u2 - y0*u1 - u0*y2;
+        var deltaF = u0*v1*y2 + v0*y1*u2 + y0*u1*v2 - y0*v1*u2 - v0*u1*y2 - u0*y1*v2;
+
+        context.transform(deltaA / delta, deltaD / delta,
+                            deltaB / delta, deltaE / delta,
+                            deltaC / delta, deltaF / delta);
+
+        context.drawImage(strip.texture.baseTexture.source, 0, 0);
+        context.restore();
+    }
+};
+
+
 /*
  * Sets the texture that the Strip will use 
  *
@@ -12033,6 +12108,9 @@ PIXI.BaseTexture = function(source, scaleMode)
             // add it to somewhere...
             PIXI.texturesToUpdate.push(scope);
             scope.dispatchEvent( { type: 'loaded', content: scope } );
+        };
+        this.source.onerror = function() {
+            scope.dispatchEvent( { type: 'error', content: scope } );
         };
     }
 
