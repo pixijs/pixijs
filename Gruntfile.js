@@ -18,6 +18,9 @@ module.exports = function(grunt) {
             '<%= dirs.src %>/core/Circle.js',
             '<%= dirs.src %>/core/Ellipse.js',
             '<%= dirs.src %>/core/Matrix.js',
+            '<%= dirs.src %>/animation/AnimationManager.js',
+            '<%= dirs.src %>/animation/Tween.js',
+            '<%= dirs.src %>/animation/DelayedCall.js',
             '<%= dirs.src %>/display/DisplayObject.js',
             '<%= dirs.src %>/display/DisplayObjectContainer.js',
             '<%= dirs.src %>/display/Sprite.js',
@@ -30,6 +33,7 @@ module.exports = function(grunt) {
             '<%= dirs.src %>/InteractionManager.js',
             '<%= dirs.src %>/display/Stage.js',
             '<%= dirs.src %>/utils/Utils.js',
+            '<%= dirs.src %>/utils/Transitions.js',
             '<%= dirs.src %>/utils/EventTarget.js',
             '<%= dirs.src %>/utils/Detector.js',
             '<%= dirs.src %>/utils/Polyk.js',
@@ -45,7 +49,7 @@ module.exports = function(grunt) {
             '<%= dirs.src %>/renderers/webgl/utils/WebGLSpriteBatch.js',
             '<%= dirs.src %>/renderers/webgl/utils/WebGLFastSpriteBatch.js',
             '<%= dirs.src %>/renderers/webgl/utils/WebGLFilterManager.js',
-			'<%= dirs.src %>/renderers/webgl/utils/FilterTexture.js',
+            '<%= dirs.src %>/renderers/webgl/utils/FilterTexture.js',
             '<%= dirs.src %>/renderers/canvas/utils/CanvasMaskManager.js',
             '<%= dirs.src %>/renderers/canvas/utils/CanvasTinter.js',
             '<%= dirs.src %>/renderers/canvas/CanvasRenderer.js',
@@ -215,6 +219,6 @@ module.exports = function(grunt) {
     grunt.registerTask('travis', ['build', 'test']);
 
     grunt.registerTask('default', ['build', 'test']);
-    
+
     grunt.registerTask('debug-watch', ['concat_sourcemap', 'watch:debug']);
 };

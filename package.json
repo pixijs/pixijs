@@ -39,6 +39,7 @@
         "karma": "~0.12",
         "karma-chrome-launcher": "~0.1",
         "karma-firefox-launcher": "~0.1",
+        "karma-phantomjs-launcher": "~0.1",
         "karma-mocha": "~0.1",
         "karma-spec-reporter": "~0.0.6",
         "grunt-contrib-watch": "~0.5.3"
