@@ -29,8 +29,6 @@
 	var aliens = [];
 	var alienFrames = ["eggHead.png", "flowerTop.png", "helmlok.png", "skully.png"];
 
-	var count = 0;
-
 	// create an new instance of a pixi stage
 	var stage = new PIXI.Stage(0xFFFFFF);
 
@@ -68,6 +66,7 @@
 			alien.position.y = Math.random() * 600 - 300;
 			alien.anchor.x = 0.5;
 			alien.anchor.y = 0.5;
+      var t = J.tween(alien, 1000, { rotation: 2 * Math.PI, repeatCount: Infinity });
 			aliens.push(alien);
 			alienContainer.addChild(alien);
 		}
@@ -76,19 +75,19 @@
 		requestAnimFrame(animate);
 	}
 
+  var J = new PIXI.Juggler();
+  J.tween(alienContainer, 5233, { rotation: 2 * Math.PI, repeatCount: Infinity });
+  alienContainer.scale = new PIXI.Point(0, 0);
+  J.tween(alienContainer, 5233, { scale: new PIXI.Point(1, 1),
+                        transition: PIXI.Transitions.EASE_SIN,
+                        repeatCount: Infinity,
+                        reverse: true });
+  var t = new Date().getTime();
+
 	function animate() {
-	    // just for fun, lets rotate mr rabbit a little
-	    for (var i = 0; i < 100; i++)
-		{
-			var alien = aliens[i];
-			alien.rotation += 0.1;
-		}
-
-		count += 0.01;
-		alienContainer.scale.x = Math.sin(count);
-		alienContainer.scale.y = Math.sin(count);
-
-		alienContainer.rotation += 0.01;
+    var nt = new Date().getTime();
+    J.advanceTime(nt - t);
+    t = nt;
 	    
 	    // render the stage
 	    renderer.render(stage);
