@@ -4,7 +4,7 @@
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-04-24
+ * Compiled: 2014-05-31
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -546,6 +546,557 @@ PIXI.Matrix.prototype.toArray = function(transpose)
 };
 
 PIXI.identityMatrix = new PIXI.Matrix();
+/**
+ * @author Dima Levchenko http://agile.in.ua/
+ */
+
+/**
+ * Juggler takes care of animations' related routes. It allows you to declare animations, and control theis' life.
+ * Jugglers can be nested. This allows you to disable one of them - and all the related animations will stop as well.
+ * Animatable interface is core concept in all the juggler- and tween-related code. You should implement
+ *   advanceTime(int) to be compliant.
+ *
+ * @class Juggler
+ * @constructor
+ */
+PIXI.Juggler = function() {
+  /**
+   * Total life time of juggler in milliseconds.
+   *
+   * @property elapsedTime
+   * @type Number
+   */
+  this.elapsedTime = 0;
+
+  /**
+   * List of objects that are currently being animated.
+   *
+   * @property objects
+   * @type Array
+   */
+  this.objects = [];
+}
+
+/**
+ * Add another animatable object into line for animation.
+ *
+ * @method add
+ * @param obj {Object} animatable object to maintain.
+ * @return {Boolean} if objects array changed. e.g. if object was added to line.
+ */
+PIXI.Juggler.prototype.add = function(obj) {
+  if(obj && this.objects.indexOf(obj) < 0) {
+    this.objects.push(obj);
+    // we can listen to events somehow to handle remove
+  }
+};
+
+/**
+ * Remove animatable object from line for animation.
+ *
+ * @method remove
+ * @param obj {Object} animatable object to remove.
+ * @return {Boolean} if objects array changed. e.g. if object was really present in line.
+ */
+PIXI.Juggler.prototype.remove = function(obj) {
+  if(obj) {
+    var ind = this.objects.indexOf(obj);
+    if(ind >= 0) {
+      // if we listen to events, we should remove listener first!
+      this.objects[ind] = null;
+    }
+  }
+};
+
+/**
+ * Check if object is animated in this juggler.
+ *
+ * @method contains
+ * @param obj {Object} object to check.
+ * @return {Boolean} if object is animated in this juggler.
+ */
+PIXI.Juggler.prototype.contains = function(obj) {
+  return (obj && this.objects.indexOf(obj) >= 0);
+};
+
+/**
+ * Create tween for given object.
+ *
+ * @method tween
+ * @param obj {Object} target for tween,
+ * @param time {Number} time in millis for this tween,
+ * @param props {Object} details of transition.
+ * @return {Tween} tween, created for this object.
+ */
+PIXI.Juggler.prototype.tween = function(obj, time, props) {
+  var t = new PIXI.Tween(obj, time, props["transition"]);
+  if(props.hasOwnProperty("delay")) t.delay = props.delay;
+  if(props.hasOwnProperty("repeatCount")) t.repeatCount = props.repeatCount;
+  if(props.hasOwnProperty("reverse")) t.reverse = props.reverse;
+  var exceptions = ["delay", "transition", "repeatCount", "reverse"];
+  for(var prop in props) {
+    if(!props.hasOwnProperty(prop)) continue;
+    if(exceptions.indexOf(prop) >= 0) continue;
+    t.animate(prop, props[prop]);
+  }
+  this.add(t);
+  return t;
+};
+
+/**
+ * Remove all tweens associated with this target
+ *
+ * @method removeTweens
+ * @param target {Object} target of tweens, which should be removed.
+ * @return {Boolean} if there were any tweens animating given target.
+ */
+PIXI.Juggler.prototype.removeTweens = function(target) {
+};
+
+/**
+ * Checks, if there are tweens working with given target object.
+ *
+ * @param target {Object} tweened object.
+ * @return {Boolean} if there is any tween working with given target.
+ */
+PIXI.Juggler.prototype.containsTweens = function(target) {
+};
+
+/**
+ * Remove all tweens.
+ *
+ * @method purge
+ */
+PIXI.Juggler.prototype.purge = function() {
+  // this method should remove listeners from objects, which can be listened. for now, we can just:
+  this.objects = [];
+  return this;
+};
+
+/**
+ * Calls function after given delay. Compared to setTimeout(Function, Number), Juggler accounts time respecting
+ * advanceTime(Number) calls, so, if you will pause, or stop this juggler - call will be exacuted later.
+ *
+ * @method delayCall
+ * @param f {Function} function to execute after given time. Use bind tecnique to set function context and parameters.
+ * @param delay {Number} delay in millis.
+ * @return {Animatable} Encapsulation of given delay.
+ */
+PIXI.Juggler.prototype.delayCall = function(f, delay) {
+};
+
+/**
+ * Repeatedly calls function with given intercals. Compared to setTimeout(Function, Number), Juggler accounts time
+ * respecting advanceTime(Number) calls, so, if you will pause, or stop this juggler - call will be exacuted later.
+ *
+ * @method @repeatCall
+ * @param f {Function} function to execute. Use bind tecnique to set function context and parameters.
+ * @param interval {Number} interval in millis.
+ * @return {Animatable} Encapsulation of given repeated call.
+ */
+PIXI.Juggler.prototype.repeatCall = function(f, interval, repeatCount) {
+};
+
+/**
+ * Inform juggler about time elapsed.
+ *
+ * @param time {int} time elapsed.
+ */
+PIXI.Juggler.prototype.advanceTime = function(time) {
+  var il = this.objects.length, currentIndex = 0;
+  this.elapsedTime += time;
+  if(il == 0) return;
+  for(var i = 0; i < il; ++i) {
+    var object = this.objects[i];
+    if(object) {
+      // next two lines is work-around - if advancetime returns false - we decide it should be removed!
+      if(object.advanceTime(time))
+        this.objects[i] = null;
+      if(currentIndex != i) {
+        this.objects[currentIndex] = object;
+        this.objects[i] = null;
+      }
+      ++currentIndex;
+    }
+  }
+  if(currentIndex != i) {
+    var numObjects = this.objects.length;
+    while(i < numObjects)
+      this.objects[currentIndex++] = this.objects[i++];
+    this.objects.length = currentIndex;
+  }
+};
+
+/**
+ * @author Dima Levchenko http://agile.in.ua/
+ */
+
+/**
+ * Animates numeric properties of given object in given time.
+ *
+ * @class Tween
+ * @constructor
+ * @param target {Object} thing to animate,
+ * @param time {Number} time for animation,
+ * @param fntype {String} one of PIXI.Transitions.EASE_* values.
+ */
+PIXI.Tween = function(target, time, fn) {
+  this._delay = 0;
+  this.reset(target, time, fn);
+};
+
+/**
+ * Resets the tween to its default values. Useful for pooling tweens.
+ *
+ * "scale" property is special for PIXI - it is animated as Point.
+ *
+ * @method reset
+ * @param target {Object} thing to animate,
+ * @param time {Number} time for animation,
+ * @param fntype {String} one of PIXI.Transitions.EASE_* values.
+ */
+PIXI.Tween.prototype.reset = function(target, time, fn) {
+  if(!fn) fn = PIXI.Transitions.LINEAR;
+
+  this._target = target;
+
+  this._currentTime = 0;
+  this._totalTime = Math.max(1, time);
+  this._progress = 0.0;
+
+  /**
+   * The amount of time to wait between repeat cycles (in millis).
+   *
+   * @property repeatDelay
+   * @type Number
+   */
+  this.delay = this.repeatDelay = 0;
+
+  /**
+   * A function that will be called when the tween starts (after a possible delay).
+   *
+   * @property onStart
+   * @type Function
+   */
+
+  /**
+   * A function that will be called each time the tween is advanced.
+   *
+   * @property onUpdate
+   * @type Function
+   */
+
+  /**
+   * A function that will be called when the tween is complete.
+   *
+   * @property onComplete
+   * @type Function
+   */
+
+  /**
+   * A function that will be called each time the tween finishes one repetition (except the last, which will trigger
+   * 'onComplete').
+   *
+   * @property onRepeat
+   * @type Function
+   */
+  this.onStart = this.onUpdate = this.onComplete = this.onRepeat = null;
+
+  /**
+   * Indicates if the numeric values should be cast to Integers.
+   *
+   * @property roundToInt
+   * @type Boolean
+   */
+
+  /**
+   * Indicates if the tween should be reversed when it is repeating.
+   *
+   * @property reverse
+   * @type Boolean
+   */
+  this.roundToInt = this.reverse = false;
+
+  /**
+   * The number of times the tween will be executed.
+   *
+   * @property repeatCount
+   * @type Number
+   */
+  this.repeatCount = 1;
+
+  this._currentCycle = -1;
+
+  if(typeof fn == "string")
+    this.transition = fn;
+  else if (fn instanceof Function)
+    this.transitionFunc = fn;
+  else
+    throw new Error("Transition must be either a string or a function");
+
+  if(this._properties)  this._properties.length  = 0; else this._properties  = [];
+  if(this._startValues) this._startValues.length = 0; else this._startValues = [];
+  if(this._endValues)   this._endValues.length   = 0; else this._endValues   = [];
+
+  return this;
+};
+
+/**
+ * Animates the property of the target to a certain value.
+ *
+ * @method animate
+ * @param property {String} parameter to animate,
+ * @param endValue {Number} final value for property,
+ */
+PIXI.Tween.prototype.animate = function(property, endValue) {
+  if(!this.target) return this;
+
+  this._properties.push(property);
+  this._startValues.push(NaN);
+  this._endValues.push(endValue);
+  return this;
+};
+
+/**
+ * Animates the 'alpha' property of an object to a certain target value.
+ *
+ * @method fadeTo
+ * @param alpha {Number} final value for alpha,
+ */
+PIXI.Tween.prototype.fadeTo = function(alpha) {
+  this.animate("alpha", alpha);
+  return this;
+};
+
+/**
+ * The end value a certain property is animated to.
+ *
+ * @method getEndValue
+ * @param property {String} property to check,
+ * @return {Number} final value for property.
+ */
+PIXI.Tween.prototype.getEndValue = function(property) {
+  var id = this._properties.indexOf(property);
+  if(id < 0) throw new Error("The property '" + property + "' is not animated");
+  return this._endValues[property];
+};
+
+/**
+ * Animates the 'x' and 'y' properties of an object simultaneously.
+ *
+ * @method moveTo
+ * @param x {Number} where to animate,
+ * @param y {Number} where to animate.
+ */
+PIXI.Tween.prototype.moveTo = function(x, y) {
+  this.animate("x", x);
+  this.animate("y", y);
+  return this;
+};
+
+/**
+ * Animates the 'scaleX' and 'scaleY' properties of an object simultaneously.
+ *
+ * @method scaleTo
+ * @param factor {Number} required scale.
+ */
+PIXI.Tween.prototype.scaleTo = function(factor) {
+  this.animate("scale", factor);
+  return this;
+};
+
+/**
+ * Advance the time by a number of millis.
+ *
+ * @method advanceTime
+ * @param time {Number} time to account.
+ */
+PIXI.Tween.prototype.advanceTime = function(time) {
+  if(time == 0 || (this.repeatCount == 1 && this._currentTime == this._totalTime)) return false;
+
+  var i;
+  var previousTime = this._currentTime;
+  var restTime = this._totalTime - this._currentTime;
+  var carryOverTime = time > restTime ? time - restTime : 0;
+
+  this._currentTime += time;
+
+  if(this._currentTime <= 0)
+    return false; // the delay is not over yet
+  else if(this._currentTime > this._totalTime)
+    this._currentTime = this._totalTime;
+
+  if(this._currentCycle < 0 && previousTime <= 0 && this._currentTime > 0) {
+    this._currentCycle++;
+    if(this.onStart != null) this.onStart();
+  }
+
+  var ratio = this._currentTime / this.totalTime;
+  var reversed = this.reverse && (this._currentCycle % 2 == 1);
+  var numProperties = this._startValues.length;
+  this._progress = reversed ? this._transitionFunc(1.0 - ratio) : this._transitionFunc(ratio);
+
+  for(i = 0; i < numProperties; ++i) {
+    if(this._startValues[i] != this._startValues[i]) {// isNaN check - "isNaN" causes allocation!
+      if(this._properties[i] == "scale") {
+        if(this._target.scale)
+          this._startValues[i] = new PIXI.Point(this._target.scale.x, this._target.scale.y);
+        else this._startValues[i] = new PIXI.Point(0, 0);
+      } else
+        this._startValues[i] = this._target[this._properties[i]];
+    }
+
+    var startValue = this._startValues[i];
+    var endValue = this._endValues[i];
+    if(this._properties[i] == "scale") {
+      var dx = endValue.x - startValue.x;
+      var cx = startValue.x + this._progress * dx;
+      var dy = endValue.y - startValue.y;
+      var cy = startValue.y + this._progress * dy;
+
+      if(this.roundToInt) {
+        cx = Math.round(cx);
+        cy = Math.round(cy);
+      }
+      this._target.scale = new PIXI.Point(cx, cy);
+    } else {
+      var delta = endValue - startValue;
+      var currentValue = startValue + this._progress * delta;
+
+      if(this.roundToInt) currentValue = Math.round(currentValue);
+      this._target[this._properties[i]] = currentValue;
+    }
+  }
+
+  if(this.onUpdate) this.onUpdate();
+
+  var isComplete = false;
+  if(previousTime < this._totalTime && this._currentTime >= this._totalTime) {
+    if(this.repeatCount == 0 || this.repeatCount > 1) {
+      this._currentTime = -this.repeatDelay;
+      this._currentCycle++;
+      if(this.repeatCount > 1) this.repeatCount--;
+      if(this.onRepeat) this.onRepeat();
+    } else {
+      isComplete = true;
+      if(this.onComplete) this.onComplete(); // delay call???
+    }
+  }
+
+  if(carryOverTime) return this.advanceTime(carryOverTime);
+  return isComplete;
+};
+
+/**
+ * Indicates if the tween is finished.
+ *
+ * @property cacheAsBitmap
+ * @default false
+ * @type Boolean
+ */
+Object.defineProperty(PIXI.Tween.prototype, "isComplete", {
+  get: function() {
+    return this.currentTime >= this.totalTime && this.repeatCount == 1;
+  }
+});
+
+/**
+ * The target object that is animated.
+ *
+ * @property target
+ * @type Object
+ */
+Object.defineProperty(PIXI.Tween.prototype, "target", {
+  get: function() {
+    return this._target;
+  }
+});
+
+/**
+ * Use transition from standard.
+ *
+ * @property transition
+ * @type String
+ */
+Object.defineProperty(PIXI.Tween.prototype, "transition", {
+  get: function() {
+    return  this._transition;
+  },
+  set: function(value) {
+    this._transition = value;
+    this._transitionFunc = PIXI.Transitions.getTransition(value);
+
+    if(!this._transitionFunc) throw new Error("Invalid transiton: " + value);
+  }
+});
+
+/**
+ * Use custom function.
+ *
+ * @property transitionFunc
+ * @type Function
+ */
+Object.defineProperty(PIXI.Tween.prototype, "transitionFunc", {
+  get: function() {
+    return this._transitionFunc;
+  },
+  set: function(value) {
+    this._transition = "custom";
+    this._transitionFunc = value;
+  }
+});
+
+/**
+ * The total time the tween will take per repetition (in millis).
+ *
+ * @property totalTime
+ * @type Number
+ */
+Object.defineProperty(PIXI.Tween.prototype, "totalTime", {
+  get: function() { return this._totalTime; }
+});
+
+/**
+ * The time that has passed since the tween was created (in millis).
+ *
+ * @property currentTime
+ * @type Number
+ */
+Object.defineProperty(PIXI.Tween.prototype, "currentTime", {
+  get: function() { return this._currentTime; }
+});
+
+/**
+ * The current progress between 0 and 1, as calculated by the transition function.
+ *
+ * @property progress
+ * @type Number
+ */
+Object.defineProperty(PIXI.Tween.prototype, "progress", {
+  get: function() { return this._progress; }
+});
+
+/**
+ * The delay before the tween is started (in millis).
+ *
+ * @property delay
+ * @type Number
+ */
+Object.defineProperty(PIXI.Tween.prototype, "delay", {
+  get: function() { return this._delay; },
+  set: function(value) {
+    this._currentTime = this._currentTime + this._delay - value;
+    this._delay = value;
+  }
+});
+
+// Object.defineProperty(PIXI.Tween.prototype, "cacheAsBitmap", {
+//   get: function() {
+//   },
+//   set: function(value) {
+//   }
+// });
+
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -4155,6 +4706,165 @@ PIXI.getNextPowerOfTwo = function(number)
         while (result < number) result <<= 1;
         return result;
     }
+};
+
+/**
+ * @author Dima Levchenko http://agile.in.ua/
+ */
+
+/**
+ * 
+ *
+ * @class Transitions
+ * @constructor
+ */
+PIXI.Transitions = {
+  LINEAR: "linear",
+  EASE_IN: "easeIn",
+  EASE_OUT: "easeOut",
+  EASE_IN_OUT: "easeInOut",
+  EASE_OUT_IN: "easeOutIn",
+  EASE_IN_BACK: "easeInBack",
+  EASE_OUT_BACK: "easeOutBack",
+  EASE_IN_OUT_BACK: "easeInOutBack",
+  EASE_OUT_IN_BACK: "easeOutInBack",
+  EASE_IN_ELASTIC: "easeInElastic",
+  EASE_OUT_ELASTIC: "easeOutElastic",
+  EASE_IN_OUT_ELASTIC: "easeInOutElastic",
+  EASE_OUT_IN_ELASTIC: "easeOutInElastic",
+  EASE_IN_BOUNCE: "easeInBounce",
+  EASE_OUT_BOUNCE: "easeOutBounce",
+  EASE_IN_OUT_BOUNCE: "easeInOutBounce",
+  EASE_OUT_IN_BOUNCE: "easeOutInBounce",
+
+  map: null,
+
+  getTransition: function(name) {
+    if(null == PIXI.Transitions.map) PIXI.Transitions.registerDefaults();
+    return PIXI.Transitions.map[name];
+  },
+
+  register: function(name, fn) {
+    if(null == PIXI.Transitions.map) PIXI.Transitions.registerDefaults();
+    PIXI.Transitions.map[name] = fn;
+  },
+
+  registerDefaults: function() {
+    PIXI.Transitions.map = {};
+    PIXI.Transitions.register(PIXI.Transitions.LINEAR,              PIXI.Transitions.linear);
+    PIXI.Transitions.register(PIXI.Transitions.EASE_IN,             PIXI.Transitions.easeIn);
+    PIXI.Transitions.register(PIXI.Transitions.EASE_OUT,            PIXI.Transitions.easeOut);
+    PIXI.Transitions.register(PIXI.Transitions.EASE_IN_OUT,         PIXI.Transitions.easeInOut);
+    PIXI.Transitions.register(PIXI.Transitions.EASE_OUT_IN,         PIXI.Transitions.easeOutIn);
+    PIXI.Transitions.register(PIXI.Transitions.EASE_IN_BACK,        PIXI.Transitions.easeInBack);
+    PIXI.Transitions.register(PIXI.Transitions.EASE_OUT_BACK,       PIXI.Transitions.easeOutBack);
+    PIXI.Transitions.register(PIXI.Transitions.EASE_IN_OUT_BACK,    PIXI.Transitions.easeInOutBack);
+    PIXI.Transitions.register(PIXI.Transitions.EASE_OUT_IN_BACK,    PIXI.Transitions.easeOutInBack);
+    PIXI.Transitions.register(PIXI.Transitions.EASE_IN_ELASTIC,     PIXI.Transitions.easeInElastic);
+    PIXI.Transitions.register(PIXI.Transitions.EASE_OUT_ELASTIC,    PIXI.Transitions.easeOutElastic);
+    PIXI.Transitions.register(PIXI.Transitions.EASE_IN_OUT_ELASTIC, PIXI.Transitions.easeInOutElastic);
+    PIXI.Transitions.register(PIXI.Transitions.EASE_OUT_IN_ELASTIC, PIXI.Transitions.easeOutInElastic);
+    PIXI.Transitions.register(PIXI.Transitions.EASE_IN_BOUNCE,      PIXI.Transitions.easeInBounce);
+    PIXI.Transitions.register(PIXI.Transitions.EASE_OUT_BOUNCE,     PIXI.Transitions.easeOutBounce);
+    PIXI.Transitions.register(PIXI.Transitions.EASE_IN_OUT_BOUNCE,  PIXI.Transitions.easeInOutBounce);
+    PIXI.Transitions.register(PIXI.Transitions.EASE_OUT_IN_BOUNCE,  PIXI.Transitions.easeOutInBounce);
+  },
+
+  linear: function(ratio) { return ratio; },
+
+  easeIn: function(ratio) { return ratio * ratio * ratio; },
+
+  easeOut: function(ratio) {
+    var invRatio = ratio - 1.0;
+    return invRatio * invRatio * invRatio + 1;
+  },
+
+  easeInOut: function(ratio) {
+    return PIXI.Transitions.easeCombined(PIXI.Transitions.easeIn, PIXI.Transitions.easeOut, ratio);
+  },
+
+  easeOutIn: function(ratio) {
+    return PIXI.Transitions.easeCombined(PIXI.Transitions.easeOut, PIXI.Transitions.easeIn, ratio);
+  },
+
+  easeInBack: function(ratio) {
+    var s = 1.70158;
+    return Math.pow(ratio, 2) * ((s + 1.0) * ratio - s);
+  },
+
+  easeOutBack: function(ratio) {
+    var invRatio = ratio - 1.0;
+    var s = 1.70158;
+    return Math.pow(invRatio, 2) * ((s + 1.0) * invRatio + s) + 1.0;
+  },
+
+  easeInOutBack: function(ratio) {
+    return PIXI.Transitions.easeCombined(PIXI.Transitions.easeInBack, PIXI.Transitions.easeOutBack, ratio);
+  },
+
+  easeOutInBack: function(ratio) {
+    return PIXI.Transitions.easeCombined(PIXI.Transitions.easeOutBack, PIXI.Transitions.easeInBack, ratio);
+  },
+
+  easeInElastic: function(ratio) {
+    if(ratio == 0 || ratio == 1) return ratio;
+    var p = 0.3;
+    var s = p / 4.0;
+    var invRatio = ratio - 1;
+    return -1.0 * Math.pow(2.0, 10.0 * invRatio) * Math.sin((invRatio - s)*(2.0 * Math.PI) / p);
+  },
+
+  easeOutElastic: function(ratio) {
+    if(ratio == 0 || ratio == 1) return ratio;
+    var p = 0.3;
+    var s = p / 4.0;
+    return Math.pow(2.0, -10.0 * ratio) * Math.sin((ratio - s)*(2.0 * Math.PI) / p) + 1;
+  },
+
+  easeInOutElastic: function(ratio) {
+    return PIXI.Transitions.easeCombined(PIXI.Transitions.easeInElastic, PIXI.Transitions.easeOutElastic, ratio);
+  },
+
+  easeOutInElastic: function(ratio) {
+    return PIXI.Transitions.easeCombined(PIXI.Transitions.easeOutElastic, PIXI.Transitions.easeInElastic, ratio);
+  },
+
+  easeInBounce: function(ratio) {
+    return 1.0 - PIXI.Transitions.easeOutBounce(1.0 - ratio);
+  },
+
+  easeOutBounce: function(ratio) {
+    var l, p = 2.75, s = 7.5625;
+    if (ratio < (1.0/p)) l = s * Math.pow(ratio, 2);
+    else {
+      if (ratio < (2.0/p)) {
+        ratio -= 1.5/p;
+        l = s * Math.pow(ratio, 2) + 0.75;
+      } else {
+        if (ratio < 2.5/p) {
+          ratio -= 2.25/p;
+          l = s * Math.pow(ratio, 2) + 0.9375;
+        } else {
+          ratio -= 2.625/p;
+          l =  s * Math.pow(ratio, 2) + 0.984375;
+        }
+      }
+    }
+    return l;
+  },
+
+  easeInOutBounce: function(ratio) {
+    return PIXI.Transitions.easeCombined(PIXI.Transitions.easeInBounce, PIXI.Transitions.easeOutBounce, ratio);
+  },
+
+  easeOutInBounce: function(ratio) {
+    return PIXI.Transitions.easeCombined(PIXI.Transitions.easeOutBounce, PIXI.Transitions.easeInBounce, ratio);
+  },
+
+  easeCombined: function(startFunc, endFunc, ratio) {
+    if (ratio < 0.5) return 0.5 * startFunc(ratio*2.0);
+    else             return 0.5 * endFunc((ratio-0.5)*2.0) + 0.5;
+  }
 };
 
 /**
@@ -10774,9 +11484,9 @@ spine.ColorTimeline = function (frameCount) {
 spine.ColorTimeline.prototype = {
     slotIndex: 0,
     getFrameCount: function () {
-        return this.frames.length / 2;
+        return this.frames.length / 5;
     },
-    setFrame: function (frameIndex, time, x, y) {
+    setFrame: function (frameIndex, time, r, g, b, a) {
         frameIndex *= 5;
         this.frames[frameIndex] = time;
         this.frames[frameIndex + 1] = r;
@@ -11473,7 +12183,7 @@ spine.SkeletonJson.readCurve = function (timeline, frameIndex, valueMap) {
 };
 spine.SkeletonJson.toColor = function (hexString, colorIndex) {
     if (hexString.length != 8) throw "Color hexidecimal length must be 8, recieved: " + hexString;
-    return parseInt(hexString.substring(colorIndex * 2, 2), 16) / 255;
+    return parseInt(hexString.substr(colorIndex * 2, 2), 16) / 255;
 };
 
 spine.Atlas = function (atlasText, textureLoader) {
@@ -11814,6 +12524,9 @@ PIXI.Spine.prototype.updateTransform = function () {
         slotContainer.scale.y = bone.worldScaleY;
 
         slotContainer.rotation = -(slot.bone.worldRotation * Math.PI / 180);
+
+        slotContainer.alpha = slot.a;
+        slot.currentSprite.tint = PIXI.rgb2hex([slot.r,slot.g,slot.b]);
     }
 
     PIXI.DisplayObjectContainer.prototype.updateTransform.call(this);
