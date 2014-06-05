@@ -38,6 +38,19 @@ PIXI.Point.prototype.clone = function()
     return new PIXI.Point(this.x, this.y);
 };
 
+/**
+ * Checks distance between two points
+ *
+ * @method clone
+ * @param p {Point} point to check
+ * @return {Number} distance between points
+ */
+PIXI.Point.prototype.distance = function(p)
+{
+    var dx = (this.x - p.x), dy = (this.y - p.y);
+    return Math.sqrt(dx*dx+dy*dy);
+};
+
 // constructor
 PIXI.Point.prototype.constructor = PIXI.Point;
 
