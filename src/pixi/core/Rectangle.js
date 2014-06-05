@@ -81,6 +81,17 @@ PIXI.Rectangle.prototype.contains = function(x, y)
     return false;
 };
 
+/**
+ * Checks whether the Rectanlge passed to this function intersects this Rectangle
+ *
+ * @method contains
+ * @param r {PIXI.Rectangle} 
+ * @return {Boolean} Whether the givin Rectangle intersects this Rectangle
+ */
+PIXI.Rectangle.prototype.intersectsRect = function(r){
+    return !(r.x > (this.x+this.width) || (r.x+r.width) < this.x || r.y > (this.y+this.height) || (r.y+r.height) < this.y);
+}
+
 // constructor
 PIXI.Rectangle.prototype.constructor = PIXI.Rectangle;
 
