@@ -82,10 +82,10 @@ PIXI.Rectangle.prototype.contains = function(x, y)
 };
 
 /**
- * Checks whether the Rectanlge passed to this function intersects this Rectangle
+ * Checks whether the Rectangle passed to this function intersects this Rectangle
  *
  * @method contains
- * @param r {PIXI.Rectangle} 
+ * @param r {Rectangle} 
  * @return {Boolean} Whether the givin Rectangle intersects this Rectangle
  */
 PIXI.Rectangle.prototype.intersectsRect = function(r){
