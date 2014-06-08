@@ -77,7 +77,7 @@ PIXI.rgb2hex = function(rgb) {
  */
 PIXI.css2rgb = function(cssString) {
     var r,g,b;
-    cssString = cssString.replace(' ',''); //remove spaces
+    cssString = cssString.toLowerCase(cssString.replace(' ','')); //remove spaces, case insensitivity
     if (cssString.charAt(0) === '#') {
         if (cssString.length === 4) { //#fff format
             r = (parseInt(cssString.charAt(1),16)*0x11) << 16;
