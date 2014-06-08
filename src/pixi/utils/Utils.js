@@ -69,6 +69,44 @@ PIXI.rgb2hex = function(rgb) {
 };
 
 /**
+ * Converts a CSS color string into an RGB integer.
+ * Supports formats #fff, #ffffff, rgb(0,0,0)
+ *
+ * @method css2rgb
+ * @param cssString {String}
+ */
+PIXI.css2rgb = function(cssString) {
+    var r,g,b;
+    cssString = cssString.toLowerCase(cssString.replace(' ','')); //remove spaces, case insensitivity
+    if (cssString.charAt(0) === '#') {
+        if (cssString.length === 4) { //#fff format
+            r = (parseInt(cssString.charAt(1),16)*0x11) << 16;
+            g = (parseInt(cssString.charAt(2),16)*0x11) << 8;
+            b = (parseInt(cssString.charAt(3),16)*0x11);
+        }
+        else if (cssString.length === 7) { //#ffffff format
+            r = parseInt(cssString.substring(1,3),16) << 16;
+            g = parseInt(cssString.substring(3,5),16) << 8;
+            b = parseInt(cssString.substring(5,7),16);
+        }
+        else throw new Error('Invalid CSS Color: ' + cssString);
+    }
+    else if (cssString.indexOf('rgb(') === 0) { //rgb(x,x,x) format
+        cssString = cssString.substring(cssString.indexOf('(')+1, cssString.indexOf(')'));
+        cssString = cssString.split(',');
+        r = parseInt(cssString[0]) << 16;
+        g = parseInt(cssString[1]) << 8;
+        b = parseInt(cssString[2]);
+    }
+    else if (cssString.indexOf('rgba(') === 0) {
+        throw new Error('RGBA not supported.');
+    }
+    else throw new Error('Unsupported color format: ' + cssString);
+
+    return r+g+b;
+};
+
+/**
  * A polyfill for Function.prototype.bind
  *
  * @method bind
