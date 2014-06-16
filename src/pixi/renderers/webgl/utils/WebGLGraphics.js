@@ -99,7 +99,7 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
 PIXI.WebGLGraphics.updateGraphics = function(graphics, gl)
 {
     var webGL = graphics._webGL[gl.id];
-    
+
     for (var i = webGL.lastIndex; i < graphics.graphicsData.length; i++)
     {
         var data = graphics.graphicsData[i];
@@ -125,11 +125,15 @@ PIXI.WebGLGraphics.updateGraphics = function(graphics, gl)
         {
             PIXI.WebGLGraphics.buildCircle(data, webGL);
         }
+        else if(data.type === PIXI.Graphics.RREC)
+        {
+            PIXI.WebGLGraphics.buildRoundedRectangle(data, webGL);
+        }
     }
 
     webGL.lastIndex = graphics.graphicsData.length;
 
-   
+
 
     webGL.glPoints = new Float32Array(webGL.points);
 
@@ -212,6 +216,123 @@ PIXI.WebGLGraphics.buildRectangle = function(graphicsData, webGLData)
 };
 
 /**
+ * Builds a rounded rectangle to draw
+ *
+ * @static
+ * @private
+ * @method buildRoundedRectangle
+ * @param graphicsData {Graphics} The graphics object containing all the necessary properties
+ * @param webGLData {Object}
+ */
+PIXI.WebGLGraphics.buildRoundedRectangle = function(graphicsData, webGLData)
+{
+    /**
+     * Calcul the points for a quadratic bezier curve.
+     * Based on : https://stackoverflow.com/questions/785097/how-do-i-implement-a-bezier-curve-in-c
+     *
+     * @param  {number}   fromX Origin point x
+     * @param  {number}   fromY Origin point x
+     * @param  {number}   cpX   Control point x
+     * @param  {number}   cpY   Control point y
+     * @param  {number}   toX   Destination point x
+     * @param  {number}   toY   Destination point y
+     * @return {number[]}
+     */
+    function quadraticBezierCurve(fromX, fromY, cpX, cpY, toX, toY) {
+        var xa,
+            ya,
+            xb,
+            yb,
+            x,
+            y,
+            n = 20,
+            points = [];
+
+        function getPt(n1 , n2, perc) {
+            var diff = n2 - n1;
+
+            return n1 + ( diff * perc );
+        }
+
+        var j = 0;
+        for (var i = 0; i <= n; i++ )
+        {
+            j = i / n;
+
+            // The Green Line
+            xa = getPt( fromX , cpX , j );
+            ya = getPt( fromY , cpY , j );
+            xb = getPt( cpX , toX , j );
+            yb = getPt( cpY , toY , j );
+
+            // The Black Dot
+            x = getPt( xa , xb , j );
+            y = getPt( ya , yb , j );
+
+            points.push(x, y);
+        }
+        return points;
+    }
+
+    var points = graphicsData.points;
+    var x = points[0];
+    var y = points[1];
+    var width = points[2];
+    var height = points[3];
+    var radius = points[4];
+
+
+    var recPoints = [];
+    recPoints.push(x, y + radius);
+    recPoints = recPoints.concat(quadraticBezierCurve(x, y + height - radius, x, y + height, x + radius, y + height));
+    recPoints = recPoints.concat(quadraticBezierCurve(x + width - radius, y + height, x + width, y + height, x + width, y + height - radius));
+    recPoints = recPoints.concat(quadraticBezierCurve(x + width, y + radius, x + width, y, x + width - radius, y));
+    recPoints = recPoints.concat(quadraticBezierCurve(x + radius, y, x, y, x, y + radius));
+
+
+    if (graphicsData.fill) {
+        var color = PIXI.hex2rgb(graphicsData.fillColor);
+        var alpha = graphicsData.fillAlpha;
+
+        var r = color[0] * alpha;
+        var g = color[1] * alpha;
+        var b = color[2] * alpha;
+
+        var verts = webGLData.points;
+        var indices = webGLData.indices;
+
+        var vecPos = verts.length/6;
+
+        var triangles = PIXI.PolyK.Triangulate(recPoints);
+
+        var i = 0;
+        for (i = 0; i < triangles.length; i+=3)
+        {
+            indices.push(triangles[i] + vecPos);
+            indices.push(triangles[i] + vecPos);
+            indices.push(triangles[i+1] + vecPos);
+            indices.push(triangles[i+2] + vecPos);
+            indices.push(triangles[i+2] + vecPos);
+        }
+
+        for (i = 0; i < recPoints.length; i++)
+        {
+            verts.push(recPoints[i], recPoints[++i], r, g, b, alpha);
+        }
+    }
+
+    if (graphicsData.lineWidth) {
+        var tempPoints = graphicsData.points;
+
+        graphicsData.points = recPoints;
+
+        PIXI.WebGLGraphics.buildLine(graphicsData, webGLData);
+
+        graphicsData.points = tempPoints;
+    }
+};
+
+/**
  * Builds a circle to draw
  *
  * @static
@@ -222,7 +343,7 @@ PIXI.WebGLGraphics.buildRectangle = function(graphicsData, webGLData)
  */
 PIXI.WebGLGraphics.buildCircle = function(graphicsData, webGLData)
 {
-    
+
     // need to convert points to a nice regular data
     var rectData = graphicsData.points;
     var x = rectData[0];
