@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.5.0</em>
+            <em>API Docs for: 1.5.3</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -88,6 +88,8 @@
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
+            
+                <li><a href="../classes/getRecommendedRenderer.html">getRecommendedRenderer</a></li>
             
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
             
@@ -313,7 +315,7 @@ PIXI.Graphics = function()
     /**
      * the bounds&#x27; padding used for bounds calculation
      *
-     * @property bounds
+     * @property boundsPadding
      * @type Number
      */
     this.boundsPadding = 10;
@@ -694,28 +696,24 @@ PIXI.Graphics.prototype.getBounds = function( matrix )
     var x4 =  a * w1 + c * h0 + tx;
     var y4 =  d * h0 + b * w1 + ty;
 
-    var maxX = -Infinity;
-    var maxY = -Infinity;
+    var maxX = x1;
+    var maxY = y1;
 
-    var minX = Infinity;
-    var minY = Infinity;
+    var minX = x1;
+    var minY = y1;
 
-    minX = x1 &lt; minX ? x1 : minX;
     minX = x2 &lt; minX ? x2 : minX;
     minX = x3 &lt; minX ? x3 : minX;
     minX = x4 &lt; minX ? x4 : minX;
 
-    minY = y1 &lt; minY ? y1 : minY;
     minY = y2 &lt; minY ? y2 : minY;
     minY = y3 &lt; minY ? y3 : minY;
     minY = y4 &lt; minY ? y4 : minY;
 
-    maxX = x1 &gt; maxX ? x1 : maxX;
     maxX = x2 &gt; maxX ? x2 : maxX;
     maxX = x3 &gt; maxX ? x3 : maxX;
     maxX = x4 &gt; maxX ? x4 : maxX;
 
-    maxY = y1 &gt; maxY ? y1 : maxY;
     maxY = y2 &gt; maxY ? y2 : maxY;
     maxY = y3 &gt; maxY ? y3 : maxY;
     maxY = y4 &gt; maxY ? y4 : maxY;

@@ -2,7 +2,7 @@
     "project": {
         "name": "pixi.js",
         "description": "Pixi.js is a fast lightweight 2D library that works across all devices.",
-        "version": "1.5.0",
+        "version": "1.5.3",
         "url": "http://goodboydigital.com/",
         "logo": "http://www.goodboydigital.com/pixijs/logo_small.png"
     },
@@ -572,7 +572,8 @@
             "name": "src/pixi/utils/Detector.js",
             "modules": {},
             "classes": {
-                "autoDetectRenderer": 1
+                "autoDetectRenderer": 1,
+                "getRecommendedRenderer": 1
             },
             "fors": {},
             "namespaces": {}
@@ -705,6 +706,7 @@
                 "BaseTexture": 1,
                 "Texture": 1,
                 "autoDetectRenderer": 1,
+                "getRecommendedRenderer": 1,
                 "EventTarget": 1,
                 "PolyK": 1,
                 "AjaxRequest": 1,
@@ -735,12 +737,12 @@
             "params": [
                 {
                     "name": "x",
-                    "description": "The X coordinate of the upper-left corner of the framing rectangle of this circle",
+                    "description": "The X coordinate of the center of this circle",
                     "type": "Number"
                 },
                 {
                     "name": "y",
-                    "description": "The Y coordinate of the upper-left corner of the framing rectangle of this circle",
+                    "description": "The Y coordinate of the center of this circle",
                     "type": "Number"
                 },
                 {
@@ -880,7 +882,7 @@
             "module": "PIXI",
             "file": "src/pixi/display/DisplayObject.js",
             "line": 5,
-            "description": "The base class for all objects that are rendered on the screen.",
+            "description": "The base class for all objects that are rendered on the screen. \nThis is an abstract class and should not be used on its own rather it should be extended.",
             "is_constructor": 1
         },
         "DisplayObjectContainer": {
@@ -1657,6 +1659,11 @@
                     "name": "height",
                     "description": "the vertical range of the filter",
                     "type": "Number"
+                },
+                {
+                    "name": "scaleMode",
+                    "description": "Should be one of the PIXI.scaleMode consts",
+                    "type": "Number"
                 }
             ],
             "access": "private",
@@ -2028,6 +2035,52 @@
             "file": "src/pixi/utils/Detector.js",
             "line": 5,
             "description": "This helper function will automatically detect which renderer you should be using.\nWebGL is the preferred renderer as it is a lot faster. If webGL is not supported by\nthe browser then this function will return a canvas renderer",
+            "static": 1,
+            "params": [
+                {
+                    "name": "width=800",
+                    "description": "the width of the renderers view",
+                    "type": "Number"
+                },
+                {
+                    "name": "height=600",
+                    "description": "the height of the renderers view",
+                    "type": "Number"
+                },
+                {
+                    "name": "view",
+                    "description": "the canvas to use as a view, optional",
+                    "type": "Canvas",
+                    "optional": true
+                },
+                {
+                    "name": "transparent",
+                    "description": "the transparency of the render view, default false",
+                    "type": "Boolean",
+                    "optional": true,
+                    "optdefault": "false"
+                },
+                {
+                    "name": "antialias",
+                    "description": "sets antialias (only applicable in webGL chrome at the moment)",
+                    "type": "Boolean",
+                    "optional": true,
+                    "optdefault": "false"
+                }
+            ]
+        },
+        "getRecommendedRenderer": {
+            "name": "getRecommendedRenderer",
+            "shortname": "getRecommendedRenderer",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "PIXI",
+            "file": "src/pixi/utils/Detector.js",
+            "line": 40,
+            "description": "This helper function will automatically detect which renderer you should be using.\nThis function is very similar to the autoDetectRenderer function except that is will return a canvas renderer for android.\nEven thought both android chrome suports webGL the canvas implementation perform better at the time of writing. \nThis function will likely change and update as webGL performance imporoves on thease devices.",
             "static": 1,
             "params": [
                 {
@@ -2514,7 +2567,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 13,
+            "line": 14,
             "description": "The coordinate of the object relative to the local coordinates of the parent.",
             "itemtype": "property",
             "name": "position",
@@ -2523,7 +2576,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 21,
+            "line": 22,
             "description": "The scale factor of the object.",
             "itemtype": "property",
             "name": "scale",
@@ -2532,7 +2585,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 29,
+            "line": 30,
             "description": "The pivot point of the displayObject that it rotates around",
             "itemtype": "property",
             "name": "pivot",
@@ -2541,7 +2594,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 37,
+            "line": 38,
             "description": "The rotation of the object in radians.",
             "itemtype": "property",
             "name": "rotation",
@@ -2550,7 +2603,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 45,
+            "line": 46,
             "description": "The opacity of the object.",
             "itemtype": "property",
             "name": "alpha",
@@ -2559,7 +2612,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 53,
+            "line": 54,
             "description": "The visibility of the object.",
             "itemtype": "property",
             "name": "visible",
@@ -2568,7 +2621,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 61,
+            "line": 62,
             "description": "This is the defined area that will pick up mouse / touch events. It is null by default.\nSetting it is a neat way of optimising the hitTest function that the interactionManager will use (as it will not need to hit test all the children)",
             "itemtype": "property",
             "name": "hitArea",
@@ -2577,7 +2630,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 70,
+            "line": 71,
             "description": "This is used to indicate if the displayObject should display a mouse hand cursor on rollover",
             "itemtype": "property",
             "name": "buttonMode",
@@ -2586,7 +2639,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 78,
+            "line": 79,
             "description": "Can this object be rendered",
             "itemtype": "property",
             "name": "renderable",
@@ -2595,7 +2648,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 86,
+            "line": 87,
             "description": "[read-only] The display object container that contains this display object.",
             "itemtype": "property",
             "name": "parent",
@@ -2605,7 +2658,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 95,
+            "line": 96,
             "description": "[read-only] The stage the display object is connected to, or undefined if it is not connected to the stage.",
             "itemtype": "property",
             "name": "stage",
@@ -2615,7 +2668,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 104,
+            "line": 105,
             "description": "[read-only] The multiplied alpha of the displayObject",
             "itemtype": "property",
             "name": "worldAlpha",
@@ -2625,7 +2678,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 113,
+            "line": 114,
             "description": "[read-only] Whether or not the object is interactive, do not toggle directly! use the `interactive` property",
             "itemtype": "property",
             "name": "_interactive",
@@ -2637,7 +2690,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 123,
+            "line": 124,
             "description": "This is the cursor that will be used when the mouse is over this object. To enable this the element must have interaction = true and buttonMode = true",
             "itemtype": "property",
             "name": "defaultCursor",
@@ -2646,7 +2699,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 132,
+            "line": 133,
             "description": "[read-only] Current transform of the object based on world (parent) factors",
             "itemtype": "property",
             "name": "worldTransform",
@@ -2658,7 +2711,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 142,
+            "line": 143,
             "description": "[NYI] Unknown",
             "itemtype": "property",
             "name": "color",
@@ -2669,7 +2722,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 151,
+            "line": 152,
             "description": "[NYI] Holds whether or not this object is dynamic, for rendering optimization",
             "itemtype": "property",
             "name": "dynamic",
@@ -2680,7 +2733,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 164,
+            "line": 165,
             "description": "The area the filter is applied to like the hitArea this is used as more of an optimisation\nrather than figuring out the dimensions of the displayObject each frame you can set this rectangle",
             "itemtype": "property",
             "name": "filterArea",
@@ -2689,7 +2742,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 173,
+            "line": 174,
             "description": "The original, cached bounds of the object",
             "itemtype": "property",
             "name": "_bounds",
@@ -2700,7 +2753,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 181,
+            "line": 182,
             "description": "The most up-to-date bounds of the object",
             "itemtype": "property",
             "name": "_currentBounds",
@@ -2711,7 +2764,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 189,
+            "line": 190,
             "description": "The original, cached mask of the object",
             "itemtype": "property",
             "name": "_currentBounds",
@@ -2722,7 +2775,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 206,
+            "line": 207,
             "description": "A callback that is used when the users clicks on the displayObject with their mouse",
             "itemtype": "method",
             "name": "click",
@@ -2737,7 +2790,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 212,
+            "line": 213,
             "description": "A callback that is used when the user clicks the mouse down over the sprite",
             "itemtype": "method",
             "name": "mousedown",
@@ -2752,7 +2805,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 218,
+            "line": 219,
             "description": "A callback that is used when the user releases the mouse that was over the displayObject\nfor this callback to be fired the mouse must have been pressed down over the displayObject",
             "itemtype": "method",
             "name": "mouseup",
@@ -2767,7 +2820,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 225,
+            "line": 226,
             "description": "A callback that is used when the user releases the mouse that was over the displayObject but is no longer over the displayObject\nfor this callback to be fired, The touch must have started over the displayObject",
             "itemtype": "method",
             "name": "mouseupoutside",
@@ -2782,7 +2835,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 232,
+            "line": 233,
             "description": "A callback that is used when the users mouse rolls over the displayObject",
             "itemtype": "method",
             "name": "mouseover",
@@ -2797,7 +2850,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 238,
+            "line": 239,
             "description": "A callback that is used when the users mouse leaves the displayObject",
             "itemtype": "method",
             "name": "mouseout",
@@ -2812,7 +2865,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 249,
+            "line": 250,
             "description": "A callback that is used when the users taps on the sprite with their finger\nbasically a touch version of click",
             "itemtype": "method",
             "name": "tap",
@@ -2827,7 +2880,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 256,
+            "line": 257,
             "description": "A callback that is used when the user touches over the displayObject",
             "itemtype": "method",
             "name": "touchstart",
@@ -2842,7 +2895,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 262,
+            "line": 263,
             "description": "A callback that is used when the user releases a touch over the displayObject",
             "itemtype": "method",
             "name": "touchend",
@@ -2857,7 +2910,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 268,
+            "line": 269,
             "description": "A callback that is used when the user releases the touch that was over the displayObject\nfor this callback to be fired, The touch must have started over the sprite",
             "itemtype": "method",
             "name": "touchendoutside",
@@ -2872,7 +2925,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 279,
+            "line": 280,
             "description": "[Deprecated] Indicates if the sprite will have touch and mouse interactivity. It is false by default\nInstead of using this function you can now simply set the interactive property to true or false",
             "itemtype": "method",
             "name": "setInteractive",
@@ -2889,7 +2942,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 292,
+            "line": 293,
             "description": "Indicates if the sprite will have touch and mouse interactivity. It is false by default",
             "itemtype": "property",
             "name": "interactive",
@@ -2899,7 +2952,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 312,
+            "line": 313,
             "description": "[read-only] Indicates if the sprite is globaly visible.",
             "itemtype": "property",
             "name": "worldVisible",
@@ -2908,7 +2961,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 333,
+            "line": 334,
             "description": "Sets a mask for the displayObject. A mask is an object that limits the visibility of an object to the shape of the mask applied to it.\nIn PIXI a regular mask must be a PIXI.Graphics object. This allows for much faster masking in canvas as it utilises shape clipping.\nTo remove a mask, set this property to null.",
             "itemtype": "property",
             "name": "mask",
@@ -2917,7 +2970,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 353,
+            "line": 354,
             "description": "Sets the filters for the displayObject.\n* IMPORTANT: This is a webGL only feature and will be ignored by the canvas renderer.\nTo remove filters simply set this property to 'null'",
             "itemtype": "property",
             "name": "filters",
@@ -2926,7 +2979,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 387,
+            "line": 388,
             "description": "Set weather or not a the display objects is cached as a bitmap.\nThis basically takes a snap shot of the display object as it is at that moment. It can provide a performance benefit for complex static displayObjects\nTo remove filters simply set this property to 'null'",
             "itemtype": "property",
             "name": "cacheAsBitmap",
@@ -2935,7 +2988,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 460,
+            "line": 461,
             "description": "Retrieves the bounds of the displayObject as a rectangle object",
             "itemtype": "method",
             "name": "getBounds",
@@ -2947,7 +3000,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 472,
+            "line": 473,
             "description": "Retrieves the local bounds of the displayObject as a rectangle object",
             "itemtype": "method",
             "name": "getLocalBounds",
@@ -2959,7 +3012,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 484,
+            "line": 485,
             "description": "Sets the object's stage reference, the stage this object is connected to",
             "itemtype": "method",
             "name": "setStageReference",
@@ -2974,7 +3027,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 552,
+            "line": 556,
             "description": "Renders the object using the WebGL renderer",
             "itemtype": "method",
             "name": "_renderWebGL",
@@ -2991,7 +3044,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 578,
+            "line": 582,
             "description": "Renders the object using the Canvas renderer",
             "itemtype": "method",
             "name": "_renderCanvas",
@@ -3008,7 +3061,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 592,
+            "line": 596,
             "description": "The position of the displayObject on the x axis relative to the local coordinates of the parent.",
             "itemtype": "property",
             "name": "x",
@@ -3017,7 +3070,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 607,
+            "line": 611,
             "description": "The position of the displayObject on the y axis relative to the local coordinates of the parent.",
             "itemtype": "property",
             "name": "y",
@@ -3367,6 +3420,38 @@
                     "name": "frameNumber",
                     "description": "frame index to start at",
                     "type": "Number"
+                }
+            ],
+            "class": "MovieClip"
+        },
+        {
+            "file": "src/pixi/display/MovieClip.js",
+            "line": 168,
+            "description": "A short hand way of creating a movieclip from an array of frame ids",
+            "static": 1,
+            "itemtype": "method",
+            "name": "fromFrames",
+            "params": [
+                {
+                    "name": "frames",
+                    "description": "the array of frames ids the movieclip will use as its texture frames",
+                    "type": "Array"
+                }
+            ],
+            "class": "MovieClip"
+        },
+        {
+            "file": "src/pixi/display/MovieClip.js",
+            "line": 187,
+            "description": "A short hand way of creating a movieclip from an array of image ids",
+            "static": 1,
+            "itemtype": "method",
+            "name": "fromFrames",
+            "params": [
+                {
+                    "name": "frames",
+                    "description": "the array of image ids the movieclip will use as its texture frames",
+                    "type": "Array"
                 }
             ],
             "class": "MovieClip"
@@ -3844,7 +3929,7 @@
         },
         {
             "file": "src/pixi/extras/Strip.js",
-            "line": 102,
+            "line": 108,
             "description": "When the texture is updated, this event will fire to update the scale and frame",
             "itemtype": "method",
             "name": "onTextureUpdate",
@@ -4692,7 +4777,7 @@
         },
         {
             "file": "src/pixi/loaders/JsonLoader.js",
-            "line": 100,
+            "line": 108,
             "description": "Invoke when JSON file is loaded",
             "itemtype": "method",
             "name": "onJSONLoaded",
@@ -4702,7 +4787,7 @@
         },
         {
             "file": "src/pixi/loaders/JsonLoader.js",
-            "line": 170,
+            "line": 177,
             "description": "Invoke when json file loaded",
             "itemtype": "method",
             "name": "onLoaded",
@@ -4712,7 +4797,7 @@
         },
         {
             "file": "src/pixi/loaders/JsonLoader.js",
-            "line": 184,
+            "line": 191,
             "description": "Invoke when error occured",
             "itemtype": "method",
             "name": "onError",
@@ -4951,7 +5036,7 @@
             "line": 107,
             "description": "the bounds' padding used for bounds calculation",
             "itemtype": "property",
-            "name": "bounds",
+            "name": "boundsPadding",
             "type": "Number",
             "class": "Graphics"
         },
@@ -5212,7 +5297,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 528,
+            "line": 524,
             "description": "Update the bounds of the object",
             "itemtype": "method",
             "name": "updateBounds",
@@ -5220,7 +5305,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 599,
+            "line": 595,
             "description": "Generates the cached sprite when the sprite has cacheAsBitmap = true",
             "itemtype": "method",
             "name": "_generateCachedSprite",
@@ -5903,7 +5988,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/utils/FilterTexture.js",
-            "line": 15,
+            "line": 16,
             "itemtype": "property",
             "name": "gl",
             "type": "WebGLContext",
@@ -5911,7 +5996,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/utils/FilterTexture.js",
-            "line": 39,
+            "line": 47,
             "description": "Clears the filter texture",
             "itemtype": "method",
             "name": "clear",
@@ -5919,7 +6004,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/utils/FilterTexture.js",
-            "line": 51,
+            "line": 59,
             "description": "Resizes the texture to the specified width and height",
             "itemtype": "method",
             "name": "resize",
@@ -5939,7 +6024,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/utils/FilterTexture.js",
-            "line": 72,
+            "line": 83,
             "description": "Destroys the filter texture",
             "itemtype": "method",
             "name": "destroy",
@@ -7139,6 +7224,30 @@
             "class": "BaseTexture"
         },
         {
+            "file": "src/pixi/textures/BaseTexture.js",
+            "line": 173,
+            "description": "Helper function that returns a base texture based on a canvas element\nIf the image is not in the base texture cache it will be created and loaded",
+            "static": 1,
+            "itemtype": "method",
+            "name": "fromCanvas",
+            "params": [
+                {
+                    "name": "canvas",
+                    "description": "The canvas element source of the texture",
+                    "type": "Canvas"
+                },
+                {
+                    "name": "scaleMode",
+                    "description": "Should be one of the PIXI.scaleMode consts",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "BaseTexture"
+            },
+            "class": "BaseTexture"
+        },
+        {
             "file": "src/pixi/textures/RenderTexture.js",
             "line": 1,
             "author": "Mat Groves http://matgroves.com/ @Doormat23",
@@ -7147,12 +7256,12 @@
         {
             "file": "src/pixi/textures/RenderTexture.js",
             "line": 5,
-            "description": "A RenderTexture is a special texture that allows any pixi displayObject to be rendered to it.\n\n__Hint__: All DisplayObjects (exmpl. Sprites) that render on RenderTexture should be preloaded.\nOtherwise black rectangles will be drawn instead.\n\nRenderTexture takes snapshot of DisplayObject passed to render method. If DisplayObject is passed to render method, position and rotation of it will be ignored. For example:\n\n   var renderTexture = new PIXI.RenderTexture(800, 600);\n   var sprite = PIXI.Sprite.fromImage(\"spinObj_01.png\");\n   sprite.position.x = 800/2;\n   sprite.position.y = 600/2;\n   sprite.anchor.x = 0.5;\n   sprite.anchor.y = 0.5;\n   renderTexture.render(sprite);\n\nSprite in this case will be rendered to 0,0 position. To render this sprite at center DisplayObjectContainer should be used:\n\n   var doc = new PIXI.DisplayObjectContainer();\n   doc.addChild(sprite);\n   renderTexture.render(doc);  // Renders to center of renderTexture\n\n* @class RenderTexture\n* @extends Texture\n* @constructor\n* @param width {Number} The width of the render texture\n* @param height {Number} The height of the render texture",
+            "description": "A RenderTexture is a special texture that allows any pixi displayObject to be rendered to it.\n\n__Hint__: All DisplayObjects (exmpl. Sprites) that render on RenderTexture should be preloaded.\nOtherwise black rectangles will be drawn instead.\n\nRenderTexture takes snapshot of DisplayObject passed to render method. If DisplayObject is passed to render method, position and rotation of it will be ignored. For example:\n\n   var renderTexture = new PIXI.RenderTexture(800, 600);\n   var sprite = PIXI.Sprite.fromImage(\"spinObj_01.png\");\n   sprite.position.x = 800/2;\n   sprite.position.y = 600/2;\n   sprite.anchor.x = 0.5;\n   sprite.anchor.y = 0.5;\n   renderTexture.render(sprite);\n\nSprite in this case will be rendered to 0,0 position. To render this sprite at center DisplayObjectContainer should be used:\n\n   var doc = new PIXI.DisplayObjectContainer();\n   doc.addChild(sprite);\n   renderTexture.render(doc);  // Renders to center of renderTexture\n\n* @class RenderTexture\n* @extends Texture\n* @constructor\n* @param width {Number} The width of the render texture\n* @param height {Number} The height of the render texture\n* @param scaleMode {Number} Should be one of the PIXI.scaleMode consts",
             "class": "Texture"
         },
         {
             "file": "src/pixi/textures/RenderTexture.js",
-            "line": 37,
+            "line": 38,
             "description": "The with of the render texture",
             "itemtype": "property",
             "name": "width",
@@ -7161,7 +7270,7 @@
         },
         {
             "file": "src/pixi/textures/RenderTexture.js",
-            "line": 44,
+            "line": 45,
             "description": "The height of the render texture",
             "itemtype": "property",
             "name": "height",
@@ -7170,7 +7279,7 @@
         },
         {
             "file": "src/pixi/textures/RenderTexture.js",
-            "line": 52,
+            "line": 53,
             "description": "The framing rectangle of the render texture",
             "itemtype": "property",
             "name": "frame",
@@ -7179,7 +7288,7 @@
         },
         {
             "file": "src/pixi/textures/RenderTexture.js",
-            "line": 60,
+            "line": 61,
             "description": "The base texture object that this texture uses",
             "itemtype": "property",
             "name": "baseTexture",
@@ -7188,7 +7297,7 @@
         },
         {
             "file": "src/pixi/textures/RenderTexture.js",
-            "line": 126,
+            "line": 129,
             "description": "This function will draw the display object to the texture.",
             "itemtype": "method",
             "name": "renderWebGL",
@@ -7210,7 +7319,7 @@
         },
         {
             "file": "src/pixi/textures/RenderTexture.js",
-            "line": 178,
+            "line": 181,
             "description": "This function will draw the display object to the texture.",
             "itemtype": "method",
             "name": "renderCanvas",
@@ -7326,6 +7435,11 @@
                     "name": "crossorigin",
                     "description": "Whether requests should be treated as crossorigin",
                     "type": "Boolean"
+                },
+                {
+                    "name": "scaleMode",
+                    "description": "Should be one of the PIXI.scaleMode consts",
+                    "type": "Number"
                 }
             ],
             "return": {
@@ -7335,7 +7449,7 @@
         },
         {
             "file": "src/pixi/textures/Texture.js",
-            "line": 175,
+            "line": 176,
             "description": "Helper function that returns a texture based on a frame id\nIf the frame id is not in the texture cache an error will be thrown",
             "static": 1,
             "itemtype": "method",
@@ -7354,7 +7468,7 @@
         },
         {
             "file": "src/pixi/textures/Texture.js",
-            "line": 191,
+            "line": 192,
             "description": "Helper function that returns a texture based on a canvas element\nIf the canvas is not in the texture cache it will be  created and loaded",
             "static": 1,
             "itemtype": "method",
@@ -7364,6 +7478,11 @@
                     "name": "canvas",
                     "description": "The canvas element source of the texture",
                     "type": "Canvas"
+                },
+                {
+                    "name": "scaleMode",
+                    "description": "Should be one of the PIXI.scaleMode consts",
+                    "type": "Number"
                 }
             ],
             "return": {
@@ -7373,7 +7492,7 @@
         },
         {
             "file": "src/pixi/textures/Texture.js",
-            "line": 209,
+            "line": 211,
             "description": "Adds a texture to the textureCache.",
             "static": 1,
             "itemtype": "method",
@@ -7394,7 +7513,7 @@
         },
         {
             "file": "src/pixi/textures/Texture.js",
-            "line": 222,
+            "line": 224,
             "description": "Remove a texture from the textureCache.",
             "static": 1,
             "itemtype": "method",
@@ -7687,7 +7806,7 @@
         },
         {
             "file": "src/pixi/InteractionData.js",
-            "line": 24,
+            "line": 22,
             "description": "The target Sprite that was interacted with",
             "itemtype": "property",
             "name": "target",
@@ -7696,7 +7815,7 @@
         },
         {
             "file": "src/pixi/InteractionData.js",
-            "line": 32,
+            "line": 30,
             "description": "When passed to an event handler, this will be the original DOM Event that was captured",
             "itemtype": "property",
             "name": "originalEvent",
@@ -7705,7 +7824,7 @@
         },
         {
             "file": "src/pixi/InteractionData.js",
-            "line": 41,
+            "line": 39,
             "description": "This will return the local coordinates of the specified displayObject for this InteractionData",
             "itemtype": "method",
             "name": "getLocalPosition",
@@ -7988,7 +8107,7 @@
         },
         {
             "file": "src/pixi/InteractionManager.js",
-            "line": 585,
+            "line": 583,
             "description": "Is called when a touch is started on the renderer element",
             "itemtype": "method",
             "name": "onTouchStart",
@@ -8005,7 +8124,7 @@
         },
         {
             "file": "src/pixi/InteractionManager.js",
-            "line": 640,
+            "line": 639,
             "description": "Is called when a touch is ended on the renderer element",
             "itemtype": "method",
             "name": "onTouchEnd",
@@ -8441,7 +8560,7 @@
             "line": " src/pixi/textures/RenderTexture.js:1"
         },
         {
-            "message": "Missing item type\nA RenderTexture is a special texture that allows any pixi displayObject to be rendered to it.\n\n__Hint__: All DisplayObjects (exmpl. Sprites) that render on RenderTexture should be preloaded.\nOtherwise black rectangles will be drawn instead.\n\nRenderTexture takes snapshot of DisplayObject passed to render method. If DisplayObject is passed to render method, position and rotation of it will be ignored. For example:\n\n   var renderTexture = new PIXI.RenderTexture(800, 600);\n   var sprite = PIXI.Sprite.fromImage(\"spinObj_01.png\");\n   sprite.position.x = 800/2;\n   sprite.position.y = 600/2;\n   sprite.anchor.x = 0.5;\n   sprite.anchor.y = 0.5;\n   renderTexture.render(sprite);\n\nSprite in this case will be rendered to 0,0 position. To render this sprite at center DisplayObjectContainer should be used:\n\n   var doc = new PIXI.DisplayObjectContainer();\n   doc.addChild(sprite);\n   renderTexture.render(doc);  // Renders to center of renderTexture\n\n* @class RenderTexture\n* @extends Texture\n* @constructor\n* @param width {Number} The width of the render texture\n* @param height {Number} The height of the render texture",
+            "message": "Missing item type\nA RenderTexture is a special texture that allows any pixi displayObject to be rendered to it.\n\n__Hint__: All DisplayObjects (exmpl. Sprites) that render on RenderTexture should be preloaded.\nOtherwise black rectangles will be drawn instead.\n\nRenderTexture takes snapshot of DisplayObject passed to render method. If DisplayObject is passed to render method, position and rotation of it will be ignored. For example:\n\n   var renderTexture = new PIXI.RenderTexture(800, 600);\n   var sprite = PIXI.Sprite.fromImage(\"spinObj_01.png\");\n   sprite.position.x = 800/2;\n   sprite.position.y = 600/2;\n   sprite.anchor.x = 0.5;\n   sprite.anchor.y = 0.5;\n   renderTexture.render(sprite);\n\nSprite in this case will be rendered to 0,0 position. To render this sprite at center DisplayObjectContainer should be used:\n\n   var doc = new PIXI.DisplayObjectContainer();\n   doc.addChild(sprite);\n   renderTexture.render(doc);  // Renders to center of renderTexture\n\n* @class RenderTexture\n* @extends Texture\n* @constructor\n* @param width {Number} The width of the render texture\n* @param height {Number} The height of the render texture\n* @param scaleMode {Number} Should be one of the PIXI.scaleMode consts",
             "line": " src/pixi/textures/RenderTexture.js:5"
         },
         {

@@ -1,10 +1,10 @@
 /**
  * @license
- * pixi.js - v1.5.2
+ * pixi.js - v1.5.3
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-03-31
+ * Compiled: 2014-04-24
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -35,7 +35,7 @@ PIXI.WEBGL_RENDERER = 0;
 PIXI.CANVAS_RENDERER = 1;
 
 // useful for testing against if your lib is using pixi.
-PIXI.VERSION = "v1.5.2";
+PIXI.VERSION = "v1.5.3";
 
 // the various blend modes supported by pixi
 PIXI.blendModes = {
@@ -295,8 +295,8 @@ PIXI.Polygon.prototype.constructor = PIXI.Polygon;
  *
  * @class Circle
  * @constructor
- * @param x {Number} The X coordinate of the upper-left corner of the framing rectangle of this circle
- * @param y {Number} The Y coordinate of the upper-left corner of the framing rectangle of this circle
+ * @param x {Number} The X coordinate of the center of this circle
+ * @param y {Number} The Y coordinate of the center of this circle
  * @param radius {Number} The radius of the circle
  */
 PIXI.Circle = function(x, y, radius)
@@ -551,7 +551,8 @@ PIXI.identityMatrix = new PIXI.Matrix();
  */
 
 /**
- * The base class for all objects that are rendered on the screen.
+ * The base class for all objects that are rendered on the screen. 
+ * This is an abstract class and should not be used on its own rather it should be extended.
  *
  * @class DisplayObject
  * @constructor
@@ -1091,6 +1092,9 @@ PIXI.DisplayObject.prototype._generateCachedSprite = function()//renderSession)
 
     this._cachedSprite.filters = tempFilters;
     this._cachedSprite.texture.render(this, new PIXI.Point(-bounds.x, -bounds.y) );
+
+    this._cachedSprite.anchor.x = -( bounds.x / bounds.width );
+    this._cachedSprite.anchor.y = -( bounds.y / bounds.height );
 
     this._filters = tempFilters;
 
@@ -2430,6 +2434,43 @@ PIXI.MovieClip.prototype.updateTransform = function()
 };
 
 /**
+ * A short hand way of creating a movieclip from an array of frame ids
+ *
+ * @static
+ * @method fromFrames
+ * @param frames {Array} the array of frames ids the movieclip will use as its texture frames
+ */
+PIXI.MovieClip.prototype.fromFrames = function(frames)
+{
+    var textures = [];
+
+    for (var i = 0; i < frames.length; i++)
+    {
+        textures.push(new PIXI.Texture.fromFrame(frames[i]));
+    }
+
+    return new PIXI.MovieClip(textures);
+};
+
+/**
+ * A short hand way of creating a movieclip from an array of image ids
+ *
+ * @static
+ * @method fromFrames
+ * @param frames {Array} the array of image ids the movieclip will use as its texture frames
+ */
+PIXI.MovieClip.prototype.fromImages = function(images)
+{
+    var textures = [];
+
+    for (var i = 0; i < images.length; i++)
+    {
+        textures.push(new PIXI.Texture.fromImage(images[i]));
+    }
+
+    return new PIXI.MovieClip(textures);
+};
+/**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
@@ -2580,7 +2621,7 @@ PIXI.Text.prototype.updateText = function()
     var width = maxLineWidth + this.style.strokeThickness;
     if(this.style.dropShadow)width += this.style.dropShadowDistance;
 
-    this.canvas.width = width;
+    this.canvas.width = width + this.context.lineWidth;
     //calculate text height
     var lineHeight = this.determineFontHeight('font: ' + this.style.font  + ';') + this.style.strokeThickness;
     
@@ -2773,7 +2814,7 @@ PIXI.Text.prototype.wordWrap = function(text)
         {
             var wordWidth = this.context.measureText(words[j]).width;
             var wordWidthWithSpace = wordWidth + this.context.measureText(' ').width;
-            if(wordWidthWithSpace > spaceLeft)
+            if(j === 0 || wordWidthWithSpace > spaceLeft)
             {
                 // Skip printing the newline if it's the first word of the line that is
                 // greater than the word wrap width.
@@ -2781,13 +2822,13 @@ PIXI.Text.prototype.wordWrap = function(text)
                 {
                     result += '\n';
                 }
-                result += words[j] + ' ';
+                result += words[j];
                 spaceLeft = this.style.wordWrapWidth - wordWidth;
             }
             else
             {
                 spaceLeft -= wordWidthWithSpace;
-                result += words[j] + ' ';
+                result += ' ' + words[j];
             }
         }
 
@@ -3033,9 +3074,7 @@ PIXI.InteractionData = function()
      */
     this.global = new PIXI.Point();
 
-    // this is here for legacy... but will remove
-    this.local = new PIXI.Point();
-
+   
     /**
      * The target Sprite that was interacted with
      *
@@ -3649,14 +3688,12 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
             touchData.global.x = touchEvent.clientX;
             touchData.global.y = touchEvent.clientY;
         }
-    }
 
-    var length = this.interactiveItems.length;
-    for (i = 0; i < length; i++)
-    {
-        var item = this.interactiveItems[i];
-        if(item.touchmove)
-            item.touchmove(touchData);
+        for (var j = 0; j < this.interactiveItems.length; j++)
+        {
+            var item = this.interactiveItems[j];
+            if(item.touchmove && item.__touchData[touchEvent.identifier]) item.touchmove(touchData);
+        }
     }
 };
 
@@ -3706,7 +3743,8 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
                     //call the function!
                     if(item.touchstart)item.touchstart(touchData);
                     item.__isDown = true;
-                    item.__touchData = touchData;
+                    item.__touchData = item.__touchData || {};
+                    item.__touchData[touchEvent.identifier] = touchData;
 
                     if(!item.interactiveChildren)break;
                 }
@@ -3744,11 +3782,11 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
         for (var j = 0; j < length; j++)
         {
             var item = this.interactiveItems[j];
-            var itemTouchData = item.__touchData; // <-- Here!
-            item.__hit = this.hitTest(item, touchData);
 
-            if(itemTouchData === touchData)
-            {
+            if(item.__touchData && item.__touchData[touchEvent.identifier]) {
+
+                item.__hit = this.hitTest(item, item.__touchData[touchEvent.identifier]);
+
                 // so this one WAS down...
                 touchData.originalEvent = event || window.event;
                 // hitTest??
@@ -3776,15 +3814,8 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
                     item.__isDown = false;
                 }
 
-                item.__touchData = null;
-
+                item.__touchData[touchEvent.identifier] = null;
             }
-            /*
-            else
-            {
-
-            }
-            */
         }
         // remove the touch..
         this.pool.push(touchData);
@@ -4265,8 +4296,45 @@ PIXI.autoDetectRenderer = function(width, height, view, transparent, antialias)
                                 }
                             } )();
 
-
     if( webgl )
+    {
+        return new PIXI.WebGLRenderer(width, height, view, transparent, antialias);
+    }
+
+    return  new PIXI.CanvasRenderer(width, height, view, transparent);
+};
+
+/**
+ * This helper function will automatically detect which renderer you should be using.
+ * This function is very similar to the autoDetectRenderer function except that is will return a canvas renderer for android.
+ * Even thought both android chrome suports webGL the canvas implementation perform better at the time of writing. 
+ * This function will likely change and update as webGL performance imporoves on thease devices.
+ * @class getRecommendedRenderer
+ * @static
+ * @param width=800 {Number} the width of the renderers view
+ * @param height=600 {Number} the height of the renderers view
+ * @param [view] {Canvas} the canvas to use as a view, optional 
+ * @param [transparent=false] {Boolean} the transparency of the render view, default false
+ * @param [antialias=false] {Boolean} sets antialias (only applicable in webGL chrome at the moment)
+ *
+ */
+PIXI.autoDetectRecommendedRenderer = function(width, height, view, transparent, antialias)
+{
+    if(!width)width = 800;
+    if(!height)height = 600;
+
+    // BORROWED from Mr Doob (mrdoob.com)
+    var webgl = ( function () { try {
+                                    var canvas = document.createElement( 'canvas' );
+                                    return !! window.WebGLRenderingContext && ( canvas.getContext( 'webgl' ) || canvas.getContext( 'experimental-webgl' ) );
+                                } catch( e ) {
+                                    return false;
+                                }
+                            } )();
+
+    var isAndroid = /Android/i.test(navigator.userAgent);
+
+    if( webgl && !isAndroid)
     {
         return new PIXI.WebGLRenderer(width, height, view, transparent, antialias);
     }
@@ -6335,7 +6403,7 @@ PIXI.WebGLMaskManager.prototype.pushMask = function(maskData, renderSession)
 
     this.maskStack.push(maskData);
     
-    gl.colorMask(false, false, false, true);
+    gl.colorMask(false, false, false, false);
     gl.stencilOp(gl.KEEP,gl.KEEP,gl.INCR);
 
     PIXI.WebGLGraphics.renderGraphics(maskData, renderSession);
@@ -7481,11 +7549,11 @@ PIXI.WebGLFilterManager.prototype.pushFilter = function(filterBlock)
 
     var filterArea = filterBlock._filterArea;// filterBlock.target.getBounds();///filterBlock.target.filterArea;
 
-    var padidng = filter.padding;
-    filterArea.x -= padidng;
-    filterArea.y -= padidng;
-    filterArea.width += padidng * 2;
-    filterArea.height += padidng * 2;
+    var padding = filter.padding;
+    filterArea.x -= padding;
+    filterArea.y -= padding;
+    filterArea.width += padding * 2;
+    filterArea.height += padding * 2;
 
     // cap filter to screen size..
     if(filterArea.x < 0)filterArea.x = 0;
@@ -7857,9 +7925,10 @@ PIXI.WebGLFilterManager.prototype.destroy = function()
 * @param gl {WebGLContext} the current WebGL drawing context
 * @param width {Number} the horizontal range of the filter
 * @param height {Number} the vertical range of the filter
+* @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
 * @private
 */
-PIXI.FilterTexture = function(gl, width, height)
+PIXI.FilterTexture = function(gl, width, height, scaleMode)
 {
     /**
      * @property gl
@@ -7871,9 +7940,11 @@ PIXI.FilterTexture = function(gl, width, height)
     this.frameBuffer = gl.createFramebuffer();
     this.texture = gl.createTexture();
 
+    scaleMode = scaleMode || PIXI.scaleModes.DEFAULT;
+
     gl.bindTexture(gl.TEXTURE_2D,  this.texture);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, scaleMode === PIXI.scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, scaleMode === PIXI.scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer );
@@ -7881,6 +7952,11 @@ PIXI.FilterTexture = function(gl, width, height)
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer );
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.texture, 0);
 
+    // required for masking a mask??
+    this.renderBuffer = gl.createRenderbuffer();
+    gl.bindRenderbuffer(gl.RENDERBUFFER, this.renderBuffer);
+    gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, this.renderBuffer);
+  
     this.resize(width, height);
 };
 
@@ -7916,6 +7992,9 @@ PIXI.FilterTexture.prototype.resize = function(width, height)
     gl.bindTexture(gl.TEXTURE_2D,  this.texture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
 
+    // update the stencil buffer width and height
+    gl.bindRenderbuffer(gl.RENDERBUFFER, this.renderBuffer);
+    gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, width, height);
 };
 
 /**
@@ -8959,7 +9038,7 @@ PIXI.Graphics = function()
     /**
      * the bounds' padding used for bounds calculation
      *
-     * @property bounds
+     * @property boundsPadding
      * @type Number
      */
     this.boundsPadding = 10;
@@ -9340,28 +9419,24 @@ PIXI.Graphics.prototype.getBounds = function( matrix )
     var x4 =  a * w1 + c * h0 + tx;
     var y4 =  d * h0 + b * w1 + ty;
 
-    var maxX = -Infinity;
-    var maxY = -Infinity;
+    var maxX = x1;
+    var maxY = y1;
 
-    var minX = Infinity;
-    var minY = Infinity;
+    var minX = x1;
+    var minY = y1;
 
-    minX = x1 < minX ? x1 : minX;
     minX = x2 < minX ? x2 : minX;
     minX = x3 < minX ? x3 : minX;
     minX = x4 < minX ? x4 : minX;
 
-    minY = y1 < minY ? y1 : minY;
     minY = y2 < minY ? y2 : minY;
     minY = y3 < minY ? y3 : minY;
     minY = y4 < minY ? y4 : minY;
 
-    maxX = x1 > maxX ? x1 : maxX;
     maxX = x2 > maxX ? x2 : maxX;
     maxX = x3 > maxX ? x3 : maxX;
     maxX = x4 > maxX ? x4 : maxX;
 
-    maxY = y1 > maxY ? y1 : maxY;
     maxY = y2 > maxY ? y2 : maxY;
     maxY = y3 > maxY ? y3 : maxY;
     maxY = y4 > maxY ? y4 : maxY;
@@ -9518,7 +9593,9 @@ PIXI.Graphics.ELIP = 3;
  */
 PIXI.Strip = function(texture, width, height)
 {
-    PIXI.DisplayObjectContainer.call( this );
+    PIXI.Sprite.call( this, texture );
+    this.width =width;
+    this.height = height;
     this.texture = texture;
     this.blendMode = PIXI.blendModes.NORMAL;
 
@@ -9561,10 +9638,11 @@ PIXI.Strip = function(texture, width, height)
     this.indices = new Uint16Array()
     */
     
-    this.width = width;
-    this.height = height;
+  //  this.width = width;
+   // this.height = height;
 
     // load the texture!
+
     if(texture.baseTexture.hasLoaded)
     {
         this.width   = this.texture.frame.width;
@@ -9581,7 +9659,7 @@ PIXI.Strip = function(texture, width, height)
 };
 
 // constructor
-PIXI.Strip.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
+PIXI.Strip.prototype = Object.create(PIXI.Sprite.prototype);
 PIXI.Strip.prototype.constructor = PIXI.Strip;
 
 /*
@@ -9591,6 +9669,8 @@ PIXI.Strip.prototype.constructor = PIXI.Strip;
  * @param texture {Texture} the texture that will be used
  * @private
  */
+
+/*
 PIXI.Strip.prototype.setTexture = function(texture)
 {
     //TODO SET THE TEXTURES
@@ -9602,6 +9682,7 @@ PIXI.Strip.prototype.setTexture = function(texture)
     this.height  = texture.frame.height;
     this.updateFrame = true;
 };
+*/
 
 /**
  * When the texture is updated, this event will fire to update the scale and frame
@@ -9610,6 +9691,7 @@ PIXI.Strip.prototype.setTexture = function(texture)
  * @param event
  * @private
  */
+
 PIXI.Strip.prototype.onTextureUpdate = function()
 {
     this.updateFrame = true;
@@ -11824,7 +11906,7 @@ PIXI.BaseTexture = function(source, scaleMode)
     
     if(!source)return;
 
-    if(this.source.complete || this.source.getContext)
+    if((this.source.complete || this.source.getContext) && this.source.width && this.source.height)
     {
         this.hasLoaded = true;
         this.width = this.source.width;
@@ -11902,7 +11984,7 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
 {
     var baseTexture = PIXI.BaseTextureCache[imageUrl];
     
-    if(crossorigin === undefined)crossorigin = true;
+    if(crossorigin === undefined && imageUrl.indexOf('data:') === -1) crossorigin = true;
 
     if(!baseTexture)
     {
@@ -12243,8 +12325,9 @@ PIXI.TextureUvs = function()
  * @constructor
  * @param width {Number} The width of the render texture
  * @param height {Number} The height of the render texture
+ * @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
  */
-PIXI.RenderTexture = function(width, height, renderer)
+PIXI.RenderTexture = function(width, height, renderer, scaleMode)
 {
     PIXI.EventTarget.call( this );
 
@@ -12282,6 +12365,8 @@ PIXI.RenderTexture = function(width, height, renderer)
     this.baseTexture.height = this.height;
     this.baseTexture._glTextures = [];
 
+    this.baseTexture.scaleMode = scaleMode || PIXI.scaleModes.DEFAULT;
+
     this.baseTexture.hasLoaded = true;
 
     // each render texture can only belong to one renderer at the moment if its webGL
@@ -12291,7 +12376,7 @@ PIXI.RenderTexture = function(width, height, renderer)
     {
         var gl = this.renderer.gl;
 
-        this.textureBuffer = new PIXI.FilterTexture(gl, this.width, this.height);
+        this.textureBuffer = new PIXI.FilterTexture(gl, this.width, this.height, this.baseTexture.scaleMode);
         this.baseTexture._glTextures[gl.id] =  this.textureBuffer.texture;
 
         this.render = this.renderWebGL;
@@ -12654,10 +12739,27 @@ PIXI.JsonLoader.prototype.constructor = PIXI.JsonLoader;
  */
 PIXI.JsonLoader.prototype.load = function () {
 
+    var scope = this;
 
     if(window.XDomainRequest)
     {
         this.ajaxRequest = new window.XDomainRequest();
+
+        // XDomainRequest has a few querks. Occasionally it will abort requests
+        // A way to avoid this is to make sure ALL callbacks are set even if not used
+        // More info here: http://stackoverflow.com/questions/15786966/xdomainrequest-aborts-post-on-ie-9
+        this.ajaxRequest.timeout = 3000;
+
+        this.ajaxRequest.onerror = function () {
+            scope.onError();
+        };
+           
+        this.ajaxRequest.ontimeout = function () {
+            scope.onError();
+        };
+
+        this.ajaxRequest.onprogress = function() {};
+
     }
     else if (window.XMLHttpRequest)
     {
@@ -12670,22 +12772,13 @@ PIXI.JsonLoader.prototype.load = function () {
 
     
 
+    this.ajaxRequest.onload = function(){
 
-   // this.ajaxRequest = new PIXI.AjaxRequest(this.crossorigin);
-    var scope = this;
-    
-
-    
-
-    this.ajaxRequest.onload = function () {
         scope.onJSONLoaded();
     };
 
-   // this.ajaxRequest.open('GET', this.url, true);
-  //  if (this.ajaxRequest.overrideMimeType) this.ajaxRequest.overrideMimeType('application/json');
-  //  this.ajaxRequest.send(null);
+    this.ajaxRequest.open('GET',this.url,true);
 
-    this.ajaxRequest.open('GET',this.url,false);
     this.ajaxRequest.send();
 };
 
@@ -12696,8 +12789,13 @@ PIXI.JsonLoader.prototype.load = function () {
  * @private
  */
 PIXI.JsonLoader.prototype.onJSONLoaded = function () {
-   // if (this.ajaxRequest.readyState === 4) {
-     //   if (this.ajaxRequest.status === 200 || window.location.protocol.indexOf('http') === -1) {
+    
+    if(!this.ajaxRequest.responseText )
+    {
+        this.onError();
+        return;
+    }
+   
     this.json = JSON.parse(this.ajaxRequest.responseText);
 
     if(this.json.frames)
@@ -12751,12 +12849,6 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
     {
         this.onLoaded();
     }
-     //   }
-      //  else
-        //{
-          //  this.onError();
-       // / }
-   // }
 };
 
 /**
@@ -12780,6 +12872,7 @@ PIXI.JsonLoader.prototype.onLoaded = function () {
  * @private
  */
 PIXI.JsonLoader.prototype.onError = function () {
+
     this.dispatchEvent({
         type: 'error',
         content: this
