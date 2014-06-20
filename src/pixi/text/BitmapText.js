@@ -174,6 +174,16 @@ PIXI.BitmapText.prototype.updateText = function()
      * @type Number
      */
     this.textHeight = (pos.y + data.lineHeight) * scale;
+
+    if (this._anchor)
+    {
+        for(i = 0; i < lenChars; i++)
+        {
+            var c = this._pool[i];
+            c.position.x -= this.textWidth * this._anchor.x;
+            c.position.y -= this.textHeight * this._anchor.y;
+        }
+    }
 };
 
 /**
@@ -192,5 +202,16 @@ PIXI.BitmapText.prototype.updateTransform = function()
 
     PIXI.DisplayObjectContainer.prototype.updateTransform.call(this);
 };
+
+Object.defineProperty(PIXI.BitmapText.prototype, 'anchor', {
+    get: function() {
+        return this._anchor;
+    },
+    set: function(anchor) {
+        this._anchor = anchor;
+        this.dirty = true;
+        this.updateTransform();
+    }
+});
 
 PIXI.BitmapText.fonts = {};
