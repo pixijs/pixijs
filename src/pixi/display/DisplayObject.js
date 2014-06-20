@@ -622,3 +622,19 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'y', {
         this.position.y = value;
     }
 });
+
+PIXI.DisplayObject.prototype.toGlobal = function(pos)
+{
+    this.updateTransform();
+    return this.worldTransform.apply(pos);
+};
+
+PIXI.DisplayObject.prototype.toLocal = function(pos, from)
+{
+    if (from)
+    {
+        pos = from.toGlobal(pos);
+    }
+    this.updateTransform();
+    return this.worldTransform.applyInverse(pos);
+};
