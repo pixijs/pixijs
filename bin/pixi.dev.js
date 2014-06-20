@@ -475,7 +475,7 @@ PIXI.Matrix2 = PIXI.determineMatrixArrayType();
 * The Matrix class is now an object, which makes it a lot faster, 
 * here is a representation of it : 
 * | a | b | tx|
-* | c | c | ty|
+* | c | d | ty|
 * | 0 | 0 | 1 |
 *
 */

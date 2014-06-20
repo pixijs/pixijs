@@ -19,7 +19,7 @@ PIXI.Matrix2 = PIXI.determineMatrixArrayType();
 * The Matrix class is now an object, which makes it a lot faster, 
 * here is a representation of it : 
 * | a | b | tx|
-* | c | c | ty|
+* | c | d | ty|
 * | 0 | 0 | 1 |
 *
 */
@@ -87,6 +87,23 @@ PIXI.Matrix.prototype.toArray = function(transpose)
     }
 
     return array;//[this.a, this.b, this.tx, this.c, this.d, this.ty, 0, 0, 1];
+};
+
+PIXI.Matrix.prototype.apply = function(pos)
+{
+    return {
+        x:this.a * pos.x + this.b * pos.y + this.tx,
+        y:this.c * pos.x + this.d * pos.y + this.ty
+    };
+};
+
+PIXI.Matrix.prototype.applyInverse = function(pos)
+{
+    var id = 1 / (this.a * this.d + this.b * -this.c);
+    return {
+        x:this.d * id * pos.x + -this.b * id * pos.y + (this.ty * this.b - this.tx * this.d) * id,
+        y:this.a * id * pos.y + -this.c * id * pos.x + (-this.ty * this.a + this.tx * this.c) * id
+    };
 };
 
 PIXI.identityMatrix = new PIXI.Matrix();
