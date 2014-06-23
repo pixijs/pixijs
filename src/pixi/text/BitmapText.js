@@ -130,15 +130,18 @@ PIXI.BitmapText.prototype.updateText = function()
         lineAlignOffsets.push(alignOffset);
     }
 
-    var lenChildren = this.children.length;
     var lenChars = chars.length;
     var tint = this.tint || 0xFFFFFF;
     for(i = 0; i < lenChars; i++)
     {
-        var c = i < lenChildren ? this.children[i] : this._pool.pop(); // get old child if have. if not - take from pool.
+        var c = this._pool[i]; // get old child if have.
 
         if (c) c.setTexture(chars[i].texture); // check if got one before.
-        else c = new PIXI.Sprite(chars[i].texture); // if no create new one.
+        else
+        {
+            c = new PIXI.Sprite(chars[i].texture); // if no create new one.
+            this._pool.push(c);
+        }
 
         c.position.x = (chars[i].position.x + lineAlignOffsets[chars[i].line]) * scale;
         c.position.y = chars[i].position.y * scale;
@@ -148,12 +151,9 @@ PIXI.BitmapText.prototype.updateText = function()
     }
 
     // remove unnecessary children.
-    // and put their into the pool.
-    while(this.children.length > lenChars)
+    for (i = lenChars; i < this._pool.length; ++i)
     {
-        var child = this.getChildAt(this.children.length - 1);
-        this._pool.push(child);
-        this.removeChild(child);
+        this.removeChild(this._pool[i]);
     }
 
 
