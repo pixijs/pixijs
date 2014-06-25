@@ -29,6 +29,9 @@ PIXI.EventTarget = function () {
      */
     var listeners = {};
 
+    var lock = 0; // denotes number of distict events dispatched at the moment. Used in remove all events.
+    var locks = {}; // per-event lock.
+
     /**
      * Adds a listener for a specific event
      *
@@ -42,6 +45,7 @@ PIXI.EventTarget = function () {
         if ( listeners[ type ] === undefined ) {
 
             listeners[ type ] = [];
+            locks[ type ] = 0;
 
         }
 
@@ -59,19 +63,35 @@ PIXI.EventTarget = function () {
      * @param event {Event} the event object
      */
     this.dispatchEvent = this.emit = function ( event ) {
-
-        if ( !listeners[ event.type ] || !listeners[ event.type ].length ) {
-
+        if ( !listeners[ event.type ] || !listeners[ event.type ].length )
             return;
 
+        event.target = this;
+
+        if(locks[event.type]++ === 0) ++lock;
+
+        var link = listeners[ event.type ];
+        var currentIndex = 0;
+
+        for(var i = 0, l = link.length; i < l; i++) {
+            if(link[i]) {
+                link[i](event);
+                if(currentIndex !== i) {
+                    link[currentIndex] = link[i];
+                    link[i] = null;
+                }
+                ++currentIndex;
+            }
         }
 
-        for(var i = 0, l = listeners[ event.type ].length; i < l; i++) {
-
-            listeners[ event.type ][ i ]( event );
-
+        if(--locks[event.type] === 0) {
+            if(currentIndex !== i) {
+                var numObjects = link.length;
+                while(i < numObjects)
+                    link[currentIndex++] = link[i++];
+                link.length = currentIndex;
+            }
         }
-
     };
 
     /**
@@ -81,27 +101,41 @@ PIXI.EventTarget = function () {
      * @param type {string} A string representing the event type which will have its listener removed
      * @param listener {function} The callback function that was be fired when the event occured
      */
-    this.removeEventListener = this.off = function ( type, listener ) {
-
-        var index = listeners[ type ].indexOf( listener );
-
-        if ( index !== - 1 ) {
-
-            listeners[ type ].splice( index, 1 );
-
-        }
-
+    this.removeEventListener = this.off = function (type, listener) {
+        var index = listeners[type].indexOf(listener);
+        if(index === -1) return;
+        // it is dangerouse to brutaly remove event listeners when this kind of event is emitted
+        if(locks[type] === 0) listeners[type].splice(index, 1);
+        else listeners[type][index] = null;
     };
 
     /**
      * Removes all the listeners that were active for the specified event type
      *
      * @method removeAllEventListeners
-     * @param type {string} A string representing the event type which will have all its listeners removed
+     * @param type {string} A string representing the event type which will have all its listeners removed. If evaluates
+     *     to flase (e.g. empty) all the listeners are removed.
      */
-	this.removeAllEventListeners = function( type ) {
-		var a = listeners[type];
-		if (a)
-			a.length = 0;
-	};
+    this.removeAllEventListeners = function(type) {
+        var a, i, l;
+        if(type) {
+            a = listeners[type];
+            if(a) {
+                if(locks[type] === 0) a.length = 0;
+                else for(i = 0, l = a.length; i < l; i++) a[i] = null; // we cannot just truncate if there are emits
+            }
+        } else {
+            if(lock === 0) {
+                listeners = {};
+                locks = {};
+            } else { // if there are any events dispatching in the moment - this action becomes more expensive...
+                for(var typeName in listeners) {
+                    if(!listeners.hasOwnProperty(typeName)) continue;
+                    a = listeners[typeName];
+                    if(locks[typeName] === 0) a.length = 0;
+                    else for(i = 0, l = a.length; i < l; i++) a[i] = null;
+                }
+            }
+        }
+    };
 };
