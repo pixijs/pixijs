@@ -4,7 +4,7 @@
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-05-27
+ * Compiled: 2014-06-26
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -2436,6 +2436,8 @@ PIXI.MovieClip.prototype.updateTransform = function()
 
     var round = (this.currentFrame + 0.5) | 0;
 
+    this.currentFrame = this.currentFrame % this.textures.length;
+
     if(this.loop || round < this.textures.length)
     {
         this.setTexture(this.textures[round % this.textures.length]);
@@ -2457,7 +2459,7 @@ PIXI.MovieClip.prototype.updateTransform = function()
  * @method fromFrames
  * @param frames {Array} the array of frames ids the movieclip will use as its texture frames
  */
-PIXI.MovieClip.prototype.fromFrames = function(frames)
+PIXI.MovieClip.fromFrames = function(frames)
 {
     var textures = [];
 
@@ -2476,7 +2478,7 @@ PIXI.MovieClip.prototype.fromFrames = function(frames)
  * @method fromFrames
  * @param frames {Array} the array of image ids the movieclip will use as its texture frames
  */
-PIXI.MovieClip.prototype.fromImages = function(images)
+PIXI.MovieClip.fromImages = function(images)
 {
     var textures = [];
 
@@ -4223,7 +4225,7 @@ PIXI.EventTarget = function () {
 
         if ( listeners[ type ].indexOf( listener ) === - 1 ) {
 
-            listeners[ type ].push( listener );
+            listeners[ type ].unshift( listener );
         }
 
     };
@@ -4242,7 +4244,10 @@ PIXI.EventTarget = function () {
 
         }
 
-        for(var i = 0, l = listeners[ event.type ].length; i < l; i++) {
+
+        for(var i = listeners[ event.type ].length-1; i >= 0; i--) {
+//        for(var i = 0, l=listeners[ event.type ].length; i < l; i++) {
+
 
             listeners[ event.type ][ i ]( event );
 
@@ -5368,7 +5373,7 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
 PIXI.WebGLGraphics.updateGraphics = function(graphics, gl)
 {
     var webGL = graphics._webGL[gl.id];
-    
+
     for (var i = webGL.lastIndex; i < graphics.graphicsData.length; i++)
     {
         var data = graphics.graphicsData[i];
@@ -5394,11 +5399,15 @@ PIXI.WebGLGraphics.updateGraphics = function(graphics, gl)
         {
             PIXI.WebGLGraphics.buildCircle(data, webGL);
         }
+        else if(data.type === PIXI.Graphics.RREC)
+        {
+            PIXI.WebGLGraphics.buildRoundedRectangle(data, webGL);
+        }
     }
 
     webGL.lastIndex = graphics.graphicsData.length;
 
-   
+
 
     webGL.glPoints = new Float32Array(webGL.points);
 
@@ -5481,6 +5490,123 @@ PIXI.WebGLGraphics.buildRectangle = function(graphicsData, webGLData)
 };
 
 /**
+ * Builds a rounded rectangle to draw
+ *
+ * @static
+ * @private
+ * @method buildRoundedRectangle
+ * @param graphicsData {Graphics} The graphics object containing all the necessary properties
+ * @param webGLData {Object}
+ */
+PIXI.WebGLGraphics.buildRoundedRectangle = function(graphicsData, webGLData)
+{
+    /**
+     * Calcul the points for a quadratic bezier curve.
+     * Based on : https://stackoverflow.com/questions/785097/how-do-i-implement-a-bezier-curve-in-c
+     *
+     * @param  {number}   fromX Origin point x
+     * @param  {number}   fromY Origin point x
+     * @param  {number}   cpX   Control point x
+     * @param  {number}   cpY   Control point y
+     * @param  {number}   toX   Destination point x
+     * @param  {number}   toY   Destination point y
+     * @return {number[]}
+     */
+    function quadraticBezierCurve(fromX, fromY, cpX, cpY, toX, toY) {
+        var xa,
+            ya,
+            xb,
+            yb,
+            x,
+            y,
+            n = 20,
+            points = [];
+
+        function getPt(n1 , n2, perc) {
+            var diff = n2 - n1;
+
+            return n1 + ( diff * perc );
+        }
+
+        var j = 0;
+        for (var i = 0; i <= n; i++ )
+        {
+            j = i / n;
+
+            // The Green Line
+            xa = getPt( fromX , cpX , j );
+            ya = getPt( fromY , cpY , j );
+            xb = getPt( cpX , toX , j );
+            yb = getPt( cpY , toY , j );
+
+            // The Black Dot
+            x = getPt( xa , xb , j );
+            y = getPt( ya , yb , j );
+
+            points.push(x, y);
+        }
+        return points;
+    }
+
+    var points = graphicsData.points;
+    var x = points[0];
+    var y = points[1];
+    var width = points[2];
+    var height = points[3];
+    var radius = points[4];
+
+
+    var recPoints = [];
+    recPoints.push(x, y + radius);
+    recPoints = recPoints.concat(quadraticBezierCurve(x, y + height - radius, x, y + height, x + radius, y + height));
+    recPoints = recPoints.concat(quadraticBezierCurve(x + width - radius, y + height, x + width, y + height, x + width, y + height - radius));
+    recPoints = recPoints.concat(quadraticBezierCurve(x + width, y + radius, x + width, y, x + width - radius, y));
+    recPoints = recPoints.concat(quadraticBezierCurve(x + radius, y, x, y, x, y + radius));
+
+
+    if (graphicsData.fill) {
+        var color = PIXI.hex2rgb(graphicsData.fillColor);
+        var alpha = graphicsData.fillAlpha;
+
+        var r = color[0] * alpha;
+        var g = color[1] * alpha;
+        var b = color[2] * alpha;
+
+        var verts = webGLData.points;
+        var indices = webGLData.indices;
+
+        var vecPos = verts.length/6;
+
+        var triangles = PIXI.PolyK.Triangulate(recPoints);
+
+        var i = 0;
+        for (i = 0; i < triangles.length; i+=3)
+        {
+            indices.push(triangles[i] + vecPos);
+            indices.push(triangles[i] + vecPos);
+            indices.push(triangles[i+1] + vecPos);
+            indices.push(triangles[i+2] + vecPos);
+            indices.push(triangles[i+2] + vecPos);
+        }
+
+        for (i = 0; i < recPoints.length; i++)
+        {
+            verts.push(recPoints[i], recPoints[++i], r, g, b, alpha);
+        }
+    }
+
+    if (graphicsData.lineWidth) {
+        var tempPoints = graphicsData.points;
+
+        graphicsData.points = recPoints;
+
+        PIXI.WebGLGraphics.buildLine(graphicsData, webGLData);
+
+        graphicsData.points = tempPoints;
+    }
+};
+
+/**
  * Builds a circle to draw
  *
  * @static
@@ -5491,7 +5617,7 @@ PIXI.WebGLGraphics.buildRectangle = function(graphicsData, webGLData)
  */
 PIXI.WebGLGraphics.buildCircle = function(graphicsData, webGLData)
 {
-    
+
     // need to convert points to a nice regular data
     var rectData = graphicsData.points;
     var x = rectData[0];
@@ -6114,8 +6240,8 @@ PIXI.WebGLRenderer.updateTextures = function()
     var i = 0;
 
     //TODO break this out into a texture manager...
-    //for (i = 0; i < PIXI.texturesToUpdate.length; i++)
-    //    PIXI.WebGLRenderer.updateTexture(PIXI.texturesToUpdate[i]);
+  //  for (i = 0; i < PIXI.texturesToUpdate.length; i++)
+  //      PIXI..updateWebGLTexture(PIXI.texturesToUpdate[i], this.gl);
 
 
     for (i=0; i < PIXI.Texture.frameUpdates.length; i++)
@@ -6227,6 +6353,8 @@ PIXI.createWebGLTexture = function(texture, gl)
         }
 
         gl.bindTexture(gl.TEXTURE_2D, null);
+
+        texture._dirty[gl.id] = false;
     }
 
     return  texture._glTextures[gl.id];
@@ -6264,7 +6392,7 @@ PIXI.updateWebGLTexture = function(texture, gl)
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
         }
 
-        gl.bindTexture(gl.TEXTURE_2D, null);
+        texture._dirty[gl.id] = false;
     }
     
 };
@@ -7059,8 +7187,13 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
     // bind the current texture
     gl.bindTexture(gl.TEXTURE_2D, this.currentBaseTexture._glTextures[gl.id] || PIXI.createWebGLTexture(this.currentBaseTexture, gl));
 
-    // upload the verts to the buffer
-    
+    // check if a texture is dirty..
+    if(this.currentBaseTexture._dirty[gl.id])
+    {
+        PIXI.updateWebGLTexture(this.currentBaseTexture, gl);
+    }
+
+    // upload the verts to the buffer  
     if(this.currentBatchSize > ( this.size * 0.5 ) )
     {
         gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vertices);
@@ -8896,6 +9029,42 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
                 context.stroke();
             }
         }
+        else if (data.type === PIXI.Graphics.RREC)
+        {
+            var rx = points[0];
+            var ry = points[1];
+            var width = points[2];
+            var height = points[3];
+            var radius = points[4];
+
+            var maxRadius = Math.min(width, height) / 2 | 0;
+            radius = radius > maxRadius ? maxRadius : radius;
+
+            context.beginPath();
+            context.moveTo(rx, ry + radius);
+            context.lineTo(rx, ry + height - radius);
+            context.quadraticCurveTo(rx, ry + height, rx + radius, ry + height);
+            context.lineTo(rx + width - radius, ry + height);
+            context.quadraticCurveTo(rx + width, ry + height, rx + width, ry + height - radius);
+            context.lineTo(rx + width, ry + radius);
+            context.quadraticCurveTo(rx + width, ry, rx + width - radius, ry);
+            context.lineTo(rx + radius, ry);
+            context.quadraticCurveTo(rx, ry, rx, ry + radius);
+            context.closePath();
+
+            if(data.fillColor || data.fillColor === 0)
+            {
+                context.globalAlpha = data.fillAlpha * worldAlpha;
+                context.fillStyle = color = '#' + ('00000' + ( data.fillColor | 0).toString(16)).substr(-6);
+                context.fill();
+
+            }
+            if(data.lineWidth)
+            {
+                context.globalAlpha = data.lineAlpha * worldAlpha;
+                context.stroke();
+            }
+        }
     }
 };
 
@@ -8984,6 +9153,29 @@ PIXI.CanvasGraphics.renderGraphicsMask = function(graphics, context)
             context.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);
             context.closePath();
         }
+        else if (data.type === PIXI.Graphics.RREC)
+        {
+            var rx = points[0];
+            var ry = points[1];
+            var width = points[2];
+            var height = points[3];
+            var radius = points[4];
+
+            var maxRadius = Math.min(width, height) / 2 | 0;
+            radius = radius > maxRadius ? maxRadius : radius;
+
+            context.beginPath();
+            context.moveTo(rx, ry + radius);
+            context.lineTo(rx, ry + height - radius);
+            context.quadraticCurveTo(rx, ry + height, rx + radius, ry + height);
+            context.lineTo(rx + width - radius, ry + height);
+            context.quadraticCurveTo(rx + width, ry + height, rx + width, ry + height - radius);
+            context.lineTo(rx + width, ry + radius);
+            context.quadraticCurveTo(rx + width, ry, rx + width - radius, ry);
+            context.lineTo(rx + radius, ry);
+            context.quadraticCurveTo(rx, ry, rx, ry + radius);
+            context.closePath();
+        }
     }
 };
 
@@ -9049,7 +9241,7 @@ PIXI.Graphics = function()
      * @default 0xFFFFFF
      */
     this.tint = 0xFFFFFF;// * Math.random();
-    
+
     /**
      * The blend mode to be applied to the graphic shape
      *
@@ -9058,7 +9250,7 @@ PIXI.Graphics = function()
      * @default PIXI.blendModes.NORMAL;
      */
     this.blendMode = PIXI.blendModes.NORMAL;
-    
+
     /**
      * Current path
      *
@@ -9254,6 +9446,29 @@ PIXI.Graphics.prototype.drawRect = function( x, y, width, height )
 };
 
 /**
+ * @method drawRoundedRect
+ *
+ * @param x {Number} The X coord of the top-left of the rectangle
+ * @param y {Number} The Y coord of the top-left of the rectangle
+ * @param width {Number} The width of the rectangle
+ * @param height {Number} The height of the rectangle
+ * @param radius {Number} Radius of the rectangle corners
+ */
+PIXI.Graphics.prototype.drawRoundedRect = function( x, y, width, height, radius )
+{
+    if (!this.currentPath.points.length) this.graphicsData.pop();
+
+    this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha,
+                        fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling,
+                        points:[x, y, width, height, radius], type:PIXI.Graphics.RREC};
+
+    this.graphicsData.push(this.currentPath);
+    this.dirty = true;
+
+    return this;
+};
+
+/**
  * Draws a circle.
  *
  * @method drawCircle
@@ -9334,7 +9549,7 @@ PIXI.Graphics.prototype.generateTexture = function()
     var texture = PIXI.Texture.fromCanvas(canvasBuffer.canvas);
 
     canvasBuffer.context.translate(-bounds.x,-bounds.y);
-    
+
     PIXI.CanvasGraphics.renderGraphics(this, canvasBuffer.context);
 
     return texture;
@@ -9344,23 +9559,23 @@ PIXI.Graphics.prototype.generateTexture = function()
 * Renders the object using the WebGL renderer
 *
 * @method _renderWebGL
-* @param renderSession {RenderSession} 
+* @param renderSession {RenderSession}
 * @private
 */
 PIXI.Graphics.prototype._renderWebGL = function(renderSession)
 {
     // if the sprite is not visible or the alpha is 0 then no need to render this element
     if(this.visible === false || this.alpha === 0 || this.isMask === true)return;
-    
+
     if(this._cacheAsBitmap)
     {
-       
+
         if(this.dirty)
         {
             this._generateCachedSprite();
             // we will also need to update the texture on the gpu too!
             PIXI.updateWebGLTexture(this._cachedSprite.texture.baseTexture, renderSession.gl);
-            
+
             this.dirty =  false;
         }
 
@@ -9375,7 +9590,7 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
 
         if(this._mask)renderSession.maskManager.pushMask(this.mask, renderSession);
         if(this._filters)renderSession.filterManager.pushFilter(this._filterBlock);
-      
+
         // check blend mode
         if(this.blendMode !== renderSession.spriteBatch.currentBlendMode)
         {
@@ -9383,9 +9598,9 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
             var blendModeWebGL = PIXI.blendModesWebGL[renderSession.spriteBatch.currentBlendMode];
             renderSession.spriteBatch.gl.blendFunc(blendModeWebGL[0], blendModeWebGL[1]);
         }
-     
+
         PIXI.WebGLGraphics.renderGraphics(this, renderSession);
-        
+
         // only render if it has children!
         if(this.children.length)
         {
@@ -9402,7 +9617,7 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
 
         if(this._filters)renderSession.filterManager.popFilter();
         if(this._mask)renderSession.maskManager.popMask(renderSession);
-          
+
         renderSession.drawCount++;
 
         renderSession.spriteBatch.start();
@@ -9413,17 +9628,17 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
 * Renders the object using the Canvas renderer
 *
 * @method _renderCanvas
-* @param renderSession {RenderSession} 
+* @param renderSession {RenderSession}
 * @private
 */
 PIXI.Graphics.prototype._renderCanvas = function(renderSession)
 {
     // if the sprite is not visible or the alpha is 0 then no need to render this element
     if(this.visible === false || this.alpha === 0 || this.isMask === true)return;
-    
+
     var context = renderSession.context;
     var transform = this.worldTransform;
-    
+
     if(this.blendMode !== renderSession.currentBlendMode)
     {
         renderSession.currentBlendMode = this.blendMode;
@@ -9517,7 +9732,7 @@ PIXI.Graphics.prototype.getBounds = function( matrix )
  */
 PIXI.Graphics.prototype.updateBounds = function()
 {
-    
+
     var minX = Infinity;
     var maxX = -Infinity;
 
@@ -9595,7 +9810,7 @@ PIXI.Graphics.prototype._generateCachedSprite = function()
     {
         var canvasBuffer = new PIXI.CanvasBuffer(bounds.width, bounds.height);
         var texture = PIXI.Texture.fromCanvas(canvasBuffer.canvas);
-        
+
         this._cachedSprite = new PIXI.Sprite(texture);
         this._cachedSprite.buffer = canvasBuffer;
 
@@ -9612,7 +9827,7 @@ PIXI.Graphics.prototype._generateCachedSprite = function()
 
    // this._cachedSprite.buffer.context.save();
     this._cachedSprite.buffer.context.translate(-bounds.x,-bounds.y);
-    
+
     PIXI.CanvasGraphics.renderGraphics(this, this._cachedSprite.buffer.context);
     this._cachedSprite.alpha = this.alpha;
 
@@ -9634,6 +9849,7 @@ PIXI.Graphics.POLY = 0;
 PIXI.Graphics.RECT = 1;
 PIXI.Graphics.CIRC = 2;
 PIXI.Graphics.ELIP = 3;
+PIXI.Graphics.RREC = 4;
 
 /**
  * @author Mat Groves http://matgroves.com/
@@ -9821,14 +10037,49 @@ PIXI.Strip.prototype._renderCanvas = function(renderSession)
         var x0 = verticies[index],   x1 = verticies[index+2], x2 = verticies[index+4];
         var y0 = verticies[index+1], y1 = verticies[index+3], y2 = verticies[index+5];
 
+        if(true)
+        {
+
+            //expand();
+            var centerX = (x0 + x1 + x2)/3;
+            var centerY = (y0 + y1 + y2)/3;
+
+            var normX = x0 - centerX;
+            var normY = y0 - centerY;
+
+            var dist = Math.sqrt( normX * normX + normY * normY );
+            x0 = centerX + (normX / dist) * (dist + 3);
+            y0 = centerY + (normY / dist) * (dist + 3);
+
+            // 
+            
+            normX = x1 - centerX;
+            normY = y1 - centerY;
+
+            dist = Math.sqrt( normX * normX + normY * normY );
+            x1 = centerX + (normX / dist) * (dist + 3);
+            y1 = centerY + (normY / dist) * (dist + 3);
+
+            normX = x2 - centerX;
+            normY = y2 - centerY;
+
+            dist = Math.sqrt( normX * normX + normY * normY );
+            x2 = centerX + (normX / dist) * (dist + 3);
+            y2 = centerY + (normY / dist) * (dist + 3);
+
+        }
+
         var u0 = uvs[index] * strip.texture.width,   u1 = uvs[index+2] * strip.texture.width, u2 = uvs[index+4]* strip.texture.width;
         var v0 = uvs[index+1]* strip.texture.height, v1 = uvs[index+3] * strip.texture.height, v2 = uvs[index+5]* strip.texture.height;
 
         context.save();
         context.beginPath();
+
+
         context.moveTo(x0, y0);
         context.lineTo(x1, y1);
         context.lineTo(x2, y2);
+
         context.closePath();
 
         context.clip();
@@ -9850,7 +10101,6 @@ PIXI.Strip.prototype._renderCanvas = function(renderSession)
         context.restore();
     }
 };
-
 
 /*
  * Sets the texture that the Strip will use 
@@ -12085,6 +12335,9 @@ PIXI.BaseTexture = function(source, scaleMode)
     // used for webGL
     this._glTextures = [];
     
+    // used for webGL teture updateing...
+    this._dirty = [];
+    
     if(!source)return;
 
     if((this.source.complete || this.source.getContext) && this.source.width && this.source.height)
@@ -12105,8 +12358,11 @@ PIXI.BaseTexture = function(source, scaleMode)
             scope.width = scope.source.width;
             scope.height = scope.source.height;
 
+            for (var i = 0; i < scope._glTextures.length; i++) {
+                scope._dirty[i] = true;
+            }
+
             // add it to somewhere...
-            PIXI.texturesToUpdate.push(scope);
             scope.dispatchEvent( { type: 'loaded', content: scope } );
         };
         this.source.onerror = function() {
@@ -12692,11 +12948,16 @@ PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, position, cl
     var originalWorldTransform = displayObject.worldTransform;
 
     displayObject.worldTransform = PIXI.RenderTexture.tempMatrix;
-
+    
     if(position)
     {
         displayObject.worldTransform.tx = position.x;
         displayObject.worldTransform.ty = position.y;
+    }
+    else
+    {
+        displayObject.worldTransform.tx = 0;
+        displayObject.worldTransform.ty = 0;
     }
 
     for(var i = 0, j = children.length; i < j; i++)
@@ -12769,6 +13030,7 @@ PIXI.AssetLoader = function(assetURLs, crossorigin)
         'jpeg': PIXI.ImageLoader,
         'png':  PIXI.ImageLoader,
         'gif':  PIXI.ImageLoader,
+        'webp': PIXI.ImageLoader,
         'json': PIXI.JsonLoader,
         'atlas': PIXI.AtlasLoader,
         'anim': PIXI.SpineLoader,
@@ -12944,7 +13206,7 @@ PIXI.JsonLoader.prototype.load = function () {
 
     var scope = this;
 
-    if(window.XDomainRequest)
+    if(window.XDomainRequest && scope.crossorigin)
     {
         this.ajaxRequest = new window.XDomainRequest();
 
@@ -13081,6 +13343,7 @@ PIXI.JsonLoader.prototype.onError = function () {
         content: this
     });
 };
+
 /**
  * @author Martin Kelm http://mkelm.github.com
  */

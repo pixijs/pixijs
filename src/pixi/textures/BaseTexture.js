@@ -70,6 +70,9 @@ PIXI.BaseTexture = function(source, scaleMode)
     // used for webGL
     this._glTextures = [];
     
+    // used for webGL teture updateing...
+    this._dirty = [];
+    
     if(!source)return;
 
     if((this.source.complete || this.source.getContext) && this.source.width && this.source.height)
@@ -90,8 +93,11 @@ PIXI.BaseTexture = function(source, scaleMode)
             scope.width = scope.source.width;
             scope.height = scope.source.height;
 
+            for (var i = 0; i < scope._glTextures.length; i++) {
+                scope._dirty[i] = true;
+            }
+
             // add it to somewhere...
-            PIXI.texturesToUpdate.push(scope);
             scope.dispatchEvent( { type: 'loaded', content: scope } );
         };
         this.source.onerror = function() {
