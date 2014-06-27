@@ -4,7 +4,7 @@
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-06-26
+ * Compiled: 2014-06-27
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -5696,12 +5696,13 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
     if(points.length === 0)return;
 
     // if the line width is an odd number add 0.5 to align to a whole pixel
-    if(graphicsData.lineWidth%2)
+    // TODO Line is rendered at a wrong place when lineWidth is not an integer with this tweak
+    /*if(graphicsData.lineWidth%2)
     {
         for (i = 0; i < points.length; i++) {
             points[i] += 0.5;
         }
-    }
+    }*/
 
     // get first and last point.. figure out the middle!
     var firstPoint = new PIXI.Point( points[0], points[1] );
@@ -10554,13 +10555,6 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
 
     var i,j;
 
-    // allow for trimming
-//(this.anchor.x) * -frame.width,
-//                               (this.anchor.y) * -frame.height,
-
-         
-    context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx , transform.ty);
-
 
     if(!this.__tilePattern ||  this.refreshTexture)
     {
@@ -10576,35 +10570,48 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
         }
     }
 
+
     // check blend mode
     if(this.blendMode !== renderSession.currentBlendMode)
     {
         renderSession.currentBlendMode = this.blendMode;
         context.globalCompositeOperation = PIXI.blendModesCanvas[renderSession.currentBlendMode];
     }
-
-    context.beginPath();
+    
 
     var tilePosition = this.tilePosition;
     var tileScale = this.tileScale;
 
     tilePosition.x %= this.tilingTexture.baseTexture.width;
     tilePosition.y %= this.tilingTexture.baseTexture.height;
+    
+    
+    var xpos=transform.tx+(this.anchor.x * -this._width)*transform.a;
+    var ypos=transform.ty+(this.anchor.y * -this._height)*transform.d;
+    
+    var xshift=0;
+    var yshift=0;
+    if(xpos<0) xshift=-xpos+(xpos%(this.tilingTexture.baseTexture.width*transform.a*tileScale.x));
+    if(ypos<0) yshift=-ypos+(ypos%(this.tilingTexture.baseTexture.height*transform.d*tileScale.y));
+    context.setTransform(transform.a, transform.c, transform.b, transform.d, xpos+xshift, ypos+yshift);
 
-    // offset
-    context.scale(tileScale.x,tileScale.y);
-    context.translate(tilePosition.x, tilePosition.y);
-
-    context.fillStyle = this.__tilePattern;
-
-    // make sure to account for the anchor point..
-    context.fillRect(-tilePosition.x + (this.anchor.x * -this._width),-tilePosition.y + (this.anchor.y * -this._height),
-                        this._width / tileScale.x, this._height / tileScale.y);
-
-    context.scale(1/tileScale.x, 1/tileScale.y);
-    context.translate(-tilePosition.x, -tilePosition.y);
-
-    context.closePath();
+    var rectWidth=(this._width -(xshift/transform.a))/tileScale.x;
+    var rectHeight=(this._height -(yshift/transform.d))/tileScale.y;
+    if(rectWidth>0 && rectHeight>0) {
+	    context.beginPath();
+	
+	    // offset
+	    context.scale(tileScale.x,tileScale.y);
+	    context.translate(tilePosition.x, tilePosition.y);
+	
+	    context.fillStyle = this.__tilePattern;
+	    context.fillRect(-tilePosition.x,-tilePosition.y, rectWidth, rectHeight);
+	    
+	    context.scale(1/tileScale.x, 1/tileScale.y);
+	    context.translate(-tilePosition.x, -tilePosition.y);
+	
+	    context.closePath();
+    }
 
     if(this._mask)
     {
@@ -10616,6 +10623,7 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
         this.children[i]._renderCanvas(renderSession);
     }
 };
+
 
 
 /**
@@ -10791,6 +10799,7 @@ PIXI.TilingSprite.prototype.generateTilingTexture = function(forcePowerOfTwo)
     this.refreshTexture = false;
     this.tilingTexture.baseTexture._powerOf2 = true;
 };
+
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  * based on pixi impact spine implementation made by Eemeli Kelokorpi (@ekelokorpi) https://github.com/ekelokorpi
