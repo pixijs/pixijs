@@ -132,7 +132,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     // time to create the render managers! each one focuses on managine a state in webGL
     this.shaderManager = new PIXI.WebGLShaderManager(gl);                   // deals with managing the shader programs and their attribs
     this.spriteBatch = new PIXI.WebGLSpriteBatch(gl);                       // manages the rendering of sprites
-    this.primitiveBatch = new PIXI.WebGLPrimitiveBatch(gl);               // primitive batch renderer
+    //this.primitiveBatch = new PIXI.WebGLPrimitiveBatch(gl);               // primitive batch renderer
     this.maskManager = new PIXI.WebGLMaskManager(gl);                       // manages the masks using the stencil buffer
     this.filterManager = new PIXI.WebGLFilterManager(gl, this.transparent); // manages the filters
     this.stencilManager = new PIXI.WebGLStencilManager(gl);
@@ -143,7 +143,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     this.renderSession.shaderManager = this.shaderManager;
     this.renderSession.maskManager = this.maskManager;
     this.renderSession.filterManager = this.filterManager;
-    this.renderSession.primitiveBatch = this.primitiveBatch;
+   // this.renderSession.primitiveBatch = this.primitiveBatch;
     this.renderSession.spriteBatch = this.spriteBatch;
     this.renderSession.stencilManager = this.stencilManager;
     this.renderSession.renderer = this;
@@ -283,7 +283,7 @@ PIXI.WebGLRenderer.prototype.renderDisplayObject = function(displayObject, proje
     // start the sprite batch
     this.spriteBatch.begin(this.renderSession);
 
-    this.primitiveBatch.begin(this.renderSession);
+//    this.primitiveBatch.begin(this.renderSession);
 
     // start the filter manager
     this.filterManager.begin(this.renderSession, buffer);
@@ -294,7 +294,7 @@ PIXI.WebGLRenderer.prototype.renderDisplayObject = function(displayObject, proje
     // finish the sprite batch
     this.spriteBatch.end();
 
-    this.primitiveBatch.end();
+//    this.primitiveBatch.end();
 };
 
 /**

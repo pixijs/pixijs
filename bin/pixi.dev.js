@@ -24,7 +24,7 @@ PIXI.WEBGL_RENDERER = 0;
 PIXI.CANVAS_RENDERER = 1;
 
 // useful for testing against if your lib is using pixi.
-PIXI.VERSION = "v1.5.2";
+PIXI.VERSION = "v1.5.4";
 
 // the various blend modes supported by pixi
 PIXI.blendModes = {
@@ -53,6 +53,9 @@ PIXI.scaleModes = {
     LINEAR:0,
     NEAREST:1
 };
+
+// used to create uids for various pixi objects..
+PIXI._UID = 0;
 
 PIXI.Float32Array = Float32Array || Array;
 PIXI.Uint16Array = Uint16Array || Array;
@@ -2162,12 +2165,10 @@ PIXI.SpriteBatch.prototype._renderWebGL = function(renderSession)
     
     renderSession.spriteBatch.stop();
     
-    renderSession.shaderManager.activateShader(renderSession.shaderManager.fastShader);
+    renderSession.shaderManager.setShader(renderSession.shaderManager.fastShader);
     
     this.fastSpriteBatch.begin(this, renderSession);
     this.fastSpriteBatch.render(this);
-
-    renderSession.shaderManager.activateShader(renderSession.shaderManager.defaultShader);
 
     renderSession.spriteBatch.start();
  
@@ -4572,6 +4573,8 @@ PIXI.compileProgram = function(gl, vertexSrc, fragmentSrc)
 */
 PIXI.PixiShader = function(gl)
 {
+    this._UID = PIXI._UID++;
+    
     /**
      * @property gl
      * @type WebGLContext
@@ -4914,7 +4917,8 @@ PIXI.PixiShader.defaultVertexSrc = [
 */
 PIXI.PixiFastShader = function(gl)
 {
-
+    this._UID = PIXI._UID++;
+    
     /**
      * @property gl
      * @type WebGLContext
@@ -5056,6 +5060,8 @@ PIXI.PixiFastShader.prototype.destroy = function()
 
 PIXI.StripShader = function(gl)
 {
+    this._UID = PIXI._UID++;
+    
     this.gl = gl;
 
     /**
@@ -5147,6 +5153,8 @@ PIXI.StripShader.prototype.init = function()
 */
 PIXI.PrimitiveShader = function(gl)
 {
+    this._UID = PIXI._UID++;
+ 
     /**
      * @property gl
      * @type WebGLContext
@@ -5252,6 +5260,7 @@ PIXI.PrimitiveShader.prototype.destroy = function()
 */
 PIXI.ComplexPrimitiveShader = function(gl)
 {
+    this._UID = PIXI._UID++;
     /**
      * @property gl
      * @type WebGLContext
@@ -5354,371 +5363,6 @@ PIXI.ComplexPrimitiveShader.prototype.destroy = function()
 };
 
 /**
- * @author Mat Groves
- * 
- * Big thanks to the very clever Matt DesLauriers <mattdesl> https://github.com/mattdesl/
- * for creating the original pixi version!
- *
- * Heavily inspired by LibGDX's WebGLPrimitiveBatch:
- * https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/graphics/g2d/WebGLPrimitiveBatch.java
- */
-
- /**
- *
- * @class WebGLPrimitiveBatch
- * @private
- * @constructor
- * @param gl {WebGLContext} the current WebGL drawing context
- *
- */
-PIXI.WebGLPrimitiveBatch = function(gl)
-{
-
-    /**
-     * 
-     *
-     * @property vertSize
-     * @type Number
-     */
-    this.vertSize = 6;
-
-    /**
-     * The number of images in the SpriteBatch before it flushes
-     * @property size
-     * @type Number
-     */
-    this.size = 2000;//Math.pow(2, 16) /  this.vertSize;
-
-    //the total number of floats in our batch
-    var numVerts = this.size * 4 *  this.vertSize;
-    //the total number of indices in our batch
-    var numIndices = this.size * 6;
-
-    //vertex data
-
-    /**
-    * Holds the vertices
-    *
-    * @property vertices
-    * @type Float32Array
-    */
-    this.vertices = new Float32Array(numVerts);
-
-    //index data
-    /**
-     * Holds the indices
-     *
-     * @property indices
-     * @type Uint16Array
-     */
-    this.indices = new Uint16Array(numIndices);
-    
-    this.lastIndexCount = 0;
-
-    for (var i=0, j=0; i < numIndices; i += 6, j += 4)
-    {
-        this.indices[i + 0] = j + 0;
-        this.indices[i + 1] = j + 1;
-        this.indices[i + 2] = j + 2;
-        this.indices[i + 3] = j + 0;
-        this.indices[i + 4] = j + 2;
-        this.indices[i + 5] = j + 3;
-    }
-
-
-    this.drawing = false;
-    this.currentBatchSize = 0;
-    this.currentBaseTexture = null;
-    
-    this.setContext(gl);
-};
-
-/**
-* 
-* @method setContext
-*
-* @param gl {WebGLContext} the current WebGL drawing context
-*/
-PIXI.WebGLPrimitiveBatch.prototype.setContext = function(gl)
-{
-    this.gl = gl;
-
-    // create a couple of buffers
-    this.vertexBuffer = gl.createBuffer();
-    this.indexBuffer = gl.createBuffer();
-
-    // 65535 is max index, so 65535 / 6 = 10922.
-
-
-    //upload the index data
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, this.vertices, gl.DYNAMIC_DRAW);
-
-    this.currentBlendMode = 99999;
-};
-
-/**
-* 
-* @method begin
-*
-* @param renderSession {RenderSession} the RenderSession
-*/
-PIXI.WebGLPrimitiveBatch.prototype.begin = function(renderSession)
-{
-    this.renderSession = renderSession;
-    this.shader = this.renderSession.shaderManager.defaultShader;
-
-    this.start();
-};
-
-/**
-* 
-* @method end
-*
-*/
-PIXI.WebGLPrimitiveBatch.prototype.end = function()
-{
-    this.flush();
-};
-
-PIXI.WebGLPrimitiveBatch.prototype.render = function(sprite)
-{
-    var texture = sprite.texture;
-
-    // check texture..
-    if(texture.baseTexture !== this.currentBaseTexture || this.currentBatchSize >= this.size)
-    {
-        this.flush();
-        this.currentBaseTexture = texture.baseTexture;
-    }
-
-
-    // check blend mode
-    if(sprite.blendMode !== this.currentBlendMode)
-    {
-        this.setBlendMode(sprite.blendMode);
-    }
-
-    // get the uvs for the texture
-    var uvs = sprite._uvs || sprite.texture._uvs;
-    // if the uvs have not updated then no point rendering just yet!
-    if(!uvs)return;
-
-    // get the sprites current alpha
-    var alpha = sprite.worldAlpha;
-    var tint = sprite.tint;
-
-    var verticies = this.vertices;
-
-
-    // TODO trim??
-    var aX = sprite.anchor.x;
-    var aY = sprite.anchor.y;
-
-    var w0, w1, h0, h1;
-        
-    if (sprite.texture.trim)
-    {
-        // if the sprite is trimmed then we need to add the extra space before transforming the sprite coords..
-        var trim = sprite.texture.trim;
-
-        w1 = trim.x - aX * trim.width;
-        w0 = w1 + texture.frame.width;
-
-        h1 = trim.y - aY * trim.height;
-        h0 = h1 + texture.frame.height;
-
-    }
-    else
-    {
-        w0 = (texture.frame.width ) * (1-aX);
-        w1 = (texture.frame.width ) * -aX;
-
-        h0 = texture.frame.height * (1-aY);
-        h1 = texture.frame.height * -aY;
-    }
-
-    var index = this.currentBatchSize * 4 * this.vertSize;
-
-    var worldTransform = sprite.worldTransform;//.toArray();
-
-    var a = worldTransform.a;//[0];
-    var b = worldTransform.c;//[3];
-    var c = worldTransform.b;//[1];
-    var d = worldTransform.d;//[4];
-    var tx = worldTransform.tx;//[2];
-    var ty = worldTransform.ty;///[5];
-
-    // xy
-    verticies[index++] = a * w1 + c * h1 + tx;
-    verticies[index++] = d * h1 + b * w1 + ty;
-    // uv
-    verticies[index++] = uvs.x0;
-    verticies[index++] = uvs.y0;
-    // color
-    verticies[index++] = alpha;
-    verticies[index++] = tint;
-
-    // xy
-    verticies[index++] = a * w0 + c * h1 + tx;
-    verticies[index++] = d * h1 + b * w0 + ty;
-    // uv
-    verticies[index++] = uvs.x1;
-    verticies[index++] = uvs.y1;
-    // color
-    verticies[index++] = alpha;
-    verticies[index++] = tint;
-
-    // xy
-    verticies[index++] = a * w0 + c * h0 + tx;
-    verticies[index++] = d * h0 + b * w0 + ty;
-    // uv
-    verticies[index++] = uvs.x2;
-    verticies[index++] = uvs.y2;
-    // color
-    verticies[index++] = alpha;
-    verticies[index++] = tint;
-
-    // xy
-    verticies[index++] = a * w1 + c * h0 + tx;
-    verticies[index++] = d * h0 + b * w1 + ty;
-    // uv
-    verticies[index++] = uvs.x3;
-    verticies[index++] = uvs.y3;
-    // color
-    verticies[index++] = alpha;
-    verticies[index++] = tint;
-    
-    // increment the batchsize
-    this.currentBatchSize++;
-
-
-};
-
-/**
-* Renders the content and empties the current batch
-*
-* @method flush
-* 
-*/
-PIXI.WebGLPrimitiveBatch.prototype.flush = function()
-{
-    // If the batch is length 0 then return as there is nothing to draw
-    if (this.currentBatchSize===0)return;
-
-    var gl = this.gl;
-    
-    // bind the current texture
-    gl.bindTexture(gl.TEXTURE_2D, this.currentBaseTexture._glTextures[gl.id] || PIXI.createWebGLTexture(this.currentBaseTexture, gl));
-
-    // upload the verts to the buffer
-    
-    if(this.currentBatchSize > ( this.size * 0.5 ) )
-    {
-        gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vertices);
-    }
-    else
-    {
-        var view = this.vertices.subarray(0, this.currentBatchSize * 4 * this.vertSize);
-
-        gl.bufferSubData(gl.ARRAY_BUFFER, 0, view);
-    }
-
-   // var view = this.vertices.subarray(0, this.currentBatchSize * 4 * this.vertSize);
-    //gl.bufferSubData(gl.ARRAY_BUFFER, 0, view);
-    
-    // now draw those suckas!
-    gl.drawElements(gl.TRIANGLES, this.currentBatchSize * 6, gl.UNSIGNED_SHORT, 0);
-   
-    // then reset the batch!
-    this.currentBatchSize = 0;
-
-    // increment the draw count
-    this.renderSession.drawCount++;
-};
-
-/**
-* 
-* @method stop
-*
-*/
-PIXI.WebGLPrimitiveBatch.prototype.stop = function()
-{
-    this.flush();
-};
-
-/**
-* 
-* @method start
-*
-*/
-PIXI.WebGLPrimitiveBatch.prototype.start = function()
-{
-    var gl = this.gl;
-
-    // bind the main texture
-    gl.activeTexture(gl.TEXTURE0);
-
-    // bind the buffers
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-
-    // set the projection
-    var projection = this.renderSession.projection;
-    gl.uniform2f(this.shader.projectionVector, projection.x, projection.y);
-
-    // set the pointers
-    var stride =  this.vertSize * 4;
-    gl.vertexAttribPointer(this.shader.aVertexPosition, 2, gl.FLOAT, false, stride, 0);
-    gl.vertexAttribPointer(this.shader.aTextureCoord, 2, gl.FLOAT, false, stride, 2 * 4);
-    gl.vertexAttribPointer(this.shader.colorAttribute, 2, gl.FLOAT, false, stride, 4 * 4);
-
-    // set the blend mode..
-    if(this.currentBlendMode !== PIXI.blendModes.NORMAL)
-    {
-        this.setBlendMode(PIXI.blendModes.NORMAL);
-    }
-};
-
-/**
-* Sets-up the given blendMode from WebGL's point of view
-* @method setBlendMode 
-*
-* @param blendMode {Number} the blendMode, should be a Pixi const, such as PIXI.BlendModes.ADD
-*/
-PIXI.WebGLPrimitiveBatch.prototype.setBlendMode = function(blendMode)
-{
-    this.flush();
-
-    this.currentBlendMode = blendMode;
-    
-    var blendModeWebGL = PIXI.blendModesWebGL[this.currentBlendMode];
-    this.gl.blendFunc(blendModeWebGL[0], blendModeWebGL[1]);
-};
-
-/**
-* Destroys the SpriteBatch
-* @method destroy
-*/
-PIXI.WebGLPrimitiveBatch.prototype.destroy = function()
-{
-
-    this.vertices = null;
-    this.indices = null;
-    
-    this.gl.deleteBuffer( this.vertexBuffer );
-    this.gl.deleteBuffer( this.indexBuffer );
-    
-    this.currentBaseTexture = null;
-    
-    this.gl = null;
-};
-
-
-/**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
@@ -5781,7 +5425,7 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
         }
         else
         {
-            renderSession.shaderManager.activatePrimitiveShader();
+            renderSession.shaderManager.setShader( shader );//activatePrimitiveShader();
             shader = renderSession.shaderManager.primitiveShader;
             gl.uniformMatrix3fv(shader.translationMatrix, false, graphics.worldTransform.toArray(true));
 
@@ -5803,7 +5447,7 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, webGLData.indexBuffer);
             gl.drawElements(gl.TRIANGLE_STRIP,  webGLData.indices.length, gl.UNSIGNED_SHORT, 0 );
 
-            renderSession.shaderManager.deactivatePrimitiveShader();
+         //   renderSession.shaderManager.deactivatePrimitiveShader();
         }
     }
 
@@ -5910,7 +5554,8 @@ PIXI.WebGLGraphics.updateGraphics = function(graphics, gl)
     for (i = 0; i < webGL.data.length; i++)
     {
         webGLData = webGL.data[i];
-        if(webGLData.dirty)webGLData.upload();
+     //   if(webGLData.dirty)
+            webGLData.upload();
     }
 };
 
@@ -6572,7 +6217,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     // time to create the render managers! each one focuses on managine a state in webGL
     this.shaderManager = new PIXI.WebGLShaderManager(gl);                   // deals with managing the shader programs and their attribs
     this.spriteBatch = new PIXI.WebGLSpriteBatch(gl);                       // manages the rendering of sprites
-    this.primitiveBatch = new PIXI.WebGLPrimitiveBatch(gl);               // primitive batch renderer
+    //this.primitiveBatch = new PIXI.WebGLPrimitiveBatch(gl);               // primitive batch renderer
     this.maskManager = new PIXI.WebGLMaskManager(gl);                       // manages the masks using the stencil buffer
     this.filterManager = new PIXI.WebGLFilterManager(gl, this.transparent); // manages the filters
     this.stencilManager = new PIXI.WebGLStencilManager(gl);
@@ -6583,7 +6228,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     this.renderSession.shaderManager = this.shaderManager;
     this.renderSession.maskManager = this.maskManager;
     this.renderSession.filterManager = this.filterManager;
-    this.renderSession.primitiveBatch = this.primitiveBatch;
+   // this.renderSession.primitiveBatch = this.primitiveBatch;
     this.renderSession.spriteBatch = this.spriteBatch;
     this.renderSession.stencilManager = this.stencilManager;
     this.renderSession.renderer = this;
@@ -6723,7 +6368,7 @@ PIXI.WebGLRenderer.prototype.renderDisplayObject = function(displayObject, proje
     // start the sprite batch
     this.spriteBatch.begin(this.renderSession);
 
-    this.primitiveBatch.begin(this.renderSession);
+//    this.primitiveBatch.begin(this.renderSession);
 
     // start the filter manager
     this.filterManager.begin(this.renderSession, buffer);
@@ -6734,7 +6379,7 @@ PIXI.WebGLRenderer.prototype.renderDisplayObject = function(displayObject, proje
     // finish the sprite batch
     this.spriteBatch.end();
 
-    this.primitiveBatch.end();
+//    this.primitiveBatch.end();
 };
 
 /**
@@ -7066,8 +6711,6 @@ PIXI.WebGLMaskManager.prototype.pushMask = function(maskData, renderSession)
     if(!maskData._webGL[gl.id].data.length)return;
 
     renderSession.stencilManager.pushStencil(maskData, maskData._webGL[gl.id].data[0], renderSession);
-  
-    renderSession.shaderManager.deactivatePrimitiveShader();
 };
 
 /**
@@ -7220,18 +6863,25 @@ PIXI.WebGLStencilManager.prototype.pushStencil = function(graphics, webGLData, r
 //TODO this does not belong here!
 PIXI.WebGLStencilManager.prototype.bindGraphics = function(graphics, webGLData, renderSession)
 {
+    //if(this._currentGraphics === graphics)return;
+    this._currentGraphics = graphics;
+
     var gl = this.gl;
 
      // bind the graphics object..
     var projection = renderSession.projection,
         offset = renderSession.offset,
-        shader = renderSession.shaderManager.primitiveShader;
+        shader;// = renderSession.shaderManager.primitiveShader;
 
     if(webGLData.mode === 1)
     {
-        renderSession.shaderManager.activateShader( renderSession.shaderManager.complexPrimativeShader );
+//        renderSession.shaderManager.activateShader( renderSession.shaderManager.complexPrimativeShader );
         shader = renderSession.shaderManager.complexPrimativeShader;
 
+    //    console.log(renderSession.shaderManager._currentId === shader._UID, renderSession.shaderManager.currentShader === shader)
+        renderSession.shaderManager.setShader( shader );
+
+        if(shader != renderSession.shaderManager.currentShader)console.log(shader === renderSession.shaderManager.currentShader)
         gl.uniformMatrix3fv(shader.translationMatrix, false, graphics.worldTransform.toArray(true));
 
         gl.uniform2f(shader.projectionVector, projection.x, -projection.y);
@@ -7253,8 +6903,10 @@ PIXI.WebGLStencilManager.prototype.bindGraphics = function(graphics, webGLData, 
     }
     else
     {
-        renderSession.shaderManager.activatePrimitiveShader();
+        //renderSession.shaderManager.activatePrimitiveShader();
         shader = renderSession.shaderManager.primitiveShader;
+        renderSession.shaderManager.setShader( shader );
+
         gl.uniformMatrix3fv(shader.translationMatrix, false, graphics.worldTransform.toArray(true));
 
         gl.uniform2f(shader.projectionVector, projection.x, -projection.y);
@@ -7361,7 +7013,7 @@ PIXI.WebGLStencilManager.prototype.popStencil = function(graphics, webGLData, re
 
     }
 
-    renderSession.shaderManager.deactivatePrimitiveShader();
+    //renderSession.shaderManager.deactivatePrimitiveShader();
 };
 
 /**
@@ -7389,6 +7041,7 @@ PIXI.WebGLShaderManager = function(gl)
     this.maxAttibs = 10;
     this.attribState = [];
     this.tempAttribState = [];
+    this.shaderMap = [];
 
     for (var i = 0; i < this.maxAttibs; i++) {
         this.attribState[i] = false;
@@ -7396,7 +7049,6 @@ PIXI.WebGLShaderManager = function(gl)
 
     this.setContext(gl);
     // the final one is used for the rendering strips
-    //this.stripShader = new PIXI.StripShader(gl);
 };
 
 
@@ -7424,8 +7076,7 @@ PIXI.WebGLShaderManager.prototype.setContext = function(gl)
 
     // the next one is used for rendering triangle strips
     this.stripShader = new PIXI.StripShader(gl);
-
-    this.activateShader(this.defaultShader);
+    this.setShader(this.defaultShader);
 };
 
 
@@ -7472,78 +7123,17 @@ PIXI.WebGLShaderManager.prototype.setAttribs = function(attribs)
     }
 };
 
-/**
-* Sets-up the given shader 
-*
-* @method activateShader
-* @param shader {Object} the shader that is going to be activated
-*/
-PIXI.WebGLShaderManager.prototype.activateShader = function(shader)
+PIXI.WebGLShaderManager.prototype.setShader = function(shader)
 {
-    //if(this.currentShader == shader)return;
+    if(this._currentId === shader._UID)return
+    
+    this._currentId = shader._UID;
 
     this.currentShader = shader;
 
     this.gl.useProgram(shader.program);
     this.setAttribs(shader.attributes);
-  
-};
-
-/**
-* Triggers the primitive shader
-* @method activatePrimitiveShader
-*/
-PIXI.WebGLShaderManager.prototype.activateDefaultShader = function()
-{
-    var gl = this.gl;
-
-    gl.useProgram(this.defaultShader.program);
-
-    this.setAttribs(this.defaultShader.attributes);
-    
-};
-
-/**
-* Triggers the primitive shader
-* @method activatePrimitiveShader
-*/
-PIXI.WebGLShaderManager.prototype.activatePrimitiveShader = function()
-{
-    var gl = this.gl;
-
-    gl.useProgram(this.primitiveShader.program);
-
-    this.setAttribs(this.primitiveShader.attributes);
-    
-};
-
-
-/**
-* Triggers the primitive shader
-* @method activatePrimitiveShader
-*/
-PIXI.WebGLShaderManager.prototype.activateStripShader = function()
-{
-    var gl = this.gl;
-
-    gl.useProgram(this.stripShader.program);
-
-    this.setAttribs(this.stripShader.attributes);
-    
-};
-
-/**
-* Disable the primitive shader
-* @method deactivatePrimitiveShader
-*/
-PIXI.WebGLShaderManager.prototype.deactivatePrimitiveShader = function()
-{
-    var gl = this.gl;
-
-    gl.useProgram(this.defaultShader.program);
-
-    this.setAttribs(this.defaultShader.attributes);
-};
+}
 
 /**
 * Destroys
@@ -7955,6 +7545,9 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
 
     var gl = this.gl;
     
+    // 
+    this.renderSession.shaderManager.setShader(this.renderSession.shaderManager.defaultShader);
+
     // bind the current texture
     gl.bindTexture(gl.TEXTURE_2D, this.currentBaseTexture._glTextures[gl.id] || PIXI.createWebGLTexture(this.currentBaseTexture, gl));
 
@@ -8002,6 +7595,8 @@ PIXI.WebGLSpriteBatch.prototype.stop = function()
 PIXI.WebGLSpriteBatch.prototype.start = function()
 {
     var gl = this.gl;
+
+    this.renderSession.shaderManager.setShader(this.renderSession.shaderManager.defaultShader);
 
     // bind the main texture
     gl.activeTexture(gl.TEXTURE0);
@@ -8716,7 +8311,7 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
     this.applyFilterPass(filter, filterArea, sizeX, sizeY);
 
     // now restore the regular shader..
-    gl.useProgram(this.defaultShader.program);
+    this.renderSession.shaderManager.setShader(this.defaultShader);
     gl.uniform2f(this.defaultShader.projectionVector, sizeX/2, -sizeY/2);
     gl.uniform2f(this.defaultShader.offsetVector, -offsetX, -offsetY);
 
@@ -8752,7 +8347,9 @@ PIXI.WebGLFilterManager.prototype.applyFilterPass = function(filter, filterArea,
     }
 
     // set the shader
-    gl.useProgram(shader.program);
+    this.renderSession.shaderManager.setShader(shader)
+
+//    gl.useProgram(shader.program);
 
     gl.uniform2f(shader.projectionVector, width/2, -height/2);
     gl.uniform2f(shader.offsetVector, 0,0);
@@ -10633,11 +10230,11 @@ PIXI.Strip.prototype._renderWebGL = function(renderSession)
     // init! init!
     if(!this._vertexBuffer)this._initWebGL(renderSession);
     
-    renderSession.shaderManager.activateStripShader();
+    renderSession.shaderManager.setShader(renderSession.shaderManager.stripShader);
 
     this._renderStrip(renderSession);
 
-    renderSession.shaderManager.activateDefaultShader();
+    ///renderSession.shaderManager.activateDefaultShader();
 
     renderSession.spriteBatch.start();
 

@@ -126,18 +126,25 @@ PIXI.WebGLStencilManager.prototype.pushStencil = function(graphics, webGLData, r
 //TODO this does not belong here!
 PIXI.WebGLStencilManager.prototype.bindGraphics = function(graphics, webGLData, renderSession)
 {
+    //if(this._currentGraphics === graphics)return;
+    this._currentGraphics = graphics;
+
     var gl = this.gl;
 
      // bind the graphics object..
     var projection = renderSession.projection,
         offset = renderSession.offset,
-        shader = renderSession.shaderManager.primitiveShader;
+        shader;// = renderSession.shaderManager.primitiveShader;
 
     if(webGLData.mode === 1)
     {
-        renderSession.shaderManager.activateShader( renderSession.shaderManager.complexPrimativeShader );
+//        renderSession.shaderManager.activateShader( renderSession.shaderManager.complexPrimativeShader );
         shader = renderSession.shaderManager.complexPrimativeShader;
 
+    //    console.log(renderSession.shaderManager._currentId === shader._UID, renderSession.shaderManager.currentShader === shader)
+        renderSession.shaderManager.setShader( shader );
+
+        if(shader != renderSession.shaderManager.currentShader)console.log(shader === renderSession.shaderManager.currentShader)
         gl.uniformMatrix3fv(shader.translationMatrix, false, graphics.worldTransform.toArray(true));
 
         gl.uniform2f(shader.projectionVector, projection.x, -projection.y);
@@ -159,8 +166,10 @@ PIXI.WebGLStencilManager.prototype.bindGraphics = function(graphics, webGLData, 
     }
     else
     {
-        renderSession.shaderManager.activatePrimitiveShader();
+        //renderSession.shaderManager.activatePrimitiveShader();
         shader = renderSession.shaderManager.primitiveShader;
+        renderSession.shaderManager.setShader( shader );
+
         gl.uniformMatrix3fv(shader.translationMatrix, false, graphics.worldTransform.toArray(true));
 
         gl.uniform2f(shader.projectionVector, projection.x, -projection.y);
@@ -267,7 +276,7 @@ PIXI.WebGLStencilManager.prototype.popStencil = function(graphics, webGLData, re
 
     }
 
-    renderSession.shaderManager.deactivatePrimitiveShader();
+    //renderSession.shaderManager.deactivatePrimitiveShader();
 };
 
 /**

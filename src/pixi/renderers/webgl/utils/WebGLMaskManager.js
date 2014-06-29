@@ -47,8 +47,6 @@ PIXI.WebGLMaskManager.prototype.pushMask = function(maskData, renderSession)
     if(!maskData._webGL[gl.id].data.length)return;
 
     renderSession.stencilManager.pushStencil(maskData, maskData._webGL[gl.id].data[0], renderSession);
-  
-    renderSession.shaderManager.deactivatePrimitiveShader();
 };
 
 /**

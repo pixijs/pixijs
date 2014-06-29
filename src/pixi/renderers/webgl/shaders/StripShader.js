@@ -5,6 +5,8 @@
 
 PIXI.StripShader = function(gl)
 {
+    this._UID = PIXI._UID++;
+    
     this.gl = gl;
 
     /**

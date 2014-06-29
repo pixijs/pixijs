@@ -9,6 +9,7 @@
 */
 PIXI.ComplexPrimitiveShader = function(gl)
 {
+    this._UID = PIXI._UID++;
     /**
      * @property gl
      * @type WebGLContext
