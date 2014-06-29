@@ -476,6 +476,11 @@ PIXI.Graphics.prototype._renderCanvas = function(renderSession)
         context.globalCompositeOperation = PIXI.blendModesCanvas[renderSession.currentBlendMode];
     }
 
+    if(this._mask)
+    {
+        renderSession.maskManager.pushMask(this._mask, renderSession.context);
+    }
+
     context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
     PIXI.CanvasGraphics.renderGraphics(this, context);
 
@@ -483,6 +488,11 @@ PIXI.Graphics.prototype._renderCanvas = function(renderSession)
     for(var i=0, j=this.children.length; i<j; i++)
     {
         this.children[i]._renderCanvas(renderSession);
+    }
+
+    if(this._mask)
+    {
+        renderSession.maskManager.popMask(renderSession.context);
     }
 };
 

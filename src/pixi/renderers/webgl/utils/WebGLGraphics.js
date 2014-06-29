@@ -102,24 +102,41 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
  */
 PIXI.WebGLGraphics.updateGraphics = function(graphics, gl)
 {
-    if(!graphics._webGL[gl.id])graphics._webGL[gl.id] = {lastIndex:0, data:[], gl:gl};
+    // get the contexts graphics object
+    var webGL = graphics._webGL[gl.id];
+    // if the graphics object does not exist in the webGL context time to create it!
+    if(!webGL)webGL = graphics._webGL[gl.id] = {lastIndex:0, data:[], gl:gl};
 
-
+    // flag the graphics as not dirty as we are about to update it...
     graphics.dirty = false;
 
+    var i;
+
+    // if the user cleared the graphics object we will need to clear every object
     if(graphics.clearDirty)
     {
         graphics.clearDirty = false;
-        //TODO return the objects to a pool!
-        graphics._webGL[gl.id].data = [];
-        graphics._webGL[gl.id].lastIndex = 0;
 
+        // lop through and return all the webGLDatas to the object pool so than can be reused later on
+        for (i = 0; i < webGL.data.length; i++)
+        {
+            var graphicsData = webGL.data[i];
+            graphicsData.reset();
+            PIXI.WebGLGraphics.graphicsDataPool.push( graphicsData );
+        }
+
+        // clear the array and reset the index.. 
+        webGL.data = [];
+        webGL.lastIndex = 0;
     }
 
-    var webGL = graphics._webGL[gl.id];
+    
     var webGLData;
     
-    for (var i = webGL.lastIndex; i < graphics.graphicsData.length; i++)
+    // loop through the graphics datas and construct each one..
+    // if the object is a complex fill then the new stencil buffer technique will be used
+    // other wise graphics objects will be pushed into a batch..
+    for (i = webGL.lastIndex; i < graphics.graphicsData.length; i++)
     {
         var data = graphics.graphicsData[i];
 
@@ -141,7 +158,6 @@ PIXI.WebGLGraphics.updateGraphics = function(graphics, gl)
                         PIXI.WebGLGraphics.buildPoly(data, webGLData);
                     }
                 }
-                // IF COMPLEX.. SWAP...   
             }
 
             if(data.lineWidth > 0)
@@ -150,8 +166,6 @@ PIXI.WebGLGraphics.updateGraphics = function(graphics, gl)
                 PIXI.WebGLGraphics.buildLine(data, webGLData);
 
             }
-            
-            
         }
         else
         {
@@ -167,14 +181,16 @@ PIXI.WebGLGraphics.updateGraphics = function(graphics, gl)
             }
         }
 
+        webGLData.dirty = true;
+
         webGL.lastIndex++;
     }
 
-   
-   // TODO this only really needs to upload the items that changed!
+    // upload all the dirty data...
     for (i = 0; i < webGL.data.length; i++)
     {
-        webGL.data[i].upload();
+        webGLData = webGL.data[i];
+        if(webGLData.dirty)webGLData.upload();
     }
 };
 
@@ -184,8 +200,7 @@ PIXI.WebGLGraphics.switchMode = function(webGL, type)
 
     if(!webGL.data.length)
     {
-        // TODO OBJECT POOL!
-        webGLData = new PIXI.WebGLGraphicsData(webGL.gl);
+        webGLData = PIXI.WebGLGraphics.graphicsDataPool.pop() || new PIXI.WebGLGraphicsData(webGL.gl);
         webGLData.mode = type;
         webGL.data.push(webGLData);
     }
@@ -195,11 +210,9 @@ PIXI.WebGLGraphics.switchMode = function(webGL, type)
 
         if(webGLData.mode !== type || type === 1)
         {
-            // TODO OBJECT POOL!
-            webGLData = new PIXI.WebGLGraphicsData(webGL.gl);
+            webGLData = PIXI.WebGLGraphics.graphicsDataPool.pop() || new PIXI.WebGLGraphicsData(webGL.gl);
             webGLData.mode = type;
             webGL.data.push(webGLData);
-          ///  webGL.lastIndex++;
         }
     }
 
@@ -663,6 +676,8 @@ PIXI.WebGLGraphics.buildPoly = function(graphicsData, webGLData)
 
 };
 
+PIXI.WebGLGraphics.graphicsDataPool = [];
+
 PIXI.WebGLGraphicsData = function(gl)
 {
     this.gl = gl;
@@ -675,6 +690,7 @@ PIXI.WebGLGraphicsData = function(gl)
     this.buffer = gl.createBuffer();
     this.indexBuffer = gl.createBuffer();
     this.mode = 1;
+    this.dirty = true;
 };
 
 PIXI.WebGLGraphicsData.prototype.reset = function()
@@ -698,4 +714,6 @@ PIXI.WebGLGraphicsData.prototype.upload = function()
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.glIndicies, gl.STATIC_DRAW);
+
+    this.dirty = false;
 };
