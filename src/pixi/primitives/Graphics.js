@@ -117,7 +117,7 @@ PIXI.Graphics = function()
      * 
      * @type {Boolean}
      */
-    this.dirty = true
+    this.dirty = true;
 };
 
 // constructor

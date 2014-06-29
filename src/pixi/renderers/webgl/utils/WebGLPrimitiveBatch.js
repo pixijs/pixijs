@@ -129,24 +129,6 @@ PIXI.WebGLPrimitiveBatch.prototype.end = function()
     this.flush();
 };
 
-/**
-* 
-* @method render
-* 
-* @param sprite {Sprite} the sprite to render when using this spritebatch
-*/
-PIXI.WebGLPrimitiveBatch.prototype.render = function(graphicsData)
-{
-    // loop through the graphics object data.
-    
-    // upload to GPU..
-    if(!graphicsData._webGL)
-    {
-        
-    }
-
-}
-
 PIXI.WebGLPrimitiveBatch.prototype.render = function(sprite)
 {
     var texture = sprite.texture;

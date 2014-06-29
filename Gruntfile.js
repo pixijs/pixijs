@@ -41,7 +41,6 @@ module.exports = function(grunt) {
             '<%= dirs.src %>/renderers/webgl/shaders/ComplexPrimitiveShader.js',
             '<%= dirs.src %>/renderers/webgl/utils/WebGLPrimitiveBatch.js',
             '<%= dirs.src %>/renderers/webgl/utils/WebGLGraphics.js',
-            '<%= dirs.src %>/renderers/webgl/utils/WebGLComplexGraphics.js',
             '<%= dirs.src %>/renderers/webgl/WebGLRenderer.js',
             '<%= dirs.src %>/renderers/webgl/utils/WebGLMaskManager.js',
             '<%= dirs.src %>/renderers/webgl/utils/WebGLStencilManager.js',

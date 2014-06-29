@@ -17,7 +17,7 @@ PIXI.WebGLMaskManager = function(gl)
 
     this.reverse = false;
     this.count = 0;
-};  
+};
 
 /**
 * Sets the drawing context to the one given in parameter
@@ -36,7 +36,7 @@ PIXI.WebGLMaskManager.prototype.setContext = function(gl)
 * @param renderSession {RenderSession}
 */
 PIXI.WebGLMaskManager.prototype.pushMask = function(maskData, renderSession)
-{  
+{
     var gl = renderSession.gl;
 
     if(maskData.dirty)
@@ -44,7 +44,7 @@ PIXI.WebGLMaskManager.prototype.pushMask = function(maskData, renderSession)
         PIXI.WebGLGraphics.updateGraphics(maskData, gl);
     }
 
-   if(!maskData._webGL[gl.id].data.length)return;
+    if(!maskData._webGL[gl.id].data.length)return;
 
     renderSession.stencilManager.pushStencil(maskData, maskData._webGL[gl.id].data[0], renderSession);
   
@@ -59,7 +59,7 @@ PIXI.WebGLMaskManager.prototype.pushMask = function(maskData, renderSession)
 */
 PIXI.WebGLMaskManager.prototype.popMask = function(maskData, renderSession)
 {
-     var gl = this.gl;
+    var gl = this.gl;
     renderSession.stencilManager.popStencil(maskData, maskData._webGL[gl.id].data[0], renderSession);
 };
 

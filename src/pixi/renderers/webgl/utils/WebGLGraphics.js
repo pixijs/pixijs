@@ -28,7 +28,8 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
     var gl = renderSession.gl;
     var projection = renderSession.projection,
         offset = renderSession.offset,
-        shader = renderSession.shaderManager.primitiveShader;
+        shader = renderSession.shaderManager.primitiveShader,
+        webGLData;
 
     if(graphics.dirty)
     {
@@ -45,12 +46,11 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
         renderSession.spriteBatch.setBlendMode(graphics.blendMode);
     }
     
-    for (var i = 0; i < webGL.data.length; i++) 
+    for (var i = 0; i < webGL.data.length; i++)
     {
         if(webGL.data[i].mode === 1)
-        {   
-            var webGLData = webGL.data[i];
-
+        {
+            webGLData = webGL.data[i];
 
             renderSession.stencilManager.pushStencil(graphics, webGLData, renderSession);
 
@@ -58,49 +58,6 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
             gl.drawElements(gl.TRIANGLE_FAN, 4, gl.UNSIGNED_SHORT, ( webGLData.indices.length - 4 ) * 2 );
             
             renderSession.stencilManager.popStencil(graphics, webGLData, renderSession);
- /*
-            renderSession.shaderManager.activateShader( renderSession.shaderManager.complexPrimativeShader );
-            shader = renderSession.shaderManager.complexPrimativeShader;
-            gl.uniformMatrix3fv(shader.translationMatrix, false, graphics.worldTransform.toArray(true));
-
-            gl.uniform2f(shader.projectionVector, projection.x, -projection.y);
-            gl.uniform2f(shader.offsetVector, -offset.x, -offset.y);
-
-            gl.uniform3fv(shader.tintColor, PIXI.hex2rgb(graphics.tint));
-            gl.uniform3fv(shader.color, webGLData.color);
-
-            gl.uniform1f(shader.alpha, graphics.worldAlpha * graphics.fillAlpha);
-        
-        
-
-            gl.bindBuffer(gl.ARRAY_BUFFER, webGLData.buffer);
-
-            gl.vertexAttribPointer(shader.aVertexPosition, 2, gl.FLOAT, false, 4 * 2, 0);
- 
-            // set the index buffer!
-            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, webGLData.indexBuffer);
-
-            // mask that quad!
-            
-            gl.enable(gl.STENCIL_TEST);
-            gl.clear(gl.STENCIL_BUFFER_BIT)
-            gl.stencilFunc(gl.ALWAYS,1,1);
-
-            gl.colorMask(false, false, false, false);
-            gl.stencilOp(gl.KEEP,gl.KEEP,gl.INCR);
-
-            gl.drawElements(gl.TRIANGLE_FAN,  webGLData.indices.length - 4, gl.UNSIGNED_SHORT, 0 );
-
-            gl.colorMask(true, true, true, true);
-            gl.stencilFunc(gl.LESS,0, 1);//this.maskStack.length);
-            gl.stencilOp(gl.KEEP,gl.KEEP,gl.KEEP);
-            
-            // now draw that quad!
-            gl.drawElements(gl.TRIANGLE_FAN, 4, gl.UNSIGNED_SHORT, ( webGLData.indices.length - 4 ) * 2 );
-
-            gl.disable(gl.STENCIL_TEST);
-
-            renderSession.shaderManager.deactivatePrimitiveShader();*/
         }
         else
         {
@@ -115,7 +72,7 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
 
             gl.uniform1f(shader.alpha, graphics.worldAlpha);
             
-            var webGLData = webGL.data[i];
+            webGLData = webGL.data[i];
 
             gl.bindBuffer(gl.ARRAY_BUFFER, webGLData.buffer);
 
@@ -128,86 +85,11 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
 
             renderSession.shaderManager.deactivatePrimitiveShader();
         }
-    };
+    }
 
     // return to default shader...
     //  PIXI.activateShader(PIXI.defaultShader);
 };
-
-
-PIXI.WebGLGraphics.renderGraphicsMask = function(graphics, renderSession)//projection, offset)
-{
-    var gl = renderSession.gl;
-    var projection = renderSession.projection,
-        offset = renderSession.offset,
-        shader = renderSession.shaderManager.primitiveShader;
-
-    if(!graphics._webGL[gl.id])graphics._webGL[gl.id] = {lastIndex:0, data:[], gl:gl};
-
-    var webGL = graphics._webGL[gl.id];
-
-    if(graphics.dirty)
-    {
-        PIXI.WebGLGraphics.updateGraphics(graphics, gl);
-    }
-
-
-    // This  could be speeded up for sure!
-    
-   
-    var webGLData = webGL.data[0];
-    if(!webGLData)return;
-
-    if(webGLData.mode === 1)
-    { 
-        renderSession.shaderManager.activateShader( renderSession.shaderManager.complexPrimativeShader );
-        shader = renderSession.shaderManager.complexPrimativeShader;
-        gl.uniformMatrix3fv(shader.translationMatrix, false, graphics.worldTransform.toArray(true));
-
-        gl.uniform2f(shader.projectionVector, projection.x, -projection.y);
-        gl.uniform2f(shader.offsetVector, -offset.x, -offset.y);
-
-        gl.uniform3fv(shader.tintColor, PIXI.hex2rgb(graphics.tint));
-        gl.uniform3fv(shader.color, webGLData.color);
-
-        gl.uniform1f(shader.alpha, graphics.worldAlpha * graphics.fillAlpha);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, webGLData.buffer);
-
-        gl.vertexAttribPointer(shader.aVertexPosition, 2, gl.FLOAT, false, 4 * 2, 0);
-
-        // set the index buffer!
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, webGLData.indexBuffer);
-
-        gl.drawElements(gl.TRIANGLE_FAN,  webGLData.indices.length - 4, gl.UNSIGNED_SHORT, 0 );
-
-        renderSession.shaderManager.deactivatePrimitiveShader();
-    }
-    else
-    {
-        
-    }
-};
-
-PIXI.WebGLGraphics.renderGraphicsQuadMask = function(graphics, renderSession)//projection, offset)
-{
-    var gl = renderSession.gl;
-    var projection = renderSession.projection,
-        offset = renderSession.offset,
-        shader = renderSession.shaderManager.primitiveShader;
-
-   var webGL = graphics._webGL[gl.id];
-   
-    var webGLData = webGL.data[0];
-    if(!webGLData)return;
-
-    renderSession.shaderManager.activateShader( renderSession.shaderManager.complexPrimativeShader );
-
-    // now draw that quad!
-    gl.drawElements(gl.TRIANGLE_FAN, 4, gl.UNSIGNED_SHORT, ( webGLData.indices.length - 4 ) * 2 );
-
-    renderSession.shaderManager.deactivatePrimitiveShader();
-}
 
 /**
  * Updates the graphics object
@@ -242,7 +124,7 @@ PIXI.WebGLGraphics.updateGraphics = function(graphics, gl)
         var data = graphics.graphicsData[i];
 
         if(data.type === PIXI.Graphics.POLY)
-        {     
+        {
             // MAKE SURE WE HAVE THE CORRECT TYPE..
             if(data.fill)
             {
@@ -290,9 +172,10 @@ PIXI.WebGLGraphics.updateGraphics = function(graphics, gl)
 
    
    // TODO this only really needs to upload the items that changed!
-   for (var i = 0; i < webGL.data.length; i++) {
-        webGL.data[i].upload();        
-   };
+    for (i = 0; i < webGL.data.length; i++)
+    {
+        webGL.data[i].upload();
+    }
 };
 
 PIXI.WebGLGraphics.switchMode = function(webGL, type)
@@ -320,8 +203,8 @@ PIXI.WebGLGraphics.switchMode = function(webGL, type)
         }
     }
 
-    return webGLData
-}
+    return webGLData;
+};
 
 /**
  * Builds a rectangle to draw
@@ -708,6 +591,8 @@ PIXI.WebGLGraphics.buildComplexPoly = function(graphicsData, webGLData)
     var minY = Infinity;
     var maxY = -Infinity;
 
+    var x,y;
+
     // get size..
     for (var i = 0; i < points.length; i+=2)
     {
@@ -731,10 +616,10 @@ PIXI.WebGLGraphics.buildComplexPoly = function(graphicsData, webGLData)
     
     //TODO - this aint needed!
     var length = points.length / 2;
-    for (var i = 0; i < length; i++) 
+    for (i = 0; i < length; i++)
     {
         indices.push( i );
-    };
+    }
 
 };
 
@@ -783,21 +668,21 @@ PIXI.WebGLGraphicsData = function(gl)
     this.gl = gl;
 
     //TODO does this need to be split before uploding??
-    this.color = [0,0,0,0] // color split!
+    this.color = [0,0,0]; // color split!
     this.points = [];
     this.indices = [];
     this.lastIndex = 0;
     this.buffer = gl.createBuffer();
     this.indexBuffer = gl.createBuffer();
     this.mode = 1;
-}
+};
 
 PIXI.WebGLGraphicsData.prototype.reset = function()
 {
     this.points = [];
     this.indices = [];
     this.lastIndex = 0;
-}
+};
 
 PIXI.WebGLGraphicsData.prototype.upload = function()
 {
@@ -813,4 +698,4 @@ PIXI.WebGLGraphicsData.prototype.upload = function()
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.glIndicies, gl.STATIC_DRAW);
-}
+};
