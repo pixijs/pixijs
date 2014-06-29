@@ -89,7 +89,9 @@
 
 		graphics.lineStyle(Math.random() * 30, Math.random() * 0xFFFFFF, 1);
 	    graphics.moveTo(Math.random() * 620,Math.random() * 380);
-		graphics.quadraticCurveTo(Math.random() * 620,Math.random() * 380, Math.random() * 620,Math.random() * 380);
+		graphics.bezierCurveTo(Math.random() * 620,Math.random() * 380, 
+								Math.random() * 620,Math.random() * 380,
+								Math.random() * 620,Math.random() * 380);
 	}
 	// run the render loop
 	requestAnimFrame(animate);
