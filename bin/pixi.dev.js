@@ -1,4 +1,15 @@
 /**
+ * @license
+ * pixi.js - v1.5.2
+ * Copyright (c) 2012-2014, Mat Groves
+ * http://goodboydigital.com/
+ *
+ * Compiled: 2014-06-29
+ *
+ * pixi.js is licensed under the MIT License.
+ * http://www.opensource.org/licenses/mit-license.php
+ */
+/**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
@@ -1771,7 +1782,6 @@ PIXI.Sprite.prototype.setTexture = function(texture)
     }
 
     this.cachedTint = 0xFFFFFF;
-    this.updateFrame = true;
 };
 
 /**
@@ -9914,6 +9924,47 @@ PIXI.Graphics.prototype.lineTo = function(x, y)
 };
 
 /**
+ * Calcul the points for a quadratic bezier curve.
+ * Based on : https://stackoverflow.com/questions/785097/how-do-i-implement-a-bezier-curve-in-c
+ *
+ * @param  {number}   cpX   Control point x
+ * @param  {number}   cpY   Control point y
+ * @param  {number}   toX   Destination point x
+ * @param  {number}   toY   Destination point y
+ * @return {number[]}
+ */
+PIXI.Graphics.prototype.quadraticCurveTo = function(cpX, cpY, toX, toY)
+{
+   // this.currentPath.points.push(toX, toY)
+    //return;
+    var xa,
+    ya,
+    n = 20,
+    points = this.currentPath.points;
+    
+    var fromX = points[points.length-2];
+    var fromY = points[points.length-1];
+
+    var j = 0;
+    for (var i = 1; i <= n; i++ )
+    {
+        j = i / n;
+
+        xa = fromX + ( (cpX - fromX) * j );
+        ya = fromY + ( (cpY - fromY) * j );
+
+        points.push( xa + ( ((cpX + ( (toX - cpX) * j )) - xa) * j ),
+                     ya + ( ((cpY + ( (toY - cpY) * j )) - ya) * j ) );
+    }
+
+
+    this.dirty = true;
+
+    return this;
+};
+
+   
+/**
  * Draws a line using the current line style from the current drawing position to (x, y);
  * the current drawing position is then set to (x, y).
  *
@@ -15665,4 +15716,3 @@ Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'angle', {
         root.PIXI = PIXI;
     }
 }).call(this);
-//# sourceMappingURL=pixi.dev.js.map
