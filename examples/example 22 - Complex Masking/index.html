@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-	<title>pixi.js example 2 loading a sprite sheet</title>
+	<title>pixi.js example 21 loading a sprite sheet</title>
 	<style>
 		body {
 			margin: 0;
@@ -10,7 +10,7 @@
 		}
 	</style>
 	<script src="../../bin/pixi.dev.js"></script>
-<!--	<script src="pixi.dev.js"></script> -->
+	<!--<script src="pixi.dev.js"></script>-->
 </head>
 <body>
 	<script>
@@ -66,6 +66,27 @@
 	label.x = 10;
 	label.y = 10;
 	
+	for (var i = 0; i < 100; i++)
+		{
+			var frameName = alienFrames[i % 4];
+
+			// create an alien using the frame name..
+			var alien = PIXI.Sprite.fromImage(frameName);
+			alien.tint = Math.random() * 0xFFFFFF;
+
+			/*
+			 * fun fact for the day :)
+			 * another way of doing the above would be
+			 * var texture = PIXI.Texture.fromFrame(frameName);
+			 * var alien = new PIXI.Sprite(texture);
+			 */
+			alien.position.x = Math.random() * 800 - 400;
+			alien.position.y = Math.random() * 600 - 300;
+			alien.anchor.x = 0.5;
+			alien.anchor.y = 0.5;
+			aliens.push(alien);
+			alienContainer.addChild(alien);
+		}
 
 	stage.mousedown = function(data)
 	{
@@ -74,6 +95,8 @@
 		color = colors[colorCount++ % colors.length]
 	//	liveGraphics.clear().beginFill(color);
 //		liveGraphics.drawCircle(data.global.x, data.global.y, 030);
+		
+
 	}
 
 	stage.mousemove = function(data)
@@ -83,9 +106,14 @@
 		path.push(data.global.x);
 		path.push(data.global.y);
 
+		liveGraphics.clear();
+		liveGraphics.beginFill(color);
+		if(path.length > 12)liveGraphics.drawPath(path);
+		liveGraphics.endFill();
 
 		//console.log(">>>>")
 	}
+
 	stage.mouseup = function()
 	{
 		isDown = false;
@@ -93,26 +121,21 @@
 		graphics.drawPath(path)
 		graphics.endFill();
 		path = [];	
-
-
-		graphics.mask = liveGraphics
 	}
 
-//
-//
+		graphics.mask = liveGraphics;
 //	graphics.drawPath(path);
 
 	stage.addChild(graphics);
 	stage.addChild(liveGraphics);
 	stage.addChild(label);
 
+
 	function animate() {
 	    
 
 		count += 0.1;
-		liveGraphics.clear();
-		liveGraphics.beginFill(color);
-	    liveGraphics.drawPath(path);
+		
 	    // render the stage
 	    renderer.render(stage);
 	//    graphics.x = 300;

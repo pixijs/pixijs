@@ -30,26 +30,12 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
         offset = renderSession.offset,
         shader = renderSession.shaderManager.primitiveShader;
 
-    if(!graphics._webGL[gl.id])graphics._webGL[gl.id] = {lastIndex:0, data:[], gl:gl};
-
-    var webGL = graphics._webGL[gl.id];
-
     if(graphics.dirty)
     {
-        //console.log("<?>???")
-        graphics.dirty = false;
-
-        if(graphics.clearDirty)
-        {
-            graphics.clearDirty = false;
-            //TODO return the objects to a pool!
-            graphics._webGL[gl.id].data = [];
-            graphics._webGL[gl.id].lastIndex = 0;
-        }
-
         PIXI.WebGLGraphics.updateGraphics(graphics, gl);
     }
 
+    var webGL = graphics._webGL[gl.id];
 
     // This  could be speeded up for sure!
 
@@ -64,7 +50,15 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
         if(webGL.data[i].mode === 1)
         {   
             var webGLData = webGL.data[i];
- 
+
+
+            renderSession.stencilManager.pushStencil(graphics, webGLData, renderSession);
+
+            // render quad..
+            gl.drawElements(gl.TRIANGLE_FAN, 4, gl.UNSIGNED_SHORT, ( webGLData.indices.length - 4 ) * 2 );
+            
+            renderSession.stencilManager.popStencil(graphics, webGLData, renderSession);
+ /*
             renderSession.shaderManager.activateShader( renderSession.shaderManager.complexPrimativeShader );
             shader = renderSession.shaderManager.complexPrimativeShader;
             gl.uniformMatrix3fv(shader.translationMatrix, false, graphics.worldTransform.toArray(true));
@@ -106,7 +100,7 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
 
             gl.disable(gl.STENCIL_TEST);
 
-            renderSession.shaderManager.deactivatePrimitiveShader();
+            renderSession.shaderManager.deactivatePrimitiveShader();*/
         }
         else
         {
@@ -130,7 +124,6 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
 
             // set the index buffer!
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, webGLData.indexBuffer);
-           // console.log()
             gl.drawElements(gl.TRIANGLE_STRIP,  webGLData.indices.length, gl.UNSIGNED_SHORT, 0 );
 
             renderSession.shaderManager.deactivatePrimitiveShader();
@@ -155,17 +148,6 @@ PIXI.WebGLGraphics.renderGraphicsMask = function(graphics, renderSession)//proje
 
     if(graphics.dirty)
     {
-        //console.log("<?>???")
-        graphics.dirty = false;
-
-        if(graphics.clearDirty)
-        {
-            graphics.clearDirty = false;
-            //TODO return the objects to a pool!
-            graphics._webGL[gl.id].data = [];
-            graphics._webGL[gl.id].lastIndex = 0;
-        }
-
         PIXI.WebGLGraphics.updateGraphics(graphics, gl);
     }
 
@@ -238,9 +220,23 @@ PIXI.WebGLGraphics.renderGraphicsQuadMask = function(graphics, renderSession)//p
  */
 PIXI.WebGLGraphics.updateGraphics = function(graphics, gl)
 {
+    if(!graphics._webGL[gl.id])graphics._webGL[gl.id] = {lastIndex:0, data:[], gl:gl};
+
+
+    graphics.dirty = false;
+
+    if(graphics.clearDirty)
+    {
+        graphics.clearDirty = false;
+        //TODO return the objects to a pool!
+        graphics._webGL[gl.id].data = [];
+        graphics._webGL[gl.id].lastIndex = 0;
+
+    }
+
     var webGL = graphics._webGL[gl.id];
     var webGLData;
-
+    
     for (var i = webGL.lastIndex; i < graphics.graphicsData.length; i++)
     {
         var data = graphics.graphicsData[i];
@@ -248,8 +244,6 @@ PIXI.WebGLGraphics.updateGraphics = function(graphics, gl)
         if(data.type === PIXI.Graphics.POLY)
         {     
             // MAKE SURE WE HAVE THE CORRECT TYPE..
-            //console.log(graphics.graphicsData.length)
-
             if(data.fill)
             {
                 if(data.points.length>6)
@@ -272,6 +266,7 @@ PIXI.WebGLGraphics.updateGraphics = function(graphics, gl)
             {
                 webGLData = PIXI.WebGLGraphics.switchMode(webGL, 0);
                 PIXI.WebGLGraphics.buildLine(data, webGLData);
+
             }
             
             
@@ -290,15 +285,14 @@ PIXI.WebGLGraphics.updateGraphics = function(graphics, gl)
             }
         }
 
-        
-        
+        webGL.lastIndex++;
     }
 
-   for (var i = webGL.lastIndex; i < webGL.data.length; i++) {
-        webGL.data[i].upload();
-        webGL.lastIndex++;
+   
+   // TODO this only really needs to upload the items that changed!
+   for (var i = 0; i < webGL.data.length; i++) {
+        webGL.data[i].upload();        
    };
-
 };
 
 PIXI.WebGLGraphics.switchMode = function(webGL, type)
@@ -322,6 +316,7 @@ PIXI.WebGLGraphics.switchMode = function(webGL, type)
             webGLData = new PIXI.WebGLGraphicsData(webGL.gl);
             webGLData.mode = type;
             webGL.data.push(webGLData);
+          ///  webGL.lastIndex++;
         }
     }
 
@@ -501,6 +496,9 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
     // if the first point is the last point - gonna have issues :)
     if(firstPoint.x === lastPoint.x && firstPoint.y === lastPoint.y)
     {
+        // need to clone as we are going to slightly modify the shape..
+        points = points.slice();
+
         points.pop();
         points.pop();
 
@@ -690,6 +688,7 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
  */
 PIXI.WebGLGraphics.buildComplexPoly = function(graphicsData, webGLData)
 {
+
     //TODO - no need to copy this as it gets turned into a FLoat32Array anyways..
     var points = graphicsData.points.slice();
     if(points.length < 6)return;
@@ -737,8 +736,6 @@ PIXI.WebGLGraphics.buildComplexPoly = function(graphicsData, webGLData)
         indices.push( i );
     };
 
-   // console.log(indices)
-    
 };
 
 PIXI.WebGLGraphics.buildPoly = function(graphicsData, webGLData)
@@ -760,7 +757,6 @@ PIXI.WebGLGraphics.buildPoly = function(graphicsData, webGLData)
     var b = color[2] * alpha;
 
     var triangles = PIXI.PolyK.Triangulate(points);
-
     var vertPos = verts.length / 6;
 
     var i = 0;
@@ -779,6 +775,7 @@ PIXI.WebGLGraphics.buildPoly = function(graphicsData, webGLData)
         verts.push(points[i * 2], points[i * 2 + 1],
                    r, g, b, alpha);
     }
+
 };
 
 PIXI.WebGLGraphicsData = function(gl)
@@ -816,7 +813,4 @@ PIXI.WebGLGraphicsData.prototype.upload = function()
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.glIndicies, gl.STATIC_DRAW);
-
-  //  console.log(this.glPoints)
-   // console.log(this.glIndicies);
 }

@@ -33,14 +33,6 @@ PIXI.CanvasMaskManager.prototype.pushMask = function(maskData, context)
 
     context.clip();
 
-    context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx + 10, transform.ty);
-    PIXI.CanvasGraphics.renderGraphicsMask(maskData, context);
-    context.clip();
-
-     context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx - 50, transform.ty);
-    PIXI.CanvasGraphics.renderGraphicsMask(maskData, context);
-    context.clip();
-
     maskData.worldAlpha = cacheAlpha;
 };
 
