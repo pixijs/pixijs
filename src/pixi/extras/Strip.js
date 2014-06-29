@@ -52,11 +52,11 @@ PIXI.Strip.prototype._renderWebGL = function(renderSession)
     // init! init!
     if(!this._vertexBuffer)this._initWebGL(renderSession);
     
-    renderSession.shaderManager.activateStripShader();
+    renderSession.shaderManager.setShader(renderSession.shaderManager.stripShader);
 
     this._renderStrip(renderSession);
 
-    renderSession.shaderManager.activateDefaultShader();
+    ///renderSession.shaderManager.activateDefaultShader();
 
     renderSession.spriteBatch.start();
 

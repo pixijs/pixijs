@@ -1,0 +1,138 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>pixi.js example 21 loading a sprite sheet</title>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			background-color: #000000;
+		}
+	</style>
+	<script src="../../bin/pixi.dev.js"></script>
+	<!--<script src="pixi.dev.js"></script>-->
+</head>
+<body>
+	<script>
+	// create an array of assets to load
+
+	
+
+	// holder to store aliens
+	var aliens = [];
+	var alienFrames = ["eggHead.png", "flowerTop.png", "helmlok.png", "skully.png"];
+
+	var count = 0;
+
+	// create an new instance of a pixi stage
+	var stage = new PIXI.Stage(0x3da8bb);
+
+
+	// create a renderer instance.
+	var renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight);
+
+	// add the renderer view element to the DOM
+	document.body.appendChild(renderer.view);
+
+	// create an empty container
+	var alienContainer = new PIXI.DisplayObjectContainer();
+	alienContainer.position.x = 400;
+	alienContainer.position.y = 300;
+
+	
+	stage.addChild(alienContainer);
+
+	count = 0;
+		
+		// start animating
+	requestAnimFrame(animate);
+	
+	var graphics = new PIXI.Graphics().beginFill(0xFF0000);//.moveTo(-200, -300).lineTo(200, -300).lineTo(220,100).lineTo(200,300).lineTo(-200,300).endFill();
+
+	var liveGraphics = new PIXI.Graphics().beginFill(0xFF0000);
+
+	var path = [];
+
+
+	stage.interactive = true;
+	
+	var isDown = false;
+	var color = 0;
+
+	var colors = [0x5D0776, 0xEC8A49, 0xAF3666, 0xF6C84C, 0x4C779A];
+	var colorCount = 0;
+
+	var label = new PIXI.Text("Click and drag anywhere do draw complex geometry in pixi / do an art attack", {fill:"white", font:"16px Arial"});
+	label.x = 10;
+	label.y = 10;
+	
+
+	stage.mousedown = function(data)
+	{
+		isDown = true;
+		path = [];
+		color = colors[colorCount++ % colors.length]
+	//	liveGraphics.clear().beginFill(color);
+//		liveGraphics.drawCircle(data.global.x, data.global.y, 030);
+	}
+
+	stage.mousemove = function(data)
+	{
+		if(!isDown)return;
+
+		path.push(data.global.x);
+		path.push(data.global.y);
+
+
+		//console.log(">>>>")
+	}
+
+	stage.mouseup = function()
+	{
+		isDown = false;
+		graphics.beginFill(color);
+		graphics.drawPath(path)
+		graphics.endFill();
+		path = [];	
+	}
+
+//	graphics.drawPath(path);
+
+	stage.addChild(graphics);
+	stage.addChild(liveGraphics);
+	stage.addChild(label);
+
+	function animate() {
+	    
+
+		count += 0.1;
+		liveGraphics.clear();
+		liveGraphics.beginFill(color);
+	    liveGraphics.drawPath(path);
+	    // render the stage
+	    renderer.render(stage);
+	//    graphics.x = 300;
+	 //   graphics.y = 399
+
+	    requestAnimFrame(animate);
+	}
+
+	var logo = PIXI.Sprite.fromImage("../../logo_small.png")
+	stage.addChild(logo);
+
+
+	logo.anchor.x = 1;
+	logo.position.x = window.innerWidth
+	logo.scale.x = logo.scale.y = 0.5;
+	logo.position.y = window.innerHeight - 70;
+	logo.setInteractive(true);
+	logo.buttonMode = true;
+	logo.click = logo.tap = function()
+	{
+		window.open("https://github.com/GoodBoyDigital/pixi.js", "_blank")
+	}
+
+	</script>
+
+	</body>
+</html>
