@@ -150,7 +150,7 @@ PIXI.WebGLStencilManager.prototype.bindGraphics = function(graphics, webGLData, 
         gl.uniform3fv(shader.tintColor, PIXI.hex2rgb(graphics.tint));
         gl.uniform3fv(shader.color, webGLData.color);
 
-        gl.uniform1f(shader.alpha, graphics.worldAlpha * graphics.fillAlpha);
+        gl.uniform1f(shader.alpha, graphics.worldAlpha * webGLData.alpha);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, webGLData.buffer);
 

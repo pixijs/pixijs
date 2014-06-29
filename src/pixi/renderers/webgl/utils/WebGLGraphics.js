@@ -716,7 +716,7 @@ PIXI.WebGLGraphics.buildComplexPoly = function(graphicsData, webGLData)
     // get first and last point.. figure out the middle!
     var indices = webGLData.indices;
     webGLData.points = points;
-    
+    webGLData.alpha = graphicsData.fillAlpha;
     webGLData.color = PIXI.hex2rgb(graphicsData.fillColor);
 
     /*
@@ -814,6 +814,7 @@ PIXI.WebGLGraphicsData = function(gl)
     this.buffer = gl.createBuffer();
     this.indexBuffer = gl.createBuffer();
     this.mode = 1;
+    this.alpha = 1;
     this.dirty = true;
 };
 
