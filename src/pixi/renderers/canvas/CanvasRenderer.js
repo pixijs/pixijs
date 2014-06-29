@@ -52,7 +52,7 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
     if(!PIXI.blendModesCanvas)
     {
         PIXI.blendModesCanvas = [];
-        
+
         if(PIXI.canUseNewCanvasBlendModes())
         {
             PIXI.blendModesCanvas[PIXI.blendModes.NORMAL]   = "source-over";
@@ -185,6 +185,11 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 
     this.context.setTransform(1,0,0,1,0,0);
     this.context.globalAlpha = 1;
+
+    if (navigator.isCocoonJS && this.view.screencanvas) {
+        this.context.fillStyle = "black";
+        this.context.clear();
+    }
 
     if (!this.transparent && this.clearBeforeRender)
     {
