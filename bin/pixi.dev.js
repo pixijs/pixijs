@@ -10118,14 +10118,38 @@ PIXI.Graphics.prototype.drawRoundedRect = function( x, y, width, height, radius 
  * @param y {Number} The Y coordinate of the center of the circle
  * @param radius {Number} The radius of the circle
  */
-PIXI.Graphics.prototype.drawCircle = function( x, y, radius, beginAngle, endAngle)
+PIXI.Graphics.prototype.drawCircle = function( x, y, radius)
 {
-
     if (!this.currentPath.points.length) this.graphicsData.pop();
 
     this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha,
                         fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling,
-                        points:[x, y, radius, radius], beginAngle: beginAngle || 0, endAngle: endAngle || (Math.PI*2), type:PIXI.Graphics.CIRC};
+                        points:[x, y, radius, radius], beginAngle: 0, endAngle: Math.PI*2, type:PIXI.Graphics.CIRC};
+
+    this.graphicsData.push(this.currentPath);
+    this.dirty = true;
+
+    return this;
+};
+
+/**
+ * Draws an arc.
+ *
+ * @method drawArc
+ * @param x {Number} The X coordinate of the center of the circle
+ * @param y {Number} The Y coordinate of the center of the circle
+ * @param radius {Number} The radius of the circle
+ * @param beginAngle {Number} Begin angle in radian
+ * @param endAngle {Number} End angle in radian
+ */
+PIXI.Graphics.prototype.drawArc = function( x, y, radius, beginAngle, endAngle)
+{
+    if(beginAngle === undefined) beginAngle=0;
+    if(endAngle === undefined) endAngle=Math.PI*2;
+    if (!this.currentPath.points.length) this.graphicsData.pop();
+    this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha,
+                        fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling,
+                        points:[x, y, radius, radius], beginAngle: beginAngle, endAngle: endAngle, type:PIXI.Graphics.CIRC};
 
     this.graphicsData.push(this.currentPath);
     this.dirty = true;
