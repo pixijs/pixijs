@@ -338,7 +338,7 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
     
 
     //ignore null sources
-    if(frame && frame.width && frame.height && texture.baseTexture.source)
+    if(frame && frame.width && frame.height && texture.baseTexture.source && texture.baseTexture.hasLoaded)
     {
         context.globalAlpha = this.worldAlpha;
 
@@ -365,9 +365,6 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
             
             if(this.cachedTint !== this.tint)
             {
-                // no point tinting an image that has not loaded yet!
-                if(!texture.baseTexture.hasLoaded)return;
-
                 this.cachedTint = this.tint;
                 
                 //TODO clean up caching - how to clean up the caches?
