@@ -10,100 +10,65 @@
 		}
 	</style>
 	<script src="../../bin/pixi.dev.js"></script>
+	<!--<script src="pixi.dev.js"></script>-->
 </head>
 <body>
 	<script>
-	// create an array of assets to load
-	var assetsToLoader = [ "SpriteSheet.json"];
-
-	// create a new loader
-	loader = new PIXI.AssetLoader(assetsToLoader);
-
-	// use callback
-	loader.onComplete = onAssetsLoaded
-
-	//begin load
-	loader.load();
 
 	// holder to store aliens
-	var aliens = [];
-	var alienFrames = ["eggHead.png", "flowerTop.png", "helmlok.png", "skully.png"];
-
 	var count = 0;
 
 	// create an new instance of a pixi stage
-	var stage = new PIXI.Stage(0xFFFFFF);
+	var stage = new PIXI.Stage(0xace455);
 
 	// create a renderer instance.
-	var renderer = PIXI.autoDetectRenderer(800, 600);
+	var renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight);
+
+	var target = new PIXI.Point();
 
 	// add the renderer view element to the DOM
 	document.body.appendChild(renderer.view);
 
 	// create an empty container
-	var alienContainer = new PIXI.DisplayObjectContainer();
-	alienContainer.position.x = 400;
-	alienContainer.position.y = 300;
-
-	
-	stage.addChild(alienContainer);
-
 	count = 0;
 
-	function onAssetsLoaded()
-	{
-		// add a bunch of aliens with textures from image paths
-		for (var i = 0; i < 1; i++)
-		{
-			var frameName = alienFrames[i % 4];
 
-			// create an alien using the frame name..
-			var alien = PIXI.Sprite.fromFrame(frameName);
+	// build a rope!
+	var length = 918 / 20;
+	points = [];
+	for (var i = 0; i < 20; i++) {
+		var segSize = length;
+		points.push(new PIXI.Point(i * length, 0));
+	};
 
-			/*
-			 * fun fact for the day :)
-			 * another way of doing the above would be
-			 * var texture = PIXI.Texture.fromFrame(frameName);
-			 * var alien = new PIXI.Sprite(texture);
-			 */
-			alien.position.x = Math.random() * 800 - 400;
-			alien.position.y = Math.random() * 600 - 300;
-			alien.anchor.x = 0.5;
-			alien.anchor.y = 0.5;
-			aliens.push(alien);
-			alienContainer.addChild(alien);
+	strip = new PIXI.Rope(PIXI.Texture.fromImage("snake.png"), points);
+	strip.x = -918/2;
+	
+	var snakeContainer = new PIXI.DisplayObjectContainer();
+	snakeContainer.position.x = window.innerWidth/2;
+	snakeContainer.position.y = window.innerHeight/2;
 
-			// build a rope!
-			var length = 600 / 20;
-			points = [];
-			for (var i = 0; i < 20; i++) {
-				var segSize = length;
-				points.push(new PIXI.Point(i * length, 0));
-			};
+	snakeContainer.scale.set(1.2)
+	stage.addChild(snakeContainer);
 
-			strip = new PIXI.Rope(PIXI.Texture.fromImage("frond_03.png"), points);
-			strip.x = -300;
-			alienContainer.addChild(strip);
-
-		}
-		
-		// start animating
-		requestAnimFrame(animate);
-	}
+	snakeContainer.addChild(strip);
 
 	
+	// start animating
+	requestAnimFrame(animate);
+
 	function animate() {
-	    // just for fun, lets rotate mr rabbit a little
-	    for (var i = 0; i < 1; i++)
-		{
-			var alien = aliens[i];
-			alien.rotation += 0.1;
-		}
 
-		count += 0.1;
-	
+		count += 0.1;		
+
+		var length = 918 / 20;
+
 		for (var i = 0; i < points.length; i++) {
-			points[i].y = Math.sin(i *0.5  + count) * 20;
+			
+			points[i].y = Math.sin(i *0.5  + count) * 30;
+
+			points[i].x = i * length + Math.cos(i *0.3  + count) * 20;
+			
 		};
 	    
 	    // render the stage
@@ -111,6 +76,8 @@
 
 	    requestAnimFrame(animate);
 	}
+
+
 	</script>
 
 	</body>

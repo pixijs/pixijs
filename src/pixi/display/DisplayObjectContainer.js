@@ -395,7 +395,7 @@ PIXI.DisplayObjectContainer.prototype._renderWebGL = function(renderSession)
 
         renderSession.spriteBatch.stop();
 
-        if(this._mask)renderSession.maskManager.popMask(renderSession);
+        if(this._mask)renderSession.maskManager.popMask(this._mask, renderSession);
         if(this._filters)renderSession.filterManager.popFilter();
         
         renderSession.spriteBatch.start();

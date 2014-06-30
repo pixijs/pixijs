@@ -575,7 +575,7 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
         for (var j = 0; j < this.interactiveItems.length; j++)
         {
             var item = this.interactiveItems[j];
-            if(item.touchmove && item.__touchData[touchEvent.identifier]) item.touchmove(touchData);
+            if(item.touchmove && item.__touchData && item.__touchData[touchEvent.identifier]) item.touchmove(touchData);
         }
     }
 };

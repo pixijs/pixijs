@@ -46,6 +46,9 @@ PIXI.scaleModes = {
     NEAREST:1
 };
 
+// used to create uids for various pixi objects..
+PIXI._UID = 0;
+
 PIXI.Float32Array = Float32Array || Array;
 PIXI.Uint16Array = Uint16Array || Array;
 
