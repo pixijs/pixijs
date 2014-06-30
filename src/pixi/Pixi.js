@@ -16,7 +16,7 @@ PIXI.WEBGL_RENDERER = 0;
 PIXI.CANVAS_RENDERER = 1;
 
 // useful for testing against if your lib is using pixi.
-PIXI.VERSION = "v1.5.3";
+PIXI.VERSION = "v1.5.4";
 
 // the various blend modes supported by pixi
 PIXI.blendModes = {
@@ -45,6 +45,9 @@ PIXI.scaleModes = {
     LINEAR:0,
     NEAREST:1
 };
+
+PIXI.Float32Array = Float32Array || Array;
+PIXI.Uint16Array = Uint16Array || Array;
 
 // interaction frequency 
 PIXI.INTERACTION_FREQUENCY = 30;

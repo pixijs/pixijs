@@ -64,7 +64,7 @@ PIXI.JsonLoader.prototype.load = function () {
 
     var scope = this;
 
-    if(window.XDomainRequest)
+    if(window.XDomainRequest && scope.crossorigin)
     {
         this.ajaxRequest = new window.XDomainRequest();
 

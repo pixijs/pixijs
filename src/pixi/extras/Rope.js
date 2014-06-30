@@ -14,20 +14,11 @@ PIXI.Rope = function(texture, points)
     PIXI.Strip.call( this, texture );
     this.points = points;
 
-    try
-    {
-        this.verticies = new Float32Array(points.length * 4);
-        this.uvs = new Float32Array(points.length * 4);
-        this.colors = new Float32Array(points.length * 2);
-        this.indices = new Uint16Array(points.length * 2);
-    }
-    catch(error)
-    {
-        this.verticies = new Array(points.length * 4);
-        this.uvs = new Array(points.length * 4);
-        this.colors = new Array(points.length * 2);
-        this.indices = new Array(points.length * 2);
-    }
+    this.verticies = new PIXI.Float32Array(points.length * 4);
+    this.uvs = new PIXI.Float32Array(points.length * 4);
+    this.colors = new PIXI.Float32Array(points.length * 2);
+    this.indices = new PIXI.Uint16Array(points.length * 2);
+   
 
     this.refresh();
 };
@@ -55,9 +46,8 @@ PIXI.Rope.prototype.refresh = function()
 
     this.count-=0.2;
 
-
     uvs[0] = 0;
-    uvs[1] = 1;
+    uvs[1] = 0;
     uvs[2] = 0;
     uvs[3] = 1;
 
@@ -72,7 +62,6 @@ PIXI.Rope.prototype.refresh = function()
 
     for (var i = 1; i < total; i++)
     {
-
         point = points[i];
         index = i * 4;
         // time to do some smart drawing!
@@ -85,7 +74,6 @@ PIXI.Rope.prototype.refresh = function()
 
             uvs[index+2] = amount;
             uvs[index+3] = 1;
-
         }
         else
         {
@@ -127,16 +115,10 @@ PIXI.Rope.prototype.updateTransform = function()
     this.count-=0.2;
 
     var verticies = this.verticies;
-    verticies[0] = lastPoint.x + perp.x;
-    verticies[1] = lastPoint.y + perp.y; //+ 200
-    verticies[2] = lastPoint.x - perp.x;
-    verticies[3] = lastPoint.y - perp.y;//+200
-    // time to do some smart drawing!
-
     var total = points.length,
         point, index, ratio, perpLength, num;
 
-    for (var i = 1; i < total; i++)
+    for (var i = 0; i < total; i++)
     {
         point = points[i];
         index = i * 4;

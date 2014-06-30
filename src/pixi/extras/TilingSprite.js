@@ -242,12 +242,7 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
     
     var transform = this.worldTransform;
 
-    // allow for trimming
-//(this.anchor.x) * -frame.width,
-//                               (this.anchor.y) * -frame.height,
-
-         
-    context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx , transform.ty);
+    var i,j;
 
 
     if(!this.__tilePattern ||  this.refreshTexture)
@@ -264,41 +259,60 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
         }
     }
 
+
     // check blend mode
     if(this.blendMode !== renderSession.currentBlendMode)
     {
         renderSession.currentBlendMode = this.blendMode;
         context.globalCompositeOperation = PIXI.blendModesCanvas[renderSession.currentBlendMode];
     }
-
-    context.beginPath();
+    
 
     var tilePosition = this.tilePosition;
     var tileScale = this.tileScale;
 
     tilePosition.x %= this.tilingTexture.baseTexture.width;
     tilePosition.y %= this.tilingTexture.baseTexture.height;
+    
+    
+    var xpos=transform.tx+(this.anchor.x * -this._width)*transform.a;
+    var ypos=transform.ty+(this.anchor.y * -this._height)*transform.d;
+    
+    var xshift=0;
+    var yshift=0;
+    if(xpos<0) xshift=-xpos+(xpos%(this.tilingTexture.baseTexture.width*transform.a*tileScale.x));
+    if(ypos<0) yshift=-ypos+(ypos%(this.tilingTexture.baseTexture.height*transform.d*tileScale.y));
+    context.setTransform(transform.a, transform.c, transform.b, transform.d, xpos+xshift, ypos+yshift);
 
-    // offset
-    context.scale(tileScale.x,tileScale.y);
-    context.translate(tilePosition.x, tilePosition.y);
+    var rectWidth=(this._width -(xshift/transform.a))/tileScale.x;
+    var rectHeight=(this._height -(yshift/transform.d))/tileScale.y;
+    if(rectWidth>0 && rectHeight>0) {
+		context.beginPath();
+	
+		// offset
+		context.scale(tileScale.x,tileScale.y);
+		context.translate(tilePosition.x, tilePosition.y);
 
-    context.fillStyle = this.__tilePattern;
+		context.fillStyle = this.__tilePattern;
+		context.fillRect(-tilePosition.x,-tilePosition.y, rectWidth, rectHeight);
 
-    // make sure to account for the anchor point..
-    context.fillRect(-tilePosition.x + (this.anchor.x * -this._width),-tilePosition.y + (this.anchor.y * -this._height),
-                        this._width / tileScale.x, this._height / tileScale.y);
+		context.scale(1/tileScale.x, 1/tileScale.y);
+		context.translate(-tilePosition.x, -tilePosition.y);
 
-    context.scale(1/tileScale.x, 1/tileScale.y);
-    context.translate(-tilePosition.x, -tilePosition.y);
-
-    context.closePath();
+		context.closePath();
+    }
 
     if(this._mask)
     {
         renderSession.maskManager.popMask(renderSession.context);
     }
+
+    for(i=0,j=this.children.length; i<j; i++)
+    {
+        this.children[i]._renderCanvas(renderSession);
+    }
 };
+
 
 
 /**
@@ -401,7 +415,6 @@ PIXI.TilingSprite.prototype.generateTilingTexture = function(forcePowerOfTwo)
     var isFrame = frame.width !== baseTexture.width || frame.height !== baseTexture.height;
 
     var newTextureRequired = false;
-
     if(!forcePowerOfTwo)
     {
         if(isFrame)
@@ -417,7 +430,9 @@ PIXI.TilingSprite.prototype.generateTilingTexture = function(forcePowerOfTwo)
     {
         targetWidth = PIXI.getNextPowerOfTwo(frame.width);
         targetHeight = PIXI.getNextPowerOfTwo(frame.height);
-        if(frame.width !== targetWidth && frame.height !== targetHeight)newTextureRequired = true;
+
+        if(frame.width !== targetWidth || frame.height !== targetHeight)newTextureRequired = true;
+
     }
 
     if(newTextureRequired)
