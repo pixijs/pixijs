@@ -502,12 +502,12 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
     if(points.length === 0)return;
 
     // if the line width is an odd number add 0.5 to align to a whole pixel
-    if(graphicsData.lineWidth%2)
+    /*if(graphicsData.lineWidth%2)
     {
         for (i = 0; i < points.length; i++) {
             points[i] += 0.5;
         }
-    }
+    }*/
 
     // get first and last point.. figure out the middle!
     var firstPoint = new PIXI.Point( points[0], points[1] );
