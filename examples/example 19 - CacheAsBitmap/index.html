@@ -47,10 +47,7 @@
 
 	stage.addChild(alienContainer);
 
-	var lable = new PIXI.Text("Click to enable cacheAsBitmap", {fill:"black", stroke:"white", strokeThickness:5});
-	lable.position.x = 20;
-	lable.position.y = 600 - 50;
-	stage.addChild(lable)
+
 
 	function onAssetsLoaded()
 	{
@@ -61,6 +58,7 @@
 
 			// create an alien using the frame name..
 			var alien = PIXI.Sprite.fromFrame(frameName);
+			alien.tint = Math.random() * 0xFFFFFF;
 
 			/*
 			 * fun fact for the day :)
@@ -81,18 +79,14 @@
 	}
 
 	stage.mousedown = stage.touchstart = function()
-	{	
-		if(alienContainer.cacheAsBitmap === true)
-		{
-			lable.setText("Click to enable cacheAsBitmap");
-			alienContainer.cacheAsBitmap = false;
-			
-		}
-		else
-		{
-			lable.setText("Click to disable cacheAsBitmap");
-			alienContainer.cacheAsBitmap = true;
-		}
+	{
+alienContainer.cacheAsBitmap = !alienContainer.cacheAsBitmap
+		console.log(alienContainer.getLocalBounds())
+
+//		var sprite = new PIXI.Sprite(alienContainer.generateTexture());
+//		stage.addChild(sprite);
+	//sprite.position.x = 800/2;
+//		sprite.position.y = 600/2;
 	}
 
 	function animate() {

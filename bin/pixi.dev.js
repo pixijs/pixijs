@@ -1,10 +1,10 @@
 /**
  * @license
- * pixi.js - v1.5.2
+ * pixi.js - v1.5.3
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-06-29
+ * Compiled: 2014-06-30
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -77,6 +77,7 @@ PIXI.AUTO_PREVENT_DEFAULT = true;
 
 PIXI.RAD_TO_DEG = 180 / Math.PI;
 PIXI.DEG_TO_RAD = Math.PI / 180;
+
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -1112,7 +1113,6 @@ PIXI.DisplayObject.prototype._generateCachedSprite = function()//renderSession)
 
     this._cachedSprite.anchor.x = -( bounds.x / bounds.width );
     this._cachedSprite.anchor.y = -( bounds.y / bounds.height );
-
 
     this._filters = tempFilters;
 
@@ -3711,7 +3711,7 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
         for (var j = 0; j < this.interactiveItems.length; j++)
         {
             var item = this.interactiveItems[j];
-            if(item.touchmove && item.__touchData[touchEvent.identifier]) item.touchmove(touchData);
+            if(item.touchmove && item.__touchData && item.__touchData[touchEvent.identifier]) item.touchmove(touchData);
         }
     }
 };
@@ -5817,7 +5817,6 @@ PIXI.WebGLGraphics.buildRoundedRectangle = function(graphicsData, webGLData)
  */
 PIXI.WebGLGraphics.buildCircle = function(graphicsData, webGLData)
 {
-    
     // need to convert points to a nice regular data
     var rectData = graphicsData.points;
     var x = rectData[0];
@@ -5825,11 +5824,13 @@ PIXI.WebGLGraphics.buildCircle = function(graphicsData, webGLData)
     var width = rectData[2];
     var height = rectData[3];
 
-    var totalSegs = 40;
-    var seg = (Math.PI * 2) / totalSegs ;
-
+    var beginAngle=graphicsData.beginAngle;
+    var endAngle=graphicsData.endAngle;
+    var circleAngle=endAngle-beginAngle;
+    var totalSegs = Math.round(40*circleAngle/(Math.PI*2));
+    var seg=circleAngle/totalSegs;
+    var angle=0;
     var i = 0;
-
     if(graphicsData.fill)
     {
         var color = PIXI.hex2rgb(graphicsData.fillColor);
@@ -5848,10 +5849,10 @@ PIXI.WebGLGraphics.buildCircle = function(graphicsData, webGLData)
 
         for (i = 0; i < totalSegs + 1 ; i++)
         {
+            angle=beginAngle+seg*i;
             verts.push(x,y, r, g, b, alpha);
-
-            verts.push(x + Math.sin(seg * i) * width,
-                       y + Math.cos(seg * i) * height,
+            verts.push(x + Math.cos(angle) * width,
+                       y + Math.sin(angle) * height,
                        r, g, b, alpha);
 
             indices.push(vecPos++, vecPos++);
@@ -5863,17 +5864,14 @@ PIXI.WebGLGraphics.buildCircle = function(graphicsData, webGLData)
     if(graphicsData.lineWidth)
     {
         var tempPoints = graphicsData.points;
-
         graphicsData.points = [];
-
         for (i = 0; i < totalSegs + 1; i++)
         {
-            graphicsData.points.push(x + Math.sin(seg * i) * width,
-                                     y + Math.cos(seg * i) * height);
+            angle=graphicsData.beginAngle+seg*i;
+            graphicsData.points.push(x + Math.cos(angle) * width,
+                                     y + Math.sin(angle) * height);
         }
-
         PIXI.WebGLGraphics.buildLine(graphicsData, webGLData);
-
         graphicsData.points = tempPoints;
     }
 };
@@ -5896,12 +5894,13 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
     if(points.length === 0)return;
 
     // if the line width is an odd number add 0.5 to align to a whole pixel
-    if(graphicsData.lineWidth%2)
+    // TODO Line is rendered at a wrong place when lineWidth is not an integer with this tweak
+    /*if(graphicsData.lineWidth%2)
     {
         for (i = 0; i < points.length; i++) {
             points[i] += 0.5;
         }
-    }
+    }*/
 
     // get first and last point.. figure out the middle!
     var firstPoint = new PIXI.Point( points[0], points[1] );
@@ -9496,11 +9495,11 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
         {
             // TODO - need to be Undefined!
             context.beginPath();
-            context.arc(points[0], points[1], points[2],0,2*Math.PI);
-            context.closePath();
+            context.arc(points[0], points[1], points[2],data.beginAngle, data.endAngle);
 
             if(data.fill)
             {
+                context.closePath();
                 context.globalAlpha = data.fillAlpha * worldAlpha;
                 context.fillStyle = color = '#' + ('00000' + ( data.fillColor | 0).toString(16)).substr(-6);
                 context.fill();
@@ -10121,12 +10120,36 @@ PIXI.Graphics.prototype.drawRoundedRect = function( x, y, width, height, radius 
  */
 PIXI.Graphics.prototype.drawCircle = function( x, y, radius)
 {
-
     if (!this.currentPath.points.length) this.graphicsData.pop();
 
     this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha,
                         fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling,
-                        points:[x, y, radius, radius], type:PIXI.Graphics.CIRC};
+                        points:[x, y, radius, radius], beginAngle: 0, endAngle: Math.PI*2, type:PIXI.Graphics.CIRC};
+
+    this.graphicsData.push(this.currentPath);
+    this.dirty = true;
+
+    return this;
+};
+
+/**
+ * Draws an arc.
+ *
+ * @method drawArc
+ * @param x {Number} The X coordinate of the center of the circle
+ * @param y {Number} The Y coordinate of the center of the circle
+ * @param radius {Number} The radius of the circle
+ * @param beginAngle {Number} Begin angle in radian
+ * @param endAngle {Number} End angle in radian
+ */
+PIXI.Graphics.prototype.drawArc = function( x, y, radius, beginAngle, endAngle)
+{
+    if(beginAngle === undefined) beginAngle=0;
+    if(endAngle === undefined) endAngle=Math.PI*2;
+    if (!this.currentPath.points.length) this.graphicsData.pop();
+    this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha,
+                        fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling,
+                        points:[x, y, radius, radius], beginAngle: beginAngle, endAngle: endAngle, type:PIXI.Graphics.CIRC};
 
     this.graphicsData.push(this.currentPath);
     this.dirty = true;
@@ -11213,13 +11236,6 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
 
     var i,j;
 
-    // allow for trimming
-//(this.anchor.x) * -frame.width,
-//                               (this.anchor.y) * -frame.height,
-
-         
-    context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx , transform.ty);
-
 
     if(!this.__tilePattern ||  this.refreshTexture)
     {
@@ -11235,35 +11251,48 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
         }
     }
 
+
     // check blend mode
     if(this.blendMode !== renderSession.currentBlendMode)
     {
         renderSession.currentBlendMode = this.blendMode;
         context.globalCompositeOperation = PIXI.blendModesCanvas[renderSession.currentBlendMode];
     }
-
-    context.beginPath();
+    
 
     var tilePosition = this.tilePosition;
     var tileScale = this.tileScale;
 
     tilePosition.x %= this.tilingTexture.baseTexture.width;
     tilePosition.y %= this.tilingTexture.baseTexture.height;
+    
+    
+    var xpos=transform.tx+(this.anchor.x * -this._width)*transform.a;
+    var ypos=transform.ty+(this.anchor.y * -this._height)*transform.d;
+    
+    var xshift=0;
+    var yshift=0;
+    if(xpos<0) xshift=-xpos+(xpos%(this.tilingTexture.baseTexture.width*transform.a*tileScale.x));
+    if(ypos<0) yshift=-ypos+(ypos%(this.tilingTexture.baseTexture.height*transform.d*tileScale.y));
+    context.setTransform(transform.a, transform.c, transform.b, transform.d, xpos+xshift, ypos+yshift);
 
-    // offset
-    context.scale(tileScale.x,tileScale.y);
-    context.translate(tilePosition.x, tilePosition.y);
+    var rectWidth=(this._width -(xshift/transform.a))/tileScale.x;
+    var rectHeight=(this._height -(yshift/transform.d))/tileScale.y;
+    if(rectWidth>0 && rectHeight>0) {
+		context.beginPath();
+	
+		// offset
+		context.scale(tileScale.x,tileScale.y);
+		context.translate(tilePosition.x, tilePosition.y);
 
-    context.fillStyle = this.__tilePattern;
+		context.fillStyle = this.__tilePattern;
+		context.fillRect(-tilePosition.x,-tilePosition.y, rectWidth, rectHeight);
 
-    // make sure to account for the anchor point..
-    context.fillRect(-tilePosition.x + (this.anchor.x * -this._width),-tilePosition.y + (this.anchor.y * -this._height),
-                        this._width / tileScale.x, this._height / tileScale.y);
+		context.scale(1/tileScale.x, 1/tileScale.y);
+		context.translate(-tilePosition.x, -tilePosition.y);
 
-    context.scale(1/tileScale.x, 1/tileScale.y);
-    context.translate(-tilePosition.x, -tilePosition.y);
-
-    context.closePath();
+		context.closePath();
+    }
 
     if(this._mask)
     {
@@ -11275,6 +11304,7 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
         this.children[i]._renderCanvas(renderSession);
     }
 };
+
 
 
 /**
@@ -11450,6 +11480,7 @@ PIXI.TilingSprite.prototype.generateTilingTexture = function(forcePowerOfTwo)
     this.refreshTexture = false;
     this.tilingTexture.baseTexture._powerOf2 = true;
 };
+
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  * based on pixi impact spine implementation made by Eemeli Kelokorpi (@ekelokorpi) https://github.com/ekelokorpi
@@ -11863,9 +11894,9 @@ spine.ColorTimeline = function (frameCount) {
 spine.ColorTimeline.prototype = {
     slotIndex: 0,
     getFrameCount: function () {
-        return this.frames.length / 2;
+        return this.frames.length / 5;
     },
-    setFrame: function (frameIndex, time, x, y) {
+    setFrame: function (frameIndex, time, r, g, b, a) {
         frameIndex *= 5;
         this.frames[frameIndex] = time;
         this.frames[frameIndex + 1] = r;
@@ -12563,7 +12594,7 @@ spine.SkeletonJson.readCurve = function (timeline, frameIndex, valueMap) {
 };
 spine.SkeletonJson.toColor = function (hexString, colorIndex) {
     if (hexString.length != 8) throw "Color hexidecimal length must be 8, recieved: " + hexString;
-    return parseInt(hexString.substring(colorIndex * 2, 2), 16) / 255;
+    return parseInt(hexString.substr(colorIndex * 2, 2), 16) / 255;
 };
 
 spine.Atlas = function (atlasText, textureLoader) {
@@ -12904,6 +12935,9 @@ PIXI.Spine.prototype.updateTransform = function () {
         slotContainer.scale.y = bone.worldScaleY;
 
         slotContainer.rotation = -(slot.bone.worldRotation * Math.PI / 180);
+
+        slotContainer.alpha = slot.a;
+        slot.currentSprite.tint = PIXI.rgb2hex([slot.r,slot.g,slot.b]);
     }
 
     PIXI.DisplayObjectContainer.prototype.updateTransform.call(this);
@@ -13108,6 +13142,16 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
     return baseTexture;
 };
 
+/**
+ * Helper function that returns a base texture based on a canvas element
+ * If the image is not in the base texture cache it will be created and loaded
+ *
+ * @static
+ * @method fromCanvas
+ * @param canvas {Canvas} The canvas element source of the texture
+ * @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
+ * @return BaseTexture
+ */
 PIXI.BaseTexture.fromCanvas = function(canvas, scaleMode)
 {
     if(!canvas._pixiId)
@@ -13287,6 +13331,7 @@ PIXI.Texture.prototype._updateWebGLuvs = function()
  * @method fromImage
  * @param imageUrl {String} The image url of the texture
  * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
+ * @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
  * @return Texture
  */
 PIXI.Texture.fromImage = function(imageUrl, crossorigin, scaleMode)
@@ -13325,6 +13370,7 @@ PIXI.Texture.fromFrame = function(frameId)
  * @static
  * @method fromCanvas
  * @param canvas {Canvas} The canvas element source of the texture
+ * @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
  * @return Texture
  */
 PIXI.Texture.fromCanvas = function(canvas, scaleMode)

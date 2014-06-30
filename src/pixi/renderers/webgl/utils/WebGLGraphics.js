@@ -423,7 +423,6 @@ PIXI.WebGLGraphics.buildRoundedRectangle = function(graphicsData, webGLData)
  */
 PIXI.WebGLGraphics.buildCircle = function(graphicsData, webGLData)
 {
-    
     // need to convert points to a nice regular data
     var rectData = graphicsData.points;
     var x = rectData[0];
@@ -431,11 +430,13 @@ PIXI.WebGLGraphics.buildCircle = function(graphicsData, webGLData)
     var width = rectData[2];
     var height = rectData[3];
 
-    var totalSegs = 40;
-    var seg = (Math.PI * 2) / totalSegs ;
-
+    var beginAngle=graphicsData.beginAngle;
+    var endAngle=graphicsData.endAngle;
+    var circleAngle=endAngle-beginAngle;
+    var totalSegs = Math.round(40*circleAngle/(Math.PI*2));
+    var seg=circleAngle/totalSegs;
+    var angle=0;
     var i = 0;
-
     if(graphicsData.fill)
     {
         var color = PIXI.hex2rgb(graphicsData.fillColor);
@@ -454,10 +455,10 @@ PIXI.WebGLGraphics.buildCircle = function(graphicsData, webGLData)
 
         for (i = 0; i < totalSegs + 1 ; i++)
         {
+            angle=beginAngle+seg*i;
             verts.push(x,y, r, g, b, alpha);
-
-            verts.push(x + Math.sin(seg * i) * width,
-                       y + Math.cos(seg * i) * height,
+            verts.push(x + Math.cos(angle) * width,
+                       y + Math.sin(angle) * height,
                        r, g, b, alpha);
 
             indices.push(vecPos++, vecPos++);
@@ -469,17 +470,14 @@ PIXI.WebGLGraphics.buildCircle = function(graphicsData, webGLData)
     if(graphicsData.lineWidth)
     {
         var tempPoints = graphicsData.points;
-
         graphicsData.points = [];
-
         for (i = 0; i < totalSegs + 1; i++)
         {
-            graphicsData.points.push(x + Math.sin(seg * i) * width,
-                                     y + Math.cos(seg * i) * height);
+            angle=graphicsData.beginAngle+seg*i;
+            graphicsData.points.push(x + Math.cos(angle) * width,
+                                     y + Math.sin(angle) * height);
         }
-
         PIXI.WebGLGraphics.buildLine(graphicsData, webGLData);
-
         graphicsData.points = tempPoints;
     }
 };
@@ -502,12 +500,13 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
     if(points.length === 0)return;
 
     // if the line width is an odd number add 0.5 to align to a whole pixel
-    if(graphicsData.lineWidth%2)
+    // TODO Line is rendered at a wrong place when lineWidth is not an integer with this tweak
+    /*if(graphicsData.lineWidth%2)
     {
         for (i = 0; i < points.length; i++) {
             points[i] += 0.5;
         }
-    }
+    }*/
 
     // get first and last point.. figure out the middle!
     var firstPoint = new PIXI.Point( points[0], points[1] );

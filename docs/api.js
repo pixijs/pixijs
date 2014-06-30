@@ -59,7 +59,8 @@ YUI.add("yuidoc-meta", function(Y) {
         "WebGLRenderer",
         "WebGLShaderManager",
         "WebGLSpriteBatch",
-        "autoDetectRenderer"
+        "autoDetectRenderer",
+        "getRecommendedRenderer"
     ],
     "modules": [
         "PIXI"

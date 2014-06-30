@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.5.0</em>
+            <em>API Docs for: 1.5.3</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -88,6 +88,8 @@
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
+            
+                <li><a href="../classes/getRecommendedRenderer.html">getRecommendedRenderer</a></li>
             
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
             
@@ -371,6 +373,43 @@ PIXI.MovieClip.prototype.updateTransform = function()
     }
 };
 
+/**
+ * A short hand way of creating a movieclip from an array of frame ids
+ *
+ * @static
+ * @method fromFrames
+ * @param frames {Array} the array of frames ids the movieclip will use as its texture frames
+ */
+PIXI.MovieClip.prototype.fromFrames = function(frames)
+{
+    var textures = [];
+
+    for (var i = 0; i &lt; frames.length; i++)
+    {
+        textures.push(new PIXI.Texture.fromFrame(frames[i]));
+    }
+
+    return new PIXI.MovieClip(textures);
+};
+
+/**
+ * A short hand way of creating a movieclip from an array of image ids
+ *
+ * @static
+ * @method fromFrames
+ * @param frames {Array} the array of image ids the movieclip will use as its texture frames
+ */
+PIXI.MovieClip.prototype.fromImages = function(images)
+{
+    var textures = [];
+
+    for (var i = 0; i &lt; images.length; i++)
+    {
+        textures.push(new PIXI.Texture.fromImage(images[i]));
+    }
+
+    return new PIXI.MovieClip(textures);
+};
     </pre>
 </div>
 
