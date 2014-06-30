@@ -413,14 +413,14 @@ PIXI.Graphics.prototype.drawRoundedRect = function( x, y, width, height, radius 
  * @param y {Number} The Y coordinate of the center of the circle
  * @param radius {Number} The radius of the circle
  */
-PIXI.Graphics.prototype.drawCircle = function( x, y, radius)
+PIXI.Graphics.prototype.drawCircle = function( x, y, radius, beginAngle, endAngle)
 {
 
     if (!this.currentPath.points.length) this.graphicsData.pop();
 
     this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha,
                         fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling,
-                        points:[x, y, radius, radius], type:PIXI.Graphics.CIRC};
+                        points:[x, y, radius, radius], beginAngle: beginAngle || 0, endAngle: endAngle || (Math.PI*2), type:PIXI.Graphics.CIRC};
 
     this.graphicsData.push(this.currentPath);
     this.dirty = true;

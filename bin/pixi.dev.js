@@ -5817,7 +5817,6 @@ PIXI.WebGLGraphics.buildRoundedRectangle = function(graphicsData, webGLData)
  */
 PIXI.WebGLGraphics.buildCircle = function(graphicsData, webGLData)
 {
-    
     // need to convert points to a nice regular data
     var rectData = graphicsData.points;
     var x = rectData[0];
@@ -5825,11 +5824,13 @@ PIXI.WebGLGraphics.buildCircle = function(graphicsData, webGLData)
     var width = rectData[2];
     var height = rectData[3];
 
-    var totalSegs = 40;
-    var seg = (Math.PI * 2) / totalSegs ;
-
+    var beginAngle=graphicsData.beginAngle;
+    var endAngle=graphicsData.endAngle;
+    var circleAngle=endAngle-beginAngle;
+    var totalSegs = Math.round(40*circleAngle/(Math.PI*2));
+    var seg=circleAngle/totalSegs;
+    var angle=0;
     var i = 0;
-
     if(graphicsData.fill)
     {
         var color = PIXI.hex2rgb(graphicsData.fillColor);
@@ -5848,10 +5849,10 @@ PIXI.WebGLGraphics.buildCircle = function(graphicsData, webGLData)
 
         for (i = 0; i < totalSegs + 1 ; i++)
         {
+            angle=beginAngle+seg*i;
             verts.push(x,y, r, g, b, alpha);
-
-            verts.push(x + Math.sin(seg * i) * width,
-                       y + Math.cos(seg * i) * height,
+            verts.push(x + Math.cos(angle) * width,
+                       y + Math.sin(angle) * height,
                        r, g, b, alpha);
 
             indices.push(vecPos++, vecPos++);
@@ -5863,17 +5864,14 @@ PIXI.WebGLGraphics.buildCircle = function(graphicsData, webGLData)
     if(graphicsData.lineWidth)
     {
         var tempPoints = graphicsData.points;
-
         graphicsData.points = [];
-
         for (i = 0; i < totalSegs + 1; i++)
         {
-            graphicsData.points.push(x + Math.sin(seg * i) * width,
-                                     y + Math.cos(seg * i) * height);
+            angle=graphicsData.beginAngle+seg*i;
+            graphicsData.points.push(x + Math.cos(angle) * width,
+                                     y + Math.sin(angle) * height);
         }
-
         PIXI.WebGLGraphics.buildLine(graphicsData, webGLData);
-
         graphicsData.points = tempPoints;
     }
 };
@@ -9497,11 +9495,11 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
         {
             // TODO - need to be Undefined!
             context.beginPath();
-            context.arc(points[0], points[1], points[2],0,2*Math.PI);
-            context.closePath();
+            context.arc(points[0], points[1], points[2],data.beginAngle, data.endAngle);
 
             if(data.fill)
             {
+                context.closePath();
                 context.globalAlpha = data.fillAlpha * worldAlpha;
                 context.fillStyle = color = '#' + ('00000' + ( data.fillColor | 0).toString(16)).substr(-6);
                 context.fill();
@@ -10120,14 +10118,14 @@ PIXI.Graphics.prototype.drawRoundedRect = function( x, y, width, height, radius 
  * @param y {Number} The Y coordinate of the center of the circle
  * @param radius {Number} The radius of the circle
  */
-PIXI.Graphics.prototype.drawCircle = function( x, y, radius)
+PIXI.Graphics.prototype.drawCircle = function( x, y, radius, beginAngle, endAngle)
 {
 
     if (!this.currentPath.points.length) this.graphicsData.pop();
 
     this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha,
                         fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling,
-                        points:[x, y, radius, radius], type:PIXI.Graphics.CIRC};
+                        points:[x, y, radius, radius], beginAngle: beginAngle || 0, endAngle: endAngle || (Math.PI*2), type:PIXI.Graphics.CIRC};
 
     this.graphicsData.push(this.currentPath);
     this.dirty = true;
