@@ -16,7 +16,7 @@ PIXI.WEBGL_RENDERER = 0;
 PIXI.CANVAS_RENDERER = 1;
 
 // useful for testing against if your lib is using pixi.
-PIXI.VERSION = "v1.5.4";
+PIXI.VERSION = 'v1.5.4';
 
 // the various blend modes supported by pixi
 PIXI.blendModes = {
@@ -58,3 +58,32 @@ PIXI.AUTO_PREVENT_DEFAULT = true;
 
 PIXI.RAD_TO_DEG = 180 / Math.PI;
 PIXI.DEG_TO_RAD = Math.PI / 180;
+
+PIXI.sayHello = function () 
+{
+    if ( navigator.userAgent.toLowerCase().indexOf('chrome') > -1 )
+    {
+        var args = [
+            '%c %c %c Pixi.js ' + PIXI.VERSION + '  %c %c ' + ' http://pixjs.com  %c %c ♥%c♥%c♥ ',
+            'background: #ed2577',
+            'background: #ed2577',
+            'color: #ed2577; background: #0a0c1a;',
+            'background: #ed2577',
+            'background: #0a0c1a',
+            'background: #ed2577',
+            'color: #ff2424; background: #fff',
+            'color: #ff2424; background: #fff',
+            'color: #ff2424; background: #fff'
+        ];
+
+       
+
+        console.log.apply(console, args);
+    }
+    else if (window['console'])
+    {
+        console.log('Pixi.js ' + PIXI.VERSION + ' - http://pixjs.com');
+    }
+};
+
+PIXI.sayHello();

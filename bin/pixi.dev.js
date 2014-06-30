@@ -4,7 +4,7 @@
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-06-29
+ * Compiled: 2014-06-30
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -35,7 +35,7 @@ PIXI.WEBGL_RENDERER = 0;
 PIXI.CANVAS_RENDERER = 1;
 
 // useful for testing against if your lib is using pixi.
-PIXI.VERSION = "v1.5.4";
+PIXI.VERSION = 'v1.5.4';
 
 // the various blend modes supported by pixi
 PIXI.blendModes = {
@@ -77,6 +77,35 @@ PIXI.AUTO_PREVENT_DEFAULT = true;
 
 PIXI.RAD_TO_DEG = 180 / Math.PI;
 PIXI.DEG_TO_RAD = Math.PI / 180;
+
+PIXI.sayHello = function () 
+{
+    if ( navigator.userAgent.toLowerCase().indexOf('chrome') > -1 )
+    {
+        var args = [
+            '%c %c %c Pixi.js ' + PIXI.VERSION + '  %c %c ' + ' http://pixjs.com  %c %c ♥%c♥%c♥ ',
+            'background: #ed2577',
+            'background: #ed2577',
+            'color: #ed2577; background: #0a0c1a;',
+            'background: #ed2577',
+            'background: #0a0c1a',
+            'background: #ed2577',
+            'color: #ff2424; background: #fff',
+            'color: #ff2424; background: #fff',
+            'color: #ff2424; background: #fff'
+        ];
+
+       
+
+        console.log.apply(console, args);
+    }
+    else if (window['console'])
+    {
+        console.log('Pixi.js ' + PIXI.VERSION + ' - http://pixjs.com');
+    }
+};
+
+PIXI.sayHello();
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -3711,7 +3740,7 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
         for (var j = 0; j < this.interactiveItems.length; j++)
         {
             var item = this.interactiveItems[j];
-            if(item.touchmove && item.__touchData[touchEvent.identifier]) item.touchmove(touchData);
+            if(item.touchmove && item.__touchData && item.__touchData[touchEvent.identifier]) item.touchmove(touchData);
         }
     }
 };
@@ -6110,7 +6139,7 @@ PIXI.WebGLGraphics.buildComplexPoly = function(graphicsData, webGLData)
     // get first and last point.. figure out the middle!
     var indices = webGLData.indices;
     webGLData.points = points;
-    
+    webGLData.alpha = graphicsData.fillAlpha;
     webGLData.color = PIXI.hex2rgb(graphicsData.fillColor);
 
     /*
@@ -6208,6 +6237,7 @@ PIXI.WebGLGraphicsData = function(gl)
     this.buffer = gl.createBuffer();
     this.indexBuffer = gl.createBuffer();
     this.mode = 1;
+    this.alpha = 1;
     this.dirty = true;
 };
 
@@ -7042,7 +7072,7 @@ PIXI.WebGLStencilManager.prototype.bindGraphics = function(graphics, webGLData, 
         gl.uniform3fv(shader.tintColor, PIXI.hex2rgb(graphics.tint));
         gl.uniform3fv(shader.color, webGLData.color);
 
-        gl.uniform1f(shader.alpha, graphics.worldAlpha * graphics.fillAlpha);
+        gl.uniform1f(shader.alpha, graphics.worldAlpha * webGLData.alpha);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, webGLData.buffer);
 
@@ -13017,7 +13047,8 @@ PIXI.BaseTexture = function(source, scaleMode)
             scope.width = scope.source.width;
             scope.height = scope.source.height;
 
-            for (var i = 0; i < scope._glTextures.length; i++) {
+            for (var i = 0; i < scope._glTextures.length; i++)
+            {
                 scope._dirty[i] = true;
             }
 

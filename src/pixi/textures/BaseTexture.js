@@ -93,7 +93,8 @@ PIXI.BaseTexture = function(source, scaleMode)
             scope.width = scope.source.width;
             scope.height = scope.source.height;
 
-            for (var i = 0; i < scope._glTextures.length; i++) {
+            for (var i = 0; i < scope._glTextures.length; i++)
+            {
                 scope._dirty[i] = true;
             }
 
