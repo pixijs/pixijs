@@ -376,8 +376,8 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
             }
 
             context.drawImage(this.tintedTexture,
-                               0,
-                               0,
+                               frame.x,
+                               frame.y,
                                frame.width,
                                frame.height,
                                (this.anchor.x) * -frame.width,
