@@ -19,6 +19,8 @@ PIXI.TextureCacheIdGenerator = 0;
  */
 PIXI.Texture = function(baseTexture, frame)
 {
+    PIXI.EventTarget.call( this );
+
     if(!frame)
     {
         this.noFrame = true;
@@ -51,7 +53,15 @@ PIXI.Texture = function(baseTexture, frame)
      * @type Rectangle
      */
     this.trim = null;
-  
+    
+    /**
+     * This will let the renderer know if the texture is valid. If its not then it cannot be rendered
+     *
+     * @property valid
+     * @type Boolean
+     */
+    this.valid = false;
+
     this.scope = this;
 
     this._uvs = null;
@@ -65,13 +75,11 @@ PIXI.Texture = function(baseTexture, frame)
     else
     {
         var scope = this;
-        baseTexture.on('loaded', function(){ scope.onBaseTextureLoaded(); });
+        baseTexture.addEventListener('loaded', function(){ scope.onBaseTextureLoaded(); });
     }
 };
 
 PIXI.Texture.prototype.constructor = PIXI.Texture;
-
-PIXI.EventTarget.mixin(PIXI.Texture.prototype);
 
 /**
  * Called when the base texture is loaded
@@ -83,13 +91,13 @@ PIXI.EventTarget.mixin(PIXI.Texture.prototype);
 PIXI.Texture.prototype.onBaseTextureLoaded = function()
 {
     var baseTexture = this.baseTexture;
-    baseTexture.off( 'loaded', this.onLoaded );
+    baseTexture.removeEventListener( 'loaded', this.onLoaded );
 
     if(this.noFrame)this.frame = new PIXI.Rectangle(0,0, baseTexture.width, baseTexture.height);
     
     this.setFrame(this.frame);
 
-    this.scope.emit('update', { content: this });
+    this.scope.dispatchEvent( { type: 'update', content: this } );
 };
 
 /**
@@ -101,6 +109,7 @@ PIXI.Texture.prototype.onBaseTextureLoaded = function()
 PIXI.Texture.prototype.destroy = function(destroyBase)
 {
     if(destroyBase) this.baseTexture.destroy();
+    this.valid = false;
 };
 
 /**
@@ -120,13 +129,12 @@ PIXI.Texture.prototype.setFrame = function(frame)
         throw new Error('Texture Error: frame does not fit inside the base Texture dimensions ' + this);
     }
 
-    this.updateFrame = true;
+    this.valid = frame && frame.width && frame.height && this.baseTexture.source && this.baseTexture.hasLoaded;
 
-    PIXI.Texture.frameUpdates.push(this);
+    if(this.valid)PIXI.Texture.frameUpdates.push(this);
 
-
-    //this.emit('update', { content: this });
 };
+
 
 PIXI.Texture.prototype._updateWebGLuvs = function()
 {

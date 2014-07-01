@@ -571,14 +571,12 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
             touchData.global.x = touchEvent.clientX;
             touchData.global.y = touchEvent.clientY;
         }
-    }
 
-    var length = this.interactiveItems.length;
-    for (i = 0; i < length; i++)
-    {
-        var item = this.interactiveItems[i];
-        if(item.touchmove)
-            item.touchmove(touchData);
+        for (var j = 0; j < this.interactiveItems.length; j++)
+        {
+            var item = this.interactiveItems[j];
+            if(item.touchmove && item.__touchData && item.__touchData[touchEvent.identifier]) item.touchmove(touchData);
+        }
     }
 };
 
@@ -628,7 +626,8 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
                     //call the function!
                     if(item.touchstart)item.touchstart(touchData);
                     item.__isDown = true;
-                    item.__touchData = touchData;
+                    item.__touchData = item.__touchData || {};
+                    item.__touchData[touchEvent.identifier] = touchData;
 
                     if(!item.interactiveChildren)break;
                 }
@@ -666,11 +665,11 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
         for (var j = 0; j < length; j++)
         {
             var item = this.interactiveItems[j];
-            var itemTouchData = item.__touchData; // <-- Here!
-            item.__hit = this.hitTest(item, touchData);
 
-            if(itemTouchData === touchData)
-            {
+            if(item.__touchData && item.__touchData[touchEvent.identifier]) {
+
+                item.__hit = this.hitTest(item, item.__touchData[touchEvent.identifier]);
+
                 // so this one WAS down...
                 touchData.originalEvent = event || window.event;
                 // hitTest??
@@ -698,15 +697,8 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
                     item.__isDown = false;
                 }
 
-                item.__touchData = null;
-
+                item.__touchData[touchEvent.identifier] = null;
             }
-            /*
-            else
-            {
-
-            }
-            */
         }
         // remove the touch..
         this.pool.push(touchData);

@@ -242,6 +242,8 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
     
     var transform = this.worldTransform;
 
+    var i,j;
+
     // allow for trimming
 //(this.anchor.x) * -frame.width,
 //                               (this.anchor.y) * -frame.height,
@@ -297,6 +299,11 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
     if(this._mask)
     {
         renderSession.maskManager.popMask(renderSession.context);
+    }
+
+    for(i=0,j=this.children.length; i<j; i++)
+    {
+        this.children[i]._renderCanvas(renderSession);
     }
 };
 
@@ -401,7 +408,6 @@ PIXI.TilingSprite.prototype.generateTilingTexture = function(forcePowerOfTwo)
     var isFrame = frame.width !== baseTexture.width || frame.height !== baseTexture.height;
 
     var newTextureRequired = false;
-
     if(!forcePowerOfTwo)
     {
         if(isFrame)
@@ -417,7 +423,9 @@ PIXI.TilingSprite.prototype.generateTilingTexture = function(forcePowerOfTwo)
     {
         targetWidth = PIXI.getNextPowerOfTwo(frame.width);
         targetHeight = PIXI.getNextPowerOfTwo(frame.height);
-        if(frame.width !== targetWidth && frame.height !== targetHeight)newTextureRequired = true;
+
+        if(frame.width !== targetWidth || frame.height !== targetHeight)newTextureRequired = true;
+
     }
 
     if(newTextureRequired)

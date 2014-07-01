@@ -3,7 +3,8 @@
  */
 
 /**
- * The base class for all objects that are rendered on the screen.
+ * The base class for all objects that are rendered on the screen. 
+ * This is an abstract class and should not be used on its own rather it should be extended.
  *
  * @class DisplayObject
  * @constructor
@@ -384,6 +385,13 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'filters', {
     }
 });
 
+/**
+ * Set weather or not a the display objects is cached as a bitmap.
+ * This basically takes a snap shot of the display object as it is at that moment. It can provide a performance benefit for complex static displayObjects
+ * To remove filters simply set this property to 'null'
+ * @property cacheAsBitmap
+ * @type Boolean
+ */
 Object.defineProperty(PIXI.DisplayObject.prototype, 'cacheAsBitmap', {
     get: function() {
         return  this._cacheAsBitmap;
@@ -491,7 +499,7 @@ PIXI.DisplayObject.prototype.generateTexture = function(renderer)
     var bounds = this.getLocalBounds();
 
     var renderTexture = new PIXI.RenderTexture(bounds.width | 0, bounds.height | 0, renderer);
-    renderTexture.render(this);
+    renderTexture.render(this, new PIXI.Point(-bounds.x, -bounds.y) );
 
     return renderTexture;
 };
@@ -503,6 +511,8 @@ PIXI.DisplayObject.prototype.updateCache = function()
 
 PIXI.DisplayObject.prototype._renderCachedSprite = function(renderSession)
 {
+    this._cachedSprite.worldAlpha = this.worldAlpha;
+   
     if(renderSession.gl)
     {
         PIXI.Sprite.prototype._renderWebGL.call(this._cachedSprite, renderSession);
@@ -535,7 +545,11 @@ PIXI.DisplayObject.prototype._generateCachedSprite = function()//renderSession)
     this._filters = null;
 
     this._cachedSprite.filters = tempFilters;
-    this._cachedSprite.texture.render(this);
+    this._cachedSprite.texture.render(this, new PIXI.Point(-bounds.x, -bounds.y) );
+
+    this._cachedSprite.anchor.x = -( bounds.x / bounds.width );
+    this._cachedSprite.anchor.y = -( bounds.y / bounds.height );
+
 
     this._filters = tempFilters;
 

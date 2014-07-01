@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.4.3</em>
+            <em>API Docs for: 1.5.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -43,11 +43,15 @@
             
                 <li><a href="../classes/AbstractFilter.html">AbstractFilter</a></li>
             
+                <li><a href="../classes/AjaxRequest.html">AjaxRequest</a></li>
+            
                 <li><a href="../classes/AlphaMaskFilter.html">AlphaMaskFilter</a></li>
             
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
                 <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
+                <li><a href="../classes/autoDetectRenderer.html">autoDetectRenderer</a></li>
             
                 <li><a href="../classes/BaseTexture.html">BaseTexture</a></li>
             
@@ -59,7 +63,11 @@
             
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
+                <li><a href="../classes/CanvasMaskManager.html">CanvasMaskManager</a></li>
+            
                 <li><a href="../classes/CanvasRenderer.html">CanvasRenderer</a></li>
+            
+                <li><a href="../classes/CanvasTinter.html">CanvasTinter</a></li>
             
                 <li><a href="../classes/Circle.html">Circle</a></li>
             
@@ -79,11 +87,17 @@
             
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
+                <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
+            
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
             
                 <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
                 <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
+            
+                <li><a href="../classes/InteractionData.html">InteractionData</a></li>
+            
+                <li><a href="../classes/InteractionManager.html">InteractionManager</a></li>
             
                 <li><a href="../classes/InvertFilter.html">InvertFilter</a></li>
             
@@ -91,29 +105,25 @@
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
+                <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
+            
                 <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
             
-                <li><a href="../classes/PIXI.PixiFastShader.html">PIXI.PixiFastShader</a></li>
+                <li><a href="../classes/PixiFastShader.html">PixiFastShader</a></li>
             
-                <li><a href="../classes/PIXI.PixiShader.html">PIXI.PixiShader</a></li>
+                <li><a href="../classes/PixiShader.html">PixiShader</a></li>
             
                 <li><a href="../classes/Point.html">Point</a></li>
             
                 <li><a href="../classes/Polygon.html">Polygon</a></li>
             
-                <li><a href="../classes/PolyK._convex.html">PolyK._convex</a></li>
+                <li><a href="../classes/PolyK.html">PolyK</a></li>
             
-                <li><a href="../classes/PolyK._PointInTriangle.html">PolyK._PointInTriangle</a></li>
-            
-                <li><a href="../classes/PolyK.AjaxRequest.html">PolyK.AjaxRequest</a></li>
-            
-                <li><a href="../classes/PolyK.InteractionData.html">PolyK.InteractionData</a></li>
-            
-                <li><a href="../classes/PolyK.InteractionManager.html">PolyK.InteractionManager</a></li>
+                <li><a href="../classes/PrimitiveShader.html">PrimitiveShader</a></li>
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
-                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
+                <li><a href="../classes/Rope.html">Rope</a></li>
             
                 <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
             
@@ -121,9 +131,13 @@
             
                 <li><a href="../classes/Sprite.html">Sprite</a></li>
             
+                <li><a href="../classes/SpriteBatch.html">SpriteBatch</a></li>
+            
                 <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
             
                 <li><a href="../classes/Stage.html">Stage</a></li>
+            
+                <li><a href="../classes/Strip.html">Strip</a></li>
             
                 <li><a href="../classes/Text.html">Text</a></li>
             
@@ -133,7 +147,17 @@
             
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
             
+                <li><a href="../classes/WebGLFilterManager.html">WebGLFilterManager</a></li>
+            
+                <li><a href="../classes/WebGLGraphics.html">WebGLGraphics</a></li>
+            
+                <li><a href="../classes/WebGLMaskManager.html">WebGLMaskManager</a></li>
+            
                 <li><a href="../classes/WebGLRenderer.html">WebGLRenderer</a></li>
+            
+                <li><a href="../classes/WebGLShaderManager.html">WebGLShaderManager</a></li>
+            
+                <li><a href="../classes/WebGLSpriteBatch.html">WebGLSpriteBatch</a></li>
             
             </ul>
 
@@ -198,7 +222,7 @@ PIXI.DisplayObjectContainer = function()
     PIXI.DisplayObject.call( this );
 
     /**
-     * [read-only] The of children of this container.
+     * [read-only] The array of children of this container.
      *
      * @property children
      * @type Array&lt;DisplayObject&gt;
@@ -218,7 +242,7 @@ PIXI.DisplayObjectContainer.prototype.constructor = PIXI.DisplayObjectContainer;
  * @type Number
  */
 
-/*
+ /*
 Object.defineProperty(PIXI.DisplayObjectContainer.prototype, &#x27;width&#x27;, {
     get: function() {
         return this.scale.x * this.getLocalBounds().width;
@@ -237,7 +261,7 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, &#x27;width&#x27;, 
  * @type Number
  */
 
- /*
+/*
 Object.defineProperty(PIXI.DisplayObjectContainer.prototype, &#x27;height&#x27;, {
     get: function() {
         return  this.scale.y * this.getLocalBounds().height;
@@ -328,7 +352,7 @@ PIXI.DisplayObjectContainer.prototype.getChildAt = function(index)
     }
     else
     {
-        throw new Error(&#x27;The supplied DisplayObjects must be a child of the caller &#x27; + this);
+        throw new Error(&#x27;Supplied index does not exist in the child list, or the supplied DisplayObject must be a child of the caller&#x27;);
     }
 };
 
@@ -340,18 +364,53 @@ PIXI.DisplayObjectContainer.prototype.getChildAt = function(index)
  */
 PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 {
-    var index = this.children.indexOf( child );
-    if ( index !== -1 )
-    {
-        // update the stage reference..
-        if(this.stage)child.removeStageReference();
+    return this.removeChildAt( this.children.indexOf( child ) );
+};
 
-        child.parent = undefined;
-        this.children.splice( index, 1 );
+/**
+ * Removes a child from the specified index position in the child list of the container.
+ *
+ * @method removeChildAt
+ * @param index {Number} The index to get the child from
+ */
+PIXI.DisplayObjectContainer.prototype.removeChildAt = function(index)
+{
+    var child = this.getChildAt( index );
+    if(this.stage)
+        child.removeStageReference();
+
+    child.parent = undefined;
+    this.children.splice( index, 1 );
+    return child;
+};
+
+/**
+* Removes all child instances from the child list of the container.
+*
+* @method removeChildren
+* @param beginIndex {Number} The beginning position. Predefined value is 0.
+* @param endIndex {Number} The ending position. Predefined value is children&#x27;s array length.
+*/
+PIXI.DisplayObjectContainer.prototype.removeChildren = function(beginIndex, endIndex)
+{
+    var begin = beginIndex || 0;
+    var end = typeof endIndex === &#x27;number&#x27; ? endIndex : this.children.length;
+    var range = end - begin;
+
+    if (range &gt; 0 &amp;&amp; range &lt;= end)
+    {
+        var removed = this.children.splice(begin, range);
+        for (var i = 0; i &lt; removed.length; i++) {
+            var child = removed[i];
+            if(this.stage)
+                child.removeStageReference();
+            child.parent = undefined;
+        }
+        return removed;
     }
     else
     {
-        throw new Error(child + &#x27; The supplied DisplayObject must be a child of the caller &#x27; + this);
+        throw new Error( &#x27;Range Error, numeric values are outside the acceptable range&#x27; );
     }
 };
 
@@ -369,18 +428,32 @@ PIXI.DisplayObjectContainer.prototype.updateTransform = function()
 
     PIXI.DisplayObject.prototype.updateTransform.call( this );
 
+    if(this._cacheAsBitmap)return;
+
     for(var i=0,j=this.children.length; i&lt;j; i++)
     {
         this.children[i].updateTransform();
     }
 };
 
-PIXI.DisplayObjectContainer.prototype.getBounds = function()
+/**
+ * Retrieves the bounds of the displayObjectContainer as a rectangle object
+ *
+ * @method getBounds
+ * @return {Rectangle} the rectangular bounding area
+ */
+PIXI.DisplayObjectContainer.prototype.getBounds = function(matrix)
 {
     if(this.children.length === 0)return PIXI.EmptyRectangle;
 
     // TODO the bounds have already been calculated this render session so return what we have
-   
+    if(matrix)
+    {
+        var matrixCache = this.worldTransform;
+        this.worldTransform = matrix;
+        this.updateTransform();
+        this.worldTransform = matrixCache;
+    }
 
     var minX = Infinity;
     var minY = Infinity;
@@ -392,13 +465,17 @@ PIXI.DisplayObjectContainer.prototype.getBounds = function()
     var childMaxX;
     var childMaxY;
 
+    var childVisible = false;
+
     for(var i=0,j=this.children.length; i&lt;j; i++)
     {
         var child = this.children[i];
         
         if(!child.visible)continue;
 
-        childBounds = this.children[i].getBounds();
+        childVisible = true;
+
+        childBounds = this.children[i].getBounds( matrix );
      
         minX = minX &lt; childBounds.x ? minX : childBounds.x;
         minY = minY &lt; childBounds.y ? minY : childBounds.y;
@@ -409,6 +486,9 @@ PIXI.DisplayObjectContainer.prototype.getBounds = function()
         maxX = maxX &gt; childMaxX ? maxX : childMaxX;
         maxY = maxY &gt; childMaxY ? maxY : childMaxY;
     }
+
+    if(!childVisible)
+        return PIXI.EmptyRectangle;
 
     var bounds = this._bounds;
 
@@ -423,6 +503,30 @@ PIXI.DisplayObjectContainer.prototype.getBounds = function()
     return bounds;
 };
 
+PIXI.DisplayObjectContainer.prototype.getLocalBounds = function()
+{
+    var matrixCache = this.worldTransform;
+
+    this.worldTransform = PIXI.identityMatrix;
+
+    for(var i=0,j=this.children.length; i&lt;j; i++)
+    {
+        this.children[i].updateTransform();
+    }
+
+    var bounds = this.getBounds();
+
+    this.worldTransform = matrixCache;
+
+    return bounds;
+};
+
+/**
+ * Sets the container&#x27;s stage reference, the stage this object is connected to
+ *
+ * @method setStageReference
+ * @param stage {Stage} the stage that the container will have as its current stage reference
+ */
 PIXI.DisplayObjectContainer.prototype.setStageReference = function(stage)
 {
     this.stage = stage;
@@ -435,6 +539,11 @@ PIXI.DisplayObjectContainer.prototype.setStageReference = function(stage)
     }
 };
 
+/**
+ * removes the current stage reference of the container
+ *
+ * @method removeStageReference
+ */
 PIXI.DisplayObjectContainer.prototype.removeStageReference = function()
 {
 
@@ -449,9 +558,22 @@ PIXI.DisplayObjectContainer.prototype.removeStageReference = function()
     this.stage = null;
 };
 
+/**
+* Renders the object using the WebGL renderer
+*
+* @method _renderWebGL
+* @param renderSession {RenderSession} 
+* @private
+*/
 PIXI.DisplayObjectContainer.prototype._renderWebGL = function(renderSession)
 {
     if(!this.visible || this.alpha &lt;= 0)return;
+    
+    if(this._cacheAsBitmap)
+    {
+        this._renderCachedSprite(renderSession);
+        return;
+    }
     
     var i,j;
 
@@ -493,9 +615,23 @@ PIXI.DisplayObjectContainer.prototype._renderWebGL = function(renderSession)
     }
 };
 
+/**
+* Renders the object using the Canvas renderer
+*
+* @method _renderCanvas
+* @param renderSession {RenderSession} 
+* @private
+*/
 PIXI.DisplayObjectContainer.prototype._renderCanvas = function(renderSession)
 {
     if(this.visible === false || this.alpha === 0)return;
+
+    if(this._cacheAsBitmap)
+    {
+
+        this._renderCachedSprite(renderSession);
+        return;
+    }
 
     if(this._mask)
     {
@@ -513,8 +649,6 @@ PIXI.DisplayObjectContainer.prototype._renderCanvas = function(renderSession)
         renderSession.maskManager.popMask(renderSession.context);
     }
 };
-
-
 
     </pre>
 </div>

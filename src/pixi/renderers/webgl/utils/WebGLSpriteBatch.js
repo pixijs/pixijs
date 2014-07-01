@@ -386,11 +386,19 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
 
     var gl = this.gl;
     
+    // 
+    this.renderSession.shaderManager.setShader(this.renderSession.shaderManager.defaultShader);
+
     // bind the current texture
     gl.bindTexture(gl.TEXTURE_2D, this.currentBaseTexture._glTextures[gl.id] || PIXI.createWebGLTexture(this.currentBaseTexture, gl));
 
-    // upload the verts to the buffer
-    
+    // check if a texture is dirty..
+    if(this.currentBaseTexture._dirty[gl.id])
+    {
+        PIXI.updateWebGLTexture(this.currentBaseTexture, gl);
+    }
+
+    // upload the verts to the buffer  
     if(this.currentBatchSize > ( this.size * 0.5 ) )
     {
         gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vertices);
@@ -433,6 +441,8 @@ PIXI.WebGLSpriteBatch.prototype.stop = function()
 PIXI.WebGLSpriteBatch.prototype.start = function()
 {
     var gl = this.gl;
+
+    this.renderSession.shaderManager.setShader(this.renderSession.shaderManager.defaultShader);
 
     // bind the main texture
     gl.activeTexture(gl.TEXTURE0);

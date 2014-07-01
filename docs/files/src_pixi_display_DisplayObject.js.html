@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.4.3</em>
+            <em>API Docs for: 1.5.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -43,11 +43,15 @@
             
                 <li><a href="../classes/AbstractFilter.html">AbstractFilter</a></li>
             
+                <li><a href="../classes/AjaxRequest.html">AjaxRequest</a></li>
+            
                 <li><a href="../classes/AlphaMaskFilter.html">AlphaMaskFilter</a></li>
             
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
                 <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
+                <li><a href="../classes/autoDetectRenderer.html">autoDetectRenderer</a></li>
             
                 <li><a href="../classes/BaseTexture.html">BaseTexture</a></li>
             
@@ -59,7 +63,11 @@
             
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
+                <li><a href="../classes/CanvasMaskManager.html">CanvasMaskManager</a></li>
+            
                 <li><a href="../classes/CanvasRenderer.html">CanvasRenderer</a></li>
+            
+                <li><a href="../classes/CanvasTinter.html">CanvasTinter</a></li>
             
                 <li><a href="../classes/Circle.html">Circle</a></li>
             
@@ -79,11 +87,17 @@
             
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
+                <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
+            
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
             
                 <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
                 <li><a href="../classes/ImageLoader.html">ImageLoader</a></li>
+            
+                <li><a href="../classes/InteractionData.html">InteractionData</a></li>
+            
+                <li><a href="../classes/InteractionManager.html">InteractionManager</a></li>
             
                 <li><a href="../classes/InvertFilter.html">InvertFilter</a></li>
             
@@ -91,29 +105,25 @@
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
+                <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
+            
                 <li><a href="../classes/PixelateFilter.html">PixelateFilter</a></li>
             
-                <li><a href="../classes/PIXI.PixiFastShader.html">PIXI.PixiFastShader</a></li>
+                <li><a href="../classes/PixiFastShader.html">PixiFastShader</a></li>
             
-                <li><a href="../classes/PIXI.PixiShader.html">PIXI.PixiShader</a></li>
+                <li><a href="../classes/PixiShader.html">PixiShader</a></li>
             
                 <li><a href="../classes/Point.html">Point</a></li>
             
                 <li><a href="../classes/Polygon.html">Polygon</a></li>
             
-                <li><a href="../classes/PolyK._convex.html">PolyK._convex</a></li>
+                <li><a href="../classes/PolyK.html">PolyK</a></li>
             
-                <li><a href="../classes/PolyK._PointInTriangle.html">PolyK._PointInTriangle</a></li>
-            
-                <li><a href="../classes/PolyK.AjaxRequest.html">PolyK.AjaxRequest</a></li>
-            
-                <li><a href="../classes/PolyK.InteractionData.html">PolyK.InteractionData</a></li>
-            
-                <li><a href="../classes/PolyK.InteractionManager.html">PolyK.InteractionManager</a></li>
+                <li><a href="../classes/PrimitiveShader.html">PrimitiveShader</a></li>
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
-                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
+                <li><a href="../classes/Rope.html">Rope</a></li>
             
                 <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
             
@@ -121,9 +131,13 @@
             
                 <li><a href="../classes/Sprite.html">Sprite</a></li>
             
+                <li><a href="../classes/SpriteBatch.html">SpriteBatch</a></li>
+            
                 <li><a href="../classes/SpriteSheetLoader.html">SpriteSheetLoader</a></li>
             
                 <li><a href="../classes/Stage.html">Stage</a></li>
+            
+                <li><a href="../classes/Strip.html">Strip</a></li>
             
                 <li><a href="../classes/Text.html">Text</a></li>
             
@@ -133,7 +147,17 @@
             
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
             
+                <li><a href="../classes/WebGLFilterManager.html">WebGLFilterManager</a></li>
+            
+                <li><a href="../classes/WebGLGraphics.html">WebGLGraphics</a></li>
+            
+                <li><a href="../classes/WebGLMaskManager.html">WebGLMaskManager</a></li>
+            
                 <li><a href="../classes/WebGLRenderer.html">WebGLRenderer</a></li>
+            
+                <li><a href="../classes/WebGLShaderManager.html">WebGLShaderManager</a></li>
+            
+                <li><a href="../classes/WebGLSpriteBatch.html">WebGLSpriteBatch</a></li>
             
             </ul>
 
@@ -192,8 +216,6 @@
  */
 PIXI.DisplayObject = function()
 {
-    this.last = this;
-    this.first = this;
     /**
      * The coordinate of the object relative to the local coordinates of the parent.
      *
@@ -321,17 +343,7 @@ PIXI.DisplayObject = function()
      * @readOnly
      * @private
      */
-    this.worldTransform = PIXI.mat3.create(); //mat3.identity();
-
-    /**
-     * [read-only] Current transform of the object locally
-     *
-     * @property localTransform
-     * @type Mat3
-     * @readOnly
-     * @private
-     */
-    this.localTransform = PIXI.mat3.create(); //mat3.identity();
+    this.worldTransform = new PIXI.Matrix();
 
     /**
      * [NYI] Unknown
@@ -355,13 +367,43 @@ PIXI.DisplayObject = function()
     this._sr = 0;
     this._cr = 1;
 
+    /**
+     * The area the filter is applied to like the hitArea this is used as more of an optimisation
+     * rather than figuring out the dimensions of the displayObject each frame you can set this rectangle
+     *
+     * @property filterArea
+     * @type Rectangle
+     */
+    this.filterArea = null;//new PIXI.Rectangle(0,0,1,1);
 
-    this.filterArea = new PIXI.Rectangle(0,0,1,1);
-
-
+    /**
+     * The original, cached bounds of the object
+     *
+     * @property _bounds
+     * @type Rectangle
+     * @private
+     */
     this._bounds = new PIXI.Rectangle(0, 0, 1, 1);
+    /**
+     * The most up-to-date bounds of the object
+     *
+     * @property _currentBounds
+     * @type Rectangle
+     * @private
+     */
     this._currentBounds = null;
+    /**
+     * The original, cached mask of the object
+     *
+     * @property _currentBounds
+     * @type Rectangle
+     * @private
+     */
     this._mask = null;
+
+    this._cacheAsBitmap = false;
+    this._cacheIsDirty = false;
+
 
     /*
      * MOUSE Callbacks
@@ -548,6 +590,35 @@ Object.defineProperty(PIXI.DisplayObject.prototype, &#x27;filters&#x27;, {
     }
 });
 
+/**
+ * Set weather or not a the display objects is cached as a bitmap.
+ * This basically takes a snap shot of the display object as it is at that moment. It can provide a performance benefit for complex static displayObjects
+ * To remove filters simply set this property to &#x27;null&#x27;
+ * @property cacheAsBitmap
+ * @type Boolean
+ */
+Object.defineProperty(PIXI.DisplayObject.prototype, &#x27;cacheAsBitmap&#x27;, {
+    get: function() {
+        return  this._cacheAsBitmap;
+    },
+    set: function(value) {
+
+        if(this._cacheAsBitmap === value)return;
+
+        if(value)
+        {
+            //this._cacheIsDirty = true;
+            this._generateCachedSprite();
+        }
+        else
+        {
+            this._destroyCachedSprite();
+        }
+
+        this._cacheAsBitmap = value;
+    }
+});
+
 /*
  * Updates the object transform for rendering
  *
@@ -559,73 +630,149 @@ PIXI.DisplayObject.prototype.updateTransform = function()
     // TODO OPTIMIZE THIS!! with dirty
     if(this.rotation !== this.rotationCache)
     {
+
         this.rotationCache = this.rotation;
         this._sr =  Math.sin(this.rotation);
         this._cr =  Math.cos(this.rotation);
     }
 
-    var localTransform = this.localTransform;
-    var parentTransform = this.parent.worldTransform;
-    var worldTransform = this.worldTransform;
-    //console.log(localTransform)
-    localTransform[0] = this._cr * this.scale.x;
-    localTransform[1] = -this._sr * this.scale.y;
-    localTransform[3] = this._sr * this.scale.x;
-    localTransform[4] = this._cr * this.scale.y;
-
-    // TODO --&gt; do we even need a local matrix???
+   // var localTransform = this.localTransform//.toArray();
+    var parentTransform = this.parent.worldTransform;//.toArray();
+    var worldTransform = this.worldTransform;//.toArray();
 
     var px = this.pivot.x;
     var py = this.pivot.y;
 
-    // Cache the matrix values (makes for huge speed increases!)
-    var a00 = localTransform[0], a01 = localTransform[1], a02 = this.position.x - localTransform[0] * px - py * localTransform[1],
-        a10 = localTransform[3], a11 = localTransform[4], a12 = this.position.y - localTransform[4] * py - px * localTransform[3],
+    var a00 = this._cr * this.scale.x,
+        a01 = -this._sr * this.scale.y,
+        a10 = this._sr * this.scale.x,
+        a11 = this._cr * this.scale.y,
+        a02 = this.position.x - a00 * px - py * a01,
+        a12 = this.position.y - a11 * py - px * a10,
+        b00 = parentTransform.a, b01 = parentTransform.b,
+        b10 = parentTransform.c, b11 = parentTransform.d;
 
-        b00 = parentTransform[0], b01 = parentTransform[1], b02 = parentTransform[2],
-        b10 = parentTransform[3], b11 = parentTransform[4], b12 = parentTransform[5];
+    worldTransform.a = b00 * a00 + b01 * a10;
+    worldTransform.b = b00 * a01 + b01 * a11;
+    worldTransform.tx = b00 * a02 + b01 * a12 + parentTransform.tx;
 
-    localTransform[2] = a02;
-    localTransform[5] = a12;
+    worldTransform.c = b10 * a00 + b11 * a10;
+    worldTransform.d = b10 * a01 + b11 * a11;
+    worldTransform.ty = b10 * a02 + b11 * a12 + parentTransform.ty;
 
-    worldTransform[0] = b00 * a00 + b01 * a10;
-    worldTransform[1] = b00 * a01 + b01 * a11;
-    worldTransform[2] = b00 * a02 + b01 * a12 + b02;
-
-    worldTransform[3] = b10 * a00 + b11 * a10;
-    worldTransform[4] = b10 * a01 + b11 * a11;
-    worldTransform[5] = b10 * a02 + b11 * a12 + b12;
-
-    // because we are using affine transformation, we can optimise the matrix concatenation process.. wooo!
-    // mat3.multiply(this.localTransform, this.parent.worldTransform, this.worldTransform);
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
 };
 
-PIXI.DisplayObject.prototype.getBounds = function()
+/**
+ * Retrieves the bounds of the displayObject as a rectangle object
+ *
+ * @method getBounds
+ * @return {Rectangle} the rectangular bounding area
+ */
+PIXI.DisplayObject.prototype.getBounds = function( matrix )
 {
+    matrix = matrix;//just to get passed js hinting (and preserve inheritance)
     return PIXI.EmptyRectangle;
 };
 
+/**
+ * Retrieves the local bounds of the displayObject as a rectangle object
+ *
+ * @method getLocalBounds
+ * @return {Rectangle} the rectangular bounding area
+ */
 PIXI.DisplayObject.prototype.getLocalBounds = function()
 {
-    var matrixCache = this.worldTransform;
-
-    this.worldTransform = PIXI.identityMatrix;
-
-    this.updateTransform();
-
-    var bounds = this.getBounds();
-
-    this.worldTransform = matrixCache;
-
-    return bounds;
+    return this.getBounds(PIXI.identityMatrix);///PIXI.EmptyRectangle();
 };
 
+
+/**
+ * Sets the object&#x27;s stage reference, the stage this object is connected to
+ *
+ * @method setStageReference
+ * @param stage {Stage} the stage that the object will have as its current stage reference
+ */
 PIXI.DisplayObject.prototype.setStageReference = function(stage)
 {
     this.stage = stage;
     if(this._interactive)this.stage.dirty = true;
 };
+
+PIXI.DisplayObject.prototype.generateTexture = function(renderer)
+{
+    var bounds = this.getLocalBounds();
+
+    var renderTexture = new PIXI.RenderTexture(bounds.width | 0, bounds.height | 0, renderer);
+    renderTexture.render(this);
+
+    return renderTexture;
+};
+
+PIXI.DisplayObject.prototype.updateCache = function()
+{
+    this._generateCachedSprite();
+};
+
+PIXI.DisplayObject.prototype._renderCachedSprite = function(renderSession)
+{
+    if(renderSession.gl)
+    {
+        PIXI.Sprite.prototype._renderWebGL.call(this._cachedSprite, renderSession);
+    }
+    else
+    {
+        PIXI.Sprite.prototype._renderCanvas.call(this._cachedSprite, renderSession);
+    }
+};
+
+PIXI.DisplayObject.prototype._generateCachedSprite = function()//renderSession)
+{
+    this._cacheAsBitmap = false;
+    var bounds = this.getLocalBounds();
+   
+    if(!this._cachedSprite)
+    {
+        var renderTexture = new PIXI.RenderTexture(bounds.width | 0, bounds.height | 0);//, renderSession.renderer);
+        
+        this._cachedSprite = new PIXI.Sprite(renderTexture);
+        this._cachedSprite.worldTransform = this.worldTransform;
+    }
+    else
+    {
+        this._cachedSprite.texture.resize(bounds.width | 0, bounds.height | 0);
+    }
+
+    //REMOVE filter!
+    var tempFilters = this._filters;
+    this._filters = null;
+
+    this._cachedSprite.filters = tempFilters;
+    this._cachedSprite.texture.render(this);
+
+    this._filters = tempFilters;
+
+    this._cacheAsBitmap = true;
+};
+
+/**
+* Renders the object using the WebGL renderer
+*
+* @method _renderWebGL
+* @param renderSession {RenderSession} 
+* @private
+*/
+PIXI.DisplayObject.prototype._destroyCachedSprite = function()
+{
+    if(!this._cachedSprite)return;
+
+    this._cachedSprite.texture.destroy(true);
+  //  console.log(&quot;DESTROY&quot;)
+    // let the gc collect the unused sprite
+    // TODO could be object pooled!
+    this._cachedSprite = null;
+};
+
 
 PIXI.DisplayObject.prototype._renderWebGL = function(renderSession)
 {
@@ -634,6 +781,13 @@ PIXI.DisplayObject.prototype._renderWebGL = function(renderSession)
     renderSession = renderSession;
 };
 
+/**
+* Renders the object using the Canvas renderer
+*
+* @method _renderCanvas
+* @param renderSession {RenderSession} 
+* @private
+*/
 PIXI.DisplayObject.prototype._renderCanvas = function(renderSession)
 {
     // OVERWRITE;
@@ -641,8 +795,35 @@ PIXI.DisplayObject.prototype._renderCanvas = function(renderSession)
     renderSession = renderSession;
 };
 
-PIXI.EmptyRectangle = new PIXI.Rectangle(0,0,0,0);
+/**
+ * The position of the displayObject on the x axis relative to the local coordinates of the parent.
+ *
+ * @property x
+ * @type Number
+ */
+Object.defineProperty(PIXI.DisplayObject.prototype, &#x27;x&#x27;, {
+    get: function() {
+        return  this.position.x;
+    },
+    set: function(value) {
+        this.position.x = value;
+    }
+});
 
+/**
+ * The position of the displayObject on the y axis relative to the local coordinates of the parent.
+ *
+ * @property y
+ * @type Number
+ */
+Object.defineProperty(PIXI.DisplayObject.prototype, &#x27;y&#x27;, {
+    get: function() {
+        return  this.position.y;
+    },
+    set: function(value) {
+        this.position.y = value;
+    }
+});
 
     </pre>
 </div>
