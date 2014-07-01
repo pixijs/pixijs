@@ -2,24 +2,31 @@ describe('pixi/utils/EventTarget', function () {
     'use strict';
 
     var expect = chai.expect;
-    var EventTarget = PIXI.EventTarget;
+
+    var Clazz, PClazz, obj, pobj;
+    before(function () {
+        Clazz = function () {};
+        PClazz = function () {};
+
+        PIXI.EventTarget.mixin(Clazz.prototype);
+        PIXI.EventTarget.mixin(PClazz.prototype);
+
+        obj = new Clazz();
+        pobj = new PClazz();
+
+        obj.parent = pobj;
+    });
 
     it('Module exists', function () {
-        expect(EventTarget).to.be.an('object');
+        expect(PIXI.EventTarget).to.be.an('object');
     });
 
     it('Confirm new instance', function () {
-        var obj = {};
-
-        EventTarget.mixin(obj);
         pixi_utils_EventTarget_like(obj);
     });
 
     it('simple on/emit case works', function (done) {
-        var myData = {},
-            obj = {};
-
-        EventTarget.mixin(obj);
+        var myData = {};
 
         obj.on('myevent', function (event) {
             expect(event).to.be.an.instanceOf(PIXI.Event);
@@ -41,10 +48,7 @@ describe('pixi/utils/EventTarget', function () {
     });
 
     it('simple once case works', function () {
-        var called = 0,
-            obj = {};
-
-        EventTarget.mixin(obj);
+        var called = 0;
 
         obj.once('myevent', function() { called++; });
 
@@ -58,10 +62,6 @@ describe('pixi/utils/EventTarget', function () {
     });
 
     it('simple off case works', function (done) {
-        var obj = {};
-
-        EventTarget.mixin(obj);
-
         function onMyEvent() {
             done(new Error('Event listener should not have been called'));
         }
@@ -74,12 +74,7 @@ describe('pixi/utils/EventTarget', function () {
     });
 
     it('simple propagation case works', function (done) {
-        var myData = {},
-            pobj = {},
-            obj = { parent: pobj };
-
-        EventTarget.mixin(pobj);
-        EventTarget.mixin(obj);
+        var myData = {};
 
         pobj.on('myevent', function () {
             done();
@@ -89,12 +84,7 @@ describe('pixi/utils/EventTarget', function () {
     });
 
     it('simple stopPropagation case works', function (done) {
-        var myData = {},
-            pobj = {},
-            obj = { parent: pobj };
-
-        EventTarget.mixin(pobj);
-        EventTarget.mixin(obj);
+        var myData = {};
 
         pobj.on('myevent', function () {
             done(new Error('Event listener should not have been called on the parent element'));
@@ -110,12 +100,7 @@ describe('pixi/utils/EventTarget', function () {
     });
 
     it('simple stopImmediatePropagation case works', function (done) {
-        var myData = {},
-            pobj = {},
-            obj = { parent: pobj };
-
-        EventTarget.mixin(pobj);
-        EventTarget.mixin(obj);
+        var myData = {};
 
         pobj.on('myevent', function () {
             done(new Error('Event listener should not have been called on the parent'));
@@ -135,10 +120,7 @@ describe('pixi/utils/EventTarget', function () {
     });
 
     it('multiple dispatches work properly', function () {
-        var called = 0,
-            obj = {};
-
-        EventTarget.mixin(obj);
+        var called = 0;
 
         function onMyEvent() {
             called++;
@@ -149,14 +131,12 @@ describe('pixi/utils/EventTarget', function () {
         obj.emit('myevent');
         obj.emit('myevent');
         obj.emit('myevent');
+
         expect(called).to.equal(4);
     });
 
     it('multiple events work properly', function () {
-        var called = 0,
-            obj = {};
-
-        EventTarget.mixin(obj);
+        var called = 0;
 
         function onMyEvent() {
             called++;
@@ -168,14 +148,12 @@ describe('pixi/utils/EventTarget', function () {
         obj.emit('myevent1');
         obj.emit('myevent2');
         obj.emit('myevent3');
+
         expect(called).to.equal(3);
     });
 
     it('multiple events one removed works properly', function () {
-        var called = 0,
-            obj = {};
-
-        EventTarget.mixin(obj);
+        var called = 0;
 
         function onMyEvent() {
             called++;
@@ -199,10 +177,7 @@ describe('pixi/utils/EventTarget', function () {
     });
 
     it('is backwards compatible with older dispatchEvent', function () {
-        var called = 0,
-            obj = {};
-
-        EventTarget.mixin(obj);
+        var called = 0;
 
         function onMyEvent() {
             called++;
