@@ -3,7 +3,7 @@ describe('pixi/utils/EventTarget', function () {
 
     var expect = chai.expect;
 
-    var Clazz, PClazz, obj, pobj;
+    var Clazz, PClazz, obj, pobj, obj2;
     before(function () {
         Clazz = function () {};
         PClazz = function () {};
@@ -12,9 +12,11 @@ describe('pixi/utils/EventTarget', function () {
         PIXI.EventTarget.mixin(PClazz.prototype);
 
         obj = new Clazz();
+        obj2 = new Clazz();
         pobj = new PClazz();
 
         obj.parent = pobj;
+        obj2.parent = obj;
     });
 
     it('Module exists', function () {
@@ -176,6 +178,27 @@ describe('pixi/utils/EventTarget', function () {
         expect(called).to.equal(5);
     });
 
+    it('handles multiple instances with the same prototype', function () {
+        var called = 0;
+
+        function onMyEvent() {
+            called++;
+        }
+
+        obj.on('myevent1', onMyEvent);
+        obj.on('myevent2', onMyEvent);
+
+        obj2.on('myevent1', onMyEvent);
+        obj2.on('myevent2', onMyEvent);
+
+        obj.emit('myevent1');
+        obj.emit('myevent2');
+        obj2.emit('myevent1');
+        obj2.emit('myevent2');
+
+        expect(called).to.equal(4);
+    });
+
     it('is backwards compatible with older dispatchEvent', function () {
         var called = 0;
 
@@ -198,5 +221,9 @@ describe('pixi/utils/EventTarget', function () {
         obj.emit({ type: 'myevent3' });
 
         expect(called).to.equal(5);
+    });
+
+    it('is backwards compatible with older .call(this)', function () {
+
     });
 });
