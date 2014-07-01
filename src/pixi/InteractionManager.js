@@ -215,18 +215,18 @@ PIXI.InteractionManager.prototype.removeEvents = function()
     this.interactionDOMElement.style['-ms-content-zooming'] = '';
     this.interactionDOMElement.style['-ms-touch-action'] = '';
 
-    this.interactionDOMElement.off('mousemove',  this.onMouseMove, true);
-    this.interactionDOMElement.off('mousedown',  this.onMouseDown, true);
-    this.interactionDOMElement.off('mouseout',   this.onMouseOut, true);
+    this.interactionDOMElement.removeEventListener('mousemove',  this.onMouseMove, true);
+    this.interactionDOMElement.removeEventListener('mousedown',  this.onMouseDown, true);
+    this.interactionDOMElement.removeEventListener('mouseout',   this.onMouseOut, true);
 
     // aint no multi touch just yet!
-    this.interactionDOMElement.off('touchstart', this.onTouchStart, true);
-    this.interactionDOMElement.off('touchend', this.onTouchEnd, true);
-    this.interactionDOMElement.off('touchmove', this.onTouchMove, true);
+    this.interactionDOMElement.removeEventListener('touchstart', this.onTouchStart, true);
+    this.interactionDOMElement.removeEventListener('touchend', this.onTouchEnd, true);
+    this.interactionDOMElement.removeEventListener('touchmove', this.onTouchMove, true);
 
     this.interactionDOMElement = null;
 
-    window.off('mouseup',  this.onMouseUp, true);
+    window.removeEventListener('mouseup',  this.onMouseUp, true);
 };
 
 /**
