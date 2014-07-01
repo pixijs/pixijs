@@ -86,6 +86,8 @@ PIXI.EventTarget = function () {
      */
     this.removeEventListener = this.off = function ( type, listener ) {
 
+        if ( listeners[ type ] === undefined ) return;
+
         var index = listeners[ type ].indexOf( listener );
 
         if ( index !== - 1 ) {
