@@ -53,7 +53,15 @@ PIXI.Texture = function(baseTexture, frame)
      * @type Rectangle
      */
     this.trim = null;
-  
+    
+    /**
+     * This will let the renderer know if the texture is valid. If its not then it cannot be rendered
+     *
+     * @property valid
+     * @type Boolean
+     */
+    this.valid = false;
+
     this.scope = this;
 
     this._uvs = null;
@@ -101,6 +109,7 @@ PIXI.Texture.prototype.onBaseTextureLoaded = function()
 PIXI.Texture.prototype.destroy = function(destroyBase)
 {
     if(destroyBase) this.baseTexture.destroy();
+    this.valid = false;
 };
 
 /**
@@ -120,13 +129,12 @@ PIXI.Texture.prototype.setFrame = function(frame)
         throw new Error('Texture Error: frame does not fit inside the base Texture dimensions ' + this);
     }
 
-    this.updateFrame = true;
+    this.valid = frame && frame.width && frame.height && this.baseTexture.source && this.baseTexture.hasLoaded;
 
-    PIXI.Texture.frameUpdates.push(this);
+    if(this.valid)PIXI.Texture.frameUpdates.push(this);
 
-
-    //this.dispatchEvent( { type: 'update', content: this } );
 };
+
 
 PIXI.Texture.prototype._updateWebGLuvs = function()
 {

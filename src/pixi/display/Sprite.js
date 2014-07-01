@@ -338,7 +338,7 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
     
 
     //ignore null sources
-    if(frame && frame.width && frame.height && texture.baseTexture.source)
+    if(texture.valid)
     {
         context.globalAlpha = this.worldAlpha;
 
