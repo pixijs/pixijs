@@ -5,7 +5,7 @@
 
 /**
  * Originally based on https://github.com/mrdoob/eventtarget.js/ from mr DOob.
- * Currently takes inspiration from the nodejs EventEmitter, and EventEmitter3
+ * Currently takes inspiration from the nodejs EventEmitter, EventEmitter3, and smokesignals
  */
 
 /**
@@ -20,175 +20,243 @@
  *      var em = new MyEmitter();
  *      em.emit('eventName', 'some data', 'some moar data', {}, null, ...);
  */
-function EventTarget() {}
+PIXI.EventTarget = {
+    /**
+     * Mixes in the properties of the EventTarget prototype onto another object
+     *
+     * @method mixin
+     * @param object {Object} The obj to mix into
+     */
+    mixin: function mixin(obj) {
+        //local tracker for this object's listeners
+        var _listeners = {};
 
-/**
- * Mixes in the properties of the EventTarget prototype onto another object
- *
- * @method mixin
- * @param object {Object} The obj to mix into
- */
-EventTarget.prototype.mixin = function mixin(obj) {
-    obj.listeners = this.listeners;
-    obj.emit = this.emit;
-    obj.on = this.on;
-    obj.off = this.off;
-    obj.once = this.once;
-    obj.removeAllListeners = this.removeAllListeners;
+        /**
+         * Return a list of assigned event listeners.
+         *
+         * @method listeners
+         * @param eventName {String} The events that should be listed.
+         * @returns {Array} An array of listener functions
+         */
+        obj.listeners = function listeners(eventName) {
+            return _listeners[eventName] ? _listeners[eventName].slice() : [];
+        };
 
-    obj.addEventListener = this.addEventListener;
-    obj.removeEventListener = this.removeEventListener;
-    obj.dispatchEvent = this.dispatchEvent;
-};
+        /**
+         * Emit an event to all registered event listeners.
+         *
+         * @method emit
+         * @alias dispatchEvent
+         * @param eventName {String} The name of the event.
+         * @returns {Boolean} Indication if we've emitted an event.
+         */
+        obj.emit = obj.dispatchEvent = function emit(eventName, data) {
+            //backwards compat with old method ".emit({ type: 'something' })"
+            if(typeof eventName === 'object') {
+                data = eventName;
+                eventName = eventName.type;
+            }
 
-/**
- * Return a list of assigned event listeners.
- *
- * @method listeners
- * @param eventName {String} The events that should be listed.
- * @returns {Array} An array of listener functions
- */
-EventTarget.prototype.listeners = function listeners(eventName) {
-    return Array.apply(this, this._listeners[eventName] || []);
-};
+            //ensure we are using a real pixi event
+            if(!data || data.__isEventObject !== true) {
+                data = new PIXI.Event(this, eventName, data);
+            }
 
-/**
- * Emit an event to all registered event listeners.
- *
- * @method emit
- * @alias dispatchEvent
- * @param eventName {String} The name of the event.
- * @returns {Boolean} Indication if we've emitted an event.
- */
-EventTarget.prototype.emit = function emit(eventName, data) {
-    if(!data || data.__isEventObject !== true)
-        data = new PIXI.Event(this, eventName, data);
+            //iterate the listeners
+            if(_listeners && _listeners[eventName]) {
+                var listeners = _listeners[eventName],
+                    length = listeners.length,
+                    fn = listeners[0],
+                    i;
 
-    if(this._listeners && this._listeners[eventName]) {
-        var listeners = this._listeners[eventName],
-            length = listeners.length,
-            fn = listeners[0],
-            i;
+                for(i = 0; i < length; fn = listeners[++i]) {
+                    //call the event listener
+                    fn.call(this, data);
 
-        for(i = 0; i < length; fn = listeners[++i]) {
-            //call the event listener
-            fn.call(this, data);
+                    //if "stopImmediatePropagation" is called, stop calling sibling events
+                    if(data.stoppedImmediate) {
+                        return this;
+                    }
+                }
 
-            //remove the listener if this is a "once" event
-            if(fn.__isOnce)
-                this.off(eventName, fn);
+                //if "stopPropagation" is called then don't bubble the event
+                if(data.stopped) {
+                    return this;
+                }
+            }
 
-            //if "stopImmediatePropagation" is called, stop calling all events
-            if(data.stoppedImmediate)
-                return;
-        }
+            //bubble this event up the scene graph
+            if(this.parent && this.parent.emit) {
+                this.parent.emit.call(this.parent, eventName, data);
+            }
 
-        //if "stopPropagation" is called then don't bubble the event
-        if(data.stopped)
-            return;
+            return this;
+        };
+
+        /**
+         * Register a new EventListener for the given event.
+         *
+         * @method on
+         * @alias addEventListener
+         * @param eventName {String} Name of the event.
+         * @param callback {Functon} fn Callback function.
+         */
+        obj.on = obj.addEventListener = function on(eventName, fn) {
+            (_listeners[eventName] = _listeners[eventName] || [])
+                .push(fn);
+
+            return this;
+        };
+
+        /**
+         * Add an EventListener that's only called once.
+         *
+         * @method once
+         * @param eventName {String} Name of the event.
+         * @param callback {Function} Callback function.
+         */
+        obj.once = function once(eventName, fn) {
+            var self = this;
+            function onceHandlerWrapper() {
+                fn.apply(self.off(eventName, onceHandlerWrapper), arguments);
+            }
+            onceHandlerWrapper._originalHandler = fn;
+
+            return this.on(eventName, onceHandlerWrapper);
+        };
+
+        /**
+         * Remove event listeners.
+         *
+         * @method off
+         * @alias removeEventListener
+         * @param eventName {String} The event we want to remove.
+         * @param callback {Function} The listener that we need to find.
+         */
+        obj.off = obj.removeEventListener = function off(eventName, fn) {
+            if(!_listeners[eventName])
+                return this;
+
+            var list = _listeners[eventName],
+                length = list.length;
+
+            for(var i = 0; i < length; ++i) {
+                if(list[i] === fn || list[i]._originalHandler === fn) {
+                    list.splice(i--, 1);
+                }
+            }
+
+            if(list.length === 0) {
+                delete _listeners[eventName];
+            }
+
+            return this;
+        };
+
+        /**
+         * Remove all listeners or only the listeners for the specified event.
+         *
+         * @method removeAllListeners
+         * @param eventName {String} The event you want to remove all listeners for.
+         */
+        obj.removeAllListeners = function removeAllListeners(eventName) {
+            if(!_listeners[eventName])
+                return this;
+
+            delete _listeners[eventName];
+
+            return this;
+        };
     }
-
-    if(this.parent && this.parent.emit) {
-        this.parent.emit.call(this.parent, eventName, data);
-    }
-
-    return true;
 };
 
 /**
- * Register a new EventListener for the given event.
+ * Creates an homogenous object for tracking events so users can know what to expect.
  *
- * @method on
- * @alias addEventListener
- * @param eventName {String} Name of the event.
- * @param callback {Functon} fn Callback function.
+ * @class Event
+ * @extends Object
+ * @constructor
+ * @param target {Object} The target object that the event is called on
+ * @param name {String} The string name of the event that was triggered
+ * @param data {Object} Arbitrary event data to pass along
  */
-EventTarget.prototype.on = function on(eventName, fn) {
-    if(!this._listeners)
-        this._listeners = {};
-
-    if(!this._listeners[eventName])
-        this._listeners[eventName] = [];
-
-    this._listeners[eventName].push(fn);
-
-    return this;
-};
-
-/**
- * Add an EventListener that's only called once.
- *
- * @method once
- * @param eventName {String} Name of the event.
- * @param callback {Function} Callback function.
- */
-EventTarget.prototype.once = function once(eventName, fn) {
-    fn.__isOnce = true;
-    return this.on(eventName, fn);
-};
-
-/**
- * Remove event listeners.
- *
- * @method off
- * @alias removeEventListener
- * @param eventName {String} The event we want to remove.
- * @param callback {Function} The listener that we need to find.
- */
-EventTarget.prototype.off = function off(eventName, fn) {
-    if(!this._listeners[eventName])
-        return this;
-
-    var index = this._listeners[eventName].indexOf(fn);
-
-    if(index !== -1) {
-        this._listeners[eventName].splice(index, 1);
-    }
-
-    return this;
-};
-
-/**
- * Remove all listeners or only the listeners for the specified event.
- *
- * @method removeAllListeners
- * @param eventName {String} The event you want to remove all listeners for.
- */
-EventTarget.prototype.removeAllListeners = function removeAllListeners(eventName) {
-    if(!this._listeners[eventName])
-        return this;
-
-    this._listeners[eventName].length = 0;
-
-    return this;
-};
-
-/**
- * Alias methods names because people roll like that.
- */
-EventTarget.prototype.removeEventListener = EventTarget.prototype.off;
-EventTarget.prototype.addEventListener = EventTarget.prototype.on;
-EventTarget.prototype.dispatchEvent = EventTarget.prototype.emit;
-
-PIXI.EventTarget = new EventTarget();
-
 PIXI.Event = function(target, name, data) {
+    //for duck typing in the ".on()" function
     this.__isEventObject = true;
 
+    /**
+     * Tracks the state of bubbling propagation. Do not
+     * set this directly, instead use `event.stopPropagation()`
+     *
+     * @property stopped
+     * @type Boolean
+     * @private
+     * @readOnly
+     */
     this.stopped = false;
+
+    /**
+     * Tracks the state of sibling listener propagation. Do not
+     * set this directly, instead use `event.stopImmediatePropagation()`
+     *
+     * @property stoppedImmediate
+     * @type Boolean
+     * @private
+     * @readOnly
+     */
     this.stoppedImmediate = false;
 
+    /**
+     * The original target the event triggered on.
+     *
+     * @property target
+     * @type Object
+     * @readOnly
+     */
     this.target = target;
+
+    /**
+     * The string name of the event that this represents.
+     *
+     * @property type
+     * @type String
+     * @readOnly
+     */
     this.type = name;
+
+    /**
+     * The data that was passed in with this event.
+     *
+     * @property data
+     * @type Object
+     * @readOnly
+     */
     this.data = data;
 
+    /**
+     * The timestamp when the event occurred.
+     *
+     * @property timeStamp
+     * @type Number
+     * @readOnly
+     */
     this.timeStamp = Date.now();
 };
 
+/**
+ * Stops the propagation of events up the scene graph (prevents bubbling).
+ *
+ * @method stopPropagation
+ */
 PIXI.Event.prototype.stopPropagation = function stopPropagation() {
     this.stopped = true;
 };
 
+/**
+ * Stops the propagation of events to sibling listeners (no longer calls any listeners).
+ *
+ * @method stopImmediatePropagation
+ */
 PIXI.Event.prototype.stopImmediatePropagation = function stopImmediatePropagation() {
     this.stoppedImmediate = true;
 };
