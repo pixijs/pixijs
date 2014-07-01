@@ -244,14 +244,15 @@ PIXI.WebGLStencilManager.prototype.popStencil = function(graphics, webGLData, re
         }
         else
         {
+          //  console.log("<<>>")
             if(!this.reverse)
             {
-                gl.stencilFunc(gl.EQUAL, 0xFF - level, 0xFF);
+                gl.stencilFunc(gl.EQUAL, 0xFF - (level+1), 0xFF);
                 gl.stencilOp(gl.KEEP,gl.KEEP,gl.INCR);
             }
             else
             {
-                gl.stencilFunc(gl.EQUAL,level, 0xFF);
+                gl.stencilFunc(gl.EQUAL,level+1, 0xFF);
                 gl.stencilOp(gl.KEEP,gl.KEEP,gl.DECR);
             }
 
