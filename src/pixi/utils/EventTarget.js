@@ -22,6 +22,16 @@
  */
 PIXI.EventTarget = {
     /**
+     * Backward compat from when this used to be a function
+     */
+    call: function callCompat(obj) {
+        if(obj) {
+            obj = obj.prototype || obj;
+            PIXI.EventTarget.mixin(obj);
+        }
+    },
+
+    /**
      * Mixes in the properties of the EventTarget prototype onto another object
      *
      * @method mixin
