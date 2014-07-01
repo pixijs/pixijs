@@ -149,7 +149,7 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
          * If true Pixi will Math.floor() x/y values when rendering, stopping pixel interpolation.
          * Handy for crisp pixel art and speed on legacy devices.
          */
-        roundPixels = false
+        roundPixels: false
     };
 
     if("imageSmoothingEnabled" in this.context)
