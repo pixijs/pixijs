@@ -130,7 +130,7 @@ Object.defineProperty(PIXI.TilingSprite.prototype, 'height', {
  */
 PIXI.TilingSprite.prototype.onTextureUpdate = function()
 {
-    this.updateFrame = true;
+    //this.updateFrame = true;
 };
 
 PIXI.TilingSprite.prototype.setTexture = function(texture)

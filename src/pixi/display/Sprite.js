@@ -160,7 +160,7 @@ PIXI.Sprite.prototype.onTextureUpdate = function()
     if(this._height)this.scale.y = this._height / this.texture.frame.height;
 
 
-    this.updateFrame = true;
+    //this.updateFrame = true;
 };
 
 /**

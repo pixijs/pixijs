@@ -167,5 +167,5 @@ PIXI.Rope.prototype.setTexture = function(texture)
 {
     // stop current texture
     this.texture = texture;
-    this.updateFrame = true;
+    //this.updateFrame = true;
 };

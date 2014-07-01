@@ -1,15 +1,4 @@
 /**
- * @license
- * pixi.js - v1.5.2
- * Copyright (c) 2012-2014, Mat Groves
- * http://goodboydigital.com/
- *
- * Compiled: 2014-07-01
- *
- * pixi.js is licensed under the MIT License.
- * http://www.opensource.org/licenses/mit-license.php
- */
-/**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
@@ -1829,7 +1818,7 @@ PIXI.Sprite.prototype.onTextureUpdate = function()
     if(this._height)this.scale.y = this._height / this.texture.frame.height;
 
 
-    this.updateFrame = true;
+    //this.updateFrame = true;
 };
 
 /**
@@ -6629,7 +6618,7 @@ PIXI.WebGLRenderer.destroyTexture = function(texture)
  */
 PIXI.WebGLRenderer.updateTextureFrame = function(texture)
 {
-    texture.updateFrame = false;
+    //texture.updateFrame = false;
 
     // now set the uvs. Figured that the uv data sits with a texture rather than a sprite.
     // so uv data is stored on the texture itself
@@ -11113,7 +11102,7 @@ PIXI.Rope.prototype.setTexture = function(texture)
 {
     // stop current texture
     this.texture = texture;
-    this.updateFrame = true;
+    //this.updateFrame = true;
 };
 
 /**
@@ -11248,7 +11237,7 @@ Object.defineProperty(PIXI.TilingSprite.prototype, 'height', {
  */
 PIXI.TilingSprite.prototype.onTextureUpdate = function()
 {
-    this.updateFrame = true;
+    //this.updateFrame = true;
 };
 
 PIXI.TilingSprite.prototype.setTexture = function(texture)
@@ -15930,3 +15919,4 @@ Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'angle', {
         root.PIXI = PIXI;
     }
 }).call(this);
+//# sourceMappingURL=pixi.dev.js.map
