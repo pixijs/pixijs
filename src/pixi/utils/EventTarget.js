@@ -138,11 +138,11 @@ PIXI.EventTarget = {
                 return this;
 
             var list = _listeners[eventName],
-                length = list.length;
+                i = list.length = fn ? list.length : 0;
 
-            for(var i = 0; i < length; ++i) {
+            while(i-- > 0) {
                 if(list[i] === fn || list[i]._originalHandler === fn) {
-                    list.splice(i--, 1);
+                    list.splice(i, 1);
                 }
             }
 

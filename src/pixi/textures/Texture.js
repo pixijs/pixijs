@@ -19,8 +19,6 @@ PIXI.TextureCacheIdGenerator = 0;
  */
 PIXI.Texture = function(baseTexture, frame)
 {
-    PIXI.EventTarget.call( this );
-
     if(!frame)
     {
         this.noFrame = true;
@@ -80,6 +78,7 @@ PIXI.Texture = function(baseTexture, frame)
 };
 
 PIXI.Texture.prototype.constructor = PIXI.Texture;
+PIXI.EventTarget.mixin(PIXI.Texture.prototype);
 
 /**
  * Called when the base texture is loaded

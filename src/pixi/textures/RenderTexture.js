@@ -33,8 +33,6 @@
  */
 PIXI.RenderTexture = function(width, height, renderer, scaleMode)
 {
-    PIXI.EventTarget.call( this );
-
     /**
      * The with of the render texture
      *
@@ -100,6 +98,7 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode)
 
 PIXI.RenderTexture.prototype = Object.create(PIXI.Texture.prototype);
 PIXI.RenderTexture.prototype.constructor = PIXI.RenderTexture;
+PIXI.EventTarget.mixin(PIXI.RenderTexture.prototype);
 
 /**
  * Resize the RenderTexture.

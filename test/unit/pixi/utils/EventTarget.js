@@ -197,4 +197,31 @@ describe('pixi/utils/EventTarget', function () {
 
         expect(called).to.equal(5);
     });
+
+    it('is backwards compatible with older dispatchEvent', function () {
+        var called = 0,
+            obj = {};
+
+        EventTarget.mixin(obj);
+
+        function onMyEvent() {
+            called++;
+        }
+
+        obj.on('myevent1', onMyEvent);
+        obj.on('myevent2', onMyEvent);
+        obj.on('myevent3', onMyEvent);
+
+        obj.emit({ type: 'myevent1' });
+        obj.emit({ type: 'myevent2' });
+        obj.emit({ type: 'myevent3' });
+
+        obj.off('myevent2', onMyEvent);
+
+        obj.emit({ type: 'myevent1' });
+        obj.emit({ type: 'myevent2' });
+        obj.emit({ type: 'myevent3' });
+
+        expect(called).to.equal(5);
+    });
 });
