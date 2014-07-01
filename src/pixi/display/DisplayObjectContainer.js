@@ -74,7 +74,7 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'height', {
  */
 PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 {
-    this.addChildAt(child, this.children.length);
+    return this.addChildAt(child, this.children.length);
 };
 
 /**
@@ -98,6 +98,8 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
         this.children.splice(index, 0, child);
 
         if(this.stage)child.setStageReference(this.stage);
+
+        return child;
     }
     else
     {

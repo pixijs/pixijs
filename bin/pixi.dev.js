@@ -1,15 +1,4 @@
 /**
- * @license
- * pixi.js - v1.5.2
- * Copyright (c) 2012-2014, Mat Groves
- * http://goodboydigital.com/
- *
- * Compiled: 2014-07-01
- *
- * pixi.js is licensed under the MIT License.
- * http://www.opensource.org/licenses/mit-license.php
- */
-/**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
@@ -1294,7 +1283,7 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'height', {
  */
 PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 {
-    this.addChildAt(child, this.children.length);
+    return this.addChildAt(child, this.children.length);
 };
 
 /**
@@ -1318,6 +1307,8 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
         this.children.splice(index, 0, child);
 
         if(this.stage)child.setStageReference(this.stage);
+
+        return child;
     }
     else
     {
@@ -15926,3 +15917,4 @@ Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'angle', {
         root.PIXI = PIXI;
     }
 }).call(this);
+//# sourceMappingURL=pixi.dev.js.map
