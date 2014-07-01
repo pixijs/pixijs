@@ -15,8 +15,6 @@
  */
 PIXI.ImageLoader = function(url, crossorigin)
 {
-    PIXI.EventTarget.call(this);
-
     /**
      * The texture being loaded
      *
@@ -36,6 +34,8 @@ PIXI.ImageLoader = function(url, crossorigin)
 // constructor
 PIXI.ImageLoader.prototype.constructor = PIXI.ImageLoader;
 
+PIXI.EventTarget.mixin(PIXI.ImageLoader.prototype);
+
 /**
  * Loads image or takes it from cache
  *
@@ -46,7 +46,7 @@ PIXI.ImageLoader.prototype.load = function()
     if(!this.texture.baseTexture.hasLoaded)
     {
         var scope = this;
-        this.texture.baseTexture.addEventListener('loaded', function()
+        this.texture.baseTexture.on('loaded', function()
         {
             scope.onLoaded();
         });
@@ -65,7 +65,7 @@ PIXI.ImageLoader.prototype.load = function()
  */
 PIXI.ImageLoader.prototype.onLoaded = function()
 {
-    this.dispatchEvent({type: 'loaded', content: this});
+    this.emit('loaded', { content: this });
 };
 
 /**
@@ -103,7 +103,7 @@ PIXI.ImageLoader.prototype.loadFramedSpriteSheet = function(frameWidth, frameHei
     if(!this.texture.baseTexture.hasLoaded)
     {
         var scope = this;
-        this.texture.baseTexture.addEventListener('loaded', function() {
+        this.texture.baseTexture.on('loaded', function() {
             scope.onLoaded();
         });
     }

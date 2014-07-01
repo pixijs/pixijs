@@ -23,8 +23,6 @@
  */
 PIXI.SpineLoader = function(url, crossorigin)
 {
-    PIXI.EventTarget.call(this);
-
     /**
      * The url of the bitmap font data
      *
@@ -53,6 +51,8 @@ PIXI.SpineLoader = function(url, crossorigin)
 
 PIXI.SpineLoader.prototype.constructor = PIXI.SpineLoader;
 
+PIXI.EventTarget.mixin(PIXI.SpineLoader.prototype);
+
 /**
  * Loads the JSON data
  *
@@ -62,8 +62,8 @@ PIXI.SpineLoader.prototype.load = function () {
 
     var scope = this;
     var jsonLoader = new PIXI.JsonLoader(this.url, this.crossorigin);
-    jsonLoader.addEventListener("loaded", function (event) {
-        scope.json = event.content.json;
+    jsonLoader.on('loaded', function (event) {
+        scope.json = event.data.content.json;
         scope.onLoaded();
     });
     jsonLoader.load();
@@ -77,6 +77,6 @@ PIXI.SpineLoader.prototype.load = function () {
  */
 PIXI.SpineLoader.prototype.onLoaded = function () {
     this.loaded = true;
-    this.dispatchEvent({type: "loaded", content: this});
+    this.emit('loaded', { content: this });
 };
 

@@ -551,8 +551,8 @@ PIXI.WebGLRenderer.prototype.destroy = function()
     // deal with losing context..
     
     // remove listeners
-    this.view.removeEventListener('webglcontextlost', this.contextLost);
-    this.view.removeEventListener('webglcontextrestored', this.contextRestoredLost);
+    this.view.off('webglcontextlost', this.contextLost);
+    this.view.off('webglcontextrestored', this.contextRestoredLost);
 
     PIXI.glContexts[this.glContextId] = null;
 

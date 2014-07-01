@@ -21,7 +21,6 @@ PIXI.BitmapFontLoader = function(url, crossorigin)
      * http://www.codeandweb.com/texturepacker
      * make sure to set the format as 'JSON'
      */
-    PIXI.EventTarget.call(this);
 
     /**
      * The url of the bitmap font data
@@ -59,6 +58,8 @@ PIXI.BitmapFontLoader = function(url, crossorigin)
 
 // constructor
 PIXI.BitmapFontLoader.prototype.constructor = PIXI.BitmapFontLoader;
+
+PIXI.EventTarget.mixin(PIXI.BitmapFontLoader.prototype);
 
 /**
  * Loads the XML font data
@@ -154,7 +155,7 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
             PIXI.BitmapText.fonts[data.font] = data;
 
             var scope = this;
-            image.addEventListener('loaded', function() {
+            image.on('loaded', function() {
                 scope.onLoaded();
             });
             image.load();
@@ -170,5 +171,5 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
  */
 PIXI.BitmapFontLoader.prototype.onLoaded = function()
 {
-    this.dispatchEvent({type: 'loaded', content: this});
+    this.emit('loaded', { content: this });
 };
