@@ -527,7 +527,7 @@ PIXI.Graphics.prototype.drawRoundedRect = function( x, y, width, height, radius 
  * @param y {Number} The Y coordinate of the center of the circle
  * @param radius {Number} The radius of the circle
  */
-PIXI.Graphics.prototype.drawCircle = function( x, y, radius)
+PIXI.Graphics.prototype.drawCircle = function(x, y, radius)
 {
 
     if (!this.currentPath.points.length) this.graphicsData.pop();
@@ -546,12 +546,12 @@ PIXI.Graphics.prototype.drawCircle = function( x, y, radius)
  * Draws an ellipse.
  *
  * @method drawEllipse
- * @param x {Number} The X coordinate of the upper-left corner of the framing rectangle of this ellipse
- * @param y {Number} The Y coordinate of the upper-left corner of the framing rectangle of this ellipse
- * @param width {Number} The width of the ellipse
- * @param height {Number} The height of the ellipse
+ * @param x {Number} The X coordinate of the center of the ellipse
+ * @param y {Number} The Y coordinate of the center of the ellipse
+ * @param width {Number} The half width of the ellipse
+ * @param height {Number} The half height of the ellipse
  */
-PIXI.Graphics.prototype.drawEllipse = function( x, y, width, height)
+PIXI.Graphics.prototype.drawEllipse = function(x, y, width, height)
 {
 
     if (!this.currentPath.points.length) this.graphicsData.pop();
