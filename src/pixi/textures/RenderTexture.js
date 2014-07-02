@@ -173,6 +173,7 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, position, cle
 
     if(clear)this.textureBuffer.clear();
 
+
     // THIS WILL MESS WITH HIT TESTING!
     var children = displayObject.children;
 
@@ -197,10 +198,13 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, position, cle
     // update the textures!
     PIXI.WebGLRenderer.updateTextures();
 
-    // 
+    this.renderer.spriteBatch.dirty = true;
+    
     this.renderer.renderDisplayObject(displayObject, this.projection, this.textureBuffer.frameBuffer);
 
     displayObject.worldTransform = originalWorldTransform;
+
+    this.renderer.spriteBatch.dirty = true;
 };
 
 

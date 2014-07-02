@@ -5530,9 +5530,14 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
             gl.drawElements(gl.TRIANGLE_FAN, 4, gl.UNSIGNED_SHORT, ( webGLData.indices.length - 4 ) * 2 );
             
             renderSession.stencilManager.popStencil(graphics, webGLData, renderSession);
+            
+            this.last = webGLData.mode;
         }
         else
         {
+            webGLData = webGL.data[i];
+           
+
             renderSession.shaderManager.setShader( shader );//activatePrimitiveShader();
             shader = renderSession.shaderManager.primitiveShader;
             gl.uniformMatrix3fv(shader.translationMatrix, false, graphics.worldTransform.toArray(true));
@@ -5544,7 +5549,6 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
 
             gl.uniform1f(shader.alpha, graphics.worldAlpha);
             
-            webGLData = webGL.data[i];
 
             gl.bindBuffer(gl.ARRAY_BUFFER, webGLData.buffer);
 
@@ -5554,13 +5558,8 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
             // set the index buffer!
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, webGLData.indexBuffer);
             gl.drawElements(gl.TRIANGLE_STRIP,  webGLData.indices.length, gl.UNSIGNED_SHORT, 0 );
-
-         //   renderSession.shaderManager.deactivatePrimitiveShader();
         }
     }
-
-    // return to default shader...
-    //  PIXI.activateShader(PIXI.defaultShader);
 };
 
 /**
@@ -7361,7 +7360,7 @@ PIXI.WebGLShaderManager.prototype.setAttribs = function(attribs)
 
 PIXI.WebGLShaderManager.prototype.setShader = function(shader)
 {
-    if(this._currentId === shader._UID)return;
+    if(this._currentId === shader._UID)return false;
     
     this._currentId = shader._UID;
 
@@ -7369,6 +7368,8 @@ PIXI.WebGLShaderManager.prototype.setShader = function(shader)
 
     this.gl.useProgram(shader.program);
     this.setAttribs(shader.attributes);
+
+    return true;
 };
 
 /**
@@ -7471,6 +7472,8 @@ PIXI.WebGLSpriteBatch = function(gl)
     this.currentBaseTexture = null;
     
     this.setContext(gl);
+
+    this.dirty = true;
 };
 
 /**
@@ -7781,8 +7784,37 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
 
     var gl = this.gl;
     
-    // 
     this.renderSession.shaderManager.setShader(this.renderSession.shaderManager.defaultShader);
+
+    //TODO - im usre this can be done better - will look to tweak this for 1.7..
+    if(this.dirty)
+    {
+        this.dirty = false;
+        // bind the main texture
+        gl.activeTexture(gl.TEXTURE0);
+
+        // bind the buffers
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+
+        // set the projection
+        var projection = this.renderSession.projection;
+        gl.uniform2f(this.shader.projectionVector, projection.x, projection.y);
+
+        // set the pointers
+        var stride =  this.vertSize * 4;
+        gl.vertexAttribPointer(this.shader.aVertexPosition, 2, gl.FLOAT, false, stride, 0);
+        gl.vertexAttribPointer(this.shader.aTextureCoord, 2, gl.FLOAT, false, stride, 2 * 4);
+        gl.vertexAttribPointer(this.shader.colorAttribute, 2, gl.FLOAT, false, stride, 4 * 4);
+
+    }
+
+    // set the blend mode..
+    if(this.currentBlendMode !== PIXI.blendModes.NORMAL)
+    {
+        this.setBlendMode(PIXI.blendModes.NORMAL);
+    }
+
 
     // bind the current texture
     gl.bindTexture(gl.TEXTURE_2D, this.currentBaseTexture._glTextures[gl.id] || PIXI.createWebGLTexture(this.currentBaseTexture, gl));
@@ -7835,32 +7867,9 @@ PIXI.WebGLSpriteBatch.prototype.stop = function()
 */
 PIXI.WebGLSpriteBatch.prototype.start = function()
 {
-    var gl = this.gl;
+    this.dirty = true;
 
-    this.renderSession.shaderManager.setShader(this.renderSession.shaderManager.defaultShader);
-
-    // bind the main texture
-    gl.activeTexture(gl.TEXTURE0);
-
-    // bind the buffers
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-
-    // set the projection
-    var projection = this.renderSession.projection;
-    gl.uniform2f(this.shader.projectionVector, projection.x, projection.y);
-
-    // set the pointers
-    var stride =  this.vertSize * 4;
-    gl.vertexAttribPointer(this.shader.aVertexPosition, 2, gl.FLOAT, false, stride, 0);
-    gl.vertexAttribPointer(this.shader.aTextureCoord, 2, gl.FLOAT, false, stride, 2 * 4);
-    gl.vertexAttribPointer(this.shader.colorAttribute, 2, gl.FLOAT, false, stride, 4 * 4);
-
-    // set the blend mode..
-    if(this.currentBlendMode !== PIXI.blendModes.NORMAL)
-    {
-        this.setBlendMode(PIXI.blendModes.NORMAL);
-    }
+   
 };
 
 /**
@@ -13781,6 +13790,7 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, position, cle
 
     if(clear)this.textureBuffer.clear();
 
+
     // THIS WILL MESS WITH HIT TESTING!
     var children = displayObject.children;
 
@@ -13805,10 +13815,13 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, position, cle
     // update the textures!
     PIXI.WebGLRenderer.updateTextures();
 
-    // 
+    this.renderer.spriteBatch.dirty = true;
+    
     this.renderer.renderDisplayObject(displayObject, this.projection, this.textureBuffer.frameBuffer);
 
     displayObject.worldTransform = originalWorldTransform;
+
+    this.renderer.spriteBatch.dirty = true;
 };
 
 

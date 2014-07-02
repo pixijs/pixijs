@@ -58,9 +58,14 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
             gl.drawElements(gl.TRIANGLE_FAN, 4, gl.UNSIGNED_SHORT, ( webGLData.indices.length - 4 ) * 2 );
             
             renderSession.stencilManager.popStencil(graphics, webGLData, renderSession);
+            
+            this.last = webGLData.mode;
         }
         else
         {
+            webGLData = webGL.data[i];
+           
+
             renderSession.shaderManager.setShader( shader );//activatePrimitiveShader();
             shader = renderSession.shaderManager.primitiveShader;
             gl.uniformMatrix3fv(shader.translationMatrix, false, graphics.worldTransform.toArray(true));
@@ -72,7 +77,6 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
 
             gl.uniform1f(shader.alpha, graphics.worldAlpha);
             
-            webGLData = webGL.data[i];
 
             gl.bindBuffer(gl.ARRAY_BUFFER, webGLData.buffer);
 
@@ -82,13 +86,8 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
             // set the index buffer!
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, webGLData.indexBuffer);
             gl.drawElements(gl.TRIANGLE_STRIP,  webGLData.indices.length, gl.UNSIGNED_SHORT, 0 );
-
-         //   renderSession.shaderManager.deactivatePrimitiveShader();
         }
     }
-
-    // return to default shader...
-    //  PIXI.activateShader(PIXI.defaultShader);
 };
 
 /**
