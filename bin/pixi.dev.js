@@ -404,6 +404,17 @@ PIXI.Circle.prototype.contains = function(x, y)
     return (dx + dy <= r2);
 };
 
+/**
+* Returns the framing rectangle of the circle as a PIXI.Rectangle object
+*
+* @method getBounds
+* @return {Rectangle} the framing rectangle
+*/
+PIXI.Circle.prototype.getBounds = function()
+{
+    return new PIXI.Rectangle(this.x - this.radius, this.y - this.radius, this.width, this.height);
+};
+
 // constructor
 PIXI.Circle.prototype.constructor = PIXI.Circle;
 
@@ -417,10 +428,10 @@ PIXI.Circle.prototype.constructor = PIXI.Circle;
  *
  * @class Ellipse
  * @constructor
- * @param x {Number} The X coordinate of the upper-left corner of the framing rectangle of this ellipse
- * @param y {Number} The Y coordinate of the upper-left corner of the framing rectangle of this ellipse
- * @param width {Number} The overall width of this ellipse
- * @param height {Number} The overall height of this ellipse
+ * @param x {Number} The X coordinate of the center of the ellipse
+ * @param y {Number} The Y coordinate of the center of the ellipse
+ * @param width {Number} The half width of this ellipse
+ * @param height {Number} The half height of this ellipse
  */
 PIXI.Ellipse = function(x, y, width, height)
 {
@@ -495,7 +506,7 @@ PIXI.Ellipse.prototype.contains = function(x, y)
 */
 PIXI.Ellipse.prototype.getBounds = function()
 {
-    return new PIXI.Rectangle(this.x, this.y, this.width, this.height);
+    return new PIXI.Rectangle(this.x - this.width, this.y - this.height, this.width, this.height);
 };
 
 // constructor
@@ -9143,16 +9154,6 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
     this.clearBeforeRender = true;
 
     /**
-     * If true Pixi will Math.floor() x/y values when rendering, stopping pixel interpolation.
-     * Handy for crisp pixel art and speed on legacy devices.
-     *
-     * @property roundPixels
-     * @type Boolean
-     * @default
-     */
-    this.roundPixels = false;
-
-    /**
      * Whether the render view is transparent
      *
      * @property transparent
@@ -9264,7 +9265,14 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
         context: this.context,
         maskManager: this.maskManager,
         scaleMode: null,
-        smoothProperty: null
+        smoothProperty: null,
+
+        /**
+         * If true Pixi will Math.floor() x/y values when rendering, stopping pixel interpolation.
+         * Handy for crisp pixel art and speed on legacy devices.
+         *
+         */
+        roundPixels: false
     };
 
     if("imageSmoothingEnabled" in this.context)
@@ -10330,7 +10338,7 @@ PIXI.Graphics.prototype.drawRoundedRect = function( x, y, width, height, radius 
  * @param y {Number} The Y coordinate of the center of the circle
  * @param radius {Number} The radius of the circle
  */
-PIXI.Graphics.prototype.drawCircle = function( x, y, radius)
+PIXI.Graphics.prototype.drawCircle = function(x, y, radius)
 {
 
     if (!this.currentPath.points.length) this.graphicsData.pop();
@@ -10349,12 +10357,12 @@ PIXI.Graphics.prototype.drawCircle = function( x, y, radius)
  * Draws an ellipse.
  *
  * @method drawEllipse
- * @param x {Number} The X coordinate of the upper-left corner of the framing rectangle of this ellipse
- * @param y {Number} The Y coordinate of the upper-left corner of the framing rectangle of this ellipse
- * @param width {Number} The width of the ellipse
- * @param height {Number} The height of the ellipse
+ * @param x {Number} The X coordinate of the center of the ellipse
+ * @param y {Number} The Y coordinate of the center of the ellipse
+ * @param width {Number} The half width of the ellipse
+ * @param height {Number} The half height of the ellipse
  */
-PIXI.Graphics.prototype.drawEllipse = function( x, y, width, height)
+PIXI.Graphics.prototype.drawEllipse = function(x, y, width, height)
 {
 
     if (!this.currentPath.points.length) this.graphicsData.pop();
