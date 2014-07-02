@@ -156,7 +156,7 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
     }
 
     // get the uvs for the texture
-    var uvs = sprite._uvs || sprite.texture._uvs;
+    var uvs = sprite.texture._uvs;
     // if the uvs have not updated then no point rendering just yet!
     if(!uvs)return;
 
