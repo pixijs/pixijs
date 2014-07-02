@@ -154,7 +154,7 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
     }
 
     // get the uvs for the texture
-    var uvs = sprite.texture._uvs;
+    var uvs = texture._uvs;
     // if the uvs have not updated then no point rendering just yet!
     if(!uvs)return;
 
@@ -171,10 +171,10 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
 
     var w0, w1, h0, h1;
         
-    if (sprite.texture.trim)
+    if (texture.trim)
     {
         // if the sprite is trimmed then we need to add the extra space before transforming the sprite coords..
-        var trim = sprite.texture.trim;
+        var trim = texture.trim;
 
         w1 = trim.x - aX * trim.width;
         w0 = w1 + texture.frame.width;
