@@ -4,7 +4,7 @@ describe('pixi/utils/EventTarget', function () {
     var expect = chai.expect;
 
     var Clazz, PClazz, obj, pobj, obj2;
-    before(function () {
+    beforeEach(function () {
         Clazz = function () {};
         PClazz = function () {};
 
@@ -181,13 +181,15 @@ describe('pixi/utils/EventTarget', function () {
     it('handles multiple instances with the same prototype', function () {
         var called = 0;
 
-        function onMyEvent() {
+        function onMyEvent(e) {
+            console.log(e.type, this.istwo, this._listeners[e.type]);
             called++;
         }
 
         obj.on('myevent1', onMyEvent);
         obj.on('myevent2', onMyEvent);
 
+        obj2.istwo = true;
         obj2.on('myevent1', onMyEvent);
         obj2.on('myevent2', onMyEvent);
 

@@ -38,9 +38,6 @@ PIXI.EventTarget = {
      * @param object {Object} The obj to mix into
      */
     mixin: function mixin(obj) {
-        //local tracker for this object's listeners
-        var _listeners = {};
-
         /**
          * Return a list of assigned event listeners.
          *
@@ -49,7 +46,9 @@ PIXI.EventTarget = {
          * @returns {Array} An array of listener functions
          */
         obj.listeners = function listeners(eventName) {
-            return _listeners[eventName] ? _listeners[eventName].slice() : [];
+            this._listeners = this._listeners || {};
+
+            return this._listeners[eventName] ? this._listeners[eventName].slice() : [];
         };
 
         /**
@@ -61,6 +60,8 @@ PIXI.EventTarget = {
          * @returns {Boolean} Indication if we've emitted an event.
          */
         obj.emit = obj.dispatchEvent = function emit(eventName, data) {
+            this._listeners = this._listeners || {};
+
             //backwards compat with old method ".emit({ type: 'something' })"
             if(typeof eventName === 'object') {
                 data = eventName;
@@ -73,8 +74,8 @@ PIXI.EventTarget = {
             }
 
             //iterate the listeners
-            if(_listeners && _listeners[eventName]) {
-                var listeners = _listeners[eventName],
+            if(this._listeners && this._listeners[eventName]) {
+                var listeners = this._listeners[eventName],
                     length = listeners.length,
                     fn = listeners[0],
                     i;
@@ -112,7 +113,9 @@ PIXI.EventTarget = {
          * @param callback {Functon} fn Callback function.
          */
         obj.on = obj.addEventListener = function on(eventName, fn) {
-            (_listeners[eventName] = _listeners[eventName] || [])
+            this._listeners = this._listeners || {};
+
+            (this._listeners[eventName] = this._listeners[eventName] || [])
                 .push(fn);
 
             return this;
@@ -126,6 +129,8 @@ PIXI.EventTarget = {
          * @param callback {Function} Callback function.
          */
         obj.once = function once(eventName, fn) {
+            this._listeners = this._listeners || {};
+
             var self = this;
             function onceHandlerWrapper() {
                 fn.apply(self.off(eventName, onceHandlerWrapper), arguments);
@@ -144,10 +149,12 @@ PIXI.EventTarget = {
          * @param callback {Function} The listener that we need to find.
          */
         obj.off = obj.removeEventListener = function off(eventName, fn) {
-            if(!_listeners[eventName])
+            this._listeners = this._listeners || {};
+
+            if(!this._listeners[eventName])
                 return this;
 
-            var list = _listeners[eventName],
+            var list = this._listeners[eventName],
                 i = list.length = fn ? list.length : 0;
 
             while(i-- > 0) {
@@ -157,7 +164,7 @@ PIXI.EventTarget = {
             }
 
             if(list.length === 0) {
-                delete _listeners[eventName];
+                delete this._listeners[eventName];
             }
 
             return this;
@@ -170,10 +177,12 @@ PIXI.EventTarget = {
          * @param eventName {String} The event you want to remove all listeners for.
          */
         obj.removeAllListeners = function removeAllListeners(eventName) {
-            if(!_listeners[eventName])
+            this._listeners = this._listeners || {};
+
+            if(!this._listeners[eventName])
                 return this;
 
-            delete _listeners[eventName];
+            delete this._listeners[eventName];
 
             return this;
         };
