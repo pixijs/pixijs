@@ -69,6 +69,17 @@ PIXI.Circle.prototype.contains = function(x, y)
     return (dx + dy <= r2);
 };
 
+/**
+* Returns the framing rectangle of the circle as a PIXI.Rectangle object
+*
+* @method getBounds
+* @return {Rectangle} the framing rectangle
+*/
+PIXI.Circle.prototype.getBounds = function()
+{
+    return new PIXI.Rectangle(this.x - this.radius, this.y - this.radius, this.width, this.height);
+};
+
 // constructor
 PIXI.Circle.prototype.constructor = PIXI.Circle;
 
