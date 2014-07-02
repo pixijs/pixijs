@@ -21,7 +21,11 @@ PIXI.glContexts = []; // this is where we store the webGL contexts for easy acce
  */
 PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
 {
-    if(!PIXI.defaultRenderer)PIXI.defaultRenderer = this;
+    if(!PIXI.defaultRenderer)
+    {
+        PIXI.sayHello('webGL');
+        PIXI.defaultRenderer = this;
+    }
 
     this.type = PIXI.WEBGL_RENDERER;
 

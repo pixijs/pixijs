@@ -59,18 +59,23 @@ PIXI.AUTO_PREVENT_DEFAULT = true;
 PIXI.RAD_TO_DEG = 180 / Math.PI;
 PIXI.DEG_TO_RAD = Math.PI / 180;
 
-PIXI.sayHello = function () 
+
+PIXI.dontSayHello = false;
+
+PIXI.sayHello = function (type) 
 {
+    if(PIXI.dontSayHello)return;
+
     if ( navigator.userAgent.toLowerCase().indexOf('chrome') > -1 )
     {
         var args = [
-            '%c %c %c Pixi.js ' + PIXI.VERSION + '  %c %c ' + ' http://pixjs.com  %c %c ♥%c♥%c♥ ',
-            'background: #ed2577',
-            'background: #ed2577',
-            'color: #ed2577; background: #0a0c1a;',
-            'background: #ed2577',
-            'background: #0a0c1a',
-            'background: #ed2577',
+            '%c %c %c Pixi.js ' + PIXI.VERSION + ' - ' + type + '  %c ' + ' %c ' + ' http://pixjs.com  %c %c ♥%c♥%c♥ ',
+            'background: #ff66a5',
+            'background: #ff66a5',
+            'color: #ff66a5; background: #030307;',
+            'background: #ff66a5',
+            'background: #ffc3dc',
+            'background: #ff66a5',
             'color: #ff2424; background: #fff',
             'color: #ff2424; background: #fff',
             'color: #ff2424; background: #fff'
@@ -84,6 +89,6 @@ PIXI.sayHello = function ()
     {
         console.log('Pixi.js ' + PIXI.VERSION + ' - http://pixjs.com');
     }
-};
 
-PIXI.sayHello();
+    PIXI.dontSayHello = true;
+};

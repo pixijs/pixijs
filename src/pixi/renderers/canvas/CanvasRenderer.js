@@ -15,7 +15,11 @@
  */
 PIXI.CanvasRenderer = function(width, height, view, transparent)
 {
-    PIXI.defaultRenderer = PIXI.defaultRenderer || this;
+    if(!PIXI.defaultRenderer)
+    {
+        PIXI.sayHello("Canvas");
+        PIXI.defaultRenderer = this;
+    }
 
     this.type = PIXI.CANVAS_RENDERER;
 

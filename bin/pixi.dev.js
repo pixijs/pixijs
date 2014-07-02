@@ -4,7 +4,7 @@
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-07-01
+ * Compiled: 2014-07-02
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -78,18 +78,23 @@ PIXI.AUTO_PREVENT_DEFAULT = true;
 PIXI.RAD_TO_DEG = 180 / Math.PI;
 PIXI.DEG_TO_RAD = Math.PI / 180;
 
-PIXI.sayHello = function () 
+
+PIXI.dontSayHello = false;
+
+PIXI.sayHello = function (type) 
 {
+    if(PIXI.dontSayHello)return;
+
     if ( navigator.userAgent.toLowerCase().indexOf('chrome') > -1 )
     {
         var args = [
-            '%c %c %c Pixi.js ' + PIXI.VERSION + '  %c %c ' + ' http://pixjs.com  %c %c ♥%c♥%c♥ ',
-            'background: #ed2577',
-            'background: #ed2577',
-            'color: #ed2577; background: #0a0c1a;',
-            'background: #ed2577',
-            'background: #0a0c1a',
-            'background: #ed2577',
+            '%c %c %c Pixi.js ' + PIXI.VERSION + ' - ' + type + '  %c ' + ' %c ' + ' http://pixjs.com  %c %c ♥%c♥%c♥ ',
+            'background: #ff66a5',
+            'background: #ff66a5',
+            'color: #ff66a5; background: #030307;',
+            'background: #ff66a5',
+            'background: #ffc3dc',
+            'background: #ff66a5',
             'color: #ff2424; background: #fff',
             'color: #ff2424; background: #fff',
             'color: #ff2424; background: #fff'
@@ -103,9 +108,10 @@ PIXI.sayHello = function ()
     {
         console.log('Pixi.js ' + PIXI.VERSION + ' - http://pixjs.com');
     }
+
+    PIXI.dontSayHello = true;
 };
 
-PIXI.sayHello();
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -6332,7 +6338,11 @@ PIXI.glContexts = []; // this is where we store the webGL contexts for easy acce
  */
 PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
 {
-    if(!PIXI.defaultRenderer)PIXI.defaultRenderer = this;
+    if(!PIXI.defaultRenderer)
+    {
+        PIXI.sayHello('webGL');
+        PIXI.defaultRenderer = this;
+    }
 
     this.type = PIXI.WEBGL_RENDERER;
 
@@ -9103,7 +9113,11 @@ PIXI.CanvasTinter.tintMethod = PIXI.CanvasTinter.canUseMultiply ? PIXI.CanvasTin
  */
 PIXI.CanvasRenderer = function(width, height, view, transparent)
 {
-    PIXI.defaultRenderer = PIXI.defaultRenderer || this;
+    if(!PIXI.defaultRenderer)
+    {
+        PIXI.sayHello("Canvas");
+        PIXI.defaultRenderer = this;
+    }
 
     this.type = PIXI.CANVAS_RENDERER;
 
