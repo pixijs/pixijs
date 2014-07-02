@@ -40,6 +40,7 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode)
      * @type Number
      */
     this.width = width || 100;
+
     /**
      * The height of the render texture
      *
@@ -48,28 +49,17 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode)
      */
     this.height = height || 100;
 
-    /**
-     * The framing rectangle of the render texture
-     *
-     * @property frame
-     * @type Rectangle
-     */
-    this.frame = new PIXI.Rectangle(0, 0, this.width, this.height);
+    var baseTexture = new PIXI.BaseTexture();
+    baseTexture.width = this.width;
+    baseTexture.height = this.height;
+    baseTexture._glTextures = [];
+    baseTexture.scaleMode = scaleMode || PIXI.scaleModes.DEFAULT;
+    baseTexture.hasLoaded = true;
 
-    /**
-     * The base texture object that this texture uses
-     *
-     * @property baseTexture
-     * @type BaseTexture
-     */
-    this.baseTexture = new PIXI.BaseTexture();
-    this.baseTexture.width = this.width;
-    this.baseTexture.height = this.height;
-    this.baseTexture._glTextures = [];
-
-    this.baseTexture.scaleMode = scaleMode || PIXI.scaleModes.DEFAULT;
-
-    this.baseTexture.hasLoaded = true;
+    PIXI.Texture.call(this,
+        baseTexture,
+        new PIXI.Rectangle(0, 0, this.width, this.height)
+    );
 
     // each render texture can only belong to one renderer at the moment if its webGL
     this.renderer = renderer || PIXI.defaultRenderer;
@@ -98,7 +88,6 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode)
 
 PIXI.RenderTexture.prototype = Object.create(PIXI.Texture.prototype);
 PIXI.RenderTexture.prototype.constructor = PIXI.RenderTexture;
-PIXI.EventTarget.mixin(PIXI.RenderTexture.prototype);
 
 /**
  * Resize the RenderTexture.

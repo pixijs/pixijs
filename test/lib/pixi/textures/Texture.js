@@ -11,7 +11,7 @@ function pixi_textures_Texture_confirmNew(obj, done) {
     }
 
     expect(obj).to.be.an.instanceof(PIXI.Texture);
-    pixi_utils_EventTarget_like(obj);
+    pixi_utils_EventTarget_confirm(obj);
 
     expect(obj).to.have.property('baseTexture')
         .and.to.be.an.instanceof(PIXI.BaseTexture);

@@ -252,6 +252,9 @@ PIXI.Event = function(target, name, data) {
      */
     this.data = data;
 
+    //backwards compat with older version of events
+    this.content = data;
+
     /**
      * The timestamp when the event occurred.
      *

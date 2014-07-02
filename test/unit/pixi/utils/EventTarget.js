@@ -24,26 +24,14 @@ describe('pixi/utils/EventTarget', function () {
     });
 
     it('Confirm new instance', function () {
-        pixi_utils_EventTarget_like(obj);
+        pixi_utils_EventTarget_confirm(obj);
     });
 
-    it('simple on/emit case works', function (done) {
+    it('simple on/emit case works', function () {
         var myData = {};
 
         obj.on('myevent', function (event) {
-            expect(event).to.be.an.instanceOf(PIXI.Event);
-
-            expect(event).to.have.property('stopped', false);
-            expect(event).to.have.property('stoppedImmediate', false);
-
-            expect(event).to.have.property('target', obj);
-            expect(event).to.have.property('type', 'myevent');
-            expect(event).to.have.property('data', myData);
-
-            expect(event).to.respondTo('stopPropagation');
-            expect(event).to.respondTo('stopImmediatePropagation');
-
-            done();
+            pixi_utils_EventTarget_Event_confirm(event, obj, myData);
         });
 
         obj.emit('myevent', myData);
@@ -182,7 +170,6 @@ describe('pixi/utils/EventTarget', function () {
         var called = 0;
 
         function onMyEvent(e) {
-            console.log(e.type, this.istwo, this._listeners[e.type]);
             called++;
         }
 
@@ -198,13 +185,22 @@ describe('pixi/utils/EventTarget', function () {
         obj2.emit('myevent1');
         obj2.emit('myevent2');
 
-        expect(called).to.equal(4);
+        //we emit 4 times, but since obj2 is a child of obj the event should bubble
+        //up to obj and show up there as well. So the obj2.emit() calls each increment
+        //the counter twice.
+        expect(called).to.equal(6);
     });
 
     it('is backwards compatible with older dispatchEvent', function () {
-        var called = 0;
+        var called = 0,
+            data = {
+                some: 'thing',
+                hello: true
+            };
 
-        function onMyEvent() {
+        function onMyEvent(event) {
+            pixi_utils_EventTarget_Event_confirm(event, obj, data);
+
             called++;
         }
 
@@ -212,20 +208,35 @@ describe('pixi/utils/EventTarget', function () {
         obj.on('myevent2', onMyEvent);
         obj.on('myevent3', onMyEvent);
 
-        obj.emit({ type: 'myevent1' });
-        obj.emit({ type: 'myevent2' });
-        obj.emit({ type: 'myevent3' });
+        data.type = 'myevent1';
+        obj.emit(data);
+
+        data.type = 'myevent2';
+        obj.emit(data);
+
+        data.type = 'myevent3';
+        obj.emit(data);
 
         obj.off('myevent2', onMyEvent);
 
-        obj.emit({ type: 'myevent1' });
-        obj.emit({ type: 'myevent2' });
-        obj.emit({ type: 'myevent3' });
+        data.type = 'myevent1';
+        obj.emit(data);
+
+        data.type = 'myevent2';
+        obj.emit(data);
+
+        data.type = 'myevent3';
+        obj.emit(data);
 
         expect(called).to.equal(5);
     });
 
     it('is backwards compatible with older .call(this)', function () {
+        var Fn = function() {
+                PIXI.EventTarget.call(this);
+            },
+            o = new Fn();
 
+        pixi_utils_EventTarget_confirm(o);
     });
 });
