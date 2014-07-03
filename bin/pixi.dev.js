@@ -4,7 +4,7 @@
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-07-02
+ * Compiled: 2014-07-03
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -88,7 +88,7 @@ PIXI.sayHello = function (type)
     if ( navigator.userAgent.toLowerCase().indexOf('chrome') > -1 )
     {
         var args = [
-            '%c %c %c Pixi.js ' + PIXI.VERSION + ' - ' + type + '  %c ' + ' %c ' + ' http://pixjs.com  %c %c ♥%c♥%c♥ ',
+            '%c %c %c Pixi.js ' + PIXI.VERSION + ' - ' + type + '  %c ' + ' %c ' + ' http://pixijs.com  %c %c ♥%c♥%c♥ ',
             'background: #ff66a5',
             'background: #ff66a5',
             'color: #ff66a5; background: #030307;',
@@ -7563,7 +7563,7 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
     }
 
     // get the uvs for the texture
-    var uvs = sprite._uvs || sprite.texture._uvs;
+    var uvs = sprite.texture._uvs;
     // if the uvs have not updated then no point rendering just yet!
     if(!uvs)return;
 
@@ -13617,7 +13617,7 @@ PIXI.TextureUvs = function()
     this.y2 = 0;
 
     this.x3 = 0;
-    this.y4 = 0;
+    this.y3 = 0;
 
 
 };
