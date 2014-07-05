@@ -87,11 +87,11 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
         {
             // TODO - need to be Undefined!
             context.beginPath();
-            context.arc(points[0], points[1], points[2],0,2*Math.PI);
-            context.closePath();
+            context.arc(points[0], points[1], points[2],data.beginAngle, data.endAngle);
 
             if(data.fill)
             {
+                context.closePath();
                 context.globalAlpha = data.fillAlpha * worldAlpha;
                 context.fillStyle = color = '#' + ('00000' + ( data.fillColor | 0).toString(16)).substr(-6);
                 context.fill();
