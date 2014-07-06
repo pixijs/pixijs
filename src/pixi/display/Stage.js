@@ -43,7 +43,7 @@ PIXI.Stage = function(backgroundColor)
     /**
      * The interaction manage for this stage, manages all interactive activity on the stage
      *
-     * @property interactive
+     * @property interactionManager
      * @type InteractionManager
      */
     this.interactionManager = new PIXI.InteractionManager(this);
