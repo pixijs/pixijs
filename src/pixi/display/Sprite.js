@@ -373,7 +373,21 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
                 this.tintedTexture = PIXI.CanvasTinter.getTintedTexture(this, this.tint);
             }
 
-            context.drawImage(this.tintedTexture,
+            if (texture.trim)
+            {
+                context.drawImage(this.tintedTexture,
+                               0,
+                               0,
+                               crop.width,
+                               crop.height,
+                               texture.trim.x - this.anchor.x * texture.trim.width,
+                               texture.trim.y - this.anchor.y * texture.trim.height,
+                               crop.width,
+                               crop.height);
+            }
+            else
+            {
+                context.drawImage(this.tintedTexture,
                                0,
                                0,
                                frame.width,
@@ -382,6 +396,7 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
                                (this.anchor.y) * -frame.height,
                                frame.width,
                                frame.height);
+            }
         }
         else
         {
