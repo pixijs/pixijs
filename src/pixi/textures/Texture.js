@@ -208,7 +208,7 @@ PIXI.Texture.prototype._updateWebGLuvs = function()
 {
     if(!this._uvs)this._uvs = new PIXI.TextureUvs();
 
-    var frame = this.frame;
+    var frame = this.crop;
     var tw = this.baseTexture.width;
     var th = this.baseTexture.height;
 
