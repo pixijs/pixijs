@@ -134,9 +134,12 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
             scope.onLoaded();
         });
 
-        for (var i in frameData) {
+        for (var i in frameData)
+        {
             var rect = frameData[i].frame;
-            if (rect) {
+
+            if (rect)
+            {
                 PIXI.TextureCache[i] = new PIXI.Texture(this.texture, {
                     x: rect.x,
                     y: rect.y,
@@ -144,15 +147,14 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
                     height: rect.h
                 });
 
-                // check to see ifthe sprite ha been trimmed..
-                if (frameData[i].trimmed) {
+                PIXI.TextureCache[i].crop = new PIXI.Rectangle(rect.x, rect.y, rect.w, rect.h);
 
-                    var texture =  PIXI.TextureCache[i];
-                    
+                //  Check to see if the sprite is trimmed
+                if (frameData[i].trimmed)
+                {
                     var actualSize = frameData[i].sourceSize;
                     var realSize = frameData[i].spriteSourceSize;
-
-                    texture.trim = new PIXI.Rectangle(realSize.x, realSize.y, actualSize.w, actualSize.h);
+                    PIXI.TextureCache[i].trim = new PIXI.Rectangle(realSize.x, realSize.y, actualSize.w, actualSize.h);
                 }
             }
         }
