@@ -320,31 +320,30 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
     // if the sprite is not visible or the alpha is 0 then no need to render this element
     if(this.visible === false || this.alpha === 0)return;
     
-    var frame = this.texture.frame;
     var context = renderSession.context;
     var texture = this.texture;
+    var frame = texture.frame;
+    var crop = texture.crop;
 
-    if(this.blendMode !== renderSession.currentBlendMode)
+    if (this.blendMode !== renderSession.currentBlendMode)
     {
         renderSession.currentBlendMode = this.blendMode;
         context.globalCompositeOperation = PIXI.blendModesCanvas[renderSession.currentBlendMode];
     }
 
-    if(this._mask)
+    if (this._mask)
     {
         renderSession.maskManager.pushMask(this._mask, renderSession.context);
     }
 
-    
-
-    //ignore null sources
-    if(texture.valid)
+    //  Ignore null sources
+    if (texture.valid)
     {
         context.globalAlpha = this.worldAlpha;
 
         var transform = this.worldTransform;
 
-        // allow for trimming
+        //  Allow for trimming
         if (renderSession.roundPixels)
         {
             context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx | 0, transform.ty | 0);
@@ -354,25 +353,24 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
             context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
         }
 
-        //if smoothingEnabled is supported and we need to change the smoothing property for this texture
-        if(renderSession.smoothProperty && renderSession.scaleMode !== this.texture.baseTexture.scaleMode) {
+        //  If smoothingEnabled is supported and we need to change the smoothing property for this texture
+        if (renderSession.smoothProperty && renderSession.scaleMode !== this.texture.baseTexture.scaleMode)
+        {
             renderSession.scaleMode = this.texture.baseTexture.scaleMode;
             context[renderSession.smoothProperty] = (renderSession.scaleMode === PIXI.scaleModes.LINEAR);
         }
 
-        if(this.tint !== 0xFFFFFF)
+        if (this.tint !== 0xFFFFFF)
         {
-            
-            if(this.cachedTint !== this.tint)
+            if (this.cachedTint !== this.tint)
             {
                 // no point tinting an image that has not loaded yet!
-                if(!texture.baseTexture.hasLoaded)return;
+                if (!texture.baseTexture.hasLoaded) return;
 
                 this.cachedTint = this.tint;
                 
                 //TODO clean up caching - how to clean up the caches?
                 this.tintedTexture = PIXI.CanvasTinter.getTintedTexture(this, this.tint);
-                
             }
 
             context.drawImage(this.tintedTexture,
@@ -387,53 +385,45 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
         }
         else
         {
-
-           
-
-            if(texture.trim)
+            if (texture.trim)
             {
-                var trim =  texture.trim;
-
                 context.drawImage(this.texture.baseTexture.source,
-                               frame.x,
-                               frame.y,
-                               frame.width,
-                               frame.height,
-                               trim.x - this.anchor.x * trim.width,
-                               trim.y - this.anchor.y * trim.height,
-                               frame.width,
-                               frame.height);
+                               crop.x,
+                               crop.y,
+                               crop.width,
+                               crop.height,
+                               texture.trim.x - this.anchor.x * texture.trim.width,
+                               texture.trim.y - this.anchor.y * texture.trim.height,
+                               crop.width,
+                               crop.height);
             }
             else
             {
-               
                 context.drawImage(this.texture.baseTexture.source,
-                               frame.x,
-                               frame.y,
-                               frame.width,
-                               frame.height,
-                               (this.anchor.x) * -frame.width,
-                               (this.anchor.y) * -frame.height,
-                               frame.width,
-                               frame.height);
+                               crop.x,
+                               crop.y,
+                               crop.width,
+                               crop.height,
+                               this.anchor.x * -frame.width,
+                               this.anchor.y * -frame.height,
+                               crop.width,
+                               crop.height);
             }
-            
         }
     }
 
     // OVERWRITE
-    for(var i=0,j=this.children.length; i<j; i++)
+    for (var i = 0, j = this.children.length; i < j; i++)
     {
         var child = this.children[i];
         child._renderCanvas(renderSession);
     }
 
-    if(this._mask)
+    if (this._mask)
     {
         renderSession.maskManager.popMask(renderSession.context);
     }
 };
-
 
 // some helper functions..
 

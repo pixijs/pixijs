@@ -1,0 +1,118 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Pixi Trim</title>
+    <script src="../src/pixi/Pixi.js"></script>
+    <script src="../src/pixi/core/Point.js"></script>
+    <script src="../src/pixi/core/Rectangle.js"></script>
+    <script src="../src/pixi/core/Polygon.js"></script>
+    <script src="../src/pixi/core/Circle.js"></script>
+    <script src="../src/pixi/core/Ellipse.js"></script>
+    <script src="../src/pixi/core/Matrix.js"></script>
+    <script src="../src/pixi/display/DisplayObject.js"></script>
+    <script src="../src/pixi/display/DisplayObjectContainer.js"></script>
+    <script src="../src/pixi/display/Sprite.js"></script>
+    <script src="../src/pixi/display/SpriteBatch.js"></script>
+    <script src="../src/pixi/display/MovieClip.js"></script>
+    <script src="../src/pixi/filters/FilterBlock.js"></script>
+    <script src="../src/pixi/text/Text.js"></script>
+    <script src="../src/pixi/text/BitmapText.js"></script>
+    <script src="../src/pixi/InteractionData.js"></script>
+    <script src="../src/pixi/InteractionManager.js"></script>
+    <script src="../src/pixi/display/Stage.js"></script>
+    <script src="../src/pixi/utils/Utils.js"></script>
+    <script src="../src/pixi/utils/EventTarget.js"></script>
+    <script src="../src/pixi/utils/Detector.js"></script>
+    <script src="../src/pixi/utils/Polyk.js"></script>
+    <script src="../src/pixi/renderers/webgl/utils/WebGLShaderUtils.js"></script>
+    <script src="../src/pixi/renderers/webgl/shaders/PixiShader.js"></script>
+    <script src="../src/pixi/renderers/webgl/shaders/PixiFastShader.js"></script>
+    <script src="../src/pixi/renderers/webgl/shaders/StripShader.js"></script>
+    <script src="../src/pixi/renderers/webgl/shaders/PrimitiveShader.js"></script>
+    <script src="../src/pixi/renderers/webgl/shaders/ComplexPrimitiveShader.js"></script>
+    <script src="../src/pixi/renderers/webgl/utils/WebGLGraphics.js"></script>
+    <script src="../src/pixi/renderers/webgl/WebGLRenderer.js"></script>
+    <script src="../src/pixi/renderers/webgl/utils/WebGLMaskManager.js"></script>
+    <script src="../src/pixi/renderers/webgl/utils/WebGLStencilManager.js"></script>
+    <script src="../src/pixi/renderers/webgl/utils/WebGLShaderManager.js"></script>
+    <script src="../src/pixi/renderers/webgl/utils/WebGLSpriteBatch.js"></script>
+    <script src="../src/pixi/renderers/webgl/utils/WebGLFastSpriteBatch.js"></script>
+    <script src="../src/pixi/renderers/webgl/utils/WebGLFilterManager.js"></script>
+    <script src="../src/pixi/renderers/webgl/utils/FilterTexture.js"></script>
+    <script src="../src/pixi/renderers/canvas/utils/CanvasMaskManager.js"></script>
+    <script src="../src/pixi/renderers/canvas/utils/CanvasTinter.js"></script>
+    <script src="../src/pixi/renderers/canvas/CanvasRenderer.js"></script>
+    <script src="../src/pixi/renderers/canvas/CanvasGraphics.js"></script>
+    <script src="../src/pixi/primitives/Graphics.js"></script>
+    <script src="../src/pixi/extras/Strip.js"></script>
+    <script src="../src/pixi/extras/Rope.js"></script>
+    <script src="../src/pixi/extras/TilingSprite.js"></script>
+    <script src="../src/pixi/extras/Spine.js"></script>
+    <script src="../src/pixi/textures/BaseTexture.js"></script>
+    <script src="../src/pixi/textures/Texture.js"></script>
+    <script src="../src/pixi/textures/RenderTexture.js"></script>
+    <script src="../src/pixi/loaders/AssetLoader.js"></script>
+    <script src="../src/pixi/loaders/JsonLoader.js"></script>
+    <script src="../src/pixi/loaders/AtlasLoader.js"></script>
+    <script src="../src/pixi/loaders/SpriteSheetLoader.js"></script>
+    <script src="../src/pixi/loaders/ImageLoader.js"></script>
+    <script src="../src/pixi/loaders/BitmapFontLoader.js"></script>
+    <script src="../src/pixi/loaders/SpineLoader.js"></script>
+    <script src="../src/pixi/filters/AbstractFilter.js"></script>
+    <script src="../src/pixi/filters/AlphaMaskFilter.js"></script>
+    <script src="../src/pixi/filters/ColorMatrixFilter.js"></script>
+    <script src="../src/pixi/filters/GrayFilter.js"></script>
+    <script src="../src/pixi/filters/DisplacementFilter.js"></script>
+    <script src="../src/pixi/filters/PixelateFilter.js"></script>
+    <script src="../src/pixi/filters/BlurXFilter.js"></script>
+    <script src="../src/pixi/filters/BlurYFilter.js"></script>
+    <script src="../src/pixi/filters/BlurFilter.js"></script>
+    <script src="../src/pixi/filters/InvertFilter.js"></script>
+    <script src="../src/pixi/filters/SepiaFilter.js"></script>
+    <script src="../src/pixi/filters/TwistFilter.js"></script>
+    <script src="../src/pixi/filters/ColorStepFilter.js"></script>
+    <script src="../src/pixi/filters/DotScreenFilter.js"></script>
+    <script src="../src/pixi/filters/CrossHatchFilter.js"></script>
+    <script src="../src/pixi/filters/RGBSplitFilter.js"></script>
+</head>
+<body>
+
+    <script>
+
+    var stage = new PIXI.Stage(0x666699);
+
+    // var renderer = PIXI.autoDetectRenderer(400, 300);
+    var renderer = new PIXI.CanvasRenderer(800, 600);
+    document.body.appendChild(renderer.view);
+
+    requestAnimFrame(animate);
+
+    var texture = PIXI.Texture.fromImage("bikkuriman.png");
+
+    var sprite = new PIXI.Sprite(texture);
+
+    // sprite.anchor.x = 0.5;
+    // sprite.anchor.y = 0.5;
+
+    // sprite.position.x = 200;
+    // sprite.position.y = 150;
+
+    stage.addChild(sprite);
+
+    function animate() {
+
+        requestAnimFrame(animate);
+
+        // sprite.rotation += 0.1;
+
+        renderer.render(stage);
+    }
+
+    </script>
+
+    <p><a href="index.html">Test 1</a></p>
+    <p><a href="index2.html">Test 2</a></p>
+    <p><a href="index3.html">Test 3</a></p>
+
+    </body>
+</html>

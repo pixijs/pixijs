@@ -21,17 +21,27 @@ PIXI.Texture = function(baseTexture, frame)
 {
     PIXI.EventTarget.call( this );
 
-    if(!frame)
+    /**
+     * Does this Texture have any frame data assigned to it?
+     *
+     * @property noFrame
+     * @type Boolean
+     */
+    this.noFrame = false;
+
+    if (!frame)
     {
         this.noFrame = true;
         frame = new PIXI.Rectangle(0,0,1,1);
     }
 
-    if(baseTexture instanceof PIXI.Texture)
+    if (baseTexture instanceof PIXI.Texture)
+    {
         baseTexture = baseTexture.baseTexture;
+    }
 
     /**
-     * The base texture of that this texture uses
+     * The base texture that this texture uses.
      *
      * @property baseTexture
      * @type BaseTexture
@@ -55,21 +65,58 @@ PIXI.Texture = function(baseTexture, frame)
     this.trim = null;
     
     /**
-     * This will let the renderer know if the texture is valid. If its not then it cannot be rendered
+     * This will let the renderer know if the texture is valid. If its not then it cannot be rendered.
      *
      * @property valid
      * @type Boolean
      */
     this.valid = false;
 
+    /**
+     * The context scope under which events are run.
+     *
+     * @property scope
+     * @type Object
+     */
     this.scope = this;
 
+    /**
+     * The WebGL UV data cache.
+     *
+     * @private
+     * @property _uvs
+     * @type Object
+     */
     this._uvs = null;
     
-    if(baseTexture.hasLoaded)
+    /**
+     * The width of the Texture in pixels.
+     *
+     * @property width
+     * @type Number
+     */
+    this.width = 0;
+
+    /**
+     * The height of the Texture in pixels.
+     *
+     * @property height
+     * @type Number
+     */
+    this.height = 0;
+
+    /**
+     * This is the area of the BaseTexture image to actually copy to the Canvas / WebGL when rendering,
+     * irrespective of the actual frame size or placement (which can be influenced by trimmed texture atlases)
+     *
+     * @property crop
+     * @type Rectangle
+     */
+    this.crop = new PIXI.Rectangle(0, 0, 1, 1);
+
+    if (baseTexture.hasLoaded)
     {
-        if(this.noFrame)frame = new PIXI.Rectangle(0,0, baseTexture.width, baseTexture.height);
-      
+        if (this.noFrame) frame = new PIXI.Rectangle(0, 0, baseTexture.width, baseTexture.height);
         this.setFrame(frame);
     }
     else
@@ -91,9 +138,9 @@ PIXI.Texture.prototype.constructor = PIXI.Texture;
 PIXI.Texture.prototype.onBaseTextureLoaded = function()
 {
     var baseTexture = this.baseTexture;
-    baseTexture.removeEventListener( 'loaded', this.onLoaded );
+    baseTexture.removeEventListener('loaded', this.onLoaded);
 
-    if(this.noFrame)this.frame = new PIXI.Rectangle(0,0, baseTexture.width, baseTexture.height);
+    if (this.noFrame) this.frame = new PIXI.Rectangle(0, 0, baseTexture.width, baseTexture.height);
     
     this.setFrame(this.frame);
 
@@ -108,39 +155,60 @@ PIXI.Texture.prototype.onBaseTextureLoaded = function()
  */
 PIXI.Texture.prototype.destroy = function(destroyBase)
 {
-    if(destroyBase) this.baseTexture.destroy();
+    if (destroyBase) this.baseTexture.destroy();
+
     this.valid = false;
 };
 
 /**
- * Specifies the rectangle region of the baseTexture
+ * Specifies the region of the baseTexture that this texture will use.
  *
  * @method setFrame
  * @param frame {Rectangle} The frame of the texture to set it to
  */
 PIXI.Texture.prototype.setFrame = function(frame)
 {
+    this.noFrame = false;
+
     this.frame = frame;
     this.width = frame.width;
     this.height = frame.height;
 
-    if(frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height)
+    this.crop.x = frame.x;
+    this.crop.y = frame.y;
+    this.crop.width = frame.width;
+    this.crop.height = frame.height;
+
+    if (!this.trim && (frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height))
     {
         throw new Error('Texture Error: frame does not fit inside the base Texture dimensions ' + this);
     }
 
     this.valid = frame && frame.width && frame.height && this.baseTexture.source && this.baseTexture.hasLoaded;
 
-    if(this.valid)PIXI.Texture.frameUpdates.push(this);
+    if (this.trim)
+    {
+        this.width = this.trim.width;
+        this.height = this.trim.height;
+        this.frame.width = this.trim.width;
+        this.frame.height = this.trim.height;
+    }
+
+    if (this.valid) PIXI.Texture.frameUpdates.push(this);
 
 };
 
-
+/**
+ * Updates the internal WebGL UV cache.
+ *
+ * @method _updateWebGLuvs
+ * @private
+ */
 PIXI.Texture.prototype._updateWebGLuvs = function()
 {
     if(!this._uvs)this._uvs = new PIXI.TextureUvs();
 
-    var frame = this.frame;
+    var frame = this.crop;
     var tw = this.baseTexture.width;
     var th = this.baseTexture.height;
 
@@ -155,6 +223,7 @@ PIXI.Texture.prototype._updateWebGLuvs = function()
 
     this._uvs.x3 = frame.x / tw;
     this._uvs.y3 = (frame.y + frame.height) / th;
+
 };
 
 /**
@@ -262,4 +331,3 @@ PIXI.TextureUvs = function()
 
 
 };
-
