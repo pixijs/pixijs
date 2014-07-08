@@ -4,7 +4,7 @@
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-07-03
+ * Compiled: 2014-07-08
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -2006,31 +2006,30 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
     // if the sprite is not visible or the alpha is 0 then no need to render this element
     if(this.visible === false || this.alpha === 0)return;
     
-    var frame = this.texture.frame;
     var context = renderSession.context;
     var texture = this.texture;
+    var frame = texture.frame;
+    var crop = texture.crop;
 
-    if(this.blendMode !== renderSession.currentBlendMode)
+    if (this.blendMode !== renderSession.currentBlendMode)
     {
         renderSession.currentBlendMode = this.blendMode;
         context.globalCompositeOperation = PIXI.blendModesCanvas[renderSession.currentBlendMode];
     }
 
-    if(this._mask)
+    if (this._mask)
     {
         renderSession.maskManager.pushMask(this._mask, renderSession.context);
     }
 
-    
-
-    //ignore null sources
-    if(texture.valid)
+    //  Ignore null sources
+    if (texture.valid)
     {
         context.globalAlpha = this.worldAlpha;
 
         var transform = this.worldTransform;
 
-        // allow for trimming
+        //  Allow for trimming
         if (renderSession.roundPixels)
         {
             context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx | 0, transform.ty | 0);
@@ -2040,25 +2039,24 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
             context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
         }
 
-        //if smoothingEnabled is supported and we need to change the smoothing property for this texture
-        if(renderSession.smoothProperty && renderSession.scaleMode !== this.texture.baseTexture.scaleMode) {
+        //  If smoothingEnabled is supported and we need to change the smoothing property for this texture
+        if (renderSession.smoothProperty && renderSession.scaleMode !== this.texture.baseTexture.scaleMode)
+        {
             renderSession.scaleMode = this.texture.baseTexture.scaleMode;
             context[renderSession.smoothProperty] = (renderSession.scaleMode === PIXI.scaleModes.LINEAR);
         }
 
-        if(this.tint !== 0xFFFFFF)
+        if (this.tint !== 0xFFFFFF)
         {
-            
-            if(this.cachedTint !== this.tint)
+            if (this.cachedTint !== this.tint)
             {
                 // no point tinting an image that has not loaded yet!
-                if(!texture.baseTexture.hasLoaded)return;
+                if (!texture.baseTexture.hasLoaded) return;
 
                 this.cachedTint = this.tint;
                 
                 //TODO clean up caching - how to clean up the caches?
                 this.tintedTexture = PIXI.CanvasTinter.getTintedTexture(this, this.tint);
-                
             }
 
             context.drawImage(this.tintedTexture,
@@ -2073,53 +2071,45 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
         }
         else
         {
-
-           
-
-            if(texture.trim)
+            if (texture.trim)
             {
-                var trim =  texture.trim;
-
                 context.drawImage(this.texture.baseTexture.source,
-                               frame.x,
-                               frame.y,
-                               frame.width,
-                               frame.height,
-                               trim.x - this.anchor.x * trim.width,
-                               trim.y - this.anchor.y * trim.height,
-                               frame.width,
-                               frame.height);
+                               crop.x,
+                               crop.y,
+                               crop.width,
+                               crop.height,
+                               texture.trim.x - this.anchor.x * texture.trim.width,
+                               texture.trim.y - this.anchor.y * texture.trim.height,
+                               crop.width,
+                               crop.height);
             }
             else
             {
-               
                 context.drawImage(this.texture.baseTexture.source,
-                               frame.x,
-                               frame.y,
-                               frame.width,
-                               frame.height,
-                               (this.anchor.x) * -frame.width,
-                               (this.anchor.y) * -frame.height,
-                               frame.width,
-                               frame.height);
+                               crop.x,
+                               crop.y,
+                               crop.width,
+                               crop.height,
+                               this.anchor.x * -frame.width,
+                               this.anchor.y * -frame.height,
+                               crop.width,
+                               crop.height);
             }
-            
         }
     }
 
     // OVERWRITE
-    for(var i=0,j=this.children.length; i<j; i++)
+    for (var i = 0, j = this.children.length; i < j; i++)
     {
         var child = this.children[i];
         child._renderCanvas(renderSession);
     }
 
-    if(this._mask)
+    if (this._mask)
     {
         renderSession.maskManager.popMask(renderSession.context);
     }
 };
-
 
 // some helper functions..
 
@@ -3974,7 +3964,7 @@ PIXI.Stage = function(backgroundColor)
     /**
      * The interaction manage for this stage, manages all interactive activity on the stage
      *
-     * @property interactive
+     * @property interactionManager
      * @type InteractionManager
      */
     this.interactionManager = new PIXI.InteractionManager(this);
@@ -7563,7 +7553,7 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
     }
 
     // get the uvs for the texture
-    var uvs = sprite.texture._uvs;
+    var uvs = texture._uvs;
     // if the uvs have not updated then no point rendering just yet!
     if(!uvs)return;
 
@@ -7580,16 +7570,16 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
 
     var w0, w1, h0, h1;
         
-    if (sprite.texture.trim)
+    if (texture.trim)
     {
         // if the sprite is trimmed then we need to add the extra space before transforming the sprite coords..
-        var trim = sprite.texture.trim;
+        var trim = texture.trim;
 
         w1 = trim.x - aX * trim.width;
-        w0 = w1 + texture.frame.width;
+        w0 = w1 + texture.crop.width;
 
         h1 = trim.y - aY * trim.height;
-        h0 = h1 + texture.frame.height;
+        h0 = h1 + texture.crop.height;
 
     }
     else
@@ -8067,10 +8057,10 @@ PIXI.WebGLFastSpriteBatch.prototype.renderSprite = function(sprite)
         var trim = sprite.texture.trim;
 
         w1 = trim.x - sprite.anchor.x * trim.width;
-        w0 = w1 + sprite.texture.frame.width;
+        w0 = w1 + sprite.texture.crop.width;
 
         h1 = trim.y - sprite.anchor.y * trim.height;
-        h0 = h1 + sprite.texture.frame.height;
+        h0 = h1 + sprite.texture.crop.height;
     }
     else
     {
@@ -8718,7 +8708,7 @@ PIXI.WebGLFilterManager.prototype.destroy = function()
 
     // destroy textures
     for (var i = 0; i < this.texturePool.length; i++) {
-        this.texturePool.destroy();
+        this.texturePool[i].destroy();
     }
     
     this.texturePool = null;
@@ -13380,17 +13370,27 @@ PIXI.Texture = function(baseTexture, frame)
 {
     PIXI.EventTarget.call( this );
 
-    if(!frame)
+    /**
+     * Does this Texture have any frame data assigned to it?
+     *
+     * @property noFrame
+     * @type Boolean
+     */
+    this.noFrame = false;
+
+    if (!frame)
     {
         this.noFrame = true;
         frame = new PIXI.Rectangle(0,0,1,1);
     }
 
-    if(baseTexture instanceof PIXI.Texture)
+    if (baseTexture instanceof PIXI.Texture)
+    {
         baseTexture = baseTexture.baseTexture;
+    }
 
     /**
-     * The base texture of that this texture uses
+     * The base texture that this texture uses.
      *
      * @property baseTexture
      * @type BaseTexture
@@ -13414,21 +13414,58 @@ PIXI.Texture = function(baseTexture, frame)
     this.trim = null;
     
     /**
-     * This will let the renderer know if the texture is valid. If its not then it cannot be rendered
+     * This will let the renderer know if the texture is valid. If its not then it cannot be rendered.
      *
      * @property valid
      * @type Boolean
      */
     this.valid = false;
 
+    /**
+     * The context scope under which events are run.
+     *
+     * @property scope
+     * @type Object
+     */
     this.scope = this;
 
+    /**
+     * The WebGL UV data cache.
+     *
+     * @private
+     * @property _uvs
+     * @type Object
+     */
     this._uvs = null;
     
-    if(baseTexture.hasLoaded)
+    /**
+     * The width of the Texture in pixels.
+     *
+     * @property width
+     * @type Number
+     */
+    this.width = 0;
+
+    /**
+     * The height of the Texture in pixels.
+     *
+     * @property height
+     * @type Number
+     */
+    this.height = 0;
+
+    /**
+     * This is the area of the BaseTexture image to actually copy to the Canvas / WebGL when rendering,
+     * irrespective of the actual frame size or placement (which can be influenced by trimmed texture atlases)
+     *
+     * @property crop
+     * @type Rectangle
+     */
+    this.crop = new PIXI.Rectangle(0, 0, 1, 1);
+
+    if (baseTexture.hasLoaded)
     {
-        if(this.noFrame)frame = new PIXI.Rectangle(0,0, baseTexture.width, baseTexture.height);
-      
+        if (this.noFrame) frame = new PIXI.Rectangle(0, 0, baseTexture.width, baseTexture.height);
         this.setFrame(frame);
     }
     else
@@ -13450,9 +13487,9 @@ PIXI.Texture.prototype.constructor = PIXI.Texture;
 PIXI.Texture.prototype.onBaseTextureLoaded = function()
 {
     var baseTexture = this.baseTexture;
-    baseTexture.removeEventListener( 'loaded', this.onLoaded );
+    baseTexture.removeEventListener('loaded', this.onLoaded);
 
-    if(this.noFrame)this.frame = new PIXI.Rectangle(0,0, baseTexture.width, baseTexture.height);
+    if (this.noFrame) this.frame = new PIXI.Rectangle(0, 0, baseTexture.width, baseTexture.height);
     
     this.setFrame(this.frame);
 
@@ -13467,39 +13504,60 @@ PIXI.Texture.prototype.onBaseTextureLoaded = function()
  */
 PIXI.Texture.prototype.destroy = function(destroyBase)
 {
-    if(destroyBase) this.baseTexture.destroy();
+    if (destroyBase) this.baseTexture.destroy();
+
     this.valid = false;
 };
 
 /**
- * Specifies the rectangle region of the baseTexture
+ * Specifies the region of the baseTexture that this texture will use.
  *
  * @method setFrame
  * @param frame {Rectangle} The frame of the texture to set it to
  */
 PIXI.Texture.prototype.setFrame = function(frame)
 {
+    this.noFrame = false;
+
     this.frame = frame;
     this.width = frame.width;
     this.height = frame.height;
 
-    if(frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height)
+    this.crop.x = frame.x;
+    this.crop.y = frame.y;
+    this.crop.width = frame.width;
+    this.crop.height = frame.height;
+
+    if (!this.trim && (frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height))
     {
         throw new Error('Texture Error: frame does not fit inside the base Texture dimensions ' + this);
     }
 
     this.valid = frame && frame.width && frame.height && this.baseTexture.source && this.baseTexture.hasLoaded;
 
-    if(this.valid)PIXI.Texture.frameUpdates.push(this);
+    if (this.trim)
+    {
+        this.width = this.trim.width;
+        this.height = this.trim.height;
+        this.frame.width = this.trim.width;
+        this.frame.height = this.trim.height;
+    }
+
+    if (this.valid) PIXI.Texture.frameUpdates.push(this);
 
 };
 
-
+/**
+ * Updates the internal WebGL UV cache.
+ *
+ * @method _updateWebGLuvs
+ * @private
+ */
 PIXI.Texture.prototype._updateWebGLuvs = function()
 {
     if(!this._uvs)this._uvs = new PIXI.TextureUvs();
 
-    var frame = this.frame;
+    var frame = this.crop;
     var tw = this.baseTexture.width;
     var th = this.baseTexture.height;
 
@@ -13514,6 +13572,7 @@ PIXI.Texture.prototype._updateWebGLuvs = function()
 
     this._uvs.x3 = frame.x / tw;
     this._uvs.y3 = (frame.y + frame.height) / th;
+
 };
 
 /**
@@ -13621,7 +13680,6 @@ PIXI.TextureUvs = function()
 
 
 };
-
 
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
@@ -14176,9 +14234,12 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
             scope.onLoaded();
         });
 
-        for (var i in frameData) {
+        for (var i in frameData)
+        {
             var rect = frameData[i].frame;
-            if (rect) {
+
+            if (rect)
+            {
                 PIXI.TextureCache[i] = new PIXI.Texture(this.texture, {
                     x: rect.x,
                     y: rect.y,
@@ -14186,15 +14247,14 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
                     height: rect.h
                 });
 
-                // check to see ifthe sprite ha been trimmed..
-                if (frameData[i].trimmed) {
+                PIXI.TextureCache[i].crop = new PIXI.Rectangle(rect.x, rect.y, rect.w, rect.h);
 
-                    var texture =  PIXI.TextureCache[i];
-                    
+                //  Check to see if the sprite is trimmed
+                if (frameData[i].trimmed)
+                {
                     var actualSize = frameData[i].sourceSize;
                     var realSize = frameData[i].spriteSourceSize;
-
-                    texture.trim = new PIXI.Rectangle(realSize.x, realSize.y, actualSize.w, actualSize.h);
+                    PIXI.TextureCache[i].trim = new PIXI.Rectangle(realSize.x, realSize.y, actualSize.w, actualSize.h);
                 }
             }
         }

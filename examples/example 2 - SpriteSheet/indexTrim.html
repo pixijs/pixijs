@@ -9,7 +9,7 @@
 			background-color: #000000;
 		}
 	</style>
-	<script src="../../bin/pixi.dev.js"></script>
+	<script src="../../../bin/pixi.dev.js"></script>
 </head>
 <body>
 	<script>
@@ -34,7 +34,8 @@
 	var stage = new PIXI.Stage(0xFFFFFF);
 
 	// create a renderer instance.
-	renderer = PIXI.autoDetectRenderer(800, 600);
+//	renderer = PIXI.autoDetectRenderer(800, 600);
+	renderer = new PIXI.CanvasRenderer(800, 600);
 
 	// add the renderer view element to the DOM
 	document.body.appendChild(renderer.view);
