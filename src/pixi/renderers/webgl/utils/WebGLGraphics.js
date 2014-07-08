@@ -40,12 +40,6 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
 
     // This  could be speeded up for sure!
 
-    // TODO blend mode needs to be broken out into its own manager..
-    if(graphics.blendMode !== renderSession.spriteBatch.currentBlendMode)
-    {
-        renderSession.spriteBatch.setBlendMode(graphics.blendMode);
-    }
-    
     for (var i = 0; i < webGL.data.length; i++)
     {
         if(webGL.data[i].mode === 1)

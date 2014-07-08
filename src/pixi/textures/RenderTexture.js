@@ -59,6 +59,15 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode)
     this.frame = new PIXI.Rectangle(0, 0, this.width, this.height);
 
     /**
+     * This is the area of the BaseTexture image to actually copy to the Canvas / WebGL when rendering,
+     * irrespective of the actual frame size or placement (which can be influenced by trimmed texture atlases)
+     *
+     * @property crop
+     * @type Rectangle
+     */
+    this.crop = new PIXI.Rectangle(0, 0, 1, 1);
+    
+    /**
      * The base texture object that this texture uses
      *
      * @property baseTexture

@@ -618,6 +618,7 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
     // if the sprite is not visible or the alpha is 0 then no need to render this element
     if(this.visible === false || this.alpha === 0 || this.isMask === true)return;
     
+
     if(this._cacheAsBitmap)
     {
        
@@ -638,6 +639,7 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
     else
     {
         renderSession.spriteBatch.stop();
+        renderSession.blendModeManager.setBlendMode(this.blendMode);
 
         if(this._mask)renderSession.maskManager.pushMask(this._mask, renderSession);
         if(this._filters)renderSession.filterManager.pushFilter(this._filterBlock);
