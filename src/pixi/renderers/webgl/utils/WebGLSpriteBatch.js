@@ -179,10 +179,10 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
         var trim = texture.trim;
 
         w1 = trim.x - aX * trim.width;
-        w0 = w1 + texture.frame.width;
+        w0 = w1 + texture.crop.width;
 
         h1 = trim.y - aY * trim.height;
-        h0 = h1 + texture.frame.height;
+        h0 = h1 + texture.crop.height;
 
     }
     else
