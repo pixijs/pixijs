@@ -273,8 +273,6 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
         context.globalCompositeOperation = PIXI.blendModesCanvas[renderSession.currentBlendMode];
     }
 
-    context.beginPath();
-
     var tilePosition = this.tilePosition;
     var tileScale = this.tileScale;
 
@@ -293,8 +291,6 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
 
     context.scale(1/tileScale.x, 1/tileScale.y);
     context.translate(-tilePosition.x, -tilePosition.y);
-
-    context.closePath();
 
     if(this._mask)
     {
