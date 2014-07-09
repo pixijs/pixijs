@@ -17,9 +17,10 @@ PIXI.glContexts = []; // this is where we store the webGL contexts for easy acce
  * @param view {HTMLCanvasElement} the canvas to use as a view, optional
  * @param transparent=false {Boolean} If the render view is transparent, default false
  * @param antialias=false {Boolean} sets antialias (only applicable in chrome at the moment)
+ * @param preserveDrawingBuffer=false {Boolean} enables drawing buffer preservation, enable this if you need to call toDataUrl on the webgl context
  *
  */
-PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
+PIXI.WebGLRenderer = function(width, height, view, transparent, antialias, preserveDrawingBuffer)
 {
     if(!PIXI.defaultRenderer)
     {
@@ -37,6 +38,14 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
      * @type Boolean
      */
     this.transparent = !!transparent;
+
+    /**
+     * The value of the preserveDrawingBuffer flag affects whether or not the contents of the stencil buffer is retained after rendering.
+     *
+     * @property preserveDrawingBuffer
+     * @type Boolean
+     */
+    this.preserveDrawingBuffer = preserveDrawingBuffer;
 
     /**
      * The width of the canvas view
@@ -77,7 +86,8 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
         alpha: this.transparent,
         antialias:!!antialias, // SPEED UP??
         premultipliedAlpha:!!transparent,
-        stencil:true
+        stencil:true,
+        preserveDrawingBuffer: preserveDrawingBuffer
     };
 
     var gl = null;
