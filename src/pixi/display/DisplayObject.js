@@ -625,3 +625,33 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'y', {
         this.position.y = value;
     }
 });
+
+/**
+ * Transforms a position from this DisplayObject's local space to the global coordinate space.
+ *
+ * @param position {Point}
+ * @return {Point} a transformed copy of the position
+ */
+PIXI.DisplayObject.prototype.toGlobal = function(position)
+{
+    this.updateTransform();
+    return this.worldTransform.apply(position);
+};
+
+/**
+ * Transforms a position from the global coordinate space to this DisplayObject's local space.
+ * Passing a DisplayObject in the 'from' parameter transforms the point from that DisplayObject's coordinate space.
+ *
+ * @param position {Point}
+ * @param [from] {DisplayObject}
+ * @return {Point} a transformed copy of the position
+ */
+PIXI.DisplayObject.prototype.toLocal = function(position, from)
+{
+    if (from)
+    {
+        position = from.toGlobal(position);
+    }
+    this.updateTransform();
+    return this.worldTransform.applyInverse(position);
+};
