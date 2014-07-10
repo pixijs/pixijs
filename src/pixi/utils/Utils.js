@@ -75,14 +75,20 @@ PIXI.rgb2hex = function(rgb) {
  */
 if (typeof Function.prototype.bind !== 'function') {
     Function.prototype.bind = (function () {
-        var slice = Array.prototype.slice;
         return function (thisArg) {
-            var target = this, boundArgs = slice.call(arguments, 1);
+            var target = this, i = arguments.length - 1, boundArgs = [];
+            if (i > 0)
+            {
+                boundArgs.length = i;
+                while (i--) boundArgs[i] = arguments[i + 1];
+            }
 
             if (typeof target !== 'function') throw new TypeError();
 
             function bound() {
-                var args = boundArgs.concat(slice.call(arguments));
+                var i = arguments.length, args = new Array(i);
+                while (i--) args[i] = arguments[i];
+                args = boundArgs.concat(args);
                 target.apply(this instanceof bound ? this : thisArg, args);
             }
 
