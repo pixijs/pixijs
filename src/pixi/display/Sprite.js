@@ -340,21 +340,21 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
         if (renderSession.roundPixels)
         {
             renderSession.context.setTransform(
-                this.worldTransform.a, 
-                this.worldTransform.c, 
-                this.worldTransform.b, 
-                this.worldTransform.d, 
-                this.worldTransform.tx | 0, 
+                this.worldTransform.a,
+                this.worldTransform.c,
+                this.worldTransform.b,
+                this.worldTransform.d,
+                this.worldTransform.tx | 0,
                 this.worldTransform.ty | 0);
         }
         else
         {
             renderSession.context.setTransform(
-                this.worldTransform.a, 
-                this.worldTransform.c, 
-                this.worldTransform.b, 
-                this.worldTransform.d, 
-                this.worldTransform.tx, 
+                this.worldTransform.a,
+                this.worldTransform.c,
+                this.worldTransform.b,
+                this.worldTransform.d,
+                this.worldTransform.tx,
                 this.worldTransform.ty);
         }
 
@@ -380,27 +380,27 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
             }
 
             renderSession.context.drawImage(
-                                this.tintedTexture, 
-                                0, 
-                                0, 
-                                this.texture.crop.width, 
-                                this.texture.crop.height, 
-                                dx, 
-                                dy, 
-                                this.texture.crop.width, 
+                                this.tintedTexture,
+                                0,
+                                0,
+                                this.texture.crop.width,
+                                this.texture.crop.height,
+                                dx,
+                                dy,
+                                this.texture.crop.width,
                                 this.texture.crop.height);
         }
         else
         {
             renderSession.context.drawImage(
-                                this.texture.baseTexture.source, 
-                                this.texture.crop.x, 
-                                this.texture.crop.y, 
-                                this.texture.crop.width, 
-                                this.texture.crop.height, 
-                                dx, 
-                                dy, 
-                                this.texture.crop.width, 
+                                this.texture.baseTexture.source,
+                                this.texture.crop.x,
+                                this.texture.crop.y,
+                                this.texture.crop.width,
+                                this.texture.crop.height,
+                                dx,
+                                dy,
+                                this.texture.crop.width,
                                 this.texture.crop.height);
         }
     }
