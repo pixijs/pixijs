@@ -111,6 +111,13 @@ PIXI.Graphics = function()
      * @type Number
      */
     this.boundsPadding = 10;
+
+    /**
+     * Used to detect if the graphics object has changed if this is set to true then the graphics object will be recalculated
+     * 
+     * @type {Boolean}
+     */
+    this.dirty = true;
 };
 
 // constructor
@@ -211,6 +218,231 @@ PIXI.Graphics.prototype.lineTo = function(x, y)
 };
 
 /**
+ * Calculate the points for a quadratic bezier curve.
+ * Based on : https://stackoverflow.com/questions/785097/how-do-i-implement-a-bezier-curve-in-c
+ *
+ * @param  {number}   cpX   Control point x
+ * @param  {number}   cpY   Control point y
+ * @param  {number}   toX   Destination point x
+ * @param  {number}   toY   Destination point y
+ * @return {PIXI.Graphics}
+ */
+PIXI.Graphics.prototype.quadraticCurveTo = function(cpX, cpY, toX, toY)
+{
+   // this.currentPath.points.push(toX, toY)
+    //return;
+    var xa,
+    ya,
+    n = 20,
+    points = this.currentPath.points;
+    
+    var fromX = points[points.length-2];
+    var fromY = points[points.length-1];
+
+    var j = 0;
+    for (var i = 1; i <= n; i++ )
+    {
+        j = i / n;
+
+        xa = fromX + ( (cpX - fromX) * j );
+        ya = fromY + ( (cpY - fromY) * j );
+
+        points.push( xa + ( ((cpX + ( (toX - cpX) * j )) - xa) * j ),
+                     ya + ( ((cpY + ( (toY - cpY) * j )) - ya) * j ) );
+    }
+
+
+    this.dirty = true;
+
+    return this;
+};
+
+/**
+ * Calculate the points for a bezier curve.
+ *
+ * @param  {number}   cpX    Control point x
+ * @param  {number}   cpY    Control point y
+ * @param  {number}   cpX2   Second Control point x
+ * @param  {number}   cpY2   Second Control point y
+ * @param  {number}   toX    Destination point x
+ * @param  {number}   toY    Destination point y
+ * @return {PIXI.Graphics}
+ */
+PIXI.Graphics.prototype.bezierCurveTo = function(cpX, cpY, cpX2, cpY2, toX, toY)
+{
+    var n = 20,
+    dt,
+    dt2,
+    dt3,
+    t2,
+    t3,
+    points = this.currentPath.points;
+
+    var fromX = points[points.length-2];
+    var fromY = points[points.length-1];
+    
+    var j = 0;
+
+    for (var i=1; i<n; i++)
+    {
+        j = i / n;
+
+        dt = (1 - j);
+        dt2 = dt * dt;
+        dt3 = dt2 * dt;
+
+        t2 = j * j;
+        t3 = t2 * j;
+        
+        points.push( dt3 * fromX + 3 * dt2 * j * cpX + 3 * dt * t2 * cpX2 + t3 * toX,
+                     dt3 * fromY + 3 * dt2 * j * cpY + 3 * dt * t2 * cpY2 + t3 * toY);
+        
+    }
+    
+    this.dirty = true;
+
+    return this;
+};
+
+/*
+ * arcTo() 
+ *
+ * "borrowed" from https://code.google.com/p/fxcanvas/ - thanks google!
+ */
+PIXI.Graphics.prototype.arcTo = function(x1, y1, x2, y2, radius)
+{
+    // check that path contains subpaths
+    //if (path.commands.length == 0)
+//        moveTo(x1, y1);
+    var points = this.currentPath.points;
+
+    var fromX = points[points.length-2];
+    var fromY = points[points.length-1];
+
+//    points.push( x1,  y1);
+
+    var a1 = fromY - y1;
+    var b1 = fromX - x1;
+    var a2 = y2   - y1;
+    var b2 = x2   - x1;
+    var mm = Math.abs(a1 * b2 - b1 * a2);
+
+    if (mm < 1.0e-8 || radius === 0)
+    {
+        points.push(x1, y1);
+    }
+    else
+    {
+        var dd = a1 * a1 + b1 * b1;
+        var cc = a2 * a2 + b2 * b2;
+        var tt = a1 * a2 + b1 * b2;
+        var k1 = radius * Math.sqrt(dd) / mm;
+        var k2 = radius * Math.sqrt(cc) / mm;
+        var j1 = k1 * tt / dd;
+        var j2 = k2 * tt / cc;
+        var cx = k1 * b2 + k2 * b1;
+        var cy = k1 * a2 + k2 * a1;
+        var px = b1 * (k2 + j1);
+        var py = a1 * (k2 + j1);
+        var qx = b2 * (k1 + j2);
+        var qy = a2 * (k1 + j2);
+        var startAngle = Math.atan2(py - cy, px - cx);
+        var endAngle   = Math.atan2(qy - cy, qx - cx);
+        // not required?
+     //   points.push(px + x1 , py + y1);
+        this.arc(cx + x1, cy + y1, radius, startAngle, endAngle, b1 * a2 > b2 * a1);
+    }
+
+    this.dirty = true;
+
+    return this;
+};
+
+/*
+ * Arc init! TODO add docs
+ */
+PIXI.Graphics.prototype.arc = function(cx, cy, radius, startAngle, endAngle, anticlockwise)
+{
+    var startX = cx + Math.cos(startAngle) * radius;
+    var startY = cy + Math.sin(startAngle) * radius;
+
+    // check that path contains subpaths
+   // if (path.commands.length == 0)
+     //   this.moveTo(startX, startY);
+   // else
+    var points = this.currentPath.points;
+    
+    var fromX = points[points.length-2];
+    var fromY = points[points.length-1];
+
+    if(fromX !== startX || fromY !== startY) points.push(startX, startY);
+
+    if (startAngle === endAngle)return this;
+
+    if( !anticlockwise && endAngle <= startAngle )
+    {
+        endAngle += Math.PI * 2;
+    }
+    else if( anticlockwise && startAngle <= endAngle )
+    {
+        startAngle += Math.PI * 2;
+    }
+
+    var sweep = anticlockwise ? (startAngle - endAngle) *-1 : (endAngle - startAngle);
+    var segs =  ( Math.abs(sweep)/ (Math.PI * 2) ) * 40;
+
+    if( sweep === 0 ) return this;
+
+    var theta = sweep/(segs*2);
+    var theta2 = theta*2;
+
+    var cTheta = Math.cos(theta);
+    var sTheta = Math.sin(theta);
+    
+    var remainder = ( segs % 1 ) / segs;
+
+    for(var i=0; i<=segs; i++)
+    {
+        var real =  i + remainder * i;
+
+        var angle = ((theta) + startAngle + (theta2 * real));
+
+        var c = Math.cos(angle);
+        var s = -Math.sin(angle);
+
+        points.push(( (cTheta *  c) + (sTheta * s) ) * radius + cx,
+                    ( (cTheta * -s) + (sTheta * c) ) * radius + cy);
+    }
+
+    this.dirty = true;
+
+    return this;
+};
+
+/**
+ * Draws a line using the current line style from the current drawing position to (x, y);
+ * the current drawing position is then set to (x, y).
+ *
+ * @method lineTo
+ * @param x {Number} the X coordinate to draw to
+ * @param y {Number} the Y coordinate to draw to
+ */
+PIXI.Graphics.prototype.drawPath = function(path)
+{
+    if (!this.currentPath.points.length) this.graphicsData.pop();
+
+    this.currentPath = this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha,
+                        fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling, points:[], type:PIXI.Graphics.POLY};
+
+    this.graphicsData.push(this.currentPath);
+
+    this.currentPath.points = this.currentPath.points.concat(path);
+    this.dirty = true;
+
+    return this;
+};
+
+/**
  * Specifies a simple one-color fill that subsequent calls to other Graphics methods
  * (such as lineTo() or drawCircle()) use when drawing.
  *
@@ -265,6 +497,29 @@ PIXI.Graphics.prototype.drawRect = function( x, y, width, height )
 };
 
 /**
+ * @method drawRoundedRect
+ *
+ * @param x {Number} The X coord of the top-left of the rectangle
+ * @param y {Number} The Y coord of the top-left of the rectangle
+ * @param width {Number} The width of the rectangle
+ * @param height {Number} The height of the rectangle
+ * @param radius {Number} Radius of the rectangle corners
+ */
+PIXI.Graphics.prototype.drawRoundedRect = function( x, y, width, height, radius )
+{
+    if (!this.currentPath.points.length) this.graphicsData.pop();
+
+    this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha,
+                        fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling,
+                        points:[x, y, width, height, radius], type:PIXI.Graphics.RREC};
+
+    this.graphicsData.push(this.currentPath);
+    this.dirty = true;
+
+    return this;
+};
+
+/**
  * Draws a circle.
  *
  * @method drawCircle
@@ -272,7 +527,7 @@ PIXI.Graphics.prototype.drawRect = function( x, y, width, height )
  * @param y {Number} The Y coordinate of the center of the circle
  * @param radius {Number} The radius of the circle
  */
-PIXI.Graphics.prototype.drawCircle = function( x, y, radius)
+PIXI.Graphics.prototype.drawCircle = function(x, y, radius)
 {
 
     if (!this.currentPath.points.length) this.graphicsData.pop();
@@ -291,12 +546,12 @@ PIXI.Graphics.prototype.drawCircle = function( x, y, radius)
  * Draws an ellipse.
  *
  * @method drawEllipse
- * @param x {Number} The X coordinate of the upper-left corner of the framing rectangle of this ellipse
- * @param y {Number} The Y coordinate of the upper-left corner of the framing rectangle of this ellipse
- * @param width {Number} The width of the ellipse
- * @param height {Number} The height of the ellipse
+ * @param x {Number} The X coordinate of the center of the ellipse
+ * @param y {Number} The Y coordinate of the center of the ellipse
+ * @param width {Number} The half width of the ellipse
+ * @param height {Number} The half height of the ellipse
  */
-PIXI.Graphics.prototype.drawEllipse = function( x, y, width, height)
+PIXI.Graphics.prototype.drawEllipse = function(x, y, width, height)
 {
 
     if (!this.currentPath.points.length) this.graphicsData.pop();
@@ -363,6 +618,7 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
     // if the sprite is not visible or the alpha is 0 then no need to render this element
     if(this.visible === false || this.alpha === 0 || this.isMask === true)return;
     
+
     if(this._cacheAsBitmap)
     {
        
@@ -383,8 +639,9 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
     else
     {
         renderSession.spriteBatch.stop();
+        renderSession.blendModeManager.setBlendMode(this.blendMode);
 
-        if(this._mask)renderSession.maskManager.pushMask(this.mask, renderSession);
+        if(this._mask)renderSession.maskManager.pushMask(this._mask, renderSession);
         if(this._filters)renderSession.filterManager.pushFilter(this._filterBlock);
       
         // check blend mode
@@ -394,7 +651,12 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
             var blendModeWebGL = PIXI.blendModesWebGL[renderSession.spriteBatch.currentBlendMode];
             renderSession.spriteBatch.gl.blendFunc(blendModeWebGL[0], blendModeWebGL[1]);
         }
-     
+        
+      //  for (var i = this.graphicsData.length - 1; i >= 0; i--) {
+        //    this.graphicsData[i]
+            
+//        };
+
         PIXI.WebGLGraphics.renderGraphics(this, renderSession);
         
         // only render if it has children!
@@ -412,7 +674,7 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
         }
 
         if(this._filters)renderSession.filterManager.popFilter();
-        if(this._mask)renderSession.maskManager.popMask(renderSession);
+        if(this._mask)renderSession.maskManager.popMask(this.mask, renderSession);
           
         renderSession.drawCount++;
 
@@ -441,6 +703,11 @@ PIXI.Graphics.prototype._renderCanvas = function(renderSession)
         context.globalCompositeOperation = PIXI.blendModesCanvas[renderSession.currentBlendMode];
     }
 
+    if(this._mask)
+    {
+        renderSession.maskManager.pushMask(this._mask, renderSession.context);
+    }
+
     context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
     PIXI.CanvasGraphics.renderGraphics(this, context);
 
@@ -448,6 +715,11 @@ PIXI.Graphics.prototype._renderCanvas = function(renderSession)
     for(var i=0, j=this.children.length; i<j; i++)
     {
         this.children[i]._renderCanvas(renderSession);
+    }
+
+    if(this._mask)
+    {
+        renderSession.maskManager.popMask(renderSession.context);
     }
 };
 
@@ -645,3 +917,5 @@ PIXI.Graphics.POLY = 0;
 PIXI.Graphics.RECT = 1;
 PIXI.Graphics.CIRC = 2;
 PIXI.Graphics.ELIP = 3;
+PIXI.Graphics.RREC = 4;
+

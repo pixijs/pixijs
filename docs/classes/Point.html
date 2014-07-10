@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.5.3</em>
+            <em>API Docs for: 1.6.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -75,6 +75,8 @@
             
                 <li><a href="../classes/ColorStepFilter.html">ColorStepFilter</a></li>
             
+                <li><a href="../classes/ComplexPrimitiveShader.html">ComplexPrimitiveShader</a></li>
+            
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
@@ -104,6 +106,10 @@
                 <li><a href="../classes/InvertFilter.html">InvertFilter</a></li>
             
                 <li><a href="../classes/JsonLoader.html">JsonLoader</a></li>
+            
+                <li><a href="../classes/Matrix.html">Matrix</a></li>
+            
+                <li><a href="../classes/Matrix2.html">Matrix2</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
@@ -160,6 +166,8 @@
                 <li><a href="../classes/WebGLShaderManager.html">WebGLShaderManager</a></li>
             
                 <li><a href="../classes/WebGLSpriteBatch.html">WebGLSpriteBatch</a></li>
+            
+                <li><a href="../classes/WebGLStencilManager.html">WebGLStencilManager</a></li>
             
             </ul>
 
@@ -377,14 +385,7 @@
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_fromArray">fromArray</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_toArray">toArray</a>
+                                <a href="#method_set">set</a>
 
                                 
                                 
@@ -501,8 +502,8 @@
 </div>
 
                 
-                    <div id="method_fromArray" class="method item">
-    <h3 class="name"><code>fromArray</code></h3>
+                    <div id="method_set" class="method item">
+    <h3 class="name"><code>set</code></h3>
 
     
         <div class="args">
@@ -510,7 +511,13 @@
             
                 <li class="arg">
                     
-                        <code>array</code>
+                        <code class="optional">[x=0]</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code class="optional">[y=0]</code>
                     
                 </li>
             
@@ -543,7 +550,7 @@
             
         
         
-        <a href="../files/src_pixi_core_Matrix.js.html#l36"><code>src&#x2F;pixi&#x2F;core&#x2F;Matrix.js:36</code></a>
+        <a href="../files/src_pixi_core_Point.js.html#l41"><code>src&#x2F;pixi&#x2F;core&#x2F;Point.js:41</code></a>
         
         </p>
 
@@ -554,7 +561,8 @@
     </div>
 
     <div class="description">
-        <p>Creates a pixi matrix object based on the array given as a parameter</p>
+        <p>Sets the point to a new x and y position.
+If y is ommited, both x and y will be set to x.</p>
 
     </div>
 
@@ -566,107 +574,32 @@
             
                 <li class="param">
                     
-                        <code class="param-name">array</code>
-                        <span class="type">Array</span>
+                        <code class="param-name optional">[x=0]</code>
+                        <span class="type">Number</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>The array that the matrix will be filled with</p>
+                        <p>position of the point on the x axis</p>
 
                     </div>
 
                     
                 </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_toArray" class="method item">
-    <h3 class="name"><code>toArray</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>transpose</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type">Array</span>
-        </span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_pixi_core_Matrix.js.html#l52"><code>src&#x2F;pixi&#x2F;core&#x2F;Matrix.js:52</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Creates an array from the current Matrix object</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
             
                 <li class="param">
                     
-                        <code class="param-name">transpose</code>
-                        <span class="type">Boolean</span>
+                        <code class="param-name optional">[y=0]</code>
+                        <span class="type">Number</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>Whether we need to transpose the matrix or not</p>
+                        <p>position of the point on the y axis</p>
 
                     </div>
 
@@ -677,20 +610,6 @@
         </div>
     
 
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type">Array</span>:
-                    
-                    <p>array  the newly created array which contains the matrix</p>
-
-                
-            </div>
-        </div>
     
 
     

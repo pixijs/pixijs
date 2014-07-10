@@ -16,7 +16,11 @@ PIXI.WEBGL_RENDERER = 0;
 PIXI.CANVAS_RENDERER = 1;
 
 // useful for testing against if your lib is using pixi.
+<<<<<<< HEAD
 PIXI.VERSION = "v1.5.3";
+=======
+PIXI.VERSION = 'v1.5.4';
+>>>>>>> dev
 
 // the various blend modes supported by pixi
 PIXI.blendModes = {
@@ -46,9 +50,49 @@ PIXI.scaleModes = {
     NEAREST:1
 };
 
+// used to create uids for various pixi objects..
+PIXI._UID = 0;
+
+PIXI.Float32Array = Float32Array || Array;
+PIXI.Uint16Array = Uint16Array || Array;
+
 // interaction frequency 
 PIXI.INTERACTION_FREQUENCY = 30;
 PIXI.AUTO_PREVENT_DEFAULT = true;
 
 PIXI.RAD_TO_DEG = 180 / Math.PI;
 PIXI.DEG_TO_RAD = Math.PI / 180;
+
+
+PIXI.dontSayHello = false;
+
+PIXI.sayHello = function (type) 
+{
+    if(PIXI.dontSayHello)return;
+
+    if ( navigator.userAgent.toLowerCase().indexOf('chrome') > -1 )
+    {
+        var args = [
+            '%c %c %c Pixi.js ' + PIXI.VERSION + ' - ' + type + '  %c ' + ' %c ' + ' http://pixijs.com  %c %c ♥%c♥%c♥ ',
+            'background: #ff66a5',
+            'background: #ff66a5',
+            'color: #ff66a5; background: #030307;',
+            'background: #ff66a5',
+            'background: #ffc3dc',
+            'background: #ff66a5',
+            'color: #ff2424; background: #fff',
+            'color: #ff2424; background: #fff',
+            'color: #ff2424; background: #fff'
+        ];
+
+       
+
+        console.log.apply(console, args);
+    }
+    else if (window['console'])
+    {
+        console.log('Pixi.js ' + PIXI.VERSION + ' - http://pixjs.com');
+    }
+
+    PIXI.dontSayHello = true;
+};

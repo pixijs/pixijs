@@ -15,7 +15,11 @@
  */
 PIXI.CanvasRenderer = function(width, height, view, transparent)
 {
-    PIXI.defaultRenderer = PIXI.defaultRenderer || this;
+    if(!PIXI.defaultRenderer)
+    {
+        PIXI.sayHello("Canvas");
+        PIXI.defaultRenderer = this;
+    }
 
     this.type = PIXI.CANVAS_RENDERER;
 
@@ -32,16 +36,6 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
     this.clearBeforeRender = true;
 
     /**
-     * If true Pixi will Math.floor() x/y values when rendering, stopping pixel interpolation.
-     * Handy for crisp pixel art and speed on legacy devices.
-     *
-     * @property roundPixels
-     * @type Boolean
-     * @default
-     */
-    this.roundPixels = false;
-
-    /**
      * Whether the render view is transparent
      *
      * @property transparent
@@ -52,7 +46,7 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
     if(!PIXI.blendModesCanvas)
     {
         PIXI.blendModesCanvas = [];
-        
+
         if(PIXI.canUseNewCanvasBlendModes())
         {
             PIXI.blendModesCanvas[PIXI.blendModes.NORMAL]   = "source-over";
@@ -153,7 +147,14 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
         context: this.context,
         maskManager: this.maskManager,
         scaleMode: null,
-        smoothProperty: null
+        smoothProperty: null,
+
+        /**
+         * If true Pixi will Math.floor() x/y values when rendering, stopping pixel interpolation.
+         * Handy for crisp pixel art and speed on legacy devices.
+         *
+         */
+        roundPixels: false
     };
 
     if("imageSmoothingEnabled" in this.context)
@@ -185,6 +186,11 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 
     this.context.setTransform(1,0,0,1,0,0);
     this.context.globalAlpha = 1;
+
+    if (navigator.isCocoonJS && this.view.screencanvas) {
+        this.context.fillStyle = "black";
+        this.context.clear();
+    }
 
     if (!this.transparent && this.clearBeforeRender)
     {

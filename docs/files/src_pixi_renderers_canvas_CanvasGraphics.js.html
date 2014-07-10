@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.5.3</em>
+            <em>API Docs for: 1.6.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -75,6 +75,8 @@
             
                 <li><a href="../classes/ColorStepFilter.html">ColorStepFilter</a></li>
             
+                <li><a href="../classes/ComplexPrimitiveShader.html">ComplexPrimitiveShader</a></li>
+            
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
@@ -104,6 +106,10 @@
                 <li><a href="../classes/InvertFilter.html">InvertFilter</a></li>
             
                 <li><a href="../classes/JsonLoader.html">JsonLoader</a></li>
+            
+                <li><a href="../classes/Matrix.html">Matrix</a></li>
+            
+                <li><a href="../classes/Matrix2.html">Matrix2</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
@@ -160,6 +166,8 @@
                 <li><a href="../classes/WebGLShaderManager.html">WebGLShaderManager</a></li>
             
                 <li><a href="../classes/WebGLSpriteBatch.html">WebGLSpriteBatch</a></li>
+            
+                <li><a href="../classes/WebGLStencilManager.html">WebGLStencilManager</a></li>
             
             </ul>
 
@@ -353,6 +361,42 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
                 context.stroke();
             }
         }
+        else if (data.type === PIXI.Graphics.RREC)
+        {
+            var rx = points[0];
+            var ry = points[1];
+            var width = points[2];
+            var height = points[3];
+            var radius = points[4];
+
+            var maxRadius = Math.min(width, height) / 2 | 0;
+            radius = radius &gt; maxRadius ? maxRadius : radius;
+
+            context.beginPath();
+            context.moveTo(rx, ry + radius);
+            context.lineTo(rx, ry + height - radius);
+            context.quadraticCurveTo(rx, ry + height, rx + radius, ry + height);
+            context.lineTo(rx + width - radius, ry + height);
+            context.quadraticCurveTo(rx + width, ry + height, rx + width, ry + height - radius);
+            context.lineTo(rx + width, ry + radius);
+            context.quadraticCurveTo(rx + width, ry, rx + width - radius, ry);
+            context.lineTo(rx + radius, ry);
+            context.quadraticCurveTo(rx, ry, rx, ry + radius);
+            context.closePath();
+
+            if(data.fillColor || data.fillColor === 0)
+            {
+                context.globalAlpha = data.fillAlpha * worldAlpha;
+                context.fillStyle = color = &#x27;#&#x27; + (&#x27;00000&#x27; + ( data.fillColor | 0).toString(16)).substr(-6);
+                context.fill();
+
+            }
+            if(data.lineWidth)
+            {
+                context.globalAlpha = data.lineAlpha * worldAlpha;
+                context.stroke();
+            }
+        }
     }
 };
 
@@ -439,6 +483,29 @@ PIXI.CanvasGraphics.renderGraphicsMask = function(graphics, context)
             context.bezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);
             context.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);
             context.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);
+            context.closePath();
+        }
+        else if (data.type === PIXI.Graphics.RREC)
+        {
+            var rx = points[0];
+            var ry = points[1];
+            var width = points[2];
+            var height = points[3];
+            var radius = points[4];
+
+            var maxRadius = Math.min(width, height) / 2 | 0;
+            radius = radius &gt; maxRadius ? maxRadius : radius;
+
+            context.beginPath();
+            context.moveTo(rx, ry + radius);
+            context.lineTo(rx, ry + height - radius);
+            context.quadraticCurveTo(rx, ry + height, rx + radius, ry + height);
+            context.lineTo(rx + width - radius, ry + height);
+            context.quadraticCurveTo(rx + width, ry + height, rx + width, ry + height - radius);
+            context.lineTo(rx + width, ry + radius);
+            context.quadraticCurveTo(rx + width, ry, rx + width - radius, ry);
+            context.lineTo(rx + radius, ry);
+            context.quadraticCurveTo(rx, ry, rx, ry + radius);
             context.closePath();
         }
     }

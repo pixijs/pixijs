@@ -17,11 +17,16 @@ PIXI.glContexts = []; // this is where we store the webGL contexts for easy acce
  * @param view {HTMLCanvasElement} the canvas to use as a view, optional
  * @param transparent=false {Boolean} If the render view is transparent, default false
  * @param antialias=false {Boolean} sets antialias (only applicable in chrome at the moment)
+ * @param preserveDrawingBuffer=false {Boolean} enables drawing buffer preservation, enable this if you need to call toDataUrl on the webgl context
  *
  */
-PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
+PIXI.WebGLRenderer = function(width, height, view, transparent, antialias, preserveDrawingBuffer)
 {
-    if(!PIXI.defaultRenderer)PIXI.defaultRenderer = this;
+    if(!PIXI.defaultRenderer)
+    {
+        PIXI.sayHello('webGL');
+        PIXI.defaultRenderer = this;
+    }
 
     this.type = PIXI.WEBGL_RENDERER;
 
@@ -33,6 +38,14 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
      * @type Boolean
      */
     this.transparent = !!transparent;
+
+    /**
+     * The value of the preserveDrawingBuffer flag affects whether or not the contents of the stencil buffer is retained after rendering.
+     *
+     * @property preserveDrawingBuffer
+     * @type Boolean
+     */
+    this.preserveDrawingBuffer = preserveDrawingBuffer;
 
     /**
      * The width of the canvas view
@@ -73,23 +86,24 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
         alpha: this.transparent,
         antialias:!!antialias, // SPEED UP??
         premultipliedAlpha:!!transparent,
-        stencil:true
+        stencil:true,
+        preserveDrawingBuffer: preserveDrawingBuffer
     };
 
-    //try 'experimental-webgl'
-    try {
-        this.gl = this.view.getContext('experimental-webgl',  this.options);
-    } catch (e) {
-        //try 'webgl'
+    var gl = null;
+
+    ['experimental-webgl', 'webgl'].forEach(function(name) {
         try {
-            this.gl = this.view.getContext('webgl',  this.options);
-        } catch (e2) {
-            // fail, not able to get a context
-            throw new Error(' This browser does not support webGL. Try using the canvas renderer' + this);
-        }
+            gl = gl || this.view.getContext(name,  this.options);
+        } catch(e) {}
+    }, this);
+
+    if (!gl) {
+        // fail, not able to get a context
+        throw new Error('This browser does not support webGL. Try using the canvas renderer' + this);
     }
 
-    var gl = this.gl;
+    this.gl = gl;
     this.glContextId = gl.id = PIXI.WebGLRenderer.glContextId ++;
 
     PIXI.glContexts[this.glContextId] = gl;
@@ -132,8 +146,11 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     // time to create the render managers! each one focuses on managine a state in webGL
     this.shaderManager = new PIXI.WebGLShaderManager(gl);                   // deals with managing the shader programs and their attribs
     this.spriteBatch = new PIXI.WebGLSpriteBatch(gl);                       // manages the rendering of sprites
+    //this.primitiveBatch = new PIXI.WebGLPrimitiveBatch(gl);               // primitive batch renderer
     this.maskManager = new PIXI.WebGLMaskManager(gl);                       // manages the masks using the stencil buffer
     this.filterManager = new PIXI.WebGLFilterManager(gl, this.transparent); // manages the filters
+    this.stencilManager = new PIXI.WebGLStencilManager(gl);
+    this.blendModeManager = new PIXI.WebGLBlendModeManager(gl);
 
     this.renderSession = {};
     this.renderSession.gl = this.gl;
@@ -141,7 +158,10 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias)
     this.renderSession.shaderManager = this.shaderManager;
     this.renderSession.maskManager = this.maskManager;
     this.renderSession.filterManager = this.filterManager;
+    this.renderSession.blendModeManager = this.blendModeManager;
+   // this.renderSession.primitiveBatch = this.primitiveBatch;
     this.renderSession.spriteBatch = this.spriteBatch;
+    this.renderSession.stencilManager = this.stencilManager;
     this.renderSession.renderer = this;
 
     gl.useProgram(this.shaderManager.defaultShader.program);
@@ -269,6 +289,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
  */
 PIXI.WebGLRenderer.prototype.renderDisplayObject = function(displayObject, projection, buffer)
 {
+    this.renderSession.blendModeManager.setBlendMode(PIXI.blendModes.NORMAL);
     // reset the render session data..
     this.renderSession.drawCount = 0;
     this.renderSession.currentBlendMode = 9999;
@@ -279,6 +300,8 @@ PIXI.WebGLRenderer.prototype.renderDisplayObject = function(displayObject, proje
     // start the sprite batch
     this.spriteBatch.begin(this.renderSession);
 
+//    this.primitiveBatch.begin(this.renderSession);
+
     // start the filter manager
     this.filterManager.begin(this.renderSession, buffer);
 
@@ -287,6 +310,8 @@ PIXI.WebGLRenderer.prototype.renderDisplayObject = function(displayObject, proje
 
     // finish the sprite batch
     this.spriteBatch.end();
+
+//    this.primitiveBatch.end();
 };
 
 /**
@@ -301,8 +326,8 @@ PIXI.WebGLRenderer.updateTextures = function()
     var i = 0;
 
     //TODO break this out into a texture manager...
-    //for (i = 0; i < PIXI.texturesToUpdate.length; i++)
-    //    PIXI.WebGLRenderer.updateTexture(PIXI.texturesToUpdate[i]);
+  //  for (i = 0; i < PIXI.texturesToUpdate.length; i++)
+  //      PIXI..updateWebGLTexture(PIXI.texturesToUpdate[i], this.gl);
 
 
     for (i=0; i < PIXI.Texture.frameUpdates.length; i++)
@@ -349,7 +374,7 @@ PIXI.WebGLRenderer.destroyTexture = function(texture)
  */
 PIXI.WebGLRenderer.updateTextureFrame = function(texture)
 {
-    texture.updateFrame = false;
+    //texture.updateFrame = false;
 
     // now set the uvs. Figured that the uv data sits with a texture rather than a sprite.
     // so uv data is stored on the texture itself
@@ -394,7 +419,7 @@ PIXI.createWebGLTexture = function(texture, gl)
         texture._glTextures[gl.id] = gl.createTexture();
 
         gl.bindTexture(gl.TEXTURE_2D, texture._glTextures[gl.id]);
-        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, texture.premultipliedAlpha);
 
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.source);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, texture.scaleMode === PIXI.scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
@@ -414,6 +439,8 @@ PIXI.createWebGLTexture = function(texture, gl)
         }
 
         gl.bindTexture(gl.TEXTURE_2D, null);
+
+        texture._dirty[gl.id] = false;
     }
 
     return  texture._glTextures[gl.id];
@@ -432,7 +459,7 @@ PIXI.updateWebGLTexture = function(texture, gl)
     if( texture._glTextures[gl.id] )
     {
         gl.bindTexture(gl.TEXTURE_2D, texture._glTextures[gl.id]);
-        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, texture.premultipliedAlpha);
 
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.source);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, texture.scaleMode === PIXI.scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
@@ -451,7 +478,7 @@ PIXI.updateWebGLTexture = function(texture, gl)
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
         }
 
-        gl.bindTexture(gl.TEXTURE_2D, null);
+        texture._dirty[gl.id] = false;
     }
     
 };
@@ -500,6 +527,7 @@ PIXI.WebGLRenderer.prototype.handleContextRestored = function()
     // need to set the context...
     this.shaderManager.setContext(gl);
     this.spriteBatch.setContext(gl);
+    this.primitiveBatch.setContext(gl);
     this.maskManager.setContext(gl);
     this.filterManager.setContext(gl);
 
@@ -551,6 +579,7 @@ PIXI.WebGLRenderer.prototype.destroy = function()
     // time to create the render managers! each one focuses on managine a state in webGL
     this.shaderManager.destroy();
     this.spriteBatch.destroy();
+    this.primitiveBatch.destroy();
     this.maskManager.destroy();
     this.filterManager.destroy();
 

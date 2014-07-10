@@ -232,8 +232,8 @@ PIXI.Text.prototype.updateTexture = function()
 {
     this.texture.baseTexture.width = this.canvas.width;
     this.texture.baseTexture.height = this.canvas.height;
-    this.texture.frame.width = this.canvas.width;
-    this.texture.frame.height = this.canvas.height;
+    this.texture.crop.width = this.texture.frame.width = this.canvas.width;
+    this.texture.crop.height = this.texture.frame.height = this.canvas.height;
 
     this._width = this.canvas.width;
     this._height = this.canvas.height;
@@ -361,15 +361,15 @@ PIXI.Text.prototype.wordWrap = function(text)
  * Destroys this text object
  *
  * @method destroy
- * @param destroyTexture {Boolean}
+ * @param destroyBaseTexture {Boolean} whether to destroy the base texture as well
  */
-PIXI.Text.prototype.destroy = function(destroyTexture)
+PIXI.Text.prototype.destroy = function(destroyBaseTexture)
 {
-    if(destroyTexture)
-    {
-        this.texture.destroy();
-    }
+    // make sure to reset the the context and canvas.. dont want this hanging around in memory!
+    this.context = null;
+    this.canvas = null;
 
+    this.texture.destroy(destroyBaseTexture === undefined ? true : destroyBaseTexture);
 };
 
 PIXI.Text.heightCache = {};

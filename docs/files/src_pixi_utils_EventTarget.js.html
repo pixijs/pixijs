@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.5.3</em>
+            <em>API Docs for: 1.6.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -75,6 +75,8 @@
             
                 <li><a href="../classes/ColorStepFilter.html">ColorStepFilter</a></li>
             
+                <li><a href="../classes/ComplexPrimitiveShader.html">ComplexPrimitiveShader</a></li>
+            
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
@@ -104,6 +106,10 @@
                 <li><a href="../classes/InvertFilter.html">InvertFilter</a></li>
             
                 <li><a href="../classes/JsonLoader.html">JsonLoader</a></li>
+            
+                <li><a href="../classes/Matrix.html">Matrix</a></li>
+            
+                <li><a href="../classes/Matrix2.html">Matrix2</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
@@ -160,6 +166,8 @@
                 <li><a href="../classes/WebGLShaderManager.html">WebGLShaderManager</a></li>
             
                 <li><a href="../classes/WebGLSpriteBatch.html">WebGLSpriteBatch</a></li>
+            
+                <li><a href="../classes/WebGLStencilManager.html">WebGLStencilManager</a></li>
             
             </ul>
 
@@ -255,7 +263,7 @@ PIXI.EventTarget = function () {
 
         if ( listeners[ type ].indexOf( listener ) === - 1 ) {
 
-            listeners[ type ].push( listener );
+            listeners[ type ].unshift( listener );
         }
 
     };
@@ -274,7 +282,10 @@ PIXI.EventTarget = function () {
 
         }
 
-        for(var i = 0, l = listeners[ event.type ].length; i &lt; l; i++) {
+
+        for(var i = listeners[ event.type ].length-1; i &gt;= 0; i--) {
+//        for(var i = 0, l=listeners[ event.type ].length; i &lt; l; i++) {
+
 
             listeners[ event.type ][ i ]( event );
 
@@ -290,6 +301,8 @@ PIXI.EventTarget = function () {
      * @param listener {function} The callback function that was be fired when the event occured
      */
     this.removeEventListener = this.off = function ( type, listener ) {
+
+        if ( listeners[ type ] === undefined ) return;
 
         var index = listeners[ type ].indexOf( listener );
 

@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.5.3</em>
+            <em>API Docs for: 1.6.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -75,6 +75,8 @@
             
                 <li><a href="../classes/ColorStepFilter.html">ColorStepFilter</a></li>
             
+                <li><a href="../classes/ComplexPrimitiveShader.html">ComplexPrimitiveShader</a></li>
+            
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
@@ -104,6 +106,10 @@
                 <li><a href="../classes/InvertFilter.html">InvertFilter</a></li>
             
                 <li><a href="../classes/JsonLoader.html">JsonLoader</a></li>
+            
+                <li><a href="../classes/Matrix.html">Matrix</a></li>
+            
+                <li><a href="../classes/Matrix2.html">Matrix2</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
@@ -161,6 +167,8 @@
             
                 <li><a href="../classes/WebGLSpriteBatch.html">WebGLSpriteBatch</a></li>
             
+                <li><a href="../classes/WebGLStencilManager.html">WebGLStencilManager</a></li>
+            
             </ul>
 
             <ul id="api-modules" class="apis modules">
@@ -211,8 +219,12 @@
  */
 
 
-PIXI.StripShader = function()
+PIXI.StripShader = function(gl)
 {
+    this._UID = PIXI._UID++;
+    
+    this.gl = gl;
+
     /**
     * @property {any} program - The WebGL program.
     */
@@ -224,37 +236,40 @@ PIXI.StripShader = function()
     this.fragmentSrc = [
         &#x27;precision mediump float;&#x27;,
         &#x27;varying vec2 vTextureCoord;&#x27;,
-        &#x27;varying float vColor;&#x27;,
+     //   &#x27;varying float vColor;&#x27;,
         &#x27;uniform float alpha;&#x27;,
         &#x27;uniform sampler2D uSampler;&#x27;,
 
         &#x27;void main(void) {&#x27;,
         &#x27;   gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y));&#x27;,
-        &#x27;   gl_FragColor = gl_FragColor * alpha;&#x27;,
+      //  &#x27;   gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);&#x27;,//gl_FragColor * alpha;&#x27;,
         &#x27;}&#x27;
     ];
 
-    /**
+     /**
     * @property {array} fragmentSrc - The fragment shader.
     */
-    this.vertexSrc = [
+    this.vertexSrc  = [
         &#x27;attribute vec2 aVertexPosition;&#x27;,
         &#x27;attribute vec2 aTextureCoord;&#x27;,
-        &#x27;attribute float aColor;&#x27;,
         &#x27;uniform mat3 translationMatrix;&#x27;,
         &#x27;uniform vec2 projectionVector;&#x27;,
-        &#x27;varying vec2 vTextureCoord;&#x27;,
         &#x27;uniform vec2 offsetVector;&#x27;,
-        &#x27;varying float vColor;&#x27;,
+      //  &#x27;uniform float alpha;&#x27;,
+       // &#x27;uniform vec3 tint;&#x27;,
+        &#x27;varying vec2 vTextureCoord;&#x27;,
+      //  &#x27;varying vec4 vColor;&#x27;,
 
         &#x27;void main(void) {&#x27;,
-        &#x27;   vec3 v = translationMatrix * vec3(aVertexPosition, 1.0);&#x27;,
+        &#x27;   vec3 v = translationMatrix * vec3(aVertexPosition , 1.0);&#x27;,
         &#x27;   v -= offsetVector.xyx;&#x27;,
-        &#x27;   gl_Position = vec4( v.x / projectionVector.x -1.0, v.y / projectionVector.y + 1.0 , 0.0, 1.0);&#x27;,
+        &#x27;   gl_Position = vec4( v.x / projectionVector.x -1.0, v.y / -projectionVector.y + 1.0 , 0.0, 1.0);&#x27;,
         &#x27;   vTextureCoord = aTextureCoord;&#x27;,
-        &#x27;   vColor = aColor;&#x27;,
+       // &#x27;   vColor = aColor * vec4(tint * alpha, alpha);&#x27;,
         &#x27;}&#x27;
     ];
+
+    this.init();
 };
 
 /**
@@ -264,8 +279,7 @@ PIXI.StripShader = function()
 */
 PIXI.StripShader.prototype.init = function()
 {
-
-    var gl = PIXI.gl;
+    var gl = this.gl;
 
     var program = PIXI.compileProgram(gl, this.vertexSrc, this.fragmentSrc);
     gl.useProgram(program);
@@ -280,6 +294,8 @@ PIXI.StripShader.prototype.init = function()
     // get and store the attributes
     this.aVertexPosition = gl.getAttribLocation(program, &#x27;aVertexPosition&#x27;);
     this.aTextureCoord = gl.getAttribLocation(program, &#x27;aTextureCoord&#x27;);
+
+    this.attributes = [this.aVertexPosition, this.aTextureCoord];
 
     this.translationMatrix = gl.getUniformLocation(program, &#x27;translationMatrix&#x27;);
     this.alpha = gl.getUniformLocation(program, &#x27;alpha&#x27;);

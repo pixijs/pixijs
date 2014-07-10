@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.5.3</em>
+            <em>API Docs for: 1.6.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -75,6 +75,8 @@
             
                 <li><a href="../classes/ColorStepFilter.html">ColorStepFilter</a></li>
             
+                <li><a href="../classes/ComplexPrimitiveShader.html">ComplexPrimitiveShader</a></li>
+            
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
@@ -104,6 +106,10 @@
                 <li><a href="../classes/InvertFilter.html">InvertFilter</a></li>
             
                 <li><a href="../classes/JsonLoader.html">JsonLoader</a></li>
+            
+                <li><a href="../classes/Matrix.html">Matrix</a></li>
+            
+                <li><a href="../classes/Matrix2.html">Matrix2</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
@@ -160,6 +166,8 @@
                 <li><a href="../classes/WebGLShaderManager.html">WebGLShaderManager</a></li>
             
                 <li><a href="../classes/WebGLSpriteBatch.html">WebGLSpriteBatch</a></li>
+            
+                <li><a href="../classes/WebGLStencilManager.html">WebGLStencilManager</a></li>
             
             </ul>
 
@@ -224,7 +232,11 @@ PIXI.WEBGL_RENDERER = 0;
 PIXI.CANVAS_RENDERER = 1;
 
 // useful for testing against if your lib is using pixi.
+&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
 PIXI.VERSION = &quot;v1.5.3&quot;;
+=======
+PIXI.VERSION = &#x27;v1.5.4&#x27;;
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; dev
 
 // the various blend modes supported by pixi
 PIXI.blendModes = {
@@ -254,12 +266,53 @@ PIXI.scaleModes = {
     NEAREST:1
 };
 
+// used to create uids for various pixi objects..
+PIXI._UID = 0;
+
+PIXI.Float32Array = Float32Array || Array;
+PIXI.Uint16Array = Uint16Array || Array;
+
 // interaction frequency 
 PIXI.INTERACTION_FREQUENCY = 30;
 PIXI.AUTO_PREVENT_DEFAULT = true;
 
 PIXI.RAD_TO_DEG = 180 / Math.PI;
 PIXI.DEG_TO_RAD = Math.PI / 180;
+
+
+PIXI.dontSayHello = false;
+
+PIXI.sayHello = function (type) 
+{
+    if(PIXI.dontSayHello)return;
+
+    if ( navigator.userAgent.toLowerCase().indexOf(&#x27;chrome&#x27;) &gt; -1 )
+    {
+        var args = [
+            &#x27;%c %c %c Pixi.js &#x27; + PIXI.VERSION + &#x27; - &#x27; + type + &#x27;  %c &#x27; + &#x27; %c &#x27; + &#x27; http://pixijs.com  %c %c ♥%c♥%c♥ &#x27;,
+            &#x27;background: #ff66a5&#x27;,
+            &#x27;background: #ff66a5&#x27;,
+            &#x27;color: #ff66a5; background: #030307;&#x27;,
+            &#x27;background: #ff66a5&#x27;,
+            &#x27;background: #ffc3dc&#x27;,
+            &#x27;background: #ff66a5&#x27;,
+            &#x27;color: #ff2424; background: #fff&#x27;,
+            &#x27;color: #ff2424; background: #fff&#x27;,
+            &#x27;color: #ff2424; background: #fff&#x27;
+        ];
+
+       
+
+        console.log.apply(console, args);
+    }
+    else if (window[&#x27;console&#x27;])
+    {
+        console.log(&#x27;Pixi.js &#x27; + PIXI.VERSION + &#x27; - http://pixjs.com&#x27;);
+    }
+
+    PIXI.dontSayHello = true;
+};
+
     </pre>
 </div>
 

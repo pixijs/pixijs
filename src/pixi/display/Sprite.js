@@ -11,7 +11,7 @@
  * @param texture {Texture} The texture for this sprite
  * 
  * A sprite can be created directly from an image like this : 
- * var sprite = nex PIXI.Sprite.FromImage('assets/image.png');
+ * var sprite = new PIXI.Sprite.fromImage('assets/image.png');
  * yourStage.addChild(sprite);
  * then obviously don't forget to add it to the stage you have already created
  */
@@ -144,7 +144,6 @@ PIXI.Sprite.prototype.setTexture = function(texture)
     }
 
     this.cachedTint = 0xFFFFFF;
-    this.updateFrame = true;
 };
 
 /**
@@ -161,7 +160,7 @@ PIXI.Sprite.prototype.onTextureUpdate = function()
     if(this._height)this.scale.y = this._height / this.texture.frame.height;
 
 
-    this.updateFrame = true;
+    //this.updateFrame = true;
 };
 
 /**
@@ -263,17 +262,18 @@ PIXI.Sprite.prototype._renderWebGL = function(renderSession)
     {
         var spriteBatch =  renderSession.spriteBatch;
 
+        // push filter first as we need to ensure the stencil buffer is correct for any masking
+        if(this._filters)
+        {
+            spriteBatch.flush();
+            renderSession.filterManager.pushFilter(this._filterBlock);
+        }
+
         if(this._mask)
         {
             spriteBatch.stop();
             renderSession.maskManager.pushMask(this.mask, renderSession);
             spriteBatch.start();
-        }
-
-        if(this._filters)
-        {
-            spriteBatch.flush();
-            renderSession.filterManager.pushFilter(this._filterBlock);
         }
 
         // add this sprite to the batch
@@ -288,8 +288,8 @@ PIXI.Sprite.prototype._renderWebGL = function(renderSession)
         // time to stop the sprite batch as either a mask element or a filter draw will happen next
         spriteBatch.stop();
 
+        if(this._mask)renderSession.maskManager.popMask(this._mask, renderSession);
         if(this._filters)renderSession.filterManager.popFilter();
-        if(this._mask)renderSession.maskManager.popMask(renderSession);
         
         spriteBatch.start();
     }
@@ -317,123 +317,105 @@ PIXI.Sprite.prototype._renderWebGL = function(renderSession)
 */
 PIXI.Sprite.prototype._renderCanvas = function(renderSession)
 {
-    // if the sprite is not visible or the alpha is 0 then no need to render this element
-    if(this.visible === false || this.alpha === 0)return;
+    // If the sprite is not visible or the alpha is 0 then no need to render this element
+    if (this.visible === false || this.alpha === 0) return;
     
-    var frame = this.texture.frame;
-    var context = renderSession.context;
-    var texture = this.texture;
-
-    if(this.blendMode !== renderSession.currentBlendMode)
+    if (this.blendMode !== renderSession.currentBlendMode)
     {
         renderSession.currentBlendMode = this.blendMode;
-        context.globalCompositeOperation = PIXI.blendModesCanvas[renderSession.currentBlendMode];
+        renderSession.context.globalCompositeOperation = PIXI.blendModesCanvas[renderSession.currentBlendMode];
     }
 
-    if(this._mask)
+    if (this._mask)
     {
         renderSession.maskManager.pushMask(this._mask, renderSession.context);
     }
 
-    
-
-    //ignore null sources
-    if(frame && frame.width && frame.height && texture.baseTexture.source)
+    //  Ignore null sources
+    if (this.texture.valid)
     {
-        context.globalAlpha = this.worldAlpha;
+        renderSession.context.globalAlpha = this.worldAlpha;
 
-        var transform = this.worldTransform;
-
-        // allow for trimming
+        //  Allow for pixel rounding
         if (renderSession.roundPixels)
         {
-            context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx | 0, transform.ty | 0);
+            renderSession.context.setTransform(
+                this.worldTransform.a,
+                this.worldTransform.c,
+                this.worldTransform.b,
+                this.worldTransform.d,
+                this.worldTransform.tx | 0,
+                this.worldTransform.ty | 0);
         }
         else
         {
-            context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
+            renderSession.context.setTransform(
+                this.worldTransform.a,
+                this.worldTransform.c,
+                this.worldTransform.b,
+                this.worldTransform.d,
+                this.worldTransform.tx,
+                this.worldTransform.ty);
         }
 
-        //if smoothingEnabled is supported and we need to change the smoothing property for this texture
-        if(renderSession.smoothProperty && renderSession.scaleMode !== this.texture.baseTexture.scaleMode) {
-            renderSession.scaleMode = this.texture.baseTexture.scaleMode;
-            context[renderSession.smoothProperty] = (renderSession.scaleMode === PIXI.scaleModes.LINEAR);
-        }
-
-        if(this.tint !== 0xFFFFFF)
+        //  If smoothingEnabled is supported and we need to change the smoothing property for this texture
+        if (renderSession.smoothProperty && renderSession.scaleMode !== this.texture.baseTexture.scaleMode)
         {
-            
-            if(this.cachedTint !== this.tint)
-            {
-                // no point tinting an image that has not loaded yet!
-                if(!texture.baseTexture.hasLoaded)return;
+            renderSession.scaleMode = this.texture.baseTexture.scaleMode;
+            renderSession.context[renderSession.smoothProperty] = (renderSession.scaleMode === PIXI.scaleModes.LINEAR);
+        }
 
+        //  If the texture is trimmed we offset by the trim x/y, otherwise we use the frame dimensions
+        var dx = (this.texture.trim) ? this.texture.trim.x - this.anchor.x * this.texture.trim.width : this.anchor.x * -this.texture.frame.width;
+        var dy = (this.texture.trim) ? this.texture.trim.y - this.anchor.y * this.texture.trim.height : this.anchor.y * -this.texture.frame.height;
+
+        if (this.tint !== 0xFFFFFF)
+        {
+            if (this.cachedTint !== this.tint)
+            {
                 this.cachedTint = this.tint;
                 
-                //TODO clean up caching - how to clean up the caches?
+                //  TODO clean up caching - how to clean up the caches?
                 this.tintedTexture = PIXI.CanvasTinter.getTintedTexture(this, this.tint);
-                
             }
 
-            context.drawImage(this.tintedTexture,
-                               0,
-                               0,
-                               frame.width,
-                               frame.height,
-                               (this.anchor.x) * -frame.width,
-                               (this.anchor.y) * -frame.height,
-                               frame.width,
-                               frame.height);
+            renderSession.context.drawImage(
+                                this.tintedTexture,
+                                0,
+                                0,
+                                this.texture.crop.width,
+                                this.texture.crop.height,
+                                dx,
+                                dy,
+                                this.texture.crop.width,
+                                this.texture.crop.height);
         }
         else
         {
-
-           
-
-            if(texture.trim)
-            {
-                var trim =  texture.trim;
-
-                context.drawImage(this.texture.baseTexture.source,
-                               frame.x,
-                               frame.y,
-                               frame.width,
-                               frame.height,
-                               trim.x - this.anchor.x * trim.width,
-                               trim.y - this.anchor.y * trim.height,
-                               frame.width,
-                               frame.height);
-            }
-            else
-            {
-               
-                context.drawImage(this.texture.baseTexture.source,
-                               frame.x,
-                               frame.y,
-                               frame.width,
-                               frame.height,
-                               (this.anchor.x) * -frame.width,
-                               (this.anchor.y) * -frame.height,
-                               frame.width,
-                               frame.height);
-            }
-            
+            renderSession.context.drawImage(
+                                this.texture.baseTexture.source,
+                                this.texture.crop.x,
+                                this.texture.crop.y,
+                                this.texture.crop.width,
+                                this.texture.crop.height,
+                                dx,
+                                dy,
+                                this.texture.crop.width,
+                                this.texture.crop.height);
         }
     }
 
     // OVERWRITE
-    for(var i=0,j=this.children.length; i<j; i++)
+    for (var i = 0, j = this.children.length; i < j; i++)
     {
-        var child = this.children[i];
-        child._renderCanvas(renderSession);
+        this.children[i]._renderCanvas(renderSession);
     }
 
-    if(this._mask)
+    if (this._mask)
     {
         renderSession.maskManager.popMask(renderSession.context);
     }
 };
-
 
 // some helper functions..
 

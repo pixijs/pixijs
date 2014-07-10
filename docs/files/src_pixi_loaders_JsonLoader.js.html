@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.5.3</em>
+            <em>API Docs for: 1.6.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -75,6 +75,8 @@
             
                 <li><a href="../classes/ColorStepFilter.html">ColorStepFilter</a></li>
             
+                <li><a href="../classes/ComplexPrimitiveShader.html">ComplexPrimitiveShader</a></li>
+            
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
@@ -104,6 +106,10 @@
                 <li><a href="../classes/InvertFilter.html">InvertFilter</a></li>
             
                 <li><a href="../classes/JsonLoader.html">JsonLoader</a></li>
+            
+                <li><a href="../classes/Matrix.html">Matrix</a></li>
+            
+                <li><a href="../classes/Matrix2.html">Matrix2</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
@@ -160,6 +166,8 @@
                 <li><a href="../classes/WebGLShaderManager.html">WebGLShaderManager</a></li>
             
                 <li><a href="../classes/WebGLSpriteBatch.html">WebGLSpriteBatch</a></li>
+            
+                <li><a href="../classes/WebGLStencilManager.html">WebGLStencilManager</a></li>
             
             </ul>
 
@@ -272,7 +280,7 @@ PIXI.JsonLoader.prototype.load = function () {
 
     var scope = this;
 
-    if(window.XDomainRequest)
+    if(window.XDomainRequest &amp;&amp; scope.crossorigin)
     {
         this.ajaxRequest = new window.XDomainRequest();
 
@@ -342,9 +350,12 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
             scope.onLoaded();
         });
 
-        for (var i in frameData) {
+        for (var i in frameData)
+        {
             var rect = frameData[i].frame;
-            if (rect) {
+
+            if (rect)
+            {
                 PIXI.TextureCache[i] = new PIXI.Texture(this.texture, {
                     x: rect.x,
                     y: rect.y,
@@ -352,15 +363,14 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
                     height: rect.h
                 });
 
-                // check to see ifthe sprite ha been trimmed..
-                if (frameData[i].trimmed) {
+                PIXI.TextureCache[i].crop = new PIXI.Rectangle(rect.x, rect.y, rect.w, rect.h);
 
-                    var texture =  PIXI.TextureCache[i];
-                    
+                //  Check to see if the sprite is trimmed
+                if (frameData[i].trimmed)
+                {
                     var actualSize = frameData[i].sourceSize;
                     var realSize = frameData[i].spriteSourceSize;
-
-                    texture.trim = new PIXI.Rectangle(realSize.x, realSize.y, actualSize.w, actualSize.h);
+                    PIXI.TextureCache[i].trim = new PIXI.Rectangle(realSize.x, realSize.y, actualSize.w, actualSize.h);
                 }
             }
         }
@@ -409,6 +419,7 @@ PIXI.JsonLoader.prototype.onError = function () {
         content: this
     });
 };
+
     </pre>
 </div>
 
