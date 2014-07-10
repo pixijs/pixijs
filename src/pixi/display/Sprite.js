@@ -368,7 +368,6 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
         //  If the texture is trimmed we offset by the trim x/y, otherwise we use the frame dimensions
         var dx = (this.texture.trim) ? this.texture.trim.x - this.anchor.x * this.texture.trim.width : this.anchor.x * -this.texture.frame.width;
         var dy = (this.texture.trim) ? this.texture.trim.y - this.anchor.y * this.texture.trim.height : this.anchor.y * -this.texture.frame.height;
-        var src = this.texture.baseTexture.source;
 
         if (this.tint !== 0xFFFFFF)
         {
@@ -380,19 +379,30 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
                 this.tintedTexture = PIXI.CanvasTinter.getTintedTexture(this, this.tint);
             }
 
-            src = this.tintedTexture;
+            renderSession.context.drawImage(
+                                this.tintedTexture, 
+                                0, 
+                                0, 
+                                this.texture.crop.width, 
+                                this.texture.crop.height, 
+                                dx, 
+                                dy, 
+                                this.texture.crop.width, 
+                                this.texture.crop.height);
         }
-
-        renderSession.context.drawImage(
-                            src, 
-                            this.texture.crop.x, 
-                            this.texture.crop.y, 
-                            this.texture.crop.width, 
-                            this.texture.crop.height, 
-                            dx, 
-                            dy, 
-                            this.texture.crop.width, 
-                            this.texture.crop.height);
+        else
+        {
+            renderSession.context.drawImage(
+                                this.texture.baseTexture.source, 
+                                this.texture.crop.x, 
+                                this.texture.crop.y, 
+                                this.texture.crop.width, 
+                                this.texture.crop.height, 
+                                dx, 
+                                dy, 
+                                this.texture.crop.width, 
+                                this.texture.crop.height);
+        }
     }
 
     // OVERWRITE
