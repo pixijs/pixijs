@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.5.0</em>
+            <em>API Docs for: 1.6.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -75,6 +75,8 @@
             
                 <li><a href="../classes/ColorStepFilter.html">ColorStepFilter</a></li>
             
+                <li><a href="../classes/ComplexPrimitiveShader.html">ComplexPrimitiveShader</a></li>
+            
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
@@ -89,6 +91,8 @@
             
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
             
+                <li><a href="../classes/getRecommendedRenderer.html">getRecommendedRenderer</a></li>
+            
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
             
                 <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
@@ -102,6 +106,10 @@
                 <li><a href="../classes/InvertFilter.html">InvertFilter</a></li>
             
                 <li><a href="../classes/JsonLoader.html">JsonLoader</a></li>
+            
+                <li><a href="../classes/Matrix.html">Matrix</a></li>
+            
+                <li><a href="../classes/Matrix2.html">Matrix2</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
@@ -159,6 +167,8 @@
             
                 <li><a href="../classes/WebGLSpriteBatch.html">WebGLSpriteBatch</a></li>
             
+                <li><a href="../classes/WebGLStencilManager.html">WebGLStencilManager</a></li>
+            
             </ul>
 
             <ul id="api-modules" class="apis modules">
@@ -213,10 +223,10 @@
  *
  * @class Ellipse
  * @constructor
- * @param x {Number} The X coordinate of the upper-left corner of the framing rectangle of this ellipse
- * @param y {Number} The Y coordinate of the upper-left corner of the framing rectangle of this ellipse
- * @param width {Number} The overall width of this ellipse
- * @param height {Number} The overall height of this ellipse
+ * @param x {Number} The X coordinate of the center of the ellipse
+ * @param y {Number} The Y coordinate of the center of the ellipse
+ * @param width {Number} The half width of this ellipse
+ * @param height {Number} The half height of this ellipse
  */
 PIXI.Ellipse = function(x, y, width, height)
 {
@@ -291,7 +301,7 @@ PIXI.Ellipse.prototype.contains = function(x, y)
 */
 PIXI.Ellipse.prototype.getBounds = function()
 {
-    return new PIXI.Rectangle(this.x, this.y, this.width, this.height);
+    return new PIXI.Rectangle(this.x - this.width, this.y - this.height, this.width, this.height);
 };
 
 // constructor

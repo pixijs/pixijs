@@ -17,6 +17,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "Circle",
         "ColorMatrixFilter",
         "ColorStepFilter",
+        "ComplexPrimitiveShader",
         "DisplacementFilter",
         "DisplayObject",
         "DisplayObjectContainer",
@@ -31,6 +32,8 @@ YUI.add("yuidoc-meta", function(Y) {
         "InteractionManager",
         "InvertFilter",
         "JsonLoader",
+        "Matrix",
+        "Matrix2",
         "MovieClip",
         "NormalMapFilter",
         "PixelateFilter",
@@ -59,7 +62,9 @@ YUI.add("yuidoc-meta", function(Y) {
         "WebGLRenderer",
         "WebGLShaderManager",
         "WebGLSpriteBatch",
-        "autoDetectRenderer"
+        "WebGLStencilManager",
+        "autoDetectRenderer",
+        "getRecommendedRenderer"
     ],
     "modules": [
         "PIXI"

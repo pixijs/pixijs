@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.5.0</em>
+            <em>API Docs for: 1.6.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -75,6 +75,8 @@
             
                 <li><a href="../classes/ColorStepFilter.html">ColorStepFilter</a></li>
             
+                <li><a href="../classes/ComplexPrimitiveShader.html">ComplexPrimitiveShader</a></li>
+            
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
@@ -89,6 +91,8 @@
             
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
             
+                <li><a href="../classes/getRecommendedRenderer.html">getRecommendedRenderer</a></li>
+            
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
             
                 <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
@@ -102,6 +106,10 @@
                 <li><a href="../classes/InvertFilter.html">InvertFilter</a></li>
             
                 <li><a href="../classes/JsonLoader.html">JsonLoader</a></li>
+            
+                <li><a href="../classes/Matrix.html">Matrix</a></li>
+            
+                <li><a href="../classes/Matrix2.html">Matrix2</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
@@ -159,6 +167,8 @@
             
                 <li><a href="../classes/WebGLSpriteBatch.html">WebGLSpriteBatch</a></li>
             
+                <li><a href="../classes/WebGLStencilManager.html">WebGLStencilManager</a></li>
+            
             </ul>
 
             <ul id="api-modules" class="apis modules">
@@ -214,9 +224,10 @@
 * @param gl {WebGLContext} the current WebGL drawing context
 * @param width {Number} the horizontal range of the filter
 * @param height {Number} the vertical range of the filter
+* @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
 * @private
 */
-PIXI.FilterTexture = function(gl, width, height)
+PIXI.FilterTexture = function(gl, width, height, scaleMode)
 {
     /**
      * @property gl
@@ -228,9 +239,11 @@ PIXI.FilterTexture = function(gl, width, height)
     this.frameBuffer = gl.createFramebuffer();
     this.texture = gl.createTexture();
 
+    scaleMode = scaleMode || PIXI.scaleModes.DEFAULT;
+
     gl.bindTexture(gl.TEXTURE_2D,  this.texture);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, scaleMode === PIXI.scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, scaleMode === PIXI.scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer );
@@ -238,6 +251,11 @@ PIXI.FilterTexture = function(gl, width, height)
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer );
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.texture, 0);
 
+    // required for masking a mask??
+    this.renderBuffer = gl.createRenderbuffer();
+    gl.bindRenderbuffer(gl.RENDERBUFFER, this.renderBuffer);
+    gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, this.renderBuffer);
+  
     this.resize(width, height);
 };
 
@@ -273,6 +291,9 @@ PIXI.FilterTexture.prototype.resize = function(width, height)
     gl.bindTexture(gl.TEXTURE_2D,  this.texture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
 
+    // update the stencil buffer width and height
+    gl.bindRenderbuffer(gl.RENDERBUFFER, this.renderBuffer);
+    gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, width, height);
 };
 
 /**

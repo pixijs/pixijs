@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.5.0</em>
+            <em>API Docs for: 1.6.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -75,6 +75,8 @@
             
                 <li><a href="../classes/ColorStepFilter.html">ColorStepFilter</a></li>
             
+                <li><a href="../classes/ComplexPrimitiveShader.html">ComplexPrimitiveShader</a></li>
+            
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
@@ -89,6 +91,8 @@
             
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
             
+                <li><a href="../classes/getRecommendedRenderer.html">getRecommendedRenderer</a></li>
+            
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
             
                 <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
@@ -102,6 +106,10 @@
                 <li><a href="../classes/InvertFilter.html">InvertFilter</a></li>
             
                 <li><a href="../classes/JsonLoader.html">JsonLoader</a></li>
+            
+                <li><a href="../classes/Matrix.html">Matrix</a></li>
+            
+                <li><a href="../classes/Matrix2.html">Matrix2</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
@@ -158,6 +166,8 @@
                 <li><a href="../classes/WebGLShaderManager.html">WebGLShaderManager</a></li>
             
                 <li><a href="../classes/WebGLSpriteBatch.html">WebGLSpriteBatch</a></li>
+            
+                <li><a href="../classes/WebGLStencilManager.html">WebGLStencilManager</a></li>
             
             </ul>
 
@@ -273,12 +283,24 @@ PIXI.BaseTexture = function(source, scaleMode)
     //TODO will be used for futer pixi 1.5...
     this.id = PIXI.BaseTextureCacheIdGenerator++;
 
+    /**
+     * Controls if RGB channels should be premultiplied by Alpha  (WebGL only)
+     *
+     * @property
+     * @type Boolean
+     * @default TRUE
+    */
+    this.premultipliedAlpha = true;
+
     // used for webGL
     this._glTextures = [];
     
+    // used for webGL teture updateing...
+    this._dirty = [];
+    
     if(!source)return;
 
-    if(this.source.complete || this.source.getContext)
+    if((this.source.complete || this.source.getContext) &amp;&amp; this.source.width &amp;&amp; this.source.height)
     {
         this.hasLoaded = true;
         this.width = this.source.width;
@@ -296,9 +318,16 @@ PIXI.BaseTexture = function(source, scaleMode)
             scope.width = scope.source.width;
             scope.height = scope.source.height;
 
+            for (var i = 0; i &lt; scope._glTextures.length; i++)
+            {
+                scope._dirty[i] = true;
+            }
+
             // add it to somewhere...
-            PIXI.texturesToUpdate.push(scope);
             scope.dispatchEvent( { type: &#x27;loaded&#x27;, content: scope } );
+        };
+        this.source.onerror = function() {
+            scope.dispatchEvent( { type: &#x27;error&#x27;, content: scope } );
         };
     }
 
@@ -321,8 +350,13 @@ PIXI.BaseTexture.prototype.destroy = function()
     if(this.imageUrl)
     {
         delete PIXI.BaseTextureCache[this.imageUrl];
+        delete PIXI.TextureCache[this.imageUrl];
         this.imageUrl = null;
         this.source.src = null;
+    }
+    else if (this.source &amp;&amp; this.source._pixiId)
+    {
+        delete PIXI.BaseTextureCache[this.source._pixiId];
     }
     this.source = null;
     PIXI.texturesToDestroy.push(this);
@@ -356,7 +390,7 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
 {
     var baseTexture = PIXI.BaseTextureCache[imageUrl];
     
-    if(crossorigin === undefined)crossorigin = true;
+    if(crossorigin === undefined &amp;&amp; imageUrl.indexOf(&#x27;data:&#x27;) === -1) crossorigin = true;
 
     if(!baseTexture)
     {

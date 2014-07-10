@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.5.0</em>
+            <em>API Docs for: 1.6.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -75,6 +75,8 @@
             
                 <li><a href="../classes/ColorStepFilter.html">ColorStepFilter</a></li>
             
+                <li><a href="../classes/ComplexPrimitiveShader.html">ComplexPrimitiveShader</a></li>
+            
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
@@ -89,6 +91,8 @@
             
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
             
+                <li><a href="../classes/getRecommendedRenderer.html">getRecommendedRenderer</a></li>
+            
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
             
                 <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
@@ -102,6 +106,10 @@
                 <li><a href="../classes/InvertFilter.html">InvertFilter</a></li>
             
                 <li><a href="../classes/JsonLoader.html">JsonLoader</a></li>
+            
+                <li><a href="../classes/Matrix.html">Matrix</a></li>
+            
+                <li><a href="../classes/Matrix2.html">Matrix2</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
@@ -158,6 +166,8 @@
                 <li><a href="../classes/WebGLShaderManager.html">WebGLShaderManager</a></li>
             
                 <li><a href="../classes/WebGLSpriteBatch.html">WebGLSpriteBatch</a></li>
+            
+                <li><a href="../classes/WebGLStencilManager.html">WebGLStencilManager</a></li>
             
             </ul>
 
@@ -289,6 +299,15 @@
                             </li>
                         
                             <li class="index-item method private">
+                                <a href="#method_buildRoundedRectangle">buildRoundedRectangle</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method private">
                                 <a href="#method_renderGraphics">renderGraphics</a>
 
                                 
@@ -374,7 +393,7 @@
             
         
         
-        <a href="../files/src_pixi_renderers_webgl_utils_WebGLGraphics.js.html#l211"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;WebGLGraphics.js:211</code></a>
+        <a href="../files/src_pixi_renderers_webgl_utils_WebGLGraphics.js.html#l408"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;WebGLGraphics.js:408</code></a>
         
         </p>
 
@@ -488,7 +507,7 @@
             
         
         
-        <a href="../files/src_pixi_renderers_webgl_utils_WebGLGraphics.js.html#l283"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;WebGLGraphics.js:283</code></a>
+        <a href="../files/src_pixi_renderers_webgl_utils_WebGLGraphics.js.html#l480"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;WebGLGraphics.js:480</code></a>
         
         </p>
 
@@ -602,7 +621,7 @@
             
         
         
-        <a href="../files/src_pixi_renderers_webgl_utils_WebGLGraphics.js.html#l493"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;WebGLGraphics.js:493</code></a>
+        <a href="../files/src_pixi_renderers_webgl_utils_WebGLGraphics.js.html#l693"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;WebGLGraphics.js:693</code></a>
         
         </p>
 
@@ -613,7 +632,7 @@
     </div>
 
     <div class="description">
-        <p>Builds a polygon to draw</p>
+        <p>Builds a complex polygon to draw</p>
 
     </div>
 
@@ -716,7 +735,7 @@
             
         
         
-        <a href="../files/src_pixi_renderers_webgl_utils_WebGLGraphics.js.html#l142"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;WebGLGraphics.js:142</code></a>
+        <a href="../files/src_pixi_renderers_webgl_utils_WebGLGraphics.js.html#l221"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;WebGLGraphics.js:221</code></a>
         
         </p>
 
@@ -728,6 +747,120 @@
 
     <div class="description">
         <p>Builds a rectangle to draw</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">graphicsData</code>
+                        <span class="type"><a href="../classes/Graphics.html" class="crosslink">Graphics</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The graphics object containing all the necessary properties</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">webGLData</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_buildRoundedRectangle" class="method item private">
+    <h3 class="name"><code>buildRoundedRectangle</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>graphicsData</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>webGLData</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_renderers_webgl_utils_WebGLGraphics.js.html#l290"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;WebGLGraphics.js:290</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Builds a rounded rectangle to draw</p>
 
     </div>
 

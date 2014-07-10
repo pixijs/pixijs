@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.5.0</em>
+            <em>API Docs for: 1.6.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -75,6 +75,8 @@
             
                 <li><a href="../classes/ColorStepFilter.html">ColorStepFilter</a></li>
             
+                <li><a href="../classes/ComplexPrimitiveShader.html">ComplexPrimitiveShader</a></li>
+            
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
@@ -89,6 +91,8 @@
             
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
             
+                <li><a href="../classes/getRecommendedRenderer.html">getRecommendedRenderer</a></li>
+            
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
             
                 <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
@@ -102,6 +106,10 @@
                 <li><a href="../classes/InvertFilter.html">InvertFilter</a></li>
             
                 <li><a href="../classes/JsonLoader.html">JsonLoader</a></li>
+            
+                <li><a href="../classes/Matrix.html">Matrix</a></li>
+            
+                <li><a href="../classes/Matrix2.html">Matrix2</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
@@ -158,6 +166,8 @@
                 <li><a href="../classes/WebGLShaderManager.html">WebGLShaderManager</a></li>
             
                 <li><a href="../classes/WebGLSpriteBatch.html">WebGLSpriteBatch</a></li>
+            
+                <li><a href="../classes/WebGLStencilManager.html">WebGLStencilManager</a></li>
             
             </ul>
 
@@ -357,6 +367,8 @@ PIXI.MovieClip.prototype.updateTransform = function()
 
     var round = (this.currentFrame + 0.5) | 0;
 
+    this.currentFrame = this.currentFrame % this.textures.length;
+
     if(this.loop || round &lt; this.textures.length)
     {
         this.setTexture(this.textures[round % this.textures.length]);
@@ -371,6 +383,43 @@ PIXI.MovieClip.prototype.updateTransform = function()
     }
 };
 
+/**
+ * A short hand way of creating a movieclip from an array of frame ids
+ *
+ * @static
+ * @method fromFrames
+ * @param frames {Array} the array of frames ids the movieclip will use as its texture frames
+ */
+PIXI.MovieClip.fromFrames = function(frames)
+{
+    var textures = [];
+
+    for (var i = 0; i &lt; frames.length; i++)
+    {
+        textures.push(new PIXI.Texture.fromFrame(frames[i]));
+    }
+
+    return new PIXI.MovieClip(textures);
+};
+
+/**
+ * A short hand way of creating a movieclip from an array of image ids
+ *
+ * @static
+ * @method fromFrames
+ * @param frames {Array} the array of image ids the movieclip will use as its texture frames
+ */
+PIXI.MovieClip.fromImages = function(images)
+{
+    var textures = [];
+
+    for (var i = 0; i &lt; images.length; i++)
+    {
+        textures.push(new PIXI.Texture.fromImage(images[i]));
+    }
+
+    return new PIXI.MovieClip(textures);
+};
     </pre>
 </div>
 
