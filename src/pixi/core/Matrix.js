@@ -80,19 +80,17 @@ PIXI.Matrix.prototype.toArray = function(transpose)
 
 PIXI.Matrix.prototype.toGlobal = function(pos)
 {
-    return {
-        x:this.a * pos.x + this.b * pos.y + this.tx,
-        y:this.c * pos.x + this.d * pos.y + this.ty
-    };
+    return new PIXI.Point(
+        this.a * pos.x + this.b * pos.y + this.tx,
+        this.c * pos.x + this.d * pos.y + this.ty);
 };
 
 PIXI.Matrix.prototype.applyInverse = function(pos)
 {
     var id = 1 / (this.a * this.d + this.b * -this.c);
-    return {
-        x:this.d * id * pos.x + -this.b * id * pos.y + (this.ty * this.b - this.tx * this.d) * id,
-        y:this.a * id * pos.y + -this.c * id * pos.x + (-this.ty * this.a + this.tx * this.c) * id
-    };
+    return new PIXI.Point(
+        this.d * id * pos.x + -this.b * id * pos.y + (this.ty * this.b - this.tx * this.d) * id,
+        this.a * id * pos.y + -this.c * id * pos.x + (-this.ty * this.a + this.tx * this.c) * id);
 };
 
 PIXI.identityMatrix = new PIXI.Matrix();
