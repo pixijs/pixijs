@@ -88,7 +88,7 @@ PIXI.ImageLoader.prototype.loadFramedSpriteSheet = function(frameWidth, frameHei
     {
         for (var x=0; x<cols; x++,i++)
         {
-            var texture = new PIXI.Texture(this.texture, {
+            var texture = new PIXI.Texture(this.texture.baseTexture, {
                 x: x*frameWidth,
                 y: y*frameHeight,
                 width: frameWidth,
