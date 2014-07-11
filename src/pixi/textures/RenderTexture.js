@@ -65,7 +65,7 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode)
      * @property crop
      * @type Rectangle
      */
-    this.crop = new PIXI.Rectangle(0, 0, 1, 1);
+    this.crop = new PIXI.Rectangle(0, 0, this.width, this.height);
     
     /**
      * The base texture object that this texture uses
