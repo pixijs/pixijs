@@ -78,13 +78,29 @@ PIXI.Matrix.prototype.toArray = function(transpose)
     return array;
 };
 
-PIXI.Matrix.prototype.toGlobal = function(pos)
+/**
+ * Get a new position with the current transormation applied.
+ * Can be used to go from a child's coordinate space to the world coordinate space. (e.g. rendering)
+ *
+ * @method apply
+ * @param pos {Point} The origin
+ * @return {Point} The new point, transformed trough this matrix
+ */
+PIXI.Matrix.prototype.apply = function(pos)
 {
     return new PIXI.Point(
         this.a * pos.x + this.b * pos.y + this.tx,
         this.c * pos.x + this.d * pos.y + this.ty);
 };
 
+/**
+ * Get a new position with the inverse of the current transormation applied.
+ * Can be used to go from the world coordinate space to a child's coordinate space. (e.g. input)
+ *
+ * @method apply
+ * @param pos {Point} The origin
+ * @return {Point} The new point, inverse-transformed trough this matrix
+ */
 PIXI.Matrix.prototype.applyInverse = function(pos)
 {
     var id = 1 / (this.a * this.d + this.b * -this.c);
