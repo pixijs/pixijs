@@ -1,0 +1,44 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>pixi.js example 1</title>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			background-color: #000000;
+		}
+	</style>
+	<script src="../../bin/pixi.dev.js"></script>
+
+</head>
+<body>
+	<script>
+
+	var stage = new PIXI.Stage();
+var renderer = new PIXI.autoDetectRenderer(1024, 768, null, true, true);
+//var renderer = new PIXI.CanvasRenderer(1024, 768, null, true, true);
+document.body.appendChild(renderer.view);
+
+var imgUrl = 'http://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Ski_trail_rating_symbol-blue_square.svg/600px-Ski_trail_rating_symbol-blue_square.svg.png';
+
+var sprite = PIXI.Sprite.fromImage(imgUrl);
+sprite.position.set(0, 0);
+sprite.pivot.set(sprite.width/2, sprite.height/2);
+
+stage.addChild(sprite);
+
+
+requestAnimFrame(animate);
+function animate() {
+    requestAnimFrame(animate);
+   
+    sprite.rotation += 0.1;
+    
+    renderer.render(stage);
+}
+
+	</script>
+
+	</body>
+</html>

@@ -10,7 +10,7 @@
 		}
 	</style>
 	<script src="../../bin/pixi.dev.js"></script>
-	<!--<script src="pixi.dev.js"></script>-->
+	<script src="pixi.dev.js"></script>
 </head>
 <body>
 	<script>
@@ -48,7 +48,7 @@
 	snakeContainer.position.x = window.innerWidth/2;
 	snakeContainer.position.y = window.innerHeight/2;
 
-	snakeContainer.scale.set(1.2)
+	snakeContainer.scale.set( window.innerWidth / 1100)
 	stage.addChild(snakeContainer);
 
 	snakeContainer.addChild(strip);

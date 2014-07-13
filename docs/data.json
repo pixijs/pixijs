@@ -3170,7 +3170,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 559,
+            "line": 558,
             "description": "Renders the object using the WebGL renderer",
             "itemtype": "method",
             "name": "_renderWebGL",
@@ -3187,7 +3187,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 585,
+            "line": 584,
             "description": "Renders the object using the Canvas renderer",
             "itemtype": "method",
             "name": "_renderCanvas",
@@ -3204,7 +3204,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 599,
+            "line": 598,
             "description": "The position of the displayObject on the x axis relative to the local coordinates of the parent.",
             "itemtype": "property",
             "name": "x",
@@ -3213,7 +3213,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 614,
+            "line": 613,
             "description": "The position of the displayObject on the y axis relative to the local coordinates of the parent.",
             "itemtype": "property",
             "name": "y",
@@ -7644,6 +7644,30 @@
             "class": "BaseTexture"
         },
         {
+            "file": "src/pixi/textures/BaseTexture.js",
+            "line": 197,
+            "description": "Helper function that returns a base texture based on a canvas element\nIf the image is not in the base texture cache it will be created and loaded",
+            "static": 1,
+            "itemtype": "method",
+            "name": "fromCanvas",
+            "params": [
+                {
+                    "name": "canvas",
+                    "description": "The canvas element source of the texture",
+                    "type": "Canvas"
+                },
+                {
+                    "name": "scaleMode",
+                    "description": "Should be one of the PIXI.scaleMode consts",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "BaseTexture"
+            },
+            "class": "BaseTexture"
+        },
+        {
             "file": "src/pixi/textures/RenderTexture.js",
             "line": 1,
             "author": "Mat Groves http://matgroves.com/ @Doormat23",
@@ -7948,6 +7972,11 @@
                     "name": "crossorigin",
                     "description": "Whether requests should be treated as crossorigin",
                     "type": "Boolean"
+                },
+                {
+                    "name": "scaleMode",
+                    "description": "Should be one of the PIXI.scaleMode consts",
+                    "type": "Number"
                 }
             ],
             "return": {
@@ -7957,7 +7986,7 @@
         },
         {
             "file": "src/pixi/textures/Texture.js",
-            "line": 252,
+            "line": 253,
             "description": "Helper function that returns a texture based on a frame id\nIf the frame id is not in the texture cache an error will be thrown",
             "static": 1,
             "itemtype": "method",
@@ -7976,7 +8005,7 @@
         },
         {
             "file": "src/pixi/textures/Texture.js",
-            "line": 268,
+            "line": 269,
             "description": "Helper function that returns a texture based on a canvas element\nIf the canvas is not in the texture cache it will be  created and loaded",
             "static": 1,
             "itemtype": "method",
@@ -7986,6 +8015,11 @@
                     "name": "canvas",
                     "description": "The canvas element source of the texture",
                     "type": "Canvas"
+                },
+                {
+                    "name": "scaleMode",
+                    "description": "Should be one of the PIXI.scaleMode consts",
+                    "type": "Number"
                 }
             ],
             "return": {
@@ -7995,7 +8029,7 @@
         },
         {
             "file": "src/pixi/textures/Texture.js",
-            "line": 286,
+            "line": 288,
             "description": "Adds a texture to the textureCache.",
             "static": 1,
             "itemtype": "method",
@@ -8016,7 +8050,7 @@
         },
         {
             "file": "src/pixi/textures/Texture.js",
-            "line": 299,
+            "line": 301,
             "description": "Remove a texture from the textureCache.",
             "static": 1,
             "itemtype": "method",

@@ -194,6 +194,16 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
     return baseTexture;
 };
 
+/**
+ * Helper function that returns a base texture based on a canvas element
+ * If the image is not in the base texture cache it will be created and loaded
+ *
+ * @static
+ * @method fromCanvas
+ * @param canvas {Canvas} The canvas element source of the texture
+ * @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
+ * @return BaseTexture
+ */
 PIXI.BaseTexture.fromCanvas = function(canvas, scaleMode)
 {
     if(!canvas._pixiId)
