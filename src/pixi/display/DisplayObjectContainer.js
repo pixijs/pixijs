@@ -42,6 +42,7 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'width', {
         return this.scale.x * this.getLocalBounds().width;
     },
     set: function(value) {
+    
         this.scale.x = value / (this.getLocalBounds().width/this.scale.x);
         this._width = value;
     }
