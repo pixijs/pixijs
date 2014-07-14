@@ -1,15 +1,4 @@
 /**
- * @license
- * pixi.js - v1.6.0
- * Copyright (c) 2012-2014, Mat Groves
- * http://goodboydigital.com/
- *
- * Compiled: 2014-07-13
- *
- * pixi.js is licensed under the MIT License.
- * http://www.opensource.org/licenses/mit-license.php
- */
-/**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
@@ -7567,6 +7556,8 @@ PIXI.WebGLSpriteBatch = function(gl)
     this.setContext(gl);
 
     this.dirty = true;
+
+    this.textures = [];
 };
 
 /**
@@ -7629,12 +7620,15 @@ PIXI.WebGLSpriteBatch.prototype.end = function()
 PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
 {
     var texture = sprite.texture;
-
+    
+   //TODO set blend modes.. 
     var blendChange = this.renderSession.blendModeManager.currentBlendMode !== sprite.blendMode;
-
+   // console.log(this.currentBatchSize, this.size)
     // check texture..
-    if(texture.baseTexture !== this.currentBaseTexture || this.currentBatchSize >= this.size || blendChange)
+    //if(texture.baseTexture !== this.currentBaseTexture || 
+    if(this.currentBatchSize >= this.size)// || blendChange)
     {
+        //return;
         this.flush();
         this.currentBaseTexture = texture.baseTexture;
         this.renderSession.blendModeManager.setBlendMode(sprite.blendMode);
@@ -7731,8 +7725,8 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
     verticies[index++] = tint;
     
     // increment the batchsize
+    this.textures[this.currentBatchSize] = sprite.texture.baseTexture;
     this.currentBatchSize++;
-
 
 };
 
@@ -7870,7 +7864,7 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
     if (this.currentBatchSize===0)return;
 
     var gl = this.gl;
-    
+    //console.log( this.textures)
     this.renderSession.shaderManager.setShader(this.renderSession.shaderManager.defaultShader);
 
     //TODO - im usre this can be done better - will look to tweak this for 1.7..
@@ -7896,16 +7890,8 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
 
     }
 
-    // bind the current texture
-    gl.bindTexture(gl.TEXTURE_2D, this.currentBaseTexture._glTextures[gl.id] || PIXI.createWebGLTexture(this.currentBaseTexture, gl));
-
-    // check if a texture is dirty..
-    if(this.currentBaseTexture._dirty[gl.id])
-    {
-        PIXI.updateWebGLTexture(this.currentBaseTexture, gl);
-    }
-
-    // upload the verts to the buffer  
+    //console.log("*** FLUSH ***")
+     // upload the verts to the buffer  
     if(this.currentBatchSize > ( this.size * 0.5 ) )
     {
         gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vertices);
@@ -7917,18 +7903,56 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
         gl.bufferSubData(gl.ARRAY_BUFFER, 0, view);
     }
 
-   // var view = this.vertices.subarray(0, this.currentBatchSize * 4 * this.vertSize);
-    //gl.bufferSubData(gl.ARRAY_BUFFER, 0, view);
-    
-    // now draw those suckas!
-    gl.drawElements(gl.TRIANGLES, this.currentBatchSize * 6, gl.UNSIGNED_SHORT, 0);
-   
+
+    var nextTexture;
+    var batchSize = 0;
+    var start = 0;
+
+    this.currentBaseTexture = null;
+
+    for (var i = 0, j = this.currentBatchSize; i < j; i++) {
+        
+        var nextTexture = this.textures[i];
+        
+        if(this.currentBaseTexture !== nextTexture)
+        {
+            // render..
+            this.tempyRender(this.currentBaseTexture, batchSize, start);
+            start = i;
+            batchSize = 0;
+
+            this.currentBaseTexture = nextTexture;
+            // increment the draw count
+            this.renderSession.drawCount++;
+        }
+
+        batchSize++;
+    };
+
+    this.tempyRender(nextTexture, batchSize, start);
+
     // then reset the batch!
     this.currentBatchSize = 0;
-
-    // increment the draw count
-    this.renderSession.drawCount++;
 };
+
+PIXI.WebGLSpriteBatch.prototype.tempyRender = function(texture, size, startIndex)
+{
+    if(size === 0)return;
+
+    var gl = this.gl;
+   // console.log("Rendering batch: " + size + " from " + startIndex + " batch " + this.currentBatchSize)
+     // bind the current texture
+    gl.bindTexture(gl.TEXTURE_2D, texture._glTextures[gl.id] || PIXI.createWebGLTexture(texture, gl));
+
+    // check if a texture is dirty..
+    if(this.currentBaseTexture._dirty[gl.id])
+    {
+        PIXI.updateWebGLTexture(this.currentBaseTexture, gl);
+    }
+
+    // now draw those suckas!
+    gl.drawElements(gl.TRIANGLES, size * 6, gl.UNSIGNED_SHORT, startIndex * 6 * 2);
+}
 
 /**
 * 
@@ -16113,3 +16137,4 @@ Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'angle', {
         root.PIXI = PIXI;
     }
 }).call(this);
+//# sourceMappingURL=pixi.dev.js.map
