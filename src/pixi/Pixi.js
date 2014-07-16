@@ -78,7 +78,7 @@ PIXI.sayHello = function (type)
     if ( navigator.userAgent.toLowerCase().indexOf('chrome') > -1 )
     {
         var args = [
-            '%c %c %c Pixi.js ' + PIXI.VERSION + ' - ' + type + '  %c ' + ' %c ' + ' http://pixijs.com  %c %c ♥%c♥%c♥ ',
+            '%c %c %c Pixi.js ' + PIXI.VERSION + ' - ' + type + '  %c ' + ' %c ' + ' http://www.pixijs.com/  %c %c ♥%c♥%c♥ ',
             'background: #ff66a5',
             'background: #ff66a5',
             'color: #ff66a5; background: #030307;',
@@ -96,7 +96,7 @@ PIXI.sayHello = function (type)
     }
     else if (window['console'])
     {
-        console.log('Pixi.js ' + PIXI.VERSION + ' - http://pixjs.com');
+        console.log('Pixi.js ' + PIXI.VERSION + ' - http://www.pixijs.com/');
     }
 
     PIXI.dontSayHello = true;
