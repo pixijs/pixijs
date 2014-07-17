@@ -21,7 +21,7 @@ PIXI.ColorMatrixFilter = function()
         matrix: {type: 'mat4', value: [1,0,0,0,
                                        0,1,0,0,
                                        0,0,1,0,
-                                       0,0,0,1]},
+                                       0,0,0,1]}
     };
 
     this.fragmentSrc = [
