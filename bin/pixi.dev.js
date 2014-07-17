@@ -5707,7 +5707,7 @@ PIXI.WebGLGraphics.updateGraphics = function(graphics, gl)
             }
             else if(data.type === PIXI.Graphics.RREC)
             {
-                PIXI.WebGLGraphics.buildRoundedRectangle(data, webGL);
+                PIXI.WebGLGraphics.buildRoundedRectangle(data, webGLData);
             }
         }
 
@@ -5831,53 +5831,6 @@ PIXI.WebGLGraphics.buildRectangle = function(graphicsData, webGLData)
  */
 PIXI.WebGLGraphics.buildRoundedRectangle = function(graphicsData, webGLData)
 {
-    /**
-     * Calcul the points for a quadratic bezier curve.
-     * Based on : https://stackoverflow.com/questions/785097/how-do-i-implement-a-bezier-curve-in-c
-     *
-     * @param  {number}   fromX Origin point x
-     * @param  {number}   fromY Origin point x
-     * @param  {number}   cpX   Control point x
-     * @param  {number}   cpY   Control point y
-     * @param  {number}   toX   Destination point x
-     * @param  {number}   toY   Destination point y
-     * @return {number[]}
-     */
-    function quadraticBezierCurve(fromX, fromY, cpX, cpY, toX, toY) {
-        var xa,
-            ya,
-            xb,
-            yb,
-            x,
-            y,
-            n = 20,
-            points = [];
-
-        function getPt(n1 , n2, perc) {
-            var diff = n2 - n1;
-
-            return n1 + ( diff * perc );
-        }
-
-        var j = 0;
-        for (var i = 0; i <= n; i++ )
-        {
-            j = i / n;
-
-            // The Green Line
-            xa = getPt( fromX , cpX , j );
-            ya = getPt( fromY , cpY , j );
-            xb = getPt( cpX , toX , j );
-            yb = getPt( cpY , toY , j );
-
-            // The Black Dot
-            x = getPt( xa , xb , j );
-            y = getPt( ya , yb , j );
-
-            points.push(x, y);
-        }
-        return points;
-    }
 
     var points = graphicsData.points;
     var x = points[0];
@@ -5889,10 +5842,10 @@ PIXI.WebGLGraphics.buildRoundedRectangle = function(graphicsData, webGLData)
 
     var recPoints = [];
     recPoints.push(x, y + radius);
-    recPoints = recPoints.concat(quadraticBezierCurve(x, y + height - radius, x, y + height, x + radius, y + height));
-    recPoints = recPoints.concat(quadraticBezierCurve(x + width - radius, y + height, x + width, y + height, x + width, y + height - radius));
-    recPoints = recPoints.concat(quadraticBezierCurve(x + width, y + radius, x + width, y, x + width - radius, y));
-    recPoints = recPoints.concat(quadraticBezierCurve(x + radius, y, x, y, x, y + radius));
+    recPoints = recPoints.concat(PIXI.WebGLGraphics.quadraticBezierCurve(x, y + height - radius, x, y + height, x + radius, y + height));
+    recPoints = recPoints.concat(PIXI.WebGLGraphics.quadraticBezierCurve(x + width - radius, y + height, x + width, y + height, x + width, y + height - radius));
+    recPoints = recPoints.concat(PIXI.WebGLGraphics.quadraticBezierCurve(x + width, y + radius, x + width, y, x + width - radius, y));
+    recPoints = recPoints.concat(PIXI.WebGLGraphics.quadraticBezierCurve(x + radius, y, x, y, x, y + radius));
 
 
     if (graphicsData.fill) {
@@ -5937,6 +5890,53 @@ PIXI.WebGLGraphics.buildRoundedRectangle = function(graphicsData, webGLData)
     }
 };
 
+/**
+ * Calcul the points for a quadratic bezier curve. (helper function..)
+ * Based on : https://stackoverflow.com/questions/785097/how-do-i-implement-a-bezier-curve-in-c
+ *
+ * @param  {number}   fromX Origin point x
+ * @param  {number}   fromY Origin point x
+ * @param  {number}   cpX   Control point x
+ * @param  {number}   cpY   Control point y
+ * @param  {number}   toX   Destination point x
+ * @param  {number}   toY   Destination point y
+ * @return {number[]}
+ */
+PIXI.WebGLGraphics.quadraticBezierCurve = function(fromX, fromY, cpX, cpY, toX, toY) {
+    var xa,
+        ya,
+        xb,
+        yb,
+        x,
+        y,
+        n = 20,
+        points = [];
+
+    function getPt(n1 , n2, perc) {
+        var diff = n2 - n1;
+
+        return n1 + ( diff * perc );
+    }
+
+    var j = 0;
+    for (var i = 0; i <= n; i++ )
+    {
+        j = i / n;
+
+        // The Green Line
+        xa = getPt( fromX , cpX , j );
+        ya = getPt( fromY , cpY , j );
+        xb = getPt( cpX , toX , j );
+        yb = getPt( cpY , toY , j );
+
+        // The Black Dot
+        x = getPt( xa , xb , j );
+        y = getPt( ya , yb , j );
+
+        points.push(x, y);
+    }
+    return points;
+};
 
 /**
  * Builds a circle to draw
@@ -13040,7 +13040,7 @@ spine.AtlasRegion.prototype = {
     index: 0,
     rotate: false,
     splits: null,
-    pads: null,
+    pads: null
 };
 
 spine.AtlasReader = function (text) {
@@ -15246,7 +15246,7 @@ PIXI.ColorMatrixFilter = function()
         matrix: {type: 'mat4', value: [1,0,0,0,
                                        0,1,0,0,
                                        0,0,1,0,
-                                       0,0,0,1]},
+                                       0,0,0,1]}
     };
 
     this.fragmentSrc = [
@@ -15300,7 +15300,7 @@ PIXI.GrayFilter = function()
 
     // set the uniforms
     this.uniforms = {
-        gray: {type: '1f', value: 1},
+        gray: {type: '1f', value: 1}
     };
 
     this.fragmentSrc = [
@@ -15483,7 +15483,7 @@ PIXI.PixelateFilter = function()
     this.uniforms = {
         invert: {type: '1f', value: 0},
         dimensions: {type: '4fv', value:new Float32Array([10000, 100, 10, 10])},
-        pixelSize: {type: '2f', value:{x:10, y:10}},
+        pixelSize: {type: '2f', value:{x:10, y:10}}
     };
 
     this.fragmentSrc = [
@@ -15537,7 +15537,7 @@ PIXI.BlurXFilter = function()
 
     // set the uniforms
     this.uniforms = {
-        blur: {type: '1f', value: 1/512},
+        blur: {type: '1f', value: 1/512}
     };
 
     this.fragmentSrc = [
@@ -15591,7 +15591,7 @@ PIXI.BlurYFilter = function()
 
     // set the uniforms
     this.uniforms = {
-        blur: {type: '1f', value: 1/512},
+        blur: {type: '1f', value: 1/512}
     };
 
     this.fragmentSrc = [
@@ -15718,7 +15718,7 @@ PIXI.InvertFilter = function()
 
     // set the uniforms
     this.uniforms = {
-        invert: {type: '1f', value: 1},
+        invert: {type: '1f', value: 1}
     };
 
     this.fragmentSrc = [
@@ -15771,7 +15771,7 @@ PIXI.SepiaFilter = function()
 
     // set the uniforms
     this.uniforms = {
-        sepia: {type: '1f', value: 1},
+        sepia: {type: '1f', value: 1}
     };
 
     this.fragmentSrc = [
@@ -15827,7 +15827,7 @@ PIXI.TwistFilter = function()
     this.uniforms = {
         radius: {type: '1f', value:0.5},
         angle: {type: '1f', value:5},
-        offset: {type: '2f', value:{x:0.5, y:0.5}},
+        offset: {type: '2f', value:{x:0.5, y:0.5}}
     };
 
     this.fragmentSrc = [
@@ -15926,7 +15926,7 @@ PIXI.ColorStepFilter = function()
 
     // set the uniforms
     this.uniforms = {
-        step: {type: '1f', value: 5},
+        step: {type: '1f', value: 5}
     };
 
     this.fragmentSrc = [
@@ -16059,7 +16059,7 @@ PIXI.CrossHatchFilter = function()
 
     // set the uniforms
     this.uniforms = {
-        blur: {type: '1f', value: 1 / 512},
+        blur: {type: '1f', value: 1 / 512}
     };
 
     this.fragmentSrc = [
