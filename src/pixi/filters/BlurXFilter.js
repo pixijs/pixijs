@@ -10,7 +10,7 @@ PIXI.BlurXFilter = function()
 
     // set the uniforms
     this.uniforms = {
-        blur: {type: '1f', value: 1/512},
+        blur: {type: '1f', value: 1/512}
     };
 
     this.fragmentSrc = [

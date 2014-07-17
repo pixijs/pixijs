@@ -16,7 +16,7 @@ PIXI.ColorStepFilter = function()
 
     // set the uniforms
     this.uniforms = {
-        step: {type: '1f', value: 5},
+        step: {type: '1f', value: 5}
     };
 
     this.fragmentSrc = [
