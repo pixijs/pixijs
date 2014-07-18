@@ -98,7 +98,7 @@ PIXI.WebGLShaderManager.prototype.setAttribs = function(attribs)
 
 PIXI.WebGLShaderManager.prototype.setShader = function(shader)
 {
-    if(this._currentId === shader._UID)return;
+    if(this._currentId === shader._UID)return false;
     
     this._currentId = shader._UID;
 
@@ -106,6 +106,8 @@ PIXI.WebGLShaderManager.prototype.setShader = function(shader)
 
     this.gl.useProgram(shader.program);
     this.setAttribs(shader.attributes);
+
+    return true;
 };
 
 /**

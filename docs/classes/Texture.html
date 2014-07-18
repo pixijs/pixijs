@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.5.0</em>
+            <em>API Docs for: 1.6.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -75,6 +75,8 @@
             
                 <li><a href="../classes/ColorStepFilter.html">ColorStepFilter</a></li>
             
+                <li><a href="../classes/ComplexPrimitiveShader.html">ComplexPrimitiveShader</a></li>
+            
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
@@ -89,6 +91,8 @@
             
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
             
+                <li><a href="../classes/getRecommendedRenderer.html">getRecommendedRenderer</a></li>
+            
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
             
                 <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
@@ -102,6 +106,10 @@
                 <li><a href="../classes/InvertFilter.html">InvertFilter</a></li>
             
                 <li><a href="../classes/JsonLoader.html">JsonLoader</a></li>
+            
+                <li><a href="../classes/Matrix.html">Matrix</a></li>
+            
+                <li><a href="../classes/Matrix2.html">Matrix2</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
@@ -158,6 +166,8 @@
                 <li><a href="../classes/WebGLShaderManager.html">WebGLShaderManager</a></li>
             
                 <li><a href="../classes/WebGLSpriteBatch.html">WebGLSpriteBatch</a></li>
+            
+                <li><a href="../classes/WebGLStencilManager.html">WebGLStencilManager</a></li>
             
             </ul>
 
@@ -377,6 +387,13 @@ to the display list directly. To do this use PIXI.Sprite. If no frame is provide
 
                     <ul class="index-list methods">
                         
+                            <li class="index-item method private">
+                                <a href="#method__updateWebGLuvs">_updateWebGLuvs</a>
+
+                                
+                                
+                            </li>
+                        
                             <li class="index-item method inherited">
                                 <a href="#method_addEventListener">addEventListener</a>
 
@@ -389,6 +406,13 @@ to the display list directly. To do this use PIXI.Sprite. If no frame is provide
 
                                 
                                     <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_clear">clear</a>
+
                                 
                                 
                             </li>
@@ -479,6 +503,13 @@ to the display list directly. To do this use PIXI.Sprite. If no frame is provide
                             </li>
                         
                             <li class="index-item method">
+                                <a href="#method_resize">resize</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
                                 <a href="#method_setFrame">setFrame</a>
 
                                 
@@ -495,6 +526,13 @@ to the display list directly. To do this use PIXI.Sprite. If no frame is provide
 
                     <ul class="index-list properties">
                         
+                            <li class="index-item property private">
+                                <a href="#property__uvs">_uvs</a>
+
+                                
+                                
+                            </li>
+                        
                             <li class="index-item property">
                                 <a href="#property_baseTexture">baseTexture</a>
 
@@ -504,6 +542,20 @@ to the display list directly. To do this use PIXI.Sprite. If no frame is provide
                         
                             <li class="index-item property">
                                 <a href="#property_baseTexture">baseTexture</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_crop">crop</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_crop">crop</a>
 
                                 
                                 
@@ -530,6 +582,13 @@ to the display list directly. To do this use PIXI.Sprite. If no frame is provide
                                 
                             </li>
                         
+                            <li class="index-item property">
+                                <a href="#property_height">height</a>
+
+                                
+                                
+                            </li>
+                        
                             <li class="index-item property inherited">
                                 <a href="#property_listeners">listeners</a>
 
@@ -538,7 +597,35 @@ to the display list directly. To do this use PIXI.Sprite. If no frame is provide
                             </li>
                         
                             <li class="index-item property">
+                                <a href="#property_noFrame">noFrame</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_scope">scope</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
                                 <a href="#property_trim">trim</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_valid">valid</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_width">width</a>
 
                                 
                                 
@@ -563,6 +650,63 @@ to the display list directly. To do this use PIXI.Sprite. If no frame is provide
         
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
+
+                
+                    <div id="method__updateWebGLuvs" class="method item private">
+    <h3 class="name"><code>_updateWebGLuvs</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_textures_Texture.js.html#l201"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:201</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Updates the internal WebGL UV cache.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
 
                 
                     <div id="method_addEventListener" class="method item inherited">
@@ -723,7 +867,7 @@ to the display list directly. To do this use PIXI.Sprite. If no frame is provide
             
         
         
-        <a href="../files/src_pixi_textures_Texture.js.html#l209"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:209</code></a>
+        <a href="../files/src_pixi_textures_Texture.js.html#l288"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:288</code></a>
         
         </p>
 
@@ -785,6 +929,61 @@ to the display list directly. To do this use PIXI.Sprite. If no frame is provide
 </div>
 
                 
+                    <div id="method_clear" class="method item">
+    <h3 class="name"><code>clear</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_textures_RenderTexture.js.html#l149"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:149</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Clears the RenderTexture.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
                     <div id="method_destroy" class="method item">
     <h3 class="name"><code>destroy</code></h3>
 
@@ -827,7 +1026,7 @@ to the display list directly. To do this use PIXI.Sprite. If no frame is provide
             
         
         
-        <a href="../files/src_pixi_textures_Texture.js.html#l95"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:95</code></a>
+        <a href="../files/src_pixi_textures_Texture.js.html#l150"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:150</code></a>
         
         </p>
 
@@ -973,6 +1172,12 @@ to the display list directly. To do this use PIXI.Sprite. If no frame is provide
                     
                 </li>
             
+                <li class="arg">
+                    
+                        <code>scaleMode</code>
+                    
+                </li>
+            
             </ul><span class="paren">)</span>
         </div>
     
@@ -1008,7 +1213,7 @@ to the display list directly. To do this use PIXI.Sprite. If no frame is provide
             
         
         
-        <a href="../files/src_pixi_textures_Texture.js.html#l191"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:191</code></a>
+        <a href="../files/src_pixi_textures_Texture.js.html#l269"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:269</code></a>
         
         </p>
 
@@ -1040,6 +1245,22 @@ If the canvas is not in the texture cache it will be  created and loaded</p>
 
                     <div class="param-description">
                         <p>The canvas element source of the texture</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">scaleMode</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Should be one of the PIXI.scaleMode consts</p>
 
                     </div>
 
@@ -1116,7 +1337,7 @@ If the canvas is not in the texture cache it will be  created and loaded</p>
             
         
         
-        <a href="../files/src_pixi_textures_Texture.js.html#l175"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:175</code></a>
+        <a href="../files/src_pixi_textures_Texture.js.html#l253"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:253</code></a>
         
         </p>
 
@@ -1195,6 +1416,12 @@ If the frame id is not in the texture cache an error will be thrown</p>
                     
                 </li>
             
+                <li class="arg">
+                    
+                        <code>scaleMode</code>
+                    
+                </li>
+            
             </ul><span class="paren">)</span>
         </div>
     
@@ -1230,7 +1457,7 @@ If the frame id is not in the texture cache an error will be thrown</p>
             
         
         
-        <a href="../files/src_pixi_textures_Texture.js.html#l152"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:152</code></a>
+        <a href="../files/src_pixi_textures_Texture.js.html#l229"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:229</code></a>
         
         </p>
 
@@ -1278,6 +1505,22 @@ If the image is not in the texture cache it will be  created and loaded</p>
 
                     <div class="param-description">
                         <p>Whether requests should be treated as crossorigin</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">scaleMode</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Should be one of the PIXI.scaleMode consts</p>
 
                     </div>
 
@@ -1350,7 +1593,7 @@ If the image is not in the texture cache it will be  created and loaded</p>
             
         
         
-        <a href="../files/src_pixi_textures_Texture.js.html#l76"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:76</code></a>
+        <a href="../files/src_pixi_textures_Texture.js.html#l131"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:131</code></a>
         
         </p>
 
@@ -1435,7 +1678,7 @@ If the image is not in the texture cache it will be  created and loaded</p>
             
         
         
-        <a href="../files/src_pixi_utils_EventTarget.js.html#l96"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:96</code></a>
+        <a href="../files/src_pixi_utils_EventTarget.js.html#l101"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:101</code></a>
         
         </p>
 
@@ -1527,7 +1770,7 @@ If the image is not in the texture cache it will be  created and loaded</p>
             
         
         
-        <a href="../files/src_pixi_utils_EventTarget.js.html#l77"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:77</code></a>
+        <a href="../files/src_pixi_utils_EventTarget.js.html#l80"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:80</code></a>
         
         </p>
 
@@ -1638,7 +1881,7 @@ If the image is not in the texture cache it will be  created and loaded</p>
             
         
         
-        <a href="../files/src_pixi_textures_Texture.js.html#l222"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:222</code></a>
+        <a href="../files/src_pixi_textures_Texture.js.html#l301"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:301</code></a>
         
         </p>
 
@@ -1749,7 +1992,7 @@ If the image is not in the texture cache it will be  created and loaded</p>
             
         
         
-        <a href="../files/src_pixi_textures_RenderTexture.js.html#l178"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:178</code></a>
+        <a href="../files/src_pixi_textures_RenderTexture.js.html#l220"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:220</code></a>
         
         </p>
 
@@ -1862,7 +2105,7 @@ If the image is not in the texture cache it will be  created and loaded</p>
             
         
         
-        <a href="../files/src_pixi_textures_RenderTexture.js.html#l126"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:126</code></a>
+        <a href="../files/src_pixi_textures_RenderTexture.js.html#l164"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:164</code></a>
         
         </p>
 
@@ -1925,6 +2168,139 @@ If the image is not in the texture cache it will be  created and loaded</p>
 </div>
 
                 
+                    <div id="method_resize" class="method item">
+    <h3 class="name"><code>resize</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>width</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>height</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>updateBase</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_textures_RenderTexture.js.html#l113"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:113</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Resize the RenderTexture.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">width</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The width to resize to.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">height</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The height to resize to.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">updateBase</code>
+                        <span class="type">Boolean</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Should the baseTexture.width and height values be resized as well?</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
                     <div id="method_setFrame" class="method item">
     <h3 class="name"><code>setFrame</code></h3>
 
@@ -1967,7 +2343,7 @@ If the image is not in the texture cache it will be  created and loaded</p>
             
         
         
-        <a href="../files/src_pixi_textures_Texture.js.html#l106"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:106</code></a>
+        <a href="../files/src_pixi_textures_Texture.js.html#l163"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:163</code></a>
         
         </p>
 
@@ -1978,7 +2354,7 @@ If the image is not in the texture cache it will be  created and loaded</p>
     </div>
 
     <div class="description">
-        <p>Specifies the rectangle region of the baseTexture</p>
+        <p>Specifies the region of the baseTexture that this texture will use.</p>
 
     </div>
 
@@ -2022,6 +2398,53 @@ If the image is not in the texture cache it will be  created and loaded</p>
                 <h2 class="off-left">Properties</h2>
 
                 
+                    <div id="property__uvs" class="property item private">
+    <h3 class="name"><code>_uvs</code></h3>
+    <span class="type">Object</span>
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_textures_Texture.js.html#l83"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:83</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The WebGL UV data cache.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
                     <div id="property_baseTexture" class="property item">
     <h3 class="name"><code>baseTexture</code></h3>
     <span class="type"><a href="../classes/BaseTexture.html" class="crosslink">BaseTexture</a></span>
@@ -2045,7 +2468,7 @@ If the image is not in the texture cache it will be  created and loaded</p>
             
         
         
-        <a href="../files/src_pixi_textures_RenderTexture.js.html#l60"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:60</code></a>
+        <a href="../files/src_pixi_textures_RenderTexture.js.html#l70"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:70</code></a>
         
         </p>
 
@@ -2090,7 +2513,7 @@ If the image is not in the texture cache it will be  created and loaded</p>
             
         
         
-        <a href="../files/src_pixi_textures_Texture.js.html#l33"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:33</code></a>
+        <a href="../files/src_pixi_textures_Texture.js.html#l43"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:43</code></a>
         
         </p>
 
@@ -2100,7 +2523,99 @@ If the image is not in the texture cache it will be  created and loaded</p>
     </div>
 
     <div class="description">
-        <p>The base texture of that this texture uses</p>
+        <p>The base texture that this texture uses.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_crop" class="property item">
+    <h3 class="name"><code>crop</code></h3>
+    <span class="type"><a href="../classes/Rectangle.html" class="crosslink">Rectangle</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_textures_RenderTexture.js.html#l61"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:61</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This is the area of the BaseTexture image to actually copy to the Canvas / WebGL when rendering,
+irrespective of the actual frame size or placement (which can be influenced by trimmed texture atlases)</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_crop" class="property item">
+    <h3 class="name"><code>crop</code></h3>
+    <span class="type"><a href="../classes/Rectangle.html" class="crosslink">Rectangle</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_textures_Texture.js.html#l108"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:108</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This is the area of the BaseTexture image to actually copy to the Canvas / WebGL when rendering,
+irrespective of the actual frame size or placement (which can be influenced by trimmed texture atlases)</p>
 
     </div>
 
@@ -2135,52 +2650,7 @@ If the image is not in the texture cache it will be  created and loaded</p>
             
         
         
-        <a href="../files/src_pixi_textures_RenderTexture.js.html#l52"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:52</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>The framing rectangle of the render texture</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_frame" class="property item">
-    <h3 class="name"><code>frame</code></h3>
-    <span class="type"><a href="../classes/Rectangle.html" class="crosslink">Rectangle</a></span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_pixi_textures_Texture.js.html#l41"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:41</code></a>
+        <a href="../files/src_pixi_textures_Texture.js.html#l51"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:51</code></a>
         
         </p>
 
@@ -2191,6 +2661,51 @@ If the image is not in the texture cache it will be  created and loaded</p>
 
     <div class="description">
         <p>The frame specifies the region of the base texture that this texture uses</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_frame" class="property item">
+    <h3 class="name"><code>frame</code></h3>
+    <span class="type"><a href="../classes/Rectangle.html" class="crosslink">Rectangle</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_textures_RenderTexture.js.html#l53"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:53</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The framing rectangle of the render texture</p>
 
     </div>
 
@@ -2225,7 +2740,7 @@ If the image is not in the texture cache it will be  created and loaded</p>
             
         
         
-        <a href="../files/src_pixi_textures_RenderTexture.js.html#l44"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:44</code></a>
+        <a href="../files/src_pixi_textures_RenderTexture.js.html#l45"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:45</code></a>
         
         </p>
 
@@ -2236,6 +2751,51 @@ If the image is not in the texture cache it will be  created and loaded</p>
 
     <div class="description">
         <p>The height of the render texture</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_height" class="property item">
+    <h3 class="name"><code>height</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_textures_Texture.js.html#l100"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:100</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The height of the Texture in pixels.</p>
 
     </div>
 
@@ -2289,6 +2849,96 @@ If the image is not in the texture cache it will be  created and loaded</p>
 </div>
 
                 
+                    <div id="property_noFrame" class="property item">
+    <h3 class="name"><code>noFrame</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_textures_Texture.js.html#l24"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:24</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Does this Texture have any frame data assigned to it?</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_scope" class="property item">
+    <h3 class="name"><code>scope</code></h3>
+    <span class="type">Object</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_textures_Texture.js.html#l75"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:75</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The context scope under which events are run.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
                     <div id="property_trim" class="property item">
     <h3 class="name"><code>trim</code></h3>
     <span class="type"><a href="../classes/Rectangle.html" class="crosslink">Rectangle</a></span>
@@ -2312,7 +2962,7 @@ If the image is not in the texture cache it will be  created and loaded</p>
             
         
         
-        <a href="../files/src_pixi_textures_Texture.js.html#l49"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:49</code></a>
+        <a href="../files/src_pixi_textures_Texture.js.html#l59"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:59</code></a>
         
         </p>
 
@@ -2323,6 +2973,51 @@ If the image is not in the texture cache it will be  created and loaded</p>
 
     <div class="description">
         <p>The trim point</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_valid" class="property item">
+    <h3 class="name"><code>valid</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_textures_Texture.js.html#l67"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:67</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This will let the renderer know if the texture is valid. If its not then it cannot be rendered.</p>
 
     </div>
 
@@ -2357,7 +3052,52 @@ If the image is not in the texture cache it will be  created and loaded</p>
             
         
         
-        <a href="../files/src_pixi_textures_RenderTexture.js.html#l37"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:37</code></a>
+        <a href="../files/src_pixi_textures_Texture.js.html#l92"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:92</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The width of the Texture in pixels.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_width" class="property item">
+    <h3 class="name"><code>width</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_textures_RenderTexture.js.html#l38"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:38</code></a>
         
         </p>
 

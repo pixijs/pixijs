@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.5.0</em>
+            <em>API Docs for: 1.6.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -75,6 +75,8 @@
             
                 <li><a href="../classes/ColorStepFilter.html">ColorStepFilter</a></li>
             
+                <li><a href="../classes/ComplexPrimitiveShader.html">ComplexPrimitiveShader</a></li>
+            
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
@@ -89,6 +91,8 @@
             
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
             
+                <li><a href="../classes/getRecommendedRenderer.html">getRecommendedRenderer</a></li>
+            
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
             
                 <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
@@ -102,6 +106,10 @@
                 <li><a href="../classes/InvertFilter.html">InvertFilter</a></li>
             
                 <li><a href="../classes/JsonLoader.html">JsonLoader</a></li>
+            
+                <li><a href="../classes/Matrix.html">Matrix</a></li>
+            
+                <li><a href="../classes/Matrix2.html">Matrix2</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
@@ -158,6 +166,8 @@
                 <li><a href="../classes/WebGLShaderManager.html">WebGLShaderManager</a></li>
             
                 <li><a href="../classes/WebGLSpriteBatch.html">WebGLSpriteBatch</a></li>
+            
+                <li><a href="../classes/WebGLStencilManager.html">WebGLStencilManager</a></li>
             
             </ul>
 
@@ -235,8 +245,45 @@ PIXI.autoDetectRenderer = function(width, height, view, transparent, antialias)
                                 }
                             } )();
 
-
     if( webgl )
+    {
+        return new PIXI.WebGLRenderer(width, height, view, transparent, antialias);
+    }
+
+    return  new PIXI.CanvasRenderer(width, height, view, transparent);
+};
+
+/**
+ * This helper function will automatically detect which renderer you should be using.
+ * This function is very similar to the autoDetectRenderer function except that is will return a canvas renderer for android.
+ * Even thought both android chrome suports webGL the canvas implementation perform better at the time of writing. 
+ * This function will likely change and update as webGL performance imporoves on thease devices.
+ * @class getRecommendedRenderer
+ * @static
+ * @param width=800 {Number} the width of the renderers view
+ * @param height=600 {Number} the height of the renderers view
+ * @param [view] {Canvas} the canvas to use as a view, optional 
+ * @param [transparent=false] {Boolean} the transparency of the render view, default false
+ * @param [antialias=false] {Boolean} sets antialias (only applicable in webGL chrome at the moment)
+ *
+ */
+PIXI.autoDetectRecommendedRenderer = function(width, height, view, transparent, antialias)
+{
+    if(!width)width = 800;
+    if(!height)height = 600;
+
+    // BORROWED from Mr Doob (mrdoob.com)
+    var webgl = ( function () { try {
+                                    var canvas = document.createElement( &#x27;canvas&#x27; );
+                                    return !! window.WebGLRenderingContext &amp;&amp; ( canvas.getContext( &#x27;webgl&#x27; ) || canvas.getContext( &#x27;experimental-webgl&#x27; ) );
+                                } catch( e ) {
+                                    return false;
+                                }
+                            } )();
+
+    var isAndroid = /Android/i.test(navigator.userAgent);
+
+    if( webgl &amp;&amp; !isAndroid)
     {
         return new PIXI.WebGLRenderer(width, height, view, transparent, antialias);
     }
