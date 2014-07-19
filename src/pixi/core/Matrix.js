@@ -78,6 +78,51 @@ PIXI.Matrix.prototype.toArray = function(transpose)
     return array;
 };
 
+/**
+ * Get a new position with the current transormation applied.
+ * Can be used to go from a child's coordinate space to the world coordinate space. (e.g. rendering)
+ *
+ * @method apply
+ * @param pos {Point} The origin
+ * @param [newPos] {Point} The point that the new position is assigned to (allowed to be same as input)
+ * @return {Point} The new point, transformed trough this matrix
+ */
+PIXI.Matrix.prototype.apply = function(pos, newPos)
+{
+    var x = this.a * pos.x + this.b * pos.y + this.tx;
+    var y = this.c * pos.x + this.d * pos.y + this.ty;
+    if (newPos === undefined)
+    {
+        return new PIXI.Point(x, y);
+    }
+    newPos.x = x;
+    newPos.y = y;
+    return newPos;
+};
+
+/**
+ * Get a new position with the inverse of the current transormation applied.
+ * Can be used to go from the world coordinate space to a child's coordinate space. (e.g. input)
+ *
+ * @method apply
+ * @param pos {Point} The origin
+ * @param [newPos] {Point} The point that the new position is assigned to (allowed to be same as input)
+ * @return {Point} The new point, inverse-transformed trough this matrix
+ */
+PIXI.Matrix.prototype.applyInverse = function(pos, newPos)
+{
+    var id = 1 / (this.a * this.d + this.b * -this.c);
+    var x = this.d * id * pos.x - this.b * id * pos.y + (this.ty * this.b - this.tx * this.d) * id;
+    var y = this.a * id * pos.y - this.c * id * pos.x + (this.tx * this.c - this.ty * this.a) * id;
+    if (newPos === undefined)
+    {
+        return new PIXI.Point(x, y);
+    }
+    newPos.x = x;
+    newPos.y = y;
+    return newPos;
+};
+
 PIXI.identityMatrix = new PIXI.Matrix();
 
 PIXI.determineMatrixArrayType = function() {
