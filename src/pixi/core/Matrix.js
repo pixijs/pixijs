@@ -89,14 +89,11 @@ PIXI.Matrix.prototype.toArray = function(transpose)
  */
 PIXI.Matrix.prototype.apply = function(pos, newPos)
 {
-    var x = this.a * pos.x + this.b * pos.y + this.tx;
-    var y = this.c * pos.x + this.d * pos.y + this.ty;
-    if (newPos === undefined)
-    {
-        return new PIXI.Point(x, y);
-    }
-    newPos.x = x;
-    newPos.y = y;
+    newPos = newPos || new PIXI.Point();
+
+    newPos.x = this.a * pos.x + this.b * pos.y + this.tx;
+    newPos.y = this.c * pos.x + this.d * pos.y + this.ty;
+
     return newPos;
 };
 
@@ -111,15 +108,12 @@ PIXI.Matrix.prototype.apply = function(pos, newPos)
  */
 PIXI.Matrix.prototype.applyInverse = function(pos, newPos)
 {
+    newPos = newPos || new PIXI.Point();
+
     var id = 1 / (this.a * this.d + this.b * -this.c);
-    var x = this.d * id * pos.x - this.b * id * pos.y + (this.ty * this.b - this.tx * this.d) * id;
-    var y = this.a * id * pos.y - this.c * id * pos.x + (this.tx * this.c - this.ty * this.a) * id;
-    if (newPos === undefined)
-    {
-        return new PIXI.Point(x, y);
-    }
-    newPos.x = x;
-    newPos.y = y;
+    newPos.x = this.d * id * pos.x - this.b * id * pos.y + (this.ty * this.b - this.tx * this.d) * id;
+    newPos.y = this.a * id * pos.y - this.c * id * pos.x + (this.tx * this.c - this.ty * this.a) * id;
+
     return newPos;
 };
 
