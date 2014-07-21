@@ -1,10 +1,10 @@
 /**
  * @license
- * pixi.js - v1.6.0
+ * pixi.js - v1.6.1
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-07-18
+ * Compiled: 2014-07-21
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -13307,10 +13307,10 @@ PIXI.BaseTexture = function(source, scaleMode)
 
     // used for webGL
     this._glTextures = [];
-    
+
     // used for webGL teture updateing...
     this._dirty = [];
-    
+
     if(!source)return;
 
     if((this.source.complete || this.source.getContext) && this.source.width && this.source.height)
@@ -13347,7 +13347,7 @@ PIXI.BaseTexture = function(source, scaleMode)
     this.imageUrl = null;
     this._powerOf2 = false;
 
-    
+
 
 };
 
@@ -13395,14 +13395,14 @@ PIXI.BaseTexture.prototype.updateSourceImage = function(newSrc)
  * @static
  * @method fromImage
  * @param imageUrl {String} The image url of the texture
- * @param crossorigin {Boolean} 
+ * @param crossorigin {Boolean}
  * @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
  * @return BaseTexture
  */
 PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
 {
     var baseTexture = PIXI.BaseTextureCache[imageUrl];
-    
+
     if(crossorigin === undefined && imageUrl.indexOf('data:') === -1) crossorigin = true;
 
     if(!baseTexture)
@@ -13414,7 +13414,10 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
         {
             image.crossOrigin = '';
         }
-        image.src = imageUrl;
+        if (window.appEnvironment === 'development' && (imageUrl.match('assets.uken.com') || imageUrl.match('s3.amazonaws.com')))
+            image.src = imageUrl.replace('assets.uken.com', 's3.amazonaws.com/uken-assets')+'?'+(+new Date());
+        else
+            image.src = imageUrl;
         baseTexture = new PIXI.BaseTexture(image, scaleMode);
         baseTexture.imageUrl = imageUrl;
         PIXI.BaseTextureCache[imageUrl] = baseTexture;
@@ -14291,7 +14294,7 @@ PIXI.JsonLoader.prototype.load = function () {
         this.ajaxRequest.onerror = function () {
             scope.onError();
         };
-           
+
         this.ajaxRequest.ontimeout = function () {
             scope.onError();
         };
@@ -14308,7 +14311,7 @@ PIXI.JsonLoader.prototype.load = function () {
         this.ajaxRequest = new window.ActiveXObject('Microsoft.XMLHTTP');
     }
 
-    
+
 
     this.ajaxRequest.onload = function(){
 
@@ -14327,31 +14330,87 @@ PIXI.JsonLoader.prototype.load = function () {
  * @private
  */
 PIXI.JsonLoader.prototype.onJSONLoaded = function () {
-    
+    var scope = this;
+    var textureUrl;
+    var image;
+    var frameData;
+    var rect;
+    var actualSize;
+    var realSize;
+    var i;
+
     if(!this.ajaxRequest.responseText )
     {
         this.onError();
         return;
     }
-   
-    this.json = JSON.parse(this.ajaxRequest.responseText);
 
-    if(this.json.frames)
+    this.json = JSON.parse(this.ajaxRequest.responseText);
+    if(this.json.animations)
     {
-        // sprite sheet
-        var scope = this;
-        var textureUrl = this.baseUrl + this.json.meta.image;
-        var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
-        var frameData = this.json.frames;
+        var animationsLoaded = 0;
+        var animationData = this.json.animations;
+        var onLoaded = function() {
+            animationsLoaded++;
+
+            if (animationsLoaded === animationData.length) {
+                scope.onLoaded();
+            }
+        };
+        for (var j=0; j < animationData.length; j++) {
+            // sprite sheet
+            var animation = animationData[j];
+            if (animation.meta.image.match(/^(\/|http)/))
+                textureUrl = animation.meta.image;
+            else
+                textureUrl = this.baseUrl + animation.meta.image;
+            image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
+            frameData = animation.frames;
+
+            this.texture = image.texture.baseTexture;
+            image.addEventListener('loaded', onLoaded);
+
+            for (i in frameData) {
+                rect = frameData[i].frame;
+                if (rect) {
+                    PIXI.TextureCache[i] = new PIXI.Texture(this.texture, {
+                        x: rect.x,
+                        y: rect.y,
+                        width: rect.w,
+                        height: rect.h
+                    });
+
+                    // check to see ifthe sprite ha been trimmed..
+                    if (frameData[i].trimmed) {
+
+                        var texture =  PIXI.TextureCache[i];
+
+                        actualSize = frameData[i].sourceSize;
+                        realSize = frameData[i].spriteSourceSize;
+
+                        texture.trim = new PIXI.Rectangle(realSize.x, realSize.y, actualSize.w, actualSize.h);
+                    }
+                }
+            }
+
+            image.load();
+        }
+    }
+    else if(this.json.frames)
+    {
+        scope = this;
+        textureUrl = this.json.meta.image;
+        image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
+        frameData = this.json.frames;
 
         this.texture = image.texture.baseTexture;
         image.addEventListener('loaded', function() {
             scope.onLoaded();
         });
 
-        for (var i in frameData)
+        for (i in frameData)
         {
-            var rect = frameData[i].frame;
+            rect = frameData[i].frame;
 
             if (rect)
             {
@@ -14367,8 +14426,8 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
                 //  Check to see if the sprite is trimmed
                 if (frameData[i].trimmed)
                 {
-                    var actualSize = frameData[i].sourceSize;
-                    var realSize = frameData[i].spriteSourceSize;
+                    actualSize = frameData[i].sourceSize;
+                    realSize = frameData[i].spriteSourceSize;
                     PIXI.TextureCache[i].trim = new PIXI.Rectangle(realSize.x, realSize.y, actualSize.w, actualSize.h);
                 }
             }
