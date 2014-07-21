@@ -76,7 +76,7 @@ PIXI.JsonLoader.prototype.load = function () {
         this.ajaxRequest.onerror = function () {
             scope.onError();
         };
-           
+
         this.ajaxRequest.ontimeout = function () {
             scope.onError();
         };
@@ -93,7 +93,7 @@ PIXI.JsonLoader.prototype.load = function () {
         this.ajaxRequest = new window.ActiveXObject('Microsoft.XMLHTTP');
     }
 
-    
+
 
     this.ajaxRequest.onload = function(){
 
@@ -112,31 +112,87 @@ PIXI.JsonLoader.prototype.load = function () {
  * @private
  */
 PIXI.JsonLoader.prototype.onJSONLoaded = function () {
-    
+    var scope = this;
+    var textureUrl;
+    var image;
+    var frameData;
+    var rect;
+    var actualSize;
+    var realSize;
+    var i;
+
     if(!this.ajaxRequest.responseText )
     {
         this.onError();
         return;
     }
-   
-    this.json = JSON.parse(this.ajaxRequest.responseText);
 
-    if(this.json.frames)
+    this.json = JSON.parse(this.ajaxRequest.responseText);
+    if(this.json.animations)
     {
-        // sprite sheet
-        var scope = this;
-        var textureUrl = this.baseUrl + this.json.meta.image;
-        var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
-        var frameData = this.json.frames;
+        var animationsLoaded = 0;
+        var animationData = this.json.animations;
+        var onLoaded = function() {
+            animationsLoaded++;
+
+            if (animationsLoaded === animationData.length) {
+                scope.onLoaded();
+            }
+        };
+        for (var j=0; j < animationData.length; j++) {
+            // sprite sheet
+            var animation = animationData[j];
+            if (animation.meta.image.match(/^(\/|http)/))
+                textureUrl = animation.meta.image;
+            else
+                textureUrl = this.baseUrl + animation.meta.image;
+            image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
+            frameData = animation.frames;
+
+            this.texture = image.texture.baseTexture;
+            image.addEventListener('loaded', onLoaded);
+
+            for (i in frameData) {
+                rect = frameData[i].frame;
+                if (rect) {
+                    PIXI.TextureCache[i] = new PIXI.Texture(this.texture, {
+                        x: rect.x,
+                        y: rect.y,
+                        width: rect.w,
+                        height: rect.h
+                    });
+
+                    // check to see ifthe sprite ha been trimmed..
+                    if (frameData[i].trimmed) {
+
+                        var texture =  PIXI.TextureCache[i];
+
+                        actualSize = frameData[i].sourceSize;
+                        realSize = frameData[i].spriteSourceSize;
+
+                        texture.trim = new PIXI.Rectangle(realSize.x, realSize.y, actualSize.w, actualSize.h);
+                    }
+                }
+            }
+
+            image.load();
+        }
+    }
+    else if(this.json.frames)
+    {
+        scope = this;
+        textureUrl = this.json.meta.image;
+        image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
+        frameData = this.json.frames;
 
         this.texture = image.texture.baseTexture;
         image.addEventListener('loaded', function() {
             scope.onLoaded();
         });
 
-        for (var i in frameData)
+        for (i in frameData)
         {
-            var rect = frameData[i].frame;
+            rect = frameData[i].frame;
 
             if (rect)
             {
@@ -152,8 +208,8 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
                 //  Check to see if the sprite is trimmed
                 if (frameData[i].trimmed)
                 {
-                    var actualSize = frameData[i].sourceSize;
-                    var realSize = frameData[i].spriteSourceSize;
+                    actualSize = frameData[i].sourceSize;
+                    realSize = frameData[i].spriteSourceSize;
                     PIXI.TextureCache[i].trim = new PIXI.Rectangle(realSize.x, realSize.y, actualSize.w, actualSize.h);
                 }
             }
