@@ -45,11 +45,7 @@ PIXI.ImageLoader.prototype.load = function()
 {
     if(!this.texture.baseTexture.hasLoaded)
     {
-        var scope = this;
-        this.texture.baseTexture.addEventListener('loaded', function()
-        {
-            scope.onLoaded();
-        });
+        this.texture.baseTexture.addEventListener('loaded', this.onLoaded.bind(this));
     }
     else
     {
@@ -100,15 +96,5 @@ PIXI.ImageLoader.prototype.loadFramedSpriteSheet = function(frameWidth, frameHei
         }
     }
 
-    if(!this.texture.baseTexture.hasLoaded)
-    {
-        var scope = this;
-        this.texture.baseTexture.addEventListener('loaded', function() {
-            scope.onLoaded();
-        });
-    }
-    else
-    {
-        this.onLoaded();
-    }
+	this.load();
 };
