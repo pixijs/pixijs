@@ -258,5 +258,59 @@ PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, position, cl
     displayObject.worldTransform = originalWorldTransform;
 };
 
+/**
+ * Will return a HTML Image of the texture
+ *
+ * @method getImage
+ */
+PIXI.RenderTexture.prototype.getImage = function()
+{
+    var image = new Image();
+    image.src = this.getBase64();
+    return image;
+};
+
+/**
+ * Will return a a base64 string of the texture
+ *
+ * @method getImage
+ */
+PIXI.RenderTexture.prototype.getBase64 = function()
+{
+    if (this.renderer.type === PIXI.WEBGL_RENDERER)
+    {
+        var gl =  this.renderer.gl;
+        var width = this.textureBuffer.width;
+        var height = this.textureBuffer.height;
+
+        var webGLPixels = new Uint8Array(4 * width * height);
+
+        gl.bindFramebuffer(gl.FRAMEBUFFER, this.textureBuffer.frameBuffer);
+        gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, webGLPixels);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+
+        var tempCanvas = new PIXI.CanvasBuffer(width, height);
+        var canvasData = tempCanvas.context.getImageData(0, 0, width, height);
+        var canvasPixels = canvasData.data;
+
+        for (var i = 0; i < webGLPixels.length; i+=4)
+        {
+            var alpha = webGLPixels[i+3];
+            canvasPixels[i] = webGLPixels[i] * alpha;
+            canvasPixels[i+1] = webGLPixels[i+1] * alpha;
+            canvasPixels[i+2] = webGLPixels[i+2] * alpha;
+            canvasPixels[i+3] = alpha;
+        }
+
+        tempCanvas.context.putImageData(canvasData, 0, 0);
+       
+        return tempCanvas.canvas.toDataURL();
+    }
+    else
+    {
+        return this.textureBuffer.canvas.toDataURL();
+    }
+};
+
 PIXI.RenderTexture.tempMatrix = new PIXI.Matrix();
 
