@@ -129,7 +129,6 @@ PIXI.Text.prototype.setStyle = function(style)
     style.strokeThickness = style.strokeThickness || 0;
     style.wordWrap = style.wordWrap || false;
     style.wordWrapWidth = style.wordWrapWidth || 100;
-    style.wordWrapWidth = style.wordWrapWidth || 100;
     
     style.dropShadow = style.dropShadow || false;
     style.dropShadowAngle = style.dropShadowAngle || Math.PI / 6;

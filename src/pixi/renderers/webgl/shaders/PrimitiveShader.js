@@ -102,5 +102,5 @@ PIXI.PrimitiveShader.prototype.destroy = function()
     this.uniforms = null;
     this.gl = null;
 
-    this.attribute = null;
+    this.attributes = null;
 };

@@ -412,12 +412,14 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
  * @param event {Event} The DOM event of a mouse button being moved out
  * @private 
  */
-PIXI.InteractionManager.prototype.onMouseOut = function()
+PIXI.InteractionManager.prototype.onMouseOut = function(event)
 {
     if(this.dirty)
     {
         this.rebuildInteractiveGraph();
     }
+
+    this.mouse.originalEvent = event || window.event; //IE uses window.event
 
     var length = this.interactiveItems.length;
 

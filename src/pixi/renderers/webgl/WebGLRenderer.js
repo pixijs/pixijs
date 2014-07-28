@@ -519,8 +519,12 @@ PIXI.WebGLRenderer.prototype.handleContextRestored = function()
         }
     }
 
+    PIXI.glContexts[this.glContextId] = null;
+
     var gl = this.gl;
-    gl.id = PIXI.WebGLRenderer.glContextId ++;
+    this.glContextId = gl.id = PIXI.WebGLRenderer.glContextId++;
+
+    PIXI.glContexts[this.glContextId] = gl;
 
 
 
