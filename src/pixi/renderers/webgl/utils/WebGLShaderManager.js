@@ -38,7 +38,7 @@ PIXI.WebGLShaderManager.prototype.setContext = function(gl)
     this.primitiveShader = new PIXI.PrimitiveShader(gl);
 
     // the next one is used for rendering triangle strips
-    this.complexPrimativeShader = new PIXI.ComplexPrimitiveShader(gl);
+    this.complexPrimitiveShader = new PIXI.ComplexPrimitiveShader(gl);
 
     // this shader is used for the default sprite rendering
     this.defaultShader = new PIXI.PixiShader(gl);
@@ -120,6 +120,8 @@ PIXI.WebGLShaderManager.prototype.destroy = function()
     this.tempAttribState = null;
 
     this.primitiveShader.destroy();
+
+    this.complexPrimitiveShader.destroy();
 
     this.defaultShader.destroy();
 
