@@ -14,7 +14,6 @@ PIXI.WebGLShaderManager = function(gl)
     this.maxAttibs = 10;
     this.attribState = [];
     this.tempAttribState = [];
-    this.shaderMap = [];
 
     for (var i = 0; i < this.maxAttibs; i++) {
         this.attribState[i] = false;
