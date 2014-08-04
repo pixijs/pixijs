@@ -14,9 +14,6 @@ PIXI.WebGLMaskManager = function(gl)
     this.maskPosition = 0;
 
     this.setContext(gl);
-
-    this.reverse = false;
-    this.count = 0;
 };
 
 /**
