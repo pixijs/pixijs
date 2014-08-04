@@ -383,10 +383,10 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
 
     var e = this.mouse.originalEvent;
     var isRightButton = e.button === 2 || e.which === 3;
-    var downFunction;
-    var clickFunction;
-    var buttonIsDown;
-    var isDown;
+    var downFunction = isRightButton ? 'rightdown' : 'mousedown';
+    var clickFunction = isRightButton ? 'rightclick' : 'click';
+    var buttonIsDown = isRightButton ? '__rightIsDown' : '__mouseIsDown';
+    var isDown = isRightButton ? '__isRightDown' : '__isDown';
         
     // while
     // hit test
@@ -394,22 +394,6 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
     {
         var item = this.interactiveItems[i];
 
-        //Left button
-        if(!isRightButton)
-        {
-            downFunction = 'mousedown';
-            clickFunction = 'click';
-            buttonIsDown = '__mouseIsDown';
-            isDown = '__isDown';
-        }
-        else  //Right button
-        {
-            downFunction = 'rightdown';
-            clickFunction = 'rightclick';
-            buttonIsDown = '__rightIsDown';
-            isDown = '__isRightDown';
-        }
-        
         if(item[downFunction] || item[clickFunction])
         {
             item[buttonIsDown] = true;
@@ -487,31 +471,15 @@ PIXI.InteractionManager.prototype.onMouseUp = function(event)
 
     var e = this.mouse.originalEvent;
     var isRightButton = e.button === 2 || e.which === 3;
-    var upFunction;
-    var upOutsideFunction;
-    var clickFunction;
-    var isDown;
+    
+    var upFunction = isRightButton ? 'rightup' : 'mouseup';
+    var clickFunction = isRightButton ? 'rightclick' : 'click';
+    var upOutsideFunction = isRightButton ? 'rightupoutside' : 'mouseupoutside';
+    var isDown = isRightButton ? '__isRightDown' : '__isDown';
     
     for (var i = 0; i < length; i++)
     {
         var item = this.interactiveItems[i];
-
-        //Left button
-        if(!isRightButton)
-        {
-            upFunction = 'mouseup';
-            upOutsideFunction = 'mouseupoutside';
-            clickFunction = 'click';
-            isDown = '__isDown';
-        }
-        else
-        {
-            //Right button
-            upFunction = 'rightup';
-            upOutsideFunction = 'rightupoutside';
-            clickFunction = 'rightclick';
-            isDown = '__isRightDown';
-        }
 
         if(item[clickFunction] || item[upFunction] || item[upOutsideFunction])
         {
