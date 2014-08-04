@@ -380,26 +380,50 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
     // get interactive items under point??
     //stage.__i
     var length = this.interactiveItems.length;
-
-    // while
-    // hit test
-    for (var i = 0; i < length; i++)
-    {
-        var item = this.interactiveItems[i];
-
-        if(item.mousedown || item.click)
-        {
-            item.__mouseIsDown = true;
-            item.__hit = this.hitTest(item, this.mouse);
-
-            if(item.__hit)
-            {
-                //call the function!
-                if(item.mousedown)item.mousedown(this.mouse);
-                item.__isDown = true;
-
-                // just the one!
-                if(!item.interactiveChildren)break;
+    
+	    var e = this.mouse.originalEvent;
+	    var isRightButton = e.button === 2 || e.which === 3;
+	    var downFunction;
+	    var clickFunction;
+	    var buttonIsDown;
+	    var isDown;
+	    
+	    // while
+	    // hit test
+	    for (var i = 0; i < length; i++)
+	    {
+	        var item = this.interactiveItems[i];
+	
+					/* I know it's a little ugly, but it allows to easy change the names
+					*  and (mainly) uses only one code.*/
+	        //Left button
+	        if(!isRightButton){
+	        	downFunction = "mousedown";
+	        	clickFunction = "click";
+	        	buttonIsDown = "__mouseIsDown";
+	        	isDown = "__isDown";
+	        } else {
+	        	//Right button
+	        	downFunction = "rightdown";
+	        	clickFunction = "rightclick";
+	        	buttonIsDown = "__rightIsDown";
+	        	isDown = "__isRightDown";
+	        }
+	        
+	        
+	        if( item[downFunction] || item[clickFunction] )
+	        {
+	            item[buttonIsDown] = true;
+	            item.__hit = this.hitTest(item, this.mouse);
+	
+	            if(item.__hit)
+	            {
+	                //call the function!
+	                if(item[downFunction])item[downFunction](this.mouse);
+	                item[isDown] = true;
+	
+	                // just the one!
+	                if(!item.interactiveChildren)break;
             }
         }
     }
@@ -459,37 +483,61 @@ PIXI.InteractionManager.prototype.onMouseUp = function(event)
 
     var length = this.interactiveItems.length;
     var up = false;
+    
+    var e = this.mouse.originalEvent;
+    var isRightButton = e.button === 2 || e.which === 3;
+    var upFunction;
+    var upOutsideFunction;
+    var clickFunction;
+    var isDown;
 
     for (var i = 0; i < length; i++)
     {
         var item = this.interactiveItems[i];
 
-        item.__hit = this.hitTest(item, this.mouse);
-
-        if(item.__hit && !up)
-        {
-            //call the function!
-            if(item.mouseup)
-            {
-                item.mouseup(this.mouse);
-            }
-            if(item.__isDown)
-            {
-                if(item.click)item.click(this.mouse);
-            }
-
-            if(!item.interactiveChildren)up = true;
+        //Left button
+        if(!isRightButton){
+        	upFunction = "mouseup";
+        	upOutsideFunction = "mouseupoutside";
+        	clickFunction = "click";
+        	isDown = "__isDown";
+        } else {
+        	//Right button
+        	upFunction = "rightup";
+        	upOutsideFunction = "rightupoutside";
+        	clickFunction = "rightclick";
+        	isDown = "__isRightDown";
         }
-        else
+        
+        if(item[clickFunction] || item[upFunction] || item[upOutsideFunction])
         {
-            if(item.__isDown)
-            {
-                if(item.mouseupoutside)item.mouseupoutside(this.mouse);
-            }
-        }
+           item.__hit = this.hitTest(item, this.mouse);
 
-        item.__isDown = false;
-        //}
+           if(item.__hit && !up)
+           {
+              //call the function!
+              if(item[upFunction])
+              {
+                  item[upFunction](this.mouse);
+              }
+              if(item[isDown])
+              {
+                  if(item[clickFunction])item[clickFunction](this.mouse);
+              }
+  
+              if(!item.interactiveChildren)up = true;
+          }
+          else
+          {
+              if(item[isDown])
+              {
+                  if(item[upOutsideFunction])item[upOutsideFunction](this.mouse);
+              }
+          }
+  
+          item[isDown] = false;
+          //}
+       }
     }
 };
 
