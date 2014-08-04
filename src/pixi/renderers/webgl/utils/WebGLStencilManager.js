@@ -138,7 +138,7 @@ PIXI.WebGLStencilManager.prototype.bindGraphics = function(graphics, webGLData, 
 
     if(webGLData.mode === 1)
     {
-        shader = renderSession.shaderManager.complexPrimativeShader;
+        shader = renderSession.shaderManager.complexPrimitiveShader;
 
         renderSession.shaderManager.setShader( shader );
 
