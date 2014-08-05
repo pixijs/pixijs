@@ -40,7 +40,7 @@ PIXI.Rope.prototype.refresh = function()
 
     var uvs = this.uvs;
 
-    var lastPoint = points[0];
+    var lastPoint;
     var indices = this.indices;
     var colors = this.colors;
 
