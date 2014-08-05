@@ -186,7 +186,7 @@ PIXI.TilingSprite.prototype._renderWebGL = function(renderSession)
     renderSession.spriteBatch.stop();
 
     if (this._filters) renderSession.filterManager.popFilter();
-    if (this._mask) renderSession.maskManager.popMask(renderSession);
+    if (this._mask) renderSession.maskManager.popMask(this._mask, renderSession);
     
     renderSession.spriteBatch.start();
 };
