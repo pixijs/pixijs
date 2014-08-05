@@ -40,11 +40,9 @@ PIXI.Rope.prototype.refresh = function()
 
     var uvs = this.uvs;
 
-    var lastPoint = points[0];
+    var lastPoint;
     var indices = this.indices;
     var colors = this.colors;
-
-    this.count-=0.2;
 
     uvs[0] = 0;
     uvs[1] = 0;
@@ -111,8 +109,6 @@ PIXI.Rope.prototype.updateTransform = function()
     var lastPoint = points[0];
     var nextPoint;
     var perp = {x:0, y:0};
-
-    this.count-=0.2;
 
     var verticies = this.verticies;
     var total = points.length,
