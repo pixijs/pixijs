@@ -174,7 +174,6 @@ PIXI.Strip.prototype._renderCanvas = function(renderSession)
     var uvs = strip.uvs;
 
     var length = verticies.length/2;
-    this.count++;
 
     for (var i = 0; i < length-2; i++)
     {
