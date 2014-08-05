@@ -283,6 +283,6 @@ PIXI.WebGLStencilManager.prototype.popStencil = function(graphics, webGLData, re
 */
 PIXI.WebGLStencilManager.prototype.destroy = function()
 {
-    this.maskStack = null;
+    this.stencilStack = null;
     this.gl = null;
 };
