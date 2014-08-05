@@ -35,6 +35,7 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode)
 {
     PIXI.EventTarget.call( this );
 
+
     /**
      * The with of the render texture
      *
@@ -126,6 +127,9 @@ PIXI.RenderTexture.prototype.resize = function(width, height, updateBase)
         return;
     }
 
+    this.valid = (width > 0 && height > 0);
+
+
     this.width = this.frame.width = this.crop.width = width;
     this.height =  this.frame.height = this.crop.height = height;
 
@@ -141,7 +145,9 @@ PIXI.RenderTexture.prototype.resize = function(width, height, updateBase)
         this.projection.y = -this.height / 2;
     }
     
+    if(!this.valid)return;
     this.textureBuffer.resize(this.width, this.height);
+   
 };
 
 /**
@@ -151,6 +157,8 @@ PIXI.RenderTexture.prototype.resize = function(width, height, updateBase)
  */
 PIXI.RenderTexture.prototype.clear = function()
 {
+    if(!this.valid)return;
+
     if (this.renderer.type === PIXI.WEBGL_RENDERER)
     {
         this.renderer.gl.bindFramebuffer(this.renderer.gl.FRAMEBUFFER, this.textureBuffer.frameBuffer);
@@ -169,6 +177,7 @@ PIXI.RenderTexture.prototype.clear = function()
  */
 PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, position, clear)
 {
+    if(!this.valid)return;
     //TOOD replace position with matrix..
     var gl = this.renderer.gl;
 
@@ -225,6 +234,8 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, position, cle
  */
 PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, position, clear)
 {
+    if(!this.valid)return;
+
     var children = displayObject.children;
 
     var originalWorldTransform = displayObject.worldTransform;
@@ -277,6 +288,11 @@ PIXI.RenderTexture.prototype.getImage = function()
  */
 PIXI.RenderTexture.prototype.getBase64 = function()
 {
+    return this.getCanvas().toDataURL();
+};
+
+PIXI.RenderTexture.prototype.getCanvas = function()
+{
     if (this.renderer.type === PIXI.WEBGL_RENDERER)
     {
         var gl =  this.renderer.gl;
@@ -304,11 +320,11 @@ PIXI.RenderTexture.prototype.getBase64 = function()
 
         tempCanvas.context.putImageData(canvasData, 0, 0);
        
-        return tempCanvas.canvas.toDataURL();
+        return tempCanvas.canvas;
     }
     else
     {
-        return this.textureBuffer.canvas.toDataURL();
+        return this.textureBuffer.canvas;
     }
 };
 
