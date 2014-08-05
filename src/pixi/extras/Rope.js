@@ -40,7 +40,6 @@ PIXI.Rope.prototype.refresh = function()
 
     var uvs = this.uvs;
 
-    var lastPoint;
     var indices = this.indices;
     var colors = this.colors;
 
@@ -89,8 +88,6 @@ PIXI.Rope.prototype.refresh = function()
         index = i * 2;
         indices[index] = index;
         indices[index + 1] = index + 1;
-
-        lastPoint = point;
     }
 };
 
