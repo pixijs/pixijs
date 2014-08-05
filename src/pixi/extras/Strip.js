@@ -47,6 +47,17 @@ PIXI.Strip = function(texture)
      * @type Boolean
      */
     this.dirty = true;
+
+
+    /**
+     * if you need a padding, not yet implemented
+     *
+     * @property padding
+     * @type Number
+     */
+     this.padding = 0;
+     // NYI, TODO padding ?
+
 };
 
 // constructor
@@ -196,7 +207,7 @@ PIXI.Strip.prototype._renderCanvas = function(renderSession)
         var x0 = verticies[index],   x1 = verticies[index+2], x2 = verticies[index+4];
         var y0 = verticies[index+1], y1 = verticies[index+3], y2 = verticies[index+5];
 
-        if(true)
+        if(this.padding === 0)
         {
 
             //expand();
