@@ -481,7 +481,6 @@ PIXI.DisplayObject.prototype.getLocalBounds = function()
     return this.getBounds(PIXI.identityMatrix);///PIXI.EmptyRectangle();
 };
 
-
 /**
  * Sets the object's stage reference, the stage this object is connected to
  *
@@ -509,22 +508,34 @@ PIXI.DisplayObject.prototype.updateCache = function()
     this._generateCachedSprite();
 };
 
+/**
+ * Calculates the global position of the display object
+ *
+ * @method toGlobal
+ * @param position {Point} The world origin to calculate from
+ * @return {Point} A point object representing the position of this object
+ */
 PIXI.DisplayObject.prototype.toGlobal = function(pos)
 {
     this.updateTransform();
     return this.worldTransform.apply(pos);
 };
 
+/**
+ * Calculates the local position of the display object relative to another point
+ *
+ * @method toGlobal
+ * @param position {Point} The world origin to calculate from
+ * @param [from] {DisplayObject} The DisplayObject to calculate the global position from
+ * @return {Point} A point object representing the position of this object
+ */
 PIXI.DisplayObject.prototype.toLocal = function(pos, from)
 {
     if (from)
     {
         pos = from.toGlobal(pos);
     }
-    else //toGlobal calls updateTransform, don't call it twice
-    {
-        this.updateTransform();
-    }
+    this.updateTransform();
     return this.worldTransform.applyInverse(pos);
 };
 
