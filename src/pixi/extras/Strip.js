@@ -55,7 +55,7 @@ PIXI.Strip = function(texture)
      * @property padding
      * @type Number
      */
-     this.padding = 0;
+    this.padding = 0;
      // NYI, TODO padding ?
 
 };
