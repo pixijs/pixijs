@@ -16,8 +16,6 @@ function pixi_textures_Texture_confirmNew(obj, done) {
     expect(obj).to.have.property('baseTexture')
         .and.to.be.an.instanceof(PIXI.BaseTexture);
 
-    expect(obj).to.have.property('scope', obj);
-
     expect(obj).to.have.property('frame');
     if (obj.baseTexture.hasLoaded) {
         confirmFrameDone();

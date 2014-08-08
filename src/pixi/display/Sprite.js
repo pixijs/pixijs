@@ -308,7 +308,7 @@ PIXI.Sprite.prototype._renderWebGL = function(renderSession)
 PIXI.Sprite.prototype._renderCanvas = function(renderSession)
 {
     // If the sprite is not visible or the alpha is 0 then no need to render this element
-    if (this.visible === false || this.alpha === 0) return;
+    if (this.visible === false || this.alpha === 0 || this.texture.crop.width <= 0 || this.texture.crop.height <= 0) return;
     
     if (this.blendMode !== renderSession.currentBlendMode)
     {

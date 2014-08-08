@@ -19,8 +19,6 @@ PIXI.TextureCacheIdGenerator = 0;
  */
 PIXI.Texture = function(baseTexture, frame)
 {
-    PIXI.EventTarget.call( this );
-
     /**
      * Does this Texture have any frame data assigned to it?
      *
@@ -63,7 +61,7 @@ PIXI.Texture = function(baseTexture, frame)
      * @type Rectangle
      */
     this.trim = null;
-    
+
     /**
      * This will let the renderer know if the texture is valid. If its not then it cannot be rendered.
      *
@@ -73,14 +71,6 @@ PIXI.Texture = function(baseTexture, frame)
     this.valid = false;
 
     /**
-     * The context scope under which events are run.
-     *
-     * @property scope
-     * @type Object
-     */
-    this.scope = this;
-
-    /**
      * The WebGL UV data cache.
      *
      * @private
@@ -88,7 +78,7 @@ PIXI.Texture = function(baseTexture, frame)
      * @type Object
      */
     this._uvs = null;
-    
+
     /**
      * The width of the Texture in pixels.
      *
@@ -121,8 +111,7 @@ PIXI.Texture = function(baseTexture, frame)
     }
     else
     {
-        var scope = this;
-        baseTexture.addEventListener('loaded', function(){ scope.onBaseTextureLoaded(); });
+        baseTexture.addEventListener('loaded', this.onBaseTextureLoaded.bind(this));
     }
 };
 
@@ -142,10 +131,10 @@ PIXI.Texture.prototype.onBaseTextureLoaded = function()
     baseTexture.removeEventListener('loaded', this.onLoaded);
 
     if (this.noFrame) this.frame = new PIXI.Rectangle(0, 0, baseTexture.width, baseTexture.height);
-    
+
     this.setFrame(this.frame);
 
-    this.scope.dispatchEvent( { type: 'update', content: this } );
+    this.dispatchEvent( { type: 'update', content: this } );
 };
 
 /**
