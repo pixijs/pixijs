@@ -191,7 +191,7 @@ describe('pixi/utils/EventTarget', function () {
         expect(called).to.equal(6);
     });
 
-    it('is backwards compatible with older dispatchEvent', function () {
+    it('is backwards compatible with older .dispatchEvent({})', function () {
         var called = 0,
             data = {
                 some: 'thing',
@@ -238,5 +238,45 @@ describe('pixi/utils/EventTarget', function () {
             o = new Fn();
 
         pixi_utils_EventTarget_confirm(o);
+    });
+
+    it('is backwards compatible with older .addEventListener("")', function () {
+        var called = 0,
+            data = {
+                some: 'thing',
+                hello: true
+            };
+
+        function onMyEvent(event) {
+            pixi_utils_EventTarget_Event_confirm(event, obj, data);
+
+            called++;
+        }
+
+        obj.addEventListener('myevent1', onMyEvent);
+        obj.addEventListener('myevent2', onMyEvent);
+        obj.addEventListener('myevent3', onMyEvent);
+
+        data.type = 'myevent1';
+        obj.emit(data);
+
+        data.type = 'myevent2';
+        obj.emit(data);
+
+        data.type = 'myevent3';
+        obj.emit(data);
+
+        obj.off('myevent2', onMyEvent);
+
+        data.type = 'myevent1';
+        obj.emit(data);
+
+        data.type = 'myevent2';
+        obj.emit(data);
+
+        data.type = 'myevent3';
+        obj.emit(data);
+
+        expect(called).to.equal(5);
     });
 });
