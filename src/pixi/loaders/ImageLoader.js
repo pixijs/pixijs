@@ -95,19 +95,5 @@ PIXI.ImageLoader.prototype.loadFramedSpriteSheet = function(frameWidth, frameHei
         }
     }
 
-<<<<<<< HEAD
-    if(!this.texture.baseTexture.hasLoaded)
-    {
-        var scope = this;
-        this.texture.baseTexture.on('loaded', function() {
-            scope.onLoaded();
-        });
-    }
-    else
-    {
-        this.onLoaded();
-    }
-=======
 	this.load();
->>>>>>> dev
 };

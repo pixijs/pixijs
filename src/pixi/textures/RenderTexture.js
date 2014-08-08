@@ -82,7 +82,7 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode)
     this.baseTexture.hasLoaded = true;
 
     PIXI.Texture.call(this,
-        baseTexture,
+        this.baseTexture,
         new PIXI.Rectangle(0, 0, this.width, this.height)
     );
 
