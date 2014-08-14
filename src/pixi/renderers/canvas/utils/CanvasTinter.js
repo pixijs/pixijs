@@ -48,7 +48,7 @@ PIXI.CanvasTinter.getTintedTexture = function(sprite, color)
     PIXI.CanvasTinter.tintMethod(texture, color, canvas);
 
 	//preserve this canvas to use it for next time we need to re-tint the texture.
-	texture.tintCache.canvas = canvas;	
+	texture.tintCache.canvas = canvas;
 
     if(PIXI.CanvasTinter.convertTintToImage)
     {
