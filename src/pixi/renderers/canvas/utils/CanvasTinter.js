@@ -40,12 +40,15 @@ PIXI.CanvasTinter.getTintedTexture = function(sprite, color)
     if(texture.tintCache[stringColor]) return texture.tintCache[stringColor];
 
      // clone texture..
-    var canvas = PIXI.CanvasTinter.canvas || document.createElement("canvas");
+    var canvas = texture.tintCache['canvas'] || PIXI.CanvasTinter.canvas || document.createElement("canvas");
     
     //PIXI.CanvasTinter.tintWithPerPixel(texture, stringColor, canvas);
 
     
     PIXI.CanvasTinter.tintMethod(texture, color, canvas);
+
+	//preserve this canvas to use it for next time we need to re-tint the texture.
+	texture.tintCache['canvas'] = canvas;	
 
     if(PIXI.CanvasTinter.convertTintToImage)
     {
