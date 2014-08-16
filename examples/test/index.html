@@ -1,15 +1,15 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-	<!--<link href=<script src="http://fonts.googleapis.com/css?family=Snippet|Arvo:700italic|Podkova<script src=" rel=<script src="stylesheet<script src=" type=<script src="text/css<script src=">-->
-	<title>pixi.js example 10 Text</title>
-	<style>
-		body {
-			margin: 0;
-			padding: 0;
-			background-color: #000000;
-		}
-	</style>
+    <!--<link href=<script src="http://fonts.googleapis.com/css?family=Snippet|Arvo:700italic|Podkova<script src=" rel=<script src="stylesheet<script src=" type=<script src="text/css<script src=">-->
+    <title>pixi.js example 10 Text</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000000;
+        }
+    </style>
 
             <script src="../../src/pixi/Pixi.js"></script>
             <script src="../../src/pixi/core/Point.js"></script>
@@ -45,7 +45,7 @@
             <script src="../../src/pixi/renderers/webgl/utils/WebGLSpriteBatch.js"></script>
             <script src="../../src/pixi/renderers/webgl/utils/WebGLFastSpriteBatch.js"></script>
             <script src="../../src/pixi/renderers/webgl/utils/WebGLFilterManager.js"></script>
-			<script src="../../src/pixi/renderers/webgl/utils/FilterTexture.js"></script>
+            <script src="../../src/pixi/renderers/webgl/utils/FilterTexture.js"></script>
             <script src="../../src/pixi/renderers/canvas/utils/CanvasMaskManager.js"></script>
             <script src="../../src/pixi/renderers/canvas/utils/CanvasTinter.js"></script>
             <script src="../../src/pixi/renderers/canvas/CanvasRenderer.js"></script>
@@ -84,49 +84,49 @@
 </head>
 <body>
 
-	<script>
+    <script>
 
-	// create an new instance of a pixi stage
-	var stage = new PIXI.Stage(0x66FF99);
+    // create an new instance of a pixi stage
+    var stage = new PIXI.Stage(0x66FF99);
 
-	// create a renderer instance
-	var renderer = PIXI.autoDetectRenderer(400, 300);
+    // create a renderer instance
+    var renderer = PIXI.autoDetectRenderer(400, 300);
 
-	// add the renderer view element to the DOM
-	document.body.appendChild(renderer.view);
+    // add the renderer view element to the DOM
+    document.body.appendChild(renderer.view);
 
-	requestAnimFrame(animate);
+    requestAnimFrame(animate);
 
-	// create a texture from an image path
-	var texture = PIXI.Texture.fromImage("bunny.png");
+    // create a texture from an image path
+    var texture = PIXI.Texture.fromImage("bunny.png");
 
-	// create a new Sprite using the texture
-	var bunny = new PIXI.Sprite(texture);
+    // create a new Sprite using the texture
+    var bunny = new PIXI.Sprite(texture);
 
-	// center the sprites anchor point
-	bunny.anchor.x = 0.5;
-	bunny.anchor.y = 0.5;
+    // center the sprites anchor point
+    bunny.anchor.x = 0.5;
+    bunny.anchor.y = 0.5;
 
-	// move the sprite t the center of the screen
-	bunny.position.x = 200;
-	bunny.position.y = 150;
+    // move the sprite t the center of the screen
+    bunny.position.x = 200;
+    bunny.position.y = 150;
 
-	stage.addChild(bunny);
+    stage.addChild(bunny);
 
-	function animate() {
+    function animate() {
 
-	    requestAnimFrame(animate);
+        requestAnimFrame(animate);
 
-	    // just for fun, let's rotate mr rabbit a little
-	    bunny.rotation += 0.1;
+        // just for fun, let's rotate mr rabbit a little
+        bunny.rotation += 0.1;
 
-	    // render the stage
-	    renderer.render(stage);
-	}
+        // render the stage
+        renderer.render(stage);
+    }
 
-	</script>
+    </script>
 
-  	
+      
 
-	</body>
+    </body>
 </html>
