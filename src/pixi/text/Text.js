@@ -214,6 +214,9 @@ PIXI.Text.prototype.updateText = function()
         {
             linePositionX = this.style.strokeThickness / 2;
             linePositionY = this.style.strokeThickness / 2 + i * lineHeight;
+            if (navigator.userAgent.search(/firefox/i)!==-1){
+                linePositionY = linePositionY + (lineHeight * 0.2);
+            }
 
             if(this.style.align === 'right')
             {
@@ -241,6 +244,9 @@ PIXI.Text.prototype.updateText = function()
     {
         linePositionX = this.style.strokeThickness / 2;
         linePositionY = this.style.strokeThickness / 2 + i * lineHeight;
+        if (navigator.userAgent.search(/firefox/i)!==-1){
+            linePositionY = linePositionY + (lineHeight * 0.2);
+        }
 
         if(this.style.align === 'right')
         {
