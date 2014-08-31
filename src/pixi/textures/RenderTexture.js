@@ -196,6 +196,7 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, position, cle
     //TODO -? create a new one??? dont think so!
     var originalWorldTransform = displayObject.worldTransform;
     displayObject.worldTransform = PIXI.RenderTexture.tempMatrix;
+    displayObject.worldAlpha = 1;
     // modify to flip...
     displayObject.worldTransform.d = -1;
     displayObject.worldTransform.ty = this.projection.y * -2;
