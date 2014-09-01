@@ -77,10 +77,10 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias, prese
 
     // deal with losing context..
     this.contextLostFunction = this.handleContextLost.bind(this);
-    this.contextRestoredLostFunction = this.handleContextRestored.bind(this);
+    this.contextRestoredFunction = this.handleContextRestored.bind(this);
 
     this.view.addEventListener('webglcontextlost', this.contextLostFunction, false);
-    this.view.addEventListener('webglcontextrestored', this.contextRestoredLostFunction, false);
+    this.view.addEventListener('webglcontextrestored', this.contextRestoredFunction, false);
 
     this.options = {
         alpha: this.transparent,
@@ -573,7 +573,7 @@ PIXI.WebGLRenderer.prototype.destroy = function()
 
     // remove listeners
     this.view.removeEventListener('webglcontextlost', this.contextLostFunction);
-    this.view.removeEventListener('webglcontextrestored', this.contextRestoredLostFunction);
+    this.view.removeEventListener('webglcontextrestored', this.contextRestoredFunction);
 
     PIXI.glContexts[this.glContextId] = null;
 
