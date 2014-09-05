@@ -79,7 +79,7 @@ before submitting changes.
 
 ### How to build ###
 
-PixiJS is build with Grunt. If you don't already have this, go install Node and NPM then install the Grunt Command Line.
+PixiJS is built with Grunt. If you don't already have this, go install Node and NPM then install the Grunt Command Line.
 
 ```
 $> npm install -g grunt-cli

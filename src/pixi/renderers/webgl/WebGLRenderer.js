@@ -78,14 +78,14 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias, prese
     // deal with losing context..
     this.contextLost = this.handleContextLost.bind(this);
     this.contextRestoredLost = this.handleContextRestored.bind(this);
-    
+
     this.view.addEventListener('webglcontextlost', this.contextLost, false);
     this.view.addEventListener('webglcontextrestored', this.contextRestoredLost, false);
 
     this.options = {
         alpha: this.transparent,
         antialias:!!antialias, // SPEED UP??
-        premultipliedAlpha:!!transparent,
+        premultipliedAlpha:!!transparent && transparent !== 'notMultiplied',
         stencil:true,
         preserveDrawingBuffer: preserveDrawingBuffer
     };
@@ -214,7 +214,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
             stage.interactionManager.setTarget(this);
         }
     }
-    
+
     var gl = this.gl;
 
     // -- Does this need to be set every frame? -- //
@@ -285,7 +285,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
  * @method renderDIsplayObject
  * @param displayObject {DisplayObject} The DisplayObject to render
  * @param projection {Point} The projection
- * @param buffer {Array} a standard WebGL buffer 
+ * @param buffer {Array} a standard WebGL buffer
  */
 PIXI.WebGLRenderer.prototype.renderDisplayObject = function(displayObject, projection, buffer)
 {
@@ -480,7 +480,7 @@ PIXI.updateWebGLTexture = function(texture, gl)
 
         texture._dirty[gl.id] = false;
     }
-    
+
 };
 
 /**
@@ -519,15 +519,19 @@ PIXI.WebGLRenderer.prototype.handleContextRestored = function()
         }
     }
 
+    PIXI.glContexts[this.glContextId] = null;
+
     var gl = this.gl;
-    gl.id = PIXI.WebGLRenderer.glContextId ++;
+    this.glContextId = gl.id = PIXI.WebGLRenderer.glContextId++;
+
+    PIXI.glContexts[this.glContextId] = gl;
 
 
 
     // need to set the context...
     this.shaderManager.setContext(gl);
     this.spriteBatch.setContext(gl);
-    this.primitiveBatch.setContext(gl);
+    // this.primitiveBatch.setContext(gl);
     this.maskManager.setContext(gl);
     this.filterManager.setContext(gl);
 
@@ -549,7 +553,7 @@ PIXI.WebGLRenderer.prototype.handleContextRestored = function()
     }
 
     /**
-     * Whether the context was lost 
+     * Whether the context was lost
      * @property contextLost
      * @type Boolean
      */
@@ -566,7 +570,7 @@ PIXI.WebGLRenderer.prototype.destroy = function()
 {
 
     // deal with losing context..
-    
+
     // remove listeners
     this.view.removeEventListener('webglcontextlost', this.contextLost);
     this.view.removeEventListener('webglcontextrestored', this.contextRestoredLost);
@@ -579,7 +583,7 @@ PIXI.WebGLRenderer.prototype.destroy = function()
     // time to create the render managers! each one focuses on managine a state in webGL
     this.shaderManager.destroy();
     this.spriteBatch.destroy();
-    this.primitiveBatch.destroy();
+    // this.primitiveBatch.destroy();
     this.maskManager.destroy();
     this.filterManager.destroy();
 
@@ -587,7 +591,7 @@ PIXI.WebGLRenderer.prototype.destroy = function()
     this.spriteBatch = null;
     this.maskManager = null;
     this.filterManager = null;
-    
+
     this.gl = null;
     //
     this.renderSession = null;

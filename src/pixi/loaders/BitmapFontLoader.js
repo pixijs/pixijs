@@ -68,11 +68,7 @@ PIXI.BitmapFontLoader.prototype.constructor = PIXI.BitmapFontLoader;
 PIXI.BitmapFontLoader.prototype.load = function()
 {
     this.ajaxRequest = new PIXI.AjaxRequest();
-    var scope = this;
-    this.ajaxRequest.onreadystatechange = function()
-    {
-        scope.onXMLLoaded();
-    };
+    this.ajaxRequest.onreadystatechange = this.onXMLLoaded.bind(this);
 
     this.ajaxRequest.open('GET', this.url, true);
     if (this.ajaxRequest.overrideMimeType) this.ajaxRequest.overrideMimeType('application/xml');
@@ -153,10 +149,7 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
 
             PIXI.BitmapText.fonts[data.font] = data;
 
-            var scope = this;
-            image.addEventListener('loaded', function() {
-                scope.onLoaded();
-            });
+            image.addEventListener('loaded', this.onLoaded.bind(this));
             image.load();
         }
     }

@@ -3,7 +3,7 @@
  */
 
 /**
- * The base class for all objects that are rendered on the screen. 
+ * The base class for all objects that are rendered on the screen.
  * This is an abstract class and should not be used on its own rather it should be extended.
  *
  * @class DisplayObject
@@ -123,7 +123,7 @@ PIXI.DisplayObject = function()
 
     /**
      * This is the cursor that will be used when the mouse is over this object. To enable this the element must have interaction = true and buttonMode = true
-     * 
+     *
      * @property defaultCursor
      * @type String
      *
@@ -203,33 +203,7 @@ PIXI.DisplayObject = function()
     /*
      * MOUSE Callbacks
      */
-
-    /**
-     * A callback that is used when the users clicks on the displayObject with their mouse
-     * @method click
-     * @param interactionData {InteractionData}
-     */
-
-    /**
-     * A callback that is used when the user clicks the mouse down over the sprite
-     * @method mousedown
-     * @param interactionData {InteractionData}
-     */
-
-    /**
-     * A callback that is used when the user releases the mouse that was over the displayObject
-     * for this callback to be fired the mouse must have been pressed down over the displayObject
-     * @method mouseup
-     * @param interactionData {InteractionData}
-     */
-
-    /**
-     * A callback that is used when the user releases the mouse that was over the displayObject but is no longer over the displayObject
-     * for this callback to be fired, The touch must have started over the displayObject
-     * @method mouseupoutside
-     * @param interactionData {InteractionData}
-     */
-
+    
     /**
      * A callback that is used when the users mouse rolls over the displayObject
      * @method mouseover
@@ -242,6 +216,59 @@ PIXI.DisplayObject = function()
      * @param interactionData {InteractionData}
      */
 
+    //Left button
+    /**
+     * A callback that is used when the users clicks on the displayObject with their mouse's left button
+     * @method click
+     * @param interactionData {InteractionData}
+     */
+
+    /**
+     * A callback that is used when the user clicks the mouse's left button down over the sprite
+     * @method mousedown
+     * @param interactionData {InteractionData}
+     */
+
+    /**
+     * A callback that is used when the user releases the mouse's left button that was over the displayObject
+     * for this callback to be fired, the mouse's left button must have been pressed down over the displayObject
+     * @method mouseup
+     * @param interactionData {InteractionData}
+     */
+
+    /**
+     * A callback that is used when the user releases the mouse's left button that was over the displayObject but is no longer over the displayObject
+     * for this callback to be fired, the mouse's left button must have been pressed down over the displayObject
+     * @method mouseupoutside
+     * @param interactionData {InteractionData}
+     */
+
+    //Right button
+    /**
+     * A callback that is used when the users clicks on the displayObject with their mouse's right button
+     * @method rightclick
+     * @param interactionData {InteractionData}
+     */
+
+    /**
+     * A callback that is used when the user clicks the mouse's right button down over the sprite
+     * @method rightdown
+     * @param interactionData {InteractionData}
+     */
+
+    /**
+     * A callback that is used when the user releases the mouse's right button that was over the displayObject
+     * for this callback to be fired the mouse's right button must have been pressed down over the displayObject
+     * @method rightup
+     * @param interactionData {InteractionData}
+     */
+
+    /**
+     * A callback that is used when the user releases the mouse's right button that was over the displayObject but is no longer over the displayObject
+     * for this callback to be fired, the mouse's right button must have been pressed down over the displayObject
+     * @method rightupoutside
+     * @param interactionData {InteractionData}
+     */
 
     /*
      * TOUCH Callbacks
@@ -481,7 +508,6 @@ PIXI.DisplayObject.prototype.getLocalBounds = function()
     return this.getBounds(PIXI.identityMatrix);///PIXI.EmptyRectangle();
 };
 
-
 /**
  * Sets the object's stage reference, the stage this object is connected to
  *
@@ -509,10 +535,41 @@ PIXI.DisplayObject.prototype.updateCache = function()
     this._generateCachedSprite();
 };
 
+/**
+ * Calculates the global position of the display object
+ *
+ * @method toGlobal
+ * @param position {Point} The world origin to calculate from
+ * @return {Point} A point object representing the position of this object
+ */
+PIXI.DisplayObject.prototype.toGlobal = function(pos)
+{
+    this.updateTransform();
+    return this.worldTransform.apply(pos);
+};
+
+/**
+ * Calculates the local position of the display object relative to another point
+ *
+ * @method toGlobal
+ * @param position {Point} The world origin to calculate from
+ * @param [from] {DisplayObject} The DisplayObject to calculate the global position from
+ * @return {Point} A point object representing the position of this object
+ */
+PIXI.DisplayObject.prototype.toLocal = function(pos, from)
+{
+    if (from)
+    {
+        pos = from.toGlobal(pos);
+    }
+    this.updateTransform();
+    return this.worldTransform.applyInverse(pos);
+};
+
 PIXI.DisplayObject.prototype._renderCachedSprite = function(renderSession)
 {
     this._cachedSprite.worldAlpha = this.worldAlpha;
-   
+
     if(renderSession.gl)
     {
         PIXI.Sprite.prototype._renderWebGL.call(this._cachedSprite, renderSession);
@@ -527,11 +584,11 @@ PIXI.DisplayObject.prototype._generateCachedSprite = function()//renderSession)
 {
     this._cacheAsBitmap = false;
     var bounds = this.getLocalBounds();
-   
+
     if(!this._cachedSprite)
     {
         var renderTexture = new PIXI.RenderTexture(bounds.width | 0, bounds.height | 0);//, renderSession.renderer);
-        
+
         this._cachedSprite = new PIXI.Sprite(renderTexture);
         this._cachedSprite.worldTransform = this.worldTransform;
     }
@@ -559,7 +616,7 @@ PIXI.DisplayObject.prototype._generateCachedSprite = function()//renderSession)
 * Renders the object using the WebGL renderer
 *
 * @method _renderWebGL
-* @param renderSession {RenderSession} 
+* @param renderSession {RenderSession}
 * @private
 */
 PIXI.DisplayObject.prototype._destroyCachedSprite = function()
@@ -585,7 +642,7 @@ PIXI.DisplayObject.prototype._renderWebGL = function(renderSession)
 * Renders the object using the Canvas renderer
 *
 * @method _renderCanvas
-* @param renderSession {RenderSession} 
+* @param renderSession {RenderSession}
 * @private
 */
 PIXI.DisplayObject.prototype._renderCanvas = function(renderSession)

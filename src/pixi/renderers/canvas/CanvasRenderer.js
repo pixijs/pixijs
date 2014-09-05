@@ -215,11 +215,11 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
         }
     }
 
-    // remove frame updates..
-    if(PIXI.Texture.frameUpdates.length > 0)
-    {
-        PIXI.Texture.frameUpdates.length = 0;
-    }
+    // remove frame updates.. // removeing for now...
+    //if(PIXI.Texture.frameUpdates.length > 0)
+    //{
+    //    PIXI.Texture.frameUpdates.length = 0;
+    //}
 };
 
 /**

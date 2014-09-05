@@ -94,6 +94,8 @@ PIXI.SpriteBatch.prototype._renderWebGL = function(renderSession)
 */
 PIXI.SpriteBatch.prototype._renderCanvas = function(renderSession)
 {
+    if(!this.visible || this.alpha <= 0 || !this.children.length)return;
+    
     var context = renderSession.context;
     context.globalAlpha = this.worldAlpha;
 

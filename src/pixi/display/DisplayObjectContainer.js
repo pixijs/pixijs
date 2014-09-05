@@ -226,6 +226,10 @@ PIXI.DisplayObjectContainer.prototype.removeChildren = function(beginIndex, endI
         }
         return removed;
     }
+    else if (range === 0 && this.children.length === 0)
+    {
+        return [];
+    }
     else
     {
         throw new Error( 'Range Error, numeric values are outside the acceptable range' );

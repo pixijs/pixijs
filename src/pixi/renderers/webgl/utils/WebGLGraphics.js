@@ -52,8 +52,6 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
             gl.drawElements(gl.TRIANGLE_FAN, 4, gl.UNSIGNED_SHORT, ( webGLData.indices.length - 4 ) * 2 );
             
             renderSession.stencilManager.popStencil(graphics, webGLData, renderSession);
-            
-            this.last = webGLData.mode;
         }
         else
         {

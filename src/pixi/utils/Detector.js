@@ -13,9 +13,10 @@
  * @param [view] {Canvas} the canvas to use as a view, optional 
  * @param [transparent=false] {Boolean} the transparency of the render view, default false
  * @param [antialias=false] {Boolean} sets antialias (only applicable in webGL chrome at the moment)
+ * @param [preserveDrawingBuffer=false] {Boolean} enables drawing buffer preservation, enable this if you need to call toDataUrl on the webgl context
  *
  */
-PIXI.autoDetectRenderer = function(width, height, view, transparent, antialias)
+PIXI.autoDetectRenderer = function(width, height, view, transparent, antialias, preserveDrawingBuffer)
 {
     if(!width)width = 800;
     if(!height)height = 600;
@@ -31,7 +32,7 @@ PIXI.autoDetectRenderer = function(width, height, view, transparent, antialias)
 
     if( webgl )
     {
-        return new PIXI.WebGLRenderer(width, height, view, transparent, antialias);
+        return new PIXI.WebGLRenderer(width, height, view, transparent, antialias, preserveDrawingBuffer);
     }
 
     return  new PIXI.CanvasRenderer(width, height, view, transparent);
@@ -49,9 +50,10 @@ PIXI.autoDetectRenderer = function(width, height, view, transparent, antialias)
  * @param [view] {Canvas} the canvas to use as a view, optional 
  * @param [transparent=false] {Boolean} the transparency of the render view, default false
  * @param [antialias=false] {Boolean} sets antialias (only applicable in webGL chrome at the moment)
+ * @param [preserveDrawingBuffer=false] {Boolean} enables drawing buffer preservation, enable this if you need to call toDataUrl on the webgl context
  *
  */
-PIXI.autoDetectRecommendedRenderer = function(width, height, view, transparent, antialias)
+PIXI.autoDetectRecommendedRenderer = function(width, height, view, transparent, antialias, preserveDrawingBuffer)
 {
     if(!width)width = 800;
     if(!height)height = 600;
@@ -69,7 +71,7 @@ PIXI.autoDetectRecommendedRenderer = function(width, height, view, transparent, 
 
     if( webgl && !isAndroid)
     {
-        return new PIXI.WebGLRenderer(width, height, view, transparent, antialias);
+        return new PIXI.WebGLRenderer(width, height, view, transparent, antialias, preserveDrawingBuffer);
     }
 
     return  new PIXI.CanvasRenderer(width, height, view, transparent);

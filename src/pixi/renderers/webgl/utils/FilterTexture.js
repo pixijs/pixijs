@@ -30,7 +30,7 @@ PIXI.FilterTexture = function(gl, width, height, scaleMode)
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, scaleMode === PIXI.scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer );
+    gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer );
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer );
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.texture, 0);

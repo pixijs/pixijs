@@ -77,7 +77,7 @@ PIXI.Circle.prototype.contains = function(x, y)
 */
 PIXI.Circle.prototype.getBounds = function()
 {
-    return new PIXI.Rectangle(this.x - this.radius, this.y - this.radius, this.width, this.height);
+    return new PIXI.Rectangle(this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2);
 };
 
 // constructor

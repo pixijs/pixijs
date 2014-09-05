@@ -10,13 +10,12 @@ describe('pixi/core/Circle', function () {
 
     it('Confirm new instance', function () {
         var obj = new Circle();
+        pixi_core_Circle_confirmNewCircle(obj);
+    });
 
-        expect(obj).to.be.an.instanceof(Circle);
-        expect(obj).to.respondTo('clone');
-        expect(obj).to.respondTo('contains');
-
-        expect(obj).to.have.property('x', 0);
-        expect(obj).to.have.property('y', 0);
-        expect(obj).to.have.property('radius', 0);
+    it("getBounds should return Rectangle that bounds the circle", function() {
+        var obj = new Circle(100, 250, 50);
+        var bounds = obj.getBounds();
+        pixi_core_Circle_isBoundedByRectangle(obj, bounds);
     });
 });

@@ -86,3 +86,17 @@ PIXI.StripShader.prototype.init = function()
 
     this.program = program;
 };
+
+/**
+* Destroys the shader
+* @method destroy
+*
+*/
+PIXI.StripShader.prototype.destroy = function()
+{
+    this.gl.deleteProgram( this.program );
+    this.uniforms = null;
+    this.gl = null;
+
+    this.attribute = null;
+};

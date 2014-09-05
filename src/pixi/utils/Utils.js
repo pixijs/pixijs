@@ -21,32 +21,34 @@
  *
  * @method cancelAnimationFrame
  */
-var lastTime = 0;
-var vendors = ['ms', 'moz', 'webkit', 'o'];
-for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
-    window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
-    window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] ||
-        window[vendors[x] + 'CancelRequestAnimationFrame'];
-}
+(function(window) {
+    var lastTime = 0;
+    var vendors = ['ms', 'moz', 'webkit', 'o'];
+    for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+        window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
+        window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] ||
+            window[vendors[x] + 'CancelRequestAnimationFrame'];
+    }
 
-if (!window.requestAnimationFrame) {
-    window.requestAnimationFrame = function(callback) {
-        var currTime = new Date().getTime();
-        var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-        var id = window.setTimeout(function() { callback(currTime + timeToCall); },
-          timeToCall);
-        lastTime = currTime + timeToCall;
-        return id;
-    };
-}
+    if (!window.requestAnimationFrame) {
+        window.requestAnimationFrame = function(callback) {
+            var currTime = new Date().getTime();
+            var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+            var id = window.setTimeout(function() { callback(currTime + timeToCall); },
+              timeToCall);
+            lastTime = currTime + timeToCall;
+            return id;
+        };
+    }
 
-if (!window.cancelAnimationFrame) {
-    window.cancelAnimationFrame = function(id) {
-        clearTimeout(id);
-    };
-}
+    if (!window.cancelAnimationFrame) {
+        window.cancelAnimationFrame = function(id) {
+            clearTimeout(id);
+        };
+    }
 
-window.requestAnimFrame = window.requestAnimationFrame;
+    window.requestAnimFrame = window.requestAnimationFrame;
+})(this);
 
 /**
  * Converts a hex color number to an [R, G, B] array
@@ -75,14 +77,20 @@ PIXI.rgb2hex = function(rgb) {
  */
 if (typeof Function.prototype.bind !== 'function') {
     Function.prototype.bind = (function () {
-        var slice = Array.prototype.slice;
         return function (thisArg) {
-            var target = this, boundArgs = slice.call(arguments, 1);
+            var target = this, i = arguments.length - 1, boundArgs = [];
+            if (i > 0)
+            {
+                boundArgs.length = i;
+                while (i--) boundArgs[i] = arguments[i + 1];
+            }
 
             if (typeof target !== 'function') throw new TypeError();
 
             function bound() {
-                var args = boundArgs.concat(slice.call(arguments));
+                var i = arguments.length, args = new Array(i);
+                while (i--) args[i] = arguments[i];
+                args = boundArgs.concat(args);
                 target.apply(this instanceof bound ? this : thisArg, args);
             }
 
@@ -164,6 +172,7 @@ PIXI.unpackColorRGB = function(r, g, b)//r, g, b, a)
  */
 PIXI.canUseNewCanvasBlendModes = function()
 {
+    if (typeof document === 'undefined') return false;
     var canvas = document.createElement('canvas');
     canvas.width = 1;
     canvas.height = 1;
