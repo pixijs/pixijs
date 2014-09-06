@@ -848,7 +848,7 @@ PIXI.Graphics.prototype.updateBounds = function()
             minX = x < minX ? x : minX;
             maxX = x + w > maxX ? x + w : maxX;
 
-            minY = y < minY ? x : minY;
+            minY = y < minY ? y : minY;
             maxY = y + h > maxY ? y + h : maxY;
         }
         else if(type === PIXI.Graphics.CIRC || type === PIXI.Graphics.ELIP)
