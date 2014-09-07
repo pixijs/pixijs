@@ -43,7 +43,7 @@ PIXI.Text = function(text, style)
     this.context = this.canvas.getContext('2d');
 
 
-    this.resolution = 2;
+    this.resolution = 1;
 
 
     PIXI.Sprite.call(this, PIXI.Texture.fromCanvas(this.canvas));
