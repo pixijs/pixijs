@@ -144,7 +144,7 @@ PIXI.WebGLStencilManager.prototype.bindGraphics = function(graphics, webGLData, 
 
         gl.uniformMatrix3fv(shader.translationMatrix, false, graphics.worldTransform.toArray(true));
 
-        gl.uniform2f(shader.projectionVector, projection.x, -projection.y);
+        gl.uniform2f(shader.projectionVector, projection.x / PIXI.SCALE, -projection.y / PIXI.SCALE);
         gl.uniform2f(shader.offsetVector, -offset.x, -offset.y);
 
         gl.uniform3fv(shader.tintColor, PIXI.hex2rgb(graphics.tint));
@@ -169,7 +169,7 @@ PIXI.WebGLStencilManager.prototype.bindGraphics = function(graphics, webGLData, 
 
         gl.uniformMatrix3fv(shader.translationMatrix, false, graphics.worldTransform.toArray(true));
 
-        gl.uniform2f(shader.projectionVector, projection.x, -projection.y);
+        gl.uniform2f(shader.projectionVector, projection.x / PIXI.SCALE, -projection.y / PIXI.SCALE);
         gl.uniform2f(shader.offsetVector, -offset.x, -offset.y);
 
         gl.uniform3fv(shader.tintColor, PIXI.hex2rgb(graphics.tint));

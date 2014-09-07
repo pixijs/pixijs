@@ -50,7 +50,7 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode)
      * @type Number
      */
     this.height = height || 100;
-
+    
     /**
      * The framing rectangle of the render texture
      *
@@ -94,7 +94,7 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode)
         this.baseTexture._glTextures[gl.id] =  this.textureBuffer.texture;
 
         this.render = this.renderWebGL;
-        this.projection = new PIXI.Point(this.width/2 , -this.height/2);
+        this.projection = new PIXI.Point(this.width/2 / PIXI.SCALE , -this.height/2/PIXI.SCALE );
     }
     else
     {

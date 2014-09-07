@@ -6,7 +6,8 @@
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":142,"h":157},
-	"sourceSize": {"w":142,"h":157}
+	"sourceSize": {"w":142,"h":157},
+	"pivot": {"x":0.5,"y":0.5}
 },
 "flowerTop.png":
 {
@@ -14,7 +15,8 @@
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":119,"h":181},
-	"sourceSize": {"w":119,"h":181}
+	"sourceSize": {"w":119,"h":181},
+	"pivot": {"x":0.5,"y":0.5}
 },
 "helmlok.png":
 {
@@ -22,7 +24,8 @@
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":123,"h":177},
-	"sourceSize": {"w":123,"h":177}
+	"sourceSize": {"w":123,"h":177},
+	"pivot": {"x":0.5,"y":0.5}
 },
 "skully.png":
 {
@@ -30,15 +33,16 @@
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":155,"h":165},
-	"sourceSize": {"w":155,"h":165}
+	"sourceSize": {"w":155,"h":165},
+	"pivot": {"x":0.5,"y":0.5}
 }},
 "meta": {
-	"app": "http://www.texturepacker.com",
+	"app": "http://www.codeandweb.com/texturepacker",
 	"version": "1.0",
-	"image": "SpriteSheet.png",
+	"image": "SpriteSheet@2x.png",
 	"format": "RGBA8888",
 	"size": {"w":256,"h":512},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:9e3e5afd01ea8e418afabfbdcd724485$"
+	"smartupdate": "$TexturePacker:SmartUpdate:7f4fc4382dd005b17fce6f8d8d16113e:d249952eb7549ee793baa78c6ec65bda:24285c5b0081273b4a1d54f994c28869$"
 }
 }

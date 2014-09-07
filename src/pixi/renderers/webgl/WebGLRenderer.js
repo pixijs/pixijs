@@ -65,6 +65,8 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias, prese
      */
     this.height = height || 600;
 
+    this.width *= PIXI.SCALE;
+    this.height *= PIXI.SCALE;
     /**
      * The canvas element that everything is drawn to
      *
@@ -75,6 +77,8 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias, prese
     this.view.width = this.width;
     this.view.height = this.height;
 
+    this.view.style.width = this.width / PIXI.SCALE + "px";
+    this.view.style.height = this.height / PIXI.SCALE + "px";
     // deal with losing context..
     this.contextLost = this.handleContextLost.bind(this);
     this.contextRestoredLost = this.handleContextRestored.bind(this);

@@ -1,0 +1,54 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>pixi.js example 1</title>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			background-color: #000000;
+		}
+	</style>
+	<script src="../../bin/pixi.dev.js"></script>
+
+</head>
+<body>
+	<script>
+	// create an new instance of a pixi stage
+	var stage = new PIXI.Stage(0x000000);
+
+	// create a renderer instance
+	var renderer = PIXI.autoDetectRenderer(400, 300);
+
+	// add the renderer view element to the DOM
+	document.body.appendChild(renderer.view);
+
+	requestAnimFrame(animate);
+
+	// create a texture from an image path
+	var texture = PIXI.Texture.fromImage("ninja-masters2.png");
+
+	// create a new Sprite using the texture
+	var bunny = new PIXI.Sprite(texture);
+
+	stage.addChild(bunny);
+
+	function animate() {
+	    requestAnimFrame(animate);
+
+	    // just for fun, let's rotate mr rabbit a little
+	    // render the stage
+	    renderer.render(stage);
+	}
+
+	window.onresize = function()
+	{
+		renderer.resize(window.innerWidth, window.innerHeight)
+	}
+
+	window.onresize();
+	
+	</script>
+
+	</body>
+</html>

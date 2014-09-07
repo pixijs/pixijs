@@ -161,6 +161,7 @@ PIXI.Text.prototype.setText = function(text)
 PIXI.Text.prototype.updateText = function()
 {
     this.context.font = this.style.font;
+    
 
     var outputText = this.text;
 
@@ -184,14 +185,16 @@ PIXI.Text.prototype.updateText = function()
     var width = maxLineWidth + this.style.strokeThickness;
     if(this.style.dropShadow)width += this.style.dropShadowDistance;
 
-    this.canvas.width = width + this.context.lineWidth;
+    this.canvas.width = ( width + this.context.lineWidth ) * PIXI.SCALE;
     //calculate text height
     var lineHeight = this.determineFontHeight('font: ' + this.style.font  + ';') + this.style.strokeThickness;
     
     var height = lineHeight * lines.length;
     if(this.style.dropShadow)height += this.style.dropShadowDistance;
 
-    this.canvas.height = height;
+    this.canvas.height = height * PIXI.SCALE;
+
+    this.context.scale( PIXI.SCALE, PIXI.SCALE);
 
     if(navigator.isCocoonJS) this.context.clearRect(0,0,this.canvas.width,this.canvas.height);
     
@@ -202,6 +205,7 @@ PIXI.Text.prototype.updateText = function()
 
     var linePositionX;
     var linePositionY;
+
 
     if(this.style.dropShadow)
     {

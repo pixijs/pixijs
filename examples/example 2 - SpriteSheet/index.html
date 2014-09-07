@@ -14,7 +14,7 @@
 <body>
 	<script>
 	// create an array of assets to load
-	var assetsToLoader = [ "SpriteSheet.json"];
+	var assetsToLoader = [ "SpriteSheet@2x.json"];
 
 	// create a new loader
 	loader = new PIXI.AssetLoader(assetsToLoader);
@@ -56,7 +56,7 @@
 
 			// create an alien using the frame name..
 			var alien = PIXI.Sprite.fromFrame(frameName);
-			alien.tint = Math.random() * 0xFFFFFF;
+		//	alien.tint = Math.random() * 0xFFFFFF;
 
 			/*
 			 * fun fact for the day :)
@@ -81,14 +81,14 @@
 	    for (var i = 0; i < 100; i++)
 		{
 			var alien = aliens[i];
-			alien.rotation += 0.1;
+		///	alien.rotation += 0.1;
 		}
 
 		count += 0.01;
-		alienContainer.scale.x = Math.sin(count);
-		alienContainer.scale.y = Math.sin(count);
+	//	alienContainer.scale.x = Math.sin(count);
+	//	alienContainer.scale.y = Math.sin(count);
 
-		alienContainer.rotation += 0.01;
+	//	alienContainer.rotation += 0.01;
 	    
 	    // render the stage
 	    renderer.render(stage);
