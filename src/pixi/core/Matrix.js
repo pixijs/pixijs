@@ -47,7 +47,7 @@ PIXI.Matrix.prototype.fromArray = function(array)
  */
 PIXI.Matrix.prototype.toArray = function(transpose)
 {
-    if(!this.array) this.array = new Float32Array(9);
+    if(!this.array) this.array = new PIXI.Float32Array(9);
     var array = this.array;
 
     if(transpose)
@@ -116,6 +116,70 @@ PIXI.Matrix.prototype.applyInverse = function(pos, newPos)
 
     return newPos;
 };
+
+/**
+ * Translates the matrix on the x and y.
+ * @method translate
+ * @param {Number} x
+ * @param {Number} y
+ * @return {Matrix} This matrix. Good for chaining method calls.
+ **/
+PIXI.Matrix.prototype.translate = function(x, y) 
+{
+    this.tx += x;
+    this.ty += y;
+    
+    return this;
+};
+
+/**
+ * Applies a scale transformation to the matrix.
+ * @method scale
+ * @param {Number} x The amount to scale horizontally
+ * @param {Number} y The amount to scale vertically
+ * @return {Matrix} This matrix. Good for chaining method calls.
+ **/
+PIXI.Matrix.prototype.scale = function(x, y) 
+{
+    this.a *= x;
+    this.d *= y;
+    this.c *= x;
+    this.b *= y;
+    this.tx *= x;
+    this.ty *= y;
+
+    return this;
+};
+
+
+/**
+ * Applies a rotation transformation to the matrix.
+ * @method rotate
+ * @param {Number} angle The angle in radians.
+ * @return {Matrix} This matrix. Good for chaining method calls.
+ **/
+PIXI.Matrix.prototype.rotate = function(angle) 
+{
+    var cos = Math.cos( angle );
+    var sin = Math.sin( angle );
+
+    var a1 = this.a;
+    var c1 = this.c;
+    var tx1 = this.tx;
+
+    this.a = a1 * cos-this.b * sin;
+    this.b = a1 * sin+this.b * cos;
+    this.c = c1 * cos-this.d * sin;
+    this.d = c1 * sin+this.d * cos;
+    this.tx = tx1 * cos - this.ty * sin;
+    this.ty = tx1 * sin + this.ty * cos;
+ 
+    return this;
+};
+
+
+
+
 
 PIXI.identityMatrix = new PIXI.Matrix();
 
