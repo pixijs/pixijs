@@ -459,7 +459,7 @@ PIXI.DisplayObjectContainer.prototype._renderCanvas = function(renderSession)
 
     if(this._mask)
     {
-        renderSession.maskManager.pushMask(this._mask, renderSession.context);
+        renderSession.maskManager.pushMask(this._mask, renderSession);
     }
 
     for(var i=0,j=this.children.length; i<j; i++)
@@ -470,6 +470,6 @@ PIXI.DisplayObjectContainer.prototype._renderCanvas = function(renderSession)
 
     if(this._mask)
     {
-        renderSession.maskManager.popMask(renderSession.context);
+        renderSession.maskManager.popMask(renderSession);
     }
 };

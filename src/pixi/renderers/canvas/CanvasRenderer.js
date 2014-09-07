@@ -23,6 +23,8 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
 
     this.type = PIXI.CANVAS_RENDERER;
 
+    this.resolution = 1;
+    
     /**
      * This sets if the CanvasRenderer will clear the canvas or not before the new render pass.
      * If the Stage is NOT transparent Pixi will use a canvas sized fillRect operation every frame to set the canvas background color.
@@ -108,6 +110,9 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
      */
     this.height = height || 600;
 
+    this.width *= this.resolution;
+    this.height *= this.resolution;
+    
     /**
      * The canvas element that everything is drawn to
      *
@@ -127,8 +132,8 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
     // hack to enable some hardware acceleration!
     //this.view.style["transform"] = "translatez(0)";
 
-    this.view.width = this.width;
-    this.view.height = this.height;
+    this.view.width = this.width * this.resolution;
+    this.view.height = this.height * this.resolution;
     this.count = 0;
 
     /**
@@ -156,6 +161,8 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
          */
         roundPixels: false
     };
+
+    this.resize(width, height);
 
     if("imageSmoothingEnabled" in this.context)
         this.renderSession.smoothProperty = "imageSmoothingEnabled";
@@ -185,6 +192,7 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
     stage.updateTransform();
 
     this.context.setTransform(1,0,0,1,0,0);
+
     this.context.globalAlpha = 1;
 
     if (navigator.isCocoonJS && this.view.screencanvas) {
@@ -195,7 +203,7 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
     if (!this.transparent && this.clearBeforeRender)
     {
         this.context.fillStyle = stage.backgroundColorString;
-        this.context.fillRect(0, 0, this.width, this.height);
+        this.context.fillRect(0, 0, this.width , this.height);
     }
     else if (this.transparent && this.clearBeforeRender)
     {
@@ -231,11 +239,15 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
  */
 PIXI.CanvasRenderer.prototype.resize = function(width, height)
 {
-    this.width = width;
-    this.height = height;
+    this.width = width * this.resolution;
+    this.height = height * this.resolution;
 
-    this.view.width = width;
-    this.view.height = height;
+    this.view.width = this.width;
+    this.view.height = this.height;
+
+    this.view.style.width = this.width / this.resolution + "px";
+    this.view.style.height = this.height / this.resolution + "px";
+
 };
 
 /**
@@ -253,6 +265,7 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject, cont
     //var context = this.context;
 
     this.renderSession.context = context || this.context;
+    this.renderSession.resolution = this.resolution;
     displayObject._renderCanvas(this.renderSession);
 };
 

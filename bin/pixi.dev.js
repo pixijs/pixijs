@@ -76,7 +76,7 @@ PIXI.AUTO_PREVENT_DEFAULT = true;
 PIXI.RAD_TO_DEG = 180 / Math.PI;
 PIXI.DEG_TO_RAD = Math.PI / 180;
 
-PIXI.SCALE = 1;
+PIXI.RETINA_PREFIX = "@2x";
 //PIXI.SCALE_PREFIX "@x%%";
 
 PIXI.dontSayHello = false;
@@ -561,7 +561,7 @@ PIXI.Matrix.prototype.fromArray = function(array)
  */
 PIXI.Matrix.prototype.toArray = function(transpose)
 {
-    if(!this.array) this.array = new Float32Array(9);
+    if(!this.array) this.array = new PIXI.Float32Array(9);
     var array = this.array;
 
     if(transpose)
@@ -630,6 +630,70 @@ PIXI.Matrix.prototype.applyInverse = function(pos, newPos)
 
     return newPos;
 };
+
+/**
+ * Translates the matrix on the x and y.
+ * @method translate
+ * @param {Number} x
+ * @param {Number} y
+ * @return {Matrix} This matrix. Good for chaining method calls.
+ **/
+PIXI.Matrix.prototype.translate = function(x, y)
+{
+    this.tx += x;
+    this.ty += y;
+    
+    return this;
+};
+
+/**
+ * Applies a scale transformation to the matrix.
+ * @method scale
+ * @param {Number} x The amount to scale horizontally
+ * @param {Number} y The amount to scale vertically
+ * @return {Matrix} This matrix. Good for chaining method calls.
+ **/
+PIXI.Matrix.prototype.scale = function(x, y)
+{
+    this.a *= x;
+    this.d *= y;
+    this.c *= x;
+    this.b *= y;
+    this.tx *= x;
+    this.ty *= y;
+
+    return this;
+};
+
+
+/**
+ * Applies a rotation transformation to the matrix.
+ * @method rotate
+ * @param {Number} angle The angle in radians.
+ * @return {Matrix} This matrix. Good for chaining method calls.
+ **/
+PIXI.Matrix.prototype.rotate = function(angle)
+{
+    var cos = Math.cos( angle );
+    var sin = Math.sin( angle );
+
+    var a1 = this.a;
+    var c1 = this.c;
+    var tx1 = this.tx;
+
+    this.a = a1 * cos-this.b * sin;
+    this.b = a1 * sin+this.b * cos;
+    this.c = c1 * cos-this.d * sin;
+    this.d = c1 * sin+this.d * cos;
+    this.tx = tx1 * cos - this.ty * sin;
+    this.ty = tx1 * sin + this.ty * cos;
+ 
+    return this;
+};
+
+
+
+
 
 PIXI.identityMatrix = new PIXI.Matrix();
 
@@ -1791,7 +1855,7 @@ PIXI.DisplayObjectContainer.prototype._renderCanvas = function(renderSession)
 
     if(this._mask)
     {
-        renderSession.maskManager.pushMask(this._mask, renderSession.context);
+        renderSession.maskManager.pushMask(this._mask, renderSession);
     }
 
     for(var i=0,j=this.children.length; i<j; i++)
@@ -1802,7 +1866,7 @@ PIXI.DisplayObjectContainer.prototype._renderCanvas = function(renderSession)
 
     if(this._mask)
     {
-        renderSession.maskManager.popMask(renderSession.context);
+        renderSession.maskManager.popMask(renderSession);
     }
 };
 
@@ -2126,12 +2190,14 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
 
     if (this._mask)
     {
-        renderSession.maskManager.pushMask(this._mask, renderSession.context);
+        renderSession.maskManager.pushMask(this._mask, renderSession);
     }
 
     //  Ignore null sources
     if (this.texture.valid)
     {
+        var resolution = this.texture.baseTexture.resolution / renderSession.resolution;
+
         renderSession.context.globalAlpha = this.worldAlpha;
 
         //  Allow for pixel rounding
@@ -2152,8 +2218,8 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
                 this.worldTransform.c,
                 this.worldTransform.b,
                 this.worldTransform.d,
-                this.worldTransform.tx,
-                this.worldTransform.ty);
+                this.worldTransform.tx * renderSession.resolution,
+                this.worldTransform.ty * renderSession.resolution);
         }
 
         //  If smoothingEnabled is supported and we need to change the smoothing property for this texture
@@ -2183,10 +2249,10 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
                                 0,
                                 this.texture.crop.width,
                                 this.texture.crop.height,
-                                dx,
-                                dy,
-                                this.texture.crop.width,
-                                this.texture.crop.height);
+                                dx / resolution,
+                                dy / resolution,
+                                this.texture.crop.width / resolution,
+                                this.texture.crop.height / resolution);
         }
         else
         {
@@ -2196,10 +2262,10 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
                                 this.texture.crop.y,
                                 this.texture.crop.width,
                                 this.texture.crop.height,
-                                dx,
-                                dy,
-                                this.texture.crop.width,
-                                this.texture.crop.height);
+                                dx / resolution,
+                                dy / resolution,
+                                this.texture.crop.width / resolution,
+                                this.texture.crop.height / resolution);
         }
     }
 
@@ -2211,7 +2277,7 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
 
     if (this._mask)
     {
-        renderSession.maskManager.popMask(renderSession.context);
+        renderSession.maskManager.popMask(renderSession);
     }
 };
 
@@ -6557,7 +6623,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias, prese
 
     this.type = PIXI.WEBGL_RENDERER;
 
-    this.resolution = 1;//0.2;
+    this.resolution = 1;
 
     // do a catch.. only 1 webGL renderer..
     /**
@@ -6606,8 +6672,8 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias, prese
     this.view.width = this.width;
     this.view.height = this.height;
 
-    this.view.style.width = this.width / this.resolution + "px";
-    this.view.style.height = this.height / this.resolution + "px";
+    this.view.style.width = this.width / this.resolution + 'px';
+    this.view.style.height = this.height / this.resolution + 'px';
     // deal with losing context..
     this.contextLost = this.handleContextLost.bind(this);
     this.contextRestoredLost = this.handleContextRestored.bind(this);
@@ -6923,11 +6989,14 @@ PIXI.WebGLRenderer.updateTextureFrame = function(texture)
  */
 PIXI.WebGLRenderer.prototype.resize = function(width, height)
 {
-    this.width = width;
-    this.height = height;
+    this.width = width * this.resolution;
+    this.height = height * this.resolution;
 
     this.view.width = width;
     this.view.height = height;
+
+    this.view.style.width = this.width / this.resolution + 'px';
+    this.view.style.height = this.height / this.resolution + 'px';
 
     this.gl.viewport(0, 0, this.width, this.height);
 
@@ -7860,12 +7929,12 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
 
     var resolution = texture.baseTexture.resolution;
 
-    var a = worldTransform.a / resolution;//[0];
-    var b = worldTransform.c / resolution;//[3];
-    var c = worldTransform.b / resolution;//[1];
-    var d = worldTransform.d / resolution;//[4];
-    var tx = worldTransform.tx //* PIXI.SCALE;//[2];
-    var ty = worldTransform.ty //* PIXI.SCALE;///[5];
+    var a = worldTransform.a / resolution;
+    var b = worldTransform.c / resolution;
+    var c = worldTransform.b / resolution;
+    var d = worldTransform.d / resolution;
+    var tx = worldTransform.tx;
+    var ty = worldTransform.ty;
 
     // xy
     verticies[index++] = a * w1 + c * h1 + tx;
@@ -7981,12 +8050,14 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
 
     var index = this.currentBatchSize * 4 * this.vertSize;
 
+    var resolution = texture.baseTexture.resolution;
+
     var worldTransform = tilingSprite.worldTransform;
 
-    var a = worldTransform.a;//[0];
-    var b = worldTransform.c;//[3];
-    var c = worldTransform.b;//[1];
-    var d = worldTransform.d;//[4];
+    var a = worldTransform.a / resolution;//[0];
+    var b = worldTransform.c / resolution;//[3];
+    var c = worldTransform.b / resolution;//[1];
+    var d = worldTransform.d / resolution;//[4];
     var tx = worldTransform.tx;//[2];
     var ty = worldTransform.ty;///[5];
 
@@ -9065,14 +9136,23 @@ PIXI.CanvasMaskManager = function()
  * @param maskData the maskData that will be pushed
  * @param context {Context2D} the 2d drawing method of the canvas
  */
-PIXI.CanvasMaskManager.prototype.pushMask = function(maskData, context)
+PIXI.CanvasMaskManager.prototype.pushMask = function(maskData, renderSession)
 {
+	var context = renderSession.context;
+
     context.save();
     
     var cacheAlpha = maskData.alpha;
     var transform = maskData.worldTransform;
 
-    context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
+    var resolution = renderSession.resolution;
+
+    context.setTransform(transform.a * resolution,
+                         transform.c * resolution,
+                         transform.b * resolution,
+                         transform.d * resolution,
+                         transform.tx * resolution,
+                         transform.ty * resolution);
 
     PIXI.CanvasGraphics.renderGraphicsMask(maskData, context);
 
@@ -9087,9 +9167,9 @@ PIXI.CanvasMaskManager.prototype.pushMask = function(maskData, context)
  * @method popMask
  * @param context {Context2D} the 2d drawing method of the canvas
  */
-PIXI.CanvasMaskManager.prototype.popMask = function(context)
+PIXI.CanvasMaskManager.prototype.popMask = function(renderSession)
 {
-    context.restore();
+    renderSession.context.restore();
 };
 
 /**
@@ -9358,6 +9438,8 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
 
     this.type = PIXI.CANVAS_RENDERER;
 
+    this.resolution = 1;
+    
     /**
      * This sets if the CanvasRenderer will clear the canvas or not before the new render pass.
      * If the Stage is NOT transparent Pixi will use a canvas sized fillRect operation every frame to set the canvas background color.
@@ -9443,6 +9525,9 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
      */
     this.height = height || 600;
 
+    this.width *= this.resolution;
+    this.height *= this.resolution;
+    
     /**
      * The canvas element that everything is drawn to
      *
@@ -9462,8 +9547,8 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
     // hack to enable some hardware acceleration!
     //this.view.style["transform"] = "translatez(0)";
 
-    this.view.width = this.width;
-    this.view.height = this.height;
+    this.view.width = this.width * this.resolution;
+    this.view.height = this.height * this.resolution;
     this.count = 0;
 
     /**
@@ -9491,6 +9576,8 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
          */
         roundPixels: false
     };
+
+    this.resize(width, height);
 
     if("imageSmoothingEnabled" in this.context)
         this.renderSession.smoothProperty = "imageSmoothingEnabled";
@@ -9520,6 +9607,7 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
     stage.updateTransform();
 
     this.context.setTransform(1,0,0,1,0,0);
+
     this.context.globalAlpha = 1;
 
     if (navigator.isCocoonJS && this.view.screencanvas) {
@@ -9530,7 +9618,7 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
     if (!this.transparent && this.clearBeforeRender)
     {
         this.context.fillStyle = stage.backgroundColorString;
-        this.context.fillRect(0, 0, this.width, this.height);
+        this.context.fillRect(0, 0, this.width , this.height);
     }
     else if (this.transparent && this.clearBeforeRender)
     {
@@ -9566,11 +9654,15 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
  */
 PIXI.CanvasRenderer.prototype.resize = function(width, height)
 {
-    this.width = width;
-    this.height = height;
+    this.width = width * this.resolution;
+    this.height = height * this.resolution;
 
-    this.view.width = width;
-    this.view.height = height;
+    this.view.width = this.width;
+    this.view.height = this.height;
+
+    this.view.style.width = this.width / this.resolution + "px";
+    this.view.style.height = this.height / this.resolution + "px";
+
 };
 
 /**
@@ -9588,6 +9680,7 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject, cont
     //var context = this.context;
 
     this.renderSession.context = context || this.context;
+    this.renderSession.resolution = this.resolution;
     displayObject._renderCanvas(this.renderSession);
 };
 
@@ -10758,7 +10851,14 @@ PIXI.Graphics.prototype._renderCanvas = function(renderSession)
         renderSession.maskManager.pushMask(this._mask, renderSession.context);
     }
 
-    context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
+    var resolution = renderSession.resolution;
+    context.setTransform(transform.a * resolution,
+                         transform.c * resolution,
+                         transform.b * resolution,
+                         transform.d * resolution,
+                         transform.tx * resolution,
+                         transform.ty * resolution);
+
     PIXI.CanvasGraphics.renderGraphics(this, context);
 
      // simple render children!
@@ -11668,7 +11768,14 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
 
     var i,j;
 
-    context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx , transform.ty);
+    var resolution = renderSession.resolution;
+
+    context.setTransform(transform.a * resolution,
+                         transform.c * resolution,
+                         transform.b * resolution,
+                         transform.d * resolution,
+                         transform.tx * resolution,
+                         transform.ty * resolution);
 
     if (!this.__tilePattern ||  this.refreshTexture)
     {
@@ -13405,6 +13512,8 @@ PIXI.BaseTexture = function(source, scaleMode)
 {
     PIXI.EventTarget.call( this );
 
+    this.resolution = 1;
+    
     /**
      * [read-only] The width of the base texture set when the image has loaded
      *
@@ -13461,7 +13570,7 @@ PIXI.BaseTexture = function(source, scaleMode)
     this.premultipliedAlpha = true;
 
 
-    this.resolution = 1;
+    
 
     // used for webGL
     this._glTextures = [];
@@ -13565,6 +13674,7 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
 
     if(!baseTexture)
     {
+
         // new Image() breaks tex loading in some versions of Chrome.
         // See https://code.google.com/p/chromium/issues/detail?id=238071
         var image = new Image();//document.createElement('img');
@@ -13572,10 +13682,17 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
         {
             image.crossOrigin = '';
         }
+
         image.src = imageUrl;
         baseTexture = new PIXI.BaseTexture(image, scaleMode);
         baseTexture.imageUrl = imageUrl;
         PIXI.BaseTextureCache[imageUrl] = baseTexture;
+
+        // if there is an @2x at the end of the url we are going to assume its a highres image
+        if( imageUrl.indexOf(PIXI.RETINA_PREFIX + '.') !== -1)
+        {
+            baseTexture.resolution = 2;
+        }
     }
 
     return baseTexture;
@@ -14045,7 +14162,7 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode)
     else
     {
         this.render = this.renderCanvas;
-        this.textureBuffer = new PIXI.CanvasBuffer(this.width, this.height);
+        this.textureBuffer = new PIXI.CanvasBuffer(this.width* this.resolution, this.height* this.resolution);
         this.baseTexture.source = this.textureBuffer.canvas;
     }
 
@@ -14092,7 +14209,7 @@ PIXI.RenderTexture.prototype.resize = function(width, height, updateBase)
     }
     
     if(!this.valid)return;
-    this.textureBuffer.resize(this.width * 2, this.height * 2);
+    this.textureBuffer.resize(this.width * this.resolution, this.height * this.resolution);
    
 };
 
@@ -14200,6 +14317,9 @@ PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, position, cl
         displayObject.worldTransform.ty = 0;
     }
 
+ //   displayObject.worldTransform.a = 0.5;
+   // displayObject.worldTransform.d = 0.5;
+
     for(var i = 0, j = children.length; i < j; i++)
     {
         children[i].updateTransform();
@@ -14209,8 +14329,15 @@ PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, position, cl
 
     var context = this.textureBuffer.context;
 
-    this.renderer.renderDisplayObject(displayObject, context);
+    var realResolution = this.renderer.resolution;
 
+    this.renderer.resolution = this.resolution;
+    //this.baseTexture.resolution = 2;
+
+    this.renderer.renderDisplayObject(displayObject, context);
+    
+    this.renderer.resolution = realResolution;
+    
     context.setTransform(1,0,0,1,0,0);
 
     displayObject.worldTransform = originalWorldTransform;

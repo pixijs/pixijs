@@ -105,7 +105,7 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode)
     else
     {
         this.render = this.renderCanvas;
-        this.textureBuffer = new PIXI.CanvasBuffer(this.width, this.height);
+        this.textureBuffer = new PIXI.CanvasBuffer(this.width* this.resolution, this.height* this.resolution);
         this.baseTexture.source = this.textureBuffer.canvas;
     }
 
@@ -152,7 +152,7 @@ PIXI.RenderTexture.prototype.resize = function(width, height, updateBase)
     }
     
     if(!this.valid)return;
-    this.textureBuffer.resize(this.width * 2, this.height * 2);
+    this.textureBuffer.resize(this.width * this.resolution, this.height * this.resolution);
    
 };
 
@@ -260,6 +260,9 @@ PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, position, cl
         displayObject.worldTransform.ty = 0;
     }
 
+ //   displayObject.worldTransform.a = 0.5;
+   // displayObject.worldTransform.d = 0.5;
+
     for(var i = 0, j = children.length; i < j; i++)
     {
         children[i].updateTransform();
@@ -269,8 +272,15 @@ PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, position, cl
 
     var context = this.textureBuffer.context;
 
-    this.renderer.renderDisplayObject(displayObject, context);
+    var realResolution = this.renderer.resolution;
 
+    this.renderer.resolution = this.resolution;
+    //this.baseTexture.resolution = 2;
+
+    this.renderer.renderDisplayObject(displayObject, context);
+    
+    this.renderer.resolution = realResolution;
+    
     context.setTransform(1,0,0,1,0,0);
 
     displayObject.worldTransform = originalWorldTransform;

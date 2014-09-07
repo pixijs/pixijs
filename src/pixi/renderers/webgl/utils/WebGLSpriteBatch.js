@@ -196,12 +196,12 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
 
     var resolution = texture.baseTexture.resolution;
 
-    var a = worldTransform.a / resolution;//[0];
-    var b = worldTransform.c / resolution;//[3];
-    var c = worldTransform.b / resolution;//[1];
-    var d = worldTransform.d / resolution;//[4];
-    var tx = worldTransform.tx //* PIXI.SCALE;//[2];
-    var ty = worldTransform.ty //* PIXI.SCALE;///[5];
+    var a = worldTransform.a / resolution;
+    var b = worldTransform.c / resolution;
+    var c = worldTransform.b / resolution;
+    var d = worldTransform.d / resolution;
+    var tx = worldTransform.tx;
+    var ty = worldTransform.ty;
 
     // xy
     verticies[index++] = a * w1 + c * h1 + tx;
@@ -317,12 +317,14 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
 
     var index = this.currentBatchSize * 4 * this.vertSize;
 
+    var resolution = texture.baseTexture.resolution;
+
     var worldTransform = tilingSprite.worldTransform;
 
-    var a = worldTransform.a;//[0];
-    var b = worldTransform.c;//[3];
-    var c = worldTransform.b;//[1];
-    var d = worldTransform.d;//[4];
+    var a = worldTransform.a / resolution;//[0];
+    var b = worldTransform.c / resolution;//[3];
+    var c = worldTransform.b / resolution;//[1];
+    var d = worldTransform.d / resolution;//[4];
     var tx = worldTransform.tx;//[2];
     var ty = worldTransform.ty;///[5];
 

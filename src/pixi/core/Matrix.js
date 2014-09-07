@@ -124,7 +124,7 @@ PIXI.Matrix.prototype.applyInverse = function(pos, newPos)
  * @param {Number} y
  * @return {Matrix} This matrix. Good for chaining method calls.
  **/
-PIXI.Matrix.prototype.translate = function(x, y) 
+PIXI.Matrix.prototype.translate = function(x, y)
 {
     this.tx += x;
     this.ty += y;
@@ -139,7 +139,7 @@ PIXI.Matrix.prototype.translate = function(x, y)
  * @param {Number} y The amount to scale vertically
  * @return {Matrix} This matrix. Good for chaining method calls.
  **/
-PIXI.Matrix.prototype.scale = function(x, y) 
+PIXI.Matrix.prototype.scale = function(x, y)
 {
     this.a *= x;
     this.d *= y;
@@ -158,7 +158,7 @@ PIXI.Matrix.prototype.scale = function(x, y)
  * @param {Number} angle The angle in radians.
  * @return {Matrix} This matrix. Good for chaining method calls.
  **/
-PIXI.Matrix.prototype.rotate = function(angle) 
+PIXI.Matrix.prototype.rotate = function(angle)
 {
     var cos = Math.cos( angle );
     var sin = Math.sin( angle );

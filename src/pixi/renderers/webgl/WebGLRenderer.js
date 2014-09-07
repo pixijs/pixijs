@@ -30,7 +30,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias, prese
 
     this.type = PIXI.WEBGL_RENDERER;
 
-    this.resolution = 1;//0.2;
+    this.resolution = 1;
 
     // do a catch.. only 1 webGL renderer..
     /**
@@ -79,8 +79,8 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias, prese
     this.view.width = this.width;
     this.view.height = this.height;
 
-    this.view.style.width = this.width / this.resolution + "px";
-    this.view.style.height = this.height / this.resolution + "px";
+    this.view.style.width = this.width / this.resolution + 'px';
+    this.view.style.height = this.height / this.resolution + 'px';
     // deal with losing context..
     this.contextLost = this.handleContextLost.bind(this);
     this.contextRestoredLost = this.handleContextRestored.bind(this);
@@ -396,11 +396,14 @@ PIXI.WebGLRenderer.updateTextureFrame = function(texture)
  */
 PIXI.WebGLRenderer.prototype.resize = function(width, height)
 {
-    this.width = width;
-    this.height = height;
+    this.width = width * this.resolution;
+    this.height = height * this.resolution;
 
     this.view.width = width;
     this.view.height = height;
+
+    this.view.style.width = this.width / this.resolution + 'px';
+    this.view.style.height = this.height / this.resolution + 'px';
 
     this.gl.viewport(0, 0, this.width, this.height);
 
