@@ -30,6 +30,8 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias, prese
 
     this.type = PIXI.WEBGL_RENDERER;
 
+    this.resolution = 1;//0.2;
+
     // do a catch.. only 1 webGL renderer..
     /**
      * Whether the render view is transparent
@@ -65,8 +67,8 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias, prese
      */
     this.height = height || 600;
 
-    this.width *= PIXI.SCALE;
-    this.height *= PIXI.SCALE;
+    this.width *= this.resolution;
+    this.height *= this.resolution;
     /**
      * The canvas element that everything is drawn to
      *
@@ -77,8 +79,8 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias, prese
     this.view.width = this.width;
     this.view.height = this.height;
 
-    this.view.style.width = this.width / PIXI.SCALE + "px";
-    this.view.style.height = this.height / PIXI.SCALE + "px";
+    this.view.style.width = this.width / this.resolution + "px";
+    this.view.style.height = this.height / this.resolution + "px";
     // deal with losing context..
     this.contextLost = this.handleContextLost.bind(this);
     this.contextRestoredLost = this.handleContextRestored.bind(this);
@@ -139,8 +141,8 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias, prese
 
 
     this.projection = new PIXI.Point();
-    this.projection.x =  this.width/2;
-    this.projection.y =  -this.height/2;
+    this.projection.x =  this.width/2 * 2;
+    this.projection.y =  -this.height/2 * 2;
 
     this.offset = new PIXI.Point(0, 0);
 
@@ -402,8 +404,8 @@ PIXI.WebGLRenderer.prototype.resize = function(width, height)
 
     this.gl.viewport(0, 0, this.width, this.height);
 
-    this.projection.x =  this.width/2;
-    this.projection.y =  -this.height/2;
+    this.projection.x =  this.width / 2 / this.resolution;
+    this.projection.y =  -this.height / 2 / this.resolution;
 };
 
 /**

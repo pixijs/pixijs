@@ -13,6 +13,8 @@
  */
 PIXI.InteractionManager = function(stage)
 {
+    this.resolution = 1;
+
     /**
      * a reference to the stage
      *
@@ -340,8 +342,8 @@ PIXI.InteractionManager.prototype.onMouseMove = function(event)
     // TODO optimize by not check EVERY TIME! maybe half as often? //
     var rect = this.interactionDOMElement.getBoundingClientRect();
 
-    this.mouse.global.x = (event.clientX - rect.left) * (this.target.width / rect.width);
-    this.mouse.global.y = (event.clientY - rect.top) * ( this.target.height / rect.height);
+    this.mouse.global.x = (event.clientX - rect.left) * (this.target.width / rect.width) /  this.resolution;
+    this.mouse.global.y = (event.clientY - rect.top) * ( this.target.height / rect.height) / this.resolution;
 
     var length = this.interactiveItems.length;
 

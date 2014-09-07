@@ -126,7 +126,7 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
     }
     else
     {
-        throw new Error(child + ' The index '+ index +' supplied is out of bounds ' + this.children.length);
+        throw new Error(child + 'addChildAt: The index '+ index +' supplied is out of bounds ' + this.children.length);
     }
 };
 
@@ -170,7 +170,7 @@ PIXI.DisplayObjectContainer.prototype.getChildAt = function(index)
     }
     else
     {
-        throw new Error('Supplied index does not exist in the child list, or the supplied DisplayObject must be a child of the caller');
+        throw new Error('getChildAt: Supplied index '+ index +' does not exist in the child list, or the supplied DisplayObject must be a child of the caller');
     }
 };
 
@@ -232,7 +232,7 @@ PIXI.DisplayObjectContainer.prototype.removeChildren = function(beginIndex, endI
     }
     else
     {
-        throw new Error( 'Range Error, numeric values are outside the acceptable range' );
+        throw new Error( 'removeChildren: Range Error, numeric values are outside the acceptable range' );
     }
 };
 

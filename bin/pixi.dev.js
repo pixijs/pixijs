@@ -76,7 +76,7 @@ PIXI.AUTO_PREVENT_DEFAULT = true;
 PIXI.RAD_TO_DEG = 180 / Math.PI;
 PIXI.DEG_TO_RAD = Math.PI / 180;
 
-PIXI.SCALE = 2;
+PIXI.SCALE = 1;
 //PIXI.SCALE_PREFIX "@x%%";
 
 PIXI.dontSayHello = false;
@@ -1458,7 +1458,7 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
     }
     else
     {
-        throw new Error(child + ' The index '+ index +' supplied is out of bounds ' + this.children.length);
+        throw new Error(child + 'addChildAt: The index '+ index +' supplied is out of bounds ' + this.children.length);
     }
 };
 
@@ -1502,7 +1502,7 @@ PIXI.DisplayObjectContainer.prototype.getChildAt = function(index)
     }
     else
     {
-        throw new Error('Supplied index does not exist in the child list, or the supplied DisplayObject must be a child of the caller');
+        throw new Error('getChildAt: Supplied index '+ index +' does not exist in the child list, or the supplied DisplayObject must be a child of the caller');
     }
 };
 
@@ -1564,7 +1564,7 @@ PIXI.DisplayObjectContainer.prototype.removeChildren = function(beginIndex, endI
     }
     else
     {
-        throw new Error( 'Range Error, numeric values are outside the acceptable range' );
+        throw new Error( 'removeChildren: Range Error, numeric values are outside the acceptable range' );
     }
 };
 
@@ -2686,10 +2686,18 @@ PIXI.Text = function(text, style)
      */
     this.context = this.canvas.getContext('2d');
 
+
+    this.resolution = 2;
+
+
     PIXI.Sprite.call(this, PIXI.Texture.fromCanvas(this.canvas));
+
+    this.texture.baseTexture.resolution = this.resolution;
 
     this.setText(text);
     this.setStyle(style);
+
+
 };
 
 // constructor
@@ -2829,16 +2837,16 @@ PIXI.Text.prototype.updateText = function()
     var width = maxLineWidth + this.style.strokeThickness;
     if(this.style.dropShadow)width += this.style.dropShadowDistance;
 
-    this.canvas.width = ( width + this.context.lineWidth ) * PIXI.SCALE;
+    this.canvas.width = ( width + this.context.lineWidth ) * this.resolution;
     //calculate text height
     var lineHeight = this.determineFontHeight('font: ' + this.style.font  + ';') + this.style.strokeThickness;
     
     var height = lineHeight * lines.length;
     if(this.style.dropShadow)height += this.style.dropShadowDistance;
 
-    this.canvas.height = height * PIXI.SCALE;
+    this.canvas.height = height * this.resolution;
 
-    this.context.scale( PIXI.SCALE, PIXI.SCALE);
+    this.context.scale( this.resolution, this.resolution);
 
     if(navigator.isCocoonJS) this.context.clearRect(0,0,this.canvas.width,this.canvas.height);
     
@@ -3348,6 +3356,8 @@ PIXI.InteractionData.prototype.constructor = PIXI.InteractionData;
  */
 PIXI.InteractionManager = function(stage)
 {
+    this.resolution = 1;
+
     /**
      * a reference to the stage
      *
@@ -3675,8 +3685,8 @@ PIXI.InteractionManager.prototype.onMouseMove = function(event)
     // TODO optimize by not check EVERY TIME! maybe half as often? //
     var rect = this.interactionDOMElement.getBoundingClientRect();
 
-    this.mouse.global.x = (event.clientX - rect.left) * (this.target.width / rect.width);
-    this.mouse.global.y = (event.clientY - rect.top) * ( this.target.height / rect.height);
+    this.mouse.global.x = (event.clientX - rect.left) * (this.target.width / rect.width) /  this.resolution;
+    this.mouse.global.y = (event.clientY - rect.top) * ( this.target.height / rect.height) / this.resolution;
 
     var length = this.interactiveItems.length;
 
@@ -5743,7 +5753,7 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
             shader = renderSession.shaderManager.primitiveShader;
             gl.uniformMatrix3fv(shader.translationMatrix, false, graphics.worldTransform.toArray(true));
 
-            gl.uniform2f(shader.projectionVector, projection.x / PIXI.SCALE, -projection.y / PIXI.SCALE);
+            gl.uniform2f(shader.projectionVector, projection.x, -projection.y);
             gl.uniform2f(shader.offsetVector, -offset.x, -offset.y);
 
             gl.uniform3fv(shader.tintColor, PIXI.hex2rgb(graphics.tint));
@@ -6547,6 +6557,8 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias, prese
 
     this.type = PIXI.WEBGL_RENDERER;
 
+    this.resolution = 1;//0.2;
+
     // do a catch.. only 1 webGL renderer..
     /**
      * Whether the render view is transparent
@@ -6582,8 +6594,8 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias, prese
      */
     this.height = height || 600;
 
-    this.width *= PIXI.SCALE;
-    this.height *= PIXI.SCALE;
+    this.width *= this.resolution;
+    this.height *= this.resolution;
     /**
      * The canvas element that everything is drawn to
      *
@@ -6594,8 +6606,8 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias, prese
     this.view.width = this.width;
     this.view.height = this.height;
 
-    this.view.style.width = this.width / PIXI.SCALE + "px";
-    this.view.style.height = this.height / PIXI.SCALE + "px";
+    this.view.style.width = this.width / this.resolution + "px";
+    this.view.style.height = this.height / this.resolution + "px";
     // deal with losing context..
     this.contextLost = this.handleContextLost.bind(this);
     this.contextRestoredLost = this.handleContextRestored.bind(this);
@@ -6656,8 +6668,8 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias, prese
 
 
     this.projection = new PIXI.Point();
-    this.projection.x =  this.width/2;
-    this.projection.y =  -this.height/2;
+    this.projection.x =  this.width/2 * 2;
+    this.projection.y =  -this.height/2 * 2;
 
     this.offset = new PIXI.Point(0, 0);
 
@@ -6919,8 +6931,8 @@ PIXI.WebGLRenderer.prototype.resize = function(width, height)
 
     this.gl.viewport(0, 0, this.width, this.height);
 
-    this.projection.x =  this.width/2;
-    this.projection.y =  -this.height/2;
+    this.projection.x =  this.width / 2 / this.resolution;
+    this.projection.y =  -this.height / 2 / this.resolution;
 };
 
 /**
@@ -7372,7 +7384,7 @@ PIXI.WebGLStencilManager.prototype.bindGraphics = function(graphics, webGLData, 
 
         gl.uniformMatrix3fv(shader.translationMatrix, false, graphics.worldTransform.toArray(true));
 
-        gl.uniform2f(shader.projectionVector, projection.x / PIXI.SCALE, -projection.y / PIXI.SCALE);
+        gl.uniform2f(shader.projectionVector, projection.x, -projection.y);
         gl.uniform2f(shader.offsetVector, -offset.x, -offset.y);
 
         gl.uniform3fv(shader.tintColor, PIXI.hex2rgb(graphics.tint));
@@ -7397,7 +7409,7 @@ PIXI.WebGLStencilManager.prototype.bindGraphics = function(graphics, webGLData, 
 
         gl.uniformMatrix3fv(shader.translationMatrix, false, graphics.worldTransform.toArray(true));
 
-        gl.uniform2f(shader.projectionVector, projection.x / PIXI.SCALE, -projection.y / PIXI.SCALE);
+        gl.uniform2f(shader.projectionVector, projection.x, -projection.y);
         gl.uniform2f(shader.offsetVector, -offset.x, -offset.y);
 
         gl.uniform3fv(shader.tintColor, PIXI.hex2rgb(graphics.tint));
@@ -7846,10 +7858,12 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
 
     var worldTransform = sprite.worldTransform;//.toArray();
 
-    var a = worldTransform.a / PIXI.SCALE;//[0];
-    var b = worldTransform.c / PIXI.SCALE;//[3];
-    var c = worldTransform.b / PIXI.SCALE;//[1];
-    var d = worldTransform.d / PIXI.SCALE;//[4];
+    var resolution = texture.baseTexture.resolution;
+
+    var a = worldTransform.a / resolution;//[0];
+    var b = worldTransform.c / resolution;//[3];
+    var c = worldTransform.b / resolution;//[1];
+    var d = worldTransform.d / resolution;//[4];
     var tx = worldTransform.tx //* PIXI.SCALE;//[2];
     var ty = worldTransform.ty //* PIXI.SCALE;///[5];
 
@@ -8049,7 +8063,7 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
 
         // set the projection
         var projection = this.renderSession.projection;
-        gl.uniform2f(this.shader.projectionVector, projection.x / PIXI.SCALE, projection.y / PIXI.SCALE);
+        gl.uniform2f(this.shader.projectionVector, projection.x, projection.y);
 
         // set the pointers
         var stride =  this.vertSize * 4;
@@ -8953,6 +8967,7 @@ PIXI.FilterTexture = function(gl, width, height, scaleMode)
      */
     this.gl = gl;
 
+
     // next time to create a frame buffer and texture
     this.frameBuffer = gl.createFramebuffer();
     this.texture = gl.createTexture();
@@ -9007,11 +9022,11 @@ PIXI.FilterTexture.prototype.resize = function(width, height)
     var gl = this.gl;
 
     gl.bindTexture(gl.TEXTURE_2D,  this.texture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  width*PIXI.SCALE, height*PIXI.SCALE, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
-   // console.log( width, width*PIXI.SCALE)
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  width , height , 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+   // console.log( width, width )
     // update the stencil buffer width and height
     gl.bindRenderbuffer(gl.RENDERBUFFER, this.renderBuffer);
-    gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, width*PIXI.SCALE, height*PIXI.SCALE);
+    gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, width , height );
 };
 
 /**
@@ -13445,6 +13460,9 @@ PIXI.BaseTexture = function(source, scaleMode)
     */
     this.premultipliedAlpha = true;
 
+
+    this.resolution = 1;
+
     // used for webGL
     this._glTextures = [];
 
@@ -13973,13 +13991,16 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode)
      */
     this.height = height || 100;
     
+
+    this.resolution = 1;
+
     /**
      * The framing rectangle of the render texture
      *
      * @property frame
      * @type Rectangle
      */
-    this.frame = new PIXI.Rectangle(0, 0, this.width, this.height);
+    this.frame = new PIXI.Rectangle(0, 0, this.width * this.resolution, this.height * this.resolution);
 
     /**
      * This is the area of the BaseTexture image to actually copy to the Canvas / WebGL when rendering,
@@ -13988,8 +14009,9 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode)
      * @property crop
      * @type Rectangle
      */
-    this.crop = new PIXI.Rectangle(0, 0, this.width, this.height);
-    
+    this.crop = new PIXI.Rectangle(0, 0, this.width * this.resolution, this.height * this.resolution);
+        
+
     /**
      * The base texture object that this texture uses
      *
@@ -13997,9 +14019,11 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode)
      * @type BaseTexture
      */
     this.baseTexture = new PIXI.BaseTexture();
-    this.baseTexture.width = this.width;
-    this.baseTexture.height = this.height;
+    this.baseTexture.width = this.width * this.resolution;
+    this.baseTexture.height = this.height * this.resolution;
     this.baseTexture._glTextures = [];
+
+    this.baseTexture.resolution = this.resolution;
 
     this.baseTexture.scaleMode = scaleMode || PIXI.scaleModes.DEFAULT;
 
@@ -14012,11 +14036,11 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode)
     {
         var gl = this.renderer.gl;
 
-        this.textureBuffer = new PIXI.FilterTexture(gl, this.width, this.height, this.baseTexture.scaleMode);
+        this.textureBuffer = new PIXI.FilterTexture(gl, this.width * this.resolution, this.height * this.resolution, this.baseTexture.scaleMode);
         this.baseTexture._glTextures[gl.id] =  this.textureBuffer.texture;
 
         this.render = this.renderWebGL;
-        this.projection = new PIXI.Point(this.width/2 / PIXI.SCALE , -this.height/2/PIXI.SCALE );
+        this.projection = new PIXI.Point(this.width*0.5, -this.height*0.5);
     }
     else
     {
@@ -14068,7 +14092,7 @@ PIXI.RenderTexture.prototype.resize = function(width, height, updateBase)
     }
     
     if(!this.valid)return;
-    this.textureBuffer.resize(this.width, this.height);
+    this.textureBuffer.resize(this.width * 2, this.height * 2);
    
 };
 
@@ -14105,7 +14129,7 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, position, cle
 
     gl.colorMask(true, true, true, true);
 
-    gl.viewport(0, 0, this.width, this.height);
+    gl.viewport(0, 0, this.width * this.resolution, this.height * this.resolution);
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.textureBuffer.frameBuffer );
 

@@ -76,6 +76,9 @@ PIXI.BaseTexture = function(source, scaleMode)
     */
     this.premultipliedAlpha = true;
 
+
+    this.resolution = 1;
+
     // used for webGL
     this._glTextures = [];
 

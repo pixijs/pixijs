@@ -68,7 +68,7 @@ PIXI.AUTO_PREVENT_DEFAULT = true;
 PIXI.RAD_TO_DEG = 180 / Math.PI;
 PIXI.DEG_TO_RAD = Math.PI / 180;
 
-PIXI.SCALE = 2;
+PIXI.SCALE = 1;
 //PIXI.SCALE_PREFIX "@x%%";
 
 PIXI.dontSayHello = false;

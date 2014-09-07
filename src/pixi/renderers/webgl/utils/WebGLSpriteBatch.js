@@ -194,10 +194,12 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
 
     var worldTransform = sprite.worldTransform;//.toArray();
 
-    var a = worldTransform.a / PIXI.SCALE;//[0];
-    var b = worldTransform.c / PIXI.SCALE;//[3];
-    var c = worldTransform.b / PIXI.SCALE;//[1];
-    var d = worldTransform.d / PIXI.SCALE;//[4];
+    var resolution = texture.baseTexture.resolution;
+
+    var a = worldTransform.a / resolution;//[0];
+    var b = worldTransform.c / resolution;//[3];
+    var c = worldTransform.b / resolution;//[1];
+    var d = worldTransform.d / resolution;//[4];
     var tx = worldTransform.tx //* PIXI.SCALE;//[2];
     var ty = worldTransform.ty //* PIXI.SCALE;///[5];
 
@@ -397,7 +399,7 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
 
         // set the projection
         var projection = this.renderSession.projection;
-        gl.uniform2f(this.shader.projectionVector, projection.x / PIXI.SCALE, projection.y / PIXI.SCALE);
+        gl.uniform2f(this.shader.projectionVector, projection.x, projection.y);
 
         // set the pointers
         var stride =  this.vertSize * 4;

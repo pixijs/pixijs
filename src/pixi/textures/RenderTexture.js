@@ -51,13 +51,16 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode)
      */
     this.height = height || 100;
     
+
+    this.resolution = 1;
+
     /**
      * The framing rectangle of the render texture
      *
      * @property frame
      * @type Rectangle
      */
-    this.frame = new PIXI.Rectangle(0, 0, this.width, this.height);
+    this.frame = new PIXI.Rectangle(0, 0, this.width * this.resolution, this.height * this.resolution);
 
     /**
      * This is the area of the BaseTexture image to actually copy to the Canvas / WebGL when rendering,
@@ -66,8 +69,9 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode)
      * @property crop
      * @type Rectangle
      */
-    this.crop = new PIXI.Rectangle(0, 0, this.width, this.height);
-    
+    this.crop = new PIXI.Rectangle(0, 0, this.width * this.resolution, this.height * this.resolution);
+        
+
     /**
      * The base texture object that this texture uses
      *
@@ -75,9 +79,11 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode)
      * @type BaseTexture
      */
     this.baseTexture = new PIXI.BaseTexture();
-    this.baseTexture.width = this.width;
-    this.baseTexture.height = this.height;
+    this.baseTexture.width = this.width * this.resolution;
+    this.baseTexture.height = this.height * this.resolution;
     this.baseTexture._glTextures = [];
+
+    this.baseTexture.resolution = this.resolution;
 
     this.baseTexture.scaleMode = scaleMode || PIXI.scaleModes.DEFAULT;
 
@@ -90,11 +96,11 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode)
     {
         var gl = this.renderer.gl;
 
-        this.textureBuffer = new PIXI.FilterTexture(gl, this.width, this.height, this.baseTexture.scaleMode);
+        this.textureBuffer = new PIXI.FilterTexture(gl, this.width * this.resolution, this.height * this.resolution, this.baseTexture.scaleMode);
         this.baseTexture._glTextures[gl.id] =  this.textureBuffer.texture;
 
         this.render = this.renderWebGL;
-        this.projection = new PIXI.Point(this.width/2 / PIXI.SCALE , -this.height/2/PIXI.SCALE );
+        this.projection = new PIXI.Point(this.width*0.5, -this.height*0.5);
     }
     else
     {
@@ -146,7 +152,7 @@ PIXI.RenderTexture.prototype.resize = function(width, height, updateBase)
     }
     
     if(!this.valid)return;
-    this.textureBuffer.resize(this.width, this.height);
+    this.textureBuffer.resize(this.width * 2, this.height * 2);
    
 };
 
@@ -183,7 +189,7 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, position, cle
 
     gl.colorMask(true, true, true, true);
 
-    gl.viewport(0, 0, this.width, this.height);
+    gl.viewport(0, 0, this.width * this.resolution, this.height * this.resolution);
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.textureBuffer.frameBuffer );
 

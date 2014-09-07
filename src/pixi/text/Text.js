@@ -42,10 +42,18 @@ PIXI.Text = function(text, style)
      */
     this.context = this.canvas.getContext('2d');
 
+
+    this.resolution = 2;
+
+
     PIXI.Sprite.call(this, PIXI.Texture.fromCanvas(this.canvas));
+
+    this.texture.baseTexture.resolution = this.resolution;
 
     this.setText(text);
     this.setStyle(style);
+
+
 };
 
 // constructor
@@ -185,16 +193,16 @@ PIXI.Text.prototype.updateText = function()
     var width = maxLineWidth + this.style.strokeThickness;
     if(this.style.dropShadow)width += this.style.dropShadowDistance;
 
-    this.canvas.width = ( width + this.context.lineWidth ) * PIXI.SCALE;
+    this.canvas.width = ( width + this.context.lineWidth ) * this.resolution;
     //calculate text height
     var lineHeight = this.determineFontHeight('font: ' + this.style.font  + ';') + this.style.strokeThickness;
     
     var height = lineHeight * lines.length;
     if(this.style.dropShadow)height += this.style.dropShadowDistance;
 
-    this.canvas.height = height * PIXI.SCALE;
+    this.canvas.height = height * this.resolution;
 
-    this.context.scale( PIXI.SCALE, PIXI.SCALE);
+    this.context.scale( this.resolution, this.resolution);
 
     if(navigator.isCocoonJS) this.context.clearRect(0,0,this.canvas.width,this.canvas.height);
     
