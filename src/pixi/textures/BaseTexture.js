@@ -79,7 +79,7 @@ PIXI.BaseTexture = function(source, scaleMode)
     // used for webGL
     this._glTextures = [];
 
-    // used for webGL teture updateing...
+    // used for webGL texture updating...
     this._dirty = [];
 
     if(!source)return;
