@@ -148,7 +148,8 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
         maskManager: this.maskManager,
         scaleMode: null,
         smoothProperty: null,
-
+        renderer: this,//used to get stage dimensions for frustum culling
+        useFrustum: true,//used to disable frustum culling eg when drawing to RenderTexture
         /**
          * If true Pixi will Math.floor() x/y values when rendering, stopping pixel interpolation.
          * Handy for crisp pixel art and speed on legacy devices.
