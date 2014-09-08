@@ -73,6 +73,16 @@ PIXI.RETINA_PREFIX = "@2x";
 
 PIXI.dontSayHello = false;
 
+
+PIXI.defaultRenderOptions = {
+    view:null, 
+    transparent:false, 
+    antialias:false, 
+    preserveDrawingBuffer:false,
+    resolution:1,
+    clearBeforeRender:true
+}
+
 PIXI.sayHello = function (type) 
 {
     if(PIXI.dontSayHello)return;

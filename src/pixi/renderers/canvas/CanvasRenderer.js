@@ -10,11 +10,27 @@
  * @constructor
  * @param width=800 {Number} the width of the canvas view
  * @param height=600 {Number} the height of the canvas view
- * @param [view] {HTMLCanvasElement} the canvas to use as a view, optional
- * @param [transparent=false] {Boolean} the transparency of the render view, default false
+
+ * @param [options] {Object} The optional renderer parameters
+ * @param [options.view] {HTMLCanvasElement} the canvas to use as a view, optional
+ * @param [options.transparent=false] {Boolean} If the render view is transparent, default false
+ * @param [options.resolution=1] {Number} the resolution of the renderer retina would be 2
+ * @param [options.clearBeforeRender=true] {Boolean} This sets if the CanvasRenderer will clear the canvas or not before the new render pass.
  */
-PIXI.CanvasRenderer = function(width, height, view, transparent)
+PIXI.CanvasRenderer = function(width, height, options)
 {
+    if(options)
+    {
+        for (var i in PIXI.defaultRenderOptions)
+        {
+            options[i] = options[i] || PIXI.defaultRenderOptions[i];
+        }
+    }
+    else
+    {
+        options = PIXI.defaultRenderOptions;
+    }
+
     if(!PIXI.defaultRenderer)
     {
         PIXI.sayHello("Canvas");
@@ -23,7 +39,7 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
 
     this.type = PIXI.CANVAS_RENDERER;
 
-    this.resolution = 1;
+    this.resolution = options.resolution;
     
     /**
      * This sets if the CanvasRenderer will clear the canvas or not before the new render pass.
@@ -35,7 +51,7 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
      * @type Boolean
      * @default
      */
-    this.clearBeforeRender = true;
+    this.clearBeforeRender = options.clearBeforeRender;
 
     /**
      * Whether the render view is transparent
@@ -43,7 +59,7 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
      * @property transparent
      * @type Boolean
      */
-    this.transparent = !!transparent;
+    this.transparent = options.transparent;
 
     if(!PIXI.blendModesCanvas)
     {
@@ -119,7 +135,7 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
      * @property view
      * @type HTMLCanvasElement
      */
-    this.view = view || document.createElement( "canvas" );
+    this.view = options.view || document.createElement( "canvas" );
 
     /**
      * The canvas 2d context that everything is drawn with

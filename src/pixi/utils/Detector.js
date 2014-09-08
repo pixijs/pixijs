@@ -16,7 +16,7 @@
  * @param [preserveDrawingBuffer=false] {Boolean} enables drawing buffer preservation, enable this if you need to call toDataUrl on the webgl context
  *
  */
-PIXI.autoDetectRenderer = function(width, height, view, transparent, antialias, preserveDrawingBuffer)
+PIXI.autoDetectRenderer = function(width, height, options)
 {
     if(!width)width = 800;
     if(!height)height = 600;
@@ -32,10 +32,10 @@ PIXI.autoDetectRenderer = function(width, height, view, transparent, antialias, 
 
     if( webgl )
     {
-        return new PIXI.WebGLRenderer(width, height, view, transparent, antialias, preserveDrawingBuffer);
+        return new PIXI.WebGLRenderer(width, height, options);
     }
 
-    return  new PIXI.CanvasRenderer(width, height, view, transparent);
+    return  new PIXI.CanvasRenderer(width, height, options);
 };
 
 /**
@@ -53,7 +53,7 @@ PIXI.autoDetectRenderer = function(width, height, view, transparent, antialias, 
  * @param [preserveDrawingBuffer=false] {Boolean} enables drawing buffer preservation, enable this if you need to call toDataUrl on the webgl context
  *
  */
-PIXI.autoDetectRecommendedRenderer = function(width, height, view, transparent, antialias, preserveDrawingBuffer)
+PIXI.autoDetectRecommendedRenderer = function(width, height, options)
 {
     if(!width)width = 800;
     if(!height)height = 600;
@@ -71,8 +71,8 @@ PIXI.autoDetectRecommendedRenderer = function(width, height, view, transparent, 
 
     if( webgl && !isAndroid)
     {
-        return new PIXI.WebGLRenderer(width, height, view, transparent, antialias, preserveDrawingBuffer);
+        return new PIXI.WebGLRenderer(width, height, options);
     }
 
-    return  new PIXI.CanvasRenderer(width, height, view, transparent);
+    return  new PIXI.CanvasRenderer(width, height, options);
 };

@@ -1,4 +1,15 @@
 /**
+ * @license
+ * pixi.js - v1.6.1
+ * Copyright (c) 2012-2014, Mat Groves
+ * http://goodboydigital.com/
+ *
+ * Compiled: 2014-09-08
+ *
+ * pixi.js is licensed under the MIT License.
+ * http://www.opensource.org/licenses/mit-license.php
+ */
+/**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
@@ -80,6 +91,16 @@ PIXI.RETINA_PREFIX = "@2x";
 //PIXI.SCALE_PREFIX "@x%%";
 
 PIXI.dontSayHello = false;
+
+
+PIXI.defaultRenderOptions = {
+    view:null, 
+    transparent:false, 
+    antialias:false, 
+    preserveDrawingBuffer:false,
+    resolution:1,
+    clearBeforeRender:true
+}
 
 PIXI.sayHello = function (type) 
 {
@@ -4652,7 +4673,7 @@ PIXI.EventTarget = function () {
  * @param [preserveDrawingBuffer=false] {Boolean} enables drawing buffer preservation, enable this if you need to call toDataUrl on the webgl context
  *
  */
-PIXI.autoDetectRenderer = function(width, height, view, transparent, antialias, preserveDrawingBuffer)
+PIXI.autoDetectRenderer = function(width, height, options)
 {
     if(!width)width = 800;
     if(!height)height = 600;
@@ -4668,10 +4689,10 @@ PIXI.autoDetectRenderer = function(width, height, view, transparent, antialias, 
 
     if( webgl )
     {
-        return new PIXI.WebGLRenderer(width, height, view, transparent, antialias, preserveDrawingBuffer);
+        return new PIXI.WebGLRenderer(width, height, options);
     }
 
-    return  new PIXI.CanvasRenderer(width, height, view, transparent);
+    return  new PIXI.CanvasRenderer(width, height, options);
 };
 
 /**
@@ -4689,7 +4710,7 @@ PIXI.autoDetectRenderer = function(width, height, view, transparent, antialias, 
  * @param [preserveDrawingBuffer=false] {Boolean} enables drawing buffer preservation, enable this if you need to call toDataUrl on the webgl context
  *
  */
-PIXI.autoDetectRecommendedRenderer = function(width, height, view, transparent, antialias, preserveDrawingBuffer)
+PIXI.autoDetectRecommendedRenderer = function(width, height, options)
 {
     if(!width)width = 800;
     if(!height)height = 600;
@@ -4707,10 +4728,10 @@ PIXI.autoDetectRecommendedRenderer = function(width, height, view, transparent, 
 
     if( webgl && !isAndroid)
     {
-        return new PIXI.WebGLRenderer(width, height, view, transparent, antialias, preserveDrawingBuffer);
+        return new PIXI.WebGLRenderer(width, height, options);
     }
 
-    return  new PIXI.CanvasRenderer(width, height, view, transparent);
+    return  new PIXI.CanvasRenderer(width, height, options);
 };
 
 /*
@@ -6607,14 +6628,30 @@ PIXI.glContexts = []; // this is where we store the webGL contexts for easy acce
  * @constructor
  * @param width=0 {Number} the width of the canvas view
  * @param height=0 {Number} the height of the canvas view
- * @param view {HTMLCanvasElement} the canvas to use as a view, optional
- * @param transparent=false {Boolean} If the render view is transparent, default false
- * @param antialias=false {Boolean} sets antialias (only applicable in chrome at the moment)
- * @param preserveDrawingBuffer=false {Boolean} enables drawing buffer preservation, enable this if you need to call toDataUrl on the webgl context
  *
+ * @param [options] {Object} The optional renderer parameters
+ * @param [options.view] {HTMLCanvasElement} the canvas to use as a view, optional
+ * @param [options.transparent=false] {Boolean} If the render view is transparent, default false
+ * @param [options.antialias=false] {Boolean} sets antialias (only applicable in chrome at the moment)
+ * @param [options.preserveDrawingBuffer=false] {Boolean} enables drawing buffer preservation, enable this if you need to call toDataUrl on the webgl context
+ * @param [options.resolution=1] {Number} the resolution of the renderer retina would be 2
+ * 
  */
-PIXI.WebGLRenderer = function(width, height, view, transparent, antialias, preserveDrawingBuffer)
+PIXI.WebGLRenderer = function(width, height, options)
 {
+    if(options)
+    {
+        for (var i in PIXI.defaultRenderOptions)
+        {
+            options[i] = options[i] || PIXI.defaultRenderOptions[i];
+        }
+    }
+    else
+    {
+        options = PIXI.defaultRenderOptions;
+    }
+
+    
     if(!PIXI.defaultRenderer)
     {
         PIXI.sayHello('webGL');
@@ -6623,7 +6660,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias, prese
 
     this.type = PIXI.WEBGL_RENDERER;
 
-    this.resolution = 1;
+    this.resolution = options.resolution;
 
     // do a catch.. only 1 webGL renderer..
     /**
@@ -6632,7 +6669,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias, prese
      * @property transparent
      * @type Boolean
      */
-    this.transparent = !!transparent;
+    this.transparent = options.transparent;
 
     /**
      * The value of the preserveDrawingBuffer flag affects whether or not the contents of the stencil buffer is retained after rendering.
@@ -6640,7 +6677,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias, prese
      * @property preserveDrawingBuffer
      * @type Boolean
      */
-    this.preserveDrawingBuffer = preserveDrawingBuffer;
+    this.preserveDrawingBuffer = options.preserveDrawingBuffer;
 
     /**
      * The width of the canvas view
@@ -6660,20 +6697,14 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias, prese
      */
     this.height = height || 600;
 
-    this.width *= this.resolution;
-    this.height *= this.resolution;
     /**
      * The canvas element that everything is drawn to
      *
      * @property view
      * @type HTMLCanvasElement
      */
-    this.view = view || document.createElement( 'canvas' );
-    this.view.width = this.width;
-    this.view.height = this.height;
+    this.view = options.view || document.createElement( 'canvas' );
 
-    this.view.style.width = this.width / this.resolution + 'px';
-    this.view.style.height = this.height / this.resolution + 'px';
     // deal with losing context..
     this.contextLost = this.handleContextLost.bind(this);
     this.contextRestoredLost = this.handleContextRestored.bind(this);
@@ -6681,19 +6712,19 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias, prese
     this.view.addEventListener('webglcontextlost', this.contextLost, false);
     this.view.addEventListener('webglcontextrestored', this.contextRestoredLost, false);
 
-    this.options = {
+    this.contextOptions = {
         alpha: this.transparent,
-        antialias:!!antialias, // SPEED UP??
-        premultipliedAlpha:!!transparent && transparent !== 'notMultiplied',
+        antialias: options.antialias, // SPEED UP??
+        premultipliedAlpha:this.transparent && this.transparent !== 'notMultiplied',
         stencil:true,
-        preserveDrawingBuffer: preserveDrawingBuffer
+        preserveDrawingBuffer: options.preserveDrawingBuffer
     };
 
     var gl = null;
 
     ['experimental-webgl', 'webgl'].forEach(function(name) {
         try {
-            gl = gl || this.view.getContext(name,  this.options);
+            gl = gl || this.view.getContext(name,  this.contextOptions);
         } catch(e) {}
     }, this);
 
@@ -6734,18 +6765,18 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias, prese
 
 
     this.projection = new PIXI.Point();
-    this.projection.x =  this.width/2 * 2;
-    this.projection.y =  -this.height/2 * 2;
+   // this.projection.x =  this.width/2 * 2;
+//    this.projection.y =  -this.height/2 * 2;
 
     this.offset = new PIXI.Point(0, 0);
 
-    this.resize(this.width, this.height);
+    this.resize(width, height);
+
     this.contextLost = false;
 
     // time to create the render managers! each one focuses on managine a state in webGL
     this.shaderManager = new PIXI.WebGLShaderManager(gl);                   // deals with managing the shader programs and their attribs
     this.spriteBatch = new PIXI.WebGLSpriteBatch(gl);                       // manages the rendering of sprites
-    //this.primitiveBatch = new PIXI.WebGLPrimitiveBatch(gl);               // primitive batch renderer
     this.maskManager = new PIXI.WebGLMaskManager(gl);                       // manages the masks using the stencil buffer
     this.filterManager = new PIXI.WebGLFilterManager(gl, this.transparent); // manages the filters
     this.stencilManager = new PIXI.WebGLStencilManager(gl);
@@ -6758,7 +6789,6 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias, prese
     this.renderSession.maskManager = this.maskManager;
     this.renderSession.filterManager = this.filterManager;
     this.renderSession.blendModeManager = this.blendModeManager;
-   // this.renderSession.primitiveBatch = this.primitiveBatch;
     this.renderSession.spriteBatch = this.spriteBatch;
     this.renderSession.stencilManager = this.stencilManager;
     this.renderSession.renderer = this;
@@ -6992,12 +7022,13 @@ PIXI.WebGLRenderer.prototype.resize = function(width, height)
     this.width = width * this.resolution;
     this.height = height * this.resolution;
 
-    this.view.width = width;
-    this.view.height = height;
+    this.view.width = this.width;
+    this.view.height = this.height;
 
-    this.view.style.width = this.width / this.resolution + 'px';
-    this.view.style.height = this.height / this.resolution + 'px';
+    this.view.style.width = width + 'px';
+    this.view.style.height = height + 'px';
 
+   // console.log(this.width / this.resolution)
     this.gl.viewport(0, 0, this.width, this.height);
 
     this.projection.x =  this.width / 2 / this.resolution;
@@ -7110,11 +7141,11 @@ PIXI.WebGLRenderer.prototype.handleContextRestored = function()
 
     //try 'experimental-webgl'
     try {
-        this.gl = this.view.getContext('experimental-webgl',  this.options);
+        this.gl = this.view.getContext('experimental-webgl',  this.contextOptions);
     } catch (e) {
         //try 'webgl'
         try {
-            this.gl = this.view.getContext('webgl',  this.options);
+            this.gl = this.view.getContext('webgl',  this.contextOptions);
         } catch (e2) {
             // fail, not able to get a context
             throw new Error(' This browser does not support webGL. Try using the canvas renderer' + this);
@@ -9425,11 +9456,27 @@ PIXI.CanvasTinter.tintMethod = PIXI.CanvasTinter.canUseMultiply ? PIXI.CanvasTin
  * @constructor
  * @param width=800 {Number} the width of the canvas view
  * @param height=600 {Number} the height of the canvas view
- * @param [view] {HTMLCanvasElement} the canvas to use as a view, optional
- * @param [transparent=false] {Boolean} the transparency of the render view, default false
+
+ * @param [options] {Object} The optional renderer parameters
+ * @param [options.view] {HTMLCanvasElement} the canvas to use as a view, optional
+ * @param [options.transparent=false] {Boolean} If the render view is transparent, default false
+ * @param [options.resolution=1] {Number} the resolution of the renderer retina would be 2
+ * @param [options.clearBeforeRender=true] {Boolean} This sets if the CanvasRenderer will clear the canvas or not before the new render pass.
  */
-PIXI.CanvasRenderer = function(width, height, view, transparent)
+PIXI.CanvasRenderer = function(width, height, options)
 {
+    if(options)
+    {
+        for (var i in PIXI.defaultRenderOptions)
+        {
+            options[i] = options[i] || PIXI.defaultRenderOptions[i];
+        }
+    }
+    else
+    {
+        options = PIXI.defaultRenderOptions;
+    }
+
     if(!PIXI.defaultRenderer)
     {
         PIXI.sayHello("Canvas");
@@ -9438,7 +9485,7 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
 
     this.type = PIXI.CANVAS_RENDERER;
 
-    this.resolution = 1;
+    this.resolution = options.resolution;
     
     /**
      * This sets if the CanvasRenderer will clear the canvas or not before the new render pass.
@@ -9450,7 +9497,7 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
      * @type Boolean
      * @default
      */
-    this.clearBeforeRender = true;
+    this.clearBeforeRender = options.clearBeforeRender;
 
     /**
      * Whether the render view is transparent
@@ -9458,7 +9505,7 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
      * @property transparent
      * @type Boolean
      */
-    this.transparent = !!transparent;
+    this.transparent = options.transparent;
 
     if(!PIXI.blendModesCanvas)
     {
@@ -9534,7 +9581,7 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
      * @property view
      * @type HTMLCanvasElement
      */
-    this.view = view || document.createElement( "canvas" );
+    this.view = options.view || document.createElement( "canvas" );
 
     /**
      * The canvas 2d context that everything is drawn with
@@ -16499,4 +16546,3 @@ Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'angle', {
         root.PIXI = PIXI;
     }
 }).call(this);
-//# sourceMappingURL=pixi.dev.js.map
