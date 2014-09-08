@@ -216,8 +216,12 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, position, cle
     PIXI.WebGLRenderer.updateTextures();
 
     this.renderer.spriteBatch.dirty = true;
-    
+
+    //store old value
+    var useCulling = this.renderer.renderSession.useCulling;
+    this.renderer.renderSession.useCulling = false;    //turn off culling
     this.renderer.renderDisplayObject(displayObject, this.projection, this.textureBuffer.frameBuffer);
+    this.renderer.renderSession.useCulling = useCulling;
 
     displayObject.worldTransform = originalWorldTransform;
 
@@ -263,7 +267,11 @@ PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, position, cl
 
     var context = this.textureBuffer.context;
 
+    //store old value
+    var useCulling = this.renderer.renderSession.useCulling;
+    this.renderer.renderSession.useCulling = false;    //turn off culling
     this.renderer.renderDisplayObject(displayObject, context);
+    this.renderer.renderSession.useCulling = useCulling;
 
     context.setTransform(1,0,0,1,0,0);
 

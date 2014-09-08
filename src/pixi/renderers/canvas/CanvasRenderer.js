@@ -148,6 +148,8 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
         maskManager: this.maskManager,
         scaleMode: null,
         smoothProperty: null,
+        renderer: this,//used to get stage dimensions for viewport culling
+        useCulling: true,//used to disable viewport culling eg when drawing to RenderTexture
 
         /**
          * If true Pixi will Math.floor() x/y values when rendering, stopping pixel interpolation.

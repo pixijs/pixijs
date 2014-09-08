@@ -244,7 +244,10 @@ PIXI.Sprite.prototype._renderWebGL = function(renderSession)
 {
     // if the sprite is not visible or the alpha is 0 then no need to render this element
     if(!this.visible || this.alpha <= 0)return;
-    
+
+    //apply viewport culling
+    if(renderSession.useCulling && ! this.viewportCheck(renderSession)) return;
+
     var i,j;
 
     // do a quick check to see if this element has a mask or a filter.
@@ -308,8 +311,11 @@ PIXI.Sprite.prototype._renderWebGL = function(renderSession)
 PIXI.Sprite.prototype._renderCanvas = function(renderSession)
 {
     // If the sprite is not visible or the alpha is 0 then no need to render this element
-    if (this.visible === false || this.alpha === 0 || this.texture.crop.width <= 0 || this.texture.crop.height <= 0) return;
-    
+    if (this.visible === false || this.alpha === 0) return;
+
+    //apply viewport culling
+    if(renderSession.useCulling && ! this.viewportCheck(renderSession)) return;
+
     if (this.blendMode !== renderSession.currentBlendMode)
     {
         renderSession.currentBlendMode = this.blendMode;

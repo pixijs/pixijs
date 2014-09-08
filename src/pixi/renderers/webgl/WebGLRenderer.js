@@ -163,6 +163,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias, prese
     this.renderSession.spriteBatch = this.spriteBatch;
     this.renderSession.stencilManager = this.stencilManager;
     this.renderSession.renderer = this;
+    this.renderSession.useCulling = true;//used to disable viewport culling eg when drawing to RenderTexture
 
     gl.useProgram(this.shaderManager.defaultShader.program);
 

@@ -441,6 +441,25 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'cacheAsBitmap', {
     }
 });
 
+/**
+ * Checks this objects world bounds for intersection with the stage viewport
+ *
+ * @method viewportCheck
+ * @return {Boolean} true if bounds rect does intersect with the stage rect
+ */
+PIXI.DisplayObject.prototype.viewportCheck = function(renderSession){
+    //get world bounds
+    var bounds = this.getBounds();
+    //get stage rect from the renderer via the renderSession object
+    var stageW = renderSession.renderer.width;
+    var stageH = renderSession.renderer.height;
+    //check bounds against stage rect
+    if(bounds.x > stageW || bounds.y > stageH || bounds.x + bounds.width < 0 || bounds.y + bounds.height < 0) {
+        return false;
+    }
+    return true;
+};
+
 /*
  * Updates the object transform for rendering
  *
