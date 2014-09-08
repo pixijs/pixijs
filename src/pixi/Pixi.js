@@ -101,3 +101,12 @@ PIXI.sayHello = function (type)
 
     PIXI.dontSayHello = true;
 };
+
+// If browser doesn't support ES5 Object methods (create, keys etc.),
+// terminate the script, leaving PIXI undefined.
+// This prevents script failure in old browsers like IE8.
+// http://kangax.github.io/compat-table/es5/
+if(!Object['create'])
+{
+    return;
+}
