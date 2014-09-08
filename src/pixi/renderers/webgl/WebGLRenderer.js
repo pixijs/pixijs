@@ -46,6 +46,13 @@ PIXI.WebGLRenderer = function(width, height, options)
 
     this.type = PIXI.WEBGL_RENDERER;
 
+    /**
+     * The resolution of the renderer
+     *
+     * @property resolution
+     * @type Number
+     * @default 1
+     */
     this.resolution = options.resolution;
 
     // do a catch.. only 1 webGL renderer..
@@ -373,8 +380,6 @@ PIXI.WebGLRenderer.destroyTexture = function(texture)
  */
 PIXI.WebGLRenderer.updateTextureFrame = function(texture)
 {
-    //texture.updateFrame = false;
-
     // now set the uvs. Figured that the uv data sits with a texture rather than a sprite.
     // so uv data is stored on the texture itself
     texture._updateWebGLuvs();
