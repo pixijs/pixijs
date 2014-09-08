@@ -147,12 +147,7 @@ PIXI.WebGLRenderer = function(width, height, options)
         PIXI.blendModesWebGL[PIXI.blendModes.LUMINOSITY]    = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
     }
 
-
-
-
     this.projection = new PIXI.Point();
-   // this.projection.x =  this.width/2 * 2;
-//    this.projection.y =  -this.height/2 * 2;
 
     this.offset = new PIXI.Point(0, 0);
 
@@ -168,6 +163,7 @@ PIXI.WebGLRenderer = function(width, height, options)
     this.stencilManager = new PIXI.WebGLStencilManager(gl);
     this.blendModeManager = new PIXI.WebGLBlendModeManager(gl);
 
+    // TODO remove
     this.renderSession = {};
     this.renderSession.gl = this.gl;
     this.renderSession.drawCount = 0;
@@ -179,12 +175,10 @@ PIXI.WebGLRenderer = function(width, height, options)
     this.renderSession.stencilManager = this.stencilManager;
     this.renderSession.renderer = this;
 
-    gl.useProgram(this.shaderManager.defaultShader.program);
-
     gl.disable(gl.DEPTH_TEST);
     gl.disable(gl.CULL_FACE);
-
     gl.enable(gl.BLEND);
+
     gl.colorMask(true, true, true, this.transparent);
 };
 
@@ -226,7 +220,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
         if(!stage._interactiveEventsAdded)
         {
             stage._interactiveEventsAdded = true;
-            stage.interactionManager.setTarget(this);
+            stage.interactionManager.setTarget( this );
         }
     }
 
@@ -247,7 +241,6 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
     {
         gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], 1);
     }
-
 
     gl.clear(gl.COLOR_BUFFER_BIT);
 
@@ -315,8 +308,6 @@ PIXI.WebGLRenderer.prototype.renderDisplayObject = function(displayObject, proje
     // start the sprite batch
     this.spriteBatch.begin(this.renderSession);
 
-//    this.primitiveBatch.begin(this.renderSession);
-
     // start the filter manager
     this.filterManager.begin(this.renderSession, buffer);
 
@@ -325,8 +316,6 @@ PIXI.WebGLRenderer.prototype.renderDisplayObject = function(displayObject, proje
 
     // finish the sprite batch
     this.spriteBatch.end();
-
-//    this.primitiveBatch.end();
 };
 
 /**
@@ -339,11 +328,6 @@ PIXI.WebGLRenderer.prototype.renderDisplayObject = function(displayObject, proje
 PIXI.WebGLRenderer.updateTextures = function()
 {
     var i = 0;
-
-    //TODO break this out into a texture manager...
-  //  for (i = 0; i < PIXI.texturesToUpdate.length; i++)
-  //      PIXI..updateWebGLTexture(PIXI.texturesToUpdate[i], this.gl);
-
 
     for (i=0; i < PIXI.Texture.frameUpdates.length; i++)
         PIXI.WebGLRenderer.updateTextureFrame(PIXI.Texture.frameUpdates[i]);
@@ -602,7 +586,6 @@ PIXI.WebGLRenderer.prototype.destroy = function()
     // time to create the render managers! each one focuses on managine a state in webGL
     this.shaderManager.destroy();
     this.spriteBatch.destroy();
-    // this.primitiveBatch.destroy();
     this.maskManager.destroy();
     this.filterManager.destroy();
 
@@ -612,7 +595,6 @@ PIXI.WebGLRenderer.prototype.destroy = function()
     this.filterManager = null;
 
     this.gl = null;
-    //
     this.renderSession = null;
 };
 
