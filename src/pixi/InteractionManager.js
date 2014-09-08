@@ -13,8 +13,6 @@
  */
 PIXI.InteractionManager = function(stage)
 {
-    this.resolution = 1;
-
     /**
      * a reference to the stage
      *
@@ -102,6 +100,8 @@ PIXI.InteractionManager = function(stage)
      *
      */
     this.mouseOut = false;
+
+    this.resolution = 1;
 };
 
 // constructor
@@ -160,6 +160,7 @@ PIXI.InteractionManager.prototype.collectInteractiveSprite = function(displayObj
 PIXI.InteractionManager.prototype.setTarget = function(target)
 {
     this.target = target;
+    this.resolution = target.resolution;
 
     //check if the dom element has been set. If it has don't do anything
     if( this.interactionDOMElement === null ) {
@@ -342,7 +343,7 @@ PIXI.InteractionManager.prototype.onMouseMove = function(event)
     // TODO optimize by not check EVERY TIME! maybe half as often? //
     var rect = this.interactionDOMElement.getBoundingClientRect();
 
-    this.mouse.global.x = (event.clientX - rect.left) * (this.target.width / rect.width) /  this.resolution;
+    this.mouse.global.x = (event.clientX - rect.left) * (this.target.width / rect.width) / this.resolution;
     this.mouse.global.y = (event.clientY - rect.top) * ( this.target.height / rect.height) / this.resolution;
 
     var length = this.interactiveItems.length;
