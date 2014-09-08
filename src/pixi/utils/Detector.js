@@ -10,11 +10,14 @@
  * @static
  * @param width=800 {Number} the width of the renderers view
  * @param height=600 {Number} the height of the renderers view
- * @param [view] {Canvas} the canvas to use as a view, optional 
- * @param [transparent=false] {Boolean} the transparency of the render view, default false
- * @param [antialias=false] {Boolean} sets antialias (only applicable in webGL chrome at the moment)
- * @param [preserveDrawingBuffer=false] {Boolean} enables drawing buffer preservation, enable this if you need to call toDataUrl on the webgl context
- *
+ * 
+ * @param [options] {Object} The optional renderer parameters
+ * @param [options.view] {HTMLCanvasElement} the canvas to use as a view, optional
+ * @param [options.transparent=false] {Boolean} If the render view is transparent, default false
+ * @param [options.antialias=false] {Boolean} sets antialias (only applicable in chrome at the moment)
+ * @param [options.preserveDrawingBuffer=false] {Boolean} enables drawing buffer preservation, enable this if you need to call toDataUrl on the webgl context
+ * @param [options.resolution=1] {Number} the resolution of the renderer retina would be 2
+ * 
  */
 PIXI.autoDetectRenderer = function(width, height, options)
 {
@@ -47,11 +50,14 @@ PIXI.autoDetectRenderer = function(width, height, options)
  * @static
  * @param width=800 {Number} the width of the renderers view
  * @param height=600 {Number} the height of the renderers view
- * @param [view] {Canvas} the canvas to use as a view, optional 
- * @param [transparent=false] {Boolean} the transparency of the render view, default false
- * @param [antialias=false] {Boolean} sets antialias (only applicable in webGL chrome at the moment)
- * @param [preserveDrawingBuffer=false] {Boolean} enables drawing buffer preservation, enable this if you need to call toDataUrl on the webgl context
- *
+ * 
+ * @param [options] {Object} The optional renderer parameters
+ * @param [options.view] {HTMLCanvasElement} the canvas to use as a view, optional
+ * @param [options.transparent=false] {Boolean} If the render view is transparent, default false
+ * @param [options.antialias=false] {Boolean} sets antialias (only applicable in chrome at the moment)
+ * @param [options.preserveDrawingBuffer=false] {Boolean} enables drawing buffer preservation, enable this if you need to call toDataUrl on the webgl context
+ * @param [options.resolution=1] {Number} the resolution of the renderer retina would be 2
+ * 
  */
 PIXI.autoDetectRecommendedRenderer = function(width, height, options)
 {
