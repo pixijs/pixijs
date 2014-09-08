@@ -4667,11 +4667,14 @@ PIXI.EventTarget = function () {
  * @static
  * @param width=800 {Number} the width of the renderers view
  * @param height=600 {Number} the height of the renderers view
- * @param [view] {Canvas} the canvas to use as a view, optional 
- * @param [transparent=false] {Boolean} the transparency of the render view, default false
- * @param [antialias=false] {Boolean} sets antialias (only applicable in webGL chrome at the moment)
- * @param [preserveDrawingBuffer=false] {Boolean} enables drawing buffer preservation, enable this if you need to call toDataUrl on the webgl context
- *
+ * 
+ * @param [options] {Object} The optional renderer parameters
+ * @param [options.view] {HTMLCanvasElement} the canvas to use as a view, optional
+ * @param [options.transparent=false] {Boolean} If the render view is transparent, default false
+ * @param [options.antialias=false] {Boolean} sets antialias (only applicable in chrome at the moment)
+ * @param [options.preserveDrawingBuffer=false] {Boolean} enables drawing buffer preservation, enable this if you need to call toDataUrl on the webgl context
+ * @param [options.resolution=1] {Number} the resolution of the renderer retina would be 2
+ * 
  */
 PIXI.autoDetectRenderer = function(width, height, options)
 {
@@ -4704,11 +4707,14 @@ PIXI.autoDetectRenderer = function(width, height, options)
  * @static
  * @param width=800 {Number} the width of the renderers view
  * @param height=600 {Number} the height of the renderers view
- * @param [view] {Canvas} the canvas to use as a view, optional 
- * @param [transparent=false] {Boolean} the transparency of the render view, default false
- * @param [antialias=false] {Boolean} sets antialias (only applicable in webGL chrome at the moment)
- * @param [preserveDrawingBuffer=false] {Boolean} enables drawing buffer preservation, enable this if you need to call toDataUrl on the webgl context
- *
+ * 
+ * @param [options] {Object} The optional renderer parameters
+ * @param [options.view] {HTMLCanvasElement} the canvas to use as a view, optional
+ * @param [options.transparent=false] {Boolean} If the render view is transparent, default false
+ * @param [options.antialias=false] {Boolean} sets antialias (only applicable in chrome at the moment)
+ * @param [options.preserveDrawingBuffer=false] {Boolean} enables drawing buffer preservation, enable this if you need to call toDataUrl on the webgl context
+ * @param [options.resolution=1] {Number} the resolution of the renderer retina would be 2
+ * 
  */
 PIXI.autoDetectRecommendedRenderer = function(width, height, options)
 {
@@ -6761,12 +6767,7 @@ PIXI.WebGLRenderer = function(width, height, options)
         PIXI.blendModesWebGL[PIXI.blendModes.LUMINOSITY]    = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
     }
 
-
-
-
     this.projection = new PIXI.Point();
-   // this.projection.x =  this.width/2 * 2;
-//    this.projection.y =  -this.height/2 * 2;
 
     this.offset = new PIXI.Point(0, 0);
 
@@ -6782,6 +6783,7 @@ PIXI.WebGLRenderer = function(width, height, options)
     this.stencilManager = new PIXI.WebGLStencilManager(gl);
     this.blendModeManager = new PIXI.WebGLBlendModeManager(gl);
 
+    // TODO remove
     this.renderSession = {};
     this.renderSession.gl = this.gl;
     this.renderSession.drawCount = 0;
@@ -6793,12 +6795,10 @@ PIXI.WebGLRenderer = function(width, height, options)
     this.renderSession.stencilManager = this.stencilManager;
     this.renderSession.renderer = this;
 
-    gl.useProgram(this.shaderManager.defaultShader.program);
-
     gl.disable(gl.DEPTH_TEST);
     gl.disable(gl.CULL_FACE);
-
     gl.enable(gl.BLEND);
+
     gl.colorMask(true, true, true, this.transparent);
 };
 
@@ -6840,7 +6840,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
         if(!stage._interactiveEventsAdded)
         {
             stage._interactiveEventsAdded = true;
-            stage.interactionManager.setTarget(this);
+            stage.interactionManager.setTarget( this );
         }
     }
 
@@ -6861,7 +6861,6 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
     {
         gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], 1);
     }
-
 
     gl.clear(gl.COLOR_BUFFER_BIT);
 
@@ -6929,8 +6928,6 @@ PIXI.WebGLRenderer.prototype.renderDisplayObject = function(displayObject, proje
     // start the sprite batch
     this.spriteBatch.begin(this.renderSession);
 
-//    this.primitiveBatch.begin(this.renderSession);
-
     // start the filter manager
     this.filterManager.begin(this.renderSession, buffer);
 
@@ -6939,8 +6936,6 @@ PIXI.WebGLRenderer.prototype.renderDisplayObject = function(displayObject, proje
 
     // finish the sprite batch
     this.spriteBatch.end();
-
-//    this.primitiveBatch.end();
 };
 
 /**
@@ -6953,11 +6948,6 @@ PIXI.WebGLRenderer.prototype.renderDisplayObject = function(displayObject, proje
 PIXI.WebGLRenderer.updateTextures = function()
 {
     var i = 0;
-
-    //TODO break this out into a texture manager...
-  //  for (i = 0; i < PIXI.texturesToUpdate.length; i++)
-  //      PIXI..updateWebGLTexture(PIXI.texturesToUpdate[i], this.gl);
-
 
     for (i=0; i < PIXI.Texture.frameUpdates.length; i++)
         PIXI.WebGLRenderer.updateTextureFrame(PIXI.Texture.frameUpdates[i]);
@@ -7216,7 +7206,6 @@ PIXI.WebGLRenderer.prototype.destroy = function()
     // time to create the render managers! each one focuses on managine a state in webGL
     this.shaderManager.destroy();
     this.spriteBatch.destroy();
-    // this.primitiveBatch.destroy();
     this.maskManager.destroy();
     this.filterManager.destroy();
 
@@ -7226,7 +7215,6 @@ PIXI.WebGLRenderer.prototype.destroy = function()
     this.filterManager = null;
 
     this.gl = null;
-    //
     this.renderSession = null;
 };
 
@@ -7842,6 +7830,9 @@ PIXI.WebGLSpriteBatch = function(gl)
     this.setContext(gl);
 
     this.dirty = true;
+
+    this.textures = [];
+    this.blendModes = [];
 };
 
 /**
@@ -7904,15 +7895,14 @@ PIXI.WebGLSpriteBatch.prototype.end = function()
 PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
 {
     var texture = sprite.texture;
-
-    var blendChange = this.renderSession.blendModeManager.currentBlendMode !== sprite.blendMode;
-
+    
+   //TODO set blend modes.. 
     // check texture..
-    if(texture.baseTexture !== this.currentBaseTexture || this.currentBatchSize >= this.size || blendChange)
+    if(this.currentBatchSize >= this.size)
     {
+        //return;
         this.flush();
         this.currentBaseTexture = texture.baseTexture;
-        this.renderSession.blendModeManager.setBlendMode(sprite.blendMode);
     }
 
     // get the uvs for the texture
@@ -7955,17 +7945,17 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
     }
 
     var index = this.currentBatchSize * 4 * this.vertSize;
-
-    var worldTransform = sprite.worldTransform;//.toArray();
-
+    
     var resolution = texture.baseTexture.resolution;
 
-    var a = worldTransform.a / resolution;
-    var b = worldTransform.c / resolution;
-    var c = worldTransform.b / resolution;
-    var d = worldTransform.d / resolution;
-    var tx = worldTransform.tx;
-    var ty = worldTransform.ty;
+    var worldTransform = sprite.worldTransform;
+
+    var a = worldTransform.a / resolution;//[0];
+    var b = worldTransform.c / resolution;//[3];
+    var c = worldTransform.b / resolution;//[1];
+    var d = worldTransform.d / resolution;//[4];
+    var tx = worldTransform.tx;//[2];
+    var ty = worldTransform.ty;///[5];
 
     // xy
     verticies[index++] = a * w1 + c * h1 + tx;
@@ -8008,8 +7998,10 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
     verticies[index++] = tint;
     
     // increment the batchsize
-    this.currentBatchSize++;
+    this.textures[this.currentBatchSize] = sprite.texture.baseTexture;
+    this.blendModes[this.currentBatchSize] = sprite.blendMode;
 
+    this.currentBatchSize++;
 
 };
 
@@ -8023,14 +8015,13 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
 {
     var texture = tilingSprite.tilingTexture;
 
-    var blendChange = this.renderSession.blendModeManager.currentBlendMode !== tilingSprite.blendMode;
-
+    
     // check texture..
-    if(texture.baseTexture !== this.currentBaseTexture || this.currentBatchSize >= this.size || blendChange)
+    if(this.currentBatchSize >= this.size)
     {
+        //return;
         this.flush();
         this.currentBaseTexture = texture.baseTexture;
-        this.renderSession.blendModeManager.setBlendMode(tilingSprite.blendMode);
     }
 
      // set the textures uvs temporarily
@@ -8071,8 +8062,8 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
     var height = tilingSprite.height;
 
     // TODO trim??
-    var aX = tilingSprite.anchor.x; // - tilingSprite.texture.trim.x
-    var aY = tilingSprite.anchor.y; //- tilingSprite.texture.trim.y
+    var aX = tilingSprite.anchor.x;
+    var aY = tilingSprite.anchor.y;
     var w0 = width * (1-aX);
     var w1 = width * -aX;
 
@@ -8103,7 +8094,7 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
     verticies[index++] = tint;
 
     // xy
-    verticies[index++] = a * w0 + c * h1 + tx;
+    verticies[index++] = (a * w0 + c * h1 + tx);
     verticies[index++] = d * h1 + b * w0 + ty;
     // uv
     verticies[index++] = uvs.x1;
@@ -8133,6 +8124,8 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
     verticies[index++] = tint;
 
     // increment the batchs
+    this.textures[this.currentBatchSize] = texture.baseTexture;
+    this.blendModes[this.currentBatchSize] = tilingSprite.blendMode;
     this.currentBatchSize++;
 };
 
@@ -8149,10 +8142,9 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
     if (this.currentBatchSize===0)return;
 
     var gl = this.gl;
-    
+
     this.renderSession.shaderManager.setShader(this.renderSession.shaderManager.defaultShader);
 
-    //TODO - im usre this can be done better - will look to tweak this for 1.7..
     if(this.dirty)
     {
         this.dirty = false;
@@ -8175,15 +8167,6 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
 
     }
 
-    // bind the current texture
-    gl.bindTexture(gl.TEXTURE_2D, this.currentBaseTexture._glTextures[gl.id] || PIXI.createWebGLTexture(this.currentBaseTexture, gl));
-
-    // check if a texture is dirty..
-    if(this.currentBaseTexture._dirty[gl.id])
-    {
-        PIXI.updateWebGLTexture(this.currentBaseTexture, gl);
-    }
-
     // upload the verts to the buffer  
     if(this.currentBatchSize > ( this.size * 0.5 ) )
     {
@@ -8192,19 +8175,59 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
     else
     {
         var view = this.vertices.subarray(0, this.currentBatchSize * 4 * this.vertSize);
-
         gl.bufferSubData(gl.ARRAY_BUFFER, 0, view);
     }
 
-   // var view = this.vertices.subarray(0, this.currentBatchSize * 4 * this.vertSize);
-    //gl.bufferSubData(gl.ARRAY_BUFFER, 0, view);
-    
-    // now draw those suckas!
-    gl.drawElements(gl.TRIANGLES, this.currentBatchSize * 6, gl.UNSIGNED_SHORT, 0);
-   
+    var nextTexture, nextBlendMode;
+    var batchSize = 0;
+    var start = 0;
+
+    var currentBaseTexture = null;
+    var currentBlendMode = this.renderSession.blendModeManager.currentBlendMode;
+
+    for (var i = 0, j = this.currentBatchSize; i < j; i++) {
+        
+        nextTexture = this.textures[i];
+        nextBlendMode = this.blendModes[i];
+
+        if(currentBaseTexture !== nextTexture || currentBlendMode !== nextBlendMode)
+        {
+            this.renderBatch(currentBaseTexture, batchSize, start);
+
+            start = i;
+            batchSize = 0;
+            currentBaseTexture = nextTexture;
+            currentBlendMode = nextBlendMode;
+            
+            this.renderSession.blendModeManager.setBlendMode( currentBlendMode );
+        }
+
+        batchSize++;
+    }
+
+    this.renderBatch(currentBaseTexture, batchSize, start);
+
     // then reset the batch!
     this.currentBatchSize = 0;
+};
 
+PIXI.WebGLSpriteBatch.prototype.renderBatch = function(texture, size, startIndex)
+{
+    if(size === 0)return;
+
+    var gl = this.gl;
+    // bind the current texture
+    gl.bindTexture(gl.TEXTURE_2D, texture._glTextures[gl.id] || PIXI.createWebGLTexture(texture, gl));
+
+    // check if a texture is dirty..
+    if(texture._dirty[gl.id])
+    {
+        PIXI.updateWebGLTexture(this.currentBaseTexture, gl);
+    }
+
+    // now draw those suckas!
+    gl.drawElements(gl.TRIANGLES, size * 6, gl.UNSIGNED_SHORT, startIndex * 6 * 2);
+    
     // increment the draw count
     this.renderSession.drawCount++;
 };
@@ -8246,7 +8269,6 @@ PIXI.WebGLSpriteBatch.prototype.destroy = function()
     
     this.gl = null;
 };
-
 
 /**
  * @author Mat Groves
