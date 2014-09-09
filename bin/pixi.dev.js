@@ -4,7 +4,7 @@
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-09-08
+ * Compiled: 2014-09-09
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -2779,8 +2779,6 @@ PIXI.Text = function(text, style)
 
     PIXI.Sprite.call(this, PIXI.Texture.fromCanvas(this.canvas));
 
-    this.texture.baseTexture.resolution = this.resolution;
-
     this.setText(text);
     this.setStyle(style);
 
@@ -2899,8 +2897,9 @@ PIXI.Text.prototype.setText = function(text)
  */
 PIXI.Text.prototype.updateText = function()
 {
+    this.texture.baseTexture.resolution = this.resolution;
+
     this.context.font = this.style.font;
-    
 
     var outputText = this.text;
 
@@ -3027,7 +3026,6 @@ PIXI.Text.prototype.updateTexture = function()
     this._width = this.canvas.width;
     this._height = this.canvas.height;
 
-    this.requiresUpdate =  true;
 };
 
 /**
@@ -3039,30 +3037,38 @@ PIXI.Text.prototype.updateTexture = function()
 */
 PIXI.Text.prototype._renderWebGL = function(renderSession)
 {
-    if(this.requiresUpdate)
+    if(this.dirty)
     {
-        this.requiresUpdate = false;
+        this.resolution = renderSession.resolution;
+
+        this.updateText();
+        this.dirty = false;
+
         PIXI.updateWebGLTexture(this.texture.baseTexture, renderSession.gl);
     }
 
     PIXI.Sprite.prototype._renderWebGL.call(this, renderSession);
 };
 
+
 /**
- * Updates the transform of this object
- *
- * @method updateTransform
- * @private
- */
-PIXI.Text.prototype.updateTransform = function()
+* Renders the object using the WebGL renderer
+*
+* @method _renderWebGL
+* @param renderSession {RenderSession} 
+* @private
+*/
+PIXI.Text.prototype._renderCanvas = function(renderSession)
 {
     if(this.dirty)
     {
+        this.resolution = renderSession.resolution;
+
         this.updateText();
         this.dirty = false;
     }
-
-    PIXI.Sprite.prototype.updateTransform.call(this);
+     
+    PIXI.Sprite.prototype._renderCanvas.call(this, renderSession);
 };
 
 /*
@@ -3443,8 +3449,6 @@ PIXI.InteractionData.prototype.constructor = PIXI.InteractionData;
  */
 PIXI.InteractionManager = function(stage)
 {
-    this.resolution = 1;
-
     /**
      * a reference to the stage
      *
@@ -3532,6 +3536,8 @@ PIXI.InteractionManager = function(stage)
      *
      */
     this.mouseOut = false;
+
+    this.resolution = 1;
 };
 
 // constructor
@@ -3590,6 +3596,7 @@ PIXI.InteractionManager.prototype.collectInteractiveSprite = function(displayObj
 PIXI.InteractionManager.prototype.setTarget = function(target)
 {
     this.target = target;
+    this.resolution = target.resolution;
 
     //check if the dom element has been set. If it has don't do anything
     if( this.interactionDOMElement === null ) {
@@ -3772,7 +3779,7 @@ PIXI.InteractionManager.prototype.onMouseMove = function(event)
     // TODO optimize by not check EVERY TIME! maybe half as often? //
     var rect = this.interactionDOMElement.getBoundingClientRect();
 
-    this.mouse.global.x = (event.clientX - rect.left) * (this.target.width / rect.width) /  this.resolution;
+    this.mouse.global.x = (event.clientX - rect.left) * (this.target.width / rect.width) / this.resolution;
     this.mouse.global.y = (event.clientY - rect.top) * ( this.target.height / rect.height) / this.resolution;
 
     var length = this.interactiveItems.length;
@@ -6666,6 +6673,13 @@ PIXI.WebGLRenderer = function(width, height, options)
 
     this.type = PIXI.WEBGL_RENDERER;
 
+    /**
+     * The resolution of the renderer
+     *
+     * @property resolution
+     * @type Number
+     * @default 1
+     */
     this.resolution = options.resolution;
 
     // do a catch.. only 1 webGL renderer..
@@ -6794,6 +6808,7 @@ PIXI.WebGLRenderer = function(width, height, options)
     this.renderSession.spriteBatch = this.spriteBatch;
     this.renderSession.stencilManager = this.stencilManager;
     this.renderSession.renderer = this;
+    this.renderSession.resolution = this.resolution;
 
     gl.disable(gl.DEPTH_TEST);
     gl.disable(gl.CULL_FACE);
@@ -6993,8 +7008,6 @@ PIXI.WebGLRenderer.destroyTexture = function(texture)
  */
 PIXI.WebGLRenderer.updateTextureFrame = function(texture)
 {
-    //texture.updateFrame = false;
-
     // now set the uvs. Figured that the uv data sits with a texture rather than a sprite.
     // so uv data is stored on the texture itself
     texture._updateWebGLuvs();
@@ -9708,10 +9721,11 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
     }
 
     // remove frame updates.. // removeing for now...
-    //if(PIXI.Texture.frameUpdates.length > 0)
-    //{
-    //    PIXI.Texture.frameUpdates.length = 0;
-    //}
+    // TODO remove this eventually!
+    if(PIXI.Texture.frameUpdates.length > 0)
+    {
+        PIXI.Texture.frameUpdates.length = 0;
+    }
 };
 
 /**

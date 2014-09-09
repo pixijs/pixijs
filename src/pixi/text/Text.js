@@ -167,7 +167,7 @@ PIXI.Text.prototype.setText = function(text)
 PIXI.Text.prototype.updateText = function()
 {
     this.texture.baseTexture.resolution = this.resolution;
-    
+
     this.context.font = this.style.font;
 
     var outputText = this.text;
@@ -338,7 +338,7 @@ PIXI.Text.prototype._renderCanvas = function(renderSession)
     }
      
     PIXI.Sprite.prototype._renderCanvas.call(this, renderSession);
-}
+};
 
 /*
  * http://stackoverflow.com/users/34441/ellisbben
