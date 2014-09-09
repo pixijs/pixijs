@@ -240,10 +240,11 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
     }
 
     // remove frame updates.. // removeing for now...
-    //if(PIXI.Texture.frameUpdates.length > 0)
-    //{
-    //    PIXI.Texture.frameUpdates.length = 0;
-    //}
+    // TODO remove this eventually!
+    if(PIXI.Texture.frameUpdates.length > 0)
+    {
+        PIXI.Texture.frameUpdates.length = 0;
+    }
 };
 
 /**
