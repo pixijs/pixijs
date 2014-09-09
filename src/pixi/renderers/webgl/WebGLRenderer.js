@@ -181,6 +181,7 @@ PIXI.WebGLRenderer = function(width, height, options)
     this.renderSession.spriteBatch = this.spriteBatch;
     this.renderSession.stencilManager = this.stencilManager;
     this.renderSession.renderer = this;
+    this.renderSession.resolution = this.resolution;
 
     gl.disable(gl.DEPTH_TEST);
     gl.disable(gl.CULL_FACE);
