@@ -64,7 +64,7 @@ PIXI.BaseTexture = function(source, scaleMode)
      */
     this.source = source;
 
-    //TODO will be used for futer pixi 1.5...
+    //TODO will be used for future pixi 1.5...
     this.id = PIXI.BaseTextureCacheIdGenerator++;
 
     /**
@@ -174,10 +174,9 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
 {
     var baseTexture = PIXI.BaseTextureCache[imageUrl];
 
-    if(crossorigin === undefined && imageUrl.indexOf('data:') === -1) crossorigin = true;
-
     if(!baseTexture)
     {
+        if(crossorigin === undefined && imageUrl.indexOf('data:') === -1) crossorigin = true;
         // new Image() breaks tex loading in some versions of Chrome.
         // See https://code.google.com/p/chromium/issues/detail?id=238071
         var image = new Image();//document.createElement('img');
@@ -185,9 +184,9 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
         {
             image.crossOrigin = '';
         }
-        image.src = imageUrl;
         baseTexture = new PIXI.BaseTexture(image, scaleMode);
         baseTexture.imageUrl = imageUrl;
+        image.src = imageUrl;
         PIXI.BaseTextureCache[imageUrl] = baseTexture;
     }
 
