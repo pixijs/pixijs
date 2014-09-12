@@ -165,6 +165,8 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
         this.renderSession.smoothProperty = "mozImageSmoothingEnabled";
     else if("oImageSmoothingEnabled" in this.context)
         this.renderSession.smoothProperty = "oImageSmoothingEnabled";
+    else if ("msImageSmoothingEnabled" in this.context)
+        this.renderSession.smoothProperty = "msImageSmoothingEnabled";
 };
 
 // constructor
