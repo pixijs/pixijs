@@ -68,6 +68,8 @@ PIXI.AUTO_PREVENT_DEFAULT = true;
 PIXI.RAD_TO_DEG = 180 / Math.PI;
 PIXI.DEG_TO_RAD = Math.PI / 180;
 
+// cache settings
+PIXI.CACHE_FRAME_FULL_NAMES = false;
 
 PIXI.dontSayHello = false;
 

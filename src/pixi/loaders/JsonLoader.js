@@ -128,21 +128,26 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
 
             if (rect)
             {
-                PIXI.TextureCache[i] = new PIXI.Texture(this.texture, {
+                var cacheId = i;
+                if(PIXI.CACHE_FRAME_FULL_NAMES) {
+                    cacheId = textureUrl + '/' + i;
+                }
+
+                PIXI.TextureCache[cacheId] = new PIXI.Texture(this.texture, {
                     x: rect.x,
                     y: rect.y,
                     width: rect.w,
                     height: rect.h
                 });
 
-                PIXI.TextureCache[i].crop = new PIXI.Rectangle(rect.x, rect.y, rect.w, rect.h);
+                PIXI.TextureCache[cacheId].crop = new PIXI.Rectangle(rect.x, rect.y, rect.w, rect.h);
 
                 //  Check to see if the sprite is trimmed
                 if (frameData[i].trimmed)
                 {
                     var actualSize = frameData[i].sourceSize;
                     var realSize = frameData[i].spriteSourceSize;
-                    PIXI.TextureCache[i].trim = new PIXI.Rectangle(realSize.x, realSize.y, actualSize.w, actualSize.h);
+                    PIXI.TextureCache[cacheId].trim = new PIXI.Rectangle(realSize.x, realSize.y, actualSize.w, actualSize.h);
                 }
             }
         }
