@@ -640,6 +640,8 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
     // if the sprite is not visible or the alpha is 0 then no need to render this element
     if(this.visible === false || this.alpha === 0 || this.isMask === true)return;
     
+    //apply frustum culling
+    if(renderSession.useFrustum && ! this.frustumCheck(renderSession)) return;
 
     if(this._cacheAsBitmap)
     {
@@ -715,6 +717,9 @@ PIXI.Graphics.prototype._renderCanvas = function(renderSession)
 {
     // if the sprite is not visible or the alpha is 0 then no need to render this element
     if(this.visible === false || this.alpha === 0 || this.isMask === true)return;
+    
+    //apply frustum culling
+    if(renderSession.useFrustum && ! this.frustumCheck(renderSession)) return;
     
     var context = renderSession.context;
     var transform = this.worldTransform;
