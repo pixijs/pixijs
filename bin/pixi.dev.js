@@ -4,7 +4,7 @@
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-09-09
+ * Compiled: 2014-09-12
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -4052,8 +4052,8 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
         touchData.originalEvent =  event || window.event;
 
         // update the touch position
-        touchData.global.x = (touchEvent.clientX - rect.left) * (this.target.width / rect.width);
-        touchData.global.y = (touchEvent.clientY - rect.top)  * (this.target.height / rect.height);
+        touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.target.width / rect.width) ) / this.resolution;
+        touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.target.height / rect.height) )  / this.resolution;
         if(navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height) {
             //Support for CocoonJS fullscreen scale modes
             touchData.global.x = touchEvent.clientX;
@@ -4097,8 +4097,8 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
         touchData.originalEvent =  event || window.event;
 
         this.touchs[touchEvent.identifier] = touchData;
-        touchData.global.x = (touchEvent.clientX - rect.left) * (this.target.width / rect.width);
-        touchData.global.y = (touchEvent.clientY - rect.top)  * (this.target.height / rect.height);
+        touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.target.width / rect.width) ) / this.resolution;
+        touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.target.height / rect.height) ) / this.resolution;
         if(navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height) {
             //Support for CocoonJS fullscreen scale modes
             touchData.global.x = touchEvent.clientX;
@@ -4153,8 +4153,8 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
         var touchEvent = changedTouches[i];
         var touchData = this.touchs[touchEvent.identifier];
         var up = false;
-        touchData.global.x = (touchEvent.clientX - rect.left) * (this.target.width / rect.width);
-        touchData.global.y = (touchEvent.clientY - rect.top)  * (this.target.height / rect.height);
+        touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.target.width / rect.width) ) / this.resolution;
+        touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.target.height / rect.height) ) / this.resolution;
         if(navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height) {
             //Support for CocoonJS fullscreen scale modes
             touchData.global.x = touchEvent.clientX;
@@ -10823,6 +10823,7 @@ PIXI.Graphics.prototype.generateTexture = function()
     var bounds = this.getBounds();
 
     var canvasBuffer = new PIXI.CanvasBuffer(bounds.width, bounds.height);
+    
     var texture = PIXI.Texture.fromCanvas(canvasBuffer.canvas);
 
     canvasBuffer.context.translate(-bounds.x,-bounds.y);
