@@ -24,6 +24,7 @@
  * @param [style.dropShadowColor='#000000'] {String} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
  * @param [style.dropShadowAngle=Math.PI/4] {Number} Set a angle of the drop shadow
  * @param [style.dropShadowDistance=5] {Number} Set a distance of the drop shadow
+ * @param [style.dropShadowBlur=0] {Number} Set the amount of blur on the drop shadow
  */
 PIXI.Text = function(text, style)
 {
@@ -118,6 +119,7 @@ Object.defineProperty(PIXI.Text.prototype, 'height', {
  * @param [style.dropShadowColor='#000000'] {String} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
  * @param [style.dropShadowAngle=Math.PI/4] {Number} Set a angle of the drop shadow
  * @param [style.dropShadowDistance=5] {Number} Set a distance of the drop shadow
+ * @param [style.dropShadowBlur=0] {Number} Set the amount of blur on the drop shadow
  */
 PIXI.Text.prototype.setStyle = function(style)
 {
@@ -134,6 +136,7 @@ PIXI.Text.prototype.setStyle = function(style)
     style.dropShadowAngle = style.dropShadowAngle || Math.PI / 6;
     style.dropShadowDistance = style.dropShadowDistance || 4;
     style.dropShadowColor = style.dropShadowColor || 'black';
+    style.dropShadowBlur = style.dropShadowBlur || 0;
 
     this.style = style;
     this.dirty = true;
@@ -202,45 +205,29 @@ PIXI.Text.prototype.updateText = function()
 
     var linePositionX;
     var linePositionY;
-
-    if(this.style.dropShadow)
-    {
-        this.context.fillStyle = this.style.dropShadowColor;
-
-        var xShadowOffset = Math.sin(this.style.dropShadowAngle) * this.style.dropShadowDistance;
-        var yShadowOffset = Math.cos(this.style.dropShadowAngle) * this.style.dropShadowDistance;
-
-        for (i = 0; i < lines.length; i++)
-        {
-            linePositionX = this.style.strokeThickness / 2;
-            linePositionY = this.style.strokeThickness / 2 + i * lineHeight;
-
-            if(this.style.align === 'right')
-            {
-                linePositionX += maxLineWidth - lineWidths[i];
-            }
-            else if(this.style.align === 'center')
-            {
-                linePositionX += (maxLineWidth - lineWidths[i]) / 2;
-            }
-
-            if(this.style.fill)
-            {
-                this.context.fillText(lines[i], linePositionX + xShadowOffset, linePositionY + yShadowOffset);
-            }
-
-          //  if(dropShadow)
-        }
-    }
-
+    
     //set canvas text styles
     this.context.fillStyle = this.style.fill;
+    
     
     //draw lines line by line
     for (i = 0; i < lines.length; i++)
     {
+    
         linePositionX = this.style.strokeThickness / 2;
         linePositionY = this.style.strokeThickness / 2 + i * lineHeight;
+        
+        if(this.style.dropShadow)
+        {
+            this.context.shadowColor = this.style.dropShadowColor;
+            this.context.shadowOffsetX = Math.sin(this.style.dropShadowAngle) * this.style.dropShadowDistance;
+            this.context.shadowOffsetY = Math.cos(this.style.dropShadowAngle) * this.style.dropShadowDistance;
+
+            if(this.style.dropShadowBlur !== 0)
+            {
+                this.context.shadowBlur = this.style.dropShadowBlur;
+            }
+        }
 
         if(this.style.align === 'right')
         {
