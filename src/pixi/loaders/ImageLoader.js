@@ -31,6 +31,7 @@ PIXI.ImageLoader = function(url, crossorigin)
      *
      * @property frames
      * @type Array
+     * @readOnly
      */
     this.frames = [];
 };

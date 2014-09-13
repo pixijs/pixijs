@@ -117,6 +117,7 @@ PIXI.Graphics = function()
      * 
      * @property dirty
      * @type Boolean
+     * @private
      */
     this.dirty = true;
 };
