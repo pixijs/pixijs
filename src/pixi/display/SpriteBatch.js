@@ -19,6 +19,7 @@
  * And here you have a hundred sprites that will be renderer at the speed of light
  *
  * @class SpriteBatch
+ * @extends DisplayObjectContainer
  * @constructor
  * @param texture {Texture}
  */

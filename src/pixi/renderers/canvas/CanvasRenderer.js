@@ -8,8 +8,8 @@
  *
  * @class CanvasRenderer
  * @constructor
- * @param width=800 {Number} the width of the canvas view
- * @param height=600 {Number} the height of the canvas view
+ * @param [width=800] {Number} the width of the canvas view
+ * @param [height=600] {Number} the height of the canvas view
  * @param [view] {HTMLCanvasElement} the canvas to use as a view, optional
  * @param [transparent=false] {Boolean} the transparency of the render view, default false
  */
@@ -119,7 +119,7 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
     /**
      * The canvas 2d context that everything is drawn with
      * @property context
-     * @type HTMLCanvasElement 2d Context
+     * @type CanvasRenderingContext2D 2d Context
      */
     this.context = this.view.getContext( "2d", { alpha: this.transparent } );
 
@@ -245,7 +245,7 @@ PIXI.CanvasRenderer.prototype.resize = function(width, height)
  *
  * @method renderDisplayObject
  * @param displayObject {DisplayObject} The displayObject to render
- * @param context {Context2D} the context 2d method of the canvas
+ * @param context {CanvasRenderingContext2D} the context 2d method of the canvas
  * @private
  */
 PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject, context)

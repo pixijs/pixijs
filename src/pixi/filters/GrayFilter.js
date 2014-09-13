@@ -6,7 +6,7 @@
  *
  * This turns your displayObjects to black and white.
  * @class GrayFilter
- * @contructor
+ * @constructor
  */
 PIXI.GrayFilter = function()
 {
