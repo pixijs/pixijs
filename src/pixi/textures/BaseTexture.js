@@ -21,6 +21,12 @@ PIXI.BaseTexture = function(source, scaleMode)
 {
     PIXI.EventTarget.call( this );
 
+    /**
+     * The Resolution of the texture. 
+     *
+     * @property resolution
+     * @type Number
+     */
     this.resolution = 1;
     
     /**

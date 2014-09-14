@@ -612,9 +612,11 @@ PIXI.Graphics.prototype.clear = function()
  * This can be quite useful if your geometry is complicated and needs to be reused multiple times.
  *
  * @method generateTexture
+ * @param resolution {Number} The resolution of the texture being generated
+ * @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
  * @return {Texture} a texture of the graphics object
  */
-PIXI.Graphics.prototype.generateTexture = function(resolution)
+PIXI.Graphics.prototype.generateTexture = function(resolution, scaleMode)
 {
     resolution = resolution || 2;
 
@@ -622,7 +624,7 @@ PIXI.Graphics.prototype.generateTexture = function(resolution)
 
     var canvasBuffer = new PIXI.CanvasBuffer(bounds.width * resolution, bounds.height * resolution);
     
-    var texture = PIXI.Texture.fromCanvas(canvasBuffer.canvas);
+    var texture = PIXI.Texture.fromCanvas(canvasBuffer.canvas, scaleMode);
     texture.baseTexture.resolution = resolution;
 
     canvasBuffer.context.scale(resolution, resolution);

@@ -1,15 +1,4 @@
 /**
- * @license
- * pixi.js - v1.6.1
- * Copyright (c) 2012-2014, Mat Groves
- * http://goodboydigital.com/
- *
- * Compiled: 2014-09-14
- *
- * pixi.js is licensed under the MIT License.
- * http://www.opensource.org/licenses/mit-license.php
- */
-/**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
@@ -1253,11 +1242,20 @@ PIXI.DisplayObject.prototype.setStageReference = function(stage)
     if(this._interactive)this.stage.dirty = true;
 };
 
-PIXI.DisplayObject.prototype.generateTexture = function(renderer)
+/**
+ * Useful function that returns a texture of the displayObject object that can then be used to create sprites
+ * This can be quite useful if your displayObject is static / complicated and needs to be reused multiple times.
+ *
+ * @method generateTexture
+ * @param resolution {Number} The resolution of the texture being generated
+ * @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
+ * @return {Texture} a texture of the graphics object
+ */
+PIXI.DisplayObject.prototype.generateTexture = function(resolution, scaleMode, renderer)
 {
     var bounds = this.getLocalBounds();
 
-    var renderTexture = new PIXI.RenderTexture(bounds.width | 0, bounds.height | 0, renderer);
+    var renderTexture = new PIXI.RenderTexture(bounds.width | 0, bounds.height | 0, renderer, scaleMode, resolution);
     renderTexture.render(this, new PIXI.Point(-bounds.x, -bounds.y) );
 
     return renderTexture;
@@ -10816,9 +10814,11 @@ PIXI.Graphics.prototype.clear = function()
  * This can be quite useful if your geometry is complicated and needs to be reused multiple times.
  *
  * @method generateTexture
+ * @param resolution {Number} The resolution of the texture being generated
+ * @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
  * @return {Texture} a texture of the graphics object
  */
-PIXI.Graphics.prototype.generateTexture = function(resolution)
+PIXI.Graphics.prototype.generateTexture = function(resolution, scaleMode)
 {
     resolution = resolution || 2;
 
@@ -10826,7 +10826,7 @@ PIXI.Graphics.prototype.generateTexture = function(resolution)
 
     var canvasBuffer = new PIXI.CanvasBuffer(bounds.width * resolution, bounds.height * resolution);
     
-    var texture = PIXI.Texture.fromCanvas(canvasBuffer.canvas);
+    var texture = PIXI.Texture.fromCanvas(canvasBuffer.canvas, scaleMode);
     texture.baseTexture.resolution = resolution;
 
     canvasBuffer.context.scale(resolution, resolution);
@@ -13601,6 +13601,12 @@ PIXI.BaseTexture = function(source, scaleMode)
 {
     PIXI.EventTarget.call( this );
 
+    /**
+     * The Resolution of the texture. 
+     *
+     * @property resolution
+     * @type Number
+     */
     this.resolution = 1;
     
     /**
@@ -14176,8 +14182,9 @@ PIXI.TextureUvs = function()
  * @param width {Number} The width of the render texture
  * @param height {Number} The height of the render texture
  * @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
+ * @param resolution {Number} The resolution of the texture being generated
  */
-PIXI.RenderTexture = function(width, height, renderer, scaleMode)
+PIXI.RenderTexture = function(width, height, renderer, scaleMode, resolution)
 {
     PIXI.EventTarget.call( this );
 
@@ -14197,8 +14204,13 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode)
      */
     this.height = height || 100;
     
-
-    this.resolution = 1;
+    /**
+     * The Resolution of the texture. 
+     *
+     * @property resolution
+     * @type Number
+     */
+    this.resolution = resolution || 1;
 
     /**
      * The framing rectangle of the render texture
@@ -16588,3 +16600,4 @@ Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'angle', {
         root.PIXI = PIXI;
     }
 }).call(this);
+//# sourceMappingURL=pixi.dev.js.map

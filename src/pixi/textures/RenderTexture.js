@@ -30,8 +30,9 @@
  * @param width {Number} The width of the render texture
  * @param height {Number} The height of the render texture
  * @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
+ * @param resolution {Number} The resolution of the texture being generated
  */
-PIXI.RenderTexture = function(width, height, renderer, scaleMode)
+PIXI.RenderTexture = function(width, height, renderer, scaleMode, resolution)
 {
     PIXI.EventTarget.call( this );
 
@@ -51,8 +52,13 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode)
      */
     this.height = height || 100;
     
-
-    this.resolution = 1;
+    /**
+     * The Resolution of the texture. 
+     *
+     * @property resolution
+     * @type Number
+     */
+    this.resolution = resolution || 1;
 
     /**
      * The framing rectangle of the render texture
