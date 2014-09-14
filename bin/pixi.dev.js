@@ -4,7 +4,7 @@
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-09-12
+ * Compiled: 2014-09-14
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -10818,13 +10818,18 @@ PIXI.Graphics.prototype.clear = function()
  * @method generateTexture
  * @return {Texture} a texture of the graphics object
  */
-PIXI.Graphics.prototype.generateTexture = function()
+PIXI.Graphics.prototype.generateTexture = function(resolution)
 {
+    resolution = resolution || 2;
+
     var bounds = this.getBounds();
 
-    var canvasBuffer = new PIXI.CanvasBuffer(bounds.width, bounds.height);
+    var canvasBuffer = new PIXI.CanvasBuffer(bounds.width * resolution, bounds.height * resolution);
     
     var texture = PIXI.Texture.fromCanvas(canvasBuffer.canvas);
+    texture.baseTexture.resolution = resolution;
+
+    canvasBuffer.context.scale(resolution, resolution);
 
     canvasBuffer.context.translate(-bounds.x,-bounds.y);
     
