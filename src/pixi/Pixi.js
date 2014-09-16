@@ -68,8 +68,20 @@ PIXI.AUTO_PREVENT_DEFAULT = true;
 PIXI.RAD_TO_DEG = 180 / Math.PI;
 PIXI.DEG_TO_RAD = Math.PI / 180;
 
+PIXI.RETINA_PREFIX = "@2x";
+//PIXI.SCALE_PREFIX "@x%%";
 
 PIXI.dontSayHello = false;
+
+
+PIXI.defaultRenderOptions = {
+    view:null, 
+    transparent:false, 
+    antialias:false, 
+    preserveDrawingBuffer:false,
+    resolution:1,
+    clearBeforeRender:true
+}
 
 PIXI.sayHello = function (type) 
 {

@@ -22,6 +22,14 @@ PIXI.BaseTexture = function(source, scaleMode)
     PIXI.EventTarget.call( this );
 
     /**
+     * The Resolution of the texture. 
+     *
+     * @property resolution
+     * @type Number
+     */
+    this.resolution = 1;
+    
+    /**
      * [read-only] The width of the base texture set when the image has loaded
      *
      * @property width
@@ -75,6 +83,9 @@ PIXI.BaseTexture = function(source, scaleMode)
      * @default TRUE
     */
     this.premultipliedAlpha = true;
+
+
+    
 
     // used for webGL
     this._glTextures = [];
@@ -178,6 +189,7 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
 
     if(!baseTexture)
     {
+
         // new Image() breaks tex loading in some versions of Chrome.
         // See https://code.google.com/p/chromium/issues/detail?id=238071
         var image = new Image();//document.createElement('img');
@@ -185,10 +197,17 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
         {
             image.crossOrigin = '';
         }
+
         image.src = imageUrl;
         baseTexture = new PIXI.BaseTexture(image, scaleMode);
         baseTexture.imageUrl = imageUrl;
         PIXI.BaseTextureCache[imageUrl] = baseTexture;
+
+        // if there is an @2x at the end of the url we are going to assume its a highres image
+        if( imageUrl.indexOf(PIXI.RETINA_PREFIX + '.') !== -1)
+        {
+            baseTexture.resolution = 2;
+        }
     }
 
     return baseTexture;
