@@ -1,0 +1,148 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>pixi.js example 24</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #333;
+        }
+    </style>
+    <script src="../../bin/pixi.dev.js"></script>
+    <script src="box2d.min.js"></script>
+
+</head>
+<body>
+    <script>
+
+    // create box2d world
+
+    // setup axis-aligned bounding box
+    var worldAABB = new b2AABB();
+    worldAABB.minVertex.Set(-1000, -1000);
+    worldAABB.maxVertex.Set(1000, 1000);
+    // define gravity
+    var gravity = new b2Vec2(0, 300);
+    // body can sleep
+    var doSleep = true;
+    // create world
+    var world = new b2World(worldAABB, gravity, doSleep);
+    // frame duration
+    var timeStep = 1 / 60;
+    // how many iteration for collisions calculations
+    var iteration = 1;
+
+    // create an new instance of a pixi stage
+    var stage = new PIXI.Stage(0x004466);
+
+    // create a renderer instance
+    var renderer = new PIXI.CanvasRenderer(400, 300);
+
+    // add the renderer view element to the DOM
+    document.body.appendChild(renderer.view);
+
+    // setup debug draw for box2d
+    /*world.SetDebugDraw({
+        ctx : renderer.view.getContext('2d'),
+        width : 400,
+        height : 300
+    });*/
+
+    requestAnimFrame(animate);
+
+    // create sprites
+
+    // create a texture from an image path
+    var bricksTexture = PIXI.Texture.fromImage("bricks.png");
+
+    // create a new wall sprites using the texture
+    var leftWall = new PIXI.Sprite(bricksTexture);
+    var rightWall = new PIXI.Sprite(bricksTexture);
+
+    // center the wall sprites anchor point
+    leftWall.anchor.x = 0.5;
+    leftWall.anchor.y = 0.5;
+    rightWall.anchor.x = 0.5;
+    rightWall.anchor.y = 0.5;
+
+    stage.addChild(leftWall);
+    stage.addChild(rightWall);
+
+    // create a texture from an image path
+    var grassTexture = PIXI.Texture.fromImage("grass.png");
+
+    // create a new ground sprite using the texture
+    var ground = new PIXI.Sprite(grassTexture);
+
+    // center the ground sprite anchor point
+    ground.anchor.x = 0.5;
+    ground.anchor.y = 0.5;
+
+    stage.addChild(ground);
+
+    // create a texture from an image path
+    var bunnyTexture = PIXI.Texture.fromImage("bunny.png");
+
+    // create a new Bunny sprite using the texture
+    var bunny = new PIXI.Sprite(bunnyTexture);
+
+    // center the bunny sprites anchor point
+    bunny.anchor.x = 0.5;
+    bunny.anchor.y = 0.5;
+
+    stage.addChild(bunny);
+
+    // add box2d bodies
+    addBody(ground, 200, 292, 400, 16);
+    addBody(leftWall, 5, 150, 10, 300);
+    addBody(rightWall, 395, 150, 10, 300);
+    addBody(bunny, 200, 150, 25, 37, 0.5);
+
+    function animate() {
+        requestAnimFrame(animate);
+
+        // box2d world step calculation
+        world.Step(timeStep, iteration);
+
+        // debug draw of box2d world
+        //world.DebugDraw();
+
+        draw();
+
+        // render the stage
+        renderer.render(stage);
+    }
+
+    // add body to box2d world
+    function addBody(sprite, x, y, width, height, density) {
+        var shapeDef = new b2BoxDef();
+        shapeDef.extents.Set(width * 0.5, height * 0.5);
+        var bodyDef = new b2BodyDef();
+        bodyDef.AddShape(shapeDef);
+        bodyDef.position.Set(x, y);
+        if (density) {
+            shapeDef.density = density;
+            shapeDef.friction = 0.4;
+            shapeDef.restitution = 1.2;
+            bodyDef.rotation = 0.8;
+        }
+        body = world.CreateBody(bodyDef);
+        body.m_userData = sprite;
+    }
+
+    // draw box2d world
+    function draw() {
+        var body, sprite;
+        for (body = world.m_bodyList; body; body = body.m_next) {
+            sprite = body.GetUserData();
+            if (sprite) {
+                sprite.position = body.GetCenterPosition();
+                sprite.rotation = body.GetRotation();
+            }
+        }
+    }
+    </script>
+
+    </body>
+</html>
