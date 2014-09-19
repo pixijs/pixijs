@@ -87,8 +87,8 @@ PIXI.BaseTexture = function(source, scaleMode)
     if((this.source.complete || this.source.getContext) && this.source.width && this.source.height)
     {
         this.hasLoaded = true;
-        this.width  = this.source[(this.source instanceof HTMLImageElement) ? "naturalWidth"  : "width"];
-        this.height = this.source[(this.source instanceof HTMLImageElement) ? "naturalHeight" : "height"];
+        this.width  = this.source[(this.source instanceof HTMLImageElement) ? 'naturalWidth'  : 'width'];
+        this.height = this.source[(this.source instanceof HTMLImageElement) ? 'naturalHeight' : 'height'];
 
         PIXI.texturesToUpdate.push(this);
     }
@@ -99,8 +99,8 @@ PIXI.BaseTexture = function(source, scaleMode)
         this.source.onload = function() {
 
             scope.hasLoaded = true;
-            scope.width  = scope.source[(scope.source instanceof HTMLImageElement) ? "naturalWidth"  : "width"];
-            scope.height = scope.source[(scope.source instanceof HTMLImageElement) ? "naturalHeight" : "height"];
+            scope.width  = scope.source[(scope.source instanceof HTMLImageElement) ? 'naturalWidth'  : 'width'];
+            scope.height = scope.source[(scope.source instanceof HTMLImageElement) ? 'naturalHeight' : 'height'];
 
             for (var i = 0; i < scope._glTextures.length; i++)
             {
@@ -108,10 +108,10 @@ PIXI.BaseTexture = function(source, scaleMode)
             }
 
             // add it to somewhere...
-            scope.dispatchEvent( { type: "loaded", content: scope } );
+            scope.dispatchEvent( { type: 'loaded', content: scope } );
         };
         this.source.onerror = function() {
-            scope.dispatchEvent( { type: "error", content: scope } );
+            scope.dispatchEvent( { type: 'error', content: scope } );
         };
     }
 
@@ -174,7 +174,7 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
 {
     var baseTexture = PIXI.BaseTextureCache[imageUrl];
 
-    if(crossorigin === undefined && imageUrl.indexOf("data:") === -1) crossorigin = true;
+    if(crossorigin === undefined && imageUrl.indexOf('data:') === -1) crossorigin = true;
 
     if(!baseTexture)
     {
@@ -183,7 +183,7 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
         var image = new Image();//document.createElement('img');
         if (crossorigin)
         {
-            image.crossOrigin = "";
+            image.crossOrigin = '';
         }
         image.src = imageUrl;
         baseTexture = new PIXI.BaseTexture(image, scaleMode);
@@ -208,7 +208,7 @@ PIXI.BaseTexture.fromCanvas = function(canvas, scaleMode)
 {
     if(!canvas._pixiId)
     {
-        canvas._pixiId = "canvas_" + PIXI.TextureCacheIdGenerator++;
+        canvas._pixiId = 'canvas_' + PIXI.TextureCacheIdGenerator++;
     }
 
     var baseTexture = PIXI.BaseTextureCache[canvas._pixiId];
