@@ -87,8 +87,8 @@ PIXI.BaseTexture = function(source, scaleMode)
     if((this.source.complete || this.source.getContext) && this.source.width && this.source.height)
     {
         this.hasLoaded = true;
-        this.width = this.source.width;
-        this.height = this.source.height;
+        this.width  = this.source[(this.source instanceof HTMLImageElement) ? "naturalWidth"  : "width"];
+        this.height = this.source[(this.source instanceof HTMLImageElement) ? "naturalHeight" : "height"];
 
         PIXI.texturesToUpdate.push(this);
     }
