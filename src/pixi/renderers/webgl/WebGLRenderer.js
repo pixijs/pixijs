@@ -187,7 +187,7 @@ PIXI.WebGLRenderer = function(width, height, options)
     gl.disable(gl.CULL_FACE);
     gl.enable(gl.BLEND);
 
-    gl.colorMask(true, true, true, this.transparent);
+    gl.colorMask(true, true, true, true);//this.transparent);
 };
 
 // constructor
@@ -551,7 +551,7 @@ PIXI.WebGLRenderer.prototype.handleContextRestored = function()
     gl.disable(gl.CULL_FACE);
 
     gl.enable(gl.BLEND);
-    gl.colorMask(true, true, true, this.transparent);
+    gl.colorMask(true, true, true, true);//this.transparent);
 
     this.gl.viewport(0, 0, this.width, this.height);
 
