@@ -98,8 +98,8 @@ PIXI.BaseTexture = function(source, scaleMode)
     if((this.source.complete || this.source.getContext) && this.source.width && this.source.height)
     {
         this.hasLoaded = true;
-        this.width = this.source.width;
-        this.height = this.source.height;
+        this.width  = this.source[(this.source instanceof HTMLImageElement) ? 'naturalWidth'  : 'width'];
+        this.height = this.source[(this.source instanceof HTMLImageElement) ? 'naturalHeight' : 'height'];
 
         PIXI.texturesToUpdate.push(this);
     }
@@ -110,8 +110,8 @@ PIXI.BaseTexture = function(source, scaleMode)
         this.source.onload = function() {
 
             scope.hasLoaded = true;
-            scope.width = scope.source.width;
-            scope.height = scope.source.height;
+            scope.width  = scope.source[(scope.source instanceof HTMLImageElement) ? 'naturalWidth'  : 'width'];
+            scope.height = scope.source[(scope.source instanceof HTMLImageElement) ? 'naturalHeight' : 'height'];
 
             for (var i = 0; i < scope._glTextures.length; i++)
             {
