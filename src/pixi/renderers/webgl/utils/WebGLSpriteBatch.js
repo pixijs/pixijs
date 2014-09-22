@@ -193,13 +193,15 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
     }
 
     var index = this.currentBatchSize * 4 * this.vertSize;
+    
+    var resolution = texture.baseTexture.resolution;
 
     var worldTransform = sprite.worldTransform;
 
-    var a = worldTransform.a;//[0];
-    var b = worldTransform.c;//[3];
-    var c = worldTransform.b;//[1];
-    var d = worldTransform.d;//[4];
+    var a = worldTransform.a / resolution;//[0];
+    var b = worldTransform.c / resolution;//[3];
+    var c = worldTransform.b / resolution;//[1];
+    var d = worldTransform.d / resolution;//[4];
     var tx = worldTransform.tx;//[2];
     var ty = worldTransform.ty;///[5];
 
@@ -318,12 +320,14 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
 
     var index = this.currentBatchSize * 4 * this.vertSize;
 
+    var resolution = texture.baseTexture.resolution;
+
     var worldTransform = tilingSprite.worldTransform;
 
-    var a = worldTransform.a;//[0];
-    var b = worldTransform.c;//[3];
-    var c = worldTransform.b;//[1];
-    var d = worldTransform.d;//[4];
+    var a = worldTransform.a / resolution;//[0];
+    var b = worldTransform.c / resolution;//[3];
+    var c = worldTransform.b / resolution;//[1];
+    var d = worldTransform.d / resolution;//[4];
     var tx = worldTransform.tx;//[2];
     var ty = worldTransform.ty;///[5];
 
@@ -513,4 +517,3 @@ PIXI.WebGLSpriteBatch.prototype.destroy = function()
     
     this.gl = null;
 };
-

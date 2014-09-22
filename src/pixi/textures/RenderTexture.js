@@ -30,8 +30,9 @@
  * @param width {Number} The width of the render texture
  * @param height {Number} The height of the render texture
  * @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
+ * @param resolution {Number} The resolution of the texture being generated
  */
-PIXI.RenderTexture = function(width, height, renderer, scaleMode)
+PIXI.RenderTexture = function(width, height, renderer, scaleMode, resolution)
 {
     PIXI.EventTarget.call( this );
 
@@ -50,6 +51,14 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode)
      * @type Number
      */
     this.height = height || 100;
+    
+    /**
+     * The Resolution of the texture. 
+     *
+     * @property resolution
+     * @type Number
+     */
+    this.resolution = resolution || 1;
 
     /**
      * The framing rectangle of the render texture
@@ -57,7 +66,7 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode)
      * @property frame
      * @type Rectangle
      */
-    this.frame = new PIXI.Rectangle(0, 0, this.width, this.height);
+    this.frame = new PIXI.Rectangle(0, 0, this.width * this.resolution, this.height * this.resolution);
 
     /**
      * This is the area of the BaseTexture image to actually copy to the Canvas / WebGL when rendering,
@@ -66,8 +75,9 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode)
      * @property crop
      * @type Rectangle
      */
-    this.crop = new PIXI.Rectangle(0, 0, this.width, this.height);
-    
+    this.crop = new PIXI.Rectangle(0, 0, this.width * this.resolution, this.height * this.resolution);
+        
+
     /**
      * The base texture object that this texture uses
      *
@@ -75,9 +85,11 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode)
      * @type BaseTexture
      */
     this.baseTexture = new PIXI.BaseTexture();
-    this.baseTexture.width = this.width;
-    this.baseTexture.height = this.height;
+    this.baseTexture.width = this.width * this.resolution;
+    this.baseTexture.height = this.height * this.resolution;
     this.baseTexture._glTextures = [];
+
+    this.baseTexture.resolution = this.resolution;
 
     this.baseTexture.scaleMode = scaleMode || PIXI.scaleModes.DEFAULT;
 
@@ -90,16 +102,16 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode)
     {
         var gl = this.renderer.gl;
 
-        this.textureBuffer = new PIXI.FilterTexture(gl, this.width, this.height, this.baseTexture.scaleMode);
+        this.textureBuffer = new PIXI.FilterTexture(gl, this.width * this.resolution, this.height * this.resolution, this.baseTexture.scaleMode);
         this.baseTexture._glTextures[gl.id] =  this.textureBuffer.texture;
 
         this.render = this.renderWebGL;
-        this.projection = new PIXI.Point(this.width/2 , -this.height/2);
+        this.projection = new PIXI.Point(this.width*0.5, -this.height*0.5);
     }
     else
     {
         this.render = this.renderCanvas;
-        this.textureBuffer = new PIXI.CanvasBuffer(this.width, this.height);
+        this.textureBuffer = new PIXI.CanvasBuffer(this.width* this.resolution, this.height* this.resolution);
         this.baseTexture.source = this.textureBuffer.canvas;
     }
 
@@ -146,7 +158,7 @@ PIXI.RenderTexture.prototype.resize = function(width, height, updateBase)
     }
     
     if(!this.valid)return;
-    this.textureBuffer.resize(this.width, this.height);
+    this.textureBuffer.resize(this.width * this.resolution, this.height * this.resolution);
    
 };
 
@@ -183,7 +195,7 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, position, cle
 
     gl.colorMask(true, true, true, true);
 
-    gl.viewport(0, 0, this.width, this.height);
+    gl.viewport(0, 0, this.width * this.resolution, this.height * this.resolution);
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.textureBuffer.frameBuffer );
 
@@ -196,6 +208,7 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, position, cle
     //TODO -? create a new one??? dont think so!
     var originalWorldTransform = displayObject.worldTransform;
     displayObject.worldTransform = PIXI.RenderTexture.tempMatrix;
+    displayObject.worldAlpha = 1;
     // modify to flip...
     displayObject.worldTransform.d = -1;
     displayObject.worldTransform.ty = this.projection.y * -2;
@@ -253,6 +266,9 @@ PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, position, cl
         displayObject.worldTransform.ty = 0;
     }
 
+ //   displayObject.worldTransform.a = 0.5;
+   // displayObject.worldTransform.d = 0.5;
+
     for(var i = 0, j = children.length; i < j; i++)
     {
         children[i].updateTransform();
@@ -262,8 +278,15 @@ PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, position, cl
 
     var context = this.textureBuffer.context;
 
-    this.renderer.renderDisplayObject(displayObject, context);
+    var realResolution = this.renderer.resolution;
 
+    this.renderer.resolution = this.resolution;
+    //this.baseTexture.resolution = 2;
+
+    this.renderer.renderDisplayObject(displayObject, context);
+    
+    this.renderer.resolution = realResolution;
+    
     context.setTransform(1,0,0,1,0,0);
 
     displayObject.worldTransform = originalWorldTransform;
