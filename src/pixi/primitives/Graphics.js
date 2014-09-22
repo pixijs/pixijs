@@ -735,7 +735,7 @@ PIXI.Graphics.prototype._renderCanvas = function(renderSession)
 
     if(this._mask)
     {
-        renderSession.maskManager.pushMask(this._mask, renderSession.context);
+        renderSession.maskManager.pushMask(this._mask, renderSession);
     }
 
     var resolution = renderSession.resolution;
@@ -756,7 +756,7 @@ PIXI.Graphics.prototype._renderCanvas = function(renderSession)
 
     if(this._mask)
     {
-        renderSession.maskManager.popMask(renderSession.context);
+        renderSession.maskManager.popMask(renderSession);
     }
 };
 

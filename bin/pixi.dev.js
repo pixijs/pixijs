@@ -4,7 +4,7 @@
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-09-20
+ * Compiled: 2014-09-22
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -6825,7 +6825,7 @@ PIXI.WebGLRenderer = function(width, height, options)
     gl.disable(gl.CULL_FACE);
     gl.enable(gl.BLEND);
 
-    gl.colorMask(true, true, true, this.transparent);
+    gl.colorMask(true, true, true, true);//this.transparent);
 };
 
 // constructor
@@ -7189,7 +7189,7 @@ PIXI.WebGLRenderer.prototype.handleContextRestored = function()
     gl.disable(gl.CULL_FACE);
 
     gl.enable(gl.BLEND);
-    gl.colorMask(true, true, true, this.transparent);
+    gl.colorMask(true, true, true, true);//this.transparent);
 
     this.gl.viewport(0, 0, this.width, this.height);
 
@@ -7353,10 +7353,6 @@ PIXI.WebGLMaskManager.prototype.destroy = function()
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
- 
-//BA0285
-//Intercontinental Hotel, 888 Howard Street
-//San Francisco
 
 /**
 * @class WebGLStencilManager
@@ -10952,7 +10948,7 @@ PIXI.Graphics.prototype._renderCanvas = function(renderSession)
 
     if(this._mask)
     {
-        renderSession.maskManager.pushMask(this._mask, renderSession.context);
+        renderSession.maskManager.pushMask(this._mask, renderSession);
     }
 
     var resolution = renderSession.resolution;
@@ -10973,7 +10969,7 @@ PIXI.Graphics.prototype._renderCanvas = function(renderSession)
 
     if(this._mask)
     {
-        renderSession.maskManager.popMask(renderSession.context);
+        renderSession.maskManager.popMask(renderSession);
     }
 };
 
@@ -13693,8 +13689,8 @@ PIXI.BaseTexture = function(source, scaleMode)
     if((this.source.complete || this.source.getContext) && this.source.width && this.source.height)
     {
         this.hasLoaded = true;
-        this.width = this.source.width;
-        this.height = this.source.height;
+        this.width = this.source.naturalWidth || this.source.width;
+        this.height = this.source.naturalHeight || this.source.height;
 
         PIXI.texturesToUpdate.push(this);
     }
@@ -13705,8 +13701,8 @@ PIXI.BaseTexture = function(source, scaleMode)
         this.source.onload = function() {
 
             scope.hasLoaded = true;
-            scope.width = scope.source.width;
-            scope.height = scope.source.height;
+            scope.width = scope.source.naturalWidth || scope.source.width;
+            scope.height = scope.source.naturalHeight || scope.source.height;
 
             for (var i = 0; i < scope._glTextures.length; i++)
             {
