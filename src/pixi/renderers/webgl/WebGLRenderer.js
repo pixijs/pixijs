@@ -29,7 +29,7 @@ PIXI.WebGLRenderer = function(width, height, options)
     {
         for (var i in PIXI.defaultRenderOptions)
         {
-            if (typeof options[i] === "undefined") options[i] = PIXI.defaultRenderOptions[i];
+            if (typeof options[i] === 'undefined') options[i] = PIXI.defaultRenderOptions[i];
         }
     }
     else
