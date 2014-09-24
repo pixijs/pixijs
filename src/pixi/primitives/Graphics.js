@@ -316,11 +316,11 @@ PIXI.Graphics.prototype.bezierCurveTo = function(cpX, cpY, cpX2, cpY2, toX, toY)
  * "borrowed" from https://code.google.com/p/fxcanvas/ - thanks google!
  *
  * @method arcTo
- * @param  {number}   x1        The x-coordinate of the beginning of the arc
- * @param  {number}   y1        The y-coordinate of the beginning of the arc
- * @param  {number}   x2        The x-coordinate of the end of the arc
- * @param  {number}   y2        The y-coordinate of the end of the arc
- * @param  {number}   radius    The radius of the arc
+ * @param  {Number}   x1        The x-coordinate of the beginning of the arc
+ * @param  {Number}   y1        The y-coordinate of the beginning of the arc
+ * @param  {Number}   x2        The x-coordinate of the end of the arc
+ * @param  {Number}   y2        The y-coordinate of the end of the arc
+ * @param  {Number}   radius    The radius of the arc
  * @return {PIXI.Graphics}
  */
 PIXI.Graphics.prototype.arcTo = function(x1, y1, x2, y2, radius)
@@ -375,12 +375,12 @@ PIXI.Graphics.prototype.arcTo = function(x1, y1, x2, y2, radius)
  * The arc() method creates an arc/curve (used to create circles, or parts of circles).
  *
  * @method arc
- * @param  {number}   cx                The x-coordinate of the center of the circle
- * @param  {number}   cy                The y-coordinate of the center of the circle
- * @param  {number}   radius            The radius of the circle
- * @param  {number}   startAngle        The starting angle, in radians (0 is at the 3 o'clock position of the arc's circle)
- * @param  {number}   endAngle          The ending angle, in radians
- * @param  {number}   anticlockwise     Optional. Specifies whether the drawing should be counterclockwise or clockwise. False is default, and indicates clockwise, while true indicates counter-clockwise.
+ * @param  {Number}   cx                The x-coordinate of the center of the circle
+ * @param  {Number}   cy                The y-coordinate of the center of the circle
+ * @param  {Number}   radius            The radius of the circle
+ * @param  {Number}   startAngle        The starting angle, in radians (0 is at the 3 o'clock position of the arc's circle)
+ * @param  {Number}   endAngle          The ending angle, in radians
+ * @param  {Boolean}   anticlockwise     Optional. Specifies whether the drawing should be counterclockwise or clockwise. False is default, and indicates clockwise, while true indicates counter-clockwise.
  * @return {PIXI.Graphics}
  */
 PIXI.Graphics.prototype.arc = function(cx, cy, radius, startAngle, endAngle, anticlockwise)
