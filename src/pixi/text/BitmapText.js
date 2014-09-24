@@ -102,7 +102,7 @@ PIXI.BitmapText.prototype.updateText = function()
         var charData = data.chars[charCode];
         if(!charData) continue;
 
-        if(prevCharCode && charData[prevCharCode])
+        if(prevCharCode && charData.kerning[prevCharCode])
         {
             pos.x += charData.kerning[prevCharCode];
         }
