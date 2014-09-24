@@ -71,7 +71,19 @@ PIXI.WebGLRenderer = function(width, height, options)
      * @type Boolean
      */
     this.preserveDrawingBuffer = options.preserveDrawingBuffer;
-
+    
+    /**
+     * This sets if the WebGLRenderer will clear the context texture or not before the new render pass. If true:
+     * If the Stage is NOT transparent, Pixi will clear to alpha (0, 0, 0, 0).
+     * If the Stage is transparent, Pixi will clear to the target Stage's background color.
+     * Disable this by setting this to false. For example: if your game has a canvas filling background image, you often don't need this set.
+     *
+     * @property clearBeforeRender
+     * @type Boolean
+     * @default
+     */
+    this.clearBeforeRender = options.clearBeforeRender;
+    
     /**
      * The width of the canvas view
      *
@@ -241,13 +253,18 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
     // make sure we are bound to the main frame buffer
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
-    if(this.transparent)
-    {
-        gl.clearColor(0, 0, 0, 0);
-    }
-    else
-    {
-        gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], 1);
+    if (this.clearBeforeRender)
+        {
+        if(this.transparent)
+        {
+            gl.clearColor(0, 0, 0, 0);
+        }
+        else
+        {
+            gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], 1);
+        }
+        
+        gl.clear (gl.COLOR_BUFFER_BIT);
     }
 
     gl.clear(gl.COLOR_BUFFER_BIT);
