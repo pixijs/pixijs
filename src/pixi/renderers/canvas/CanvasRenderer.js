@@ -221,7 +221,7 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
     if (this.clearBeforeRender)
     {
         if (!this.transparent) this.context.fillStyle = stage.backgroundColorString;
-        this.context.[(this.transparent) ? "clearRect" : "fillRect"](0, 0, this.width, this.height);
+        this.context[(this.transparent) ? "clearRect" : "fillRect"](0, 0, this.width, this.height);
     }
     
     this.renderDisplayObject(stage);
