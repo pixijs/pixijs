@@ -23,7 +23,7 @@ PIXI.CanvasRenderer = function(width, height, options)
     {
         for (var i in PIXI.defaultRenderOptions)
         {
-            options[i] = options[i] || PIXI.defaultRenderOptions[i];
+            if (typeof options[i] === "undefined") options[i] = PIXI.defaultRenderOptions[i];
         }
     }
     else
