@@ -19,8 +19,6 @@ PIXI.BaseTextureCacheIdGenerator = 0;
  */
 PIXI.BaseTexture = function(source, scaleMode)
 {
-    PIXI.EventTarget.call( this );
-
     /**
      * The Resolution of the texture. 
      *
@@ -134,6 +132,7 @@ PIXI.BaseTexture = function(source, scaleMode)
 };
 
 PIXI.BaseTexture.prototype.constructor = PIXI.BaseTexture;
+PIXI.EventTarget.mixin(PIXI.BaseTexture.prototype);
 
 /**
  * Destroys this base texture

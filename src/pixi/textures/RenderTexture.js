@@ -34,9 +34,6 @@
  */
 PIXI.RenderTexture = function(width, height, renderer, scaleMode, resolution)
 {
-    PIXI.EventTarget.call( this );
-
-
     /**
      * The with of the render texture
      *
@@ -44,6 +41,7 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode, resolution)
      * @type Number
      */
     this.width = width || 100;
+
     /**
      * The height of the render texture
      *
@@ -51,9 +49,9 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode, resolution)
      * @type Number
      */
     this.height = height || 100;
-    
+
     /**
-     * The Resolution of the texture. 
+     * The Resolution of the texture.
      *
      * @property resolution
      * @type Number
@@ -76,7 +74,6 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode, resolution)
      * @type Rectangle
      */
     this.crop = new PIXI.Rectangle(0, 0, this.width * this.resolution, this.height * this.resolution);
-        
 
     /**
      * The base texture object that this texture uses
@@ -94,6 +91,11 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode, resolution)
     this.baseTexture.scaleMode = scaleMode || PIXI.scaleModes.DEFAULT;
 
     this.baseTexture.hasLoaded = true;
+
+    PIXI.Texture.call(this,
+        this.baseTexture,
+        new PIXI.Rectangle(0, 0, this.width, this.height)
+    );
 
     // each render texture can only belong to one renderer at the moment if its webGL
     this.renderer = renderer || PIXI.defaultRenderer;
@@ -156,10 +158,10 @@ PIXI.RenderTexture.prototype.resize = function(width, height, updateBase)
         this.projection.x = this.width / 2;
         this.projection.y = -this.height / 2;
     }
-    
+
     if(!this.valid)return;
+
     this.textureBuffer.resize(this.width * this.resolution, this.height * this.resolution);
-   
 };
 
 /**
@@ -175,7 +177,7 @@ PIXI.RenderTexture.prototype.clear = function()
     {
         this.renderer.gl.bindFramebuffer(this.renderer.gl.FRAMEBUFFER, this.textureBuffer.frameBuffer);
     }
-    
+
     this.textureBuffer.clear();
 };
 
@@ -228,7 +230,7 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, position, cle
     PIXI.WebGLRenderer.updateTextures();
 
     this.renderer.spriteBatch.dirty = true;
-    
+
     this.renderer.renderDisplayObject(displayObject, this.projection, this.textureBuffer.frameBuffer);
 
     displayObject.worldTransform = originalWorldTransform;
@@ -254,7 +256,7 @@ PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, position, cl
     var originalWorldTransform = displayObject.worldTransform;
 
     displayObject.worldTransform = PIXI.RenderTexture.tempMatrix;
-    
+
     if(position)
     {
         displayObject.worldTransform.tx = position.x;
@@ -284,9 +286,9 @@ PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, position, cl
     //this.baseTexture.resolution = 2;
 
     this.renderer.renderDisplayObject(displayObject, context);
-    
+
     this.renderer.resolution = realResolution;
-    
+
     context.setTransform(1,0,0,1,0,0);
 
     displayObject.worldTransform = originalWorldTransform;
@@ -342,7 +344,7 @@ PIXI.RenderTexture.prototype.getCanvas = function()
         }
 
         tempCanvas.context.putImageData(canvasData, 0, 0);
-       
+
         return tempCanvas.canvas;
     }
     else

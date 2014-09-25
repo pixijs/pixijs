@@ -21,7 +21,7 @@ PIXI.glContexts = []; // this is where we store the webGL contexts for easy acce
  * @param [options.antialias=false] {Boolean} sets antialias (only applicable in chrome at the moment)
  * @param [options.preserveDrawingBuffer=false] {Boolean} enables drawing buffer preservation, enable this if you need to call toDataUrl on the webgl context
  * @param [options.resolution=1] {Number} the resolution of the renderer retina would be 2
- * 
+ *
  */
 PIXI.WebGLRenderer = function(width, height, options)
 {
@@ -37,7 +37,7 @@ PIXI.WebGLRenderer = function(width, height, options)
         options = PIXI.defaultRenderOptions;
     }
 
-    
+
     if(!PIXI.defaultRenderer)
     {
         PIXI.sayHello('webGL');
@@ -581,8 +581,8 @@ PIXI.WebGLRenderer.prototype.destroy = function()
     // deal with losing context..
 
     // remove listeners
-    this.view.removeEventListener('webglcontextlost', this.contextLostFunction);
-    this.view.removeEventListener('webglcontextrestored', this.contextRestoredFunction);
+    this.view.off('webglcontextlost', this.contextLostFunction);
+    this.view.off('webglcontextrestored', this.contextRestoredFunction);
 
     PIXI.glContexts[this.glContextId] = null;
 
