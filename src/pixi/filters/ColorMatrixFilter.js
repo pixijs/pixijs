@@ -8,7 +8,7 @@
  * color and alpha values of every pixel on your displayObject to produce a result
  * with a new set of RGBA color and alpha values. Its pretty powerful!
  * @class ColorMatrixFilter
- * @contructor
+ * @constructor
  */
 PIXI.ColorMatrixFilter = function()
 {

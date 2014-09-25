@@ -8,8 +8,8 @@
  *
  * @class CanvasRenderer
  * @constructor
- * @param width=800 {Number} the width of the canvas view
- * @param height=600 {Number} the height of the canvas view
+ * @param [width=800] {Number} the width of the canvas view
+ * @param [height=600] {Number} the height of the canvas view
 
  * @param [options] {Object} The optional renderer parameters
  * @param [options.view] {HTMLCanvasElement} the canvas to use as a view, optional
@@ -40,7 +40,7 @@ PIXI.CanvasRenderer = function(width, height, options)
     this.type = PIXI.CANVAS_RENDERER;
 
     this.resolution = options.resolution;
-    
+
     /**
      * This sets if the CanvasRenderer will clear the canvas or not before the new render pass.
      * If the Stage is NOT transparent Pixi will use a canvas sized fillRect operation every frame to set the canvas background color.
@@ -128,7 +128,7 @@ PIXI.CanvasRenderer = function(width, height, options)
 
     this.width *= this.resolution;
     this.height *= this.resolution;
-    
+
     /**
      * The canvas element that everything is drawn to
      *
@@ -140,7 +140,7 @@ PIXI.CanvasRenderer = function(width, height, options)
     /**
      * The canvas 2d context that everything is drawn with
      * @property context
-     * @type HTMLCanvasElement 2d Context
+     * @type CanvasRenderingContext2D 2d Context
      */
     this.context = this.view.getContext( "2d", { alpha: this.transparent } );
 
@@ -274,7 +274,7 @@ PIXI.CanvasRenderer.prototype.resize = function(width, height)
  *
  * @method renderDisplayObject
  * @param displayObject {DisplayObject} The displayObject to render
- * @param context {Context2D} the context 2d method of the canvas
+ * @param context {CanvasRenderingContext2D} the context 2d method of the canvas
  * @private
  */
 PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject, context)

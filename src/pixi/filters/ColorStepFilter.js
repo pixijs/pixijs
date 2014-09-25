@@ -6,7 +6,7 @@
  *
  * This lowers the color depth of your image by the given amount, producing an image with a smaller palette.
  * @class ColorStepFilter
- * @contructor
+ * @constructor
  */
 PIXI.ColorStepFilter = function()
 {

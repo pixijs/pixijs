@@ -6,7 +6,7 @@
  *
  * This inverts your displayObjects colors.
  * @class InvertFilter
- * @contructor
+ * @constructor
  */
 PIXI.InvertFilter = function()
 {
