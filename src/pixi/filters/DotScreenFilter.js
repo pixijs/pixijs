@@ -7,7 +7,7 @@
  *
  * This filter applies a dotscreen effect making display objects appear to be made out of black and white halftone dots like an old printer
  * @class DotScreenFilter
- * @contructor
+ * @constructor
  */
 PIXI.DotScreenFilter = function()
 {

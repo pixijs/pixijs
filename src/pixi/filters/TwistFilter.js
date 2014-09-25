@@ -6,7 +6,7 @@
  *
  * This filter applies a twist effect making display objects appear twisted in the given direction
  * @class TwistFilter
- * @contructor
+ * @constructor
  */
 PIXI.TwistFilter = function()
 {

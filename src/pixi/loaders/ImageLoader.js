@@ -27,6 +27,9 @@ PIXI.ImageLoader = function(url, crossorigin)
      * if the image is loaded with loadFramedSpriteSheet
      * frames will contain the sprite sheet frames
      *
+     * @property frames
+     * @type Array
+     * @readOnly
      */
     this.frames = [];
 };

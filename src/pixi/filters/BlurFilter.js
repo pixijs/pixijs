@@ -8,7 +8,7 @@
  * The strength of the blur can be set for x- and y-axis separately (always relative to the stage).
  *
  * @class BlurFilter
- * @contructor
+ * @constructor
  */
 PIXI.BlurFilter = function()
 {

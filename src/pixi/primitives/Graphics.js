@@ -115,7 +115,9 @@ PIXI.Graphics = function()
     /**
      * Used to detect if the graphics object has changed if this is set to true then the graphics object will be recalculated
      * 
-     * @type {Boolean}
+     * @property dirty
+     * @type Boolean
+     * @private
      */
     this.dirty = true;
 };
