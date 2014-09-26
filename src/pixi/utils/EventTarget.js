@@ -155,7 +155,7 @@ PIXI.EventTarget = {
                 return this;
 
             var list = this._listeners[eventName],
-                i = list.length = fn ? list.length : 0;
+                i = fn ? list.length : 0;
 
             while(i-- > 0) {
                 if(list[i] === fn || list[i]._originalHandler === fn) {

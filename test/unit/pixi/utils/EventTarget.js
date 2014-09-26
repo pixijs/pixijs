@@ -166,6 +166,61 @@ describe('pixi/utils/EventTarget', function () {
         expect(called).to.equal(5);
     });
 
+    it('multiple handlers for one event with some removed', function () {
+        var called = 0;
+
+        var onMyEvent = function () {
+                called++;
+            },
+            onMyEvent2 = function () {
+                called++;
+            };
+
+        // add 2 handlers and confirm they both get called
+        obj.on('myevent', onMyEvent);
+        obj.on('myevent', onMyEvent);
+        obj.on('myevent', onMyEvent2);
+        obj.on('myevent', onMyEvent2);
+
+        obj.emit('myevent');
+
+        expect(called).to.equal(4);
+
+        // remove one of the handlers, emit again, then ensure 1 more call is made
+        obj.off('myevent', onMyEvent);
+
+        obj.emit('myevent');
+
+        expect(called).to.equal(6);
+    });
+
+    it('calls to off without a handler do nothing', function () {
+        var called = 0;
+
+        var onMyEvent = function () {
+            called++;
+        };
+
+        obj.on('myevent', onMyEvent);
+        obj.on('myevent', onMyEvent);
+
+        obj.emit('myevent');
+
+        expect(called).to.equal(2);
+
+        obj.off('myevent');
+
+        obj.emit('myevent');
+
+        expect(called).to.equal(4);
+
+        obj.off('myevent', onMyEvent);
+
+        obj.emit('myevent');
+
+        expect(called).to.equal(4);
+    });
+
     it('handles multiple instances with the same prototype', function () {
         var called = 0;
 
