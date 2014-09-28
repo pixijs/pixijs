@@ -184,11 +184,11 @@ PIXI.Strip.prototype._renderCanvas = function(renderSession)
 
     if (renderSession.roundPixels)
     {
-        context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx | 0, transform.ty | 0);
+        context.setTransform(transform.a, transform.b, transform.c, transform.d, transform.tx | 0, transform.ty | 0);
     }
     else
     {
-        context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
+        context.setTransform(transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
     }
         
     var strip = this;

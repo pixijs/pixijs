@@ -449,39 +449,65 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'cacheAsBitmap', {
  */
 PIXI.DisplayObject.prototype.updateTransform = function()
 {
-    // TODO OPTIMIZE THIS!! with dirty
-    if(this.rotation !== this.rotationCache)
-    {
+    // create some matrix refs for easy access
+    var pt = this.parent.worldTransform;
+    var wt = this.worldTransform;
 
-        this.rotationCache = this.rotation;
-        this._sr =  Math.sin(this.rotation);
-        this._cr =  Math.cos(this.rotation);
+    // temporary matrix variables
+    var a, b, c, d, tx, ty;
+
+    // TODO create a const for 2_PI 
+    // so if rotation is between 0 then we can simplify the multiplication process..
+    if(this.rotation % PIXI.PI_2)
+    {
+        // check to see if the rotation is the same as the previous render. This means we only need to use sin and cos when rotation actually changes
+        if(this.rotation !== this.rotationCache)
+        {
+            this.rotationCache = this.rotation;
+            this._sr = Math.sin(this.rotation);
+            this._cr = Math.cos(this.rotation);
+        }
+
+        // get the matrix values of the displayobject based on its transform properties..
+        a  =  this._cr * this.scale.x;
+        b  =  this._sr * this.scale.x;
+        c  = -this._sr * this.scale.y;
+        d  =  this._cr * this.scale.y;
+        tx =  this.position.x;
+        ty =  this.position.y;
+        
+        // concat the parent matrix with the objects transform.
+        wt.a  = a  * pt.a + b  * pt.c;
+        wt.b  = a  * pt.b + b  * pt.d;
+        wt.c  = c  * pt.a + d  * pt.c;
+        wt.d  = c  * pt.b + d  * pt.d;
+        wt.tx = tx * pt.a + ty * pt.c + pt.tx;
+        wt.ty = tx * pt.b + ty * pt.d + pt.ty;
+
+        // check for pivot.. not often used so geared towards that fact!
+        if(this.pivot.x || this.pivot.y)
+        {
+            wt.tx -= this.pivot.x * a + this.pivot.y * c;
+            wt.ty -= this.pivot.x * b + this.pivot.y * d;
+        }
+    }
+    else
+    {
+        // lets do the fast version as we know there is no rotation..
+        a  = this.scale.x;
+        d  = this.scale.y;
+        tx = this.position.x;
+        ty = this.position.y;
+
+        wt.a  = pt.a * a;
+        wt.b  = pt.b * d;
+        wt.c  = pt.c * a;
+        wt.d  = pt.d * d;
+        wt.tx = tx * pt.a + ty * pt.c + pt.tx - this.pivot.x * a;
+        wt.ty = tx * pt.b + ty * pt.d + pt.ty - this.pivot.y * d;
     }
 
-   // var localTransform = this.localTransform//.toArray();
-    var parentTransform = this.parent.worldTransform;//.toArray();
-    var worldTransform = this.worldTransform;//.toArray();
-
-    var px = this.pivot.x;
-    var py = this.pivot.y;
-
-    var a00 = this._cr * this.scale.x,
-        a01 = -this._sr * this.scale.y,
-        a10 = this._sr * this.scale.x,
-        a11 = this._cr * this.scale.y,
-        a02 = this.position.x - a00 * px - py * a01,
-        a12 = this.position.y - a11 * py - px * a10,
-        b00 = parentTransform.a, b01 = parentTransform.b,
-        b10 = parentTransform.c, b11 = parentTransform.d;
-
-    worldTransform.a = b00 * a00 + b01 * a10;
-    worldTransform.b = b00 * a01 + b01 * a11;
-    worldTransform.tx = b00 * a02 + b01 * a12 + parentTransform.tx;
-
-    worldTransform.c = b10 * a00 + b11 * a10;
-    worldTransform.d = b10 * a01 + b11 * a11;
-    worldTransform.ty = b10 * a02 + b11 * a12 + parentTransform.ty;
-
+    // multiply the alphas..
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
 };
 

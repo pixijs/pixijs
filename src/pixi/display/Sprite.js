@@ -333,18 +333,18 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
         {
             renderSession.context.setTransform(
                 this.worldTransform.a,
-                this.worldTransform.c,
                 this.worldTransform.b,
+                this.worldTransform.c,
                 this.worldTransform.d,
-                this.worldTransform.tx | 0,
-                this.worldTransform.ty | 0);
+                (this.worldTransform.tx* renderSession.resolution) | 0,
+                (this.worldTransform.ty* renderSession.resolution) | 0);
         }
         else
         {
             renderSession.context.setTransform(
                 this.worldTransform.a,
-                this.worldTransform.c,
                 this.worldTransform.b,
+                this.worldTransform.c,
                 this.worldTransform.d,
                 this.worldTransform.tx * renderSession.resolution,
                 this.worldTransform.ty * renderSession.resolution);

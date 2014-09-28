@@ -53,9 +53,9 @@ PIXI.Matrix.prototype.toArray = function(transpose)
     if(transpose)
     {
         array[0] = this.a;
-        array[1] = this.c;
+        array[1] = this.b;
         array[2] = 0;
-        array[3] = this.b;
+        array[3] = this.c;
         array[4] = this.d;
         array[5] = 0;
         array[6] = this.tx;
@@ -65,9 +65,9 @@ PIXI.Matrix.prototype.toArray = function(transpose)
     else
     {
         array[0] = this.a;
-        array[1] = this.b;
+        array[1] = this.c;
         array[2] = this.tx;
-        array[3] = this.c;
+        array[3] = this.b;
         array[4] = this.d;
         array[5] = this.ty;
         array[6] = 0;
