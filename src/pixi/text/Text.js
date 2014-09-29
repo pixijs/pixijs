@@ -313,7 +313,8 @@ PIXI.Text.prototype._renderWebGL = function(renderSession)
         this.updateText();
         this.dirty = false;
 
-        PIXI.updateWebGLTexture(this.texture.baseTexture, renderSession.gl);
+        // update the dirty base textures
+        this.texture.baseTexture.dirty();
     }
 
     PIXI.Sprite.prototype._renderWebGL.call(this, renderSession);

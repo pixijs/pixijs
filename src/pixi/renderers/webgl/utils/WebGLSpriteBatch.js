@@ -465,12 +465,12 @@ PIXI.WebGLSpriteBatch.prototype.renderBatch = function(texture, size, startIndex
 
     var gl = this.gl;
     // bind the current texture
-    gl.bindTexture(gl.TEXTURE_2D, texture._glTextures[gl.id] || PIXI.createWebGLTexture(texture, gl));
+    gl.bindTexture(gl.TEXTURE_2D, texture._glTextures[gl.id] || this.renderSession.renderer.updateTexture(texture));
 
     // check if a texture is dirty..
     if(texture._dirty[gl.id])
     {
-        PIXI.updateWebGLTexture(this.currentBaseTexture, gl);
+        this.renderSession.renderer.updateTexture(texture);
     }
 
     // now draw those suckas!

@@ -203,9 +203,6 @@ PIXI.CanvasRenderer.prototype.constructor = PIXI.CanvasRenderer;
  */
 PIXI.CanvasRenderer.prototype.render = function(stage)
 {
-    // update textures if need be
-    PIXI.texturesToDestroy.length = 0;
-
     stage.updateTransform();
 
     this.context.setTransform(1,0,0,1,0,0);

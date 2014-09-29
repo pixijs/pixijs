@@ -222,8 +222,6 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, matrix, clear
 
     if(clear)this.textureBuffer.clear();
 
-    PIXI.WebGLRenderer.updateTextures();
-
     this.renderer.spriteBatch.dirty = true;
 
     this.renderer.renderDisplayObject(displayObject, this.projection, this.textureBuffer.frameBuffer);
