@@ -16,8 +16,10 @@ PIXI.TextureCacheIdGenerator = 0;
  * @constructor
  * @param baseTexture {BaseTexture} The base texture source to create the texture from
  * @param frame {Rectangle} The rectangle frame of the texture to show
+ * @param [crop] {Rectangle} The area of original texture 
+ * @param [trim] {Rectangle} Trimmed texture rectangle
  */
-PIXI.Texture = function(baseTexture, frame)
+PIXI.Texture = function(baseTexture, frame, crop, trim)
 {
     /**
      * Does this Texture have any frame data assigned to it?
@@ -60,7 +62,7 @@ PIXI.Texture = function(baseTexture, frame)
      * @property trim
      * @type Rectangle
      */
-    this.trim = null;
+    this.trim = trim;
 
     /**
      * This will let the renderer know if the texture is valid. If its not then it cannot be rendered.
@@ -102,7 +104,7 @@ PIXI.Texture = function(baseTexture, frame)
      * @property crop
      * @type Rectangle
      */
-    this.crop = new PIXI.Rectangle(0, 0, 1, 1);
+    this.crop = crop || new PIXI.Rectangle(0, 0, 1, 1);
 
     if (baseTexture.hasLoaded)
     {
