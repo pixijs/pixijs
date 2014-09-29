@@ -118,7 +118,8 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode, resolution)
     }
 
     this.valid = true;
-    PIXI.Texture.frameUpdates.push(this);
+
+    this._updateUvs();
 
 
 };
@@ -189,13 +190,31 @@ PIXI.RenderTexture.prototype.clear = function()
  * @param clear {Boolean} If true the texture will be cleared before the displayObject is drawn
  * @private
  */
-PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, position, clear)
+PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, matrix, clear)
 {
     if(!this.valid)return;
     //TOOD replace position with matrix..
-    var gl = this.renderer.gl;
+   
+    //Lets create a nice matrix to apply to our display object. Frame buffers come in upside down so we need to flip the matrix 
+    var wt = displayObject.worldTransform;
+    wt.identity();
+    wt.translate(0, this.projection.y * 2);
+    wt.append(matrix);
+    wt.scale(1,-1);
 
-    gl.colorMask(true, true, true, true);
+    // setWorld Alpha to ensure that the object is renderer at full opacity
+    displayObject.worldAlpha = 1;
+
+    // Time to update all the children of the displayObject with the new matrix..    
+    var children = displayObject.children;
+
+    for(var i=0,j=children.length; i<j; i++)
+    {
+        children[i].updateTransform();
+    }
+    
+    // time for the webGL fun stuff!
+    var gl = this.renderer.gl;
 
     gl.viewport(0, 0, this.width * this.resolution, this.height * this.resolution);
 
@@ -203,37 +222,12 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, position, cle
 
     if(clear)this.textureBuffer.clear();
 
-
-    // THIS WILL MESS WITH HIT TESTING!
-    var children = displayObject.children;
-
-    //TODO -? create a new one??? dont think so!
-    var originalWorldTransform = displayObject.worldTransform;
-    displayObject.worldTransform = PIXI.RenderTexture.tempMatrix;
-    displayObject.worldAlpha = 1;
-    // modify to flip...
-    displayObject.worldTransform.d = -1;
-    displayObject.worldTransform.ty = this.projection.y * -2;
-
-    if(position)
-    {
-        displayObject.worldTransform.tx = position.x;
-        displayObject.worldTransform.ty -= position.y;
-    }
-
-    for(var i=0,j=children.length; i<j; i++)
-    {
-        children[i].updateTransform();
-    }
-
-    // update the textures!
     PIXI.WebGLRenderer.updateTextures();
 
     this.renderer.spriteBatch.dirty = true;
 
     this.renderer.renderDisplayObject(displayObject, this.projection, this.textureBuffer.frameBuffer);
 
-    displayObject.worldTransform = originalWorldTransform;
 
     this.renderer.spriteBatch.dirty = true;
 };

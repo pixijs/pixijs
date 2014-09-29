@@ -637,7 +637,11 @@ PIXI.DisplayObject.prototype._generateCachedSprite = function()//renderSession)
     this._filters = null;
 
     this._cachedSprite.filters = tempFilters;
-    this._cachedSprite.texture.render(this, new PIXI.Point(-bounds.x, -bounds.y) );
+
+    PIXI.DisplayObject._tempMatrix.tx = -bounds.x;
+    PIXI.DisplayObject._tempMatrix.ty = -bounds.y;
+    
+    this._cachedSprite.texture.render(this, PIXI.DisplayObject._tempMatrix );
 
     this._cachedSprite.anchor.x = -( bounds.x / bounds.width );
     this._cachedSprite.anchor.y = -( bounds.y / bounds.height );
@@ -687,6 +691,9 @@ PIXI.DisplayObject.prototype._renderCanvas = function(renderSession)
     renderSession = renderSession;
 };
 
+
+PIXI.DisplayObject._tempMatrix = new PIXI.Matrix();
+
 /**
  * The position of the displayObject on the x axis relative to the local coordinates of the parent.
  *
@@ -716,3 +723,5 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'y', {
         this.position.y = value;
     }
 });
+
+

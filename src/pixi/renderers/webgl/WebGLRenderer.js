@@ -187,7 +187,7 @@ PIXI.WebGLRenderer = function(width, height, options)
     gl.disable(gl.CULL_FACE);
     gl.enable(gl.BLEND);
 
-    gl.colorMask(true, true, true, true);//this.transparent);
+    gl.colorMask(true, true, true, true);
 };
 
 // constructor
@@ -235,7 +235,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
     var gl = this.gl;
 
     // -- Does this need to be set every frame? -- //
-    //gl.colorMask(true, true, true, this.transparent);
+
     gl.viewport(0, 0, this.width, this.height);
 
     // make sure we are bound to the main frame buffer
@@ -337,15 +337,11 @@ PIXI.WebGLRenderer.updateTextures = function()
 {
     var i = 0;
 
-    for (i=0; i < PIXI.Texture.frameUpdates.length; i++)
-        PIXI.WebGLRenderer.updateTextureFrame(PIXI.Texture.frameUpdates[i]);
-
     for (i = 0; i < PIXI.texturesToDestroy.length; i++)
         PIXI.WebGLRenderer.destroyTexture(PIXI.texturesToDestroy[i]);
 
     PIXI.texturesToUpdate.length = 0;
     PIXI.texturesToDestroy.length = 0;
-    PIXI.Texture.frameUpdates.length = 0;
 };
 
 /**
@@ -371,19 +367,6 @@ PIXI.WebGLRenderer.destroyTexture = function(texture)
     }
 
     texture._glTextures.length = 0;
-};
-
-/**
- *
- * @method updateTextureFrame
- * @param texture {Texture} The texture to update the frame from
- * @private
- */
-PIXI.WebGLRenderer.updateTextureFrame = function(texture)
-{
-    // now set the uvs. Figured that the uv data sits with a texture rather than a sprite.
-    // so uv data is stored on the texture itself
-    texture._updateWebGLuvs();
 };
 
 /**

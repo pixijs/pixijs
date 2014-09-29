@@ -71,6 +71,14 @@ PIXI.Texture = function(baseTexture, frame)
     this.valid = false;
 
     /**
+     * This will let a renderer know that a texture has been updated (used mainly for webGL uv updates)
+     *
+     * @property requiresUpdate
+     * @type Boolean
+     */
+    this.requiresUpdate = false;
+
+    /**
      * The WebGL UV data cache.
      *
      * @private
@@ -183,8 +191,8 @@ PIXI.Texture.prototype.setFrame = function(frame)
         this.frame.width = this.trim.width;
         this.frame.height = this.trim.height;
     }
-
-    if (this.valid) PIXI.Texture.frameUpdates.push(this);
+    
+    if (this.valid) this._updateUvs();
 
 };
 
@@ -194,7 +202,7 @@ PIXI.Texture.prototype.setFrame = function(frame)
  * @method _updateWebGLuvs
  * @private
  */
-PIXI.Texture.prototype._updateWebGLuvs = function()
+PIXI.Texture.prototype._updateUvs = function()
 {
     if(!this._uvs)this._uvs = new PIXI.TextureUvs();
 
@@ -304,8 +312,6 @@ PIXI.Texture.removeTextureFromCache = function(id)
     return texture;
 };
 
-// this is more for webGL.. it contains updated frames..
-PIXI.Texture.frameUpdates = [];
 
 PIXI.TextureUvs = function()
 {
@@ -320,6 +326,4 @@ PIXI.TextureUvs = function()
 
     this.x3 = 0;
     this.y3 = 0;
-
-
 };
