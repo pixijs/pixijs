@@ -16,7 +16,7 @@ PIXI.WEBGL_RENDERER = 0;
 PIXI.CANVAS_RENDERER = 1;
 
 // useful for testing against if your lib is using pixi.
-PIXI.VERSION = "v1.6.1";
+PIXI.VERSION = "v2.0.0";
 
 
 // the various blend modes supported by pixi

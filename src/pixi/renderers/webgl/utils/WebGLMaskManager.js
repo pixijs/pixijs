@@ -8,9 +8,9 @@
 * @param gl {WebGLContext} the current WebGL drawing context
 * @private
 */
-PIXI.WebGLMaskManager = function(gl)
+PIXI.WebGLMaskManager = function()
 {
-    this.setContext(gl);
+    //this.setContext(gl);
 };
 
 /**

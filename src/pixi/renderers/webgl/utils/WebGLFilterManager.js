@@ -6,19 +6,16 @@
 * @class WebGLFilterManager
 * @constructor
 * @param gl {WebGLContext} the current WebGL drawing context
-* @param transparent {Boolean} Whether or not the drawing context should be transparent
 * @private
 */
-PIXI.WebGLFilterManager = function(gl, transparent)
+PIXI.WebGLFilterManager = function()
 {
-    this.transparent = transparent;
-
     this.filterStack = [];
     
     this.offsetX = 0;
     this.offsetY = 0;
 
-    this.setContext(gl);
+   // this.setContext(gl);
 };
 
 // API

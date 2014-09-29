@@ -16,7 +16,7 @@
  * @param gl {WebGLContext} the current WebGL drawing context
  *
  */
-PIXI.WebGLSpriteBatch = function(gl)
+PIXI.WebGLSpriteBatch = function()
 {
 
     /**
@@ -75,7 +75,7 @@ PIXI.WebGLSpriteBatch = function(gl)
     this.currentBatchSize = 0;
     this.currentBaseTexture = null;
     
-    this.setContext(gl);
+//    this.setContext(gl);
 
     this.dirty = true;
 
