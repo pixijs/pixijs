@@ -3,7 +3,6 @@
  */
 
 PIXI.BaseTextureCache = {};
-PIXI.texturesToUpdate = [];
 PIXI.texturesToDestroy = [];
 
 PIXI.BaseTextureCacheIdGenerator = 0;
@@ -98,8 +97,6 @@ PIXI.BaseTexture = function(source, scaleMode)
         this.hasLoaded = true;
         this.width = this.source.naturalWidth || this.source.width;
         this.height = this.source.naturalHeight || this.source.height;
-
-        PIXI.texturesToUpdate.push(this);
     }
     else
     {
