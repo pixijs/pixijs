@@ -239,29 +239,16 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, matrix, clear
  * @param clear {Boolean} If true the texture will be cleared before the displayObject is drawn
  * @private
  */
-PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, position, clear)
+PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, matrix, clear)
 {
     if(!this.valid)return;
 
+    var wt = displayObject.worldTransform;
+    wt.identity();
+    wt.append(matrix);
+
+    // Time to update all the children of the displayObject with the new matrix..    
     var children = displayObject.children;
-
-    var originalWorldTransform = displayObject.worldTransform;
-
-    displayObject.worldTransform = PIXI.RenderTexture.tempMatrix;
-
-    if(position)
-    {
-        displayObject.worldTransform.tx = position.x;
-        displayObject.worldTransform.ty = position.y;
-    }
-    else
-    {
-        displayObject.worldTransform.tx = 0;
-        displayObject.worldTransform.ty = 0;
-    }
-
- //   displayObject.worldTransform.a = 0.5;
-   // displayObject.worldTransform.d = 0.5;
 
     for(var i = 0, j = children.length; i < j; i++)
     {
@@ -275,15 +262,10 @@ PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, position, cl
     var realResolution = this.renderer.resolution;
 
     this.renderer.resolution = this.resolution;
-    //this.baseTexture.resolution = 2;
 
     this.renderer.renderDisplayObject(displayObject, context);
 
     this.renderer.resolution = realResolution;
-
-    context.setTransform(1,0,0,1,0,0);
-
-    displayObject.worldTransform = originalWorldTransform;
 };
 
 /**
