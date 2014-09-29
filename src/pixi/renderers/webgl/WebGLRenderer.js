@@ -258,11 +258,14 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 PIXI.WebGLRenderer.prototype.renderDisplayObject = function(displayObject, projection, buffer)
 {
     this.renderSession.blendModeManager.setBlendMode(PIXI.blendModes.NORMAL);
+   
     // reset the render session data..
     this.renderSession.drawCount = 0;
-    this.renderSession.currentBlendMode = 9999;
 
+    // set the default projection
     this.renderSession.projection = projection;
+
+    //set the default offset
     this.renderSession.offset = this.offset;
 
     // start the sprite batch
@@ -304,7 +307,7 @@ PIXI.WebGLRenderer.prototype.resize = function(width, height)
 };
 
 /**
- * Updates and Creates a WebGL texture
+ * Updates and Creates a WebGL texture for the renderers context
  *
  * @method updateTexture
  * @param texture {Texture} the texture to render
@@ -356,7 +359,6 @@ PIXI.WebGLRenderer.prototype.handleContextLost = function(event)
     this.contextLost = true;
 };
 
-
 /**
  * Handles a restored webgl context
  *
@@ -366,7 +368,6 @@ PIXI.WebGLRenderer.prototype.handleContextLost = function(event)
  */
 PIXI.WebGLRenderer.prototype.handleContextRestored = function()
 {
-
     this.initContext();
 
     // empty all the ol gl textures as they are useless now

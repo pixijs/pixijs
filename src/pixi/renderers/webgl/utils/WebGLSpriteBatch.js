@@ -432,13 +432,15 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
 
     var currentBaseTexture = null;
     var currentBlendMode = this.renderSession.blendModeManager.currentBlendMode;
+    var blendSwap = false;
 
     for (var i = 0, j = this.currentBatchSize; i < j; i++) {
         
         nextTexture = this.textures[i];
         nextBlendMode = this.blendModes[i];
-
-        if(currentBaseTexture !== nextTexture || currentBlendMode !== nextBlendMode)
+        blendSwap = currentBlendMode !== nextBlendMode;
+        
+        if(currentBaseTexture !== nextTexture || blendSwap)
         {
             this.renderBatch(currentBaseTexture, batchSize, start);
 
@@ -447,7 +449,7 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
             currentBaseTexture = nextTexture;
             currentBlendMode = nextBlendMode;
             
-            this.renderSession.blendModeManager.setBlendMode( currentBlendMode );
+            if( blendSwap )this.renderSession.blendModeManager.setBlendMode( currentBlendMode );
         }
 
         batchSize++;
