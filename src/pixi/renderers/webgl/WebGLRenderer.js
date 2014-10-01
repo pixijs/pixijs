@@ -266,9 +266,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
         
         gl.clear (gl.COLOR_BUFFER_BIT);
     }
-
-    gl.clear(gl.COLOR_BUFFER_BIT);
-
+    
     this.renderDisplayObject( stage, this.projection );
 
     // interaction
