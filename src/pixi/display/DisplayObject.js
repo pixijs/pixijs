@@ -476,6 +476,13 @@ PIXI.DisplayObject.prototype.updateTransform = function()
         tx =  this.position.x;
         ty =  this.position.y;
         
+        // check for pivot.. not often used so geared towards that fact!
+        if(this.pivot.x || this.pivot.y)
+        {
+          tx -= this.pivot.x * a + this.pivot.y * c;
+          ty -= this.pivot.x * b + this.pivot.y * d;
+        }
+
         // concat the parent matrix with the objects transform.
         wt.a  = a  * pt.a + b  * pt.c;
         wt.b  = a  * pt.b + b  * pt.d;
@@ -484,27 +491,22 @@ PIXI.DisplayObject.prototype.updateTransform = function()
         wt.tx = tx * pt.a + ty * pt.c + pt.tx;
         wt.ty = tx * pt.b + ty * pt.d + pt.ty;
 
-        // check for pivot.. not often used so geared towards that fact!
-        if(this.pivot.x || this.pivot.y)
-        {
-            wt.tx -= this.pivot.x * a + this.pivot.y * c;
-            wt.ty -= this.pivot.x * b + this.pivot.y * d;
-        }
+        
     }
     else
     {
         // lets do the fast version as we know there is no rotation..
         a  = this.scale.x;
         d  = this.scale.y;
-        tx = this.position.x;
-        ty = this.position.y;
+        tx = this.position.x - this.pivot.x * a;
+        ty = this.position.y - this.pivot.y * d;
 
         wt.a  = pt.a * a;
         wt.b  = pt.b * d;
         wt.c  = pt.c * a;
         wt.d  = pt.d * d;
-        wt.tx = tx * pt.a + ty * pt.c + pt.tx - this.pivot.x * a;
-        wt.ty = tx * pt.b + ty * pt.d + pt.ty - this.pivot.y * d;
+        wt.tx = tx * pt.a + ty * pt.c + pt.tx;
+        wt.ty = tx * pt.b + ty * pt.d + pt.ty;
     }
 
     // multiply the alphas..

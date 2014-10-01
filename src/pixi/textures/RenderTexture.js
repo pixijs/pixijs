@@ -120,8 +120,6 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode, resolution)
     this.valid = true;
 
     this._updateUvs();
-
-
 };
 
 PIXI.RenderTexture.prototype = Object.create(PIXI.Texture.prototype);
@@ -137,10 +135,7 @@ PIXI.RenderTexture.prototype.constructor = PIXI.RenderTexture;
  */
 PIXI.RenderTexture.prototype.resize = function(width, height, updateBase)
 {
-    if (width === this.width && height === this.height)
-    {
-        return;
-    }
+    if (width === this.width && height === this.height)return;
 
     this.valid = (width > 0 && height > 0);
 
@@ -199,7 +194,7 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, matrix, clear
     var wt = displayObject.worldTransform;
     wt.identity();
     wt.translate(0, this.projection.y * 2);
-    wt.append(matrix);
+    if(matrix)wt.append(matrix);
     wt.scale(1,-1);
 
     // setWorld Alpha to ensure that the object is renderer at full opacity
@@ -225,7 +220,6 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, matrix, clear
     this.renderer.spriteBatch.dirty = true;
 
     this.renderer.renderDisplayObject(displayObject, this.projection, this.textureBuffer.frameBuffer);
-
 
     this.renderer.spriteBatch.dirty = true;
 };

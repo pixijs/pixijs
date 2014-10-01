@@ -269,8 +269,6 @@ PIXI.WebGLStencilManager.prototype.popStencil = function(graphics, webGLData, re
 
 
     }
-
-    //renderSession.shaderManager.deactivatePrimitiveShader();
 };
 
 /**
