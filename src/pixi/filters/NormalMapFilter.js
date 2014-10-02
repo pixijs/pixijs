@@ -9,7 +9,7 @@
  * You can use this filter to apply all manor of crazy warping effects
  * Currently the r property of the texture is used offset the x and the g propery of the texture is used to offset the y.
  * @class NormalMapFilter
- * @contructor
+ * @constructor
  * @param texture {Texture} The texture used for the displacemtent map * must be power of 2 texture at the moment
  */
 PIXI.NormalMapFilter = function(texture)

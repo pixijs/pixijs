@@ -6,7 +6,7 @@
  *
  * This filter applies a pixelate effect making display objects appear 'blocky'
  * @class PixelateFilter
- * @contructor
+ * @constructor
  */
 PIXI.PixelateFilter = function()
 {

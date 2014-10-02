@@ -8,13 +8,29 @@
  *
  * @class CanvasRenderer
  * @constructor
- * @param width=800 {Number} the width of the canvas view
- * @param height=600 {Number} the height of the canvas view
- * @param [view] {HTMLCanvasElement} the canvas to use as a view, optional
- * @param [transparent=false] {Boolean} the transparency of the render view, default false
+ * @param [width=800] {Number} the width of the canvas view
+ * @param [height=600] {Number} the height of the canvas view
+
+ * @param [options] {Object} The optional renderer parameters
+ * @param [options.view] {HTMLCanvasElement} the canvas to use as a view, optional
+ * @param [options.transparent=false] {Boolean} If the render view is transparent, default false
+ * @param [options.resolution=1] {Number} the resolution of the renderer retina would be 2
+ * @param [options.clearBeforeRender=true] {Boolean} This sets if the CanvasRenderer will clear the canvas or not before the new render pass.
  */
-PIXI.CanvasRenderer = function(width, height, view, transparent)
+PIXI.CanvasRenderer = function(width, height, options)
 {
+    if(options)
+    {
+        for (var i in PIXI.defaultRenderOptions)
+        {
+            if (typeof options[i] === "undefined") options[i] = PIXI.defaultRenderOptions[i];
+        }
+    }
+    else
+    {
+        options = PIXI.defaultRenderOptions;
+    }
+
     if(!PIXI.defaultRenderer)
     {
         PIXI.sayHello("Canvas");
@@ -22,6 +38,8 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
     }
 
     this.type = PIXI.CANVAS_RENDERER;
+
+    this.resolution = options.resolution;
 
     /**
      * This sets if the CanvasRenderer will clear the canvas or not before the new render pass.
@@ -33,7 +51,7 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
      * @type Boolean
      * @default
      */
-    this.clearBeforeRender = true;
+    this.clearBeforeRender = options.clearBeforeRender;
 
     /**
      * Whether the render view is transparent
@@ -41,7 +59,7 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
      * @property transparent
      * @type Boolean
      */
-    this.transparent = !!transparent;
+    this.transparent = options.transparent;
 
     if(!PIXI.blendModesCanvas)
     {
@@ -108,18 +126,21 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
      */
     this.height = height || 600;
 
+    this.width *= this.resolution;
+    this.height *= this.resolution;
+
     /**
      * The canvas element that everything is drawn to
      *
      * @property view
      * @type HTMLCanvasElement
      */
-    this.view = view || document.createElement( "canvas" );
+    this.view = options.view || document.createElement( "canvas" );
 
     /**
      * The canvas 2d context that everything is drawn with
      * @property context
-     * @type HTMLCanvasElement 2d Context
+     * @type CanvasRenderingContext2D 2d Context
      */
     this.context = this.view.getContext( "2d", { alpha: this.transparent } );
 
@@ -127,8 +148,8 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
     // hack to enable some hardware acceleration!
     //this.view.style["transform"] = "translatez(0)";
 
-    this.view.width = this.width;
-    this.view.height = this.height;
+    this.view.width = this.width * this.resolution;
+    this.view.height = this.height * this.resolution;
     this.count = 0;
 
     /**
@@ -157,6 +178,8 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
         roundPixels: false
     };
 
+    this.resize(width, height);
+
     if("imageSmoothingEnabled" in this.context)
         this.renderSession.smoothProperty = "imageSmoothingEnabled";
     else if("webkitImageSmoothingEnabled" in this.context)
@@ -165,6 +188,8 @@ PIXI.CanvasRenderer = function(width, height, view, transparent)
         this.renderSession.smoothProperty = "mozImageSmoothingEnabled";
     else if("oImageSmoothingEnabled" in this.context)
         this.renderSession.smoothProperty = "oImageSmoothingEnabled";
+    else if ("msImageSmoothingEnabled" in this.context)
+        this.renderSession.smoothProperty = "msImageSmoothingEnabled";
 };
 
 // constructor
@@ -185,6 +210,7 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
     stage.updateTransform();
 
     this.context.setTransform(1,0,0,1,0,0);
+
     this.context.globalAlpha = 1;
 
     if (navigator.isCocoonJS && this.view.screencanvas) {
@@ -195,7 +221,7 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
     if (!this.transparent && this.clearBeforeRender)
     {
         this.context.fillStyle = stage.backgroundColorString;
-        this.context.fillRect(0, 0, this.width, this.height);
+        this.context.fillRect(0, 0, this.width , this.height);
     }
     else if (this.transparent && this.clearBeforeRender)
     {
@@ -216,10 +242,11 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
     }
 
     // remove frame updates.. // removeing for now...
-    //if(PIXI.Texture.frameUpdates.length > 0)
-    //{
-    //    PIXI.Texture.frameUpdates.length = 0;
-    //}
+    // TODO remove this eventually!
+    if(PIXI.Texture.frameUpdates.length > 0)
+    {
+        PIXI.Texture.frameUpdates.length = 0;
+    }
 };
 
 /**
@@ -231,11 +258,15 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
  */
 PIXI.CanvasRenderer.prototype.resize = function(width, height)
 {
-    this.width = width;
-    this.height = height;
+    this.width = width * this.resolution;
+    this.height = height * this.resolution;
 
-    this.view.width = width;
-    this.view.height = height;
+    this.view.width = this.width;
+    this.view.height = this.height;
+
+    this.view.style.width = this.width / this.resolution + "px";
+    this.view.style.height = this.height / this.resolution + "px";
+
 };
 
 /**
@@ -243,7 +274,7 @@ PIXI.CanvasRenderer.prototype.resize = function(width, height)
  *
  * @method renderDisplayObject
  * @param displayObject {DisplayObject} The displayObject to render
- * @param context {Context2D} the context 2d method of the canvas
+ * @param context {CanvasRenderingContext2D} the context 2d method of the canvas
  * @private
  */
 PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject, context)
@@ -253,6 +284,7 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject, cont
     //var context = this.context;
 
     this.renderSession.context = context || this.context;
+    this.renderSession.resolution = this.resolution;
     displayObject._renderCanvas(this.renderSession);
 };
 

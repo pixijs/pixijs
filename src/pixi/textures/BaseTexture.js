@@ -19,7 +19,13 @@ PIXI.BaseTextureCacheIdGenerator = 0;
  */
 PIXI.BaseTexture = function(source, scaleMode)
 {
-    PIXI.EventTarget.call( this );
+    /**
+     * The Resolution of the texture.
+     *
+     * @property resolution
+     * @type Number
+     */
+    this.resolution = 1;
 
     /**
      * [read-only] The width of the base texture set when the image has loaded
@@ -76,6 +82,9 @@ PIXI.BaseTexture = function(source, scaleMode)
     */
     this.premultipliedAlpha = true;
 
+
+
+
     // used for webGL
     this._glTextures = [];
 
@@ -87,8 +96,8 @@ PIXI.BaseTexture = function(source, scaleMode)
     if((this.source.complete || this.source.getContext) && this.source.width && this.source.height)
     {
         this.hasLoaded = true;
-        this.width = this.source.width;
-        this.height = this.source.height;
+        this.width = this.source.naturalWidth || this.source.width;
+        this.height = this.source.naturalHeight || this.source.height;
 
         PIXI.texturesToUpdate.push(this);
     }
@@ -99,8 +108,8 @@ PIXI.BaseTexture = function(source, scaleMode)
         this.source.onload = function() {
 
             scope.hasLoaded = true;
-            scope.width = scope.source.width;
-            scope.height = scope.source.height;
+            scope.width = scope.source.naturalWidth || scope.source.width;
+            scope.height = scope.source.naturalHeight || scope.source.height;
 
             for (var i = 0; i < scope._glTextures.length; i++)
             {
@@ -123,6 +132,7 @@ PIXI.BaseTexture = function(source, scaleMode)
 };
 
 PIXI.BaseTexture.prototype.constructor = PIXI.BaseTexture;
+PIXI.EventTarget.mixin(PIXI.BaseTexture.prototype);
 
 /**
  * Destroys this base texture
@@ -188,6 +198,12 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
         baseTexture.imageUrl = imageUrl;
         image.src = imageUrl;
         PIXI.BaseTextureCache[imageUrl] = baseTexture;
+
+        // if there is an @2x at the end of the url we are going to assume its a highres image
+        if( imageUrl.indexOf(PIXI.RETINA_PREFIX + '.') !== -1)
+        {
+            baseTexture.resolution = 2;
+        }
     }
 
     return baseTexture;

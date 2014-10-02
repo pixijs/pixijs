@@ -11,7 +11,7 @@ function pixi_textures_Texture_confirmNew(obj, done) {
     }
 
     expect(obj).to.be.an.instanceof(PIXI.Texture);
-    pixi_utils_EventTarget_like(obj);
+    pixi_utils_EventTarget_confirm(obj);
 
     expect(obj).to.have.property('baseTexture')
         .and.to.be.an.instanceof(PIXI.BaseTexture);
@@ -20,7 +20,7 @@ function pixi_textures_Texture_confirmNew(obj, done) {
     if (obj.baseTexture.hasLoaded) {
         confirmFrameDone();
     } else {
-        obj.addEventListener('update', confirmFrameDone);
+        obj.on('update', confirmFrameDone);
         pixi_core_Rectangle_confirm(obj.frame, 0, 0, 1, 1);
     }
 }
