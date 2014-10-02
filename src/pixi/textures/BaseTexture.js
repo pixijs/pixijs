@@ -85,9 +85,10 @@ PIXI.BaseTexture = function(source, scaleMode)
 
     // used for webGL
     this._glTextures = [];
-
     // used for webGL texture updating...
-    this._dirty = [];
+    // TODO - this needs to be addressed
+    this._dirty = [true, true, true, true];
+
 
     if(!source)return;
 
@@ -96,6 +97,7 @@ PIXI.BaseTexture = function(source, scaleMode)
         this.hasLoaded = true;
         this.width = this.source.naturalWidth || this.source.width;
         this.height = this.source.naturalHeight || this.source.height;
+        this.dirty();
     }
     else
     {

@@ -412,7 +412,6 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
         gl.vertexAttribPointer(this.shader.aVertexPosition, 2, gl.FLOAT, false, stride, 0);
         gl.vertexAttribPointer(this.shader.aTextureCoord, 2, gl.FLOAT, false, stride, 2 * 4);
         gl.vertexAttribPointer(this.shader.colorAttribute, 2, gl.FLOAT, false, stride, 4 * 4);
-
     }
 
     // upload the verts to the buffer  
@@ -439,7 +438,7 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
         nextTexture = this.textures[i];
         nextBlendMode = this.blendModes[i];
         blendSwap = currentBlendMode !== nextBlendMode;
-        
+
         if(currentBaseTexture !== nextTexture || blendSwap)
         {
             this.renderBatch(currentBaseTexture, batchSize, start);
@@ -466,14 +465,18 @@ PIXI.WebGLSpriteBatch.prototype.renderBatch = function(texture, size, startIndex
     if(size === 0)return;
 
     var gl = this.gl;
-    // bind the current texture
-    gl.bindTexture(gl.TEXTURE_2D, texture._glTextures[gl.id] || this.renderSession.renderer.updateTexture(texture));
 
     // check if a texture is dirty..
     if(texture._dirty[gl.id])
     {
         this.renderSession.renderer.updateTexture(texture);
     }
+    else
+    {   
+        // bind the current texture
+        gl.bindTexture(gl.TEXTURE_2D, texture._glTextures[gl.id]);
+    }
+    
 
     // now draw those suckas!
     gl.drawElements(gl.TRIANGLES, size * 6, gl.UNSIGNED_SHORT, startIndex * 6 * 2);
@@ -490,6 +493,7 @@ PIXI.WebGLSpriteBatch.prototype.renderBatch = function(texture, size, startIndex
 PIXI.WebGLSpriteBatch.prototype.stop = function()
 {
     this.flush();
+    this.dirty = true;
 };
 
 /**

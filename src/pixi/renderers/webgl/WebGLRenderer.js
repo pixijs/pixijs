@@ -117,12 +117,12 @@ PIXI.WebGLRenderer = function(width, height, options)
     this.offset = new PIXI.Point(0, 0);
 
     // time to create the render managers! each one focuses on managine a state in webGL
-    this.shaderManager = new PIXI.WebGLShaderManager();                   // deals with managing the shader programs and their attribs
-    this.spriteBatch = new PIXI.WebGLSpriteBatch();                       // manages the rendering of sprites
-    this.maskManager = new PIXI.WebGLMaskManager();                       // manages the masks using the stencil buffer
-    this.filterManager = new PIXI.WebGLFilterManager(); // manages the filters
-    this.stencilManager = new PIXI.WebGLStencilManager();
-    this.blendModeManager = new PIXI.WebGLBlendModeManager();
+    this.shaderManager    = new PIXI.WebGLShaderManager();      // deals with managing the shader programs and their attribs
+    this.spriteBatch      = new PIXI.WebGLSpriteBatch();        // manages the rendering of sprites
+    this.maskManager      = new PIXI.WebGLMaskManager();        // manages the masks using the stencil buffer
+    this.filterManager    = new PIXI.WebGLFilterManager();      // manages the filters
+    this.stencilManager   = new PIXI.WebGLStencilManager();     // manages the stencil buffer
+    this.blendModeManager = new PIXI.WebGLBlendModeManager();   // manages the blendModes
 
     // TODO remove
     this.renderSession = {};
@@ -140,6 +140,7 @@ PIXI.WebGLRenderer = function(width, height, options)
     // time init the context..
     this.initContext();
 
+    // map some webGL blend modes..
     this.mapBlendModes();
 };
 
@@ -165,7 +166,7 @@ PIXI.WebGLRenderer.prototype.initContext = function()
     gl.disable(gl.CULL_FACE);
     gl.enable(gl.BLEND);
 
-    // need to set the context...
+    // need to set the context for all the managers...
     this.shaderManager.setContext(gl);
     this.spriteBatch.setContext(gl);
     this.maskManager.setContext(gl);
@@ -188,8 +189,8 @@ PIXI.WebGLRenderer.prototype.initContext = function()
  */
 PIXI.WebGLRenderer.prototype.render = function(stage)
 {
+    // no point rendering if our context has been blown up!
     if(this.contextLost)return;
-
 
     // if rendering a new stage clear the batches..
     if(this.__stage !== stage)
@@ -207,8 +208,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 
     var gl = this.gl;
 
-    // -- Does this need to be set every frame? -- //
-
+    
     // interaction
     if(stage._interactive)
     {
@@ -228,6 +228,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
         }
     }
 
+    // -- Does this need to be set every frame? -- //
     gl.viewport(0, 0, this.width, this.height);
 
     // make sure we are bound to the main frame buffer
@@ -296,8 +297,8 @@ PIXI.WebGLRenderer.prototype.resize = function(width, height)
     this.view.width = this.width;
     this.view.height = this.height;
 
-    this.view.style.width = width + 'px';
-    this.view.style.height = height + 'px';
+  //  this.view.style.width = width + 'px';
+  //  this.view.style.height = height + 'px';
 
    // console.log(this.width / this.resolution)
     this.gl.viewport(0, 0, this.width, this.height);
@@ -321,9 +322,10 @@ PIXI.WebGLRenderer.prototype.updateTexture = function(texture)
     if(!texture._glTextures[gl.id])texture._glTextures[gl.id] = gl.createTexture();
 
     gl.bindTexture(gl.TEXTURE_2D, texture._glTextures[gl.id]);
-    gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, texture.premultipliedAlpha);
 
+    gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, texture.premultipliedAlpha);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.source);
+    
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, texture.scaleMode === PIXI.scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, texture.scaleMode === PIXI.scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
 
@@ -338,8 +340,6 @@ PIXI.WebGLRenderer.prototype.updateTexture = function(texture)
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
     }
-
-    gl.bindTexture(gl.TEXTURE_2D, null);
 
     texture._dirty[gl.id] = false;
 
