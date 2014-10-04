@@ -6,6 +6,9 @@
  * @module PIXI
  */
 var PIXI = PIXI || {};
+if (typeof exports !== 'undefined') {
+  PIXI = exports
+}
 
 /* 
 * 
