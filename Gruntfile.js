@@ -6,7 +6,8 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-connect');
     grunt.loadNpmTasks('grunt-contrib-yuidoc');
     grunt.loadNpmTasks('grunt-contrib-watch');
-    
+    grunt.loadNpmTasks('grunt-browserify');
+
     grunt.loadTasks('tasks');
 
     var srcFiles = [
@@ -204,10 +205,21 @@ module.exports = function(grunt) {
                 // browsers: ['Chrome'],
                 singleRun: true
             }
+        },
+        browserify: {
+            dist: {
+                files: {
+                    '<%= files.build %>': [
+                        '<%= dirs.src %>/module.js'
+                    ],
+                }
+            }
         }
     });
 
     grunt.registerTask('default', ['build', 'test']);
+
+    grunt.registerTask('browserify-build', ['jshint:source', 'browserify:dist', 'uglify']);
 
     grunt.registerTask('build', ['jshint:source', 'concat', 'uglify']);
     grunt.registerTask('build-debug', ['concat_sourcemap', 'uglify']);
