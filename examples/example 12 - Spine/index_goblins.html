@@ -67,7 +67,7 @@
         {
             // change current skin
             var currentSkinName = goblin.skeleton.skin.name;
-            var newSkinName = (currentSkinName == 'goblin' ? 'goblingirl' : 'goblin');
+            var newSkinName = (currentSkinName === 'goblin' ? 'goblingirl' : 'goblin');
             goblin.skeleton.setSkinByName(newSkinName);
             goblin.skeleton.setSlotsToSetupPose();
         };
