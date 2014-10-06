@@ -58,10 +58,12 @@ PIXI.Polygon.prototype.contains = function(x, y)
 
     // use some raycasting to test hits
     // https://github.com/substack/point-in-polygon/blob/master/index.js
-    for(var i = 0, j = this.points.length - 1; i < this.points.length; j = i++)
+    var length = this.points.length / 2;
+
+    for(var i = 0, j = length - 1; i < length; j = i++)
     {
-        var xi = this.points[i].x, yi = this.points[i].y,
-            xj = this.points[j].x, yj = this.points[j].y,
+        var xi = this.points[i * 2], yi = this.points[i * 2 + 1],
+            xj = this.points[j * 2], yj = this.points[j * 2 + 1],
             intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
 
         if(intersect) inside = !inside;
