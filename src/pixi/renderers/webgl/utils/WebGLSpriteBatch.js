@@ -472,7 +472,7 @@ PIXI.WebGLSpriteBatch.prototype.renderBatch = function(texture, size, startIndex
         this.renderSession.renderer.updateTexture(texture);
     }
     else
-    {   
+    {
         // bind the current texture
         gl.bindTexture(gl.TEXTURE_2D, texture._glTextures[gl.id]);
     }
