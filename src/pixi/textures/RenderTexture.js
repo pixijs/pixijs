@@ -256,6 +256,7 @@ PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, position, cl
     var originalWorldTransform = displayObject.worldTransform;
 
     displayObject.worldTransform = PIXI.RenderTexture.tempMatrix;
+    displayObject.worldAlpha = 1;
 
     if(position)
     {
