@@ -531,8 +531,7 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 
     // temp fix for if the element is in a non visible
    
-    var isSprite = (item instanceof PIXI.Sprite),
-        worldTransform = item.worldTransform,
+    var worldTransform = item.worldTransform, i,
         a00 = worldTransform.a, a01 = worldTransform.b, a02 = worldTransform.tx,
         a10 = worldTransform.c, a11 = worldTransform.d, a12 = worldTransform.ty,
         id = 1 / (a00 * a11 + a01 * -a10),
@@ -553,7 +552,7 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
         return false;
     }
     // a sprite with no hitarea defined
-    else if(isSprite)
+    else if(item instanceof PIXI.Sprite)
     {
         var width = item.texture.frame.width,
             height = item.texture.frame.height,
@@ -572,10 +571,29 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
             }
         }
     }
+    else if(item instanceof PIXI.Graphics)
+    {
+        var graphicsData = item.graphicsData;
+        for (i = 0; i < graphicsData.length; i++)
+        {
+            var data = graphicsData[i];
+            if(!data.fill)continue;
+
+            // only deal with fills..
+            if(data.shape)
+            {
+                if(data.shape.contains(x, y))
+                {
+                    interactionData.target = item;
+                    return true;
+                }
+            }
+        }
+    }
 
     var length = item.children.length;
 
-    for (var i = 0; i < length; i++)
+    for (i = 0; i < length; i++)
     {
         var tempItem = item.children[i];
         var hit = this.hitTest(tempItem, interactionData);

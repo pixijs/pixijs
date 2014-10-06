@@ -479,8 +479,8 @@ PIXI.DisplayObject.prototype.updateTransform = function()
         // check for pivot.. not often used so geared towards that fact!
         if(this.pivot.x || this.pivot.y)
         {
-          tx -= this.pivot.x * a + this.pivot.y * c;
-          ty -= this.pivot.x * b + this.pivot.y * d;
+            tx -= this.pivot.x * a + this.pivot.y * c;
+            ty -= this.pivot.x * b + this.pivot.y * d;
         }
 
         // concat the parent matrix with the objects transform.
