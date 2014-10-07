@@ -132,12 +132,17 @@ PIXI.InteractionManager.prototype.collectInteractiveSprite = function(displayObj
             //child.__iParent = iParent;
             this.interactiveItems.push(child);
 
-            if (child.children.length > 0) this.collectInteractiveSprite(child, child);
+            if (child.children.length > 0) {
+                this.collectInteractiveSprite(child, child);
+            }
         }
         else
         {
             child.__iParent = null;
-            if (child.children.length > 0) this.collectInteractiveSprite(child, iParent);
+            if (child.children.length > 0)
+            {
+                this.collectInteractiveSprite(child, iParent);
+            }
         }
 
     }
@@ -155,8 +160,10 @@ PIXI.InteractionManager.prototype.setTarget = function(target)
     this.target = target;
     this.resolution = target.resolution;
 
-    //check if the dom element has been set. If it has don't do anything
-    if (this.interactionDOMElement === null) this.setTargetDomElement (target.view);
+    // Check if the dom element has been set. If it has don't do anything.
+    if (this.interactionDOMElement !== null) return;
+    
+    this.setTargetDomElement (target.view);
 };
 
 
@@ -238,7 +245,10 @@ PIXI.InteractionManager.prototype.update = function()
     // ok.. so mouse events??
     // yes for now :)
     // OPTIMISE - how often to check??
-    if (this.dirty) this.rebuildInteractiveGraph();
+    if (this.dirty)
+    {
+        this.rebuildInteractiveGraph();
+    }
     
     // loop through interactive objects!
     var length = this.interactiveItems.length;
@@ -263,11 +273,17 @@ PIXI.InteractionManager.prototype.update = function()
         {
             if (item.buttonMode) cursor = item.defaultCursor;
 
-            if (!item.interactiveChildren) over = true;
-
+            if (!item.interactiveChildren)
+            {
+                over = true;
+            }
+            
             if (!item.__isOver)
             {
-                if (item.mouseover) item.mouseover (this.mouse);
+                if (item.mouseover)
+                {
+                    item.mouseover (this.mouse);
+                }
                 item.__isOver = true;
             }
         }
@@ -276,7 +292,10 @@ PIXI.InteractionManager.prototype.update = function()
             if (item.__isOver)
             {
                 // roll out!
-                if (item.mouseout) item.mouseout( this.mouse);
+                if (item.mouseout)
+                {
+                    item.mouseout (this.mouse);
+                }
                 item.__isOver = false;
             }
         }
@@ -301,8 +320,12 @@ PIXI.InteractionManager.prototype.rebuildInteractiveGraph = function()
 
     this.interactiveItems = [];
 
-    if (this.stage.interactive) this.interactiveItems.push(this.stage);
-    // go through and collect all the objects that are interactive..
+    if (this.stage.interactive)
+    {
+        this.interactiveItems.push(this.stage);
+    }
+    
+    // Go through and collect all the objects that are interactive..
     this.collectInteractiveSprite(this.stage, this.stage);
 };
 
@@ -315,7 +338,10 @@ PIXI.InteractionManager.prototype.rebuildInteractiveGraph = function()
  */
 PIXI.InteractionManager.prototype.onMouseMove = function(event)
 {
-    if (this.dirty) this.rebuildInteractiveGraph ();
+    if (this.dirty)
+    {
+        this.rebuildInteractiveGraph ();
+    }
     
     this.mouse.originalEvent = event;
     
@@ -332,7 +358,10 @@ PIXI.InteractionManager.prototype.onMouseMove = function(event)
         var item = this.interactiveItems[i];
         
         // Call the function!
-        if (item.mousemove) item.mousemove(this.mouse);
+        if (item.mousemove)
+        {
+            item.mousemove(this.mouse);
+        }
     }
 };
 
@@ -345,12 +374,18 @@ PIXI.InteractionManager.prototype.onMouseMove = function(event)
  */
 PIXI.InteractionManager.prototype.onMouseDown = function(event)
 {
-    if (this.dirty) this.rebuildInteractiveGraph ();
+    if (this.dirty)
+    {
+        this.rebuildInteractiveGraph ();
+    }
     
     this.mouse.originalEvent = event;
 
-    if (PIXI.AUTO_PREVENT_DEFAULT) this.mouse.originalEvent.preventDefault();
-
+    if (PIXI.AUTO_PREVENT_DEFAULT)
+    {
+        this.mouse.originalEvent.preventDefault ();
+    }
+    
     // loop through interaction tree...
     // hit test each item! ->
     // get interactive items under point??
@@ -378,7 +413,10 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
             if (item.__hit)
             {
                 //call the function!
-                if (item[downFunction]) item[downFunction](this.mouse);
+                if (item[downFunction])
+                {
+                    item[downFunction](this.mouse);
+                }
                 item[isDown] = true;
 
                 // just the one!
@@ -397,7 +435,10 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
  */
 PIXI.InteractionManager.prototype.onMouseOut = function(event)
 {
-    if (this.dirty) this.rebuildInteractiveGraph ();
+    if (this.dirty)
+    {
+        this.rebuildInteractiveGraph ();
+    }
     
     this.mouse.originalEvent = event;
 
@@ -411,7 +452,10 @@ PIXI.InteractionManager.prototype.onMouseOut = function(event)
         if (item.__isOver)
         {
             this.mouse.target = item;
-            if (item.mouseout) item.mouseout(this.mouse);
+            if (item.mouseout)
+            {
+                item.mouseout(this.mouse);
+            }
             item.__isOver = false;
         }
     }
@@ -432,7 +476,10 @@ PIXI.InteractionManager.prototype.onMouseOut = function(event)
  */
 PIXI.InteractionManager.prototype.onMouseUp = function(event)
 {
-    if (this.dirty) this.rebuildInteractiveGraph();
+    if (this.dirty)
+    {
+        this.rebuildInteractiveGraph();
+    }
     
     this.mouse.originalEvent = event;
 
@@ -464,10 +511,16 @@ PIXI.InteractionManager.prototype.onMouseUp = function(event)
                 }
                 if (item[isDown])
                 {
-                    if (item[clickFunction]) item[clickFunction](this.mouse);
+                    if (item[clickFunction])
+                    {
+                        item[clickFunction](this.mouse);
+                    }
                 }
 
-                if (!item.interactiveChildren) up = true;
+                if (!item.interactiveChildren)
+                {
+                    up = true;
+                }
             }
             else
             {
@@ -494,8 +547,11 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
 {
     var global = interactionData.global;
 
-    if (!item.worldVisible) return false;
-
+    if (!item.worldVisible)
+    {
+        return false;
+    }
+    
     // temp fix for if the element is in a non visible
    
     var isSprite = (item instanceof PIXI.Sprite);
@@ -509,8 +565,10 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
     interactionData.target = item;
 
     //a sprite or display object with a hit area defined
-    if (item.hitArea && item.hitArea.contains) {
-        if (item.hitArea.contains(x, y)) {
+    if (item.hitArea && item.hitArea.contains)
+    {
+        if (item.hitArea.contains(x, y))
+        {
             interactionData.target = item;
             return true;
         }
@@ -562,7 +620,10 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
  */
 PIXI.InteractionManager.prototype.onTouchMove = function(event)
 {
-    if (this.dirty) this.rebuildInteractiveGraph ();
+    if (this.dirty)
+    {
+        this.rebuildInteractiveGraph ();
+    }
     
     var rect = this.interactionDOMElement.getBoundingClientRect();
     var changedTouches = event.changedTouches;
@@ -578,7 +639,8 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
         // update the touch position
         touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.target.width / rect.width) ) / this.resolution;
         touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.target.height / rect.height) )  / this.resolution;
-        if (navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height) {
+        if (navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height)
+        {
             //Support for CocoonJS fullscreen scale modes
             touchData.global.x = touchEvent.clientX;
             touchData.global.y = touchEvent.clientY;
@@ -587,7 +649,10 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
         for (var j = 0; j < this.interactiveItems.length; j++)
         {
             var item = this.interactiveItems[j];
-            if (item.touchmove && item.__touchData && item.__touchData[touchEvent.identifier]) item.touchmove(touchData);
+            if (item.touchmove && item.__touchData && item.__touchData[touchEvent.identifier])
+            {
+                item.touchmove(touchData);
+            }
         }
     }
 };
@@ -601,11 +666,17 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
  */
 PIXI.InteractionManager.prototype.onTouchStart = function(event)
 {
-    if (this.dirty) this.rebuildInteractiveGraph ();
+    if (this.dirty)
+    {
+        this.rebuildInteractiveGraph ();
+    }
     
     var rect = this.interactionDOMElement.getBoundingClientRect();
 
-    if (PIXI.AUTO_PREVENT_DEFAULT) event.preventDefault();
+    if (PIXI.AUTO_PREVENT_DEFAULT)
+    {
+        event.preventDefault ();
+    }
     
     var changedTouches = event.changedTouches;
     for (var i=0; i < changedTouches.length; i++)
@@ -613,14 +684,18 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
         var touchEvent = changedTouches[i];
 
         var touchData = this.pool.pop();
-        if (!touchData) touchData = new PIXI.InteractionData();
-
+        if (!touchData)
+        {
+            touchData = new PIXI.InteractionData();
+        }
+        
         touchData.originalEvent = event;
 
         this.touches[touchEvent.identifier] = touchData;
         touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.target.width / rect.width) ) / this.resolution;
         touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.target.height / rect.height) ) / this.resolution;
-        if (navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height) {
+        if (navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height)
+        {
             //Support for CocoonJS fullscreen scale modes
             touchData.global.x = touchEvent.clientX;
             touchData.global.y = touchEvent.clientY;
@@ -660,7 +735,10 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
  */
 PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 {
-    if (this.dirty) this.rebuildInteractiveGraph ();
+    if (this.dirty)
+    {
+        this.rebuildInteractiveGraph ();
+    }
     
     var rect = this.interactionDOMElement.getBoundingClientRect();
     var changedTouches = event.changedTouches;
@@ -672,7 +750,8 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
         var up = false;
         touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.target.width / rect.width) ) / this.resolution;
         touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.target.height / rect.height) ) / this.resolution;
-        if (navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height) {
+        if (navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height)
+        {
             //Support for CocoonJS fullscreen scale modes
             touchData.global.x = touchEvent.clientX;
             touchData.global.y = touchEvent.clientY;
@@ -683,7 +762,8 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
         {
             var item = this.interactiveItems[j];
 
-            if (item.__touchData && item.__touchData[touchEvent.identifier]) {
+            if (item.__touchData && item.__touchData[touchEvent.identifier])
+            {
 
                 item.__hit = this.hitTest(item, item.__touchData[touchEvent.identifier]);
 
@@ -695,13 +775,25 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
                 {
                     if (item.__hit && !up)
                     {
-                        if (item.touchend) item.touchend(touchData);
-                        if (item.__isDown && item.tap) item.tap(touchData);
-                        if (!item.interactiveChildren) up = true;
+                        if (item.touchend)
+                        {
+                            item.touchend(touchData);
+                        }
+                        if (item.__isDown && item.tap)
+                        {
+                            item.tap(touchData);
+                        }
+                        if (!item.interactiveChildren)
+                        {
+                            up = true;
+                        }
                     }
                     else
                     {
-                        if (item.__isDown && item.touchendoutside) item.touchendoutside(touchData);
+                        if (item.__isDown && item.touchendoutside)
+                        {
+                            item.touchendoutside(touchData);
+                        }
                     }
 
                     item.__isDown = false;
