@@ -102,7 +102,7 @@ PIXI.Graphics = function()
      * @property bounds
      * @type Rectangle
      */
-    this.bounds = null;
+    this.bounds = new PIXI.Rectangle(0, 0, 0, 0);
 
     /**
      * the bounds' padding used for bounds calculation

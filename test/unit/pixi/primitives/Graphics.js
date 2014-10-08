@@ -35,6 +35,8 @@ describe('pixi/primitives/Graphics', function () {
         expect(obj).to.have.property('renderable', true);
         expect(obj).to.have.property('fillAlpha', 1);
         expect(obj).to.have.property('lineWidth', 0);
+        expect(obj).to.have.property('width', 0);
+        expect(obj).to.have.property('height', 0);
         expect(obj).to.have.property('lineColor', 'black');
         expect(obj).to.have.deep.property('graphicsData.length', 0);
         expect(obj).to.have.deep.property('currentPath.points.length', 0);
