@@ -12,7 +12,7 @@ PIXI.WebGLFastSpriteBatch = function(gl)
 {
    
 
-    this.vertSize = 10;
+    this.vertSize = 11;
     this.maxSize = 6000;//Math.pow(2, 16) /  this.vertSize;
     this.size = this.maxSize;
 
@@ -180,8 +180,10 @@ PIXI.WebGLFastSpriteBatch.prototype.renderSprite = function(sprite)
     // uv
     verticies[index++] = uvs.x0;
     verticies[index++] = uvs.y1;
+    
     // color
     verticies[index++] = sprite.alpha;
+    verticies[index++] = sprite.tint;
  
 
     // xy
@@ -201,8 +203,10 @@ PIXI.WebGLFastSpriteBatch.prototype.renderSprite = function(sprite)
     // uv
     verticies[index++] = uvs.x1;
     verticies[index++] = uvs.y1;
+    
     // color
     verticies[index++] = sprite.alpha;
+    verticies[index++] = sprite.tint;
   
 
     // xy
@@ -222,8 +226,10 @@ PIXI.WebGLFastSpriteBatch.prototype.renderSprite = function(sprite)
     // uv
     verticies[index++] = uvs.x2;
     verticies[index++] = uvs.y2;
+    
     // color
     verticies[index++] = sprite.alpha;
+    verticies[index++] = sprite.tint;
  
 
 
@@ -245,8 +251,10 @@ PIXI.WebGLFastSpriteBatch.prototype.renderSprite = function(sprite)
     // uv
     verticies[index++] = uvs.x3;
     verticies[index++] = uvs.y3;
+    
     // color
     verticies[index++] = sprite.alpha;
+    verticies[index++] = sprite.tint;
 
     // increment the batchs
     this.currentBatchSize++;
@@ -328,7 +336,8 @@ PIXI.WebGLFastSpriteBatch.prototype.start = function()
     gl.vertexAttribPointer(this.shader.aScale, 2, gl.FLOAT, false, stride, 4 * 4);
     gl.vertexAttribPointer(this.shader.aRotation, 1, gl.FLOAT, false, stride, 6 * 4);
     gl.vertexAttribPointer(this.shader.aTextureCoord, 2, gl.FLOAT, false, stride, 7 * 4);
-    gl.vertexAttribPointer(this.shader.colorAttribute, 1, gl.FLOAT, false, stride, 9 * 4);
+    gl.vertexAttribPointer(this.shader.aAlpha, 1, gl.FLOAT, false, stride, 9 * 4);
+    gl.vertexAttribPointer(this.shader.aTint, 1, gl.FLOAT, false, stride,10 * 4);
 
     
 };

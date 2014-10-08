@@ -29,10 +29,16 @@ PIXI.PixiFastShader = function(gl)
     this.fragmentSrc = [
         'precision lowp float;',
         'varying vec2 vTextureCoord;',
-        'varying float vColor;',
+        'varying float vAlpha;',
+        'varying vec3 vTint;',
         'uniform sampler2D uSampler;',
         'void main(void) {',
-        '   gl_FragColor = texture2D(uSampler, vTextureCoord) * vColor ;',
+        '   vec4 tc=texture2D(uSampler, vTextureCoord);',
+        '   tc.x =((tc.x*vTint.x)/255.0);',
+        '   tc.y =((tc.y*vTint.y)/255.0);',
+        '   tc.z =((tc.z*vTint.z)/255.0);',
+        '   tc.w*=vAlpha;',
+        '   gl_FragColor = tc;',
         '}'
     ];
 
@@ -45,14 +51,16 @@ PIXI.PixiFastShader = function(gl)
         'attribute vec2 aScale;',
         'attribute float aRotation;',
         'attribute vec2 aTextureCoord;',
-        'attribute float aColor;',
+        'attribute float aAlpha;',
+        'attribute float aTint;',
 
         'uniform vec2 projectionVector;',
         'uniform vec2 offsetVector;',
         'uniform mat3 uMatrix;',
 
         'varying vec2 vTextureCoord;',
-        'varying float vColor;',
+        'varying float vAlpha;',
+        'varying vec3 vTint;',
 
         'const vec2 center = vec2(-1.0, 1.0);',
 
@@ -64,8 +72,8 @@ PIXI.PixiFastShader = function(gl)
         '   v = ( uMatrix * vec3(v + aPositionCoord , 1.0) ).xy ;',
         '   gl_Position = vec4( ( v / projectionVector) + center , 0.0, 1.0);',
         '   vTextureCoord = aTextureCoord;',
-      //  '   vec3 color = mod(vec3(aColor.y/65536.0, aColor.y/256.0, aColor.y), 256.0) / 256.0;',
-        '   vColor = aColor;',
+        '   vAlpha = aAlpha;',
+        '   vTint = mod(vec3(aTint/65536.0,aTint/256.0,aTint),256.0);',
         '}'
     ];
 
@@ -109,7 +117,8 @@ PIXI.PixiFastShader.prototype.init = function()
     this.aRotation = gl.getAttribLocation(program, 'aRotation');
 
     this.aTextureCoord = gl.getAttribLocation(program, 'aTextureCoord');
-    this.colorAttribute = gl.getAttribLocation(program, 'aColor');
+    this.aAlpha = gl.getAttribLocation(program, 'aAlpha');
+    this.aTint = gl.getAttribLocation(program, 'aTint');
    
 
    
@@ -119,12 +128,12 @@ PIXI.PixiFastShader.prototype.init = function()
     // maybe its somthing to do with the current state of the gl context.
     // Im convinced this is a bug in the chrome browser as there is NO reason why this should be returning -1 especially as it only manifests on my chrome pixel
     // If theres any webGL people that know why could happen please help :)
-    if(this.colorAttribute === -1)
+    if(this.aAlpha === -1)
     {
-        this.colorAttribute = 2;
+        this.aAlpha = 2;
     }
 
-    this.attributes = [this.aVertexPosition, this.aPositionCoord,  this.aScale, this.aRotation, this.aTextureCoord, this.colorAttribute];
+    this.attributes = [this.aVertexPosition, this.aPositionCoord,  this.aScale, this.aRotation, this.aTextureCoord, this.aAlpha, this.aTint];
     
     // End worst hack eva //
 
