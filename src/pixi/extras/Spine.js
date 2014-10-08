@@ -2431,15 +2431,16 @@ PIXI.Spine.prototype.autoUpdateTransform = function () {
 PIXI.Spine.prototype.createSprite = function (slot, attachment) {
 	var descriptor = attachment.rendererObject;
 	var baseTexture = descriptor.page.rendererObject;
-	var spriteRect = new PIXI.Rectangle(descriptor.u * baseTexture.width,
- 										descriptor.v * baseTexture.height,
- 										(descriptor.u2 - descriptor.u) * baseTexture.width,
- 										(descriptor.v2 - descriptor.v) * baseTexture.height);
+	var spriteRect = new PIXI.Rectangle(descriptor.x,
+ 										descriptor.y,
+ 										descriptor.rotate ? descriptor.height : descriptor.width,
+ 										descriptor.rotate ? descriptor.width : descriptor.height);
 	var spriteTexture = new PIXI.Texture(baseTexture, spriteRect);
 	var sprite = new PIXI.Sprite(spriteTexture);
 	
+	var baseRotation = descriptor.rotate ? Math.PI * 0.5 : 0.0;
     sprite.scale.set(descriptor.width / descriptor.originalWidth, descriptor.height / descriptor.originalHeight);
-    sprite.rotation = -(attachment.rotation * (Math.PI / 180));
+    sprite.rotation = baseRotation - (attachment.rotation * (Math.PI / 180));
     sprite.anchor.x = sprite.anchor.y = 0.5;
 
     slot.sprites = slot.sprites || {};
