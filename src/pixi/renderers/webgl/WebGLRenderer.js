@@ -400,11 +400,7 @@ PIXI.WebGLRenderer.prototype.resize = function(width, height)
 
     this.view.width = this.width;
     this.view.height = this.height;
-
-    this.view.style.width = width + 'px';
-    this.view.style.height = height + 'px';
-
-   // console.log(this.width / this.resolution)
+    
     this.gl.viewport(0, 0, this.width, this.height);
 
     this.projection.x =  this.width / 2 / this.resolution;
