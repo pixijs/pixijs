@@ -34,9 +34,9 @@ PIXI.PixiFastShader = function(gl)
         'uniform sampler2D uSampler;',
         'void main(void) {',
         '   vec4 tc=texture2D(uSampler, vTextureCoord);',
-        '   tc.x*=vTint.x;',
-        '   tc.y*=vTint.y;',
-        '   tc.z*=vTint.z;',
+        '   tc.x =((tc.x*vTint.x)/255.0);',
+        '   tc.y =((tc.y*vTint.y)/255.0);',
+        '   tc.z =((tc.z*vTint.z)/255.0);',
         '   tc.w*=vAlpha;',
         '   gl_FragColor = tc;',
         '}'
