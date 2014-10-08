@@ -10,13 +10,7 @@
 */
 PIXI.WebGLMaskManager = function(gl)
 {
-    this.maskStack = [];
-    this.maskPosition = 0;
-
     this.setContext(gl);
-
-    this.reverse = false;
-    this.count = 0;
 };
 
 /**
@@ -68,6 +62,5 @@ PIXI.WebGLMaskManager.prototype.popMask = function(maskData, renderSession)
 */
 PIXI.WebGLMaskManager.prototype.destroy = function()
 {
-    this.maskStack = null;
     this.gl = null;
 };

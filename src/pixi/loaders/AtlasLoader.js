@@ -7,14 +7,13 @@
  * When loaded this class will dispatch a 'loaded' event
  * If loading fails this class will dispatch an 'error' event
  * @class AtlasLoader
- * @extends EventTarget
+ * @uses EventTarget
  * @constructor
  * @param {String} url the url of the JSON file
  * @param {Boolean} crossorigin
  */
 
 PIXI.AtlasLoader = function (url, crossorigin) {
-    PIXI.EventTarget.call(this);
     this.url = url;
     this.baseUrl = url.replace(/[^\/]*$/, '');
     this.crossorigin = crossorigin;
@@ -25,6 +24,7 @@ PIXI.AtlasLoader = function (url, crossorigin) {
 // constructor
 PIXI.AtlasLoader.constructor = PIXI.AtlasLoader;
 
+PIXI.EventTarget.mixin(PIXI.AtlasLoader.prototype);
 
  /**
  * Starts loading the JSON file
@@ -145,7 +145,7 @@ PIXI.AtlasLoader.prototype.onAtlasLoaded = function () {
 
                 this.currentImageId = 0;
                 for (j = 0; j < this.images.length; j++) {
-                    this.images[j].addEventListener('loaded', selfOnLoaded);
+                    this.images[j].on('loaded', selfOnLoaded);
                 }
                 this.images[this.currentImageId].load();
 
@@ -170,10 +170,7 @@ PIXI.AtlasLoader.prototype.onLoaded = function () {
         this.images[this.currentImageId].load();
     } else {
         this.loaded = true;
-        this.dispatchEvent({
-            type: 'loaded',
-            content: this
-        });
+        this.emit('loaded', { content: this });
     }
 };
 
@@ -183,8 +180,5 @@ PIXI.AtlasLoader.prototype.onLoaded = function () {
  * @private
  */
 PIXI.AtlasLoader.prototype.onError = function () {
-    this.dispatchEvent({
-        type: 'error',
-        content: this
-    });
+    this.emit('error', { content: this });
 };

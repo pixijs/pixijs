@@ -100,6 +100,8 @@ PIXI.InteractionManager = function(stage)
      *
      */
     this.mouseOut = false;
+
+    this.resolution = 1;
 };
 
 // constructor
@@ -158,6 +160,7 @@ PIXI.InteractionManager.prototype.collectInteractiveSprite = function(displayObj
 PIXI.InteractionManager.prototype.setTarget = function(target)
 {
     this.target = target;
+    this.resolution = target.resolution;
 
     //check if the dom element has been set. If it has don't do anything
     if( this.interactionDOMElement === null ) {
@@ -340,8 +343,8 @@ PIXI.InteractionManager.prototype.onMouseMove = function(event)
     // TODO optimize by not check EVERY TIME! maybe half as often? //
     var rect = this.interactionDOMElement.getBoundingClientRect();
 
-    this.mouse.global.x = (event.clientX - rect.left) * (this.target.width / rect.width);
-    this.mouse.global.y = (event.clientY - rect.top) * ( this.target.height / rect.height);
+    this.mouse.global.x = (event.clientX - rect.left) * (this.target.width / rect.width) / this.resolution;
+    this.mouse.global.y = (event.clientY - rect.top) * ( this.target.height / rect.height) / this.resolution;
 
     var length = this.interactiveItems.length;
 
@@ -381,22 +384,29 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
     //stage.__i
     var length = this.interactiveItems.length;
 
+    var e = this.mouse.originalEvent;
+    var isRightButton = e.button === 2 || e.which === 3;
+    var downFunction = isRightButton ? 'rightdown' : 'mousedown';
+    var clickFunction = isRightButton ? 'rightclick' : 'click';
+    var buttonIsDown = isRightButton ? '__rightIsDown' : '__mouseIsDown';
+    var isDown = isRightButton ? '__isRightDown' : '__isDown';
+        
     // while
     // hit test
     for (var i = 0; i < length; i++)
     {
         var item = this.interactiveItems[i];
 
-        if(item.mousedown || item.click)
+        if(item[downFunction] || item[clickFunction])
         {
-            item.__mouseIsDown = true;
+            item[buttonIsDown] = true;
             item.__hit = this.hitTest(item, this.mouse);
 
             if(item.__hit)
             {
                 //call the function!
-                if(item.mousedown)item.mousedown(this.mouse);
-                item.__isDown = true;
+                if(item[downFunction])item[downFunction](this.mouse);
+                item[isDown] = true;
 
                 // just the one!
                 if(!item.interactiveChildren)break;
@@ -412,12 +422,14 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
  * @param event {Event} The DOM event of a mouse button being moved out
  * @private 
  */
-PIXI.InteractionManager.prototype.onMouseOut = function()
+PIXI.InteractionManager.prototype.onMouseOut = function(event)
 {
     if(this.dirty)
     {
         this.rebuildInteractiveGraph();
     }
+
+    this.mouse.originalEvent = event || window.event; //IE uses window.event
 
     var length = this.interactiveItems.length;
 
@@ -460,36 +472,46 @@ PIXI.InteractionManager.prototype.onMouseUp = function(event)
     var length = this.interactiveItems.length;
     var up = false;
 
+    var e = this.mouse.originalEvent;
+    var isRightButton = e.button === 2 || e.which === 3;
+    
+    var upFunction = isRightButton ? 'rightup' : 'mouseup';
+    var clickFunction = isRightButton ? 'rightclick' : 'click';
+    var upOutsideFunction = isRightButton ? 'rightupoutside' : 'mouseupoutside';
+    var isDown = isRightButton ? '__isRightDown' : '__isDown';
+    
     for (var i = 0; i < length; i++)
     {
         var item = this.interactiveItems[i];
 
-        item.__hit = this.hitTest(item, this.mouse);
-
-        if(item.__hit && !up)
+        if(item[clickFunction] || item[upFunction] || item[upOutsideFunction])
         {
-            //call the function!
-            if(item.mouseup)
+            item.__hit = this.hitTest(item, this.mouse);
+
+            if(item.__hit && !up)
             {
-                item.mouseup(this.mouse);
+                //call the function!
+                if(item[upFunction])
+                {
+                    item[upFunction](this.mouse);
+                }
+                if(item[isDown])
+                {
+                    if(item[clickFunction])item[clickFunction](this.mouse);
+                }
+
+                if(!item.interactiveChildren)up = true;
             }
-            if(item.__isDown)
+            else
             {
-                if(item.click)item.click(this.mouse);
+                if(item[isDown])
+                {
+                    if(item[upOutsideFunction])item[upOutsideFunction](this.mouse);
+                }
             }
 
-            if(!item.interactiveChildren)up = true;
+            item[isDown] = false;
         }
-        else
-        {
-            if(item.__isDown)
-            {
-                if(item.mouseupoutside)item.mouseupoutside(this.mouse);
-            }
-        }
-
-        item.__isDown = false;
-        //}
     }
 };
 
@@ -594,9 +616,10 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
         touchData.originalEvent =  event || window.event;
 
         // update the touch position
-        touchData.global.x = (touchEvent.clientX - rect.left) * (this.target.width / rect.width);
-        touchData.global.y = (touchEvent.clientY - rect.top)  * (this.target.height / rect.height);
-        if(navigator.isCocoonJS) {
+        touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.target.width / rect.width) ) / this.resolution;
+        touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.target.height / rect.height) )  / this.resolution;
+        if(navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height) {
+            //Support for CocoonJS fullscreen scale modes
             touchData.global.x = touchEvent.clientX;
             touchData.global.y = touchEvent.clientY;
         }
@@ -638,9 +661,10 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
         touchData.originalEvent =  event || window.event;
 
         this.touchs[touchEvent.identifier] = touchData;
-        touchData.global.x = (touchEvent.clientX - rect.left) * (this.target.width / rect.width);
-        touchData.global.y = (touchEvent.clientY - rect.top)  * (this.target.height / rect.height);
-        if(navigator.isCocoonJS) {
+        touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.target.width / rect.width) ) / this.resolution;
+        touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.target.height / rect.height) ) / this.resolution;
+        if(navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height) {
+            //Support for CocoonJS fullscreen scale modes
             touchData.global.x = touchEvent.clientX;
             touchData.global.y = touchEvent.clientY;
         }
@@ -693,9 +717,10 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
         var touchEvent = changedTouches[i];
         var touchData = this.touchs[touchEvent.identifier];
         var up = false;
-        touchData.global.x = (touchEvent.clientX - rect.left) * (this.target.width / rect.width);
-        touchData.global.y = (touchEvent.clientY - rect.top)  * (this.target.height / rect.height);
-        if(navigator.isCocoonJS) {
+        touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.target.width / rect.width) ) / this.resolution;
+        touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.target.height / rect.height) ) / this.resolution;
+        if(navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height) {
+            //Support for CocoonJS fullscreen scale modes
             touchData.global.x = touchEvent.clientX;
             touchData.global.y = touchEvent.clientY;
         }

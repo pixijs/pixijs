@@ -5,6 +5,7 @@
  * 
  * @class Rope
  * @constructor
+ * @extends Strip
  * @param texture {Texture} The texture to use
  * @param points {Array}
  * 

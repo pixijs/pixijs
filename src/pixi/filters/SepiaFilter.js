@@ -6,7 +6,7 @@
  *
  * This applies a sepia effect to your displayObjects.
  * @class SepiaFilter
- * @contructor
+ * @constructor
  */
 PIXI.SepiaFilter = function()
 {
