@@ -174,7 +174,7 @@ PIXI.Strip.prototype._renderStrip = function(renderSession)
         // check if a texture is dirty..
         if(this.texture.baseTexture._dirty[gl.id])
         {
-            this.renderSession.renderer.updateTexture(this.texture.baseTexture);
+            renderSession.renderer.updateTexture(this.texture.baseTexture);
         }
         else
         {
