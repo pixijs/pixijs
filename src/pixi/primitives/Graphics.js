@@ -887,21 +887,21 @@ PIXI.Graphics.prototype.updateBounds = function()
     var minY = Infinity;
     var maxY = -Infinity;
 
-    var points, x, y, w, h;
+    var shape, points, x, y, w, h;
 
     for (var i = 0; i < this.graphicsData.length; i++) {
         var data = this.graphicsData[i];
         var type = data.type;
         var lineWidth = data.lineWidth;
-
-        points = data.points;
+        shape = data.shape;
+       
 
         if(type === PIXI.Graphics.RECT)
         {
-            x = points[0] - lineWidth/2;
-            y = points[1] - lineWidth/2;
-            w = points[2] + lineWidth;
-            h = points[3] + lineWidth;
+            x = shape.x - lineWidth/2;
+            y = shape.y - lineWidth/2;
+            w = shape.width + lineWidth;
+            h = shape.height + lineWidth;
 
             minX = x < minX ? x : minX;
             maxX = x + w > maxX ? x + w : maxX;
@@ -909,12 +909,25 @@ PIXI.Graphics.prototype.updateBounds = function()
             minY = y < minY ? y : minY;
             maxY = y + h > maxY ? y + h : maxY;
         }
-        else if(type === PIXI.Graphics.CIRC || type === PIXI.Graphics.ELIP)
+        else if(type === PIXI.Graphics.CIRC)
         {
-            x = points[0];
-            y = points[1];
-            w = points[2] + lineWidth/2;
-            h = points[3] + lineWidth/2;
+            x = shape.x;
+            y = shape.y;
+            w = shape.radius + lineWidth/2;
+            h = shape.radius + lineWidth/2;
+
+            minX = x - w < minX ? x - w : minX;
+            maxX = x + w > maxX ? x + w : maxX;
+
+            minY = y - h < minY ? y - h : minY;
+            maxY = y + h > maxY ? y + h : maxY;
+        }
+        else if(type === PIXI.Graphics.ELIP)
+        {
+            x = shape.x;
+            y = shape.y;
+            w = shape.width + lineWidth/2;
+            h = shape.height + lineWidth/2;
 
             minX = x - w < minX ? x - w : minX;
             maxX = x + w > maxX ? x + w : maxX;
@@ -925,6 +938,8 @@ PIXI.Graphics.prototype.updateBounds = function()
         else
         {
             // POLY
+            points = shape.points;
+            
             for (var j = 0; j < points.length; j+=2)
             {
 
