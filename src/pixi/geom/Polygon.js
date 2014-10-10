@@ -14,21 +14,21 @@
 PIXI.Polygon = function(points)
 {
     //if points isn't an array, use arguments as the array
-    if(!(points instanceof Array))
-        points = Array.prototype.slice.call(arguments);
+    if(!(points instanceof Array))points = Array.prototype.slice.call(arguments);
 
     //if this is a flat array of numbers, convert it to points
-    if(typeof points[0] === 'number') {
+    if(points[0] instanceof PIXI.Point)
+    {
         var p = [];
-        for(var i = 0, il = points.length; i < il; i+=2) {
-            p.push(
-                new PIXI.Point(points[i], points[i + 1])
-            );
+        for(var i = 0, il = points.length; i < il; i++)
+        {
+            p.push(points[i].x, points[i].y);
         }
 
         points = p;
     }
 
+    this.closed = true;
     this.points = points;
 };
 
@@ -40,11 +40,7 @@ PIXI.Polygon = function(points)
  */
 PIXI.Polygon.prototype.clone = function()
 {
-    var points = [];
-    for (var i=0; i<this.points.length; i++) {
-        points.push(this.points[i].clone());
-    }
-
+    var points = this.points.slice();
     return new PIXI.Polygon(points);
 };
 
@@ -62,9 +58,12 @@ PIXI.Polygon.prototype.contains = function(x, y)
 
     // use some raycasting to test hits
     // https://github.com/substack/point-in-polygon/blob/master/index.js
-    for(var i = 0, j = this.points.length - 1; i < this.points.length; j = i++) {
-        var xi = this.points[i].x, yi = this.points[i].y,
-            xj = this.points[j].x, yj = this.points[j].y,
+    var length = this.points.length / 2;
+
+    for(var i = 0, j = length - 1; i < length; j = i++)
+    {
+        var xi = this.points[i * 2], yi = this.points[i * 2 + 1],
+            xj = this.points[j * 2], yj = this.points[j * 2 + 1],
             intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
 
         if(intersect) inside = !inside;

@@ -8,7 +8,7 @@
 * @param gl {WebGLContext} the current WebGL drawing context
 * @private
 */
-PIXI.WebGLShaderManager = function(gl)
+PIXI.WebGLShaderManager = function()
 {
 
     this.maxAttibs = 10;
@@ -19,7 +19,7 @@ PIXI.WebGLShaderManager = function(gl)
         this.attribState[i] = false;
     }
 
-    this.setContext(gl);
+    //this.setContext(gl);
     // the final one is used for the rendering strips
 };
 

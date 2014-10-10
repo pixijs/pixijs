@@ -8,7 +8,7 @@
  * https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/graphics/g2d/WebGLSpriteBatch.java
  */
 
-PIXI.WebGLFastSpriteBatch = function(gl)
+PIXI.WebGLFastSpriteBatch = function()
 {
    
 
@@ -53,7 +53,7 @@ PIXI.WebGLFastSpriteBatch = function(gl)
 
     this.matrix = null;
 
-    this.setContext(gl);
+    //this.setContext(gl);
 };
 
 PIXI.WebGLFastSpriteBatch.prototype.setContext = function(gl)

@@ -295,6 +295,9 @@ PIXI.Text.prototype.updateTexture = function()
     this._width = this.canvas.width;
     this._height = this.canvas.height;
 
+    // update the dirty base textures
+    this.texture.baseTexture.dirty();
+
 };
 
 /**
@@ -313,7 +316,7 @@ PIXI.Text.prototype._renderWebGL = function(renderSession)
         this.updateText();
         this.dirty = false;
 
-        PIXI.updateWebGLTexture(this.texture.baseTexture, renderSession.gl);
+       
     }
 
     PIXI.Sprite.prototype._renderWebGL.call(this, renderSession);

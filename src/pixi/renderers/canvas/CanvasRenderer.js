@@ -203,10 +203,6 @@ PIXI.CanvasRenderer.prototype.constructor = PIXI.CanvasRenderer;
  */
 PIXI.CanvasRenderer.prototype.render = function(stage)
 {
-    // update textures if need be
-    PIXI.texturesToUpdate.length = 0;
-    PIXI.texturesToDestroy.length = 0;
-
     stage.updateTransform();
 
     this.context.setTransform(1,0,0,1,0,0);
@@ -241,12 +237,6 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
         }
     }
 
-    // remove frame updates.. // removeing for now...
-    // TODO remove this eventually!
-    if(PIXI.Texture.frameUpdates.length > 0)
-    {
-        PIXI.Texture.frameUpdates.length = 0;
-    }
 };
 
 /**
