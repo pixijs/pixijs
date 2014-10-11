@@ -239,7 +239,7 @@ PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, matrix, clea
 
     var wt = displayObject.worldTransform;
     wt.identity();
-    wt.append(matrix);
+    if(matrix)wt.append(matrix);
 
     // Time to update all the children of the displayObject with the new matrix..    
     var children = displayObject.children;
