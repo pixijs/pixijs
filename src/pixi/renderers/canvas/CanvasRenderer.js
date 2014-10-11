@@ -123,7 +123,6 @@ PIXI.CanvasRenderer = function(width, height, options)
         maskManager: this.maskManager,
         scaleMode: null,
         smoothProperty: null,
-
         /**
          * If true Pixi will Math.floor() x/y values when rendering, stopping pixel interpolation.
          * Handy for crisp pixel art and speed on legacy devices.
@@ -190,7 +189,6 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
             stage.interactionManager.setTarget(this);
         }
     }
-
 };
 
 /**
@@ -210,7 +208,6 @@ PIXI.CanvasRenderer.prototype.resize = function(width, height)
 
     this.view.style.width = this.width / this.resolution + "px";
     this.view.style.height = this.height / this.resolution + "px";
-
 };
 
 /**
@@ -223,10 +220,6 @@ PIXI.CanvasRenderer.prototype.resize = function(width, height)
  */
 PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject, context)
 {
-    // no longer recursive!
-    //var transform;
-    //var context = this.context;
-
     this.renderSession.context = context || this.context;
     this.renderSession.resolution = this.resolution;
     displayObject._renderCanvas(this.renderSession);
