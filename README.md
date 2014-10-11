@@ -1,7 +1,7 @@
 Pixi Renderer 
 =============
 
-## IMPORTANT - DEV BRANCH API CHANGES ##
+#### IMPORTANT - DEV BRANCH API CHANGES ####
 
 A heads up for anyone using the dev branch of pixi.js as we have changed a couple of bits that you need to be aware of. Fortunatly there are only 2 and both are small.
 
