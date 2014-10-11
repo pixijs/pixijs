@@ -75,24 +75,38 @@ PIXI.JsonLoader.prototype.load = function () {
         this.ajaxRequest.ontimeout = this.onError.bind(this);
 
         this.ajaxRequest.onprogress = function() {};
-
-    }
-    else if (window.XMLHttpRequest)
-    {
-        this.ajaxRequest = new window.XMLHttpRequest();
+        
+        this.ajaxRequest.onload = this.onJSONLoaded.bind(this);
     }
     else
     {
-        this.ajaxRequest = new window.ActiveXObject('Microsoft.XMLHTTP');
+        if (window.XMLHttpRequest)
+        {
+            this.ajaxRequest = new window.XMLHttpRequest();
+        }
+        else
+        {
+            this.ajaxRequest = new window.ActiveXObject('Microsoft.XMLHTTP');
+        }
+        
+        this.ajaxRequest.onreadystatechange = this.onReadyStateChanged.bind(this);
     }
-
-
-
-    this.ajaxRequest.onload = this.onJSONLoaded.bind(this);
 
     this.ajaxRequest.open('GET',this.url,true);
 
     this.ajaxRequest.send();
+};
+
+/**
+ * Bridge function to be able to use the more reliable onreadystatechange in XMLHttpRequest.
+ *
+ * @method onReadyStateChanged
+ * @private
+ */
+PIXI.JsonLoader.prototype.onReadyStateChanged = function () {
+    if (this.ajaxRequest.readyState === 4 && (this.ajaxRequest.status === 200 || window.location.href.indexOf('http') === -1)) {
+        this.onJSONLoaded();
+    }
 };
 	
 /**
