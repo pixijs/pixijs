@@ -3,7 +3,7 @@ Pixi Renderer
 
 #### *** IMPORTANT - DEV BRANCH API CHANGES *** ####
 
-A heads up for anyone using the dev branch of pixi.js as we have changed a couple of bits that you need to be aware of. Fortunatly there are only 2 and both are small.
+A heads up for anyone using the dev branch of pixi.js as we have changed a couple of bits that you need to be aware of. Fortunatly there are only two changes and both are small.
 
 1: Creating a renderer no accepts an options parameter that you can add specific settings too:
 ``` 
@@ -16,7 +16,7 @@ var options = {
 var renderer = new PIXI.WebGLRenderer(800, 600, options) 
 ```
 
-2: A ```PIXI.RenderTexture``` now accepts a ```PIXI.Matrix``` as its second param instead of a point. This give you much more flexibility: 
+2: A ```PIXI.RenderTexture``` now accepts a ```PIXI.Matrix``` as its second param instead of a point. This gives you much more flexibility: 
 
 ``` myRenderTexture.render(myDisplayObject, myMatrix) ```
 
