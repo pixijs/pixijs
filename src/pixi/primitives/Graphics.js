@@ -112,7 +112,7 @@ PIXI.Graphics = function()
      * @property boundsPadding
      * @type Number
      */
-    this.boundsPadding = 10;
+    this.boundsPadding = 0;
 
     /**
      * Used to detect if the graphics object has changed if this is set to true then the graphics object will be recalculated
