@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.6.0</em>
+            <em>API Docs for: 2.0.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -87,6 +87,8 @@
             
                 <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
+                <li><a href="../classes/Event.html">Event</a></li>
+            
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
@@ -109,8 +111,6 @@
             
                 <li><a href="../classes/Matrix.html">Matrix</a></li>
             
-                <li><a href="../classes/Matrix2.html">Matrix2</a></li>
-            
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
@@ -130,6 +130,8 @@
                 <li><a href="../classes/PrimitiveShader.html">PrimitiveShader</a></li>
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
+            
+                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
             
                 <li><a href="../classes/Rope.html">Rope</a></li>
             
@@ -152,6 +154,8 @@
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
+            
+                <li><a href="../classes/TiltShiftFilter.html">TiltShiftFilter</a></li>
             
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
             
@@ -226,12 +230,16 @@
  * @static
  * @param width=800 {Number} the width of the renderers view
  * @param height=600 {Number} the height of the renderers view
- * @param [view] {Canvas} the canvas to use as a view, optional 
- * @param [transparent=false] {Boolean} the transparency of the render view, default false
- * @param [antialias=false] {Boolean} sets antialias (only applicable in webGL chrome at the moment)
- *
+ * 
+ * @param [options] {Object} The optional renderer parameters
+ * @param [options.view] {HTMLCanvasElement} the canvas to use as a view, optional
+ * @param [options.transparent=false] {Boolean} If the render view is transparent, default false
+ * @param [options.antialias=false] {Boolean} sets antialias (only applicable in chrome at the moment)
+ * @param [options.preserveDrawingBuffer=false] {Boolean} enables drawing buffer preservation, enable this if you need to call toDataUrl on the webgl context
+ * @param [options.resolution=1] {Number} the resolution of the renderer retina would be 2
+ * 
  */
-PIXI.autoDetectRenderer = function(width, height, view, transparent, antialias)
+PIXI.autoDetectRenderer = function(width, height, options)
 {
     if(!width)width = 800;
     if(!height)height = 600;
@@ -247,10 +255,10 @@ PIXI.autoDetectRenderer = function(width, height, view, transparent, antialias)
 
     if( webgl )
     {
-        return new PIXI.WebGLRenderer(width, height, view, transparent, antialias);
+        return new PIXI.WebGLRenderer(width, height, options);
     }
 
-    return  new PIXI.CanvasRenderer(width, height, view, transparent);
+    return  new PIXI.CanvasRenderer(width, height, options);
 };
 
 /**
@@ -262,12 +270,16 @@ PIXI.autoDetectRenderer = function(width, height, view, transparent, antialias)
  * @static
  * @param width=800 {Number} the width of the renderers view
  * @param height=600 {Number} the height of the renderers view
- * @param [view] {Canvas} the canvas to use as a view, optional 
- * @param [transparent=false] {Boolean} the transparency of the render view, default false
- * @param [antialias=false] {Boolean} sets antialias (only applicable in webGL chrome at the moment)
- *
+ * 
+ * @param [options] {Object} The optional renderer parameters
+ * @param [options.view] {HTMLCanvasElement} the canvas to use as a view, optional
+ * @param [options.transparent=false] {Boolean} If the render view is transparent, default false
+ * @param [options.antialias=false] {Boolean} sets antialias (only applicable in chrome at the moment)
+ * @param [options.preserveDrawingBuffer=false] {Boolean} enables drawing buffer preservation, enable this if you need to call toDataUrl on the webgl context
+ * @param [options.resolution=1] {Number} the resolution of the renderer retina would be 2
+ * 
  */
-PIXI.autoDetectRecommendedRenderer = function(width, height, view, transparent, antialias)
+PIXI.autoDetectRecommendedRenderer = function(width, height, options)
 {
     if(!width)width = 800;
     if(!height)height = 600;
@@ -285,10 +297,10 @@ PIXI.autoDetectRecommendedRenderer = function(width, height, view, transparent, 
 
     if( webgl &amp;&amp; !isAndroid)
     {
-        return new PIXI.WebGLRenderer(width, height, view, transparent, antialias);
+        return new PIXI.WebGLRenderer(width, height, options);
     }
 
-    return  new PIXI.CanvasRenderer(width, height, view, transparent);
+    return  new PIXI.CanvasRenderer(width, height, options);
 };
 
     </pre>

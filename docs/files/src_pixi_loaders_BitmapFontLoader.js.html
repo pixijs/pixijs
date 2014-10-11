@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.6.0</em>
+            <em>API Docs for: 2.0.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -87,6 +87,8 @@
             
                 <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
+                <li><a href="../classes/Event.html">Event</a></li>
+            
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
@@ -109,8 +111,6 @@
             
                 <li><a href="../classes/Matrix.html">Matrix</a></li>
             
-                <li><a href="../classes/Matrix2.html">Matrix2</a></li>
-            
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
@@ -130,6 +130,8 @@
                 <li><a href="../classes/PrimitiveShader.html">PrimitiveShader</a></li>
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
+            
+                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
             
                 <li><a href="../classes/Rope.html">Rope</a></li>
             
@@ -152,6 +154,8 @@
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
+            
+                <li><a href="../classes/TiltShiftFilter.html">TiltShiftFilter</a></li>
             
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
             
@@ -237,7 +241,6 @@ PIXI.BitmapFontLoader = function(url, crossorigin)
      * http://www.codeandweb.com/texturepacker
      * make sure to set the format as &#x27;JSON&#x27;
      */
-    PIXI.EventTarget.call(this);
 
     /**
      * The url of the bitmap font data
@@ -275,6 +278,7 @@ PIXI.BitmapFontLoader = function(url, crossorigin)
 
 // constructor
 PIXI.BitmapFontLoader.prototype.constructor = PIXI.BitmapFontLoader;
+PIXI.EventTarget.mixin(PIXI.BitmapFontLoader.prototype);
 
 /**
  * Loads the XML font data
@@ -284,11 +288,7 @@ PIXI.BitmapFontLoader.prototype.constructor = PIXI.BitmapFontLoader;
 PIXI.BitmapFontLoader.prototype.load = function()
 {
     this.ajaxRequest = new PIXI.AjaxRequest();
-    var scope = this;
-    this.ajaxRequest.onreadystatechange = function()
-    {
-        scope.onXMLLoaded();
-    };
+    this.ajaxRequest.onreadystatechange = this.onXMLLoaded.bind(this);
 
     this.ajaxRequest.open(&#x27;GET&#x27;, this.url, true);
     if (this.ajaxRequest.overrideMimeType) this.ajaxRequest.overrideMimeType(&#x27;application/xml&#x27;);
@@ -369,10 +369,7 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
 
             PIXI.BitmapText.fonts[data.font] = data;
 
-            var scope = this;
-            image.addEventListener(&#x27;loaded&#x27;, function() {
-                scope.onLoaded();
-            });
+            image.addEventListener(&#x27;loaded&#x27;, this.onLoaded.bind(this));
             image.load();
         }
     }
@@ -386,7 +383,7 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
  */
 PIXI.BitmapFontLoader.prototype.onLoaded = function()
 {
-    this.dispatchEvent({type: &#x27;loaded&#x27;, content: this});
+    this.emit(&#x27;loaded&#x27;, { content: this });
 };
 
     </pre>

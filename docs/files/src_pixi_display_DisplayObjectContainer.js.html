@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.6.0</em>
+            <em>API Docs for: 2.0.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -87,6 +87,8 @@
             
                 <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
+                <li><a href="../classes/Event.html">Event</a></li>
+            
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
@@ -109,8 +111,6 @@
             
                 <li><a href="../classes/Matrix.html">Matrix</a></li>
             
-                <li><a href="../classes/Matrix2.html">Matrix2</a></li>
-            
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
@@ -130,6 +130,8 @@
                 <li><a href="../classes/PrimitiveShader.html">PrimitiveShader</a></li>
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
+            
+                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
             
                 <li><a href="../classes/Rope.html">Rope</a></li>
             
@@ -152,6 +154,8 @@
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
+            
+                <li><a href="../classes/TiltShiftFilter.html">TiltShiftFilter</a></li>
             
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
             
@@ -258,7 +262,19 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, &#x27;width&#x27;, 
         return this.scale.x * this.getLocalBounds().width;
     },
     set: function(value) {
-        this.scale.x = value / (this.getLocalBounds().width/this.scale.x);
+        
+        var width = this.getLocalBounds().width;
+
+        if(width !== 0)
+        {
+            this.scale.x = value / ( width/this.scale.x );
+        }
+        else
+        {
+            this.scale.x = 1;
+        }
+
+        
         this._width = value;
     }
 });
@@ -276,7 +292,18 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, &#x27;height&#x27;,
         return  this.scale.y * this.getLocalBounds().height;
     },
     set: function(value) {
-        this.scale.y = value / (this.getLocalBounds().height/this.scale.y);
+
+        var height = this.getLocalBounds().height;
+
+        if(height !== 0)
+        {
+            this.scale.y = value / ( height/this.scale.y );
+        }
+        else
+        {
+            this.scale.y = 1;
+        }
+
         this._height = value;
     }
 });
@@ -319,7 +346,7 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
     }
     else
     {
-        throw new Error(child + &#x27; The index &#x27;+ index +&#x27; supplied is out of bounds &#x27; + this.children.length);
+        throw new Error(child + &#x27;addChildAt: The index &#x27;+ index +&#x27; supplied is out of bounds &#x27; + this.children.length);
     }
 };
 
@@ -337,8 +364,8 @@ PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
         return;
     }
 
-    var index1 = this.children.indexOf(child);
-    var index2 = this.children.indexOf(child2);
+    var index1 = this.getChildIndex(child);
+    var index2 = this.getChildIndex(child2);
 
     if(index1 &lt; 0 || index2 &lt; 0) {
         throw new Error(&#x27;swapChildren: Both the supplied DisplayObjects must be a child of the caller.&#x27;);
@@ -347,6 +374,42 @@ PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
     this.children[index1] = child2;
     this.children[index2] = child;
     
+
+};
+
+/**
+ * Returns the index position of a child DisplayObject instance
+ *
+ * @method getChildIndex
+ * @param child {DisplayObject} The DisplayObject instance to identify
+ * @return {Number} The index position of the child display object to identify
+ */
+PIXI.DisplayObjectContainer.prototype.getChildIndex = function(child)
+{
+    var index = this.children.indexOf(child);
+    if (index === -1)
+    {
+        throw new Error(&#x27;The supplied DisplayObject must be a child of the caller&#x27;);
+    }
+    return index;
+};
+
+/**
+ * Changes the position of an existing child in the display object container
+ *
+ * @method setChildIndex
+ * @param child {DisplayObject} The child DisplayObject instance for which you want to change the index number
+ * @param index {Number} The resulting index number for the child display object
+ */
+PIXI.DisplayObjectContainer.prototype.setChildIndex = function(child, index)
+{
+    if (index &lt; 0 || index &gt;= this.children.length)
+    {
+        throw new Error(&#x27;The supplied index is out of bounds&#x27;);
+    }
+    var currentIndex = this.getChildIndex(child);
+    this.children.splice(currentIndex, 1); //remove from old position
+    this.children.splice(index, 0, child); //add at new position
 };
 
 /**
@@ -357,14 +420,12 @@ PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
  */
 PIXI.DisplayObjectContainer.prototype.getChildAt = function(index)
 {
-    if(index &gt;= 0 &amp;&amp; index &lt; this.children.length)
+    if (index &lt; 0 || index &gt;= this.children.length)
     {
-        return this.children[index];
+        throw new Error(&#x27;getChildAt: Supplied index &#x27;+ index +&#x27; does not exist in the child list, or the supplied DisplayObject must be a child of the caller&#x27;);
     }
-    else
-    {
-        throw new Error(&#x27;Supplied index does not exist in the child list, or the supplied DisplayObject must be a child of the caller&#x27;);
-    }
+    return this.children[index];
+    
 };
 
 /**
@@ -375,7 +436,10 @@ PIXI.DisplayObjectContainer.prototype.getChildAt = function(index)
  */
 PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 {
-    return this.removeChildAt( this.children.indexOf( child ) );
+    var index = this.children.indexOf( child );
+    if(index === -1)return;
+    
+    return this.removeChildAt( index );
 };
 
 /**
@@ -419,9 +483,13 @@ PIXI.DisplayObjectContainer.prototype.removeChildren = function(beginIndex, endI
         }
         return removed;
     }
+    else if (range === 0 &amp;&amp; this.children.length === 0)
+    {
+        return [];
+    }
     else
     {
-        throw new Error( &#x27;Range Error, numeric values are outside the acceptable range&#x27; );
+        throw new Error( &#x27;removeChildren: Range Error, numeric values are outside the acceptable range&#x27; );
     }
 };
 
@@ -433,8 +501,6 @@ PIXI.DisplayObjectContainer.prototype.removeChildren = function(beginIndex, endI
  */
 PIXI.DisplayObjectContainer.prototype.updateTransform = function()
 {
-    //this._currentBounds = null;
-
     if(!this.visible)return;
 
     PIXI.DisplayObject.prototype.updateTransform.call( this );
@@ -648,7 +714,7 @@ PIXI.DisplayObjectContainer.prototype._renderCanvas = function(renderSession)
 
     if(this._mask)
     {
-        renderSession.maskManager.pushMask(this._mask, renderSession.context);
+        renderSession.maskManager.pushMask(this._mask, renderSession);
     }
 
     for(var i=0,j=this.children.length; i&lt;j; i++)
@@ -659,7 +725,7 @@ PIXI.DisplayObjectContainer.prototype._renderCanvas = function(renderSession)
 
     if(this._mask)
     {
-        renderSession.maskManager.popMask(renderSession.context);
+        renderSession.maskManager.popMask(renderSession);
     }
 };
 

@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.6.0</em>
+            <em>API Docs for: 2.0.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -87,6 +87,8 @@
             
                 <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
+                <li><a href="../classes/Event.html">Event</a></li>
+            
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
@@ -109,8 +111,6 @@
             
                 <li><a href="../classes/Matrix.html">Matrix</a></li>
             
-                <li><a href="../classes/Matrix2.html">Matrix2</a></li>
-            
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
@@ -130,6 +130,8 @@
                 <li><a href="../classes/PrimitiveShader.html">PrimitiveShader</a></li>
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
+            
+                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
             
                 <li><a href="../classes/Rope.html">Rope</a></li>
             
@@ -152,6 +154,8 @@
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
+            
+                <li><a href="../classes/TiltShiftFilter.html">TiltShiftFilter</a></li>
             
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
             
@@ -214,7 +218,6 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-
 /**
  * @author Mat Groves
  * 
@@ -294,38 +297,38 @@ PIXI.CanvasTinter.tintWithMultiply = function(texture, color, canvas)
 {
     var context = canvas.getContext( &quot;2d&quot; );
 
-    var frame = texture.frame;
+    var crop = texture.crop;
 
-    canvas.width = frame.width;
-    canvas.height = frame.height;
+    canvas.width = crop.width;
+    canvas.height = crop.height;
 
     context.fillStyle = &quot;#&quot; + (&quot;00000&quot; + ( color | 0).toString(16)).substr(-6);
     
-    context.fillRect(0, 0, frame.width, frame.height);
+    context.fillRect(0, 0, crop.width, crop.height);
     
     context.globalCompositeOperation = &quot;multiply&quot;;
 
     context.drawImage(texture.baseTexture.source,
-                           frame.x,
-                           frame.y,
-                           frame.width,
-                           frame.height,
+                           crop.x,
+                           crop.y,
+                           crop.width,
+                           crop.height,
                            0,
                            0,
-                           frame.width,
-                           frame.height);
+                           crop.width,
+                           crop.height);
 
     context.globalCompositeOperation = &quot;destination-atop&quot;;
-    
+
     context.drawImage(texture.baseTexture.source,
-                           frame.x,
-                           frame.y,
-                           frame.width,
-                           frame.height,
+                           crop.x,
+                           crop.y,
+                           crop.width,
+                           crop.height,
                            0,
                            0,
-                           frame.width,
-                           frame.height);
+                           crop.width,
+                           crop.height);
 };
 
 /**
@@ -339,27 +342,27 @@ PIXI.CanvasTinter.tintWithOverlay = function(texture, color, canvas)
 {
     var context = canvas.getContext( &quot;2d&quot; );
 
-    var frame = texture.frame;
+    var crop = texture.crop;
 
-    canvas.width = frame.width;
-    canvas.height = frame.height;
+    canvas.width = crop.width;
+    canvas.height = crop.height;
 
     
     
     context.globalCompositeOperation = &quot;copy&quot;;
     context.fillStyle = &quot;#&quot; + (&quot;00000&quot; + ( color | 0).toString(16)).substr(-6);
-    context.fillRect(0, 0, frame.width, frame.height);
+    context.fillRect(0, 0, crop.width, crop.height);
 
     context.globalCompositeOperation = &quot;destination-atop&quot;;
     context.drawImage(texture.baseTexture.source,
-                           frame.x,
-                           frame.y,
-                           frame.width,
-                           frame.height,
+                           crop.x,
+                           crop.y,
+                           crop.width,
+                           crop.height,
                            0,
                            0,
-                           frame.width,
-                           frame.height);
+                           crop.width,
+                           crop.height);
 
     
     //context.globalCompositeOperation = &quot;copy&quot;;
@@ -377,26 +380,26 @@ PIXI.CanvasTinter.tintWithPerPixel = function(texture, color, canvas)
 {
     var context = canvas.getContext( &quot;2d&quot; );
 
-    var frame = texture.frame;
+    var crop = texture.crop;
 
-    canvas.width = frame.width;
-    canvas.height = frame.height;
+    canvas.width = crop.width;
+    canvas.height = crop.height;
   
     context.globalCompositeOperation = &quot;copy&quot;;
     context.drawImage(texture.baseTexture.source,
-                           frame.x,
-                           frame.y,
-                           frame.width,
-                           frame.height,
+                           crop.x,
+                           crop.y,
+                           crop.width,
+                           crop.height,
                            0,
                            0,
-                           frame.width,
-                           frame.height);
+                           crop.width,
+                           crop.height);
 
     var rgbValues = PIXI.hex2rgb(color);
     var r = rgbValues[0], g = rgbValues[1], b = rgbValues[2];
 
-    var pixelData = context.getImageData(0, 0, frame.width, frame.height);
+    var pixelData = context.getImageData(0, 0, crop.width, crop.height);
 
     var pixels = pixelData.data;
 

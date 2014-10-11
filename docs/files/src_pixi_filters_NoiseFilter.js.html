@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/pixi/core/Rectangle.js - pixi.js</title>
+    <title>src/pixi/filters/NoiseFilter.js - pixi.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.6.0</em>
+            <em>API Docs for: 2.0.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -87,6 +87,8 @@
             
                 <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
+                <li><a href="../classes/Event.html">Event</a></li>
+            
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
@@ -109,8 +111,6 @@
             
                 <li><a href="../classes/Matrix.html">Matrix</a></li>
             
-                <li><a href="../classes/Matrix2.html">Matrix2</a></li>
-            
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
@@ -130,6 +130,8 @@
                 <li><a href="../classes/PrimitiveShader.html">PrimitiveShader</a></li>
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
+            
+                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
             
                 <li><a href="../classes/Rope.html">Rope</a></li>
             
@@ -152,6 +154,8 @@
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
+            
+                <li><a href="../classes/TiltShiftFilter.html">TiltShiftFilter</a></li>
             
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
             
@@ -210,97 +214,59 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/pixi/core/Rectangle.js</h1>
+                        <h1 class="file-heading">File: src/pixi/filters/NoiseFilter.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- * @author Mat Groves http://matgroves.com/
+ * @author Vico @vicocotea
+ * original filter: https://github.com/evanw/glfx.js/blob/master/src/filters/adjust/noise.js
  */
 
-/**
- * the Rectangle object is an area defined by its position, as indicated by its top-left corner point (x, y) and by its width and its height.
- *
- * @class Rectangle
- * @constructor
- * @param x {Number} The X coord of the upper-left corner of the rectangle
- * @param y {Number} The Y coord of the upper-left corner of the rectangle
- * @param width {Number} The overall width of this rectangle
- * @param height {Number} The overall height of this rectangle
- */
-PIXI.Rectangle = function(x, y, width, height)
+PIXI.NoiseFilter = function()
 {
-    /**
-     * @property x
-     * @type Number
-     * @default 0
-     */
-    this.x = x || 0;
+    PIXI.AbstractFilter.call( this );
 
-    /**
-     * @property y
-     * @type Number
-     * @default 0
-     */
-    this.y = y || 0;
+    this.passes = [this];
 
-    /**
-     * @property width
-     * @type Number
-     * @default 0
-     */
-    this.width = width || 0;
+    // set the uniforms
+    this.uniforms = {
+        noise: {type: &#x27;1f&#x27;, value: 0.5}
+    };
 
-    /**
-     * @property height
-     * @type Number
-     * @default 0
-     */
-    this.height = height || 0;
+    this.fragmentSrc = [
+        &#x27;precision mediump float;&#x27;,
+        &#x27;uniform sampler2D uSampler;&#x27;,
+        &#x27;uniform float noise;&#x27;,
+        &#x27;varying vec2 vTextureCoord;&#x27;,
+
+        &#x27;float rand(vec2 co) {&#x27;,
+        &#x27;    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);&#x27;,
+        &#x27;}&#x27;,
+        &#x27;void main() {&#x27;,
+        &#x27;    vec4 color = texture2D(uSampler, vTextureCoord);&#x27;,
+            
+        &#x27;    float diff = (rand(vTextureCoord) - 0.5) * noise;&#x27;,
+        &#x27;    color.r += diff;&#x27;,
+        &#x27;    color.g += diff;&#x27;,
+        &#x27;    color.b += diff;&#x27;,
+            
+        &#x27;    gl_FragColor = color;&#x27;,
+        &#x27;}&#x27;
+    ];
 };
 
-/**
- * Creates a clone of this Rectangle
- *
- * @method clone
- * @return {Rectangle} a copy of the rectangle
- */
-PIXI.Rectangle.prototype.clone = function()
-{
-    return new PIXI.Rectangle(this.x, this.y, this.width, this.height);
-};
-
-/**
- * Checks whether the x and y coordinates passed to this function are contained within this Rectangle
- *
- * @method contains
- * @param x {Number} The X coordinate of the point to test
- * @param y {Number} The Y coordinate of the point to test
- * @return {Boolean} Whether the x/y coords are within this Rectangle
- */
-PIXI.Rectangle.prototype.contains = function(x, y)
-{
-    if(this.width &lt;= 0 || this.height &lt;= 0)
-        return false;
-
-    var x1 = this.x;
-    if(x &gt;= x1 &amp;&amp; x &lt;= x1 + this.width)
-    {
-        var y1 = this.y;
-
-        if(y &gt;= y1 &amp;&amp; y &lt;= y1 + this.height)
-        {
-            return true;
-        }
+PIXI.NoiseFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
+PIXI.NoiseFilter.prototype.constructor = PIXI.NoiseFilter;
+Object.defineProperty(PIXI.NoiseFilter.prototype, &#x27;noise&#x27;, {
+    get: function() {
+        return this.uniforms.noise.value;
+    },
+    set: function(value) {
+        this.dirty = true;
+        this.uniforms.noise.value = value;
     }
-
-    return false;
-};
-
-// constructor
-PIXI.Rectangle.prototype.constructor = PIXI.Rectangle;
-
-PIXI.EmptyRectangle = new PIXI.Rectangle(0,0,0,0);
+});
     </pre>
 </div>
 

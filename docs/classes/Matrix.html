@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.6.0</em>
+            <em>API Docs for: 2.0.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -87,6 +87,8 @@
             
                 <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
+                <li><a href="../classes/Event.html">Event</a></li>
+            
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
@@ -109,8 +111,6 @@
             
                 <li><a href="../classes/Matrix.html">Matrix</a></li>
             
-                <li><a href="../classes/Matrix2.html">Matrix2</a></li>
-            
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
@@ -130,6 +130,8 @@
                 <li><a href="../classes/PrimitiveShader.html">PrimitiveShader</a></li>
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
+            
+                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
             
                 <li><a href="../classes/Rope.html">Rope</a></li>
             
@@ -152,6 +154,8 @@
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
+            
+                <li><a href="../classes/TiltShiftFilter.html">TiltShiftFilter</a></li>
             
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
             
@@ -218,7 +222,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_pixi_core_Matrix.js.html#l5"><code>src&#x2F;pixi&#x2F;core&#x2F;Matrix.js:5</code></a>
+            Defined in: <a href="../files/src_pixi_geom_Matrix.js.html#l5"><code>src&#x2F;pixi&#x2F;geom&#x2F;Matrix.js:5</code></a>
         </div>
     
 
@@ -277,7 +281,7 @@ here is a representation of it :
             
         
         
-        <a href="../files/src_pixi_core_Matrix.js.html#l5"><code>src&#x2F;pixi&#x2F;core&#x2F;Matrix.js:5</code></a>
+        <a href="../files/src_pixi_geom_Matrix.js.html#l5"><code>src&#x2F;pixi&#x2F;geom&#x2F;Matrix.js:5</code></a>
         
         </p>
 
@@ -324,6 +328,20 @@ here is a representation of it :
                     <ul class="index-list methods">
                         
                             <li class="index-item method">
+                                <a href="#method_apply">apply</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_apply">apply</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
                                 <a href="#method_fromArray">fromArray</a>
 
                                 
@@ -331,7 +349,35 @@ here is a representation of it :
                             </li>
                         
                             <li class="index-item method">
+                                <a href="#method_rotate">rotate</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_scale">scale</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
                                 <a href="#method_toArray">toArray</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_translate">translate</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_translate">translate</a>
 
                                 
                                 
@@ -351,6 +397,268 @@ here is a representation of it :
         
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
+
+                
+                    <div id="method_apply" class="method item">
+    <h3 class="name"><code>apply</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>pos</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code class="optional">[newPos]</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_geom_Matrix.js.html#l81"><code>src&#x2F;pixi&#x2F;geom&#x2F;Matrix.js:81</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Get a new position with the current transormation applied.
+Can be used to go from a child&#39;s coordinate space to the world coordinate space. (e.g. rendering)</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">pos</code>
+                        <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The origin</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name optional">[newPos]</code>
+                        <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The point that the new position is assigned to (allowed to be same as input)</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>:
+                    
+                    <p>The new point, transformed trough this matrix</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_apply" class="method item">
+    <h3 class="name"><code>apply</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>pos</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code class="optional">[newPos]</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_geom_Matrix.js.html#l100"><code>src&#x2F;pixi&#x2F;geom&#x2F;Matrix.js:100</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Get a new position with the inverse of the current transormation applied.
+Can be used to go from the world coordinate space to a child&#39;s coordinate space. (e.g. input)</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">pos</code>
+                        <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The origin</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name optional">[newPos]</code>
+                        <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The point that the new position is assigned to (allowed to be same as input)</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>:
+                    
+                    <p>The new point, inverse-transformed trough this matrix</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
 
                 
                     <div id="method_fromArray" class="method item">
@@ -395,7 +703,7 @@ here is a representation of it :
             
         
         
-        <a href="../files/src_pixi_core_Matrix.js.html#l25"><code>src&#x2F;pixi&#x2F;core&#x2F;Matrix.js:25</code></a>
+        <a href="../files/src_pixi_geom_Matrix.js.html#l25"><code>src&#x2F;pixi&#x2F;geom&#x2F;Matrix.js:25</code></a>
         
         </p>
 
@@ -436,6 +744,242 @@ here is a representation of it :
         </div>
     
 
+    
+
+    
+</div>
+
+                
+                    <div id="method_rotate" class="method item">
+    <h3 class="name"><code>rotate</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>angle</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Matrix.html" class="crosslink">Matrix</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_geom_Matrix.js.html#l155"><code>src&#x2F;pixi&#x2F;geom&#x2F;Matrix.js:155</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Applies a rotation transformation to the matrix.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">angle</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The angle in radians.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/Matrix.html" class="crosslink">Matrix</a></span>:
+                    
+                    <p>This matrix. Good for chaining method calls.</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_scale" class="method item">
+    <h3 class="name"><code>scale</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>x</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>y</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Matrix.html" class="crosslink">Matrix</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_geom_Matrix.js.html#l135"><code>src&#x2F;pixi&#x2F;geom&#x2F;Matrix.js:135</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Applies a scale transformation to the matrix.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">x</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The amount to scale horizontally</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">y</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The amount to scale vertically</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/Matrix.html" class="crosslink">Matrix</a></span>:
+                    
+                    <p>This matrix. Good for chaining method calls.</p>
+
+                
+            </div>
+        </div>
     
 
     
@@ -488,7 +1032,7 @@ here is a representation of it :
             
         
         
-        <a href="../files/src_pixi_core_Matrix.js.html#l41"><code>src&#x2F;pixi&#x2F;core&#x2F;Matrix.js:41</code></a>
+        <a href="../files/src_pixi_geom_Matrix.js.html#l41"><code>src&#x2F;pixi&#x2F;geom&#x2F;Matrix.js:41</code></a>
         
         </p>
 
@@ -539,6 +1083,260 @@ here is a representation of it :
                         <span class="type">Array</span>:
                     
                     <p>the newly created array which contains the matrix</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_translate" class="method item">
+    <h3 class="name"><code>translate</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>x</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>y</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Matrix.html" class="crosslink">Matrix</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_geom_Matrix.js.html#l120"><code>src&#x2F;pixi&#x2F;geom&#x2F;Matrix.js:120</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Translates the matrix on the x and y.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">x</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">y</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/Matrix.html" class="crosslink">Matrix</a></span>:
+                    
+                    <p>This matrix. Good for chaining method calls.</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_translate" class="method item">
+    <h3 class="name"><code>translate</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>x</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>y</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Matrix.html" class="crosslink">Matrix</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_geom_Matrix.js.html#l181"><code>src&#x2F;pixi&#x2F;geom&#x2F;Matrix.js:181</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Translates the matrix on the x and y.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">x</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">y</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/Matrix.html" class="crosslink">Matrix</a></span>:
+                    
+                    <p>This matrix. Good for chaining method calls.</p>
 
                 
             </div>

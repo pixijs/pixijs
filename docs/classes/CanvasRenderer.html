@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.6.0</em>
+            <em>API Docs for: 2.0.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -87,6 +87,8 @@
             
                 <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
+                <li><a href="../classes/Event.html">Event</a></li>
+            
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
@@ -109,8 +111,6 @@
             
                 <li><a href="../classes/Matrix.html">Matrix</a></li>
             
-                <li><a href="../classes/Matrix2.html">Matrix2</a></li>
-            
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
@@ -130,6 +130,8 @@
                 <li><a href="../classes/PrimitiveShader.html">PrimitiveShader</a></li>
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
+            
+                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
             
                 <li><a href="../classes/Rope.html">Rope</a></li>
             
@@ -152,6 +154,8 @@
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
+            
+                <li><a href="../classes/TiltShiftFilter.html">TiltShiftFilter</a></li>
             
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
             
@@ -251,25 +255,19 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
                 <li class="arg">
                     
-                        <code>width=800</code>
+                        <code class="optional">[width=800]</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>height=600</code>
+                        <code class="optional">[height=600]</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code class="optional">[view]</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code class="optional">[transparent=false]</code>
+                        <code class="optional">[options]</code>
                     
                 </li>
             
@@ -324,8 +322,9 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
                 <li class="param">
                     
-                        <code class="param-name">width=800</code>
+                        <code class="param-name optional">[width=800]</code>
                         <span class="type">Number</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
                     
 
                     
@@ -340,8 +339,9 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
                 <li class="param">
                     
-                        <code class="param-name">height=600</code>
+                        <code class="param-name optional">[height=600]</code>
                         <span class="type">Number</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
                     
 
                     
@@ -356,35 +356,82 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
                 <li class="param">
                     
-                        <code class="param-name optional">[view]</code>
-                        <span class="type">HTMLCanvasElement</span>
+                        <code class="param-name optional">[options]</code>
+                        <span class="type">Object</span>
                         <span class="flag optional" title="This parameter is optional.">optional</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>the canvas to use as a view, optional</p>
+                        <p>The optional renderer parameters</p>
 
                     </div>
 
                     
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name optional">[transparent=false]</code>
-                        <span class="type">Boolean</span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-                    
+                        <ul class="params-list">
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[view]</code>
+                                    <span class="type">HTMLCanvasElement</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
 
-                    
+                                <div class="param-description">
+                                    <p>the canvas to use as a view, optional</p>
 
-                    <div class="param-description">
-                        <p>the transparency of the render view, default false</p>
+                                </div>
 
-                    </div>
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[transparent=false]</code>
+                                    <span class="type">Boolean</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
 
+                                <div class="param-description">
+                                    <p>If the render view is transparent, default false</p>
+
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[resolution=1]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    <p>the resolution of the renderer retina would be 2</p>
+
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
+                                    <code class="param-name optional">[clearBeforeRender=true]</code>
+                                    <span class="type">Boolean</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    <p>This sets if the CanvasRenderer will clear the canvas or not before the new render pass.</p>
+
+                                </div>
+
+                                
+                            </li>
+                            
+                        </ul>
                     
                 </li>
             
@@ -614,7 +661,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l349"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:349</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l371"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:371</code></a>
         
         </p>
 
@@ -711,7 +758,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l370"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:370</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l392"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:392</code></a>
         
         </p>
 
@@ -776,7 +823,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l173"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:173</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l198"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:198</code></a>
         
         </p>
 
@@ -873,7 +920,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l241"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:241</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l262"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:262</code></a>
         
         </p>
 
@@ -913,7 +960,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
                 <li class="param">
                     
                         <code class="param-name">context</code>
-                        <span class="type">Context2D</span>
+                        <span class="type">CanvasRenderingContext2D</span>
                     
 
                     
@@ -980,7 +1027,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l293"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:293</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l315"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:315</code></a>
         
         </p>
 
@@ -1071,7 +1118,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l259"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:259</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l281"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:281</code></a>
         
         </p>
 
@@ -1166,7 +1213,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l225"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:225</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l242"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:242</code></a>
         
         </p>
 
@@ -1279,7 +1326,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l381"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:381</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l403"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:403</code></a>
         
         </p>
 
@@ -1373,7 +1420,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l134"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:134</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l155"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:155</code></a>
         
         </p>
 
@@ -1418,7 +1465,7 @@ Dont forget to add the view to your DOM or you will not see anything :)</p>
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l26"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:26</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l44"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:44</code></a>
         
         </p>
 
@@ -1445,7 +1492,7 @@ Disable this by setting this to false. For example if your game has a canvas fil
                 
                     <div id="property_context" class="property item">
     <h3 class="name"><code>context</code></h3>
-    <span class="type">HTMLCanvasElement 2d Context</span>
+    <span class="type">CanvasRenderingContext2D 2d Context</span>
 
     
 
@@ -1466,7 +1513,7 @@ Disable this by setting this to false. For example if your game has a canvas fil
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l119"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:119</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l140"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:140</code></a>
         
         </p>
 
@@ -1511,7 +1558,7 @@ Disable this by setting this to false. For example if your game has a canvas fil
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l102"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:102</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l120"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:120</code></a>
         
         </p>
 
@@ -1558,7 +1605,7 @@ Disable this by setting this to false. For example if your game has a canvas fil
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l141"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:141</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l162"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:162</code></a>
         
         </p>
 
@@ -1603,7 +1650,7 @@ Disable this by setting this to false. For example if your game has a canvas fil
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l38"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:38</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l56"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:56</code></a>
         
         </p>
 
@@ -1648,7 +1695,7 @@ Disable this by setting this to false. For example if your game has a canvas fil
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l111"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:111</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l132"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:132</code></a>
         
         </p>
 
@@ -1693,7 +1740,7 @@ Disable this by setting this to false. For example if your game has a canvas fil
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l93"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:93</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l111"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:111</code></a>
         
         </p>
 

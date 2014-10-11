@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.6.0</em>
+            <em>API Docs for: 2.0.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -87,6 +87,8 @@
             
                 <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
+                <li><a href="../classes/Event.html">Event</a></li>
+            
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
@@ -109,8 +111,6 @@
             
                 <li><a href="../classes/Matrix.html">Matrix</a></li>
             
-                <li><a href="../classes/Matrix2.html">Matrix2</a></li>
-            
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
@@ -130,6 +130,8 @@
                 <li><a href="../classes/PrimitiveShader.html">PrimitiveShader</a></li>
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
+            
+                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
             
                 <li><a href="../classes/Rope.html">Rope</a></li>
             
@@ -152,6 +154,8 @@
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
+            
+                <li><a href="../classes/TiltShiftFilter.html">TiltShiftFilter</a></li>
             
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
             
@@ -237,7 +241,7 @@ PIXI.CanvasGraphics = function()
  * @private
  * @method renderGraphics
  * @param graphics {Graphics} the actual graphics object to render
- * @param context {Context2D} the 2d drawing method of the canvas
+ * @param context {CanvasRenderingContext2D} the 2d drawing method of the canvas
  */
 PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 {
@@ -247,7 +251,7 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
     for (var i = 0; i &lt; graphics.graphicsData.length; i++)
     {
         var data = graphics.graphicsData[i];
-        var points = data.points;
+        var shape = data.shape;
 
         context.strokeStyle = color = &#x27;#&#x27; + (&#x27;00000&#x27; + ( data.lineColor | 0).toString(16)).substr(-6);
 
@@ -257,11 +261,18 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
         {
             context.beginPath();
 
+            var points = shape.points;
+
             context.moveTo(points[0], points[1]);
 
             for (var j=1; j &lt; points.length/2; j++)
             {
                 context.lineTo(points[j * 2], points[j * 2 + 1]);
+            }
+
+            if(shape.closed)
+            {
+                context.lineTo(points[0], points[1]);
             }
 
             // if the first and last point are the same close the path - much neater :)
@@ -289,13 +300,13 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
             {
                 context.globalAlpha = data.fillAlpha * worldAlpha;
                 context.fillStyle = color = &#x27;#&#x27; + (&#x27;00000&#x27; + ( data.fillColor | 0).toString(16)).substr(-6);
-                context.fillRect(points[0], points[1], points[2], points[3]);
+                context.fillRect(shape.x, shape.y, shape.width, shape.height);
 
             }
             if(data.lineWidth)
             {
                 context.globalAlpha = data.lineAlpha * worldAlpha;
-                context.strokeRect(points[0], points[1], points[2], points[3]);
+                context.strokeRect(shape.x, shape.y, shape.width, shape.height);
             }
 
         }
@@ -303,7 +314,7 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
         {
             // TODO - need to be Undefined!
             context.beginPath();
-            context.arc(points[0], points[1], points[2],0,2*Math.PI);
+            context.arc(shape.x, shape.y, shape.radius,0,2*Math.PI);
             context.closePath();
 
             if(data.fill)
@@ -323,13 +334,11 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
 
             // ellipse code taken from: http://stackoverflow.com/questions/2172798/how-to-draw-an-oval-in-html5-canvas
 
-            var ellipseData =  data.points;
+            var w = shape.width * 2;
+            var h = shape.height * 2;
 
-            var w = ellipseData[2] * 2;
-            var h = ellipseData[3] * 2;
-
-            var x = ellipseData[0] - w/2;
-            var y = ellipseData[1] - h/2;
+            var x = shape.x - w/2;
+            var y = shape.y - h/2;
 
             context.beginPath();
 
@@ -361,6 +370,7 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
                 context.stroke();
             }
         }
+            /*
         else if (data.type === PIXI.Graphics.RREC)
         {
             var rx = points[0];
@@ -397,6 +407,7 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
                 context.stroke();
             }
         }
+            */
     }
 };
 
@@ -407,7 +418,7 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
  * @private
  * @method renderGraphicsMask
  * @param graphics {Graphics} the graphics which will be used as a mask
- * @param context {Context2D} the context 2d method of the canvas
+ * @param context {CanvasRenderingContext2D} the context 2d method of the canvas
  */
 PIXI.CanvasGraphics.renderGraphicsMask = function(graphics, context)
 {

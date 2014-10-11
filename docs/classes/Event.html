@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>SepiaFilter - pixi.js</title>
+    <title>Event - pixi.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -214,15 +214,19 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>SepiaFilter Class</h1>
+                        <h1>Event Class</h1>
 <div class="box meta">
     
 
     
+        <div class="extends">
+            Extends Object
+        </div>
+    
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_pixi_filters_SepiaFilter.js.html#l5"><code>src&#x2F;pixi&#x2F;filters&#x2F;SepiaFilter.js:5</code></a>
+            Defined in: <a href="../files/src_pixi_utils_EventTarget.js.html#l192"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:192</code></a>
         </div>
     
 
@@ -238,15 +242,253 @@
 
 
 <div class="box intro">
-    <p>This applies a sepia effect to your displayObjects.</p>
+    <p>Creates an homogenous object for tracking events so users can know what to expect.</p>
 
 </div>
 
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_SepiaFilter" class="method item">
-    <h3 class="name"><code>SepiaFilter</code></h3>
+        <div id="method_Event" class="method item">
+    <h3 class="name"><code>Event</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>target</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>name</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>data</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_utils_EventTarget.js.html#l192"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:192</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">target</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The target object that the event is called on</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">name</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The string name of the event that was triggered</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">data</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Arbitrary event data to pass along</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+    </div>
+
+
+<div id="classdocs" class="tabview">
+    <ul class="api-class-tabs">
+        <li class="api-class-tab index"><a href="#index">Index</a></li>
+
+        
+            <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
+        
+        
+            <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
+        
+        
+        
+    </ul>
+
+    <div>
+        <div id="index" class="api-class-tabpanel index">
+            <h2 class="off-left">Item Index</h2>
+
+            
+                <div class="index-section methods">
+                    <h3>Methods</h3>
+
+                    <ul class="index-list methods extends">
+                        
+                            <li class="index-item method">
+                                <a href="#method_stopImmediatePropagation">stopImmediatePropagation</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_stopPropagation">stopPropagation</a>
+
+                                
+                                
+                            </li>
+                        
+                    </ul>
+                </div>
+            
+
+            
+                <div class="index-section properties">
+                    <h3>Properties</h3>
+
+                    <ul class="index-list properties extends">
+                        
+                            <li class="index-item property">
+                                <a href="#property_data">data</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property private">
+                                <a href="#property_stopped">stopped</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property private">
+                                <a href="#property_stoppedImmediate">stoppedImmediate</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_target">target</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_timeStamp">timeStamp</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_type">type</a>
+
+                                
+                                
+                            </li>
+                        
+                    </ul>
+                </div>
+            
+
+            
+
+            
+        </div>
+
+        
+            <div id="methods" class="api-class-tabpanel">
+                <h2 class="off-left">Methods</h2>
+
+                
+                    <div id="method_stopImmediatePropagation" class="method item">
+    <h3 class="name"><code>stopImmediatePropagation</code></h3>
 
     
         <span class="paren">()</span>
@@ -277,7 +519,7 @@
             
         
         
-        <a href="../files/src_pixi_filters_SepiaFilter.js.html#l5"><code>src&#x2F;pixi&#x2F;filters&#x2F;SepiaFilter.js:5</code></a>
+        <a href="../files/src_pixi_utils_EventTarget.js.html#l277"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:277</code></a>
         
         </p>
 
@@ -288,7 +530,8 @@
     </div>
 
     <div class="description">
-        
+        <p>Stops the propagation of events to sibling listeners (no longer calls any listeners).</p>
+
     </div>
 
     
@@ -298,59 +541,19 @@
     
 </div>
 
-    </div>
-
-
-<div id="classdocs" class="tabview">
-    <ul class="api-class-tabs">
-        <li class="api-class-tab index"><a href="#index">Index</a></li>
-
-        
-        
-            <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
-        
-        
-        
-    </ul>
-
-    <div>
-        <div id="index" class="api-class-tabpanel index">
-            <h2 class="off-left">Item Index</h2>
-
-            
-
-            
-                <div class="index-section properties">
-                    <h3>Properties</h3>
-
-                    <ul class="index-list properties">
-                        
-                            <li class="index-item property">
-                                <a href="#property_sepia">sepia</a>
-
-                                
-                                
-                            </li>
-                        
-                    </ul>
-                </div>
-            
-
-            
-
-            
-        </div>
-
-        
-
-        
-            <div id="properties" class="api-class-tabpanel">
-                <h2 class="off-left">Properties</h2>
-
                 
-                    <div id="property_sepia" class="property item">
-    <h3 class="name"><code>sepia</code></h3>
-    <span class="type">Unknown</span>
+                    <div id="method_stopPropagation" class="method item">
+    <h3 class="name"><code>stopPropagation</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
 
     
 
@@ -371,7 +574,61 @@
             
         
         
-        <a href="../files/src_pixi_filters_SepiaFilter.js.html#l42"><code>src&#x2F;pixi&#x2F;filters&#x2F;SepiaFilter.js:42</code></a>
+        <a href="../files/src_pixi_utils_EventTarget.js.html#l268"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:268</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Stops the propagation of events up the scene graph (prevents bubbling).</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+            </div>
+        
+
+        
+            <div id="properties" class="api-class-tabpanel">
+                <h2 class="off-left">Properties</h2>
+
+                
+                    <div id="property_data" class="property item">
+    <h3 class="name"><code>data</code></h3>
+    <span class="type">Object</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_utils_EventTarget.js.html#l246"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:246</code></a>
         
         </p>
 
@@ -381,7 +638,238 @@
     </div>
 
     <div class="description">
-        <p>The strength of the sepia. 1 will apply the full sepia effect, 0 will make the object its normal color</p>
+        <p>The data that was passed in with this event.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_stopped" class="property item private">
+    <h3 class="name"><code>stopped</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_utils_EventTarget.js.html#l206"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:206</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Tracks the state of bubbling propagation. Do not
+set this directly, instead use <code>event.stopPropagation()</code></p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_stoppedImmediate" class="property item private">
+    <h3 class="name"><code>stoppedImmediate</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_utils_EventTarget.js.html#l217"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:217</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Tracks the state of sibling listener propagation. Do not
+set this directly, instead use <code>event.stopImmediatePropagation()</code></p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_target" class="property item">
+    <h3 class="name"><code>target</code></h3>
+    <span class="type">Object</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_utils_EventTarget.js.html#l228"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:228</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The original target the event triggered on.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_timeStamp" class="property item">
+    <h3 class="name"><code>timeStamp</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_utils_EventTarget.js.html#l258"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:258</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The timestamp when the event occurred.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_type" class="property item">
+    <h3 class="name"><code>type</code></h3>
+    <span class="type">String</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_utils_EventTarget.js.html#l237"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:237</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The string name of the event that this represents.</p>
 
     </div>
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Matrix2 - pixi.js</title>
+    <title>src/pixi/geom/Polygon.js - pixi.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.6.0</em>
+            <em>API Docs for: 2.0.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -87,6 +87,8 @@
             
                 <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
+                <li><a href="../classes/Event.html">Event</a></li>
+            
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
@@ -109,8 +111,6 @@
             
                 <li><a href="../classes/Matrix.html">Matrix</a></li>
             
-                <li><a href="../classes/Matrix2.html">Matrix2</a></li>
-            
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
@@ -130,6 +130,8 @@
                 <li><a href="../classes/PrimitiveShader.html">PrimitiveShader</a></li>
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
+            
+                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
             
                 <li><a href="../classes/Rope.html">Rope</a></li>
             
@@ -152,6 +154,8 @@
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
+            
+                <li><a href="../classes/TiltShiftFilter.html">TiltShiftFilter</a></li>
             
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
             
@@ -210,125 +214,88 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>Matrix2 Class</h1>
-<div class="box meta">
-    
+                        <h1 class="file-heading">File: src/pixi/geom/Polygon.js</h1>
 
-    
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+ * @author Adrien Brault &lt;adrien.brault@gmail.com&gt;
+ */
 
-    
-        <div class="foundat">
-            Defined in: <a href="../files/src_pixi_core_Matrix.js.html#l87"><code>src&#x2F;pixi&#x2F;core&#x2F;Matrix.js:87</code></a>
-        </div>
-    
+/**
+ * @class Polygon
+ * @constructor
+ * @param points* {Array&lt;Point&gt;|Array&lt;Number&gt;|Point...|Number...} This can be an array of Points that form the polygon,
+ *      a flat array of numbers that will be interpreted as [x,y, x,y, ...], or the arguments passed can be
+ *      all the points of the polygon e.g. &#x60;new PIXI.Polygon(new PIXI.Point(), new PIXI.Point(), ...)&#x60;, or the
+ *      arguments passed can be flat x,y values e.g. &#x60;new PIXI.Polygon(x,y, x,y, x,y, ...)&#x60; where &#x60;x&#x60; and &#x60;y&#x60; are
+ *      Numbers.
+ */
+PIXI.Polygon = function(points)
+{
+    //if points isn&#x27;t an array, use arguments as the array
+    if(!(points instanceof Array))points = Array.prototype.slice.call(arguments);
 
-    
-        
-            Module: <a href="../modules/PIXI.html">PIXI</a>
-        
-    
+    //if this is a flat array of numbers, convert it to points
+    if(points[0] instanceof PIXI.Point)
+    {
+        var p = [];
+        for(var i = 0, il = points.length; i &lt; il; i++)
+        {
+            p.push(points[i].x, points[i].y);
+        }
 
-    
-</div>
+        points = p;
+    }
 
+    this.closed = true;
+    this.points = points;
+};
 
+/**
+ * Creates a clone of this polygon
+ *
+ * @method clone
+ * @return {Polygon} a copy of the polygon
+ */
+PIXI.Polygon.prototype.clone = function()
+{
+    var points = this.points.slice();
+    return new PIXI.Polygon(points);
+};
 
-<div class="box intro">
-    <p>The Matrix2 class will choose the best type of array to use between
-a regular javascript Array and a Float32Array if the latter is available</p>
+/**
+ * Checks whether the x and y coordinates passed to this function are contained within this polygon
+ *
+ * @method contains
+ * @param x {Number} The X coordinate of the point to test
+ * @param y {Number} The Y coordinate of the point to test
+ * @return {Boolean} Whether the x/y coordinates are within this polygon
+ */
+PIXI.Polygon.prototype.contains = function(x, y)
+{
+    var inside = false;
 
-</div>
+    // use some raycasting to test hits
+    // https://github.com/substack/point-in-polygon/blob/master/index.js
+    var length = this.points.length / 2;
 
+    for(var i = 0, j = length - 1; i &lt; length; j = i++)
+    {
+        var xi = this.points[i * 2], yi = this.points[i * 2 + 1],
+            xj = this.points[j * 2], yj = this.points[j * 2 + 1],
+            intersect = ((yi &gt; y) !== (yj &gt; y)) &amp;&amp; (x &lt; (xj - xi) * (y - yi) / (yj - yi) + xi);
 
-    <div class="constructor">
-        <h2>Constructor</h2>
-        <div id="method_Matrix2" class="method item">
-    <h3 class="name"><code>Matrix2</code></h3>
+        if(intersect) inside = !inside;
+    }
 
-    
-        <span class="paren">()</span>
-    
+    return inside;
+};
 
-    
+// constructor
+PIXI.Polygon.prototype.constructor = PIXI.Polygon;
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_pixi_core_Matrix.js.html#l87"><code>src&#x2F;pixi&#x2F;core&#x2F;Matrix.js:87</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-    </div>
-
-
-<div id="classdocs" class="tabview">
-    <ul class="api-class-tabs">
-        <li class="api-class-tab index"><a href="#index">Index</a></li>
-
-        
-        
-        
-        
-    </ul>
-
-    <div>
-        <div id="index" class="api-class-tabpanel index">
-            <h2 class="off-left">Item Index</h2>
-
-            
-
-            
-
-            
-
-            
-        </div>
-
-        
-
-        
-
-        
-
-        
-    </div>
+    </pre>
 </div>
 
                     </div>

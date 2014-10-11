@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>BaseTexture - pixi.js</title>
+    <title>RenderTexture - pixi.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -214,24 +214,19 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>BaseTexture Class</h1>
+                        <h1>RenderTexture Class</h1>
 <div class="box meta">
     
-        <div class="uses">
-            Uses
-            <ul class="inline commas">
-                
-                    <li><a href="EventTarget.html">EventTarget</a></li>
-                
-            </ul>
+
+    
+        <div class="extends">
+            Extends <a href="../classes/Texture.html" class="crosslink">Texture</a>
         </div>
     
 
     
-
-    
         <div class="foundat">
-            Defined in: <a href="../files/src_pixi_textures_BaseTexture.js.html#l9"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:9</code></a>
+            Defined in: <a href="../files/src_pixi_textures_RenderTexture.js.html#l5"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:5</code></a>
         </div>
     
 
@@ -247,15 +242,29 @@
 
 
 <div class="box intro">
-    <p>A texture stores the information that represents an image. All textures have a base texture</p>
+    <p>A RenderTexture is a special texture that allows any pixi displayObject to be rendered to it.</p>
+<p><strong>Hint</strong>: All DisplayObjects (exmpl. Sprites) that render on RenderTexture should be preloaded.
+Otherwise black rectangles will be drawn instead.</p>
+<p>RenderTexture takes snapshot of DisplayObject passed to render method. If DisplayObject is passed to render method, position and rotation of it will be ignored. For example:</p>
+<p>   var renderTexture = new PIXI.RenderTexture(800, 600);
+   var sprite = PIXI.Sprite.fromImage(&quot;spinObj_01.png&quot;);
+   sprite.position.x = 800/2;
+   sprite.position.y = 600/2;
+   sprite.anchor.x = 0.5;
+   sprite.anchor.y = 0.5;
+   renderTexture.render(sprite);</p>
+<p>Sprite in this case will be rendered to 0,0 position. To render this sprite at center DisplayObjectContainer should be used:</p>
+<p>   var doc = new PIXI.DisplayObjectContainer();
+   doc.addChild(sprite);
+   renderTexture.render(doc);  // Renders to center of renderTexture</p>
 
 </div>
 
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_BaseTexture" class="method item">
-    <h3 class="name"><code>BaseTexture</code></h3>
+        <div id="method_RenderTexture" class="method item">
+    <h3 class="name"><code>RenderTexture</code></h3>
 
     
         <div class="args">
@@ -263,13 +272,25 @@
             
                 <li class="arg">
                     
-                        <code>source</code>
+                        <code>width</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>height</code>
                     
                 </li>
             
                 <li class="arg">
                     
                         <code>scaleMode</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>resolution</code>
                     
                 </li>
             
@@ -302,7 +323,7 @@
             
         
         
-        <a href="../files/src_pixi_textures_BaseTexture.js.html#l9"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:9</code></a>
+        <a href="../files/src_pixi_textures_RenderTexture.js.html#l5"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:5</code></a>
         
         </p>
 
@@ -324,14 +345,30 @@
             
                 <li class="param">
                     
-                        <code class="param-name">source</code>
-                        <span class="type">String</span>
+                        <code class="param-name">width</code>
+                        <span class="type">Number</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>the source object (image or canvas)</p>
+                        <p>The width of the render texture</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">height</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The height of the render texture</p>
 
                     </div>
 
@@ -348,6 +385,22 @@
 
                     <div class="param-description">
                         <p>Should be one of the PIXI.scaleMode consts</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">resolution</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The resolution of the texture being generated</p>
 
                     </div>
 
@@ -388,9 +441,23 @@
                 <div class="index-section methods">
                     <h3>Methods</h3>
 
-                    <ul class="index-list methods">
+                    <ul class="index-list methods extends">
+                        
+                            <li class="index-item method private inherited">
+                                <a href="#method__updateWebGLuvs">_updateWebGLuvs</a>
+
+                                
+                                
+                            </li>
                         
                             <li class="index-item method">
+                                <a href="#method_clear">clear</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
                                 <a href="#method_destroy">destroy</a>
 
                                 
@@ -405,19 +472,15 @@
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_fromCanvas">fromCanvas</a>
+                                <a href="#method_getImage">getImage</a>
 
-                                
-                                    <span class="flag static">static</span>
                                 
                                 
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_fromImage">fromImage</a>
+                                <a href="#method_getImage">getImage</a>
 
-                                
-                                    <span class="flag static">static</span>
                                 
                                 
                             </li>
@@ -450,6 +513,13 @@
                                 
                             </li>
                         
+                            <li class="index-item method private inherited">
+                                <a href="#method_onBaseTextureLoaded">onBaseTextureLoaded</a>
+
+                                
+                                
+                            </li>
+                        
                             <li class="index-item method inherited">
                                 <a href="#method_once">once</a>
 
@@ -464,8 +534,29 @@
                                 
                             </li>
                         
+                            <li class="index-item method private">
+                                <a href="#method_renderCanvas">renderCanvas</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method private">
+                                <a href="#method_renderWebGL">renderWebGL</a>
+
+                                
+                                
+                            </li>
+                        
                             <li class="index-item method">
-                                <a href="#method_updateSourceImage">updateSourceImage</a>
+                                <a href="#method_resize">resize</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_setFrame">setFrame</a>
 
                                 
                                 
@@ -479,17 +570,52 @@
                 <div class="index-section properties">
                     <h3>Properties</h3>
 
-                    <ul class="index-list properties">
+                    <ul class="index-list properties extends">
                         
-                            <li class="index-item property">
-                                <a href="#property_hasLoaded">hasLoaded</a>
+                            <li class="index-item property private inherited">
+                                <a href="#property__uvs">_uvs</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item property">
+                            <li class="index-item property inherited">
+                                <a href="#property_baseTexture">baseTexture</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_crop">crop</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_frame">frame</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
                                 <a href="#property_height">height</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_noFrame">noFrame</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property inherited">
+                                <a href="#property_requiresUpdate">requiresUpdate</a>
 
                                 
                                 
@@ -502,29 +628,22 @@
                                 
                             </li>
                         
-                            <li class="index-item property">
-                                <a href="#property_scaleMode">scaleMode</a>
+                            <li class="index-item property inherited">
+                                <a href="#property_trim">trim</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item property">
-                                <a href="#property_source">source</a>
+                            <li class="index-item property inherited">
+                                <a href="#property_valid">valid</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item property">
+                            <li class="index-item property inherited">
                                 <a href="#property_width">width</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_"></a>
 
                                 
                                 
@@ -544,8 +663,62 @@
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_destroy" class="method item">
-    <h3 class="name"><code>destroy</code></h3>
+                    <div id="method__updateWebGLuvs" class="method item private inherited">
+    <h3 class="name"><code>_updateWebGLuvs</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Texture.html#method__updateWebGLuvs">Texture</a>:
+            
+        
+        
+        <a href="../files/src_pixi_textures_Texture.js.html#l201"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:201</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Updates the internal WebGL UV cache.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_clear" class="method item">
+    <h3 class="name"><code>clear</code></h3>
 
     
         <span class="paren">()</span>
@@ -576,7 +749,7 @@
             
         
         
-        <a href="../files/src_pixi_textures_BaseTexture.js.html#l132"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:132</code></a>
+        <a href="../files/src_pixi_textures_RenderTexture.js.html#l163"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:163</code></a>
         
         </p>
 
@@ -587,10 +760,96 @@
     </div>
 
     <div class="description">
-        <p>Destroys this base texture</p>
+        <p>Clears the RenderTexture.</p>
 
     </div>
 
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_destroy" class="method item inherited">
+    <h3 class="name"><code>destroy</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>destroyBase</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Texture.html#method_destroy">Texture</a>:
+            
+        
+        
+        <a href="../files/src_pixi_textures_Texture.js.html#l150"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:150</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Destroys this texture</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">destroyBase</code>
+                        <span class="type">Boolean</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Whether to destroy the base texture as well</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
     
 
     
@@ -703,33 +962,11 @@
 </div>
 
                 
-                    <div id="method_fromCanvas" class="method item">
-    <h3 class="name"><code>fromCanvas</code></h3>
+                    <div id="method_getImage" class="method item">
+    <h3 class="name"><code>getImage</code></h3>
 
     
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>canvas</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>scaleMode</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
+        <span class="paren">()</span>
     
 
     
@@ -739,7 +976,7 @@
     
 
     
-        <span class="flag static">static</span>
+
     
 
     
@@ -757,7 +994,7 @@
             
         
         
-        <a href="../files/src_pixi_textures_BaseTexture.js.html#l231"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:231</code></a>
+        <a href="../files/src_pixi_textures_RenderTexture.js.html#l265"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:265</code></a>
         
         </p>
 
@@ -768,104 +1005,23 @@
     </div>
 
     <div class="description">
-        <p>Helper function that returns a base texture based on a canvas element
-If the image is not in the base texture cache it will be created and loaded</p>
+        <p>Will return a HTML Image of the texture</p>
 
     </div>
 
     
-        <div class="params">
-            <h4>Parameters:</h4>
 
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">canvas</code>
-                        <span class="type">Canvas</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>The canvas element source of the texture</p>
-
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">scaleMode</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>Should be one of the PIXI.scaleMode consts</p>
-
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                    <p>BaseTexture</p>
-
-                
-            </div>
-        </div>
     
 
     
 </div>
 
                 
-                    <div id="method_fromImage" class="method item">
-    <h3 class="name"><code>fromImage</code></h3>
+                    <div id="method_getImage" class="method item">
+    <h3 class="name"><code>getImage</code></h3>
 
     
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>imageUrl</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>crossorigin</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>scaleMode</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
+        <span class="paren">()</span>
     
 
     
@@ -875,7 +1031,7 @@ If the image is not in the base texture cache it will be created and loaded</p>
     
 
     
-        <span class="flag static">static</span>
+
     
 
     
@@ -893,7 +1049,7 @@ If the image is not in the base texture cache it will be created and loaded</p>
             
         
         
-        <a href="../files/src_pixi_textures_BaseTexture.js.html#l188"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:188</code></a>
+        <a href="../files/src_pixi_textures_RenderTexture.js.html#l277"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:277</code></a>
         
         </p>
 
@@ -904,80 +1060,12 @@ If the image is not in the base texture cache it will be created and loaded</p>
     </div>
 
     <div class="description">
-        <p>Helper function that returns a base texture based on an image url
-If the image is not in the base texture cache it will be created and loaded</p>
+        <p>Will return a a base64 string of the texture</p>
 
     </div>
 
     
-        <div class="params">
-            <h4>Parameters:</h4>
 
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">imageUrl</code>
-                        <span class="type">String</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>The image url of the texture</p>
-
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">crossorigin</code>
-                        <span class="type">Boolean</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">scaleMode</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>Should be one of the PIXI.scaleMode consts</p>
-
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                    <p>BaseTexture</p>
-
-                
-            </div>
-        </div>
     
 
     
@@ -1390,6 +1478,93 @@ If the image is not in the base texture cache it will be created and loaded</p>
 </div>
 
                 
+                    <div id="method_onBaseTextureLoaded" class="method item private inherited">
+    <h3 class="name"><code>onBaseTextureLoaded</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>event</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Texture.html#method_onBaseTextureLoaded">Texture</a>:
+            
+        
+        
+        <a href="../files/src_pixi_textures_Texture.js.html#l131"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:131</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Called when the base texture is loaded</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">event</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
                     <div id="method_once" class="method item inherited">
     <h3 class="name"><code>once</code></h3>
 
@@ -1584,8 +1759,8 @@ If the image is not in the base texture cache it will be created and loaded</p>
 </div>
 
                 
-                    <div id="method_updateSourceImage" class="method item">
-    <h3 class="name"><code>updateSourceImage</code></h3>
+                    <div id="method_renderCanvas" class="method item private">
+    <h3 class="name"><code>renderCanvas</code></h3>
 
     
         <div class="args">
@@ -1593,7 +1768,245 @@ If the image is not in the base texture cache it will be created and loaded</p>
             
                 <li class="arg">
                     
-                        <code>newSrc</code>
+                        <code>displayObject</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>clear</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_textures_RenderTexture.js.html#l228"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:228</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This function will draw the display object to the texture.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">displayObject</code>
+                        <span class="type"><a href="../classes/DisplayObject.html" class="crosslink">DisplayObject</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The display object to render this texture on</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">clear</code>
+                        <span class="type">Boolean</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>If true the texture will be cleared before the displayObject is drawn</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_renderWebGL" class="method item private">
+    <h3 class="name"><code>renderWebGL</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>displayObject</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>clear</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_textures_RenderTexture.js.html#l180"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:180</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This function will draw the display object to the texture.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">displayObject</code>
+                        <span class="type"><a href="../classes/DisplayObject.html" class="crosslink">DisplayObject</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The display object to render this texture on</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">clear</code>
+                        <span class="type">Boolean</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>If true the texture will be cleared before the displayObject is drawn</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_resize" class="method item">
+    <h3 class="name"><code>resize</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>width</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>height</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>updateBase</code>
                     
                 </li>
             
@@ -1626,7 +2039,7 @@ If the image is not in the base texture cache it will be created and loaded</p>
             
         
         
-        <a href="../files/src_pixi_textures_BaseTexture.js.html#l167"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:167</code></a>
+        <a href="../files/src_pixi_textures_RenderTexture.js.html#l128"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:128</code></a>
         
         </p>
 
@@ -1637,7 +2050,7 @@ If the image is not in the base texture cache it will be created and loaded</p>
     </div>
 
     <div class="description">
-        <p>Changes the source image of the texture</p>
+        <p>Resize the RenderTexture.</p>
 
     </div>
 
@@ -1649,14 +2062,132 @@ If the image is not in the base texture cache it will be created and loaded</p>
             
                 <li class="param">
                     
-                        <code class="param-name">newSrc</code>
-                        <span class="type">String</span>
+                        <code class="param-name">width</code>
+                        <span class="type">Number</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>the path of the image</p>
+                        <p>The width to resize to.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">height</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The height to resize to.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">updateBase</code>
+                        <span class="type">Boolean</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Should the baseTexture.width and height values be resized as well?</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_setFrame" class="method item inherited">
+    <h3 class="name"><code>setFrame</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>frame</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Texture.html#method_setFrame">Texture</a>:
+            
+        
+        
+        <a href="../files/src_pixi_textures_Texture.js.html#l163"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:163</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Specifies the region of the baseTexture that this texture will use.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">frame</code>
+                        <span class="type"><a href="../classes/Rectangle.html" class="crosslink">Rectangle</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The frame of the texture to set it to</p>
 
                     </div>
 
@@ -1681,9 +2212,53 @@ If the image is not in the base texture cache it will be created and loaded</p>
                 <h2 class="off-left">Properties</h2>
 
                 
-                    <div id="property_hasLoaded" class="property item">
-    <h3 class="name"><code>hasLoaded</code></h3>
-    <span class="type">Boolean</span>
+                    <div id="property__uvs" class="property item private inherited">
+    <h3 class="name"><code>_uvs</code></h3>
+    <span class="type">Object</span>
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Texture.html#property__uvs">Texture</a>:
+            
+        
+        
+        <a href="../files/src_pixi_textures_Texture.js.html#l83"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:83</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The WebGL UV data cache.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_baseTexture" class="property item">
+    <h3 class="name"><code>baseTexture</code></h3>
+    <span class="type"><a href="../classes/BaseTexture.html" class="crosslink">BaseTexture</a></span>
 
     
 
@@ -1695,16 +2270,16 @@ If the image is not in the base texture cache it will be created and loaded</p>
 
     <div class="meta">
         
+            <p>Inherited from
+            <a href="../classes/Texture.html#property_baseTexture">
+                Texture
+            </a>
             
-                
-                <p>
-                
-                Defined in
-                
+            but overwritten in
             
         
         
-        <a href="../files/src_pixi_textures_BaseTexture.js.html#l54"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:54</code></a>
+        <a href="../files/src_pixi_textures_RenderTexture.js.html#l78"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:78</code></a>
         
         </p>
 
@@ -1714,7 +2289,98 @@ If the image is not in the base texture cache it will be created and loaded</p>
     </div>
 
     <div class="description">
-        <p>[read-only] Describes if the base texture has loaded or not</p>
+        <p>The base texture object that this texture uses</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_crop" class="property item">
+    <h3 class="name"><code>crop</code></h3>
+    <span class="type"><a href="../classes/Rectangle.html" class="crosslink">Rectangle</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            <p>Inherited from
+            <a href="../classes/Texture.html#property_crop">
+                Texture
+            </a>
+            
+            but overwritten in
+            
+        
+        
+        <a href="../files/src_pixi_textures_RenderTexture.js.html#l69"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:69</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This is the area of the BaseTexture image to actually copy to the Canvas / WebGL when rendering,
+irrespective of the actual frame size or placement (which can be influenced by trimmed texture atlases)</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_frame" class="property item">
+    <h3 class="name"><code>frame</code></h3>
+    <span class="type"><a href="../classes/Rectangle.html" class="crosslink">Rectangle</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            <p>Inherited from
+            <a href="../classes/Texture.html#property_frame">
+                Texture
+            </a>
+            
+            but overwritten in
+            
+        
+        
+        <a href="../files/src_pixi_textures_RenderTexture.js.html#l61"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:61</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The framing rectangle of the render texture</p>
 
     </div>
 
@@ -1740,16 +2406,16 @@ If the image is not in the base texture cache it will be created and loaded</p>
 
     <div class="meta">
         
+            <p>Inherited from
+            <a href="../classes/Texture.html#property_height">
+                Texture
+            </a>
             
-                
-                <p>
-                
-                Defined in
-                
+            but overwritten in
             
         
         
-        <a href="../files/src_pixi_textures_BaseTexture.js.html#l37"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:37</code></a>
+        <a href="../files/src_pixi_textures_RenderTexture.js.html#l45"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:45</code></a>
         
         </p>
 
@@ -1759,7 +2425,91 @@ If the image is not in the base texture cache it will be created and loaded</p>
     </div>
 
     <div class="description">
-        <p>[read-only] The height of the base texture set when the image has loaded</p>
+        <p>The height of the render texture</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_noFrame" class="property item inherited">
+    <h3 class="name"><code>noFrame</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Texture.html#property_noFrame">Texture</a>:
+            
+        
+        
+        <a href="../files/src_pixi_textures_Texture.js.html#l24"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:24</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Does this Texture have any frame data assigned to it?</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_requiresUpdate" class="property item inherited">
+    <h3 class="name"><code>requiresUpdate</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/Texture.html#property_requiresUpdate">Texture</a>:
+            
+        
+        
+        <a href="../files/src_pixi_textures_Texture.js.html#l75"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:75</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This will let a renderer know that a texture has been updated (used mainly for webGL uv updates)</p>
 
     </div>
 
@@ -1794,7 +2544,7 @@ If the image is not in the base texture cache it will be created and loaded</p>
             
         
         
-        <a href="../files/src_pixi_textures_BaseTexture.js.html#l20"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:20</code></a>
+        <a href="../files/src_pixi_textures_RenderTexture.js.html#l53"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:53</code></a>
         
         </p>
 
@@ -1816,9 +2566,9 @@ If the image is not in the base texture cache it will be created and loaded</p>
 </div>
 
                 
-                    <div id="property_scaleMode" class="property item">
-    <h3 class="name"><code>scaleMode</code></h3>
-    <span class="type">PIXI.scaleModes</span>
+                    <div id="property_trim" class="property item inherited">
+    <h3 class="name"><code>trim</code></h3>
+    <span class="type"><a href="../classes/Rectangle.html" class="crosslink">Rectangle</a></span>
 
     
 
@@ -1831,15 +2581,12 @@ If the image is not in the base texture cache it will be created and loaded</p>
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="../classes/Texture.html#property_trim">Texture</a>:
             
         
         
-        <a href="../files/src_pixi_textures_BaseTexture.js.html#l46"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:46</code></a>
+        <a href="../files/src_pixi_textures_Texture.js.html#l59"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:59</code></a>
         
         </p>
 
@@ -1849,12 +2596,10 @@ If the image is not in the base texture cache it will be created and loaded</p>
     </div>
 
     <div class="description">
-        <p>The scale mode to apply when scaling this texture</p>
+        <p>The trim point</p>
 
     </div>
 
-    
-        <p><strong>Default:</strong> PIXI.scaleModes.LINEAR</p>
     
 
     
@@ -1863,9 +2608,9 @@ If the image is not in the base texture cache it will be created and loaded</p>
 </div>
 
                 
-                    <div id="property_source" class="property item">
-    <h3 class="name"><code>source</code></h3>
-    <span class="type">Image</span>
+                    <div id="property_valid" class="property item inherited">
+    <h3 class="name"><code>valid</code></h3>
+    <span class="type">Boolean</span>
 
     
 
@@ -1878,15 +2623,12 @@ If the image is not in the base texture cache it will be created and loaded</p>
     <div class="meta">
         
             
-                
-                <p>
-                
-                Defined in
-                
+                <p>Inherited from
+                <a href="../classes/Texture.html#property_valid">Texture</a>:
             
         
         
-        <a href="../files/src_pixi_textures_BaseTexture.js.html#l63"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:63</code></a>
+        <a href="../files/src_pixi_textures_Texture.js.html#l67"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:67</code></a>
         
         </p>
 
@@ -1896,7 +2638,7 @@ If the image is not in the base texture cache it will be created and loaded</p>
     </div>
 
     <div class="description">
-        <p>The source that is loaded to create the texture</p>
+        <p>This will let the renderer know if the texture is valid. If its not then it cannot be rendered.</p>
 
     </div>
 
@@ -1922,16 +2664,16 @@ If the image is not in the base texture cache it will be created and loaded</p>
 
     <div class="meta">
         
+            <p>Inherited from
+            <a href="../classes/Texture.html#property_width">
+                Texture
+            </a>
             
-                
-                <p>
-                
-                Defined in
-                
+            but overwritten in
             
         
         
-        <a href="../files/src_pixi_textures_BaseTexture.js.html#l28"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:28</code></a>
+        <a href="../files/src_pixi_textures_RenderTexture.js.html#l37"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:37</code></a>
         
         </p>
 
@@ -1941,57 +2683,10 @@ If the image is not in the base texture cache it will be created and loaded</p>
     </div>
 
     <div class="description">
-        <p>[read-only] The width of the base texture set when the image has loaded</p>
+        <p>The with of the render texture</p>
 
     </div>
 
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_" class="property item">
-    <h3 class="name"><code></code></h3>
-    <span class="type">Boolean</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_pixi_textures_BaseTexture.js.html#l74"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:74</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Controls if RGB channels should be premultiplied by Alpha  (WebGL only)</p>
-
-    </div>
-
-    
-        <p><strong>Default:</strong> TRUE</p>
     
 
     
