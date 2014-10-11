@@ -1,6 +1,23 @@
 Pixi Renderer 
 =============
 
+## IMPORTANT - DEV BRANCH API CHANGES ##
+
+A heads up for anyone using the dev branch of pixi.js as we have changed a couple of bits that you need to be aware of. Fortunatly there are only 2 and both are small.
+
+Creating a renderer no accepts an options parameter that you can add specific settings too:
+``` 
+// an optional object that contains the settings for the renderer
+var options = {
+    view:myCanvas,
+    resolution:1
+};
+
+var renderer = new PIXI.WebGLRenderer(800, 600, options) 
+```
+Check out the docs for more info!
+
+
 ![pixi.js logo](http://www.goodboydigital.com/pixijs/logo_small.png) 
 
 [<img src="http://www.pixijs.com/wp-content/uploads/2013/05/headerPanel_projects-898x342.jpg">](http://www.pixijs.com/projects)
