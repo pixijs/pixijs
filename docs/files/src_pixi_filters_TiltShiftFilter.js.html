@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/pixi/renderers/webgl/shaders/ComplexPrimitiveShader.js - pixi.js</title>
+    <title>src/pixi/filters/TiltShiftFilter.js - pixi.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -214,123 +214,62 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/pixi/renderers/webgl/shaders/ComplexPrimitiveShader.js</h1>
+                        <h1 class="file-heading">File: src/pixi/filters/TiltShiftFilter.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- * @author Mat Groves http://matgroves.com/ @Doormat23
+ * @author Vico @vicocotea
+ * original filter https://github.com/evanw/glfx.js/blob/master/src/filters/blur/tiltshift.js by Evan Wallace : http://madebyevan.com/
  */
 
 /**
-* @class ComplexPrimitiveShader
-* @constructor
-* @param gl {WebGLContext} the current WebGL drawing context
-*/
-PIXI.ComplexPrimitiveShader = function(gl)
+ * @class TiltShiftFilter
+ * @contructor
+ */
+PIXI.TiltShiftFilter = function()
 {
-    this._UID = PIXI._UID++;
-    /**
-     * @property gl
-     * @type WebGLContext
-     */
-    this.gl = gl;
+    this.tiltShiftXFilter = new PIXI.TiltShiftXFilter();
+    this.tiltShiftYFilter = new PIXI.TiltShiftYFilter();
+    this.tiltShiftXFilter.updateDelta();
+    this.tiltShiftXFilter.updateDelta();
 
-    /**
-    * @property {any} program - The WebGL program.
-    */
-    this.program = null;
-
-    /**
-     * @property fragmentSrc
-     * @type Array
-     */
-    this.fragmentSrc = [
-        &#x27;precision mediump float;&#x27;,
-        
-
-
-        &#x27;varying vec4 vColor;&#x27;,
-
-        &#x27;void main(void) {&#x27;,
-        &#x27;   gl_FragColor = vColor;&#x27;,
-        &#x27;}&#x27;
-    ];
-
-    /**
-     * @property vertexSrc
-     * @type Array
-     */
-    this.vertexSrc  = [
-        &#x27;attribute vec2 aVertexPosition;&#x27;,
-        //&#x27;attribute vec4 aColor;&#x27;,
-        &#x27;uniform mat3 translationMatrix;&#x27;,
-        &#x27;uniform vec2 projectionVector;&#x27;,
-        &#x27;uniform vec2 offsetVector;&#x27;,
-        
-        &#x27;uniform vec3 tint;&#x27;,
-        &#x27;uniform float alpha;&#x27;,
-        &#x27;uniform vec3 color;&#x27;,
-
-        &#x27;varying vec4 vColor;&#x27;,
-
-        &#x27;void main(void) {&#x27;,
-        &#x27;   vec3 v = translationMatrix * vec3(aVertexPosition , 1.0);&#x27;,
-        &#x27;   v -= offsetVector.xyx;&#x27;,
-        &#x27;   gl_Position = vec4( v.x / projectionVector.x -1.0, v.y / -projectionVector.y + 1.0 , 0.0, 1.0);&#x27;,
-        &#x27;   vColor = vec4(color * alpha * tint, alpha);&#x27;,//&quot; * vec4(tint * alpha, alpha);&#x27;,
-        &#x27;}&#x27;
-    ];
-
-    this.init();
+    this.passes = [this.tiltShiftXFilter, this.tiltShiftYFilter];
 };
 
-/**
-* Initialises the shader
-* @method init
-*
-*/
-PIXI.ComplexPrimitiveShader.prototype.init = function()
-{
+Object.defineProperty(PIXI.TiltShiftFilter.prototype, &#x27;blur&#x27;, {
+    get: function() {
+        return this.tiltShiftXFilter.blur;
+    },
+    set: function(value) {
+        this.tiltShiftXFilter.blur = this.tiltShiftYFilter.blur = value;
+    }
+});
 
-    var gl = this.gl;
-
-    var program = PIXI.compileProgram(gl, this.vertexSrc, this.fragmentSrc);
-    gl.useProgram(program);
-
-    // get and store the uniforms for the shader
-    this.projectionVector = gl.getUniformLocation(program, &#x27;projectionVector&#x27;);
-    this.offsetVector = gl.getUniformLocation(program, &#x27;offsetVector&#x27;);
-    this.tintColor = gl.getUniformLocation(program, &#x27;tint&#x27;);
-    this.color = gl.getUniformLocation(program, &#x27;color&#x27;);
-
-
-    // get and store the attributes
-    this.aVertexPosition = gl.getAttribLocation(program, &#x27;aVertexPosition&#x27;);
-   // this.colorAttribute = gl.getAttribLocation(program, &#x27;aColor&#x27;);
-
-    this.attributes = [this.aVertexPosition, this.colorAttribute];
-
-    this.translationMatrix = gl.getUniformLocation(program, &#x27;translationMatrix&#x27;);
-    this.alpha = gl.getUniformLocation(program, &#x27;alpha&#x27;);
-
-    this.program = program;
-};
-
-/**
-* Destroys the shader
-* @method destroy
-*
-*/
-PIXI.ComplexPrimitiveShader.prototype.destroy = function()
-{
-    this.gl.deleteProgram( this.program );
-    this.uniforms = null;
-    this.gl = null;
-
-    this.attribute = null;
-};
-
+Object.defineProperty(PIXI.TiltShiftFilter.prototype, &#x27;gradientBlur&#x27;, {
+    get: function() {
+        return this.tiltShiftXFilter.gradientBlur;
+    },
+    set: function(value) {
+        this.tiltShiftXFilter.gradientBlur = this.tiltShiftYFilter.gradientBlur = value;
+    }
+});
+Object.defineProperty(PIXI.TiltShiftFilter.prototype, &#x27;start&#x27;, {
+    get: function() {
+        return this.tiltShiftXFilter.start;
+    },
+    set: function(value) {
+        this.tiltShiftXFilter.start = this.tiltShiftYFilter.start = value;
+    }
+});
+Object.defineProperty(PIXI.TiltShiftFilter.prototype, &#x27;end&#x27;, {
+    get: function() {
+        return this.tiltShiftXFilter.end;
+    },
+    set: function(value) {
+        this.tiltShiftXFilter.end = this.tiltShiftYFilter.end = value;
+    }
+});
     </pre>
 </div>
 

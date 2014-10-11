@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.6.0</em>
+            <em>API Docs for: 2.0.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -87,6 +87,8 @@
             
                 <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
+                <li><a href="../classes/Event.html">Event</a></li>
+            
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
@@ -109,8 +111,6 @@
             
                 <li><a href="../classes/Matrix.html">Matrix</a></li>
             
-                <li><a href="../classes/Matrix2.html">Matrix2</a></li>
-            
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
             
                 <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
@@ -130,6 +130,8 @@
                 <li><a href="../classes/PrimitiveShader.html">PrimitiveShader</a></li>
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
+            
+                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
             
                 <li><a href="../classes/Rope.html">Rope</a></li>
             
@@ -152,6 +154,8 @@
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
+            
+                <li><a href="../classes/TiltShiftFilter.html">TiltShiftFilter</a></li>
             
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
             
@@ -389,14 +393,14 @@ If loading fails this class will dispatch an &#39;error&#39; event</p>
                     <ul class="index-list methods">
                         
                             <li class="index-item method inherited">
-                                <a href="#method_addEventListener">addEventListener</a>
+                                <a href="#method_emit">emit</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item method inherited">
-                                <a href="#method_dispatchEvent">dispatchEvent</a>
+                                <a href="#method_listeners">listeners</a>
 
                                 
                                 
@@ -404,6 +408,34 @@ If loading fails this class will dispatch an &#39;error&#39; event</p>
                         
                             <li class="index-item method">
                                 <a href="#method_load">load</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_mixin">mixin</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_off">off</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_on">on</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_once">once</a>
 
                                 
                                 
@@ -431,14 +463,7 @@ If loading fails this class will dispatch an &#39;error&#39; event</p>
                             </li>
                         
                             <li class="index-item method inherited">
-                                <a href="#method_removeAllEventListeners">removeAllEventListeners</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method inherited">
-                                <a href="#method_removeEventListener">removeEventListener</a>
+                                <a href="#method_removeAllListeners">removeAllListeners</a>
 
                                 
                                 
@@ -463,13 +488,6 @@ If loading fails this class will dispatch an &#39;error&#39; event</p>
                         
                             <li class="index-item property">
                                 <a href="#property_crossorigin">crossorigin</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property inherited">
-                                <a href="#property_listeners">listeners</a>
 
                                 
                                 
@@ -503,8 +521,8 @@ If loading fails this class will dispatch an &#39;error&#39; event</p>
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_addEventListener" class="method item inherited">
-    <h3 class="name"><code>addEventListener</code></h3>
+                    <div id="method_emit" class="method item inherited">
+    <h3 class="name"><code>emit</code></h3>
 
     
         <div class="args">
@@ -512,13 +530,7 @@ If loading fails this class will dispatch an &#39;error&#39; event</p>
             
                 <li class="arg">
                     
-                        <code>type</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>listener</code>
+                        <code>eventName</code>
                     
                 </li>
             
@@ -526,6 +538,10 @@ If loading fails this class will dispatch an &#39;error&#39; event</p>
         </div>
     
 
+    
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
     
 
     
@@ -544,11 +560,11 @@ If loading fails this class will dispatch an &#39;error&#39; event</p>
         
             
                 <p>Inherited from
-                <a href="../classes/EventTarget.html#method_addEventListener">EventTarget</a>:
+                <a href="../classes/EventTarget.html#method_emit">EventTarget</a>:
             
         
         
-        <a href="../files/src_pixi_utils_EventTarget.js.html#l32"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:32</code></a>
+        <a href="../files/src_pixi_utils_EventTarget.js.html#l54"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:54</code></a>
         
         </p>
 
@@ -559,7 +575,7 @@ If loading fails this class will dispatch an &#39;error&#39; event</p>
     </div>
 
     <div class="description">
-        <p>Adds a listener for a specific event</p>
+        <p>Emit an event to all registered event listeners.</p>
 
     </div>
 
@@ -571,30 +587,14 @@ If loading fails this class will dispatch an &#39;error&#39; event</p>
             
                 <li class="param">
                     
-                        <code class="param-name">type</code>
+                        <code class="param-name">eventName</code>
                         <span class="type">String</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>A string representing the event type to listen for.</p>
-
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">listener</code>
-                        <span class="type">Function</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>The callback function that will be fired when the event occurs</p>
+                        <p>The name of the event.</p>
 
                     </div>
 
@@ -606,13 +606,27 @@ If loading fails this class will dispatch an &#39;error&#39; event</p>
     
 
     
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Boolean</span>:
+                    
+                    <p>Indication if we&#39;ve emitted an event.</p>
+
+                
+            </div>
+        </div>
+    
 
     
 </div>
 
                 
-                    <div id="method_dispatchEvent" class="method item inherited">
-    <h3 class="name"><code>dispatchEvent</code></h3>
+                    <div id="method_listeners" class="method item inherited">
+    <h3 class="name"><code>listeners</code></h3>
 
     
         <div class="args">
@@ -620,7 +634,7 @@ If loading fails this class will dispatch an &#39;error&#39; event</p>
             
                 <li class="arg">
                     
-                        <code>event</code>
+                        <code>eventName</code>
                     
                 </li>
             
@@ -628,6 +642,10 @@ If loading fails this class will dispatch an &#39;error&#39; event</p>
         </div>
     
 
+    
+        <span class="returns-inline">
+            <span class="type">Array</span>
+        </span>
     
 
     
@@ -646,11 +664,11 @@ If loading fails this class will dispatch an &#39;error&#39; event</p>
         
             
                 <p>Inherited from
-                <a href="../classes/EventTarget.html#method_dispatchEvent">EventTarget</a>:
+                <a href="../classes/EventTarget.html#method_listeners">EventTarget</a>:
             
         
         
-        <a href="../files/src_pixi_utils_EventTarget.js.html#l55"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:55</code></a>
+        <a href="../files/src_pixi_utils_EventTarget.js.html#l41"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:41</code></a>
         
         </p>
 
@@ -661,7 +679,7 @@ If loading fails this class will dispatch an &#39;error&#39; event</p>
     </div>
 
     <div class="description">
-        <p>Fires the event, ie pretends that the event has happened</p>
+        <p>Return a list of assigned event listeners.</p>
 
     </div>
 
@@ -673,14 +691,14 @@ If loading fails this class will dispatch an &#39;error&#39; event</p>
             
                 <li class="param">
                     
-                        <code class="param-name">event</code>
-                        <span class="type">Event</span>
+                        <code class="param-name">eventName</code>
+                        <span class="type">String</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>the event object</p>
+                        <p>The events that should be listed.</p>
 
                     </div>
 
@@ -691,6 +709,20 @@ If loading fails this class will dispatch an &#39;error&#39; event</p>
         </div>
     
 
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Array</span>:
+                    
+                    <p>An array of listener functions</p>
+
+                
+            </div>
+        </div>
     
 
     
@@ -729,7 +761,7 @@ If loading fails this class will dispatch an &#39;error&#39; event</p>
             
         
         
-        <a href="../files/src_pixi_loaders_JsonLoader.js.html#l58"><code>src&#x2F;pixi&#x2F;loaders&#x2F;JsonLoader.js:58</code></a>
+        <a href="../files/src_pixi_loaders_JsonLoader.js.html#l57"><code>src&#x2F;pixi&#x2F;loaders&#x2F;JsonLoader.js:57</code></a>
         
         </p>
 
@@ -744,6 +776,416 @@ If loading fails this class will dispatch an &#39;error&#39; event</p>
 
     </div>
 
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_mixin" class="method item inherited">
+    <h3 class="name"><code>mixin</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>object</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/EventTarget.html#method_mixin">EventTarget</a>:
+            
+        
+        
+        <a href="../files/src_pixi_utils_EventTarget.js.html#l34"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:34</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Mixes in the properties of the EventTarget prototype onto another object</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">object</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The obj to mix into</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_off" class="method item inherited">
+    <h3 class="name"><code>off</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>eventName</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>callback</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/EventTarget.html#method_off">EventTarget</a>:
+            
+        
+        
+        <a href="../files/src_pixi_utils_EventTarget.js.html#l143"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:143</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Remove event listeners.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">eventName</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The event we want to remove.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">callback</code>
+                        <span class="type">Function</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The listener that we need to find.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_on" class="method item inherited">
+    <h3 class="name"><code>on</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>eventName</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>callback</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/EventTarget.html#method_on">EventTarget</a>:
+            
+        
+        
+        <a href="../files/src_pixi_utils_EventTarget.js.html#l107"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:107</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Register a new EventListener for the given event.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">eventName</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Name of the event.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">callback</code>
+                        <span class="type">Functon</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>fn Callback function.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_once" class="method item inherited">
+    <h3 class="name"><code>once</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>eventName</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>callback</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/EventTarget.html#method_once">EventTarget</a>:
+            
+        
+        
+        <a href="../files/src_pixi_utils_EventTarget.js.html#l124"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:124</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Add an EventListener that&#39;s only called once.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">eventName</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Name of the event.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">callback</code>
+                        <span class="type">Function</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Callback function.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
     
 
     
@@ -786,7 +1228,7 @@ If loading fails this class will dispatch an &#39;error&#39; event</p>
             
         
         
-        <a href="../files/src_pixi_loaders_JsonLoader.js.html#l193"><code>src&#x2F;pixi&#x2F;loaders&#x2F;JsonLoader.js:193</code></a>
+        <a href="../files/src_pixi_loaders_JsonLoader.js.html#l176"><code>src&#x2F;pixi&#x2F;loaders&#x2F;JsonLoader.js:176</code></a>
         
         </p>
 
@@ -843,7 +1285,7 @@ If loading fails this class will dispatch an &#39;error&#39; event</p>
             
         
         
-        <a href="../files/src_pixi_loaders_JsonLoader.js.html#l108"><code>src&#x2F;pixi&#x2F;loaders&#x2F;JsonLoader.js:108</code></a>
+        <a href="../files/src_pixi_loaders_JsonLoader.js.html#l98"><code>src&#x2F;pixi&#x2F;loaders&#x2F;JsonLoader.js:98</code></a>
         
         </p>
 
@@ -900,7 +1342,7 @@ If loading fails this class will dispatch an &#39;error&#39; event</p>
             
         
         
-        <a href="../files/src_pixi_loaders_JsonLoader.js.html#l179"><code>src&#x2F;pixi&#x2F;loaders&#x2F;JsonLoader.js:179</code></a>
+        <a href="../files/src_pixi_loaders_JsonLoader.js.html#l162"><code>src&#x2F;pixi&#x2F;loaders&#x2F;JsonLoader.js:162</code></a>
         
         </p>
 
@@ -923,8 +1365,8 @@ If loading fails this class will dispatch an &#39;error&#39; event</p>
 </div>
 
                 
-                    <div id="method_removeAllEventListeners" class="method item inherited">
-    <h3 class="name"><code>removeAllEventListeners</code></h3>
+                    <div id="method_removeAllListeners" class="method item inherited">
+    <h3 class="name"><code>removeAllListeners</code></h3>
 
     
         <div class="args">
@@ -932,7 +1374,7 @@ If loading fails this class will dispatch an &#39;error&#39; event</p>
             
                 <li class="arg">
                     
-                        <code>type</code>
+                        <code>eventName</code>
                     
                 </li>
             
@@ -958,11 +1400,11 @@ If loading fails this class will dispatch an &#39;error&#39; event</p>
         
             
                 <p>Inherited from
-                <a href="../classes/EventTarget.html#method_removeAllEventListeners">EventTarget</a>:
+                <a href="../classes/EventTarget.html#method_removeAllListeners">EventTarget</a>:
             
         
         
-        <a href="../files/src_pixi_utils_EventTarget.js.html#l101"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:101</code></a>
+        <a href="../files/src_pixi_utils_EventTarget.js.html#l173"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:173</code></a>
         
         </p>
 
@@ -973,7 +1415,7 @@ If loading fails this class will dispatch an &#39;error&#39; event</p>
     </div>
 
     <div class="description">
-        <p>Removes all the listeners that were active for the specified event type</p>
+        <p>Remove all listeners or only the listeners for the specified event.</p>
 
     </div>
 
@@ -985,122 +1427,14 @@ If loading fails this class will dispatch an &#39;error&#39; event</p>
             
                 <li class="param">
                     
-                        <code class="param-name">type</code>
+                        <code class="param-name">eventName</code>
                         <span class="type">String</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>A string representing the event type which will have all its listeners removed</p>
-
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_removeEventListener" class="method item inherited">
-    <h3 class="name"><code>removeEventListener</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>type</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>listener</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/EventTarget.html#method_removeEventListener">EventTarget</a>:
-            
-        
-        
-        <a href="../files/src_pixi_utils_EventTarget.js.html#l80"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:80</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Removes the specified listener that was assigned to the specified event type</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">type</code>
-                        <span class="type">String</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>A string representing the event type which will have its listener removed</p>
-
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">listener</code>
-                        <span class="type">Function</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>The callback function that was be fired when the event occured</p>
+                        <p>The event you want to remove all listeners for.</p>
 
                     </div>
 
@@ -1148,7 +1482,7 @@ If loading fails this class will dispatch an &#39;error&#39; event</p>
             
         
         
-        <a href="../files/src_pixi_loaders_JsonLoader.js.html#l35"><code>src&#x2F;pixi&#x2F;loaders&#x2F;JsonLoader.js:35</code></a>
+        <a href="../files/src_pixi_loaders_JsonLoader.js.html#l33"><code>src&#x2F;pixi&#x2F;loaders&#x2F;JsonLoader.js:33</code></a>
         
         </p>
 
@@ -1193,7 +1527,7 @@ If loading fails this class will dispatch an &#39;error&#39; event</p>
             
         
         
-        <a href="../files/src_pixi_loaders_JsonLoader.js.html#l27"><code>src&#x2F;pixi&#x2F;loaders&#x2F;JsonLoader.js:27</code></a>
+        <a href="../files/src_pixi_loaders_JsonLoader.js.html#l25"><code>src&#x2F;pixi&#x2F;loaders&#x2F;JsonLoader.js:25</code></a>
         
         </p>
 
@@ -1204,48 +1538,6 @@ If loading fails this class will dispatch an &#39;error&#39; event</p>
 
     <div class="description">
         <p>Whether the requests should be treated as cross origin</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_listeners" class="property item inherited">
-    <h3 class="name"><code>listeners</code></h3>
-    <span class="type">Object</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/EventTarget.html#property_listeners">EventTarget</a>:
-            
-        
-        
-        <a href="../files/src_pixi_utils_EventTarget.js.html#l24"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:24</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Holds all the listeners</p>
 
     </div>
 
@@ -1280,7 +1572,7 @@ If loading fails this class will dispatch an &#39;error&#39; event</p>
             
         
         
-        <a href="../files/src_pixi_loaders_JsonLoader.js.html#l44"><code>src&#x2F;pixi&#x2F;loaders&#x2F;JsonLoader.js:44</code></a>
+        <a href="../files/src_pixi_loaders_JsonLoader.js.html#l42"><code>src&#x2F;pixi&#x2F;loaders&#x2F;JsonLoader.js:42</code></a>
         
         </p>
 
@@ -1325,7 +1617,7 @@ If loading fails this class will dispatch an &#39;error&#39; event</p>
             
         
         
-        <a href="../files/src_pixi_loaders_JsonLoader.js.html#l19"><code>src&#x2F;pixi&#x2F;loaders&#x2F;JsonLoader.js:19</code></a>
+        <a href="../files/src_pixi_loaders_JsonLoader.js.html#l17"><code>src&#x2F;pixi&#x2F;loaders&#x2F;JsonLoader.js:17</code></a>
         
         </p>
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/pixi/renderers/webgl/shaders/ComplexPrimitiveShader.js - pixi.js</title>
+    <title>src/pixi/filters/AsciiFilter.js - pixi.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -214,123 +214,83 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/pixi/renderers/webgl/shaders/ComplexPrimitiveShader.js</h1>
+                        <h1 class="file-heading">File: src/pixi/filters/AsciiFilter.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- * @author Mat Groves http://matgroves.com/ @Doormat23
+ * @author Vico @vicocotea
+ * original shader : https://www.shadertoy.com/view/lssGDj by @movAX13h
  */
 
-/**
-* @class ComplexPrimitiveShader
-* @constructor
-* @param gl {WebGLContext} the current WebGL drawing context
-*/
-PIXI.ComplexPrimitiveShader = function(gl)
+PIXI.AsciiFilter = function()
 {
-    this._UID = PIXI._UID++;
-    /**
-     * @property gl
-     * @type WebGLContext
-     */
-    this.gl = gl;
+    PIXI.AbstractFilter.call( this );
 
-    /**
-    * @property {any} program - The WebGL program.
-    */
-    this.program = null;
+    this.passes = [this];
 
-    /**
-     * @property fragmentSrc
-     * @type Array
-     */
+    // set the uniforms
+    this.uniforms = {
+        dimensions: {type: &#x27;4fv&#x27;, value:new Float32Array([10000, 100, 10, 10])},
+        pixelSize: {type: &#x27;1f&#x27;, value:8}
+    };
+
     this.fragmentSrc = [
+        
         &#x27;precision mediump float;&#x27;,
-        
+        &#x27;uniform vec4 dimensions;&#x27;,
+        &#x27;uniform float pixelSize;&#x27;,
+        &#x27;uniform sampler2D uSampler;&#x27;,
 
+        &#x27;float character(float n, vec2 p)&#x27;,
+        &#x27;{&#x27;,
+        &#x27;    p = floor(p*vec2(4.0, -4.0) + 2.5);&#x27;,
+        &#x27;    if (clamp(p.x, 0.0, 4.0) == p.x &amp;&amp; clamp(p.y, 0.0, 4.0) == p.y)&#x27;,
+        &#x27;    {&#x27;,
+        &#x27;        if (int(mod(n/exp2(p.x + 5.0*p.y), 2.0)) == 1) return 1.0;&#x27;,
+        &#x27;    }&#x27;,
+        &#x27;    return 0.0;&#x27;,
+        &#x27;}&#x27;,
 
-        &#x27;varying vec4 vColor;&#x27;,
-
-        &#x27;void main(void) {&#x27;,
-        &#x27;   gl_FragColor = vColor;&#x27;,
+        &#x27;void main()&#x27;,
+        &#x27;{&#x27;,
+        &#x27;    vec2 uv = gl_FragCoord.xy;&#x27;,
+        &#x27;    vec3 col = texture2D(uSampler, floor( uv / pixelSize ) * pixelSize / dimensions.xy).rgb;&#x27;,
+            
+        &#x27;    #ifdef HAS_GREENSCREEN&#x27;,
+        &#x27;    float gray = (col.r + col.b)/2.0;&#x27;, 
+        &#x27;    #else&#x27;,
+        &#x27;    float gray = (col.r + col.g + col.b)/3.0;&#x27;,
+        &#x27;    #endif&#x27;,
+  
+        &#x27;    float n =  65536.0;             // .&#x27;,
+        &#x27;    if (gray &gt; 0.2) n = 65600.0;    // :&#x27;,
+        &#x27;    if (gray &gt; 0.3) n = 332772.0;   // *&#x27;,
+        &#x27;    if (gray &gt; 0.4) n = 15255086.0; // o&#x27;,
+        &#x27;    if (gray &gt; 0.5) n = 23385164.0; // &amp;&#x27;,
+        &#x27;    if (gray &gt; 0.6) n = 15252014.0; // 8&#x27;,
+        &#x27;    if (gray &gt; 0.7) n = 13199452.0; // @&#x27;,
+        &#x27;    if (gray &gt; 0.8) n = 11512810.0; // #&#x27;,
+            
+        &#x27;    vec2 p = mod( uv / ( pixelSize * 0.5 ), 2.0) - vec2(1.0);&#x27;,
+        &#x27;    col = col * character(n, p);&#x27;,
+            
+        &#x27;    gl_FragColor = vec4(col, 1.0);&#x27;,
         &#x27;}&#x27;
     ];
-
-    /**
-     * @property vertexSrc
-     * @type Array
-     */
-    this.vertexSrc  = [
-        &#x27;attribute vec2 aVertexPosition;&#x27;,
-        //&#x27;attribute vec4 aColor;&#x27;,
-        &#x27;uniform mat3 translationMatrix;&#x27;,
-        &#x27;uniform vec2 projectionVector;&#x27;,
-        &#x27;uniform vec2 offsetVector;&#x27;,
-        
-        &#x27;uniform vec3 tint;&#x27;,
-        &#x27;uniform float alpha;&#x27;,
-        &#x27;uniform vec3 color;&#x27;,
-
-        &#x27;varying vec4 vColor;&#x27;,
-
-        &#x27;void main(void) {&#x27;,
-        &#x27;   vec3 v = translationMatrix * vec3(aVertexPosition , 1.0);&#x27;,
-        &#x27;   v -= offsetVector.xyx;&#x27;,
-        &#x27;   gl_Position = vec4( v.x / projectionVector.x -1.0, v.y / -projectionVector.y + 1.0 , 0.0, 1.0);&#x27;,
-        &#x27;   vColor = vec4(color * alpha * tint, alpha);&#x27;,//&quot; * vec4(tint * alpha, alpha);&#x27;,
-        &#x27;}&#x27;
-    ];
-
-    this.init();
 };
 
-/**
-* Initialises the shader
-* @method init
-*
-*/
-PIXI.ComplexPrimitiveShader.prototype.init = function()
-{
-
-    var gl = this.gl;
-
-    var program = PIXI.compileProgram(gl, this.vertexSrc, this.fragmentSrc);
-    gl.useProgram(program);
-
-    // get and store the uniforms for the shader
-    this.projectionVector = gl.getUniformLocation(program, &#x27;projectionVector&#x27;);
-    this.offsetVector = gl.getUniformLocation(program, &#x27;offsetVector&#x27;);
-    this.tintColor = gl.getUniformLocation(program, &#x27;tint&#x27;);
-    this.color = gl.getUniformLocation(program, &#x27;color&#x27;);
-
-
-    // get and store the attributes
-    this.aVertexPosition = gl.getAttribLocation(program, &#x27;aVertexPosition&#x27;);
-   // this.colorAttribute = gl.getAttribLocation(program, &#x27;aColor&#x27;);
-
-    this.attributes = [this.aVertexPosition, this.colorAttribute];
-
-    this.translationMatrix = gl.getUniformLocation(program, &#x27;translationMatrix&#x27;);
-    this.alpha = gl.getUniformLocation(program, &#x27;alpha&#x27;);
-
-    this.program = program;
-};
-
-/**
-* Destroys the shader
-* @method destroy
-*
-*/
-PIXI.ComplexPrimitiveShader.prototype.destroy = function()
-{
-    this.gl.deleteProgram( this.program );
-    this.uniforms = null;
-    this.gl = null;
-
-    this.attribute = null;
-};
-
+PIXI.AsciiFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
+PIXI.AsciiFilter.prototype.constructor = PIXI.AsciiFilter;
+Object.defineProperty(PIXI.AsciiFilter.prototype, &#x27;size&#x27;, {
+    get: function() {
+        return this.uniforms.pixelSize.value;
+    },
+    set: function(value) {
+        this.dirty = true;
+        this.uniforms.pixelSize.value = value;
+    }
+});
     </pre>
 </div>
 

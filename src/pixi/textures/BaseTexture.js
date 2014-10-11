@@ -3,8 +3,6 @@
  */
 
 PIXI.BaseTextureCache = {};
-PIXI.texturesToUpdate = [];
-PIXI.texturesToDestroy = [];
 
 PIXI.BaseTextureCacheIdGenerator = 0;
 
@@ -87,9 +85,10 @@ PIXI.BaseTexture = function(source, scaleMode)
 
     // used for webGL
     this._glTextures = [];
-
     // used for webGL texture updating...
-    this._dirty = [];
+    // TODO - this needs to be addressed
+    this._dirty = [true, true, true, true];
+
 
     if(!source)return;
 
@@ -98,8 +97,7 @@ PIXI.BaseTexture = function(source, scaleMode)
         this.hasLoaded = true;
         this.width = this.source.naturalWidth || this.source.width;
         this.height = this.source.naturalHeight || this.source.height;
-
-        PIXI.texturesToUpdate.push(this);
+        this.dirty();
     }
     else
     {
@@ -111,10 +109,7 @@ PIXI.BaseTexture = function(source, scaleMode)
             scope.width = scope.source.naturalWidth || scope.source.width;
             scope.height = scope.source.naturalHeight || scope.source.height;
 
-            for (var i = 0; i < scope._glTextures.length; i++)
-            {
-                scope._dirty[i] = true;
-            }
+            scope.dirty();
 
             // add it to somewhere...
             scope.dispatchEvent( { type: 'loaded', content: scope } );
@@ -153,7 +148,20 @@ PIXI.BaseTexture.prototype.destroy = function()
         delete PIXI.BaseTextureCache[this.source._pixiId];
     }
     this.source = null;
-    PIXI.texturesToDestroy.push(this);
+
+    // delete the webGL textures if any.
+    for (var i = this._glTextures.length - 1; i >= 0; i--)
+    {
+        var glTexture = this._glTextures[i];
+        var gl = PIXI.glContexts[i];
+
+        if(gl && glTexture)
+        {
+            gl.deleteTexture(glTexture);
+        }
+    }
+
+    this._glTextures.length = 0;
 };
 
 /**
@@ -167,6 +175,14 @@ PIXI.BaseTexture.prototype.updateSourceImage = function(newSrc)
     this.hasLoaded = false;
     this.source.src = null;
     this.source.src = newSrc;
+};
+
+PIXI.BaseTexture.prototype.dirty = function()
+{
+    for (var i = 0; i < this._glTextures.length; i++)
+    {
+        this._dirty[i] = true;
+    }
 };
 
 /**

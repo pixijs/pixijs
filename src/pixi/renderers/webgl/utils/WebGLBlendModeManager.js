@@ -8,10 +8,14 @@
 * @param gl {WebGLContext} the current WebGL drawing context
 * @private
 */
-PIXI.WebGLBlendModeManager = function(gl)
+PIXI.WebGLBlendModeManager = function()
+{
+    this.currentBlendMode = 99999;
+};
+
+PIXI.WebGLBlendModeManager.prototype.setContext = function(gl)
 {
     this.gl = gl;
-    this.currentBlendMode = 99999;
 };
 
 /**
