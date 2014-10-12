@@ -125,7 +125,7 @@ PIXI.Strip.prototype._renderStrip = function(renderSession)
     gl.uniformMatrix3fv(shader.translationMatrix, false, this.worldTransform.toArray(true));
     gl.uniform2f(shader.projectionVector, projection.x, -projection.y);
     gl.uniform2f(shader.offsetVector, -offset.x, -offset.y);
-    gl.uniform1f(shader.alpha, 1);
+    gl.uniform1f(shader.alpha, this.worldAlpha);
 
     if(!this.dirty)
     {
@@ -143,7 +143,7 @@ PIXI.Strip.prototype._renderStrip = function(renderSession)
         // check if a texture is dirty..
         if(this.texture.baseTexture._dirty[gl.id])
         {
-            this.renderSession.renderer.updateTexture(this.texture.baseTexture);
+            renderSession.renderer.updateTexture(this.texture.baseTexture);
         }
         else
         {
