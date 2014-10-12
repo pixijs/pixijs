@@ -86,6 +86,8 @@ PIXI.Sprite = function(texture)
     }
 
     this.renderable = true;
+
+    this.customShader = null;
 };
 
 // constructor
@@ -285,17 +287,49 @@ PIXI.Sprite.prototype._renderWebGL = function(renderSession)
     }
     else
     {
-        renderSession.spriteBatch.render(this);
-
-        // simple render children!
-        for(i=0,j=this.children.length; i<j; i++)
+        if( this.customShader )
         {
-            this.children[i]._renderWebGL(renderSession);
+            var gl = renderSession.gl;
+            var shader = this.customShader.shaders[gl.id];
+
+            if(!shader)
+            {
+                shader = new PIXI.PixiShader(gl);
+
+                shader.fragmentSrc = this.customShader.fragmentSrc;
+                shader.uniforms = this.customShader.uniforms;
+                shader.init();
+
+                this.customShader.shaders[gl.id] = shader;
+            }
+
+            renderSession.spriteBatch.flush();
+
+            renderSession.spriteBatch.render(this);
+
+
+            // simple render children!
+            for(i=0,j=this.children.length; i<j; i++)
+            {
+                this.children[i]._renderWebGL(renderSession);
+            }
+
+            renderSession.spriteBatch.flush( shader );
+
+           // renderSession.shaderManager.setShader( renderSession.shaderManager.defaultShader );
+
+        }
+        else
+        {
+            renderSession.spriteBatch.render(this);
+
+            // simple render children!
+            for(i=0,j=this.children.length; i<j; i++)
+            {
+                this.children[i]._renderWebGL(renderSession);
+            }
         }
     }
-
-   
-    //TODO check culling  
 };
 
 /**

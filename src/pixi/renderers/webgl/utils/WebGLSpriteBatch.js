@@ -40,6 +40,7 @@ PIXI.WebGLSpriteBatch = function()
     var numIndices = this.size * 6;
 
     //vertex data
+    this.emptyTexture = {_UID:99999};
 
     /**
     * Holds the vertices
@@ -148,7 +149,6 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
     // check texture..
     if(this.currentBatchSize >= this.size)
     {
-        //return;
         this.flush();
         this.currentBaseTexture = texture.baseTexture;
     }
@@ -163,7 +163,6 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
     var tint = sprite.tint;
 
     var verticies = this.vertices;
-
 
     // TODO trim??
     var aX = sprite.anchor.x;
@@ -204,6 +203,7 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
     var d = worldTransform.d / resolution;
     var tx = worldTransform.tx;
     var ty = worldTransform.ty;
+
 
     // xy
     verticies[index++] = a * w1 + c * h1 + tx;
@@ -384,14 +384,21 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
 * @method flush
 * 
 */
-PIXI.WebGLSpriteBatch.prototype.flush = function()
+PIXI.WebGLSpriteBatch.prototype.flush = function(shader)
 {
     // If the batch is length 0 then return as there is nothing to draw
     if (this.currentBatchSize===0)return;
 
     var gl = this.gl;
+    shader = shader || this.shader;
 
-    this.renderSession.shaderManager.setShader(this.renderSession.shaderManager.defaultShader);
+    var change = this.renderSession.shaderManager.setShader(shader);
+    if(shader.firstRun)
+    {
+        shader.firstRun = false;
+        this.dirty = true;
+    } 
+  //  this.dirty = change;
 
     if(this.dirty)
     {
@@ -405,13 +412,13 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
 
         // set the projection
         var projection = this.renderSession.projection;
-        gl.uniform2f(this.shader.projectionVector, projection.x, projection.y);
+        gl.uniform2f(shader.projectionVector, projection.x, projection.y);
 
         // set the pointers
         var stride =  this.vertSize * 4;
-        gl.vertexAttribPointer(this.shader.aVertexPosition, 2, gl.FLOAT, false, stride, 0);
-        gl.vertexAttribPointer(this.shader.aTextureCoord, 2, gl.FLOAT, false, stride, 2 * 4);
-        gl.vertexAttribPointer(this.shader.colorAttribute, 2, gl.FLOAT, false, stride, 4 * 4);
+        gl.vertexAttribPointer(shader.aVertexPosition, 2, gl.FLOAT, false, stride, 0);
+        gl.vertexAttribPointer(shader.aTextureCoord, 2, gl.FLOAT, false, stride, 2 * 4);
+        gl.vertexAttribPointer(shader.colorAttribute, 2, gl.FLOAT, false, stride, 4 * 4);
     }
 
     // upload the verts to the buffer  
@@ -429,7 +436,7 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
     var batchSize = 0;
     var start = 0;
 
-    var currentBaseTexture = null;
+    var currentBaseTexture = this.emptyTexture;
     var currentBlendMode = this.renderSession.blendModeManager.currentBlendMode;
     var blendSwap = false;
 
@@ -439,7 +446,7 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
         nextBlendMode = this.blendModes[i];
         blendSwap = currentBlendMode !== nextBlendMode;
 
-        if(currentBaseTexture !== nextTexture || blendSwap)
+        if(currentBaseTexture._UID !== nextTexture._UID || blendSwap)
         {
             this.renderBatch(currentBaseTexture, batchSize, start);
 
@@ -484,6 +491,7 @@ PIXI.WebGLSpriteBatch.prototype.renderBatch = function(texture, size, startIndex
     // increment the draw count
     this.renderSession.drawCount++;
 };
+
 
 /**
 * 

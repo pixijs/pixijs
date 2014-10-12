@@ -39,7 +39,8 @@ PIXI.PixiShader = function(gl)
     * @property {number} textureCount - A local texture counter for multi-texture shaders.
     */
     this.textureCount = 0;
-
+    this.firstRun = true;
+    
     this.attributes = [];
 
     this.init();
