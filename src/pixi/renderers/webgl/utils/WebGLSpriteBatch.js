@@ -278,8 +278,6 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
 {
     var texture = tilingSprite.tilingTexture;
 
-    if(this.customShader)
-
     // check texture..
     if(this.currentBatchSize >= this.size)
     {
@@ -387,10 +385,8 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
     verticies[index++] = alpha;
     verticies[index++] = tint;
 
-    // increment the batchs
-    this.textures[this.currentBatchSize] = texture.baseTexture;
-    this.blendModes[this.currentBatchSize] = tilingSprite.blendMode;
-    this.currentBatchSize++;
+    // increment the batchsize
+    this.sprites[this.currentBatchSize++] = tilingSprite;
 };
 
 
@@ -406,8 +402,7 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
     if (this.currentBatchSize===0)return;
 
     var gl = this.gl;
-   
-
+    var shader;
 
     if(this.dirty)
     {
@@ -419,7 +414,7 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 
-        var shader =  this.defaultShader.shaders[gl.id];
+        shader =  this.defaultShader.shaders[gl.id];
 
         // this is the same for each shader?
         var stride =  this.vertSize * 4;
@@ -439,7 +434,7 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
         gl.bufferSubData(gl.ARRAY_BUFFER, 0, view);
     }
 
-    var nextTexture, nextBlendMode;
+    var nextTexture, nextBlendMode, nextShader;
     var batchSize = 0;
     var start = 0;
 
@@ -453,10 +448,10 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
 
     for (var i = 0, j = this.currentBatchSize; i < j; i++) {
         
-        var sprite = this.sprites[i];
+        sprite = this.sprites[i];
 
         nextTexture = sprite.texture.baseTexture;
-        nextBlendMode = sprite.blendMode
+        nextBlendMode = sprite.blendMode;
         nextShader = sprite.shader || this.defaultShader;
 
         blendSwap = currentBlendMode !== nextBlendMode;
@@ -480,7 +475,7 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
             {
                 currentShader = nextShader;
                 
-                var shader = currentShader.shaders[gl.id];
+                shader = currentShader.shaders[gl.id];
 
                 if(!shader)
                 {
@@ -494,7 +489,7 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
                 }
 
                 // set shader function???
-                var change = this.renderSession.shaderManager.setShader(shader);
+                this.renderSession.shaderManager.setShader(shader);
 
                 if(shader.dirty)shader.syncUniforms();
               
