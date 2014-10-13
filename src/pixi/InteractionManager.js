@@ -340,7 +340,7 @@ PIXI.InteractionManager.prototype.onMouseMove = function(event)
 {
     if (this.dirty)
     {
-        this.rebuildInteractiveGraph ();
+        this.rebuildInteractiveGraph();
     }
 
     this.mouse.originalEvent = event;
@@ -376,14 +376,14 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
 {
     if (this.dirty)
     {
-        this.rebuildInteractiveGraph ();
+        this.rebuildInteractiveGraph();
     }
 
     this.mouse.originalEvent = event;
 
     if (PIXI.AUTO_PREVENT_DEFAULT)
     {
-        this.mouse.originalEvent.preventDefault ();
+        this.mouse.originalEvent.preventDefault();
     }
 
     // loop through interaction tree...
@@ -437,7 +437,7 @@ PIXI.InteractionManager.prototype.onMouseOut = function(event)
 {
     if (this.dirty)
     {
-        this.rebuildInteractiveGraph ();
+        this.rebuildInteractiveGraph();
     }
 
     this.mouse.originalEvent = event;
@@ -640,7 +640,7 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
 {
     if (this.dirty)
     {
-        this.rebuildInteractiveGraph ();
+        this.rebuildInteractiveGraph();
     }
 
     var rect = this.interactionDOMElement.getBoundingClientRect();
@@ -686,14 +686,14 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
 {
     if (this.dirty)
     {
-        this.rebuildInteractiveGraph ();
+        this.rebuildInteractiveGraph();
     }
 
     var rect = this.interactionDOMElement.getBoundingClientRect();
 
     if (PIXI.AUTO_PREVENT_DEFAULT)
     {
-        event.preventDefault ();
+        event.preventDefault();
     }
 
     var changedTouches = event.changedTouches;
@@ -755,7 +755,7 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 {
     if (this.dirty)
     {
-        this.rebuildInteractiveGraph ();
+        this.rebuildInteractiveGraph();
     }
 
     var rect = this.interactionDOMElement.getBoundingClientRect();
