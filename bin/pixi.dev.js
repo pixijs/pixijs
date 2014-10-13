@@ -8068,6 +8068,7 @@ PIXI.WebGLSpriteBatch.prototype.setContext = function(gl)
     shader.uniforms = {};
     shader.init();
 
+
     this.defaultShader.shaders[gl.id] = shader;
 };
 
@@ -8435,10 +8436,15 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
                 this.renderSession.shaderManager.setShader(shader);
 
                 if(shader.dirty)shader.syncUniforms();
-              
+                
+                // both thease only need to be set if they are changing..
                 // set the projection
                 var projection = this.renderSession.projection;
                 gl.uniform2f(shader.projectionVector, projection.x, projection.y);
+
+                // TODO - this is temprorary!
+                var offsetVector = this.renderSession.offset;
+                gl.uniform2f(shader.offsetVector, offsetVector.x, offsetVector.y);
 
                 // set the pointers
             }
