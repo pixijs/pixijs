@@ -25,7 +25,7 @@ PIXI.WebGLSpriteBatch = function()
      * @property vertSize
      * @type Number
      */
-    this.vertSize = 5;
+    this.vertSize = 6;
 
     /**
      * The number of images in the SpriteBatch before it flushes
@@ -48,14 +48,8 @@ PIXI.WebGLSpriteBatch = function()
     * @property vertices
     * @type Float32Array
     */
-   
-    this.buffer = new ArrayBuffer(numVerts * 32);
+    this.vertices = new Float32Array(numVerts);
 
-    this.vertices = new Float32Array(this.buffer);
-    this.byteBuffer = new Uint8Array(this.buffer);
-    this.byteBuffer32 = new Uint32Array(this.buffer);
-
-    console.log( this.byteBuffer , this.vertices)
     //index data
     /**
      * Holds the indices
@@ -186,11 +180,10 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
     if(!uvs)return;
 
     // get the sprites current alpha
-    var alpha = sprite.worldAlpha * 255;
+    var alpha = sprite.worldAlpha;
     var tint = sprite.tint;
 
     var verticies = this.vertices;
-    var byteBuffer = this.byteBuffer;
 
     // TODO trim??
     var aX = sprite.anchor.x;
@@ -232,16 +225,16 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
     var tx = worldTransform.tx;
     var ty = worldTransform.ty;
 
+
     // xy
     verticies[index++] = a * w1 + c * h1 + tx;
     verticies[index++] = d * h1 + b * w1 + ty;
     // uv
     verticies[index++] = uvs.x0;
     verticies[index++] = uvs.y0;
-
-
-    this.byteBuffer32[index++] = tint;
-    byteBuffer[(index-1) * 4 + 3] = alpha;
+    // color
+    verticies[index++] = alpha;
+    verticies[index++] = tint;
 
     // xy
     verticies[index++] = a * w0 + c * h1 + tx;
@@ -250,8 +243,8 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
     verticies[index++] = uvs.x1;
     verticies[index++] = uvs.y1;
     // color
-    this.byteBuffer32[index++] = tint
-    byteBuffer[(index-1) * 4 + 3] = alpha;
+    verticies[index++] = alpha;
+    verticies[index++] = tint;
 
     // xy
     verticies[index++] = a * w0 + c * h0 + tx;
@@ -260,8 +253,8 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
     verticies[index++] = uvs.x2;
     verticies[index++] = uvs.y2;
     // color
-    this.byteBuffer32[index++] = tint
-    byteBuffer[(index-1) * 4 + 3] = alpha;
+    verticies[index++] = alpha;
+    verticies[index++] = tint;
 
     // xy
     verticies[index++] = a * w1 + c * h0 + tx;
@@ -270,9 +263,9 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
     verticies[index++] = uvs.x3;
     verticies[index++] = uvs.y3;
     // color
-    this.byteBuffer32[index++] = tint
-    byteBuffer[(index-1) * 4 + 3] = alpha;
-
+    verticies[index++] = alpha;
+    verticies[index++] = tint;
+    
     // increment the batchsize
     this.sprites[this.currentBatchSize++] = sprite;
 
@@ -417,11 +410,7 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
 
     var gl = this.gl;
    
-    for (var i = this.byteBuffer.length - 1; i >= 0; i--) {
-     //   this.byteBuffer[i] = 0;
-    };
-// console.log(this.byteBuffer);
-   // console.log(this.vertices);
+
 
     if(this.dirty)
     {
@@ -439,7 +428,7 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
         var stride =  this.vertSize * 4;
         gl.vertexAttribPointer(shader.aVertexPosition, 2, gl.FLOAT, false, stride, 0);
         gl.vertexAttribPointer(shader.aTextureCoord, 2, gl.FLOAT, false, stride, 2 * 4);
-        gl.vertexAttribPointer(shader.colorAttribute, 4, gl.UNSIGNED_BYTE, true, stride, 4 * 4);
+        gl.vertexAttribPointer(shader.colorAttribute, 2, gl.FLOAT, false, stride, 4 * 4);
     }
 
     // upload the verts to the buffer  
@@ -511,7 +500,6 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
                 var change = this.renderSession.shaderManager.setShader(shader);
 
                 if(shader.dirty)shader.syncUniforms();
-
                 // set the projection
                 var projection = this.renderSession.projection;
                 gl.uniform2f(shader.projectionVector, projection.x, projection.y);

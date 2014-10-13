@@ -288,49 +288,14 @@ PIXI.Sprite.prototype._renderWebGL = function(renderSession)
     }
     else
     {
-        if( this.customShader )
+        renderSession.spriteBatch.render(this);
+
+        // simple render children!
+        for(i=0,j=this.children.length; i<j; i++)
         {
-            var gl = renderSession.gl;
-            var shader = this.customShader.shaders[gl.id];
-
-            if(!shader)
-            {
-                shader = new PIXI.PixiShader(gl);
-
-                shader.fragmentSrc = this.customShader.fragmentSrc;
-                shader.uniforms = this.customShader.uniforms;
-                shader.init();
-
-                this.customShader.shaders[gl.id] = shader;
-            }
-
-
-           // renderSession.spriteBatch.flush();
-
-            renderSession.spriteBatch.render(this);
-
-
-            // simple render children!
-            for(i=0,j=this.children.length; i<j; i++)
-            {
-                this.children[i]._renderWebGL(renderSession);
-            }
-
-            renderSession.spriteBatch.flush( shader );
-
-           // renderSession.shaderManager.setShader( renderSession.shaderManager.defaultShader );
-
+            this.children[i]._renderWebGL(renderSession);
         }
-        else
-        {
-            renderSession.spriteBatch.render(this);
-
-            // simple render children!
-            for(i=0,j=this.children.length; i<j; i++)
-            {
-                this.children[i]._renderWebGL(renderSession);
-            }
-        }
+        
     }
 };
 
