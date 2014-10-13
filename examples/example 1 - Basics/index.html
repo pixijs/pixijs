@@ -31,21 +31,25 @@
     // create a new Sprite using the texture
     var bunny = new PIXI.Sprite(texture);
 
-    // center the sprites anchor point
-    bunny.anchor.x = 0.5;
-    bunny.anchor.y = 0.5;
+    var bunny2 = new PIXI.Sprite(texture);
+    bunny2.shader = new PIXI.GrayFilter();
 
+    // center the sprites anchor point
+   // bunny.anchor.x = 0.5;
+   // bunny.anchor.y = 0.5;
+   bunny.alpha = 0.5
     // move the sprite to the center of the screen
     bunny.position.x = 200;
     bunny.position.y = 150;
 
     stage.addChild(bunny);
+   //   stage.addChild(bunny2);
 
     function animate() {
         requestAnimFrame(animate);
 
         // just for fun, let's rotate mr rabbit a little
-        bunny.rotation += 0.1;
+  //      bunny.rotation += 0.1;
 
         // render the stage
         renderer.render(stage);

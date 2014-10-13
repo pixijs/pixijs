@@ -75,6 +75,7 @@ PIXI.Sprite = function(texture)
      */
     this.blendMode = PIXI.blendModes.NORMAL;
 
+//    this.shader = PIXI.
     if(texture.baseTexture.hasLoaded)
     {
         this.onTextureUpdate();
@@ -303,7 +304,8 @@ PIXI.Sprite.prototype._renderWebGL = function(renderSession)
                 this.customShader.shaders[gl.id] = shader;
             }
 
-            renderSession.spriteBatch.flush();
+
+           // renderSession.spriteBatch.flush();
 
             renderSession.spriteBatch.render(this);
 
