@@ -85,7 +85,6 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode, resolution)
     this.baseTexture.width = this.width * this.resolution;
     this.baseTexture.height = this.height * this.resolution;
     this.baseTexture._glTextures = [];
-
     this.baseTexture.resolution = this.resolution;
 
     this.baseTexture.scaleMode = scaleMode || PIXI.scaleModes.DEFAULT;
@@ -103,6 +102,7 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode, resolution)
     if(this.renderer.type === PIXI.WEBGL_RENDERER)
     {
         var gl = this.renderer.gl;
+        this.baseTexture._dirty[gl.id] = false;
 
         this.textureBuffer = new PIXI.FilterTexture(gl, this.width * this.resolution, this.height * this.resolution, this.baseTexture.scaleMode);
         this.baseTexture._glTextures[gl.id] =  this.textureBuffer.texture;
@@ -239,7 +239,7 @@ PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, matrix, clea
 
     var wt = displayObject.worldTransform;
     wt.identity();
-    wt.append(matrix);
+    if(matrix)wt.append(matrix);
 
     // Time to update all the children of the displayObject with the new matrix..    
     var children = displayObject.children;
