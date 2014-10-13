@@ -131,6 +131,8 @@ PIXI.CanvasRenderer = function(width, height, options)
         roundPixels: false
     };
 
+    this.mapBlendModes();
+    
     this.resize(width, height);
 
     if("imageSmoothingEnabled" in this.context)
