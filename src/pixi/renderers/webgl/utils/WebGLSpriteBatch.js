@@ -485,7 +485,7 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
                     shader.uniforms =currentShader.uniforms;
                     shader.init();
 
-                    currentShader.shaders[gl.id] = shader;  
+                    currentShader.shaders[gl.id] = shader;
                 }
 
                 // set shader function???
