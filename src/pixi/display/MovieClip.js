@@ -190,7 +190,7 @@ PIXI.MovieClip.fromFrames = function(frames)
  * A short hand way of creating a movieclip from an array of image ids
  *
  * @static
- * @method fromFrames
+ * @method fromImages
  * @param frames {Array} the array of image ids the movieclip will use as its texture frames
  */
 PIXI.MovieClip.fromImages = function(images)
