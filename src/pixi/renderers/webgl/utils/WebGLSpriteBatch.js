@@ -39,9 +39,6 @@ PIXI.WebGLSpriteBatch = function()
     //the total number of indices in our batch
     var numIndices = this.size * 6;
 
-    //vertex data
-    this.emptyTexture = {_UID:99999};
-
     /**
     * Holds the vertices
     *
@@ -446,9 +443,9 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
     var batchSize = 0;
     var start = 0;
 
-    var currentBaseTexture = this.emptyTexture;
+    var currentBaseTexture = null;
     var currentBlendMode = this.renderSession.blendModeManager.currentBlendMode;
-    var currentShader = this.emptyTexture;
+    var currentShader = null;
 
     var blendSwap = false;
     var shaderSwap = false;
@@ -500,6 +497,7 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
                 var change = this.renderSession.shaderManager.setShader(shader);
 
                 if(shader.dirty)shader.syncUniforms();
+              
                 // set the projection
                 var projection = this.renderSession.projection;
                 gl.uniform2f(shader.projectionVector, projection.x, projection.y);
