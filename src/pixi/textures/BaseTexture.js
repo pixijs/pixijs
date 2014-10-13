@@ -69,7 +69,7 @@ PIXI.BaseTexture = function(source, scaleMode)
     this.source = source;
 
     //TODO will be used for futer pixi 1.5...
-    this.id = PIXI.BaseTextureCacheIdGenerator++;
+    this._UID = PIXI._UID++;
 
     /**
      * Controls if RGB channels should be premultiplied by Alpha  (WebGL only)
