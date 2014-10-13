@@ -64,7 +64,7 @@ PIXI.Sprite = function(texture)
      * @type Number
      * @default 0xFFFFFF
      */
-    this.tint = 0xFFFFFF;// * Math.random();
+    this.tint = 0xFFFFFF;
     
     /**
      * The blend mode to be applied to the sprite
@@ -75,7 +75,16 @@ PIXI.Sprite = function(texture)
      */
     this.blendMode = PIXI.blendModes.NORMAL;
 
-//    this.shader = PIXI.
+
+    /**
+     * The shader that will be used to render the texture to the stage.
+     *
+     * @property shader
+     * @type PIXI.AbstractFilter
+     * @default null
+     */
+    this.shader = null;
+
     if(texture.baseTexture.hasLoaded)
     {
         this.onTextureUpdate();
@@ -88,7 +97,6 @@ PIXI.Sprite = function(texture)
 
     this.renderable = true;
 
-    this.customShader = null;
 };
 
 // constructor
