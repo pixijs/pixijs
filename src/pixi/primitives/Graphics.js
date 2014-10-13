@@ -5,9 +5,7 @@
 
 /**
  * The Graphics class contains a set of methods that you can use to create primitive shapes and lines.
- * It is important to know that with the webGL renderer only simple polygons can be filled at this stage
- * Complex polygons will not be filled. Heres an example of a complex polygon: http://www.goodboydigital.com/wp-content/uploads/2013/06/complexPolygon.png
- *
+ * 
  * @class Graphics
  * @extends DisplayObjectContainer
  * @constructor
