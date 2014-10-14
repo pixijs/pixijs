@@ -1,10 +1,10 @@
 /**
  * @license
- * pixi.js - v1.6.0
+ * pixi.js - v1.6.1
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-07-18
+ * Compiled: 2014-10-14
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -6541,7 +6541,7 @@ PIXI.WebGLRenderer = function(width, height, view, transparent, antialias, prese
     gl.disable(gl.CULL_FACE);
 
     gl.enable(gl.BLEND);
-    gl.colorMask(true, true, true, this.transparent);
+    gl.colorMask(true, true, true, true);
 };
 
 // constructor
@@ -6909,7 +6909,7 @@ PIXI.WebGLRenderer.prototype.handleContextRestored = function()
     gl.disable(gl.CULL_FACE);
 
     gl.enable(gl.BLEND);
-    gl.colorMask(true, true, true, this.transparent);
+    gl.colorMask(true, true, true, true);
 
     this.gl.viewport(0, 0, this.width, this.height);
 
