@@ -190,7 +190,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
     // if rendering a new stage clear the batches..
     if(this.__stage !== stage)
     {
-        if(stage.interactive)stage.interactionManager.removeEvents();
+        if(stage.interactive && this.__stage)stage.interactionManager.removeEvents();
 
         // TODO make this work
         // dont think this is needed any more?
