@@ -33,6 +33,6 @@ function pixi_display_DisplayObject_confirmNew(obj) {
     expect(obj).to.have.deep.property('worldTransform');
     pixi_core_Matrix_confirmNewMatrix(obj.worldTransform);
 
-    expect(obj).to.have.deep.property('color.length', 0);
-    expect(obj).to.have.property('dynamic', true);
+    //expect(obj).to.have.deep.property('color.length', 0);
+    //expect(obj).to.have.property('dynamic', true);
 }

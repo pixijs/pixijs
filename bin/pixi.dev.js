@@ -4,7 +4,7 @@
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-10-13
+ * Compiled: 2014-10-15
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -886,32 +886,28 @@ PIXI.DisplayObject = function()
      * [read-only] Current transform of the object based on world (parent) factors
      *
      * @property worldTransform
-     * @type Mat3
+     * @type Matrix
      * @readOnly
      * @private
      */
     this.worldTransform = new PIXI.Matrix();
 
     /**
-     * [NYI] Unknown
+     * cached sin rotation and cos rotation
      *
-     * @property color
-     * @type Array<>
+     * @property _sr
+     * @type Number
      * @private
      */
-    this.color = [];
+    this._sr = 0;
 
     /**
-     * [NYI] Holds whether or not this object is dynamic, for rendering optimization
+     * cached sin rotation and cos rotation
      *
-     * @property dynamic
-     * @type Boolean
+     * @property _cr
+     * @type Number
      * @private
      */
-    this.dynamic = true;
-
-    // cached sin rotation and cos rotation
-    this._sr = 0;
     this._cr = 1;
 
     /**
@@ -931,6 +927,7 @@ PIXI.DisplayObject = function()
      * @private
      */
     this._bounds = new PIXI.Rectangle(0, 0, 1, 1);
+
     /**
      * The most up-to-date bounds of the object
      *
@@ -939,6 +936,7 @@ PIXI.DisplayObject = function()
      * @private
      */
     this._currentBounds = null;
+
     /**
      * The original, cached mask of the object
      *
@@ -948,7 +946,22 @@ PIXI.DisplayObject = function()
      */
     this._mask = null;
 
+    /**
+     * Cached internal flag.
+     *
+     * @property _cacheAsBitmap
+     * @type Boolean
+     * @private
+     */
     this._cacheAsBitmap = false;
+
+    /**
+     * Cached internal flag.
+     *
+     * @property _cacheIsDirty
+     * @type Boolean
+     * @private
+     */
     this._cacheIsDirty = false;
 
 
@@ -1057,19 +1070,6 @@ PIXI.DisplayObject = function()
 PIXI.DisplayObject.prototype.constructor = PIXI.DisplayObject;
 
 /**
- * [Deprecated] Indicates if the sprite will have touch and mouse interactivity. It is false by default
- * Instead of using this function you can now simply set the interactive property to true or false
- *
- * @method setInteractive
- * @param interactive {Boolean}
- * @deprecated Simply set the `interactive` property directly
- */
-PIXI.DisplayObject.prototype.setInteractive = function(interactive)
-{
-    this.interactive = interactive;
-};
-
-/**
  * Indicates if the sprite will have touch and mouse interactivity. It is false by default
  *
  * @property interactive
@@ -1090,7 +1090,7 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'interactive', {
 });
 
 /**
- * [read-only] Indicates if the sprite is globaly visible.
+ * [read-only] Indicates if the sprite is globally visible.
  *
  * @property worldVisible
  * @type Boolean
@@ -1138,9 +1138,11 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'mask', {
  * @type Array An array of filters
  */
 Object.defineProperty(PIXI.DisplayObject.prototype, 'filters', {
+
     get: function() {
         return this._filters;
     },
+
     set: function(value) {
 
         if(value)
@@ -1165,23 +1167,24 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'filters', {
 });
 
 /**
- * Set weather or not a the display objects is cached as a bitmap.
- * This basically takes a snap shot of the display object as it is at that moment. It can provide a performance benefit for complex static displayObjects
- * To remove filters simply set this property to 'null'
+ * Set if this display object is cached as a bitmap.
+ * This basically takes a snap shot of the display object as it is at that moment. It can provide a performance benefit for complex static displayObjects.
+ * To remove simply set this property to 'null'
  * @property cacheAsBitmap
  * @type Boolean
  */
 Object.defineProperty(PIXI.DisplayObject.prototype, 'cacheAsBitmap', {
+
     get: function() {
         return  this._cacheAsBitmap;
     },
+
     set: function(value) {
 
         if(this._cacheAsBitmap === value)return;
 
         if(value)
         {
-            //this._cacheIsDirty = true;
             this._generateCachedSprite();
         }
         else
@@ -1269,9 +1272,10 @@ PIXI.DisplayObject.prototype.updateTransform = function()
  * Retrieves the bounds of the displayObject as a rectangle object
  *
  * @method getBounds
+ * @param matrix {Matrix}
  * @return {Rectangle} the rectangular bounding area
  */
-PIXI.DisplayObject.prototype.getBounds = function( matrix )
+PIXI.DisplayObject.prototype.getBounds = function(matrix)
 {
     matrix = matrix;//just to get passed js hinting (and preserve inheritance)
     return PIXI.EmptyRectangle;
@@ -1307,6 +1311,7 @@ PIXI.DisplayObject.prototype.setStageReference = function(stage)
  * @method generateTexture
  * @param resolution {Number} The resolution of the texture being generated
  * @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
+ * @param renderer {CanvasRenderer|WebGLRenderer} The renderer used to generate the texture.
  * @return {Texture} a texture of the graphics object
  */
 PIXI.DisplayObject.prototype.generateTexture = function(resolution, scaleMode, renderer)
@@ -1319,6 +1324,11 @@ PIXI.DisplayObject.prototype.generateTexture = function(resolution, scaleMode, r
     return renderTexture;
 };
 
+/**
+ * Generates and updates the cached sprite for this object.
+ *
+ * @method updateCache
+ */
 PIXI.DisplayObject.prototype.updateCache = function()
 {
     this._generateCachedSprite();
@@ -1331,30 +1341,39 @@ PIXI.DisplayObject.prototype.updateCache = function()
  * @param position {Point} The world origin to calculate from
  * @return {Point} A point object representing the position of this object
  */
-PIXI.DisplayObject.prototype.toGlobal = function(pos)
+PIXI.DisplayObject.prototype.toGlobal = function(position)
 {
     this.updateTransform();
-    return this.worldTransform.apply(pos);
+    return this.worldTransform.apply(position);
 };
 
 /**
  * Calculates the local position of the display object relative to another point
  *
- * @method toGlobal
+ * @method toLocal
  * @param position {Point} The world origin to calculate from
  * @param [from] {DisplayObject} The DisplayObject to calculate the global position from
  * @return {Point} A point object representing the position of this object
  */
-PIXI.DisplayObject.prototype.toLocal = function(pos, from)
+PIXI.DisplayObject.prototype.toLocal = function(position, from)
 {
     if (from)
     {
-        pos = from.toGlobal(pos);
+        position = from.toGlobal(position);
     }
+
     this.updateTransform();
-    return this.worldTransform.applyInverse(pos);
+
+    return this.worldTransform.applyInverse(position);
 };
 
+/**
+ * Internal method.
+ *
+ * @method _renderCachedSprite
+ * @param renderSession {Object} The render session
+ * @private
+ */
 PIXI.DisplayObject.prototype._renderCachedSprite = function(renderSession)
 {
     this._cachedSprite.worldAlpha = this.worldAlpha;
@@ -1369,7 +1388,13 @@ PIXI.DisplayObject.prototype._renderCachedSprite = function(renderSession)
     }
 };
 
-PIXI.DisplayObject.prototype._generateCachedSprite = function()//renderSession)
+/**
+ * Internal method.
+ *
+ * @method _generateCachedSprite
+ * @private
+ */
+PIXI.DisplayObject.prototype._generateCachedSprite = function()
 {
     this._cacheAsBitmap = false;
     var bounds = this.getLocalBounds();
@@ -1406,10 +1431,9 @@ PIXI.DisplayObject.prototype._generateCachedSprite = function()//renderSession)
 };
 
 /**
-* Renders the object using the WebGL renderer
+* Destroys the cached sprite.
 *
-* @method _renderWebGL
-* @param renderSession {RenderSession}
+* @method _destroyCachedSprite
 * @private
 */
 PIXI.DisplayObject.prototype._destroyCachedSprite = function()
@@ -1417,13 +1441,18 @@ PIXI.DisplayObject.prototype._destroyCachedSprite = function()
     if(!this._cachedSprite)return;
 
     this._cachedSprite.texture.destroy(true);
-  //  console.log("DESTROY")
-    // let the gc collect the unused sprite
+
     // TODO could be object pooled!
     this._cachedSprite = null;
 };
 
-
+/**
+* Renders the object using the WebGL renderer
+*
+* @method _renderWebGL
+* @param renderSession {RenderSession}
+* @private
+*/
 PIXI.DisplayObject.prototype._renderWebGL = function(renderSession)
 {
     // OVERWRITE;
@@ -1478,12 +1507,9 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'y', {
     }
 });
 
-
-
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
-
 
 /**
  * A DisplayObjectContainer represents a collection of display objects.
@@ -1517,8 +1543,6 @@ PIXI.DisplayObjectContainer.prototype.constructor = PIXI.DisplayObjectContainer;
  * @property width
  * @type Number
  */
-
- 
 Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'width', {
     get: function() {
         return this.scale.x * this.getLocalBounds().width;
@@ -1541,14 +1565,12 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'width', {
     }
 });
 
-
 /**
  * The height of the displayObjectContainer, setting this will actually modify the scale to achieve the value set
  *
  * @property height
  * @type Number
  */
-
 Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'height', {
     get: function() {
         return  this.scale.y * this.getLocalBounds().height;
@@ -1570,12 +1592,12 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'height', {
     }
 });
 
-
 /**
  * Adds a child to the container.
  *
  * @method addChild
  * @param child {DisplayObject} The DisplayObject to add to the container
+ * @return {DisplayObject} The child that was added.
  */
 PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 {
@@ -1588,6 +1610,7 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
  * @method addChildAt
  * @param child {DisplayObject} The child to add
  * @param index {Number} The index to place the child in
+ * @return {DisplayObject} The child that was added.
  */
 PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 {
@@ -1613,12 +1636,11 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 };
 
 /**
- * [NYI] Swaps the depth of 2 displayObjects
+ * Swaps the position of 2 Display Objects within this container.
  *
  * @method swapChildren
  * @param child {DisplayObject}
  * @param child2 {DisplayObject}
- * @private
  */
 PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
 {
@@ -1635,7 +1657,6 @@ PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
 
     this.children[index1] = child2;
     this.children[index2] = child;
-    
 
 };
 
@@ -1679,6 +1700,7 @@ PIXI.DisplayObjectContainer.prototype.setChildIndex = function(child, index)
  *
  * @method getChildAt
  * @param index {Number} The index to get the child from
+ * @return {DisplayObject} The child at the given index, if any.
  */
 PIXI.DisplayObjectContainer.prototype.getChildAt = function(index)
 {
@@ -1695,6 +1717,7 @@ PIXI.DisplayObjectContainer.prototype.getChildAt = function(index)
  *
  * @method removeChild
  * @param child {DisplayObject} The DisplayObject to remove
+ * @return {DisplayObject} The child that was removed.
  */
 PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 {
@@ -1705,10 +1728,11 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 };
 
 /**
- * Removes a child from the specified index position in the child list of the container.
+ * Removes a child from the specified index position.
  *
  * @method removeChildAt
  * @param index {Number} The index to get the child from
+ * @return {DisplayObject} The child that was removed.
  */
 PIXI.DisplayObjectContainer.prototype.removeChildAt = function(index)
 {
@@ -1722,11 +1746,11 @@ PIXI.DisplayObjectContainer.prototype.removeChildAt = function(index)
 };
 
 /**
-* Removes all child instances from the child list of the container.
+* Removes all children from this container that are within the begin and end indexes.
 *
 * @method removeChildren
-* @param beginIndex {Number} The beginning position. Predefined value is 0.
-* @param endIndex {Number} The ending position. Predefined value is children's array length.
+* @param beginIndex {Number} The beginning position. Default value is 0.
+* @param endIndex {Number} The ending position. Default value is size of the container.
 */
 PIXI.DisplayObjectContainer.prototype.removeChildren = function(beginIndex, endIndex)
 {
@@ -1756,7 +1780,7 @@ PIXI.DisplayObjectContainer.prototype.removeChildren = function(beginIndex, endI
 };
 
 /*
- * Updates the container's childrens transform for rendering
+ * Updates the transform on all children of this container for rendering
  *
  * @method updateTransform
  * @private
@@ -1776,10 +1800,10 @@ PIXI.DisplayObjectContainer.prototype.updateTransform = function()
 };
 
 /**
- * Retrieves the bounds of the displayObjectContainer as a rectangle object
+ * Retrieves the bounds of the displayObjectContainer as a rectangle. The bounds calculation takes all visible children into consideration.
  *
  * @method getBounds
- * @return {Rectangle} the rectangular bounding area
+ * @return {Rectangle} The rectangular bounding area
  */
 PIXI.DisplayObjectContainer.prototype.getBounds = function(matrix)
 {
@@ -1842,6 +1866,12 @@ PIXI.DisplayObjectContainer.prototype.getBounds = function(matrix)
     return bounds;
 };
 
+/**
+ * Retrieves the non-global local bounds of the displayObjectContainer as a rectangle. The calculation takes all visible children into consideration.
+ *
+ * @method getLocalBounds
+ * @return {Rectangle} The rectangular bounding area
+ */
 PIXI.DisplayObjectContainer.prototype.getLocalBounds = function()
 {
     var matrixCache = this.worldTransform;
@@ -1861,7 +1891,7 @@ PIXI.DisplayObjectContainer.prototype.getLocalBounds = function()
 };
 
 /**
- * Sets the container's stage reference, the stage this object is connected to
+ * Sets the containers Stage reference. This is the Stage that this object, and all of its children, is connected to.
  *
  * @method setStageReference
  * @param stage {Stage} the stage that the container will have as its current stage reference
@@ -1879,7 +1909,7 @@ PIXI.DisplayObjectContainer.prototype.setStageReference = function(stage)
 };
 
 /**
- * removes the current stage reference of the container
+ * Removes the current stage reference from the container and all of its children.
  *
  * @method removeStageReference
  */
@@ -2015,7 +2045,7 @@ PIXI.Sprite = function(texture)
     /**
      * The anchor sets the origin point of the texture.
      * The default is 0,0 this means the texture's origin is the top left
-     * Setting than anchor to 0.5,0.5 means the textures origin is centred
+     * Setting than anchor to 0.5,0.5 means the textures origin is centered
      * Setting the anchor to 1,1 would mean the textures origin points will be the bottom right corner
      *
      * @property anchor
@@ -2049,9 +2079,8 @@ PIXI.Sprite = function(texture)
      */
     this._height = 0;
 
-
     /**
-     * The tint applied to the sprite. This is a hex value
+     * The tint applied to the sprite. This is a hex value. A value of 0xFFFFFF will remove any tint effect.
      *
      * @property tint
      * @type Number
@@ -2060,7 +2089,7 @@ PIXI.Sprite = function(texture)
     this.tint = 0xFFFFFF;
     
     /**
-     * The blend mode to be applied to the sprite
+     * The blend mode to be applied to the sprite. Set to PIXI.blendModes.NORMAL to remove any blend mode.
      *
      * @property blendMode
      * @type Number
@@ -2068,9 +2097,8 @@ PIXI.Sprite = function(texture)
      */
     this.blendMode = PIXI.blendModes.NORMAL;
 
-
     /**
-     * The shader that will be used to render the texture to the stage.
+     * The shader that will be used to render the texture to the stage. Set to null to remove a current shader.
      *
      * @property shader
      * @type PIXI.AbstractFilter
@@ -2153,12 +2181,11 @@ PIXI.Sprite.prototype.onTextureUpdate = function()
     if(this._width)this.scale.x = this._width / this.texture.frame.width;
     if(this._height)this.scale.y = this._height / this.texture.frame.height;
 
-
     //this.updateFrame = true;
 };
 
 /**
-* Returns the framing rectangle of the sprite as a PIXI.Rectangle object
+* Returns the bounds of the Sprite as a rectangle. The bounds calculation takes the worldTransform into account.
 *
 * @method getBounds
 * @param matrix {Matrix} the transformation matrix of the sprite
@@ -2166,7 +2193,6 @@ PIXI.Sprite.prototype.onTextureUpdate = function()
 */
 PIXI.Sprite.prototype.getBounds = function(matrix)
 {
-
     var width = this.texture.frame.width;
     var height = this.texture.frame.height;
 
@@ -2482,7 +2508,7 @@ PIXI.SpriteBatch = function(texture)
 };
 
 PIXI.SpriteBatch.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
-PIXI.SpriteBatch.constructor = PIXI.SpriteBatch;
+PIXI.SpriteBatch.prototype.constructor = PIXI.SpriteBatch;
 
 /*
  * Initialises the spriteBatch
@@ -2506,9 +2532,9 @@ PIXI.SpriteBatch.prototype.initWebGL = function(gl)
  */
 PIXI.SpriteBatch.prototype.updateTransform = function()
 {
-   // TODO dont need to!
+    // TODO don't need to!
     PIXI.DisplayObject.prototype.updateTransform.call( this );
-  //  PIXI.DisplayObjectContainer.prototype.updateTransform.call( this );
+    //  PIXI.DisplayObjectContainer.prototype.updateTransform.call( this );
 };
 
 /**
@@ -2624,7 +2650,6 @@ PIXI.SpriteBatch.prototype._renderCanvas = function(renderSession)
 //    context.restore();
 };
 
-
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -2714,7 +2739,6 @@ Object.defineProperty( PIXI.MovieClip.prototype, 'totalFrames', {
 		return this.textures.length;
 	}
 });
-
 
 /**
  * Stops the MovieClip
@@ -2817,7 +2841,7 @@ PIXI.MovieClip.fromFrames = function(frames)
  * A short hand way of creating a movieclip from an array of image ids
  *
  * @static
- * @method fromFrames
+ * @method fromImages
  * @param frames {Array} the array of image ids the movieclip will use as its texture frames
  */
 PIXI.MovieClip.fromImages = function(images)
@@ -2831,6 +2855,7 @@ PIXI.MovieClip.fromImages = function(images)
 
     return new PIXI.MovieClip(textures);
 };
+
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
@@ -4406,7 +4431,7 @@ PIXI.Stage = function(backgroundColor)
      * [read-only] Current transform of the object based on world (parent) factors
      *
      * @property worldTransform
-     * @type Mat3
+     * @type Matrix
      * @readOnly
      * @private
      */
@@ -4441,7 +4466,7 @@ PIXI.Stage = function(backgroundColor)
     this.stage = this;
 
     //optimize hit detection a bit
-    this.stage.hitArea = new PIXI.Rectangle(0,0,100000, 100000);
+    this.stage.hitArea = new PIXI.Rectangle(0, 0, 100000, 100000);
 
     this.setBackgroundColor(backgroundColor);
 };
@@ -4504,10 +4529,10 @@ PIXI.Stage.prototype.setBackgroundColor = function(backgroundColor)
 };
 
 /**
- * This will return the point containing global coords of the mouse.
+ * This will return the point containing global coordinates of the mouse.
  *
  * @method getMousePosition
- * @return {Point} The point containing the coords of the global InteractionData position.
+ * @return {Point} A point containing the coordinates of the global InteractionData position.
  */
 PIXI.Stage.prototype.getMousePosition = function()
 {
@@ -9973,6 +9998,9 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 
     this.context.globalAlpha = 1;
 
+    this.renderSession.currentBlendMode = PIXI.blendModes.NORMAL;
+    this.context.globalCompositeOperation = PIXI.blendModesCanvas[PIXI.blendModes.NORMAL];
+
     if (navigator.isCocoonJS && this.view.screencanvas) {
         this.context.fillStyle = "black";
         this.context.clear();
@@ -10402,9 +10430,7 @@ PIXI.CanvasGraphics.renderGraphicsMask = function(graphics, context)
 
 /**
  * The Graphics class contains a set of methods that you can use to create primitive shapes and lines.
- * It is important to know that with the webGL renderer only simple polygons can be filled at this stage
- * Complex polygons will not be filled. Heres an example of a complex polygon: http://www.goodboydigital.com/wp-content/uploads/2013/06/complexPolygon.png
- *
+ * 
  * @class Graphics
  * @extends DisplayObjectContainer
  * @constructor
