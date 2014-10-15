@@ -134,32 +134,28 @@ PIXI.DisplayObject = function()
      * [read-only] Current transform of the object based on world (parent) factors
      *
      * @property worldTransform
-     * @type Mat3
+     * @type Matrix
      * @readOnly
      * @private
      */
     this.worldTransform = new PIXI.Matrix();
 
     /**
-     * [NYI] Unknown
+     * cached sin rotation and cos rotation
      *
-     * @property color
-     * @type Array<>
+     * @property _sr
+     * @type Number
      * @private
      */
-    this.color = [];
+    this._sr = 0;
 
     /**
-     * [NYI] Holds whether or not this object is dynamic, for rendering optimization
+     * cached sin rotation and cos rotation
      *
-     * @property dynamic
-     * @type Boolean
+     * @property _cr
+     * @type Number
      * @private
      */
-    this.dynamic = true;
-
-    // cached sin rotation and cos rotation
-    this._sr = 0;
     this._cr = 1;
 
     /**
@@ -179,6 +175,7 @@ PIXI.DisplayObject = function()
      * @private
      */
     this._bounds = new PIXI.Rectangle(0, 0, 1, 1);
+
     /**
      * The most up-to-date bounds of the object
      *
@@ -187,6 +184,7 @@ PIXI.DisplayObject = function()
      * @private
      */
     this._currentBounds = null;
+
     /**
      * The original, cached mask of the object
      *
@@ -196,7 +194,22 @@ PIXI.DisplayObject = function()
      */
     this._mask = null;
 
+    /**
+     * Cached internal flag.
+     *
+     * @property _cacheAsBitmap
+     * @type Boolean
+     * @private
+     */
     this._cacheAsBitmap = false;
+
+    /**
+     * Cached internal flag.
+     *
+     * @property _cacheIsDirty
+     * @type Boolean
+     * @private
+     */
     this._cacheIsDirty = false;
 
 
@@ -305,19 +318,6 @@ PIXI.DisplayObject = function()
 PIXI.DisplayObject.prototype.constructor = PIXI.DisplayObject;
 
 /**
- * [Deprecated] Indicates if the sprite will have touch and mouse interactivity. It is false by default
- * Instead of using this function you can now simply set the interactive property to true or false
- *
- * @method setInteractive
- * @param interactive {Boolean}
- * @deprecated Simply set the `interactive` property directly
- */
-PIXI.DisplayObject.prototype.setInteractive = function(interactive)
-{
-    this.interactive = interactive;
-};
-
-/**
  * Indicates if the sprite will have touch and mouse interactivity. It is false by default
  *
  * @property interactive
@@ -338,7 +338,7 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'interactive', {
 });
 
 /**
- * [read-only] Indicates if the sprite is globaly visible.
+ * [read-only] Indicates if the sprite is globally visible.
  *
  * @property worldVisible
  * @type Boolean
@@ -386,9 +386,11 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'mask', {
  * @type Array An array of filters
  */
 Object.defineProperty(PIXI.DisplayObject.prototype, 'filters', {
+
     get: function() {
         return this._filters;
     },
+
     set: function(value) {
 
         if(value)
@@ -413,23 +415,24 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'filters', {
 });
 
 /**
- * Set weather or not a the display objects is cached as a bitmap.
- * This basically takes a snap shot of the display object as it is at that moment. It can provide a performance benefit for complex static displayObjects
- * To remove filters simply set this property to 'null'
+ * Set if this display object is cached as a bitmap.
+ * This basically takes a snap shot of the display object as it is at that moment. It can provide a performance benefit for complex static displayObjects.
+ * To remove simply set this property to 'null'
  * @property cacheAsBitmap
  * @type Boolean
  */
 Object.defineProperty(PIXI.DisplayObject.prototype, 'cacheAsBitmap', {
+
     get: function() {
         return  this._cacheAsBitmap;
     },
+
     set: function(value) {
 
         if(this._cacheAsBitmap === value)return;
 
         if(value)
         {
-            //this._cacheIsDirty = true;
             this._generateCachedSprite();
         }
         else
@@ -517,9 +520,10 @@ PIXI.DisplayObject.prototype.updateTransform = function()
  * Retrieves the bounds of the displayObject as a rectangle object
  *
  * @method getBounds
+ * @param matrix {Matrix}
  * @return {Rectangle} the rectangular bounding area
  */
-PIXI.DisplayObject.prototype.getBounds = function( matrix )
+PIXI.DisplayObject.prototype.getBounds = function(matrix)
 {
     matrix = matrix;//just to get passed js hinting (and preserve inheritance)
     return PIXI.EmptyRectangle;
@@ -555,6 +559,7 @@ PIXI.DisplayObject.prototype.setStageReference = function(stage)
  * @method generateTexture
  * @param resolution {Number} The resolution of the texture being generated
  * @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
+ * @param renderer {CanvasRenderer|WebGLRenderer} The renderer used to generate the texture.
  * @return {Texture} a texture of the graphics object
  */
 PIXI.DisplayObject.prototype.generateTexture = function(resolution, scaleMode, renderer)
@@ -567,6 +572,11 @@ PIXI.DisplayObject.prototype.generateTexture = function(resolution, scaleMode, r
     return renderTexture;
 };
 
+/**
+ * Generates and updates the cached sprite for this object.
+ *
+ * @method updateCache
+ */
 PIXI.DisplayObject.prototype.updateCache = function()
 {
     this._generateCachedSprite();
@@ -579,30 +589,39 @@ PIXI.DisplayObject.prototype.updateCache = function()
  * @param position {Point} The world origin to calculate from
  * @return {Point} A point object representing the position of this object
  */
-PIXI.DisplayObject.prototype.toGlobal = function(pos)
+PIXI.DisplayObject.prototype.toGlobal = function(position)
 {
     this.updateTransform();
-    return this.worldTransform.apply(pos);
+    return this.worldTransform.apply(position);
 };
 
 /**
  * Calculates the local position of the display object relative to another point
  *
- * @method toGlobal
+ * @method toLocal
  * @param position {Point} The world origin to calculate from
  * @param [from] {DisplayObject} The DisplayObject to calculate the global position from
  * @return {Point} A point object representing the position of this object
  */
-PIXI.DisplayObject.prototype.toLocal = function(pos, from)
+PIXI.DisplayObject.prototype.toLocal = function(position, from)
 {
     if (from)
     {
-        pos = from.toGlobal(pos);
+        position = from.toGlobal(position);
     }
+
     this.updateTransform();
-    return this.worldTransform.applyInverse(pos);
+
+    return this.worldTransform.applyInverse(position);
 };
 
+/**
+ * Internal method.
+ *
+ * @method _renderCachedSprite
+ * @param renderSession {Object} The render session
+ * @private
+ */
 PIXI.DisplayObject.prototype._renderCachedSprite = function(renderSession)
 {
     this._cachedSprite.worldAlpha = this.worldAlpha;
@@ -617,7 +636,13 @@ PIXI.DisplayObject.prototype._renderCachedSprite = function(renderSession)
     }
 };
 
-PIXI.DisplayObject.prototype._generateCachedSprite = function()//renderSession)
+/**
+ * Internal method.
+ *
+ * @method _generateCachedSprite
+ * @private
+ */
+PIXI.DisplayObject.prototype._generateCachedSprite = function()
 {
     this._cacheAsBitmap = false;
     var bounds = this.getLocalBounds();
@@ -654,10 +679,9 @@ PIXI.DisplayObject.prototype._generateCachedSprite = function()//renderSession)
 };
 
 /**
-* Renders the object using the WebGL renderer
+* Destroys the cached sprite.
 *
-* @method _renderWebGL
-* @param renderSession {RenderSession}
+* @method _destroyCachedSprite
 * @private
 */
 PIXI.DisplayObject.prototype._destroyCachedSprite = function()
@@ -665,13 +689,18 @@ PIXI.DisplayObject.prototype._destroyCachedSprite = function()
     if(!this._cachedSprite)return;
 
     this._cachedSprite.texture.destroy(true);
-  //  console.log("DESTROY")
-    // let the gc collect the unused sprite
+
     // TODO could be object pooled!
     this._cachedSprite = null;
 };
 
-
+/**
+* Renders the object using the WebGL renderer
+*
+* @method _renderWebGL
+* @param renderSession {RenderSession}
+* @private
+*/
 PIXI.DisplayObject.prototype._renderWebGL = function(renderSession)
 {
     // OVERWRITE;
@@ -725,5 +754,3 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'y', {
         this.position.y = value;
     }
 });
-
-

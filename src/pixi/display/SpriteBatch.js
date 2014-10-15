@@ -34,7 +34,7 @@ PIXI.SpriteBatch = function(texture)
 };
 
 PIXI.SpriteBatch.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
-PIXI.SpriteBatch.constructor = PIXI.SpriteBatch;
+PIXI.SpriteBatch.prototype.constructor = PIXI.SpriteBatch;
 
 /*
  * Initialises the spriteBatch
@@ -58,9 +58,9 @@ PIXI.SpriteBatch.prototype.initWebGL = function(gl)
  */
 PIXI.SpriteBatch.prototype.updateTransform = function()
 {
-   // TODO dont need to!
+    // TODO don't need to!
     PIXI.DisplayObject.prototype.updateTransform.call( this );
-  //  PIXI.DisplayObjectContainer.prototype.updateTransform.call( this );
+    //  PIXI.DisplayObjectContainer.prototype.updateTransform.call( this );
 };
 
 /**
@@ -175,4 +175,3 @@ PIXI.SpriteBatch.prototype._renderCanvas = function(renderSession)
 
 //    context.restore();
 };
-

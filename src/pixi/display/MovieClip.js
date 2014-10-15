@@ -88,7 +88,6 @@ Object.defineProperty( PIXI.MovieClip.prototype, 'totalFrames', {
 	}
 });
 
-
 /**
  * Stops the MovieClip
  *
