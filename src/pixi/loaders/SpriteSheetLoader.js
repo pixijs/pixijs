@@ -18,14 +18,9 @@
  * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
  */
 PIXI.SpriteSheetLoader = function (url, crossorigin) {
-    /*
-     * i use texture packer to load the assets..
-     * http://www.codeandweb.com/texturepacker
-     * make sure to set the format as 'JSON'
-     */
 
     /**
-     * The url of the bitmap font data
+     * The url of the atlas data
      *
      * @property url
      * @type String
