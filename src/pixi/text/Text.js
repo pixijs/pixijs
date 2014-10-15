@@ -1,12 +1,11 @@
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
- * - Modified by Tom Slezakowski http://www.tomslezakowski.com @TomSlezakowski (24/03/2014) - Added dropShadowColor.
+ * Modified by Tom Slezakowski http://www.tomslezakowski.com @TomSlezakowski (24/03/2014) - Added dropShadowColor.
  */
 
 /**
- * A Text Object will create a line(s) of text. To split a line you can use '\n' 
- * or add a wordWrap property set to true and and wordWrapWidth property with a value
- * in the style object
+ * A Text Object will create a line or multiple lines of text. To split a line you can use '\n' in your text string,
+ * or add a wordWrap property set to true and and wordWrapWidth property with a value in the style object.
  *
  * @class Text
  * @extends Sprite
@@ -38,19 +37,21 @@ PIXI.Text = function(text, style)
     /**
      * The canvas 2d context that everything is drawn with
      * @property context
-     * @type HTMLCanvasElement 2d Context
+     * @type HTMLCanvasElement
      */
     this.context = this.canvas.getContext('2d');
 
-
+    /**
+     * The resolution of the canvas.
+     * @property resolution
+     * @type Number
+     */
     this.resolution = 1;
-
 
     PIXI.Sprite.call(this, PIXI.Texture.fromCanvas(this.canvas));
 
     this.setText(text);
     this.setStyle(style);
-
 
 };
 
@@ -58,9 +59,8 @@ PIXI.Text = function(text, style)
 PIXI.Text.prototype = Object.create(PIXI.Sprite.prototype);
 PIXI.Text.prototype.constructor = PIXI.Text;
 
-
 /**
- * The width of the sprite, setting this will actually modify the scale to achieve the value set
+ * The width of the Text, setting this will actually modify the scale to achieve the value set
  *
  * @property width
  * @type Number
@@ -107,7 +107,6 @@ Object.defineProperty(PIXI.Text.prototype, 'height', {
     }
 });
 
-
 /**
  * Set the style of the text
  *
@@ -146,16 +145,15 @@ PIXI.Text.prototype.setStyle = function(style)
 };
 
 /**
- * Set the copy for the text object. To split a line you can use '\n'
+ * Set the copy for the text object. To split a line you can use '\n'.
  *
  * @method setText
- * @param {String} text The copy that you would like the text to display
+ * @param text {String} The copy that you would like the text to display
  */
 PIXI.Text.prototype.setText = function(text)
 {
     this.text = text.toString() || ' ';
     this.dirty = true;
-
 };
 
 /**
@@ -212,7 +210,6 @@ PIXI.Text.prototype.updateText = function()
 
     var linePositionX;
     var linePositionY;
-
 
     if(this.style.dropShadow)
     {
@@ -275,7 +272,6 @@ PIXI.Text.prototype.updateText = function()
       //  if(dropShadow)
     }
 
-
     this.updateTexture();
 };
 
@@ -297,7 +293,6 @@ PIXI.Text.prototype.updateTexture = function()
 
     // update the dirty base textures
     this.texture.baseTexture.dirty();
-
 };
 
 /**
@@ -315,18 +310,15 @@ PIXI.Text.prototype._renderWebGL = function(renderSession)
 
         this.updateText();
         this.dirty = false;
-
-       
     }
 
     PIXI.Sprite.prototype._renderWebGL.call(this, renderSession);
 };
 
-
 /**
-* Renders the object using the WebGL renderer
+* Renders the object using the Canvas renderer
 *
-* @method _renderWebGL
+* @method _renderCanvas
 * @param renderSession {RenderSession} 
 * @private
 */
@@ -344,9 +336,9 @@ PIXI.Text.prototype._renderCanvas = function(renderSession)
 };
 
 /*
- * http://stackoverflow.com/users/34441/ellisbben
- * great solution to the problem!
- * returns the height of the given font
+ * Determine the font height. Based on http://stackoverflow.com/users/34441/ellisbben - a great solution to the problem!
+ * Returns the height of the given font.
+ * Warning: This creates DOM elements each time it is called.
  *
  * @method determineFontHeight
  * @param fontStyle {Object}
@@ -425,7 +417,7 @@ PIXI.Text.prototype.wordWrap = function(text)
 };
 
 /**
- * Destroys this text object
+ * Destroys this text object.
  *
  * @method destroy
  * @param destroyBaseTexture {Boolean} whether to destroy the base texture as well
