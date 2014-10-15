@@ -164,6 +164,9 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 
     this.context.globalAlpha = 1;
 
+    this.renderSession.currentBlendMode = PIXI.blendModes.NORMAL;
+    this.context.globalCompositeOperation = PIXI.blendModesCanvas[PIXI.blendModes.NORMAL];
+
     if (navigator.isCocoonJS && this.view.screencanvas) {
         this.context.fillStyle = "black";
         this.context.clear();
