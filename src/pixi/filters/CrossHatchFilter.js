@@ -2,6 +2,13 @@
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
+/**
+ * A Cross Hatch effect filter.
+ * 
+ * @class CrossHatchFilter
+ * @extends AbstractFilter
+ * @constructor
+ */
 PIXI.CrossHatchFilter = function()
 {
     PIXI.AbstractFilter.call( this );
@@ -53,8 +60,15 @@ PIXI.CrossHatchFilter = function()
 };
 
 PIXI.CrossHatchFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
-PIXI.CrossHatchFilter.prototype.constructor = PIXI.BlurYFilter;
+PIXI.CrossHatchFilter.prototype.constructor = PIXI.CrossHatchFilter;
 
+/**
+ * Sets the strength of both the blur.
+ *
+ * @property blur
+ * @type Number the strength of the blur
+ * @default 2
+ */
 Object.defineProperty(PIXI.CrossHatchFilter.prototype, 'blur', {
     get: function() {
         return this.uniforms.blur.value / (1/7000);

@@ -2,6 +2,13 @@
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
+/**
+ * A Smart Blur Filter.
+ * 
+ * @class SmartBlurFilter
+ * @extends AbstractFilter
+ * @constructor
+ */
 PIXI.SmartBlurFilter = function()
 {
     PIXI.AbstractFilter.call( this );
@@ -51,6 +58,13 @@ PIXI.SmartBlurFilter = function()
 PIXI.SmartBlurFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.SmartBlurFilter.prototype.constructor = PIXI.SmartBlurFilter;
 
+/**
+ * The strength of the blur.
+ *
+ * @property blur
+ * @type Number the strength of the blur
+ * @default 2
+ */
 Object.defineProperty(PIXI.SmartBlurFilter.prototype, 'blur', {
     get: function() {
         return this.uniforms.blur.value;

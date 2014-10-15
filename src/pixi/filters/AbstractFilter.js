@@ -3,12 +3,12 @@
  */
 
 /**
- * This is the base class for creating a pixi.js filter. Currently only webGL supports filters.
+ * This is the base class for creating a PIXI filter. Currently only webGL supports filters.
  * If you want to make a custom filter this should be your base class.
  * @class AbstractFilter
  * @constructor
- * @param fragmentSrc
- * @param uniforms
+ * @param fragmentSrc {Array} The fragment source in an array of strings.
+ * @param uniforms {Object} An object containing the uniforms for this filter.
  */
 PIXI.AbstractFilter = function(fragmentSrc, uniforms)
 {
@@ -28,7 +28,16 @@ PIXI.AbstractFilter = function(fragmentSrc, uniforms)
     */
     this.shaders = [];
     
+    /**
+    * @property dirty
+    * @type Boolean
+    */
     this.dirty = true;
+
+    /**
+    * @property padding
+    * @type Number
+    */
     this.padding = 0;
 
     /**
@@ -37,6 +46,7 @@ PIXI.AbstractFilter = function(fragmentSrc, uniforms)
     * @private
     */
     this.uniforms = uniforms || {};
+
     /**
     * @property fragmentSrc
     * @type Array
@@ -45,6 +55,13 @@ PIXI.AbstractFilter = function(fragmentSrc, uniforms)
     this.fragmentSrc = fragmentSrc || [];
 };
 
+PIXI.AbstractFilter.prototype.constructor = PIXI.AbstractFilter;
+
+/**
+ * Syncs the uniforms between the class object and the shaders.
+ *
+ * @method syncUniforms
+ */
 PIXI.AbstractFilter.prototype.syncUniforms = function()
 {
     for(var i=0,j=this.shaders.length; i<j; i++)
@@ -52,6 +69,7 @@ PIXI.AbstractFilter.prototype.syncUniforms = function()
         this.shaders[i].dirty = true;
     }
 };
+
 /*
 PIXI.AbstractFilter.prototype.apply = function(frameBuffer)
 {

@@ -3,11 +3,11 @@
  */
 
 /**
- *
  * The BlurFilter applies a Gaussian blur to an object.
  * The strength of the blur can be set for x- and y-axis separately (always relative to the stage).
  *
  * @class BlurFilter
+ * @extends AbstractFilter
  * @constructor
  */
 PIXI.BlurFilter = function()
@@ -17,6 +17,9 @@ PIXI.BlurFilter = function()
 
     this.passes =[this.blurXFilter, this.blurYFilter];
 };
+
+PIXI.BlurFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
+PIXI.BlurFilter.prototype.constructor = PIXI.BlurFilter;
 
 /**
  * Sets the strength of both the blurX and blurY properties simultaneously
@@ -51,7 +54,7 @@ Object.defineProperty(PIXI.BlurFilter.prototype, 'blurX', {
 });
 
 /**
- * Sets the strength of the blurX property
+ * Sets the strength of the blurY property
  *
  * @property blurY
  * @type Number the strength of the blurY

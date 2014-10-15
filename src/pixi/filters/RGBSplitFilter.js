@@ -2,6 +2,13 @@
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
+/**
+ * An RGB Split Filter.
+ * 
+ * @class RGBSplitFilter
+ * @extends AbstractFilter
+ * @constructor
+ */
 PIXI.RGBSplitFilter = function()
 {
     PIXI.AbstractFilter.call( this );
@@ -38,6 +45,12 @@ PIXI.RGBSplitFilter = function()
 PIXI.RGBSplitFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.RGBSplitFilter.prototype.constructor = PIXI.RGBSplitFilter;
 
+/**
+ * The angle of the split.
+ * 
+ * @property angle
+ * @type Number
+ */
 Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'angle', {
     get: function() {
         return this.uniforms.blur.value / (1/7000);

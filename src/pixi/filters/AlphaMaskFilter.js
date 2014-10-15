@@ -3,13 +3,14 @@
  */
 
 /**
- *
  * The AlphaMaskFilter class uses the pixel values from the specified texture (called the displacement map) to perform a displacement of an object.
  * You can use this filter to apply all manor of crazy warping effects
- * Currently the r property of the texture is used to offset the x and the g propery of the texture is used to offset the y.
+ * Currently the r property of the texture is used to offset the x and the g property of the texture is used to offset the y.
+ * 
  * @class AlphaMaskFilter
+ * @extends AbstractFilter
  * @constructor
- * @param texture {Texture} The texture used for the displacemtent map * must be power of 2 texture at the moment
+ * @param texture {Texture} The texture used for the displacement map * must be power of 2 texture at the moment
  */
 PIXI.AlphaMaskFilter = function(texture)
 {
@@ -67,6 +68,11 @@ PIXI.AlphaMaskFilter = function(texture)
 PIXI.AlphaMaskFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.AlphaMaskFilter.prototype.constructor = PIXI.AlphaMaskFilter;
 
+/**
+ * Sets the map dimensions uniforms when the texture becomes available.
+ *
+ * @method onTextureLoaded
+ */
 PIXI.AlphaMaskFilter.prototype.onTextureLoaded = function()
 {
     this.uniforms.mapDimensions.value.x = this.uniforms.mask.value.width;
@@ -76,7 +82,7 @@ PIXI.AlphaMaskFilter.prototype.onTextureLoaded = function()
 };
 
 /**
- * The texture used for the displacemtent map * must be power of 2 texture at the moment
+ * The texture used for the displacement map. Must be power of 2 sized texture.
  *
  * @property map
  * @type Texture
@@ -89,4 +95,3 @@ Object.defineProperty(PIXI.AlphaMaskFilter.prototype, 'map', {
         this.uniforms.mask.value = value;
     }
 });
-

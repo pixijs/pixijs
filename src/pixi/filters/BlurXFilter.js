@@ -2,6 +2,13 @@
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
+/**
+ * The BlurXFilter applies a horizontal Gaussian blur to an object.
+ *
+ * @class BlurXFilter
+ * @extends AbstractFilter
+ * @constructor
+ */
 PIXI.BlurXFilter = function()
 {
     PIXI.AbstractFilter.call( this );
@@ -41,6 +48,13 @@ PIXI.BlurXFilter = function()
 PIXI.BlurXFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.BlurXFilter.prototype.constructor = PIXI.BlurXFilter;
 
+/**
+ * Sets the strength of both the blur.
+ *
+ * @property blur
+ * @type Number the strength of the blur
+ * @default 2
+ */
 Object.defineProperty(PIXI.BlurXFilter.prototype, 'blur', {
     get: function() {
         return this.uniforms.blur.value / (1/7000);
