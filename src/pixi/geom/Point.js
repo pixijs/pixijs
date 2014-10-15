@@ -40,7 +40,7 @@ PIXI.Point.prototype.clone = function()
 
 /**
  * Sets the point to a new x and y position.
- * If y is ommited, both x and y will be set to x.
+ * If y is omitted, both x and y will be set to x.
  * 
  * @method set
  * @param [x=0] {Number} position of the point on the x axis

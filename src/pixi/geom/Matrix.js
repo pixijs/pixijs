@@ -14,19 +14,61 @@
  */
 PIXI.Matrix = function()
 {
+    /**
+     * @property a
+     * @type Number
+     * @default 1
+     */
     this.a = 1;
+
+    /**
+     * @property b
+     * @type Number
+     * @default 0
+     */
     this.b = 0;
+
+    /**
+     * @property c
+     * @type Number
+     * @default 0
+     */
     this.c = 0;
+
+    /**
+     * @property d
+     * @type Number
+     * @default 1
+     */
     this.d = 1;
+
+    /**
+     * @property tx
+     * @type Number
+     * @default 0
+     */
     this.tx = 0;
+
+    /**
+     * @property ty
+     * @type Number
+     * @default 0
+     */
     this.ty = 0;
 };
 
 /**
- * Creates a pixi matrix object based on the array given as a parameter
+ * Creates a Matrix object based on the given array. The Element to Matrix mapping order is as follows:
+ *
+ * a = array[0]
+ * b = array[1]
+ * c = array[3]
+ * d = array[4]
+ * tx = array[2]
+ * ty = array[5]
  *
  * @method fromArray
- * @param array {Array} The array that the matrix will be filled with
+ * @param array {Array} The array that the matrix will be populated from.
  */
 PIXI.Matrix.prototype.fromArray = function(array)
 {
@@ -39,7 +81,7 @@ PIXI.Matrix.prototype.fromArray = function(array)
 };
 
 /**
- * Creates an array from the current Matrix object
+ * Creates an array from the current Matrix object.
  *
  * @method toArray
  * @param transpose {Boolean} Whether we need to transpose the matrix or not
@@ -79,13 +121,13 @@ PIXI.Matrix.prototype.toArray = function(transpose)
 };
 
 /**
- * Get a new position with the current transormation applied.
+ * Get a new position with the current transformation applied.
  * Can be used to go from a child's coordinate space to the world coordinate space. (e.g. rendering)
  *
  * @method apply
  * @param pos {Point} The origin
  * @param [newPos] {Point} The point that the new position is assigned to (allowed to be same as input)
- * @return {Point} The new point, transformed trough this matrix
+ * @return {Point} The new point, transformed through this matrix
  */
 PIXI.Matrix.prototype.apply = function(pos, newPos)
 {
@@ -98,13 +140,13 @@ PIXI.Matrix.prototype.apply = function(pos, newPos)
 };
 
 /**
- * Get a new position with the inverse of the current transormation applied.
+ * Get a new position with the inverse of the current transformation applied.
  * Can be used to go from the world coordinate space to a child's coordinate space. (e.g. input)
  *
- * @method apply
+ * @method applyInverse
  * @param pos {Point} The origin
  * @param [newPos] {Point} The point that the new position is assigned to (allowed to be same as input)
- * @return {Point} The new point, inverse-transformed trough this matrix
+ * @return {Point} The new point, inverse-transformed through this matrix
  */
 PIXI.Matrix.prototype.applyInverse = function(pos, newPos)
 {
@@ -119,6 +161,7 @@ PIXI.Matrix.prototype.applyInverse = function(pos, newPos)
 
 /**
  * Translates the matrix on the x and y.
+ * 
  * @method translate
  * @param {Number} x
  * @param {Number} y
@@ -134,6 +177,7 @@ PIXI.Matrix.prototype.translate = function(x, y)
 
 /**
  * Applies a scale transformation to the matrix.
+ * 
  * @method scale
  * @param {Number} x The amount to scale horizontally
  * @param {Number} y The amount to scale vertically
@@ -177,14 +221,13 @@ PIXI.Matrix.prototype.rotate = function(angle)
     return this;
 };
 
-
 /**
- * Translates the matrix on the x and y.
- * @method translate
- * @param {Number} x
- * @param {Number} y
+ * Appends the given Matrix to this Matrix.
+ * 
+ * @method append
+ * @param {Matrix} matrix
  * @return {Matrix} This matrix. Good for chaining method calls.
- **/
+ */
 PIXI.Matrix.prototype.append = function(matrix)
 {
     var a1 = this.a;
@@ -203,6 +246,12 @@ PIXI.Matrix.prototype.append = function(matrix)
     return this;
 };
 
+/**
+ * Resets this Matix to an identity (default) matrix.
+ * 
+ * @method identity
+ * @return {Matrix} This matrix. Good for chaining method calls.
+ */
 PIXI.Matrix.prototype.identity = function()
 {
     this.a = 1;
@@ -211,6 +260,8 @@ PIXI.Matrix.prototype.identity = function()
     this.d = 1;
     this.tx = 0;
     this.ty = 0;
+
+    return this;
 };
 
 PIXI.identityMatrix = new PIXI.Matrix();
