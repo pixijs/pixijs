@@ -3,7 +3,7 @@ function pixi_display_DisplayObject_confirmNew(obj) {
     var expect = chai.expect;
 
     expect(obj).to.be.an.instanceof(PIXI.DisplayObject);
-    expect(obj).to.respondTo('setInteractive');
+    //expect(obj).to.respondTo('setInteractive');
     //expect(obj).to.respondTo('addFilter');
     //expect(obj).to.respondTo('removeFilter');
     expect(obj).to.respondTo('updateTransform');
