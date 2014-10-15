@@ -3,6 +3,13 @@
  * original filter: https://github.com/evanw/glfx.js/blob/master/src/filters/adjust/noise.js
  */
 
+/**
+ * A Noise effect filter.
+ * 
+ * @class NoiseFilter
+ * @extends AbstractFilter
+ * @constructor
+ */
 PIXI.NoiseFilter = function()
 {
     PIXI.AbstractFilter.call( this );
@@ -38,6 +45,12 @@ PIXI.NoiseFilter = function()
 
 PIXI.NoiseFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.NoiseFilter.prototype.constructor = PIXI.NoiseFilter;
+
+/**
+ * The amount of noise to apply.
+ * @property noise
+ * @type Number
+*/
 Object.defineProperty(PIXI.NoiseFilter.prototype, 'noise', {
     get: function() {
         return this.uniforms.noise.value;

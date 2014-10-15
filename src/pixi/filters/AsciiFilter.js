@@ -3,6 +3,13 @@
  * original shader : https://www.shadertoy.com/view/lssGDj by @movAX13h
  */
 
+/**
+ * An ASCII filter.
+ * 
+ * @class AsciiFilter
+ * @extends AbstractFilter
+ * @constructor
+ */
 PIXI.AsciiFilter = function()
 {
     PIXI.AbstractFilter.call( this );
@@ -62,6 +69,13 @@ PIXI.AsciiFilter = function()
 
 PIXI.AsciiFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.AsciiFilter.prototype.constructor = PIXI.AsciiFilter;
+
+/**
+ * The pixel size used by the filter.
+ *
+ * @property size
+ * @type Number
+ */
 Object.defineProperty(PIXI.AsciiFilter.prototype, 'size', {
     get: function() {
         return this.uniforms.pixelSize.value;

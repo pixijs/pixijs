@@ -4,13 +4,14 @@
 
 
 /**
- * 
  * The NormalMapFilter class uses the pixel values from the specified texture (called the displacement map) to perform a displacement of an object. 
  * You can use this filter to apply all manor of crazy warping effects
- * Currently the r property of the texture is used offset the x and the g propery of the texture is used to offset the y.
+ * Currently the r property of the texture is used offset the x and the g property of the texture is used to offset the y.
+ * 
  * @class NormalMapFilter
+ * @extends AbstractFilter
  * @constructor
- * @param texture {Texture} The texture used for the displacemtent map * must be power of 2 texture at the moment
+ * @param texture {Texture} The texture used for the displacement map * must be power of 2 texture at the moment
  */
 PIXI.NormalMapFilter = function(texture)
 {
@@ -133,53 +134,24 @@ PIXI.NormalMapFilter = function(texture)
 	
 }
 
-/*
-void main() {
-        //sample color & normals from our textures
-        vec4 color = texture2D(u_texture, v_texCoords.st);
-        vec3 nColor = texture2D(u_normals, v_texCoords.st).rgb;
- 
-        //some bump map programs will need the Y value flipped..
-        nColor.g = yInvert ? 1.0 - nColor.g : nColor.g;
- 
-        //this is for debugging purposes, allowing us to lower the intensity of our bump map
-        vec3 nBase = vec3(0.5, 0.5, 1.0);
-        nColor = mix(nBase, nColor, strength);
- 
-        //normals need to be converted to [-1.0, 1.0] range and normalized
-        vec3 normal = normalize(nColor * 2.0 - 1.0);
- 
-        //here we do a simple distance calculation
-        vec3 deltaPos = vec3( (light.xy - gl_FragCoord.xy) / resolution.xy, light.z );
- 
-        vec3 lightDir = normalize(deltaPos);
-        float lambert = useNormals ? clamp(dot(normal, lightDir), 0.0, 1.0) : 1.0;
-       
-        //now let's get a nice little falloff
-        float d = sqrt(dot(deltaPos, deltaPos));       
-        float att = useShadow ? 1.0 / ( attenuation.x + (attenuation.y*d) + (attenuation.z*d*d) ) : 1.0;
-       
-        vec3 result = (ambientColor * ambientIntensity) + (lightColor.rgb * lambert) * att;
-        result *= color.rgb;
-       
-        gl_FragColor = v_color * vec4(result, color.a);
-}
-*/
 PIXI.NormalMapFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.NormalMapFilter.prototype.constructor = PIXI.NormalMapFilter;
 
+/**
+ * Sets the map dimensions uniforms when the texture becomes available.
+ *
+ * @method onTextureLoaded
+ */
 PIXI.NormalMapFilter.prototype.onTextureLoaded = function()
 {
-	
 	this.uniforms.mapDimensions.value.x = this.uniforms.displacementMap.value.width;
 	this.uniforms.mapDimensions.value.y = this.uniforms.displacementMap.value.height;
 
 	this.uniforms.displacementMap.value.baseTexture.off("loaded", this.boundLoadedFunction)
-
-}
+};
 
 /**
- * The texture used for the displacemtent map * must be power of 2 texture at the moment
+ * The texture used for the displacement map. Must be power of 2 texture.
  *
  * @property map
  * @type Texture

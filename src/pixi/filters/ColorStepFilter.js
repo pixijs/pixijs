@@ -3,9 +3,10 @@
  */
 
 /**
- *
  * This lowers the color depth of your image by the given amount, producing an image with a smaller palette.
+ * 
  * @class ColorStepFilter
+ * @extends AbstractFilter
  * @constructor
  */
 PIXI.ColorStepFilter = function()
@@ -38,9 +39,11 @@ PIXI.ColorStepFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.ColorStepFilter.prototype.constructor = PIXI.ColorStepFilter;
 
 /**
-The number of steps.
-@property step
-*/
+ * The number of steps to reduce the palette by.
+ *
+ * @property step
+ * @type Number
+ */
 Object.defineProperty(PIXI.ColorStepFilter.prototype, 'step', {
     get: function() {
         return this.uniforms.step.value;

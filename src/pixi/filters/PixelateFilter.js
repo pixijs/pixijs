@@ -3,9 +3,10 @@
  */
 
 /**
- *
- * This filter applies a pixelate effect making display objects appear 'blocky'
+ * This filter applies a pixelate effect making display objects appear 'blocky'.
+ * 
  * @class PixelateFilter
+ * @extends AbstractFilter
  * @constructor
  */
 PIXI.PixelateFilter = function()
@@ -45,8 +46,8 @@ PIXI.PixelateFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.PixelateFilter.prototype.constructor = PIXI.PixelateFilter;
 
 /**
- *
- * This a point that describes the size of the blocs. x is the width of the block and y is the the height
+ * This a point that describes the size of the blocks. x is the width of the block and y is the height.
+ * 
  * @property size
  * @type Point
  */
