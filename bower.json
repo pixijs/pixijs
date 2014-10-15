@@ -2,7 +2,7 @@
     "name": "pixi.js",
     "version": "1.6.1",
 
-    "main": "bin/pixi.js",
+    "main": "bin/pixi.dev.js",
 
     "ignore": [
         "**/.*",

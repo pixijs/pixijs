@@ -44,3 +44,17 @@ PIXI.AbstractFilter = function(fragmentSrc, uniforms)
     */
     this.fragmentSrc = fragmentSrc || [];
 };
+
+PIXI.AbstractFilter.prototype.syncUniforms = function()
+{
+    for(var i=0,j=this.shaders.length; i<j; i++)
+    {
+        this.shaders[i].dirty = true;
+    }
+};
+/*
+PIXI.AbstractFilter.prototype.apply = function(frameBuffer)
+{
+    // TODO :)
+};
+*/

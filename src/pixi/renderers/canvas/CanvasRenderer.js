@@ -131,6 +131,8 @@ PIXI.CanvasRenderer = function(width, height, options)
         roundPixels: false
     };
 
+    this.mapBlendModes();
+    
     this.resize(width, height);
 
     if("imageSmoothingEnabled" in this.context)
@@ -166,17 +168,20 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
         this.context.fillStyle = "black";
         this.context.clear();
     }
-
-    if (!this.transparent && this.clearBeforeRender)
+    
+    if (this.clearBeforeRender)
     {
-        this.context.fillStyle = stage.backgroundColorString;
-        this.context.fillRect(0, 0, this.width , this.height);
+        if (this.transparent)
+        {
+            this.context.clearRect(0, 0, this.width, this.height);
+        }
+        else
+        {
+            this.context.fillStyle = stage.backgroundColorString;
+            this.context.fillRect(0, 0, this.width , this.height);
+        }
     }
-    else if (this.transparent && this.clearBeforeRender)
-    {
-        this.context.clearRect(0, 0, this.width, this.height);
-    }
-
+    
     this.renderDisplayObject(stage);
 
     // run interaction!

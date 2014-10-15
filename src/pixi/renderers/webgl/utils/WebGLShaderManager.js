@@ -19,6 +19,8 @@ PIXI.WebGLShaderManager = function()
         this.attribState[i] = false;
     }
 
+    this.stack = [];
+    
     //this.setContext(gl);
     // the final one is used for the rendering strips
 };

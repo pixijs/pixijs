@@ -315,7 +315,7 @@ PIXI.WebGLRenderer.prototype.resize = function(width, height)
  */
 PIXI.WebGLRenderer.prototype.updateTexture = function(texture)
 {
-    if(!texture.hasLoaded)return;
+    if(!texture.hasLoaded )return;
 
     var gl = this.gl;
 
