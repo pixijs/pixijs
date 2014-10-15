@@ -3,16 +3,19 @@
  */
 
 /**
- * The atlas file loader is used to load in Atlas data and parse it
- * When loaded this class will dispatch a 'loaded' event
- * If loading fails this class will dispatch an 'error' event
+ * The atlas file loader is used to load in Texture Atlas data and parse it. When loaded this class will dispatch a 'loaded' event. If loading fails this class will dispatch an 'error' event.
+ *
+ * To generate the data you can use http://www.codeandweb.com/texturepacker and publish in the 'JSON' format.
+ * 
+ * It is highly recommended to use texture atlases (also know as 'sprite sheets') as it allowed sprites to be batched and drawn together for highly increased rendering speed.
+ * Once the data has been loaded the frames are stored in the PIXI texture cache and can be accessed though PIXI.Texture.fromFrameId() and PIXI.Sprite.fromFrameId()
+ * 
  * @class AtlasLoader
  * @uses EventTarget
  * @constructor
- * @param {String} url the url of the JSON file
- * @param {Boolean} crossorigin
+ * @param url {String} The url of the JSON file
+ * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
  */
-
 PIXI.AtlasLoader = function (url, crossorigin) {
     this.url = url;
     this.baseUrl = url.replace(/[^\/]*$/, '');
@@ -41,7 +44,8 @@ PIXI.AtlasLoader.prototype.load = function () {
 };
 
 /**
- * Invoke when JSON file is loaded
+ * Invoked when the Atlas has fully loaded. Parses the JSON and builds the texture frames.
+ * 
  * @method onAtlasLoaded
  * @private
  */
@@ -160,7 +164,8 @@ PIXI.AtlasLoader.prototype.onAtlasLoaded = function () {
 };
 
 /**
- * Invoke when json file has loaded
+ * Invoked when json file has loaded.
+ * 
  * @method onLoaded
  * @private
  */
@@ -175,7 +180,8 @@ PIXI.AtlasLoader.prototype.onLoaded = function () {
 };
 
 /**
- * Invoke when error occured
+ * Invoked when an error occurs.
+ * 
  * @method onError
  * @private
  */

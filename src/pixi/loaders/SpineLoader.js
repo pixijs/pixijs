@@ -70,7 +70,7 @@ PIXI.SpineLoader.prototype.load = function () {
 };
 
 /**
- * Invoke when JSON file is loaded
+ * Invoked when JSON file is loaded.
  *
  * @method onLoaded
  * @private
@@ -79,4 +79,3 @@ PIXI.SpineLoader.prototype.onLoaded = function () {
     this.loaded = true;
     this.emit('loaded', { content: this });
 };
-

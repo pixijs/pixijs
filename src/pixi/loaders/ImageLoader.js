@@ -36,6 +36,7 @@ PIXI.ImageLoader = function(url, crossorigin)
 
 // constructor
 PIXI.ImageLoader.prototype.constructor = PIXI.ImageLoader;
+
 PIXI.EventTarget.mixin(PIXI.ImageLoader.prototype);
 
 /**
@@ -68,7 +69,6 @@ PIXI.ImageLoader.prototype.onLoaded = function()
 
 /**
  * Loads image and split it to uniform sized frames
- *
  *
  * @method loadFramedSpriteSheet
  * @param frameWidth {Number} width of each frame
