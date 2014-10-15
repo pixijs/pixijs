@@ -75,26 +75,40 @@ PIXI.JsonLoader.prototype.load = function () {
         this.ajaxRequest.ontimeout = this.onError.bind(this);
 
         this.ajaxRequest.onprogress = function() {};
-
-    }
-    else if (window.XMLHttpRequest)
-    {
-        this.ajaxRequest = new window.XMLHttpRequest();
+        
+        this.ajaxRequest.onload = this.onJSONLoaded.bind(this);
     }
     else
     {
-        this.ajaxRequest = new window.ActiveXObject('Microsoft.XMLHTTP');
+        if (window.XMLHttpRequest)
+        {
+            this.ajaxRequest = new window.XMLHttpRequest();
+        }
+        else
+        {
+            this.ajaxRequest = new window.ActiveXObject('Microsoft.XMLHTTP');
+        }
+        
+        this.ajaxRequest.onreadystatechange = this.onReadyStateChanged.bind(this);
     }
-
-
-
-    this.ajaxRequest.onload = this.onJSONLoaded.bind(this);
 
     this.ajaxRequest.open('GET',this.url,true);
 
     this.ajaxRequest.send();
 };
 
+/**
+ * Bridge function to be able to use the more reliable onreadystatechange in XMLHttpRequest.
+ *
+ * @method onReadyStateChanged
+ * @private
+ */
+PIXI.JsonLoader.prototype.onReadyStateChanged = function () {
+    if (this.ajaxRequest.readyState === 4 && (this.ajaxRequest.status === 200 || window.location.href.indexOf('http') === -1)) {
+        this.onJSONLoaded();
+    }
+};
+	
 /**
  * Invoke when JSON file is loaded
  *
@@ -147,11 +161,58 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
     }
     else if(this.json.bones)
     {
-        // spine animation
-        var spineJsonParser = new spine.SkeletonJson();
-        var skeletonData = spineJsonParser.readSkeletonData(this.json);
-        PIXI.AnimCache[this.url] = skeletonData;
-        this.onLoaded();
+		/* check if the json was loaded before */
+		if (PIXI.AnimCache[this.url])
+		{
+			this.onLoaded();
+		}
+		else
+		{
+			/* use a bit of hackery to load the atlas file, here we assume that the .json, .atlas and .png files
+			 * that correspond to the spine file are in the same base URL and that the .json and .atlas files
+			 * have the same name
+			*/
+			var atlasPath = this.url.substr(0, this.url.lastIndexOf('.')) + '.atlas';
+			var atlasLoader = new PIXI.JsonLoader(atlasPath, this.crossorigin);
+			// save a copy of the current object for future reference //
+			var originalLoader = this;
+			// before loading the file, replace the "onJSONLoaded" function for our own //
+			atlasLoader.onJSONLoaded = function()
+			{
+				// at this point "this" points at the atlasLoader (JsonLoader) instance //
+				if(!this.ajaxRequest.responseText)
+				{
+					this.onError(); // FIXME: hmm, this is funny because we are not reponding to errors yet
+					return;
+				}
+				// create a new instance of a spine texture loader for this spine object //
+				var textureLoader = new PIXI.SpineTextureLoader(this.url.substring(0, this.url.lastIndexOf('/')));
+				// create a spine atlas using the loaded text and a spine texture loader instance //
+				var spineAtlas = new spine.Atlas(this.ajaxRequest.responseText, textureLoader);
+				// now we use an atlas attachment loader //
+				var attachmentLoader = new spine.AtlasAttachmentLoader(spineAtlas);
+				// spine animation
+				var spineJsonParser = new spine.SkeletonJson(attachmentLoader);
+				var skeletonData = spineJsonParser.readSkeletonData(originalLoader.json);
+				PIXI.AnimCache[originalLoader.url] = skeletonData;
+				// wait for textures to finish loading if needed
+				if (textureLoader.loadingCount > 0)
+				{
+					textureLoader.addEventListener('loadedBaseTexture', function(evt){
+						if (evt.content.content.loadingCount <= 0)
+						{
+							originalLoader.onLoaded();
+						}
+					});
+				}
+				else
+				{
+					originalLoader.onLoaded();
+				}
+			};
+			// start the loading //
+			atlasLoader.load();
+		}
     }
     else
     {
