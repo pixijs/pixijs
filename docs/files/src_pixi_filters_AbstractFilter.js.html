@@ -47,9 +47,13 @@
             
                 <li><a href="../classes/AlphaMaskFilter.html">AlphaMaskFilter</a></li>
             
+                <li><a href="../classes/AsciiFilter.html">AsciiFilter</a></li>
+            
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
                 <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
+                <li><a href="../classes/autoDetectRecommendedRenderer.html">autoDetectRecommendedRenderer</a></li>
             
                 <li><a href="../classes/autoDetectRenderer.html">autoDetectRenderer</a></li>
             
@@ -60,6 +64,10 @@
                 <li><a href="../classes/BitmapText.html">BitmapText</a></li>
             
                 <li><a href="../classes/BlurFilter.html">BlurFilter</a></li>
+            
+                <li><a href="../classes/BlurXFilter.html">BlurXFilter</a></li>
+            
+                <li><a href="../classes/BlurYFilter.html">BlurYFilter</a></li>
             
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
@@ -77,6 +85,10 @@
             
                 <li><a href="../classes/ComplexPrimitiveShader.html">ComplexPrimitiveShader</a></li>
             
+                <li><a href="../classes/ConvolutionFilter.html">ConvolutionFilter</a></li>
+            
+                <li><a href="../classes/CrossHatchFilter.html">CrossHatchFilter</a></li>
+            
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
@@ -91,11 +103,13 @@
             
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
+                <li><a href="../classes/FilterBlock.html">FilterBlock</a></li>
+            
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
             
-                <li><a href="../classes/getRecommendedRenderer.html">getRecommendedRenderer</a></li>
-            
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
+            
+                <li><a href="../classes/GraphicsData.html">GraphicsData</a></li>
             
                 <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
@@ -112,6 +126,8 @@
                 <li><a href="../classes/Matrix.html">Matrix</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
+            
+                <li><a href="../classes/NoiseFilter.html">NoiseFilter</a></li>
             
                 <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
             
@@ -133,9 +149,13 @@
             
                 <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
             
+                <li><a href="../classes/RGBSplitFilter.html">RGBSplitFilter</a></li>
+            
                 <li><a href="../classes/Rope.html">Rope</a></li>
             
                 <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
+            
+                <li><a href="../classes/SmartBlurFilter.html">SmartBlurFilter</a></li>
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
@@ -149,6 +169,8 @@
             
                 <li><a href="../classes/Strip.html">Strip</a></li>
             
+                <li><a href="../classes/StripShader.html">StripShader</a></li>
+            
                 <li><a href="../classes/Text.html">Text</a></li>
             
                 <li><a href="../classes/Texture.html">Texture</a></li>
@@ -157,11 +179,21 @@
             
                 <li><a href="../classes/TiltShiftFilter.html">TiltShiftFilter</a></li>
             
+                <li><a href="../classes/TiltShiftXFilter.html">TiltShiftXFilter</a></li>
+            
+                <li><a href="../classes/TiltShiftYFilter.html">TiltShiftYFilter</a></li>
+            
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
+            
+                <li><a href="../classes/WebGLBlendModeManager.html">WebGLBlendModeManager</a></li>
+            
+                <li><a href="../classes/WebGLFastSpriteBatch.html">WebGLFastSpriteBatch</a></li>
             
                 <li><a href="../classes/WebGLFilterManager.html">WebGLFilterManager</a></li>
             
                 <li><a href="../classes/WebGLGraphics.html">WebGLGraphics</a></li>
+            
+                <li><a href="../classes/WebGLGraphicsData.html">WebGLGraphicsData</a></li>
             
                 <li><a href="../classes/WebGLMaskManager.html">WebGLMaskManager</a></li>
             
@@ -223,12 +255,12 @@
  */
 
 /**
- * This is the base class for creating a pixi.js filter. Currently only webGL supports filters.
+ * This is the base class for creating a PIXI filter. Currently only webGL supports filters.
  * If you want to make a custom filter this should be your base class.
  * @class AbstractFilter
  * @constructor
- * @param fragmentSrc
- * @param uniforms
+ * @param fragmentSrc {Array} The fragment source in an array of strings.
+ * @param uniforms {Object} An object containing the uniforms for this filter.
  */
 PIXI.AbstractFilter = function(fragmentSrc, uniforms)
 {
@@ -248,7 +280,16 @@ PIXI.AbstractFilter = function(fragmentSrc, uniforms)
     */
     this.shaders = [];
     
+    /**
+    * @property dirty
+    * @type Boolean
+    */
     this.dirty = true;
+
+    /**
+    * @property padding
+    * @type Number
+    */
     this.padding = 0;
 
     /**
@@ -257,6 +298,7 @@ PIXI.AbstractFilter = function(fragmentSrc, uniforms)
     * @private
     */
     this.uniforms = uniforms || {};
+
     /**
     * @property fragmentSrc
     * @type Array
@@ -265,6 +307,27 @@ PIXI.AbstractFilter = function(fragmentSrc, uniforms)
     this.fragmentSrc = fragmentSrc || [];
 };
 
+PIXI.AbstractFilter.prototype.constructor = PIXI.AbstractFilter;
+
+/**
+ * Syncs the uniforms between the class object and the shaders.
+ *
+ * @method syncUniforms
+ */
+PIXI.AbstractFilter.prototype.syncUniforms = function()
+{
+    for(var i=0,j=this.shaders.length; i&lt;j; i++)
+    {
+        this.shaders[i].dirty = true;
+    }
+};
+
+/*
+PIXI.AbstractFilter.prototype.apply = function(frameBuffer)
+{
+    // TODO :)
+};
+*/
     </pre>
 </div>
 

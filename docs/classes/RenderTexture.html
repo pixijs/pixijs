@@ -47,9 +47,13 @@
             
                 <li><a href="../classes/AlphaMaskFilter.html">AlphaMaskFilter</a></li>
             
+                <li><a href="../classes/AsciiFilter.html">AsciiFilter</a></li>
+            
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
                 <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
+                <li><a href="../classes/autoDetectRecommendedRenderer.html">autoDetectRecommendedRenderer</a></li>
             
                 <li><a href="../classes/autoDetectRenderer.html">autoDetectRenderer</a></li>
             
@@ -60,6 +64,10 @@
                 <li><a href="../classes/BitmapText.html">BitmapText</a></li>
             
                 <li><a href="../classes/BlurFilter.html">BlurFilter</a></li>
+            
+                <li><a href="../classes/BlurXFilter.html">BlurXFilter</a></li>
+            
+                <li><a href="../classes/BlurYFilter.html">BlurYFilter</a></li>
             
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
@@ -77,6 +85,10 @@
             
                 <li><a href="../classes/ComplexPrimitiveShader.html">ComplexPrimitiveShader</a></li>
             
+                <li><a href="../classes/ConvolutionFilter.html">ConvolutionFilter</a></li>
+            
+                <li><a href="../classes/CrossHatchFilter.html">CrossHatchFilter</a></li>
+            
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
@@ -91,11 +103,13 @@
             
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
+                <li><a href="../classes/FilterBlock.html">FilterBlock</a></li>
+            
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
             
-                <li><a href="../classes/getRecommendedRenderer.html">getRecommendedRenderer</a></li>
-            
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
+            
+                <li><a href="../classes/GraphicsData.html">GraphicsData</a></li>
             
                 <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
@@ -112,6 +126,8 @@
                 <li><a href="../classes/Matrix.html">Matrix</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
+            
+                <li><a href="../classes/NoiseFilter.html">NoiseFilter</a></li>
             
                 <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
             
@@ -133,9 +149,13 @@
             
                 <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
             
+                <li><a href="../classes/RGBSplitFilter.html">RGBSplitFilter</a></li>
+            
                 <li><a href="../classes/Rope.html">Rope</a></li>
             
                 <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
+            
+                <li><a href="../classes/SmartBlurFilter.html">SmartBlurFilter</a></li>
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
@@ -149,6 +169,8 @@
             
                 <li><a href="../classes/Strip.html">Strip</a></li>
             
+                <li><a href="../classes/StripShader.html">StripShader</a></li>
+            
                 <li><a href="../classes/Text.html">Text</a></li>
             
                 <li><a href="../classes/Texture.html">Texture</a></li>
@@ -157,11 +179,21 @@
             
                 <li><a href="../classes/TiltShiftFilter.html">TiltShiftFilter</a></li>
             
+                <li><a href="../classes/TiltShiftXFilter.html">TiltShiftXFilter</a></li>
+            
+                <li><a href="../classes/TiltShiftYFilter.html">TiltShiftYFilter</a></li>
+            
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
+            
+                <li><a href="../classes/WebGLBlendModeManager.html">WebGLBlendModeManager</a></li>
+            
+                <li><a href="../classes/WebGLFastSpriteBatch.html">WebGLFastSpriteBatch</a></li>
             
                 <li><a href="../classes/WebGLFilterManager.html">WebGLFilterManager</a></li>
             
                 <li><a href="../classes/WebGLGraphics.html">WebGLGraphics</a></li>
+            
+                <li><a href="../classes/WebGLGraphicsData.html">WebGLGraphicsData</a></li>
             
                 <li><a href="../classes/WebGLMaskManager.html">WebGLMaskManager</a></li>
             
@@ -242,10 +274,9 @@
 
 
 <div class="box intro">
-    <p>A RenderTexture is a special texture that allows any pixi displayObject to be rendered to it.</p>
-<p><strong>Hint</strong>: All DisplayObjects (exmpl. Sprites) that render on RenderTexture should be preloaded.
-Otherwise black rectangles will be drawn instead.</p>
-<p>RenderTexture takes snapshot of DisplayObject passed to render method. If DisplayObject is passed to render method, position and rotation of it will be ignored. For example:</p>
+    <p>A RenderTexture is a special texture that allows any Pixi display object to be rendered to it.</p>
+<p><strong>Hint</strong>: All DisplayObjects (i.e. Sprites) that render to a RenderTexture should be preloaded otherwise black rectangles will be drawn instead.</p>
+<p>A RenderTexture takes a snapshot of any Display Object given to its render method. The position and rotation of the given Display Objects is ignored. For example:</p>
 <p>   var renderTexture = new PIXI.RenderTexture(800, 600);
    var sprite = PIXI.Sprite.fromImage(&quot;spinObj_01.png&quot;);
    sprite.position.x = 800/2;
@@ -253,7 +284,7 @@ Otherwise black rectangles will be drawn instead.</p>
    sprite.anchor.x = 0.5;
    sprite.anchor.y = 0.5;
    renderTexture.render(sprite);</p>
-<p>Sprite in this case will be rendered to 0,0 position. To render this sprite at center DisplayObjectContainer should be used:</p>
+<p>The Sprite in this case will be rendered to a position of 0,0. To render this sprite at its actual position a DisplayObjectContainer should be used:</p>
 <p>   var doc = new PIXI.DisplayObjectContainer();
    doc.addChild(sprite);
    renderTexture.render(doc);  // Renders to center of renderTexture</p>
@@ -279,6 +310,12 @@ Otherwise black rectangles will be drawn instead.</p>
                 <li class="arg">
                     
                         <code>height</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>renderer</code>
                     
                 </li>
             
@@ -377,6 +414,22 @@ Otherwise black rectangles will be drawn instead.</p>
             
                 <li class="param">
                     
+                        <code class="param-name">renderer</code>
+                        <span class="type"><a href="../classes/CanvasRenderer.html" class="crosslink">CanvasRenderer</a> | <a href="../classes/WebGLRenderer.html" class="crosslink">WebGLRenderer</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The renderer used for this RenderTexture</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
                         <code class="param-name">scaleMode</code>
                         <span class="type">Number</span>
                     
@@ -444,7 +497,7 @@ Otherwise black rectangles will be drawn instead.</p>
                     <ul class="index-list methods extends">
                         
                             <li class="index-item method private inherited">
-                                <a href="#method__updateWebGLuvs">_updateWebGLuvs</a>
+                                <a href="#method__updateUvs">_updateUvs</a>
 
                                 
                                 
@@ -472,7 +525,14 @@ Otherwise black rectangles will be drawn instead.</p>
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_getImage">getImage</a>
+                                <a href="#method_getBase64">getBase64</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_getCanvas">getCanvas</a>
 
                                 
                                 
@@ -614,6 +674,13 @@ Otherwise black rectangles will be drawn instead.</p>
                                 
                             </li>
                         
+                            <li class="index-item property">
+                                <a href="#property_renderer">renderer</a>
+
+                                
+                                
+                            </li>
+                        
                             <li class="index-item property inherited">
                                 <a href="#property_requiresUpdate">requiresUpdate</a>
 
@@ -663,8 +730,8 @@ Otherwise black rectangles will be drawn instead.</p>
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method__updateWebGLuvs" class="method item private inherited">
-    <h3 class="name"><code>_updateWebGLuvs</code></h3>
+                    <div id="method__updateUvs" class="method item private inherited">
+    <h3 class="name"><code>_updateUvs</code></h3>
 
     
         <span class="paren">()</span>
@@ -690,11 +757,11 @@ Otherwise black rectangles will be drawn instead.</p>
         
             
                 <p>Inherited from
-                <a href="../classes/Texture.html#method__updateWebGLuvs">Texture</a>:
+                <a href="../classes/Texture.html#method__updateUvs">Texture</a>:
             
         
         
-        <a href="../files/src_pixi_textures_Texture.js.html#l201"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:201</code></a>
+        <a href="../files/src_pixi_textures_Texture.js.html#l200"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:200</code></a>
         
         </p>
 
@@ -749,7 +816,7 @@ Otherwise black rectangles will be drawn instead.</p>
             
         
         
-        <a href="../files/src_pixi_textures_RenderTexture.js.html#l163"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:163</code></a>
+        <a href="../files/src_pixi_textures_RenderTexture.js.html#l171"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:171</code></a>
         
         </p>
 
@@ -811,7 +878,7 @@ Otherwise black rectangles will be drawn instead.</p>
             
         
         
-        <a href="../files/src_pixi_textures_Texture.js.html#l150"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:150</code></a>
+        <a href="../files/src_pixi_textures_Texture.js.html#l149"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:149</code></a>
         
         </p>
 
@@ -962,13 +1029,17 @@ Otherwise black rectangles will be drawn instead.</p>
 </div>
 
                 
-                    <div id="method_getImage" class="method item">
-    <h3 class="name"><code>getImage</code></h3>
+                    <div id="method_getBase64" class="method item">
+    <h3 class="name"><code>getBase64</code></h3>
 
     
         <span class="paren">()</span>
     
 
+    
+        <span class="returns-inline">
+            <span class="type">String</span>
+        </span>
     
 
     
@@ -994,7 +1065,153 @@ Otherwise black rectangles will be drawn instead.</p>
             
         
         
-        <a href="../files/src_pixi_textures_RenderTexture.js.html#l265"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:265</code></a>
+        <a href="../files/src_pixi_textures_RenderTexture.js.html#l288"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:288</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Will return a a base64 encoded string of this texture. It works by calling RenderTexture.getCanvas and then running toDataURL on that.</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">String</span>:
+                    
+                    <p>A base64 encoded string of the texture.</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_getCanvas" class="method item">
+    <h3 class="name"><code>getCanvas</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">HTMLCanvasElement</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_textures_RenderTexture.js.html#l299"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:299</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Creates a Canvas element, renders this RenderTexture to it and then returns it.</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">HTMLCanvasElement</span>:
+                    
+                    <p>A Canvas element with the texture rendered on.</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_getImage" class="method item">
+    <h3 class="name"><code>getImage</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">HTMLImage</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_textures_RenderTexture.js.html#l275"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:275</code></a>
         
         </p>
 
@@ -1012,60 +1229,17 @@ Otherwise black rectangles will be drawn instead.</p>
     
 
     
+        <div class="returns">
+            <h4>Returns:</h4>
 
-    
-</div>
-
+            <div class="returns-description">
                 
-                    <div id="method_getImage" class="method item">
-    <h3 class="name"><code>getImage</code></h3>
-
-    
-        <span class="paren">()</span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
+                    
+                        <span class="type">HTMLImage</span>:
+                    
                 
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_pixi_textures_RenderTexture.js.html#l277"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:277</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Will return a a base64 string of the texture</p>
-
-    </div>
-
-    
-
+            </div>
+        </div>
     
 
     
@@ -1482,17 +1656,7 @@ Otherwise black rectangles will be drawn instead.</p>
     <h3 class="name"><code>onBaseTextureLoaded</code></h3>
 
     
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>event</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
+        <span class="paren">()</span>
     
 
     
@@ -1534,29 +1698,6 @@ Otherwise black rectangles will be drawn instead.</p>
 
     </div>
 
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">event</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
     
 
     
@@ -1774,7 +1915,13 @@ Otherwise black rectangles will be drawn instead.</p>
             
                 <li class="arg">
                     
-                        <code>clear</code>
+                        <code class="optional">[matrix]</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code class="optional">[clear]</code>
                     
                 </li>
             
@@ -1809,7 +1956,7 @@ Otherwise black rectangles will be drawn instead.</p>
             
         
         
-        <a href="../files/src_pixi_textures_RenderTexture.js.html#l228"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:228</code></a>
+        <a href="../files/src_pixi_textures_RenderTexture.js.html#l237"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:237</code></a>
         
         </p>
 
@@ -1848,8 +1995,26 @@ Otherwise black rectangles will be drawn instead.</p>
             
                 <li class="param">
                     
-                        <code class="param-name">clear</code>
+                        <code class="param-name optional">[matrix]</code>
+                        <span class="type"><a href="../classes/Matrix.html" class="crosslink">Matrix</a></span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Optional matrix to apply to the display object before rendering.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name optional">[clear]</code>
                         <span class="type">Boolean</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
                     
 
                     
@@ -1887,7 +2052,13 @@ Otherwise black rectangles will be drawn instead.</p>
             
                 <li class="arg">
                     
-                        <code>clear</code>
+                        <code class="optional">[matrix]</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code class="optional">[clear]</code>
                     
                 </li>
             
@@ -1922,7 +2093,7 @@ Otherwise black rectangles will be drawn instead.</p>
             
         
         
-        <a href="../files/src_pixi_textures_RenderTexture.js.html#l180"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:180</code></a>
+        <a href="../files/src_pixi_textures_RenderTexture.js.html#l188"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:188</code></a>
         
         </p>
 
@@ -1961,8 +2132,26 @@ Otherwise black rectangles will be drawn instead.</p>
             
                 <li class="param">
                     
-                        <code class="param-name">clear</code>
+                        <code class="param-name optional">[matrix]</code>
+                        <span class="type"><a href="../classes/Matrix.html" class="crosslink">Matrix</a></span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Optional matrix to apply to the display object before rendering.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name optional">[clear]</code>
                         <span class="type">Boolean</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
                     
 
                     
@@ -2039,7 +2228,7 @@ Otherwise black rectangles will be drawn instead.</p>
             
         
         
-        <a href="../files/src_pixi_textures_RenderTexture.js.html#l128"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:128</code></a>
+        <a href="../files/src_pixi_textures_RenderTexture.js.html#l137"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:137</code></a>
         
         </p>
 
@@ -2050,7 +2239,7 @@ Otherwise black rectangles will be drawn instead.</p>
     </div>
 
     <div class="description">
-        <p>Resize the RenderTexture.</p>
+        <p>Resizes the RenderTexture.</p>
 
     </div>
 
@@ -2157,7 +2346,7 @@ Otherwise black rectangles will be drawn instead.</p>
             
         
         
-        <a href="../files/src_pixi_textures_Texture.js.html#l163"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:163</code></a>
+        <a href="../files/src_pixi_textures_Texture.js.html#l162"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:162</code></a>
         
         </p>
 
@@ -2479,6 +2668,51 @@ irrespective of the actual frame size or placement (which can be influenced by t
 </div>
 
                 
+                    <div id="property_renderer" class="property item">
+    <h3 class="name"><code>renderer</code></h3>
+    <span class="type"><a href="../classes/CanvasRenderer.html" class="crosslink">CanvasRenderer</a> | <a href="../classes/WebGLRenderer.html" class="crosslink">WebGLRenderer</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_textures_RenderTexture.js.html#l99"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:99</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The renderer this RenderTexture uses. A RenderTexture can only belong to one renderer at the moment if its webGL.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
                     <div id="property_requiresUpdate" class="property item inherited">
     <h3 class="name"><code>requiresUpdate</code></h3>
     <span class="type">Boolean</span>
@@ -2596,7 +2830,7 @@ irrespective of the actual frame size or placement (which can be influenced by t
     </div>
 
     <div class="description">
-        <p>The trim point</p>
+        <p>The texture trim data.</p>
 
     </div>
 
@@ -2608,7 +2842,7 @@ irrespective of the actual frame size or placement (which can be influenced by t
 </div>
 
                 
-                    <div id="property_valid" class="property item inherited">
+                    <div id="property_valid" class="property item">
     <h3 class="name"><code>valid</code></h3>
     <span class="type">Boolean</span>
 
@@ -2622,13 +2856,16 @@ irrespective of the actual frame size or placement (which can be influenced by t
 
     <div class="meta">
         
+            <p>Inherited from
+            <a href="../classes/Texture.html#property_valid">
+                Texture
+            </a>
             
-                <p>Inherited from
-                <a href="../classes/Texture.html#property_valid">Texture</a>:
+            but overwritten in
             
         
         
-        <a href="../files/src_pixi_textures_Texture.js.html#l67"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:67</code></a>
+        <a href="../files/src_pixi_textures_RenderTexture.js.html#l125"><code>src&#x2F;pixi&#x2F;textures&#x2F;RenderTexture.js:125</code></a>
         
         </p>
 
@@ -2638,8 +2875,7 @@ irrespective of the actual frame size or placement (which can be influenced by t
     </div>
 
     <div class="description">
-        <p>This will let the renderer know if the texture is valid. If its not then it cannot be rendered.</p>
-
+        
     </div>
 
     

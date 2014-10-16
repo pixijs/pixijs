@@ -47,9 +47,13 @@
             
                 <li><a href="../classes/AlphaMaskFilter.html">AlphaMaskFilter</a></li>
             
+                <li><a href="../classes/AsciiFilter.html">AsciiFilter</a></li>
+            
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
                 <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
+                <li><a href="../classes/autoDetectRecommendedRenderer.html">autoDetectRecommendedRenderer</a></li>
             
                 <li><a href="../classes/autoDetectRenderer.html">autoDetectRenderer</a></li>
             
@@ -60,6 +64,10 @@
                 <li><a href="../classes/BitmapText.html">BitmapText</a></li>
             
                 <li><a href="../classes/BlurFilter.html">BlurFilter</a></li>
+            
+                <li><a href="../classes/BlurXFilter.html">BlurXFilter</a></li>
+            
+                <li><a href="../classes/BlurYFilter.html">BlurYFilter</a></li>
             
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
@@ -77,6 +85,10 @@
             
                 <li><a href="../classes/ComplexPrimitiveShader.html">ComplexPrimitiveShader</a></li>
             
+                <li><a href="../classes/ConvolutionFilter.html">ConvolutionFilter</a></li>
+            
+                <li><a href="../classes/CrossHatchFilter.html">CrossHatchFilter</a></li>
+            
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
@@ -91,11 +103,13 @@
             
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
+                <li><a href="../classes/FilterBlock.html">FilterBlock</a></li>
+            
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
             
-                <li><a href="../classes/getRecommendedRenderer.html">getRecommendedRenderer</a></li>
-            
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
+            
+                <li><a href="../classes/GraphicsData.html">GraphicsData</a></li>
             
                 <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
@@ -112,6 +126,8 @@
                 <li><a href="../classes/Matrix.html">Matrix</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
+            
+                <li><a href="../classes/NoiseFilter.html">NoiseFilter</a></li>
             
                 <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
             
@@ -133,9 +149,13 @@
             
                 <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
             
+                <li><a href="../classes/RGBSplitFilter.html">RGBSplitFilter</a></li>
+            
                 <li><a href="../classes/Rope.html">Rope</a></li>
             
                 <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
+            
+                <li><a href="../classes/SmartBlurFilter.html">SmartBlurFilter</a></li>
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
@@ -149,6 +169,8 @@
             
                 <li><a href="../classes/Strip.html">Strip</a></li>
             
+                <li><a href="../classes/StripShader.html">StripShader</a></li>
+            
                 <li><a href="../classes/Text.html">Text</a></li>
             
                 <li><a href="../classes/Texture.html">Texture</a></li>
@@ -157,11 +179,21 @@
             
                 <li><a href="../classes/TiltShiftFilter.html">TiltShiftFilter</a></li>
             
+                <li><a href="../classes/TiltShiftXFilter.html">TiltShiftXFilter</a></li>
+            
+                <li><a href="../classes/TiltShiftYFilter.html">TiltShiftYFilter</a></li>
+            
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
+            
+                <li><a href="../classes/WebGLBlendModeManager.html">WebGLBlendModeManager</a></li>
+            
+                <li><a href="../classes/WebGLFastSpriteBatch.html">WebGLFastSpriteBatch</a></li>
             
                 <li><a href="../classes/WebGLFilterManager.html">WebGLFilterManager</a></li>
             
                 <li><a href="../classes/WebGLGraphics.html">WebGLGraphics</a></li>
+            
+                <li><a href="../classes/WebGLGraphicsData.html">WebGLGraphicsData</a></li>
             
                 <li><a href="../classes/WebGLMaskManager.html">WebGLMaskManager</a></li>
             
@@ -242,7 +274,7 @@ PIXI.Sprite = function(texture)
     /**
      * The anchor sets the origin point of the texture.
      * The default is 0,0 this means the texture&#x27;s origin is the top left
-     * Setting than anchor to 0.5,0.5 means the textures origin is centred
+     * Setting than anchor to 0.5,0.5 means the textures origin is centered
      * Setting the anchor to 1,1 would mean the textures origin points will be the bottom right corner
      *
      * @property anchor
@@ -276,24 +308,32 @@ PIXI.Sprite = function(texture)
      */
     this._height = 0;
 
-
     /**
-     * The tint applied to the sprite. This is a hex value
+     * The tint applied to the sprite. This is a hex value. A value of 0xFFFFFF will remove any tint effect.
      *
      * @property tint
      * @type Number
      * @default 0xFFFFFF
      */
-    this.tint = 0xFFFFFF;// * Math.random();
+    this.tint = 0xFFFFFF;
     
     /**
-     * The blend mode to be applied to the sprite
+     * The blend mode to be applied to the sprite. Set to PIXI.blendModes.NORMAL to remove any blend mode.
      *
      * @property blendMode
      * @type Number
      * @default PIXI.blendModes.NORMAL;
      */
     this.blendMode = PIXI.blendModes.NORMAL;
+
+    /**
+     * The shader that will be used to render the texture to the stage. Set to null to remove a current shader.
+     *
+     * @property shader
+     * @type PIXI.AbstractFilter
+     * @default null
+     */
+    this.shader = null;
 
     if(texture.baseTexture.hasLoaded)
     {
@@ -306,6 +346,7 @@ PIXI.Sprite = function(texture)
     }
 
     this.renderable = true;
+
 };
 
 // constructor
@@ -369,12 +410,11 @@ PIXI.Sprite.prototype.onTextureUpdate = function()
     if(this._width)this.scale.x = this._width / this.texture.frame.width;
     if(this._height)this.scale.y = this._height / this.texture.frame.height;
 
-
     //this.updateFrame = true;
 };
 
 /**
-* Returns the framing rectangle of the sprite as a PIXI.Rectangle object
+* Returns the bounds of the Sprite as a rectangle. The bounds calculation takes the worldTransform into account.
 *
 * @method getBounds
 * @param matrix {Matrix} the transformation matrix of the sprite
@@ -382,7 +422,6 @@ PIXI.Sprite.prototype.onTextureUpdate = function()
 */
 PIXI.Sprite.prototype.getBounds = function(matrix)
 {
-
     var width = this.texture.frame.width;
     var height = this.texture.frame.height;
 
@@ -512,10 +551,8 @@ PIXI.Sprite.prototype._renderWebGL = function(renderSession)
         {
             this.children[i]._renderWebGL(renderSession);
         }
+        
     }
-
-   
-    //TODO check culling  
 };
 
 /**

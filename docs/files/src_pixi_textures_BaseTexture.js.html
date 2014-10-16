@@ -47,9 +47,13 @@
             
                 <li><a href="../classes/AlphaMaskFilter.html">AlphaMaskFilter</a></li>
             
+                <li><a href="../classes/AsciiFilter.html">AsciiFilter</a></li>
+            
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
                 <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
+                <li><a href="../classes/autoDetectRecommendedRenderer.html">autoDetectRecommendedRenderer</a></li>
             
                 <li><a href="../classes/autoDetectRenderer.html">autoDetectRenderer</a></li>
             
@@ -60,6 +64,10 @@
                 <li><a href="../classes/BitmapText.html">BitmapText</a></li>
             
                 <li><a href="../classes/BlurFilter.html">BlurFilter</a></li>
+            
+                <li><a href="../classes/BlurXFilter.html">BlurXFilter</a></li>
+            
+                <li><a href="../classes/BlurYFilter.html">BlurYFilter</a></li>
             
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
@@ -77,6 +85,10 @@
             
                 <li><a href="../classes/ComplexPrimitiveShader.html">ComplexPrimitiveShader</a></li>
             
+                <li><a href="../classes/ConvolutionFilter.html">ConvolutionFilter</a></li>
+            
+                <li><a href="../classes/CrossHatchFilter.html">CrossHatchFilter</a></li>
+            
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
@@ -91,11 +103,13 @@
             
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
+                <li><a href="../classes/FilterBlock.html">FilterBlock</a></li>
+            
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
             
-                <li><a href="../classes/getRecommendedRenderer.html">getRecommendedRenderer</a></li>
-            
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
+            
+                <li><a href="../classes/GraphicsData.html">GraphicsData</a></li>
             
                 <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
@@ -112,6 +126,8 @@
                 <li><a href="../classes/Matrix.html">Matrix</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
+            
+                <li><a href="../classes/NoiseFilter.html">NoiseFilter</a></li>
             
                 <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
             
@@ -133,9 +149,13 @@
             
                 <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
             
+                <li><a href="../classes/RGBSplitFilter.html">RGBSplitFilter</a></li>
+            
                 <li><a href="../classes/Rope.html">Rope</a></li>
             
                 <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
+            
+                <li><a href="../classes/SmartBlurFilter.html">SmartBlurFilter</a></li>
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
@@ -149,6 +169,8 @@
             
                 <li><a href="../classes/Strip.html">Strip</a></li>
             
+                <li><a href="../classes/StripShader.html">StripShader</a></li>
+            
                 <li><a href="../classes/Text.html">Text</a></li>
             
                 <li><a href="../classes/Texture.html">Texture</a></li>
@@ -157,11 +179,21 @@
             
                 <li><a href="../classes/TiltShiftFilter.html">TiltShiftFilter</a></li>
             
+                <li><a href="../classes/TiltShiftXFilter.html">TiltShiftXFilter</a></li>
+            
+                <li><a href="../classes/TiltShiftYFilter.html">TiltShiftYFilter</a></li>
+            
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
+            
+                <li><a href="../classes/WebGLBlendModeManager.html">WebGLBlendModeManager</a></li>
+            
+                <li><a href="../classes/WebGLFastSpriteBatch.html">WebGLFastSpriteBatch</a></li>
             
                 <li><a href="../classes/WebGLFilterManager.html">WebGLFilterManager</a></li>
             
                 <li><a href="../classes/WebGLGraphics.html">WebGLGraphics</a></li>
+            
+                <li><a href="../classes/WebGLGraphicsData.html">WebGLGraphicsData</a></li>
             
                 <li><a href="../classes/WebGLMaskManager.html">WebGLMaskManager</a></li>
             
@@ -227,7 +259,7 @@ PIXI.BaseTextureCache = {};
 PIXI.BaseTextureCacheIdGenerator = 0;
 
 /**
- * A texture stores the information that represents an image. All textures have a base texture
+ * A texture stores the information that represents an image. All textures have a base texture.
  *
  * @class BaseTexture
  * @uses EventTarget
@@ -265,6 +297,7 @@ PIXI.BaseTexture = function(source, scaleMode)
 
     /**
      * The scale mode to apply when scaling this texture
+     * 
      * @property scaleMode
      * @type PIXI.scaleModes
      * @default PIXI.scaleModes.LINEAR
@@ -272,7 +305,7 @@ PIXI.BaseTexture = function(source, scaleMode)
     this.scaleMode = scaleMode || PIXI.scaleModes.DEFAULT;
 
     /**
-     * [read-only] Describes if the base texture has loaded or not
+     * [read-only] Set to true once the base texture has loaded
      *
      * @property hasLoaded
      * @type Boolean
@@ -281,34 +314,42 @@ PIXI.BaseTexture = function(source, scaleMode)
     this.hasLoaded = false;
 
     /**
-     * The source that is loaded to create the texture
+     * The image source that is used to create the texture.
      *
      * @property source
      * @type Image
      */
     this.source = source;
 
-    //TODO will be used for futer pixi 1.5...
-    this.id = PIXI.BaseTextureCacheIdGenerator++;
+    this._UID = PIXI._UID++;
 
     /**
-     * Controls if RGB channels should be premultiplied by Alpha  (WebGL only)
+     * Controls if RGB channels should be pre-multiplied by Alpha  (WebGL only)
      *
-     * @property
+     * @property premultipliedAlpha
      * @type Boolean
-     * @default TRUE
-    */
+     * @default true
+     */
     this.premultipliedAlpha = true;
 
-
-    
-
     // used for webGL
+
+    /**
+     * @property _glTextures
+     * @type Array
+     * @private
+     */
     this._glTextures = [];
+
     // used for webGL texture updating...
     // TODO - this needs to be addressed
-    this._dirty = [true, true, true, true];
 
+    /**
+     * @property _dirty
+     * @type Array
+     * @private
+     */
+    this._dirty = [true, true, true, true];
 
     if(!source)return;
 
@@ -321,8 +362,8 @@ PIXI.BaseTexture = function(source, scaleMode)
     }
     else
     {
-
         var scope = this;
+
         this.source.onload = function() {
 
             scope.hasLoaded = true;
@@ -334,19 +375,29 @@ PIXI.BaseTexture = function(source, scaleMode)
             // add it to somewhere...
             scope.dispatchEvent( { type: &#x27;loaded&#x27;, content: scope } );
         };
+
         this.source.onerror = function() {
             scope.dispatchEvent( { type: &#x27;error&#x27;, content: scope } );
         };
     }
 
+    /**
+     * @property imageUrl
+     * @type String
+     */
     this.imageUrl = null;
+
+    /**
+     * @property _powerOf2
+     * @type Boolean
+     * @private
+     */
     this._powerOf2 = false;
-
-
 
 };
 
 PIXI.BaseTexture.prototype.constructor = PIXI.BaseTexture;
+
 PIXI.EventTarget.mixin(PIXI.BaseTexture.prototype);
 
 /**
@@ -397,6 +448,11 @@ PIXI.BaseTexture.prototype.updateSourceImage = function(newSrc)
     this.source.src = newSrc;
 };
 
+/**
+ * Sets all glTextures to be dirty.
+ *
+ * @method dirty
+ */
 PIXI.BaseTexture.prototype.dirty = function()
 {
     for (var i = 0; i &lt; this._glTextures.length; i++)
@@ -406,8 +462,8 @@ PIXI.BaseTexture.prototype.dirty = function()
 };
 
 /**
- * Helper function that returns a base texture based on an image url
- * If the image is not in the base texture cache it will be created and loaded
+ * Helper function that creates a base texture from the given image url.
+ * If the image is not in the base texture cache it will be created and loaded.
  *
  * @static
  * @method fromImage
@@ -424,7 +480,6 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
 
     if(!baseTexture)
     {
-
         // new Image() breaks tex loading in some versions of Chrome.
         // See https://code.google.com/p/chromium/issues/detail?id=238071
         var image = new Image();//document.createElement(&#x27;img&#x27;);
@@ -449,8 +504,7 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
 };
 
 /**
- * Helper function that returns a base texture based on a canvas element
- * If the image is not in the base texture cache it will be created and loaded
+ * Helper function that creates a base texture from the given canvas element.
  *
  * @static
  * @method fromCanvas
@@ -475,8 +529,6 @@ PIXI.BaseTexture.fromCanvas = function(canvas, scaleMode)
 
     return baseTexture;
 };
-
-
 
     </pre>
 </div>

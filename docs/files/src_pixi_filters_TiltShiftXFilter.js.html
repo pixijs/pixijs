@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>getRecommendedRenderer - pixi.js</title>
+    <title>src/pixi/filters/TiltShiftXFilter.js - pixi.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -47,9 +47,13 @@
             
                 <li><a href="../classes/AlphaMaskFilter.html">AlphaMaskFilter</a></li>
             
+                <li><a href="../classes/AsciiFilter.html">AsciiFilter</a></li>
+            
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
                 <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
+                <li><a href="../classes/autoDetectRecommendedRenderer.html">autoDetectRecommendedRenderer</a></li>
             
                 <li><a href="../classes/autoDetectRenderer.html">autoDetectRenderer</a></li>
             
@@ -60,6 +64,10 @@
                 <li><a href="../classes/BitmapText.html">BitmapText</a></li>
             
                 <li><a href="../classes/BlurFilter.html">BlurFilter</a></li>
+            
+                <li><a href="../classes/BlurXFilter.html">BlurXFilter</a></li>
+            
+                <li><a href="../classes/BlurYFilter.html">BlurYFilter</a></li>
             
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
@@ -77,6 +85,10 @@
             
                 <li><a href="../classes/ComplexPrimitiveShader.html">ComplexPrimitiveShader</a></li>
             
+                <li><a href="../classes/ConvolutionFilter.html">ConvolutionFilter</a></li>
+            
+                <li><a href="../classes/CrossHatchFilter.html">CrossHatchFilter</a></li>
+            
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
@@ -91,11 +103,13 @@
             
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
+                <li><a href="../classes/FilterBlock.html">FilterBlock</a></li>
+            
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
             
-                <li><a href="../classes/getRecommendedRenderer.html">getRecommendedRenderer</a></li>
-            
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
+            
+                <li><a href="../classes/GraphicsData.html">GraphicsData</a></li>
             
                 <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
@@ -112,6 +126,8 @@
                 <li><a href="../classes/Matrix.html">Matrix</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
+            
+                <li><a href="../classes/NoiseFilter.html">NoiseFilter</a></li>
             
                 <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
             
@@ -133,9 +149,13 @@
             
                 <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
             
+                <li><a href="../classes/RGBSplitFilter.html">RGBSplitFilter</a></li>
+            
                 <li><a href="../classes/Rope.html">Rope</a></li>
             
                 <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
+            
+                <li><a href="../classes/SmartBlurFilter.html">SmartBlurFilter</a></li>
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
@@ -149,6 +169,8 @@
             
                 <li><a href="../classes/Strip.html">Strip</a></li>
             
+                <li><a href="../classes/StripShader.html">StripShader</a></li>
+            
                 <li><a href="../classes/Text.html">Text</a></li>
             
                 <li><a href="../classes/Texture.html">Texture</a></li>
@@ -157,11 +179,21 @@
             
                 <li><a href="../classes/TiltShiftFilter.html">TiltShiftFilter</a></li>
             
+                <li><a href="../classes/TiltShiftXFilter.html">TiltShiftXFilter</a></li>
+            
+                <li><a href="../classes/TiltShiftYFilter.html">TiltShiftYFilter</a></li>
+            
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
+            
+                <li><a href="../classes/WebGLBlendModeManager.html">WebGLBlendModeManager</a></li>
+            
+                <li><a href="../classes/WebGLFastSpriteBatch.html">WebGLFastSpriteBatch</a></li>
             
                 <li><a href="../classes/WebGLFilterManager.html">WebGLFilterManager</a></li>
             
                 <li><a href="../classes/WebGLGraphics.html">WebGLGraphics</a></li>
+            
+                <li><a href="../classes/WebGLGraphicsData.html">WebGLGraphicsData</a></li>
             
                 <li><a href="../classes/WebGLMaskManager.html">WebGLMaskManager</a></li>
             
@@ -214,70 +246,161 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>getRecommendedRenderer Class</h1>
-<div class="box meta">
-    
+                        <h1 class="file-heading">File: src/pixi/filters/TiltShiftXFilter.js</h1>
 
-    
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+ * @author Vico @vicocotea
+ * original filter https://github.com/evanw/glfx.js/blob/master/src/filters/blur/tiltshift.js by Evan Wallace : http://madebyevan.com/
+ */
 
-    
-        <div class="foundat">
-            Defined in: <a href="../files/src_pixi_utils_Detector.js.html#l44"><code>src&#x2F;pixi&#x2F;utils&#x2F;Detector.js:44</code></a>
-        </div>
-    
+/**
+ * A TiltShiftXFilter.
+ * 
+ * @class TiltShiftXFilter
+ * @extends AbstractFilter
+ * @constructor
+ */
+PIXI.TiltShiftXFilter = function()
+{
+    PIXI.AbstractFilter.call( this );
 
-    
+    this.passes = [this];
+
+    // set the uniforms
+    this.uniforms = {
+        blur: {type: &#x27;1f&#x27;, value: 100.0},
+        gradientBlur: {type: &#x27;1f&#x27;, value: 600.0},
+        start: {type: &#x27;2f&#x27;, value:{x:0, y:window.screenHeight / 2}},
+        end: {type: &#x27;2f&#x27;, value:{x:600, y:window.screenHeight / 2}},
+        delta: {type: &#x27;2f&#x27;, value:{x:30, y:30}},
+        texSize: {type: &#x27;2f&#x27;, value:{x:window.screenWidth, y:window.screenHeight}}
+    };
+
+    this.updateDelta();
+
+    this.fragmentSrc = [
+        &#x27;precision mediump float;&#x27;,
+        &#x27;uniform sampler2D uSampler;&#x27;,
+        &#x27;uniform float blur;&#x27;,
+        &#x27;uniform float gradientBlur;&#x27;,
+        &#x27;uniform vec2 start;&#x27;,
+        &#x27;uniform vec2 end;&#x27;,
+        &#x27;uniform vec2 delta;&#x27;,
+        &#x27;uniform vec2 texSize;&#x27;,
+        &#x27;varying vec2 vTextureCoord;&#x27;,
+
+        &#x27;float random(vec3 scale, float seed) {&#x27;,
+        &#x27;   return fract(sin(dot(gl_FragCoord.xyz + seed, scale)) * 43758.5453 + seed);&#x27;,
+        &#x27;}&#x27;,
+
+        &#x27;void main(void) {&#x27;,
+        &#x27;    vec4 color = vec4(0.0);&#x27;,
+        &#x27;    float total = 0.0;&#x27;,
         
-            Module: <a href="../modules/PIXI.html">PIXI</a>
+        &#x27;    float offset = random(vec3(12.9898, 78.233, 151.7182), 0.0);&#x27;,
+        &#x27;    vec2 normal = normalize(vec2(start.y - end.y, end.x - start.x));&#x27;,
+        &#x27;    float radius = smoothstep(0.0, 1.0, abs(dot(vTextureCoord * texSize - start, normal)) / gradientBlur) * blur;&#x27;,
         
-    
+        &#x27;    for (float t = -30.0; t &lt;= 30.0; t++) {&#x27;,
+        &#x27;        float percent = (t + offset - 0.5) / 30.0;&#x27;,
+        &#x27;        float weight = 1.0 - abs(percent);&#x27;,
+        &#x27;        vec4 sample = texture2D(uSampler, vTextureCoord + delta / texSize * percent * radius);&#x27;,
+        &#x27;        sample.rgb *= sample.a;&#x27;,
+        &#x27;        color += sample * weight;&#x27;,
+        &#x27;        total += weight;&#x27;,
+        &#x27;    }&#x27;,
 
-    
-</div>
+        &#x27;    gl_FragColor = color / total;&#x27;,
+        &#x27;    gl_FragColor.rgb /= gl_FragColor.a + 0.00001;&#x27;,
+        &#x27;}&#x27;
+    ];
+};
 
+PIXI.TiltShiftXFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
+PIXI.TiltShiftXFilter.prototype.constructor = PIXI.TiltShiftXFilter;
 
+/**
+ * The strength of the blur.
+ *
+ * @property blur
+ * @type Number
+ */
+Object.defineProperty(PIXI.TiltShiftXFilter.prototype, &#x27;blur&#x27;, {
+    get: function() {
+        return this.uniforms.blur.value;
+    },
+    set: function(value) {
+        this.dirty = true;
+        this.uniforms.blur.value = value;
+    }
+});
 
-<div class="box intro">
-    <p>This helper function will automatically detect which renderer you should be using.
-This function is very similar to the autoDetectRenderer function except that is will return a canvas renderer for android.
-Even thought both android chrome suports webGL the canvas implementation perform better at the time of writing. 
-This function will likely change and update as webGL performance imporoves on thease devices.</p>
+/**
+ * The strength of the gradient blur.
+ *
+ * @property gradientBlur
+ * @type Number
+ */
+Object.defineProperty(PIXI.TiltShiftXFilter.prototype, &#x27;gradientBlur&#x27;, {
+    get: function() {
+        return this.uniforms.gradientBlur.value;
+    },
+    set: function(value) {
+        this.dirty = true;
+        this.uniforms.gradientBlur.value = value;
+    }
+});
 
-</div>
+/**
+ * The X value to start the effect at.
+ *
+ * @property start
+ * @type Number
+ */
+Object.defineProperty(PIXI.TiltShiftXFilter.prototype, &#x27;start&#x27;, {
+    get: function() {
+        return this.uniforms.start.value;
+    },
+    set: function(value) {
+        this.dirty = true;
+        this.uniforms.start.value = value;
+        this.updateDelta();
+    }
+});
 
+/**
+ * The X value to end the effect at.
+ *
+ * @property end
+ * @type Number
+ */
+Object.defineProperty(PIXI.TiltShiftXFilter.prototype, &#x27;end&#x27;, {
+    get: function() {
+        return this.uniforms.end.value;
+    },
+    set: function(value) {
+        this.dirty = true;
+        this.uniforms.end.value = value;
+        this.updateDelta();
+    }
+});
 
+/**
+ * Updates the filter delta values.
+ *
+ * @method updateDelta
+ */
+PIXI.TiltShiftXFilter.prototype.updateDelta = function(){
+    var dx = this.uniforms.end.value.x - this.uniforms.start.value.x;
+    var dy = this.uniforms.end.value.y - this.uniforms.start.value.y;
+    var d = Math.sqrt(dx * dx + dy * dy);
+    this.uniforms.delta.value.x = dx / d;
+    this.uniforms.delta.value.y = dy / d;
+};
 
-<div id="classdocs" class="tabview">
-    <ul class="api-class-tabs">
-        <li class="api-class-tab index"><a href="#index">Index</a></li>
-
-        
-        
-        
-        
-    </ul>
-
-    <div>
-        <div id="index" class="api-class-tabpanel index">
-            <h2 class="off-left">Item Index</h2>
-
-            
-
-            
-
-            
-
-            
-        </div>
-
-        
-
-        
-
-        
-
-        
-    </div>
+    </pre>
 </div>
 
                     </div>

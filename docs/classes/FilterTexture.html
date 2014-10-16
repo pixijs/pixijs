@@ -47,9 +47,13 @@
             
                 <li><a href="../classes/AlphaMaskFilter.html">AlphaMaskFilter</a></li>
             
+                <li><a href="../classes/AsciiFilter.html">AsciiFilter</a></li>
+            
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
                 <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
+                <li><a href="../classes/autoDetectRecommendedRenderer.html">autoDetectRecommendedRenderer</a></li>
             
                 <li><a href="../classes/autoDetectRenderer.html">autoDetectRenderer</a></li>
             
@@ -60,6 +64,10 @@
                 <li><a href="../classes/BitmapText.html">BitmapText</a></li>
             
                 <li><a href="../classes/BlurFilter.html">BlurFilter</a></li>
+            
+                <li><a href="../classes/BlurXFilter.html">BlurXFilter</a></li>
+            
+                <li><a href="../classes/BlurYFilter.html">BlurYFilter</a></li>
             
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
@@ -77,6 +85,10 @@
             
                 <li><a href="../classes/ComplexPrimitiveShader.html">ComplexPrimitiveShader</a></li>
             
+                <li><a href="../classes/ConvolutionFilter.html">ConvolutionFilter</a></li>
+            
+                <li><a href="../classes/CrossHatchFilter.html">CrossHatchFilter</a></li>
+            
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
@@ -91,11 +103,13 @@
             
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
+                <li><a href="../classes/FilterBlock.html">FilterBlock</a></li>
+            
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
             
-                <li><a href="../classes/getRecommendedRenderer.html">getRecommendedRenderer</a></li>
-            
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
+            
+                <li><a href="../classes/GraphicsData.html">GraphicsData</a></li>
             
                 <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
@@ -112,6 +126,8 @@
                 <li><a href="../classes/Matrix.html">Matrix</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
+            
+                <li><a href="../classes/NoiseFilter.html">NoiseFilter</a></li>
             
                 <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
             
@@ -133,9 +149,13 @@
             
                 <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
             
+                <li><a href="../classes/RGBSplitFilter.html">RGBSplitFilter</a></li>
+            
                 <li><a href="../classes/Rope.html">Rope</a></li>
             
                 <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
+            
+                <li><a href="../classes/SmartBlurFilter.html">SmartBlurFilter</a></li>
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
@@ -149,6 +169,8 @@
             
                 <li><a href="../classes/Strip.html">Strip</a></li>
             
+                <li><a href="../classes/StripShader.html">StripShader</a></li>
+            
                 <li><a href="../classes/Text.html">Text</a></li>
             
                 <li><a href="../classes/Texture.html">Texture</a></li>
@@ -157,11 +179,21 @@
             
                 <li><a href="../classes/TiltShiftFilter.html">TiltShiftFilter</a></li>
             
+                <li><a href="../classes/TiltShiftXFilter.html">TiltShiftXFilter</a></li>
+            
+                <li><a href="../classes/TiltShiftYFilter.html">TiltShiftYFilter</a></li>
+            
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
+            
+                <li><a href="../classes/WebGLBlendModeManager.html">WebGLBlendModeManager</a></li>
+            
+                <li><a href="../classes/WebGLFastSpriteBatch.html">WebGLFastSpriteBatch</a></li>
             
                 <li><a href="../classes/WebGLFilterManager.html">WebGLFilterManager</a></li>
             
                 <li><a href="../classes/WebGLGraphics.html">WebGLGraphics</a></li>
+            
+                <li><a href="../classes/WebGLGraphicsData.html">WebGLGraphicsData</a></li>
             
                 <li><a href="../classes/WebGLMaskManager.html">WebGLMaskManager</a></li>
             
@@ -244,7 +276,7 @@
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_FilterTexture" class="method item private">
+        <div id="method_FilterTexture" class="method item">
     <h3 class="name"><code>FilterTexture</code></h3>
 
     
@@ -283,8 +315,6 @@
 
     
 
-    
-        <span class="flag private">private</span>
     
 
     
@@ -441,20 +471,6 @@
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_destroy">destroy</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_init">init</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
                                 <a href="#method_resize">resize</a>
 
                                 
@@ -472,14 +488,7 @@
                     <ul class="index-list properties">
                         
                             <li class="index-item property">
-                                <a href="#property_fragmentSrc - The fragment shader.">fragmentSrc - The fragment shader.</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_fragmentSrc - The fragment shader.">fragmentSrc - The fragment shader.</a>
+                                <a href="#property_frameBuffer">frameBuffer</a>
 
                                 
                                 
@@ -493,7 +502,14 @@
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_program - The WebGL program.">program - The WebGL program.</a>
+                                <a href="#property_scaleMode">scaleMode</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_texture">texture</a>
 
                                 
                                 
@@ -545,7 +561,7 @@
             
         
         
-        <a href="../files/src_pixi_renderers_webgl_utils_FilterTexture.js.html#l48"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;FilterTexture.js:48</code></a>
+        <a href="../files/src_pixi_renderers_webgl_utils_FilterTexture.js.html#l61"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;FilterTexture.js:61</code></a>
         
         </p>
 
@@ -556,7 +572,7 @@
     </div>
 
     <div class="description">
-        <p>Clears the filter texture</p>
+        <p>Clears the filter texture.</p>
 
     </div>
 
@@ -600,7 +616,7 @@
             
         
         
-        <a href="../files/src_pixi_renderers_webgl_shaders_StripShader.js.html#l90"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;shaders&#x2F;StripShader.js:90</code></a>
+        <a href="../files/src_pixi_renderers_webgl_utils_FilterTexture.js.html#l97"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;FilterTexture.js:97</code></a>
         
         </p>
 
@@ -611,117 +627,7 @@
     </div>
 
     <div class="description">
-        <p>Destroys the shader</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_destroy" class="method item">
-    <h3 class="name"><code>destroy</code></h3>
-
-    
-        <span class="paren">()</span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_pixi_renderers_webgl_utils_FilterTexture.js.html#l84"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;FilterTexture.js:84</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Destroys the filter texture</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_init" class="method item">
-    <h3 class="name"><code>init</code></h3>
-
-    
-        <span class="paren">()</span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_pixi_renderers_webgl_shaders_StripShader.js.html#l59"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;shaders&#x2F;StripShader.js:59</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Initialises the shader</p>
+        <p>Destroys the filter texture.</p>
 
     </div>
 
@@ -781,7 +687,7 @@
             
         
         
-        <a href="../files/src_pixi_renderers_webgl_utils_FilterTexture.js.html#l60"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;FilterTexture.js:60</code></a>
+        <a href="../files/src_pixi_renderers_webgl_utils_FilterTexture.js.html#l74"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;FilterTexture.js:74</code></a>
         
         </p>
 
@@ -852,9 +758,9 @@
                 <h2 class="off-left">Properties</h2>
 
                 
-                    <div id="property_fragmentSrc - The fragment shader." class="property item">
-    <h3 class="name"><code>fragmentSrc - The fragment shader.</code></h3>
-    <span class="type">Array</span>
+                    <div id="property_frameBuffer" class="property item">
+    <h3 class="name"><code>frameBuffer</code></h3>
+    <span class="type">Any</span>
 
     
 
@@ -875,51 +781,7 @@
             
         
         
-        <a href="../files/src_pixi_renderers_webgl_shaders_StripShader.js.html#l17"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;shaders&#x2F;StripShader.js:17</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_fragmentSrc - The fragment shader." class="property item">
-    <h3 class="name"><code>fragmentSrc - The fragment shader.</code></h3>
-    <span class="type">Array</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_pixi_renderers_webgl_shaders_StripShader.js.html#l33"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;shaders&#x2F;StripShader.js:33</code></a>
+        <a href="../files/src_pixi_renderers_webgl_utils_FilterTexture.js.html#l23"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;FilterTexture.js:23</code></a>
         
         </p>
 
@@ -963,7 +825,7 @@
             
         
         
-        <a href="../files/src_pixi_renderers_webgl_utils_FilterTexture.js.html#l16"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;FilterTexture.js:16</code></a>
+        <a href="../files/src_pixi_renderers_webgl_utils_FilterTexture.js.html#l15"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;FilterTexture.js:15</code></a>
         
         </p>
 
@@ -984,8 +846,52 @@
 </div>
 
                 
-                    <div id="property_program - The WebGL program." class="property item">
-    <h3 class="name"><code>program - The WebGL program.</code></h3>
+                    <div id="property_scaleMode" class="property item">
+    <h3 class="name"><code>scaleMode</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_renderers_webgl_utils_FilterTexture.js.html#l35"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;FilterTexture.js:35</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_texture" class="property item">
+    <h3 class="name"><code>texture</code></h3>
     <span class="type">Any</span>
 
     
@@ -1007,7 +913,7 @@
             
         
         
-        <a href="../files/src_pixi_renderers_webgl_shaders_StripShader.js.html#l12"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;shaders&#x2F;StripShader.js:12</code></a>
+        <a href="../files/src_pixi_renderers_webgl_utils_FilterTexture.js.html#l29"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;FilterTexture.js:29</code></a>
         
         </p>
 

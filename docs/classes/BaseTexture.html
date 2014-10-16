@@ -47,9 +47,13 @@
             
                 <li><a href="../classes/AlphaMaskFilter.html">AlphaMaskFilter</a></li>
             
+                <li><a href="../classes/AsciiFilter.html">AsciiFilter</a></li>
+            
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
                 <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
+                <li><a href="../classes/autoDetectRecommendedRenderer.html">autoDetectRecommendedRenderer</a></li>
             
                 <li><a href="../classes/autoDetectRenderer.html">autoDetectRenderer</a></li>
             
@@ -60,6 +64,10 @@
                 <li><a href="../classes/BitmapText.html">BitmapText</a></li>
             
                 <li><a href="../classes/BlurFilter.html">BlurFilter</a></li>
+            
+                <li><a href="../classes/BlurXFilter.html">BlurXFilter</a></li>
+            
+                <li><a href="../classes/BlurYFilter.html">BlurYFilter</a></li>
             
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
@@ -77,6 +85,10 @@
             
                 <li><a href="../classes/ComplexPrimitiveShader.html">ComplexPrimitiveShader</a></li>
             
+                <li><a href="../classes/ConvolutionFilter.html">ConvolutionFilter</a></li>
+            
+                <li><a href="../classes/CrossHatchFilter.html">CrossHatchFilter</a></li>
+            
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
@@ -91,11 +103,13 @@
             
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
+                <li><a href="../classes/FilterBlock.html">FilterBlock</a></li>
+            
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
             
-                <li><a href="../classes/getRecommendedRenderer.html">getRecommendedRenderer</a></li>
-            
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
+            
+                <li><a href="../classes/GraphicsData.html">GraphicsData</a></li>
             
                 <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
@@ -112,6 +126,8 @@
                 <li><a href="../classes/Matrix.html">Matrix</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
+            
+                <li><a href="../classes/NoiseFilter.html">NoiseFilter</a></li>
             
                 <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
             
@@ -133,9 +149,13 @@
             
                 <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
             
+                <li><a href="../classes/RGBSplitFilter.html">RGBSplitFilter</a></li>
+            
                 <li><a href="../classes/Rope.html">Rope</a></li>
             
                 <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
+            
+                <li><a href="../classes/SmartBlurFilter.html">SmartBlurFilter</a></li>
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
@@ -149,6 +169,8 @@
             
                 <li><a href="../classes/Strip.html">Strip</a></li>
             
+                <li><a href="../classes/StripShader.html">StripShader</a></li>
+            
                 <li><a href="../classes/Text.html">Text</a></li>
             
                 <li><a href="../classes/Texture.html">Texture</a></li>
@@ -157,11 +179,21 @@
             
                 <li><a href="../classes/TiltShiftFilter.html">TiltShiftFilter</a></li>
             
+                <li><a href="../classes/TiltShiftXFilter.html">TiltShiftXFilter</a></li>
+            
+                <li><a href="../classes/TiltShiftYFilter.html">TiltShiftYFilter</a></li>
+            
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
+            
+                <li><a href="../classes/WebGLBlendModeManager.html">WebGLBlendModeManager</a></li>
+            
+                <li><a href="../classes/WebGLFastSpriteBatch.html">WebGLFastSpriteBatch</a></li>
             
                 <li><a href="../classes/WebGLFilterManager.html">WebGLFilterManager</a></li>
             
                 <li><a href="../classes/WebGLGraphics.html">WebGLGraphics</a></li>
+            
+                <li><a href="../classes/WebGLGraphicsData.html">WebGLGraphicsData</a></li>
             
                 <li><a href="../classes/WebGLMaskManager.html">WebGLMaskManager</a></li>
             
@@ -247,7 +279,7 @@
 
 
 <div class="box intro">
-    <p>A texture stores the information that represents an image. All textures have a base texture</p>
+    <p>A texture stores the information that represents an image. All textures have a base texture.</p>
 
 </div>
 
@@ -397,6 +429,13 @@
                                 
                             </li>
                         
+                            <li class="index-item method">
+                                <a href="#method_dirty">dirty</a>
+
+                                
+                                
+                            </li>
+                        
                             <li class="index-item method inherited">
                                 <a href="#method_emit">emit</a>
 
@@ -481,6 +520,27 @@
 
                     <ul class="index-list properties">
                         
+                            <li class="index-item property private">
+                                <a href="#property__dirty">_dirty</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property private">
+                                <a href="#property__glTextures">_glTextures</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property private">
+                                <a href="#property__powerOf2">_powerOf2</a>
+
+                                
+                                
+                            </li>
+                        
                             <li class="index-item property">
                                 <a href="#property_hasLoaded">hasLoaded</a>
 
@@ -490,6 +550,20 @@
                         
                             <li class="index-item property">
                                 <a href="#property_height">height</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_imageUrl">imageUrl</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_premultipliedAlpha">premultipliedAlpha</a>
 
                                 
                                 
@@ -518,13 +592,6 @@
                         
                             <li class="index-item property">
                                 <a href="#property_width">width</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_"></a>
 
                                 
                                 
@@ -576,7 +643,7 @@
             
         
         
-        <a href="../files/src_pixi_textures_BaseTexture.js.html#l132"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:132</code></a>
+        <a href="../files/src_pixi_textures_BaseTexture.js.html#l151"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:151</code></a>
         
         </p>
 
@@ -588,6 +655,61 @@
 
     <div class="description">
         <p>Destroys this base texture</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_dirty" class="method item">
+    <h3 class="name"><code>dirty</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_textures_BaseTexture.js.html#l199"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:199</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Sets all glTextures to be dirty.</p>
 
     </div>
 
@@ -757,7 +879,7 @@
             
         
         
-        <a href="../files/src_pixi_textures_BaseTexture.js.html#l231"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:231</code></a>
+        <a href="../files/src_pixi_textures_BaseTexture.js.html#l254"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:254</code></a>
         
         </p>
 
@@ -768,8 +890,7 @@
     </div>
 
     <div class="description">
-        <p>Helper function that returns a base texture based on a canvas element
-If the image is not in the base texture cache it will be created and loaded</p>
+        <p>Helper function that creates a base texture from the given canvas element.</p>
 
     </div>
 
@@ -893,7 +1014,7 @@ If the image is not in the base texture cache it will be created and loaded</p>
             
         
         
-        <a href="../files/src_pixi_textures_BaseTexture.js.html#l188"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:188</code></a>
+        <a href="../files/src_pixi_textures_BaseTexture.js.html#l212"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:212</code></a>
         
         </p>
 
@@ -904,8 +1025,8 @@ If the image is not in the base texture cache it will be created and loaded</p>
     </div>
 
     <div class="description">
-        <p>Helper function that returns a base texture based on an image url
-If the image is not in the base texture cache it will be created and loaded</p>
+        <p>Helper function that creates a base texture from the given image url.
+If the image is not in the base texture cache it will be created and loaded.</p>
 
     </div>
 
@@ -1626,7 +1747,7 @@ If the image is not in the base texture cache it will be created and loaded</p>
             
         
         
-        <a href="../files/src_pixi_textures_BaseTexture.js.html#l167"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:167</code></a>
+        <a href="../files/src_pixi_textures_BaseTexture.js.html#l186"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:186</code></a>
         
         </p>
 
@@ -1681,6 +1802,144 @@ If the image is not in the base texture cache it will be created and loaded</p>
                 <h2 class="off-left">Properties</h2>
 
                 
+                    <div id="property__dirty" class="property item private">
+    <h3 class="name"><code>_dirty</code></h3>
+    <span class="type">Array</span>
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_textures_BaseTexture.js.html#l95"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:95</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property__glTextures" class="property item private">
+    <h3 class="name"><code>_glTextures</code></h3>
+    <span class="type">Array</span>
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_textures_BaseTexture.js.html#l85"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:85</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property__powerOf2" class="property item private">
+    <h3 class="name"><code>_powerOf2</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_textures_BaseTexture.js.html#l138"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:138</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
                     <div id="property_hasLoaded" class="property item">
     <h3 class="name"><code>hasLoaded</code></h3>
     <span class="type">Boolean</span>
@@ -1704,7 +1963,7 @@ If the image is not in the base texture cache it will be created and loaded</p>
             
         
         
-        <a href="../files/src_pixi_textures_BaseTexture.js.html#l54"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:54</code></a>
+        <a href="../files/src_pixi_textures_BaseTexture.js.html#l55"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:55</code></a>
         
         </p>
 
@@ -1714,7 +1973,7 @@ If the image is not in the base texture cache it will be created and loaded</p>
     </div>
 
     <div class="description">
-        <p>[read-only] Describes if the base texture has loaded or not</p>
+        <p>[read-only] Set to true once the base texture has loaded</p>
 
     </div>
 
@@ -1763,6 +2022,97 @@ If the image is not in the base texture cache it will be created and loaded</p>
 
     </div>
 
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_imageUrl" class="property item">
+    <h3 class="name"><code>imageUrl</code></h3>
+    <span class="type">String</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_textures_BaseTexture.js.html#l132"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:132</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_premultipliedAlpha" class="property item">
+    <h3 class="name"><code>premultipliedAlpha</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_textures_BaseTexture.js.html#l74"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:74</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Controls if RGB channels should be pre-multiplied by Alpha  (WebGL only)</p>
+
+    </div>
+
+    
+        <p><strong>Default:</strong> true</p>
     
 
     
@@ -1886,7 +2236,7 @@ If the image is not in the base texture cache it will be created and loaded</p>
             
         
         
-        <a href="../files/src_pixi_textures_BaseTexture.js.html#l63"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:63</code></a>
+        <a href="../files/src_pixi_textures_BaseTexture.js.html#l64"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:64</code></a>
         
         </p>
 
@@ -1896,7 +2246,7 @@ If the image is not in the base texture cache it will be created and loaded</p>
     </div>
 
     <div class="description">
-        <p>The source that is loaded to create the texture</p>
+        <p>The image source that is used to create the texture.</p>
 
     </div>
 
@@ -1945,53 +2295,6 @@ If the image is not in the base texture cache it will be created and loaded</p>
 
     </div>
 
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_" class="property item">
-    <h3 class="name"><code></code></h3>
-    <span class="type">Boolean</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_pixi_textures_BaseTexture.js.html#l74"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:74</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Controls if RGB channels should be premultiplied by Alpha  (WebGL only)</p>
-
-    </div>
-
-    
-        <p><strong>Default:</strong> TRUE</p>
     
 
     

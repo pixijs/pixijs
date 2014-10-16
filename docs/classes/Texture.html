@@ -47,9 +47,13 @@
             
                 <li><a href="../classes/AlphaMaskFilter.html">AlphaMaskFilter</a></li>
             
+                <li><a href="../classes/AsciiFilter.html">AsciiFilter</a></li>
+            
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
                 <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
+                <li><a href="../classes/autoDetectRecommendedRenderer.html">autoDetectRecommendedRenderer</a></li>
             
                 <li><a href="../classes/autoDetectRenderer.html">autoDetectRenderer</a></li>
             
@@ -60,6 +64,10 @@
                 <li><a href="../classes/BitmapText.html">BitmapText</a></li>
             
                 <li><a href="../classes/BlurFilter.html">BlurFilter</a></li>
+            
+                <li><a href="../classes/BlurXFilter.html">BlurXFilter</a></li>
+            
+                <li><a href="../classes/BlurYFilter.html">BlurYFilter</a></li>
             
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
@@ -77,6 +85,10 @@
             
                 <li><a href="../classes/ComplexPrimitiveShader.html">ComplexPrimitiveShader</a></li>
             
+                <li><a href="../classes/ConvolutionFilter.html">ConvolutionFilter</a></li>
+            
+                <li><a href="../classes/CrossHatchFilter.html">CrossHatchFilter</a></li>
+            
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
@@ -91,11 +103,13 @@
             
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
+                <li><a href="../classes/FilterBlock.html">FilterBlock</a></li>
+            
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
             
-                <li><a href="../classes/getRecommendedRenderer.html">getRecommendedRenderer</a></li>
-            
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
+            
+                <li><a href="../classes/GraphicsData.html">GraphicsData</a></li>
             
                 <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
@@ -112,6 +126,8 @@
                 <li><a href="../classes/Matrix.html">Matrix</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
+            
+                <li><a href="../classes/NoiseFilter.html">NoiseFilter</a></li>
             
                 <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
             
@@ -133,9 +149,13 @@
             
                 <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
             
+                <li><a href="../classes/RGBSplitFilter.html">RGBSplitFilter</a></li>
+            
                 <li><a href="../classes/Rope.html">Rope</a></li>
             
                 <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
+            
+                <li><a href="../classes/SmartBlurFilter.html">SmartBlurFilter</a></li>
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
@@ -149,6 +169,8 @@
             
                 <li><a href="../classes/Strip.html">Strip</a></li>
             
+                <li><a href="../classes/StripShader.html">StripShader</a></li>
+            
                 <li><a href="../classes/Text.html">Text</a></li>
             
                 <li><a href="../classes/Texture.html">Texture</a></li>
@@ -157,11 +179,21 @@
             
                 <li><a href="../classes/TiltShiftFilter.html">TiltShiftFilter</a></li>
             
+                <li><a href="../classes/TiltShiftXFilter.html">TiltShiftXFilter</a></li>
+            
+                <li><a href="../classes/TiltShiftYFilter.html">TiltShiftYFilter</a></li>
+            
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
+            
+                <li><a href="../classes/WebGLBlendModeManager.html">WebGLBlendModeManager</a></li>
+            
+                <li><a href="../classes/WebGLFastSpriteBatch.html">WebGLFastSpriteBatch</a></li>
             
                 <li><a href="../classes/WebGLFilterManager.html">WebGLFilterManager</a></li>
             
                 <li><a href="../classes/WebGLGraphics.html">WebGLGraphics</a></li>
+            
+                <li><a href="../classes/WebGLGraphicsData.html">WebGLGraphicsData</a></li>
             
                 <li><a href="../classes/WebGLMaskManager.html">WebGLMaskManager</a></li>
             
@@ -248,7 +280,7 @@
 
 <div class="box intro">
     <p>A texture stores the information that represents an image or part of an image. It cannot be added
-to the display list directly. To do this use PIXI.Sprite. If no frame is provided then the whole image is used</p>
+to the display list directly. Instead use it as the texture for a PIXI.Sprite. If no frame is provided then the whole image is used.</p>
 
 </div>
 
@@ -438,7 +470,7 @@ to the display list directly. To do this use PIXI.Sprite. If no frame is provide
                     <ul class="index-list methods">
                         
                             <li class="index-item method private">
-                                <a href="#method__updateWebGLuvs">_updateWebGLuvs</a>
+                                <a href="#method__updateUvs">_updateUvs</a>
 
                                 
                                 
@@ -653,8 +685,8 @@ to the display list directly. To do this use PIXI.Sprite. If no frame is provide
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method__updateWebGLuvs" class="method item private">
-    <h3 class="name"><code>_updateWebGLuvs</code></h3>
+                    <div id="method__updateUvs" class="method item private">
+    <h3 class="name"><code>_updateUvs</code></h3>
 
     
         <span class="paren">()</span>
@@ -687,7 +719,7 @@ to the display list directly. To do this use PIXI.Sprite. If no frame is provide
             
         
         
-        <a href="../files/src_pixi_textures_Texture.js.html#l201"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:201</code></a>
+        <a href="../files/src_pixi_textures_Texture.js.html#l200"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:200</code></a>
         
         </p>
 
@@ -760,7 +792,7 @@ to the display list directly. To do this use PIXI.Sprite. If no frame is provide
             
         
         
-        <a href="../files/src_pixi_textures_Texture.js.html#l288"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:288</code></a>
+        <a href="../files/src_pixi_textures_Texture.js.html#l284"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:284</code></a>
         
         </p>
 
@@ -771,7 +803,7 @@ to the display list directly. To do this use PIXI.Sprite. If no frame is provide
     </div>
 
     <div class="description">
-        <p>Adds a texture to the textureCache.</p>
+        <p>Adds a texture to the global PIXI.TextureCache. This cache is shared across the whole PIXI object.</p>
 
     </div>
 
@@ -790,7 +822,8 @@ to the display list directly. To do this use PIXI.Sprite. If no frame is provide
                     
 
                     <div class="param-description">
-                         
+                        <p>The Texture to add to the cache.</p>
+
                     </div>
 
                     
@@ -805,7 +838,7 @@ to the display list directly. To do this use PIXI.Sprite. If no frame is provide
                     
 
                     <div class="param-description">
-                        <p>the id that the texture will be stored against.</p>
+                        <p>The id that the texture will be stored against.</p>
 
                     </div>
 
@@ -864,7 +897,7 @@ to the display list directly. To do this use PIXI.Sprite. If no frame is provide
             
         
         
-        <a href="../files/src_pixi_textures_Texture.js.html#l150"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:150</code></a>
+        <a href="../files/src_pixi_textures_Texture.js.html#l149"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:149</code></a>
         
         </p>
 
@@ -1069,7 +1102,7 @@ to the display list directly. To do this use PIXI.Sprite. If no frame is provide
             
         
         
-        <a href="../files/src_pixi_textures_Texture.js.html#l269"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:269</code></a>
+        <a href="../files/src_pixi_textures_Texture.js.html#l267"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:267</code></a>
         
         </p>
 
@@ -1080,8 +1113,7 @@ to the display list directly. To do this use PIXI.Sprite. If no frame is provide
     </div>
 
     <div class="description">
-        <p>Helper function that returns a texture based on a canvas element
-If the canvas is not in the texture cache it will be  created and loaded</p>
+        <p>Helper function that creates a new a Texture based on the given canvas element.</p>
 
     </div>
 
@@ -1193,7 +1225,7 @@ If the canvas is not in the texture cache it will be  created and loaded</p>
             
         
         
-        <a href="../files/src_pixi_textures_Texture.js.html#l253"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:253</code></a>
+        <a href="../files/src_pixi_textures_Texture.js.html#l251"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:251</code></a>
         
         </p>
 
@@ -1204,8 +1236,8 @@ If the canvas is not in the texture cache it will be  created and loaded</p>
     </div>
 
     <div class="description">
-        <p>Helper function that returns a texture based on a frame id
-If the frame id is not in the texture cache an error will be thrown</p>
+        <p>Helper function that returns a Texture objected based on the given frame id.
+If the frame id is not in the texture cache an error will be thrown.</p>
 
     </div>
 
@@ -1313,7 +1345,7 @@ If the frame id is not in the texture cache an error will be thrown</p>
             
         
         
-        <a href="../files/src_pixi_textures_Texture.js.html#l229"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:229</code></a>
+        <a href="../files/src_pixi_textures_Texture.js.html#l227"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:227</code></a>
         
         </p>
 
@@ -1324,8 +1356,8 @@ If the frame id is not in the texture cache an error will be thrown</p>
     </div>
 
     <div class="description">
-        <p>Helper function that returns a texture based on an image url
-If the image is not in the texture cache it will be  created and loaded</p>
+        <p>Helper function that creates a Texture object from the given image url.
+If the image is not in the texture cache it will be  created and loaded.</p>
 
     </div>
 
@@ -1815,17 +1847,7 @@ If the image is not in the texture cache it will be  created and loaded</p>
     <h3 class="name"><code>onBaseTextureLoaded</code></h3>
 
     
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>event</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
+        <span class="paren">()</span>
     
 
     
@@ -1870,29 +1892,6 @@ If the image is not in the texture cache it will be  created and loaded</p>
 
     </div>
 
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">event</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
     
 
     
@@ -2143,7 +2142,7 @@ If the image is not in the texture cache it will be  created and loaded</p>
             
         
         
-        <a href="../files/src_pixi_textures_Texture.js.html#l301"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:301</code></a>
+        <a href="../files/src_pixi_textures_Texture.js.html#l297"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:297</code></a>
         
         </p>
 
@@ -2154,7 +2153,7 @@ If the image is not in the texture cache it will be  created and loaded</p>
     </div>
 
     <div class="description">
-        <p>Remove a texture from the textureCache.</p>
+        <p>Remove a texture from the global PIXI.TextureCache.</p>
 
     </div>
 
@@ -2173,7 +2172,7 @@ If the image is not in the texture cache it will be  created and loaded</p>
                     
 
                     <div class="param-description">
-                        <p>the id of the texture to be removed</p>
+                        <p>The id of the texture to be removed</p>
 
                     </div>
 
@@ -2193,7 +2192,7 @@ If the image is not in the texture cache it will be  created and loaded</p>
                     
                         <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>:
                     
-                    <p>the texture that was removed</p>
+                    <p>The texture that was removed</p>
 
                 
             </div>
@@ -2246,7 +2245,7 @@ If the image is not in the texture cache it will be  created and loaded</p>
             
         
         
-        <a href="../files/src_pixi_textures_Texture.js.html#l163"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:163</code></a>
+        <a href="../files/src_pixi_textures_Texture.js.html#l162"><code>src&#x2F;pixi&#x2F;textures&#x2F;Texture.js:162</code></a>
         
         </p>
 
@@ -2652,7 +2651,7 @@ irrespective of the actual frame size or placement (which can be influenced by t
     </div>
 
     <div class="description">
-        <p>The trim point</p>
+        <p>The texture trim data.</p>
 
     </div>
 
@@ -2697,7 +2696,7 @@ irrespective of the actual frame size or placement (which can be influenced by t
     </div>
 
     <div class="description">
-        <p>This will let the renderer know if the texture is valid. If its not then it cannot be rendered.</p>
+        <p>This will let the renderer know if the texture is valid. If it&#39;s not then it cannot be rendered.</p>
 
     </div>
 

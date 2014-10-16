@@ -176,7 +176,7 @@ PIXI.Point.prototype.clone = function()
 
 /**
  * Sets the point to a new x and y position.
- * If y is ommited, both x and y will be set to x.
+ * If y is omitted, both x and y will be set to x.
  * 
  * @method set
  * @param [x=0] {Number} position of the point on the x axis
@@ -199,8 +199,8 @@ PIXI.Point.prototype.constructor = PIXI.Point;
  *
  * @class Rectangle
  * @constructor
- * @param x {Number} The X coord of the upper-left corner of the rectangle
- * @param y {Number} The Y coord of the upper-left corner of the rectangle
+ * @param x {Number} The X coordinate of the upper-left corner of the rectangle
+ * @param y {Number} The Y coordinate of the upper-left corner of the rectangle
  * @param width {Number} The overall width of this rectangle
  * @param height {Number} The overall height of this rectangle
  */
@@ -247,12 +247,12 @@ PIXI.Rectangle.prototype.clone = function()
 };
 
 /**
- * Checks whether the x and y coordinates passed to this function are contained within this Rectangle
+ * Checks whether the x and y coordinates given are contained within this Rectangle
  *
  * @method contains
  * @param x {Number} The X coordinate of the point to test
  * @param y {Number} The Y coordinate of the point to test
- * @return {Boolean} Whether the x/y coords are within this Rectangle
+ * @return {Boolean} Whether the x/y coordinates are within this Rectangle
  */
 PIXI.Rectangle.prototype.contains = function(x, y)
 {
@@ -395,7 +395,7 @@ PIXI.Circle = function(x, y, radius)
  * Creates a clone of this Circle instance
  *
  * @method clone
- * @return {Circle} a copy of the polygon
+ * @return {Circle} a copy of the Circle
  */
 PIXI.Circle.prototype.clone = function()
 {
@@ -403,12 +403,12 @@ PIXI.Circle.prototype.clone = function()
 };
 
 /**
- * Checks whether the x, and y coordinates passed to this function are contained within this circle
+ * Checks whether the x and y coordinates given are contained within this circle
  *
  * @method contains
  * @param x {Number} The X coordinate of the point to test
  * @param y {Number} The Y coordinate of the point to test
- * @return {Boolean} Whether the x/y coordinates are within this polygon
+ * @return {Boolean} Whether the x/y coordinates are within this Circle
  */
 PIXI.Circle.prototype.contains = function(x, y)
 {
@@ -438,7 +438,6 @@ PIXI.Circle.prototype.getBounds = function()
 
 // constructor
 PIXI.Circle.prototype.constructor = PIXI.Circle;
-
 
 /**
  * @author Chad Engler <chad@pantherdev.com>
@@ -497,7 +496,7 @@ PIXI.Ellipse.prototype.clone = function()
 };
 
 /**
- * Checks whether the x and y coordinates passed to this function are contained within this ellipse
+ * Checks whether the x and y coordinates given are contained within this ellipse
  *
  * @method contains
  * @param x {Number} The X coordinate of the point to test
@@ -549,19 +548,61 @@ PIXI.Ellipse.prototype.constructor = PIXI.Ellipse;
  */
 PIXI.Matrix = function()
 {
+    /**
+     * @property a
+     * @type Number
+     * @default 1
+     */
     this.a = 1;
+
+    /**
+     * @property b
+     * @type Number
+     * @default 0
+     */
     this.b = 0;
+
+    /**
+     * @property c
+     * @type Number
+     * @default 0
+     */
     this.c = 0;
+
+    /**
+     * @property d
+     * @type Number
+     * @default 1
+     */
     this.d = 1;
+
+    /**
+     * @property tx
+     * @type Number
+     * @default 0
+     */
     this.tx = 0;
+
+    /**
+     * @property ty
+     * @type Number
+     * @default 0
+     */
     this.ty = 0;
 };
 
 /**
- * Creates a pixi matrix object based on the array given as a parameter
+ * Creates a Matrix object based on the given array. The Element to Matrix mapping order is as follows:
+ *
+ * a = array[0]
+ * b = array[1]
+ * c = array[3]
+ * d = array[4]
+ * tx = array[2]
+ * ty = array[5]
  *
  * @method fromArray
- * @param array {Array} The array that the matrix will be filled with
+ * @param array {Array} The array that the matrix will be populated from.
  */
 PIXI.Matrix.prototype.fromArray = function(array)
 {
@@ -574,7 +615,7 @@ PIXI.Matrix.prototype.fromArray = function(array)
 };
 
 /**
- * Creates an array from the current Matrix object
+ * Creates an array from the current Matrix object.
  *
  * @method toArray
  * @param transpose {Boolean} Whether we need to transpose the matrix or not
@@ -614,13 +655,13 @@ PIXI.Matrix.prototype.toArray = function(transpose)
 };
 
 /**
- * Get a new position with the current transormation applied.
+ * Get a new position with the current transformation applied.
  * Can be used to go from a child's coordinate space to the world coordinate space. (e.g. rendering)
  *
  * @method apply
  * @param pos {Point} The origin
  * @param [newPos] {Point} The point that the new position is assigned to (allowed to be same as input)
- * @return {Point} The new point, transformed trough this matrix
+ * @return {Point} The new point, transformed through this matrix
  */
 PIXI.Matrix.prototype.apply = function(pos, newPos)
 {
@@ -633,13 +674,13 @@ PIXI.Matrix.prototype.apply = function(pos, newPos)
 };
 
 /**
- * Get a new position with the inverse of the current transormation applied.
+ * Get a new position with the inverse of the current transformation applied.
  * Can be used to go from the world coordinate space to a child's coordinate space. (e.g. input)
  *
- * @method apply
+ * @method applyInverse
  * @param pos {Point} The origin
  * @param [newPos] {Point} The point that the new position is assigned to (allowed to be same as input)
- * @return {Point} The new point, inverse-transformed trough this matrix
+ * @return {Point} The new point, inverse-transformed through this matrix
  */
 PIXI.Matrix.prototype.applyInverse = function(pos, newPos)
 {
@@ -654,6 +695,7 @@ PIXI.Matrix.prototype.applyInverse = function(pos, newPos)
 
 /**
  * Translates the matrix on the x and y.
+ * 
  * @method translate
  * @param {Number} x
  * @param {Number} y
@@ -669,6 +711,7 @@ PIXI.Matrix.prototype.translate = function(x, y)
 
 /**
  * Applies a scale transformation to the matrix.
+ * 
  * @method scale
  * @param {Number} x The amount to scale horizontally
  * @param {Number} y The amount to scale vertically
@@ -712,14 +755,13 @@ PIXI.Matrix.prototype.rotate = function(angle)
     return this;
 };
 
-
 /**
- * Translates the matrix on the x and y.
- * @method translate
- * @param {Number} x
- * @param {Number} y
+ * Appends the given Matrix to this Matrix.
+ * 
+ * @method append
+ * @param {Matrix} matrix
  * @return {Matrix} This matrix. Good for chaining method calls.
- **/
+ */
 PIXI.Matrix.prototype.append = function(matrix)
 {
     var a1 = this.a;
@@ -738,6 +780,12 @@ PIXI.Matrix.prototype.append = function(matrix)
     return this;
 };
 
+/**
+ * Resets this Matix to an identity (default) matrix.
+ * 
+ * @method identity
+ * @return {Matrix} This matrix. Good for chaining method calls.
+ */
 PIXI.Matrix.prototype.identity = function()
 {
     this.a = 1;
@@ -746,6 +794,8 @@ PIXI.Matrix.prototype.identity = function()
     this.d = 1;
     this.tx = 0;
     this.ty = 0;
+
+    return this;
 };
 
 PIXI.identityMatrix = new PIXI.Matrix();
@@ -2860,12 +2910,32 @@ PIXI.MovieClip.fromImages = function(images)
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
-
+/**
+ * A target and pass info object for filters.
+ * 
+ * @class FilterBlock
+ * @constructor
+ */
 PIXI.FilterBlock = function()
 {
+    /**
+     * The visible state of this FilterBlock.
+     *
+     * @property visible
+     * @type Boolean
+     */
     this.visible = true;
+
+    /**
+     * The renderable state of this FilterBlock.
+     *
+     * @property renderable
+     * @type Boolean
+     */
     this.renderable = true;
 };
+
+PIXI.FilterBlock.prototype.constructor = PIXI.FilterBlock;
 
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
@@ -14885,7 +14955,7 @@ PIXI.RenderTexture.tempMatrix = new PIXI.Matrix();
  * @class AssetLoader
  * @constructor
  * @uses EventTarget
- * @param {Array<String>} assetURLs an array of image/sprite sheet urls that you would like loaded
+ * @param assetURLs {Array<String>} An array of image/sprite sheet urls that you would like loaded
  *      supported. Supported image formats include 'jpeg', 'jpg', 'png', 'gif'. Supported
  *      sprite sheet data formats only include 'JSON' at this time. Supported bitmap font
  *      data formats include 'xml' and 'fnt'.
@@ -14945,7 +15015,7 @@ PIXI.EventTarget.mixin(PIXI.AssetLoader.prototype);
 PIXI.AssetLoader.prototype.constructor = PIXI.AssetLoader;
 
 /**
- * Given a filename, returns its extension, wil
+ * Given a filename, returns its extension.
  *
  * @method _getDataType
  * @param str {String} the name of the asset
@@ -15048,6 +15118,7 @@ PIXI.AssetLoader.prototype.onAssetLoaded = function(loader)
  * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
  */
 PIXI.JsonLoader = function (url, crossorigin) {
+
     /**
      * The url of the bitmap font data
      *
@@ -15086,6 +15157,7 @@ PIXI.JsonLoader = function (url, crossorigin) {
 
 // constructor
 PIXI.JsonLoader.prototype.constructor = PIXI.JsonLoader;
+
 PIXI.EventTarget.mixin(PIXI.JsonLoader.prototype);
 
 /**
@@ -15099,7 +15171,7 @@ PIXI.JsonLoader.prototype.load = function () {
     {
         this.ajaxRequest = new window.XDomainRequest();
 
-        // XDomainRequest has a few querks. Occasionally it will abort requests
+        // XDomainRequest has a few quirks. Occasionally it will abort requests
         // A way to avoid this is to make sure ALL callbacks are set even if not used
         // More info here: http://stackoverflow.com/questions/15786966/xdomainrequest-aborts-post-on-ie-9
         this.ajaxRequest.timeout = 3000;
@@ -15120,8 +15192,6 @@ PIXI.JsonLoader.prototype.load = function () {
         this.ajaxRequest = new window.ActiveXObject('Microsoft.XMLHTTP');
     }
 
-
-
     this.ajaxRequest.onload = this.onJSONLoaded.bind(this);
 
     this.ajaxRequest.open('GET',this.url,true);
@@ -15130,7 +15200,7 @@ PIXI.JsonLoader.prototype.load = function () {
 };
 
 /**
- * Invoke when JSON file is loaded
+ * Invoked when the JSON file is loaded.
  *
  * @method onJSONLoaded
  * @private
@@ -15194,7 +15264,7 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
 };
 
 /**
- * Invoke when json file loaded
+ * Invoked when the json file has loaded.
  *
  * @method onLoaded
  * @private
@@ -15208,7 +15278,7 @@ PIXI.JsonLoader.prototype.onLoaded = function () {
 };
 
 /**
- * Invoke when error occured
+ * Invoked if an error occurs.
  *
  * @method onError
  * @private
@@ -15226,16 +15296,19 @@ PIXI.JsonLoader.prototype.onError = function () {
  */
 
 /**
- * The atlas file loader is used to load in Atlas data and parse it
- * When loaded this class will dispatch a 'loaded' event
- * If loading fails this class will dispatch an 'error' event
+ * The atlas file loader is used to load in Texture Atlas data and parse it. When loaded this class will dispatch a 'loaded' event. If loading fails this class will dispatch an 'error' event.
+ *
+ * To generate the data you can use http://www.codeandweb.com/texturepacker and publish in the 'JSON' format.
+ * 
+ * It is highly recommended to use texture atlases (also know as 'sprite sheets') as it allowed sprites to be batched and drawn together for highly increased rendering speed.
+ * Once the data has been loaded the frames are stored in the PIXI texture cache and can be accessed though PIXI.Texture.fromFrameId() and PIXI.Sprite.fromFrameId()
+ * 
  * @class AtlasLoader
  * @uses EventTarget
  * @constructor
- * @param {String} url the url of the JSON file
- * @param {Boolean} crossorigin
+ * @param url {String} The url of the JSON file
+ * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
  */
-
 PIXI.AtlasLoader = function (url, crossorigin) {
     this.url = url;
     this.baseUrl = url.replace(/[^\/]*$/, '');
@@ -15264,7 +15337,8 @@ PIXI.AtlasLoader.prototype.load = function () {
 };
 
 /**
- * Invoke when JSON file is loaded
+ * Invoked when the Atlas has fully loaded. Parses the JSON and builds the texture frames.
+ * 
  * @method onAtlasLoaded
  * @private
  */
@@ -15383,7 +15457,8 @@ PIXI.AtlasLoader.prototype.onAtlasLoaded = function () {
 };
 
 /**
- * Invoke when json file has loaded
+ * Invoked when json file has loaded.
+ * 
  * @method onLoaded
  * @private
  */
@@ -15398,7 +15473,8 @@ PIXI.AtlasLoader.prototype.onLoaded = function () {
 };
 
 /**
- * Invoke when error occured
+ * Invoked when an error occurs.
+ * 
  * @method onError
  * @private
  */
@@ -15426,14 +15502,9 @@ PIXI.AtlasLoader.prototype.onError = function () {
  * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
  */
 PIXI.SpriteSheetLoader = function (url, crossorigin) {
-    /*
-     * i use texture packer to load the assets..
-     * http://www.codeandweb.com/texturepacker
-     * make sure to set the format as 'JSON'
-     */
 
     /**
-     * The url of the bitmap font data
+     * The url of the atlas data
      *
      * @property url
      * @type String
@@ -15544,6 +15615,7 @@ PIXI.ImageLoader = function(url, crossorigin)
 
 // constructor
 PIXI.ImageLoader.prototype.constructor = PIXI.ImageLoader;
+
 PIXI.EventTarget.mixin(PIXI.ImageLoader.prototype);
 
 /**
@@ -15576,7 +15648,6 @@ PIXI.ImageLoader.prototype.onLoaded = function()
 
 /**
  * Loads image and split it to uniform sized frames
- *
  *
  * @method loadFramedSpriteSheet
  * @param frameWidth {Number} width of each frame
@@ -15627,12 +15698,6 @@ PIXI.ImageLoader.prototype.loadFramedSpriteSheet = function(frameWidth, frameHei
  */
 PIXI.BitmapFontLoader = function(url, crossorigin)
 {
-    /*
-     * I use texture packer to load the assets..
-     * http://www.codeandweb.com/texturepacker
-     * make sure to set the format as 'JSON'
-     */
-
     /**
      * The url of the bitmap font data
      *
@@ -15661,8 +15726,8 @@ PIXI.BitmapFontLoader = function(url, crossorigin)
     /**
      * [read-only] The texture of the bitmap font
      *
-     * @property baseUrl
-     * @type String
+     * @property texture
+     * @type Texture
      */
     this.texture = null;
 };
@@ -15687,7 +15752,7 @@ PIXI.BitmapFontLoader.prototype.load = function()
 };
 
 /**
- * Invoked when the XML file is loaded, parses the data
+ * Invoked when the XML file is loaded, parses the data.
  *
  * @method onXMLLoaded
  * @private
@@ -15849,7 +15914,7 @@ PIXI.SpineLoader.prototype.load = function () {
 };
 
 /**
- * Invoke when JSON file is loaded
+ * Invoked when JSON file is loaded.
  *
  * @method onLoaded
  * @private
@@ -15859,18 +15924,17 @@ PIXI.SpineLoader.prototype.onLoaded = function () {
     this.emit('loaded', { content: this });
 };
 
-
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
 /**
- * This is the base class for creating a pixi.js filter. Currently only webGL supports filters.
+ * This is the base class for creating a PIXI filter. Currently only webGL supports filters.
  * If you want to make a custom filter this should be your base class.
  * @class AbstractFilter
  * @constructor
- * @param fragmentSrc
- * @param uniforms
+ * @param fragmentSrc {Array} The fragment source in an array of strings.
+ * @param uniforms {Object} An object containing the uniforms for this filter.
  */
 PIXI.AbstractFilter = function(fragmentSrc, uniforms)
 {
@@ -15890,7 +15954,16 @@ PIXI.AbstractFilter = function(fragmentSrc, uniforms)
     */
     this.shaders = [];
     
+    /**
+    * @property dirty
+    * @type Boolean
+    */
     this.dirty = true;
+
+    /**
+    * @property padding
+    * @type Number
+    */
     this.padding = 0;
 
     /**
@@ -15899,6 +15972,7 @@ PIXI.AbstractFilter = function(fragmentSrc, uniforms)
     * @private
     */
     this.uniforms = uniforms || {};
+
     /**
     * @property fragmentSrc
     * @type Array
@@ -15907,6 +15981,13 @@ PIXI.AbstractFilter = function(fragmentSrc, uniforms)
     this.fragmentSrc = fragmentSrc || [];
 };
 
+PIXI.AbstractFilter.prototype.constructor = PIXI.AbstractFilter;
+
+/**
+ * Syncs the uniforms between the class object and the shaders.
+ *
+ * @method syncUniforms
+ */
 PIXI.AbstractFilter.prototype.syncUniforms = function()
 {
     for(var i=0,j=this.shaders.length; i<j; i++)
@@ -15914,6 +15995,7 @@ PIXI.AbstractFilter.prototype.syncUniforms = function()
         this.shaders[i].dirty = true;
     }
 };
+
 /*
 PIXI.AbstractFilter.prototype.apply = function(frameBuffer)
 {
@@ -15925,13 +16007,14 @@ PIXI.AbstractFilter.prototype.apply = function(frameBuffer)
  */
 
 /**
- *
  * The AlphaMaskFilter class uses the pixel values from the specified texture (called the displacement map) to perform a displacement of an object.
  * You can use this filter to apply all manor of crazy warping effects
- * Currently the r property of the texture is used to offset the x and the g propery of the texture is used to offset the y.
+ * Currently the r property of the texture is used to offset the x and the g property of the texture is used to offset the y.
+ * 
  * @class AlphaMaskFilter
+ * @extends AbstractFilter
  * @constructor
- * @param texture {Texture} The texture used for the displacemtent map * must be power of 2 texture at the moment
+ * @param texture {Texture} The texture used for the displacement map * must be power of 2 texture at the moment
  */
 PIXI.AlphaMaskFilter = function(texture)
 {
@@ -15989,6 +16072,11 @@ PIXI.AlphaMaskFilter = function(texture)
 PIXI.AlphaMaskFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.AlphaMaskFilter.prototype.constructor = PIXI.AlphaMaskFilter;
 
+/**
+ * Sets the map dimensions uniforms when the texture becomes available.
+ *
+ * @method onTextureLoaded
+ */
 PIXI.AlphaMaskFilter.prototype.onTextureLoaded = function()
 {
     this.uniforms.mapDimensions.value.x = this.uniforms.mask.value.width;
@@ -15998,7 +16086,7 @@ PIXI.AlphaMaskFilter.prototype.onTextureLoaded = function()
 };
 
 /**
- * The texture used for the displacemtent map * must be power of 2 texture at the moment
+ * The texture used for the displacement map. Must be power of 2 sized texture.
  *
  * @property map
  * @type Texture
@@ -16012,17 +16100,17 @@ Object.defineProperty(PIXI.AlphaMaskFilter.prototype, 'map', {
     }
 });
 
-
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
 /**
- *
  * The ColorMatrixFilter class lets you apply a 4x4 matrix transformation on the RGBA
  * color and alpha values of every pixel on your displayObject to produce a result
- * with a new set of RGBA color and alpha values. Its pretty powerful!
+ * with a new set of RGBA color and alpha values. It's pretty powerful!
+ * 
  * @class ColorMatrixFilter
+ * @extends AbstractFilter
  * @constructor
  */
 PIXI.ColorMatrixFilter = function()
@@ -16077,9 +16165,10 @@ Object.defineProperty(PIXI.ColorMatrixFilter.prototype, 'matrix', {
  */
 
 /**
- *
- * This turns your displayObjects to black and white.
+ * This greyscales the palette of your Display Objects.
+ * 
  * @class GrayFilter
+ * @extends AbstractFilter
  * @constructor
  */
 PIXI.GrayFilter = function()
@@ -16112,9 +16201,10 @@ PIXI.GrayFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.GrayFilter.prototype.constructor = PIXI.GrayFilter;
 
 /**
-The strength of the gray. 1 will make the object black and white, 0 will make the object its normal color
-@property gray
-*/
+ * The strength of the gray. 1 will make the object black and white, 0 will make the object its normal color.
+ * @property gray
+ * @type Number
+ */
 Object.defineProperty(PIXI.GrayFilter.prototype, 'gray', {
     get: function() {
         return this.uniforms.gray.value;
@@ -16129,13 +16219,14 @@ Object.defineProperty(PIXI.GrayFilter.prototype, 'gray', {
  */
 
 /**
- *
  * The DisplacementFilter class uses the pixel values from the specified texture (called the displacement map) to perform a displacement of an object.
  * You can use this filter to apply all manor of crazy warping effects
- * Currently the r property of the texture is used offset the x and the g propery of the texture is used to offset the y.
+ * Currently the r property of the texture is used offset the x and the g property of the texture is used to offset the y.
+ * 
  * @class DisplacementFilter
+ * @extends AbstractFilter
  * @constructor
- * @param texture {Texture} The texture used for the displacemtent map * must be power of 2 texture at the moment
+ * @param texture {Texture} The texture used for the displacement map * must be power of 2 texture at the moment
  */
 PIXI.DisplacementFilter = function(texture)
 {
@@ -16200,6 +16291,11 @@ PIXI.DisplacementFilter = function(texture)
 PIXI.DisplacementFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.DisplacementFilter.prototype.constructor = PIXI.DisplacementFilter;
 
+/**
+ * Sets the map dimensions uniforms when the texture becomes available.
+ *
+ * @method onTextureLoaded
+ */
 PIXI.DisplacementFilter.prototype.onTextureLoaded = function()
 {
     this.uniforms.mapDimensions.value.x = this.uniforms.displacementMap.value.width;
@@ -16209,7 +16305,7 @@ PIXI.DisplacementFilter.prototype.onTextureLoaded = function()
 };
 
 /**
- * The texture used for the displacemtent map * must be power of 2 texture at the moment
+ * The texture used for the displacement map. Must be power of 2 texture.
  *
  * @property map
  * @type Texture
@@ -16258,9 +16354,10 @@ Object.defineProperty(PIXI.DisplacementFilter.prototype, 'offset', {
  */
 
 /**
- *
- * This filter applies a pixelate effect making display objects appear 'blocky'
+ * This filter applies a pixelate effect making display objects appear 'blocky'.
+ * 
  * @class PixelateFilter
+ * @extends AbstractFilter
  * @constructor
  */
 PIXI.PixelateFilter = function()
@@ -16300,8 +16397,8 @@ PIXI.PixelateFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.PixelateFilter.prototype.constructor = PIXI.PixelateFilter;
 
 /**
- *
- * This a point that describes the size of the blocs. x is the width of the block and y is the the height
+ * This a point that describes the size of the blocks. x is the width of the block and y is the height.
+ * 
  * @property size
  * @type Point
  */
@@ -16319,6 +16416,13 @@ Object.defineProperty(PIXI.PixelateFilter.prototype, 'size', {
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
+/**
+ * The BlurXFilter applies a horizontal Gaussian blur to an object.
+ *
+ * @class BlurXFilter
+ * @extends AbstractFilter
+ * @constructor
+ */
 PIXI.BlurXFilter = function()
 {
     PIXI.AbstractFilter.call( this );
@@ -16358,6 +16462,13 @@ PIXI.BlurXFilter = function()
 PIXI.BlurXFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.BlurXFilter.prototype.constructor = PIXI.BlurXFilter;
 
+/**
+ * Sets the strength of both the blur.
+ *
+ * @property blur
+ * @type Number the strength of the blur
+ * @default 2
+ */
 Object.defineProperty(PIXI.BlurXFilter.prototype, 'blur', {
     get: function() {
         return this.uniforms.blur.value / (1/7000);
@@ -16373,6 +16484,13 @@ Object.defineProperty(PIXI.BlurXFilter.prototype, 'blur', {
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
+/**
+ * The BlurYFilter applies a vertical Gaussian blur to an object.
+ *
+ * @class BlurYFilter
+ * @extends AbstractFilter
+ * @constructor
+ */
 PIXI.BlurYFilter = function()
 {
     PIXI.AbstractFilter.call( this );
@@ -16412,6 +16530,13 @@ PIXI.BlurYFilter = function()
 PIXI.BlurYFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.BlurYFilter.prototype.constructor = PIXI.BlurYFilter;
 
+/**
+ * Sets the strength of both the blur.
+ *
+ * @property blur
+ * @type Number the strength of the blur
+ * @default 2
+ */
 Object.defineProperty(PIXI.BlurYFilter.prototype, 'blur', {
     get: function() {
         return this.uniforms.blur.value / (1/7000);
@@ -16427,11 +16552,11 @@ Object.defineProperty(PIXI.BlurYFilter.prototype, 'blur', {
  */
 
 /**
- *
  * The BlurFilter applies a Gaussian blur to an object.
  * The strength of the blur can be set for x- and y-axis separately (always relative to the stage).
  *
  * @class BlurFilter
+ * @extends AbstractFilter
  * @constructor
  */
 PIXI.BlurFilter = function()
@@ -16441,6 +16566,9 @@ PIXI.BlurFilter = function()
 
     this.passes =[this.blurXFilter, this.blurYFilter];
 };
+
+PIXI.BlurFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
+PIXI.BlurFilter.prototype.constructor = PIXI.BlurFilter;
 
 /**
  * Sets the strength of both the blurX and blurY properties simultaneously
@@ -16475,7 +16603,7 @@ Object.defineProperty(PIXI.BlurFilter.prototype, 'blurX', {
 });
 
 /**
- * Sets the strength of the blurX property
+ * Sets the strength of the blurY property
  *
  * @property blurY
  * @type Number the strength of the blurY
@@ -16495,9 +16623,10 @@ Object.defineProperty(PIXI.BlurFilter.prototype, 'blurY', {
  */
 
 /**
- *
- * This inverts your displayObjects colors.
+ * This inverts your Display Objects colors.
+ * 
  * @class InvertFilter
+ * @extends AbstractFilter
  * @constructor
  */
 PIXI.InvertFilter = function()
@@ -16531,8 +16660,9 @@ PIXI.InvertFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.InvertFilter.prototype.constructor = PIXI.InvertFilter;
 
 /**
-The strength of the invert. 1 will fully invert the colors, 0 will make the object its normal color
-@property invert
+ * The strength of the invert. 1 will fully invert the colors, 0 will make the object its normal color
+ * @property invert
+ * @type Number
 */
 Object.defineProperty(PIXI.InvertFilter.prototype, 'invert', {
     get: function() {
@@ -16548,9 +16678,10 @@ Object.defineProperty(PIXI.InvertFilter.prototype, 'invert', {
  */
 
 /**
- *
- * This applies a sepia effect to your displayObjects.
+ * This applies a sepia effect to your Display Objects.
+ * 
  * @class SepiaFilter
+ * @extends AbstractFilter
  * @constructor
  */
 PIXI.SepiaFilter = function()
@@ -16585,8 +16716,9 @@ PIXI.SepiaFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.SepiaFilter.prototype.constructor = PIXI.SepiaFilter;
 
 /**
-The strength of the sepia. 1 will apply the full sepia effect, 0 will make the object its normal color
-@property sepia
+ * The strength of the sepia. 1 will apply the full sepia effect, 0 will make the object its normal color.
+ * @property sepia
+ * @type Number
 */
 Object.defineProperty(PIXI.SepiaFilter.prototype, 'sepia', {
     get: function() {
@@ -16602,9 +16734,10 @@ Object.defineProperty(PIXI.SepiaFilter.prototype, 'sepia', {
  */
 
 /**
- *
- * This filter applies a twist effect making display objects appear twisted in the given direction
+ * This filter applies a twist effect making display objects appear twisted in the given direction.
+ * 
  * @class TwistFilter
+ * @extends AbstractFilter
  * @constructor
  */
 PIXI.TwistFilter = function()
@@ -16652,9 +16785,9 @@ PIXI.TwistFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.TwistFilter.prototype.constructor = PIXI.TwistFilter;
 
 /**
- *
- * This point describes the the offset of the twist
- * @property size
+ * This point describes the the offset of the twist.
+ * 
+ * @property offset
  * @type Point
  */
 Object.defineProperty(PIXI.TwistFilter.prototype, 'offset', {
@@ -16668,9 +16801,9 @@ Object.defineProperty(PIXI.TwistFilter.prototype, 'offset', {
 });
 
 /**
- *
- * This radius describes size of the twist
- * @property size
+ * This radius of the twist.
+ * 
+ * @property radius
  * @type Number
  */
 Object.defineProperty(PIXI.TwistFilter.prototype, 'radius', {
@@ -16684,8 +16817,8 @@ Object.defineProperty(PIXI.TwistFilter.prototype, 'radius', {
 });
 
 /**
- *
- * This radius describes angle of the twist
+ * This angle of the twist.
+ * 
  * @property angle
  * @type Number
  */
@@ -16698,14 +16831,16 @@ Object.defineProperty(PIXI.TwistFilter.prototype, 'angle', {
         this.uniforms.angle.value = value;
     }
 });
+
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
 /**
- *
  * This lowers the color depth of your image by the given amount, producing an image with a smaller palette.
+ * 
  * @class ColorStepFilter
+ * @extends AbstractFilter
  * @constructor
  */
 PIXI.ColorStepFilter = function()
@@ -16738,9 +16873,11 @@ PIXI.ColorStepFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.ColorStepFilter.prototype.constructor = PIXI.ColorStepFilter;
 
 /**
-The number of steps.
-@property step
-*/
+ * The number of steps to reduce the palette by.
+ *
+ * @property step
+ * @type Number
+ */
 Object.defineProperty(PIXI.ColorStepFilter.prototype, 'step', {
     get: function() {
         return this.uniforms.step.value;
@@ -16756,9 +16893,10 @@ Object.defineProperty(PIXI.ColorStepFilter.prototype, 'step', {
  */
 
 /**
- *
- * This filter applies a dotscreen effect making display objects appear to be made out of black and white halftone dots like an old printer
+ * This filter applies a dotscreen effect making display objects appear to be made out of black and white halftone dots like an old printer.
+ * 
  * @class DotScreenFilter
+ * @extends AbstractFilter
  * @constructor
  */
 PIXI.DotScreenFilter = function()
@@ -16806,8 +16944,7 @@ PIXI.DotScreenFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.DotScreenFilter.prototype.constructor = PIXI.DotScreenFilter;
 
 /**
- *
- * This describes the the scale
+ * The scale of the effect.
  * @property scale
  * @type Number
  */
@@ -16822,8 +16959,7 @@ Object.defineProperty(PIXI.DotScreenFilter.prototype, 'scale', {
 });
 
 /**
- *
- * This radius describes angle
+ * The radius of the effect.
  * @property angle
  * @type Number
  */
@@ -16841,6 +16977,13 @@ Object.defineProperty(PIXI.DotScreenFilter.prototype, 'angle', {
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
+/**
+ * A Cross Hatch effect filter.
+ * 
+ * @class CrossHatchFilter
+ * @extends AbstractFilter
+ * @constructor
+ */
 PIXI.CrossHatchFilter = function()
 {
     PIXI.AbstractFilter.call( this );
@@ -16892,8 +17035,15 @@ PIXI.CrossHatchFilter = function()
 };
 
 PIXI.CrossHatchFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
-PIXI.CrossHatchFilter.prototype.constructor = PIXI.BlurYFilter;
+PIXI.CrossHatchFilter.prototype.constructor = PIXI.CrossHatchFilter;
 
+/**
+ * Sets the strength of both the blur.
+ *
+ * @property blur
+ * @type Number the strength of the blur
+ * @default 2
+ */
 Object.defineProperty(PIXI.CrossHatchFilter.prototype, 'blur', {
     get: function() {
         return this.uniforms.blur.value / (1/7000);
@@ -16908,6 +17058,13 @@ Object.defineProperty(PIXI.CrossHatchFilter.prototype, 'blur', {
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
+/**
+ * An RGB Split Filter.
+ * 
+ * @class RGBSplitFilter
+ * @extends AbstractFilter
+ * @constructor
+ */
 PIXI.RGBSplitFilter = function()
 {
     PIXI.AbstractFilter.call( this );
@@ -16944,6 +17101,12 @@ PIXI.RGBSplitFilter = function()
 PIXI.RGBSplitFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.RGBSplitFilter.prototype.constructor = PIXI.RGBSplitFilter;
 
+/**
+ * The angle of the split.
+ * 
+ * @property angle
+ * @type Number
+ */
 Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'angle', {
     get: function() {
         return this.uniforms.blur.value / (1/7000);

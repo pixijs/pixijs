@@ -47,9 +47,13 @@
             
                 <li><a href="../classes/AlphaMaskFilter.html">AlphaMaskFilter</a></li>
             
+                <li><a href="../classes/AsciiFilter.html">AsciiFilter</a></li>
+            
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
                 <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
+                <li><a href="../classes/autoDetectRecommendedRenderer.html">autoDetectRecommendedRenderer</a></li>
             
                 <li><a href="../classes/autoDetectRenderer.html">autoDetectRenderer</a></li>
             
@@ -60,6 +64,10 @@
                 <li><a href="../classes/BitmapText.html">BitmapText</a></li>
             
                 <li><a href="../classes/BlurFilter.html">BlurFilter</a></li>
+            
+                <li><a href="../classes/BlurXFilter.html">BlurXFilter</a></li>
+            
+                <li><a href="../classes/BlurYFilter.html">BlurYFilter</a></li>
             
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
@@ -77,6 +85,10 @@
             
                 <li><a href="../classes/ComplexPrimitiveShader.html">ComplexPrimitiveShader</a></li>
             
+                <li><a href="../classes/ConvolutionFilter.html">ConvolutionFilter</a></li>
+            
+                <li><a href="../classes/CrossHatchFilter.html">CrossHatchFilter</a></li>
+            
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
@@ -91,11 +103,13 @@
             
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
+                <li><a href="../classes/FilterBlock.html">FilterBlock</a></li>
+            
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
             
-                <li><a href="../classes/getRecommendedRenderer.html">getRecommendedRenderer</a></li>
-            
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
+            
+                <li><a href="../classes/GraphicsData.html">GraphicsData</a></li>
             
                 <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
@@ -112,6 +126,8 @@
                 <li><a href="../classes/Matrix.html">Matrix</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
+            
+                <li><a href="../classes/NoiseFilter.html">NoiseFilter</a></li>
             
                 <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
             
@@ -133,9 +149,13 @@
             
                 <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
             
+                <li><a href="../classes/RGBSplitFilter.html">RGBSplitFilter</a></li>
+            
                 <li><a href="../classes/Rope.html">Rope</a></li>
             
                 <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
+            
+                <li><a href="../classes/SmartBlurFilter.html">SmartBlurFilter</a></li>
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
@@ -149,6 +169,8 @@
             
                 <li><a href="../classes/Strip.html">Strip</a></li>
             
+                <li><a href="../classes/StripShader.html">StripShader</a></li>
+            
                 <li><a href="../classes/Text.html">Text</a></li>
             
                 <li><a href="../classes/Texture.html">Texture</a></li>
@@ -157,11 +179,21 @@
             
                 <li><a href="../classes/TiltShiftFilter.html">TiltShiftFilter</a></li>
             
+                <li><a href="../classes/TiltShiftXFilter.html">TiltShiftXFilter</a></li>
+            
+                <li><a href="../classes/TiltShiftYFilter.html">TiltShiftYFilter</a></li>
+            
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
+            
+                <li><a href="../classes/WebGLBlendModeManager.html">WebGLBlendModeManager</a></li>
+            
+                <li><a href="../classes/WebGLFastSpriteBatch.html">WebGLFastSpriteBatch</a></li>
             
                 <li><a href="../classes/WebGLFilterManager.html">WebGLFilterManager</a></li>
             
                 <li><a href="../classes/WebGLGraphics.html">WebGLGraphics</a></li>
+            
+                <li><a href="../classes/WebGLGraphicsData.html">WebGLGraphicsData</a></li>
             
                 <li><a href="../classes/WebGLMaskManager.html">WebGLMaskManager</a></li>
             
@@ -248,7 +280,17 @@
     <h3 class="name"><code>PixiShader</code></h3>
 
     
-        <span class="paren">()</span>
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>gl</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
     
 
     
@@ -290,6 +332,30 @@
         
     </div>
 
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">gl</code>
+                        <span class="type">WebGLContext</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the current WebGL drawing context</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
     
 
     
@@ -369,6 +435,20 @@
 
                     <ul class="index-list properties">
                         
+                            <li class="index-item property private">
+                                <a href="#property__UID">_UID</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property private">
+                                <a href="#property_attributes">attributes</a>
+
+                                
+                                
+                            </li>
+                        
                             <li class="index-item property">
                                 <a href="#property_defaultVertexSrc">defaultVertexSrc</a>
 
@@ -377,7 +457,21 @@
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_fragmentSrc - The fragment shader.">fragmentSrc - The fragment shader.</a>
+                                <a href="#property_dirty">dirty</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property private">
+                                <a href="#property_firstRun">firstRun</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_fragmentSrc">fragmentSrc</a>
 
                                 
                                 
@@ -391,14 +485,14 @@
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_program - The WebGL program.">program - The WebGL program.</a>
+                                <a href="#property_program">program</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_textureCount - A local texture counter for multi-texture shaders.">textureCount - A local texture counter for multi-texture shaders.</a>
+                                <a href="#property_textureCount">textureCount</a>
 
                                 
                                 
@@ -450,7 +544,7 @@
             
         
         
-        <a href="../files/src_pixi_renderers_webgl_shaders_PixiShader.js.html#l305"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;shaders&#x2F;PixiShader.js:305</code></a>
+        <a href="../files/src_pixi_renderers_webgl_shaders_PixiShader.js.html#l351"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;shaders&#x2F;PixiShader.js:351</code></a>
         
         </p>
 
@@ -461,7 +555,7 @@
     </div>
 
     <div class="description">
-        <p>Destroys the shader</p>
+        <p>Destroys the shader.</p>
 
     </div>
 
@@ -505,7 +599,7 @@
             
         
         
-        <a href="../files/src_pixi_renderers_webgl_shaders_PixiShader.js.html#l48"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;shaders&#x2F;PixiShader.js:48</code></a>
+        <a href="../files/src_pixi_renderers_webgl_shaders_PixiShader.js.html#l83"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;shaders&#x2F;PixiShader.js:83</code></a>
         
         </p>
 
@@ -516,7 +610,7 @@
     </div>
 
     <div class="description">
-        <p>Initialises the shader</p>
+        <p>Initialises the shader.</p>
 
     </div>
 
@@ -560,7 +654,7 @@
             
         
         
-        <a href="../files/src_pixi_renderers_webgl_shaders_PixiShader.js.html#l173"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;shaders&#x2F;PixiShader.js:173</code></a>
+        <a href="../files/src_pixi_renderers_webgl_shaders_PixiShader.js.html#l208"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;shaders&#x2F;PixiShader.js:208</code></a>
         
         </p>
 
@@ -615,7 +709,7 @@
             
         
         
-        <a href="../files/src_pixi_renderers_webgl_shaders_PixiShader.js.html#l100"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;shaders&#x2F;PixiShader.js:100</code></a>
+        <a href="../files/src_pixi_renderers_webgl_shaders_PixiShader.js.html#l134"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;shaders&#x2F;PixiShader.js:134</code></a>
         
         </p>
 
@@ -626,8 +720,8 @@
     </div>
 
     <div class="description">
-        <p>Initialises the shader uniform values.
-Uniforms are specified in the GLSL_ES Specification: <a href="http://www.khronos.org/registry/webgl/specs/latest/1.0/">http://www.khronos.org/registry/webgl/specs/latest/1.0/</a>
+        <p>Initialises the shader uniform values.</p>
+<p>Uniforms are specified in the GLSL_ES Specification: <a href="http://www.khronos.org/registry/webgl/specs/latest/1.0/">http://www.khronos.org/registry/webgl/specs/latest/1.0/</a>
 <a href="http://www.khronos.org/registry/gles/specs/2.0/GLSL_ES_Specification_1.0.17.pdf">http://www.khronos.org/registry/gles/specs/2.0/GLSL_ES_Specification_1.0.17.pdf</a></p>
 
     </div>
@@ -672,7 +766,7 @@ Uniforms are specified in the GLSL_ES Specification: <a href="http://www.khronos
             
         
         
-        <a href="../files/src_pixi_renderers_webgl_shaders_PixiShader.js.html#l248"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;shaders&#x2F;PixiShader.js:248</code></a>
+        <a href="../files/src_pixi_renderers_webgl_shaders_PixiShader.js.html#l283"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;shaders&#x2F;PixiShader.js:283</code></a>
         
         </p>
 
@@ -703,6 +797,99 @@ Uniforms are specified in the GLSL_ES Specification: <a href="http://www.khronos
                 <h2 class="off-left">Properties</h2>
 
                 
+                    <div id="property__UID" class="property item private">
+    <h3 class="name"><code>_UID</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_renderers_webgl_shaders_PixiShader.js.html#l13"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;shaders&#x2F;PixiShader.js:13</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_attributes" class="property item private">
+    <h3 class="name"><code>attributes</code></h3>
+    <span class="type">Array</span>
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_renderers_webgl_shaders_PixiShader.js.html#l70"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;shaders&#x2F;PixiShader.js:70</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Uniform attributes cache.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
                     <div id="property_defaultVertexSrc" class="property item">
     <h3 class="name"><code>defaultVertexSrc</code></h3>
     <span class="type">String</span>
@@ -726,7 +913,7 @@ Uniforms are specified in the GLSL_ES Specification: <a href="http://www.khronos
             
         
         
-        <a href="../files/src_pixi_renderers_webgl_shaders_PixiShader.js.html#l318"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;shaders&#x2F;PixiShader.js:318</code></a>
+        <a href="../files/src_pixi_renderers_webgl_shaders_PixiShader.js.html#l365"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;shaders&#x2F;PixiShader.js:365</code></a>
         
         </p>
 
@@ -736,7 +923,7 @@ Uniforms are specified in the GLSL_ES Specification: <a href="http://www.khronos
     </div>
 
     <div class="description">
-        <p>The Default Vertex shader source</p>
+        <p>The Default Vertex shader source.</p>
 
     </div>
 
@@ -748,8 +935,100 @@ Uniforms are specified in the GLSL_ES Specification: <a href="http://www.khronos
 </div>
 
                 
-                    <div id="property_fragmentSrc - The fragment shader." class="property item">
-    <h3 class="name"><code>fragmentSrc - The fragment shader.</code></h3>
+                    <div id="property_dirty" class="property item">
+    <h3 class="name"><code>dirty</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_renderers_webgl_shaders_PixiShader.js.html#l63"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;shaders&#x2F;PixiShader.js:63</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>A dirty flag</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_firstRun" class="property item private">
+    <h3 class="name"><code>firstRun</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_renderers_webgl_shaders_PixiShader.js.html#l55"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;shaders&#x2F;PixiShader.js:55</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>A local flag</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_fragmentSrc" class="property item">
+    <h3 class="name"><code>fragmentSrc</code></h3>
     <span class="type">Array</span>
 
     
@@ -771,7 +1050,7 @@ Uniforms are specified in the GLSL_ES Specification: <a href="http://www.khronos
             
         
         
-        <a href="../files/src_pixi_renderers_webgl_shaders_PixiShader.js.html#l25"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;shaders&#x2F;PixiShader.js:25</code></a>
+        <a href="../files/src_pixi_renderers_webgl_shaders_PixiShader.js.html#l33"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;shaders&#x2F;PixiShader.js:33</code></a>
         
         </p>
 
@@ -781,7 +1060,8 @@ Uniforms are specified in the GLSL_ES Specification: <a href="http://www.khronos
     </div>
 
     <div class="description">
-        
+        <p>The fragment shader.</p>
+
     </div>
 
     
@@ -795,50 +1075,6 @@ Uniforms are specified in the GLSL_ES Specification: <a href="http://www.khronos
                     <div id="property_gl" class="property item">
     <h3 class="name"><code>gl</code></h3>
     <span class="type">WebGLContext</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_pixi_renderers_webgl_shaders_PixiShader.js.html#l14"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;shaders&#x2F;PixiShader.js:14</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_program - The WebGL program." class="property item">
-    <h3 class="name"><code>program - The WebGL program.</code></h3>
-    <span class="type">Any</span>
 
     
 
@@ -880,8 +1116,53 @@ Uniforms are specified in the GLSL_ES Specification: <a href="http://www.khronos
 </div>
 
                 
-                    <div id="property_textureCount - A local texture counter for multi-texture shaders." class="property item">
-    <h3 class="name"><code>textureCount - A local texture counter for multi-texture shaders.</code></h3>
+                    <div id="property_program" class="property item">
+    <h3 class="name"><code>program</code></h3>
+    <span class="type">Any</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_renderers_webgl_shaders_PixiShader.js.html#l26"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;shaders&#x2F;PixiShader.js:26</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The WebGL program.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_textureCount" class="property item">
+    <h3 class="name"><code>textureCount</code></h3>
     <span class="type">Number</span>
 
     
@@ -903,7 +1184,7 @@ Uniforms are specified in the GLSL_ES Specification: <a href="http://www.khronos
             
         
         
-        <a href="../files/src_pixi_renderers_webgl_shaders_PixiShader.js.html#l38"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;shaders&#x2F;PixiShader.js:38</code></a>
+        <a href="../files/src_pixi_renderers_webgl_shaders_PixiShader.js.html#l48"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;shaders&#x2F;PixiShader.js:48</code></a>
         
         </p>
 
@@ -913,7 +1194,8 @@ Uniforms are specified in the GLSL_ES Specification: <a href="http://www.khronos
     </div>
 
     <div class="description">
-        
+        <p>A local texture counter for multi-texture shaders.</p>
+
     </div>
 
     

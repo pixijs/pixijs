@@ -47,9 +47,13 @@
             
                 <li><a href="../classes/AlphaMaskFilter.html">AlphaMaskFilter</a></li>
             
+                <li><a href="../classes/AsciiFilter.html">AsciiFilter</a></li>
+            
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
                 <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
+                <li><a href="../classes/autoDetectRecommendedRenderer.html">autoDetectRecommendedRenderer</a></li>
             
                 <li><a href="../classes/autoDetectRenderer.html">autoDetectRenderer</a></li>
             
@@ -60,6 +64,10 @@
                 <li><a href="../classes/BitmapText.html">BitmapText</a></li>
             
                 <li><a href="../classes/BlurFilter.html">BlurFilter</a></li>
+            
+                <li><a href="../classes/BlurXFilter.html">BlurXFilter</a></li>
+            
+                <li><a href="../classes/BlurYFilter.html">BlurYFilter</a></li>
             
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
@@ -77,6 +85,10 @@
             
                 <li><a href="../classes/ComplexPrimitiveShader.html">ComplexPrimitiveShader</a></li>
             
+                <li><a href="../classes/ConvolutionFilter.html">ConvolutionFilter</a></li>
+            
+                <li><a href="../classes/CrossHatchFilter.html">CrossHatchFilter</a></li>
+            
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
@@ -91,11 +103,13 @@
             
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
+                <li><a href="../classes/FilterBlock.html">FilterBlock</a></li>
+            
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
             
-                <li><a href="../classes/getRecommendedRenderer.html">getRecommendedRenderer</a></li>
-            
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
+            
+                <li><a href="../classes/GraphicsData.html">GraphicsData</a></li>
             
                 <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
@@ -112,6 +126,8 @@
                 <li><a href="../classes/Matrix.html">Matrix</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
+            
+                <li><a href="../classes/NoiseFilter.html">NoiseFilter</a></li>
             
                 <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
             
@@ -133,9 +149,13 @@
             
                 <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
             
+                <li><a href="../classes/RGBSplitFilter.html">RGBSplitFilter</a></li>
+            
                 <li><a href="../classes/Rope.html">Rope</a></li>
             
                 <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
+            
+                <li><a href="../classes/SmartBlurFilter.html">SmartBlurFilter</a></li>
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
@@ -149,6 +169,8 @@
             
                 <li><a href="../classes/Strip.html">Strip</a></li>
             
+                <li><a href="../classes/StripShader.html">StripShader</a></li>
+            
                 <li><a href="../classes/Text.html">Text</a></li>
             
                 <li><a href="../classes/Texture.html">Texture</a></li>
@@ -157,11 +179,21 @@
             
                 <li><a href="../classes/TiltShiftFilter.html">TiltShiftFilter</a></li>
             
+                <li><a href="../classes/TiltShiftXFilter.html">TiltShiftXFilter</a></li>
+            
+                <li><a href="../classes/TiltShiftYFilter.html">TiltShiftYFilter</a></li>
+            
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
+            
+                <li><a href="../classes/WebGLBlendModeManager.html">WebGLBlendModeManager</a></li>
+            
+                <li><a href="../classes/WebGLFastSpriteBatch.html">WebGLFastSpriteBatch</a></li>
             
                 <li><a href="../classes/WebGLFilterManager.html">WebGLFilterManager</a></li>
             
                 <li><a href="../classes/WebGLGraphics.html">WebGLGraphics</a></li>
+            
+                <li><a href="../classes/WebGLGraphicsData.html">WebGLGraphicsData</a></li>
             
                 <li><a href="../classes/WebGLMaskManager.html">WebGLMaskManager</a></li>
             
@@ -313,6 +345,8 @@ here is a representation of it :
             <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
         
         
+            <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
+        
         
         
     </ul>
@@ -328,7 +362,7 @@ here is a representation of it :
                     <ul class="index-list methods">
                         
                             <li class="index-item method">
-                                <a href="#method_apply">apply</a>
+                                <a href="#method_append">append</a>
 
                                 
                                 
@@ -336,6 +370,13 @@ here is a representation of it :
                         
                             <li class="index-item method">
                                 <a href="#method_apply">apply</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_applyInverse">applyInverse</a>
 
                                 
                                 
@@ -343,6 +384,13 @@ here is a representation of it :
                         
                             <li class="index-item method">
                                 <a href="#method_fromArray">fromArray</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_identity">identity</a>
 
                                 
                                 
@@ -376,8 +424,53 @@ here is a representation of it :
                                 
                             </li>
                         
-                            <li class="index-item method">
-                                <a href="#method_translate">translate</a>
+                    </ul>
+                </div>
+            
+
+            
+                <div class="index-section properties">
+                    <h3>Properties</h3>
+
+                    <ul class="index-list properties">
+                        
+                            <li class="index-item property">
+                                <a href="#property_a">a</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_b">b</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_c">c</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_d">d</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_tx">tx</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_ty">ty</a>
 
                                 
                                 
@@ -390,13 +483,117 @@ here is a representation of it :
             
 
             
-
-            
         </div>
 
         
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
+
+                
+                    <div id="method_append" class="method item">
+    <h3 class="name"><code>append</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>matrix</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Matrix.html" class="crosslink">Matrix</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_geom_Matrix.js.html#l224"><code>src&#x2F;pixi&#x2F;geom&#x2F;Matrix.js:224</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Appends the given Matrix to this Matrix.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">matrix</code>
+                        <span class="type"><a href="../classes/Matrix.html" class="crosslink">Matrix</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/Matrix.html" class="crosslink">Matrix</a></span>:
+                    
+                    <p>This matrix. Good for chaining method calls.</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
 
                 
                     <div id="method_apply" class="method item">
@@ -451,7 +648,7 @@ here is a representation of it :
             
         
         
-        <a href="../files/src_pixi_geom_Matrix.js.html#l81"><code>src&#x2F;pixi&#x2F;geom&#x2F;Matrix.js:81</code></a>
+        <a href="../files/src_pixi_geom_Matrix.js.html#l123"><code>src&#x2F;pixi&#x2F;geom&#x2F;Matrix.js:123</code></a>
         
         </p>
 
@@ -462,7 +659,7 @@ here is a representation of it :
     </div>
 
     <div class="description">
-        <p>Get a new position with the current transormation applied.
+        <p>Get a new position with the current transformation applied.
 Can be used to go from a child&#39;s coordinate space to the world coordinate space. (e.g. rendering)</p>
 
     </div>
@@ -519,7 +716,7 @@ Can be used to go from a child&#39;s coordinate space to the world coordinate sp
                     
                         <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>:
                     
-                    <p>The new point, transformed trough this matrix</p>
+                    <p>The new point, transformed through this matrix</p>
 
                 
             </div>
@@ -530,8 +727,8 @@ Can be used to go from a child&#39;s coordinate space to the world coordinate sp
 </div>
 
                 
-                    <div id="method_apply" class="method item">
-    <h3 class="name"><code>apply</code></h3>
+                    <div id="method_applyInverse" class="method item">
+    <h3 class="name"><code>applyInverse</code></h3>
 
     
         <div class="args">
@@ -582,7 +779,7 @@ Can be used to go from a child&#39;s coordinate space to the world coordinate sp
             
         
         
-        <a href="../files/src_pixi_geom_Matrix.js.html#l100"><code>src&#x2F;pixi&#x2F;geom&#x2F;Matrix.js:100</code></a>
+        <a href="../files/src_pixi_geom_Matrix.js.html#l142"><code>src&#x2F;pixi&#x2F;geom&#x2F;Matrix.js:142</code></a>
         
         </p>
 
@@ -593,7 +790,7 @@ Can be used to go from a child&#39;s coordinate space to the world coordinate sp
     </div>
 
     <div class="description">
-        <p>Get a new position with the inverse of the current transormation applied.
+        <p>Get a new position with the inverse of the current transformation applied.
 Can be used to go from the world coordinate space to a child&#39;s coordinate space. (e.g. input)</p>
 
     </div>
@@ -650,7 +847,7 @@ Can be used to go from the world coordinate space to a child&#39;s coordinate sp
                     
                         <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>:
                     
-                    <p>The new point, inverse-transformed trough this matrix</p>
+                    <p>The new point, inverse-transformed through this matrix</p>
 
                 
             </div>
@@ -703,7 +900,7 @@ Can be used to go from the world coordinate space to a child&#39;s coordinate sp
             
         
         
-        <a href="../files/src_pixi_geom_Matrix.js.html#l25"><code>src&#x2F;pixi&#x2F;geom&#x2F;Matrix.js:25</code></a>
+        <a href="../files/src_pixi_geom_Matrix.js.html#l60"><code>src&#x2F;pixi&#x2F;geom&#x2F;Matrix.js:60</code></a>
         
         </p>
 
@@ -714,7 +911,13 @@ Can be used to go from the world coordinate space to a child&#39;s coordinate sp
     </div>
 
     <div class="description">
-        <p>Creates a pixi matrix object based on the array given as a parameter</p>
+        <p>Creates a Matrix object based on the given array. The Element to Matrix mapping order is as follows:</p>
+<p>a = array[0]
+b = array[1]
+c = array[3]
+d = array[4]
+tx = array[2]
+ty = array[5]</p>
 
     </div>
 
@@ -733,7 +936,7 @@ Can be used to go from the world coordinate space to a child&#39;s coordinate sp
                     
 
                     <div class="param-description">
-                        <p>The array that the matrix will be filled with</p>
+                        <p>The array that the matrix will be populated from.</p>
 
                     </div>
 
@@ -744,6 +947,79 @@ Can be used to go from the world coordinate space to a child&#39;s coordinate sp
         </div>
     
 
+    
+
+    
+</div>
+
+                
+                    <div id="method_identity" class="method item">
+    <h3 class="name"><code>identity</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Matrix.html" class="crosslink">Matrix</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_geom_Matrix.js.html#l249"><code>src&#x2F;pixi&#x2F;geom&#x2F;Matrix.js:249</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Resets this Matix to an identity (default) matrix.</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/Matrix.html" class="crosslink">Matrix</a></span>:
+                    
+                    <p>This matrix. Good for chaining method calls.</p>
+
+                
+            </div>
+        </div>
     
 
     
@@ -796,7 +1072,7 @@ Can be used to go from the world coordinate space to a child&#39;s coordinate sp
             
         
         
-        <a href="../files/src_pixi_geom_Matrix.js.html#l155"><code>src&#x2F;pixi&#x2F;geom&#x2F;Matrix.js:155</code></a>
+        <a href="../files/src_pixi_geom_Matrix.js.html#l199"><code>src&#x2F;pixi&#x2F;geom&#x2F;Matrix.js:199</code></a>
         
         </p>
 
@@ -909,7 +1185,7 @@ Can be used to go from the world coordinate space to a child&#39;s coordinate sp
             
         
         
-        <a href="../files/src_pixi_geom_Matrix.js.html#l135"><code>src&#x2F;pixi&#x2F;geom&#x2F;Matrix.js:135</code></a>
+        <a href="../files/src_pixi_geom_Matrix.js.html#l178"><code>src&#x2F;pixi&#x2F;geom&#x2F;Matrix.js:178</code></a>
         
         </p>
 
@@ -1032,7 +1308,7 @@ Can be used to go from the world coordinate space to a child&#39;s coordinate sp
             
         
         
-        <a href="../files/src_pixi_geom_Matrix.js.html#l41"><code>src&#x2F;pixi&#x2F;geom&#x2F;Matrix.js:41</code></a>
+        <a href="../files/src_pixi_geom_Matrix.js.html#l83"><code>src&#x2F;pixi&#x2F;geom&#x2F;Matrix.js:83</code></a>
         
         </p>
 
@@ -1043,7 +1319,7 @@ Can be used to go from the world coordinate space to a child&#39;s coordinate sp
     </div>
 
     <div class="description">
-        <p>Creates an array from the current Matrix object</p>
+        <p>Creates an array from the current Matrix object.</p>
 
     </div>
 
@@ -1145,7 +1421,7 @@ Can be used to go from the world coordinate space to a child&#39;s coordinate sp
             
         
         
-        <a href="../files/src_pixi_geom_Matrix.js.html#l120"><code>src&#x2F;pixi&#x2F;geom&#x2F;Matrix.js:120</code></a>
+        <a href="../files/src_pixi_geom_Matrix.js.html#l162"><code>src&#x2F;pixi&#x2F;geom&#x2F;Matrix.js:162</code></a>
         
         </p>
 
@@ -1220,38 +1496,17 @@ Can be used to go from the world coordinate space to a child&#39;s coordinate sp
 </div>
 
                 
-                    <div id="method_translate" class="method item">
-    <h3 class="name"><code>translate</code></h3>
+            </div>
+        
 
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>x</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>y</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
+        
+            <div id="properties" class="api-class-tabpanel">
+                <h2 class="off-left">Properties</h2>
 
-    
-        <span class="returns-inline">
-            <span class="type"><a href="../classes/Matrix.html" class="crosslink">Matrix</a></span>
-        </span>
-    
-
-    
-
-    
+                
+                    <div id="property_a" class="property item">
+    <h3 class="name"><code>a</code></h3>
+    <span class="type">Number</span>
 
     
 
@@ -1272,10 +1527,9 @@ Can be used to go from the world coordinate space to a child&#39;s coordinate sp
             
         
         
-        <a href="../files/src_pixi_geom_Matrix.js.html#l181"><code>src&#x2F;pixi&#x2F;geom&#x2F;Matrix.js:181</code></a>
+        <a href="../files/src_pixi_geom_Matrix.js.html#l17"><code>src&#x2F;pixi&#x2F;geom&#x2F;Matrix.js:17</code></a>
         
         </p>
-
 
         
 
@@ -1283,64 +1537,243 @@ Can be used to go from the world coordinate space to a child&#39;s coordinate sp
     </div>
 
     <div class="description">
-        <p>Translates the matrix on the x and y.</p>
-
+        
     </div>
 
     
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">x</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">y</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
+        <p><strong>Default:</strong> 1</p>
     
 
     
-        <div class="returns">
-            <h4>Returns:</h4>
 
-            <div class="returns-description">
-                
-                    
-                        <span class="type"><a href="../classes/Matrix.html" class="crosslink">Matrix</a></span>:
-                    
-                    <p>This matrix. Good for chaining method calls.</p>
+    
+</div>
 
                 
-            </div>
-        </div>
+                    <div id="property_b" class="property item">
+    <h3 class="name"><code>b</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_geom_Matrix.js.html#l24"><code>src&#x2F;pixi&#x2F;geom&#x2F;Matrix.js:24</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+        <p><strong>Default:</strong> 0</p>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_c" class="property item">
+    <h3 class="name"><code>c</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_geom_Matrix.js.html#l31"><code>src&#x2F;pixi&#x2F;geom&#x2F;Matrix.js:31</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+        <p><strong>Default:</strong> 0</p>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_d" class="property item">
+    <h3 class="name"><code>d</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_geom_Matrix.js.html#l38"><code>src&#x2F;pixi&#x2F;geom&#x2F;Matrix.js:38</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+        <p><strong>Default:</strong> 1</p>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_tx" class="property item">
+    <h3 class="name"><code>tx</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_geom_Matrix.js.html#l45"><code>src&#x2F;pixi&#x2F;geom&#x2F;Matrix.js:45</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+        <p><strong>Default:</strong> 0</p>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_ty" class="property item">
+    <h3 class="name"><code>ty</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_geom_Matrix.js.html#l52"><code>src&#x2F;pixi&#x2F;geom&#x2F;Matrix.js:52</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+        <p><strong>Default:</strong> 0</p>
+    
+
     
 
     
@@ -1348,8 +1781,6 @@ Can be used to go from the world coordinate space to a child&#39;s coordinate sp
 
                 
             </div>
-        
-
         
 
         

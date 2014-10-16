@@ -47,9 +47,13 @@
             
                 <li><a href="../classes/AlphaMaskFilter.html">AlphaMaskFilter</a></li>
             
+                <li><a href="../classes/AsciiFilter.html">AsciiFilter</a></li>
+            
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
                 <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
+                <li><a href="../classes/autoDetectRecommendedRenderer.html">autoDetectRecommendedRenderer</a></li>
             
                 <li><a href="../classes/autoDetectRenderer.html">autoDetectRenderer</a></li>
             
@@ -60,6 +64,10 @@
                 <li><a href="../classes/BitmapText.html">BitmapText</a></li>
             
                 <li><a href="../classes/BlurFilter.html">BlurFilter</a></li>
+            
+                <li><a href="../classes/BlurXFilter.html">BlurXFilter</a></li>
+            
+                <li><a href="../classes/BlurYFilter.html">BlurYFilter</a></li>
             
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
@@ -77,6 +85,10 @@
             
                 <li><a href="../classes/ComplexPrimitiveShader.html">ComplexPrimitiveShader</a></li>
             
+                <li><a href="../classes/ConvolutionFilter.html">ConvolutionFilter</a></li>
+            
+                <li><a href="../classes/CrossHatchFilter.html">CrossHatchFilter</a></li>
+            
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
@@ -91,11 +103,13 @@
             
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
+                <li><a href="../classes/FilterBlock.html">FilterBlock</a></li>
+            
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
             
-                <li><a href="../classes/getRecommendedRenderer.html">getRecommendedRenderer</a></li>
-            
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
+            
+                <li><a href="../classes/GraphicsData.html">GraphicsData</a></li>
             
                 <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
@@ -112,6 +126,8 @@
                 <li><a href="../classes/Matrix.html">Matrix</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
+            
+                <li><a href="../classes/NoiseFilter.html">NoiseFilter</a></li>
             
                 <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
             
@@ -133,9 +149,13 @@
             
                 <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
             
+                <li><a href="../classes/RGBSplitFilter.html">RGBSplitFilter</a></li>
+            
                 <li><a href="../classes/Rope.html">Rope</a></li>
             
                 <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
+            
+                <li><a href="../classes/SmartBlurFilter.html">SmartBlurFilter</a></li>
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
@@ -149,6 +169,8 @@
             
                 <li><a href="../classes/Strip.html">Strip</a></li>
             
+                <li><a href="../classes/StripShader.html">StripShader</a></li>
+            
                 <li><a href="../classes/Text.html">Text</a></li>
             
                 <li><a href="../classes/Texture.html">Texture</a></li>
@@ -157,11 +179,21 @@
             
                 <li><a href="../classes/TiltShiftFilter.html">TiltShiftFilter</a></li>
             
+                <li><a href="../classes/TiltShiftXFilter.html">TiltShiftXFilter</a></li>
+            
+                <li><a href="../classes/TiltShiftYFilter.html">TiltShiftYFilter</a></li>
+            
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
+            
+                <li><a href="../classes/WebGLBlendModeManager.html">WebGLBlendModeManager</a></li>
+            
+                <li><a href="../classes/WebGLFastSpriteBatch.html">WebGLFastSpriteBatch</a></li>
             
                 <li><a href="../classes/WebGLFilterManager.html">WebGLFilterManager</a></li>
             
                 <li><a href="../classes/WebGLGraphics.html">WebGLGraphics</a></li>
+            
+                <li><a href="../classes/WebGLGraphicsData.html">WebGLGraphicsData</a></li>
             
                 <li><a href="../classes/WebGLMaskManager.html">WebGLMaskManager</a></li>
             
@@ -219,9 +251,7 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- * @author Mat Groves
- * 
- * 
+ * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
 /**
@@ -231,23 +261,18 @@
  */
 PIXI.CanvasTinter = function()
 {
-    /// this.textureCach
 };
 
-//PIXI.CanvasTinter.cachTint = true;
-    
-
 /**
- * Basically this method just needs a sprite and a color and tints the sprite 
- * with the given color
+ * Basically this method just needs a sprite and a color and tints the sprite with the given color.
  * 
  * @method getTintedTexture 
  * @param sprite {Sprite} the sprite to tint
  * @param color {Number} the color to use to tint the sprite with
+ * @return {HTMLCanvasElement} The tinted canvas
  */
 PIXI.CanvasTinter.getTintedTexture = function(sprite, color)
 {
-
     var texture = sprite.texture;
 
     color = PIXI.CanvasTinter.roundColor(color);
@@ -262,8 +287,6 @@ PIXI.CanvasTinter.getTintedTexture = function(sprite, color)
     var canvas = PIXI.CanvasTinter.canvas || document.createElement(&quot;canvas&quot;);
     
     //PIXI.CanvasTinter.tintWithPerPixel(texture, stringColor, canvas);
-
-    
     PIXI.CanvasTinter.tintMethod(texture, color, canvas);
 
     if(PIXI.CanvasTinter.convertTintToImage)
@@ -276,20 +299,19 @@ PIXI.CanvasTinter.getTintedTexture = function(sprite, color)
     }
     else
     {
-      
         texture.tintCache[stringColor] = canvas;
         // if we are not converting the texture to an image then we need to lose the reference to the canvas
         PIXI.CanvasTinter.canvas = null;
-
     }
 
     return canvas;
 };
 
 /**
- * Tint a texture using the &quot;multiply&quot; operation
+ * Tint a texture using the &quot;multiply&quot; operation.
+ * 
  * @method tintWithMultiply
- * @param texture {texture} the texture to tint
+ * @param texture {Texture} the texture to tint
  * @param color {Number} the color to use to tint the sprite with
  * @param canvas {HTMLCanvasElement} the current canvas
  */
@@ -332,7 +354,8 @@ PIXI.CanvasTinter.tintWithMultiply = function(texture, color, canvas)
 };
 
 /**
- * Tint a texture using the &quot;overlay&quot; operation
+ * Tint a texture using the &quot;overlay&quot; operation.
+ * 
  * @method tintWithOverlay
  * @param texture {texture} the texture to tint
  * @param color {Number} the color to use to tint the sprite with
@@ -346,8 +369,6 @@ PIXI.CanvasTinter.tintWithOverlay = function(texture, color, canvas)
 
     canvas.width = crop.width;
     canvas.height = crop.height;
-
-    
     
     context.globalCompositeOperation = &quot;copy&quot;;
     context.fillStyle = &quot;#&quot; + (&quot;00000&quot; + ( color | 0).toString(16)).substr(-6);
@@ -363,14 +384,13 @@ PIXI.CanvasTinter.tintWithOverlay = function(texture, color, canvas)
                            0,
                            crop.width,
                            crop.height);
-
     
     //context.globalCompositeOperation = &quot;copy&quot;;
-
 };
 
 /**
- * Tint a texture pixel per pixel
+ * Tint a texture pixel per pixel.
+ * 
  * @method tintPerPixel
  * @param texture {texture} the texture to tint
  * @param color {Number} the color to use to tint the sprite with
@@ -414,7 +434,8 @@ PIXI.CanvasTinter.tintWithPerPixel = function(texture, color, canvas)
 };
 
 /**
- * Rounds the specified color according to the PIXI.CanvasTinter.cacheStepsPerColorChannel
+ * Rounds the specified color according to the PIXI.CanvasTinter.cacheStepsPerColorChannel.
+ * 
  * @method roundColor
  * @param color {number} the color to round, should be a hex color
  */
@@ -432,16 +453,15 @@ PIXI.CanvasTinter.roundColor = function(color)
 };
 
 /**
- * 
- * Number of steps which will be used as a cap when rounding colors
+ * Number of steps which will be used as a cap when rounding colors.
  *
  * @property cacheStepsPerColorChannel
  * @type Number
  */
 PIXI.CanvasTinter.cacheStepsPerColorChannel = 8;
+
 /**
- * 
- * Number of steps which will be used as a cap when rounding colors
+ * Tint cache boolean flag.
  *
  * @property convertTintToImage
  * @type Boolean
@@ -449,15 +469,19 @@ PIXI.CanvasTinter.cacheStepsPerColorChannel = 8;
 PIXI.CanvasTinter.convertTintToImage = false;
 
 /**
- * Whether or not the Canvas BlendModes are supported, consequently the ability to tint using the multiply method
+ * Whether or not the Canvas BlendModes are supported, consequently the ability to tint using the multiply method.
  *
  * @property canUseMultiply
  * @type Boolean
  */
 PIXI.CanvasTinter.canUseMultiply = PIXI.canUseNewCanvasBlendModes();
 
+/**
+ * The tinting method that will be used.
+ * 
+ * @method tintMethod
+ */
 PIXI.CanvasTinter.tintMethod = PIXI.CanvasTinter.canUseMultiply ? PIXI.CanvasTinter.tintWithMultiply :  PIXI.CanvasTinter.tintWithPerPixel;
-
 
     </pre>
 </div>

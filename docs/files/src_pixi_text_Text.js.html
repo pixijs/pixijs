@@ -47,9 +47,13 @@
             
                 <li><a href="../classes/AlphaMaskFilter.html">AlphaMaskFilter</a></li>
             
+                <li><a href="../classes/AsciiFilter.html">AsciiFilter</a></li>
+            
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
                 <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
+                <li><a href="../classes/autoDetectRecommendedRenderer.html">autoDetectRecommendedRenderer</a></li>
             
                 <li><a href="../classes/autoDetectRenderer.html">autoDetectRenderer</a></li>
             
@@ -60,6 +64,10 @@
                 <li><a href="../classes/BitmapText.html">BitmapText</a></li>
             
                 <li><a href="../classes/BlurFilter.html">BlurFilter</a></li>
+            
+                <li><a href="../classes/BlurXFilter.html">BlurXFilter</a></li>
+            
+                <li><a href="../classes/BlurYFilter.html">BlurYFilter</a></li>
             
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
@@ -77,6 +85,10 @@
             
                 <li><a href="../classes/ComplexPrimitiveShader.html">ComplexPrimitiveShader</a></li>
             
+                <li><a href="../classes/ConvolutionFilter.html">ConvolutionFilter</a></li>
+            
+                <li><a href="../classes/CrossHatchFilter.html">CrossHatchFilter</a></li>
+            
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
@@ -91,11 +103,13 @@
             
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
+                <li><a href="../classes/FilterBlock.html">FilterBlock</a></li>
+            
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
             
-                <li><a href="../classes/getRecommendedRenderer.html">getRecommendedRenderer</a></li>
-            
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
+            
+                <li><a href="../classes/GraphicsData.html">GraphicsData</a></li>
             
                 <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
@@ -112,6 +126,8 @@
                 <li><a href="../classes/Matrix.html">Matrix</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
+            
+                <li><a href="../classes/NoiseFilter.html">NoiseFilter</a></li>
             
                 <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
             
@@ -133,9 +149,13 @@
             
                 <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
             
+                <li><a href="../classes/RGBSplitFilter.html">RGBSplitFilter</a></li>
+            
                 <li><a href="../classes/Rope.html">Rope</a></li>
             
                 <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
+            
+                <li><a href="../classes/SmartBlurFilter.html">SmartBlurFilter</a></li>
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
@@ -149,6 +169,8 @@
             
                 <li><a href="../classes/Strip.html">Strip</a></li>
             
+                <li><a href="../classes/StripShader.html">StripShader</a></li>
+            
                 <li><a href="../classes/Text.html">Text</a></li>
             
                 <li><a href="../classes/Texture.html">Texture</a></li>
@@ -157,11 +179,21 @@
             
                 <li><a href="../classes/TiltShiftFilter.html">TiltShiftFilter</a></li>
             
+                <li><a href="../classes/TiltShiftXFilter.html">TiltShiftXFilter</a></li>
+            
+                <li><a href="../classes/TiltShiftYFilter.html">TiltShiftYFilter</a></li>
+            
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
+            
+                <li><a href="../classes/WebGLBlendModeManager.html">WebGLBlendModeManager</a></li>
+            
+                <li><a href="../classes/WebGLFastSpriteBatch.html">WebGLFastSpriteBatch</a></li>
             
                 <li><a href="../classes/WebGLFilterManager.html">WebGLFilterManager</a></li>
             
                 <li><a href="../classes/WebGLGraphics.html">WebGLGraphics</a></li>
+            
+                <li><a href="../classes/WebGLGraphicsData.html">WebGLGraphicsData</a></li>
             
                 <li><a href="../classes/WebGLMaskManager.html">WebGLMaskManager</a></li>
             
@@ -220,13 +252,12 @@
     <pre class="code prettyprint linenums">
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
- * - Modified by Tom Slezakowski http://www.tomslezakowski.com @TomSlezakowski (24/03/2014) - Added dropShadowColor.
+ * Modified by Tom Slezakowski http://www.tomslezakowski.com @TomSlezakowski (24/03/2014) - Added dropShadowColor.
  */
 
 /**
- * A Text Object will create a line(s) of text. To split a line you can use &#x27;\n&#x27; 
- * or add a wordWrap property set to true and and wordWrapWidth property with a value
- * in the style object
+ * A Text Object will create a line or multiple lines of text. To split a line you can use &#x27;\n&#x27; in your text string,
+ * or add a wordWrap property set to true and and wordWrapWidth property with a value in the style object.
  *
  * @class Text
  * @extends Sprite
@@ -258,19 +289,21 @@ PIXI.Text = function(text, style)
     /**
      * The canvas 2d context that everything is drawn with
      * @property context
-     * @type HTMLCanvasElement 2d Context
+     * @type HTMLCanvasElement
      */
     this.context = this.canvas.getContext(&#x27;2d&#x27;);
 
-
+    /**
+     * The resolution of the canvas.
+     * @property resolution
+     * @type Number
+     */
     this.resolution = 1;
-
 
     PIXI.Sprite.call(this, PIXI.Texture.fromCanvas(this.canvas));
 
     this.setText(text);
     this.setStyle(style);
-
 
 };
 
@@ -278,9 +311,8 @@ PIXI.Text = function(text, style)
 PIXI.Text.prototype = Object.create(PIXI.Sprite.prototype);
 PIXI.Text.prototype.constructor = PIXI.Text;
 
-
 /**
- * The width of the sprite, setting this will actually modify the scale to achieve the value set
+ * The width of the Text, setting this will actually modify the scale to achieve the value set
  *
  * @property width
  * @type Number
@@ -327,7 +359,6 @@ Object.defineProperty(PIXI.Text.prototype, &#x27;height&#x27;, {
     }
 });
 
-
 /**
  * Set the style of the text
  *
@@ -366,16 +397,15 @@ PIXI.Text.prototype.setStyle = function(style)
 };
 
 /**
- * Set the copy for the text object. To split a line you can use &#x27;\n&#x27;
+ * Set the copy for the text object. To split a line you can use &#x27;\n&#x27;.
  *
  * @method setText
- * @param {String} text The copy that you would like the text to display
+ * @param text {String} The copy that you would like the text to display
  */
 PIXI.Text.prototype.setText = function(text)
 {
     this.text = text.toString() || &#x27; &#x27;;
     this.dirty = true;
-
 };
 
 /**
@@ -432,7 +462,6 @@ PIXI.Text.prototype.updateText = function()
 
     var linePositionX;
     var linePositionY;
-
 
     if(this.style.dropShadow)
     {
@@ -495,7 +524,6 @@ PIXI.Text.prototype.updateText = function()
       //  if(dropShadow)
     }
 
-
     this.updateTexture();
 };
 
@@ -517,7 +545,6 @@ PIXI.Text.prototype.updateTexture = function()
 
     // update the dirty base textures
     this.texture.baseTexture.dirty();
-
 };
 
 /**
@@ -535,18 +562,15 @@ PIXI.Text.prototype._renderWebGL = function(renderSession)
 
         this.updateText();
         this.dirty = false;
-
-       
     }
 
     PIXI.Sprite.prototype._renderWebGL.call(this, renderSession);
 };
 
-
 /**
-* Renders the object using the WebGL renderer
+* Renders the object using the Canvas renderer
 *
-* @method _renderWebGL
+* @method _renderCanvas
 * @param renderSession {RenderSession} 
 * @private
 */
@@ -564,9 +588,9 @@ PIXI.Text.prototype._renderCanvas = function(renderSession)
 };
 
 /*
- * http://stackoverflow.com/users/34441/ellisbben
- * great solution to the problem!
- * returns the height of the given font
+ * Determine the font height. Based on http://stackoverflow.com/users/34441/ellisbben - a great solution to the problem!
+ * Returns the height of the given font.
+ * Warning: This creates DOM elements each time it is called.
  *
  * @method determineFontHeight
  * @param fontStyle {Object}
@@ -645,7 +669,7 @@ PIXI.Text.prototype.wordWrap = function(text)
 };
 
 /**
- * Destroys this text object
+ * Destroys this text object.
  *
  * @method destroy
  * @param destroyBaseTexture {Boolean} whether to destroy the base texture as well

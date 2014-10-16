@@ -47,9 +47,13 @@
             
                 <li><a href="../classes/AlphaMaskFilter.html">AlphaMaskFilter</a></li>
             
+                <li><a href="../classes/AsciiFilter.html">AsciiFilter</a></li>
+            
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
                 <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
+                <li><a href="../classes/autoDetectRecommendedRenderer.html">autoDetectRecommendedRenderer</a></li>
             
                 <li><a href="../classes/autoDetectRenderer.html">autoDetectRenderer</a></li>
             
@@ -60,6 +64,10 @@
                 <li><a href="../classes/BitmapText.html">BitmapText</a></li>
             
                 <li><a href="../classes/BlurFilter.html">BlurFilter</a></li>
+            
+                <li><a href="../classes/BlurXFilter.html">BlurXFilter</a></li>
+            
+                <li><a href="../classes/BlurYFilter.html">BlurYFilter</a></li>
             
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
@@ -77,6 +85,10 @@
             
                 <li><a href="../classes/ComplexPrimitiveShader.html">ComplexPrimitiveShader</a></li>
             
+                <li><a href="../classes/ConvolutionFilter.html">ConvolutionFilter</a></li>
+            
+                <li><a href="../classes/CrossHatchFilter.html">CrossHatchFilter</a></li>
+            
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
@@ -91,11 +103,13 @@
             
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
             
+                <li><a href="../classes/FilterBlock.html">FilterBlock</a></li>
+            
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
             
-                <li><a href="../classes/getRecommendedRenderer.html">getRecommendedRenderer</a></li>
-            
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
+            
+                <li><a href="../classes/GraphicsData.html">GraphicsData</a></li>
             
                 <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
@@ -112,6 +126,8 @@
                 <li><a href="../classes/Matrix.html">Matrix</a></li>
             
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
+            
+                <li><a href="../classes/NoiseFilter.html">NoiseFilter</a></li>
             
                 <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
             
@@ -133,9 +149,13 @@
             
                 <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
             
+                <li><a href="../classes/RGBSplitFilter.html">RGBSplitFilter</a></li>
+            
                 <li><a href="../classes/Rope.html">Rope</a></li>
             
                 <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
+            
+                <li><a href="../classes/SmartBlurFilter.html">SmartBlurFilter</a></li>
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
             
@@ -149,6 +169,8 @@
             
                 <li><a href="../classes/Strip.html">Strip</a></li>
             
+                <li><a href="../classes/StripShader.html">StripShader</a></li>
+            
                 <li><a href="../classes/Text.html">Text</a></li>
             
                 <li><a href="../classes/Texture.html">Texture</a></li>
@@ -157,11 +179,21 @@
             
                 <li><a href="../classes/TiltShiftFilter.html">TiltShiftFilter</a></li>
             
+                <li><a href="../classes/TiltShiftXFilter.html">TiltShiftXFilter</a></li>
+            
+                <li><a href="../classes/TiltShiftYFilter.html">TiltShiftYFilter</a></li>
+            
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
+            
+                <li><a href="../classes/WebGLBlendModeManager.html">WebGLBlendModeManager</a></li>
+            
+                <li><a href="../classes/WebGLFastSpriteBatch.html">WebGLFastSpriteBatch</a></li>
             
                 <li><a href="../classes/WebGLFilterManager.html">WebGLFilterManager</a></li>
             
                 <li><a href="../classes/WebGLGraphics.html">WebGLGraphics</a></li>
+            
+                <li><a href="../classes/WebGLGraphicsData.html">WebGLGraphicsData</a></li>
             
                 <li><a href="../classes/WebGLMaskManager.html">WebGLMaskManager</a></li>
             
@@ -248,17 +280,7 @@
     <h3 class="name"><code>WebGLMaskManager</code></h3>
 
     
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>gl</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
+        <span class="paren">()</span>
     
 
     
@@ -302,30 +324,6 @@
         
     </div>
 
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">gl</code>
-                        <span class="type">WebGLContext</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>the current WebGL drawing context</p>
-
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
     
 
     
@@ -374,13 +372,6 @@
                         
                             <li class="index-item method">
                                 <a href="#method_pushMask">pushMask</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_setBlendMode">setBlendMode</a>
 
                                 
                                 
@@ -441,7 +432,7 @@
             
         
         
-        <a href="../files/src_pixi_renderers_webgl_utils_WebGLMaskManager.js.html#l59"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;WebGLMaskManager.js:59</code></a>
+        <a href="../files/src_pixi_renderers_webgl_utils_WebGLMaskManager.js.html#l61"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;WebGLMaskManager.js:61</code></a>
         
         </p>
 
@@ -452,7 +443,7 @@
     </div>
 
     <div class="description">
-        <p>Destroys the mask stack</p>
+        <p>Destroys the mask stack.</p>
 
     </div>
 
@@ -470,6 +461,12 @@
     
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>maskData</code>
+                    
+                </li>
             
                 <li class="arg">
                     
@@ -506,7 +503,7 @@
             
         
         
-        <a href="../files/src_pixi_renderers_webgl_utils_WebGLMaskManager.js.html#l46"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;WebGLMaskManager.js:46</code></a>
+        <a href="../files/src_pixi_renderers_webgl_utils_WebGLMaskManager.js.html#l48"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;WebGLMaskManager.js:48</code></a>
         
         </p>
 
@@ -517,7 +514,7 @@
     </div>
 
     <div class="description">
-        <p>Removes the last filter from the filter stack and doesn&#39;t return it</p>
+        <p>Removes the last filter from the filter stack and doesn&#39;t return it.</p>
 
     </div>
 
@@ -529,8 +526,23 @@
             
                 <li class="param">
                     
+                        <code class="param-name">maskData</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
                         <code class="param-name">renderSession</code>
-                        <span class="type">RenderSession</span>
+                        <span class="type">Object</span>
                     
 
                     
@@ -601,7 +613,7 @@
             
         
         
-        <a href="../files/src_pixi_renderers_webgl_utils_WebGLMaskManager.js.html#l26"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;WebGLMaskManager.js:26</code></a>
+        <a href="../files/src_pixi_renderers_webgl_utils_WebGLMaskManager.js.html#l27"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;WebGLMaskManager.js:27</code></a>
         
         </p>
 
@@ -612,7 +624,7 @@
     </div>
 
     <div class="description">
-        <p>Applies the Mask and adds it to the current filter stack</p>
+        <p>Applies the Mask and adds it to the current filter stack.</p>
 
     </div>
 
@@ -640,102 +652,13 @@
                 <li class="param">
                     
                         <code class="param-name">renderSession</code>
-                        <span class="type">RenderSession</span>
+                        <span class="type">Object</span>
                     
 
                     
 
                     <div class="param-description">
                          
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_setBlendMode" class="method item">
-    <h3 class="name"><code>setBlendMode</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>blendMode</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_pixi_renderers_webgl_utils_WebGLBlendModeManager.js.html#l21"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;WebGLBlendModeManager.js:21</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Sets-up the given blendMode from WebGL&#39;s point of view</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">blendMode</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>the blendMode, should be a Pixi const, such as PIXI.BlendModes.ADD</p>
-
                     </div>
 
                     
@@ -804,7 +727,7 @@
     </div>
 
     <div class="description">
-        <p>Sets the drawing context to the one given in parameter</p>
+        <p>Sets the drawing context to the one given in parameter.</p>
 
     </div>
 
