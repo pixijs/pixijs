@@ -1,16 +1,16 @@
 /**
  * The ConvolutionFilter class applies a matrix convolution filter effect. 
- * A convolution combines pixels in the input image with neighboring pixels to produce an image. 
+ * A convolution combines pixels in the input image with neighboring pixels to produce a new image. 
  * A wide variety of image effects can be achieved through convolutions, including blurring, edge detection, sharpening, embossing, and beveling.
+ * The matrix should be specified as a 9 point Array. See http://docs.gimp.org/en/plug-in-convmatrix.html for more info.
  * 
  * @class ConvolutionFilter
  * @extends AbstractFilter
  * @constructor
- * @param texture {Array} An array of values used for matrix transformation.
+ * @param matrix {Array} An array of values used for matrix transformation. Specified as a 9 point Array.
  * @param width {Number} Width of the object you are transforming
  * @param height {Number} Height of the object you are transforming
  */
-
 PIXI.ConvolutionFilter = function(matrix, width, height)
 {
     PIXI.AbstractFilter.call( this );
@@ -23,7 +23,6 @@ PIXI.ConvolutionFilter = function(matrix, width, height)
         texelSizeX: {type: '1f', value: 1 / width},
         texelSizeY: {type: '1f', value: 1 / height}
     };
-
 
     this.fragmentSrc = [
         'precision mediump float;',
@@ -61,7 +60,12 @@ PIXI.ConvolutionFilter = function(matrix, width, height)
 PIXI.ConvolutionFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.ConvolutionFilter.prototype.constructor = PIXI.ConvolutionFilter;
 
-
+/**
+ * An array of values used for matrix transformation. Specified as a 9 point Array.
+ *
+ * @property matrix
+ * @type Array
+ */
 Object.defineProperty(PIXI.ConvolutionFilter.prototype, 'matrix', {
     get: function() {
         return this.uniforms.m.value;
@@ -71,6 +75,12 @@ Object.defineProperty(PIXI.ConvolutionFilter.prototype, 'matrix', {
     }
 });
 
+/**
+ * Width of the object you are transforming
+ *
+ * @property width
+ * @type Number
+ */
 Object.defineProperty(PIXI.ConvolutionFilter.prototype, 'width', {
     get: function() {
         return this.uniforms.texelSizeX.value;
@@ -80,6 +90,12 @@ Object.defineProperty(PIXI.ConvolutionFilter.prototype, 'width', {
     }
 });
 
+/**
+ * Height of the object you are transforming
+ *
+ * @property height
+ * @type Number
+ */
 Object.defineProperty(PIXI.ConvolutionFilter.prototype, 'height', {
     get: function() {
         return this.uniforms.texelSizeY.value;
