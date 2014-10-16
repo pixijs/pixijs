@@ -49,7 +49,7 @@ PIXI._CompileShader = function(gl, shaderSrc, shaderType)
 
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS))
     {
-        console.log(gl.getShaderInfoLog(shader));
+        window.console.log(gl.getShaderInfoLog(shader));
         return null;
     }
 
@@ -76,7 +76,7 @@ PIXI.compileProgram = function(gl, vertexSrc, fragmentSrc)
 
     if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS))
     {
-        console.log("Could not initialise shaders");
+        window.console.log("Could not initialise shaders");
     }
 
     return shaderProgram;
