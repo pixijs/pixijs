@@ -1,32 +1,56 @@
 /**
- * @author Mat Groves
- * 
- * 
+ * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
 /**
- * Creates a Canvas element of the given size
+ * Creates a Canvas element of the given size.
  *
  * @method CanvasBuffer
  * @param width {Number} the width for the newly created canvas
  * @param height {Number} the height for the newly created canvas
- * @static
- * @private
  */
 PIXI.CanvasBuffer = function(width, height)
 {
+    /**
+     * The width of the Canvas in pixels.
+     *
+     * @property width
+     * @type Number
+     */
     this.width = width;
+
+    /**
+     * The height of the Canvas in pixels.
+     *
+     * @property height
+     * @type Number
+     */
     this.height = height;
 
-    this.canvas = document.createElement( "canvas" );
-    this.context = this.canvas.getContext( "2d" );
+    /**
+     * The Canvas object that belongs to this CanvasBuffer.
+     *
+     * @property canvas
+     * @type HTMLCanvasElement
+     */
+    this.canvas = document.createElement("canvas");
+
+    /**
+     * A CanvasRenderingContext2D object representing a two-dimensional rendering context.
+     *
+     * @property context
+     * @type CanvasRenderingContext2D
+     */
+    this.context = this.canvas.getContext("2d");
 
     this.canvas.width = width;
     this.canvas.height = height;
 };
 
+PIXI.CanvasBuffer.prototype.constructor = PIXI.CanvasBuffer;
+
 /**
- * Clears the canvas that was created by the CanvasBuffer class
+ * Clears the canvas that was created by the CanvasBuffer class.
  *
  * @method clear
  * @private
@@ -37,17 +61,14 @@ PIXI.CanvasBuffer.prototype.clear = function()
 };
 
 /**
- * Resizes the canvas that was created by the CanvasBuffer class to the specified width and height
+ * Resizes the canvas to the specified width and height.
  *
  * @method resize
  * @param width {Number} the new width of the canvas
  * @param height {Number} the new height of the canvas
- * @private
  */
-
 PIXI.CanvasBuffer.prototype.resize = function(width, height)
 {
     this.width = this.canvas.width = width;
     this.height = this.canvas.height = height;
 };
-

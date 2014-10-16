@@ -3,14 +3,13 @@
  */
 
 /**
- * the CanvasRenderer draws the stage and all its content onto a 2d canvas. This renderer should be used for browsers that do not support webGL.
- * Dont forget to add the view to your DOM or you will not see anything :)
+ * The CanvasRenderer draws the Stage and all its content onto a 2d canvas. This renderer should be used for browsers that do not support webGL.
+ * Don't forget to add the CanvasRenderer.view to your DOM or you will not see anything :)
  *
  * @class CanvasRenderer
  * @constructor
  * @param [width=800] {Number} the width of the canvas view
  * @param [height=600] {Number} the height of the canvas view
-
  * @param [options] {Object} The optional renderer parameters
  * @param [options.view] {HTMLCanvasElement} the canvas to use as a view, optional
  * @param [options.transparent=false] {Boolean} If the render view is transparent, default false
@@ -37,8 +36,20 @@ PIXI.CanvasRenderer = function(width, height, options)
         PIXI.defaultRenderer = this;
     }
 
+    /**
+     * The renderer type.
+     *
+     * @property type
+     * @type Number
+     */
     this.type = PIXI.CANVAS_RENDERER;
 
+    /**
+     * The resolution of the canvas.
+     *
+     * @property resolution
+     * @type Number
+     */
     this.resolution = options.resolution;
 
     /**
@@ -60,7 +71,6 @@ PIXI.CanvasRenderer = function(width, height, options)
      * @type Boolean
      */
     this.transparent = options.transparent;
-
     
     /**
      * The width of the canvas view
@@ -84,7 +94,7 @@ PIXI.CanvasRenderer = function(width, height, options)
     this.height *= this.resolution;
 
     /**
-     * The canvas element that everything is drawn to
+     * The canvas element that everything is drawn to.
      *
      * @property view
      * @type HTMLCanvasElement
@@ -98,12 +108,23 @@ PIXI.CanvasRenderer = function(width, height, options)
      */
     this.context = this.view.getContext( "2d", { alpha: this.transparent } );
 
+    /**
+     * Boolean flag controlling canvas refresh.
+     *
+     * @property refresh
+     * @type Boolean
+     */
     this.refresh = true;
-    // hack to enable some hardware acceleration!
-    //this.view.style["transform"] = "translatez(0)";
 
     this.view.width = this.width * this.resolution;
     this.view.height = this.height * this.resolution;
+
+    /**
+     * Internal var.
+     *
+     * @property count
+     * @type Number
+     */
     this.count = 0;
 
     /**
@@ -151,7 +172,7 @@ PIXI.CanvasRenderer = function(width, height, options)
 PIXI.CanvasRenderer.prototype.constructor = PIXI.CanvasRenderer;
 
 /**
- * Renders the stage to its canvas view
+ * Renders the Stage to this canvas view
  *
  * @method render
  * @param stage {Stage} the Stage element to be rendered
@@ -233,8 +254,12 @@ PIXI.CanvasRenderer.prototype.renderDisplayObject = function(displayObject, cont
     displayObject._renderCanvas(this.renderSession);
 };
 
-
-
+/**
+ * Maps Pixi blend modes to canvas blend modes.
+ *
+ * @method mapBlendModes
+ * @private
+ */
 PIXI.CanvasRenderer.prototype.mapBlendModes = function()
 {
     if(!PIXI.blendModesCanvas)
