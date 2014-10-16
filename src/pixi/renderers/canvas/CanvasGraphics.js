@@ -210,7 +210,7 @@ PIXI.CanvasGraphics.renderGraphicsMask = function(graphics, context)
     for (var i = 0; i < 1; i++)
     {
         var data = graphics.graphicsData[i];
-        var points = data.points;
+        var points = data.shape.points;
 
         if(data.type === PIXI.Graphics.POLY)
         {
