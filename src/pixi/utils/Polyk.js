@@ -28,23 +28,21 @@
 
     This is an amazing lib!
 
-    slightly modified by Mat Groves (matgroves.com);
+    Slightly modified by Mat Groves (matgroves.com);
 */
 
 /**
  * Based on the Polyk library http://polyk.ivank.net released under MIT licence.
  * This is an amazing lib!
- * slightly modified by Mat Groves (matgroves.com);
+ * Slightly modified by Mat Groves (matgroves.com);
  * @class PolyK
- *
  */
 PIXI.PolyK = {};
 
 /**
- * Triangulates shapes for webGL graphic fills
+ * Triangulates shapes for webGL graphic fills.
  *
  * @method Triangulate
- * 
  */
 PIXI.PolyK.Triangulate = function(p)
 {
@@ -132,6 +130,7 @@ PIXI.PolyK.Triangulate = function(p)
  * @param cx {Number} x coordinate of the c point of the triangle
  * @param cy {Number} y coordinate of the c point of the triangle
  * @private
+ * @return {Boolean}
  */
 PIXI.PolyK._PointInTriangle = function(px, py, ax, ay, bx, by, cx, cy)
 {
@@ -160,8 +159,8 @@ PIXI.PolyK._PointInTriangle = function(px, py, ax, ay, bx, by, cx, cy)
  * Checks whether a shape is convex
  *
  * @method _convex
- * 
  * @private
+ * @return {Boolean}
  */
 PIXI.PolyK._convex = function(ax, ay, bx, by, cx, cy, sign)
 {

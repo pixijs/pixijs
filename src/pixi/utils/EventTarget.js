@@ -4,7 +4,7 @@
  */
 
 /**
- * Originally based on https://github.com/mrdoob/eventtarget.js/ from mr DOob.
+ * Originally based on https://github.com/mrdoob/eventtarget.js/ from mr Doob.
  * Currently takes inspiration from the nodejs EventEmitter, EventEmitter3, and smokesignals
  */
 
@@ -18,7 +18,7 @@
  *      PIXI.EventTarget.mixin(MyEmitter.prototype);
  *
  *      var em = new MyEmitter();
- *      em.emit('eventName', 'some data', 'some moar data', {}, null, ...);
+ *      em.emit('eventName', 'some data', 'some more data', {}, null, ...);
  */
 PIXI.EventTarget = {
     /**

@@ -44,9 +44,10 @@ PIXI.autoDetectRenderer = function(width, height, options)
 /**
  * This helper function will automatically detect which renderer you should be using.
  * This function is very similar to the autoDetectRenderer function except that is will return a canvas renderer for android.
- * Even thought both android chrome suports webGL the canvas implementation perform better at the time of writing. 
- * This function will likely change and update as webGL performance imporoves on thease devices.
- * @class getRecommendedRenderer
+ * Even thought both android chrome supports webGL the canvas implementation perform better at the time of writing. 
+ * This function will likely change and update as webGL performance improves on these devices.
+ * 
+ * @class autoDetectRecommendedRenderer
  * @static
  * @param width=800 {Number} the width of the renderers view
  * @param height=600 {Number} the height of the renderers view

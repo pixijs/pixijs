@@ -14,7 +14,7 @@
 PIXI.InteractionManager = function(stage)
 {
     /**
-     * a reference to the stage
+     * A reference to the stage
      *
      * @property stage
      * @type Stage
@@ -22,7 +22,7 @@ PIXI.InteractionManager = function(stage)
     this.stage = stage;
 
     /**
-     * the mouse data
+     * The mouse data
      *
      * @property mouse
      * @type InteractionData
@@ -30,18 +30,21 @@ PIXI.InteractionManager = function(stage)
     this.mouse = new PIXI.InteractionData();
 
     /**
-     * an object that stores current touches (InteractionData) by id reference
+     * An object that stores current touches (InteractionData) by id reference
      *
      * @property touches
      * @type Object
      */
     this.touches = {};
 
-    // helpers
+    /**
+     * @property tempPoint
+     * @type Point
+     * @private
+     */
     this.tempPoint = new PIXI.Point();
 
     /**
-     *
      * @property mouseoverEnabled
      * @type Boolean
      * @default
@@ -49,7 +52,7 @@ PIXI.InteractionManager = function(stage)
     this.mouseoverEnabled = true;
 
     /**
-     * tiny little interactiveData pool !
+     * Tiny little interactiveData pool !
      *
      * @property pool
      * @type Array
@@ -61,7 +64,6 @@ PIXI.InteractionManager = function(stage)
      * @property interactiveItems
      * @type Array
      * @private
-     *
      */
     this.interactiveItems = [];
 
@@ -73,23 +75,60 @@ PIXI.InteractionManager = function(stage)
      */
     this.interactionDOMElement = null;
 
-    //this will make it so that you dont have to call bind all the time
+    //this will make it so that you don't have to call bind all the time
+
+    /**
+     * @property onMouseMove
+     * @type Function
+     */
     this.onMouseMove = this.onMouseMove.bind( this );
+
+    /**
+     * @property onMouseDown
+     * @type Function
+     */
     this.onMouseDown = this.onMouseDown.bind(this);
+
+    /**
+     * @property onMouseOut
+     * @type Function
+     */
     this.onMouseOut = this.onMouseOut.bind(this);
+
+    /**
+     * @property onMouseUp
+     * @type Function
+     */
     this.onMouseUp = this.onMouseUp.bind(this);
 
+    /**
+     * @property onTouchStart
+     * @type Function
+     */
     this.onTouchStart = this.onTouchStart.bind(this);
+
+    /**
+     * @property onTouchEnd
+     * @type Function
+     */
     this.onTouchEnd = this.onTouchEnd.bind(this);
+
+    /**
+     * @property onTouchMove
+     * @type Function
+     */
     this.onTouchMove = this.onTouchMove.bind(this);
 
+    /**
+     * @property last
+     * @type Number
+     */
     this.last = 0;
 
     /**
      * The css style of the cursor that is being used
      * @property currentCursorStyle
      * @type String
-     *
      */
     this.currentCursorStyle = 'inherit';
 
@@ -97,10 +136,13 @@ PIXI.InteractionManager = function(stage)
      * Is set to true when the mouse is moved out of the canvas
      * @property mouseOut
      * @type Boolean
-     *
      */
     this.mouseOut = false;
 
+    /**
+     * @property resolution
+     * @type Number
+     */
     this.resolution = 1;
 };
 
@@ -166,7 +208,6 @@ PIXI.InteractionManager.prototype.setTarget = function(target)
     this.setTargetDomElement (target.view);
 };
 
-
 /**
  * Sets the DOM element which will receive mouse/touch events. This is useful for when you have other DOM
  * elements on top of the renderers Canvas element. With this you'll be able to delegate another DOM element
@@ -201,7 +242,10 @@ PIXI.InteractionManager.prototype.setTargetDomElement = function(domElement)
     window.addEventListener('mouseup',  this.onMouseUp, true);
 };
 
-
+/**
+ * @method removeEvents
+ * @private
+ */
 PIXI.InteractionManager.prototype.removeEvents = function()
 {
     if (!this.interactionDOMElement) return;
@@ -308,6 +352,10 @@ PIXI.InteractionManager.prototype.update = function()
     }
 };
 
+/**
+ * @method rebuildInteractiveGraph
+ * @private
+ */
 PIXI.InteractionManager.prototype.rebuildInteractiveGraph = function()
 {
     this.dirty = false;
@@ -427,10 +475,10 @@ PIXI.InteractionManager.prototype.onMouseDown = function(event)
 };
 
 /**
- * Is called when the mouse button is moved out of the renderer element
+ * Is called when the mouse is moved out of the renderer element
  *
  * @method onMouseOut
- * @param event {Event} The DOM event of a mouse button being moved out
+ * @param event {Event} The DOM event of a mouse being moved out
  * @private
  */
 PIXI.InteractionManager.prototype.onMouseOut = function(event)

@@ -5,21 +5,18 @@
 /**
 * @class WebGLStencilManager
 * @constructor
-* @param gl {WebGLContext} the current WebGL drawing context
 * @private
 */
 PIXI.WebGLStencilManager = function()
 {
-   
     this.stencilStack = [];
-    //this.setContext(gl);
     this.reverse = true;
     this.count = 0;
-
 };
 
 /**
-* Sets the drawing context to the one given in parameter
+* Sets the drawing context to the one given in parameter.
+* 
 * @method setContext 
 * @param gl {WebGLContext} the current WebGL drawing context
 */
@@ -29,10 +26,12 @@ PIXI.WebGLStencilManager.prototype.setContext = function(gl)
 };
 
 /**
-* Applies the Mask and adds it to the current filter stack
+* Applies the Mask and adds it to the current filter stack.
+* 
 * @method pushMask
-* @param maskData {Array}
-* @param renderSession {RenderSession}
+* @param graphics {Graphics}
+* @param webGLData {Array}
+* @param renderSession {Object}
 */
 PIXI.WebGLStencilManager.prototype.pushStencil = function(graphics, webGLData, renderSession)
 {
@@ -60,7 +59,6 @@ PIXI.WebGLStencilManager.prototype.pushStencil = function(graphics, webGLData, r
 
     if(webGLData.mode === 1)
     {
-
         gl.drawElements(gl.TRIANGLE_FAN,  webGLData.indices.length - 4, gl.UNSIGNED_SHORT, 0 );
        
         if(this.reverse)
@@ -119,7 +117,14 @@ PIXI.WebGLStencilManager.prototype.pushStencil = function(graphics, webGLData, r
     this.count++;
 };
 
-//TODO this does not belong here!
+/**
+ * TODO this does not belong here!
+ * 
+ * @method bindGraphics
+ * @param graphics {Graphics}
+ * @param webGLData {Array}
+ * @param renderSession {Object}
+ */
 PIXI.WebGLStencilManager.prototype.bindGraphics = function(graphics, webGLData, renderSession)
 {
     //if(this._currentGraphics === graphics)return;
@@ -182,6 +187,12 @@ PIXI.WebGLStencilManager.prototype.bindGraphics = function(graphics, webGLData, 
     }
 };
 
+/**
+ * @method popStencil
+ * @param graphics {Graphics}
+ * @param webGLData {Array}
+ * @param renderSession {Object}
+ */
 PIXI.WebGLStencilManager.prototype.popStencil = function(graphics, webGLData, renderSession)
 {
 	var gl = this.gl;
@@ -272,7 +283,8 @@ PIXI.WebGLStencilManager.prototype.popStencil = function(graphics, webGLData, re
 };
 
 /**
-* Destroys the mask stack
+* Destroys the mask stack.
+* 
 * @method destroy
 */
 PIXI.WebGLStencilManager.prototype.destroy = function()
