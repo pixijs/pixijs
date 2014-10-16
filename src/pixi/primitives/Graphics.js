@@ -38,7 +38,7 @@ PIXI.Graphics = function()
      * @type String
      * @default 0
      */
-    this.lineColor = 0x000000;
+    this.lineColor = 0;
 
     /**
      * Graphics data
