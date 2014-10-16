@@ -7,7 +7,7 @@ PIXI.BaseTextureCache = {};
 PIXI.BaseTextureCacheIdGenerator = 0;
 
 /**
- * A texture stores the information that represents an image. All textures have a base texture
+ * A texture stores the information that represents an image. All textures have a base texture.
  *
  * @class BaseTexture
  * @uses EventTarget
@@ -45,6 +45,7 @@ PIXI.BaseTexture = function(source, scaleMode)
 
     /**
      * The scale mode to apply when scaling this texture
+     * 
      * @property scaleMode
      * @type PIXI.scaleModes
      * @default PIXI.scaleModes.LINEAR
@@ -52,7 +53,7 @@ PIXI.BaseTexture = function(source, scaleMode)
     this.scaleMode = scaleMode || PIXI.scaleModes.DEFAULT;
 
     /**
-     * [read-only] Describes if the base texture has loaded or not
+     * [read-only] Set to true once the base texture has loaded
      *
      * @property hasLoaded
      * @type Boolean
@@ -61,34 +62,42 @@ PIXI.BaseTexture = function(source, scaleMode)
     this.hasLoaded = false;
 
     /**
-     * The source that is loaded to create the texture
+     * The image source that is used to create the texture.
      *
      * @property source
      * @type Image
      */
     this.source = source;
 
-    //TODO will be used for futer pixi 1.5...
     this._UID = PIXI._UID++;
 
     /**
-     * Controls if RGB channels should be premultiplied by Alpha  (WebGL only)
+     * Controls if RGB channels should be pre-multiplied by Alpha  (WebGL only)
      *
-     * @property
+     * @property premultipliedAlpha
      * @type Boolean
-     * @default TRUE
-    */
+     * @default true
+     */
     this.premultipliedAlpha = true;
 
-
-    
-
     // used for webGL
+
+    /**
+     * @property _glTextures
+     * @type Array
+     * @private
+     */
     this._glTextures = [];
+
     // used for webGL texture updating...
     // TODO - this needs to be addressed
-    this._dirty = [true, true, true, true];
 
+    /**
+     * @property _dirty
+     * @type Array
+     * @private
+     */
+    this._dirty = [true, true, true, true];
 
     if(!source)return;
 
@@ -101,8 +110,8 @@ PIXI.BaseTexture = function(source, scaleMode)
     }
     else
     {
-
         var scope = this;
+
         this.source.onload = function() {
 
             scope.hasLoaded = true;
@@ -114,19 +123,29 @@ PIXI.BaseTexture = function(source, scaleMode)
             // add it to somewhere...
             scope.dispatchEvent( { type: 'loaded', content: scope } );
         };
+
         this.source.onerror = function() {
             scope.dispatchEvent( { type: 'error', content: scope } );
         };
     }
 
+    /**
+     * @property imageUrl
+     * @type String
+     */
     this.imageUrl = null;
+
+    /**
+     * @property _powerOf2
+     * @type Boolean
+     * @private
+     */
     this._powerOf2 = false;
-
-
 
 };
 
 PIXI.BaseTexture.prototype.constructor = PIXI.BaseTexture;
+
 PIXI.EventTarget.mixin(PIXI.BaseTexture.prototype);
 
 /**
@@ -177,6 +196,11 @@ PIXI.BaseTexture.prototype.updateSourceImage = function(newSrc)
     this.source.src = newSrc;
 };
 
+/**
+ * Sets all glTextures to be dirty.
+ *
+ * @method dirty
+ */
 PIXI.BaseTexture.prototype.dirty = function()
 {
     for (var i = 0; i < this._glTextures.length; i++)
@@ -186,8 +210,8 @@ PIXI.BaseTexture.prototype.dirty = function()
 };
 
 /**
- * Helper function that returns a base texture based on an image url
- * If the image is not in the base texture cache it will be created and loaded
+ * Helper function that creates a base texture from the given image url.
+ * If the image is not in the base texture cache it will be created and loaded.
  *
  * @static
  * @method fromImage
@@ -204,7 +228,6 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
 
     if(!baseTexture)
     {
-
         // new Image() breaks tex loading in some versions of Chrome.
         // See https://code.google.com/p/chromium/issues/detail?id=238071
         var image = new Image();//document.createElement('img');
@@ -229,8 +252,7 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
 };
 
 /**
- * Helper function that returns a base texture based on a canvas element
- * If the image is not in the base texture cache it will be created and loaded
+ * Helper function that creates a base texture from the given canvas element.
  *
  * @static
  * @method fromCanvas
@@ -255,5 +277,3 @@ PIXI.BaseTexture.fromCanvas = function(canvas, scaleMode)
 
     return baseTexture;
 };
-
-

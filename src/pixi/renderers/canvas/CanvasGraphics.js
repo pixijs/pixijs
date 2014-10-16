@@ -10,15 +10,12 @@
  */
 PIXI.CanvasGraphics = function()
 {
-
 };
 
-
 /*
- * Renders the graphics object
+ * Renders a PIXI.Graphics object to a canvas.
  *
  * @static
- * @private
  * @method renderGraphics
  * @param graphics {Graphics} the actual graphics object to render
  * @param context {CanvasRenderingContext2D} the 2d drawing method of the canvas
@@ -88,7 +85,6 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
                 context.globalAlpha = data.lineAlpha * worldAlpha;
                 context.strokeRect(shape.x, shape.y, shape.width, shape.height);
             }
-
         }
         else if(data.type === PIXI.Graphics.CIRC)
         {
@@ -111,7 +107,6 @@ PIXI.CanvasGraphics.renderGraphics = function(graphics, context)
         }
         else if(data.type === PIXI.Graphics.ELIP)
         {
-
             // ellipse code taken from: http://stackoverflow.com/questions/2172798/how-to-draw-an-oval-in-html5-canvas
 
             var w = shape.width * 2;

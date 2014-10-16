@@ -5,38 +5,54 @@
 /**
 * @class WebGLShaderManager
 * @constructor
-* @param gl {WebGLContext} the current WebGL drawing context
 * @private
 */
 PIXI.WebGLShaderManager = function()
 {
-
+    /**
+     * @property maxAttibs
+     * @type Number
+     */
     this.maxAttibs = 10;
+
+    /**
+     * @property attribState
+     * @type Array
+     */
     this.attribState = [];
+
+    /**
+     * @property tempAttribState
+     * @type Array
+     */
     this.tempAttribState = [];
 
-    for (var i = 0; i < this.maxAttibs; i++) {
+    for (var i = 0; i < this.maxAttibs; i++)
+    {
         this.attribState[i] = false;
     }
 
+    /**
+     * @property stack
+     * @type Array
+     */
     this.stack = [];
-    
-    //this.setContext(gl);
-    // the final one is used for the rendering strips
+
 };
 
+PIXI.WebGLShaderManager.prototype.constructor = PIXI.WebGLShaderManager;
 
 /**
-* Initialises the context and the properties
+* Initialises the context and the properties.
+* 
 * @method setContext 
 * @param gl {WebGLContext} the current WebGL drawing context
-* @param transparent {Boolean} Whether or not the drawing context should be transparent
 */
 PIXI.WebGLShaderManager.prototype.setContext = function(gl)
 {
     this.gl = gl;
     
-    // the next one is used for rendering primatives
+    // the next one is used for rendering primitives
     this.primitiveShader = new PIXI.PrimitiveShader(gl);
 
     // the next one is used for rendering triangle strips
@@ -53,16 +69,15 @@ PIXI.WebGLShaderManager.prototype.setContext = function(gl)
     this.setShader(this.defaultShader);
 };
 
-
 /**
-* Takes the attributes given in parameters 
+* Takes the attributes given in parameters.
+* 
 * @method setAttribs
 * @param attribs {Array} attribs 
 */
 PIXI.WebGLShaderManager.prototype.setAttribs = function(attribs)
 {
     // reset temp state
-
     var i;
 
     for (i = 0; i < this.tempAttribState.length; i++)
@@ -97,6 +112,12 @@ PIXI.WebGLShaderManager.prototype.setAttribs = function(attribs)
     }
 };
 
+/**
+* Sets the current shader.
+* 
+* @method setShader
+* @param shader {Any}
+*/
 PIXI.WebGLShaderManager.prototype.setShader = function(shader)
 {
     if(this._currentId === shader._UID)return false;
@@ -112,7 +133,8 @@ PIXI.WebGLShaderManager.prototype.setShader = function(shader)
 };
 
 /**
-* Destroys
+* Destroys this object.
+* 
 * @method destroy
 */
 PIXI.WebGLShaderManager.prototype.destroy = function()
@@ -133,4 +155,3 @@ PIXI.WebGLShaderManager.prototype.destroy = function()
 
     this.gl = null;
 };
-

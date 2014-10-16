@@ -9,7 +9,7 @@ PIXI.TextureCacheIdGenerator = 0;
 
 /**
  * A texture stores the information that represents an image or part of an image. It cannot be added
- * to the display list directly. To do this use PIXI.Sprite. If no frame is provided then the whole image is used
+ * to the display list directly. Instead use it as the texture for a PIXI.Sprite. If no frame is provided then the whole image is used.
  *
  * @class Texture
  * @uses EventTarget
@@ -57,7 +57,7 @@ PIXI.Texture = function(baseTexture, frame, crop, trim)
     this.frame = frame;
 
     /**
-     * The trim point
+     * The texture trim data.
      *
      * @property trim
      * @type Rectangle
@@ -65,7 +65,7 @@ PIXI.Texture = function(baseTexture, frame, crop, trim)
     this.trim = trim;
 
     /**
-     * This will let the renderer know if the texture is valid. If its not then it cannot be rendered.
+     * This will let the renderer know if the texture is valid. If it's not then it cannot be rendered.
      *
      * @property valid
      * @type Boolean
@@ -83,9 +83,9 @@ PIXI.Texture = function(baseTexture, frame, crop, trim)
     /**
      * The WebGL UV data cache.
      *
-     * @private
      * @property _uvs
      * @type Object
+     * @private
      */
     this._uvs = null;
 
@@ -132,7 +132,6 @@ PIXI.EventTarget.mixin(PIXI.Texture.prototype);
  * Called when the base texture is loaded
  *
  * @method onBaseTextureLoaded
- * @param event
  * @private
  */
 PIXI.Texture.prototype.onBaseTextureLoaded = function()
@@ -201,7 +200,7 @@ PIXI.Texture.prototype.setFrame = function(frame)
 /**
  * Updates the internal WebGL UV cache.
  *
- * @method _updateWebGLuvs
+ * @method _updateUvs
  * @private
  */
 PIXI.Texture.prototype._updateUvs = function()
@@ -223,12 +222,11 @@ PIXI.Texture.prototype._updateUvs = function()
 
     this._uvs.x3 = frame.x / tw;
     this._uvs.y3 = (frame.y + frame.height) / th;
-
 };
 
 /**
- * Helper function that returns a texture based on an image url
- * If the image is not in the texture cache it will be  created and loaded
+ * Helper function that creates a Texture object from the given image url.
+ * If the image is not in the texture cache it will be  created and loaded.
  *
  * @static
  * @method fromImage
@@ -251,8 +249,8 @@ PIXI.Texture.fromImage = function(imageUrl, crossorigin, scaleMode)
 };
 
 /**
- * Helper function that returns a texture based on a frame id
- * If the frame id is not in the texture cache an error will be thrown
+ * Helper function that returns a Texture objected based on the given frame id.
+ * If the frame id is not in the texture cache an error will be thrown.
  *
  * @static
  * @method fromFrame
@@ -267,8 +265,7 @@ PIXI.Texture.fromFrame = function(frameId)
 };
 
 /**
- * Helper function that returns a texture based on a canvas element
- * If the canvas is not in the texture cache it will be  created and loaded
+ * Helper function that creates a new a Texture based on the given canvas element.
  *
  * @static
  * @method fromCanvas
@@ -284,14 +281,13 @@ PIXI.Texture.fromCanvas = function(canvas, scaleMode)
 
 };
 
-
 /**
- * Adds a texture to the textureCache.
+ * Adds a texture to the global PIXI.TextureCache. This cache is shared across the whole PIXI object.
  *
  * @static
  * @method addTextureToCache
- * @param texture {Texture}
- * @param id {String} the id that the texture will be stored against.
+ * @param texture {Texture} The Texture to add to the cache.
+ * @param id {String} The id that the texture will be stored against.
  */
 PIXI.Texture.addTextureToCache = function(texture, id)
 {
@@ -299,12 +295,12 @@ PIXI.Texture.addTextureToCache = function(texture, id)
 };
 
 /**
- * Remove a texture from the textureCache.
+ * Remove a texture from the global PIXI.TextureCache.
  *
  * @static
  * @method removeTextureFromCache
- * @param id {String} the id of the texture to be removed
- * @return {Texture} the texture that was removed
+ * @param id {String} The id of the texture to be removed
+ * @return {Texture} The texture that was removed
  */
 PIXI.Texture.removeTextureFromCache = function(id)
 {
@@ -313,7 +309,6 @@ PIXI.Texture.removeTextureFromCache = function(id)
     delete PIXI.BaseTextureCache[id];
     return texture;
 };
-
 
 PIXI.TextureUvs = function()
 {

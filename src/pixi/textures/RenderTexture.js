@@ -3,12 +3,11 @@
  */
 
 /**
- * A RenderTexture is a special texture that allows any pixi displayObject to be rendered to it.
+ * A RenderTexture is a special texture that allows any Pixi display object to be rendered to it.
  *
- * __Hint__: All DisplayObjects (exmpl. Sprites) that render on RenderTexture should be preloaded.
- * Otherwise black rectangles will be drawn instead.
+ * __Hint__: All DisplayObjects (i.e. Sprites) that render to a RenderTexture should be preloaded otherwise black rectangles will be drawn instead.
  *
- * RenderTexture takes snapshot of DisplayObject passed to render method. If DisplayObject is passed to render method, position and rotation of it will be ignored. For example:
+ * A RenderTexture takes a snapshot of any Display Object given to its render method. The position and rotation of the given Display Objects is ignored. For example:
  *
  *    var renderTexture = new PIXI.RenderTexture(800, 600);
  *    var sprite = PIXI.Sprite.fromImage("spinObj_01.png");
@@ -18,7 +17,7 @@
  *    sprite.anchor.y = 0.5;
  *    renderTexture.render(sprite);
  *
- * Sprite in this case will be rendered to 0,0 position. To render this sprite at center DisplayObjectContainer should be used:
+ * The Sprite in this case will be rendered to a position of 0,0. To render this sprite at its actual position a DisplayObjectContainer should be used:
  *
  *    var doc = new PIXI.DisplayObjectContainer();
  *    doc.addChild(sprite);
@@ -29,6 +28,7 @@
  * @constructor
  * @param width {Number} The width of the render texture
  * @param height {Number} The height of the render texture
+ * @param renderer {CanvasRenderer|WebGLRenderer} The renderer used for this RenderTexture
  * @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
  * @param resolution {Number} The resolution of the texture being generated
  */
@@ -96,7 +96,12 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode, resolution)
         new PIXI.Rectangle(0, 0, this.width, this.height)
     );
 
-    // each render texture can only belong to one renderer at the moment if its webGL
+    /**
+     * The renderer this RenderTexture uses. A RenderTexture can only belong to one renderer at the moment if its webGL.
+     *
+     * @property renderer
+     * @type CanvasRenderer|WebGLRenderer
+     */
     this.renderer = renderer || PIXI.defaultRenderer;
 
     if(this.renderer.type === PIXI.WEBGL_RENDERER)
@@ -117,6 +122,10 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode, resolution)
         this.baseTexture.source = this.textureBuffer.canvas;
     }
 
+    /**
+     * @property valid
+     * @type Boolean
+     */
     this.valid = true;
 
     this._updateUvs();
@@ -126,7 +135,7 @@ PIXI.RenderTexture.prototype = Object.create(PIXI.Texture.prototype);
 PIXI.RenderTexture.prototype.constructor = PIXI.RenderTexture;
 
 /**
- * Resize the RenderTexture.
+ * Resizes the RenderTexture.
  *
  * @method resize
  * @param width {Number} The width to resize to.
@@ -138,7 +147,6 @@ PIXI.RenderTexture.prototype.resize = function(width, height, updateBase)
     if (width === this.width && height === this.height)return;
 
     this.valid = (width > 0 && height > 0);
-
 
     this.width = this.frame.width = this.crop.width = width;
     this.height =  this.frame.height = this.crop.height = height;
@@ -182,7 +190,8 @@ PIXI.RenderTexture.prototype.clear = function()
  *
  * @method renderWebGL
  * @param displayObject {DisplayObject} The display object to render this texture on
- * @param clear {Boolean} If true the texture will be cleared before the displayObject is drawn
+ * @param [matrix] {Matrix} Optional matrix to apply to the display object before rendering.
+ * @param [clear] {Boolean} If true the texture will be cleared before the displayObject is drawn
  * @private
  */
 PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, matrix, clear)
@@ -230,7 +239,8 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, matrix, clear
  *
  * @method renderCanvas
  * @param displayObject {DisplayObject} The display object to render this texture on
- * @param clear {Boolean} If true the texture will be cleared before the displayObject is drawn
+ * @param [matrix] {Matrix} Optional matrix to apply to the display object before rendering.
+ * @param [clear] {Boolean} If true the texture will be cleared before the displayObject is drawn
  * @private
  */
 PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, matrix, clear)
@@ -266,6 +276,7 @@ PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, matrix, clea
  * Will return a HTML Image of the texture
  *
  * @method getImage
+ * @return {HTMLImage}
  */
 PIXI.RenderTexture.prototype.getImage = function()
 {
@@ -275,15 +286,22 @@ PIXI.RenderTexture.prototype.getImage = function()
 };
 
 /**
- * Will return a a base64 string of the texture
+ * Will return a a base64 encoded string of this texture. It works by calling RenderTexture.getCanvas and then running toDataURL on that.
  *
- * @method getImage
+ * @method getBase64
+ * @return {String} A base64 encoded string of the texture.
  */
 PIXI.RenderTexture.prototype.getBase64 = function()
 {
     return this.getCanvas().toDataURL();
 };
 
+/**
+ * Creates a Canvas element, renders this RenderTexture to it and then returns it.
+ *
+ * @method getCanvas
+ * @return {HTMLCanvasElement} A Canvas element with the texture rendered on.
+ */
 PIXI.RenderTexture.prototype.getCanvas = function()
 {
     if (this.renderer.type === PIXI.WEBGL_RENDERER)
@@ -322,4 +340,3 @@ PIXI.RenderTexture.prototype.getCanvas = function()
 };
 
 PIXI.RenderTexture.tempMatrix = new PIXI.Matrix();
-
