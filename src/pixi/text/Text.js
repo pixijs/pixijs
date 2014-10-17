@@ -180,6 +180,7 @@ PIXI.Text.prototype.updateText = function()
     //calculate text width
     var lineWidths = [];
     var maxLineWidth = 0;
+    var ascent = this.determineFontAscent(this.style.font, this.context);
     for (var i = 0; i < lines.length; i++)
     {
         var lineWidth = this.context.measureText(lines[i]).width;
@@ -191,9 +192,10 @@ PIXI.Text.prototype.updateText = function()
     if(this.style.dropShadow)width += this.style.dropShadowDistance;
 
     this.canvas.width = ( width + this.context.lineWidth ) * this.resolution;
-    //calculate text height
-    var lineHeight = this.determineFontHeight('font: ' + this.style.font  + ';') + this.style.strokeThickness;
     
+    //calculate text height
+    var lineHeight = parseInt(this.getFontProperties(this.style.font).fontSize) + this.style.strokeThickness;
+ 
     var height = lineHeight * lines.length;
     if(this.style.dropShadow)height += this.style.dropShadowDistance;
 
@@ -206,7 +208,7 @@ PIXI.Text.prototype.updateText = function()
     this.context.font = this.style.font;
     this.context.strokeStyle = this.style.stroke;
     this.context.lineWidth = this.style.strokeThickness;
-    this.context.textBaseline = 'top';
+    this.context.textBaseline = 'alphabetic';
 
     var linePositionX;
     var linePositionY;
@@ -221,7 +223,7 @@ PIXI.Text.prototype.updateText = function()
         for (i = 0; i < lines.length; i++)
         {
             linePositionX = this.style.strokeThickness / 2;
-            linePositionY = this.style.strokeThickness / 2 + i * lineHeight;
+            linePositionY = (this.style.strokeThickness / 2 + i * lineHeight) + ascent;
 
             if(this.style.align === 'right')
             {
@@ -248,7 +250,7 @@ PIXI.Text.prototype.updateText = function()
     for (i = 0; i < lines.length; i++)
     {
         linePositionX = this.style.strokeThickness / 2;
-        linePositionY = this.style.strokeThickness / 2 + i * lineHeight;
+        linePositionY = (this.style.strokeThickness / 2 + i * lineHeight) + ascent;
 
         if(this.style.align === 'right')
         {
@@ -335,37 +337,118 @@ PIXI.Text.prototype._renderCanvas = function(renderSession)
     PIXI.Sprite.prototype._renderCanvas.call(this, renderSession);
 };
 
-/*
- * Determine the font height. Based on http://stackoverflow.com/users/34441/ellisbben - a great solution to the problem!
- * Returns the height of the given font.
- * Warning: This creates DOM elements each time it is called.
- *
- * @method determineFontHeight
- * @param fontStyle {Object}
- * @private
- */
-PIXI.Text.prototype.determineFontHeight = function(fontStyle)
+/**
+* Returns the ascent (in pixels) of the highest letter for the given font
+* - returns a cached value if it has already been calculated. This means 
+* that if the value for a webfont is calculated before it is loaded, it will be incorrect
+* @method determinFontAscent
+* @param font {String} The size and type of font (e.g. '23px Arial')
+* @param context {Context2D} the 2d drawing method of the canvas
+* @return {number}
+* @private
+*/
+PIXI.Text.prototype.determineFontAscent = function (font, context)
 {
-    // build a little reference dictionary so if the font style has been used return a
-    // cached version...
-    var result = PIXI.Text.heightCache[fontStyle];
+    var fontAscent = PIXI.Text.ascentCache[font];
 
-    if(!result)
+    if (!fontAscent)
     {
-        var body = document.getElementsByTagName('body')[0];
-        var dummy = document.createElement('div');
-        var dummyText = document.createTextNode('M');
-        dummy.appendChild(dummyText);
-        dummy.setAttribute('style', fontStyle + ';position:absolute;top:0;left:0');
-        body.appendChild(dummy);
+        // We test all uppercase letters to try to ensure that the greatest ascent will be found
+        var testText = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        var testMeasureTextWidth = context.measureText(testText).width;
 
-        result = dummy.offsetHeight;
-        PIXI.Text.heightCache[fontStyle] = result;
-
-        body.removeChild(dummy);
+        var fontProperties = this.getFontProperties(font);
+        var fontSize = parseInt(fontProperties.fontSize);
+        var fontFamily = fontProperties.fontFamily;
+        fontAscent = this.getFontAscent(testText, fontFamily, fontSize, testMeasureTextWidth);
+        PIXI.Text.ascentCache[font] = fontAscent;
     }
 
-    return result;
+    return fontAscent;
+};
+ 
+/**
+* This code was lifted from https://github.com/Pomax/fontmetrics.js - which is covered by the MIT License - not sure how we should credit....
+* Returns the ascent (in pixels) of the highest letter for the given font
+* @method getFontAscent
+* @param textstring {String} - the string of text used to calculate the ascent
+* @param fontFamily {String} - the Font Family of the text (e.g. 'Arial')
+* @param fontSize {number} - the size (in pixels) of the text 
+* @param textWidth {number} - the width (in pixels) of the text
+* @return {number}
+* @private
+*/
+PIXI.Text.prototype.getFontAscent = function (textstring, fontFamily, fontSize, textWidth) {
+
+    var canvas = document.createElement('canvas');
+    var padding = 100;
+    canvas.width = textWidth + padding;
+    canvas.height = 3 * fontSize;
+    canvas.style.opacity = 1;
+    canvas.style.fontFamily = fontFamily;
+    canvas.style.fontSize = fontSize;
+    var ctx = canvas.getContext('2d');
+    ctx.font = fontSize + 'px ' + fontFamily;
+
+    var w = canvas.width,
+    h = canvas.height,
+    baseline = h / 2;
+
+    // Set all canvas pixeldata values to 255, with all the content
+    // data being 0. This lets us scan for data[i] != 255.
+    ctx.fillStyle = 'white';
+    ctx.fillRect(-1, -1, w + 2, h + 2);
+    ctx.fillStyle = 'black';
+    ctx.fillText(textstring, padding / 2, baseline);
+    var pixelData = ctx.getImageData(0, 0, w, h).data;
+
+    // canvas pixel data is w*4 by h*4, because R, G, B and A are separate,
+    // consecutive values in the array, rather than stored as 32 bit ints.
+    var i = 1,
+    w4 = w * 4,
+    len = pixelData.length;
+
+    // Finding the ascent uses a normal, forward scanline
+    while (i < len && pixelData[i] === 255) {i++; }
+    var ascent = (i / w4) | 0;
+
+    return (baseline - ascent) + 1;
+};
+ 
+/**
+* Returns the fontSize and fontFamily for a given font - caches the calculated values
+* @method getFontProperties
+* @param font {String} The size and type of font (e.g. '23px Arial')
+* @return {Object} fontSize and fontFamily
+* @private
+**/
+PIXI.Text.prototype.getFontProperties = function (font)
+{
+    var fontProperties = PIXI.Text.fontPropertiesCache[font];
+
+    if (!fontProperties)
+    {
+        var div = document.createElement('div');
+        div.style.font = font;
+        div.style.display = 'none';
+
+        var body = document.getElementsByTagName('body')[0];
+        body.appendChild(div);
+
+        var fontSize = document.defaultView.getComputedStyle(div, null).getPropertyValue('font-size');
+        var fontFamily = document.defaultView.getComputedStyle(div, null).getPropertyValue('font-family');
+
+        fontProperties = {
+            fontSize: fontSize,
+            fontFamily: fontFamily
+        };
+
+        PIXI.Text.fontPropertiesCache[font] = fontProperties;
+
+        body.removeChild(div);
+    }
+
+    return fontProperties;
 };
 
 /**
@@ -431,4 +514,5 @@ PIXI.Text.prototype.destroy = function(destroyBaseTexture)
     this.texture.destroy(destroyBaseTexture === undefined ? true : destroyBaseTexture);
 };
 
-PIXI.Text.heightCache = {};
+PIXI.Text.ascentCache = {};
+PIXI.Text.fontPropertiesCache = {};
