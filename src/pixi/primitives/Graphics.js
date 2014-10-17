@@ -529,21 +529,13 @@ PIXI.Graphics.prototype.drawRect = function( x, y, width, height )
  * @param width {Number} The width of the rectangle
  * @param height {Number} The height of the rectangle
  * @param radius {Number} Radius of the rectangle corners
- *//*
+ */
 PIXI.Graphics.prototype.drawRoundedRect = function( x, y, width, height, radius )
 {
-    if (!this.currentPath.points.length) this.graphicsData.pop();
-
-  //  this.currentPath = {lineWidth:this.lineWidth, lineColor:this.lineColor, lineAlpha:this.lineAlpha,
-    ///                    fillColor:this.fillColor, fillAlpha:this.fillAlpha, fill:this.filling,
-       //                 points:[x, y, width, height, radius], shape:new PIXI.Rectangle(x,y, width, height), type:PIXI.Graphics.RREC};
-
-    this.graphicsData.push(this.currentPath);
-    this.dirty = true;
+    this.drawShape({ points:[x, y, width, height, radius], type:PIXI.Graphics.RREC });
 
     return this;
 };
-*/
 
 /**
  * Draws a circle.
