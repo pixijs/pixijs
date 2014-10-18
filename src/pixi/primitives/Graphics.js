@@ -111,6 +111,15 @@ PIXI.Graphics = function()
     this.dirty = true;
 
     /**
+     * Used to detect if the webgl graphics object has changed. If this is set to true then the graphics object will be recalculated.
+     * 
+     * @property webGLDirty
+     * @type Boolean
+     * @private
+     */
+    this.webGLDirty = false;
+
+    /**
      * Used to detect if the cached sprite object needs to be updated.
      * 
      * @property cachedSpriteDirty
@@ -614,7 +623,7 @@ PIXI.Graphics.prototype.clear = function()
  */
 PIXI.Graphics.prototype.generateTexture = function(resolution, scaleMode)
 {
-    resolution = resolution || 2;
+    resolution = resolution || 1;
 
     var bounds = this.getBounds();
 
@@ -676,6 +685,13 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
             renderSession.spriteBatch.currentBlendMode = this.blendMode;
             var blendModeWebGL = PIXI.blendModesWebGL[renderSession.spriteBatch.currentBlendMode];
             renderSession.spriteBatch.gl.blendFunc(blendModeWebGL[0], blendModeWebGL[1]);
+        }
+        
+        // check if the webgl graphic needs to be updated
+        if(this.webGLDirty)
+        {
+            this.dirty = true;
+            this.webGLDirty = false;
         }
         
         PIXI.WebGLGraphics.renderGraphics(this, renderSession);
@@ -783,6 +799,7 @@ PIXI.Graphics.prototype.getBounds = function( matrix )
     if(this.dirty)
     {
         this.updateBounds();
+        this.webGLDirty = true;
         this.cachedSpriteDirty = true;
         this.dirty = false;
     }
