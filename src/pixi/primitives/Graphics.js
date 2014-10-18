@@ -721,8 +721,8 @@ PIXI.Graphics.prototype._renderCanvas = function(renderSession)
         {
             this._generateCachedSprite();
    
-           // we will also need to update the texture
-           this.updateCachedSpriteTexture();
+            // we will also need to update the texture
+            this.updateCachedSpriteTexture();
 
             this.cachedSpriteDirty = false;
             this.dirty = false;
@@ -770,30 +770,6 @@ PIXI.Graphics.prototype._renderCanvas = function(renderSession)
             renderSession.maskManager.popMask(renderSession);
         }
     }
-};
-
-/**
- * Updates texture size based on canvas size
- *
- * @method updateCachedSpriteTexture
- * @private
- */
-PIXI.Graphics.prototype.updateCachedSpriteTexture = function()
-{
-    var cachedSprite = this._cachedSprite;
-    var texture = cachedSprite.texture;
-    var canvas = cachedSprite.buffer.canvas;
-
-    texture.baseTexture.width = canvas.width;
-    texture.baseTexture.height = canvas.height;
-    texture.crop.width = texture.frame.width = canvas.width;
-    texture.crop.height = texture.frame.height = canvas.height;
-
-    cachedSprite._width = canvas.width;
-    cachedSprite._height = canvas.height;
-
-    // update the dirty base textures
-    texture.baseTexture.dirty();
 };
 
 /**
@@ -997,6 +973,30 @@ PIXI.Graphics.prototype._generateCachedSprite = function()
     this._cachedSprite.alpha = this.alpha;
 
    // this._cachedSprite.buffer.context.restore();
+};
+
+/**
+ * Updates texture size based on canvas size
+ *
+ * @method updateCachedSpriteTexture
+ * @private
+ */
+PIXI.Graphics.prototype.updateCachedSpriteTexture = function()
+{
+    var cachedSprite = this._cachedSprite;
+    var texture = cachedSprite.texture;
+    var canvas = cachedSprite.buffer.canvas;
+
+    texture.baseTexture.width = canvas.width;
+    texture.baseTexture.height = canvas.height;
+    texture.crop.width = texture.frame.width = canvas.width;
+    texture.crop.height = texture.frame.height = canvas.height;
+
+    cachedSprite._width = canvas.width;
+    cachedSprite._height = canvas.height;
+
+    // update the dirty base textures
+    texture.baseTexture.dirty();
 };
 
 /**
