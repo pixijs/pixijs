@@ -19,7 +19,7 @@
         "url": "https://github.com/GoodBoyDigital/pixi.js.git"
     },
 
-    "main": "bin/pixi.js",
+    "main": "index.js",
 
     "scripts": {
         "test": "grunt travis --verbose"
@@ -32,8 +32,7 @@
         "grunt-contrib-uglify": "~0.2",
         "grunt-contrib-connect": "~0.5",
         "grunt-contrib-yuidoc": "~0.5",
-        "grunt-concat-sourcemap": "~0.4",
-        "grunt-contrib-concat": "~0.3",
+        "grunt-browserify": "~3.0",
         "mocha": "~1.15",
         "chai": "~1.8",
         "karma": "~0.12",

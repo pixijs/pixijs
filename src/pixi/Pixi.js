@@ -7,7 +7,7 @@
  *
  * @module PIXI
  */
- 
+
 /**
  * Namespace-class for [pixi.js](http://www.pixijs.com/).
  *
@@ -16,12 +16,12 @@
  * @class PIXI
  * @static
  */
-var PIXI = PIXI || {};
+var PIXI = (typeof window !== 'undefined' ? window : global).PIXI || {};
 
 /**
  * @property {Number} WEBGL_RENDERER
  * @protected
- * @static 
+ * @static
  */
 PIXI.WEBGL_RENDERER = 0;
 /**
@@ -34,7 +34,7 @@ PIXI.CANVAS_RENDERER = 1;
 /**
  * Version of pixi that is loaded.
  * @property {String} VERSION
- * @static 
+ * @static
  */
 PIXI.VERSION = "v2.1.0";
 
@@ -112,7 +112,7 @@ else
     PIXI.Uint16Array = Array;
 }
 
-// interaction frequency 
+// interaction frequency
 PIXI.INTERACTION_FREQUENCY = 30;
 PIXI.AUTO_PREVENT_DEFAULT = true;
 
@@ -168,14 +168,14 @@ PIXI.dontSayHello = false;
 PIXI.defaultRenderOptions = {
     view:null,
     transparent:false,
-    antialias:false, 
+    antialias:false,
     preserveDrawingBuffer:false,
     resolution:1,
     clearBeforeRender:true,
     autoResize:false
 }
 
-PIXI.sayHello = function (type) 
+PIXI.sayHello = function (type)
 {
     if(PIXI.dontSayHello)return;
 
