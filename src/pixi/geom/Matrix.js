@@ -152,9 +152,10 @@ PIXI.Matrix.prototype.applyInverse = function(pos, newPos)
 {
     newPos = newPos || new PIXI.Point();
 
-    var id = 1 / (this.a * this.d + this.b * -this.c);
-    newPos.x = this.d * id * pos.x - this.b * id * pos.y + (this.ty * this.b - this.tx * this.d) * id;
-    newPos.y = this.a * id * pos.y - this.c * id * pos.x + (this.tx * this.c - this.ty * this.a) * id;
+    var id = 1 / (this.a * this.d + this.c * -this.b);
+     
+    newPos.x = this.d * id * pos.x + -this.c * id * pos.y + (this.ty * this.c - this.tx * this.d) * id;
+    newPos.y = this.a * id * pos.y + -this.b * id * pos.x + (-this.ty * this.a + this.tx * this.b) * id;
 
     return newPos;
 };
