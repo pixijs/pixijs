@@ -4,9 +4,10 @@
 
 
 /**
- * A set of functions used by the canvas renderer to draw the primitive graphics data
+ * A set of functions used by the canvas renderer to draw the primitive graphics data.
  *
  * @class CanvasGraphics
+ * @static
  */
 PIXI.CanvasGraphics = function()
 {
@@ -15,8 +16,8 @@ PIXI.CanvasGraphics = function()
 /*
  * Renders a PIXI.Graphics object to a canvas.
  *
- * @static
  * @method renderGraphics
+ * @static
  * @param graphics {Graphics} the actual graphics object to render
  * @param context {CanvasRenderingContext2D} the 2d drawing method of the canvas
  */

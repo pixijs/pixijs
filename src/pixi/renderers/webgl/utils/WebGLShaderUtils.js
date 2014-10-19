@@ -4,6 +4,7 @@
 
 /**
 * @method initDefaultShaders
+* @static
 * @private
 */
 PIXI.initDefaultShaders = function()
@@ -12,6 +13,7 @@ PIXI.initDefaultShaders = function()
 
 /**
 * @method CompileVertexShader
+* @static
 * @param gl {WebGLContext} the current WebGL drawing context
 * @param shaderSrc {Array}
 * @return {Any}
@@ -23,6 +25,7 @@ PIXI.CompileVertexShader = function(gl, shaderSrc)
 
 /**
 * @method CompileFragmentShader
+* @static
 * @param gl {WebGLContext} the current WebGL drawing context
 * @param shaderSrc {Array}
 * @return {Any}
@@ -34,6 +37,7 @@ PIXI.CompileFragmentShader = function(gl, shaderSrc)
 
 /**
 * @method _CompileShader
+* @static
 * @private
 * @param gl {WebGLContext} the current WebGL drawing context
 * @param shaderSrc {Array}
@@ -58,6 +62,7 @@ PIXI._CompileShader = function(gl, shaderSrc, shaderType)
 
 /**
 * @method compileProgram
+* @static
 * @param gl {WebGLContext} the current WebGL drawing context
 * @param vertexSrc {Array}
 * @param fragmentSrc {Array}

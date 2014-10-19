@@ -3,13 +3,16 @@
  */
 
 /**
- * A set of functions used to handle masking
+ * A set of functions used to handle masking.
  *
  * @class CanvasMaskManager
+ * @constructor
  */
 PIXI.CanvasMaskManager = function()
 {
 };
+
+PIXI.CanvasMaskManager.prototype.constructor = PIXI.CanvasMaskManager;
 
 /**
  * This method adds it to the current stack of masks.
