@@ -357,8 +357,8 @@ PIXI.Text.prototype.determineFontProperties = function(fontStyle)
 
         context.font = fontStyle;
 
-        var width = Math.ceil(context.measureText("|Mq").width);
-        var baseline = Math.ceil(context.measureText("M").width);
+        var width = Math.ceil(context.measureText('|Mq').width);
+        var baseline = Math.ceil(context.measureText('M').width);
         var height = 2 * baseline;
 
         baseline = baseline * 1.4 | 0;
@@ -366,14 +366,14 @@ PIXI.Text.prototype.determineFontProperties = function(fontStyle)
         canvas.width = width;
         canvas.height = height;
 
-        context.fillStyle = "#f00";
+        context.fillStyle = '#f00';
         context.fillRect(0, 0, width, height);
 
         context.font = fontStyle;
 
         context.textBaseline = 'alphabetic';
-        context.fillStyle = "#000";
-        context.fillText("|Mq", 0, baseline);
+        context.fillStyle = '#000';
+        context.fillText('|Mq', 0, baseline);
 
         var imagedata = context.getImageData(0, 0, width, height).data;
         var pixels = imagedata.length;
@@ -395,11 +395,11 @@ PIXI.Text.prototype.determineFontProperties = function(fontStyle)
                     break;
                 }
             }
-            if(!stop) 
+            if(!stop)
             {
                 idx += line;
             }
-            else 
+            else
             {
                 break;
             }
@@ -421,7 +421,7 @@ PIXI.Text.prototype.determineFontProperties = function(fontStyle)
                     break;
                 }
             }
-            if(!stop) 
+            if(!stop)
             {
                 idx -= line;
             }
@@ -504,5 +504,5 @@ PIXI.Text.prototype.destroy = function(destroyBaseTexture)
 };
 
 PIXI.Text.fontPropertiesCache = {};
-PIXI.Text.fontPropertiesCanvas = document.createElement("canvas");
-PIXI.Text.fontPropertiesContext = PIXI.Text.fontPropertyCanvas.getContext("2d");
+PIXI.Text.fontPropertiesCanvas = document.createElement('canvas');
+PIXI.Text.fontPropertiesContext = PIXI.Text.fontPropertiesCanvas.getContext('2d');
