@@ -5,7 +5,8 @@
 /**
  * Creates a Canvas element of the given size.
  *
- * @method CanvasBuffer
+ * @class CanvasBuffer
+ * @constructor
  * @param width {Number} the width for the newly created canvas
  * @param height {Number} the height for the newly created canvas
  */
