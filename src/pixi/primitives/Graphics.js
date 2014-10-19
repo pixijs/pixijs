@@ -154,6 +154,7 @@ Object.defineProperty(PIXI.Graphics.prototype, "cacheAsBitmap", {
 
         if(this._cacheAsBitmap)
         {
+
             this._generateCachedSprite();
         }
         else
@@ -626,7 +627,7 @@ PIXI.Graphics.prototype.generateTexture = function(resolution, scaleMode)
     resolution = resolution || 1;
 
     var bounds = this.getBounds();
-
+   
     var canvasBuffer = new PIXI.CanvasBuffer(bounds.width * resolution, bounds.height * resolution);
     
     var texture = PIXI.Texture.fromCanvas(canvasBuffer.canvas, scaleMode);
@@ -655,8 +656,10 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
 
     if(this._cacheAsBitmap)
     {
+
         if(this.dirty || this.cachedSpriteDirty)
         {
+
             this._generateCachedSprite();
    
             // we will also need to update the texture on the gpu too!
@@ -996,10 +999,12 @@ PIXI.Graphics.prototype._generateCachedSprite = function()
    // this._cachedSprite.buffer.context.save();
     this._cachedSprite.buffer.context.translate(-bounds.x,-bounds.y);
     
+    // make sure we set the alpha of the graphics to 1 for the render.. 
+    this.worldAlpha = 1;
+
+    // now render the graphic..
     PIXI.CanvasGraphics.renderGraphics(this, this._cachedSprite.buffer.context);
     this._cachedSprite.alpha = this.alpha;
-
-   // this._cachedSprite.buffer.context.restore();
 };
 
 /**
