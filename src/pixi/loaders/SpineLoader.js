@@ -15,7 +15,7 @@
  * You will need to generate a sprite sheet to accompany the spine data
  * When loaded this class will dispatch a "loaded" event
  *
- * @class Spine
+ * @class SpineLoader
  * @uses EventTarget
  * @constructor
  * @param url {String} The url of the JSON file
