@@ -210,6 +210,7 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
         }
 
         gl.enable(gl.BLEND);
+        gl.flush();
 
         texture = inputTexture;
         this.texturePool.push(outputTexture);
