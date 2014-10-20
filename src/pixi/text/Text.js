@@ -209,6 +209,7 @@ PIXI.Text.prototype.updateText = function()
     this.context.strokeStyle = this.style.stroke;
     this.context.lineWidth = this.style.strokeThickness;
     this.context.textBaseline = 'alphabetic';
+    this.context.lineJoin = 'round';
 
     var linePositionX;
     var linePositionY;
