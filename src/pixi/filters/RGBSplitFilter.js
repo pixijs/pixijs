@@ -46,17 +46,46 @@ PIXI.RGBSplitFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.RGBSplitFilter.prototype.constructor = PIXI.RGBSplitFilter;
 
 /**
- * The angle of the split.
+ * Red channel offset.
  * 
- * @property angle
- * @type Number
+ * @property red
+ * @type Point
  */
-Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'angle', {
+Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'red', {
     get: function() {
-        return this.uniforms.blur.value / (1/7000);
+        return this.uniforms.red.value;
     },
     set: function(value) {
-        //this.padding = value;
-        this.uniforms.blur.value = (1/7000) * value;
+        this.uniforms.red.value = value;
+    }
+});
+
+/**
+ * Green channel offset.
+ * 
+ * @property green
+ * @type Point
+ */
+Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'green', {
+    get: function() {
+        return this.uniforms.green.value;
+    },
+    set: function(value) {
+        this.uniforms.green.value = value;
+    }
+});
+
+/**
+ * Blue offset.
+ * 
+ * @property blue
+ * @type Point
+ */
+Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'blue', {
+    get: function() {
+        return this.uniforms.blue.value;
+    },
+    set: function(value) {
+        this.uniforms.blue.value = value;
     }
 });
