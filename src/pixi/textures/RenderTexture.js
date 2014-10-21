@@ -276,7 +276,7 @@ PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, matrix, clea
  * Will return a HTML Image of the texture
  *
  * @method getImage
- * @return {HTMLImage}
+ * @return {Image}
  */
 PIXI.RenderTexture.prototype.getImage = function()
 {
