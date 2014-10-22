@@ -104,7 +104,7 @@ PIXI.CanvasRenderer = function(width, height, options)
     /**
      * The canvas 2d context that everything is drawn with
      * @property context
-     * @type CanvasRenderingContext2D 2d Context
+     * @type CanvasRenderingContext2D
      */
     this.context = this.view.getContext( "2d", { alpha: this.transparent } );
 
@@ -218,6 +218,28 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
             stage.interactionManager.setTarget(this);
         }
     }
+};
+
+/**
+ * Removes everything from the renderer and optionally removes the Canvas DOM element.
+ *
+ * @method destroy
+ * @param [removeView=true] {boolean} Removes the Canvas element from the DOM.
+ */
+PIXI.CanvasRenderer.prototype.destroy = function(removeView)
+{
+    if (typeof removeView === "undefined") { removeView = true; }
+
+    if (removeView && this.view.parent)
+    {
+        this.view.parent.removeChild(this.view);
+    }
+
+    this.view = null;
+    this.context = null;
+    this.maskManager = null;
+    this.renderSession = null;
+
 };
 
 /**
