@@ -69,6 +69,8 @@
             
                 <li><a href="../classes/BlurYFilter.html">BlurYFilter</a></li>
             
+                <li><a href="../classes/CanvasBuffer.html">CanvasBuffer</a></li>
+            
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
                 <li><a href="../classes/CanvasMaskManager.html">CanvasMaskManager</a></li>
@@ -158,6 +160,8 @@
                 <li><a href="../classes/SmartBlurFilter.html">SmartBlurFilter</a></li>
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
+            
+                <li><a href="../classes/SpineLoader.html">SpineLoader</a></li>
             
                 <li><a href="../classes/Sprite.html">Sprite</a></li>
             
@@ -275,8 +279,9 @@
 
 <div class="box intro">
     <p>The ConvolutionFilter class applies a matrix convolution filter effect. 
-A convolution combines pixels in the input image with neighboring pixels to produce an image. 
-A wide variety of image effects can be achieved through convolutions, including blurring, edge detection, sharpening, embossing, and beveling.</p>
+A convolution combines pixels in the input image with neighboring pixels to produce a new image. 
+A wide variety of image effects can be achieved through convolutions, including blurring, edge detection, sharpening, embossing, and beveling.
+The matrix should be specified as a 9 point Array. See <a href="http://docs.gimp.org/en/plug-in-convmatrix.html">http://docs.gimp.org/en/plug-in-convmatrix.html</a> for more info.</p>
 
 </div>
 
@@ -292,7 +297,7 @@ A wide variety of image effects can be achieved through convolutions, including 
             
                 <li class="arg">
                     
-                        <code>texture</code>
+                        <code>matrix</code>
                     
                 </li>
             
@@ -359,14 +364,14 @@ A wide variety of image effects can be achieved through convolutions, including 
             
                 <li class="param">
                     
-                        <code class="param-name">texture</code>
+                        <code class="param-name">matrix</code>
                         <span class="type">Array</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>An array of values used for matrix transformation.</p>
+                        <p>An array of values used for matrix transformation. Specified as a 9 point Array.</p>
 
                     </div>
 
@@ -472,6 +477,20 @@ A wide variety of image effects can be achieved through convolutions, including 
                                 
                             </li>
                         
+                            <li class="index-item property">
+                                <a href="#property_height">height</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_matrix">matrix</a>
+
+                                
+                                
+                            </li>
+                        
                             <li class="index-item property inherited">
                                 <a href="#property_padding">padding</a>
 
@@ -495,6 +514,13 @@ A wide variety of image effects can be achieved through convolutions, including 
                         
                             <li class="index-item property private inherited">
                                 <a href="#property_uniforms">uniforms</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_width">width</a>
 
                                 
                                 
@@ -648,6 +674,96 @@ A wide variety of image effects can be achieved through convolutions, including 
 
     <div class="description">
         
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_height" class="property item">
+    <h3 class="name"><code>height</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_filters_ConvolutionFilter.js.html#l93"><code>src&#x2F;pixi&#x2F;filters&#x2F;ConvolutionFilter.js:93</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Height of the object you are transforming</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_matrix" class="property item">
+    <h3 class="name"><code>matrix</code></h3>
+    <span class="type">Array</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_filters_ConvolutionFilter.js.html#l63"><code>src&#x2F;pixi&#x2F;filters&#x2F;ConvolutionFilter.js:63</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>An array of values used for matrix transformation. Specified as a 9 point Array.</p>
+
     </div>
 
     
@@ -820,6 +936,51 @@ For example the blur filter has two passes blurX and blurY.</p>
 
     <div class="description">
         
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_width" class="property item">
+    <h3 class="name"><code>width</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_filters_ConvolutionFilter.js.html#l78"><code>src&#x2F;pixi&#x2F;filters&#x2F;ConvolutionFilter.js:78</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Width of the object you are transforming</p>
+
     </div>
 
     

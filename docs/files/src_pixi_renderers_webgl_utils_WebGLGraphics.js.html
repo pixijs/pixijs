@@ -69,6 +69,8 @@
             
                 <li><a href="../classes/BlurYFilter.html">BlurYFilter</a></li>
             
+                <li><a href="../classes/CanvasBuffer.html">CanvasBuffer</a></li>
+            
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
                 <li><a href="../classes/CanvasMaskManager.html">CanvasMaskManager</a></li>
@@ -158,6 +160,8 @@
                 <li><a href="../classes/SmartBlurFilter.html">SmartBlurFilter</a></li>
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
+            
+                <li><a href="../classes/SpineLoader.html">SpineLoader</a></li>
             
                 <li><a href="../classes/Sprite.html">Sprite</a></li>
             
@@ -561,7 +565,7 @@ PIXI.WebGLGraphics.buildRectangle = function(graphicsData, webGLData)
  */
 PIXI.WebGLGraphics.buildRoundedRectangle = function(graphicsData, webGLData)
 {
-    var points = graphicsData.points;
+    var points = graphicsData.shape.points;
     var x = points[0];
     var y = points[1];
     var width = points[2];

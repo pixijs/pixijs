@@ -69,6 +69,8 @@
             
                 <li><a href="../classes/BlurYFilter.html">BlurYFilter</a></li>
             
+                <li><a href="../classes/CanvasBuffer.html">CanvasBuffer</a></li>
+            
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
                 <li><a href="../classes/CanvasMaskManager.html">CanvasMaskManager</a></li>
@@ -158,6 +160,8 @@
                 <li><a href="../classes/SmartBlurFilter.html">SmartBlurFilter</a></li>
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
+            
+                <li><a href="../classes/SpineLoader.html">SpineLoader</a></li>
             
                 <li><a href="../classes/Sprite.html">Sprite</a></li>
             
@@ -855,11 +859,14 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
     // temp fix for if the element is in a non visible
 
     var worldTransform = item.worldTransform, i,
-        a00 = worldTransform.a, a01 = worldTransform.b, a02 = worldTransform.tx,
-        a10 = worldTransform.c, a11 = worldTransform.d, a12 = worldTransform.ty,
-        id = 1 / (a00 * a11 + a01 * -a10),
-        x = a11 * id * global.x + -a01 * id * global.y + (a12 * a01 - a02 * a11) * id,
-        y = a00 * id * global.y + -a10 * id * global.x + (-a12 * a00 + a02 * a10) * id;
+        a = worldTransform.a, b = worldTransform.b,
+        c = worldTransform.c, tx = worldTransform.tx,
+        d = worldTransform.d, ty = worldTransform.ty,
+     
+        id = 1 / (a * d + c * -b),
+        x = d * id * global.x + -c * id * global.y + (ty * c - tx * d) * id,
+        y = a * id * global.y + -b * id * global.x + (-ty * a + tx * b) * id;
+
 
     interactionData.target = item;
 

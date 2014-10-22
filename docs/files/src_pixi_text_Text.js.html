@@ -69,6 +69,8 @@
             
                 <li><a href="../classes/BlurYFilter.html">BlurYFilter</a></li>
             
+                <li><a href="../classes/CanvasBuffer.html">CanvasBuffer</a></li>
+            
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
                 <li><a href="../classes/CanvasMaskManager.html">CanvasMaskManager</a></li>
@@ -158,6 +160,8 @@
                 <li><a href="../classes/SmartBlurFilter.html">SmartBlurFilter</a></li>
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
+            
+                <li><a href="../classes/SpineLoader.html">SpineLoader</a></li>
             
                 <li><a href="../classes/Sprite.html">Sprite</a></li>
             
@@ -432,6 +436,7 @@ PIXI.Text.prototype.updateText = function()
     //calculate text width
     var lineWidths = [];
     var maxLineWidth = 0;
+    var fontProperties = this.determineFontProperties(this.style.font);
     for (var i = 0; i &lt; lines.length; i++)
     {
         var lineWidth = this.context.measureText(lines[i]).width;
@@ -443,9 +448,10 @@ PIXI.Text.prototype.updateText = function()
     if(this.style.dropShadow)width += this.style.dropShadowDistance;
 
     this.canvas.width = ( width + this.context.lineWidth ) * this.resolution;
-    //calculate text height
-    var lineHeight = this.determineFontHeight(&#x27;font: &#x27; + this.style.font  + &#x27;;&#x27;) + this.style.strokeThickness;
     
+    //calculate text height
+    var lineHeight = fontProperties.fontSize + this.style.strokeThickness;
+ 
     var height = lineHeight * lines.length;
     if(this.style.dropShadow)height += this.style.dropShadowDistance;
 
@@ -458,7 +464,7 @@ PIXI.Text.prototype.updateText = function()
     this.context.font = this.style.font;
     this.context.strokeStyle = this.style.stroke;
     this.context.lineWidth = this.style.strokeThickness;
-    this.context.textBaseline = &#x27;top&#x27;;
+    this.context.textBaseline = &#x27;alphabetic&#x27;;
 
     var linePositionX;
     var linePositionY;
@@ -473,7 +479,7 @@ PIXI.Text.prototype.updateText = function()
         for (i = 0; i &lt; lines.length; i++)
         {
             linePositionX = this.style.strokeThickness / 2;
-            linePositionY = this.style.strokeThickness / 2 + i * lineHeight;
+            linePositionY = (this.style.strokeThickness / 2 + i * lineHeight) + fontProperties.ascent;
 
             if(this.style.align === &#x27;right&#x27;)
             {
@@ -500,7 +506,7 @@ PIXI.Text.prototype.updateText = function()
     for (i = 0; i &lt; lines.length; i++)
     {
         linePositionX = this.style.strokeThickness / 2;
-        linePositionY = this.style.strokeThickness / 2 + i * lineHeight;
+        linePositionY = (this.style.strokeThickness / 2 + i * lineHeight) + fontProperties.ascent;
 
         if(this.style.align === &#x27;right&#x27;)
         {
@@ -587,37 +593,107 @@ PIXI.Text.prototype._renderCanvas = function(renderSession)
     PIXI.Sprite.prototype._renderCanvas.call(this, renderSession);
 };
 
-/*
- * Determine the font height. Based on http://stackoverflow.com/users/34441/ellisbben - a great solution to the problem!
- * Returns the height of the given font.
- * Warning: This creates DOM elements each time it is called.
- *
- * @method determineFontHeight
- * @param fontStyle {Object}
- * @private
- */
-PIXI.Text.prototype.determineFontHeight = function(fontStyle)
+/**
+* Calculates the ascent, descent and fontSize of a given fontStyle
+*
+* @method determineFontProperties
+* @param fontStyle {Object}
+* @private
+*/
+PIXI.Text.prototype.determineFontProperties = function(fontStyle)
 {
-    // build a little reference dictionary so if the font style has been used return a
-    // cached version...
-    var result = PIXI.Text.heightCache[fontStyle];
+    var properties = PIXI.Text.fontPropertiesCache[fontStyle];
 
-    if(!result)
+    if(!properties)
     {
-        var body = document.getElementsByTagName(&#x27;body&#x27;)[0];
-        var dummy = document.createElement(&#x27;div&#x27;);
-        var dummyText = document.createTextNode(&#x27;M&#x27;);
-        dummy.appendChild(dummyText);
-        dummy.setAttribute(&#x27;style&#x27;, fontStyle + &#x27;;position:absolute;top:0;left:0&#x27;);
-        body.appendChild(dummy);
+        properties = {};
+        
+        var canvas = PIXI.Text.fontPropertiesCanvas;
+        var context = PIXI.Text.fontPropertiesContext;
 
-        result = dummy.offsetHeight;
-        PIXI.Text.heightCache[fontStyle] = result;
+        context.font = fontStyle;
 
-        body.removeChild(dummy);
+        var width = Math.ceil(context.measureText(&#x27;|Mq&#x27;).width);
+        var baseline = Math.ceil(context.measureText(&#x27;M&#x27;).width);
+        var height = 2 * baseline;
+
+        baseline = baseline * 1.4 | 0;
+
+        canvas.width = width;
+        canvas.height = height;
+
+        context.fillStyle = &#x27;#f00&#x27;;
+        context.fillRect(0, 0, width, height);
+
+        context.font = fontStyle;
+
+        context.textBaseline = &#x27;alphabetic&#x27;;
+        context.fillStyle = &#x27;#000&#x27;;
+        context.fillText(&#x27;|Mq&#x27;, 0, baseline);
+
+        var imagedata = context.getImageData(0, 0, width, height).data;
+        var pixels = imagedata.length;
+        var line = width * 4;
+
+        var i, j;
+
+        var idx = 0;
+        var stop = false;
+
+        // ascent. scan from top to bottom until we find a non red pixel
+        for(i = 0; i &lt; baseline; i++)
+        {
+            for(j = 0; j &lt; line; j += 4)
+            {
+                if(imagedata[idx + j] !== 255)
+                {
+                    stop = true;
+                    break;
+                }
+            }
+            if(!stop)
+            {
+                idx += line;
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        properties.ascent = baseline - i;
+
+        idx = pixels - line;
+        stop = false;
+
+        // descent. scan from bottom to top until we find a non red pixel
+        for(i = height; i &gt; baseline; i--)
+        {
+            for(j = 0; j &lt; line; j += 4)
+            {
+                if(imagedata[idx + j] !== 255)
+                {
+                    stop = true;
+                    break;
+                }
+            }
+            if(!stop)
+            {
+                idx -= line;
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        properties.descent = i - baseline;
+        properties.fontSize = properties.ascent + properties.descent;
+
+        PIXI.Text.fontPropertiesCache[fontStyle] = properties;
     }
 
-    return result;
+    return properties;
 };
 
 /**
@@ -683,7 +759,9 @@ PIXI.Text.prototype.destroy = function(destroyBaseTexture)
     this.texture.destroy(destroyBaseTexture === undefined ? true : destroyBaseTexture);
 };
 
-PIXI.Text.heightCache = {};
+PIXI.Text.fontPropertiesCache = {};
+PIXI.Text.fontPropertiesCanvas = document.createElement(&#x27;canvas&#x27;);
+PIXI.Text.fontPropertiesContext = PIXI.Text.fontPropertiesCanvas.getContext(&#x27;2d&#x27;);
 
     </pre>
 </div>

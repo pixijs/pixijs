@@ -69,6 +69,8 @@
             
                 <li><a href="../classes/BlurYFilter.html">BlurYFilter</a></li>
             
+                <li><a href="../classes/CanvasBuffer.html">CanvasBuffer</a></li>
+            
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
                 <li><a href="../classes/CanvasMaskManager.html">CanvasMaskManager</a></li>
@@ -158,6 +160,8 @@
                 <li><a href="../classes/SmartBlurFilter.html">SmartBlurFilter</a></li>
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
+            
+                <li><a href="../classes/SpineLoader.html">SpineLoader</a></li>
             
                 <li><a href="../classes/Sprite.html">Sprite</a></li>
             
@@ -249,15 +253,6 @@
                         <h1>Spine Class</h1>
 <div class="box meta">
     
-        <div class="uses">
-            Uses
-            <ul class="inline commas">
-                
-                    <li><a href="EventTarget.html">EventTarget</a></li>
-                
-            </ul>
-        </div>
-    
 
     
         <div class="extends">
@@ -267,7 +262,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_pixi_loaders_SpineLoader.js.html#l10"><code>src&#x2F;pixi&#x2F;loaders&#x2F;SpineLoader.js:10</code></a>
+            Defined in: <a href="../files/src_pixi_extras_Spine.js.html#l1357"><code>src&#x2F;pixi&#x2F;extras&#x2F;Spine.js:1357</code></a>
         </div>
     
 
@@ -283,12 +278,9 @@
 
 
 <div class="box intro">
-    <p>The Spine loader is used to load in JSON spine data
-To generate the data you need to use <a href="http://esotericsoftware.com/">http://esotericsoftware.com/</a> and export in the &quot;JSON&quot; format
-Due to a clash of names  You will need to change the extension of the spine file from <em>.json to </em>.anim for it to load
-See example 12 (<a href="http://www.goodboydigital.com/pixijs/examples/12/">http://www.goodboydigital.com/pixijs/examples/12/</a>) to see a working example and check out the source
-You will need to generate a sprite sheet to accompany the spine data
-When loaded this class will dispatch a &quot;loaded&quot; event</p>
+    <p>A class that enables the you to import and run your spine animations in pixi.
+Spine animation data needs to be loaded using the PIXI.AssetLoader or PIXI.SpineLoader before it can be used by this class
+See example 12 (<a href="http://www.goodboydigital.com/pixijs/examples/12/">http://www.goodboydigital.com/pixijs/examples/12/</a>) to see a working example and check out the source</p>
 
 </div>
 
@@ -337,7 +329,7 @@ When loaded this class will dispatch a &quot;loaded&quot; event</p>
             
         
         
-        <a href="../files/src_pixi_loaders_SpineLoader.js.html#l10"><code>src&#x2F;pixi&#x2F;loaders&#x2F;SpineLoader.js:10</code></a>
+        <a href="../files/src_pixi_extras_Spine.js.html#l1357"><code>src&#x2F;pixi&#x2F;extras&#x2F;Spine.js:1357</code></a>
         
         </p>
 
@@ -466,13 +458,6 @@ When loaded this class will dispatch a &quot;loaded&quot; event</p>
                             </li>
                         
                             <li class="index-item method inherited">
-                                <a href="#method_emit">emit</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method inherited">
                                 <a href="#method_generateTexture">generateTexture</a>
 
                                 
@@ -508,27 +493,6 @@ When loaded this class will dispatch a &quot;loaded&quot; event</p>
                             </li>
                         
                             <li class="index-item method inherited">
-                                <a href="#method_listeners">listeners</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_load">load</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method inherited">
-                                <a href="#method_mixin">mixin</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method inherited">
                                 <a href="#method_mousedown">mousedown</a>
 
                                 
@@ -558,41 +522,6 @@ When loaded this class will dispatch a &quot;loaded&quot; event</p>
                         
                             <li class="index-item method inherited">
                                 <a href="#method_mouseupoutside">mouseupoutside</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method inherited">
-                                <a href="#method_off">off</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method inherited">
-                                <a href="#method_on">on</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method inherited">
-                                <a href="#method_once">once</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method private">
-                                <a href="#method_onLoaded">onLoaded</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method inherited">
-                                <a href="#method_removeAllListeners">removeAllListeners</a>
 
                                 
                                 
@@ -811,13 +740,6 @@ When loaded this class will dispatch a &quot;loaded&quot; event</p>
                                 
                             </li>
                         
-                            <li class="index-item property">
-                                <a href="#property_crossorigin">crossorigin</a>
-
-                                
-                                
-                            </li>
-                        
                             <li class="index-item property inherited">
                                 <a href="#property_defaultCursor">defaultCursor</a>
 
@@ -855,13 +777,6 @@ When loaded this class will dispatch a &quot;loaded&quot; event</p>
                         
                             <li class="index-item property inherited">
                                 <a href="#property_interactive">interactive</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_loaded">loaded</a>
 
                                 
                                 
@@ -918,13 +833,6 @@ When loaded this class will dispatch a &quot;loaded&quot; event</p>
                         
                             <li class="index-item property inherited">
                                 <a href="#property_stage">stage</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
-                                <a href="#property_url">url</a>
 
                                 
                                 
@@ -1233,7 +1141,7 @@ When loaded this class will dispatch a &quot;loaded&quot; event</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l480"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:480</code></a>
+        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l473"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:473</code></a>
         
         </p>
 
@@ -1323,7 +1231,7 @@ When loaded this class will dispatch a &quot;loaded&quot; event</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l421"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:421</code></a>
+        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l414"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:414</code></a>
         
         </p>
 
@@ -1678,110 +1586,6 @@ When loaded this class will dispatch a &quot;loaded&quot; event</p>
         </div>
     
 
-    
-
-    
-</div>
-
-                
-                    <div id="method_emit" class="method item inherited">
-    <h3 class="name"><code>emit</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>eventName</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type">Boolean</span>
-        </span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/EventTarget.html#method_emit">EventTarget</a>:
-            
-        
-        
-        <a href="../files/src_pixi_utils_EventTarget.js.html#l54"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:54</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Emit an event to all registered event listeners.</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">eventName</code>
-                        <span class="type">String</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>The name of the event.</p>
-
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type">Boolean</span>:
-                    
-                    <p>Indication if we&#39;ve emitted an event.</p>
-
-                
-            </div>
-        </div>
     
 
     
@@ -2254,7 +2058,7 @@ This can be quite useful if your displayObject is static / complicated and needs
             
         
         
-        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l360"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:360</code></a>
+        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l353"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:353</code></a>
         
         </p>
 
@@ -2285,251 +2089,6 @@ This can be quite useful if your displayObject is static / complicated and needs
                 
             </div>
         </div>
-    
-
-    
-</div>
-
-                
-                    <div id="method_listeners" class="method item inherited">
-    <h3 class="name"><code>listeners</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>eventName</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-        <span class="returns-inline">
-            <span class="type">Array</span>
-        </span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/EventTarget.html#method_listeners">EventTarget</a>:
-            
-        
-        
-        <a href="../files/src_pixi_utils_EventTarget.js.html#l41"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:41</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Return a list of assigned event listeners.</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">eventName</code>
-                        <span class="type">String</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>The events that should be listed.</p>
-
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                
-                    
-                        <span class="type">Array</span>:
-                    
-                    <p>An array of listener functions</p>
-
-                
-            </div>
-        </div>
-    
-
-    
-</div>
-
-                
-                    <div id="method_load" class="method item">
-    <h3 class="name"><code>load</code></h3>
-
-    
-        <span class="paren">()</span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_pixi_loaders_SpineLoader.js.html#l56"><code>src&#x2F;pixi&#x2F;loaders&#x2F;SpineLoader.js:56</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Loads the JSON data</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_mixin" class="method item inherited">
-    <h3 class="name"><code>mixin</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>object</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/EventTarget.html#method_mixin">EventTarget</a>:
-            
-        
-        
-        <a href="../files/src_pixi_utils_EventTarget.js.html#l34"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:34</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Mixes in the properties of the EventTarget prototype onto another object</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">object</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>The obj to mix into</p>
-
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
     
 
     
@@ -2963,473 +2522,6 @@ for this callback to be fired, the mouse&#39;s left button must have been presse
 </div>
 
                 
-                    <div id="method_off" class="method item inherited">
-    <h3 class="name"><code>off</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>eventName</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>callback</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/EventTarget.html#method_off">EventTarget</a>:
-            
-        
-        
-        <a href="../files/src_pixi_utils_EventTarget.js.html#l143"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:143</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Remove event listeners.</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">eventName</code>
-                        <span class="type">String</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>The event we want to remove.</p>
-
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">callback</code>
-                        <span class="type">Function</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>The listener that we need to find.</p>
-
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_on" class="method item inherited">
-    <h3 class="name"><code>on</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>eventName</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>callback</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/EventTarget.html#method_on">EventTarget</a>:
-            
-        
-        
-        <a href="../files/src_pixi_utils_EventTarget.js.html#l107"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:107</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Register a new EventListener for the given event.</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">eventName</code>
-                        <span class="type">String</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>Name of the event.</p>
-
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">callback</code>
-                        <span class="type">Functon</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>fn Callback function.</p>
-
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_once" class="method item inherited">
-    <h3 class="name"><code>once</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>eventName</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>callback</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/EventTarget.html#method_once">EventTarget</a>:
-            
-        
-        
-        <a href="../files/src_pixi_utils_EventTarget.js.html#l124"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:124</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Add an EventListener that&#39;s only called once.</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">eventName</code>
-                        <span class="type">String</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>Name of the event.</p>
-
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">callback</code>
-                        <span class="type">Function</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>Callback function.</p>
-
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_onLoaded" class="method item private">
-    <h3 class="name"><code>onLoaded</code></h3>
-
-    
-        <span class="paren">()</span>
-    
-
-    
-
-    
-
-    
-        <span class="flag private">private</span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_pixi_loaders_SpineLoader.js.html#l72"><code>src&#x2F;pixi&#x2F;loaders&#x2F;SpineLoader.js:72</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Invoked when JSON file is loaded.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_removeAllListeners" class="method item inherited">
-    <h3 class="name"><code>removeAllListeners</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>eventName</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/EventTarget.html#method_removeAllListeners">EventTarget</a>:
-            
-        
-        
-        <a href="../files/src_pixi_utils_EventTarget.js.html#l173"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:173</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Remove all listeners or only the listeners for the specified event.</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">eventName</code>
-                        <span class="type">String</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>The event you want to remove all listeners for.</p>
-
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
                     <div id="method_removeChild" class="method item inherited">
     <h3 class="name"><code>removeChild</code></h3>
 
@@ -3775,7 +2867,7 @@ for this callback to be fired, the mouse&#39;s left button must have been presse
             
         
         
-        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l402"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:402</code></a>
+        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l395"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:395</code></a>
         
         </p>
 
@@ -4290,7 +3382,7 @@ for this callback to be fired, the mouse&#39;s right button must have been press
             
         
         
-        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l384"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:384</code></a>
+        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l377"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:377</code></a>
         
         </p>
 
@@ -5557,51 +4649,6 @@ To remove simply set this property to &#39;null&#39;</p>
 </div>
 
                 
-                    <div id="property_crossorigin" class="property item">
-    <h3 class="name"><code>crossorigin</code></h3>
-    <span class="type">Boolean</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_pixi_loaders_SpineLoader.js.html#l34"><code>src&#x2F;pixi&#x2F;loaders&#x2F;SpineLoader.js:34</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Whether the requests should be treated as cross origin</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
                     <div id="property_defaultCursor" class="property item inherited">
     <h3 class="name"><code>defaultCursor</code></h3>
     <span class="type">String</span>
@@ -5854,51 +4901,6 @@ Setting it is a neat way of optimising the hitTest function that the interaction
 
     
         <p><strong>Default:</strong> false</p>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_loaded" class="property item">
-    <h3 class="name"><code>loaded</code></h3>
-    <span class="type">Boolean</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_pixi_loaders_SpineLoader.js.html#l42"><code>src&#x2F;pixi&#x2F;loaders&#x2F;SpineLoader.js:42</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>[read-only] Whether the data has loaded yet</p>
-
-    </div>
-
     
 
     
@@ -6234,51 +5236,6 @@ To remove a mask, set this property to null.</p>
 
     <div class="description">
         <p>[read-only] The stage the display object is connected to, or undefined if it is not connected to the stage.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_url" class="property item">
-    <h3 class="name"><code>url</code></h3>
-    <span class="type">String</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_pixi_loaders_SpineLoader.js.html#l26"><code>src&#x2F;pixi&#x2F;loaders&#x2F;SpineLoader.js:26</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>The url of the bitmap font data</p>
 
     </div>
 

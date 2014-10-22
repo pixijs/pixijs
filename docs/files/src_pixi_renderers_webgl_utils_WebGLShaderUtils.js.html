@@ -69,6 +69,8 @@
             
                 <li><a href="../classes/BlurYFilter.html">BlurYFilter</a></li>
             
+                <li><a href="../classes/CanvasBuffer.html">CanvasBuffer</a></li>
+            
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
                 <li><a href="../classes/CanvasMaskManager.html">CanvasMaskManager</a></li>
@@ -158,6 +160,8 @@
                 <li><a href="../classes/SmartBlurFilter.html">SmartBlurFilter</a></li>
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
+            
+                <li><a href="../classes/SpineLoader.html">SpineLoader</a></li>
             
                 <li><a href="../classes/Sprite.html">Sprite</a></li>
             
@@ -256,6 +260,7 @@
 
 /**
 * @method initDefaultShaders
+* @static
 * @private
 */
 PIXI.initDefaultShaders = function()
@@ -264,6 +269,7 @@ PIXI.initDefaultShaders = function()
 
 /**
 * @method CompileVertexShader
+* @static
 * @param gl {WebGLContext} the current WebGL drawing context
 * @param shaderSrc {Array}
 * @return {Any}
@@ -275,6 +281,7 @@ PIXI.CompileVertexShader = function(gl, shaderSrc)
 
 /**
 * @method CompileFragmentShader
+* @static
 * @param gl {WebGLContext} the current WebGL drawing context
 * @param shaderSrc {Array}
 * @return {Any}
@@ -286,6 +293,7 @@ PIXI.CompileFragmentShader = function(gl, shaderSrc)
 
 /**
 * @method _CompileShader
+* @static
 * @private
 * @param gl {WebGLContext} the current WebGL drawing context
 * @param shaderSrc {Array}
@@ -310,6 +318,7 @@ PIXI._CompileShader = function(gl, shaderSrc, shaderType)
 
 /**
 * @method compileProgram
+* @static
 * @param gl {WebGLContext} the current WebGL drawing context
 * @param vertexSrc {Array}
 * @param fragmentSrc {Array}

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>TwistFilter - pixi.js</title>
+    <title>CanvasBuffer - pixi.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -250,19 +250,15 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>TwistFilter Class</h1>
+                        <h1>CanvasBuffer Class</h1>
 <div class="box meta">
     
 
     
-        <div class="extends">
-            Extends <a href="../classes/AbstractFilter.html" class="crosslink">AbstractFilter</a>
-        </div>
-    
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_pixi_filters_TwistFilter.js.html#l5"><code>src&#x2F;pixi&#x2F;filters&#x2F;TwistFilter.js:5</code></a>
+            Defined in: <a href="../files/src_pixi_renderers_canvas_utils_CanvasBuffer.js.html#l5"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;utils&#x2F;CanvasBuffer.js:5</code></a>
         </div>
     
 
@@ -278,18 +274,34 @@
 
 
 <div class="box intro">
-    <p>This filter applies a twist effect making display objects appear twisted in the given direction.</p>
+    <p>Creates a Canvas element of the given size.</p>
 
 </div>
 
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_TwistFilter" class="method item">
-    <h3 class="name"><code>TwistFilter</code></h3>
+        <div id="method_CanvasBuffer" class="method item">
+    <h3 class="name"><code>CanvasBuffer</code></h3>
 
     
-        <span class="paren">()</span>
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>width</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>height</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
     
 
     
@@ -317,7 +329,7 @@
             
         
         
-        <a href="../files/src_pixi_filters_TwistFilter.js.html#l5"><code>src&#x2F;pixi&#x2F;filters&#x2F;TwistFilter.js:5</code></a>
+        <a href="../files/src_pixi_renderers_canvas_utils_CanvasBuffer.js.html#l5"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;utils&#x2F;CanvasBuffer.js:5</code></a>
         
         </p>
 
@@ -331,6 +343,46 @@
         
     </div>
 
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">width</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the width for the newly created canvas</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">height</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the height for the newly created canvas</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
     
 
     
@@ -363,10 +415,17 @@
                 <div class="index-section methods">
                     <h3>Methods</h3>
 
-                    <ul class="index-list methods extends">
+                    <ul class="index-list methods">
                         
-                            <li class="index-item method inherited">
-                                <a href="#method_syncUniforms">syncUniforms</a>
+                            <li class="index-item method private">
+                                <a href="#method_clear">clear</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_resize">resize</a>
 
                                 
                                 
@@ -380,66 +439,31 @@
                 <div class="index-section properties">
                     <h3>Properties</h3>
 
-                    <ul class="index-list properties extends">
+                    <ul class="index-list properties">
                         
                             <li class="index-item property">
-                                <a href="#property_angle">angle</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property inherited">
-                                <a href="#property_dirty">dirty</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property private inherited">
-                                <a href="#property_fragmentSrc">fragmentSrc</a>
+                                <a href="#property_canvas">canvas</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_offset">offset</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property inherited">
-                                <a href="#property_padding">padding</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property private inherited">
-                                <a href="#property_passes">passes</a>
+                                <a href="#property_context">context</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_radius">radius</a>
+                                <a href="#property_height">height</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item property private inherited">
-                                <a href="#property_shaders">shaders</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property private inherited">
-                                <a href="#property_uniforms">uniforms</a>
+                            <li class="index-item property">
+                                <a href="#property_width">width</a>
 
                                 
                                 
@@ -459,11 +483,84 @@
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_syncUniforms" class="method item inherited">
-    <h3 class="name"><code>syncUniforms</code></h3>
+                    <div id="method_clear" class="method item private">
+    <h3 class="name"><code>clear</code></h3>
 
     
         <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_renderers_canvas_utils_CanvasBuffer.js.html#l53"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;utils&#x2F;CanvasBuffer.js:53</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Clears the canvas that was created by the CanvasBuffer class.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_resize" class="method item">
+    <h3 class="name"><code>resize</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>width</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>height</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
     
 
     
@@ -483,12 +580,15 @@
     <div class="meta">
         
             
-                <p>Inherited from
-                <a href="../classes/AbstractFilter.html#method_syncUniforms">AbstractFilter</a>:
+                
+                <p>
+                
+                Defined in
+                
             
         
         
-        <a href="../files/src_pixi_filters_AbstractFilter.js.html#l60"><code>src&#x2F;pixi&#x2F;filters&#x2F;AbstractFilter.js:60</code></a>
+        <a href="../files/src_pixi_renderers_canvas_utils_CanvasBuffer.js.html#l64"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;utils&#x2F;CanvasBuffer.js:64</code></a>
         
         </p>
 
@@ -499,10 +599,50 @@
     </div>
 
     <div class="description">
-        <p>Syncs the uniforms between the class object and the shaders.</p>
+        <p>Resizes the canvas to the specified width and height.</p>
 
     </div>
 
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">width</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the new width of the canvas</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">height</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the new height of the canvas</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
     
 
     
@@ -519,8 +659,98 @@
                 <h2 class="off-left">Properties</h2>
 
                 
-                    <div id="property_angle" class="property item">
-    <h3 class="name"><code>angle</code></h3>
+                    <div id="property_canvas" class="property item">
+    <h3 class="name"><code>canvas</code></h3>
+    <span class="type">HTMLCanvasElement</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_renderers_canvas_utils_CanvasBuffer.js.html#l31"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;utils&#x2F;CanvasBuffer.js:31</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The Canvas object that belongs to this CanvasBuffer.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_context" class="property item">
+    <h3 class="name"><code>context</code></h3>
+    <span class="type">CanvasRenderingContext2D</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_renderers_canvas_utils_CanvasBuffer.js.html#l39"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;utils&#x2F;CanvasBuffer.js:39</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>A CanvasRenderingContext2D object representing a two-dimensional rendering context.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_height" class="property item">
+    <h3 class="name"><code>height</code></h3>
     <span class="type">Number</span>
 
     
@@ -542,7 +772,7 @@
             
         
         
-        <a href="../files/src_pixi_filters_TwistFilter.js.html#l88"><code>src&#x2F;pixi&#x2F;filters&#x2F;TwistFilter.js:88</code></a>
+        <a href="../files/src_pixi_renderers_canvas_utils_CanvasBuffer.js.html#l23"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;utils&#x2F;CanvasBuffer.js:23</code></a>
         
         </p>
 
@@ -552,7 +782,7 @@
     </div>
 
     <div class="description">
-        <p>This angle of the twist.</p>
+        <p>The height of the Canvas in pixels.</p>
 
     </div>
 
@@ -564,223 +794,8 @@
 </div>
 
                 
-                    <div id="property_dirty" class="property item inherited">
-    <h3 class="name"><code>dirty</code></h3>
-    <span class="type">Boolean</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/AbstractFilter.html#property_dirty">AbstractFilter</a>:
-            
-        
-        
-        <a href="../files/src_pixi_filters_AbstractFilter.js.html#l31"><code>src&#x2F;pixi&#x2F;filters&#x2F;AbstractFilter.js:31</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_fragmentSrc" class="property item private inherited">
-    <h3 class="name"><code>fragmentSrc</code></h3>
-    <span class="type">Array</span>
-
-    
-
-    
-        <span class="flag private">private</span>
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/AbstractFilter.html#property_fragmentSrc">AbstractFilter</a>:
-            
-        
-        
-        <a href="../files/src_pixi_filters_AbstractFilter.js.html#l50"><code>src&#x2F;pixi&#x2F;filters&#x2F;AbstractFilter.js:50</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_offset" class="property item">
-    <h3 class="name"><code>offset</code></h3>
-    <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_pixi_filters_TwistFilter.js.html#l56"><code>src&#x2F;pixi&#x2F;filters&#x2F;TwistFilter.js:56</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>This point describes the the offset of the twist.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_padding" class="property item inherited">
-    <h3 class="name"><code>padding</code></h3>
-    <span class="type">Number</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/AbstractFilter.html#property_padding">AbstractFilter</a>:
-            
-        
-        
-        <a href="../files/src_pixi_filters_AbstractFilter.js.html#l37"><code>src&#x2F;pixi&#x2F;filters&#x2F;AbstractFilter.js:37</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_passes" class="property item private inherited">
-    <h3 class="name"><code>passes</code></h3>
-    <span class="type">Array an array of filter objects</span>
-
-    
-
-    
-        <span class="flag private">private</span>
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/AbstractFilter.html#property_passes">AbstractFilter</a>:
-            
-        
-        
-        <a href="../files/src_pixi_filters_AbstractFilter.js.html#l15"><code>src&#x2F;pixi&#x2F;filters&#x2F;AbstractFilter.js:15</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>An array of passes - some filters contain a few steps this array simply stores the steps in a liniear fashion.
-For example the blur filter has two passes blurX and blurY.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_radius" class="property item">
-    <h3 class="name"><code>radius</code></h3>
+                    <div id="property_width" class="property item">
+    <h3 class="name"><code>width</code></h3>
     <span class="type">Number</span>
 
     
@@ -802,7 +817,7 @@ For example the blur filter has two passes blurX and blurY.</p>
             
         
         
-        <a href="../files/src_pixi_filters_TwistFilter.js.html#l72"><code>src&#x2F;pixi&#x2F;filters&#x2F;TwistFilter.js:72</code></a>
+        <a href="../files/src_pixi_renderers_canvas_utils_CanvasBuffer.js.html#l15"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;utils&#x2F;CanvasBuffer.js:15</code></a>
         
         </p>
 
@@ -812,94 +827,8 @@ For example the blur filter has two passes blurX and blurY.</p>
     </div>
 
     <div class="description">
-        <p>This radius of the twist.</p>
+        <p>The width of the Canvas in pixels.</p>
 
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_shaders" class="property item private inherited">
-    <h3 class="name"><code>shaders</code></h3>
-    <span class="type">Array an array of shaders</span>
-
-    
-
-    
-        <span class="flag private">private</span>
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/AbstractFilter.html#property_shaders">AbstractFilter</a>:
-            
-        
-        
-        <a href="../files/src_pixi_filters_AbstractFilter.js.html#l24"><code>src&#x2F;pixi&#x2F;filters&#x2F;AbstractFilter.js:24</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_uniforms" class="property item private inherited">
-    <h3 class="name"><code>uniforms</code></h3>
-    <span class="type">Object</span>
-
-    
-
-    
-        <span class="flag private">private</span>
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/AbstractFilter.html#property_uniforms">AbstractFilter</a>:
-            
-        
-        
-        <a href="../files/src_pixi_filters_AbstractFilter.js.html#l43"><code>src&#x2F;pixi&#x2F;filters&#x2F;AbstractFilter.js:43</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
     </div>
 
     

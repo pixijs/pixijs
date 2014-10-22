@@ -4,7 +4,7 @@
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-10-19
+ * Compiled: 2014-10-22
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -667,8 +667,8 @@ PIXI.Matrix.prototype.apply = function(pos, newPos)
 {
     newPos = newPos || new PIXI.Point();
 
-    newPos.x = this.a * pos.x + this.b * pos.y + this.tx;
-    newPos.y = this.c * pos.x + this.d * pos.y + this.ty;
+    newPos.x = this.a * pos.x + this.c * pos.y + this.tx;
+    newPos.y = this.b * pos.x + this.d * pos.y + this.ty;
 
     return newPos;
 };
@@ -5492,6 +5492,7 @@ PIXI.PolyK._convex = function(ax, ay, bx, by, cx, cy, sign)
 
 /**
 * @method initDefaultShaders
+* @static
 * @private
 */
 PIXI.initDefaultShaders = function()
@@ -5500,6 +5501,7 @@ PIXI.initDefaultShaders = function()
 
 /**
 * @method CompileVertexShader
+* @static
 * @param gl {WebGLContext} the current WebGL drawing context
 * @param shaderSrc {Array}
 * @return {Any}
@@ -5511,6 +5513,7 @@ PIXI.CompileVertexShader = function(gl, shaderSrc)
 
 /**
 * @method CompileFragmentShader
+* @static
 * @param gl {WebGLContext} the current WebGL drawing context
 * @param shaderSrc {Array}
 * @return {Any}
@@ -5522,6 +5525,7 @@ PIXI.CompileFragmentShader = function(gl, shaderSrc)
 
 /**
 * @method _CompileShader
+* @static
 * @private
 * @param gl {WebGLContext} the current WebGL drawing context
 * @param shaderSrc {Array}
@@ -5546,6 +5550,7 @@ PIXI._CompileShader = function(gl, shaderSrc, shaderType)
 
 /**
 * @method compileProgram
+* @static
 * @param gl {WebGLContext} the current WebGL drawing context
 * @param vertexSrc {Array}
 * @param fragmentSrc {Array}
@@ -10068,7 +10073,8 @@ PIXI.FilterTexture.prototype.destroy = function()
 /**
  * Creates a Canvas element of the given size.
  *
- * @method CanvasBuffer
+ * @class CanvasBuffer
+ * @constructor
  * @param width {Number} the width for the newly created canvas
  * @param height {Number} the height for the newly created canvas
  */
@@ -10141,13 +10147,16 @@ PIXI.CanvasBuffer.prototype.resize = function(width, height)
  */
 
 /**
- * A set of functions used to handle masking
+ * A set of functions used to handle masking.
  *
  * @class CanvasMaskManager
+ * @constructor
  */
 PIXI.CanvasMaskManager = function()
 {
 };
+
+PIXI.CanvasMaskManager.prototype.constructor = PIXI.CanvasMaskManager;
 
 /**
  * This method adds it to the current stack of masks.
@@ -10743,9 +10752,10 @@ PIXI.CanvasRenderer.prototype.mapBlendModes = function()
 
 
 /**
- * A set of functions used by the canvas renderer to draw the primitive graphics data
+ * A set of functions used by the canvas renderer to draw the primitive graphics data.
  *
  * @class CanvasGraphics
+ * @static
  */
 PIXI.CanvasGraphics = function()
 {
@@ -10754,8 +10764,8 @@ PIXI.CanvasGraphics = function()
 /*
  * Renders a PIXI.Graphics object to a canvas.
  *
- * @static
  * @method renderGraphics
+ * @static
  * @param graphics {Graphics} the actual graphics object to render
  * @param context {CanvasRenderingContext2D} the 2d drawing method of the canvas
  */
@@ -16486,7 +16496,7 @@ PIXI.BitmapFontLoader.prototype.onLoaded = function()
  * You will need to generate a sprite sheet to accompany the spine data
  * When loaded this class will dispatch a "loaded" event
  *
- * @class Spine
+ * @class SpineLoader
  * @uses EventTarget
  * @constructor
  * @param url {String} The url of the JSON file

@@ -69,6 +69,8 @@
             
                 <li><a href="../classes/BlurYFilter.html">BlurYFilter</a></li>
             
+                <li><a href="../classes/CanvasBuffer.html">CanvasBuffer</a></li>
+            
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
                 <li><a href="../classes/CanvasMaskManager.html">CanvasMaskManager</a></li>
@@ -158,6 +160,8 @@
                 <li><a href="../classes/SmartBlurFilter.html">SmartBlurFilter</a></li>
             
                 <li><a href="../classes/Spine.html">Spine</a></li>
+            
+                <li><a href="../classes/SpineLoader.html">SpineLoader</a></li>
             
                 <li><a href="../classes/Sprite.html">Sprite</a></li>
             
@@ -252,17 +256,17 @@
     <pre class="code prettyprint linenums">
 /**
  * The ConvolutionFilter class applies a matrix convolution filter effect. 
- * A convolution combines pixels in the input image with neighboring pixels to produce an image. 
+ * A convolution combines pixels in the input image with neighboring pixels to produce a new image. 
  * A wide variety of image effects can be achieved through convolutions, including blurring, edge detection, sharpening, embossing, and beveling.
+ * The matrix should be specified as a 9 point Array. See http://docs.gimp.org/en/plug-in-convmatrix.html for more info.
  * 
  * @class ConvolutionFilter
  * @extends AbstractFilter
  * @constructor
- * @param texture {Array} An array of values used for matrix transformation.
+ * @param matrix {Array} An array of values used for matrix transformation. Specified as a 9 point Array.
  * @param width {Number} Width of the object you are transforming
  * @param height {Number} Height of the object you are transforming
  */
-
 PIXI.ConvolutionFilter = function(matrix, width, height)
 {
     PIXI.AbstractFilter.call( this );
@@ -275,7 +279,6 @@ PIXI.ConvolutionFilter = function(matrix, width, height)
         texelSizeX: {type: &#x27;1f&#x27;, value: 1 / width},
         texelSizeY: {type: &#x27;1f&#x27;, value: 1 / height}
     };
-
 
     this.fragmentSrc = [
         &#x27;precision mediump float;&#x27;,
@@ -313,7 +316,12 @@ PIXI.ConvolutionFilter = function(matrix, width, height)
 PIXI.ConvolutionFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.ConvolutionFilter.prototype.constructor = PIXI.ConvolutionFilter;
 
-
+/**
+ * An array of values used for matrix transformation. Specified as a 9 point Array.
+ *
+ * @property matrix
+ * @type Array
+ */
 Object.defineProperty(PIXI.ConvolutionFilter.prototype, &#x27;matrix&#x27;, {
     get: function() {
         return this.uniforms.m.value;
@@ -323,6 +331,12 @@ Object.defineProperty(PIXI.ConvolutionFilter.prototype, &#x27;matrix&#x27;, {
     }
 });
 
+/**
+ * Width of the object you are transforming
+ *
+ * @property width
+ * @type Number
+ */
 Object.defineProperty(PIXI.ConvolutionFilter.prototype, &#x27;width&#x27;, {
     get: function() {
         return this.uniforms.texelSizeX.value;
@@ -332,6 +346,12 @@ Object.defineProperty(PIXI.ConvolutionFilter.prototype, &#x27;width&#x27;, {
     }
 });
 
+/**
+ * Height of the object you are transforming
+ *
+ * @property height
+ * @type Number
+ */
 Object.defineProperty(PIXI.ConvolutionFilter.prototype, &#x27;height&#x27;, {
     get: function() {
         return this.uniforms.texelSizeY.value;
