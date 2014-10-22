@@ -228,7 +228,7 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
  */
 PIXI.CanvasRenderer.prototype.destroy = function(removeView)
 {
-    if (typeof removeView === 'undefined') { removeView = true; }
+    if (typeof removeView === "undefined") { removeView = true; }
 
     if (removeView && this.view.parent)
     {
