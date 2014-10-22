@@ -133,8 +133,8 @@ PIXI.Matrix.prototype.apply = function(pos, newPos)
 {
     newPos = newPos || new PIXI.Point();
 
-    newPos.x = this.a * pos.x + this.b * pos.y + this.tx;
-    newPos.y = this.c * pos.x + this.d * pos.y + this.ty;
+    newPos.x = this.a * pos.x + this.c * pos.y + this.tx;
+    newPos.y = this.b * pos.x + this.d * pos.y + this.ty;
 
     return newPos;
 };
