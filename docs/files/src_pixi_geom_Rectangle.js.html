@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/pixi/core/Circle.js - pixi.js</title>
+    <title>src/pixi/geom/Rectangle.js - pixi.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.6.0</em>
+            <em>API Docs for: 2.0.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -47,9 +47,13 @@
             
                 <li><a href="../classes/AlphaMaskFilter.html">AlphaMaskFilter</a></li>
             
+                <li><a href="../classes/AsciiFilter.html">AsciiFilter</a></li>
+            
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
                 <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
+                <li><a href="../classes/autoDetectRecommendedRenderer.html">autoDetectRecommendedRenderer</a></li>
             
                 <li><a href="../classes/autoDetectRenderer.html">autoDetectRenderer</a></li>
             
@@ -60,6 +64,12 @@
                 <li><a href="../classes/BitmapText.html">BitmapText</a></li>
             
                 <li><a href="../classes/BlurFilter.html">BlurFilter</a></li>
+            
+                <li><a href="../classes/BlurXFilter.html">BlurXFilter</a></li>
+            
+                <li><a href="../classes/BlurYFilter.html">BlurYFilter</a></li>
+            
+                <li><a href="../classes/CanvasBuffer.html">CanvasBuffer</a></li>
             
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
@@ -77,6 +87,10 @@
             
                 <li><a href="../classes/ComplexPrimitiveShader.html">ComplexPrimitiveShader</a></li>
             
+                <li><a href="../classes/ConvolutionFilter.html">ConvolutionFilter</a></li>
+            
+                <li><a href="../classes/CrossHatchFilter.html">CrossHatchFilter</a></li>
+            
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
@@ -87,13 +101,17 @@
             
                 <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
+                <li><a href="../classes/Event.html">Event</a></li>
+            
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
+            
+                <li><a href="../classes/FilterBlock.html">FilterBlock</a></li>
             
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
             
-                <li><a href="../classes/getRecommendedRenderer.html">getRecommendedRenderer</a></li>
-            
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
+            
+                <li><a href="../classes/GraphicsData.html">GraphicsData</a></li>
             
                 <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
@@ -109,9 +127,9 @@
             
                 <li><a href="../classes/Matrix.html">Matrix</a></li>
             
-                <li><a href="../classes/Matrix2.html">Matrix2</a></li>
-            
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
+            
+                <li><a href="../classes/NoiseFilter.html">NoiseFilter</a></li>
             
                 <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
             
@@ -131,11 +149,19 @@
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
+                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
+            
+                <li><a href="../classes/RGBSplitFilter.html">RGBSplitFilter</a></li>
+            
                 <li><a href="../classes/Rope.html">Rope</a></li>
             
                 <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
             
+                <li><a href="../classes/SmartBlurFilter.html">SmartBlurFilter</a></li>
+            
                 <li><a href="../classes/Spine.html">Spine</a></li>
+            
+                <li><a href="../classes/SpineLoader.html">SpineLoader</a></li>
             
                 <li><a href="../classes/Sprite.html">Sprite</a></li>
             
@@ -147,17 +173,31 @@
             
                 <li><a href="../classes/Strip.html">Strip</a></li>
             
+                <li><a href="../classes/StripShader.html">StripShader</a></li>
+            
                 <li><a href="../classes/Text.html">Text</a></li>
             
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
             
+                <li><a href="../classes/TiltShiftFilter.html">TiltShiftFilter</a></li>
+            
+                <li><a href="../classes/TiltShiftXFilter.html">TiltShiftXFilter</a></li>
+            
+                <li><a href="../classes/TiltShiftYFilter.html">TiltShiftYFilter</a></li>
+            
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
+            
+                <li><a href="../classes/WebGLBlendModeManager.html">WebGLBlendModeManager</a></li>
+            
+                <li><a href="../classes/WebGLFastSpriteBatch.html">WebGLFastSpriteBatch</a></li>
             
                 <li><a href="../classes/WebGLFilterManager.html">WebGLFilterManager</a></li>
             
                 <li><a href="../classes/WebGLGraphics.html">WebGLGraphics</a></li>
+            
+                <li><a href="../classes/WebGLGraphicsData.html">WebGLGraphicsData</a></li>
             
                 <li><a href="../classes/WebGLMaskManager.html">WebGLMaskManager</a></li>
             
@@ -210,24 +250,25 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/pixi/core/Circle.js</h1>
+                        <h1 class="file-heading">File: src/pixi/geom/Rectangle.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- * @author Chad Engler &lt;chad@pantherdev.com&gt;
+ * @author Mat Groves http://matgroves.com/
  */
 
 /**
- * The Circle object can be used to specify a hit area for displayObjects
+ * the Rectangle object is an area defined by its position, as indicated by its top-left corner point (x, y) and by its width and its height.
  *
- * @class Circle
+ * @class Rectangle
  * @constructor
- * @param x {Number} The X coordinate of the center of this circle
- * @param y {Number} The Y coordinate of the center of this circle
- * @param radius {Number} The radius of the circle
+ * @param x {Number} The X coordinate of the upper-left corner of the rectangle
+ * @param y {Number} The Y coordinate of the upper-left corner of the rectangle
+ * @param width {Number} The overall width of this rectangle
+ * @param height {Number} The overall height of this rectangle
  */
-PIXI.Circle = function(x, y, radius)
+PIXI.Rectangle = function(x, y, width, height)
 {
     /**
      * @property x
@@ -244,62 +285,62 @@ PIXI.Circle = function(x, y, radius)
     this.y = y || 0;
 
     /**
-     * @property radius
+     * @property width
      * @type Number
      * @default 0
      */
-    this.radius = radius || 0;
+    this.width = width || 0;
+
+    /**
+     * @property height
+     * @type Number
+     * @default 0
+     */
+    this.height = height || 0;
 };
 
 /**
- * Creates a clone of this Circle instance
+ * Creates a clone of this Rectangle
  *
  * @method clone
- * @return {Circle} a copy of the polygon
+ * @return {Rectangle} a copy of the rectangle
  */
-PIXI.Circle.prototype.clone = function()
+PIXI.Rectangle.prototype.clone = function()
 {
-    return new PIXI.Circle(this.x, this.y, this.radius);
+    return new PIXI.Rectangle(this.x, this.y, this.width, this.height);
 };
 
 /**
- * Checks whether the x, and y coordinates passed to this function are contained within this circle
+ * Checks whether the x and y coordinates given are contained within this Rectangle
  *
  * @method contains
  * @param x {Number} The X coordinate of the point to test
  * @param y {Number} The Y coordinate of the point to test
- * @return {Boolean} Whether the x/y coordinates are within this polygon
+ * @return {Boolean} Whether the x/y coordinates are within this Rectangle
  */
-PIXI.Circle.prototype.contains = function(x, y)
+PIXI.Rectangle.prototype.contains = function(x, y)
 {
-    if(this.radius &lt;= 0)
+    if(this.width &lt;= 0 || this.height &lt;= 0)
         return false;
 
-    var dx = (this.x - x),
-        dy = (this.y - y),
-        r2 = this.radius * this.radius;
+    var x1 = this.x;
+    if(x &gt;= x1 &amp;&amp; x &lt;= x1 + this.width)
+    {
+        var y1 = this.y;
 
-    dx *= dx;
-    dy *= dy;
+        if(y &gt;= y1 &amp;&amp; y &lt;= y1 + this.height)
+        {
+            return true;
+        }
+    }
 
-    return (dx + dy &lt;= r2);
-};
-
-/**
-* Returns the framing rectangle of the circle as a PIXI.Rectangle object
-*
-* @method getBounds
-* @return {Rectangle} the framing rectangle
-*/
-PIXI.Circle.prototype.getBounds = function()
-{
-    return new PIXI.Rectangle(this.x - this.radius, this.y - this.radius, this.width, this.height);
+    return false;
 };
 
 // constructor
-PIXI.Circle.prototype.constructor = PIXI.Circle;
+PIXI.Rectangle.prototype.constructor = PIXI.Rectangle;
 
-
+PIXI.EmptyRectangle = new PIXI.Rectangle(0,0,0,0);
     </pre>
 </div>
 

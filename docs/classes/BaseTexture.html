@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.6.0</em>
+            <em>API Docs for: 2.0.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -47,9 +47,13 @@
             
                 <li><a href="../classes/AlphaMaskFilter.html">AlphaMaskFilter</a></li>
             
+                <li><a href="../classes/AsciiFilter.html">AsciiFilter</a></li>
+            
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
                 <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
+                <li><a href="../classes/autoDetectRecommendedRenderer.html">autoDetectRecommendedRenderer</a></li>
             
                 <li><a href="../classes/autoDetectRenderer.html">autoDetectRenderer</a></li>
             
@@ -60,6 +64,12 @@
                 <li><a href="../classes/BitmapText.html">BitmapText</a></li>
             
                 <li><a href="../classes/BlurFilter.html">BlurFilter</a></li>
+            
+                <li><a href="../classes/BlurXFilter.html">BlurXFilter</a></li>
+            
+                <li><a href="../classes/BlurYFilter.html">BlurYFilter</a></li>
+            
+                <li><a href="../classes/CanvasBuffer.html">CanvasBuffer</a></li>
             
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
@@ -77,6 +87,10 @@
             
                 <li><a href="../classes/ComplexPrimitiveShader.html">ComplexPrimitiveShader</a></li>
             
+                <li><a href="../classes/ConvolutionFilter.html">ConvolutionFilter</a></li>
+            
+                <li><a href="../classes/CrossHatchFilter.html">CrossHatchFilter</a></li>
+            
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
@@ -87,13 +101,17 @@
             
                 <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
+                <li><a href="../classes/Event.html">Event</a></li>
+            
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
+            
+                <li><a href="../classes/FilterBlock.html">FilterBlock</a></li>
             
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
             
-                <li><a href="../classes/getRecommendedRenderer.html">getRecommendedRenderer</a></li>
-            
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
+            
+                <li><a href="../classes/GraphicsData.html">GraphicsData</a></li>
             
                 <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
@@ -109,9 +127,9 @@
             
                 <li><a href="../classes/Matrix.html">Matrix</a></li>
             
-                <li><a href="../classes/Matrix2.html">Matrix2</a></li>
-            
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
+            
+                <li><a href="../classes/NoiseFilter.html">NoiseFilter</a></li>
             
                 <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
             
@@ -131,11 +149,19 @@
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
+                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
+            
+                <li><a href="../classes/RGBSplitFilter.html">RGBSplitFilter</a></li>
+            
                 <li><a href="../classes/Rope.html">Rope</a></li>
             
                 <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
             
+                <li><a href="../classes/SmartBlurFilter.html">SmartBlurFilter</a></li>
+            
                 <li><a href="../classes/Spine.html">Spine</a></li>
+            
+                <li><a href="../classes/SpineLoader.html">SpineLoader</a></li>
             
                 <li><a href="../classes/Sprite.html">Sprite</a></li>
             
@@ -147,17 +173,31 @@
             
                 <li><a href="../classes/Strip.html">Strip</a></li>
             
+                <li><a href="../classes/StripShader.html">StripShader</a></li>
+            
                 <li><a href="../classes/Text.html">Text</a></li>
             
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
             
+                <li><a href="../classes/TiltShiftFilter.html">TiltShiftFilter</a></li>
+            
+                <li><a href="../classes/TiltShiftXFilter.html">TiltShiftXFilter</a></li>
+            
+                <li><a href="../classes/TiltShiftYFilter.html">TiltShiftYFilter</a></li>
+            
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
+            
+                <li><a href="../classes/WebGLBlendModeManager.html">WebGLBlendModeManager</a></li>
+            
+                <li><a href="../classes/WebGLFastSpriteBatch.html">WebGLFastSpriteBatch</a></li>
             
                 <li><a href="../classes/WebGLFilterManager.html">WebGLFilterManager</a></li>
             
                 <li><a href="../classes/WebGLGraphics.html">WebGLGraphics</a></li>
+            
+                <li><a href="../classes/WebGLGraphicsData.html">WebGLGraphicsData</a></li>
             
                 <li><a href="../classes/WebGLMaskManager.html">WebGLMaskManager</a></li>
             
@@ -227,7 +267,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_pixi_textures_BaseTexture.js.html#l11"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:11</code></a>
+            Defined in: <a href="../files/src_pixi_textures_BaseTexture.js.html#l9"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:9</code></a>
         </div>
     
 
@@ -243,7 +283,7 @@
 
 
 <div class="box intro">
-    <p>A texture stores the information that represents an image. All textures have a base texture</p>
+    <p>A texture stores the information that represents an image. All textures have a base texture.</p>
 
 </div>
 
@@ -298,7 +338,7 @@
             
         
         
-        <a href="../files/src_pixi_textures_BaseTexture.js.html#l11"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:11</code></a>
+        <a href="../files/src_pixi_textures_BaseTexture.js.html#l9"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:9</code></a>
         
         </p>
 
@@ -386,13 +426,6 @@
 
                     <ul class="index-list methods">
                         
-                            <li class="index-item method inherited">
-                                <a href="#method_addEventListener">addEventListener</a>
-
-                                
-                                
-                            </li>
-                        
                             <li class="index-item method">
                                 <a href="#method_destroy">destroy</a>
 
@@ -400,8 +433,15 @@
                                 
                             </li>
                         
+                            <li class="index-item method">
+                                <a href="#method_dirty">dirty</a>
+
+                                
+                                
+                            </li>
+                        
                             <li class="index-item method inherited">
-                                <a href="#method_dispatchEvent">dispatchEvent</a>
+                                <a href="#method_emit">emit</a>
 
                                 
                                 
@@ -426,14 +466,42 @@
                             </li>
                         
                             <li class="index-item method inherited">
-                                <a href="#method_removeAllEventListeners">removeAllEventListeners</a>
+                                <a href="#method_listeners">listeners</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item method inherited">
-                                <a href="#method_removeEventListener">removeEventListener</a>
+                                <a href="#method_mixin">mixin</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_off">off</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_on">on</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_once">once</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_removeAllListeners">removeAllListeners</a>
 
                                 
                                 
@@ -456,6 +524,27 @@
 
                     <ul class="index-list properties">
                         
+                            <li class="index-item property private">
+                                <a href="#property__dirty">_dirty</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property private">
+                                <a href="#property__glTextures">_glTextures</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property private">
+                                <a href="#property__powerOf2">_powerOf2</a>
+
+                                
+                                
+                            </li>
+                        
                             <li class="index-item property">
                                 <a href="#property_hasLoaded">hasLoaded</a>
 
@@ -465,6 +554,27 @@
                         
                             <li class="index-item property">
                                 <a href="#property_height">height</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_imageUrl">imageUrl</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_premultipliedAlpha">premultipliedAlpha</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property">
+                                <a href="#property_resolution">resolution</a>
 
                                 
                                 
@@ -491,20 +601,6 @@
                                 
                             </li>
                         
-                            <li class="index-item property">
-                                <a href="#property_"></a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property inherited">
-                                <a href="#property_listeners">listeners</a>
-
-                                
-                                
-                            </li>
-                        
                     </ul>
                 </div>
             
@@ -517,114 +613,6 @@
         
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
-
-                
-                    <div id="method_addEventListener" class="method item inherited">
-    <h3 class="name"><code>addEventListener</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>type</code>
-                    
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>listener</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/EventTarget.html#method_addEventListener">EventTarget</a>:
-            
-        
-        
-        <a href="../files/src_pixi_utils_EventTarget.js.html#l32"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:32</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Adds a listener for a specific event</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">type</code>
-                        <span class="type">String</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>A string representing the event type to listen for.</p>
-
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">listener</code>
-                        <span class="type">Function</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>The callback function that will be fired when the event occurs</p>
-
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
 
                 
                     <div id="method_destroy" class="method item">
@@ -659,7 +647,7 @@
             
         
         
-        <a href="../files/src_pixi_textures_BaseTexture.js.html#l127"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:127</code></a>
+        <a href="../files/src_pixi_textures_BaseTexture.js.html#l151"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:151</code></a>
         
         </p>
 
@@ -682,21 +670,11 @@
 </div>
 
                 
-                    <div id="method_dispatchEvent" class="method item inherited">
-    <h3 class="name"><code>dispatchEvent</code></h3>
+                    <div id="method_dirty" class="method item">
+    <h3 class="name"><code>dirty</code></h3>
 
     
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>event</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
+        <span class="paren">()</span>
     
 
     
@@ -716,12 +694,15 @@
     <div class="meta">
         
             
-                <p>Inherited from
-                <a href="../classes/EventTarget.html#method_dispatchEvent">EventTarget</a>:
+                
+                <p>
+                
+                Defined in
+                
             
         
         
-        <a href="../files/src_pixi_utils_EventTarget.js.html#l55"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:55</code></a>
+        <a href="../files/src_pixi_textures_BaseTexture.js.html#l199"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:199</code></a>
         
         </p>
 
@@ -732,7 +713,73 @@
     </div>
 
     <div class="description">
-        <p>Fires the event, ie pretends that the event has happened</p>
+        <p>Sets all glTextures to be dirty.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_emit" class="method item inherited">
+    <h3 class="name"><code>emit</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>eventName</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/EventTarget.html#method_emit">EventTarget</a>:
+            
+        
+        
+        <a href="../files/src_pixi_utils_EventTarget.js.html#l54"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:54</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Emit an event to all registered event listeners.</p>
 
     </div>
 
@@ -744,14 +791,14 @@
             
                 <li class="param">
                     
-                        <code class="param-name">event</code>
-                        <span class="type">Event</span>
+                        <code class="param-name">eventName</code>
+                        <span class="type">String</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>the event object</p>
+                        <p>The name of the event.</p>
 
                     </div>
 
@@ -762,6 +809,20 @@
         </div>
     
 
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Boolean</span>:
+                    
+                    <p>Indication if we&#39;ve emitted an event.</p>
+
+                
+            </div>
+        </div>
     
 
     
@@ -822,7 +883,7 @@
             
         
         
-        <a href="../files/src_pixi_textures_BaseTexture.js.html#l197"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:197</code></a>
+        <a href="../files/src_pixi_textures_BaseTexture.js.html#l254"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:254</code></a>
         
         </p>
 
@@ -833,8 +894,7 @@
     </div>
 
     <div class="description">
-        <p>Helper function that returns a base texture based on a canvas element
-If the image is not in the base texture cache it will be created and loaded</p>
+        <p>Helper function that creates a base texture from the given canvas element.</p>
 
     </div>
 
@@ -958,7 +1018,7 @@ If the image is not in the base texture cache it will be created and loaded</p>
             
         
         
-        <a href="../files/src_pixi_textures_BaseTexture.js.html#l162"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:162</code></a>
+        <a href="../files/src_pixi_textures_BaseTexture.js.html#l212"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:212</code></a>
         
         </p>
 
@@ -969,8 +1029,8 @@ If the image is not in the base texture cache it will be created and loaded</p>
     </div>
 
     <div class="description">
-        <p>Helper function that returns a base texture based on an image url
-If the image is not in the base texture cache it will be created and loaded</p>
+        <p>Helper function that creates a base texture from the given image url.
+If the image is not in the base texture cache it will be created and loaded.</p>
 
     </div>
 
@@ -1049,8 +1109,8 @@ If the image is not in the base texture cache it will be created and loaded</p>
 </div>
 
                 
-                    <div id="method_removeAllEventListeners" class="method item inherited">
-    <h3 class="name"><code>removeAllEventListeners</code></h3>
+                    <div id="method_listeners" class="method item inherited">
+    <h3 class="name"><code>listeners</code></h3>
 
     
         <div class="args">
@@ -1058,7 +1118,111 @@ If the image is not in the base texture cache it will be created and loaded</p>
             
                 <li class="arg">
                     
-                        <code>type</code>
+                        <code>eventName</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Array</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/EventTarget.html#method_listeners">EventTarget</a>:
+            
+        
+        
+        <a href="../files/src_pixi_utils_EventTarget.js.html#l41"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:41</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Return a list of assigned event listeners.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">eventName</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The events that should be listed.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Array</span>:
+                    
+                    <p>An array of listener functions</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_mixin" class="method item inherited">
+    <h3 class="name"><code>mixin</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>object</code>
                     
                 </li>
             
@@ -1084,11 +1248,11 @@ If the image is not in the base texture cache it will be created and loaded</p>
         
             
                 <p>Inherited from
-                <a href="../classes/EventTarget.html#method_removeAllEventListeners">EventTarget</a>:
+                <a href="../classes/EventTarget.html#method_mixin">EventTarget</a>:
             
         
         
-        <a href="../files/src_pixi_utils_EventTarget.js.html#l101"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:101</code></a>
+        <a href="../files/src_pixi_utils_EventTarget.js.html#l34"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:34</code></a>
         
         </p>
 
@@ -1099,7 +1263,7 @@ If the image is not in the base texture cache it will be created and loaded</p>
     </div>
 
     <div class="description">
-        <p>Removes all the listeners that were active for the specified event type</p>
+        <p>Mixes in the properties of the EventTarget prototype onto another object</p>
 
     </div>
 
@@ -1111,14 +1275,14 @@ If the image is not in the base texture cache it will be created and loaded</p>
             
                 <li class="param">
                     
-                        <code class="param-name">type</code>
-                        <span class="type">String</span>
+                        <code class="param-name">object</code>
+                        <span class="type">Object</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>A string representing the event type which will have all its listeners removed</p>
+                        <p>The obj to mix into</p>
 
                     </div>
 
@@ -1135,8 +1299,8 @@ If the image is not in the base texture cache it will be created and loaded</p>
 </div>
 
                 
-                    <div id="method_removeEventListener" class="method item inherited">
-    <h3 class="name"><code>removeEventListener</code></h3>
+                    <div id="method_off" class="method item inherited">
+    <h3 class="name"><code>off</code></h3>
 
     
         <div class="args">
@@ -1144,13 +1308,13 @@ If the image is not in the base texture cache it will be created and loaded</p>
             
                 <li class="arg">
                     
-                        <code>type</code>
+                        <code>eventName</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>listener</code>
+                        <code>callback</code>
                     
                 </li>
             
@@ -1176,11 +1340,11 @@ If the image is not in the base texture cache it will be created and loaded</p>
         
             
                 <p>Inherited from
-                <a href="../classes/EventTarget.html#method_removeEventListener">EventTarget</a>:
+                <a href="../classes/EventTarget.html#method_off">EventTarget</a>:
             
         
         
-        <a href="../files/src_pixi_utils_EventTarget.js.html#l80"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:80</code></a>
+        <a href="../files/src_pixi_utils_EventTarget.js.html#l143"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:143</code></a>
         
         </p>
 
@@ -1191,7 +1355,7 @@ If the image is not in the base texture cache it will be created and loaded</p>
     </div>
 
     <div class="description">
-        <p>Removes the specified listener that was assigned to the specified event type</p>
+        <p>Remove event listeners.</p>
 
     </div>
 
@@ -1203,14 +1367,14 @@ If the image is not in the base texture cache it will be created and loaded</p>
             
                 <li class="param">
                     
-                        <code class="param-name">type</code>
+                        <code class="param-name">eventName</code>
                         <span class="type">String</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>A string representing the event type which will have its listener removed</p>
+                        <p>The event we want to remove.</p>
 
                     </div>
 
@@ -1219,14 +1383,316 @@ If the image is not in the base texture cache it will be created and loaded</p>
             
                 <li class="param">
                     
-                        <code class="param-name">listener</code>
+                        <code class="param-name">callback</code>
                         <span class="type">Function</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>The callback function that was be fired when the event occured</p>
+                        <p>The listener that we need to find.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_on" class="method item inherited">
+    <h3 class="name"><code>on</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>eventName</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>callback</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/EventTarget.html#method_on">EventTarget</a>:
+            
+        
+        
+        <a href="../files/src_pixi_utils_EventTarget.js.html#l107"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:107</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Register a new EventListener for the given event.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">eventName</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Name of the event.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">callback</code>
+                        <span class="type">Functon</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>fn Callback function.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_once" class="method item inherited">
+    <h3 class="name"><code>once</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>eventName</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>callback</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/EventTarget.html#method_once">EventTarget</a>:
+            
+        
+        
+        <a href="../files/src_pixi_utils_EventTarget.js.html#l124"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:124</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Add an EventListener that&#39;s only called once.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">eventName</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Name of the event.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">callback</code>
+                        <span class="type">Function</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Callback function.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_removeAllListeners" class="method item inherited">
+    <h3 class="name"><code>removeAllListeners</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>eventName</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/EventTarget.html#method_removeAllListeners">EventTarget</a>:
+            
+        
+        
+        <a href="../files/src_pixi_utils_EventTarget.js.html#l173"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:173</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Remove all listeners or only the listeners for the specified event.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">eventName</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The event you want to remove all listeners for.</p>
 
                     </div>
 
@@ -1285,7 +1751,7 @@ If the image is not in the base texture cache it will be created and loaded</p>
             
         
         
-        <a href="../files/src_pixi_textures_BaseTexture.js.html#l149"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:149</code></a>
+        <a href="../files/src_pixi_textures_BaseTexture.js.html#l186"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:186</code></a>
         
         </p>
 
@@ -1340,6 +1806,144 @@ If the image is not in the base texture cache it will be created and loaded</p>
                 <h2 class="off-left">Properties</h2>
 
                 
+                    <div id="property__dirty" class="property item private">
+    <h3 class="name"><code>_dirty</code></h3>
+    <span class="type">Array</span>
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_textures_BaseTexture.js.html#l95"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:95</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property__glTextures" class="property item private">
+    <h3 class="name"><code>_glTextures</code></h3>
+    <span class="type">Array</span>
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_textures_BaseTexture.js.html#l85"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:85</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property__powerOf2" class="property item private">
+    <h3 class="name"><code>_powerOf2</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_textures_BaseTexture.js.html#l138"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:138</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
                     <div id="property_hasLoaded" class="property item">
     <h3 class="name"><code>hasLoaded</code></h3>
     <span class="type">Boolean</span>
@@ -1363,7 +1967,7 @@ If the image is not in the base texture cache it will be created and loaded</p>
             
         
         
-        <a href="../files/src_pixi_textures_BaseTexture.js.html#l50"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:50</code></a>
+        <a href="../files/src_pixi_textures_BaseTexture.js.html#l55"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:55</code></a>
         
         </p>
 
@@ -1373,7 +1977,7 @@ If the image is not in the base texture cache it will be created and loaded</p>
     </div>
 
     <div class="description">
-        <p>[read-only] Describes if the base texture has loaded or not</p>
+        <p>[read-only] Set to true once the base texture has loaded</p>
 
     </div>
 
@@ -1408,7 +2012,7 @@ If the image is not in the base texture cache it will be created and loaded</p>
             
         
         
-        <a href="../files/src_pixi_textures_BaseTexture.js.html#l33"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:33</code></a>
+        <a href="../files/src_pixi_textures_BaseTexture.js.html#l37"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:37</code></a>
         
         </p>
 
@@ -1419,6 +2023,142 @@ If the image is not in the base texture cache it will be created and loaded</p>
 
     <div class="description">
         <p>[read-only] The height of the base texture set when the image has loaded</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_imageUrl" class="property item">
+    <h3 class="name"><code>imageUrl</code></h3>
+    <span class="type">String</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_textures_BaseTexture.js.html#l132"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:132</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_premultipliedAlpha" class="property item">
+    <h3 class="name"><code>premultipliedAlpha</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_textures_BaseTexture.js.html#l74"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:74</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Controls if RGB channels should be pre-multiplied by Alpha  (WebGL only)</p>
+
+    </div>
+
+    
+        <p><strong>Default:</strong> true</p>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_resolution" class="property item">
+    <h3 class="name"><code>resolution</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_textures_BaseTexture.js.html#l20"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:20</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The Resolution of the texture.</p>
 
     </div>
 
@@ -1453,7 +2193,7 @@ If the image is not in the base texture cache it will be created and loaded</p>
             
         
         
-        <a href="../files/src_pixi_textures_BaseTexture.js.html#l42"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:42</code></a>
+        <a href="../files/src_pixi_textures_BaseTexture.js.html#l46"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:46</code></a>
         
         </p>
 
@@ -1500,7 +2240,7 @@ If the image is not in the base texture cache it will be created and loaded</p>
             
         
         
-        <a href="../files/src_pixi_textures_BaseTexture.js.html#l59"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:59</code></a>
+        <a href="../files/src_pixi_textures_BaseTexture.js.html#l64"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:64</code></a>
         
         </p>
 
@@ -1510,7 +2250,7 @@ If the image is not in the base texture cache it will be created and loaded</p>
     </div>
 
     <div class="description">
-        <p>The source that is loaded to create the texture</p>
+        <p>The image source that is used to create the texture.</p>
 
     </div>
 
@@ -1545,7 +2285,7 @@ If the image is not in the base texture cache it will be created and loaded</p>
             
         
         
-        <a href="../files/src_pixi_textures_BaseTexture.js.html#l24"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:24</code></a>
+        <a href="../files/src_pixi_textures_BaseTexture.js.html#l28"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:28</code></a>
         
         </p>
 
@@ -1556,95 +2296,6 @@ If the image is not in the base texture cache it will be created and loaded</p>
 
     <div class="description">
         <p>[read-only] The width of the base texture set when the image has loaded</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_" class="property item">
-    <h3 class="name"><code></code></h3>
-    <span class="type">Boolean</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_pixi_textures_BaseTexture.js.html#l70"><code>src&#x2F;pixi&#x2F;textures&#x2F;BaseTexture.js:70</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Controls if RGB channels should be premultiplied by Alpha  (WebGL only)</p>
-
-    </div>
-
-    
-        <p><strong>Default:</strong> TRUE</p>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_listeners" class="property item inherited">
-    <h3 class="name"><code>listeners</code></h3>
-    <span class="type">Object</span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/EventTarget.html#property_listeners">EventTarget</a>:
-            
-        
-        
-        <a href="../files/src_pixi_utils_EventTarget.js.html#l24"><code>src&#x2F;pixi&#x2F;utils&#x2F;EventTarget.js:24</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Holds all the listeners</p>
 
     </div>
 

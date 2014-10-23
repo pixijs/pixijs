@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.6.0</em>
+            <em>API Docs for: 2.0.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -47,9 +47,13 @@
             
                 <li><a href="../classes/AlphaMaskFilter.html">AlphaMaskFilter</a></li>
             
+                <li><a href="../classes/AsciiFilter.html">AsciiFilter</a></li>
+            
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
                 <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
+                <li><a href="../classes/autoDetectRecommendedRenderer.html">autoDetectRecommendedRenderer</a></li>
             
                 <li><a href="../classes/autoDetectRenderer.html">autoDetectRenderer</a></li>
             
@@ -60,6 +64,12 @@
                 <li><a href="../classes/BitmapText.html">BitmapText</a></li>
             
                 <li><a href="../classes/BlurFilter.html">BlurFilter</a></li>
+            
+                <li><a href="../classes/BlurXFilter.html">BlurXFilter</a></li>
+            
+                <li><a href="../classes/BlurYFilter.html">BlurYFilter</a></li>
+            
+                <li><a href="../classes/CanvasBuffer.html">CanvasBuffer</a></li>
             
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
@@ -77,6 +87,10 @@
             
                 <li><a href="../classes/ComplexPrimitiveShader.html">ComplexPrimitiveShader</a></li>
             
+                <li><a href="../classes/ConvolutionFilter.html">ConvolutionFilter</a></li>
+            
+                <li><a href="../classes/CrossHatchFilter.html">CrossHatchFilter</a></li>
+            
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
@@ -87,13 +101,17 @@
             
                 <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
+                <li><a href="../classes/Event.html">Event</a></li>
+            
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
+            
+                <li><a href="../classes/FilterBlock.html">FilterBlock</a></li>
             
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
             
-                <li><a href="../classes/getRecommendedRenderer.html">getRecommendedRenderer</a></li>
-            
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
+            
+                <li><a href="../classes/GraphicsData.html">GraphicsData</a></li>
             
                 <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
@@ -109,9 +127,9 @@
             
                 <li><a href="../classes/Matrix.html">Matrix</a></li>
             
-                <li><a href="../classes/Matrix2.html">Matrix2</a></li>
-            
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
+            
+                <li><a href="../classes/NoiseFilter.html">NoiseFilter</a></li>
             
                 <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
             
@@ -131,11 +149,19 @@
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
+                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
+            
+                <li><a href="../classes/RGBSplitFilter.html">RGBSplitFilter</a></li>
+            
                 <li><a href="../classes/Rope.html">Rope</a></li>
             
                 <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
             
+                <li><a href="../classes/SmartBlurFilter.html">SmartBlurFilter</a></li>
+            
                 <li><a href="../classes/Spine.html">Spine</a></li>
+            
+                <li><a href="../classes/SpineLoader.html">SpineLoader</a></li>
             
                 <li><a href="../classes/Sprite.html">Sprite</a></li>
             
@@ -147,17 +173,31 @@
             
                 <li><a href="../classes/Strip.html">Strip</a></li>
             
+                <li><a href="../classes/StripShader.html">StripShader</a></li>
+            
                 <li><a href="../classes/Text.html">Text</a></li>
             
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
             
+                <li><a href="../classes/TiltShiftFilter.html">TiltShiftFilter</a></li>
+            
+                <li><a href="../classes/TiltShiftXFilter.html">TiltShiftXFilter</a></li>
+            
+                <li><a href="../classes/TiltShiftYFilter.html">TiltShiftYFilter</a></li>
+            
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
+            
+                <li><a href="../classes/WebGLBlendModeManager.html">WebGLBlendModeManager</a></li>
+            
+                <li><a href="../classes/WebGLFastSpriteBatch.html">WebGLFastSpriteBatch</a></li>
             
                 <li><a href="../classes/WebGLFilterManager.html">WebGLFilterManager</a></li>
             
                 <li><a href="../classes/WebGLGraphics.html">WebGLGraphics</a></li>
+            
+                <li><a href="../classes/WebGLGraphicsData.html">WebGLGraphicsData</a></li>
             
                 <li><a href="../classes/WebGLMaskManager.html">WebGLMaskManager</a></li>
             
@@ -222,7 +262,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_pixi_primitives_Graphics.js.html#l6"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:6</code></a>
+            Defined in: <a href="../files/src_pixi_primitives_Graphics.js.html#l5"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:5</code></a>
         </div>
     
 
@@ -238,9 +278,7 @@
 
 
 <div class="box intro">
-    <p>The Graphics class contains a set of methods that you can use to create primitive shapes and lines.
-It is important to know that with the webGL renderer only simple polygons can be filled at this stage
-Complex polygons will not be filled. Heres an example of a complex polygon: <a href="http://www.goodboydigital.com/wp-content/uploads/2013/06/complexPolygon.png">http://www.goodboydigital.com/wp-content/uploads/2013/06/complexPolygon.png</a></p>
+    <p>The Graphics class contains methods used to draw primitive shapes such as lines, circles and rectangles to the display, and color and fill them.</p>
 
 </div>
 
@@ -279,7 +317,7 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
             
         
         
-        <a href="../files/src_pixi_primitives_Graphics.js.html#l6"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:6</code></a>
+        <a href="../files/src_pixi_primitives_Graphics.js.html#l5"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:5</code></a>
         
         </p>
 
@@ -327,8 +365,22 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
 
                     <ul class="index-list methods extends">
                         
-                            <li class="index-item method private">
+                            <li class="index-item method private inherited">
+                                <a href="#method__destroyCachedSprite">_destroyCachedSprite</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method private inherited">
                                 <a href="#method__generateCachedSprite">_generateCachedSprite</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method private inherited">
+                                <a href="#method__renderCachedSprite">_renderCachedSprite</a>
 
                                 
                                 
@@ -363,7 +415,21 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
                             </li>
                         
                             <li class="index-item method">
+                                <a href="#method_arc">arc</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
                                 <a href="#method_beginFill">beginFill</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_bezierCurveTo">bezierCurveTo</a>
 
                                 
                                 
@@ -384,6 +450,13 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
                             </li>
                         
                             <li class="index-item method">
+                                <a href="#method_destroyCachedSprite">destroyCachedSprite</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
                                 <a href="#method_drawCircle">drawCircle</a>
 
                                 
@@ -392,6 +465,13 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
                         
                             <li class="index-item method">
                                 <a href="#method_drawEllipse">drawEllipse</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_drawPolygon">drawPolygon</a>
 
                                 
                                 
@@ -412,13 +492,20 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_endFill">endFill</a>
+                                <a href="#method_drawShape">drawShape</a>
 
                                 
                                 
                             </li>
                         
                             <li class="index-item method">
+                                <a href="#method_endFill">endFill</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
                                 <a href="#method_generateTexture">generateTexture</a>
 
                                 
@@ -440,6 +527,13 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
                             </li>
                         
                             <li class="index-item method inherited">
+                                <a href="#method_getChildIndex">getChildIndex</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited inherited">
                                 <a href="#method_getLocalBounds">getLocalBounds</a>
 
                                 
@@ -448,13 +542,6 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
                         
                             <li class="index-item method">
                                 <a href="#method_lineStyle">lineStyle</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_lineTo">lineTo</a>
 
                                 
                                 
@@ -509,6 +596,13 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
                                 
                             </li>
                         
+                            <li class="index-item method">
+                                <a href="#method_quadraticCurveTo">quadraticCurveTo</a>
+
+                                
+                                
+                            </li>
+                        
                             <li class="index-item method inherited">
                                 <a href="#method_removeChild">removeChild</a>
 
@@ -537,12 +631,38 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
                                 
                             </li>
                         
-                            <li class="index-item method deprecated inherited">
-                                <a href="#method_setInteractive">setInteractive</a>
+                            <li class="index-item method inherited">
+                                <a href="#method_rightclick">rightclick</a>
 
                                 
                                 
-                                    <span class="flag deprecated">deprecated</span>
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_rightdown">rightdown</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_rightup">rightup</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_rightupoutside">rightupoutside</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_setChildIndex">setChildIndex</a>
+
+                                
                                 
                             </li>
                         
@@ -553,7 +673,7 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
                                 
                             </li>
                         
-                            <li class="index-item method private inherited">
+                            <li class="index-item method inherited">
                                 <a href="#method_swapChildren">swapChildren</a>
 
                                 
@@ -562,6 +682,20 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
                         
                             <li class="index-item method inherited">
                                 <a href="#method_tap">tap</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_toGlobal">toGlobal</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method inherited">
+                                <a href="#method_toLocal">toLocal</a>
 
                                 
                                 
@@ -595,6 +729,20 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
                                 
                             </li>
                         
+                            <li class="index-item method inherited">
+                                <a href="#method_updateCache">updateCache</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method private">
+                                <a href="#method_updateCachedSpriteTexture">updateCachedSpriteTexture</a>
+
+                                
+                                
+                            </li>
+                        
                     </ul>
                 </div>
             
@@ -612,6 +760,27 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
                                 
                             </li>
                         
+                            <li class="index-item property private inherited">
+                                <a href="#property__cacheAsBitmap">_cacheAsBitmap</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property private inherited">
+                                <a href="#property__cacheIsDirty">_cacheIsDirty</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property private inherited">
+                                <a href="#property__cr">_cr</a>
+
+                                
+                                
+                            </li>
+                        
                             <li class="index-item property private inherited inherited">
                                 <a href="#property__currentBounds">_currentBounds</a>
 
@@ -621,6 +790,13 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
                         
                             <li class="index-item property private inherited">
                                 <a href="#property__interactive">_interactive</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item property private inherited">
+                                <a href="#property__sr">_sr</a>
 
                                 
                                 
@@ -648,13 +824,6 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
                             </li>
                         
                             <li class="index-item property">
-                                <a href="#property_bounds">bounds</a>
-
-                                
-                                
-                            </li>
-                        
-                            <li class="index-item property">
                                 <a href="#property_boundsPadding">boundsPadding</a>
 
                                 
@@ -675,15 +844,15 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
                                 
                             </li>
                         
-                            <li class="index-item property inherited">
-                                <a href="#property_children">children</a>
+                            <li class="index-item property private">
+                                <a href="#property_cachedSpriteDirty">cachedSpriteDirty</a>
 
                                 
                                 
                             </li>
                         
-                            <li class="index-item property private inherited">
-                                <a href="#property_color">color</a>
+                            <li class="index-item property inherited">
+                                <a href="#property_children">children</a>
 
                                 
                                 
@@ -703,8 +872,8 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
                                 
                             </li>
                         
-                            <li class="index-item property private inherited">
-                                <a href="#property_dynamic">dynamic</a>
+                            <li class="index-item property private">
+                                <a href="#property_dirty">dirty</a>
 
                                 
                                 
@@ -850,6 +1019,13 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
                                 
                             </li>
                         
+                            <li class="index-item property private">
+                                <a href="#property_webGLDirty">webGLDirty</a>
+
+                                
+                                
+                            </li>
+                        
                             <li class="index-item property inherited">
                                 <a href="#property_width">width</a>
 
@@ -906,6 +1082,60 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
                 <h2 class="off-left">Methods</h2>
 
                 
+                    <div id="method__destroyCachedSprite" class="method item private inherited">
+    <h3 class="name"><code>_destroyCachedSprite</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#method__destroyCachedSprite">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l681"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:681</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Destroys the cached sprite.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
                     <div id="method__generateCachedSprite" class="method item private">
     <h3 class="name"><code>_generateCachedSprite</code></h3>
 
@@ -931,16 +1161,16 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
 
     <div class="meta">
         
+            <p>Inherited from
+            <a href="../classes/DisplayObject.html#method__generateCachedSprite">
+                DisplayObject
+            </a>
             
-                
-                <p>
-                
-                Defined in
-                
+            but overwritten in
             
         
         
-        <a href="../files/src_pixi_primitives_Graphics.js.html#l867"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:867</code></a>
+        <a href="../files/src_pixi_primitives_Graphics.js.html#l970"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:970</code></a>
         
         </p>
 
@@ -955,6 +1185,94 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
 
     </div>
 
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method__renderCachedSprite" class="method item private inherited">
+    <h3 class="name"><code>_renderCachedSprite</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>renderSession</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#method__renderCachedSprite">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l618"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:618</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Internal method.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">renderSession</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The render session</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
     
 
     
@@ -1007,7 +1325,7 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
             
         
         
-        <a href="../files/src_pixi_primitives_Graphics.js.html#l685"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:685</code></a>
+        <a href="../files/src_pixi_primitives_Graphics.js.html#l725"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:725</code></a>
         
         </p>
 
@@ -1097,7 +1415,7 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
             
         
         
-        <a href="../files/src_pixi_primitives_Graphics.js.html#l609"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:609</code></a>
+        <a href="../files/src_pixi_primitives_Graphics.js.html#l645"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:645</code></a>
         
         </p>
 
@@ -1161,6 +1479,10 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
     
 
     
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/DisplayObject.html" class="crosslink">DisplayObject</a></span>
+        </span>
+    
 
     
 
@@ -1182,7 +1504,7 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
             
         
         
-        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l69"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:69</code></a>
+        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l86"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:86</code></a>
         
         </p>
 
@@ -1224,6 +1546,20 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
     
 
     
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/DisplayObject.html" class="crosslink">DisplayObject</a></span>:
+                    
+                    <p>The child that was added.</p>
+
+                
+            </div>
+        </div>
+    
 
     
 </div>
@@ -1253,6 +1589,10 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
     
 
     
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/DisplayObject.html" class="crosslink">DisplayObject</a></span>
+        </span>
+    
 
     
 
@@ -1274,7 +1614,7 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
             
         
         
-        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l80"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:80</code></a>
+        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l98"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:98</code></a>
         
         </p>
 
@@ -1332,6 +1672,235 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
     
 
     
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/DisplayObject.html" class="crosslink">DisplayObject</a></span>:
+                    
+                    <p>The child that was added.</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_arc" class="method item">
+    <h3 class="name"><code>arc</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>cx</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>cy</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>radius</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>startAngle</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>endAngle</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>anticlockwise</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Graphics.html" class="crosslink">Graphics</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_primitives_Graphics.js.html#l407"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:407</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>The arc method creates an arc/curve (used to create circles, or parts of circles).</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">cx</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The x-coordinate of the center of the circle</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">cy</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The y-coordinate of the center of the circle</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">radius</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The radius of the circle</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">startAngle</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The starting angle, in radians (0 is at the 3 o&#39;clock position of the arc&#39;s circle)</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">endAngle</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The ending angle, in radians</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">anticlockwise</code>
+                        <span class="type">Boolean</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Optional. Specifies whether the drawing should be counterclockwise or clockwise. False is default, and indicates clockwise, while true indicates counter-clockwise.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/Graphics.html" class="crosslink">Graphics</a></span>:
+                    
+                
+            </div>
+        </div>
+    
 
     
 </div>
@@ -1361,6 +1930,10 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
     
 
     
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Graphics.html" class="crosslink">Graphics</a></span>
+        </span>
+    
 
     
 
@@ -1385,7 +1958,7 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
             
         
         
-        <a href="../files/src_pixi_primitives_Graphics.js.html#l445"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:445</code></a>
+        <a href="../files/src_pixi_primitives_Graphics.js.html#l477"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:477</code></a>
         
         </p>
 
@@ -1444,18 +2017,74 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
     
 
     
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/Graphics.html" class="crosslink">Graphics</a></span>:
+                    
+                
+            </div>
+        </div>
+    
 
     
 </div>
 
                 
-                    <div id="method_clear" class="method item">
-    <h3 class="name"><code>clear</code></h3>
+                    <div id="method_bezierCurveTo" class="method item">
+    <h3 class="name"><code>bezierCurveTo</code></h3>
 
     
-        <span class="paren">()</span>
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>cpX</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>cpY</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>cpX2</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>cpY2</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>toX</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>toY</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
     
 
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Graphics.html" class="crosslink">Graphics</a></span>
+        </span>
     
 
     
@@ -1481,7 +2110,182 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
             
         
         
-        <a href="../files/src_pixi_primitives_Graphics.js.html#l569"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:569</code></a>
+        <a href="../files/src_pixi_primitives_Graphics.js.html#l285"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:285</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Calculate the points for a bezier curve and then draws it.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">cpX</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Control point x</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">cpY</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Control point y</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">cpX2</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Second Control point x</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">cpY2</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Second Control point y</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">toX</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Destination point x</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">toY</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Destination point y</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/Graphics.html" class="crosslink">Graphics</a></span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_clear" class="method item">
+    <h3 class="name"><code>clear</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Graphics.html" class="crosslink">Graphics</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_primitives_Graphics.js.html#l598"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:598</code></a>
         
         </p>
 
@@ -1498,6 +2302,18 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
 
     
 
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/Graphics.html" class="crosslink">Graphics</a></span>:
+                    
+                
+            </div>
+        </div>
     
 
     
@@ -1543,7 +2359,7 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l207"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:207</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l233"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:233</code></a>
         
         </p>
 
@@ -1554,7 +2370,7 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
     </div>
 
     <div class="description">
-        <p>A callback that is used when the users clicks on the displayObject with their mouse</p>
+        <p>A callback that is used when the users clicks on the displayObject with their mouse&#39;s left button</p>
 
     </div>
 
@@ -1573,7 +2389,7 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -1581,6 +2397,61 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
             
             </ul>
         </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_destroyCachedSprite" class="method item">
+    <h3 class="name"><code>destroyCachedSprite</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_primitives_Graphics.js.html#l1034"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:1034</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Destroys a previous cached sprite.</p>
+
+    </div>
+
     
 
     
@@ -1619,6 +2490,10 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
     
 
     
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Graphics.html" class="crosslink">Graphics</a></span>
+        </span>
+    
 
     
 
@@ -1643,7 +2518,7 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
             
         
         
-        <a href="../files/src_pixi_primitives_Graphics.js.html#l522"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:522</code></a>
+        <a href="../files/src_pixi_primitives_Graphics.js.html#l551"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:551</code></a>
         
         </p>
 
@@ -1717,6 +2592,18 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
     
 
     
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/Graphics.html" class="crosslink">Graphics</a></span>:
+                    
+                
+            </div>
+        </div>
+    
 
     
 </div>
@@ -1758,6 +2645,10 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
     
 
     
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Graphics.html" class="crosslink">Graphics</a></span>
+        </span>
+    
 
     
 
@@ -1782,7 +2673,7 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
             
         
         
-        <a href="../files/src_pixi_primitives_Graphics.js.html#l545"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:545</code></a>
+        <a href="../files/src_pixi_primitives_Graphics.js.html#l567"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:567</code></a>
         
         </p>
 
@@ -1872,6 +2763,123 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
     
 
     
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/Graphics.html" class="crosslink">Graphics</a></span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_drawPolygon" class="method item">
+    <h3 class="name"><code>drawPolygon</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>path</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Graphics.html" class="crosslink">Graphics</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_primitives_Graphics.js.html#l584"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:584</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Draws a polygon using the given path.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">path</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The path data used to construct the polygon.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/Graphics.html" class="crosslink">Graphics</a></span>:
+                    
+                
+            </div>
+        </div>
+    
 
     
 </div>
@@ -1913,6 +2921,10 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
     
 
     
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Graphics.html" class="crosslink">Graphics</a></span>
+        </span>
+    
 
     
 
@@ -1937,7 +2949,7 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
             
         
         
-        <a href="../files/src_pixi_primitives_Graphics.js.html#l477"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:477</code></a>
+        <a href="../files/src_pixi_primitives_Graphics.js.html#l519"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:519</code></a>
         
         </p>
 
@@ -2026,6 +3038,18 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
     
 
     
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/Graphics.html" class="crosslink">Graphics</a></span>:
+                    
+                
+            </div>
+        </div>
+    
 
     
 </div>
@@ -2097,7 +3121,7 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
             
         
         
-        <a href="../files/src_pixi_primitives_Graphics.js.html#l499"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:499</code></a>
+        <a href="../files/src_pixi_primitives_Graphics.js.html#l535"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:535</code></a>
         
         </p>
 
@@ -2207,71 +3231,26 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
 </div>
 
                 
-                    <div id="method_endFill" class="method item">
-    <h3 class="name"><code>endFill</code></h3>
+                    <div id="method_drawShape" class="method item">
+    <h3 class="name"><code>drawShape</code></h3>
 
     
-        <span class="paren">()</span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
             
-                
-                <p>
-                
-                Defined in
-                
+                <li class="arg">
+                    
+                        <code>shape</code>
+                    
+                </li>
             
-        
-        
-        <a href="../files/src_pixi_primitives_Graphics.js.html#l463"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:463</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Applies a fill to the lines and shapes that were added since the last call to the beginFill() method.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_generateTexture" class="method item">
-    <h3 class="name"><code>generateTexture</code></h3>
-
-    
-        <span class="paren">()</span>
+            </ul><span class="paren">)</span>
+        </div>
     
 
     
         <span class="returns-inline">
-            <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
+            <span class="type"><a href="../classes/GraphicsData.html" class="crosslink">GraphicsData</a></span>
         </span>
     
 
@@ -2298,7 +3277,191 @@ Complex polygons will not be filled. Heres an example of a complex polygon: <a h
             
         
         
-        <a href="../files/src_pixi_primitives_Graphics.js.html#l588"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:588</code></a>
+        <a href="../files/src_pixi_primitives_Graphics.js.html#l1048"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:1048</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Draws the given shape to this Graphics object. Can be any of Circle, Rectangle, Ellipse, Line or Polygon.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">shape</code>
+                        <span class="type"><a href="../classes/Circle.html" class="crosslink">Circle</a> | <a href="../classes/Rectangle.html" class="crosslink">Rectangle</a> | <a href="../classes/Ellipse.html" class="crosslink">Ellipse</a> | Line | <a href="../classes/Polygon.html" class="crosslink">Polygon</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The Shape object to draw.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/GraphicsData.html" class="crosslink">GraphicsData</a></span>:
+                    
+                    <p>The generated GraphicsData object.</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_endFill" class="method item">
+    <h3 class="name"><code>endFill</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Graphics.html" class="crosslink">Graphics</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_primitives_Graphics.js.html#l504"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:504</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Applies a fill to the lines and shapes that were added since the last call to the beginFill() method.</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/Graphics.html" class="crosslink">Graphics</a></span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_generateTexture" class="method item">
+    <h3 class="name"><code>generateTexture</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>resolution</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>scaleMode</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Texture.html" class="crosslink">Texture</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            <p>Inherited from
+            <a href="../classes/DisplayObject.html#method_generateTexture">
+                DisplayObject
+            </a>
+            
+            but overwritten in
+            
+        
+        
+        <a href="../files/src_pixi_primitives_Graphics.js.html#l616"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:616</code></a>
         
         </p>
 
@@ -2314,6 +3477,46 @@ This can be quite useful if your geometry is complicated and needs to be reused 
 
     </div>
 
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">resolution</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The resolution of the texture being generated</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">scaleMode</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Should be one of the PIXI.scaleMode consts</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
     
 
     
@@ -2372,7 +3575,7 @@ This can be quite useful if your geometry is complicated and needs to be reused 
             
         
         
-        <a href="../files/src_pixi_primitives_Graphics.js.html#l726"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:726</code></a>
+        <a href="../files/src_pixi_primitives_Graphics.js.html#l794"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:794</code></a>
         
         </p>
 
@@ -2427,6 +3630,10 @@ This can be quite useful if your geometry is complicated and needs to be reused 
     
 
     
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/DisplayObject.html" class="crosslink">DisplayObject</a></span>
+        </span>
+    
 
     
 
@@ -2448,7 +3655,7 @@ This can be quite useful if your geometry is complicated and needs to be reused 
             
         
         
-        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l136"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:136</code></a>
+        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l189"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:189</code></a>
         
         </p>
 
@@ -2490,6 +3697,124 @@ This can be quite useful if your geometry is complicated and needs to be reused 
     
 
     
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/DisplayObject.html" class="crosslink">DisplayObject</a></span>:
+                    
+                    <p>The child at the given index, if any.</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_getChildIndex" class="method item inherited">
+    <h3 class="name"><code>getChildIndex</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>child</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Number</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObjectContainer.html#method_getChildIndex">DisplayObjectContainer</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l154"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:154</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Returns the index position of a child DisplayObject instance</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">child</code>
+                        <span class="type"><a href="../classes/DisplayObject.html" class="crosslink">DisplayObject</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The DisplayObject instance to identify</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Number</span>:
+                    
+                    <p>The index position of the child display object to identify</p>
+
+                
+            </div>
+        </div>
+    
 
     
 </div>
@@ -2522,13 +3847,16 @@ This can be quite useful if your geometry is complicated and needs to be reused 
 
     <div class="meta">
         
+            <p>Inherited from
+            <a href="../classes/DisplayObject.html#method_getLocalBounds">
+                DisplayObject
+            </a>
             
-                <p>Inherited from
-                <a href="../classes/DisplayObject.html#method_getLocalBounds">DisplayObject</a>:
+            but overwritten in
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l473"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:473</code></a>
+        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l353"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:353</code></a>
         
         </p>
 
@@ -2539,7 +3867,7 @@ This can be quite useful if your geometry is complicated and needs to be reused 
     </div>
 
     <div class="description">
-        <p>Retrieves the local bounds of the displayObject as a rectangle object</p>
+        <p>Retrieves the non-global local bounds of the displayObjectContainer as a rectangle. The calculation takes all visible children into consideration.</p>
 
     </div>
 
@@ -2554,7 +3882,7 @@ This can be quite useful if your geometry is complicated and needs to be reused 
                     
                         <span class="type"><a href="../classes/Rectangle.html" class="crosslink">Rectangle</a></span>:
                     
-                    <p>the rectangular bounding area</p>
+                    <p>The rectangular bounding area</p>
 
                 
             </div>
@@ -2595,6 +3923,10 @@ This can be quite useful if your geometry is complicated and needs to be reused 
     
 
     
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Graphics.html" class="crosslink">Graphics</a></span>
+        </span>
+    
 
     
 
@@ -2619,7 +3951,7 @@ This can be quite useful if your geometry is complicated and needs to be reused 
             
         
         
-        <a href="../files/src_pixi_primitives_Graphics.js.html#l159"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:159</code></a>
+        <a href="../files/src_pixi_primitives_Graphics.js.html#l169"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:169</code></a>
         
         </p>
 
@@ -2649,7 +3981,7 @@ This can be quite useful if your geometry is complicated and needs to be reused 
                     
 
                     <div class="param-description">
-                        <p>width of the line to draw, will update the object&#39;s stored style</p>
+                        <p>width of the line to draw, will update the objects stored style</p>
 
                     </div>
 
@@ -2665,7 +3997,7 @@ This can be quite useful if your geometry is complicated and needs to be reused 
                     
 
                     <div class="param-description">
-                        <p>color of the line to draw, will update the object&#39;s stored style</p>
+                        <p>color of the line to draw, will update the objects stored style</p>
 
                     </div>
 
@@ -2681,7 +4013,7 @@ This can be quite useful if your geometry is complicated and needs to be reused 
                     
 
                     <div class="param-description">
-                        <p>alpha of the line to draw, will update the object&#39;s stored style</p>
+                        <p>alpha of the line to draw, will update the objects stored style</p>
 
                     </div>
 
@@ -2692,6 +4024,18 @@ This can be quite useful if your geometry is complicated and needs to be reused 
         </div>
     
 
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/Graphics.html" class="crosslink">Graphics</a></span>:
+                    
+                
+            </div>
+        </div>
     
 
     
@@ -2722,6 +4066,10 @@ This can be quite useful if your geometry is complicated and needs to be reused 
     
 
     
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Graphics.html" class="crosslink">Graphics</a></span>
+        </span>
+    
 
     
 
@@ -2746,7 +4094,7 @@ This can be quite useful if your geometry is complicated and needs to be reused 
             
         
         
-        <a href="../files/src_pixi_primitives_Graphics.js.html#l204"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:204</code></a>
+        <a href="../files/src_pixi_primitives_Graphics.js.html#l218"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:218</code></a>
         
         </p>
 
@@ -2758,7 +4106,7 @@ This can be quite useful if your geometry is complicated and needs to be reused 
 
     <div class="description">
         <p>Draws a line using the current line style from the current drawing position to (x, y);
-the current drawing position is then set to (x, y).</p>
+The current drawing position is then set to (x, y).</p>
 
     </div>
 
@@ -2805,117 +4153,17 @@ the current drawing position is then set to (x, y).</p>
     
 
     
+        <div class="returns">
+            <h4>Returns:</h4>
 
-    
-</div>
-
+            <div class="returns-description">
                 
-                    <div id="method_lineTo" class="method item">
-    <h3 class="name"><code>lineTo</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
                     
-                        <code>x</code>
+                        <span class="type"><a href="../classes/Graphics.html" class="crosslink">Graphics</a></span>:
                     
-                </li>
-            
-                <li class="arg">
-                    
-                        <code>y</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
+                
+            </div>
         </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_pixi_primitives_Graphics.js.html#l422"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:422</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Draws a line using the current line style from the current drawing position to (x, y);
-the current drawing position is then set to (x, y).</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">x</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>the X coordinate to draw to</p>
-
-                    </div>
-
-                    
-                </li>
-            
-                <li class="param">
-                    
-                        <code class="param-name">y</code>
-                        <span class="type">Number</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>the Y coordinate to draw to</p>
-
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
     
 
     
@@ -2961,7 +4209,7 @@ the current drawing position is then set to (x, y).</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l213"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:213</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l239"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:239</code></a>
         
         </p>
 
@@ -2972,7 +4220,7 @@ the current drawing position is then set to (x, y).</p>
     </div>
 
     <div class="description">
-        <p>A callback that is used when the user clicks the mouse down over the sprite</p>
+        <p>A callback that is used when the user clicks the mouse&#39;s left button down over the sprite</p>
 
     </div>
 
@@ -2991,7 +4239,7 @@ the current drawing position is then set to (x, y).</p>
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -3046,7 +4294,7 @@ the current drawing position is then set to (x, y).</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l239"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:239</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l226"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:226</code></a>
         
         </p>
 
@@ -3076,7 +4324,7 @@ the current drawing position is then set to (x, y).</p>
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -3131,7 +4379,7 @@ the current drawing position is then set to (x, y).</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l233"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:233</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l220"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:220</code></a>
         
         </p>
 
@@ -3161,7 +4409,7 @@ the current drawing position is then set to (x, y).</p>
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -3216,7 +4464,7 @@ the current drawing position is then set to (x, y).</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l219"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:219</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l245"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:245</code></a>
         
         </p>
 
@@ -3227,8 +4475,8 @@ the current drawing position is then set to (x, y).</p>
     </div>
 
     <div class="description">
-        <p>A callback that is used when the user releases the mouse that was over the displayObject
-for this callback to be fired the mouse must have been pressed down over the displayObject</p>
+        <p>A callback that is used when the user releases the mouse&#39;s left button that was over the displayObject
+for this callback to be fired, the mouse&#39;s left button must have been pressed down over the displayObject</p>
 
     </div>
 
@@ -3247,7 +4495,7 @@ for this callback to be fired the mouse must have been pressed down over the dis
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -3302,7 +4550,7 @@ for this callback to be fired the mouse must have been pressed down over the dis
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l226"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:226</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l252"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:252</code></a>
         
         </p>
 
@@ -3313,8 +4561,8 @@ for this callback to be fired the mouse must have been pressed down over the dis
     </div>
 
     <div class="description">
-        <p>A callback that is used when the user releases the mouse that was over the displayObject but is no longer over the displayObject
-for this callback to be fired, The touch must have started over the displayObject</p>
+        <p>A callback that is used when the user releases the mouse&#39;s left button that was over the displayObject but is no longer over the displayObject
+for this callback to be fired, the mouse&#39;s left button must have been pressed down over the displayObject</p>
 
     </div>
 
@@ -3333,7 +4581,7 @@ for this callback to be fired, The touch must have started over the displayObjec
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -3373,6 +4621,10 @@ for this callback to be fired, The touch must have started over the displayObjec
     
 
     
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Graphics.html" class="crosslink">Graphics</a></span>
+        </span>
+    
 
     
 
@@ -3397,7 +4649,7 @@ for this callback to be fired, The touch must have started over the displayObjec
             
         
         
-        <a href="../files/src_pixi_primitives_Graphics.js.html#l183"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:183</code></a>
+        <a href="../files/src_pixi_primitives_Graphics.js.html#l203"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:203</code></a>
         
         </p>
 
@@ -3408,7 +4660,7 @@ for this callback to be fired, The touch must have started over the displayObjec
     </div>
 
     <div class="description">
-        <p>Moves the current drawing position to (x, y).</p>
+        <p>Moves the current drawing position to x, y.</p>
 
     </div>
 
@@ -3455,6 +4707,190 @@ for this callback to be fired, The touch must have started over the displayObjec
     
 
     
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/Graphics.html" class="crosslink">Graphics</a></span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_quadraticCurveTo" class="method item">
+    <h3 class="name"><code>quadraticCurveTo</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>cpX</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>cpY</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>toX</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>toY</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Graphics.html" class="crosslink">Graphics</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_primitives_Graphics.js.html#l235"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:235</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Calculate the points for a quadratic bezier curve and then draws it.
+Based on: <a href="https://stackoverflow.com/questions/785097/how-do-i-implement-a-bezier-curve-in-c">https://stackoverflow.com/questions/785097/how-do-i-implement-a-bezier-curve-in-c</a></p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">cpX</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Control point x</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">cpY</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Control point y</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">toX</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Destination point x</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">toY</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Destination point y</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/Graphics.html" class="crosslink">Graphics</a></span>:
+                    
+                
+            </div>
+        </div>
+    
 
     
 </div>
@@ -3478,6 +4914,10 @@ for this callback to be fired, The touch must have started over the displayObjec
     
 
     
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/DisplayObject.html" class="crosslink">DisplayObject</a></span>
+        </span>
+    
 
     
 
@@ -3499,7 +4939,7 @@ for this callback to be fired, The touch must have started over the displayObjec
             
         
         
-        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l154"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:154</code></a>
+        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l206"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:206</code></a>
         
         </p>
 
@@ -3541,6 +4981,20 @@ for this callback to be fired, The touch must have started over the displayObjec
     
 
     
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/DisplayObject.html" class="crosslink">DisplayObject</a></span>:
+                    
+                    <p>The child that was removed.</p>
+
+                
+            </div>
+        </div>
+    
 
     
 </div>
@@ -3564,6 +5018,10 @@ for this callback to be fired, The touch must have started over the displayObjec
     
 
     
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/DisplayObject.html" class="crosslink">DisplayObject</a></span>
+        </span>
+    
 
     
 
@@ -3585,7 +5043,7 @@ for this callback to be fired, The touch must have started over the displayObjec
             
         
         
-        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l165"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:165</code></a>
+        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l221"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:221</code></a>
         
         </p>
 
@@ -3596,7 +5054,7 @@ for this callback to be fired, The touch must have started over the displayObjec
     </div>
 
     <div class="description">
-        <p>Removes a child from the specified index position in the child list of the container.</p>
+        <p>Removes a child from the specified index position.</p>
 
     </div>
 
@@ -3626,6 +5084,20 @@ for this callback to be fired, The touch must have started over the displayObjec
         </div>
     
 
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/DisplayObject.html" class="crosslink">DisplayObject</a></span>:
+                    
+                    <p>The child that was removed.</p>
+
+                
+            </div>
+        </div>
     
 
     
@@ -3677,7 +5149,7 @@ for this callback to be fired, The touch must have started over the displayObjec
             
         
         
-        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l182"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:182</code></a>
+        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l239"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:239</code></a>
         
         </p>
 
@@ -3688,7 +5160,7 @@ for this callback to be fired, The touch must have started over the displayObjec
     </div>
 
     <div class="description">
-        <p>Removes all child instances from the child list of the container.</p>
+        <p>Removes all children from this container that are within the begin and end indexes.</p>
 
     </div>
 
@@ -3707,7 +5179,7 @@ for this callback to be fired, The touch must have started over the displayObjec
                     
 
                     <div class="param-description">
-                        <p>The beginning position. Predefined value is 0.</p>
+                        <p>The beginning position. Default value is 0.</p>
 
                     </div>
 
@@ -3723,7 +5195,7 @@ for this callback to be fired, The touch must have started over the displayObjec
                     
 
                     <div class="param-description">
-                        <p>The ending position. Predefined value is children&#39;s array length.</p>
+                        <p>The ending position. Default value is size of the container.</p>
 
                     </div>
 
@@ -3769,7 +5241,7 @@ for this callback to be fired, The touch must have started over the displayObjec
             
         
         
-        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l337"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:337</code></a>
+        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l395"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:395</code></a>
         
         </p>
 
@@ -3780,7 +5252,7 @@ for this callback to be fired, The touch must have started over the displayObjec
     </div>
 
     <div class="description">
-        <p>removes the current stage reference of the container</p>
+        <p>Removes the current stage reference from the container and all of its children.</p>
 
     </div>
 
@@ -3792,8 +5264,8 @@ for this callback to be fired, The touch must have started over the displayObjec
 </div>
 
                 
-                    <div id="method_setInteractive" class="method item deprecated inherited">
-    <h3 class="name"><code>setInteractive</code></h3>
+                    <div id="method_rightclick" class="method item inherited">
+    <h3 class="name"><code>rightclick</code></h3>
 
     
         <div class="args">
@@ -3801,7 +5273,7 @@ for this callback to be fired, The touch must have started over the displayObjec
             
                 <li class="arg">
                     
-                        <code>interactive</code>
+                        <code>interactionData</code>
                     
                 </li>
             
@@ -3811,8 +5283,6 @@ for this callback to be fired, The touch must have started over the displayObjec
 
     
 
-    
-        <span class="flag deprecated" title="Simply set the &#x60;interactive&#x60; property directly">deprecated</span>
     
 
     
@@ -3829,25 +5299,22 @@ for this callback to be fired, The touch must have started over the displayObjec
         
             
                 <p>Inherited from
-                <a href="../classes/DisplayObject.html#method_setInteractive">DisplayObject</a>:
+                <a href="../classes/DisplayObject.html#method_rightclick">DisplayObject</a>:
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l280"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:280</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l260"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:260</code></a>
         
         </p>
 
 
-        
-            <p>Deprecated: Simply set the &#x60;interactive&#x60; property directly</p>
         
 
         
     </div>
 
     <div class="description">
-        <p>[Deprecated] Indicates if the sprite will have touch and mouse interactivity. It is false by default
-Instead of using this function you can now simply set the interactive property to true or false</p>
+        <p>A callback that is used when the users clicks on the displayObject with their mouse&#39;s right button</p>
 
     </div>
 
@@ -3859,14 +5326,379 @@ Instead of using this function you can now simply set the interactive property t
             
                 <li class="param">
                     
-                        <code class="param-name">interactive</code>
-                        <span class="type">Boolean</span>
+                        <code class="param-name">interactionData</code>
+                        <span class="type"><a href="../classes/InteractionData.html" class="crosslink">InteractionData</a></span>
                     
 
                     
 
                     <div class="param-description">
-                         
+                        
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_rightdown" class="method item inherited">
+    <h3 class="name"><code>rightdown</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>interactionData</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#method_rightdown">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l266"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:266</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>A callback that is used when the user clicks the mouse&#39;s right button down over the sprite</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">interactionData</code>
+                        <span class="type"><a href="../classes/InteractionData.html" class="crosslink">InteractionData</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_rightup" class="method item inherited">
+    <h3 class="name"><code>rightup</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>interactionData</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#method_rightup">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l272"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:272</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>A callback that is used when the user releases the mouse&#39;s right button that was over the displayObject
+for this callback to be fired the mouse&#39;s right button must have been pressed down over the displayObject</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">interactionData</code>
+                        <span class="type"><a href="../classes/InteractionData.html" class="crosslink">InteractionData</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_rightupoutside" class="method item inherited">
+    <h3 class="name"><code>rightupoutside</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>interactionData</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#method_rightupoutside">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l279"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:279</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>A callback that is used when the user releases the mouse&#39;s right button that was over the displayObject but is no longer over the displayObject
+for this callback to be fired, the mouse&#39;s right button must have been pressed down over the displayObject</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">interactionData</code>
+                        <span class="type"><a href="../classes/InteractionData.html" class="crosslink">InteractionData</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_setChildIndex" class="method item inherited">
+    <h3 class="name"><code>setChildIndex</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>child</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>index</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObjectContainer.html#method_setChildIndex">DisplayObjectContainer</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l171"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:171</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Changes the position of an existing child in the display object container</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">child</code>
+                        <span class="type"><a href="../classes/DisplayObject.html" class="crosslink">DisplayObject</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The child DisplayObject instance for which you want to change the index number</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">index</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The resulting index number for the child display object</p>
+
                     </div>
 
                     
@@ -3924,7 +5756,7 @@ Instead of using this function you can now simply set the interactive property t
             
         
         
-        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l319"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:319</code></a>
+        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l377"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:377</code></a>
         
         </p>
 
@@ -3935,7 +5767,7 @@ Instead of using this function you can now simply set the interactive property t
     </div>
 
     <div class="description">
-        <p>Sets the container&#39;s stage reference, the stage this object is connected to</p>
+        <p>Sets the containers Stage reference. This is the Stage that this object, and all of its children, is connected to.</p>
 
     </div>
 
@@ -3971,7 +5803,7 @@ Instead of using this function you can now simply set the interactive property t
 </div>
 
                 
-                    <div id="method_swapChildren" class="method item private inherited">
+                    <div id="method_swapChildren" class="method item inherited">
     <h3 class="name"><code>swapChildren</code></h3>
 
     
@@ -3999,8 +5831,6 @@ Instead of using this function you can now simply set the interactive property t
     
 
     
-        <span class="flag private">private</span>
-    
 
     
 
@@ -4018,7 +5848,7 @@ Instead of using this function you can now simply set the interactive property t
             
         
         
-        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l110"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:110</code></a>
+        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l129"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:129</code></a>
         
         </p>
 
@@ -4029,7 +5859,7 @@ Instead of using this function you can now simply set the interactive property t
     </div>
 
     <div class="description">
-        <p>[NYI] Swaps the depth of 2 displayObjects</p>
+        <p>Swaps the position of 2 Display Objects within this container.</p>
 
     </div>
 
@@ -4048,7 +5878,7 @@ Instead of using this function you can now simply set the interactive property t
                     
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                     
@@ -4063,7 +5893,7 @@ Instead of using this function you can now simply set the interactive property t
                     
 
                     <div class="param-description">
-                        
+                         
                     </div>
 
                     
@@ -4118,7 +5948,7 @@ Instead of using this function you can now simply set the interactive property t
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l250"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:250</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l290"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:290</code></a>
         
         </p>
 
@@ -4149,7 +5979,7 @@ basically a touch version of click</p>
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -4159,6 +5989,237 @@ basically a touch version of click</p>
         </div>
     
 
+    
+
+    
+</div>
+
+                
+                    <div id="method_toGlobal" class="method item inherited">
+    <h3 class="name"><code>toGlobal</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>position</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#method_toGlobal">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l585"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:585</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Calculates the global position of the display object</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">position</code>
+                        <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The world origin to calculate from</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>:
+                    
+                    <p>A point object representing the position of this object</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_toLocal" class="method item inherited">
+    <h3 class="name"><code>toLocal</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>position</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code class="optional">[from]</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#method_toLocal">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l598"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:598</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Calculates the local position of the display object relative to another point</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">position</code>
+                        <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The world origin to calculate from</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name optional">[from]</code>
+                        <span class="type"><a href="../classes/DisplayObject.html" class="crosslink">DisplayObject</a></span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The DisplayObject to calculate the global position from</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/Point.html" class="crosslink">Point</a></span>:
+                    
+                    <p>A point object representing the position of this object</p>
+
+                
+            </div>
+        </div>
     
 
     
@@ -4204,7 +6265,7 @@ basically a touch version of click</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l263"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:263</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l303"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:303</code></a>
         
         </p>
 
@@ -4234,7 +6295,7 @@ basically a touch version of click</p>
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -4289,7 +6350,7 @@ basically a touch version of click</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l269"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:269</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l309"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:309</code></a>
         
         </p>
 
@@ -4320,7 +6381,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -4375,7 +6436,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l257"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:257</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l297"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:297</code></a>
         
         </p>
 
@@ -4405,7 +6466,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
                     
 
                     <div class="param-description">
-                         
+                        
                     </div>
 
                     
@@ -4453,7 +6514,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
             
         
         
-        <a href="../files/src_pixi_primitives_Graphics.js.html#l796"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:796</code></a>
+        <a href="../files/src_pixi_primitives_Graphics.js.html#l870"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:870</code></a>
         
         </p>
 
@@ -4465,6 +6526,115 @@ for this callback to be fired, The touch must have started over the sprite</p>
 
     <div class="description">
         <p>Update the bounds of the object</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_updateCache" class="method item inherited">
+    <h3 class="name"><code>updateCache</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#method_updateCache">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l575"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:575</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Generates and updates the cached sprite for this object.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_updateCachedSpriteTexture" class="method item private">
+    <h3 class="name"><code>updateCachedSpriteTexture</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_primitives_Graphics.js.html#l1010"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:1010</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Updates texture size based on canvas size</p>
 
     </div>
 
@@ -4506,7 +6676,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l174"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:174</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l170"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:170</code></a>
         
         </p>
 
@@ -4517,6 +6687,138 @@ for this callback to be fired, The touch must have started over the sprite</p>
 
     <div class="description">
         <p>The original, cached bounds of the object</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property__cacheAsBitmap" class="property item private inherited">
+    <h3 class="name"><code>_cacheAsBitmap</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#property__cacheAsBitmap">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l197"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:197</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Cached internal flag.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property__cacheIsDirty" class="property item private inherited">
+    <h3 class="name"><code>_cacheIsDirty</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#property__cacheIsDirty">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l206"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:206</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Cached internal flag.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property__cr" class="property item private inherited">
+    <h3 class="name"><code>_cr</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#property__cr">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l152"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:152</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>cached sin rotation and cos rotation</p>
 
     </div>
 
@@ -4553,7 +6855,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l182"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:182</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l179"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:179</code></a>
         
         </p>
 
@@ -4619,6 +6921,50 @@ for this callback to be fired, The touch must have started over the sprite</p>
 </div>
 
                 
+                    <div id="property__sr" class="property item private inherited">
+    <h3 class="name"><code>_sr</code></h3>
+    <span class="type">Number</span>
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                <p>Inherited from
+                <a href="../classes/DisplayObject.html#property__sr">DisplayObject</a>:
+            
+        
+        
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l143"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:143</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>cached sin rotation and cos rotation</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
                     <div id="property__webGL" class="property item private">
     <h3 class="name"><code>_webGL</code></h3>
     <span class="type">Array</span>
@@ -4644,7 +6990,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
             
         
         
-        <a href="../files/src_pixi_primitives_Graphics.js.html#l82"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:82</code></a>
+        <a href="../files/src_pixi_primitives_Graphics.js.html#l79"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:79</code></a>
         
         </p>
 
@@ -4654,7 +7000,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
     </div>
 
     <div class="description">
-        <p>Array containing some WebGL-related properties used by the WebGL renderer</p>
+        <p>Array containing some WebGL-related properties used by the WebGL renderer.</p>
 
     </div>
 
@@ -4731,7 +7077,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
             
         
         
-        <a href="../files/src_pixi_primitives_Graphics.js.html#l64"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:64</code></a>
+        <a href="../files/src_pixi_primitives_Graphics.js.html#l61"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:61</code></a>
         
         </p>
 
@@ -4741,57 +7087,12 @@ for this callback to be fired, The touch must have started over the sprite</p>
     </div>
 
     <div class="description">
-        <p>The blend mode to be applied to the graphic shape</p>
+        <p>The blend mode to be applied to the graphic shape. Apply a value of PIXI.blendModes.NORMAL to reset the blend mode.</p>
 
     </div>
 
     
         <p><strong>Default:</strong> PIXI.blendModes.NORMAL;</p>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_bounds" class="property item">
-    <h3 class="name"><code>bounds</code></h3>
-    <span class="type"><a href="../classes/Rectangle.html" class="crosslink">Rectangle</a></span>
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_pixi_primitives_Graphics.js.html#l99"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:99</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>The bounds of the graphic shape as rectangle object</p>
-
-    </div>
-
     
 
     
@@ -4823,7 +7124,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
             
         
         
-        <a href="../files/src_pixi_primitives_Graphics.js.html#l107"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:107</code></a>
+        <a href="../files/src_pixi_primitives_Graphics.js.html#l96"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:96</code></a>
         
         </p>
 
@@ -4833,7 +7134,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
     </div>
 
     <div class="description">
-        <p>the bounds&#39; padding used for bounds calculation</p>
+        <p>The bounds&#39; padding used for bounds calculation.</p>
 
     </div>
 
@@ -4912,7 +7213,7 @@ for this callback to be fired, The touch must have started over the sprite</p>
             
         
         
-        <a href="../files/src_pixi_primitives_Graphics.js.html#l127"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:127</code></a>
+        <a href="../files/src_pixi_primitives_Graphics.js.html#l137"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:137</code></a>
         
         </p>
 
@@ -4922,15 +7223,62 @@ for this callback to be fired, The touch must have started over the sprite</p>
     </div>
 
     <div class="description">
-        <p>If cacheAsBitmap is true the graphics object will then be rendered as if it was a sprite.
-This is useful if your graphics element does not change often as it will speed up the rendering of the object
-It is also usful as the graphics object will always be antialiased because it will be rendered using canvas
-Not recommended if you are constanly redrawing the graphics element.</p>
+        <p>When cacheAsBitmap is set to true the graphics object will be rendered as if it was a sprite.
+This is useful if your graphics element does not change often, as it will speed up the rendering of the object in exchange for taking up texture memory.
+It is also useful if you need the graphics object to be anti-aliased, because it will be rendered using canvas.
+This is not recommended if you are constantly redrawing the graphics element.</p>
 
     </div>
 
     
         <p><strong>Default:</strong> false</p>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="property_cachedSpriteDirty" class="property item private">
+    <h3 class="name"><code>cachedSpriteDirty</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_primitives_Graphics.js.html#l122"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:122</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Used to detect if the cached sprite object needs to be updated.</p>
+
+    </div>
+
     
 
     
@@ -4959,7 +7307,7 @@ Not recommended if you are constanly redrawing the graphics element.</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l18"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:18</code></a>
+        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l17"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:17</code></a>
         
         </p>
 
@@ -4970,50 +7318,6 @@ Not recommended if you are constanly redrawing the graphics element.</p>
 
     <div class="description">
         <p>[read-only] The array of children of this container.</p>
-
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="property_color" class="property item private inherited">
-    <h3 class="name"><code>color</code></h3>
-    <span class="type">Array<></span>
-
-    
-
-    
-        <span class="flag private">private</span>
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                <p>Inherited from
-                <a href="../classes/DisplayObject.html#property_color">DisplayObject</a>:
-            
-        
-        
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l143"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:143</code></a>
-        
-        </p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>[NYI] Unknown</p>
 
     </div>
 
@@ -5050,7 +7354,7 @@ Not recommended if you are constanly redrawing the graphics element.</p>
             
         
         
-        <a href="../files/src_pixi_primitives_Graphics.js.html#l73"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:73</code></a>
+        <a href="../files/src_pixi_primitives_Graphics.js.html#l70"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:70</code></a>
         
         </p>
 
@@ -5114,8 +7418,8 @@ Not recommended if you are constanly redrawing the graphics element.</p>
 </div>
 
                 
-                    <div id="property_dynamic" class="property item private inherited">
-    <h3 class="name"><code>dynamic</code></h3>
+                    <div id="property_dirty" class="property item private">
+    <h3 class="name"><code>dirty</code></h3>
     <span class="type">Boolean</span>
 
     
@@ -5131,12 +7435,15 @@ Not recommended if you are constanly redrawing the graphics element.</p>
     <div class="meta">
         
             
-                <p>Inherited from
-                <a href="../classes/DisplayObject.html#property_dynamic">DisplayObject</a>:
+                
+                <p>
+                
+                Defined in
+                
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l152"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:152</code></a>
+        <a href="../files/src_pixi_primitives_Graphics.js.html#l104"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:104</code></a>
         
         </p>
 
@@ -5146,7 +7453,7 @@ Not recommended if you are constanly redrawing the graphics element.</p>
     </div>
 
     <div class="description">
-        <p>[NYI] Holds whether or not this object is dynamic, for rendering optimization</p>
+        <p>Used to detect if the graphics object has changed. If this is set to true then the graphics object will be recalculated.</p>
 
     </div>
 
@@ -5181,7 +7488,7 @@ Not recommended if you are constanly redrawing the graphics element.</p>
             
         
         
-        <a href="../files/src_pixi_primitives_Graphics.js.html#l21"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:21</code></a>
+        <a href="../files/src_pixi_primitives_Graphics.js.html#l18"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:18</code></a>
         
         </p>
 
@@ -5191,7 +7498,7 @@ Not recommended if you are constanly redrawing the graphics element.</p>
     </div>
 
     <div class="description">
-        <p>The alpha of the fill of this graphics object</p>
+        <p>The alpha value used when filling the Graphics object.</p>
 
     </div>
 
@@ -5223,7 +7530,7 @@ Not recommended if you are constanly redrawing the graphics element.</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l165"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:165</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l161"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:161</code></a>
         
         </p>
 
@@ -5266,7 +7573,7 @@ rather than figuring out the dimensions of the displayObject each frame you can 
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l354"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:354</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l381"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:381</code></a>
         
         </p>
 
@@ -5317,7 +7624,7 @@ To remove filters simply set this property to &#39;null&#39;</li>
             
         
         
-        <a href="../files/src_pixi_primitives_Graphics.js.html#l45"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:45</code></a>
+        <a href="../files/src_pixi_primitives_Graphics.js.html#l43"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:43</code></a>
         
         </p>
 
@@ -5359,7 +7666,7 @@ To remove filters simply set this property to &#39;null&#39;</li>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l51"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:51</code></a>
+        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l59"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:59</code></a>
         
         </p>
 
@@ -5444,7 +7751,7 @@ Setting it is a neat way of optimising the hitTest function that the interaction
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l293"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:293</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l320"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:320</code></a>
         
         </p>
 
@@ -5470,7 +7777,7 @@ Setting it is a neat way of optimising the hitTest function that the interaction
                 
                     <div id="property_isMask" class="property item">
     <h3 class="name"><code>isMask</code></h3>
-    <span class="type">IsMask</span>
+    <span class="type">Boolean</span>
 
     
 
@@ -5491,7 +7798,7 @@ Setting it is a neat way of optimising the hitTest function that the interaction
             
         
         
-        <a href="../files/src_pixi_primitives_Graphics.js.html#l91"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:91</code></a>
+        <a href="../files/src_pixi_primitives_Graphics.js.html#l88"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:88</code></a>
         
         </p>
 
@@ -5501,7 +7808,7 @@ Setting it is a neat way of optimising the hitTest function that the interaction
     </div>
 
     <div class="description">
-        <p>Whether this shape is being used as a mask</p>
+        <p>Whether this shape is being used as a mask.</p>
 
     </div>
 
@@ -5536,7 +7843,7 @@ Setting it is a neat way of optimising the hitTest function that the interaction
             
         
         
-        <a href="../files/src_pixi_primitives_Graphics.js.html#l37"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:37</code></a>
+        <a href="../files/src_pixi_primitives_Graphics.js.html#l34"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:34</code></a>
         
         </p>
 
@@ -5546,10 +7853,12 @@ Setting it is a neat way of optimising the hitTest function that the interaction
     </div>
 
     <div class="description">
-        <p>The color of any lines drawn</p>
+        <p>The color of any lines drawn.</p>
 
     </div>
 
+    
+        <p><strong>Default:</strong> 0</p>
     
 
     
@@ -5581,7 +7890,7 @@ Setting it is a neat way of optimising the hitTest function that the interaction
             
         
         
-        <a href="../files/src_pixi_primitives_Graphics.js.html#l29"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:29</code></a>
+        <a href="../files/src_pixi_primitives_Graphics.js.html#l26"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:26</code></a>
         
         </p>
 
@@ -5591,7 +7900,7 @@ Setting it is a neat way of optimising the hitTest function that the interaction
     </div>
 
     <div class="description">
-        <p>The width of any lines drawn</p>
+        <p>The width (thickness) of any lines drawn.</p>
 
     </div>
 
@@ -5623,7 +7932,7 @@ Setting it is a neat way of optimising the hitTest function that the interaction
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l334"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:334</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l361"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:361</code></a>
         
         </p>
 
@@ -5964,7 +8273,7 @@ To remove a mask, set this property to null.</p>
             
         
         
-        <a href="../files/src_pixi_primitives_Graphics.js.html#l55"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:55</code></a>
+        <a href="../files/src_pixi_primitives_Graphics.js.html#l52"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:52</code></a>
         
         </p>
 
@@ -5974,7 +8283,7 @@ To remove a mask, set this property to null.</p>
     </div>
 
     <div class="description">
-        <p>The tint applied to the graphic shape. This is a hex value</p>
+        <p>The tint applied to the graphic shape. This is a hex value. Apply a value of 0xFFFFFF to reset the tint.</p>
 
     </div>
 
@@ -6030,6 +8339,53 @@ To remove a mask, set this property to null.</p>
 </div>
 
                 
+                    <div id="property_webGLDirty" class="property item private">
+    <h3 class="name"><code>webGLDirty</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_primitives_Graphics.js.html#l113"><code>src&#x2F;pixi&#x2F;primitives&#x2F;Graphics.js:113</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Used to detect if the webgl graphics object has changed. If this is set to true then the graphics object will be recalculated.</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
                     <div id="property_width" class="property item inherited">
     <h3 class="name"><code>width</code></h3>
     <span class="type">Number</span>
@@ -6050,7 +8406,7 @@ To remove a mask, set this property to null.</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l32"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:32</code></a>
+        <a href="../files/src_pixi_display_DisplayObjectContainer.js.html#l31"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObjectContainer.js:31</code></a>
         
         </p>
 
@@ -6116,7 +8472,7 @@ To remove a mask, set this property to null.</p>
                 
                     <div id="property_worldTransform" class="property item private inherited">
     <h3 class="name"><code>worldTransform</code></h3>
-    <span class="type">Mat3</span>
+    <span class="type"><a href="../classes/Matrix.html" class="crosslink">Matrix</a></span>
 
     
 
@@ -6178,7 +8534,7 @@ To remove a mask, set this property to null.</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l313"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:313</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l340"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:340</code></a>
         
         </p>
 
@@ -6188,7 +8544,7 @@ To remove a mask, set this property to null.</p>
     </div>
 
     <div class="description">
-        <p>[read-only] Indicates if the sprite is globaly visible.</p>
+        <p>[read-only] Indicates if the sprite is globally visible.</p>
 
     </div>
 
@@ -6220,7 +8576,7 @@ To remove a mask, set this property to null.</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l598"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:598</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l728"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:728</code></a>
         
         </p>
 
@@ -6262,7 +8618,7 @@ To remove a mask, set this property to null.</p>
             
         
         
-        <a href="../files/src_pixi_display_DisplayObject.js.html#l613"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:613</code></a>
+        <a href="../files/src_pixi_display_DisplayObject.js.html#l743"><code>src&#x2F;pixi&#x2F;display&#x2F;DisplayObject.js:743</code></a>
         
         </p>
 

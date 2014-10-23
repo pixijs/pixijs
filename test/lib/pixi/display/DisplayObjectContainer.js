@@ -9,6 +9,8 @@ function pixi_display_DisplayObjectContainer_confirmNew(obj) {
     expect(obj).to.respondTo('addChildAt');
     expect(obj).to.respondTo('swapChildren');
     expect(obj).to.respondTo('getChildAt');
+    expect(obj).to.respondTo('getChildIndex');
+    expect(obj).to.respondTo('setChildIndex');
     expect(obj).to.respondTo('removeChild');
     expect(obj).to.respondTo('updateTransform');
 

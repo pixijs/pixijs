@@ -3,10 +3,11 @@
  */
 
 /**
- *
- * This filter applies a twist effect making display objects appear twisted in the given direction
+ * This filter applies a twist effect making display objects appear twisted in the given direction.
+ * 
  * @class TwistFilter
- * @contructor
+ * @extends AbstractFilter
+ * @constructor
  */
 PIXI.TwistFilter = function()
 {
@@ -53,9 +54,9 @@ PIXI.TwistFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.TwistFilter.prototype.constructor = PIXI.TwistFilter;
 
 /**
- *
- * This point describes the the offset of the twist
- * @property size
+ * This point describes the the offset of the twist.
+ * 
+ * @property offset
  * @type Point
  */
 Object.defineProperty(PIXI.TwistFilter.prototype, 'offset', {
@@ -69,9 +70,9 @@ Object.defineProperty(PIXI.TwistFilter.prototype, 'offset', {
 });
 
 /**
- *
- * This radius describes size of the twist
- * @property size
+ * This radius of the twist.
+ * 
+ * @property radius
  * @type Number
  */
 Object.defineProperty(PIXI.TwistFilter.prototype, 'radius', {
@@ -85,8 +86,8 @@ Object.defineProperty(PIXI.TwistFilter.prototype, 'radius', {
 });
 
 /**
- *
- * This radius describes angle of the twist
+ * This angle of the twist.
+ * 
  * @property angle
  * @type Number
  */

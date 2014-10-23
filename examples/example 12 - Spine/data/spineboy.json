@@ -185,12 +185,12 @@
   "sourceSize": {"w":32,"h":32}
 }},
 "meta": {
-	"app": "http://www.texturepacker.com",
-	"version": "1.0",
-	"image": "spineboy.png",
-	"format": "RGBA8888",
-	"size": {"w":256,"h":256},
-	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:93f9a66503bccd3c31cdba2ae4b91285$"
+    "app": "http://www.texturepacker.com",
+    "version": "1.0",
+    "image": "spineboy.png",
+    "format": "RGBA8888",
+    "size": {"w":256,"h":256},
+    "scale": "1",
+    "smartupdate": "$TexturePacker:SmartUpdate:93f9a66503bccd3c31cdba2ae4b91285$"
 }
 }

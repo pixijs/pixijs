@@ -3,27 +3,42 @@
  */
 
 /**
-* @class WebGLMaskManager
+* @class WebGLBlendModeManager
 * @constructor
 * @param gl {WebGLContext} the current WebGL drawing context
-* @private
 */
-PIXI.WebGLBlendModeManager = function(gl)
+PIXI.WebGLBlendModeManager = function()
 {
-    this.gl = gl;
+    /**
+     * @property currentBlendMode
+     * @type Number
+     */
     this.currentBlendMode = 99999;
 };
 
+PIXI.WebGLBlendModeManager.prototype.constructor = PIXI.WebGLBlendModeManager;
+
 /**
-* Sets-up the given blendMode from WebGL's point of view
+ * Sets the WebGL Context.
+ *
+ * @method setContext
+ * @param gl {WebGLContext} the current WebGL drawing context
+ */
+PIXI.WebGLBlendModeManager.prototype.setContext = function(gl)
+{
+    this.gl = gl;
+};
+
+/**
+* Sets-up the given blendMode from WebGL's point of view.
+* 
 * @method setBlendMode 
-*
 * @param blendMode {Number} the blendMode, should be a Pixi const, such as PIXI.BlendModes.ADD
 */
 PIXI.WebGLBlendModeManager.prototype.setBlendMode = function(blendMode)
 {
     if(this.currentBlendMode === blendMode)return false;
- //   console.log("SWAP!")
+
     this.currentBlendMode = blendMode;
     
     var blendModeWebGL = PIXI.blendModesWebGL[this.currentBlendMode];
@@ -32,6 +47,11 @@ PIXI.WebGLBlendModeManager.prototype.setBlendMode = function(blendMode)
     return true;
 };
 
+/**
+* Destroys this object.
+* 
+* @method destroy
+*/
 PIXI.WebGLBlendModeManager.prototype.destroy = function()
 {
     this.gl = null;

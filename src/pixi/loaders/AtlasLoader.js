@@ -3,18 +3,20 @@
  */
 
 /**
- * The atlas file loader is used to load in Atlas data and parse it
- * When loaded this class will dispatch a 'loaded' event
- * If loading fails this class will dispatch an 'error' event
+ * The atlas file loader is used to load in Texture Atlas data and parse it. When loaded this class will dispatch a 'loaded' event. If loading fails this class will dispatch an 'error' event.
+ *
+ * To generate the data you can use http://www.codeandweb.com/texturepacker and publish in the 'JSON' format.
+ * 
+ * It is highly recommended to use texture atlases (also know as 'sprite sheets') as it allowed sprites to be batched and drawn together for highly increased rendering speed.
+ * Once the data has been loaded the frames are stored in the PIXI texture cache and can be accessed though PIXI.Texture.fromFrameId() and PIXI.Sprite.fromFrameId()
+ * 
  * @class AtlasLoader
- * @extends EventTarget
+ * @uses EventTarget
  * @constructor
- * @param {String} url the url of the JSON file
- * @param {Boolean} crossorigin
+ * @param url {String} The url of the JSON file
+ * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
  */
-
 PIXI.AtlasLoader = function (url, crossorigin) {
-    PIXI.EventTarget.call(this);
     this.url = url;
     this.baseUrl = url.replace(/[^\/]*$/, '');
     this.crossorigin = crossorigin;
@@ -25,6 +27,7 @@ PIXI.AtlasLoader = function (url, crossorigin) {
 // constructor
 PIXI.AtlasLoader.constructor = PIXI.AtlasLoader;
 
+PIXI.EventTarget.mixin(PIXI.AtlasLoader.prototype);
 
  /**
  * Starts loading the JSON file
@@ -41,7 +44,8 @@ PIXI.AtlasLoader.prototype.load = function () {
 };
 
 /**
- * Invoke when JSON file is loaded
+ * Invoked when the Atlas has fully loaded. Parses the JSON and builds the texture frames.
+ * 
  * @method onAtlasLoaded
  * @private
  */
@@ -145,7 +149,7 @@ PIXI.AtlasLoader.prototype.onAtlasLoaded = function () {
 
                 this.currentImageId = 0;
                 for (j = 0; j < this.images.length; j++) {
-                    this.images[j].addEventListener('loaded', selfOnLoaded);
+                    this.images[j].on('loaded', selfOnLoaded);
                 }
                 this.images[this.currentImageId].load();
 
@@ -160,7 +164,8 @@ PIXI.AtlasLoader.prototype.onAtlasLoaded = function () {
 };
 
 /**
- * Invoke when json file has loaded
+ * Invoked when json file has loaded.
+ * 
  * @method onLoaded
  * @private
  */
@@ -170,21 +175,16 @@ PIXI.AtlasLoader.prototype.onLoaded = function () {
         this.images[this.currentImageId].load();
     } else {
         this.loaded = true;
-        this.dispatchEvent({
-            type: 'loaded',
-            content: this
-        });
+        this.emit('loaded', { content: this });
     }
 };
 
 /**
- * Invoke when error occured
+ * Invoked when an error occurs.
+ * 
  * @method onError
  * @private
  */
 PIXI.AtlasLoader.prototype.onError = function () {
-    this.dispatchEvent({
-        type: 'error',
-        content: this
-    });
+    this.emit('error', { content: this });
 };

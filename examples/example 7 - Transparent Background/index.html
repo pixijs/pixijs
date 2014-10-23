@@ -1,71 +1,71 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-	<title>pixi.js example 7 transparency</title>
-	<style>
-		body {
-			margin: 0;
-			padding: 0;
-			background-color: #FFFFFF;
-		}
+    <title>pixi.js example 7 transparency</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #FFFFFF;
+        }
 
-		.textHolder{
-			width: 400px;
-		}
-	</style>
-	<script src="../../bin/pixi.dev.js"></script>
+        .textHolder{
+            width: 400px;
+        }
+    </style>
+    <script src="../../bin/pixi.dev.js"></script>
 </head>
 <body>
-	<div class="textHolder">Hi there, I'm some HTML text... blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
-	 blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
-	  blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
-	 blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
-	  blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
-	 blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
-	  blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
-	   blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
-	    blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah</div>
-	<script>
-	// create an new instance of a pixi stage
-	var stage = new PIXI.Stage(0x66FF99);
+    <div class="textHolder">Hi there, I'm some HTML text... blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
+     blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
+      blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
+     blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
+      blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
+     blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
+      blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
+       blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
+        blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah</div>
+    <script>
+    // create an new instance of a pixi stage
+    var stage = new PIXI.Stage(0x66FF99);
 
 	// create a renderer instance
-	var renderer = PIXI.autoDetectRenderer(400, 300, null, true, true);
+	var renderer = PIXI.autoDetectRenderer(400, 300, {transparent:true});
 
-	// add the renderer view element to the DOM
-	document.body.appendChild(renderer.view);
-	renderer.view.style.position = "absolute";
-	renderer.view.style.top = "0px";
-	renderer.view.style.left = "0px";
+    // add the renderer view element to the DOM
+    document.body.appendChild(renderer.view);
+    renderer.view.style.position = "absolute";
+    renderer.view.style.top = "0px";
+    renderer.view.style.left = "0px";
 
-	// create a texture from an image path
-	var texture = PIXI.Texture.fromImage("bunny.png");
+    // create a texture from an image path
+    var texture = PIXI.Texture.fromImage("bunny.png");
 
-	// create a new Sprite using the texture
-	var bunny = new PIXI.Sprite(texture);
+    // create a new Sprite using the texture
+    var bunny = new PIXI.Sprite(texture);
 
-	// center the sprite's anchor point
-	bunny.anchor.x = 0.5;
-	bunny.anchor.y = 0.5;
+    // center the sprite's anchor point
+    bunny.anchor.x = 0.5;
+    bunny.anchor.y = 0.5;
 
-	// move the sprite to the center of the screen
-	bunny.position.x = 200;
-	bunny.position.y = 150;
+    // move the sprite to the center of the screen
+    bunny.position.x = 200;
+    bunny.position.y = 150;
 
-	stage.addChild(bunny);
+    stage.addChild(bunny);
 
-	function animate() {
-	    requestAnimFrame(animate);
+    function animate() {
+        requestAnimFrame(animate);
 
-	    // just for fun, lets rotate mr rabbit a little
-	    bunny.rotation += 0.1;
+        // just for fun, lets rotate mr rabbit a little
+        bunny.rotation += 0.1;
 
-	    // render the stage
-	    renderer.render(stage);
-	}
+        // render the stage
+        renderer.render(stage);
+    }
 
-	requestAnimFrame(animate);
-	</script>
+    requestAnimFrame(animate);
+    </script>
 
-	</body>
+    </body>
 </html>

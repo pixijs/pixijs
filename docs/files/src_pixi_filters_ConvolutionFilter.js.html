@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/pixi/core/Ellipse.js - pixi.js</title>
+    <title>src/pixi/filters/ConvolutionFilter.js - pixi.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.6.0</em>
+            <em>API Docs for: 2.0.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -47,9 +47,13 @@
             
                 <li><a href="../classes/AlphaMaskFilter.html">AlphaMaskFilter</a></li>
             
+                <li><a href="../classes/AsciiFilter.html">AsciiFilter</a></li>
+            
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
                 <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
+                <li><a href="../classes/autoDetectRecommendedRenderer.html">autoDetectRecommendedRenderer</a></li>
             
                 <li><a href="../classes/autoDetectRenderer.html">autoDetectRenderer</a></li>
             
@@ -60,6 +64,12 @@
                 <li><a href="../classes/BitmapText.html">BitmapText</a></li>
             
                 <li><a href="../classes/BlurFilter.html">BlurFilter</a></li>
+            
+                <li><a href="../classes/BlurXFilter.html">BlurXFilter</a></li>
+            
+                <li><a href="../classes/BlurYFilter.html">BlurYFilter</a></li>
+            
+                <li><a href="../classes/CanvasBuffer.html">CanvasBuffer</a></li>
             
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
@@ -77,6 +87,10 @@
             
                 <li><a href="../classes/ComplexPrimitiveShader.html">ComplexPrimitiveShader</a></li>
             
+                <li><a href="../classes/ConvolutionFilter.html">ConvolutionFilter</a></li>
+            
+                <li><a href="../classes/CrossHatchFilter.html">CrossHatchFilter</a></li>
+            
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
@@ -87,13 +101,17 @@
             
                 <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
+                <li><a href="../classes/Event.html">Event</a></li>
+            
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
+            
+                <li><a href="../classes/FilterBlock.html">FilterBlock</a></li>
             
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
             
-                <li><a href="../classes/getRecommendedRenderer.html">getRecommendedRenderer</a></li>
-            
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
+            
+                <li><a href="../classes/GraphicsData.html">GraphicsData</a></li>
             
                 <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
@@ -109,9 +127,9 @@
             
                 <li><a href="../classes/Matrix.html">Matrix</a></li>
             
-                <li><a href="../classes/Matrix2.html">Matrix2</a></li>
-            
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
+            
+                <li><a href="../classes/NoiseFilter.html">NoiseFilter</a></li>
             
                 <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
             
@@ -131,11 +149,19 @@
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
+                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
+            
+                <li><a href="../classes/RGBSplitFilter.html">RGBSplitFilter</a></li>
+            
                 <li><a href="../classes/Rope.html">Rope</a></li>
             
                 <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
             
+                <li><a href="../classes/SmartBlurFilter.html">SmartBlurFilter</a></li>
+            
                 <li><a href="../classes/Spine.html">Spine</a></li>
+            
+                <li><a href="../classes/SpineLoader.html">SpineLoader</a></li>
             
                 <li><a href="../classes/Sprite.html">Sprite</a></li>
             
@@ -147,17 +173,31 @@
             
                 <li><a href="../classes/Strip.html">Strip</a></li>
             
+                <li><a href="../classes/StripShader.html">StripShader</a></li>
+            
                 <li><a href="../classes/Text.html">Text</a></li>
             
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
             
+                <li><a href="../classes/TiltShiftFilter.html">TiltShiftFilter</a></li>
+            
+                <li><a href="../classes/TiltShiftXFilter.html">TiltShiftXFilter</a></li>
+            
+                <li><a href="../classes/TiltShiftYFilter.html">TiltShiftYFilter</a></li>
+            
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
+            
+                <li><a href="../classes/WebGLBlendModeManager.html">WebGLBlendModeManager</a></li>
+            
+                <li><a href="../classes/WebGLFastSpriteBatch.html">WebGLFastSpriteBatch</a></li>
             
                 <li><a href="../classes/WebGLFilterManager.html">WebGLFilterManager</a></li>
             
                 <li><a href="../classes/WebGLGraphics.html">WebGLGraphics</a></li>
+            
+                <li><a href="../classes/WebGLGraphicsData.html">WebGLGraphicsData</a></li>
             
                 <li><a href="../classes/WebGLMaskManager.html">WebGLMaskManager</a></li>
             
@@ -210,102 +250,116 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/pixi/core/Ellipse.js</h1>
+                        <h1 class="file-heading">File: src/pixi/filters/ConvolutionFilter.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- * @author Chad Engler &lt;chad@pantherdev.com&gt;
- */
-
-/**
- * The Ellipse object can be used to specify a hit area for displayObjects
- *
- * @class Ellipse
+ * The ConvolutionFilter class applies a matrix convolution filter effect. 
+ * A convolution combines pixels in the input image with neighboring pixels to produce a new image. 
+ * A wide variety of image effects can be achieved through convolutions, including blurring, edge detection, sharpening, embossing, and beveling.
+ * The matrix should be specified as a 9 point Array. See http://docs.gimp.org/en/plug-in-convmatrix.html for more info.
+ * 
+ * @class ConvolutionFilter
+ * @extends AbstractFilter
  * @constructor
- * @param x {Number} The X coordinate of the center of the ellipse
- * @param y {Number} The Y coordinate of the center of the ellipse
- * @param width {Number} The half width of this ellipse
- * @param height {Number} The half height of this ellipse
+ * @param matrix {Array} An array of values used for matrix transformation. Specified as a 9 point Array.
+ * @param width {Number} Width of the object you are transforming
+ * @param height {Number} Height of the object you are transforming
  */
-PIXI.Ellipse = function(x, y, width, height)
+PIXI.ConvolutionFilter = function(matrix, width, height)
 {
-    /**
-     * @property x
-     * @type Number
-     * @default 0
-     */
-    this.x = x || 0;
+    PIXI.AbstractFilter.call( this );
 
-    /**
-     * @property y
-     * @type Number
-     * @default 0
-     */
-    this.y = y || 0;
+    this.passes = [this];
 
-    /**
-     * @property width
-     * @type Number
-     * @default 0
-     */
-    this.width = width || 0;
+    // set the uniforms
+    this.uniforms = {
+        m : {type: &#x27;1fv&#x27;, value: new Float32Array(matrix)},
+        texelSizeX: {type: &#x27;1f&#x27;, value: 1 / width},
+        texelSizeY: {type: &#x27;1f&#x27;, value: 1 / height}
+    };
 
-    /**
-     * @property height
-     * @type Number
-     * @default 0
-     */
-    this.height = height || 0;
+    this.fragmentSrc = [
+        &#x27;precision mediump float;&#x27;,
+        &#x27;varying mediump vec2 vTextureCoord;&#x27;,
+        &#x27;uniform sampler2D texture;&#x27;,
+        &#x27;uniform float texelSizeX;&#x27;,
+        &#x27;uniform float texelSizeY;&#x27;,
+        &#x27;uniform float m[9];&#x27;,
+
+        &#x27;vec2 px = vec2(texelSizeX, texelSizeY);&#x27;,
+
+        &#x27;void main(void) {&#x27;,
+            &#x27;vec4 c11 = texture2D(texture, vTextureCoord - px);&#x27;, // top left
+            &#x27;vec4 c12 = texture2D(texture, vec2(vTextureCoord.x, vTextureCoord.y - px.y));&#x27;, // top center
+            &#x27;vec4 c13 = texture2D(texture, vec2(vTextureCoord.x + px.x, vTextureCoord.y - px.y));&#x27;, // top right
+
+            &#x27;vec4 c21 = texture2D(texture, vec2(vTextureCoord.x - px.x, vTextureCoord.y) );&#x27;, // mid left
+            &#x27;vec4 c22 = texture2D(texture, vTextureCoord);&#x27;, // mid center
+            &#x27;vec4 c23 = texture2D(texture, vec2(vTextureCoord.x + px.x, vTextureCoord.y) );&#x27;, // mid right
+
+            &#x27;vec4 c31 = texture2D(texture, vec2(vTextureCoord.x - px.x, vTextureCoord.y + px.y) );&#x27;, // bottom left
+            &#x27;vec4 c32 = texture2D(texture, vec2(vTextureCoord.x, vTextureCoord.y + px.y) );&#x27;, // bottom center
+            &#x27;vec4 c33 = texture2D(texture, vTextureCoord + px );&#x27;, // bottom right
+
+            &#x27;gl_FragColor = &#x27;,
+            &#x27;c11 * m[0] + c12 * m[1] + c22 * m[2] +&#x27;,
+            &#x27;c21 * m[3] + c22 * m[4] + c23 * m[5] +&#x27;,
+            &#x27;c31 * m[6] + c32 * m[7] + c33 * m[8];&#x27;,
+            &#x27;gl_FragColor.a = c22.a;&#x27;,
+        &#x27;}&#x27;
+    ];
+
 };
 
+PIXI.ConvolutionFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
+PIXI.ConvolutionFilter.prototype.constructor = PIXI.ConvolutionFilter;
+
 /**
- * Creates a clone of this Ellipse instance
+ * An array of values used for matrix transformation. Specified as a 9 point Array.
  *
- * @method clone
- * @return {Ellipse} a copy of the ellipse
+ * @property matrix
+ * @type Array
  */
-PIXI.Ellipse.prototype.clone = function()
-{
-    return new PIXI.Ellipse(this.x, this.y, this.width, this.height);
-};
+Object.defineProperty(PIXI.ConvolutionFilter.prototype, &#x27;matrix&#x27;, {
+    get: function() {
+        return this.uniforms.m.value;
+    },
+    set: function(value) {
+        this.uniforms.m.value = new Float32Array(value);
+    }
+});
 
 /**
- * Checks whether the x and y coordinates passed to this function are contained within this ellipse
+ * Width of the object you are transforming
  *
- * @method contains
- * @param x {Number} The X coordinate of the point to test
- * @param y {Number} The Y coordinate of the point to test
- * @return {Boolean} Whether the x/y coords are within this ellipse
+ * @property width
+ * @type Number
  */
-PIXI.Ellipse.prototype.contains = function(x, y)
-{
-    if(this.width &lt;= 0 || this.height &lt;= 0)
-        return false;
-
-    //normalize the coords to an ellipse with center 0,0
-    var normx = ((x - this.x) / this.width),
-        normy = ((y - this.y) / this.height);
-
-    normx *= normx;
-    normy *= normy;
-
-    return (normx + normy &lt;= 1);
-};
+Object.defineProperty(PIXI.ConvolutionFilter.prototype, &#x27;width&#x27;, {
+    get: function() {
+        return this.uniforms.texelSizeX.value;
+    },
+    set: function(value) {
+        this.uniforms.texelSizeX.value = 1/value;
+    }
+});
 
 /**
-* Returns the framing rectangle of the ellipse as a PIXI.Rectangle object
-*
-* @method getBounds
-* @return {Rectangle} the framing rectangle
-*/
-PIXI.Ellipse.prototype.getBounds = function()
-{
-    return new PIXI.Rectangle(this.x - this.width, this.y - this.height, this.width, this.height);
-};
-
-// constructor
-PIXI.Ellipse.prototype.constructor = PIXI.Ellipse;
+ * Height of the object you are transforming
+ *
+ * @property height
+ * @type Number
+ */
+Object.defineProperty(PIXI.ConvolutionFilter.prototype, &#x27;height&#x27;, {
+    get: function() {
+        return this.uniforms.texelSizeY.value;
+    },
+    set: function(value) {
+        this.uniforms.texelSizeY.value = 1/value;
+    }
+});
 
     </pre>
 </div>

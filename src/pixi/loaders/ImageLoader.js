@@ -4,7 +4,7 @@
 
 /**
  * The image loader class is responsible for loading images file formats ('jpeg', 'jpg', 'png' and 'gif')
- * Once the image has been loaded it is stored in the PIXI texture cache and can be accessed though PIXI.Texture.fromFrameId() and PIXI.Sprite.fromFrameId()
+ * Once the image has been loaded it is stored in the PIXI texture cache and can be accessed though PIXI.Texture.fromFrame() and PIXI.Sprite.fromFrame()
  * When loaded this class will dispatch a 'loaded' event
  *
  * @class ImageLoader
@@ -15,8 +15,6 @@
  */
 PIXI.ImageLoader = function(url, crossorigin)
 {
-    PIXI.EventTarget.call(this);
-
     /**
      * The texture being loaded
      *
@@ -29,12 +27,17 @@ PIXI.ImageLoader = function(url, crossorigin)
      * if the image is loaded with loadFramedSpriteSheet
      * frames will contain the sprite sheet frames
      *
+     * @property frames
+     * @type Array
+     * @readOnly
      */
     this.frames = [];
 };
 
 // constructor
 PIXI.ImageLoader.prototype.constructor = PIXI.ImageLoader;
+
+PIXI.EventTarget.mixin(PIXI.ImageLoader.prototype);
 
 /**
  * Loads image or takes it from cache
@@ -45,11 +48,7 @@ PIXI.ImageLoader.prototype.load = function()
 {
     if(!this.texture.baseTexture.hasLoaded)
     {
-        var scope = this;
-        this.texture.baseTexture.addEventListener('loaded', function()
-        {
-            scope.onLoaded();
-        });
+        this.texture.baseTexture.on('loaded', this.onLoaded.bind(this));
     }
     else
     {
@@ -65,12 +64,11 @@ PIXI.ImageLoader.prototype.load = function()
  */
 PIXI.ImageLoader.prototype.onLoaded = function()
 {
-    this.dispatchEvent({type: 'loaded', content: this});
+    this.emit('loaded', { content: this });
 };
 
 /**
  * Loads image and split it to uniform sized frames
- *
  *
  * @method loadFramedSpriteSheet
  * @param frameWidth {Number} width of each frame
@@ -88,7 +86,7 @@ PIXI.ImageLoader.prototype.loadFramedSpriteSheet = function(frameWidth, frameHei
     {
         for (var x=0; x<cols; x++,i++)
         {
-            var texture = new PIXI.Texture(this.texture, {
+            var texture = new PIXI.Texture(this.texture.baseTexture, {
                 x: x*frameWidth,
                 y: y*frameHeight,
                 width: frameWidth,
@@ -100,15 +98,5 @@ PIXI.ImageLoader.prototype.loadFramedSpriteSheet = function(frameWidth, frameHei
         }
     }
 
-    if(!this.texture.baseTexture.hasLoaded)
-    {
-        var scope = this;
-        this.texture.baseTexture.addEventListener('loaded', function() {
-            scope.onLoaded();
-        });
-    }
-    else
-    {
-        this.onLoaded();
-    }
+	this.load();
 };

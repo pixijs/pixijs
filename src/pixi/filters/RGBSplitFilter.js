@@ -2,6 +2,13 @@
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
+/**
+ * An RGB Split Filter.
+ * 
+ * @class RGBSplitFilter
+ * @extends AbstractFilter
+ * @constructor
+ */
 PIXI.RGBSplitFilter = function()
 {
     PIXI.AbstractFilter.call( this );
@@ -38,12 +45,47 @@ PIXI.RGBSplitFilter = function()
 PIXI.RGBSplitFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.RGBSplitFilter.prototype.constructor = PIXI.RGBSplitFilter;
 
-Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'angle', {
+/**
+ * Red channel offset.
+ * 
+ * @property red
+ * @type Point
+ */
+Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'red', {
     get: function() {
-        return this.uniforms.blur.value / (1/7000);
+        return this.uniforms.red.value;
     },
     set: function(value) {
-        //this.padding = value;
-        this.uniforms.blur.value = (1/7000) * value;
+        this.uniforms.red.value = value;
+    }
+});
+
+/**
+ * Green channel offset.
+ * 
+ * @property green
+ * @type Point
+ */
+Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'green', {
+    get: function() {
+        return this.uniforms.green.value;
+    },
+    set: function(value) {
+        this.uniforms.green.value = value;
+    }
+});
+
+/**
+ * Blue offset.
+ * 
+ * @property blue
+ * @type Point
+ */
+Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'blue', {
+    get: function() {
+        return this.uniforms.blue.value;
+    },
+    set: function(value) {
+        this.uniforms.blue.value = value;
     }
 });

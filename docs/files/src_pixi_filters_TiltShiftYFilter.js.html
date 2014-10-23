@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/pixi/core/Polygon.js - pixi.js</title>
+    <title>src/pixi/filters/TiltShiftYFilter.js - pixi.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.6.0</em>
+            <em>API Docs for: 2.0.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -47,9 +47,13 @@
             
                 <li><a href="../classes/AlphaMaskFilter.html">AlphaMaskFilter</a></li>
             
+                <li><a href="../classes/AsciiFilter.html">AsciiFilter</a></li>
+            
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
                 <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
+                <li><a href="../classes/autoDetectRecommendedRenderer.html">autoDetectRecommendedRenderer</a></li>
             
                 <li><a href="../classes/autoDetectRenderer.html">autoDetectRenderer</a></li>
             
@@ -60,6 +64,12 @@
                 <li><a href="../classes/BitmapText.html">BitmapText</a></li>
             
                 <li><a href="../classes/BlurFilter.html">BlurFilter</a></li>
+            
+                <li><a href="../classes/BlurXFilter.html">BlurXFilter</a></li>
+            
+                <li><a href="../classes/BlurYFilter.html">BlurYFilter</a></li>
+            
+                <li><a href="../classes/CanvasBuffer.html">CanvasBuffer</a></li>
             
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
@@ -77,6 +87,10 @@
             
                 <li><a href="../classes/ComplexPrimitiveShader.html">ComplexPrimitiveShader</a></li>
             
+                <li><a href="../classes/ConvolutionFilter.html">ConvolutionFilter</a></li>
+            
+                <li><a href="../classes/CrossHatchFilter.html">CrossHatchFilter</a></li>
+            
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
@@ -87,13 +101,17 @@
             
                 <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
+                <li><a href="../classes/Event.html">Event</a></li>
+            
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
+            
+                <li><a href="../classes/FilterBlock.html">FilterBlock</a></li>
             
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
             
-                <li><a href="../classes/getRecommendedRenderer.html">getRecommendedRenderer</a></li>
-            
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
+            
+                <li><a href="../classes/GraphicsData.html">GraphicsData</a></li>
             
                 <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
@@ -109,9 +127,9 @@
             
                 <li><a href="../classes/Matrix.html">Matrix</a></li>
             
-                <li><a href="../classes/Matrix2.html">Matrix2</a></li>
-            
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
+            
+                <li><a href="../classes/NoiseFilter.html">NoiseFilter</a></li>
             
                 <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
             
@@ -131,11 +149,19 @@
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
+                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
+            
+                <li><a href="../classes/RGBSplitFilter.html">RGBSplitFilter</a></li>
+            
                 <li><a href="../classes/Rope.html">Rope</a></li>
             
                 <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
             
+                <li><a href="../classes/SmartBlurFilter.html">SmartBlurFilter</a></li>
+            
                 <li><a href="../classes/Spine.html">Spine</a></li>
+            
+                <li><a href="../classes/SpineLoader.html">SpineLoader</a></li>
             
                 <li><a href="../classes/Sprite.html">Sprite</a></li>
             
@@ -147,17 +173,31 @@
             
                 <li><a href="../classes/Strip.html">Strip</a></li>
             
+                <li><a href="../classes/StripShader.html">StripShader</a></li>
+            
                 <li><a href="../classes/Text.html">Text</a></li>
             
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
             
+                <li><a href="../classes/TiltShiftFilter.html">TiltShiftFilter</a></li>
+            
+                <li><a href="../classes/TiltShiftXFilter.html">TiltShiftXFilter</a></li>
+            
+                <li><a href="../classes/TiltShiftYFilter.html">TiltShiftYFilter</a></li>
+            
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
+            
+                <li><a href="../classes/WebGLBlendModeManager.html">WebGLBlendModeManager</a></li>
+            
+                <li><a href="../classes/WebGLFastSpriteBatch.html">WebGLFastSpriteBatch</a></li>
             
                 <li><a href="../classes/WebGLFilterManager.html">WebGLFilterManager</a></li>
             
                 <li><a href="../classes/WebGLGraphics.html">WebGLGraphics</a></li>
+            
+                <li><a href="../classes/WebGLGraphicsData.html">WebGLGraphicsData</a></li>
             
                 <li><a href="../classes/WebGLMaskManager.html">WebGLMaskManager</a></li>
             
@@ -210,87 +250,159 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1 class="file-heading">File: src/pixi/core/Polygon.js</h1>
+                        <h1 class="file-heading">File: src/pixi/filters/TiltShiftYFilter.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- * @author Adrien Brault &lt;adrien.brault@gmail.com&gt;
+ * @author Vico @vicocotea
+ * original filter https://github.com/evanw/glfx.js/blob/master/src/filters/blur/tiltshift.js by Evan Wallace : http://madebyevan.com/
  */
 
 /**
- * @class Polygon
+ * A TiltShiftYFilter.
+ * 
+ * @class TiltShiftYFilter
+ * @extends AbstractFilter
  * @constructor
- * @param points* {Array&lt;Point&gt;|Array&lt;Number&gt;|Point...|Number...} This can be an array of Points that form the polygon,
- *      a flat array of numbers that will be interpreted as [x,y, x,y, ...], or the arguments passed can be
- *      all the points of the polygon e.g. &#x60;new PIXI.Polygon(new PIXI.Point(), new PIXI.Point(), ...)&#x60;, or the
- *      arguments passed can be flat x,y values e.g. &#x60;new PIXI.Polygon(x,y, x,y, x,y, ...)&#x60; where &#x60;x&#x60; and &#x60;y&#x60; are
- *      Numbers.
  */
-PIXI.Polygon = function(points)
+PIXI.TiltShiftYFilter = function()
 {
-    //if points isn&#x27;t an array, use arguments as the array
-    if(!(points instanceof Array))
-        points = Array.prototype.slice.call(arguments);
+    PIXI.AbstractFilter.call( this );
 
-    //if this is a flat array of numbers, convert it to points
-    if(typeof points[0] === &#x27;number&#x27;) {
-        var p = [];
-        for(var i = 0, il = points.length; i &lt; il; i+=2) {
-            p.push(
-                new PIXI.Point(points[i], points[i + 1])
-            );
-        }
+    this.passes = [this];
 
-        points = p;
-    }
+    // set the uniforms
+    this.uniforms = {
+        blur: {type: &#x27;1f&#x27;, value: 100.0},
+        gradientBlur: {type: &#x27;1f&#x27;, value: 600.0},
+        start: {type: &#x27;2f&#x27;, value:{x:0, y:window.screenHeight / 2}},
+        end: {type: &#x27;2f&#x27;, value:{x:600, y:window.screenHeight / 2}},
+        delta: {type: &#x27;2f&#x27;, value:{x:30, y:30}},
+        texSize: {type: &#x27;2f&#x27;, value:{x:window.screenWidth, y:window.screenHeight}}
+    };
+    
+    this.updateDelta();
 
-    this.points = points;
+    this.fragmentSrc = [
+        &#x27;precision mediump float;&#x27;,
+        &#x27;uniform sampler2D uSampler;&#x27;,
+        &#x27;uniform float blur;&#x27;,
+        &#x27;uniform float gradientBlur;&#x27;,
+        &#x27;uniform vec2 start;&#x27;,
+        &#x27;uniform vec2 end;&#x27;,
+        &#x27;uniform vec2 delta;&#x27;,
+        &#x27;uniform vec2 texSize;&#x27;,
+        &#x27;varying vec2 vTextureCoord;&#x27;,
+
+        &#x27;float random(vec3 scale, float seed) {&#x27;,
+        &#x27;   return fract(sin(dot(gl_FragCoord.xyz + seed, scale)) * 43758.5453 + seed);&#x27;,
+        &#x27;}&#x27;,
+
+        &#x27;void main(void) {&#x27;,
+        &#x27;    vec4 color = vec4(0.0);&#x27;,
+        &#x27;    float total = 0.0;&#x27;,
+        
+        &#x27;    float offset = random(vec3(12.9898, 78.233, 151.7182), 0.0);&#x27;,
+        &#x27;    vec2 normal = normalize(vec2(start.y - end.y, end.x - start.x));&#x27;,
+        &#x27;    float radius = smoothstep(0.0, 1.0, abs(dot(vTextureCoord * texSize - start, normal)) / gradientBlur) * blur;&#x27;,
+        
+        &#x27;    for (float t = -30.0; t &lt;= 30.0; t++) {&#x27;,
+        &#x27;        float percent = (t + offset - 0.5) / 30.0;&#x27;,
+        &#x27;        float weight = 1.0 - abs(percent);&#x27;,
+        &#x27;        vec4 sample = texture2D(uSampler, vTextureCoord + delta / texSize * percent * radius);&#x27;,
+        &#x27;        sample.rgb *= sample.a;&#x27;,
+        &#x27;        color += sample * weight;&#x27;,
+        &#x27;        total += weight;&#x27;,
+        &#x27;    }&#x27;,
+
+        &#x27;    gl_FragColor = color / total;&#x27;,
+        &#x27;    gl_FragColor.rgb /= gl_FragColor.a + 0.00001;&#x27;,
+        &#x27;}&#x27;
+    ];
 };
+
+PIXI.TiltShiftYFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
+PIXI.TiltShiftYFilter.prototype.constructor = PIXI.TiltShiftYFilter;
 
 /**
- * Creates a clone of this polygon
+ * The strength of the blur.
  *
- * @method clone
- * @return {Polygon} a copy of the polygon
+ * @property blur
+ * @type Number
  */
-PIXI.Polygon.prototype.clone = function()
-{
-    var points = [];
-    for (var i=0; i&lt;this.points.length; i++) {
-        points.push(this.points[i].clone());
+Object.defineProperty(PIXI.TiltShiftYFilter.prototype, &#x27;blur&#x27;, {
+    get: function() {
+        return this.uniforms.blur.value;
+    },
+    set: function(value) {
+        this.dirty = true;
+        this.uniforms.blur.value = value;
     }
-
-    return new PIXI.Polygon(points);
-};
+});
 
 /**
- * Checks whether the x and y coordinates passed to this function are contained within this polygon
+ * The strength of the gradient blur.
  *
- * @method contains
- * @param x {Number} The X coordinate of the point to test
- * @param y {Number} The Y coordinate of the point to test
- * @return {Boolean} Whether the x/y coordinates are within this polygon
+ * @property gradientBlur
+ * @type Number
  */
-PIXI.Polygon.prototype.contains = function(x, y)
-{
-    var inside = false;
-
-    // use some raycasting to test hits
-    // https://github.com/substack/point-in-polygon/blob/master/index.js
-    for(var i = 0, j = this.points.length - 1; i &lt; this.points.length; j = i++) {
-        var xi = this.points[i].x, yi = this.points[i].y,
-            xj = this.points[j].x, yj = this.points[j].y,
-            intersect = ((yi &gt; y) !== (yj &gt; y)) &amp;&amp; (x &lt; (xj - xi) * (y - yi) / (yj - yi) + xi);
-
-        if(intersect) inside = !inside;
+Object.defineProperty(PIXI.TiltShiftYFilter.prototype, &#x27;gradientBlur&#x27;, {
+    get: function() {
+        return this.uniforms.gradientBlur.value;
+    },
+    set: function(value) {
+        this.dirty = true;
+        this.uniforms.gradientBlur.value = value;
     }
+});
 
-    return inside;
+/**
+ * The Y value to start the effect at.
+ *
+ * @property start
+ * @type Number
+ */
+Object.defineProperty(PIXI.TiltShiftYFilter.prototype, &#x27;start&#x27;, {
+    get: function() {
+        return this.uniforms.start.value;
+    },
+    set: function(value) {
+        this.dirty = true;
+        this.uniforms.start.value = value;
+        this.updateDelta();
+    }
+});
+
+/**
+ * The Y value to end the effect at.
+ *
+ * @property end
+ * @type Number
+ */
+Object.defineProperty(PIXI.TiltShiftYFilter.prototype, &#x27;end&#x27;, {
+    get: function() {
+        return this.uniforms.end.value;
+    },
+    set: function(value) {
+        this.dirty = true;
+        this.uniforms.end.value = value;
+        this.updateDelta();
+    }
+});
+
+/**
+ * Updates the filter delta values.
+ *
+ * @method updateDelta
+ */
+PIXI.TiltShiftYFilter.prototype.updateDelta = function(){
+    var dx = this.uniforms.end.value.x - this.uniforms.start.value.x;
+    var dy = this.uniforms.end.value.y - this.uniforms.start.value.y;
+    var d = Math.sqrt(dx * dx + dy * dy);
+    this.uniforms.delta.value.x = -dy / d;
+    this.uniforms.delta.value.y = dx / d;
 };
-
-// constructor
-PIXI.Polygon.prototype.constructor = PIXI.Polygon;
 
     </pre>
 </div>

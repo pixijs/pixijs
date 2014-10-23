@@ -2,6 +2,13 @@
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
+/**
+ * The BlurYFilter applies a vertical Gaussian blur to an object.
+ *
+ * @class BlurYFilter
+ * @extends AbstractFilter
+ * @constructor
+ */
 PIXI.BlurYFilter = function()
 {
     PIXI.AbstractFilter.call( this );
@@ -41,6 +48,13 @@ PIXI.BlurYFilter = function()
 PIXI.BlurYFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.BlurYFilter.prototype.constructor = PIXI.BlurYFilter;
 
+/**
+ * Sets the strength of both the blur.
+ *
+ * @property blur
+ * @type Number the strength of the blur
+ * @default 2
+ */
 Object.defineProperty(PIXI.BlurYFilter.prototype, 'blur', {
     get: function() {
         return this.uniforms.blur.value / (1/7000);

@@ -3,10 +3,11 @@
  */
 
 /**
- *
- * This inverts your displayObjects colors.
+ * This inverts your Display Objects colors.
+ * 
  * @class InvertFilter
- * @contructor
+ * @extends AbstractFilter
+ * @constructor
  */
 PIXI.InvertFilter = function()
 {
@@ -39,8 +40,9 @@ PIXI.InvertFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.InvertFilter.prototype.constructor = PIXI.InvertFilter;
 
 /**
-The strength of the invert. 1 will fully invert the colors, 0 will make the object its normal color
-@property invert
+ * The strength of the invert. 1 will fully invert the colors, 0 will make the object its normal color
+ * @property invert
+ * @type Number
 */
 Object.defineProperty(PIXI.InvertFilter.prototype, 'invert', {
     get: function() {
