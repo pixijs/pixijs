@@ -108,7 +108,7 @@
 
         liveGraphics.clear();
         liveGraphics.beginFill(color);
-        if(path.length > 12)liveGraphics.drawPath(path);
+        if(path.length > 12)liveGraphics.drawPolygon(path);
         liveGraphics.endFill();
 
         //console.log(">>>>")
@@ -118,7 +118,7 @@
     {
         isDown = false;
         graphics.beginFill(color);
-        graphics.drawPath(path)
+        graphics.drawPolygon(path)
         graphics.endFill();
         path = [];    
     }
@@ -152,7 +152,7 @@
     logo.position.x = window.innerWidth
     logo.scale.x = logo.scale.y = 0.5;
     logo.position.y = window.innerHeight - 70;
-    logo.setInteractive(true);
+    logo.interactive = true;
     logo.buttonMode = true;
     logo.click = logo.tap = function()
     {
