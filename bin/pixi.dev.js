@@ -4,7 +4,7 @@
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-10-22
+ * Compiled: 2014-10-23
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -1370,7 +1370,11 @@ PIXI.DisplayObject.prototype.generateTexture = function(resolution, scaleMode, r
     var bounds = this.getLocalBounds();
 
     var renderTexture = new PIXI.RenderTexture(bounds.width | 0, bounds.height | 0, renderer, scaleMode, resolution);
-    renderTexture.render(this, new PIXI.Point(-bounds.x, -bounds.y) );
+    
+    PIXI.DisplayObject._tempMatrix.tx = -bounds.x;
+    PIXI.DisplayObject._tempMatrix.ty = -bounds.y;
+    
+    renderTexture.render(this, PIXI.DisplayObject._tempMatrix);
 
     return renderTexture;
 };
@@ -3142,6 +3146,7 @@ PIXI.Text.prototype.updateText = function()
     this.context.strokeStyle = this.style.stroke;
     this.context.lineWidth = this.style.strokeThickness;
     this.context.textBaseline = 'alphabetic';
+    this.context.lineJoin = 'round';
 
     var linePositionX;
     var linePositionY;
@@ -9090,7 +9095,7 @@ PIXI.WebGLSpriteBatch.prototype.destroy = function()
 * @class WebGLFastSpriteBatch
 * @constructor
 */
-PIXI.WebGLFastSpriteBatch = function()
+PIXI.WebGLFastSpriteBatch = function(gl)
 {
     /**
      * @property vertSize
@@ -9200,6 +9205,7 @@ PIXI.WebGLFastSpriteBatch = function()
      */
     this.matrix = null;
 
+    this.setContext(gl);
 };
 
 PIXI.WebGLFastSpriteBatch.prototype.constructor = PIXI.WebGLFastSpriteBatch;
@@ -9435,7 +9441,7 @@ PIXI.WebGLFastSpriteBatch.prototype.flush = function()
     
     // bind the current texture
 
-    if(!this.currentBaseTexture._glTextures[gl.id])PIXI.createWebGLTexture(this.currentBaseTexture, gl);
+    if(!this.currentBaseTexture._glTextures[gl.id])this.renderSession.renderer.updateTexture(this.currentBaseTexture, gl);
 
     gl.bindTexture(gl.TEXTURE_2D, this.currentBaseTexture._glTextures[gl.id]);
 
@@ -9823,7 +9829,7 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
 * 
 * @method applyFilterPass
 * @param filter {AbstractFilter} the filter that needs to be applied
-* @param filterArea {texture} TODO - might need an update
+* @param filterArea {Texture} TODO - might need an update
 * @param width {Number} the horizontal range of the filter
 * @param height {Number} the vertical range of the filter
 */
@@ -10308,7 +10314,7 @@ PIXI.CanvasTinter.tintWithMultiply = function(texture, color, canvas)
  * Tint a texture using the "overlay" operation.
  * 
  * @method tintWithOverlay
- * @param texture {texture} the texture to tint
+ * @param texture {Texture} the texture to tint
  * @param color {Number} the color to use to tint the sprite with
  * @param canvas {HTMLCanvasElement} the current canvas
  */
@@ -10343,7 +10349,7 @@ PIXI.CanvasTinter.tintWithOverlay = function(texture, color, canvas)
  * Tint a texture pixel per pixel.
  * 
  * @method tintPerPixel
- * @param texture {texture} the texture to tint
+ * @param texture {Texture} the texture to tint
  * @param color {Number} the color to use to tint the sprite with
  * @param canvas {HTMLCanvasElement} the current canvas
  */
@@ -10540,7 +10546,7 @@ PIXI.CanvasRenderer = function(width, height, options)
     /**
      * The canvas 2d context that everything is drawn with
      * @property context
-     * @type CanvasRenderingContext2D 2d Context
+     * @type CanvasRenderingContext2D
      */
     this.context = this.view.getContext( "2d", { alpha: this.transparent } );
 
@@ -10654,6 +10660,28 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
             stage.interactionManager.setTarget(this);
         }
     }
+};
+
+/**
+ * Removes everything from the renderer and optionally removes the Canvas DOM element.
+ *
+ * @method destroy
+ * @param [removeView=true] {boolean} Removes the Canvas element from the DOM.
+ */
+PIXI.CanvasRenderer.prototype.destroy = function(removeView)
+{
+    if (typeof removeView === "undefined") { removeView = true; }
+
+    if (removeView && this.view.parent)
+    {
+        this.view.parent.removeChild(this.view);
+    }
+
+    this.view = null;
+    this.context = null;
+    this.maskManager = null;
+    this.renderSession = null;
+
 };
 
 /**
@@ -15513,7 +15541,7 @@ PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, matrix, clea
  * Will return a HTML Image of the texture
  *
  * @method getImage
- * @return {HTMLImage}
+ * @return {Image}
  */
 PIXI.RenderTexture.prototype.getImage = function()
 {
@@ -17739,18 +17767,47 @@ PIXI.RGBSplitFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.RGBSplitFilter.prototype.constructor = PIXI.RGBSplitFilter;
 
 /**
- * The angle of the split.
+ * Red channel offset.
  * 
- * @property angle
- * @type Number
+ * @property red
+ * @type Point
  */
-Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'angle', {
+Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'red', {
     get: function() {
-        return this.uniforms.blur.value / (1/7000);
+        return this.uniforms.red.value;
     },
     set: function(value) {
-        //this.padding = value;
-        this.uniforms.blur.value = (1/7000) * value;
+        this.uniforms.red.value = value;
+    }
+});
+
+/**
+ * Green channel offset.
+ * 
+ * @property green
+ * @type Point
+ */
+Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'green', {
+    get: function() {
+        return this.uniforms.green.value;
+    },
+    set: function(value) {
+        this.uniforms.green.value = value;
+    }
+});
+
+/**
+ * Blue offset.
+ * 
+ * @property blue
+ * @type Point
+ */
+Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'blue', {
+    get: function() {
+        return this.uniforms.blue.value;
+    },
+    set: function(value) {
+        this.uniforms.blue.value = value;
     }
 });
 

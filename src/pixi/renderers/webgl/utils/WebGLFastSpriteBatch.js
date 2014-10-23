@@ -12,7 +12,7 @@
 * @class WebGLFastSpriteBatch
 * @constructor
 */
-PIXI.WebGLFastSpriteBatch = function()
+PIXI.WebGLFastSpriteBatch = function(gl)
 {
     /**
      * @property vertSize
@@ -122,6 +122,7 @@ PIXI.WebGLFastSpriteBatch = function()
      */
     this.matrix = null;
 
+    this.setContext(gl);
 };
 
 PIXI.WebGLFastSpriteBatch.prototype.constructor = PIXI.WebGLFastSpriteBatch;
@@ -357,7 +358,7 @@ PIXI.WebGLFastSpriteBatch.prototype.flush = function()
     
     // bind the current texture
 
-    if(!this.currentBaseTexture._glTextures[gl.id])PIXI.createWebGLTexture(this.currentBaseTexture, gl);
+    if(!this.currentBaseTexture._glTextures[gl.id])this.renderSession.renderer.updateTexture(this.currentBaseTexture, gl);
 
     gl.bindTexture(gl.TEXTURE_2D, this.currentBaseTexture._glTextures[gl.id]);
 
