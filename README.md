@@ -1,9 +1,9 @@
 Pixi Renderer 
 =============
 
-#### *** IMPORTANT - DEV BRANCH API CHANGES *** ####
+#### *** IMPORTANT - V2 API CHANGES *** ####
 
-A heads up for anyone using the dev branch of pixi.js as we have changed a couple of bits that you need to be aware of. Fortunatly there are only two changes and both are small.
+A heads up for anyone updating their version of pixi.js to version 2 as we have changed a couple of bits that you need to be aware of. Fortunatly there are only two changes and both are small.
 
 1: Creating a renderer no accepts an options parameter that you can add specific settings too:
 ``` 
