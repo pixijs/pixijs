@@ -3,9 +3,9 @@ Pixi Renderer
 
 #### *** IMPORTANT - V2 API CHANGES *** ####
 
-A heads up for anyone updating their version of pixi.js to version 2 as we have changed a couple of bits that you need to be aware of. Fortunately there are only two changes and both are small.
+A heads up for anyone updating their version of pixi.js to version 2, as we have changed a couple of bits that you need to be aware of. Fortunately, there are only two changes, and both are small.
 
-1: Creating a renderer now accepts an options parameter that you can add specific settings too:
+1: Creating a renderer now accepts an options parameter that you can add specific settings to:
 ``` 
 // an optional object that contains the settings for the renderer
 var options = {
@@ -16,7 +16,7 @@ var options = {
 var renderer = new PIXI.WebGLRenderer(800, 600, options) 
 ```
 
-2: A ```PIXI.RenderTexture``` now accepts a ```PIXI.Matrix``` as its second param instead of a point. This gives you much more flexibility: 
+2: A ```PIXI.RenderTexture``` now accepts a ```PIXI.Matrix``` as its second parameter instead of a point. This gives you much more flexibility: 
 
 ``` myRenderTexture.render(myDisplayObject, myMatrix) ```
 
@@ -30,7 +30,7 @@ Check out the docs for more info!
 
 The aim of this project is to provide a fast lightweight 2D library that works
 across all devices. The Pixi renderer allows everyone to enjoy the power of
-hardware acceleration without prior knowledge of webGL. Also its fast.
+hardware acceleration without prior knowledge of webGL. Also, it's fast.
 
 If you’re interested in pixi.js then feel free to follow me on twitter
 ([@doormat23](https://twitter.com/doormat23)) and I will keep you posted!  And
