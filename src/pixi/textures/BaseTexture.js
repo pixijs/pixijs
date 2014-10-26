@@ -168,19 +168,7 @@ PIXI.BaseTexture.prototype.destroy = function()
     }
     this.source = null;
 
-    // delete the webGL textures if any.
-    for (var i = this._glTextures.length - 1; i >= 0; i--)
-    {
-        var glTexture = this._glTextures[i];
-        var gl = PIXI.glContexts[i];
-
-        if(gl && glTexture)
-        {
-            gl.deleteTexture(glTexture);
-        }
-    }
-
-    this._glTextures.length = 0;
+    this.unloadFromGPU();
 };
 
 /**
@@ -208,6 +196,29 @@ PIXI.BaseTexture.prototype.dirty = function()
         this._dirty[i] = true;
     }
 };
+
+/**
+ * Removes the base texture from the GPU, useful for managing resources on the GPU.
+ * Atexture is still 100% usable and will simply be reuploaded if there is a sprite on screen that is using it.
+ *
+ * @method unloadFromGPU
+ */
+PIXI.BaseTexture.unloadFromGPU = function()
+{
+    // delete the webGL textures if any.
+    for (var i = this._glTextures.length - 1; i >= 0; i--)
+    {
+        var glTexture = this._glTextures[i];
+        var gl = PIXI.glContexts[i];
+
+        if(gl && glTexture)
+        {
+            gl.deleteTexture(glTexture);
+        }
+    }
+
+    this._glTextures.length = 0;
+}
 
 /**
  * Helper function that creates a base texture from the given image url.
