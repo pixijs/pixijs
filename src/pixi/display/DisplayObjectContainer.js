@@ -240,8 +240,8 @@ PIXI.DisplayObjectContainer.prototype.removeChildAt = function(index)
 * Removes all children from this container that are within the begin and end indexes.
 *
 * @method removeChildren
-* @param beginIndex {Number} The beginning position. Default value is 0.
-* @param endIndex {Number} The ending position. Default value is size of the container.
+* @param beginIndex {Number?} The beginning position. Default value is 0.
+* @param endIndex {Number?} The ending position. Default value is size of the container.
 */
 PIXI.DisplayObjectContainer.prototype.removeChildren = function(beginIndex, endIndex)
 {
