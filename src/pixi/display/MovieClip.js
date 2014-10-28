@@ -6,7 +6,7 @@
  * A MovieClip is a simple way to display an animation depicted by a list of textures.
  *
  * @class MovieClip
- * @extends Sprite
+ * @extends {PIXI.Sprite}
  * @constructor
  * @param textures {Array<Texture>} an array of {Texture} objects that make up the animation
  */
