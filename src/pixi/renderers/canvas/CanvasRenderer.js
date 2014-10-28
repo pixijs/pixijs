@@ -256,9 +256,6 @@ PIXI.CanvasRenderer.prototype.resize = function(width, height)
 
     this.view.width = this.width;
     this.view.height = this.height;
-
-    this.view.style.width = this.width / this.resolution + "px";
-    this.view.style.height = this.height / this.resolution + "px";
 };
 
 /**
