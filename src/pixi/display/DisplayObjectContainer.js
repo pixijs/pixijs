@@ -7,7 +7,7 @@
  * It is the base class of all display objects that act as a container for other objects.
  *
  * @class DisplayObjectContainer
- * @extends DisplayObject
+ * @extends {PIXI.DisplayObject}
  * @constructor
  */
 PIXI.DisplayObjectContainer = function()
