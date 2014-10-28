@@ -6,7 +6,7 @@
  * The Sprite object is the base for all textured objects that are rendered to the screen
  *
  * @class Sprite
- * @extends DisplayObjectContainer
+ * @extends {PIXI.DisplayObjectContainer}
  * @constructor
  * @param texture {Texture} The texture for this sprite
  * 
