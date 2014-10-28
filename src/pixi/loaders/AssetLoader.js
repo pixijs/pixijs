@@ -24,7 +24,7 @@ PIXI.AssetLoader = function(assetURLs, crossorigin)
      * The array of asset URLs that are going to be loaded
      *
      * @property assetURLs
-     * @type Array<String>
+     * @type {Array}<String>
      */
     this.assetURLs = assetURLs;
 
@@ -40,7 +40,7 @@ PIXI.AssetLoader = function(assetURLs, crossorigin)
      * Maps file extension to loader types
      *
      * @property loadersByType
-     * @type Object
+     * @type {*}
      */
     this.loadersByType = {
         'jpg':  PIXI.ImageLoader,

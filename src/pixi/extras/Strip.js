@@ -8,8 +8,8 @@
  * @extends DisplayObjectContainer
  * @constructor
  * @param texture {Texture} The texture to use
- * @param width {Number} the width 
- * @param height {Number} the height
+ * @param {Number} width the width 
+ * @param {Number} height the height
  * 
  */
 PIXI.Strip = function(texture)
@@ -53,7 +53,7 @@ PIXI.Strip = function(texture)
      * if you need a padding, not yet implemented
      *
      * @property padding
-     * @type Number
+     * @type {Number}
      */
     this.padding = 0;
      // NYI, TODO padding ?

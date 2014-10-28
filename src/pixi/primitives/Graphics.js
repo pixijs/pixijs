@@ -19,7 +19,7 @@ PIXI.Graphics = function()
      * The alpha value used when filling the Graphics object.
      *
      * @property fillAlpha
-     * @type Number
+     * @type {Number}
      */
     this.fillAlpha = 1;
 
@@ -27,7 +27,7 @@ PIXI.Graphics = function()
      * The width (thickness) of any lines drawn.
      *
      * @property lineWidth
-     * @type Number
+     * @type {Number}
      */
     this.lineWidth = 0;
 
@@ -35,7 +35,7 @@ PIXI.Graphics = function()
      * The color of any lines drawn.
      *
      * @property lineColor
-     * @type String
+     * @type {String}
      * @default 0
      */
     this.lineColor = 0;
@@ -44,7 +44,7 @@ PIXI.Graphics = function()
      * Graphics data
      *
      * @property graphicsData
-     * @type Array
+     * @type {Array}
      * @private
      */
     this.graphicsData = [];
@@ -53,7 +53,7 @@ PIXI.Graphics = function()
      * The tint applied to the graphic shape. This is a hex value. Apply a value of 0xFFFFFF to reset the tint.
      *
      * @property tint
-     * @type Number
+     * @type {Number}
      * @default 0xFFFFFF
      */
     this.tint = 0xFFFFFF;
@@ -62,7 +62,7 @@ PIXI.Graphics = function()
      * The blend mode to be applied to the graphic shape. Apply a value of PIXI.blendModes.NORMAL to reset the blend mode.
      *
      * @property blendMode
-     * @type Number
+     * @type {Number}
      * @default PIXI.blendModes.NORMAL;
      */
     this.blendMode = PIXI.blendModes.NORMAL;
@@ -71,7 +71,7 @@ PIXI.Graphics = function()
      * Current path
      *
      * @property currentPath
-     * @type Object
+     * @type {*}
      * @private
      */
     this.currentPath = null;
@@ -80,7 +80,7 @@ PIXI.Graphics = function()
      * Array containing some WebGL-related properties used by the WebGL renderer.
      *
      * @property _webGL
-     * @type Array
+     * @type {Array}
      * @private
      */
     this._webGL = [];
@@ -97,7 +97,7 @@ PIXI.Graphics = function()
      * The bounds' padding used for bounds calculation.
      *
      * @property boundsPadding
-     * @type Number
+     * @type {Number}
      */
     this.boundsPadding = 0;
 
@@ -170,7 +170,7 @@ Object.defineProperty(PIXI.Graphics.prototype, "cacheAsBitmap", {
  * Specifies the line style used for subsequent calls to Graphics methods such as the lineTo() method or the drawCircle() method.
  *
  * @method lineStyle
- * @param lineWidth {Number} width of the line to draw, will update the objects stored style
+ * @param line{Number} width width of the line to draw, will update the objects stored style
  * @param color {Number} color of the line to draw, will update the objects stored style
  * @param alpha {Number} alpha of the line to draw, will update the objects stored style
  * @return {Graphics}
@@ -521,8 +521,8 @@ PIXI.Graphics.prototype.endFill = function()
  *
  * @param x {Number} The X coord of the top-left of the rectangle
  * @param y {Number} The Y coord of the top-left of the rectangle
- * @param width {Number} The width of the rectangle
- * @param height {Number} The height of the rectangle
+ * @param {Number} width The width of the rectangle
+ * @param {Number} height The height of the rectangle
  * @return {Graphics}
  */
 PIXI.Graphics.prototype.drawRect = function( x, y, width, height )
@@ -537,8 +537,8 @@ PIXI.Graphics.prototype.drawRect = function( x, y, width, height )
  *
  * @param x {Number} The X coord of the top-left of the rectangle
  * @param y {Number} The Y coord of the top-left of the rectangle
- * @param width {Number} The width of the rectangle
- * @param height {Number} The height of the rectangle
+ * @param {Number} width The width of the rectangle
+ * @param {Number} height The height of the rectangle
  * @param radius {Number} Radius of the rectangle corners
  */
 PIXI.Graphics.prototype.drawRoundedRect = function( x, y, width, height, radius )
@@ -570,8 +570,8 @@ PIXI.Graphics.prototype.drawCircle = function(x, y, radius)
  * @method drawEllipse
  * @param x {Number} The X coordinate of the center of the ellipse
  * @param y {Number} The Y coordinate of the center of the ellipse
- * @param width {Number} The half width of the ellipse
- * @param height {Number} The half height of the ellipse
+ * @param {Number} width The half width of the ellipse
+ * @param {Number} height The half height of the ellipse
  * @return {Graphics}
  */
 PIXI.Graphics.prototype.drawEllipse = function(x, y, width, height)
@@ -646,7 +646,7 @@ PIXI.Graphics.prototype.generateTexture = function(resolution, scaleMode)
 * Renders the object using the WebGL renderer
 *
 * @method _renderWebGL
-* @param renderSession {RenderSession} 
+* @param {RenderSession} renderSession
 * @private
 */
 PIXI.Graphics.prototype._renderWebGL = function(renderSession)
@@ -726,7 +726,7 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
 * Renders the object using the Canvas renderer
 *
 * @method _renderCanvas
-* @param renderSession {RenderSession} 
+* @param {RenderSession} renderSession
 * @private
 */
 PIXI.Graphics.prototype._renderCanvas = function(renderSession)

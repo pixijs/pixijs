@@ -27,7 +27,7 @@ PIXI.SpineLoader = function(url, crossorigin)
      * The url of the bitmap font data
      *
      * @property url
-     * @type String
+     * @type {String}
      */
     this.url = url;
 

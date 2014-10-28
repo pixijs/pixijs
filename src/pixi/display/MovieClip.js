@@ -18,7 +18,7 @@ PIXI.MovieClip = function(textures)
      * The array of textures that make up the animation
      *
      * @property textures
-     * @type Array
+     * @type {Array}
      */
     this.textures = textures;
 
@@ -26,7 +26,7 @@ PIXI.MovieClip = function(textures)
      * The speed that the MovieClip will play at. Higher is faster, lower is slower
      *
      * @property animationSpeed
-     * @type Number
+     * @type {Number}
      * @default 1
      */
     this.animationSpeed = 1;
@@ -52,7 +52,7 @@ PIXI.MovieClip = function(textures)
      * [read-only] The MovieClips current frame index (this may not have to be a whole number)
      *
      * @property currentFrame
-     * @type Number
+     * @type {Number}
      * @default 0
      * @readOnly
      */
@@ -77,7 +77,7 @@ PIXI.MovieClip.prototype.constructor = PIXI.MovieClip;
 * assigned to the MovieClip.
 *
 * @property totalFrames
-* @type Number
+* @type {Number}
 * @default 0
 * @readOnly
 */

@@ -23,7 +23,7 @@ PIXI.SpriteSheetLoader = function (url, crossorigin) {
      * The url of the atlas data
      *
      * @property url
-     * @type String
+     * @type {String}
      */
     this.url = url;
 
@@ -39,7 +39,7 @@ PIXI.SpriteSheetLoader = function (url, crossorigin) {
      * [read-only] The base url of the bitmap font data
      *
      * @property baseUrl
-     * @type String
+     * @type {String}
      * @readOnly
      */
     this.baseUrl = url.replace(/[^\/]*$/, '');
@@ -56,7 +56,7 @@ PIXI.SpriteSheetLoader = function (url, crossorigin) {
      * The frames of the sprite sheet
      *
      * @property frames
-     * @type Object
+     * @type {*}
      */
     this.frames = {};
 };

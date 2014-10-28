@@ -15,7 +15,7 @@ PIXI.DisplayObject = function()
      * The coordinate of the object relative to the local coordinates of the parent.
      *
      * @property position
-     * @type Point
+     * @type {PIXI.Point}
      */
     this.position = new PIXI.Point();
 
@@ -23,7 +23,7 @@ PIXI.DisplayObject = function()
      * The scale factor of the object.
      *
      * @property scale
-     * @type Point
+     * @type {PIXI.Point}
      */
     this.scale = new PIXI.Point(1,1);//{x:1, y:1};
 
@@ -31,7 +31,7 @@ PIXI.DisplayObject = function()
      * The pivot point of the displayObject that it rotates around
      *
      * @property pivot
-     * @type Point
+     * @type {PIXI.Point}
      */
     this.pivot = new PIXI.Point(0,0);
 
@@ -39,7 +39,7 @@ PIXI.DisplayObject = function()
      * The rotation of the object in radians.
      *
      * @property rotation
-     * @type Number
+     * @type {Number}
      */
     this.rotation = 0;
 
@@ -47,7 +47,7 @@ PIXI.DisplayObject = function()
      * The opacity of the object.
      *
      * @property alpha
-     * @type Number
+     * @type {Number}
      */
     this.alpha = 1;
 
@@ -55,7 +55,7 @@ PIXI.DisplayObject = function()
      * The visibility of the object.
      *
      * @property visible
-     * @type Boolean
+     * @type {Boolean}
      */
     this.visible = true;
 
@@ -72,7 +72,7 @@ PIXI.DisplayObject = function()
      * This is used to indicate if the displayObject should display a mouse hand cursor on rollover
      *
      * @property buttonMode
-     * @type Boolean
+     * @type {Boolean}
      */
     this.buttonMode = false;
 
@@ -80,7 +80,7 @@ PIXI.DisplayObject = function()
      * Can this object be rendered
      *
      * @property renderable
-     * @type Boolean
+     * @type {Boolean}
      */
     this.renderable = false;
 
@@ -88,7 +88,7 @@ PIXI.DisplayObject = function()
      * [read-only] The display object container that contains this display object.
      *
      * @property parent
-     * @type DisplayObjectContainer
+     * @type {PIXI.DisplayObjectContainer}
      * @readOnly
      */
     this.parent = null;
@@ -97,7 +97,7 @@ PIXI.DisplayObject = function()
      * [read-only] The stage the display object is connected to, or undefined if it is not connected to the stage.
      *
      * @property stage
-     * @type Stage
+     * @type {PIXI.Stage}
      * @readOnly
      */
     this.stage = null;
@@ -106,7 +106,7 @@ PIXI.DisplayObject = function()
      * [read-only] The multiplied alpha of the displayObject
      *
      * @property worldAlpha
-     * @type Number
+     * @type {Number}
      * @readOnly
      */
     this.worldAlpha = 1;
@@ -115,7 +115,7 @@ PIXI.DisplayObject = function()
      * [read-only] Whether or not the object is interactive, do not toggle directly! use the `interactive` property
      *
      * @property _interactive
-     * @type Boolean
+     * @type {Boolean}
      * @readOnly
      * @private
      */
@@ -125,7 +125,7 @@ PIXI.DisplayObject = function()
      * This is the cursor that will be used when the mouse is over this object. To enable this the element must have interaction = true and buttonMode = true
      *
      * @property defaultCursor
-     * @type String
+     * @type {String}
      *
     */
     this.defaultCursor = 'pointer';
@@ -144,7 +144,7 @@ PIXI.DisplayObject = function()
      * cached sin rotation and cos rotation
      *
      * @property _sr
-     * @type Number
+     * @type {Number}
      * @private
      */
     this._sr = 0;
@@ -153,7 +153,7 @@ PIXI.DisplayObject = function()
      * cached sin rotation and cos rotation
      *
      * @property _cr
-     * @type Number
+     * @type {Number}
      * @private
      */
     this._cr = 1;
@@ -198,7 +198,7 @@ PIXI.DisplayObject = function()
      * Cached internal flag.
      *
      * @property _cacheAsBitmap
-     * @type Boolean
+     * @type {Boolean}
      * @private
      */
     this._cacheAsBitmap = false;
@@ -207,7 +207,7 @@ PIXI.DisplayObject = function()
      * Cached internal flag.
      *
      * @property _cacheIsDirty
-     * @type Boolean
+     * @type {Boolean}
      * @private
      */
     this._cacheIsDirty = false;
@@ -321,7 +321,7 @@ PIXI.DisplayObject.prototype.constructor = PIXI.DisplayObject;
  * Indicates if the sprite will have touch and mouse interactivity. It is false by default
  *
  * @property interactive
- * @type Boolean
+ * @type {Boolean}
  * @default false
  */
 Object.defineProperty(PIXI.DisplayObject.prototype, 'interactive', {
@@ -341,7 +341,7 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'interactive', {
  * [read-only] Indicates if the sprite is globally visible.
  *
  * @property worldVisible
- * @type Boolean
+ * @type {Boolean}
  */
 Object.defineProperty(PIXI.DisplayObject.prototype, 'worldVisible', {
     get: function() {
@@ -383,7 +383,10 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'mask', {
  * * IMPORTANT: This is a webGL only feature and will be ignored by the canvas renderer.
  * To remove filters simply set this property to 'null'
  * @property filters
- * @type Array An array of filters
+ * @type {
+    Array
+}
+ An array of filters
  */
 Object.defineProperty(PIXI.DisplayObject.prototype, 'filters', {
 
@@ -419,7 +422,7 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'filters', {
  * This basically takes a snap shot of the display object as it is at that moment. It can provide a performance benefit for complex static displayObjects.
  * To remove simply set this property to 'null'
  * @property cacheAsBitmap
- * @type Boolean
+ * @type {Boolean}
  */
 Object.defineProperty(PIXI.DisplayObject.prototype, 'cacheAsBitmap', {
 
@@ -544,7 +547,7 @@ PIXI.DisplayObject.prototype.getLocalBounds = function()
  * Sets the object's stage reference, the stage this object is connected to
  *
  * @method setStageReference
- * @param stage {Stage} the stage that the object will have as its current stage reference
+ * @param stage {PIXI.Stage} the stage that the object will have as its current stage reference
  */
 PIXI.DisplayObject.prototype.setStageReference = function(stage)
 {
@@ -733,7 +736,7 @@ PIXI.DisplayObject._tempMatrix = new PIXI.Matrix();
  * The position of the displayObject on the x axis relative to the local coordinates of the parent.
  *
  * @property x
- * @type Number
+ * @type {Number}
  */
 Object.defineProperty(PIXI.DisplayObject.prototype, 'x', {
     get: function() {
@@ -748,7 +751,7 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'x', {
  * The position of the displayObject on the y axis relative to the local coordinates of the parent.
  *
  * @property y
- * @type Number
+ * @type {Number}
  */
 Object.defineProperty(PIXI.DisplayObject.prototype, 'y', {
     get: function() {
