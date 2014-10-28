@@ -6,7 +6,7 @@
  * A Stage represents the root of the display tree. Everything connected to the stage is rendered
  *
  * @class Stage
- * @extends DisplayObjectContainer
+ * @extends {PIXI.DisplayObjectContainer}
  * @constructor
  * @param backgroundColor {Number} the background color of the stage, you have to pass this in is in hex format
  *      like: 0xFFFFFF for white
