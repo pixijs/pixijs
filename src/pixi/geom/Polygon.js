@@ -54,8 +54,6 @@ PIXI.Polygon.prototype.clone = function()
  */
 PIXI.Polygon.prototype.contains = function(x, y)
 {
-    var inside = false;
-
     // use some raycasting to test hits
     // https://github.com/substack/point-in-polygon/blob/master/index.js
     var length = this.points.length / 2;
@@ -66,10 +64,10 @@ PIXI.Polygon.prototype.contains = function(x, y)
             xj = this.points[j * 2], yj = this.points[j * 2 + 1],
             intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
 
-        if(intersect) inside = !inside;
+        if(intersect) return true;
     }
 
-    return inside;
+    return false;
 };
 
 // constructor
