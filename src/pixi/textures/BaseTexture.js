@@ -218,7 +218,7 @@ PIXI.BaseTexture.unloadFromGPU = function()
     }
 
     this._glTextures.length = 0;
-}
+};
 
 /**
  * Helper function that creates a base texture from the given image url.
