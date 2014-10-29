@@ -21,7 +21,7 @@ PIXI.BaseTexture = function(source, scaleMode)
      * The Resolution of the texture. 
      *
      * @property resolution
-     * @type Number
+     * @type {Number}
      */
     this.resolution = 1;
     
@@ -29,7 +29,7 @@ PIXI.BaseTexture = function(source, scaleMode)
      * [read-only] The width of the base texture set when the image has loaded
      *
      * @property width
-     * @type Number
+     * @type {Number}
      * @readOnly
      */
     this.width = 100;
@@ -38,7 +38,7 @@ PIXI.BaseTexture = function(source, scaleMode)
      * [read-only] The height of the base texture set when the image has loaded
      *
      * @property height
-     * @type Number
+     * @type {Number}
      * @readOnly
      */
     this.height = 100;
@@ -47,7 +47,7 @@ PIXI.BaseTexture = function(source, scaleMode)
      * The scale mode to apply when scaling this texture
      * 
      * @property scaleMode
-     * @type PIXI.scaleModes
+     * @type {PIXI.scaleModes}
      * @default PIXI.scaleModes.LINEAR
      */
     this.scaleMode = scaleMode || PIXI.scaleModes.DEFAULT;
@@ -56,7 +56,7 @@ PIXI.BaseTexture = function(source, scaleMode)
      * [read-only] Set to true once the base texture has loaded
      *
      * @property hasLoaded
-     * @type Boolean
+     * @type {Boolean}
      * @readOnly
      */
     this.hasLoaded = false;
@@ -75,7 +75,7 @@ PIXI.BaseTexture = function(source, scaleMode)
      * Controls if RGB channels should be pre-multiplied by Alpha  (WebGL only)
      *
      * @property premultipliedAlpha
-     * @type Boolean
+     * @type {Boolean}
      * @default true
      */
     this.premultipliedAlpha = true;
@@ -84,7 +84,7 @@ PIXI.BaseTexture = function(source, scaleMode)
 
     /**
      * @property _glTextures
-     * @type Array
+     * @type {Array}
      * @private
      */
     this._glTextures = [];
@@ -94,7 +94,7 @@ PIXI.BaseTexture = function(source, scaleMode)
 
     /**
      * @property _dirty
-     * @type Array
+     * @type {Array}
      * @private
      */
     this._dirty = [true, true, true, true];
@@ -131,13 +131,13 @@ PIXI.BaseTexture = function(source, scaleMode)
 
     /**
      * @property imageUrl
-     * @type String
+     * @type {String}
      */
     this.imageUrl = null;
 
     /**
      * @property _powerOf2
-     * @type Boolean
+     * @type {Boolean}
      * @private
      */
     this._powerOf2 = false;
@@ -218,7 +218,7 @@ PIXI.BaseTexture.prototype.dirty = function()
  * @param imageUrl {String} The image url of the texture
  * @param crossorigin {Boolean}
  * @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
- * @return BaseTexture
+ * @return {PIXI.BaseTexture}
  */
 PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
 {
@@ -258,7 +258,7 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
  * @method fromCanvas
  * @param canvas {Canvas} The canvas element source of the texture
  * @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
- * @return BaseTexture
+ * @return {PIXI.BaseTexture}
  */
 PIXI.BaseTexture.fromCanvas = function(canvas, scaleMode)
 {
