@@ -52,5 +52,20 @@ PIXI.Point.prototype.set = function(x, y)
     this.y = y || ( (y !== 0) ? this.x : 0 ) ;
 };
 
+/**
+ * Add two points, return the sum.
+ *
+ * @method add
+ * @param p {Point} a second point
+ * @return {Point} the sum of this point and 'p'
+ */
+PIXI.Point.prototype.add = function(p)
+{
+    var result = this.clone();
+    result.x += p.x;
+    result.y += p.y;
+    return result;
+};
+
 // constructor
 PIXI.Point.prototype.constructor = PIXI.Point;
