@@ -21,9 +21,11 @@ describe('pixi/core/Point', function () {
 
         expect(PX1).to.respondTo('add');
 
-        var PT = PX1.add(PY1);
+        var PT = PX1.clone().add(PY1);
         expect(PT.x).to.equal(1);
         expect(PT.y).to.equal(1);
+        //PX1 is unchanged
+        expect(PX1.y).to.equal(0);
         //expect(PT).to.equal(PX1Y1);
     });
 });
