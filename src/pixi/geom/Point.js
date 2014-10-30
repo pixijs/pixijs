@@ -52,5 +52,19 @@ PIXI.Point.prototype.set = function(x, y)
     this.y = y || ( (y !== 0) ? this.x : 0 ) ;
 };
 
+/**
+ * Add two points
+ *
+ * @method add
+ * @param p {Point} a second point
+ * @return {Point} the point
+ */
+PIXI.Point.prototype.add = function(p)
+{
+    this.x += p.x;
+    this.y += p.y;
+    return this;
+};
+
 // constructor
 PIXI.Point.prototype.constructor = PIXI.Point;
