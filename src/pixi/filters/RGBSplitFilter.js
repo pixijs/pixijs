@@ -49,7 +49,7 @@ PIXI.RGBSplitFilter.prototype.constructor = PIXI.RGBSplitFilter;
  * Red channel offset.
  * 
  * @property red
- * @type Point
+ * @type {PIXI.Point}
  */
 Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'red', {
     get: function() {
@@ -64,7 +64,7 @@ Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'red', {
  * Green channel offset.
  * 
  * @property green
- * @type Point
+ * @type {PIXI.Point}
  */
 Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'green', {
     get: function() {
@@ -79,7 +79,7 @@ Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'green', {
  * Blue offset.
  * 
  * @property blue
- * @type Point
+ * @type {PIXI.Point}
  */
 Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'blue', {
     get: function() {

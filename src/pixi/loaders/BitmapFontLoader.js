@@ -28,7 +28,7 @@ PIXI.BitmapFontLoader = function(url, crossorigin)
      * Whether the requests should be treated as cross origin
      *
      * @property crossorigin
-     * @type Boolean
+     * @type {Boolean}
      */
     this.crossorigin = crossorigin;
 

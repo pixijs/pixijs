@@ -10,7 +10,7 @@
  * @class DisplacementFilter
  * @extends AbstractFilter
  * @constructor
- * @param texture {Texture} The texture used for the displacement map * must be power of 2 texture at the moment
+ * @param texture {PIXI.Texture} The texture used for the displacement map * must be power of 2 texture at the moment
  */
 PIXI.DisplacementFilter = function(texture)
 {
@@ -107,7 +107,7 @@ Object.defineProperty(PIXI.DisplacementFilter.prototype, 'map', {
  * The multiplier used to scale the displacement result from the map calculation.
  *
  * @property scale
- * @type Point
+ * @type {PIXI.Point}
  */
 Object.defineProperty(PIXI.DisplacementFilter.prototype, 'scale', {
     get: function() {
@@ -122,7 +122,7 @@ Object.defineProperty(PIXI.DisplacementFilter.prototype, 'scale', {
  * The offset used to move the displacement map.
  *
  * @property offset
- * @type Point
+ * @type {PIXI.Point}
  */
 Object.defineProperty(PIXI.DisplacementFilter.prototype, 'offset', {
     get: function() {

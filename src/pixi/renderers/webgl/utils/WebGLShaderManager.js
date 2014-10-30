@@ -11,19 +11,19 @@ PIXI.WebGLShaderManager = function()
 {
     /**
      * @property maxAttibs
-     * @type Number
+     * @type {Number}
      */
     this.maxAttibs = 10;
 
     /**
      * @property attribState
-     * @type Array
+     * @type {Array}
      */
     this.attribState = [];
 
     /**
      * @property tempAttribState
-     * @type Array
+     * @type {Array}
      */
     this.tempAttribState = [];
 
@@ -34,7 +34,7 @@ PIXI.WebGLShaderManager = function()
 
     /**
      * @property stack
-     * @type Array
+     * @type {Array}
      */
     this.stack = [];
 

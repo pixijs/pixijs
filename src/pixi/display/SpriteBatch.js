@@ -20,7 +20,7 @@
  *
  * @class SpriteBatch
  * @constructor
- * @param texture {Texture}
+ * @param texture {PIXI.Texture}
  */
 
 //TODO RENAME to PARTICLE CONTAINER?

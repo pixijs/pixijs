@@ -36,7 +36,7 @@ PIXI.Stage = function(backgroundColor)
      * Whether or not the stage is interactive
      *
      * @property interactive
-     * @type Boolean
+     * @type {Boolean}
      */
     this.interactive = true;
 
@@ -52,7 +52,7 @@ PIXI.Stage = function(backgroundColor)
      * Whether the stage is dirty and needs to have interactions updated
      *
      * @property dirty
-     * @type Boolean
+     * @type {Boolean}
      * @private
      */
     this.dirty = true;
@@ -127,7 +127,7 @@ PIXI.Stage.prototype.setBackgroundColor = function(backgroundColor)
  * This will return the point containing global coordinates of the mouse.
  *
  * @method getMousePosition
- * @return {Point} A point containing the coordinates of the global InteractionData position.
+ * @return {PIXI.Point} A point containing the coordinates of the global InteractionData position.
  */
 PIXI.Stage.prototype.getMousePosition = function()
 {

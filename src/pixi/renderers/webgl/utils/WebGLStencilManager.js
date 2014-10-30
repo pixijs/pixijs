@@ -29,7 +29,7 @@ PIXI.WebGLStencilManager.prototype.setContext = function(gl)
 * Applies the Mask and adds it to the current filter stack.
 * 
 * @method pushMask
-* @param graphics {Graphics}
+* @param graphics {PIXI.Graphics}
 * @param webGLData {Array}
 * @param renderSession {Object}
 */
@@ -121,7 +121,7 @@ PIXI.WebGLStencilManager.prototype.pushStencil = function(graphics, webGLData, r
  * TODO this does not belong here!
  * 
  * @method bindGraphics
- * @param graphics {Graphics}
+ * @param graphics {PIXI.Graphics}
  * @param webGLData {Array}
  * @param renderSession {Object}
  */
@@ -189,7 +189,7 @@ PIXI.WebGLStencilManager.prototype.bindGraphics = function(graphics, webGLData, 
 
 /**
  * @method popStencil
- * @param graphics {Graphics}
+ * @param graphics {PIXI.Graphics}
  * @param webGLData {Array}
  * @param renderSession {Object}
  */

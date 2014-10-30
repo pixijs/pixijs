@@ -74,7 +74,7 @@ PIXI.AsciiFilter.prototype.constructor = PIXI.AsciiFilter;
  * The pixel size used by the filter.
  *
  * @property size
- * @type Number
+ * @type {Number}
  */
 Object.defineProperty(PIXI.AsciiFilter.prototype, 'size', {
     get: function() {

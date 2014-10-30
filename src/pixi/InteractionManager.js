@@ -9,7 +9,7 @@
  *
  * @class InteractionManager
  * @constructor
- * @param stage {Stage} The stage to handle interactions
+ * @param stage {PIXI.Stage} The stage to handle interactions
  */
 PIXI.InteractionManager = function(stage)
 {
@@ -17,7 +17,7 @@ PIXI.InteractionManager = function(stage)
      * A reference to the stage
      *
      * @property stage
-     * @type Stage
+     * @type {PIXI.Stage}
      */
     this.stage = stage;
 
@@ -33,20 +33,20 @@ PIXI.InteractionManager = function(stage)
      * An object that stores current touches (InteractionData) by id reference
      *
      * @property touches
-     * @type Object
+     * @type {*}
      */
     this.touches = {};
 
     /**
      * @property tempPoint
-     * @type Point
+     * @type {PIXI.Point}
      * @private
      */
     this.tempPoint = new PIXI.Point();
 
     /**
      * @property mouseoverEnabled
-     * @type Boolean
+     * @type {Boolean}
      * @default
      */
     this.mouseoverEnabled = true;
@@ -55,14 +55,14 @@ PIXI.InteractionManager = function(stage)
      * Tiny little interactiveData pool !
      *
      * @property pool
-     * @type Array
+     * @type {Array}
      */
     this.pool = [];
 
     /**
      * An array containing all the iterative items from the our interactive tree
      * @property interactiveItems
-     * @type Array
+     * @type {Array}
      * @private
      */
     this.interactiveItems = [];
@@ -79,69 +79,69 @@ PIXI.InteractionManager = function(stage)
 
     /**
      * @property onMouseMove
-     * @type Function
+     * @type {Function()}
      */
     this.onMouseMove = this.onMouseMove.bind( this );
 
     /**
      * @property onMouseDown
-     * @type Function
+     * @type {Function()}
      */
     this.onMouseDown = this.onMouseDown.bind(this);
 
     /**
      * @property onMouseOut
-     * @type Function
+     * @type {Function()}
      */
     this.onMouseOut = this.onMouseOut.bind(this);
 
     /**
      * @property onMouseUp
-     * @type Function
+     * @type {Function()}
      */
     this.onMouseUp = this.onMouseUp.bind(this);
 
     /**
      * @property onTouchStart
-     * @type Function
+     * @type {Function()}
      */
     this.onTouchStart = this.onTouchStart.bind(this);
 
     /**
      * @property onTouchEnd
-     * @type Function
+     * @type {Function()}
      */
     this.onTouchEnd = this.onTouchEnd.bind(this);
 
     /**
      * @property onTouchMove
-     * @type Function
+     * @type {Function()}
      */
     this.onTouchMove = this.onTouchMove.bind(this);
 
     /**
      * @property last
-     * @type Number
+     * @type {Number}
      */
     this.last = 0;
 
     /**
      * The css style of the cursor that is being used
      * @property currentCursorStyle
-     * @type String
+     * @type {String}
      */
     this.currentCursorStyle = 'inherit';
 
     /**
      * Is set to true when the mouse is moved out of the canvas
      * @property mouseOut
-     * @type Boolean
+     * @type {Boolean}
      */
     this.mouseOut = false;
 
     /**
      * @property resolution
-     * @type Number
+     * @type {Number}
      */
     this.resolution = 1;
 };
@@ -153,8 +153,8 @@ PIXI.InteractionManager.prototype.constructor = PIXI.InteractionManager;
  * Collects an interactive sprite recursively to have their interactions managed
  *
  * @method collectInteractiveSprite
- * @param displayObject {DisplayObject} the displayObject to collect
- * @param iParent {DisplayObject} the display object's parent
+ * @param displayObject {PIXI.DisplayObject} the displayObject to collect
+ * @param iParent {PIXI.DisplayObject} the display object's parent
  * @private
  */
 PIXI.InteractionManager.prototype.collectInteractiveSprite = function(displayObject, iParent)
@@ -587,7 +587,7 @@ PIXI.InteractionManager.prototype.onMouseUp = function(event)
  * Tests if the current mouse coordinates hit a sprite
  *
  * @method hitTest
- * @param item {DisplayObject} The displayObject to test for a hit
+ * @param item {PIXI.DisplayObject} The displayObject to test for a hit
  * @param interactionData {InteractionData} The interactionData object to update in the case there is a hit
  * @private
  */

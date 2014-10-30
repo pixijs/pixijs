@@ -64,7 +64,7 @@ PIXI.ConvolutionFilter.prototype.constructor = PIXI.ConvolutionFilter;
  * An array of values used for matrix transformation. Specified as a 9 point Array.
  *
  * @property matrix
- * @type Array
+ * @type {Array}
  */
 Object.defineProperty(PIXI.ConvolutionFilter.prototype, 'matrix', {
     get: function() {
@@ -79,7 +79,7 @@ Object.defineProperty(PIXI.ConvolutionFilter.prototype, 'matrix', {
  * Width of the object you are transforming
  *
  * @property width
- * @type Number
+ * @type {Number}
  */
 Object.defineProperty(PIXI.ConvolutionFilter.prototype, 'width', {
     get: function() {
@@ -94,7 +94,7 @@ Object.defineProperty(PIXI.ConvolutionFilter.prototype, 'width', {
  * Height of the object you are transforming
  *
  * @property height
- * @type Number
+ * @type {Number}
  */
 Object.defineProperty(PIXI.ConvolutionFilter.prototype, 'height', {
     get: function() {

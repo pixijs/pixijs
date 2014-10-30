@@ -11,7 +11,7 @@ PIXI.PixiFastShader = function(gl)
 {
     /**
      * @property _UID
-     * @type Number
+     * @type {Number}
      * @private
      */
     this._UID = PIXI._UID++;
@@ -32,7 +32,7 @@ PIXI.PixiFastShader = function(gl)
     /**
      * The fragment shader.
      * @property fragmentSrc
-     * @type Array
+     * @type {Array}
      */
     this.fragmentSrc = [
         'precision lowp float;',
@@ -47,7 +47,7 @@ PIXI.PixiFastShader = function(gl)
     /**
      * The vertex shader.
      * @property vertexSrc
-     * @type Array
+     * @type {Array}
      */
     this.vertexSrc = [
         'attribute vec2 aVertexPosition;',
@@ -82,7 +82,7 @@ PIXI.PixiFastShader = function(gl)
     /**
      * A local texture counter for multi-texture shaders.
      * @property textureCount
-     * @type Number
+     * @type {Number}
      */
     this.textureCount = 0;
     

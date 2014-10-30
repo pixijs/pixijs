@@ -11,7 +11,7 @@
  * @class NormalMapFilter
  * @extends AbstractFilter
  * @constructor
- * @param texture {Texture} The texture used for the displacement map * must be power of 2 texture at the moment
+ * @param texture {PIXI.Texture} The texture used for the displacement map * must be power of 2 texture at the moment
  */
 PIXI.NormalMapFilter = function(texture)
 {
@@ -169,7 +169,7 @@ Object.defineProperty(PIXI.NormalMapFilter.prototype, 'map', {
  * The multiplier used to scale the displacement result from the map calculation.
  *
  * @property scale
- * @type Point
+ * @type {PIXI.Point}
  */
 Object.defineProperty(PIXI.NormalMapFilter.prototype, 'scale', {
     get: function() {
@@ -184,7 +184,7 @@ Object.defineProperty(PIXI.NormalMapFilter.prototype, 'scale', {
  * The offset used to move the displacement map.
  *
  * @property offset
- * @type Point
+ * @type {PIXI.Point}
  */
 Object.defineProperty(PIXI.NormalMapFilter.prototype, 'offset', {
     get: function() {

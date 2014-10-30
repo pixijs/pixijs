@@ -73,7 +73,7 @@ PIXI.TiltShiftYFilter.prototype.constructor = PIXI.TiltShiftYFilter;
  * The strength of the blur.
  *
  * @property blur
- * @type Number
+ * @type {Number}
  */
 Object.defineProperty(PIXI.TiltShiftYFilter.prototype, 'blur', {
     get: function() {
@@ -89,7 +89,7 @@ Object.defineProperty(PIXI.TiltShiftYFilter.prototype, 'blur', {
  * The strength of the gradient blur.
  *
  * @property gradientBlur
- * @type Number
+ * @type {Number}
  */
 Object.defineProperty(PIXI.TiltShiftYFilter.prototype, 'gradientBlur', {
     get: function() {
@@ -105,7 +105,7 @@ Object.defineProperty(PIXI.TiltShiftYFilter.prototype, 'gradientBlur', {
  * The Y value to start the effect at.
  *
  * @property start
- * @type Number
+ * @type {Number}
  */
 Object.defineProperty(PIXI.TiltShiftYFilter.prototype, 'start', {
     get: function() {
@@ -122,7 +122,7 @@ Object.defineProperty(PIXI.TiltShiftYFilter.prototype, 'start', {
  * The Y value to end the effect at.
  *
  * @property end
- * @type Number
+ * @type {Number}
  */
 Object.defineProperty(PIXI.TiltShiftYFilter.prototype, 'end', {
     get: function() {

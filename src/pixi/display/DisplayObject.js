@@ -560,7 +560,7 @@ PIXI.DisplayObject.prototype.setStageReference = function(stage)
  * @param resolution {Number} The resolution of the texture being generated
  * @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
  * @param renderer {CanvasRenderer|WebGLRenderer} The renderer used to generate the texture.
- * @return {Texture} a texture of the graphics object
+ * @return {PIXI.Texture} a texture of the graphics object
  */
 PIXI.DisplayObject.prototype.generateTexture = function(resolution, scaleMode, renderer)
 {
@@ -590,8 +590,8 @@ PIXI.DisplayObject.prototype.updateCache = function()
  * Calculates the global position of the display object
  *
  * @method toGlobal
- * @param position {Point} The world origin to calculate from
- * @return {Point} A point object representing the position of this object
+ * @param position {PIXI.Point} The world origin to calculate from
+ * @return {PIXI.Point} A point object representing the position of this object
  */
 PIXI.DisplayObject.prototype.toGlobal = function(position)
 {
@@ -603,9 +603,9 @@ PIXI.DisplayObject.prototype.toGlobal = function(position)
  * Calculates the local position of the display object relative to another point
  *
  * @method toLocal
- * @param position {Point} The world origin to calculate from
- * @param [from] {DisplayObject} The DisplayObject to calculate the global position from
- * @return {Point} A point object representing the position of this object
+ * @param position {PIXI.Point} The world origin to calculate from
+ * @param [from] {PIXI.DisplayObject} The DisplayObject to calculate the global position from
+ * @return {PIXI.Point} A point object representing the position of this object
  */
 PIXI.DisplayObject.prototype.toLocal = function(position, from)
 {

@@ -10,19 +10,19 @@ PIXI.WebGLFilterManager = function()
 {
     /**
      * @property filterStack
-     * @type Array
+     * @type {Array}
      */
     this.filterStack = [];
     
     /**
      * @property offsetX
-     * @type Number
+     * @type {Number}
      */
     this.offsetX = 0;
 
     /**
      * @property offsetY
-     * @type Number
+     * @type {Number}
      */
     this.offsetY = 0;
 };
@@ -317,7 +317,7 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
 * 
 * @method applyFilterPass
 * @param filter {AbstractFilter} the filter that needs to be applied
-* @param filterArea {Texture} TODO - might need an update
+* @param filterArea {PIXI.Texture} TODO - might need an update
 * @param width {Number} the horizontal range of the filter
 * @param height {Number} the vertical range of the filter
 */

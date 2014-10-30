@@ -9,7 +9,7 @@
  * http://www.bmglyph.com/ for mac.
  *
  * @class BitmapText
- * @extends DisplayObjectContainer
+ * @extends {PIXI.DisplayObjectContainer}
  * @constructor
  * @param text {String} The copy that you would like the text to display
  * @param style {Object} The style parameters
@@ -25,7 +25,7 @@ PIXI.BitmapText = function(text, style)
      * which is defined in the style object
      *
      * @property textWidth
-     * @type Number
+     * @type {Number}
      * @readOnly
      */
     this.textWidth = 0;
@@ -35,14 +35,14 @@ PIXI.BitmapText = function(text, style)
      * which is defined in the style object
      *
      * @property textHeight
-     * @type Number
+     * @type {Number}
      * @readOnly
      */
     this.textHeight = 0;
 
     /**
      * @property _pool
-     * @type Array
+     * @type {Array}
      * @private
      */
     this._pool = [];
@@ -54,7 +54,7 @@ PIXI.BitmapText = function(text, style)
     /**
      * The dirty state of this object.
      * @property dirty
-     * @type Boolean
+     * @type {Boolean}
      */
     this.dirty = false;
 };

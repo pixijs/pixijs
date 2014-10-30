@@ -49,7 +49,7 @@ PIXI.PixelateFilter.prototype.constructor = PIXI.PixelateFilter;
  * This a point that describes the size of the blocks. x is the width of the block and y is the height.
  * 
  * @property size
- * @type Point
+ * @type {PIXI.Point}
  */
 Object.defineProperty(PIXI.PixelateFilter.prototype, 'size', {
     get: function() {

@@ -14,7 +14,7 @@ PIXI.TextureCacheIdGenerator = 0;
  * @class Texture
  * @uses EventTarget
  * @constructor
- * @param baseTexture {BaseTexture} The base texture source to create the texture from
+ * @param baseTexture {PIXI.BaseTexture} The base texture source to create the texture from
  * @param frame {PIXI.Rectangle} The rectangle frame of the texture to show
  * @param [crop] {PIXI.Rectangle} The area of original texture 
  * @param [trim] {PIXI.Rectangle} Trimmed texture rectangle

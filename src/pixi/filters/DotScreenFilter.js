@@ -57,7 +57,7 @@ PIXI.DotScreenFilter.prototype.constructor = PIXI.DotScreenFilter;
 /**
  * The scale of the effect.
  * @property scale
- * @type Number
+ * @type {Number}
  */
 Object.defineProperty(PIXI.DotScreenFilter.prototype, 'scale', {
     get: function() {
@@ -72,7 +72,7 @@ Object.defineProperty(PIXI.DotScreenFilter.prototype, 'scale', {
 /**
  * The radius of the effect.
  * @property angle
- * @type Number
+ * @type {Number}
  */
 Object.defineProperty(PIXI.DotScreenFilter.prototype, 'angle', {
     get: function() {

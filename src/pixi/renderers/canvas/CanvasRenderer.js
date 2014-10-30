@@ -59,7 +59,7 @@ PIXI.CanvasRenderer = function(width, height, options)
      * Disable this by setting this to false. For example if your game has a canvas filling background image you often don't need this set.
      *
      * @property clearBeforeRender
-     * @type Boolean
+     * @type {Boolean}
      * @default
      */
     this.clearBeforeRender = options.clearBeforeRender;
@@ -68,7 +68,7 @@ PIXI.CanvasRenderer = function(width, height, options)
      * Whether the render view is transparent
      *
      * @property transparent
-     * @type Boolean
+     * @type {Boolean}
      */
     this.transparent = options.transparent;
     
@@ -112,7 +112,7 @@ PIXI.CanvasRenderer = function(width, height, options)
      * Boolean flag controlling canvas refresh.
      *
      * @property refresh
-     * @type Boolean
+     * @type {Boolean}
      */
     this.refresh = true;
 
@@ -262,7 +262,7 @@ PIXI.CanvasRenderer.prototype.resize = function(width, height)
  * Renders a display object
  *
  * @method renderDisplayObject
- * @param {DisplayObject} displayObject  The displayObject to render
+ * @param {PIXI.DisplayObject} displayObject  The displayObject to render
  * @param context {CanvasRenderingContext2D} the context 2d method of the canvas
  * @private
  */

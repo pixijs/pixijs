@@ -8,7 +8,7 @@
  * @class MovieClip
  * @extends {PIXI.Sprite}
  * @constructor
- * @param textures {Array<Texture>} an array of {Texture} objects that make up the animation
+ * @param textures {Array<Texture>} an array of {PIXI.Texture} objects that make up the animation
  */
 PIXI.MovieClip = function(textures)
 {
@@ -35,7 +35,7 @@ PIXI.MovieClip = function(textures)
      * Whether or not the movie clip repeats after playing.
      *
      * @property loop
-     * @type Boolean
+     * @type {Boolean}
      * @default true
      */
     this.loop = true;
@@ -44,7 +44,7 @@ PIXI.MovieClip = function(textures)
      * Function to call when a MovieClip finishes playing
      *
      * @property onComplete
-     * @type Function
+     * @type {Function()}
      */
     this.onComplete = null;
 
@@ -62,7 +62,7 @@ PIXI.MovieClip = function(textures)
      * [read-only] Indicates if the MovieClip is currently playing
      *
      * @property playing
-     * @type Boolean
+     * @type {Boolean}
      * @readOnly
      */
     this.playing = false;

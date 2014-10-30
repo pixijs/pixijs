@@ -14,7 +14,7 @@ PIXI.InteractionData = function()
      * This point stores the global coords of where the touch/mouse event happened
      *
      * @property global
-     * @type Point
+     * @type {PIXI.Point}
      */
     this.global = new PIXI.Point();
 
@@ -39,9 +39,9 @@ PIXI.InteractionData = function()
  * This will return the local coordinates of the specified displayObject for this InteractionData
  *
  * @method getLocalPosition
- * @param displayObject {DisplayObject} The DisplayObject that you would like the local coords off
- * @param [point] {Point} A Point object in which to store the value, optional (otherwise will create a new point)
- * @return {Point} A point containing the coordinates of the InteractionData position relative to the DisplayObject
+ * @param displayObject {PIXI.DisplayObject} The DisplayObject that you would like the local coords off
+ * @param [point] {PIXI.Point} A Point object in which to store the value, optional (otherwise will create a new point)
+ * @return {PIXI.Point} A point containing the coordinates of the InteractionData position relative to the DisplayObject
  */
 PIXI.InteractionData.prototype.getLocalPosition = function(displayObject, point)
 {

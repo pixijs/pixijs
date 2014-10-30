@@ -16,42 +16,42 @@ PIXI.Matrix = function()
 {
     /**
      * @property a
-     * @type Number
+     * @type {Number}
      * @default 1
      */
     this.a = 1;
 
     /**
      * @property b
-     * @type Number
+     * @type {Number}
      * @default 0
      */
     this.b = 0;
 
     /**
      * @property c
-     * @type Number
+     * @type {Number}
      * @default 0
      */
     this.c = 0;
 
     /**
      * @property d
-     * @type Number
+     * @type {Number}
      * @default 1
      */
     this.d = 1;
 
     /**
      * @property tx
-     * @type Number
+     * @type {Number}
      * @default 0
      */
     this.tx = 0;
 
     /**
      * @property ty
-     * @type Number
+     * @type {Number}
      * @default 0
      */
     this.ty = 0;
@@ -125,9 +125,9 @@ PIXI.Matrix.prototype.toArray = function(transpose)
  * Can be used to go from a child's coordinate space to the world coordinate space. (e.g. rendering)
  *
  * @method apply
- * @param pos {Point} The origin
- * @param [newPos] {Point} The point that the new position is assigned to (allowed to be same as input)
- * @return {Point} The new point, transformed through this matrix
+ * @param pos {PIXI.Point} The origin
+ * @param [newPos] {PIXI.Point} The point that the new position is assigned to (allowed to be same as input)
+ * @return {PIXI.Point} The new point, transformed through this matrix
  */
 PIXI.Matrix.prototype.apply = function(pos, newPos)
 {
@@ -144,9 +144,9 @@ PIXI.Matrix.prototype.apply = function(pos, newPos)
  * Can be used to go from the world coordinate space to a child's coordinate space. (e.g. input)
  *
  * @method applyInverse
- * @param pos {Point} The origin
- * @param [newPos] {Point} The point that the new position is assigned to (allowed to be same as input)
- * @return {Point} The new point, inverse-transformed through this matrix
+ * @param pos {PIXI.Point} The origin
+ * @param [newPos] {PIXI.Point} The point that the new position is assigned to (allowed to be same as input)
+ * @return {PIXI.Point} The new point, inverse-transformed through this matrix
  */
 PIXI.Matrix.prototype.applyInverse = function(pos, newPos)
 {

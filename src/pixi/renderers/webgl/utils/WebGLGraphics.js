@@ -19,7 +19,7 @@ PIXI.WebGLGraphics = function()
  * @static
  * @private
  * @method renderGraphics
- * @param graphics {Graphics}
+ * @param graphics {PIXI.Graphics}
  * @param renderSession {Object}
  */
 PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projection, offset)
@@ -87,7 +87,7 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
  * @static
  * @private
  * @method updateGraphics
- * @param graphicsData {Graphics} The graphics object to update
+ * @param graphicsData {PIXI.Graphics} The graphics object to update
  * @param gl {WebGLContext} the current WebGL drawing context
  */
 PIXI.WebGLGraphics.updateGraphics = function(graphics, gl)
@@ -236,7 +236,7 @@ PIXI.WebGLGraphics.switchMode = function(webGL, type)
  * @static
  * @private
  * @method buildRectangle
- * @param graphicsData {Graphics} The graphics object containing all the necessary properties
+ * @param graphicsData {PIXI.Graphics} The graphics object containing all the necessary properties
  * @param webGLData {Object}
  */
 PIXI.WebGLGraphics.buildRectangle = function(graphicsData, webGLData)
@@ -304,7 +304,7 @@ PIXI.WebGLGraphics.buildRectangle = function(graphicsData, webGLData)
  * @static
  * @private
  * @method buildRoundedRectangle
- * @param graphicsData {Graphics} The graphics object containing all the necessary properties
+ * @param graphicsData {PIXI.Graphics} The graphics object containing all the necessary properties
  * @param webGLData {Object}
  */
 PIXI.WebGLGraphics.buildRoundedRectangle = function(graphicsData, webGLData)
@@ -423,7 +423,7 @@ PIXI.WebGLGraphics.quadraticBezierCurve = function(fromX, fromY, cpX, cpY, toX, 
  * @static
  * @private
  * @method buildCircle
- * @param graphicsData {Graphics} The graphics object to draw
+ * @param graphicsData {PIXI.Graphics} The graphics object to draw
  * @param webGLData {Object}
  */
 PIXI.WebGLGraphics.buildCircle = function(graphicsData, webGLData)
@@ -506,7 +506,7 @@ PIXI.WebGLGraphics.buildCircle = function(graphicsData, webGLData)
  * @static
  * @private
  * @method buildLine
- * @param graphicsData {Graphics} The graphics object containing all the necessary properties
+ * @param graphicsData {PIXI.Graphics} The graphics object containing all the necessary properties
  * @param webGLData {Object}
  */
 PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
@@ -718,7 +718,7 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
  * @static
  * @private
  * @method buildComplexPoly
- * @param graphicsData {Graphics} The graphics object containing all the necessary properties
+ * @param graphicsData {PIXI.Graphics} The graphics object containing all the necessary properties
  * @param webGLData {Object}
  */
 PIXI.WebGLGraphics.buildComplexPoly = function(graphicsData, webGLData)
@@ -780,7 +780,7 @@ PIXI.WebGLGraphics.buildComplexPoly = function(graphicsData, webGLData)
  * @static
  * @private
  * @method buildPoly
- * @param graphicsData {Graphics} The graphics object containing all the necessary properties
+ * @param graphicsData {PIXI.Graphics} The graphics object containing all the necessary properties
  * @param webGLData {Object}
  */
 PIXI.WebGLGraphics.buildPoly = function(graphicsData, webGLData)

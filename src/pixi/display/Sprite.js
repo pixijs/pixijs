@@ -424,7 +424,7 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
  * @method fromFrame
  * @static
  * @param frameId {String} The frame Id of the texture in the cache
- * @return {Sprite} A new Sprite using a texture from the texture cache matching the frameId
+ * @return {PIXI.Sprite} A new Sprite using a texture from the texture cache matching the frameId
  */
 PIXI.Sprite.fromFrame = function(frameId)
 {
@@ -441,7 +441,7 @@ PIXI.Sprite.fromFrame = function(frameId)
  * @method fromImage
  * @static
  * @param imageId {String} The image url of the texture
- * @return {Sprite} A new Sprite using a texture from the texture cache matching the image id
+ * @return {PIXI.Sprite} A new Sprite using a texture from the texture cache matching the image id
  */
 PIXI.Sprite.fromImage = function(imageId, crossorigin, scaleMode)
 {

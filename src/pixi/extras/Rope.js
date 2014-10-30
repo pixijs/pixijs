@@ -8,7 +8,7 @@
  * @class Rope
  * @constructor
  * @extends Strip
- * @param {Texture} texture - The texture to use on the rope.
+ * @param {PIXI.Texture} texture - The texture to use on the rope.
  * @param {Array} points - An array of {PIXI.Point}.
  *
  */
@@ -164,7 +164,7 @@ PIXI.Rope.prototype.updateTransform = function()
  * Sets the texture that the Rope will use
  *
  * @method setTexture
- * @param texture {Texture} the texture that will be used
+ * @param texture {PIXI.Texture} the texture that will be used
  */
 PIXI.Rope.prototype.setTexture = function(texture)
 {

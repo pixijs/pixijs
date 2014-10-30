@@ -35,7 +35,7 @@ PIXI.SpineLoader = function(url, crossorigin)
      * Whether the requests should be treated as cross origin
      *
      * @property crossorigin
-     * @type Boolean
+     * @type {Boolean}
      */
     this.crossorigin = crossorigin;
 
@@ -43,7 +43,7 @@ PIXI.SpineLoader = function(url, crossorigin)
      * [read-only] Whether the data has loaded yet
      *
      * @property loaded
-     * @type Boolean
+     * @type {Boolean}
      * @readOnly
      */
     this.loaded = false;
