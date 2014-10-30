@@ -28,7 +28,7 @@
  * @constructor
  * @param width {Number} The width of the render texture
  * @param height {Number} The height of the render texture
- * @param renderer {CanvasRenderer|WebGLRenderer} The renderer used for this RenderTexture
+ * @param renderer {PIXI.CanvasRenderer|PIXI.WebGLRenderer} The renderer used for this RenderTexture
  * @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
  * @param resolution {Number} The resolution of the texture being generated
  */
@@ -38,7 +38,7 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode, resolution)
      * The with of the render texture
      *
      * @property width
-     * @type Number
+     * @type {Number}
      */
     this.width = width || 100;
 
@@ -46,7 +46,7 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode, resolution)
      * The height of the render texture
      *
      * @property height
-     * @type Number
+     * @type {Number}
      */
     this.height = height || 100;
 
@@ -54,7 +54,7 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode, resolution)
      * The Resolution of the texture.
      *
      * @property resolution
-     * @type Number
+     * @type {Number}
      */
     this.resolution = resolution || 1;
 
@@ -62,7 +62,7 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode, resolution)
      * The framing rectangle of the render texture
      *
      * @property frame
-     * @type Rectangle
+     * @type {PIXI.Rectangle}
      */
     this.frame = new PIXI.Rectangle(0, 0, this.width * this.resolution, this.height * this.resolution);
 
@@ -71,7 +71,7 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode, resolution)
      * irrespective of the actual frame size or placement (which can be influenced by trimmed texture atlases)
      *
      * @property crop
-     * @type Rectangle
+     * @type {PIXI.Rectangle}
      */
     this.crop = new PIXI.Rectangle(0, 0, this.width * this.resolution, this.height * this.resolution);
 
@@ -79,7 +79,7 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode, resolution)
      * The base texture object that this texture uses
      *
      * @property baseTexture
-     * @type BaseTexture
+     * @type {PIXI.BaseTexture}
      */
     this.baseTexture = new PIXI.BaseTexture();
     this.baseTexture.width = this.width * this.resolution;
@@ -100,7 +100,7 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode, resolution)
      * The renderer this RenderTexture uses. A RenderTexture can only belong to one renderer at the moment if its webGL.
      *
      * @property renderer
-     * @type CanvasRenderer|WebGLRenderer
+     * @type {PIXI.CanvasRenderer|PIXI.WebGLRenderer}
      */
     this.renderer = renderer || PIXI.defaultRenderer;
 
@@ -124,7 +124,7 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode, resolution)
 
     /**
      * @property valid
-     * @type Boolean
+     * @type {Boolean}
      */
     this.valid = true;
 
@@ -189,7 +189,7 @@ PIXI.RenderTexture.prototype.clear = function()
  * This function will draw the display object to the texture.
  *
  * @method renderWebGL
- * @param displayObject {DisplayObject} The display object to render this texture on
+ * @param displayObject {PIXI.DisplayObject} The display object to render this texture on
  * @param [matrix] {Matrix} Optional matrix to apply to the display object before rendering.
  * @param [clear] {Boolean} If true the texture will be cleared before the displayObject is drawn
  * @private
@@ -238,7 +238,7 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, matrix, clear
  * This function will draw the display object to the texture.
  *
  * @method renderCanvas
- * @param displayObject {DisplayObject} The display object to render this texture on
+ * @param displayObject {PIXI.DisplayObject} The display object to render this texture on
  * @param [matrix] {Matrix} Optional matrix to apply to the display object before rendering.
  * @param [clear] {Boolean} If true the texture will be cleared before the displayObject is drawn
  * @private

@@ -41,7 +41,7 @@ PIXI.GrayFilter.prototype.constructor = PIXI.GrayFilter;
 /**
  * The strength of the gray. 1 will make the object black and white, 0 will make the object its normal color.
  * @property gray
- * @type Number
+ * @type {Number}
  */
 Object.defineProperty(PIXI.GrayFilter.prototype, 'gray', {
     get: function() {

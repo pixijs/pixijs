@@ -11,7 +11,7 @@ PIXI.StripShader = function(gl)
 {
     /**
      * @property _UID
-     * @type Number
+     * @type {Number}
      * @private
      */
     this._UID = PIXI._UID++;
@@ -32,7 +32,7 @@ PIXI.StripShader = function(gl)
     /**
      * The fragment shader.
      * @property fragmentSrc
-     * @type Array
+     * @type {Array}
      */
     this.fragmentSrc = [
         'precision mediump float;',
@@ -50,7 +50,7 @@ PIXI.StripShader = function(gl)
     /**
      * The vertex shader.
      * @property vertexSrc
-     * @type Array
+     * @type {Array}
      */
     this.vertexSrc  = [
         'attribute vec2 aVertexPosition;',

@@ -14,14 +14,14 @@ PIXI.Point = function(x, y)
 {
     /**
      * @property x
-     * @type Number
+     * @type {Number}
      * @default 0
      */
     this.x = x || 0;
 
     /**
      * @property y
-     * @type Number
+     * @type {Number}
      * @default 0
      */
     this.y = y || 0;
@@ -31,7 +31,7 @@ PIXI.Point = function(x, y)
  * Creates a clone of this point
  *
  * @method clone
- * @return {Point} a copy of the point
+ * @return {PIXI.Point} a copy of the point
  */
 PIXI.Point.prototype.clone = function()
 {

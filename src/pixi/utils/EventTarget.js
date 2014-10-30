@@ -208,7 +208,7 @@ PIXI.Event = function(target, name, data) {
      * set this directly, instead use `event.stopPropagation()`
      *
      * @property stopped
-     * @type Boolean
+     * @type {Boolean}
      * @private
      * @readOnly
      */
@@ -219,7 +219,7 @@ PIXI.Event = function(target, name, data) {
      * set this directly, instead use `event.stopImmediatePropagation()`
      *
      * @property stoppedImmediate
-     * @type Boolean
+     * @type {Boolean}
      * @private
      * @readOnly
      */
@@ -229,7 +229,7 @@ PIXI.Event = function(target, name, data) {
      * The original target the event triggered on.
      *
      * @property target
-     * @type Object
+     * @type {*}
      * @readOnly
      */
     this.target = target;
@@ -238,7 +238,7 @@ PIXI.Event = function(target, name, data) {
      * The string name of the event that this represents.
      *
      * @property type
-     * @type String
+     * @type {String}
      * @readOnly
      */
     this.type = name;
@@ -247,7 +247,7 @@ PIXI.Event = function(target, name, data) {
      * The data that was passed in with this event.
      *
      * @property data
-     * @type Object
+     * @type {*}
      * @readOnly
      */
     this.data = data;
@@ -259,7 +259,7 @@ PIXI.Event = function(target, name, data) {
      * The timestamp when the event occurred.
      *
      * @property timeStamp
-     * @type Number
+     * @type {Number}
      * @readOnly
      */
     this.timeStamp = Date.now();

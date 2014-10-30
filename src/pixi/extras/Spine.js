@@ -1360,7 +1360,7 @@ PIXI.AnimCache = {};
  * See example 12 (http://www.goodboydigital.com/pixijs/examples/12/) to see a working example and check out the source
  *
  * @class Spine
- * @extends DisplayObjectContainer
+ * @extends {PIXI.DisplayObjectContainer}
  * @constructor
  * @param url {String} The url of the spine anim file to be used
  */

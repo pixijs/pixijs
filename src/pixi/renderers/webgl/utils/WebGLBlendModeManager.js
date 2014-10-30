@@ -11,7 +11,7 @@ PIXI.WebGLBlendModeManager = function()
 {
     /**
      * @property currentBlendMode
-     * @type Number
+     * @type {Number}
      */
     this.currentBlendMode = 99999;
 };

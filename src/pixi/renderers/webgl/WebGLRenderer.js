@@ -43,7 +43,7 @@ PIXI.WebGLRenderer = function(width, height, options)
 
     /**
      * @property type
-     * @type Number
+     * @type {Number}
      */
     this.type = PIXI.WEBGL_RENDERER;
 
@@ -51,7 +51,7 @@ PIXI.WebGLRenderer = function(width, height, options)
      * The resolution of the renderer
      *
      * @property resolution
-     * @type Number
+     * @type {Number}
      * @default 1
      */
     this.resolution = options.resolution;
@@ -62,7 +62,7 @@ PIXI.WebGLRenderer = function(width, height, options)
      * Whether the render view is transparent
      *
      * @property transparent
-     * @type Boolean
+     * @type {Boolean}
      */
     this.transparent = options.transparent;
 
@@ -70,7 +70,7 @@ PIXI.WebGLRenderer = function(width, height, options)
      * The value of the preserveDrawingBuffer flag affects whether or not the contents of the stencil buffer is retained after rendering.
      *
      * @property preserveDrawingBuffer
-     * @type Boolean
+     * @type {Boolean}
      */
     this.preserveDrawingBuffer = options.preserveDrawingBuffer;
     
@@ -81,7 +81,7 @@ PIXI.WebGLRenderer = function(width, height, options)
      * Disable this by setting this to false. For example: if your game has a canvas filling background image, you often don't need this set.
      *
      * @property clearBeforeRender
-     * @type Boolean
+     * @type {Boolean}
      * @default
      */
     this.clearBeforeRender = options.clearBeforeRender;
@@ -90,7 +90,7 @@ PIXI.WebGLRenderer = function(width, height, options)
      * The width of the canvas view
      *
      * @property width
-     * @type Number
+     * @type {Number}
      * @default 800
      */
     this.width = width || 800;
@@ -99,7 +99,7 @@ PIXI.WebGLRenderer = function(width, height, options)
      * The height of the canvas view
      *
      * @property height
-     * @type Number
+     * @type {Number}
      * @default 600
      */
     this.height = height || 600;
@@ -131,7 +131,7 @@ PIXI.WebGLRenderer = function(width, height, options)
 
     /**
      * @property _contextOptions
-     * @type Object
+     * @type {*}
      * @private
      */
     this._contextOptions = {
@@ -144,13 +144,13 @@ PIXI.WebGLRenderer = function(width, height, options)
 
     /**
      * @property projection
-     * @type Point
+     * @type {PIXI.Point}
      */
     this.projection = new PIXI.Point();
 
     /**
      * @property offset
-     * @type Point
+     * @type {PIXI.Point}
      */
     this.offset = new PIXI.Point(0, 0);
 
@@ -166,42 +166,42 @@ PIXI.WebGLRenderer = function(width, height, options)
     /**
      * Manages the rendering of sprites
      * @property spriteBatch
-     * @type WebGLSpriteBatch
+     * @type {PIXI.WebGLSpriteBatch}
      */
     this.spriteBatch = new PIXI.WebGLSpriteBatch();
 
     /**
      * Manages the masks using the stencil buffer
      * @property maskManager
-     * @type WebGLMaskManager
+     * @type {PIXI.WebGLMaskManager}
      */
     this.maskManager = new PIXI.WebGLMaskManager();
 
     /**
      * Manages the filters
      * @property filterManager
-     * @type WebGLFilterManager
+     * @type {PIXI.WebGLFilterManager}
      */
     this.filterManager = new PIXI.WebGLFilterManager();
 
     /**
      * Manages the stencil buffer
      * @property stencilManager
-     * @type WebGLStencilManager
+     * @type {PIXI.WebGLStencilManager}
      */
     this.stencilManager = new PIXI.WebGLStencilManager();
 
     /**
      * Manages the blendModes
      * @property blendModeManager
-     * @type WebGLBlendModeManager
+     * @type {PIXI.WebGLBlendModeManager}
      */
     this.blendModeManager = new PIXI.WebGLBlendModeManager();
 
     /**
      * TODO remove
      * @property renderSession
-     * @type Object
+     * @type {*}
      */
     this.renderSession = {};
     this.renderSession.gl = this.gl;
@@ -265,7 +265,7 @@ PIXI.WebGLRenderer.prototype.initContext = function()
  * Renders the stage to its webGL view
  *
  * @method render
- * @param stage {Stage} the Stage element to be rendered
+ * @param stage {PIXI.Stage} the Stage element to be rendered
  */
 PIXI.WebGLRenderer.prototype.render = function(stage)
 {
@@ -333,8 +333,8 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
  * Renders a Display Object.
  *
  * @method renderDisplayObject
- * @param displayObject {DisplayObject} The DisplayObject to render
- * @param projection {Point} The projection
+ * @param displayObject {PIXI.DisplayObject} The DisplayObject to render
+ * @param projection {PIXI.Point} The projection
  * @param buffer {Array} a standard WebGL buffer
  */
 PIXI.WebGLRenderer.prototype.renderDisplayObject = function(displayObject, projection, buffer)
@@ -388,7 +388,7 @@ PIXI.WebGLRenderer.prototype.resize = function(width, height)
  * Updates and Creates a WebGL texture for the renderers context.
  *
  * @method updateTexture
- * @param texture {Texture} the texture to update
+ * @param texture {PIXI.Texture} the texture to update
  */
 PIXI.WebGLRenderer.prototype.updateTexture = function(texture)
 {

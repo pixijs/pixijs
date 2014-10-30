@@ -6,7 +6,7 @@
  * The Graphics class contains methods used to draw primitive shapes such as lines, circles and rectangles to the display, and color and fill them.
  * 
  * @class Graphics
- * @extends DisplayObjectContainer
+ * @extends {PIXI.DisplayObjectContainer}
  * @constructor
  */
 PIXI.Graphics = function()
@@ -19,7 +19,7 @@ PIXI.Graphics = function()
      * The alpha value used when filling the Graphics object.
      *
      * @property fillAlpha
-     * @type Number
+     * @type {Number}
      */
     this.fillAlpha = 1;
 
@@ -27,7 +27,7 @@ PIXI.Graphics = function()
      * The width (thickness) of any lines drawn.
      *
      * @property lineWidth
-     * @type Number
+     * @type {Number}
      */
     this.lineWidth = 0;
 
@@ -35,7 +35,7 @@ PIXI.Graphics = function()
      * The color of any lines drawn.
      *
      * @property lineColor
-     * @type String
+     * @type {String}
      * @default 0
      */
     this.lineColor = 0;
@@ -44,7 +44,7 @@ PIXI.Graphics = function()
      * Graphics data
      *
      * @property graphicsData
-     * @type Array
+     * @type {Array}
      * @private
      */
     this.graphicsData = [];
@@ -53,7 +53,7 @@ PIXI.Graphics = function()
      * The tint applied to the graphic shape. This is a hex value. Apply a value of 0xFFFFFF to reset the tint.
      *
      * @property tint
-     * @type Number
+     * @type {Number}
      * @default 0xFFFFFF
      */
     this.tint = 0xFFFFFF;
@@ -62,7 +62,7 @@ PIXI.Graphics = function()
      * The blend mode to be applied to the graphic shape. Apply a value of PIXI.blendModes.NORMAL to reset the blend mode.
      *
      * @property blendMode
-     * @type Number
+     * @type {Number}
      * @default PIXI.blendModes.NORMAL;
      */
     this.blendMode = PIXI.blendModes.NORMAL;
@@ -71,7 +71,7 @@ PIXI.Graphics = function()
      * Current path
      *
      * @property currentPath
-     * @type Object
+     * @type {*}
      * @private
      */
     this.currentPath = null;
@@ -80,7 +80,7 @@ PIXI.Graphics = function()
      * Array containing some WebGL-related properties used by the WebGL renderer.
      *
      * @property _webGL
-     * @type Array
+     * @type {Array}
      * @private
      */
     this._webGL = [];
@@ -89,7 +89,7 @@ PIXI.Graphics = function()
      * Whether this shape is being used as a mask.
      *
      * @property isMask
-     * @type Boolean
+     * @type {Boolean}
      */
     this.isMask = false;
 
@@ -97,7 +97,7 @@ PIXI.Graphics = function()
      * The bounds' padding used for bounds calculation.
      *
      * @property boundsPadding
-     * @type Number
+     * @type {Number}
      */
     this.boundsPadding = 0;
 
@@ -105,7 +105,7 @@ PIXI.Graphics = function()
      * Used to detect if the graphics object has changed. If this is set to true then the graphics object will be recalculated.
      * 
      * @property dirty
-     * @type Boolean
+     * @type {Boolean}
      * @private
      */
     this.dirty = true;
@@ -114,7 +114,7 @@ PIXI.Graphics = function()
      * Used to detect if the webgl graphics object has changed. If this is set to true then the graphics object will be recalculated.
      * 
      * @property webGLDirty
-     * @type Boolean
+     * @type {Boolean}
      * @private
      */
     this.webGLDirty = false;
@@ -123,7 +123,7 @@ PIXI.Graphics = function()
      * Used to detect if the cached sprite object needs to be updated.
      * 
      * @property cachedSpriteDirty
-     * @type Boolean
+     * @type {Boolean}
      * @private
      */
     this.cachedSpriteDirty = false;
@@ -141,7 +141,7 @@ PIXI.Graphics.prototype.constructor = PIXI.Graphics;
  * This is not recommended if you are constantly redrawing the graphics element.
  *
  * @property cacheAsBitmap
- * @type Boolean
+ * @type {Boolean}
  * @default false
  * @private
  */
@@ -170,10 +170,10 @@ Object.defineProperty(PIXI.Graphics.prototype, "cacheAsBitmap", {
  * Specifies the line style used for subsequent calls to Graphics methods such as the lineTo() method or the drawCircle() method.
  *
  * @method lineStyle
- * @param lineWidth {Number} width of the line to draw, will update the objects stored style
+ * @param line{Number} width width of the line to draw, will update the objects stored style
  * @param color {Number} color of the line to draw, will update the objects stored style
  * @param alpha {Number} alpha of the line to draw, will update the objects stored style
- * @return {Graphics}
+ * @return {PIXI.Graphics}
  */
 PIXI.Graphics.prototype.lineStyle = function(lineWidth, color, alpha)
 {
@@ -206,7 +206,7 @@ PIXI.Graphics.prototype.lineStyle = function(lineWidth, color, alpha)
  * @method moveTo
  * @param x {Number} the X coordinate to move to
  * @param y {Number} the Y coordinate to move to
- * @return {Graphics}
+ * @return {PIXI.Graphics}
   */
 PIXI.Graphics.prototype.moveTo = function(x, y)
 {
@@ -222,7 +222,7 @@ PIXI.Graphics.prototype.moveTo = function(x, y)
  * @method lineTo
  * @param x {Number} the X coordinate to draw to
  * @param y {Number} the Y coordinate to draw to
- * @return {Graphics}
+ * @return {PIXI.Graphics}
  */
 PIXI.Graphics.prototype.lineTo = function(x, y)
 {
@@ -241,7 +241,7 @@ PIXI.Graphics.prototype.lineTo = function(x, y)
  * @param cpY {Number} Control point y
  * @param toX {Number} Destination point x
  * @param toY {Number} Destination point y
- * @return {Graphics}
+ * @return {PIXI.Graphics}
  */
 PIXI.Graphics.prototype.quadraticCurveTo = function(cpX, cpY, toX, toY)
 {
@@ -292,7 +292,7 @@ PIXI.Graphics.prototype.quadraticCurveTo = function(cpX, cpY, toX, toY)
  * @param cpY2 {Number} Second Control point y
  * @param toX {Number} Destination point x
  * @param toY {Number} Destination point y
- * @return {Graphics}
+ * @return {PIXI.Graphics}
  */
 PIXI.Graphics.prototype.bezierCurveTo = function(cpX, cpY, cpX2, cpY2, toX, toY)
 {
@@ -349,7 +349,7 @@ PIXI.Graphics.prototype.bezierCurveTo = function(cpX, cpY, cpX2, cpY2, toX, toY)
  * @param x2 {Number} The x-coordinate of the end of the arc
  * @param y2 {Number} The y-coordinate of the end of the arc
  * @param radius {Number} The radius of the arc
- * @return {Graphics}
+ * @return {PIXI.Graphics}
  */
 PIXI.Graphics.prototype.arcTo = function(x1, y1, x2, y2, radius)
 {
@@ -414,7 +414,7 @@ PIXI.Graphics.prototype.arcTo = function(x1, y1, x2, y2, radius)
  * @param startAngle {Number} The starting angle, in radians (0 is at the 3 o'clock position of the arc's circle)
  * @param endAngle {Number} The ending angle, in radians
  * @param anticlockwise {Boolean} Optional. Specifies whether the drawing should be counterclockwise or clockwise. False is default, and indicates clockwise, while true indicates counter-clockwise.
- * @return {Graphics}
+ * @return {PIXI.Graphics}
  */
 PIXI.Graphics.prototype.arc = function(cx, cy, radius, startAngle, endAngle, anticlockwise)
 {
@@ -481,7 +481,7 @@ PIXI.Graphics.prototype.arc = function(cx, cy, radius, startAngle, endAngle, ant
  * @method beginFill
  * @param color {Number} the color of the fill
  * @param alpha {Number} the alpha of the fill
- * @return {Graphics}
+ * @return {PIXI.Graphics}
  */
 PIXI.Graphics.prototype.beginFill = function(color, alpha)
 {
@@ -505,7 +505,7 @@ PIXI.Graphics.prototype.beginFill = function(color, alpha)
  * Applies a fill to the lines and shapes that were added since the last call to the beginFill() method.
  *
  * @method endFill
- * @return {Graphics}
+ * @return {PIXI.Graphics}
  */
 PIXI.Graphics.prototype.endFill = function()
 {
@@ -521,9 +521,9 @@ PIXI.Graphics.prototype.endFill = function()
  *
  * @param x {Number} The X coord of the top-left of the rectangle
  * @param y {Number} The Y coord of the top-left of the rectangle
- * @param width {Number} The width of the rectangle
- * @param height {Number} The height of the rectangle
- * @return {Graphics}
+ * @param {Number} width The width of the rectangle
+ * @param {Number} height The height of the rectangle
+ * @return {PIXI.Graphics}
  */
 PIXI.Graphics.prototype.drawRect = function( x, y, width, height )
 {
@@ -537,8 +537,8 @@ PIXI.Graphics.prototype.drawRect = function( x, y, width, height )
  *
  * @param x {Number} The X coord of the top-left of the rectangle
  * @param y {Number} The Y coord of the top-left of the rectangle
- * @param width {Number} The width of the rectangle
- * @param height {Number} The height of the rectangle
+ * @param {Number} width The width of the rectangle
+ * @param {Number} height The height of the rectangle
  * @param radius {Number} Radius of the rectangle corners
  */
 PIXI.Graphics.prototype.drawRoundedRect = function( x, y, width, height, radius )
@@ -555,7 +555,7 @@ PIXI.Graphics.prototype.drawRoundedRect = function( x, y, width, height, radius 
  * @param x {Number} The X coordinate of the center of the circle
  * @param y {Number} The Y coordinate of the center of the circle
  * @param radius {Number} The radius of the circle
- * @return {Graphics}
+ * @return {PIXI.Graphics}
  */
 PIXI.Graphics.prototype.drawCircle = function(x, y, radius)
 {
@@ -570,9 +570,9 @@ PIXI.Graphics.prototype.drawCircle = function(x, y, radius)
  * @method drawEllipse
  * @param x {Number} The X coordinate of the center of the ellipse
  * @param y {Number} The Y coordinate of the center of the ellipse
- * @param width {Number} The half width of the ellipse
- * @param height {Number} The half height of the ellipse
- * @return {Graphics}
+ * @param {Number} width The half width of the ellipse
+ * @param {Number} height The half height of the ellipse
+ * @return {PIXI.Graphics}
  */
 PIXI.Graphics.prototype.drawEllipse = function(x, y, width, height)
 {
@@ -586,7 +586,7 @@ PIXI.Graphics.prototype.drawEllipse = function(x, y, width, height)
  *
  * @method drawPolygon
  * @param path {Array} The path data used to construct the polygon.
- * @return {Graphics}
+ * @return {PIXI.Graphics}
  */
 PIXI.Graphics.prototype.drawPolygon = function(path)
 {
@@ -599,7 +599,7 @@ PIXI.Graphics.prototype.drawPolygon = function(path)
  * Clears the graphics that were drawn to this Graphics object, and resets fill and line style settings.
  *
  * @method clear
- * @return {Graphics}
+ * @return {PIXI.Graphics}
  */
 PIXI.Graphics.prototype.clear = function()
 {
@@ -620,7 +620,7 @@ PIXI.Graphics.prototype.clear = function()
  * @method generateTexture
  * @param resolution {Number} The resolution of the texture being generated
  * @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
- * @return {Texture} a texture of the graphics object
+ * @return {PIXI.Texture} a texture of the graphics object
  */
 PIXI.Graphics.prototype.generateTexture = function(resolution, scaleMode)
 {
@@ -646,7 +646,7 @@ PIXI.Graphics.prototype.generateTexture = function(resolution, scaleMode)
 * Renders the object using the WebGL renderer
 *
 * @method _renderWebGL
-* @param renderSession {RenderSession} 
+* @param {RenderSession} renderSession
 * @private
 */
 PIXI.Graphics.prototype._renderWebGL = function(renderSession)
@@ -726,7 +726,7 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
 * Renders the object using the Canvas renderer
 *
 * @method _renderCanvas
-* @param renderSession {RenderSession} 
+* @param {RenderSession} renderSession
 * @private
 */
 PIXI.Graphics.prototype._renderCanvas = function(renderSession)

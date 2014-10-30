@@ -42,7 +42,7 @@ PIXI.ColorStepFilter.prototype.constructor = PIXI.ColorStepFilter;
  * The number of steps to reduce the palette by.
  *
  * @property step
- * @type Number
+ * @type {Number}
  */
 Object.defineProperty(PIXI.ColorStepFilter.prototype, 'step', {
     get: function() {

@@ -19,7 +19,7 @@ PIXI.JsonLoader = function (url, crossorigin) {
      * The url of the bitmap font data
      *
      * @property url
-     * @type String
+     * @type {String}
      */
     this.url = url;
 
@@ -27,7 +27,7 @@ PIXI.JsonLoader = function (url, crossorigin) {
      * Whether the requests should be treated as cross origin
      *
      * @property crossorigin
-     * @type Boolean
+     * @type {Boolean}
      */
     this.crossorigin = crossorigin;
 
@@ -35,7 +35,7 @@ PIXI.JsonLoader = function (url, crossorigin) {
      * [read-only] The base url of the bitmap font data
      *
      * @property baseUrl
-     * @type String
+     * @type {String}
      * @readOnly
      */
     this.baseUrl = url.replace(/[^\/]*$/, '');
@@ -44,7 +44,7 @@ PIXI.JsonLoader = function (url, crossorigin) {
      * [read-only] Whether the data has loaded yet
      *
      * @property loaded
-     * @type Boolean
+     * @type {Boolean}
      * @readOnly
      */
     this.loaded = false;

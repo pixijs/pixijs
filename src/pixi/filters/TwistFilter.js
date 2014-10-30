@@ -57,7 +57,7 @@ PIXI.TwistFilter.prototype.constructor = PIXI.TwistFilter;
  * This point describes the the offset of the twist.
  * 
  * @property offset
- * @type Point
+ * @type {PIXI.Point}
  */
 Object.defineProperty(PIXI.TwistFilter.prototype, 'offset', {
     get: function() {
@@ -73,7 +73,7 @@ Object.defineProperty(PIXI.TwistFilter.prototype, 'offset', {
  * This radius of the twist.
  * 
  * @property radius
- * @type Number
+ * @type {Number}
  */
 Object.defineProperty(PIXI.TwistFilter.prototype, 'radius', {
     get: function() {
@@ -89,7 +89,7 @@ Object.defineProperty(PIXI.TwistFilter.prototype, 'radius', {
  * This angle of the twist.
  * 
  * @property angle
- * @type Number
+ * @type {Number}
  */
 Object.defineProperty(PIXI.TwistFilter.prototype, 'angle', {
     get: function() {

@@ -12,7 +12,7 @@ PIXI.PixiShader = function(gl)
 {
     /**
      * @property _UID
-     * @type Number
+     * @type {Number}
      * @private
      */
     this._UID = PIXI._UID++;
@@ -33,7 +33,7 @@ PIXI.PixiShader = function(gl)
     /**
      * The fragment shader.
      * @property fragmentSrc
-     * @type Array
+     * @type {Array}
      */
     this.fragmentSrc = [
         'precision lowp float;',
@@ -48,14 +48,14 @@ PIXI.PixiShader = function(gl)
     /**
      * A local texture counter for multi-texture shaders.
      * @property textureCount
-     * @type Number
+     * @type {Number}
      */
     this.textureCount = 0;
 
     /**
      * A local flag
      * @property firstRun
-     * @type Boolean
+     * @type {Boolean}
      * @private
      */
     this.firstRun = true;
@@ -63,14 +63,14 @@ PIXI.PixiShader = function(gl)
     /**
      * A dirty flag
      * @property dirty
-     * @type Boolean
+     * @type {Boolean}
      */
     this.dirty = true;
 
     /**
      * Uniform attributes cache.
      * @property attributes
-     * @type Array
+     * @type {Array}
      * @private
      */
     this.attributes = [];
@@ -366,7 +366,7 @@ PIXI.PixiShader.prototype.destroy = function()
 * The Default Vertex shader source.
 * 
 * @property defaultVertexSrc
-* @type String
+* @type {String}
 */
 PIXI.PixiShader.defaultVertexSrc = [
     'attribute vec2 aVertexPosition;',

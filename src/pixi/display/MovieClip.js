@@ -6,9 +6,9 @@
  * A MovieClip is a simple way to display an animation depicted by a list of textures.
  *
  * @class MovieClip
- * @extends Sprite
+ * @extends {PIXI.Sprite}
  * @constructor
- * @param textures {Array<Texture>} an array of {Texture} objects that make up the animation
+ * @param textures {Array<Texture>} an array of {PIXI.Texture} objects that make up the animation
  */
 PIXI.MovieClip = function(textures)
 {
@@ -18,7 +18,7 @@ PIXI.MovieClip = function(textures)
      * The array of textures that make up the animation
      *
      * @property textures
-     * @type Array
+     * @type {Array}
      */
     this.textures = textures;
 
@@ -26,7 +26,7 @@ PIXI.MovieClip = function(textures)
      * The speed that the MovieClip will play at. Higher is faster, lower is slower
      *
      * @property animationSpeed
-     * @type Number
+     * @type {Number}
      * @default 1
      */
     this.animationSpeed = 1;
@@ -35,7 +35,7 @@ PIXI.MovieClip = function(textures)
      * Whether or not the movie clip repeats after playing.
      *
      * @property loop
-     * @type Boolean
+     * @type {Boolean}
      * @default true
      */
     this.loop = true;
@@ -44,7 +44,7 @@ PIXI.MovieClip = function(textures)
      * Function to call when a MovieClip finishes playing
      *
      * @property onComplete
-     * @type Function
+     * @type {Function()}
      */
     this.onComplete = null;
 
@@ -52,7 +52,7 @@ PIXI.MovieClip = function(textures)
      * [read-only] The MovieClips current frame index (this may not have to be a whole number)
      *
      * @property currentFrame
-     * @type Number
+     * @type {Number}
      * @default 0
      * @readOnly
      */
@@ -62,7 +62,7 @@ PIXI.MovieClip = function(textures)
      * [read-only] Indicates if the MovieClip is currently playing
      *
      * @property playing
-     * @type Boolean
+     * @type {Boolean}
      * @readOnly
      */
     this.playing = false;
@@ -77,7 +77,7 @@ PIXI.MovieClip.prototype.constructor = PIXI.MovieClip;
 * assigned to the MovieClip.
 *
 * @property totalFrames
-* @type Number
+* @type {Number}
 * @default 0
 * @readOnly
 */

@@ -16,7 +16,7 @@ PIXI.CanvasBuffer = function(width, height)
      * The width of the Canvas in pixels.
      *
      * @property width
-     * @type Number
+     * @type {Number}
      */
     this.width = width;
 
@@ -24,7 +24,7 @@ PIXI.CanvasBuffer = function(width, height)
      * The height of the Canvas in pixels.
      *
      * @property height
-     * @type Number
+     * @type {Number}
      */
     this.height = height;
 

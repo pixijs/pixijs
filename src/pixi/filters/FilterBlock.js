@@ -14,7 +14,7 @@ PIXI.FilterBlock = function()
      * The visible state of this FilterBlock.
      *
      * @property visible
-     * @type Boolean
+     * @type {Boolean}
      */
     this.visible = true;
 
@@ -22,7 +22,7 @@ PIXI.FilterBlock = function()
      * The renderable state of this FilterBlock.
      *
      * @property renderable
-     * @type Boolean
+     * @type {Boolean}
      */
     this.renderable = true;
 };

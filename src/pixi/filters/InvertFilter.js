@@ -42,7 +42,7 @@ PIXI.InvertFilter.prototype.constructor = PIXI.InvertFilter;
 /**
  * The strength of the invert. 1 will fully invert the colors, 0 will make the object its normal color
  * @property invert
- * @type Number
+ * @type {Number}
 */
 Object.defineProperty(PIXI.InvertFilter.prototype, 'invert', {
     get: function() {

@@ -7,7 +7,7 @@
  * It is the base class of all display objects that act as a container for other objects.
  *
  * @class DisplayObjectContainer
- * @extends DisplayObject
+ * @extends {PIXI.DisplayObject}
  * @constructor
  */
 PIXI.DisplayObjectContainer = function()
@@ -18,7 +18,7 @@ PIXI.DisplayObjectContainer = function()
      * [read-only] The array of children of this container.
      *
      * @property children
-     * @type Array<DisplayObject>
+     * @type {Array}<DisplayObject>
      * @readOnly
      */
     this.children = [];
@@ -32,7 +32,7 @@ PIXI.DisplayObjectContainer.prototype.constructor = PIXI.DisplayObjectContainer;
  * The width of the displayObjectContainer, setting this will actually modify the scale to achieve the value set
  *
  * @property width
- * @type Number
+ * @type {Number}
  */
 Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'width', {
     get: function() {
@@ -60,7 +60,7 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'width', {
  * The height of the displayObjectContainer, setting this will actually modify the scale to achieve the value set
  *
  * @property height
- * @type Number
+ * @type {Number}
  */
 Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'height', {
     get: function() {
@@ -87,8 +87,8 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'height', {
  * Adds a child to the container.
  *
  * @method addChild
- * @param child {DisplayObject} The DisplayObject to add to the container
- * @return {DisplayObject} The child that was added.
+ * @param child {PIXI.DisplayObject} The DisplayObject to add to the container
+ * @return {PIXI.DisplayObject} The child that was added.
  */
 PIXI.DisplayObjectContainer.prototype.addChild = function(child)
 {
@@ -99,9 +99,9 @@ PIXI.DisplayObjectContainer.prototype.addChild = function(child)
  * Adds a child to the container at a specified index. If the index is out of bounds an error will be thrown
  *
  * @method addChildAt
- * @param child {DisplayObject} The child to add
+ * @param child {PIXI.DisplayObject} The child to add
  * @param index {Number} The index to place the child in
- * @return {DisplayObject} The child that was added.
+ * @return {PIXI.DisplayObject} The child that was added.
  */
 PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
 {
@@ -130,8 +130,8 @@ PIXI.DisplayObjectContainer.prototype.addChildAt = function(child, index)
  * Swaps the position of 2 Display Objects within this container.
  *
  * @method swapChildren
- * @param child {DisplayObject}
- * @param child2 {DisplayObject}
+ * @param child {PIXI.DisplayObject}
+ * @param child2 {PIXI.DisplayObject}
  */
 PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
 {
@@ -155,7 +155,7 @@ PIXI.DisplayObjectContainer.prototype.swapChildren = function(child, child2)
  * Returns the index position of a child DisplayObject instance
  *
  * @method getChildIndex
- * @param child {DisplayObject} The DisplayObject instance to identify
+ * @param child {PIXI.DisplayObject} The DisplayObject instance to identify
  * @return {Number} The index position of the child display object to identify
  */
 PIXI.DisplayObjectContainer.prototype.getChildIndex = function(child)
@@ -172,7 +172,7 @@ PIXI.DisplayObjectContainer.prototype.getChildIndex = function(child)
  * Changes the position of an existing child in the display object container
  *
  * @method setChildIndex
- * @param child {DisplayObject} The child DisplayObject instance for which you want to change the index number
+ * @param child {PIXI.DisplayObject} The child DisplayObject instance for which you want to change the index number
  * @param index {Number} The resulting index number for the child display object
  */
 PIXI.DisplayObjectContainer.prototype.setChildIndex = function(child, index)
@@ -191,7 +191,7 @@ PIXI.DisplayObjectContainer.prototype.setChildIndex = function(child, index)
  *
  * @method getChildAt
  * @param index {Number} The index to get the child from
- * @return {DisplayObject} The child at the given index, if any.
+ * @return {PIXI.DisplayObject} The child at the given index, if any.
  */
 PIXI.DisplayObjectContainer.prototype.getChildAt = function(index)
 {
@@ -207,8 +207,8 @@ PIXI.DisplayObjectContainer.prototype.getChildAt = function(index)
  * Removes a child from the container.
  *
  * @method removeChild
- * @param child {DisplayObject} The DisplayObject to remove
- * @return {DisplayObject} The child that was removed.
+ * @param child {PIXI.DisplayObject} The DisplayObject to remove
+ * @return {PIXI.DisplayObject} The child that was removed.
  */
 PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
 {
@@ -223,7 +223,7 @@ PIXI.DisplayObjectContainer.prototype.removeChild = function(child)
  *
  * @method removeChildAt
  * @param index {Number} The index to get the child from
- * @return {DisplayObject} The child that was removed.
+ * @return {PIXI.DisplayObject} The child that was removed.
  */
 PIXI.DisplayObjectContainer.prototype.removeChildAt = function(index)
 {
@@ -240,8 +240,8 @@ PIXI.DisplayObjectContainer.prototype.removeChildAt = function(index)
 * Removes all children from this container that are within the begin and end indexes.
 *
 * @method removeChildren
-* @param beginIndex {Number} The beginning position. Default value is 0.
-* @param endIndex {Number} The ending position. Default value is size of the container.
+* @param beginIndex {Number?} The beginning position. Default value is 0.
+* @param endIndex {Number?} The ending position. Default value is size of the container.
 */
 PIXI.DisplayObjectContainer.prototype.removeChildren = function(beginIndex, endIndex)
 {
@@ -378,7 +378,7 @@ PIXI.DisplayObjectContainer.prototype.getLocalBounds = function()
  * Sets the containers Stage reference. This is the Stage that this object, and all of its children, is connected to.
  *
  * @method setStageReference
- * @param stage {Stage} the stage that the container will have as its current stage reference
+ * @param stage {PIXI.Stage} the stage that the container will have as its current stage reference
  */
 PIXI.DisplayObjectContainer.prototype.setStageReference = function(stage)
 {
@@ -415,7 +415,7 @@ PIXI.DisplayObjectContainer.prototype.removeStageReference = function()
 * Renders the object using the WebGL renderer
 *
 * @method _renderWebGL
-* @param renderSession {RenderSession} 
+* @param {RenderSession} renderSession
 * @private
 */
 PIXI.DisplayObjectContainer.prototype._renderWebGL = function(renderSession)
@@ -474,7 +474,7 @@ PIXI.DisplayObjectContainer.prototype._renderWebGL = function(renderSession)
 * Renders the object using the Canvas renderer
 *
 * @method _renderCanvas
-* @param renderSession {RenderSession} 
+* @param {RenderSession} renderSession
 * @private
 */
 PIXI.DisplayObjectContainer.prototype._renderCanvas = function(renderSession)

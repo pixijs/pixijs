@@ -14,10 +14,10 @@ PIXI.TextureCacheIdGenerator = 0;
  * @class Texture
  * @uses EventTarget
  * @constructor
- * @param baseTexture {BaseTexture} The base texture source to create the texture from
- * @param frame {Rectangle} The rectangle frame of the texture to show
- * @param [crop] {Rectangle} The area of original texture 
- * @param [trim] {Rectangle} Trimmed texture rectangle
+ * @param baseTexture {PIXI.BaseTexture} The base texture source to create the texture from
+ * @param frame {PIXI.Rectangle} The rectangle frame of the texture to show
+ * @param [crop] {PIXI.Rectangle} The area of original texture 
+ * @param [trim] {PIXI.Rectangle} Trimmed texture rectangle
  */
 PIXI.Texture = function(baseTexture, frame, crop, trim)
 {
@@ -25,7 +25,7 @@ PIXI.Texture = function(baseTexture, frame, crop, trim)
      * Does this Texture have any frame data assigned to it?
      *
      * @property noFrame
-     * @type Boolean
+     * @type {Boolean}
      */
     this.noFrame = false;
 
@@ -44,7 +44,7 @@ PIXI.Texture = function(baseTexture, frame, crop, trim)
      * The base texture that this texture uses.
      *
      * @property baseTexture
-     * @type BaseTexture
+     * @type {PIXI.BaseTexture}
      */
     this.baseTexture = baseTexture;
 
@@ -52,7 +52,7 @@ PIXI.Texture = function(baseTexture, frame, crop, trim)
      * The frame specifies the region of the base texture that this texture uses
      *
      * @property frame
-     * @type Rectangle
+     * @type {PIXI.Rectangle}
      */
     this.frame = frame;
 
@@ -60,7 +60,7 @@ PIXI.Texture = function(baseTexture, frame, crop, trim)
      * The texture trim data.
      *
      * @property trim
-     * @type Rectangle
+     * @type {PIXI.Rectangle}
      */
     this.trim = trim;
 
@@ -68,7 +68,7 @@ PIXI.Texture = function(baseTexture, frame, crop, trim)
      * This will let the renderer know if the texture is valid. If it's not then it cannot be rendered.
      *
      * @property valid
-     * @type Boolean
+     * @type {Boolean}
      */
     this.valid = false;
 
@@ -76,7 +76,7 @@ PIXI.Texture = function(baseTexture, frame, crop, trim)
      * This will let a renderer know that a texture has been updated (used mainly for webGL uv updates)
      *
      * @property requiresUpdate
-     * @type Boolean
+     * @type {Boolean}
      */
     this.requiresUpdate = false;
 
@@ -84,7 +84,7 @@ PIXI.Texture = function(baseTexture, frame, crop, trim)
      * The WebGL UV data cache.
      *
      * @property _uvs
-     * @type Object
+     * @type {*}
      * @private
      */
     this._uvs = null;
@@ -93,7 +93,7 @@ PIXI.Texture = function(baseTexture, frame, crop, trim)
      * The width of the Texture in pixels.
      *
      * @property width
-     * @type Number
+     * @type {Number}
      */
     this.width = 0;
 
@@ -101,7 +101,7 @@ PIXI.Texture = function(baseTexture, frame, crop, trim)
      * The height of the Texture in pixels.
      *
      * @property height
-     * @type Number
+     * @type {Number}
      */
     this.height = 0;
 
@@ -110,7 +110,7 @@ PIXI.Texture = function(baseTexture, frame, crop, trim)
      * irrespective of the actual frame size or placement (which can be influenced by trimmed texture atlases)
      *
      * @property crop
-     * @type Rectangle
+     * @type {PIXI.Rectangle}
      */
     this.crop = crop || new PIXI.Rectangle(0, 0, 1, 1);
 
@@ -163,7 +163,7 @@ PIXI.Texture.prototype.destroy = function(destroyBase)
  * Specifies the region of the baseTexture that this texture will use.
  *
  * @method setFrame
- * @param frame {Rectangle} The frame of the texture to set it to
+ * @param frame {PIXI.Rectangle} The frame of the texture to set it to
  */
 PIXI.Texture.prototype.setFrame = function(frame)
 {
@@ -233,7 +233,7 @@ PIXI.Texture.prototype._updateUvs = function()
  * @param imageUrl {String} The image url of the texture
  * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
  * @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
- * @return Texture
+ * @return {PIXI.Texture}
  */
 PIXI.Texture.fromImage = function(imageUrl, crossorigin, scaleMode)
 {
@@ -255,7 +255,7 @@ PIXI.Texture.fromImage = function(imageUrl, crossorigin, scaleMode)
  * @static
  * @method fromFrame
  * @param frameId {String} The frame id of the texture
- * @return Texture
+ * @return {PIXI.Texture}
  */
 PIXI.Texture.fromFrame = function(frameId)
 {
@@ -271,7 +271,7 @@ PIXI.Texture.fromFrame = function(frameId)
  * @method fromCanvas
  * @param canvas {Canvas} The canvas element source of the texture
  * @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
- * @return Texture
+ * @return {PIXI.Texture}
  */
 PIXI.Texture.fromCanvas = function(canvas, scaleMode)
 {
@@ -286,7 +286,7 @@ PIXI.Texture.fromCanvas = function(canvas, scaleMode)
  *
  * @static
  * @method addTextureToCache
- * @param texture {Texture} The Texture to add to the cache.
+ * @param texture {PIXI.Texture} The Texture to add to the cache.
  * @param id {String} The id that the texture will be stored against.
  */
 PIXI.Texture.addTextureToCache = function(texture, id)
@@ -300,7 +300,7 @@ PIXI.Texture.addTextureToCache = function(texture, id)
  * @static
  * @method removeTextureFromCache
  * @param id {String} The id of the texture to be removed
- * @return {Texture} The texture that was removed
+ * @return {PIXI.Texture} The texture that was removed
  */
 PIXI.Texture.removeTextureFromCache = function(id)
 {

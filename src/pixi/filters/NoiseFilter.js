@@ -49,7 +49,7 @@ PIXI.NoiseFilter.prototype.constructor = PIXI.NoiseFilter;
 /**
  * The amount of noise to apply.
  * @property noise
- * @type Number
+ * @type {Number}
 */
 Object.defineProperty(PIXI.NoiseFilter.prototype, 'noise', {
     get: function() {

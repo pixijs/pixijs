@@ -16,19 +16,19 @@ PIXI.WebGLFastSpriteBatch = function(gl)
 {
     /**
      * @property vertSize
-     * @type Number
+     * @type {Number}
      */
     this.vertSize = 10;
 
     /**
      * @property maxSize
-     * @type Number
+     * @type {Number}
      */
     this.maxSize = 6000;//Math.pow(2, 16) /  this.vertSize;
 
     /**
      * @property size
-     * @type Number
+     * @type {Number}
      */
     this.size = this.maxSize;
 
@@ -54,19 +54,19 @@ PIXI.WebGLFastSpriteBatch = function(gl)
     
     /**
      * @property vertexBuffer
-     * @type Object
+     * @type {*}
      */
     this.vertexBuffer = null;
 
     /**
      * @property indexBuffer
-     * @type Object
+     * @type {*}
      */
     this.indexBuffer = null;
 
     /**
      * @property lastIndexCount
-     * @type Number
+     * @type {Number}
      */
     this.lastIndexCount = 0;
 
@@ -82,37 +82,37 @@ PIXI.WebGLFastSpriteBatch = function(gl)
 
     /**
      * @property drawing
-     * @type Boolean
+     * @type {Boolean}
      */
     this.drawing = false;
 
     /**
      * @property currentBatchSize
-     * @type Number
+     * @type {Number}
      */
     this.currentBatchSize = 0;
 
     /**
      * @property currentBaseTexture
-     * @type BaseTexture
+     * @type {PIXI.BaseTexture}
      */
     this.currentBaseTexture = null;
    
     /**
      * @property currentBlendMode
-     * @type Number
+     * @type {Number}
      */
     this.currentBlendMode = 0;
 
     /**
      * @property renderSession
-     * @type Object
+     * @type {*}
      */
     this.renderSession = null;
     
     /**
      * @property shader
-     * @type Object
+     * @type {*}
      */
     this.shader = null;
 
@@ -207,7 +207,7 @@ PIXI.WebGLFastSpriteBatch.prototype.render = function(spriteBatch)
 
 /**
  * @method renderSprite
- * @param sprite {Sprite}
+ * @param sprite {PIXI.Sprite}
  */
 PIXI.WebGLFastSpriteBatch.prototype.renderSprite = function(sprite)
 {

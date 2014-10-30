@@ -40,7 +40,7 @@ PIXI.CanvasRenderer = function(width, height, options)
      * The renderer type.
      *
      * @property type
-     * @type Number
+     * @type {Number}
      */
     this.type = PIXI.CANVAS_RENDERER;
 
@@ -48,7 +48,7 @@ PIXI.CanvasRenderer = function(width, height, options)
      * The resolution of the canvas.
      *
      * @property resolution
-     * @type Number
+     * @type {Number}
      */
     this.resolution = options.resolution;
 
@@ -59,7 +59,7 @@ PIXI.CanvasRenderer = function(width, height, options)
      * Disable this by setting this to false. For example if your game has a canvas filling background image you often don't need this set.
      *
      * @property clearBeforeRender
-     * @type Boolean
+     * @type {Boolean}
      * @default
      */
     this.clearBeforeRender = options.clearBeforeRender;
@@ -68,7 +68,7 @@ PIXI.CanvasRenderer = function(width, height, options)
      * Whether the render view is transparent
      *
      * @property transparent
-     * @type Boolean
+     * @type {Boolean}
      */
     this.transparent = options.transparent;
     
@@ -76,7 +76,7 @@ PIXI.CanvasRenderer = function(width, height, options)
      * The width of the canvas view
      *
      * @property width
-     * @type Number
+     * @type {Number}
      * @default 800
      */
     this.width = width || 800;
@@ -85,7 +85,7 @@ PIXI.CanvasRenderer = function(width, height, options)
      * The height of the canvas view
      *
      * @property height
-     * @type Number
+     * @type {Number}
      * @default 600
      */
     this.height = height || 600;
@@ -112,7 +112,7 @@ PIXI.CanvasRenderer = function(width, height, options)
      * Boolean flag controlling canvas refresh.
      *
      * @property refresh
-     * @type Boolean
+     * @type {Boolean}
      */
     this.refresh = true;
 
@@ -123,7 +123,7 @@ PIXI.CanvasRenderer = function(width, height, options)
      * Internal var.
      *
      * @property count
-     * @type Number
+     * @type {Number}
      */
     this.count = 0;
 
@@ -137,7 +137,7 @@ PIXI.CanvasRenderer = function(width, height, options)
     /**
      * The render session is just a bunch of parameter used for rendering
      * @property renderSession
-     * @type Object
+     * @type {*}
      */
     this.renderSession = {
         context: this.context,
@@ -175,7 +175,7 @@ PIXI.CanvasRenderer.prototype.constructor = PIXI.CanvasRenderer;
  * Renders the Stage to this canvas view
  *
  * @method render
- * @param stage {Stage} the Stage element to be rendered
+ * @param {PIXI.Stage} stage the Stage element to be rendered
  */
 PIXI.CanvasRenderer.prototype.render = function(stage)
 {
@@ -246,8 +246,8 @@ PIXI.CanvasRenderer.prototype.destroy = function(removeView)
  * Resizes the canvas view to the specified width and height
  *
  * @method resize
- * @param width {Number} the new width of the canvas view
- * @param height {Number} the new height of the canvas view
+ * @param {Number} width the new width of the canvas view
+ * @param {Number} height the new height of the canvas view
  */
 PIXI.CanvasRenderer.prototype.resize = function(width, height)
 {
@@ -256,16 +256,13 @@ PIXI.CanvasRenderer.prototype.resize = function(width, height)
 
     this.view.width = this.width;
     this.view.height = this.height;
-
-    this.view.style.width = this.width / this.resolution + "px";
-    this.view.style.height = this.height / this.resolution + "px";
 };
 
 /**
  * Renders a display object
  *
  * @method renderDisplayObject
- * @param displayObject {DisplayObject} The displayObject to render
+ * @param {PIXI.DisplayObject} displayObject  The displayObject to render
  * @param context {CanvasRenderingContext2D} the context 2d method of the canvas
  * @private
  */

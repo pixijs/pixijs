@@ -6,9 +6,9 @@
  * The Sprite object is the base for all textured objects that are rendered to the screen
  *
  * @class Sprite
- * @extends DisplayObjectContainer
+ * @extends {PIXI.DisplayObjectContainer}
  * @constructor
- * @param texture {Texture} The texture for this sprite
+ * @param texture {PIXI.Texture} The texture for this sprite
  * 
  * A sprite can be created directly from an image like this : 
  * var sprite = new PIXI.Sprite.fromImage('assets/image.png');
@@ -26,7 +26,7 @@ PIXI.Sprite = function(texture)
      * Setting the anchor to 1,1 would mean the textures origin points will be the bottom right corner
      *
      * @property anchor
-     * @type Point
+     * @type {PIXI.Point}
      */
     this.anchor = new PIXI.Point();
 
@@ -42,7 +42,7 @@ PIXI.Sprite = function(texture)
      * The width of the sprite (this is initially set by the texture)
      *
      * @property _width
-     * @type Number
+     * @type {Number}
      * @private
      */
     this._width = 0;
@@ -51,7 +51,7 @@ PIXI.Sprite = function(texture)
      * The height of the sprite (this is initially set by the texture)
      *
      * @property _height
-     * @type Number
+     * @type {Number}
      * @private
      */
     this._height = 0;
@@ -60,7 +60,7 @@ PIXI.Sprite = function(texture)
      * The tint applied to the sprite. This is a hex value. A value of 0xFFFFFF will remove any tint effect.
      *
      * @property tint
-     * @type Number
+     * @type {Number}
      * @default 0xFFFFFF
      */
     this.tint = 0xFFFFFF;
@@ -69,7 +69,7 @@ PIXI.Sprite = function(texture)
      * The blend mode to be applied to the sprite. Set to PIXI.blendModes.NORMAL to remove any blend mode.
      *
      * @property blendMode
-     * @type Number
+     * @type {Number}
      * @default PIXI.blendModes.NORMAL;
      */
     this.blendMode = PIXI.blendModes.NORMAL;
@@ -78,7 +78,7 @@ PIXI.Sprite = function(texture)
      * The shader that will be used to render the texture to the stage. Set to null to remove a current shader.
      *
      * @property shader
-     * @type PIXI.AbstractFilter
+     * @type {PIXI.AbstractFilter}
      * @default null
      */
     this.shader = null;
@@ -105,7 +105,7 @@ PIXI.Sprite.prototype.constructor = PIXI.Sprite;
  * The width of the sprite, setting this will actually modify the scale to achieve the value set
  *
  * @property width
- * @type Number
+ * @type {Number}
  */
 Object.defineProperty(PIXI.Sprite.prototype, 'width', {
     get: function() {
@@ -121,7 +121,7 @@ Object.defineProperty(PIXI.Sprite.prototype, 'width', {
  * The height of the sprite, setting this will actually modify the scale to achieve the value set
  *
  * @property height
- * @type Number
+ * @type {Number}
  */
 Object.defineProperty(PIXI.Sprite.prototype, 'height', {
     get: function() {
@@ -137,7 +137,7 @@ Object.defineProperty(PIXI.Sprite.prototype, 'height', {
  * Sets the texture of the sprite
  *
  * @method setTexture
- * @param texture {Texture} The PIXI texture that is displayed by the sprite
+ * @param {PIXI.Texture} texture. The PIXI texture that is displayed by the sprite
  */
 PIXI.Sprite.prototype.setTexture = function(texture)
 {
@@ -244,7 +244,7 @@ PIXI.Sprite.prototype.getBounds = function(matrix)
 * Renders the object using the WebGL renderer
 *
 * @method _renderWebGL
-* @param renderSession {RenderSession} 
+* @param {RenderSession} renderSession
 * @private
 */
 PIXI.Sprite.prototype._renderWebGL = function(renderSession)
@@ -307,7 +307,7 @@ PIXI.Sprite.prototype._renderWebGL = function(renderSession)
 * Renders the object using the Canvas renderer
 *
 * @method _renderCanvas
-* @param renderSession {RenderSession} 
+* @param {RenderSession} renderSession
 * @private
 */
 PIXI.Sprite.prototype._renderCanvas = function(renderSession)
@@ -424,7 +424,7 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
  * @method fromFrame
  * @static
  * @param frameId {String} The frame Id of the texture in the cache
- * @return {Sprite} A new Sprite using a texture from the texture cache matching the frameId
+ * @return {PIXI.Sprite} A new Sprite using a texture from the texture cache matching the frameId
  */
 PIXI.Sprite.fromFrame = function(frameId)
 {
@@ -441,7 +441,7 @@ PIXI.Sprite.fromFrame = function(frameId)
  * @method fromImage
  * @static
  * @param imageId {String} The image url of the texture
- * @return {Sprite} A new Sprite using a texture from the texture cache matching the image id
+ * @return {PIXI.Sprite} A new Sprite using a texture from the texture cache matching the image id
  */
 PIXI.Sprite.fromImage = function(imageId, crossorigin, scaleMode)
 {

@@ -18,14 +18,14 @@ PIXI.WebGLSpriteBatch = function()
 {
     /**
      * @property vertSize
-     * @type Number
+     * @type {Number}
      */
     this.vertSize = 6;
 
     /**
      * The number of images in the SpriteBatch before it flushes
      * @property size
-     * @type Number
+     * @type {Number}
      */
     this.size = 2000;//Math.pow(2, 16) /  this.vertSize;
 
@@ -52,7 +52,7 @@ PIXI.WebGLSpriteBatch = function()
     
     /**
      * @property lastIndexCount
-     * @type Number
+     * @type {Number}
      */
     this.lastIndexCount = 0;
 
@@ -68,55 +68,55 @@ PIXI.WebGLSpriteBatch = function()
 
     /**
      * @property drawing
-     * @type Boolean
+     * @type {Boolean}
      */
     this.drawing = false;
 
     /**
      * @property currentBatchSize
-     * @type Number
+     * @type {Number}
      */
     this.currentBatchSize = 0;
 
     /**
      * @property currentBaseTexture
-     * @type BaseTexture
+     * @type {PIXI.BaseTexture}
      */
     this.currentBaseTexture = null;
 
     /**
      * @property dirty
-     * @type Boolean
+     * @type {Boolean}
      */
     this.dirty = true;
 
     /**
      * @property textures
-     * @type Array
+     * @type {Array}
      */
     this.textures = [];
 
     /**
      * @property blendModes
-     * @type Array
+     * @type {Array}
      */
     this.blendModes = [];
 
     /**
      * @property shaders
-     * @type Array
+     * @type {Array}
      */
     this.shaders = [];
 
     /**
      * @property sprites
-     * @type Array
+     * @type {Array}
      */
     this.sprites = [];
 
     /**
      * @property defaultShader
-     * @type AbstractFilter
+     * @type {PIXI.AbstractFilter}
      */
     this.defaultShader = new PIXI.AbstractFilter([
         'precision lowp float;',
@@ -183,7 +183,7 @@ PIXI.WebGLSpriteBatch.prototype.end = function()
 
 /**
 * @method render
-* @param sprite {Sprite} the sprite to render when using this spritebatch
+* @param sprite {PIXI.Sprite} the sprite to render when using this spritebatch
 */
 PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
 {
@@ -541,7 +541,7 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
 
 /**
 * @method renderBatch
-* @param texture {Texture}
+* @param texture {PIXI.Texture}
 * @param size {Number}
 * @param startIndex {Number}
 */

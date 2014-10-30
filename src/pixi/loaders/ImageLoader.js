@@ -28,7 +28,7 @@ PIXI.ImageLoader = function(url, crossorigin)
      * frames will contain the sprite sheet frames
      *
      * @property frames
-     * @type Array
+     * @type {Array}
      * @readOnly
      */
     this.frames = [];
@@ -71,8 +71,8 @@ PIXI.ImageLoader.prototype.onLoaded = function()
  * Loads image and split it to uniform sized frames
  *
  * @method loadFramedSpriteSheet
- * @param frameWidth {Number} width of each frame
- * @param frameHeight {Number} height of each frame
+ * @param frame{Number} width width of each frame
+ * @param frame{Number} height height of each frame
  * @param textureName {String} if given, the frames will be cached in <textureName>-<ord> format
  */
 PIXI.ImageLoader.prototype.loadFramedSpriteSheet = function(frameWidth, frameHeight, textureName)

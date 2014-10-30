@@ -8,7 +8,7 @@
  * or add a wordWrap property set to true and and wordWrapWidth property with a value in the style object.
  *
  * @class Text
- * @extends Sprite
+ * @extends {PIXI.Sprite}
  * @constructor
  * @param text {String} The copy that you would like the text to display
  * @param [style] {Object} The style parameters
@@ -44,7 +44,7 @@ PIXI.Text = function(text, style)
     /**
      * The resolution of the canvas.
      * @property resolution
-     * @type Number
+     * @type {Number}
      */
     this.resolution = 1;
 
@@ -63,7 +63,7 @@ PIXI.Text.prototype.constructor = PIXI.Text;
  * The width of the Text, setting this will actually modify the scale to achieve the value set
  *
  * @property width
- * @type Number
+ * @type {Number}
  */
 Object.defineProperty(PIXI.Text.prototype, 'width', {
     get: function() {
@@ -87,7 +87,7 @@ Object.defineProperty(PIXI.Text.prototype, 'width', {
  * The height of the Text, setting this will actually modify the scale to achieve the value set
  *
  * @property height
- * @type Number
+ * @type {Number}
  */
 Object.defineProperty(PIXI.Text.prototype, 'height', {
     get: function() {

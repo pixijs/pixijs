@@ -6,11 +6,11 @@
  * A tiling sprite is a fast way of rendering a tiling image
  *
  * @class TilingSprite
- * @extends Sprite
+ * @extends {PIXI.Sprite}
  * @constructor
- * @param texture {Texture} the texture of the tiling sprite
- * @param width {Number}  the width of the tiling sprite
- * @param height {Number} the height of the tiling sprite
+ * @param texture {!Texture} the texture of the tiling sprite
+ * @param width {Number?}  the width of the tiling sprite
+ * @param height {Number?} the height of the tiling sprite
  */
 PIXI.TilingSprite = function(texture, width, height)
 {
@@ -20,7 +20,7 @@ PIXI.TilingSprite = function(texture, width, height)
      * The with of the tiling sprite
      *
      * @property width
-     * @type Number
+     * @type {Number}
      */
     this._width = width || 100;
 
@@ -28,7 +28,7 @@ PIXI.TilingSprite = function(texture, width, height)
      * The height of the tiling sprite
      *
      * @property height
-     * @type Number
+     * @type {Number}
      */
     this._height = height || 100;
 
@@ -36,7 +36,7 @@ PIXI.TilingSprite = function(texture, width, height)
      * The scaling of the image that is being tiled
      *
      * @property tileScale
-     * @type Point
+     * @type {PIXI.Point}
      */
     this.tileScale = new PIXI.Point(1,1);
 
@@ -44,7 +44,7 @@ PIXI.TilingSprite = function(texture, width, height)
      * A point that represents the scale of the texture object
      *
      * @property tileScaleOffset
-     * @type Point
+     * @type {PIXI.Point}
      */
     this.tileScaleOffset = new PIXI.Point(1,1);
     
@@ -52,7 +52,7 @@ PIXI.TilingSprite = function(texture, width, height)
      * The offset position of the image that is being tiled
      *
      * @property tilePosition
-     * @type Point
+     * @type {PIXI.Point}
      */
     this.tilePosition = new PIXI.Point(0,0);
 
@@ -60,7 +60,7 @@ PIXI.TilingSprite = function(texture, width, height)
      * Whether this sprite is renderable or not
      *
      * @property renderable
-     * @type Boolean
+     * @type {Boolean}
      * @default true
      */
     this.renderable = true;
@@ -69,7 +69,7 @@ PIXI.TilingSprite = function(texture, width, height)
      * The tint applied to the sprite. This is a hex value
      *
      * @property tint
-     * @type Number
+     * @type {Number}
      * @default 0xFFFFFF
      */
     this.tint = 0xFFFFFF;
@@ -78,7 +78,7 @@ PIXI.TilingSprite = function(texture, width, height)
      * The blend mode to be applied to the sprite
      *
      * @property blendMode
-     * @type Number
+     * @type {Number}
      * @default PIXI.blendModes.NORMAL;
      */
     this.blendMode = PIXI.blendModes.NORMAL;
@@ -96,7 +96,7 @@ PIXI.TilingSprite.prototype.constructor = PIXI.TilingSprite;
  * The width of the sprite, setting this will actually modify the scale to achieve the value set
  *
  * @property width
- * @type Number
+ * @type {Number}
  */
 Object.defineProperty(PIXI.TilingSprite.prototype, 'width', {
     get: function() {
@@ -112,7 +112,7 @@ Object.defineProperty(PIXI.TilingSprite.prototype, 'width', {
  * The height of the TilingSprite, setting this will actually modify the scale to achieve the value set
  *
  * @property height
- * @type Number
+ * @type {Number}
  */
 Object.defineProperty(PIXI.TilingSprite.prototype, 'height', {
     get: function() {
@@ -138,7 +138,7 @@ PIXI.TilingSprite.prototype.setTexture = function(texture)
 * Renders the object using the WebGL renderer
 *
 * @method _renderWebGL
-* @param renderSession {RenderSession} 
+* @param {RenderSession} renderSession
 * @private
 */
 PIXI.TilingSprite.prototype._renderWebGL = function(renderSession)
@@ -195,7 +195,7 @@ PIXI.TilingSprite.prototype._renderWebGL = function(renderSession)
 * Renders the object using the Canvas renderer
 *
 * @method _renderCanvas
-* @param renderSession {RenderSession} 
+* @param {RenderSession} renderSession
 * @private
 */
 PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)

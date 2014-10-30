@@ -20,7 +20,7 @@ PIXI.BitmapFontLoader = function(url, crossorigin)
      * The url of the bitmap font data
      *
      * @property url
-     * @type String
+     * @type {String}
      */
     this.url = url;
 
@@ -28,7 +28,7 @@ PIXI.BitmapFontLoader = function(url, crossorigin)
      * Whether the requests should be treated as cross origin
      *
      * @property crossorigin
-     * @type Boolean
+     * @type {Boolean}
      */
     this.crossorigin = crossorigin;
 
@@ -36,7 +36,7 @@ PIXI.BitmapFontLoader = function(url, crossorigin)
      * [read-only] The base url of the bitmap font data
      *
      * @property baseUrl
-     * @type String
+     * @type {String}
      * @readOnly
      */
     this.baseUrl = url.replace(/[^\/]*$/, '');

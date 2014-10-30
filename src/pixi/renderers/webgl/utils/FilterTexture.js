@@ -34,7 +34,7 @@ PIXI.FilterTexture = function(gl, width, height, scaleMode)
 
     /**
      * @property scaleMode
-     * @type Number
+     * @type {Number}
      */
     scaleMode = scaleMode || PIXI.scaleModes.DEFAULT;
 

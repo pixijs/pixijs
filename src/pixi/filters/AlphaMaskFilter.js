@@ -10,7 +10,7 @@
  * @class AlphaMaskFilter
  * @extends AbstractFilter
  * @constructor
- * @param texture {Texture} The texture used for the displacement map * must be power of 2 texture at the moment
+ * @param texture {PIXI.Texture} The texture used for the displacement map * must be power of 2 texture at the moment
  */
 PIXI.AlphaMaskFilter = function(texture)
 {
