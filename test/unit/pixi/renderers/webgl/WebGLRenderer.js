@@ -14,6 +14,7 @@ describe('renderers/webgl/WebGLRenderer', function () {
             renderer = new PIXI.WebGLRenderer(400, 300, {});
         } catch (error) {
             // Cannot test destroy method if we cannot create WebGLRenderer
+            return;
         }
         renderer.destroy();
     });
