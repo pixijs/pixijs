@@ -18,7 +18,7 @@ PIXI.PixelateFilter = function()
     // set the uniforms
     this.uniforms = {
         invert: {type: '1f', value: 0},
-        dimensions: {type: '4fv', value:new Float32Array([10000, 100, 10, 10])},
+        dimensions: {type: '4fv', value:new PIXI.Float32Array([10000, 100, 10, 10])},
         pixelSize: {type: '2f', value:{x:10, y:10}}
     };
 

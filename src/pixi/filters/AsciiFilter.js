@@ -18,7 +18,7 @@ PIXI.AsciiFilter = function()
 
     // set the uniforms
     this.uniforms = {
-        dimensions: {type: '4fv', value:new Float32Array([10000, 100, 10, 10])},
+        dimensions: {type: '4fv', value:new PIXI.Float32Array([10000, 100, 10, 10])},
         pixelSize: {type: '1f', value:8}
     };
 
