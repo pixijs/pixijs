@@ -7,4 +7,15 @@ describe('renderers/webgl/WebGLRenderer', function () {
     it('Module exists', function () {
         expect(WebGLRenderer).to.be.a('function');
     });
+
+    it('Destroy renderer', function () {
+        var renderer;
+        try {
+            renderer = new PIXI.WebGLRenderer(400, 300, {});
+        } catch (error) {
+            // Cannot test destroy method if we cannot create WebGLRenderer
+            return;
+        }
+        renderer.destroy();
+    });
 });
