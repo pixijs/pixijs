@@ -18,7 +18,9 @@
     var stage = new PIXI.Stage(0x66FF99);
 
     // create a renderer instance
-    var renderer = PIXI.autoDetectRenderer(400, 300);
+    var renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight);
+
+   
 
     // add the renderer view element to the DOM
     document.body.appendChild(renderer.view);
@@ -29,23 +31,48 @@
     var texture = PIXI.VideoTexture.fromUrl("testVideo.mp4");
 
     // create a new Sprite using the texture
-    var bunny = new PIXI.Sprite(texture);
+    var moveSprite = new PIXI.Sprite(texture);
 
     // center the sprites anchor point
-    bunny.anchor.x = 0.5;
-    bunny.anchor.y = 0.5;
+    moveSprite.anchor.x = 0.5;
+    moveSprite.anchor.y = 0.5;
 
     // move the sprite to the center of the screen
-    bunny.position.x = 200;
-    bunny.position.y = 150;
+    moveSprite.position.x = window.innerWidth/2;
+    moveSprite.position.y = window.innerHeight/2;
 
-    stage.addChild(bunny);
 
+
+    var colorMatrix =  [1,0,0,0,
+                        0,1,0,0,
+                        0,0,1,0,
+                        0,0,0,1];
+                        
+    var filter = new PIXI.ColorMatrixFilter();
+
+    moveSprite.shader = filter;
+    
+    moveSprite.width = window.innerWidth;
+    moveSprite.height = window.innerHeight;
+
+    stage.addChild(moveSprite);
+
+    count = 0;
     function animate() {
         requestAnimFrame(animate);
 
+        count += 0.1;
+        
+        colorMatrix[1] = Math.sin(count) * 3;
+        colorMatrix[2] = Math.cos(count);
+        colorMatrix[3] = Math.cos(count) * 1.5;
+        colorMatrix[4] = Math.sin(count / 3) * 2;
+        colorMatrix[5] = Math.sin(count / 2);
+        colorMatrix[6] = Math.sin(count / 4);
+        filter.matrix = colorMatrix;
+        filter.syncUniforms();
+
         // just for fun, let's rotate mr rabbit a little
-        bunny.rotation += 0.01;
         // render the stage
         renderer.render(stage);
     }
