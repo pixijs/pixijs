@@ -192,6 +192,9 @@ module.exports = function(grunt) {
         },
         browserify: {
             dist: {
+                options: {
+                    banner: banner
+                },
                 files: {
                     '<%= files.build %>': [
                         'index.js'
@@ -200,6 +203,7 @@ module.exports = function(grunt) {
             },
             dev: {
                 options: {
+                    banner: banner,
                     browserifyOptions: {
                         debug: true
                     }
