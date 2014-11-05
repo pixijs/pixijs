@@ -320,13 +320,12 @@ PIXI.RenderTexture.prototype.getCanvas = function()
         var canvasData = tempCanvas.context.getImageData(0, 0, width, height);
         var canvasPixels = canvasData.data;
 
-        for (var i = 0; i < webGLPixels.length; i+=4)
+        for (var i = 0, len = webGLPixels.length; i < len; i+=4)
         {
-            var alpha = webGLPixels[i+3];
-            canvasPixels[i] = webGLPixels[i] * alpha;
-            canvasPixels[i+1] = webGLPixels[i+1] * alpha;
-            canvasPixels[i+2] = webGLPixels[i+2] * alpha;
-            canvasPixels[i+3] = alpha;
+            canvasPixels[i] = webGLPixels[i];
+            canvasPixels[i+1] = webGLPixels[i+1];
+            canvasPixels[i+2] = webGLPixels[i+2];
+            canvasPixels[i+3] = webGLPixels[i+3];
         }
 
         tempCanvas.context.putImageData(canvasData, 0, 0);
