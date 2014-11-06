@@ -9,15 +9,19 @@ describe('renderers/webgl/WebGLRenderer', function () {
     });
 
     // Skip tests if WebGL is not available (WebGL not supported in Travis CI)
-    var describeCond = window.WebGLRenderingContext ? describe : describe.skip;
-    var itCond = window.WebGLRenderingContext ? it : it.skip;
+    try {
+        var renderer = new WebGLRenderer(400, 300, {});
+        renderer.destroy();
+    } catch (error) {
+        return;
+    }
 
-    itCond('Destroy renderer', function () {
-        var renderer = new PIXI.WebGLRenderer(400, 300, {});
+    it('Destroy renderer', function () {
+        var renderer = new WebGLRenderer(400, 300, {});
         renderer.destroy();
     });
 
-    describeCond('.autoResize', function () {
+    describe('.autoResize', function () {
         it('Should automatically resize view if enabled', function () {
             var renderer = new WebGLRenderer(200, 200, {
                 autoResize: true
