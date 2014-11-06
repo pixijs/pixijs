@@ -8,7 +8,7 @@ describe('renderers/webgl/WebGLRenderer', function () {
         expect(WebGLRenderer).to.be.a('function');
     });
 
-    // Skip tests if WebGL is not available (Travis CI)
+    // Skip tests if WebGL is not available (WebGL not supported in Travis CI)
     var describeCond = window.WebGLRenderingContext ? describe : describe.skip;
     var itCond = window.WebGLRenderingContext ? it : it.skip;
 
