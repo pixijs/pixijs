@@ -28,22 +28,23 @@ PIXI.DisplayObject = function()
     this.scale = new PIXI.Point(1,1);//{x:1, y:1};
 
     /**
-     * Set the minimum scale this Display Object will scale down to.
-     * Prevents a parent from scaling this Display Object lower than the given value. Set to `null` to remove.
+     * The transform callback is an optional callback that if set will be called at the end of the updateTransform method and sent two parameters:
+     * This Display Objects worldTransform matrix and its parents transform matrix. Both are PIXI.Matrix object types.
+     * The matrix are passed by reference and can be modified directly without needing to return them.
+     * This ability allows you to check any of the matrix values and perform actions such as clamping scale or limiting rotation, regardless of the parent transforms.
      * 
-     * @property scaleMin
-     * @type Point
+     * @property transformCallback
+     * @type Function
      */
-    this.scaleMin = null;
+    this.transformCallback = null;
 
     /**
-     * Set the maximum scale this Display Object will scale up to.
-     * Prevents a parent from scaling this Display Object higher than the given value. Set to `null` to remove.
+     * The context under which the transformCallback is invoked.
      * 
-     * @property scaleMax
-     * @type Point
+     * @property transformCallbackContext
+     * @type Object
      */
-    this.scaleMax = null;
+    this.transformCallbackContext = null;
 
     /**
      * The pivot point of the displayObject that it rotates around
@@ -511,8 +512,6 @@ PIXI.DisplayObject.prototype.updateTransform = function()
         wt.d  = c  * pt.b + d  * pt.d;
         wt.tx = tx * pt.a + ty * pt.c + pt.tx;
         wt.ty = tx * pt.b + ty * pt.d + pt.ty;
-
-        
     }
     else
     {
@@ -530,103 +529,13 @@ PIXI.DisplayObject.prototype.updateTransform = function()
         wt.ty = tx * pt.b + ty * pt.d + pt.ty;
     }
 
-    if (this.scaleMin)
-    {
-        if (wt.a < this.scaleMin.x)
-        {
-            wt.a = this.scaleMin.x;
-        }
-
-        if (wt.d < this.scaleMin.y)
-        {
-            wt.d = this.scaleMin.y;
-        }
-    }
-
-    if (this.scaleMax)
-    {
-        if (wt.a > this.scaleMax.x)
-        {
-            wt.a = this.scaleMax.x;
-        }
-
-        if (wt.d > this.scaleMax.y)
-        {
-            wt.d = this.scaleMax.y;
-        }
-    }
-
     // multiply the alphas..
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
-};
 
-/**
- * Sets the scaleMin and scaleMax values in one call.
- * 
- * These values are used to limit how far this Display Object will scale (either up or down) based on its parent.
- * For example if this Display Object has a minScale value of 1 and its parent has a scale value of 0.5, the 0.5 will be ignored and the scale value of 1 will be used.
- * By setting these values you can carefully control how Display Objects deal with responsive scaling.
- * 
- * If only one parameter is given then that value will be used for both scaleMin and scaleMax:
- * setScaleMinMax(1) = scaleMin.x, scaleMin.y, scaleMax.x and scaleMax.y all = 1
- *
- * If only two parameters are given the first is set as scaleMin.x and y and the second as scaleMax.x and y:
- * setScaleMinMax(0.5, 2) = scaleMin.x and y = 0.5 and scaleMax.x and y = 2
- *
- * If you wish to set scaleMin with different values for x and y then either set DisplayObject.scaleMin directly, or pass `null` for the maxX and maxY parameters.
- * 
- * Call setScaleMinMax(null) to clear both the scaleMin and scaleMax values.
- *
- * @method setScaleMinMax
- * @param minX {number|null} The minimum horizontal scale value this Display Object can scale down to.
- * @param minY {number|null} The minimum vertical scale value this Display Object can scale down to.
- * @param maxX {number|null} The maximum horizontal scale value this Display Object can scale up to.
- * @param maxY {number|null} The maximum vertical scale value this Display Object can scale up to.
- */
-PIXI.DisplayObject.prototype.setScaleMinMax = function (minX, minY, maxX, maxY) {
-
-    if (typeof minY === 'undefined')
+    //  Custom callback?
+    if (this.transformCallback)
     {
-        //  1 parameter, set all to it
-        minY = maxX = maxY = minX;
-    }
-    else if (typeof maxX === 'undefined')
-    {
-        //  2 parameters, the first is min, the second max
-        maxX = maxY = minY;
-        minY = minX;
-    }
-
-    if (minX === null)
-    {
-        this.scaleMin = null;
-    }
-    else
-    {
-        if (this.scaleMin)
-        {
-            this.scaleMin.set(minX, minY);
-        }
-        else
-        {
-            this.scaleMin = new PIXI.Point(minX, minY);
-        }
-    }
-
-    if (maxX === null)
-    {
-        this.scaleMax = null;
-    }
-    else
-    {
-        if (this.scaleMax)
-        {
-            this.scaleMax.set(maxX, maxY);
-        }
-        else
-        {
-            this.scaleMax = new PIXI.Point(maxX, maxY);
-        }
+        this.transformCallback.call(this.transformCallbackContext, wt, pt);
     }
 
 };
