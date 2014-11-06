@@ -609,7 +609,7 @@ PIXI.DisplayObject.prototype.setScaleMinMax = function (minX, minY, maxX, maxY) 
         }
         else
         {
-            this.scaleMin = new Phaser.Point(minX, minY);
+            this.scaleMin = new PIXI.Point(minX, minY);
         }
     }
 
@@ -625,7 +625,7 @@ PIXI.DisplayObject.prototype.setScaleMinMax = function (minX, minY, maxX, maxY) 
         }
         else
         {
-            this.scaleMax = new Phaser.Point(maxX, maxY);
+            this.scaleMax = new PIXI.Point(maxX, maxY);
         }
     }
 
