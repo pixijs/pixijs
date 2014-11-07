@@ -334,4 +334,28 @@ describe('pixi/utils/EventTarget', function () {
 
         expect(called).to.equal(5);
     });
+
+    it('event remove during emit call properly', function () {
+        var called = 0;
+
+        function cb1() {
+            called++;
+            obj.off('myevent', cb1);
+        }
+        function cb2() {
+            called++;
+            obj.off('myevent', cb2);
+        }
+        function cb3() {
+            called++;
+            obj.off('myevent', cb3);
+        }
+
+        obj.on('myevent', cb1);
+        obj.on('myevent', cb2);
+        obj.on('myevent', cb3);
+        obj.emit('myevent', '');
+
+        expect(called).to.equal(3);
+    });
 });
