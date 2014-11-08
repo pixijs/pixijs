@@ -249,7 +249,7 @@ PIXI.Texture.fromImage = function(imageUrl, crossorigin, scaleMode)
 };
 
 /**
- * Helper function that returns a Texture objected based on the given frame id.
+ * Helper function that returns a Texture object based on the given frame id.
  * If the frame id is not in the texture cache an error will be thrown.
  *
  * @static
@@ -262,6 +262,32 @@ PIXI.Texture.fromFrame = function(frameId)
     var texture = PIXI.TextureCache[frameId];
     if(!texture) throw new Error('The frameId "' + frameId + '" does not exist in the texture cache ');
     return texture;
+};
+
+/**
+ * Helper function that returns an Array of Texture objects based on the given frame id prefix.
+ * If no matching frame id is found in the texture cache an error will be thrown.
+ *
+ * @static
+ * @method fromFrames
+ * @param prefixId {String} The frame id prefix of the textures to match
+ * @return Array<Texture>
+ */
+PIXI.Texture.fromFrames = function(prefixId)
+{
+	if(prefixId === null) throw new Error('The prefixId is null');
+	var textures = [];
+	var prefixLength = prefixId.length;
+	for(var frameId in PIXI.TextureCache)
+	{
+		if(frameId.substr(0, prefixLength) === prefixId)
+		{
+			var texture = PIXI.TextureCache[frameId];
+			textures.push(texture);
+		}
+	}
+    if(!textures.length) throw new Error('The frameId prefix "' + prefixId + '" does not exist in the texture cache ');
+    return textures;
 };
 
 /**
