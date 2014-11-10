@@ -38,7 +38,7 @@ PIXI.WebGLMaskManager.prototype.pushMask = function(maskData, renderSession)
         PIXI.WebGLGraphics.updateGraphics(maskData, gl);
     }
 
-    if(!maskData._webGL[gl.id].data.length)return;
+    if(!maskData._webGL || !maskData._webGL[gl.id].data.length)return;
 
     renderSession.stencilManager.pushStencil(maskData, maskData._webGL[gl.id].data[0], renderSession);
 };
@@ -52,6 +52,9 @@ PIXI.WebGLMaskManager.prototype.pushMask = function(maskData, renderSession)
 PIXI.WebGLMaskManager.prototype.popMask = function(maskData, renderSession)
 {
     var gl = this.gl;
+    
+    if(!maskData._webGL || !maskData._webGL[gl.id].data.length)return;
+
     renderSession.stencilManager.popStencil(maskData, maskData._webGL[gl.id].data[0], renderSession);
 };
 
