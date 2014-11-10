@@ -81,7 +81,8 @@ PIXI.defaultRenderOptions = {
     antialias:false, 
     preserveDrawingBuffer:false,
     resolution:1,
-    clearBeforeRender:true
+    clearBeforeRender:true,
+    autoResize:false
 }
 
 PIXI.sayHello = function (type) 
