@@ -14,7 +14,6 @@
  * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
  */
 PIXI.JsonLoader = function (url, crossorigin) {
-    PIXI.EventTarget.call(this);
 
     /**
      * The url of the bitmap font data
@@ -55,6 +54,8 @@ PIXI.JsonLoader = function (url, crossorigin) {
 // constructor
 PIXI.JsonLoader.prototype.constructor = PIXI.JsonLoader;
 
+PIXI.EventTarget.mixin(PIXI.JsonLoader.prototype);
+
 /**
  * Loads the JSON data
  *
@@ -66,7 +67,7 @@ PIXI.JsonLoader.prototype.load = function () {
     {
         this.ajaxRequest = new window.XDomainRequest();
 
-        // XDomainRequest has a few querks. Occasionally it will abort requests
+        // XDomainRequest has a few quirks. Occasionally it will abort requests
         // A way to avoid this is to make sure ALL callbacks are set even if not used
         // More info here: http://stackoverflow.com/questions/15786966/xdomainrequest-aborts-post-on-ie-9
         this.ajaxRequest.timeout = 3000;
@@ -87,8 +88,6 @@ PIXI.JsonLoader.prototype.load = function () {
         this.ajaxRequest = new window.ActiveXObject('Microsoft.XMLHTTP');
     }
 
-
-
     this.ajaxRequest.onload = this.onJSONLoaded.bind(this);
 
     this.ajaxRequest.open('GET',this.url,true);
@@ -97,7 +96,7 @@ PIXI.JsonLoader.prototype.load = function () {
 };
 
 /**
- * Invoke when JSON file is loaded
+ * Invoked when the JSON file is loaded.
  *
  * @method onJSONLoaded
  * @private
@@ -128,22 +127,18 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
 
             if (rect)
             {
-                PIXI.TextureCache[i] = new PIXI.Texture(this.texture, {
-                    x: rect.x,
-                    y: rect.y,
-                    width: rect.w,
-                    height: rect.h
-                });
-
-                PIXI.TextureCache[i].crop = new PIXI.Rectangle(rect.x, rect.y, rect.w, rect.h);
-
+                var textureSize = new PIXI.Rectangle(rect.x, rect.y, rect.w, rect.h);
+                var crop = textureSize.clone();
+                var trim = null;
+                
                 //  Check to see if the sprite is trimmed
                 if (frameData[i].trimmed)
                 {
                     var actualSize = frameData[i].sourceSize;
                     var realSize = frameData[i].spriteSourceSize;
-                    PIXI.TextureCache[i].trim = new PIXI.Rectangle(realSize.x, realSize.y, actualSize.w, actualSize.h);
+                    trim = new PIXI.Rectangle(realSize.x, realSize.y, actualSize.w, actualSize.h);
                 }
+                PIXI.TextureCache[i] = new PIXI.Texture(this.texture, textureSize, crop, trim);
             }
         }
 
@@ -165,7 +160,7 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
 };
 
 /**
- * Invoke when json file loaded
+ * Invoked when the json file has loaded.
  *
  * @method onLoaded
  * @private
@@ -179,7 +174,7 @@ PIXI.JsonLoader.prototype.onLoaded = function () {
 };
 
 /**
- * Invoke when error occured
+ * Invoked if an error occurs.
  *
  * @method onError
  * @private

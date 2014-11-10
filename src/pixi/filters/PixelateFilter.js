@@ -3,10 +3,11 @@
  */
 
 /**
- *
- * This filter applies a pixelate effect making display objects appear 'blocky'
+ * This filter applies a pixelate effect making display objects appear 'blocky'.
+ * 
  * @class PixelateFilter
- * @contructor
+ * @extends AbstractFilter
+ * @constructor
  */
 PIXI.PixelateFilter = function()
 {
@@ -17,7 +18,7 @@ PIXI.PixelateFilter = function()
     // set the uniforms
     this.uniforms = {
         invert: {type: '1f', value: 0},
-        dimensions: {type: '4fv', value:new Float32Array([10000, 100, 10, 10])},
+        dimensions: {type: '4fv', value:new PIXI.Float32Array([10000, 100, 10, 10])},
         pixelSize: {type: '2f', value:{x:10, y:10}}
     };
 
@@ -45,8 +46,8 @@ PIXI.PixelateFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.PixelateFilter.prototype.constructor = PIXI.PixelateFilter;
 
 /**
- *
- * This a point that describes the size of the blocs. x is the width of the block and y is the the height
+ * This a point that describes the size of the blocks. x is the width of the block and y is the height.
+ * 
  * @property size
  * @type Point
  */

@@ -4,8 +4,10 @@
  */
 
 /**
+ * A TiltShift Filter. Manages the pass of both a TiltShiftXFilter and TiltShiftYFilter.
+ * 
  * @class TiltShiftFilter
- * @contructor
+ * @constructor
  */
 PIXI.TiltShiftFilter = function()
 {
@@ -17,6 +19,14 @@ PIXI.TiltShiftFilter = function()
     this.passes = [this.tiltShiftXFilter, this.tiltShiftYFilter];
 };
 
+PIXI.TiltShiftFilter.prototype.constructor = PIXI.TiltShiftFilter;
+
+/**
+ * The strength of the blur.
+ *
+ * @property blur
+ * @type Number
+ */
 Object.defineProperty(PIXI.TiltShiftFilter.prototype, 'blur', {
     get: function() {
         return this.tiltShiftXFilter.blur;
@@ -26,6 +36,12 @@ Object.defineProperty(PIXI.TiltShiftFilter.prototype, 'blur', {
     }
 });
 
+/**
+ * The strength of the gradient blur.
+ *
+ * @property gradientBlur
+ * @type Number
+ */
 Object.defineProperty(PIXI.TiltShiftFilter.prototype, 'gradientBlur', {
     get: function() {
         return this.tiltShiftXFilter.gradientBlur;
@@ -34,6 +50,13 @@ Object.defineProperty(PIXI.TiltShiftFilter.prototype, 'gradientBlur', {
         this.tiltShiftXFilter.gradientBlur = this.tiltShiftYFilter.gradientBlur = value;
     }
 });
+
+/**
+ * The Y value to start the effect at.
+ *
+ * @property start
+ * @type Number
+ */
 Object.defineProperty(PIXI.TiltShiftFilter.prototype, 'start', {
     get: function() {
         return this.tiltShiftXFilter.start;
@@ -42,6 +65,13 @@ Object.defineProperty(PIXI.TiltShiftFilter.prototype, 'start', {
         this.tiltShiftXFilter.start = this.tiltShiftYFilter.start = value;
     }
 });
+
+/**
+ * The Y value to end the effect at.
+ *
+ * @property end
+ * @type Number
+ */
 Object.defineProperty(PIXI.TiltShiftFilter.prototype, 'end', {
     get: function() {
         return this.tiltShiftXFilter.end;

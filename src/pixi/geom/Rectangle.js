@@ -7,8 +7,8 @@
  *
  * @class Rectangle
  * @constructor
- * @param x {Number} The X coord of the upper-left corner of the rectangle
- * @param y {Number} The Y coord of the upper-left corner of the rectangle
+ * @param x {Number} The X coordinate of the upper-left corner of the rectangle
+ * @param y {Number} The Y coordinate of the upper-left corner of the rectangle
  * @param width {Number} The overall width of this rectangle
  * @param height {Number} The overall height of this rectangle
  */
@@ -55,12 +55,12 @@ PIXI.Rectangle.prototype.clone = function()
 };
 
 /**
- * Checks whether the x and y coordinates passed to this function are contained within this Rectangle
+ * Checks whether the x and y coordinates given are contained within this Rectangle
  *
  * @method contains
  * @param x {Number} The X coordinate of the point to test
  * @param y {Number} The Y coordinate of the point to test
- * @return {Boolean} Whether the x/y coords are within this Rectangle
+ * @return {Boolean} Whether the x/y coordinates are within this Rectangle
  */
 PIXI.Rectangle.prototype.contains = function(x, y)
 {

@@ -16,6 +16,7 @@
  *
  * @method requestAnimationFrame
  */
+
 /**
  * A polyfill for cancelAnimationFrame
  *
@@ -91,7 +92,7 @@ if (typeof Function.prototype.bind !== 'function') {
                 var i = arguments.length, args = new Array(i);
                 while (i--) args[i] = arguments[i];
                 args = boundArgs.concat(args);
-                target.apply(this instanceof bound ? this : thisArg, args);
+                return target.apply(this instanceof bound ? this : thisArg, args);
             }
 
             bound.prototype = (function F(proto) {

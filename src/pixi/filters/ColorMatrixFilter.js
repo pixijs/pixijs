@@ -3,12 +3,13 @@
  */
 
 /**
- *
  * The ColorMatrixFilter class lets you apply a 4x4 matrix transformation on the RGBA
  * color and alpha values of every pixel on your displayObject to produce a result
- * with a new set of RGBA color and alpha values. Its pretty powerful!
+ * with a new set of RGBA color and alpha values. It's pretty powerful!
+ * 
  * @class ColorMatrixFilter
- * @contructor
+ * @extends AbstractFilter
+ * @constructor
  */
 PIXI.ColorMatrixFilter = function()
 {

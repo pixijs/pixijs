@@ -18,7 +18,6 @@ PIXI.InteractionData = function()
      */
     this.global = new PIXI.Point();
 
-
     /**
      * The target Sprite that was interacted with
      *

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Matrix2 - pixi.js</title>
+    <title>src/pixi/filters/NoiseFilter.js - pixi.js</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.6.0</em>
+            <em>API Docs for: 2.0.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -47,9 +47,13 @@
             
                 <li><a href="../classes/AlphaMaskFilter.html">AlphaMaskFilter</a></li>
             
+                <li><a href="../classes/AsciiFilter.html">AsciiFilter</a></li>
+            
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
                 <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
+                <li><a href="../classes/autoDetectRecommendedRenderer.html">autoDetectRecommendedRenderer</a></li>
             
                 <li><a href="../classes/autoDetectRenderer.html">autoDetectRenderer</a></li>
             
@@ -60,6 +64,12 @@
                 <li><a href="../classes/BitmapText.html">BitmapText</a></li>
             
                 <li><a href="../classes/BlurFilter.html">BlurFilter</a></li>
+            
+                <li><a href="../classes/BlurXFilter.html">BlurXFilter</a></li>
+            
+                <li><a href="../classes/BlurYFilter.html">BlurYFilter</a></li>
+            
+                <li><a href="../classes/CanvasBuffer.html">CanvasBuffer</a></li>
             
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
@@ -77,6 +87,10 @@
             
                 <li><a href="../classes/ComplexPrimitiveShader.html">ComplexPrimitiveShader</a></li>
             
+                <li><a href="../classes/ConvolutionFilter.html">ConvolutionFilter</a></li>
+            
+                <li><a href="../classes/CrossHatchFilter.html">CrossHatchFilter</a></li>
+            
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
@@ -87,13 +101,17 @@
             
                 <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
+                <li><a href="../classes/Event.html">Event</a></li>
+            
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
+            
+                <li><a href="../classes/FilterBlock.html">FilterBlock</a></li>
             
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
             
-                <li><a href="../classes/getRecommendedRenderer.html">getRecommendedRenderer</a></li>
-            
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
+            
+                <li><a href="../classes/GraphicsData.html">GraphicsData</a></li>
             
                 <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
@@ -109,9 +127,9 @@
             
                 <li><a href="../classes/Matrix.html">Matrix</a></li>
             
-                <li><a href="../classes/Matrix2.html">Matrix2</a></li>
-            
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
+            
+                <li><a href="../classes/NoiseFilter.html">NoiseFilter</a></li>
             
                 <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
             
@@ -131,11 +149,19 @@
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
+                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
+            
+                <li><a href="../classes/RGBSplitFilter.html">RGBSplitFilter</a></li>
+            
                 <li><a href="../classes/Rope.html">Rope</a></li>
             
                 <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
             
+                <li><a href="../classes/SmartBlurFilter.html">SmartBlurFilter</a></li>
+            
                 <li><a href="../classes/Spine.html">Spine</a></li>
+            
+                <li><a href="../classes/SpineLoader.html">SpineLoader</a></li>
             
                 <li><a href="../classes/Sprite.html">Sprite</a></li>
             
@@ -147,17 +173,31 @@
             
                 <li><a href="../classes/Strip.html">Strip</a></li>
             
+                <li><a href="../classes/StripShader.html">StripShader</a></li>
+            
                 <li><a href="../classes/Text.html">Text</a></li>
             
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
             
+                <li><a href="../classes/TiltShiftFilter.html">TiltShiftFilter</a></li>
+            
+                <li><a href="../classes/TiltShiftXFilter.html">TiltShiftXFilter</a></li>
+            
+                <li><a href="../classes/TiltShiftYFilter.html">TiltShiftYFilter</a></li>
+            
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
+            
+                <li><a href="../classes/WebGLBlendModeManager.html">WebGLBlendModeManager</a></li>
+            
+                <li><a href="../classes/WebGLFastSpriteBatch.html">WebGLFastSpriteBatch</a></li>
             
                 <li><a href="../classes/WebGLFilterManager.html">WebGLFilterManager</a></li>
             
                 <li><a href="../classes/WebGLGraphics.html">WebGLGraphics</a></li>
+            
+                <li><a href="../classes/WebGLGraphicsData.html">WebGLGraphicsData</a></li>
             
                 <li><a href="../classes/WebGLMaskManager.html">WebGLMaskManager</a></li>
             
@@ -210,125 +250,74 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>Matrix2 Class</h1>
-<div class="box meta">
-    
+                        <h1 class="file-heading">File: src/pixi/filters/NoiseFilter.js</h1>
 
-    
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+ * @author Vico @vicocotea
+ * original filter: https://github.com/evanw/glfx.js/blob/master/src/filters/adjust/noise.js
+ */
 
-    
-        <div class="foundat">
-            Defined in: <a href="../files/src_pixi_core_Matrix.js.html#l87"><code>src&#x2F;pixi&#x2F;core&#x2F;Matrix.js:87</code></a>
-        </div>
-    
+/**
+ * A Noise effect filter.
+ * 
+ * @class NoiseFilter
+ * @extends AbstractFilter
+ * @constructor
+ */
+PIXI.NoiseFilter = function()
+{
+    PIXI.AbstractFilter.call( this );
 
-    
-        
-            Module: <a href="../modules/PIXI.html">PIXI</a>
-        
-    
+    this.passes = [this];
 
-    
-</div>
+    // set the uniforms
+    this.uniforms = {
+        noise: {type: &#x27;1f&#x27;, value: 0.5}
+    };
 
+    this.fragmentSrc = [
+        &#x27;precision mediump float;&#x27;,
+        &#x27;uniform sampler2D uSampler;&#x27;,
+        &#x27;uniform float noise;&#x27;,
+        &#x27;varying vec2 vTextureCoord;&#x27;,
 
-
-<div class="box intro">
-    <p>The Matrix2 class will choose the best type of array to use between
-a regular javascript Array and a Float32Array if the latter is available</p>
-
-</div>
-
-
-    <div class="constructor">
-        <h2>Constructor</h2>
-        <div id="method_Matrix2" class="method item">
-    <h3 class="name"><code>Matrix2</code></h3>
-
-    
-        <span class="paren">()</span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
+        &#x27;float rand(vec2 co) {&#x27;,
+        &#x27;    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);&#x27;,
+        &#x27;}&#x27;,
+        &#x27;void main() {&#x27;,
+        &#x27;    vec4 color = texture2D(uSampler, vTextureCoord);&#x27;,
             
-                
-                <p>
-                
-                Defined in
-                
+        &#x27;    float diff = (rand(vTextureCoord) - 0.5) * noise;&#x27;,
+        &#x27;    color.r += diff;&#x27;,
+        &#x27;    color.g += diff;&#x27;,
+        &#x27;    color.b += diff;&#x27;,
             
-        
-        
-        <a href="../files/src_pixi_core_Matrix.js.html#l87"><code>src&#x2F;pixi&#x2F;core&#x2F;Matrix.js:87</code></a>
-        
-        </p>
+        &#x27;    gl_FragColor = color;&#x27;,
+        &#x27;}&#x27;
+    ];
+};
 
+PIXI.NoiseFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
+PIXI.NoiseFilter.prototype.constructor = PIXI.NoiseFilter;
 
-        
+/**
+ * The amount of noise to apply.
+ * @property noise
+ * @type Number
+*/
+Object.defineProperty(PIXI.NoiseFilter.prototype, &#x27;noise&#x27;, {
+    get: function() {
+        return this.uniforms.noise.value;
+    },
+    set: function(value) {
+        this.dirty = true;
+        this.uniforms.noise.value = value;
+    }
+});
 
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-    </div>
-
-
-<div id="classdocs" class="tabview">
-    <ul class="api-class-tabs">
-        <li class="api-class-tab index"><a href="#index">Index</a></li>
-
-        
-        
-        
-        
-    </ul>
-
-    <div>
-        <div id="index" class="api-class-tabpanel index">
-            <h2 class="off-left">Item Index</h2>
-
-            
-
-            
-
-            
-
-            
-        </div>
-
-        
-
-        
-
-        
-
-        
-    </div>
+    </pre>
 </div>
 
                     </div>

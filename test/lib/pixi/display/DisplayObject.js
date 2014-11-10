@@ -3,7 +3,7 @@ function pixi_display_DisplayObject_confirmNew(obj) {
     var expect = chai.expect;
 
     expect(obj).to.be.an.instanceof(PIXI.DisplayObject);
-    expect(obj).to.respondTo('setInteractive');
+    //expect(obj).to.respondTo('setInteractive');
     //expect(obj).to.respondTo('addFilter');
     //expect(obj).to.respondTo('removeFilter');
     expect(obj).to.respondTo('updateTransform');
@@ -33,6 +33,6 @@ function pixi_display_DisplayObject_confirmNew(obj) {
     expect(obj).to.have.deep.property('worldTransform');
     pixi_core_Matrix_confirmNewMatrix(obj.worldTransform);
 
-    expect(obj).to.have.deep.property('color.length', 0);
-    expect(obj).to.have.property('dynamic', true);
+    //expect(obj).to.have.deep.property('color.length', 0);
+    //expect(obj).to.have.property('dynamic', true);
 }

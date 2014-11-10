@@ -18,15 +18,9 @@
  * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
  */
 PIXI.SpriteSheetLoader = function (url, crossorigin) {
-    /*
-     * i use texture packer to load the assets..
-     * http://www.codeandweb.com/texturepacker
-     * make sure to set the format as 'JSON'
-     */
-    PIXI.EventTarget.call(this);
 
     /**
-     * The url of the bitmap font data
+     * The url of the atlas data
      *
      * @property url
      * @type String
@@ -70,6 +64,8 @@ PIXI.SpriteSheetLoader = function (url, crossorigin) {
 // constructor
 PIXI.SpriteSheetLoader.prototype.constructor = PIXI.SpriteSheetLoader;
 
+PIXI.EventTarget.mixin(PIXI.SpriteSheetLoader.prototype);
+
 /**
  * This will begin loading the JSON file
  *
@@ -78,8 +74,8 @@ PIXI.SpriteSheetLoader.prototype.constructor = PIXI.SpriteSheetLoader;
 PIXI.SpriteSheetLoader.prototype.load = function () {
     var scope = this;
     var jsonLoader = new PIXI.JsonLoader(this.url, this.crossorigin);
-    jsonLoader.addEventListener('loaded', function (event) {
-        scope.json = event.content.json;
+    jsonLoader.on('loaded', function (event) {
+        scope.json = event.data.content.json;
         scope.onLoaded();
     });
     jsonLoader.load();
@@ -92,8 +88,7 @@ PIXI.SpriteSheetLoader.prototype.load = function () {
  * @private
  */
 PIXI.SpriteSheetLoader.prototype.onLoaded = function () {
-    this.dispatchEvent({
-        type: 'loaded',
+    this.emit('loaded', {
         content: this
     });
 };

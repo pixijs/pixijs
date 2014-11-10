@@ -55,7 +55,7 @@ PIXI.Ellipse.prototype.clone = function()
 };
 
 /**
- * Checks whether the x and y coordinates passed to this function are contained within this ellipse
+ * Checks whether the x and y coordinates given are contained within this ellipse
  *
  * @method contains
  * @param x {Number} The X coordinate of the point to test

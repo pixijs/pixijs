@@ -15,8 +15,6 @@
  */
 PIXI.ImageLoader = function(url, crossorigin)
 {
-    PIXI.EventTarget.call(this);
-
     /**
      * The texture being loaded
      *
@@ -29,12 +27,17 @@ PIXI.ImageLoader = function(url, crossorigin)
      * if the image is loaded with loadFramedSpriteSheet
      * frames will contain the sprite sheet frames
      *
+     * @property frames
+     * @type Array
+     * @readOnly
      */
     this.frames = [];
 };
 
 // constructor
 PIXI.ImageLoader.prototype.constructor = PIXI.ImageLoader;
+
+PIXI.EventTarget.mixin(PIXI.ImageLoader.prototype);
 
 /**
  * Loads image or takes it from cache
@@ -45,7 +48,7 @@ PIXI.ImageLoader.prototype.load = function()
 {
     if(!this.texture.baseTexture.hasLoaded)
     {
-        this.texture.baseTexture.addEventListener('loaded', this.onLoaded.bind(this));
+        this.texture.baseTexture.on('loaded', this.onLoaded.bind(this));
     }
     else
     {
@@ -61,12 +64,11 @@ PIXI.ImageLoader.prototype.load = function()
  */
 PIXI.ImageLoader.prototype.onLoaded = function()
 {
-    this.dispatchEvent({type: 'loaded', content: this});
+    this.emit('loaded', { content: this });
 };
 
 /**
  * Loads image and split it to uniform sized frames
- *
  *
  * @method loadFramedSpriteSheet
  * @param frameWidth {Number} width of each frame

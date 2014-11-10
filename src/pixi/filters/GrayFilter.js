@@ -3,10 +3,11 @@
  */
 
 /**
- *
- * This turns your displayObjects to black and white.
+ * This greyscales the palette of your Display Objects.
+ * 
  * @class GrayFilter
- * @contructor
+ * @extends AbstractFilter
+ * @constructor
  */
 PIXI.GrayFilter = function()
 {
@@ -38,9 +39,10 @@ PIXI.GrayFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.GrayFilter.prototype.constructor = PIXI.GrayFilter;
 
 /**
-The strength of the gray. 1 will make the object black and white, 0 will make the object its normal color
-@property gray
-*/
+ * The strength of the gray. 1 will make the object black and white, 0 will make the object its normal color.
+ * @property gray
+ * @type Number
+ */
 Object.defineProperty(PIXI.GrayFilter.prototype, 'gray', {
     get: function() {
         return this.uniforms.gray.value;

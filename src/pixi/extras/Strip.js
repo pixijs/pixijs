@@ -27,14 +27,14 @@ PIXI.Strip = function(texture)
 
     // set up the main bits..
     this.uvs = new PIXI.Float32Array([0, 1,
-                                    1, 1,
-                                    1, 0,
-                                    0,1]);
+                                      1, 1,
+                                      1, 0,
+                                      0, 1]);
 
     this.verticies = new PIXI.Float32Array([0, 0,
-                      100,0,
-                      100,100,
-                      0, 100]);
+                                            100, 0,
+                                            100, 100,
+                                            0, 100]);
 
     this.colors = new PIXI.Float32Array([1, 1, 1, 1]);
 
@@ -125,7 +125,7 @@ PIXI.Strip.prototype._renderStrip = function(renderSession)
     gl.uniformMatrix3fv(shader.translationMatrix, false, this.worldTransform.toArray(true));
     gl.uniform2f(shader.projectionVector, projection.x, -projection.y);
     gl.uniform2f(shader.offsetVector, -offset.x, -offset.y);
-    gl.uniform1f(shader.alpha, 1);
+    gl.uniform1f(shader.alpha, this.worldAlpha);
 
     if(!this.dirty)
     {
@@ -139,8 +139,17 @@ PIXI.Strip.prototype._renderStrip = function(renderSession)
         gl.vertexAttribPointer(shader.aTextureCoord, 2, gl.FLOAT, false, 0, 0);
             
         gl.activeTexture(gl.TEXTURE0);
-         // bind the current texture
-        gl.bindTexture(gl.TEXTURE_2D, this.texture.baseTexture._glTextures[gl.id] || PIXI.createWebGLTexture(this.texture.baseTexture, gl));
+
+        // check if a texture is dirty..
+        if(this.texture.baseTexture._dirty[gl.id])
+        {
+            renderSession.renderer.updateTexture(this.texture.baseTexture);
+        }
+        else
+        {
+            // bind the current texture
+            gl.bindTexture(gl.TEXTURE_2D, this.texture.baseTexture._glTextures[gl.id]);
+        }
     
         // dont need to upload!
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
@@ -161,7 +170,16 @@ PIXI.Strip.prototype._renderStrip = function(renderSession)
         gl.vertexAttribPointer(shader.aTextureCoord, 2, gl.FLOAT, false, 0, 0);
             
         gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, this.texture.baseTexture._glTextures[gl.id] || PIXI.createWebGLTexture(this.texture.baseTexture, gl));
+
+        // check if a texture is dirty..
+        if(this.texture.baseTexture._dirty[gl.id])
+        {
+            renderSession.renderer.updateTexture(this.texture.baseTexture);
+        }
+        else
+        {
+            gl.bindTexture(gl.TEXTURE_2D, this.texture.baseTexture._glTextures[gl.id]);
+        }
     
         // dont need to upload!
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
@@ -176,6 +194,8 @@ PIXI.Strip.prototype._renderStrip = function(renderSession)
   
 };
 
+
+
 PIXI.Strip.prototype._renderCanvas = function(renderSession)
 {
     var context = renderSession.context;
@@ -184,11 +204,11 @@ PIXI.Strip.prototype._renderCanvas = function(renderSession)
 
     if (renderSession.roundPixels)
     {
-        context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx | 0, transform.ty | 0);
+        context.setTransform(transform.a, transform.b, transform.c, transform.d, transform.tx | 0, transform.ty | 0);
     }
     else
     {
-        context.setTransform(transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
+        context.setTransform(transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
     }
         
     var strip = this;
@@ -207,10 +227,8 @@ PIXI.Strip.prototype._renderCanvas = function(renderSession)
         var x0 = verticies[index],   x1 = verticies[index+2], x2 = verticies[index+4];
         var y0 = verticies[index+1], y1 = verticies[index+3], y2 = verticies[index+5];
 
-        if(this.padding === 0)
+        if(this.padding > 0)
         {
-
-            //expand();
             var centerX = (x0 + x1 + x2)/3;
             var centerY = (y0 + y1 + y2)/3;
 
@@ -236,7 +254,6 @@ PIXI.Strip.prototype._renderCanvas = function(renderSession)
             dist = Math.sqrt( normX * normX + normY * normY );
             x2 = centerX + (normX / dist) * (dist + 3);
             y2 = centerY + (normY / dist) * (dist + 3);
-
         }
 
         var u0 = uvs[index] * strip.texture.width,   u1 = uvs[index+2] * strip.texture.width, u2 = uvs[index+4]* strip.texture.width;
@@ -272,13 +289,40 @@ PIXI.Strip.prototype._renderCanvas = function(renderSession)
     }
 };
 
-/*
- * Sets the texture that the Strip will use 
+
+/**
+ * Renders a flat strip
  *
- * @method setTexture
- * @param texture {Texture} the texture that will be used
+ * @method renderStripFlat
+ * @param strip {Strip} The Strip to render
  * @private
  */
+PIXI.Strip.prototype.renderStripFlat = function(strip)
+{
+    var context = this.context;
+    var verticies = strip.verticies;
+
+    var length = verticies.length/2;
+    this.count++;
+
+    context.beginPath();
+    for (var i=1; i < length-2; i++)
+    {
+        // draw some triangles!
+        var index = i*2;
+
+        var x0 = verticies[index],   x1 = verticies[index+2], x2 = verticies[index+4];
+        var y0 = verticies[index+1], y1 = verticies[index+3], y2 = verticies[index+5];
+
+        context.moveTo(x0, y0);
+        context.lineTo(x1, y1);
+        context.lineTo(x2, y2);
+    }
+
+    context.fillStyle = "#FF0000";
+    context.fill();
+    context.closePath();
+};
 
 /*
 PIXI.Strip.prototype.setTexture = function(texture)

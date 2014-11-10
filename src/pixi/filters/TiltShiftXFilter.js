@@ -1,3 +1,15 @@
+/**
+ * @author Vico @vicocotea
+ * original filter https://github.com/evanw/glfx.js/blob/master/src/filters/blur/tiltshift.js by Evan Wallace : http://madebyevan.com/
+ */
+
+/**
+ * A TiltShiftXFilter.
+ * 
+ * @class TiltShiftXFilter
+ * @extends AbstractFilter
+ * @constructor
+ */
 PIXI.TiltShiftXFilter = function()
 {
     PIXI.AbstractFilter.call( this );
@@ -57,6 +69,12 @@ PIXI.TiltShiftXFilter = function()
 PIXI.TiltShiftXFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.TiltShiftXFilter.prototype.constructor = PIXI.TiltShiftXFilter;
 
+/**
+ * The strength of the blur.
+ *
+ * @property blur
+ * @type Number
+ */
 Object.defineProperty(PIXI.TiltShiftXFilter.prototype, 'blur', {
     get: function() {
         return this.uniforms.blur.value;
@@ -67,6 +85,12 @@ Object.defineProperty(PIXI.TiltShiftXFilter.prototype, 'blur', {
     }
 });
 
+/**
+ * The strength of the gradient blur.
+ *
+ * @property gradientBlur
+ * @type Number
+ */
 Object.defineProperty(PIXI.TiltShiftXFilter.prototype, 'gradientBlur', {
     get: function() {
         return this.uniforms.gradientBlur.value;
@@ -77,6 +101,12 @@ Object.defineProperty(PIXI.TiltShiftXFilter.prototype, 'gradientBlur', {
     }
 });
 
+/**
+ * The X value to start the effect at.
+ *
+ * @property start
+ * @type Number
+ */
 Object.defineProperty(PIXI.TiltShiftXFilter.prototype, 'start', {
     get: function() {
         return this.uniforms.start.value;
@@ -88,6 +118,12 @@ Object.defineProperty(PIXI.TiltShiftXFilter.prototype, 'start', {
     }
 });
 
+/**
+ * The X value to end the effect at.
+ *
+ * @property end
+ * @type Number
+ */
 Object.defineProperty(PIXI.TiltShiftXFilter.prototype, 'end', {
     get: function() {
         return this.uniforms.end.value;
@@ -99,6 +135,11 @@ Object.defineProperty(PIXI.TiltShiftXFilter.prototype, 'end', {
     }
 });
 
+/**
+ * Updates the filter delta values.
+ *
+ * @method updateDelta
+ */
 PIXI.TiltShiftXFilter.prototype.updateDelta = function(){
     var dx = this.uniforms.end.value.x - this.uniforms.start.value.x;
     var dy = this.uniforms.end.value.y - this.uniforms.start.value.y;

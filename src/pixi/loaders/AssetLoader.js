@@ -12,7 +12,7 @@
  * @class AssetLoader
  * @constructor
  * @uses EventTarget
- * @param {Array<String>} assetURLs an array of image/sprite sheet urls that you would like loaded
+ * @param assetURLs {Array<String>} An array of image/sprite sheet urls that you would like loaded
  *      supported. Supported image formats include 'jpeg', 'jpg', 'png', 'gif'. Supported
  *      sprite sheet data formats only include 'JSON' at this time. Supported bitmap font
  *      data formats include 'xml' and 'fnt'.
@@ -20,8 +20,6 @@
  */
 PIXI.AssetLoader = function(assetURLs, crossorigin)
 {
-    PIXI.EventTarget.call(this);
-
     /**
      * The array of asset URLs that are going to be loaded
      *
@@ -58,6 +56,8 @@ PIXI.AssetLoader = function(assetURLs, crossorigin)
     };
 };
 
+PIXI.EventTarget.mixin(PIXI.AssetLoader.prototype);
+
 /**
  * Fired when an item has loaded
  * @event onProgress
@@ -72,7 +72,7 @@ PIXI.AssetLoader = function(assetURLs, crossorigin)
 PIXI.AssetLoader.prototype.constructor = PIXI.AssetLoader;
 
 /**
- * Given a filename, returns its extension, wil
+ * Given a filename, returns its extension.
  *
  * @method _getDataType
  * @param str {String} the name of the asset
@@ -114,7 +114,7 @@ PIXI.AssetLoader.prototype.load = function()
     var scope = this;
 
     function onLoad(evt) {
-        scope.onAssetLoaded(evt.content);
+        scope.onAssetLoaded(evt.data.content);
     }
 
     this.loadCount = this.assetURLs.length;
@@ -135,7 +135,7 @@ PIXI.AssetLoader.prototype.load = function()
 
         var loader = new Constructor(fileName, this.crossorigin);
 
-        loader.addEventListener('loaded', onLoad);
+        loader.on('loaded', onLoad);
         loader.load();
     }
 };
@@ -149,12 +149,12 @@ PIXI.AssetLoader.prototype.load = function()
 PIXI.AssetLoader.prototype.onAssetLoaded = function(loader)
 {
     this.loadCount--;
-    this.dispatchEvent({ type: 'onProgress', content: this, loader: loader });
+    this.emit('onProgress', { content: this, loader: loader });
     if (this.onProgress) this.onProgress(loader);
 
     if (!this.loadCount)
     {
-        this.dispatchEvent({type: 'onComplete', content: this});
+        this.emit('onComplete', { content: this });
         if(this.onComplete) this.onComplete();
     }
 };

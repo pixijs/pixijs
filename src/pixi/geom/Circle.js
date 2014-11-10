@@ -39,7 +39,7 @@ PIXI.Circle = function(x, y, radius)
  * Creates a clone of this Circle instance
  *
  * @method clone
- * @return {Circle} a copy of the polygon
+ * @return {Circle} a copy of the Circle
  */
 PIXI.Circle.prototype.clone = function()
 {
@@ -47,12 +47,12 @@ PIXI.Circle.prototype.clone = function()
 };
 
 /**
- * Checks whether the x, and y coordinates passed to this function are contained within this circle
+ * Checks whether the x and y coordinates given are contained within this circle
  *
  * @method contains
  * @param x {Number} The X coordinate of the point to test
  * @param y {Number} The Y coordinate of the point to test
- * @return {Boolean} Whether the x/y coordinates are within this polygon
+ * @return {Boolean} Whether the x/y coordinates are within this Circle
  */
 PIXI.Circle.prototype.contains = function(x, y)
 {
@@ -82,4 +82,3 @@ PIXI.Circle.prototype.getBounds = function()
 
 // constructor
 PIXI.Circle.prototype.constructor = PIXI.Circle;
-

@@ -1,24 +1,25 @@
 /**
- * @author Mat Groves
- * 
- * 
+ * @author Mat Groves http://matgroves.com/ @Doormat23
  */
+
 /**
- * A set of functions used to handle masking
+ * A set of functions used to handle masking.
  *
  * @class CanvasMaskManager
+ * @constructor
  */
 PIXI.CanvasMaskManager = function()
 {
-    
 };
 
+PIXI.CanvasMaskManager.prototype.constructor = PIXI.CanvasMaskManager;
+
 /**
- * This method adds it to the current stack of masks
+ * This method adds it to the current stack of masks.
  *
  * @method pushMask
- * @param maskData the maskData that will be pushed
- * @param context {Context2D} the 2d drawing method of the canvas
+ * @param maskData {Object} the maskData that will be pushed
+ * @param renderSession {Object} The renderSession whose context will be used for this mask manager.
  */
 PIXI.CanvasMaskManager.prototype.pushMask = function(maskData, renderSession)
 {
@@ -32,8 +33,8 @@ PIXI.CanvasMaskManager.prototype.pushMask = function(maskData, renderSession)
     var resolution = renderSession.resolution;
 
     context.setTransform(transform.a * resolution,
-                         transform.c * resolution,
                          transform.b * resolution,
+                         transform.c * resolution,
                          transform.d * resolution,
                          transform.tx * resolution,
                          transform.ty * resolution);
@@ -46,10 +47,10 @@ PIXI.CanvasMaskManager.prototype.pushMask = function(maskData, renderSession)
 };
 
 /**
- * Restores the current drawing context to the state it was before the mask was applied
+ * Restores the current drawing context to the state it was before the mask was applied.
  *
  * @method popMask
- * @param context {Context2D} the 2d drawing method of the canvas
+ * @param renderSession {Object} The renderSession whose context will be used for this mask manager.
  */
 PIXI.CanvasMaskManager.prototype.popMask = function(renderSession)
 {

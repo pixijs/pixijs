@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 1.6.0</em>
+            <em>API Docs for: 2.0.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -47,9 +47,13 @@
             
                 <li><a href="../classes/AlphaMaskFilter.html">AlphaMaskFilter</a></li>
             
+                <li><a href="../classes/AsciiFilter.html">AsciiFilter</a></li>
+            
                 <li><a href="../classes/AssetLoader.html">AssetLoader</a></li>
             
                 <li><a href="../classes/AtlasLoader.html">AtlasLoader</a></li>
+            
+                <li><a href="../classes/autoDetectRecommendedRenderer.html">autoDetectRecommendedRenderer</a></li>
             
                 <li><a href="../classes/autoDetectRenderer.html">autoDetectRenderer</a></li>
             
@@ -60,6 +64,12 @@
                 <li><a href="../classes/BitmapText.html">BitmapText</a></li>
             
                 <li><a href="../classes/BlurFilter.html">BlurFilter</a></li>
+            
+                <li><a href="../classes/BlurXFilter.html">BlurXFilter</a></li>
+            
+                <li><a href="../classes/BlurYFilter.html">BlurYFilter</a></li>
+            
+                <li><a href="../classes/CanvasBuffer.html">CanvasBuffer</a></li>
             
                 <li><a href="../classes/CanvasGraphics.html">CanvasGraphics</a></li>
             
@@ -77,6 +87,10 @@
             
                 <li><a href="../classes/ComplexPrimitiveShader.html">ComplexPrimitiveShader</a></li>
             
+                <li><a href="../classes/ConvolutionFilter.html">ConvolutionFilter</a></li>
+            
+                <li><a href="../classes/CrossHatchFilter.html">CrossHatchFilter</a></li>
+            
                 <li><a href="../classes/DisplacementFilter.html">DisplacementFilter</a></li>
             
                 <li><a href="../classes/DisplayObject.html">DisplayObject</a></li>
@@ -87,13 +101,17 @@
             
                 <li><a href="../classes/Ellipse.html">Ellipse</a></li>
             
+                <li><a href="../classes/Event.html">Event</a></li>
+            
                 <li><a href="../classes/EventTarget.html">EventTarget</a></li>
+            
+                <li><a href="../classes/FilterBlock.html">FilterBlock</a></li>
             
                 <li><a href="../classes/FilterTexture.html">FilterTexture</a></li>
             
-                <li><a href="../classes/getRecommendedRenderer.html">getRecommendedRenderer</a></li>
-            
                 <li><a href="../classes/Graphics.html">Graphics</a></li>
+            
+                <li><a href="../classes/GraphicsData.html">GraphicsData</a></li>
             
                 <li><a href="../classes/GrayFilter.html">GrayFilter</a></li>
             
@@ -109,9 +127,9 @@
             
                 <li><a href="../classes/Matrix.html">Matrix</a></li>
             
-                <li><a href="../classes/Matrix2.html">Matrix2</a></li>
-            
                 <li><a href="../classes/MovieClip.html">MovieClip</a></li>
+            
+                <li><a href="../classes/NoiseFilter.html">NoiseFilter</a></li>
             
                 <li><a href="../classes/NormalMapFilter.html">NormalMapFilter</a></li>
             
@@ -131,11 +149,19 @@
             
                 <li><a href="../classes/Rectangle.html">Rectangle</a></li>
             
+                <li><a href="../classes/RenderTexture.html">RenderTexture</a></li>
+            
+                <li><a href="../classes/RGBSplitFilter.html">RGBSplitFilter</a></li>
+            
                 <li><a href="../classes/Rope.html">Rope</a></li>
             
                 <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
             
+                <li><a href="../classes/SmartBlurFilter.html">SmartBlurFilter</a></li>
+            
                 <li><a href="../classes/Spine.html">Spine</a></li>
+            
+                <li><a href="../classes/SpineLoader.html">SpineLoader</a></li>
             
                 <li><a href="../classes/Sprite.html">Sprite</a></li>
             
@@ -147,17 +173,31 @@
             
                 <li><a href="../classes/Strip.html">Strip</a></li>
             
+                <li><a href="../classes/StripShader.html">StripShader</a></li>
+            
                 <li><a href="../classes/Text.html">Text</a></li>
             
                 <li><a href="../classes/Texture.html">Texture</a></li>
             
                 <li><a href="../classes/TilingSprite.html">TilingSprite</a></li>
             
+                <li><a href="../classes/TiltShiftFilter.html">TiltShiftFilter</a></li>
+            
+                <li><a href="../classes/TiltShiftXFilter.html">TiltShiftXFilter</a></li>
+            
+                <li><a href="../classes/TiltShiftYFilter.html">TiltShiftYFilter</a></li>
+            
                 <li><a href="../classes/TwistFilter.html">TwistFilter</a></li>
+            
+                <li><a href="../classes/WebGLBlendModeManager.html">WebGLBlendModeManager</a></li>
+            
+                <li><a href="../classes/WebGLFastSpriteBatch.html">WebGLFastSpriteBatch</a></li>
             
                 <li><a href="../classes/WebGLFilterManager.html">WebGLFilterManager</a></li>
             
                 <li><a href="../classes/WebGLGraphics.html">WebGLGraphics</a></li>
+            
+                <li><a href="../classes/WebGLGraphicsData.html">WebGLGraphicsData</a></li>
             
                 <li><a href="../classes/WebGLMaskManager.html">WebGLMaskManager</a></li>
             
@@ -272,6 +312,15 @@
                             </li>
                         
                             <li class="index-item method private">
+                                <a href="#method_buildComplexPoly">buildComplexPoly</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method private">
                                 <a href="#method_buildLine">buildLine</a>
 
                                 
@@ -308,7 +357,25 @@
                             </li>
                         
                             <li class="index-item method private">
+                                <a href="#method_quadraticBezierCurve">quadraticBezierCurve</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method private">
                                 <a href="#method_renderGraphics">renderGraphics</a>
+
+                                
+                                    <span class="flag static">static</span>
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method private">
+                                <a href="#method_switchMode">switchMode</a>
 
                                 
                                     <span class="flag static">static</span>
@@ -393,7 +460,7 @@
             
         
         
-        <a href="../files/src_pixi_renderers_webgl_utils_WebGLGraphics.js.html#l408"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;WebGLGraphics.js:408</code></a>
+        <a href="../files/src_pixi_renderers_webgl_utils_WebGLGraphics.js.html#l420"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;WebGLGraphics.js:420</code></a>
         
         </p>
 
@@ -424,6 +491,120 @@
 
                     <div class="param-description">
                         <p>The graphics object to draw</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">webGLData</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_buildComplexPoly" class="method item private">
+    <h3 class="name"><code>buildComplexPoly</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>graphicsData</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>webGLData</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_renderers_webgl_utils_WebGLGraphics.js.html#l715"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;WebGLGraphics.js:715</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Builds a complex polygon to draw</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">graphicsData</code>
+                        <span class="type"><a href="../classes/Graphics.html" class="crosslink">Graphics</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The graphics object containing all the necessary properties</p>
 
                     </div>
 
@@ -507,7 +688,7 @@
             
         
         
-        <a href="../files/src_pixi_renderers_webgl_utils_WebGLGraphics.js.html#l480"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;WebGLGraphics.js:480</code></a>
+        <a href="../files/src_pixi_renderers_webgl_utils_WebGLGraphics.js.html#l503"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;WebGLGraphics.js:503</code></a>
         
         </p>
 
@@ -621,7 +802,7 @@
             
         
         
-        <a href="../files/src_pixi_renderers_webgl_utils_WebGLGraphics.js.html#l693"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;WebGLGraphics.js:693</code></a>
+        <a href="../files/src_pixi_renderers_webgl_utils_WebGLGraphics.js.html#l777"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;WebGLGraphics.js:777</code></a>
         
         </p>
 
@@ -632,7 +813,7 @@
     </div>
 
     <div class="description">
-        <p>Builds a complex polygon to draw</p>
+        <p>Builds a polygon to draw</p>
 
     </div>
 
@@ -735,7 +916,7 @@
             
         
         
-        <a href="../files/src_pixi_renderers_webgl_utils_WebGLGraphics.js.html#l221"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;WebGLGraphics.js:221</code></a>
+        <a href="../files/src_pixi_renderers_webgl_utils_WebGLGraphics.js.html#l233"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;WebGLGraphics.js:233</code></a>
         
         </p>
 
@@ -849,7 +1030,7 @@
             
         
         
-        <a href="../files/src_pixi_renderers_webgl_utils_WebGLGraphics.js.html#l290"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;WebGLGraphics.js:290</code></a>
+        <a href="../files/src_pixi_renderers_webgl_utils_WebGLGraphics.js.html#l301"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;WebGLGraphics.js:301</code></a>
         
         </p>
 
@@ -911,6 +1092,226 @@
 </div>
 
                 
+                    <div id="method_quadraticBezierCurve" class="method item private">
+    <h3 class="name"><code>quadraticBezierCurve</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>fromX</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>fromY</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>cpX</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>cpY</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>toX</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>toY</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Array<Number></span>
+        </span>
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_renderers_webgl_utils_WebGLGraphics.js.html#l368"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;WebGLGraphics.js:368</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Calculate the points for a quadratic bezier curve. (helper function..)
+Based on: <a href="https://stackoverflow.com/questions/785097/how-do-i-implement-a-bezier-curve-in-c">https://stackoverflow.com/questions/785097/how-do-i-implement-a-bezier-curve-in-c</a></p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">fromX</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Origin point x</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">fromY</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Origin point x</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">cpX</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Control point x</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">cpY</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Control point y</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">toX</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Destination point x</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">toY</code>
+                        <span class="type">Number</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Destination point y</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Array<Number></span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
                     <div id="method_renderGraphics" class="method item private">
     <h3 class="name"><code>renderGraphics</code></h3>
 
@@ -963,7 +1364,7 @@
             
         
         
-        <a href="../files/src_pixi_renderers_webgl_utils_WebGLGraphics.js.html#l17"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;WebGLGraphics.js:17</code></a>
+        <a href="../files/src_pixi_renderers_webgl_utils_WebGLGraphics.js.html#l16"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;WebGLGraphics.js:16</code></a>
         
         </p>
 
@@ -1003,6 +1404,118 @@
                     
                         <code class="param-name">renderSession</code>
                         <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_switchMode" class="method item private">
+    <h3 class="name"><code>switchMode</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>webGL</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>type</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+        <span class="flag private">private</span>
+    
+
+    
+
+    
+        <span class="flag static">static</span>
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_renderers_webgl_utils_WebGLGraphics.js.html#l199"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;WebGLGraphics.js:199</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">webGL</code>
+                        <span class="type">WebGLContext</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">type</code>
+                        <span class="type">Number</span>
                     
 
                     
@@ -1076,7 +1589,7 @@
             
         
         
-        <a href="../files/src_pixi_renderers_webgl_utils_WebGLGraphics.js.html#l87"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;WebGLGraphics.js:87</code></a>
+        <a href="../files/src_pixi_renderers_webgl_utils_WebGLGraphics.js.html#l84"><code>src&#x2F;pixi&#x2F;renderers&#x2F;webgl&#x2F;utils&#x2F;WebGLGraphics.js:84</code></a>
         
         </p>
 
