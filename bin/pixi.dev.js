@@ -4,7 +4,7 @@
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-11-03
+ * Compiled: 2014-11-10
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -5027,7 +5027,7 @@ PIXI.EventTarget = {
 
             //iterate the listeners
             if(this._listeners && this._listeners[eventName]) {
-                var listeners = this._listeners[eventName],
+                var listeners = this._listeners[eventName].slice(0),
                     length = listeners.length,
                     fn = listeners[0],
                     i;
@@ -10131,6 +10131,7 @@ PIXI.CanvasBuffer.prototype.constructor = PIXI.CanvasBuffer;
  */
 PIXI.CanvasBuffer.prototype.clear = function()
 {
+    this.context.setTransform(1, 0, 0, 1, 0, 0);
     this.context.clearRect(0,0, this.width, this.height);
 };
 
@@ -11969,7 +11970,7 @@ PIXI.Graphics.prototype.updateBounds = function()
             shape = data.shape;
            
 
-            if(type === PIXI.Graphics.RECT || type === PIXI.Graphics.RRECT)
+            if(type === PIXI.Graphics.RECT || type === PIXI.Graphics.RREC)
             {
                 x = shape.x - lineWidth/2;
                 y = shape.y - lineWidth/2;
@@ -15530,6 +15531,9 @@ PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, matrix, clea
     var wt = displayObject.worldTransform;
     wt.identity();
     if(matrix)wt.append(matrix);
+    
+    // setWorld Alpha to ensure that the object is renderer at full opacity
+    displayObject.worldAlpha = 1;
 
     // Time to update all the children of the displayObject with the new matrix..    
     var children = displayObject.children;
@@ -15598,16 +15602,7 @@ PIXI.RenderTexture.prototype.getCanvas = function()
 
         var tempCanvas = new PIXI.CanvasBuffer(width, height);
         var canvasData = tempCanvas.context.getImageData(0, 0, width, height);
-        var canvasPixels = canvasData.data;
-
-        for (var i = 0; i < webGLPixels.length; i+=4)
-        {
-            var alpha = webGLPixels[i+3];
-            canvasPixels[i] = webGLPixels[i] * alpha;
-            canvasPixels[i+1] = webGLPixels[i+1] * alpha;
-            canvasPixels[i+2] = webGLPixels[i+2] * alpha;
-            canvasPixels[i+3] = alpha;
-        }
+        canvasData.data.set(webGLPixels);
 
         tempCanvas.context.putImageData(canvasData, 0, 0);
 
