@@ -799,6 +799,9 @@ PIXI.Graphics.prototype._renderCanvas = function(renderSession)
  */
 PIXI.Graphics.prototype.getBounds = function( matrix )
 {
+    // return an empty object if the item is a mask!
+    if(this.isMask)return PIXI.EmptyRectangle;
+
     if(this.dirty)
     {
         this.updateBounds();
