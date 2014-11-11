@@ -1305,13 +1305,14 @@ PIXI.DisplayObject.prototype.updateTransform = function()
         // lets do the fast version as we know there is no rotation..
         a  = this.scale.x;
         d  = this.scale.y;
-        tx = this.position.x - this.pivot.x * a;
-        ty = this.position.y - this.pivot.y * d;
 
-        wt.a  = pt.a * a;
-        wt.b  = pt.b * d;
-        wt.c  = pt.c * a;
-        wt.d  = pt.d * d;
+        tx =  this.position.x;
+        ty =  this.position.y;
+
+        wt.a  = a  * pt.a;
+        wt.b  = a  * pt.b;
+        wt.c  = d  * pt.c;
+        wt.d  = d  * pt.d;
         wt.tx = tx * pt.a + ty * pt.c + pt.tx;
         wt.ty = tx * pt.b + ty * pt.d + pt.ty;
     }
@@ -1319,6 +1320,9 @@ PIXI.DisplayObject.prototype.updateTransform = function()
     // multiply the alphas..
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
 };
+
+// performance increase to avoid using call.. (10x faster)
+PIXI.DisplayObject.prototype.displayObjectUpdateTransform = PIXI.DisplayObject.prototype.updateTransform;
 
 /**
  * Retrieves the bounds of the displayObject as a rectangle object
@@ -1587,11 +1591,15 @@ PIXI.DisplayObjectContainer = function()
      * @readOnly
      */
     this.children = [];
+
+    // fast access to update transform..
+    
 };
 
 // constructor
 PIXI.DisplayObjectContainer.prototype = Object.create( PIXI.DisplayObject.prototype );
 PIXI.DisplayObjectContainer.prototype.constructor = PIXI.DisplayObjectContainer;
+
 
 /**
  * The width of the displayObjectContainer, setting this will actually modify the scale to achieve the value set
@@ -1845,7 +1853,9 @@ PIXI.DisplayObjectContainer.prototype.updateTransform = function()
 {
     if(!this.visible)return;
 
-    PIXI.DisplayObject.prototype.updateTransform.call( this );
+    this.displayObjectUpdateTransform();
+
+    //PIXI.DisplayObject.prototype.updateTransform.call( this );
 
     if(this._cacheAsBitmap)return;
 
@@ -1854,6 +1864,9 @@ PIXI.DisplayObjectContainer.prototype.updateTransform = function()
         this.children[i].updateTransform();
     }
 };
+
+// performance increase to avoid using call.. (10x faster)
+PIXI.DisplayObjectContainer.prototype.displayObjectContainerUpdateTransform = PIXI.DisplayObjectContainer.prototype.updateTransform;
 
 /**
  * Retrieves the bounds of the displayObjectContainer as a rectangle. The bounds calculation takes all visible children into consideration.
@@ -2253,8 +2266,8 @@ PIXI.Sprite.prototype.getBounds = function(matrix)
     var worldTransform = matrix || this.worldTransform ;
 
     var a = worldTransform.a;
-    var b = worldTransform.c;
-    var c = worldTransform.b;
+    var b = worldTransform.b;
+    var c = worldTransform.c;
     var d = worldTransform.d;
     var tx = worldTransform.tx;
     var ty = worldTransform.ty;
@@ -3712,8 +3725,8 @@ PIXI.InteractionData.prototype.getLocalPosition = function(displayObject, point)
     var global = this.global;
 
     // do a cheeky transform to get the mouse coords;
-    var a00 = worldTransform.a, a01 = worldTransform.b, a02 = worldTransform.tx,
-        a10 = worldTransform.c, a11 = worldTransform.d, a12 = worldTransform.ty,
+    var a00 = worldTransform.a, a01 = worldTransform.c, a02 = worldTransform.tx,
+        a10 = worldTransform.b, a11 = worldTransform.d, a12 = worldTransform.ty,
         id = 1 / (a00 * a11 + a01 * -a10);
 
     point = point || new PIXI.Point();
@@ -11927,8 +11940,8 @@ PIXI.Graphics.prototype.getBounds = function( matrix )
     var worldTransform = matrix || this.worldTransform;
 
     var a = worldTransform.a;
-    var b = worldTransform.c;
-    var c = worldTransform.b;
+    var b = worldTransform.b;
+    var c = worldTransform.c;
     var d = worldTransform.d;
     var tx = worldTransform.tx;
     var ty = worldTransform.ty;
@@ -13044,8 +13057,8 @@ PIXI.TilingSprite.prototype.getBounds = function()
     var worldTransform = this.worldTransform;
 
     var a = worldTransform.a;
-    var b = worldTransform.c;
-    var c = worldTransform.b;
+    var b = worldTransform.b;
+    var c = worldTransform.c;
     var d = worldTransform.d;
     var tx = worldTransform.tx;
     var ty = worldTransform.ty;
@@ -15308,6 +15321,9 @@ PIXI.TextureUvs = function()
     this.x3 = 0;
     this.y3 = 0;
 };
+
+PIXI.Texture.emptyTexture = new PIXI.Texture(new PIXI.BaseTexture());
+
 
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23

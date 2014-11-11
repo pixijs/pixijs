@@ -22,11 +22,15 @@ PIXI.DisplayObjectContainer = function()
      * @readOnly
      */
     this.children = [];
+
+    // fast access to update transform..
+    
 };
 
 // constructor
 PIXI.DisplayObjectContainer.prototype = Object.create( PIXI.DisplayObject.prototype );
 PIXI.DisplayObjectContainer.prototype.constructor = PIXI.DisplayObjectContainer;
+
 
 /**
  * The width of the displayObjectContainer, setting this will actually modify the scale to achieve the value set
@@ -280,7 +284,9 @@ PIXI.DisplayObjectContainer.prototype.updateTransform = function()
 {
     if(!this.visible)return;
 
-    PIXI.DisplayObject.prototype.updateTransform.call( this );
+    this.displayObjectUpdateTransform();
+
+    //PIXI.DisplayObject.prototype.updateTransform.call( this );
 
     if(this._cacheAsBitmap)return;
 
@@ -289,6 +295,9 @@ PIXI.DisplayObjectContainer.prototype.updateTransform = function()
         this.children[i].updateTransform();
     }
 };
+
+// performance increase to avoid using call.. (10x faster)
+PIXI.DisplayObjectContainer.prototype.displayObjectContainerUpdateTransform = PIXI.DisplayObjectContainer.prototype.updateTransform;
 
 /**
  * Retrieves the bounds of the displayObjectContainer as a rectangle. The bounds calculation takes all visible children into consideration.
