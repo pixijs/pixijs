@@ -91,7 +91,7 @@
     {
         isDown = false;
         graphics.beginFill(color);
-        graphics.drawPath(path)
+        graphics.drawPolygon(path)
         graphics.endFill();
         path = [];    
     }
@@ -108,7 +108,7 @@
         count += 0.1;
         liveGraphics.clear();
         liveGraphics.beginFill(color);
-        liveGraphics.drawPath(path);
+        liveGraphics.drawPolygon(path);
         // render the stage
         renderer.render(stage);
     //    graphics.x = 300;
@@ -125,7 +125,7 @@
     logo.position.x = window.innerWidth
     logo.scale.x = logo.scale.y = 0.5;
     logo.position.y = window.innerHeight - 70;
-    logo.setInteractive(true);
+    logo.interactive = true;
     logo.buttonMode = true;
     logo.click = logo.tap = function()
     {
