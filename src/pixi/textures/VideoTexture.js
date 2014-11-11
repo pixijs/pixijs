@@ -45,7 +45,7 @@ PIXI.VideoTexture.prototype._onUpdate = function()
     }
 };
 
-PIXI.VideoTexture.prototype.onPlayStart = function(event)
+PIXI.VideoTexture.prototype.onPlayStart = function()
 {
     if(!this.autoUpdate)
     {
@@ -54,12 +54,12 @@ PIXI.VideoTexture.prototype.onPlayStart = function(event)
     }
 };
 
-PIXI.VideoTexture.prototype.onPlayStop = function(event)
+PIXI.VideoTexture.prototype.onPlayStop = function()
 {
     this.autoUpdate = false;
 };
 
-PIXI.VideoTexture.prototype.onCanPlay = function(event)
+PIXI.VideoTexture.prototype.onCanPlay = function()
 {
     if( event.type === 'canplaythrough' )
     {
