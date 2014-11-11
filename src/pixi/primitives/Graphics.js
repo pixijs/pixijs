@@ -545,7 +545,7 @@ PIXI.Graphics.prototype.drawRect = function( x, y, width, height )
  */
 PIXI.Graphics.prototype.drawRoundedRect = function( x, y, width, height, radius )
 {
-    this.drawShape({ points:[x, y, width, height, radius], type:PIXI.Graphics.RREC });
+    this.drawShape(new PIXI.RoundedRectangle(x, y, width, height, radius));
 
     return this;
 };
@@ -1112,3 +1112,5 @@ PIXI.Polygon.prototype.type = PIXI.Graphics.POLY;
 PIXI.Rectangle.prototype.type = PIXI.Graphics.RECT;
 PIXI.Circle.prototype.type = PIXI.Graphics.CIRC;
 PIXI.Ellipse.prototype.type = PIXI.Graphics.ELIP;
+PIXI.RoundedRectangle.prototype.type = PIXI.Graphics.RREC;
+

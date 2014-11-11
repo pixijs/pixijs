@@ -309,12 +309,13 @@ PIXI.WebGLGraphics.buildRectangle = function(graphicsData, webGLData)
  */
 PIXI.WebGLGraphics.buildRoundedRectangle = function(graphicsData, webGLData)
 {
-    var points = graphicsData.shape.points;
-    var x = points[0];
-    var y = points[1];
-    var width = points[2];
-    var height = points[3];
-    var radius = points[4];
+    var rrectData = graphicsData.shape;
+    var x = rrectData.x;
+    var y = rrectData.y;
+    var width = rrectData.width;
+    var height = rrectData.height;
+
+    var radius = rrectData.radius;
 
     var recPoints = [];
     recPoints.push(x, y + radius);
