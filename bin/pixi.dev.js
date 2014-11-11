@@ -1,6 +1,6 @@
 /**
  * @license
- * pixi.js - v2.0.0
+ * pixi.js - v2.1.0
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
@@ -35,7 +35,7 @@ PIXI.WEBGL_RENDERER = 0;
 PIXI.CANVAS_RENDERER = 1;
 
 // useful for testing against if your lib is using pixi.
-PIXI.VERSION = "v2.0.0";
+PIXI.VERSION = "v2.1.0";
 
 
 // the various blend modes supported by pixi
@@ -3532,6 +3532,24 @@ PIXI.Text.prototype.wordWrap = function(text)
         }
     }
     return result;
+};
+
+/**
+* Returns the bounds of the Text as a rectangle. The bounds calculation takes the worldTransform into account.
+*
+* @method getBounds
+* @param matrix {Matrix} the transformation matrix of the Text
+* @return {Rectangle} the framing rectangle
+*/
+PIXI.Text.prototype.getBounds = function(matrix)
+{
+    if(this.dirty)
+    {
+        this.updateText();
+        this.dirty = false;
+    }
+
+    return PIXI.Sprite.prototype.getBounds.call(this, matrix);
 };
 
 /**
