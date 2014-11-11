@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 2.0.0</em>
+            <em>API Docs for: 2.1.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -154,6 +154,8 @@
                 <li><a href="../classes/RGBSplitFilter.html">RGBSplitFilter</a></li>
             
                 <li><a href="../classes/Rope.html">Rope</a></li>
+            
+                <li><a href="../classes/Rounded Rectangle.html">Rounded Rectangle</a></li>
             
                 <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
             
@@ -298,7 +300,7 @@ PIXI.StripShader = function(gl)
         &#x27;uniform sampler2D uSampler;&#x27;,
 
         &#x27;void main(void) {&#x27;,
-        &#x27;   gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y));&#x27;,
+        &#x27;   gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y)) * alpha;&#x27;,
       //  &#x27;   gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);&#x27;,//gl_FragColor * alpha;&#x27;,
         &#x27;}&#x27;
     ];

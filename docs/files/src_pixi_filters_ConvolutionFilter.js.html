@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 2.0.0</em>
+            <em>API Docs for: 2.1.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -155,6 +155,8 @@
             
                 <li><a href="../classes/Rope.html">Rope</a></li>
             
+                <li><a href="../classes/Rounded Rectangle.html">Rounded Rectangle</a></li>
+            
                 <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
             
                 <li><a href="../classes/SmartBlurFilter.html">SmartBlurFilter</a></li>
@@ -275,7 +277,7 @@ PIXI.ConvolutionFilter = function(matrix, width, height)
 
     // set the uniforms
     this.uniforms = {
-        m : {type: &#x27;1fv&#x27;, value: new Float32Array(matrix)},
+        m : {type: &#x27;1fv&#x27;, value: new PIXI.Float32Array(matrix)},
         texelSizeX: {type: &#x27;1f&#x27;, value: 1 / width},
         texelSizeY: {type: &#x27;1f&#x27;, value: 1 / height}
     };
@@ -327,7 +329,7 @@ Object.defineProperty(PIXI.ConvolutionFilter.prototype, &#x27;matrix&#x27;, {
         return this.uniforms.m.value;
     },
     set: function(value) {
-        this.uniforms.m.value = new Float32Array(value);
+        this.uniforms.m.value = new PIXI.Float32Array(value);
     }
 });
 

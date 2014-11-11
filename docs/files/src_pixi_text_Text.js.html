@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 2.0.0</em>
+            <em>API Docs for: 2.1.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -154,6 +154,8 @@
                 <li><a href="../classes/RGBSplitFilter.html">RGBSplitFilter</a></li>
             
                 <li><a href="../classes/Rope.html">Rope</a></li>
+            
+                <li><a href="../classes/Rounded Rectangle.html">Rounded Rectangle</a></li>
             
                 <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
             
@@ -465,6 +467,7 @@ PIXI.Text.prototype.updateText = function()
     this.context.strokeStyle = this.style.stroke;
     this.context.lineWidth = this.style.strokeThickness;
     this.context.textBaseline = &#x27;alphabetic&#x27;;
+    //this.context.lineJoin = &#x27;round&#x27;;
 
     var linePositionX;
     var linePositionY;
@@ -742,6 +745,24 @@ PIXI.Text.prototype.wordWrap = function(text)
         }
     }
     return result;
+};
+
+/**
+* Returns the bounds of the Text as a rectangle. The bounds calculation takes the worldTransform into account.
+*
+* @method getBounds
+* @param matrix {Matrix} the transformation matrix of the Text
+* @return {Rectangle} the framing rectangle
+*/
+PIXI.Text.prototype.getBounds = function(matrix)
+{
+    if(this.dirty)
+    {
+        this.updateText();
+        this.dirty = false;
+    }
+
+    return PIXI.Sprite.prototype.getBounds.call(this, matrix);
 };
 
 /**

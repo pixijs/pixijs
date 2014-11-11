@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 2.0.0</em>
+            <em>API Docs for: 2.1.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -154,6 +154,8 @@
                 <li><a href="../classes/RGBSplitFilter.html">RGBSplitFilter</a></li>
             
                 <li><a href="../classes/Rope.html">Rope</a></li>
+            
+                <li><a href="../classes/Rounded Rectangle.html">Rounded Rectangle</a></li>
             
                 <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
             
@@ -302,18 +304,47 @@ PIXI.RGBSplitFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
 PIXI.RGBSplitFilter.prototype.constructor = PIXI.RGBSplitFilter;
 
 /**
- * The angle of the split.
+ * Red channel offset.
  * 
- * @property angle
- * @type Number
+ * @property red
+ * @type Point
  */
-Object.defineProperty(PIXI.RGBSplitFilter.prototype, &#x27;angle&#x27;, {
+Object.defineProperty(PIXI.RGBSplitFilter.prototype, &#x27;red&#x27;, {
     get: function() {
-        return this.uniforms.blur.value / (1/7000);
+        return this.uniforms.red.value;
     },
     set: function(value) {
-        //this.padding = value;
-        this.uniforms.blur.value = (1/7000) * value;
+        this.uniforms.red.value = value;
+    }
+});
+
+/**
+ * Green channel offset.
+ * 
+ * @property green
+ * @type Point
+ */
+Object.defineProperty(PIXI.RGBSplitFilter.prototype, &#x27;green&#x27;, {
+    get: function() {
+        return this.uniforms.green.value;
+    },
+    set: function(value) {
+        this.uniforms.green.value = value;
+    }
+});
+
+/**
+ * Blue offset.
+ * 
+ * @property blue
+ * @type Point
+ */
+Object.defineProperty(PIXI.RGBSplitFilter.prototype, &#x27;blue&#x27;, {
+    get: function() {
+        return this.uniforms.blue.value;
+    },
+    set: function(value) {
+        this.uniforms.blue.value = value;
     }
 });
 

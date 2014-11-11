@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 2.0.0</em>
+            <em>API Docs for: 2.1.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -154,6 +154,8 @@
                 <li><a href="../classes/RGBSplitFilter.html">RGBSplitFilter</a></li>
             
                 <li><a href="../classes/Rope.html">Rope</a></li>
+            
+                <li><a href="../classes/Rounded Rectangle.html">Rounded Rectangle</a></li>
             
                 <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
             
@@ -305,8 +307,8 @@ PIXI.InteractionData.prototype.getLocalPosition = function(displayObject, point)
     var global = this.global;
 
     // do a cheeky transform to get the mouse coords;
-    var a00 = worldTransform.a, a01 = worldTransform.b, a02 = worldTransform.tx,
-        a10 = worldTransform.c, a11 = worldTransform.d, a12 = worldTransform.ty,
+    var a00 = worldTransform.a, a01 = worldTransform.c, a02 = worldTransform.tx,
+        a10 = worldTransform.b, a11 = worldTransform.d, a12 = worldTransform.ty,
         id = 1 / (a00 * a11 + a01 * -a10);
 
     point = point || new PIXI.Point();
