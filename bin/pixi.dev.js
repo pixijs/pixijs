@@ -5611,7 +5611,7 @@ PIXI.PixiShader = function(gl)
      * @private
      */
     this._UID = PIXI._UID++;
-    
+
     /**
      * @property gl
      * @type WebGLContext
@@ -5677,7 +5677,7 @@ PIXI.PixiShader.prototype.constructor = PIXI.PixiShader;
 
 /**
 * Initialises the shader.
-* 
+*
 * @method init
 */
 PIXI.PixiShader.prototype.init = function()
@@ -5685,7 +5685,7 @@ PIXI.PixiShader.prototype.init = function()
     var gl = this.gl;
 
     var program = PIXI.compileProgram(gl, this.vertexSrc || PIXI.PixiShader.defaultVertexSrc, this.fragmentSrc);
-    
+
     gl.useProgram(program);
 
     // get and store the uniforms for the shader
@@ -5728,7 +5728,7 @@ PIXI.PixiShader.prototype.init = function()
 
 /**
 * Initialises the shader uniform values.
-* 
+*
 * Uniforms are specified in the GLSL_ES Specification: http://www.khronos.org/registry/webgl/specs/latest/1.0/
 * http://www.khronos.org/registry/gles/specs/2.0/GLSL_ES_Specification_1.0.17.pdf
 *
@@ -5922,7 +5922,7 @@ PIXI.PixiShader.prototype.syncUniforms = function()
 
                 if(uniform.value.baseTexture._dirty[gl.id])
                 {
-                    PIXI.defaultRenderer.updateTexture(uniform.value.baseTexture);
+                    PIXI.WebGLRenderer.instances[gl.id].updateTexture(uniform.value.baseTexture);
                 }
                 else
                 {
@@ -5945,7 +5945,7 @@ PIXI.PixiShader.prototype.syncUniforms = function()
 
 /**
 * Destroys the shader.
-* 
+*
 * @method destroy
 */
 PIXI.PixiShader.prototype.destroy = function()
@@ -5959,7 +5959,7 @@ PIXI.PixiShader.prototype.destroy = function()
 
 /**
 * The Default Vertex shader source.
-* 
+*
 * @property defaultVertexSrc
 * @type String
 */
@@ -7386,6 +7386,7 @@ PIXI.WebGLGraphicsData.prototype.upload = function()
  */
 
 PIXI.glContexts = []; // this is where we store the webGL contexts for easy access.
+PIXI.instances = [];
 
 /**
  * The WebGLRenderer draws the stage and all its content onto a webGL enabled canvas. This renderer
@@ -7465,7 +7466,7 @@ PIXI.WebGLRenderer = function(width, height, options)
      * @type Boolean
      */
     this.preserveDrawingBuffer = options.preserveDrawingBuffer;
-    
+
     /**
      * This sets if the WebGLRenderer will clear the context texture or not before the new render pass. If true:
      * If the Stage is NOT transparent, Pixi will clear to alpha (0, 0, 0, 0).
@@ -7477,7 +7478,7 @@ PIXI.WebGLRenderer = function(width, height, options)
      * @default
      */
     this.clearBeforeRender = options.clearBeforeRender;
-    
+
     /**
      * The width of the canvas view
      *
@@ -7634,6 +7635,8 @@ PIXI.WebGLRenderer.prototype.initContext = function()
 
     PIXI.glContexts[this.glContextId] = gl;
 
+    PIXI.instances[this.glContextId] = this;
+
     // set up the default pixi settings..
     gl.disable(gl.DEPTH_TEST);
     gl.disable(gl.CULL_FACE);
@@ -7678,7 +7681,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
     stage.updateTransform();
 
     var gl = this.gl;
-    
+
     // interaction
     if(stage._interactive)
     {
@@ -7714,10 +7717,10 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
         {
             gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], 1);
         }
-        
+
         gl.clear (gl.COLOR_BUFFER_BIT);
     }
-    
+
     this.renderDisplayObject( stage, this.projection );
 };
 
@@ -7732,7 +7735,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 PIXI.WebGLRenderer.prototype.renderDisplayObject = function(displayObject, projection, buffer)
 {
     this.renderSession.blendModeManager.setBlendMode(PIXI.blendModes.NORMAL);
-   
+
     // reset the render session data..
     this.renderSession.drawCount = 0;
 
@@ -7799,7 +7802,7 @@ PIXI.WebGLRenderer.prototype.updateTexture = function(texture)
 
     gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, texture.premultipliedAlpha);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.source);
-    
+
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, texture.scaleMode === PIXI.scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, texture.scaleMode === PIXI.scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
 
@@ -7850,7 +7853,7 @@ PIXI.WebGLRenderer.prototype.handleContextRestored = function()
         var texture = PIXI.TextureCache[key].baseTexture;
         texture._glTextures = [];
     }
-    
+
     this.contextLost = false;
 };
 
@@ -7919,6 +7922,7 @@ PIXI.WebGLRenderer.prototype.mapBlendModes = function()
 };
 
 PIXI.WebGLRenderer.glContextId = 0;
+PIXI.WebGLRenderer.instances = [];
 
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
@@ -11220,6 +11224,8 @@ PIXI.Graphics = function()
      */
     this.boundsPadding = 0;
 
+    this._localBounds = new PIXI.Rectangle(0,0,1,1);
+
     /**
      * Used to detect if the graphics object has changed. If this is set to true then the graphics object will be recalculated.
      * 
@@ -11923,13 +11929,13 @@ PIXI.Graphics.prototype.getBounds = function( matrix )
 
     if(this.dirty)
     {
-        this.updateBounds();
+        this.updateLocalBounds();
         this.webGLDirty = true;
         this.cachedSpriteDirty = true;
         this.dirty = false;
     }
 
-    var bounds = this._bounds;
+    var bounds = this._localBounds;
 
     var w0 = bounds.x;
     var w1 = bounds.width + bounds.x;
@@ -11980,21 +11986,21 @@ PIXI.Graphics.prototype.getBounds = function( matrix )
     maxY = y3 > maxY ? y3 : maxY;
     maxY = y4 > maxY ? y4 : maxY;
 
-    bounds.x = minX;
-    bounds.width = maxX - minX;
+    this._bounds.x = minX;
+    this._bounds.width = maxX - minX;
 
-    bounds.y = minY;
-    bounds.height = maxY - minY;
+    this._bounds.y = minY;
+    this._bounds.height = maxY - minY;
 
-    return bounds;
+    return  this._bounds;
 };
 
 /**
  * Update the bounds of the object
  *
- * @method updateBounds
+ * @method updateLocalBounds
  */
-PIXI.Graphics.prototype.updateBounds = function()
+PIXI.Graphics.prototype.updateLocalBounds = function()
 {
     var minX = Infinity;
     var maxX = -Infinity;
@@ -12080,13 +12086,12 @@ PIXI.Graphics.prototype.updateBounds = function()
     }
 
     var padding = this.boundsPadding;
-    var bounds = this._bounds;
     
-    bounds.x = minX - padding;
-    bounds.width = (maxX - minX) + padding * 2;
+    this._localBounds.x = minX - padding;
+    this._localBounds.width = (maxX - minX) + padding * 2;
 
-    bounds.y = minY - padding;
-    bounds.height = (maxY - minY) + padding * 2;
+    this._localBounds.y = minY - padding;
+    this._localBounds.height = (maxY - minY) + padding * 2;
 };
 
 /**
