@@ -40,7 +40,7 @@ PIXI.WebGLSpriteBatch = function()
     * @property vertices
     * @type Float32Array
     */
-    this.vertices = new Float32Array(numVerts);
+    this.vertices = new PIXI.Float32Array(numVerts);
 
     /**
      * Holds the indices
@@ -48,7 +48,7 @@ PIXI.WebGLSpriteBatch = function()
      * @property indices
      * @type Uint16Array
      */
-    this.indices = new Uint16Array(numIndices);
+    this.indices = new PIXI.Uint16Array(numIndices);
     
     /**
      * @property lastIndexCount

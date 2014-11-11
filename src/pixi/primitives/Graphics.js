@@ -101,6 +101,8 @@ PIXI.Graphics = function()
      */
     this.boundsPadding = 0;
 
+    this._localBounds = new PIXI.Rectangle(0,0,1,1);
+
     /**
      * Used to detect if the graphics object has changed. If this is set to true then the graphics object will be recalculated.
      * 
@@ -355,17 +357,17 @@ PIXI.Graphics.prototype.arcTo = function(x1, y1, x2, y2, radius)
 {
     if( this.currentPath )
     {
-        if(this.currentPath.shape.points.length === 0)this.currentPath.shape.points = [x1, y1];
+        if(this.currentPath.shape.points.length === 0)
+        {
+            this.currentPath.shape.points.push(x1, y1);
+        }
     }
     else
     {
         this.moveTo(x1, y1);
     }
 
-    // check that path contains subpaths
-    if( this.currentPath.length === 0)this.moveTo(x1, y1);
-    
-    var points = this.currentPath;
+    var points = this.currentPath.shape.points;
     var fromX = points[points.length-2];
     var fromY = points[points.length-1];
     var a1 = fromY - y1;
@@ -374,9 +376,14 @@ PIXI.Graphics.prototype.arcTo = function(x1, y1, x2, y2, radius)
     var b2 = x2   - x1;
     var mm = Math.abs(a1 * b2 - b1 * a2);
 
+
     if (mm < 1.0e-8 || radius === 0)
     {
-        points.push(x1, y1);
+        if( points[points.length-2] !== x1 || points[points.length-1] !== y1)
+        {
+            //console.log(">>")
+            points.push(x1, y1);
+        }
     }
     else
     {
@@ -420,15 +427,19 @@ PIXI.Graphics.prototype.arc = function(cx, cy, radius, startAngle, endAngle, ant
 {
     var startX = cx + Math.cos(startAngle) * radius;
     var startY = cy + Math.sin(startAngle) * radius;
-    
+   
     var points = this.currentPath.shape.points;
 
-    if(points.length !== 0 && points[points.length-2] !== startX || points[points.length-1] !== startY)
+    if(points.length === 0)
     {
         this.moveTo(startX, startY);
         points = this.currentPath.shape.points;
     }
-
+    else if( points[points.length-2] !== startX || points[points.length-1] !== startY)
+    {
+        points.push(startX, startY);
+    }
+  
     if (startAngle === endAngle)return this;
 
     if( !anticlockwise && endAngle <= startAngle )
@@ -543,7 +554,7 @@ PIXI.Graphics.prototype.drawRect = function( x, y, width, height )
  */
 PIXI.Graphics.prototype.drawRoundedRect = function( x, y, width, height, radius )
 {
-    this.drawShape({ points:[x, y, width, height, radius], type:PIXI.Graphics.RREC });
+    this.drawShape(new PIXI.RoundedRectangle(x, y, width, height, radius));
 
     return this;
 };
@@ -669,7 +680,7 @@ PIXI.Graphics.prototype._renderWebGL = function(renderSession)
             this.dirty = false;
         }
 
-        this._cachedSprite.alpha = this.alpha;
+        this._cachedSprite.worldAlpha = this.worldAlpha;
         PIXI.Sprite.prototype._renderWebGL.call(this._cachedSprite, renderSession);
 
         return;
@@ -799,15 +810,18 @@ PIXI.Graphics.prototype._renderCanvas = function(renderSession)
  */
 PIXI.Graphics.prototype.getBounds = function( matrix )
 {
+    // return an empty object if the item is a mask!
+    if(this.isMask)return PIXI.EmptyRectangle;
+
     if(this.dirty)
     {
-        this.updateBounds();
+        this.updateLocalBounds();
         this.webGLDirty = true;
         this.cachedSpriteDirty = true;
         this.dirty = false;
     }
 
-    var bounds = this._bounds;
+    var bounds = this._localBounds;
 
     var w0 = bounds.x;
     var w1 = bounds.width + bounds.x;
@@ -818,8 +832,8 @@ PIXI.Graphics.prototype.getBounds = function( matrix )
     var worldTransform = matrix || this.worldTransform;
 
     var a = worldTransform.a;
-    var b = worldTransform.c;
-    var c = worldTransform.b;
+    var b = worldTransform.b;
+    var c = worldTransform.c;
     var d = worldTransform.d;
     var tx = worldTransform.tx;
     var ty = worldTransform.ty;
@@ -858,21 +872,21 @@ PIXI.Graphics.prototype.getBounds = function( matrix )
     maxY = y3 > maxY ? y3 : maxY;
     maxY = y4 > maxY ? y4 : maxY;
 
-    bounds.x = minX;
-    bounds.width = maxX - minX;
+    this._bounds.x = minX;
+    this._bounds.width = maxX - minX;
 
-    bounds.y = minY;
-    bounds.height = maxY - minY;
+    this._bounds.y = minY;
+    this._bounds.height = maxY - minY;
 
-    return bounds;
+    return  this._bounds;
 };
 
 /**
  * Update the bounds of the object
  *
- * @method updateBounds
+ * @method updateLocalBounds
  */
-PIXI.Graphics.prototype.updateBounds = function()
+PIXI.Graphics.prototype.updateLocalBounds = function()
 {
     var minX = Infinity;
     var maxX = -Infinity;
@@ -891,7 +905,7 @@ PIXI.Graphics.prototype.updateBounds = function()
             shape = data.shape;
            
 
-            if(type === PIXI.Graphics.RECT || type === PIXI.Graphics.RRECT)
+            if(type === PIXI.Graphics.RECT || type === PIXI.Graphics.RREC)
             {
                 x = shape.x - lineWidth/2;
                 y = shape.y - lineWidth/2;
@@ -958,13 +972,12 @@ PIXI.Graphics.prototype.updateBounds = function()
     }
 
     var padding = this.boundsPadding;
-    var bounds = this._bounds;
     
-    bounds.x = minX - padding;
-    bounds.width = (maxX - minX) + padding * 2;
+    this._localBounds.x = minX - padding;
+    this._localBounds.width = (maxX - minX) + padding * 2;
 
-    bounds.y = minY - padding;
-    bounds.height = (maxY - minY) + padding * 2;
+    this._localBounds.y = minY - padding;
+    this._localBounds.height = (maxY - minY) + padding * 2;
 };
 
 /**
@@ -1108,3 +1121,5 @@ PIXI.Polygon.prototype.type = PIXI.Graphics.POLY;
 PIXI.Rectangle.prototype.type = PIXI.Graphics.RECT;
 PIXI.Circle.prototype.type = PIXI.Graphics.CIRC;
 PIXI.Ellipse.prototype.type = PIXI.Graphics.ELIP;
+PIXI.RoundedRectangle.prototype.type = PIXI.Graphics.RREC;
+

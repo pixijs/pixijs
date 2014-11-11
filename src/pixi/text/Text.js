@@ -209,7 +209,7 @@ PIXI.Text.prototype.updateText = function()
     this.context.strokeStyle = this.style.stroke;
     this.context.lineWidth = this.style.strokeThickness;
     this.context.textBaseline = 'alphabetic';
-    this.context.lineJoin = 'round';
+    //this.context.lineJoin = 'round';
 
     var linePositionX;
     var linePositionY;
@@ -487,6 +487,24 @@ PIXI.Text.prototype.wordWrap = function(text)
         }
     }
     return result;
+};
+
+/**
+* Returns the bounds of the Text as a rectangle. The bounds calculation takes the worldTransform into account.
+*
+* @method getBounds
+* @param matrix {Matrix} the transformation matrix of the Text
+* @return {Rectangle} the framing rectangle
+*/
+PIXI.Text.prototype.getBounds = function(matrix)
+{
+    if(this.dirty)
+    {
+        this.updateText();
+        this.dirty = false;
+    }
+
+    return PIXI.Sprite.prototype.getBounds.call(this, matrix);
 };
 
 /**

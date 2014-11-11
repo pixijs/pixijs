@@ -3,6 +3,7 @@
  */
 
 PIXI.glContexts = []; // this is where we store the webGL contexts for easy access.
+PIXI.instances = [];
 
 /**
  * The WebGLRenderer draws the stage and all its content onto a webGL enabled canvas. This renderer
@@ -17,6 +18,7 @@ PIXI.glContexts = []; // this is where we store the webGL contexts for easy acce
  * @param [options] {Object} The optional renderer parameters
  * @param [options.view] {HTMLCanvasElement} the canvas to use as a view, optional
  * @param [options.transparent=false] {Boolean} If the render view is transparent, default false
+ * @param [options.autoResize=false] {Boolean} If the render view is automatically resized, default false
  * @param [options.antialias=false] {Boolean} sets antialias (only applicable in chrome at the moment)
  * @param [options.preserveDrawingBuffer=false] {Boolean} enables drawing buffer preservation, enable this if you need to call toDataUrl on the webgl context
  * @param [options.resolution=1] {Number} the resolution of the renderer retina would be 2
@@ -67,13 +69,21 @@ PIXI.WebGLRenderer = function(width, height, options)
     this.transparent = options.transparent;
 
     /**
+     * Whether the render view should be resized automatically
+     *
+     * @property autoResize
+     * @type Boolean
+     */
+    this.autoResize = options.autoResize || false;
+
+    /**
      * The value of the preserveDrawingBuffer flag affects whether or not the contents of the stencil buffer is retained after rendering.
      *
      * @property preserveDrawingBuffer
      * @type Boolean
      */
     this.preserveDrawingBuffer = options.preserveDrawingBuffer;
-    
+
     /**
      * This sets if the WebGLRenderer will clear the context texture or not before the new render pass. If true:
      * If the Stage is NOT transparent, Pixi will clear to alpha (0, 0, 0, 0).
@@ -85,7 +95,7 @@ PIXI.WebGLRenderer = function(width, height, options)
      * @default
      */
     this.clearBeforeRender = options.clearBeforeRender;
-    
+
     /**
      * The width of the canvas view
      *
@@ -242,6 +252,8 @@ PIXI.WebGLRenderer.prototype.initContext = function()
 
     PIXI.glContexts[this.glContextId] = gl;
 
+    PIXI.instances[this.glContextId] = this;
+
     // set up the default pixi settings..
     gl.disable(gl.DEPTH_TEST);
     gl.disable(gl.CULL_FACE);
@@ -286,7 +298,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
     stage.updateTransform();
 
     var gl = this.gl;
-    
+
     // interaction
     if(stage._interactive)
     {
@@ -322,10 +334,10 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
         {
             gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], 1);
         }
-        
+
         gl.clear (gl.COLOR_BUFFER_BIT);
     }
-    
+
     this.renderDisplayObject( stage, this.projection );
 };
 
@@ -340,7 +352,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
 PIXI.WebGLRenderer.prototype.renderDisplayObject = function(displayObject, projection, buffer)
 {
     this.renderSession.blendModeManager.setBlendMode(PIXI.blendModes.NORMAL);
-   
+
     // reset the render session data..
     this.renderSession.drawCount = 0;
 
@@ -378,6 +390,11 @@ PIXI.WebGLRenderer.prototype.resize = function(width, height)
     this.view.width = this.width;
     this.view.height = this.height;
 
+    if (this.autoResize) {
+        this.view.style.width = this.width / this.resolution + 'px';
+        this.view.style.height = this.height / this.resolution + 'px';
+    }
+
     this.gl.viewport(0, 0, this.width, this.height);
 
     this.projection.x =  this.width / 2 / this.resolution;
@@ -402,7 +419,7 @@ PIXI.WebGLRenderer.prototype.updateTexture = function(texture)
 
     gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, texture.premultipliedAlpha);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.source);
-    
+
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, texture.scaleMode === PIXI.scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, texture.scaleMode === PIXI.scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
 
@@ -453,7 +470,7 @@ PIXI.WebGLRenderer.prototype.handleContextRestored = function()
         var texture = PIXI.TextureCache[key].baseTexture;
         texture._glTextures = [];
     }
-    
+
     this.contextLost = false;
 };
 
@@ -465,8 +482,8 @@ PIXI.WebGLRenderer.prototype.handleContextRestored = function()
 PIXI.WebGLRenderer.prototype.destroy = function()
 {
     // remove listeners
-    this.view.off('webglcontextlost', this.contextLostBound);
-    this.view.off('webglcontextrestored', this.contextRestoredBound);
+    this.view.removeEventListener('webglcontextlost', this.contextLostBound);
+    this.view.removeEventListener('webglcontextrestored', this.contextRestoredBound);
 
     PIXI.glContexts[this.glContextId] = null;
 
@@ -522,3 +539,4 @@ PIXI.WebGLRenderer.prototype.mapBlendModes = function()
 };
 
 PIXI.WebGLRenderer.glContextId = 0;
+PIXI.WebGLRenderer.instances = [];

@@ -160,7 +160,7 @@ PIXI.BaseTexture.prototype.destroy = function()
         delete PIXI.BaseTextureCache[this.imageUrl];
         delete PIXI.TextureCache[this.imageUrl];
         this.imageUrl = null;
-        this.source.src = '';
+        if (!navigator.isCocoonJS) this.source.src = '';
     }
     else if (this.source && this.source._pixiId)
     {
@@ -203,8 +203,10 @@ PIXI.BaseTexture.prototype.dirty = function()
  *
  * @method unloadFromGPU
  */
-PIXI.BaseTexture.unloadFromGPU = function()
+PIXI.BaseTexture.prototype.unloadFromGPU = function()
 {
+    this.dirty();
+
     // delete the webGL textures if any.
     for (var i = this._glTextures.length - 1; i >= 0; i--)
     {
@@ -215,10 +217,13 @@ PIXI.BaseTexture.unloadFromGPU = function()
         {
             gl.deleteTexture(glTexture);
         }
+        
     }
 
     this._glTextures.length = 0;
-}
+
+    this.dirty();
+};
 
 /**
  * Helper function that creates a base texture from the given image url.

@@ -19,7 +19,7 @@ PIXI.ConvolutionFilter = function(matrix, width, height)
 
     // set the uniforms
     this.uniforms = {
-        m : {type: '1fv', value: new Float32Array(matrix)},
+        m : {type: '1fv', value: new PIXI.Float32Array(matrix)},
         texelSizeX: {type: '1f', value: 1 / width},
         texelSizeY: {type: '1f', value: 1 / height}
     };
@@ -71,7 +71,7 @@ Object.defineProperty(PIXI.ConvolutionFilter.prototype, 'matrix', {
         return this.uniforms.m.value;
     },
     set: function(value) {
-        this.uniforms.m.value = new Float32Array(value);
+        this.uniforms.m.value = new PIXI.Float32Array(value);
     }
 });
 

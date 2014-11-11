@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 2.0.0</em>
+            <em>API Docs for: 2.1.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -154,6 +154,8 @@
                 <li><a href="../classes/RGBSplitFilter.html">RGBSplitFilter</a></li>
             
                 <li><a href="../classes/Rope.html">Rope</a></li>
+            
+                <li><a href="../classes/Rounded Rectangle.html">Rounded Rectangle</a></li>
             
                 <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
             
@@ -439,6 +441,21 @@ Don&#39;t forget to add the CanvasRenderer.view to your DOM or you will not see 
                             
                             <li class="param">
                                 
+                                    <code class="param-name optional">[autoResize=false]</code>
+                                    <span class="type">Boolean</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+                                
+
+                                <div class="param-description">
+                                    <p>If the render view is automatically resized, default false</p>
+
+                                </div>
+
+                                
+                            </li>
+                            
+                            <li class="param">
+                                
                                     <code class="param-name optional">[resolution=1]</code>
                                     <span class="type">Number</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
@@ -507,6 +524,13 @@ Don&#39;t forget to add the CanvasRenderer.view to your DOM or you will not see 
 
                     <ul class="index-list methods">
                         
+                            <li class="index-item method">
+                                <a href="#method_destroy">destroy</a>
+
+                                
+                                
+                            </li>
+                        
                             <li class="index-item method private">
                                 <a href="#method_mapBlendModes">mapBlendModes</a>
 
@@ -544,6 +568,13 @@ Don&#39;t forget to add the CanvasRenderer.view to your DOM or you will not see 
                     <h3>Properties</h3>
 
                     <ul class="index-list properties">
+                        
+                            <li class="index-item property">
+                                <a href="#property_autoResize">autoResize</a>
+
+                                
+                                
+                            </li>
                         
                             <li class="index-item property">
                                 <a href="#property_CanvasMaskManager">CanvasMaskManager</a>
@@ -643,6 +674,96 @@ Don&#39;t forget to add the CanvasRenderer.view to your DOM or you will not see 
                 <h2 class="off-left">Methods</h2>
 
                 
+                    <div id="method_destroy" class="method item">
+    <h3 class="name"><code>destroy</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code class="optional">[removeView=true]</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l233"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:233</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Removes everything from the renderer and optionally removes the Canvas DOM element.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name optional">[removeView=true]</code>
+                        <span class="type">Boolean</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>Removes the Canvas element from the DOM.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
                     <div id="method_mapBlendModes" class="method item private">
     <h3 class="name"><code>mapBlendModes</code></h3>
 
@@ -677,7 +798,7 @@ Don&#39;t forget to add the CanvasRenderer.view to your DOM or you will not see 
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l257"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:257</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l291"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:291</code></a>
         
         </p>
 
@@ -742,7 +863,7 @@ Don&#39;t forget to add the CanvasRenderer.view to your DOM or you will not see 
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l174"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:174</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l184"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:184</code></a>
         
         </p>
 
@@ -839,7 +960,7 @@ Don&#39;t forget to add the CanvasRenderer.view to your DOM or you will not see 
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l242"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:242</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l276"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:276</code></a>
         
         </p>
 
@@ -950,7 +1071,7 @@ Don&#39;t forget to add the CanvasRenderer.view to your DOM or you will not see 
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l223"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:223</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l255"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:255</code></a>
         
         </p>
 
@@ -1021,6 +1142,51 @@ Don&#39;t forget to add the CanvasRenderer.view to your DOM or you will not see 
                 <h2 class="off-left">Properties</h2>
 
                 
+                    <div id="property_autoResize" class="property item">
+    <h3 class="name"><code>autoResize</code></h3>
+    <span class="type">Boolean</span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l76"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:76</code></a>
+        
+        </p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Whether the render view should be resized automatically</p>
+
+    </div>
+
+    
+
+    
+
+    
+</div>
+
+                
                     <div id="property_CanvasMaskManager" class="property item">
     <h3 class="name"><code>CanvasMaskManager</code></h3>
     <span class="type"><a href="../classes/CanvasMaskManager.html" class="crosslink">CanvasMaskManager</a></span>
@@ -1044,7 +1210,7 @@ Don&#39;t forget to add the CanvasRenderer.view to your DOM or you will not see 
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l130"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:130</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l140"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:140</code></a>
         
         </p>
 
@@ -1089,7 +1255,7 @@ Don&#39;t forget to add the CanvasRenderer.view to your DOM or you will not see 
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l55"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:55</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l56"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:56</code></a>
         
         </p>
 
@@ -1116,7 +1282,7 @@ Disable this by setting this to false. For example if your game has a canvas fil
                 
                     <div id="property_context" class="property item">
     <h3 class="name"><code>context</code></h3>
-    <span class="type">CanvasRenderingContext2D 2d Context</span>
+    <span class="type">CanvasRenderingContext2D</span>
 
     
 
@@ -1137,7 +1303,7 @@ Disable this by setting this to false. For example if your game has a canvas fil
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l104"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:104</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l114"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:114</code></a>
         
         </p>
 
@@ -1182,7 +1348,7 @@ Disable this by setting this to false. For example if your game has a canvas fil
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l122"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:122</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l132"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:132</code></a>
         
         </p>
 
@@ -1227,7 +1393,7 @@ Disable this by setting this to false. For example if your game has a canvas fil
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l84"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:84</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l94"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:94</code></a>
         
         </p>
 
@@ -1274,7 +1440,7 @@ Disable this by setting this to false. For example if your game has a canvas fil
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l111"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:111</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l121"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:121</code></a>
         
         </p>
 
@@ -1319,7 +1485,7 @@ Disable this by setting this to false. For example if your game has a canvas fil
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l137"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:137</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l147"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:147</code></a>
         
         </p>
 
@@ -1364,7 +1530,7 @@ Disable this by setting this to false. For example if your game has a canvas fil
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l47"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:47</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l48"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:48</code></a>
         
         </p>
 
@@ -1409,7 +1575,7 @@ Disable this by setting this to false. For example if your game has a canvas fil
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l67"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:67</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l68"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:68</code></a>
         
         </p>
 
@@ -1454,7 +1620,7 @@ Disable this by setting this to false. For example if your game has a canvas fil
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l39"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:39</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l40"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:40</code></a>
         
         </p>
 
@@ -1499,7 +1665,7 @@ Disable this by setting this to false. For example if your game has a canvas fil
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l96"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:96</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l106"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:106</code></a>
         
         </p>
 
@@ -1544,7 +1710,7 @@ Disable this by setting this to false. For example if your game has a canvas fil
             
         
         
-        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l75"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:75</code></a>
+        <a href="../files/src_pixi_renderers_canvas_CanvasRenderer.js.html#l85"><code>src&#x2F;pixi&#x2F;renderers&#x2F;canvas&#x2F;CanvasRenderer.js:85</code></a>
         
         </p>
 
