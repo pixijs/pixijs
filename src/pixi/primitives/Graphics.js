@@ -365,9 +365,9 @@ PIXI.Graphics.prototype.arcTo = function(x1, y1, x2, y2, radius)
     }
 
     // check that path contains subpaths
-    if( this.currentPath.length === 0)this.moveTo(x1, y1);
+    if( this.currentPath.shape.points.length === 0)this.moveTo(x1, y1);
     
-    var points = this.currentPath;
+    var points = this.currentPath.shape.points;
     var fromX = points[points.length-2];
     var fromY = points[points.length-1];
     var a1 = fromY - y1;
@@ -375,6 +375,7 @@ PIXI.Graphics.prototype.arcTo = function(x1, y1, x2, y2, radius)
     var a2 = y2   - y1;
     var b2 = x2   - x1;
     var mm = Math.abs(a1 * b2 - b1 * a2);
+
 
     if (mm < 1.0e-8 || radius === 0)
     {
