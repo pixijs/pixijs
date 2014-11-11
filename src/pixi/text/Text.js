@@ -388,7 +388,7 @@ PIXI.Text.prototype.determineFontProperties = function(fontStyle)
         // ascent. scan from top to bottom until we find a non red pixel
         for(i = 0; i < baseline; i++)
         {
-            for(j = 0; j < line; j += 4)
+            for(j = 0; j < line; j++)
             {
                 if(imagedata[idx + j] !== 255)
                 {
@@ -414,7 +414,7 @@ PIXI.Text.prototype.determineFontProperties = function(fontStyle)
         // descent. scan from bottom to top until we find a non red pixel
         for(i = height; i > baseline; i--)
         {
-            for(j = 0; j < line; j += 4)
+            for(j = 0; j < line; j++)
             {
                 if(imagedata[idx + j] !== 255)
                 {
