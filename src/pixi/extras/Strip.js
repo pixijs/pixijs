@@ -48,7 +48,15 @@ PIXI.Strip = function(texture)
      */
     this.dirty = true;
 
-
+    /**
+     * The blend mode to be applied to the sprite. Set to PIXI.blendModes.NORMAL to remove any blend mode.
+     *
+     * @property blendMode
+     * @type Number
+     * @default PIXI.blendModes.NORMAL;
+     */
+    this.blendMode = PIXI.blendModes.NORMAL;
+    
     /**
      * if you need a padding, not yet implemented
      *
