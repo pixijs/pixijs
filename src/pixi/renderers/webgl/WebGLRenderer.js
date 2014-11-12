@@ -539,4 +539,3 @@ PIXI.WebGLRenderer.prototype.mapBlendModes = function()
 };
 
 PIXI.WebGLRenderer.glContextId = 0;
-PIXI.WebGLRenderer.instances = [];
