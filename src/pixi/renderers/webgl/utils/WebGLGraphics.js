@@ -158,14 +158,14 @@ PIXI.WebGLGraphics.updateGraphics = function(graphics, gl)
                         {
                         //    console.log("<>>>")
                             webGLData = PIXI.WebGLGraphics.switchMode(webGL, 1);
-                            PIXI.WebGLGraphics.buildComplexPoly(data, webGLData);   
+                            PIXI.WebGLGraphics.buildComplexPoly(data, webGLData);
                         }
                         
                     }
                     else
                     {
                         webGLData = PIXI.WebGLGraphics.switchMode(webGL, 1);
-                        PIXI.WebGLGraphics.buildComplexPoly(data, webGLData);   
+                        PIXI.WebGLGraphics.buildComplexPoly(data, webGLData);
                     }
                 }
             }
