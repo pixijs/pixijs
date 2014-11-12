@@ -1,4 +1,15 @@
 /**
+ * @license
+ * pixi.js - v2.1.0
+ * Copyright (c) 2012-2014, Mat Groves
+ * http://goodboydigital.com/
+ *
+ * Compiled: 2014-11-12
+ *
+ * pixi.js is licensed under the MIT License.
+ * http://www.opensource.org/licenses/mit-license.php
+ */
+/**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
@@ -1701,7 +1712,7 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'width', {
 
         if(width !== 0)
         {
-            this.scale.x = value / ( width/this.scale.x );
+            this.scale.x = value / width;
         }
         else
         {
@@ -1729,7 +1740,7 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'height', {
 
         if(height !== 0)
         {
-            this.scale.y = value / ( height/this.scale.y );
+            this.scale.y = value / height ;
         }
         else
         {
@@ -5546,8 +5557,8 @@ PIXI.PolyK.Triangulate = function(p)
             }
             else
             {
-                window.console.log("PIXI Warning: shape too complex to fill");
-                return [];
+             //   window.console.log("PIXI Warning: shape too complex to fill");
+                return null;
             }
         }
     }
@@ -6024,7 +6035,7 @@ PIXI.PixiShader.prototype.syncUniforms = function()
 
                 if(uniform.value.baseTexture._dirty[gl.id])
                 {
-                    PIXI.WebGLRenderer.instances[gl.id].updateTexture(uniform.value.baseTexture);
+                    PIXI.instances[gl.id].updateTexture(uniform.value.baseTexture);
                 }
                 else
                 {
@@ -6753,15 +6764,25 @@ PIXI.WebGLGraphics.updateGraphics = function(graphics, gl)
             {
                 if(data.points.length >= 6)
                 {
-                    if(data.points.length > 5 * 2)
+                    if(data.points.length < 6 * 2)
                     {
-                        webGLData = PIXI.WebGLGraphics.switchMode(webGL, 1);
-                        PIXI.WebGLGraphics.buildComplexPoly(data, webGLData);
+                        webGLData = PIXI.WebGLGraphics.switchMode(webGL, 0);
+                        
+                        var canDrawUsingSimple = PIXI.WebGLGraphics.buildPoly(data, webGLData);
+                   //     console.log(canDrawUsingSimple);
+
+                        if(!canDrawUsingSimple)
+                        {
+                        //    console.log("<>>>")
+                            webGLData = PIXI.WebGLGraphics.switchMode(webGL, 1);
+                            PIXI.WebGLGraphics.buildComplexPoly(data, webGLData);
+                        }
+                        
                     }
                     else
                     {
-                        webGLData = PIXI.WebGLGraphics.switchMode(webGL, 0);
-                        PIXI.WebGLGraphics.buildPoly(data, webGLData);
+                        webGLData = PIXI.WebGLGraphics.switchMode(webGL, 1);
+                        PIXI.WebGLGraphics.buildComplexPoly(data, webGLData);
                     }
                 }
             }
@@ -7409,6 +7430,9 @@ PIXI.WebGLGraphics.buildPoly = function(graphicsData, webGLData)
     var b = color[2] * alpha;
 
     var triangles = PIXI.PolyK.Triangulate(points);
+
+    if(!triangles)return false;
+
     var vertPos = verts.length / 6;
 
     var i = 0;
@@ -7428,6 +7452,7 @@ PIXI.WebGLGraphics.buildPoly = function(graphicsData, webGLData)
                    r, g, b, alpha);
     }
 
+    return true;
 };
 
 PIXI.WebGLGraphics.graphicsDataPool = [];
@@ -8025,7 +8050,6 @@ PIXI.WebGLRenderer.prototype.mapBlendModes = function()
 };
 
 PIXI.WebGLRenderer.glContextId = 0;
-PIXI.WebGLRenderer.instances = [];
 
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
@@ -12399,7 +12423,15 @@ PIXI.Strip = function(texture)
      */
     this.dirty = true;
 
-
+    /**
+     * The blend mode to be applied to the sprite. Set to PIXI.blendModes.NORMAL to remove any blend mode.
+     *
+     * @property blendMode
+     * @type Number
+     * @default PIXI.blendModes.NORMAL;
+     */
+    this.blendMode = PIXI.blendModes.NORMAL;
+    
     /**
      * if you need a padding, not yet implemented
      *
@@ -12470,7 +12502,8 @@ PIXI.Strip.prototype._renderStrip = function(renderSession)
 
     // gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mat4Real);
 
-    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    renderSession.blendModeManager.setBlendMode(this.blendMode);
+    
 
     // set uniforms
     gl.uniformMatrix3fv(shader.translationMatrix, false, this.worldTransform.toArray(true));
@@ -18147,4 +18180,3 @@ Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'blue', {
         root.PIXI = PIXI;
     }
 }).call(this);
-//# sourceMappingURL=pixi.dev.js.map
