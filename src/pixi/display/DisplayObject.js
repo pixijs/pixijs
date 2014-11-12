@@ -502,8 +502,8 @@ PIXI.DisplayObject.prototype.updateTransform = function()
         a  = this.scale.x;
         d  = this.scale.y;
 
-        tx =  this.position.x;
-        ty =  this.position.y;
+        tx = this.position.x - this.pivot.x * a;
+        ty = this.position.y - this.pivot.y * d;
 
         wt.a  = a  * pt.a;
         wt.b  = a  * pt.b;
