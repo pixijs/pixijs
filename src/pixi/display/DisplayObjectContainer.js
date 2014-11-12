@@ -48,7 +48,7 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'width', {
 
         if(width !== 0)
         {
-            this.scale.x = value / ( width/this.scale.x );
+            this.scale.x = value / width;
         }
         else
         {
@@ -76,7 +76,7 @@ Object.defineProperty(PIXI.DisplayObjectContainer.prototype, 'height', {
 
         if(height !== 0)
         {
-            this.scale.y = value / ( height/this.scale.y );
+            this.scale.y = value / height ;
         }
         else
         {
