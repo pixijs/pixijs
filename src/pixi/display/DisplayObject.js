@@ -28,6 +28,25 @@ PIXI.DisplayObject = function()
     this.scale = new PIXI.Point(1,1);//{x:1, y:1};
 
     /**
+     * The transform callback is an optional callback that if set will be called at the end of the updateTransform method and sent two parameters:
+     * This Display Objects worldTransform matrix and its parents transform matrix. Both are PIXI.Matrix object types.
+     * The matrix are passed by reference and can be modified directly without needing to return them.
+     * This ability allows you to check any of the matrix values and perform actions such as clamping scale or limiting rotation, regardless of the parent transforms.
+     * 
+     * @property transformCallback
+     * @type Function
+     */
+    this.transformCallback = null;
+
+    /**
+     * The context under which the transformCallback is invoked.
+     * 
+     * @property transformCallbackContext
+     * @type Object
+     */
+    this.transformCallbackContext = null;
+
+    /**
      * The pivot point of the displayObject that it rotates around
      *
      * @property pivot
@@ -493,8 +512,6 @@ PIXI.DisplayObject.prototype.updateTransform = function()
         wt.d  = c  * pt.b + d  * pt.d;
         wt.tx = tx * pt.a + ty * pt.c + pt.tx;
         wt.ty = tx * pt.b + ty * pt.d + pt.ty;
-
-        
     }
     else
     {
@@ -515,6 +532,13 @@ PIXI.DisplayObject.prototype.updateTransform = function()
 
     // multiply the alphas..
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
+
+    //  Custom callback?
+    if (this.transformCallback)
+    {
+        this.transformCallback.call(this.transformCallbackContext, wt, pt);
+    }
+
 };
 
 // performance increase to avoid using call.. (10x faster)
