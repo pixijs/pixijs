@@ -147,15 +147,25 @@ PIXI.WebGLGraphics.updateGraphics = function(graphics, gl)
             {
                 if(data.points.length >= 6)
                 {
-                    if(data.points.length > 5 * 2)
+                    if(data.points.length < 6 * 2)
                     {
-                        webGLData = PIXI.WebGLGraphics.switchMode(webGL, 1);
-                        PIXI.WebGLGraphics.buildComplexPoly(data, webGLData);
+                        webGLData = PIXI.WebGLGraphics.switchMode(webGL, 0);
+                        
+                        var canDrawUsingSimple = PIXI.WebGLGraphics.buildPoly(data, webGLData);
+                   //     console.log(canDrawUsingSimple);
+
+                        if(!canDrawUsingSimple)
+                        {
+                        //    console.log("<>>>")
+                            webGLData = PIXI.WebGLGraphics.switchMode(webGL, 1);
+                            PIXI.WebGLGraphics.buildComplexPoly(data, webGLData);
+                        }
+                        
                     }
                     else
                     {
-                        webGLData = PIXI.WebGLGraphics.switchMode(webGL, 0);
-                        PIXI.WebGLGraphics.buildPoly(data, webGLData);
+                        webGLData = PIXI.WebGLGraphics.switchMode(webGL, 1);
+                        PIXI.WebGLGraphics.buildComplexPoly(data, webGLData);
                     }
                 }
             }
@@ -803,6 +813,9 @@ PIXI.WebGLGraphics.buildPoly = function(graphicsData, webGLData)
     var b = color[2] * alpha;
 
     var triangles = PIXI.PolyK.Triangulate(points);
+
+    if(!triangles)return false;
+
     var vertPos = verts.length / 6;
 
     var i = 0;
@@ -822,6 +835,7 @@ PIXI.WebGLGraphics.buildPoly = function(graphicsData, webGLData)
                    r, g, b, alpha);
     }
 
+    return true;
 };
 
 PIXI.WebGLGraphics.graphicsDataPool = [];

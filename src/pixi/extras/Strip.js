@@ -119,7 +119,8 @@ PIXI.Strip.prototype._renderStrip = function(renderSession)
 
     // gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mat4Real);
 
-    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    renderSession.blendModeManager.setBlendMode(this.blendMode);
+    
 
     // set uniforms
     gl.uniformMatrix3fv(shader.translationMatrix, false, this.worldTransform.toArray(true));
