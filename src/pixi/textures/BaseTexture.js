@@ -18,13 +18,13 @@ PIXI.BaseTextureCacheIdGenerator = 0;
 PIXI.BaseTexture = function(source, scaleMode)
 {
     /**
-     * The Resolution of the texture. 
+     * The Resolution of the texture.
      *
      * @property resolution
      * @type Number
      */
     this.resolution = 1;
-    
+
     /**
      * [read-only] The width of the base texture set when the image has loaded
      *
@@ -45,7 +45,7 @@ PIXI.BaseTexture = function(source, scaleMode)
 
     /**
      * The scale mode to apply when scaling this texture
-     * 
+     *
      * @property scaleMode
      * @type PIXI.scaleModes
      * @default PIXI.scaleModes.LINEAR
@@ -217,7 +217,7 @@ PIXI.BaseTexture.prototype.unloadFromGPU = function()
         {
             gl.deleteTexture(glTexture);
         }
-        
+
     }
 
     this._glTextures.length = 0;
@@ -252,8 +252,8 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
             image.crossOrigin = '';
         }
 
-        image.src = imageUrl;
         baseTexture = new PIXI.BaseTexture(image, scaleMode);
+        image.src = imageUrl;
         baseTexture.imageUrl = imageUrl;
         PIXI.BaseTextureCache[imageUrl] = baseTexture;
 
