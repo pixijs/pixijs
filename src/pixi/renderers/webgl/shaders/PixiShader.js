@@ -327,7 +327,7 @@ PIXI.PixiShader.prototype.syncUniforms = function()
 
                 if(uniform.value.baseTexture._dirty[gl.id])
                 {
-                    PIXI.WebGLRenderer.instances[gl.id].updateTexture(uniform.value.baseTexture);
+                    PIXI.instances[gl.id].updateTexture(uniform.value.baseTexture);
                 }
                 else
                 {
