@@ -427,19 +427,27 @@ PIXI.Graphics.prototype.arc = function(cx, cy, radius, startAngle, endAngle, ant
 {
     var startX = cx + Math.cos(startAngle) * radius;
     var startY = cy + Math.sin(startAngle) * radius;
-   
-    var points = this.currentPath.shape.points;
+    var points;
 
-    if(points.length === 0)
+    if( this.currentPath )
+    {
+        points = this.currentPath.shape.points;
+
+        if(points.length === 0)
+        {
+            points.push(startX, startY);
+        }
+        else if( points[points.length-2] !== startX || points[points.length-1] !== startY)
+        {
+             points.push(startX, startY);
+        }
+    }
+    else
     {
         this.moveTo(startX, startY);
-        points = this.currentPath.shape.points;
+        points = this.currentPath.shape.points;   
     }
-    else if( points[points.length-2] !== startX || points[points.length-1] !== startY)
-    {
-        points.push(startX, startY);
-    }
-  
+    
     if (startAngle === endAngle)return this;
 
     if( !anticlockwise && endAngle <= startAngle )
