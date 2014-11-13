@@ -282,7 +282,7 @@ PIXI.WebGLRenderer.prototype.initContext = function()
 PIXI.WebGLRenderer.prototype.render = function(stage)
 {
     // no point rendering if our context has been blown up!
-    if(this.contextLost || this.gl.isContextLost())return;
+    if(this.gl.isContextLost())return;
 
     // if rendering a new stage clear the batches..
     if(this.__stage !== stage)
@@ -450,7 +450,6 @@ PIXI.WebGLRenderer.prototype.updateTexture = function(texture)
 PIXI.WebGLRenderer.prototype.handleContextLost = function(event)
 {
     event.preventDefault();
-    this.contextLost = true;
 };
 
 /**
@@ -470,8 +469,6 @@ PIXI.WebGLRenderer.prototype.handleContextRestored = function()
         var texture = PIXI.TextureCache[key].baseTexture;
         texture._glTextures = [];
     }
-
-    this.contextLost = false;
 };
 
 /**
