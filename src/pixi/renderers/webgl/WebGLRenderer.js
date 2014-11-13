@@ -282,7 +282,7 @@ PIXI.WebGLRenderer.prototype.initContext = function()
 PIXI.WebGLRenderer.prototype.render = function(stage)
 {
     // no point rendering if our context has been blown up!
-    if(this.contextLost)return;
+    if(this.contextLost || this.gl.isContextLost())return;
 
     // if rendering a new stage clear the batches..
     if(this.__stage !== stage)
