@@ -439,13 +439,13 @@ PIXI.Graphics.prototype.arc = function(cx, cy, radius, startAngle, endAngle, ant
         }
         else if( points[points.length-2] !== startX || points[points.length-1] !== startY)
         {
-             points.push(startX, startY);
+            points.push(startX, startY);
         }
     }
     else
     {
         this.moveTo(startX, startY);
-        points = this.currentPath.shape.points;   
+        points = this.currentPath.shape.points;
     }
     
     if (startAngle === endAngle)return this;
