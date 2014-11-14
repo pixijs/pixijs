@@ -5,8 +5,10 @@
 /**
  * This helper function will automatically detect which renderer you should be using.
  * WebGL is the preferred renderer as it is a lot faster. If webGL is not supported by
- * the browser then this function will return a canvas renderer
- * @class autoDetectRenderer
+ * the browser then this function will return a canvas renderer.
+ *
+ * @method autoDetectRenderer
+ * @for PIXI
  * @static
  * @param width=800 {Number} the width of the renderers view
  * @param height=600 {Number} the height of the renderers view
@@ -17,21 +19,24 @@
  * @param [options.antialias=false] {Boolean} sets antialias (only applicable in chrome at the moment)
  * @param [options.preserveDrawingBuffer=false] {Boolean} enables drawing buffer preservation, enable this if you need to call toDataUrl on the webgl context
  * @param [options.resolution=1] {Number} the resolution of the renderer retina would be 2
+ *
+ * @param [noWebGL=false] {Boolean} prevents selection of WebGL renderer, even if such is present
  * 
  */
-PIXI.autoDetectRenderer = function(width, height, options)
+PIXI.autoDetectRenderer = function(width, height, options, noWebGL)
 {
     if(!width)width = 800;
     if(!height)height = 600;
 
     // BORROWED from Mr Doob (mrdoob.com)
-    var webgl = ( function () { try {
-                                    var canvas = document.createElement( 'canvas' );
-                                    return !! window.WebGLRenderingContext && ( canvas.getContext( 'webgl' ) || canvas.getContext( 'experimental-webgl' ) );
-                                } catch( e ) {
-                                    return false;
-                                }
-                            } )();
+    var webgl = !noWebGL &&
+        ( function () { try {
+                            var canvas = document.createElement( 'canvas' );
+                            return !! window.WebGLRenderingContext && ( canvas.getContext( 'webgl' ) || canvas.getContext( 'experimental-webgl' ) );
+                        } catch( e ) {
+                            return false;
+                        }
+                    } )();
 
     if( webgl )
     {
@@ -47,7 +52,8 @@ PIXI.autoDetectRenderer = function(width, height, options)
  * Even thought both android chrome supports webGL the canvas implementation perform better at the time of writing. 
  * This function will likely change and update as webGL performance improves on these devices.
  * 
- * @class autoDetectRecommendedRenderer
+ * @method autoDetectRecommendedRenderer
+ * @for PIXI
  * @static
  * @param width=800 {Number} the width of the renderers view
  * @param height=600 {Number} the height of the renderers view
@@ -62,24 +68,10 @@ PIXI.autoDetectRenderer = function(width, height, options)
  */
 PIXI.autoDetectRecommendedRenderer = function(width, height, options)
 {
-    if(!width)width = 800;
-    if(!height)height = 600;
-
-    // BORROWED from Mr Doob (mrdoob.com)
-    var webgl = ( function () { try {
-                                    var canvas = document.createElement( 'canvas' );
-                                    return !! window.WebGLRenderingContext && ( canvas.getContext( 'webgl' ) || canvas.getContext( 'experimental-webgl' ) );
-                                } catch( e ) {
-                                    return false;
-                                }
-                            } )();
 
     var isAndroid = /Android/i.test(navigator.userAgent);
+    var noWebGL = isAndroid;
 
-    if( webgl && !isAndroid)
-    {
-        return new PIXI.WebGLRenderer(width, height, options);
-    }
+    return PIXI.autoDetectRenderer(width, height, options, noWebGL);
 
-    return  new PIXI.CanvasRenderer(width, height, options);
 };
