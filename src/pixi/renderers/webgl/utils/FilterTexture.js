@@ -8,7 +8,7 @@
 * @param gl {WebGLContext} the current WebGL drawing context
 * @param width {Number} the horizontal range of the filter
 * @param height {Number} the vertical range of the filter
-* @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
+* @param scaleMode {Number} See {{#crossLink "PIXI/scaleModes:property"}}PIXI.scaleModes{{/crossLink}} for possible values
 */
 PIXI.FilterTexture = function(gl, width, height, scaleMode)
 {

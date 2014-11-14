@@ -383,7 +383,7 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'mask', {
  * * IMPORTANT: This is a webGL only feature and will be ignored by the canvas renderer.
  * To remove filters simply set this property to 'null'
  * @property filters
- * @type Array An array of filters
+ * @type {Array(Filter)}
  */
 Object.defineProperty(PIXI.DisplayObject.prototype, 'filters', {
 
@@ -562,7 +562,7 @@ PIXI.DisplayObject.prototype.setStageReference = function(stage)
  *
  * @method generateTexture
  * @param resolution {Number} The resolution of the texture being generated
- * @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
+ * @param scaleMode {Number} See {{#crossLink "PIXI/scaleModes:property"}}PIXI.scaleModes{{/crossLink}} for possible values
  * @param renderer {CanvasRenderer|WebGLRenderer} The renderer used to generate the texture.
  * @return {Texture} a texture of the graphics object
  */

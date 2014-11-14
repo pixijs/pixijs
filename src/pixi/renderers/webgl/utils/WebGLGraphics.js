@@ -389,7 +389,7 @@ PIXI.WebGLGraphics.buildRoundedRectangle = function(graphicsData, webGLData)
  * @param cpY {Number} Control point y
  * @param toX {Number} Destination point x
  * @param toY {Number} Destination point y
- * @return {Array<Number>}
+ * @return {Array(Number)}
  */
 PIXI.WebGLGraphics.quadraticBezierCurve = function(fromX, fromY, cpX, cpY, toX, toY) {
 
