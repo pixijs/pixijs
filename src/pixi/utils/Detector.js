@@ -7,7 +7,8 @@
  * WebGL is the preferred renderer as it is a lot faster. If webGL is not supported by
  * the browser then this function will return a canvas renderer.
  *
- * @class autoDetectRenderer
+ * @method autoDetectRenderer
+ * @for PIXI
  * @static
  * @param width=800 {Number} the width of the renderers view
  * @param height=600 {Number} the height of the renderers view
@@ -51,7 +52,8 @@ PIXI.autoDetectRenderer = function(width, height, options, noWebGL)
  * Even thought both android chrome supports webGL the canvas implementation perform better at the time of writing. 
  * This function will likely change and update as webGL performance improves on these devices.
  * 
- * @class autoDetectRecommendedRenderer
+ * @method autoDetectRecommendedRenderer
+ * @for PIXI
  * @static
  * @param width=800 {Number} the width of the renderers view
  * @param height=600 {Number} the height of the renderers view
