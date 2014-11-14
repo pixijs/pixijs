@@ -562,7 +562,7 @@ PIXI.DisplayObject.prototype.setStageReference = function(stage)
  *
  * @method generateTexture
  * @param resolution {Number} The resolution of the texture being generated
- * @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
+ * @param scaleMode {Integer} See {{#crossLink "PIXI/scaleModes:property"}}{{/crossLink}} for possible values
  * @param renderer {CanvasRenderer|WebGLRenderer} The renderer used to generate the texture.
  * @return {Texture} a texture of the graphics object
  */

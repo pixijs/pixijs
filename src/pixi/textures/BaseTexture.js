@@ -13,7 +13,7 @@ PIXI.BaseTextureCacheIdGenerator = 0;
  * @uses EventTarget
  * @constructor
  * @param source {String} the source object (image or canvas)
- * @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
+ * @param scaleMode {Integer} See {{#crossLink "PIXI/scaleModes:property"}}{{/crossLink}} for possible values
  */
 PIXI.BaseTexture = function(source, scaleMode)
 {
@@ -233,7 +233,7 @@ PIXI.BaseTexture.prototype.unloadFromGPU = function()
  * @method fromImage
  * @param imageUrl {String} The image url of the texture
  * @param crossorigin {Boolean}
- * @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
+ * @param scaleMode {Integer} See {{#crossLink "PIXI/scaleModes:property"}}{{/crossLink}} for possible values
  * @return BaseTexture
  */
 PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
@@ -273,7 +273,7 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
  * @static
  * @method fromCanvas
  * @param canvas {Canvas} The canvas element source of the texture
- * @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
+ * @param scaleMode {Integer} See {{#crossLink "PIXI/scaleModes:property"}}{{/crossLink}} for possible values
  * @return BaseTexture
  */
 PIXI.BaseTexture.fromCanvas = function(canvas, scaleMode)
