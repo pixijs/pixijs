@@ -1,4 +1,14 @@
-
+/**
+ * A texture of a [playing] Video.
+ *
+ * See the ["deus" demo](http://www.goodboydigital.com/pixijs/examples/deus/).
+ *
+ * @class VideoTexture
+ * @extends BaseTexture
+ * @constructor
+ * @param source {HTMLVideoElement}
+ * @param scaleMode {Integer} See {{#crossLink "PIXI/scaleModes:property"}}{{/crossLink}} for possible values
+ */
 PIXI.VideoTexture = function( source, scaleMode )
 {
     if( !source ){
@@ -83,11 +93,27 @@ PIXI.VideoTexture.prototype.onCanPlay = function()
     }
 };
 
+PIXI.VideoTexture.prototype.destroy = function()
+{
+    if( this.source && this.source._pixiId )
+    {
+        PIXI.BaseTextureCache[ this.source._pixiId ] = null;
+        delete PIXI.BaseTextureCache[ this.source._pixiId ];
+
+        this.source._pixiId = null;
+        delete this.source._pixiId;
+    }
+
+    PIXI.BaseTexture.prototype.destroy.call( this );
+};
 
 /**
  * Mimic Pixi BaseTexture.from.... method.
- * @param video
- * @param scaleMode
+ *
+ * @name baseTextureFromVideo
+ * @static
+ * @param video {HTMLVideoElement}
+ * @param scaleMode {Integer} See {{#crossLink "PIXI/scaleModes:property"}}{{/crossLink}} for possible values
  * @returns {PIXI.VideoTexture}
  */
 PIXI.VideoTexture.baseTextureFromVideo = function( video, scaleMode )
@@ -108,25 +134,13 @@ PIXI.VideoTexture.baseTextureFromVideo = function( video, scaleMode )
     return baseTexture;
 };
 
-
-PIXI.VideoTexture.prototype.destroy = function()
-{
-    if( this.source && this.source._pixiId )
-    {
-        PIXI.BaseTextureCache[ this.source._pixiId ] = null;
-        delete PIXI.BaseTextureCache[ this.source._pixiId ];
-
-        this.source._pixiId = null;
-        delete this.source._pixiId;
-    }
-
-    PIXI.BaseTexture.prototype.destroy.call( this );
-};
-
 /**
- * Mimic PIXI Texture.from... method.
- * @param video
- * @param scaleMode
+ * Mimic Pixi BaseTexture.from.... method.
+ *
+ * @name textureFromVideo
+ * @static
+ * @param video {HTMLVideoElement}
+ * @param scaleMode {Integer} See {{#crossLink "PIXI/scaleModes:property"}}{{/crossLink}} for possible values
  * @returns {PIXI.Texture}
  */
 PIXI.VideoTexture.textureFromVideo = function( video, scaleMode )
@@ -135,6 +149,15 @@ PIXI.VideoTexture.textureFromVideo = function( video, scaleMode )
     return new PIXI.Texture( baseTexture );
 };
 
+/**
+ * Mimic Pixi BaseTexture.from.... method.
+ *
+ * @name fromUrl
+ * @static
+ * @param videoSrc {Url}
+ * @param scaleMode {Integer} See {{#crossLink "PIXI/scaleModes:property"}}{{/crossLink}} for possible values
+ * @returns {PIXI.Texture}
+ */
 PIXI.VideoTexture.fromUrl = function( videoSrc, scaleMode )
 {
     var video = document.createElement('video');
@@ -143,4 +166,3 @@ PIXI.VideoTexture.fromUrl = function( videoSrc, scaleMode )
     video.play();
     return PIXI.VideoTexture.textureFromVideo( video, scaleMode);
 };
-
