@@ -7,7 +7,7 @@
  * @extends BaseTexture
  * @constructor
  * @param source {HTMLVideoElement}
- * @param scaleMode {Integer} See {{#crossLink "PIXI/scaleModes:property"}}{{/crossLink}} for possible values
+ * @param scaleMode {Number} See {{#crossLink "PIXI/scaleModes:property"}}PIXI.scaleModes{{/crossLink}} for possible values
  */
 PIXI.VideoTexture = function( source, scaleMode )
 {
@@ -110,11 +110,11 @@ PIXI.VideoTexture.prototype.destroy = function()
 /**
  * Mimic Pixi BaseTexture.from.... method.
  *
- * @name baseTextureFromVideo
  * @static
+ * @method baseTextureFromVideo
  * @param video {HTMLVideoElement}
- * @param scaleMode {Integer} See {{#crossLink "PIXI/scaleModes:property"}}{{/crossLink}} for possible values
- * @returns {PIXI.VideoTexture}
+ * @param scaleMode {Number} See {{#crossLink "PIXI/scaleModes:property"}}PIXI.scaleModes{{/crossLink}} for possible values
+ * @returns {VideoTexture}
  */
 PIXI.VideoTexture.baseTextureFromVideo = function( video, scaleMode )
 {
@@ -137,11 +137,11 @@ PIXI.VideoTexture.baseTextureFromVideo = function( video, scaleMode )
 /**
  * Mimic Pixi BaseTexture.from.... method.
  *
- * @name textureFromVideo
  * @static
+ * @method textureFromVideo 
  * @param video {HTMLVideoElement}
- * @param scaleMode {Integer} See {{#crossLink "PIXI/scaleModes:property"}}{{/crossLink}} for possible values
- * @returns {PIXI.Texture}
+ * @param scaleMode {Number} See {{#crossLink "PIXI/scaleModes:property"}}PIXI.scaleModes{{/crossLink}} for possible values
+ * @returns {Texture} A Texture, but not a VideoTexture.
  */
 PIXI.VideoTexture.textureFromVideo = function( video, scaleMode )
 {
@@ -152,11 +152,11 @@ PIXI.VideoTexture.textureFromVideo = function( video, scaleMode )
 /**
  * Mimic Pixi BaseTexture.from.... method.
  *
- * @name fromUrl
  * @static
- * @param videoSrc {Url}
- * @param scaleMode {Integer} See {{#crossLink "PIXI/scaleModes:property"}}{{/crossLink}} for possible values
- * @returns {PIXI.Texture}
+ * @method fromUrl 
+ * @param videoSrc {String} The URL for the video.
+ * @param scaleMode {Number} See {{#crossLink "PIXI/scaleModes:property"}}PIXI.scaleModes{{/crossLink}} for possible values
+ * @returns {VideoTexture}
  */
 PIXI.VideoTexture.fromUrl = function( videoSrc, scaleMode )
 {

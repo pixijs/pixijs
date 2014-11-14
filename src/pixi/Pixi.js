@@ -19,13 +19,13 @@
 var PIXI = PIXI || {};
 
 /**
- * @property {Integer} WEBGL_RENDERER
+ * @property {Number} WEBGL_RENDERER
  * @protected
  * @static 
  */
 PIXI.WEBGL_RENDERER = 0;
 /**
- * @property {Integer} CANVAS_RENDERER
+ * @property {Number} CANVAS_RENDERER
  * @protected
  * @static
  */
@@ -41,23 +41,23 @@ PIXI.VERSION = "v2.1.0";
 /**
  * Various blend modes supported by pixi.
  * @property {Object} blendModes
- * @property {Integer} blendModes.NORMAL
- * @property {Integer} blendModes.ADD
- * @property {Integer} blendModes.MULTIPLY
- * @property {Integer} blendModes.SCREEN
- * @property {Integer} blendModes.OVERLAY
- * @property {Integer} blendModes.DARKEN
- * @property {Integer} blendModes.LIGHTEN
- * @property {Integer} blendModes.COLOR_DODGE
- * @property {Integer} blendModes.COLOR_BURN
- * @property {Integer} blendModes.HARD_LIGHT
- * @property {Integer} blendModes.SOFT_LIGHT
- * @property {Integer} blendModes.DIFFERENCE
- * @property {Integer} blendModes.EXCLUSION
- * @property {Integer} blendModes.HUE
- * @property {Integer} blendModes.SATURATION
- * @property {Integer} blendModes.COLOR
- * @property {Integer} blendModes.LUMINOSITY
+ * @property {Number} blendModes.NORMAL
+ * @property {Number} blendModes.ADD
+ * @property {Number} blendModes.MULTIPLY
+ * @property {Number} blendModes.SCREEN
+ * @property {Number} blendModes.OVERLAY
+ * @property {Number} blendModes.DARKEN
+ * @property {Number} blendModes.LIGHTEN
+ * @property {Number} blendModes.COLOR_DODGE
+ * @property {Number} blendModes.COLOR_BURN
+ * @property {Number} blendModes.HARD_LIGHT
+ * @property {Number} blendModes.SOFT_LIGHT
+ * @property {Number} blendModes.DIFFERENCE
+ * @property {Number} blendModes.EXCLUSION
+ * @property {Number} blendModes.HUE
+ * @property {Number} blendModes.SATURATION
+ * @property {Number} blendModes.COLOR
+ * @property {Number} blendModes.LUMINOSITY
  * @static
  */
 PIXI.blendModes = {
@@ -83,13 +83,13 @@ PIXI.blendModes = {
 /**
  * The scale modes that are supported by pixi.
  *
- * The DEFAULT scale mode affects the default scaling mode of future operrations.
- * It can be user-reassigned to either LINEAR or NEAREST, depending upon need.
+ * The DEFAULT scale mode affects the default scaling mode of future operations.
+ * It can be re-assigned to either LINEAR or NEAREST, depending upon suitability.
  *
  * @property {Object} scaleModes
- * @property {Integer} scaleModes.DEFAULT=LINEAR
- * @property {Integer} scaleModes.LINEAR Smooth scaling
- * @property {Integer} scaleModes.NEAREST Pixelating scaling
+ * @property {Number} scaleModes.DEFAULT=LINEAR
+ * @property {Number} scaleModes.LINEAR Smooth scaling
+ * @property {Number} scaleModes.NEAREST Pixelating scaling
  * @static
  */
 PIXI.scaleModes = {

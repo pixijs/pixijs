@@ -638,7 +638,7 @@ PIXI.Graphics.prototype.clear = function()
  *
  * @method generateTexture
  * @param resolution {Number} The resolution of the texture being generated
- * @param scaleMode {Integer} See {{#crossLink "PIXI/scaleModes:property"}}{{/crossLink}} for possible values
+ * @param scaleMode {Number} See {{#crossLink "PIXI/scaleModes:property"}}PIXI.scaleModes{{/crossLink}} for possible values
  * @return {Texture} a texture of the graphics object
  */
 PIXI.Graphics.prototype.generateTexture = function(resolution, scaleMode)
