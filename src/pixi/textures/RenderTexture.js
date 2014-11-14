@@ -200,10 +200,11 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, matrix, clear
     if(!this.valid)return;
     if(typeof preserveWorldTransform === 'undefined')preserveWorldTransform = true;
 
+    var tempAlpha, tempTransform;
     if (preserveWorldTransform)
     {
-        PIXI.RenderTexture.tempAlpha = displayObject.worldAlpha;
-        PIXI.RenderTexture.tempTransform = displayObject.worldTransform.toArray();
+        tempAlpha = displayObject.worldAlpha;
+        tempTransform = displayObject.worldTransform.toArray();
     }
 
     //TOOD replace position with matrix..
@@ -244,8 +245,8 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, matrix, clear
 
     if (preserveWorldTransform)
     {
-        displayObject.worldAlpha = PIXI.RenderTexture.tempAlpha;
-        displayObject.worldTransform.fromArray(PIXI.RenderTexture.tempTransform);
+        displayObject.worldAlpha = tempAlpha;
+        displayObject.worldTransform.fromArray(tempTransform);
 
         for(i = 0, j = children.length; i < j; i++)
         {
@@ -270,10 +271,11 @@ PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, matrix, clea
     if(!this.valid)return;
     if(typeof preserveWorldTransform === 'undefined')preserveWorldTransform = true;
 
+    var tempAlpha, tempTransform;
     if (preserveWorldTransform)
     {
-        PIXI.RenderTexture.tempAlpha = displayObject.worldAlpha;
-        PIXI.RenderTexture.tempTransform = displayObject.worldTransform.toArray();
+        tempAlpha = displayObject.worldAlpha;
+        tempTransform = displayObject.worldTransform.toArray();
     }
 
     var wt = displayObject.worldTransform;
@@ -306,8 +308,8 @@ PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, matrix, clea
 
     if (preserveWorldTransform)
     {
-        displayObject.worldAlpha = PIXI.RenderTexture.tempAlpha;
-        displayObject.worldTransform.fromArray(PIXI.RenderTexture.tempTransform);
+        displayObject.worldAlpha = tempAlpha;
+        displayObject.worldTransform.fromArray(tempTransform);
 
         for(i = 0, j = children.length; i < j; i++)
         {
@@ -373,9 +375,3 @@ PIXI.RenderTexture.prototype.getCanvas = function()
         return this.textureBuffer.canvas;
     }
 };
-
-// Temporary alpha used to restore the worldAlpha of the DisplayObject being rendered.
-PIXI.RenderTexture.tempAlpha = 1;
-
-// Temporary array/object re-used to store the worldTransform of the DisplayObject being rendered.
-PIXI.RenderTexture.tempTransform = null;
