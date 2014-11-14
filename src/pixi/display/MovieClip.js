@@ -8,7 +8,7 @@
  * @class MovieClip
  * @extends Sprite
  * @constructor
- * @param textures {Array<Texture>} an array of {Texture} objects that make up the animation
+ * @param textures {Array(Texture)} an array of {Texture} objects that make up the animation
  */
 PIXI.MovieClip = function(textures)
 {
