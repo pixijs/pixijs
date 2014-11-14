@@ -2,7 +2,7 @@
     "project": {
         "name": "pixi.js",
         "description": "Pixi.js is a fast lightweight 2D library that works across all devices.",
-        "version": "2.0.0",
+        "version": "2.1.0",
         "url": "http://goodboydigital.com/",
         "logo": "http://www.goodboydigital.com/pixijs/logo_small.png"
     },
@@ -376,6 +376,15 @@
             "fors": {},
             "namespaces": {}
         },
+        "src/pixi/geom/RoundedRectangle.js": {
+            "name": "src/pixi/geom/RoundedRectangle.js",
+            "modules": {},
+            "classes": {
+                "Rounded Rectangle": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "src/pixi/loaders/AssetLoader.js": {
             "name": "src/pixi/loaders/AssetLoader.js",
             "modules": {},
@@ -682,6 +691,13 @@
             "fors": {},
             "namespaces": {}
         },
+        "src/pixi/textures/VideoTexture.js": {
+            "name": "src/pixi/textures/VideoTexture.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
         "src/pixi/utils/Detector.js": {
             "name": "src/pixi/utils/Detector.js",
             "modules": {},
@@ -808,6 +824,7 @@
                 "Point": 1,
                 "Polygon": 1,
                 "Rectangle": 1,
+                "Rounded Rectangle": 1,
                 "AssetLoader": 1,
                 "AtlasLoader": 1,
                 "BitmapFontLoader": 1,
@@ -928,7 +945,7 @@
             "params": [
                 {
                     "name": "texture",
-                    "description": "The texture for this sprite\n\nA sprite can be created directly from an image like this : \nvar sprite = new PIXI.Sprite.fromImage('assets/image.png');\nyourStage.addChild(sprite);\nthen obviously don't forget to add it to the stage you have already created",
+                    "description": "The texture for this sprite\n\nA sprite can be created directly from an image like this :\nvar sprite = new PIXI.Sprite.fromImage('assets/image.png');\nyourStage.addChild(sprite);\nthen obviously don't forget to add it to the stage you have already created",
                     "type": "Texture"
                 }
             ]
@@ -1673,6 +1690,47 @@
                 }
             ]
         },
+        "Rounded Rectangle": {
+            "name": "Rounded Rectangle",
+            "shortname": "Rounded Rectangle",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "PIXI",
+            "file": "src/pixi/geom/RoundedRectangle.js",
+            "line": 5,
+            "description": "the Rounded Rectangle object is an area defined by its position and has nice rounded corners, as indicated by its top-left corner point (x, y) and by its width and its height.",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "x",
+                    "description": "The X coordinate of the upper-left corner of the rounded rectangle",
+                    "type": "Number"
+                },
+                {
+                    "name": "y",
+                    "description": "The Y coordinate of the upper-left corner of the rounded rectangle",
+                    "type": "Number"
+                },
+                {
+                    "name": "width",
+                    "description": "The overall width of this rounded rectangle",
+                    "type": "Number"
+                },
+                {
+                    "name": "height",
+                    "description": "The overall height of this rounded rectangle",
+                    "type": "Number"
+                },
+                {
+                    "name": "radius",
+                    "description": "The overall radius of this corners of this rounded rectangle",
+                    "type": "Number"
+                }
+            ]
+        },
         "AssetLoader": {
             "name": "AssetLoader",
             "shortname": "AssetLoader",
@@ -1901,7 +1959,7 @@
             "extension_for": [],
             "module": "PIXI",
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 1080,
+            "line": 1093,
             "description": "A GraphicsData object.",
             "is_constructor": 1
         },
@@ -2016,6 +2074,13 @@
                         {
                             "name": "transparent",
                             "description": "If the render view is transparent, default false",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
+                        },
+                        {
+                            "name": "autoResize",
+                            "description": "If the render view is automatically resized, default false",
                             "type": "Boolean",
                             "optional": true,
                             "optdefault": "false"
@@ -2245,7 +2310,7 @@
             "extension_for": [],
             "module": "PIXI",
             "file": "src/pixi/renderers/webgl/utils/WebGLGraphics.js",
-            "line": 828,
+            "line": 829,
             "access": "private",
             "tagname": "",
             "static": 1
@@ -2320,7 +2385,7 @@
             "extension_for": [],
             "module": "PIXI",
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 7,
+            "line": 8,
             "description": "The WebGLRenderer draws the stage and all its content onto a webGL enabled canvas. This renderer\nshould be used for browsers that support webGL. This Render works by automatically managing webGLBatchs.\nSo no need for Sprite Batches or Sprite Clouds.\nDon't forget to add the view to your DOM or you will not see anything :)",
             "is_constructor": 1,
             "params": [
@@ -2353,6 +2418,13 @@
                         {
                             "name": "transparent",
                             "description": "If the render view is transparent, default false",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
+                        },
+                        {
+                            "name": "autoResize",
+                            "description": "If the render view is automatically resized, default false",
                             "type": "Boolean",
                             "optional": true,
                             "optdefault": "false"
@@ -3392,7 +3464,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 519,
+            "line": 523,
             "description": "Retrieves the bounds of the displayObject as a rectangle object",
             "itemtype": "method",
             "name": "getBounds",
@@ -3411,7 +3483,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 532,
+            "line": 536,
             "description": "Retrieves the local bounds of the displayObject as a rectangle object",
             "itemtype": "method",
             "name": "getLocalBounds",
@@ -3423,7 +3495,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 543,
+            "line": 547,
             "description": "Sets the object's stage reference, the stage this object is connected to",
             "itemtype": "method",
             "name": "setStageReference",
@@ -3438,7 +3510,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 555,
+            "line": 559,
             "description": "Useful function that returns a texture of the displayObject object that can then be used to create sprites\nThis can be quite useful if your displayObject is static / complicated and needs to be reused multiple times.",
             "itemtype": "method",
             "name": "generateTexture",
@@ -3467,7 +3539,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 575,
+            "line": 583,
             "description": "Generates and updates the cached sprite for this object.",
             "itemtype": "method",
             "name": "updateCache",
@@ -3475,7 +3547,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 585,
+            "line": 593,
             "description": "Calculates the global position of the display object",
             "itemtype": "method",
             "name": "toGlobal",
@@ -3494,7 +3566,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 598,
+            "line": 606,
             "description": "Calculates the local position of the display object relative to another point",
             "itemtype": "method",
             "name": "toLocal",
@@ -3519,7 +3591,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 618,
+            "line": 626,
             "description": "Internal method.",
             "itemtype": "method",
             "name": "_renderCachedSprite",
@@ -3536,7 +3608,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 639,
+            "line": 647,
             "description": "Internal method.",
             "itemtype": "method",
             "name": "_generateCachedSprite",
@@ -3546,7 +3618,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 681,
+            "line": 689,
             "description": "Destroys the cached sprite.",
             "itemtype": "method",
             "name": "_destroyCachedSprite",
@@ -3556,7 +3628,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 697,
+            "line": 705,
             "description": "Renders the object using the WebGL renderer",
             "itemtype": "method",
             "name": "_renderWebGL",
@@ -3573,7 +3645,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 711,
+            "line": 719,
             "description": "Renders the object using the Canvas renderer",
             "itemtype": "method",
             "name": "_renderCanvas",
@@ -3590,7 +3662,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 728,
+            "line": 736,
             "description": "The position of the displayObject on the x axis relative to the local coordinates of the parent.",
             "itemtype": "property",
             "name": "x",
@@ -3599,7 +3671,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObject.js",
-            "line": 743,
+            "line": 751,
             "description": "The position of the displayObject on the y axis relative to the local coordinates of the parent.",
             "itemtype": "property",
             "name": "y",
@@ -3624,7 +3696,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObjectContainer.js",
-            "line": 31,
+            "line": 35,
             "description": "The width of the displayObjectContainer, setting this will actually modify the scale to achieve the value set",
             "itemtype": "property",
             "name": "width",
@@ -3633,7 +3705,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObjectContainer.js",
-            "line": 59,
+            "line": 63,
             "description": "The height of the displayObjectContainer, setting this will actually modify the scale to achieve the value set",
             "itemtype": "property",
             "name": "height",
@@ -3642,7 +3714,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObjectContainer.js",
-            "line": 86,
+            "line": 90,
             "description": "Adds a child to the container.",
             "itemtype": "method",
             "name": "addChild",
@@ -3661,7 +3733,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObjectContainer.js",
-            "line": 98,
+            "line": 102,
             "description": "Adds a child to the container at a specified index. If the index is out of bounds an error will be thrown",
             "itemtype": "method",
             "name": "addChildAt",
@@ -3685,7 +3757,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObjectContainer.js",
-            "line": 129,
+            "line": 133,
             "description": "Swaps the position of 2 Display Objects within this container.",
             "itemtype": "method",
             "name": "swapChildren",
@@ -3705,7 +3777,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObjectContainer.js",
-            "line": 154,
+            "line": 158,
             "description": "Returns the index position of a child DisplayObject instance",
             "itemtype": "method",
             "name": "getChildIndex",
@@ -3724,7 +3796,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObjectContainer.js",
-            "line": 171,
+            "line": 175,
             "description": "Changes the position of an existing child in the display object container",
             "itemtype": "method",
             "name": "setChildIndex",
@@ -3744,7 +3816,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObjectContainer.js",
-            "line": 189,
+            "line": 193,
             "description": "Returns the child at the specified index",
             "itemtype": "method",
             "name": "getChildAt",
@@ -3763,7 +3835,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObjectContainer.js",
-            "line": 206,
+            "line": 210,
             "description": "Removes a child from the container.",
             "itemtype": "method",
             "name": "removeChild",
@@ -3782,7 +3854,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObjectContainer.js",
-            "line": 221,
+            "line": 225,
             "description": "Removes a child from the specified index position.",
             "itemtype": "method",
             "name": "removeChildAt",
@@ -3801,7 +3873,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObjectContainer.js",
-            "line": 239,
+            "line": 243,
             "description": "Removes all children from this container that are within the begin and end indexes.",
             "itemtype": "method",
             "name": "removeChildren",
@@ -3821,7 +3893,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObjectContainer.js",
-            "line": 293,
+            "line": 302,
             "description": "Retrieves the bounds of the displayObjectContainer as a rectangle. The bounds calculation takes all visible children into consideration.",
             "itemtype": "method",
             "name": "getBounds",
@@ -3833,7 +3905,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObjectContainer.js",
-            "line": 353,
+            "line": 362,
             "description": "Retrieves the non-global local bounds of the displayObjectContainer as a rectangle. The calculation takes all visible children into consideration.",
             "itemtype": "method",
             "name": "getLocalBounds",
@@ -3845,7 +3917,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObjectContainer.js",
-            "line": 377,
+            "line": 386,
             "description": "Sets the containers Stage reference. This is the Stage that this object, and all of its children, is connected to.",
             "itemtype": "method",
             "name": "setStageReference",
@@ -3860,7 +3932,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObjectContainer.js",
-            "line": 395,
+            "line": 404,
             "description": "Removes the current stage reference from the container and all of its children.",
             "itemtype": "method",
             "name": "removeStageReference",
@@ -3868,7 +3940,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObjectContainer.js",
-            "line": 414,
+            "line": 423,
             "description": "Renders the object using the WebGL renderer",
             "itemtype": "method",
             "name": "_renderWebGL",
@@ -3885,7 +3957,7 @@
         },
         {
             "file": "src/pixi/display/DisplayObjectContainer.js",
-            "line": 473,
+            "line": 482,
             "description": "Renders the object using the Canvas renderer",
             "itemtype": "method",
             "name": "_renderCanvas",
@@ -4132,7 +4204,7 @@
         },
         {
             "file": "src/pixi/display/Sprite.js",
-            "line": 104,
+            "line": 103,
             "description": "The width of the sprite, setting this will actually modify the scale to achieve the value set",
             "itemtype": "property",
             "name": "width",
@@ -4141,7 +4213,7 @@
         },
         {
             "file": "src/pixi/display/Sprite.js",
-            "line": 120,
+            "line": 119,
             "description": "The height of the sprite, setting this will actually modify the scale to achieve the value set",
             "itemtype": "property",
             "name": "height",
@@ -4150,7 +4222,7 @@
         },
         {
             "file": "src/pixi/display/Sprite.js",
-            "line": 136,
+            "line": 135,
             "description": "Sets the texture of the sprite",
             "itemtype": "method",
             "name": "setTexture",
@@ -4165,7 +4237,7 @@
         },
         {
             "file": "src/pixi/display/Sprite.js",
-            "line": 148,
+            "line": 147,
             "description": "When the texture is updated, this event will fire to update the scale and frame",
             "itemtype": "method",
             "name": "onTextureUpdate",
@@ -4181,7 +4253,7 @@
         },
         {
             "file": "src/pixi/display/Sprite.js",
-            "line": 164,
+            "line": 163,
             "description": "Returns the bounds of the Sprite as a rectangle. The bounds calculation takes the worldTransform into account.",
             "itemtype": "method",
             "name": "getBounds",
@@ -4200,7 +4272,7 @@
         },
         {
             "file": "src/pixi/display/Sprite.js",
-            "line": 243,
+            "line": 242,
             "description": "Renders the object using the WebGL renderer",
             "itemtype": "method",
             "name": "_renderWebGL",
@@ -4217,7 +4289,7 @@
         },
         {
             "file": "src/pixi/display/Sprite.js",
-            "line": 306,
+            "line": 305,
             "description": "Renders the object using the Canvas renderer",
             "itemtype": "method",
             "name": "_renderCanvas",
@@ -4234,7 +4306,7 @@
         },
         {
             "file": "src/pixi/display/Sprite.js",
-            "line": 419,
+            "line": 418,
             "description": "Helper function that creates a sprite that will contain a texture from the TextureCache based on the frameId\n The frame ids are created when a Texture packer file has been loaded",
             "itemtype": "method",
             "name": "fromFrame",
@@ -4254,7 +4326,7 @@
         },
         {
             "file": "src/pixi/display/Sprite.js",
-            "line": 436,
+            "line": 435,
             "description": "Helper function that creates a sprite that will contain a texture based on an image url\n If the image is not in the texture cache it will be loaded",
             "itemtype": "method",
             "name": "fromImage",
@@ -5227,10 +5299,28 @@
         {
             "file": "src/pixi/filters/RGBSplitFilter.js",
             "line": 48,
-            "description": "The angle of the split.",
+            "description": "Red channel offset.",
             "itemtype": "property",
-            "name": "angle",
-            "type": "Number",
+            "name": "red",
+            "type": "Point",
+            "class": "RGBSplitFilter"
+        },
+        {
+            "file": "src/pixi/filters/RGBSplitFilter.js",
+            "line": 63,
+            "description": "Green channel offset.",
+            "itemtype": "property",
+            "name": "green",
+            "type": "Point",
+            "class": "RGBSplitFilter"
+        },
+        {
+            "file": "src/pixi/filters/RGBSplitFilter.js",
+            "line": 78,
+            "description": "Blue offset.",
+            "itemtype": "property",
+            "name": "blue",
+            "type": "Point",
             "class": "RGBSplitFilter"
         },
         {
@@ -6033,6 +6123,93 @@
             "class": "Rectangle"
         },
         {
+            "file": "src/pixi/geom/RoundedRectangle.js",
+            "line": 1,
+            "author": "Mat Groves http://matgroves.com/",
+            "class": "Rounded Rectangle"
+        },
+        {
+            "file": "src/pixi/geom/RoundedRectangle.js",
+            "line": 18,
+            "itemtype": "property",
+            "name": "x",
+            "type": "Number",
+            "default": "0",
+            "class": "Rounded Rectangle"
+        },
+        {
+            "file": "src/pixi/geom/RoundedRectangle.js",
+            "line": 25,
+            "itemtype": "property",
+            "name": "y",
+            "type": "Number",
+            "default": "0",
+            "class": "Rounded Rectangle"
+        },
+        {
+            "file": "src/pixi/geom/RoundedRectangle.js",
+            "line": 32,
+            "itemtype": "property",
+            "name": "width",
+            "type": "Number",
+            "default": "0",
+            "class": "Rounded Rectangle"
+        },
+        {
+            "file": "src/pixi/geom/RoundedRectangle.js",
+            "line": 39,
+            "itemtype": "property",
+            "name": "height",
+            "type": "Number",
+            "default": "0",
+            "class": "Rounded Rectangle"
+        },
+        {
+            "file": "src/pixi/geom/RoundedRectangle.js",
+            "line": 46,
+            "itemtype": "property",
+            "name": "radius",
+            "type": "Number",
+            "default": "20",
+            "class": "Rounded Rectangle"
+        },
+        {
+            "file": "src/pixi/geom/RoundedRectangle.js",
+            "line": 54,
+            "description": "Creates a clone of this Rounded Rectangle",
+            "itemtype": "method",
+            "name": "clone",
+            "return": {
+                "description": "a copy of the rounded rectangle",
+                "type": "Rounded Rectangle"
+            },
+            "class": "Rounded Rectangle"
+        },
+        {
+            "file": "src/pixi/geom/RoundedRectangle.js",
+            "line": 65,
+            "description": "Checks whether the x and y coordinates given are contained within this Rounded Rectangle",
+            "itemtype": "method",
+            "name": "contains",
+            "params": [
+                {
+                    "name": "x",
+                    "description": "The X coordinate of the point to test",
+                    "type": "Number"
+                },
+                {
+                    "name": "y",
+                    "description": "The Y coordinate of the point to test",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "Whether the x/y coordinates are within this Rounded Rectangle",
+                "type": "Boolean"
+            },
+            "class": "Rounded Rectangle"
+        },
+        {
             "file": "src/pixi/loaders/AssetLoader.js",
             "line": 1,
             "author": "Mat Groves http://matgroves.com/ @Doormat23",
@@ -6608,7 +6785,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 104,
+            "line": 106,
             "description": "Used to detect if the graphics object has changed. If this is set to true then the graphics object will be recalculated.",
             "itemtype": "property",
             "name": "dirty",
@@ -6619,7 +6796,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 113,
+            "line": 115,
             "description": "Used to detect if the webgl graphics object has changed. If this is set to true then the graphics object will be recalculated.",
             "itemtype": "property",
             "name": "webGLDirty",
@@ -6630,7 +6807,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 122,
+            "line": 124,
             "description": "Used to detect if the cached sprite object needs to be updated.",
             "itemtype": "property",
             "name": "cachedSpriteDirty",
@@ -6641,7 +6818,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 137,
+            "line": 139,
             "description": "When cacheAsBitmap is set to true the graphics object will be rendered as if it was a sprite.\nThis is useful if your graphics element does not change often, as it will speed up the rendering of the object in exchange for taking up texture memory.\nIt is also useful if you need the graphics object to be anti-aliased, because it will be rendered using canvas.\nThis is not recommended if you are constantly redrawing the graphics element.",
             "itemtype": "property",
             "name": "cacheAsBitmap",
@@ -6653,7 +6830,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 169,
+            "line": 171,
             "description": "Specifies the line style used for subsequent calls to Graphics methods such as the lineTo() method or the drawCircle() method.",
             "itemtype": "method",
             "name": "lineStyle",
@@ -6682,7 +6859,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 203,
+            "line": 205,
             "description": "Moves the current drawing position to x, y.",
             "itemtype": "method",
             "name": "moveTo",
@@ -6706,7 +6883,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 218,
+            "line": 220,
             "description": "Draws a line using the current line style from the current drawing position to (x, y);\nThe current drawing position is then set to (x, y).",
             "itemtype": "method",
             "name": "lineTo",
@@ -6730,7 +6907,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 235,
+            "line": 237,
             "description": "Calculate the points for a quadratic bezier curve and then draws it.\nBased on: https://stackoverflow.com/questions/785097/how-do-i-implement-a-bezier-curve-in-c",
             "itemtype": "method",
             "name": "quadraticCurveTo",
@@ -6764,7 +6941,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 285,
+            "line": 287,
             "description": "Calculate the points for a bezier curve and then draws it.",
             "itemtype": "method",
             "name": "bezierCurveTo",
@@ -6808,7 +6985,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 407,
+            "line": 414,
             "description": "The arc method creates an arc/curve (used to create circles, or parts of circles).",
             "itemtype": "method",
             "name": "arc",
@@ -6852,7 +7029,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 477,
+            "line": 488,
             "description": "Specifies a simple one-color fill that subsequent calls to other Graphics methods\n(such as lineTo() or drawCircle()) use when drawing.",
             "itemtype": "method",
             "name": "beginFill",
@@ -6876,7 +7053,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 504,
+            "line": 515,
             "description": "Applies a fill to the lines and shapes that were added since the last call to the beginFill() method.",
             "itemtype": "method",
             "name": "endFill",
@@ -6888,7 +7065,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 519,
+            "line": 530,
             "itemtype": "method",
             "name": "drawRect",
             "params": [
@@ -6921,7 +7098,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 535,
+            "line": 546,
             "itemtype": "method",
             "name": "drawRoundedRect",
             "params": [
@@ -6955,7 +7132,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 551,
+            "line": 562,
             "description": "Draws a circle.",
             "itemtype": "method",
             "name": "drawCircle",
@@ -6984,7 +7161,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 567,
+            "line": 578,
             "description": "Draws an ellipse.",
             "itemtype": "method",
             "name": "drawEllipse",
@@ -7018,7 +7195,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 584,
+            "line": 595,
             "description": "Draws a polygon using the given path.",
             "itemtype": "method",
             "name": "drawPolygon",
@@ -7037,7 +7214,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 598,
+            "line": 609,
             "description": "Clears the graphics that were drawn to this Graphics object, and resets fill and line style settings.",
             "itemtype": "method",
             "name": "clear",
@@ -7049,7 +7226,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 616,
+            "line": 627,
             "description": "Useful function that returns a texture of the graphics object that can then be used to create sprites\nThis can be quite useful if your geometry is complicated and needs to be reused multiple times.",
             "itemtype": "method",
             "name": "generateTexture",
@@ -7073,7 +7250,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 645,
+            "line": 656,
             "description": "Renders the object using the WebGL renderer",
             "itemtype": "method",
             "name": "_renderWebGL",
@@ -7090,7 +7267,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 725,
+            "line": 736,
             "description": "Renders the object using the Canvas renderer",
             "itemtype": "method",
             "name": "_renderCanvas",
@@ -7107,7 +7284,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 794,
+            "line": 805,
             "description": "Retrieves the bounds of the graphic shape as a rectangle object",
             "itemtype": "method",
             "name": "getBounds",
@@ -7119,15 +7296,15 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 870,
+            "line": 884,
             "description": "Update the bounds of the object",
             "itemtype": "method",
-            "name": "updateBounds",
+            "name": "updateLocalBounds",
             "class": "Graphics"
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 970,
+            "line": 983,
             "description": "Generates the cached sprite when the sprite has cacheAsBitmap = true",
             "itemtype": "method",
             "name": "_generateCachedSprite",
@@ -7137,7 +7314,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 1010,
+            "line": 1023,
             "description": "Updates texture size based on canvas size",
             "itemtype": "method",
             "name": "updateCachedSpriteTexture",
@@ -7147,7 +7324,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 1034,
+            "line": 1047,
             "description": "Destroys a previous cached sprite.",
             "itemtype": "method",
             "name": "destroyCachedSprite",
@@ -7155,7 +7332,7 @@
         },
         {
             "file": "src/pixi/primitives/Graphics.js",
-            "line": 1048,
+            "line": 1061,
             "description": "Draws the given shape to this Graphics object. Can be any of Circle, Rectangle, Ellipse, Line or Polygon.",
             "itemtype": "method",
             "name": "drawShape",
@@ -7226,7 +7403,7 @@
         },
         {
             "file": "src/pixi/renderers/canvas/utils/CanvasBuffer.js",
-            "line": 64,
+            "line": 65,
             "description": "Resizes the canvas to the specified width and height.",
             "itemtype": "method",
             "name": "resize",
@@ -7454,7 +7631,7 @@
         },
         {
             "file": "src/pixi/renderers/canvas/CanvasRenderer.js",
-            "line": 39,
+            "line": 40,
             "description": "The renderer type.",
             "itemtype": "property",
             "name": "type",
@@ -7463,7 +7640,7 @@
         },
         {
             "file": "src/pixi/renderers/canvas/CanvasRenderer.js",
-            "line": 47,
+            "line": 48,
             "description": "The resolution of the canvas.",
             "itemtype": "property",
             "name": "resolution",
@@ -7472,7 +7649,7 @@
         },
         {
             "file": "src/pixi/renderers/canvas/CanvasRenderer.js",
-            "line": 55,
+            "line": 56,
             "description": "This sets if the CanvasRenderer will clear the canvas or not before the new render pass.\nIf the Stage is NOT transparent Pixi will use a canvas sized fillRect operation every frame to set the canvas background color.\nIf the Stage is transparent Pixi will use clearRect to clear the canvas every frame.\nDisable this by setting this to false. For example if your game has a canvas filling background image you often don't need this set.",
             "itemtype": "property",
             "name": "clearBeforeRender",
@@ -7482,7 +7659,7 @@
         },
         {
             "file": "src/pixi/renderers/canvas/CanvasRenderer.js",
-            "line": 67,
+            "line": 68,
             "description": "Whether the render view is transparent",
             "itemtype": "property",
             "name": "transparent",
@@ -7491,7 +7668,16 @@
         },
         {
             "file": "src/pixi/renderers/canvas/CanvasRenderer.js",
-            "line": 75,
+            "line": 76,
+            "description": "Whether the render view should be resized automatically",
+            "itemtype": "property",
+            "name": "autoResize",
+            "type": "Boolean",
+            "class": "CanvasRenderer"
+        },
+        {
+            "file": "src/pixi/renderers/canvas/CanvasRenderer.js",
+            "line": 85,
             "description": "The width of the canvas view",
             "itemtype": "property",
             "name": "width",
@@ -7501,7 +7687,7 @@
         },
         {
             "file": "src/pixi/renderers/canvas/CanvasRenderer.js",
-            "line": 84,
+            "line": 94,
             "description": "The height of the canvas view",
             "itemtype": "property",
             "name": "height",
@@ -7511,7 +7697,7 @@
         },
         {
             "file": "src/pixi/renderers/canvas/CanvasRenderer.js",
-            "line": 96,
+            "line": 106,
             "description": "The canvas element that everything is drawn to.",
             "itemtype": "property",
             "name": "view",
@@ -7520,16 +7706,16 @@
         },
         {
             "file": "src/pixi/renderers/canvas/CanvasRenderer.js",
-            "line": 104,
+            "line": 114,
             "description": "The canvas 2d context that everything is drawn with",
             "itemtype": "property",
             "name": "context",
-            "type": "CanvasRenderingContext2D 2d Context",
+            "type": "CanvasRenderingContext2D",
             "class": "CanvasRenderer"
         },
         {
             "file": "src/pixi/renderers/canvas/CanvasRenderer.js",
-            "line": 111,
+            "line": 121,
             "description": "Boolean flag controlling canvas refresh.",
             "itemtype": "property",
             "name": "refresh",
@@ -7538,7 +7724,7 @@
         },
         {
             "file": "src/pixi/renderers/canvas/CanvasRenderer.js",
-            "line": 122,
+            "line": 132,
             "description": "Internal var.",
             "itemtype": "property",
             "name": "count",
@@ -7547,7 +7733,7 @@
         },
         {
             "file": "src/pixi/renderers/canvas/CanvasRenderer.js",
-            "line": 130,
+            "line": 140,
             "description": "Instance of a PIXI.CanvasMaskManager, handles masking when using the canvas renderer",
             "itemtype": "property",
             "name": "CanvasMaskManager",
@@ -7556,7 +7742,7 @@
         },
         {
             "file": "src/pixi/renderers/canvas/CanvasRenderer.js",
-            "line": 137,
+            "line": 147,
             "description": "The render session is just a bunch of parameter used for rendering",
             "itemtype": "property",
             "name": "renderSession",
@@ -7565,13 +7751,13 @@
         },
         {
             "file": "src/pixi/renderers/canvas/CanvasRenderer.js",
-            "line": 147,
+            "line": 157,
             "description": "If true Pixi will Math.floor() x/y values when rendering, stopping pixel interpolation.\nHandy for crisp pixel art and speed on legacy devices.",
             "class": "CanvasRenderer"
         },
         {
             "file": "src/pixi/renderers/canvas/CanvasRenderer.js",
-            "line": 174,
+            "line": 184,
             "description": "Renders the Stage to this canvas view",
             "itemtype": "method",
             "name": "render",
@@ -7586,7 +7772,24 @@
         },
         {
             "file": "src/pixi/renderers/canvas/CanvasRenderer.js",
-            "line": 223,
+            "line": 233,
+            "description": "Removes everything from the renderer and optionally removes the Canvas DOM element.",
+            "itemtype": "method",
+            "name": "destroy",
+            "params": [
+                {
+                    "name": "removeView",
+                    "description": "Removes the Canvas element from the DOM.",
+                    "type": "Boolean",
+                    "optional": true,
+                    "optdefault": "true"
+                }
+            ],
+            "class": "CanvasRenderer"
+        },
+        {
+            "file": "src/pixi/renderers/canvas/CanvasRenderer.js",
+            "line": 255,
             "description": "Resizes the canvas view to the specified width and height",
             "itemtype": "method",
             "name": "resize",
@@ -7606,7 +7809,7 @@
         },
         {
             "file": "src/pixi/renderers/canvas/CanvasRenderer.js",
-            "line": 242,
+            "line": 276,
             "description": "Renders a display object",
             "itemtype": "method",
             "name": "renderDisplayObject",
@@ -7628,7 +7831,7 @@
         },
         {
             "file": "src/pixi/renderers/canvas/CanvasRenderer.js",
-            "line": 257,
+            "line": 291,
             "description": "Maps Pixi blend modes to canvas blend modes.",
             "itemtype": "method",
             "name": "mapBlendModes",
@@ -8300,7 +8503,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/utils/WebGLFastSpriteBatch.js",
-            "line": 129,
+            "line": 130,
             "description": "Sets the WebGL Context.",
             "itemtype": "method",
             "name": "setContext",
@@ -8315,7 +8518,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/utils/WebGLFastSpriteBatch.js",
-            "line": 153,
+            "line": 154,
             "itemtype": "method",
             "name": "begin",
             "params": [
@@ -8334,14 +8537,14 @@
         },
         {
             "file": "src/pixi/renderers/webgl/utils/WebGLFastSpriteBatch.js",
-            "line": 168,
+            "line": 169,
             "itemtype": "method",
             "name": "end",
             "class": "WebGLFastSpriteBatch"
         },
         {
             "file": "src/pixi/renderers/webgl/utils/WebGLFastSpriteBatch.js",
-            "line": 176,
+            "line": 177,
             "itemtype": "method",
             "name": "render",
             "params": [
@@ -8355,7 +8558,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/utils/WebGLFastSpriteBatch.js",
-            "line": 207,
+            "line": 208,
             "itemtype": "method",
             "name": "renderSprite",
             "params": [
@@ -8369,21 +8572,21 @@
         },
         {
             "file": "src/pixi/renderers/webgl/utils/WebGLFastSpriteBatch.js",
-            "line": 348,
+            "line": 349,
             "itemtype": "method",
             "name": "flush",
             "class": "WebGLFastSpriteBatch"
         },
         {
             "file": "src/pixi/renderers/webgl/utils/WebGLFastSpriteBatch.js",
-            "line": 388,
+            "line": 389,
             "itemtype": "method",
             "name": "stop",
             "class": "WebGLFastSpriteBatch"
         },
         {
             "file": "src/pixi/renderers/webgl/utils/WebGLFastSpriteBatch.js",
-            "line": 396,
+            "line": 397,
             "itemtype": "method",
             "name": "start",
             "class": "WebGLFastSpriteBatch"
@@ -8643,7 +8846,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/utils/WebGLGraphics.js",
-            "line": 368,
+            "line": 369,
             "description": "Calculate the points for a quadratic bezier curve. (helper function..)\nBased on: https://stackoverflow.com/questions/785097/how-do-i-implement-a-bezier-curve-in-c",
             "static": 1,
             "access": "private",
@@ -8690,7 +8893,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/utils/WebGLGraphics.js",
-            "line": 420,
+            "line": 421,
             "description": "Builds a circle to draw",
             "static": 1,
             "access": "private",
@@ -8713,7 +8916,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/utils/WebGLGraphics.js",
-            "line": 503,
+            "line": 504,
             "description": "Builds a line to draw",
             "static": 1,
             "access": "private",
@@ -8736,7 +8939,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/utils/WebGLGraphics.js",
-            "line": 715,
+            "line": 716,
             "description": "Builds a complex polygon to draw",
             "static": 1,
             "access": "private",
@@ -8759,7 +8962,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/utils/WebGLGraphics.js",
-            "line": 777,
+            "line": 778,
             "description": "Builds a polygon to draw",
             "static": 1,
             "access": "private",
@@ -8782,14 +8985,14 @@
         },
         {
             "file": "src/pixi/renderers/webgl/utils/WebGLGraphics.js",
-            "line": 849,
+            "line": 850,
             "itemtype": "method",
             "name": "reset",
             "class": "WebGLGraphicsData"
         },
         {
             "file": "src/pixi/renderers/webgl/utils/WebGLGraphics.js",
-            "line": 859,
+            "line": 860,
             "itemtype": "method",
             "name": "upload",
             "class": "WebGLGraphicsData"
@@ -9428,7 +9631,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 44,
+            "line": 46,
             "itemtype": "property",
             "name": "type",
             "type": "Number",
@@ -9436,7 +9639,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 50,
+            "line": 52,
             "description": "The resolution of the renderer",
             "itemtype": "property",
             "name": "resolution",
@@ -9446,7 +9649,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 61,
+            "line": 63,
             "description": "Whether the render view is transparent",
             "itemtype": "property",
             "name": "transparent",
@@ -9455,7 +9658,16 @@
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 69,
+            "line": 71,
+            "description": "Whether the render view should be resized automatically",
+            "itemtype": "property",
+            "name": "autoResize",
+            "type": "Boolean",
+            "class": "WebGLRenderer"
+        },
+        {
+            "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
+            "line": 79,
             "description": "The value of the preserveDrawingBuffer flag affects whether or not the contents of the stencil buffer is retained after rendering.",
             "itemtype": "property",
             "name": "preserveDrawingBuffer",
@@ -9464,7 +9676,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 77,
+            "line": 87,
             "description": "This sets if the WebGLRenderer will clear the context texture or not before the new render pass. If true:\nIf the Stage is NOT transparent, Pixi will clear to alpha (0, 0, 0, 0).\nIf the Stage is transparent, Pixi will clear to the target Stage's background color.\nDisable this by setting this to false. For example: if your game has a canvas filling background image, you often don't need this set.",
             "itemtype": "property",
             "name": "clearBeforeRender",
@@ -9474,7 +9686,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 89,
+            "line": 99,
             "description": "The width of the canvas view",
             "itemtype": "property",
             "name": "width",
@@ -9484,7 +9696,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 98,
+            "line": 108,
             "description": "The height of the canvas view",
             "itemtype": "property",
             "name": "height",
@@ -9494,7 +9706,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 107,
+            "line": 117,
             "description": "The canvas element that everything is drawn to",
             "itemtype": "property",
             "name": "view",
@@ -9503,7 +9715,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 117,
+            "line": 127,
             "itemtype": "property",
             "name": "contextLostBound",
             "type": "Function",
@@ -9511,7 +9723,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 123,
+            "line": 133,
             "itemtype": "property",
             "name": "contextRestoredBound",
             "type": "Function",
@@ -9519,7 +9731,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 132,
+            "line": 142,
             "itemtype": "property",
             "name": "_contextOptions",
             "type": "Object",
@@ -9529,7 +9741,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 145,
+            "line": 155,
             "itemtype": "property",
             "name": "projection",
             "type": "Point",
@@ -9537,7 +9749,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 151,
+            "line": 161,
             "itemtype": "property",
             "name": "offset",
             "type": "Point",
@@ -9545,7 +9757,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 159,
+            "line": 169,
             "description": "Deals with managing the shader programs and their attribs",
             "itemtype": "property",
             "name": "shaderManager",
@@ -9554,7 +9766,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 166,
+            "line": 176,
             "description": "Manages the rendering of sprites",
             "itemtype": "property",
             "name": "spriteBatch",
@@ -9563,7 +9775,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 173,
+            "line": 183,
             "description": "Manages the masks using the stencil buffer",
             "itemtype": "property",
             "name": "maskManager",
@@ -9572,7 +9784,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 180,
+            "line": 190,
             "description": "Manages the filters",
             "itemtype": "property",
             "name": "filterManager",
@@ -9581,7 +9793,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 187,
+            "line": 197,
             "description": "Manages the stencil buffer",
             "itemtype": "property",
             "name": "stencilManager",
@@ -9590,7 +9802,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 194,
+            "line": 204,
             "description": "Manages the blendModes",
             "itemtype": "property",
             "name": "blendModeManager",
@@ -9599,7 +9811,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 201,
+            "line": 211,
             "description": "TODO remove",
             "itemtype": "property",
             "name": "renderSession",
@@ -9608,14 +9820,14 @@
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 228,
+            "line": 238,
             "itemtype": "method",
             "name": "initContext",
             "class": "WebGLRenderer"
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 264,
+            "line": 276,
             "description": "Renders the stage to its webGL view",
             "itemtype": "method",
             "name": "render",
@@ -9630,7 +9842,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 332,
+            "line": 344,
             "description": "Renders a Display Object.",
             "itemtype": "method",
             "name": "renderDisplayObject",
@@ -9655,7 +9867,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 366,
+            "line": 378,
             "description": "Resizes the webGL view to the specified width and height.",
             "itemtype": "method",
             "name": "resize",
@@ -9675,7 +9887,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 387,
+            "line": 404,
             "description": "Updates and Creates a WebGL texture for the renderers context.",
             "itemtype": "method",
             "name": "updateTexture",
@@ -9690,7 +9902,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 426,
+            "line": 443,
             "description": "Handles a lost webgl context",
             "itemtype": "method",
             "name": "handleContextLost",
@@ -9707,7 +9919,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 439,
+            "line": 456,
             "description": "Handles a restored webgl context",
             "itemtype": "method",
             "name": "handleContextRestored",
@@ -9724,7 +9936,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 460,
+            "line": 477,
             "description": "Removes everything from the renderer (event listeners, spritebatch, etc...)",
             "itemtype": "method",
             "name": "destroy",
@@ -9732,7 +9944,7 @@
         },
         {
             "file": "src/pixi/renderers/webgl/WebGLRenderer.js",
-            "line": 491,
+            "line": 508,
             "description": "Maps Pixi blend modes to WebGL blend modes.",
             "itemtype": "method",
             "name": "mapBlendModes",
@@ -10004,7 +10216,7 @@
         },
         {
             "file": "src/pixi/text/Text.js",
-            "line": 280,
+            "line": 281,
             "description": "Updates texture size based on canvas size",
             "itemtype": "method",
             "name": "updateTexture",
@@ -10014,7 +10226,7 @@
         },
         {
             "file": "src/pixi/text/Text.js",
-            "line": 300,
+            "line": 301,
             "description": "Renders the object using the WebGL renderer",
             "itemtype": "method",
             "name": "_renderWebGL",
@@ -10031,7 +10243,7 @@
         },
         {
             "file": "src/pixi/text/Text.js",
-            "line": 320,
+            "line": 321,
             "description": "Renders the object using the Canvas renderer",
             "itemtype": "method",
             "name": "_renderCanvas",
@@ -10048,7 +10260,7 @@
         },
         {
             "file": "src/pixi/text/Text.js",
-            "line": 340,
+            "line": 341,
             "description": "Calculates the ascent, descent and fontSize of a given fontStyle",
             "itemtype": "method",
             "name": "determineFontProperties",
@@ -10065,7 +10277,7 @@
         },
         {
             "file": "src/pixi/text/Text.js",
-            "line": 443,
+            "line": 444,
             "description": "Applies newlines to a string to have it optimally fit into the horizontal\nbounds set by the Text object's wordWrapWidth property.",
             "itemtype": "method",
             "name": "wordWrap",
@@ -10082,7 +10294,26 @@
         },
         {
             "file": "src/pixi/text/Text.js",
-            "line": 491,
+            "line": 492,
+            "description": "Returns the bounds of the Text as a rectangle. The bounds calculation takes the worldTransform into account.",
+            "itemtype": "method",
+            "name": "getBounds",
+            "params": [
+                {
+                    "name": "matrix",
+                    "description": "the transformation matrix of the Text",
+                    "type": "Matrix"
+                }
+            ],
+            "return": {
+                "description": "the framing rectangle",
+                "type": "Rectangle"
+            },
+            "class": "Text"
+        },
+        {
+            "file": "src/pixi/text/Text.js",
+            "line": 510,
             "description": "Destroys this text object.",
             "itemtype": "method",
             "name": "destroy",
@@ -10217,7 +10448,7 @@
         },
         {
             "file": "src/pixi/textures/BaseTexture.js",
-            "line": 186,
+            "line": 174,
             "description": "Changes the source image of the texture",
             "itemtype": "method",
             "name": "updateSourceImage",
@@ -10232,7 +10463,7 @@
         },
         {
             "file": "src/pixi/textures/BaseTexture.js",
-            "line": 199,
+            "line": 187,
             "description": "Sets all glTextures to be dirty.",
             "itemtype": "method",
             "name": "dirty",
@@ -10240,7 +10471,15 @@
         },
         {
             "file": "src/pixi/textures/BaseTexture.js",
-            "line": 212,
+            "line": 200,
+            "description": "Removes the base texture from the GPU, useful for managing resources on the GPU.\nAtexture is still 100% usable and will simply be reuploaded if there is a sprite on screen that is using it.",
+            "itemtype": "method",
+            "name": "unloadFromGPU",
+            "class": "BaseTexture"
+        },
+        {
+            "file": "src/pixi/textures/BaseTexture.js",
+            "line": 228,
             "description": "Helper function that creates a base texture from the given image url.\nIf the image is not in the base texture cache it will be created and loaded.",
             "static": 1,
             "itemtype": "method",
@@ -10269,7 +10508,7 @@
         },
         {
             "file": "src/pixi/textures/BaseTexture.js",
-            "line": 254,
+            "line": 270,
             "description": "Helper function that creates a base texture from the given canvas element.",
             "static": 1,
             "itemtype": "method",
@@ -10461,19 +10700,19 @@
         },
         {
             "file": "src/pixi/textures/RenderTexture.js",
-            "line": 275,
+            "line": 278,
             "description": "Will return a HTML Image of the texture",
             "itemtype": "method",
             "name": "getImage",
             "return": {
                 "description": "",
-                "type": "HTMLImage"
+                "type": "Image"
             },
             "class": "RenderTexture"
         },
         {
             "file": "src/pixi/textures/RenderTexture.js",
-            "line": 288,
+            "line": 291,
             "description": "Will return a a base64 encoded string of this texture. It works by calling RenderTexture.getCanvas and then running toDataURL on that.",
             "itemtype": "method",
             "name": "getBase64",
@@ -10485,7 +10724,7 @@
         },
         {
             "file": "src/pixi/textures/RenderTexture.js",
-            "line": 299,
+            "line": 302,
             "description": "Creates a Canvas element, renders this RenderTexture to it and then returns it.",
             "itemtype": "method",
             "name": "getCanvas",
@@ -10755,6 +10994,46 @@
                 "type": "Texture"
             },
             "class": "Texture"
+        },
+        {
+            "file": "src/pixi/textures/VideoTexture.js",
+            "line": 87,
+            "description": "Mimic Pixi BaseTexture.from.... method.",
+            "params": [
+                {
+                    "name": "video",
+                    "description": ""
+                },
+                {
+                    "name": "scaleMode",
+                    "description": ""
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "PIXI.VideoTexture"
+            },
+            "class": "autoDetectRenderer"
+        },
+        {
+            "file": "src/pixi/textures/VideoTexture.js",
+            "line": 126,
+            "description": "Mimic PIXI Texture.from... method.",
+            "params": [
+                {
+                    "name": "video",
+                    "description": ""
+                },
+                {
+                    "name": "scaleMode",
+                    "description": ""
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "PIXI.Texture"
+            },
+            "class": "autoDetectRenderer"
         },
         {
             "file": "src/pixi/utils/Detector.js",
@@ -11642,6 +11921,14 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
+            "line": " src/pixi/textures/VideoTexture.js:87"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src/pixi/textures/VideoTexture.js:126"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
             "line": " src/pixi/utils/EventTarget.js:41"
         },
         {
@@ -11918,6 +12205,10 @@
         },
         {
             "message": "Missing item type",
+            "line": " src/pixi/geom/RoundedRectangle.js:1"
+        },
+        {
+            "message": "Missing item type",
             "line": " src/pixi/loaders/AssetLoader.js:1"
         },
         {
@@ -11970,7 +12261,7 @@
         },
         {
             "message": "Missing item type\nIf true Pixi will Math.floor() x/y values when rendering, stopping pixel interpolation.\nHandy for crisp pixel art and speed on legacy devices.",
-            "line": " src/pixi/renderers/canvas/CanvasRenderer.js:147"
+            "line": " src/pixi/renderers/canvas/CanvasRenderer.js:157"
         },
         {
             "message": "Missing item type",
@@ -12055,6 +12346,14 @@
         {
             "message": "Missing item type",
             "line": " src/pixi/textures/Texture.js:1"
+        },
+        {
+            "message": "Missing item type\nMimic Pixi BaseTexture.from.... method.",
+            "line": " src/pixi/textures/VideoTexture.js:87"
+        },
+        {
+            "message": "Missing item type\nMimic PIXI Texture.from... method.",
+            "line": " src/pixi/textures/VideoTexture.js:126"
         },
         {
             "message": "Missing item type",

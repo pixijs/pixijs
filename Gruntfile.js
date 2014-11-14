@@ -17,6 +17,7 @@ module.exports = function(grunt) {
             '<%= dirs.src %>/geom/Polygon.js',
             '<%= dirs.src %>/geom/Circle.js',
             '<%= dirs.src %>/geom/Ellipse.js',
+            '<%= dirs.src %>/geom/RoundedRectangle.js',
             '<%= dirs.src %>/geom/Matrix.js',
             '<%= dirs.src %>/display/DisplayObject.js',
             '<%= dirs.src %>/display/DisplayObjectContainer.js',

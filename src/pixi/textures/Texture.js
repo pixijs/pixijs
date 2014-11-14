@@ -324,3 +324,6 @@ PIXI.TextureUvs = function()
     this.x3 = 0;
     this.y3 = 0;
 };
+
+PIXI.Texture.emptyTexture = new PIXI.Texture(new PIXI.BaseTexture());
+

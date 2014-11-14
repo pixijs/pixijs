@@ -19,7 +19,7 @@
             
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 2.0.0</em>
+            <em>API Docs for: 2.1.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -155,6 +155,8 @@
             
                 <li><a href="../classes/Rope.html">Rope</a></li>
             
+                <li><a href="../classes/Rounded Rectangle.html">Rounded Rectangle</a></li>
+            
                 <li><a href="../classes/SepiaFilter.html">SepiaFilter</a></li>
             
                 <li><a href="../classes/SmartBlurFilter.html">SmartBlurFilter</a></li>
@@ -269,6 +271,7 @@
  * @param [options] {Object} The optional renderer parameters
  * @param [options.view] {HTMLCanvasElement} the canvas to use as a view, optional
  * @param [options.transparent=false] {Boolean} If the render view is transparent, default false
+ * @param [options.autoResize=false] {Boolean} If the render view is automatically resized, default false
  * @param [options.resolution=1] {Number} the resolution of the renderer retina would be 2
  * @param [options.clearBeforeRender=true] {Boolean} This sets if the CanvasRenderer will clear the canvas or not before the new render pass.
  */
@@ -327,7 +330,16 @@ PIXI.CanvasRenderer = function(width, height, options)
      * @type Boolean
      */
     this.transparent = options.transparent;
-    
+
+    /**
+     * Whether the render view should be resized automatically
+     *
+     * @property autoResize
+     * @type Boolean
+     */
+    this.autoResize = options.autoResize || false;
+
+
     /**
      * The width of the canvas view
      *
@@ -360,7 +372,7 @@ PIXI.CanvasRenderer = function(width, height, options)
     /**
      * The canvas 2d context that everything is drawn with
      * @property context
-     * @type CanvasRenderingContext2D 2d Context
+     * @type CanvasRenderingContext2D
      */
     this.context = this.view.getContext( &quot;2d&quot;, { alpha: this.transparent } );
 
@@ -477,6 +489,28 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
 };
 
 /**
+ * Removes everything from the renderer and optionally removes the Canvas DOM element.
+ *
+ * @method destroy
+ * @param [removeView=true] {boolean} Removes the Canvas element from the DOM.
+ */
+PIXI.CanvasRenderer.prototype.destroy = function(removeView)
+{
+    if (typeof removeView === &quot;undefined&quot;) { removeView = true; }
+
+    if (removeView &amp;&amp; this.view.parent)
+    {
+        this.view.parent.removeChild(this.view);
+    }
+
+    this.view = null;
+    this.context = null;
+    this.maskManager = null;
+    this.renderSession = null;
+
+};
+
+/**
  * Resizes the canvas view to the specified width and height
  *
  * @method resize
@@ -491,8 +525,10 @@ PIXI.CanvasRenderer.prototype.resize = function(width, height)
     this.view.width = this.width;
     this.view.height = this.height;
 
-    this.view.style.width = this.width / this.resolution + &quot;px&quot;;
-    this.view.style.height = this.height / this.resolution + &quot;px&quot;;
+    if (this.autoResize) {
+        this.view.style.width = this.width / this.resolution + &quot;px&quot;;
+        this.view.style.height = this.height / this.resolution + &quot;px&quot;;
+    }
 };
 
 /**

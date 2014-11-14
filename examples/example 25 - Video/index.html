@@ -1,15 +1,19 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-    <title>pixi.js example 1</title>
+    <title>deus</title>
     <style>
         body {
             margin: 0;
             padding: 0;
             background-color: #000000;
         }
+        canvas {
+            display: block;
+        }
     </style>
     <script src="../../bin/pixi.dev.js"></script>
+     <script src="pixi.js"></script>
 
 </head>
 <body>
@@ -58,6 +62,14 @@
     stage.addChild(moveSprite);
 
     count = 0;
+
+    var text = new PIXI.Text("DEUS", {fill:"white", font:"bold 444px Arial"});
+    stage.addChild(text);
+
+    text.anchor.set(0.5);
+    text.x = window.innerWidth/2;
+    text.y = window.innerHeight/2;
+
     function animate() {
         requestAnimFrame(animate);
 
@@ -76,6 +88,26 @@
         // render the stage
         renderer.render(stage);
     }
+
+    window.onresize = function()
+    {
+        renderer.resize(window.innerWidth, window.innerHeight);
+        moveSprite.width = window.innerWidth;
+        moveSprite.height = window.innerHeight;
+
+        text.scale.set( (window.innerWidth * 0.2) /text.texture.width);
+
+        text.x = window.innerWidth/2;
+        text.y = window.innerHeight/2;
+
+            // move the sprite to the center of the screen
+        moveSprite.position.x = window.innerWidth/2;
+        moveSprite.position.y = window.innerHeight/2;
+
+    }
+
+    window.onresize();
+    
     </script>
 
     </body>
