@@ -66,7 +66,7 @@ PIXI.CrossHatchFilter.prototype.constructor = PIXI.CrossHatchFilter;
  * Sets the strength of both the blur.
  *
  * @property blur
- * @type Number the strength of the blur
+ * @type Number
  * @default 2
  */
 Object.defineProperty(PIXI.CrossHatchFilter.prototype, 'blur', {
