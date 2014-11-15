@@ -62,7 +62,7 @@ PIXI.SmartBlurFilter.prototype.constructor = PIXI.SmartBlurFilter;
  * The strength of the blur.
  *
  * @property blur
- * @type Number the strength of the blur
+ * @type Number
  * @default 2
  */
 Object.defineProperty(PIXI.SmartBlurFilter.prototype, 'blur', {

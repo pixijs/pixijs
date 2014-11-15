@@ -114,7 +114,7 @@ PIXI.VideoTexture.prototype.destroy = function()
  * @method baseTextureFromVideo
  * @param video {HTMLVideoElement}
  * @param scaleMode {Number} See {{#crossLink "PIXI/scaleModes:property"}}PIXI.scaleModes{{/crossLink}} for possible values
- * @returns {VideoTexture}
+ * @return {VideoTexture}
  */
 PIXI.VideoTexture.baseTextureFromVideo = function( video, scaleMode )
 {
@@ -141,7 +141,7 @@ PIXI.VideoTexture.baseTextureFromVideo = function( video, scaleMode )
  * @method textureFromVideo 
  * @param video {HTMLVideoElement}
  * @param scaleMode {Number} See {{#crossLink "PIXI/scaleModes:property"}}PIXI.scaleModes{{/crossLink}} for possible values
- * @returns {Texture} A Texture, but not a VideoTexture.
+ * @return {Texture} A Texture, but not a VideoTexture.
  */
 PIXI.VideoTexture.textureFromVideo = function( video, scaleMode )
 {
@@ -156,7 +156,7 @@ PIXI.VideoTexture.textureFromVideo = function( video, scaleMode )
  * @method fromUrl 
  * @param videoSrc {String} The URL for the video.
  * @param scaleMode {Number} See {{#crossLink "PIXI/scaleModes:property"}}PIXI.scaleModes{{/crossLink}} for possible values
- * @returns {VideoTexture}
+ * @return {VideoTexture}
  */
 PIXI.VideoTexture.fromUrl = function( videoSrc, scaleMode )
 {

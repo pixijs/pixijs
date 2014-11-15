@@ -383,7 +383,7 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'mask', {
  * * IMPORTANT: This is a webGL only feature and will be ignored by the canvas renderer.
  * To remove filters simply set this property to 'null'
  * @property filters
- * @type {Array(Filter)}
+ * @type Array(Filter)
  */
 Object.defineProperty(PIXI.DisplayObject.prototype, 'filters', {
 
