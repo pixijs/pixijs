@@ -142,7 +142,7 @@ PIXI.MovieClip.prototype.gotoAndPlay = function(frameNumber)
  */
 PIXI.MovieClip.prototype.updateTransform = function()
 {
-    PIXI.Sprite.prototype.updateTransform.call(this);
+    this.displayObjectContainerUpdateTransform();
 
     if(!this.playing)return;
 
