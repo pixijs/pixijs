@@ -25,7 +25,7 @@ PIXI.PixiFastShader = function(gl)
     /**
      * The WebGL program.
      * @property program
-     * @type {Any}
+     * @type Any
      */
     this.program = null;
 

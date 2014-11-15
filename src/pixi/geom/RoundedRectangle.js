@@ -3,9 +3,9 @@
  */
 
 /**
- * the Rounded Rectangle object is an area defined by its position and has nice rounded corners, as indicated by its top-left corner point (x, y) and by its width and its height.
+ * The Rounded Rectangle object is an area defined by its position and has nice rounded corners, as indicated by its top-left corner point (x, y) and by its width and its height.
  *
- * @class Rounded Rectangle
+ * @class RoundedRectangle
  * @constructor
  * @param x {Number} The X coordinate of the upper-left corner of the rounded rectangle
  * @param y {Number} The Y coordinate of the upper-left corner of the rounded rectangle
@@ -55,7 +55,7 @@ PIXI.RoundedRectangle = function(x, y, width, height, radius)
  * Creates a clone of this Rounded Rectangle
  *
  * @method clone
- * @return {rounded Rectangle} a copy of the rounded rectangle
+ * @return {RoundedRectangle} a copy of the rounded rectangle
  */
 PIXI.RoundedRectangle.prototype.clone = function()
 {
