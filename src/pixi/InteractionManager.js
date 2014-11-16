@@ -606,8 +606,9 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
     // map the global point to local space.
     item.worldTransform.applyInverse(global,  this._tempPoint);
 
-    var x = this._tempPoint.x;
-        y = this._tempPoint.y;
+    var x = this._tempPoint.x,
+        y = this._tempPoint.y,
+        i;
 
     interactionData.target = item;
 
