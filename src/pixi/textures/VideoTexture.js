@@ -70,6 +70,7 @@ PIXI.VideoTexture.prototype.onPlayStop = function()
 };
 
 PIXI.VideoTexture.prototype.onCanPlay = function()
+PIXI.VideoTexture.prototype.onCanPlay = function(event)
 {
     if( event.type === 'canplaythrough' )
     {
