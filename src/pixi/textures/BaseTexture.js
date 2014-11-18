@@ -55,7 +55,9 @@ PIXI.BaseTexture = function(source, scaleMode)
     this.scaleMode = scaleMode || PIXI.scaleModes.DEFAULT;
 
     /**
-     * [read-only] Set to true once the base texture has loaded
+     * [read-only] Set to true once the base texture has sucessfully loaded.
+     *
+     * This is never true if the underlying source fails to load or has no texture data.
      *
      * @property hasLoaded
      * @type Boolean
@@ -66,8 +68,9 @@ PIXI.BaseTexture = function(source, scaleMode)
     /**
      * [read-only] Set to true if the source is currently loading.
      *
-     * If an Image source is loading the 'loaded' and/or 'error' event will be
-     * dispatched when the operation ends.
+     * If an Image source is loading the 'loaded' or 'error' event will be
+     * dispatched when the operation ends. An underyling source that is
+     * immediately-available bypasses loading entirely.
      *
      * @property isLoading
      * @type Boolean
@@ -125,14 +128,14 @@ PIXI.BaseTexture = function(source, scaleMode)
     this._powerOf2 = false;
 
     /**
-     * Fired when a non-immediately-loaded source finishes loaded.
+     * Fired when a not-immediately-available source finishes loading.
      *
      * @event loaded
      * @protected
      */
 
     /**
-     * Fired when a non-immediately-loaded source fails to load.
+     * Fired when a not-immediately-available source fails to load.
      *
      * @event error
      * @protected
@@ -150,11 +153,13 @@ PIXI.EventTarget.mixin(PIXI.BaseTexture.prototype);
 /**
  * Load a source.
  *
- * If the source is not immediately loaded then the 'loaded' and/or 'error'
- * events will be dispatched in the future. Thus the logic state after calling
- * `loadSource` directly indirectly (eg. `fromImage`, `new BaseTexture`) is:
+ * If the source is not-immediately-available, such as an image that needs to be
+ * downloaded, then the 'loaded' or 'error' event will be dispatched in the future
+ * and `hasLoaded` will remain false after this call.
  *
- *     if (texture.isLoaded) {
+ * The logic state after calling `loadSource` directly or indirectly (eg. `fromImage`, `new BaseTexture`) is:
+ *
+ *     if (texture.hasLoaded) {
  *        // texture ready for use
  *     } else if (texture.isLoading) {
  *        // listen to 'loaded' and/or 'error' events on texture
@@ -193,7 +198,7 @@ PIXI.BaseTexture.prototype.loadSource = function(source)
     }
     else if('onload' in source)
     {
-        // Image fail / not ready        
+        // Image fail / not ready
         this.isLoading = true;
         var scope = this;
 
@@ -224,7 +229,7 @@ PIXI.BaseTexture.prototype.loadSource = function(source)
 
         // Per http://www.w3.org/TR/html5/embedded-content-0.html#the-img-element
         //   "The value of `complete` can thus change while a script is executing."
-        // Thus complete needs to be re-checked after the callbacks have been added..
+        // So complete needs to be re-checked after the callbacks have been added..
         if(source.complete)
         {
             this.isLoading = false;
@@ -345,7 +350,7 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
 {
     var baseTexture = PIXI.BaseTextureCache[imageUrl];
 
-    if(crossorigin === undefined && imageUrl.indexOf('data:') === -1) crossorigin = true;
+    if(crossorigin === undefined && imageUrl.indexOf('data:') !== 0) crossorigin = true;
 
     if(!baseTexture)
     {
