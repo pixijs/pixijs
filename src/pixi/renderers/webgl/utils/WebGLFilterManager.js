@@ -104,10 +104,31 @@ PIXI.WebGLFilterManager.prototype.pushFilter = function(filterBlock)
     filterArea.height += padding * 2;
 
     // cap filter to screen size..
-    if(filterArea.x < 0)filterArea.x = 0;
-    if(filterArea.width > this.width)filterArea.width = this.width;
-    if(filterArea.y < 0)filterArea.y = 0;
-    if(filterArea.height > this.height)filterArea.height = this.height;
+    var localX = filterArea.x;
+    var localY = filterArea.y;
+
+    if (filterArea.x < 0)
+    {
+        filterArea.width += filterArea.x;
+        filterArea.x = 0;
+    }
+    if (filterArea.y < 0)
+    {
+        filterArea.height += filterArea.y;
+        filterArea.y = 0;
+    }
+
+    if (localX + filterArea.width > this.width)
+    {
+        filterArea.width = this.width - localX;
+    }
+    if (localY + filterArea.height > this.height)
+    {
+        filterArea.height = this.height - localY;
+    }
+    
+    if (filterArea.width < 0) filterArea.width = 0;
+    if (filterArea.height < 0) filterArea.height = 0;
 
     //gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  filterArea.width, filterArea.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
     gl.bindFramebuffer(gl.FRAMEBUFFER, texture.frameBuffer);
