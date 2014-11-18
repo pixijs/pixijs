@@ -60,6 +60,7 @@ module.exports = function(grunt) {
             '<%= dirs.src %>/extras/Rope.js',
             '<%= dirs.src %>/extras/TilingSprite.js',
             '<%= dirs.src %>/extras/Spine.js',
+            '<%= dirs.src %>/extras/TransparencyHitArea.js',
             '<%= dirs.src %>/textures/BaseTexture.js',
             '<%= dirs.src %>/textures/Texture.js',
             '<%= dirs.src %>/textures/RenderTexture.js',
