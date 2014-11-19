@@ -9,6 +9,7 @@ require('./src/pixi/geom/Rectangle');
 require('./src/pixi/geom/Polygon');
 require('./src/pixi/geom/Circle');
 require('./src/pixi/geom/Ellipse');
+require('./src/pixi/geom/RoundedRectangle');
 require('./src/pixi/geom/Matrix');
 
 require('./src/pixi/display/DisplayObject');
@@ -61,6 +62,7 @@ require('./src/pixi/extras/Spine');
 require('./src/pixi/textures/BaseTexture');
 require('./src/pixi/textures/Texture');
 require('./src/pixi/textures/RenderTexture');
+require('./src/pixi/textures/VideoTexture');
 
 require('./src/pixi/loaders/AssetLoader');
 require('./src/pixi/loaders/JsonLoader');
