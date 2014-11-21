@@ -144,6 +144,12 @@ PIXI.InteractionManager = function(stage)
      * @type Number
      */
     this.resolution = 1;
+
+    /**
+     * @property pixelRatio
+     * @type Number
+     */
+    this.pixelRatio = 1;
 };
 
 // constructor
@@ -200,12 +206,24 @@ PIXI.InteractionManager.prototype.collectInteractiveSprite = function(displayObj
 PIXI.InteractionManager.prototype.setTarget = function(target)
 {
     this.target = target;
-    this.resolution = target.resolution;
+    this.resolution = target.resolution / this.pixelRatio;
 
     // Check if the dom element has been set. If it has don't do anything.
     if (this.interactionDOMElement !== null) return;
 
     this.setTargetDomElement (target.view);
+};
+
+/**
+ * Set pixel ratio
+ *
+ * @method setPixelRatio
+ * @param value {number}
+ */
+PIXI.InteractionManager.prototype.setPixelRatio = function(value)
+{
+    this.pixelRatio = value;
+    this.resolution /= this.pixelRatio;
 };
 
 /**
