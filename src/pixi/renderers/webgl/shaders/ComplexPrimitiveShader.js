@@ -98,7 +98,7 @@ PIXI.ComplexPrimitiveShader.prototype.init = function()
     this.aVertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
    // this.colorAttribute = gl.getAttribLocation(program, 'aColor');
 
-    this.attributes = [this.aVertexPosition, this.colorAttribute];
+    this.attributes = [this.aVertexPosition];
 
     this.translationMatrix = gl.getUniformLocation(program, 'translationMatrix');
     this.alpha = gl.getUniformLocation(program, 'alpha');
