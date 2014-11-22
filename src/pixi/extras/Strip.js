@@ -408,7 +408,7 @@ PIXI.Strip.prototype.onTextureUpdate = function()
  */
 PIXI.Strip.prototype.getBounds = function(matrix)
 {
-    var worldTransform = matrix || this.worldTransform ;
+    var worldTransform = matrix || this.worldTransform;
 
     var a = worldTransform.a;
     var b = worldTransform.b;
