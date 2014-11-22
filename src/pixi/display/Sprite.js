@@ -36,8 +36,8 @@ PIXI.Sprite = function(texture)
      * @property texture
      * @type Texture
      */
-    this.texture = texture;
-
+    this.texture = texture || PIXI.Texture.emptyTexture;;
+    
     /**
      * The width of the sprite (this is initially set by the texture)
      *
@@ -83,7 +83,7 @@ PIXI.Sprite = function(texture)
      */
     this.shader = null;
 
-    if(texture.baseTexture.hasLoaded)
+    if(this.texture.baseTexture.hasLoaded)
     {
         this.onTextureUpdate();
     }
