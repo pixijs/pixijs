@@ -296,9 +296,6 @@ PIXI.Spine.prototype.createMesh = function (slot, attachment) {
     strip.uvs = attachment.uvs;
     strip.indices = attachment.triangles;
 
-    window.console.log('UVS: ' + strip.uvs.length);
-    window.console.log('INDICES: ' + strip.indices.length);
-
     slot.meshes[attachment.name] = strip;
 
     return strip;
