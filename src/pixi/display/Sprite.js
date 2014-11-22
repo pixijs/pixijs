@@ -36,7 +36,7 @@ PIXI.Sprite = function(texture)
      * @property texture
      * @type Texture
      */
-    this.texture = texture || PIXI.Texture.emptyTexture;;
+    this.texture = texture || PIXI.Texture.emptyTexture;
     
     /**
      * The width of the sprite (this is initially set by the texture)
