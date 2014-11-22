@@ -220,12 +220,6 @@ PIXI.Sprite.prototype.getBounds = function(matrix)
         var x4 =  a * w1 + c * h0 + tx;
         var y4 =  d * h0 + b * w1 + ty;
 
-        maxX = -Infinity;
-        maxY = -Infinity;
-
-        minX = Infinity;
-        minY = Infinity;
-
         minX = x1 < minX ? x1 : minX;
         minX = x2 < minX ? x2 : minX;
         minX = x3 < minX ? x3 : minX;
