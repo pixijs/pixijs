@@ -225,7 +225,7 @@ PIXI.Spine.prototype.update = function(dt)
                 slot.currentMeshName = meshName;
             }
 
-            attachment.computeWorldVertices(slot.bone.skeleton.x, slot.bone.skeleton.y, slot, slot.currentMesh.verticies);
+            attachment.computeWorldVertices(slot.bone.skeleton.x, slot.bone.skeleton.y, slot, slot.currentMesh.vertices);
 
         }
         else
@@ -292,7 +292,7 @@ PIXI.Spine.prototype.createMesh = function (slot, attachment) {
     strip.drawMode = PIXI.Strip.DrawModes.TRIANGLES;
     strip.padding = 5;
 
-    strip.verticies = new PIXI.Float32Array(attachment.uvs.length);
+    strip.vertices = new PIXI.Float32Array(attachment.uvs.length);
     strip.uvs = attachment.uvs;
     strip.indices = attachment.triangles;
 
