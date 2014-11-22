@@ -374,7 +374,7 @@ PIXI.Text.prototype.determineFontProperties = function(fontStyle)
 
         context.textBaseline = 'alphabetic';
         context.fillStyle = '#000';
-        context.fillText('|Mq', 0, baseline);
+        context.fillText('|MÉq', 0, baseline);
 
         var imagedata = context.getImageData(0, 0, width, height).data;
         var pixels = imagedata.length;
