@@ -404,7 +404,8 @@ PIXI.TilingSprite.prototype.generateTilingTexture = function(forcePowerOfTwo)
         targetWidth = PIXI.getNextPowerOfTwo(frame.width);
         targetHeight = PIXI.getNextPowerOfTwo(frame.height);
 
-        if (frame.width !== targetWidth || frame.height !== targetHeight) newTextureRequired = true;
+        //  If the BaseTexture dimensions don't match the texture frame then we need a new texture anyway because it's part of a texture atlas
+        if (frame.width !== targetWidth || frame.height !== targetHeight || texture.baseTexture.width !== targetWidth || texture.baseTexture.height || targetHeight) newTextureRequired = true;
     }
 
     if (newTextureRequired)
