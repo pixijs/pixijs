@@ -65,7 +65,7 @@ PIXI.JsonLoader.prototype.load = function () {
     {
         this.ajaxRequest = new window.XDomainRequest();
 
-        // XDomainRequest has a few querks. Occasionally it will abort requests
+        // XDomainRequest has a few quirks. Occasionally it will abort requests
         // A way to avoid this is to make sure ALL callbacks are set even if not used
         // More info here: http://stackoverflow.com/questions/15786966/xdomainrequest-aborts-post-on-ie-9
         this.ajaxRequest.timeout = 3000;
@@ -75,7 +75,7 @@ PIXI.JsonLoader.prototype.load = function () {
         this.ajaxRequest.ontimeout = this.onError.bind(this);
 
         this.ajaxRequest.onprogress = function() {};
-        
+
         this.ajaxRequest.onload = this.onJSONLoaded.bind(this);
     }
     else
@@ -88,7 +88,7 @@ PIXI.JsonLoader.prototype.load = function () {
         {
             this.ajaxRequest = new window.ActiveXObject('Microsoft.XMLHTTP');
         }
-        
+
         this.ajaxRequest.onreadystatechange = this.onReadyStateChanged.bind(this);
     }
 
@@ -108,7 +108,7 @@ PIXI.JsonLoader.prototype.onReadyStateChanged = function () {
         this.onJSONLoaded();
     }
 };
-	
+
 /**
  * Invoke when JSON file is loaded
  *
@@ -144,7 +144,7 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
                 var textureSize = new PIXI.Rectangle(rect.x, rect.y, rect.w, rect.h);
                 var crop = textureSize.clone();
                 var trim = null;
-                
+
                 //  Check to see if the sprite is trimmed
                 if (frameData[i].trimmed)
                 {
@@ -182,7 +182,7 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
 				// at this point "this" points at the atlasLoader (JsonLoader) instance //
 				if(!this.ajaxRequest.responseText)
 				{
-					this.onError(); // FIXME: hmm, this is funny because we are not reponding to errors yet
+					this.onError(); // FIXME: hmm, this is funny because we are not responding to errors yet
 					return;
 				}
 				// create a new instance of a spine texture loader for this spine object //
