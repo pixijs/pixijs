@@ -853,7 +853,6 @@ PIXI.WebGLGraphicsData = function(gl)
     this.color = [0,0,0]; // color split!
     this.points = [];
     this.indices = [];
-    this.lastIndex = 0;
     this.buffer = gl.createBuffer();
     this.indexBuffer = gl.createBuffer();
     this.mode = 1;
@@ -868,7 +867,6 @@ PIXI.WebGLGraphicsData.prototype.reset = function()
 {
     this.points = [];
     this.indices = [];
-    this.lastIndex = 0;
 };
 
 /**
