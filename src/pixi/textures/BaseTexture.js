@@ -196,7 +196,7 @@ PIXI.BaseTexture.prototype.loadSource = function(source)
         this.height = source.naturalHeight || source.height;
         this.dirty();
     }
-    else if('onload' in source)
+    else if(!source.getContext)
     {
         // Image fail / not ready
         this.isLoading = true;
