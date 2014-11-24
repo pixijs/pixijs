@@ -2092,7 +2092,7 @@ spine.SkeletonJson.prototype = {
 							}
 							if (isMesh) {
 								var meshVertices = attachment.vertices;
-								for (var ii = 0, nn = vertices.length; ii < nn; i++)
+								for (var ii = 0, nn = vertices.length; ii < nn; ii++)
 									vertices[ii] += meshVertices[ii];
 							}
 						}
