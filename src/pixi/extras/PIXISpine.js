@@ -161,6 +161,13 @@ PIXI.Spine.prototype.update = function(dt)
         var slot = drawOrder[i];
         var attachment = slot.attachment;
         var slotContainer = this.slotContainers[i];
+
+        if (!attachment)
+        {
+            slotContainer.visible = false;
+            continue;
+        }
+
         var type = attachment.type;
         if (type === spine.AttachmentType.region)
         {
@@ -296,6 +303,7 @@ PIXI.Spine.prototype.createMesh = function (slot, attachment) {
     strip.uvs = attachment.uvs;
     strip.indices = attachment.triangles;
 
+    slot.meshes = slot.meshes || {};
     slot.meshes[attachment.name] = strip;
 
     return strip;
