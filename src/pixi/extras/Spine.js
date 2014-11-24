@@ -772,8 +772,8 @@ spine.FfdTimeline.prototype = {
 		this.frameVertices[frameIndex] = vertices;
 	},
 	apply: function (skeleton, lastTime, time, firedEvents, alpha) {
-		var slot = skeleton.slots[slotIndex];
-		if (slot.attachment != attachment) return;
+		var slot = skeleton.slots[this.slotIndex];
+		if (slot.attachment != this.attachment) return;
 
 		var frames = this.frames;
 		if (time < frames[0]) return; // Time is before first frame.
@@ -1821,8 +1821,8 @@ spine.SkeletonJson.prototype = {
 			var region = this.attachmentLoader.newRegionAttachment(skin, name, path);
 			if (!region) return null;
 			region.path = path;
-			region.x = (map["x"] || 0) * this.scale;
-			region.y = (map["y"] || 0) * this.scale;
+			region.x = (map["x"] || 0) * scale;
+			region.y = (map["y"] || 0) * scale;
 			region.scaleX = map.hasOwnProperty("scaleX") ? map["scaleX"] : 1;
 			region.scaleY = map.hasOwnProperty("scaleY") ? map["scaleY"] : 1;
 			region.rotation = map["rotation"] || 0;
@@ -1904,7 +1904,7 @@ spine.SkeletonJson.prototype = {
 			var attachment = this.attachmentLoader.newBoundingBoxAttachment(skin, name);
 			var vertices = map["vertices"];
 			for (var i = 0, n = vertices.length; i < n; i++)
-				attachment.vertices.push(vertices[i] * this.scale);
+				attachment.vertices.push(vertices[i] * scale);
 			return attachment;
 		}
 		throw "Unknown attachment type: " + type;
@@ -2083,16 +2083,16 @@ spine.SkeletonJson.prototype = {
 							vertices.length = vertexCount;
 							var start = valueMap["offset"] || 0;
 							var nn = verticesValue.length;
-							if (scale == 1) {
+							if (this.scale == 1) {
 								for (var ii = 0; ii < nn; ii++)
 									vertices[ii + start] = verticesValue[ii];
 							} else {
 								for (var ii = 0; ii < nn; ii++)
-									vertices[ii + start] = verticesValue[ii] * scale;
+									vertices[ii + start] = verticesValue[ii] * this.scale;
 							}
 							if (isMesh) {
 								var meshVertices = attachment.vertices;
-								for (var ii = 0, nn = vertices.length; ii < nn; i++)
+								for (var ii = 0, nn = vertices.length; ii < nn; ii++)
 									vertices[ii] += meshVertices[ii];
 							}
 						}

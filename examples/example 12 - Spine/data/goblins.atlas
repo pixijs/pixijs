@@ -1,0 +1,293 @@
+
+goblins.png
+size: 228,523
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+dagger
+  rotate: false
+  xy: 2, 43
+  size: 26, 108
+  orig: 26, 108
+  offset: 0, 0
+  index: -1
+goblin/eyes-closed
+  rotate: false
+  xy: 166, 237
+  size: 34, 12
+  orig: 34, 12
+  offset: 0, 0
+  index: -1
+goblin/head
+  rotate: false
+  xy: 26, 372
+  size: 103, 66
+  orig: 103, 66
+  offset: 0, 0
+  index: -1
+goblin/left-arm
+  rotate: false
+  xy: 166, 251
+  size: 37, 35
+  orig: 37, 35
+  offset: 0, 0
+  index: -1
+goblin/left-foot
+  rotate: true
+  xy: 195, 358
+  size: 65, 31
+  orig: 65, 31
+  offset: 0, 0
+  index: -1
+goblin/left-hand
+  rotate: false
+  xy: 49, 2
+  size: 36, 41
+  orig: 36, 41
+  offset: 0, 0
+  index: -1
+goblin/left-lower-leg
+  rotate: false
+  xy: 30, 45
+  size: 33, 70
+  orig: 33, 70
+  offset: 0, 0
+  index: -1
+goblin/left-shoulder
+  rotate: true
+  xy: 169, 288
+  size: 29, 44
+  orig: 29, 44
+  offset: 0, 0
+  index: -1
+goblin/left-upper-leg
+  rotate: false
+  xy: 134, 305
+  size: 33, 73
+  orig: 33, 73
+  offset: 0, 0
+  index: -1
+goblin/neck
+  rotate: false
+  xy: 87, 2
+  size: 36, 41
+  orig: 36, 41
+  offset: 0, 0
+  index: -1
+goblin/pelvis
+  rotate: false
+  xy: 131, 380
+  size: 62, 43
+  orig: 62, 43
+  offset: 0, 0
+  index: -1
+goblin/right-arm
+  rotate: false
+  xy: 135, 69
+  size: 23, 50
+  orig: 23, 50
+  offset: 0, 0
+  index: -1
+goblin/right-foot
+  rotate: true
+  xy: 104, 157
+  size: 63, 33
+  orig: 63, 33
+  offset: 0, 0
+  index: -1
+goblin/right-hand
+  rotate: false
+  xy: 190, 319
+  size: 36, 37
+  orig: 36, 37
+  offset: 0, 0
+  index: -1
+goblin/right-lower-leg
+  rotate: false
+  xy: 96, 294
+  size: 36, 76
+  orig: 36, 76
+  offset: 0, 0
+  index: -1
+goblin/right-shoulder
+  rotate: true
+  xy: 2, 2
+  size: 39, 45
+  orig: 39, 45
+  offset: 0, 0
+  index: -1
+goblin/right-upper-leg
+  rotate: false
+  xy: 139, 162
+  size: 34, 63
+  orig: 34, 63
+  offset: 0, 0
+  index: -1
+goblin/torso
+  rotate: false
+  xy: 131, 425
+  size: 68, 96
+  orig: 68, 96
+  offset: 0, 0
+  index: -1
+goblin/undie-straps
+  rotate: true
+  xy: 201, 466
+  size: 55, 19
+  orig: 55, 19
+  offset: 0, 0
+  index: -1
+goblin/undies
+  rotate: false
+  xy: 190, 51
+  size: 36, 29
+  orig: 36, 29
+  offset: 0, 0
+  index: -1
+goblingirl/eyes-closed
+  rotate: true
+  xy: 201, 427
+  size: 37, 21
+  orig: 37, 21
+  offset: 0, 0
+  index: -1
+goblingirl/head
+  rotate: false
+  xy: 26, 440
+  size: 103, 81
+  orig: 103, 81
+  offset: 0, 0
+  index: -1
+goblingirl/left-arm
+  rotate: true
+  xy: 175, 198
+  size: 37, 35
+  orig: 37, 35
+  offset: 0, 0
+  index: -1
+goblingirl/left-foot
+  rotate: true
+  xy: 133, 227
+  size: 65, 31
+  orig: 65, 31
+  offset: 0, 0
+  index: -1
+goblingirl/left-hand
+  rotate: true
+  xy: 168, 2
+  size: 35, 40
+  orig: 35, 40
+  offset: 0, 0
+  index: -1
+goblingirl/left-lower-leg
+  rotate: false
+  xy: 65, 45
+  size: 33, 70
+  orig: 33, 70
+  offset: 0, 0
+  index: -1
+goblingirl/left-shoulder
+  rotate: true
+  xy: 135, 39
+  size: 28, 46
+  orig: 28, 46
+  offset: 0, 0
+  index: -1
+goblingirl/left-upper-leg
+  rotate: false
+  xy: 98, 222
+  size: 33, 70
+  orig: 33, 70
+  offset: 0, 0
+  index: -1
+goblingirl/neck
+  rotate: true
+  xy: 125, 2
+  size: 35, 41
+  orig: 35, 41
+  offset: 0, 0
+  index: -1
+goblingirl/pelvis
+  rotate: false
+  xy: 30, 117
+  size: 62, 43
+  orig: 62, 43
+  offset: 0, 0
+  index: -1
+goblingirl/right-arm
+  rotate: false
+  xy: 160, 69
+  size: 28, 50
+  orig: 28, 50
+  offset: 0, 0
+  index: -1
+goblingirl/right-foot
+  rotate: true
+  xy: 100, 56
+  size: 63, 33
+  orig: 63, 33
+  offset: 0, 0
+  index: -1
+goblingirl/right-hand
+  rotate: false
+  xy: 190, 82
+  size: 36, 37
+  orig: 36, 37
+  offset: 0, 0
+  index: -1
+goblingirl/right-lower-leg
+  rotate: true
+  xy: 26, 162
+  size: 36, 76
+  orig: 36, 76
+  offset: 0, 0
+  index: -1
+goblingirl/right-shoulder
+  rotate: true
+  xy: 159, 121
+  size: 39, 45
+  orig: 39, 45
+  offset: 0, 0
+  index: -1
+goblingirl/right-upper-leg
+  rotate: true
+  xy: 94, 121
+  size: 34, 63
+  orig: 34, 63
+  offset: 0, 0
+  index: -1
+goblingirl/torso
+  rotate: false
+  xy: 26, 274
+  size: 68, 96
+  orig: 68, 96
+  offset: 0, 0
+  index: -1
+goblingirl/undie-straps
+  rotate: true
+  xy: 169, 323
+  size: 55, 19
+  orig: 55, 19
+  offset: 0, 0
+  index: -1
+goblingirl/undies
+  rotate: false
+  xy: 175, 167
+  size: 36, 29
+  orig: 36, 29
+  offset: 0, 0
+  index: -1
+shield
+  rotate: false
+  xy: 26, 200
+  size: 70, 72
+  orig: 70, 72
+  offset: 0, 0
+  index: -1
+spear
+  rotate: false
+  xy: 2, 153
+  size: 22, 368
+  orig: 22, 368
+  offset: 0, 0
+  index: -1

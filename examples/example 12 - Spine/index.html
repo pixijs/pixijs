@@ -18,7 +18,7 @@
 
     // create an array of assets to load
 
-    var assetsToLoader = ["data/spineboy.json", "data/spineboySpineData.json"];
+    var assetsToLoader = ["data/spineboy.json"];
 
     // create a new loader
     loader = new PIXI.AssetLoader(assetsToLoader);
@@ -45,7 +45,7 @@
     function onAssetsLoaded()
     {
         // create a spine boy
-        var spineBoy = new PIXI.Spine("data/spineboySpineData.json");
+        var spineBoy = new PIXI.Spine("data/spineboy.json");
 
         // set the position
         spineBoy.position.x = window.innerWidth/2;
@@ -58,15 +58,15 @@
         spineBoy.stateData.setMixByName("jump", "walk", 0.4);
 
         // play animation
-        spineBoy.state.setAnimationByName("walk", true);
+        spineBoy.state.setAnimationByName(0, "walk", true);
 
 
         stage.addChild(spineBoy);
 
         stage.click = function()
         {
-            spineBoy.state.setAnimationByName("jump", false);
-            spineBoy.state.addAnimationByName("walk", true);
+            spineBoy.state.setAnimationByName(0, "jump", false);
+            spineBoy.state.addAnimationByName(0, "walk", true, 0);
 
         }
 
