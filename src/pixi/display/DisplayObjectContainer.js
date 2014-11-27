@@ -208,6 +208,18 @@ PIXI.DisplayObjectContainer.prototype.getChildAt = function(index)
 };
 
 /**
+ * Check if the container contains the child passed in
+ *
+ * @method contains
+ * @param {DisplayObject} child
+ * @returns {boolean}
+ */
+PIXI.DisplayObjectContainer.prototype.contains = function(child)
+{
+    return this.children.indexOf(child) > -1;
+};
+
+/**
  * Removes a child from the container.
  *
  * @method removeChild
