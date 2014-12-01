@@ -26,7 +26,7 @@ PIXI.PixiShader = function(gl)
     /**
      * The WebGL program.
      * @property program
-     * @type {Any}
+     * @type Any
      */
     this.program = null;
 
@@ -371,7 +371,7 @@ PIXI.PixiShader.prototype.destroy = function()
 PIXI.PixiShader.defaultVertexSrc = [
     'attribute vec2 aVertexPosition;',
     'attribute vec2 aTextureCoord;',
-    'attribute vec4 aColor;',
+    'attribute vec2 aColor;',
 
     'uniform vec2 projectionVector;',
     'uniform vec2 offsetVector;',

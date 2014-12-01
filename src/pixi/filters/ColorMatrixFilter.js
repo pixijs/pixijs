@@ -47,7 +47,7 @@ PIXI.ColorMatrixFilter.prototype.constructor = PIXI.ColorMatrixFilter;
  * Sets the matrix of the color matrix filter
  *
  * @property matrix
- * @type Array and array of 26 numbers
+ * @type Array(Number)
  * @default [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]
  */
 Object.defineProperty(PIXI.ColorMatrixFilter.prototype, 'matrix', {

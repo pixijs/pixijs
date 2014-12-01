@@ -144,6 +144,9 @@ PIXI.InteractionManager = function(stage)
      * @type Number
      */
     this.resolution = 1;
+
+    // used for hit testing
+    this._tempPoint = new PIXI.Point();
 };
 
 // constructor
@@ -600,29 +603,19 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
         return false;
     }
 
-    // temp fix for if the element is in a non visible
+    // map the global point to local space.
+    item.worldTransform.applyInverse(global,  this._tempPoint);
 
-    var worldTransform = item.worldTransform, i,
-        a = worldTransform.a, b = worldTransform.b,
-        c = worldTransform.c, tx = worldTransform.tx,
-        d = worldTransform.d, ty = worldTransform.ty,
-     
-        id = 1 / (a * d + c * -b),
-        x = d * id * global.x + -c * id * global.y + (ty * c - tx * d) * id,
-        y = a * id * global.y + -b * id * global.x + (-ty * a + tx * b) * id;
-
+    var x = this._tempPoint.x,
+        y = this._tempPoint.y,
+        i;
 
     interactionData.target = item;
 
     //a sprite or display object with a hit area defined
     if (item.hitArea && item.hitArea.contains)
     {
-        if (item.hitArea.contains(x, y))
-        {
-            interactionData.target = item;
-            return true;
-        }
-        return false;
+        return item.hitArea.contains(x, y);
     }
     // a sprite with no hitarea defined
     else if(item instanceof PIXI.Sprite)
@@ -639,7 +632,6 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
             if (y > y1 && y < y1 + height)
             {
                 // set the target property if a hit is true!
-                interactionData.target = item;
                 return true;
             }
         }
@@ -657,7 +649,7 @@ PIXI.InteractionManager.prototype.hitTest = function(item, interactionData)
             {
                 if(data.shape.contains(x, y))
                 {
-                    interactionData.target = item;
+                    //interactionData.target = item;
                     return true;
                 }
             }
