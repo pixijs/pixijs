@@ -369,7 +369,7 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
     uvs.x3 = 0 - offsetX;
     uvs.y3 = (1 * scaleY) - offsetY;
 
-    // get the tilingSprites current alpha and tint and combining them into a single 
+    // get the tilingSprites current alpha and tint and combining them into a single color
     var color = tilingSprite.tint + ((tilingSprite.worldAlpha * 255 | 0) * 0x1000000);
 
     var verticies = this.vertices;
