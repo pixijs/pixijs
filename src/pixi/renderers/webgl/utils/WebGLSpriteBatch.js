@@ -248,49 +248,70 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
     var tx = worldTransform.tx;
     var ty = worldTransform.ty;
 
+    if(this.renderSession.roundPixels)
+    {
+        //xy
+        verticies[index] = a * w1 + c * h1 + tx | 0;
+        verticies[index+1] = d * h1 + b * w1 + ty | 0;
 
-    // xy
-    verticies[index++] = a * w1 + c * h1 + tx;
-    verticies[index++] = d * h1 + b * w1 + ty;
-    // uv
-    verticies[index++] = uvs.x0;
-    verticies[index++] = uvs.y0;
-    // color
-    verticies[index++] = alpha;
-    verticies[index++] = tint;
+        // xy
+        verticies[index+6] = a * w0 + c * h1 + tx | 0;
+        verticies[index+7] = d * h1 + b * w0 + ty | 0;
 
-    // xy
-    verticies[index++] = a * w0 + c * h1 + tx;
-    verticies[index++] = d * h1 + b * w0 + ty;
-    // uv
-    verticies[index++] = uvs.x1;
-    verticies[index++] = uvs.y1;
-    // color
-    verticies[index++] = alpha;
-    verticies[index++] = tint;
+         // xy
+        verticies[index+12] = a * w0 + c * h0 + tx | 0;
+        verticies[index+13] = d * h0 + b * w0 + ty | 0;
 
-    // xy
-    verticies[index++] = a * w0 + c * h0 + tx;
-    verticies[index++] = d * h0 + b * w0 + ty;
-    // uv
-    verticies[index++] = uvs.x2;
-    verticies[index++] = uvs.y2;
-    // color
-    verticies[index++] = alpha;
-    verticies[index++] = tint;
+        // xy
+        verticies[index+18] = a * w1 + c * h0 + tx | 0;
+        verticies[index+19] = d * h0 + b * w1 + ty | 0;
+    }
+    else
+    {
+        //xy
+        verticies[index] = a * w1 + c * h1 + tx;
+        verticies[index+1] = d * h1 + b * w1 + ty;
 
-    // xy
-    verticies[index++] = a * w1 + c * h0 + tx;
-    verticies[index++] = d * h0 + b * w1 + ty;
-    // uv
-    verticies[index++] = uvs.x3;
-    verticies[index++] = uvs.y3;
-    // color
-    verticies[index++] = alpha;
-    verticies[index++] = tint;
+        // xy
+        verticies[index+6] = a * w0 + c * h1 + tx;
+        verticies[index+7] = d * h1 + b * w0 + ty;
+
+         // xy
+        verticies[index+12] = a * w0 + c * h0 + tx;
+        verticies[index+13] = d * h0 + b * w0 + ty;
+
+        // xy
+        verticies[index+18] = a * w1 + c * h0 + tx;
+        verticies[index+19] = d * h0 + b * w1 + ty;
+    }
     
+    // uv
+    verticies[index+2] = uvs.x0;
+    verticies[index+3] = uvs.y0;
+
+    // uv
+    verticies[index+8] = uvs.x1;
+    verticies[index+9] = uvs.y1;
+
+     // uv
+    verticies[index+14] = uvs.x2;
+    verticies[index+15] = uvs.y2;
+
+    // uv
+    verticies[index+20] = uvs.x3;
+    verticies[index+21] = uvs.y3;
+
+    // color
+    verticies[index+4] = verticies[index+10] = verticies[index+16] = verticies[index+22] = alpha;
+    
+    // alpha
+    verticies[index+5] = verticies[index+11] = verticies[index+17] = verticies[index+23] = tint;
+
+    
+
     // increment the batchsize
     this.sprites[this.currentBatchSize++] = sprite;
+
 
 };
 

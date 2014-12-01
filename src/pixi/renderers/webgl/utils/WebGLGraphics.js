@@ -135,8 +135,8 @@ PIXI.WebGLGraphics.updateGraphics = function(graphics, gl)
             data.points = data.shape.points.slice();
             if(data.shape.closed)
             {
-                // close the poly if the valu is true!
-                if(data.points[0] !== data.points[data.points.length-2] && data.points[1] !== data.points[data.points.length-1])
+                // close the poly if the value is true!
+                if(data.points[0] !== data.points[data.points.length-2] || data.points[1] !== data.points[data.points.length-1])
                 {
                     data.points.push(data.points[0], data.points[1]);
                 }
@@ -853,7 +853,6 @@ PIXI.WebGLGraphicsData = function(gl)
     this.color = [0,0,0]; // color split!
     this.points = [];
     this.indices = [];
-    this.lastIndex = 0;
     this.buffer = gl.createBuffer();
     this.indexBuffer = gl.createBuffer();
     this.mode = 1;
@@ -868,7 +867,6 @@ PIXI.WebGLGraphicsData.prototype.reset = function()
 {
     this.points = [];
     this.indices = [];
-    this.lastIndex = 0;
 };
 
 /**
