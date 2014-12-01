@@ -9056,7 +9056,7 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
 
         // xy
         positions[index+15] = a * w1 + c * h0 + tx;
-        positions[index+17] = d * h0 + b * w1 + ty;
+        positions[index+16] = d * h0 + b * w1 + ty;
     }
     
     // uv
@@ -9130,7 +9130,7 @@ PIXI.WebGLSpriteBatch.prototype.renderTilingSprite = function(tilingSprite)
     uvs.x3 = 0 - offsetX;
     uvs.y3 = (1 * scaleY) - offsetY;
 
-    // get the tilingSprites current alpha and tint and combining them into a single 
+    // get the tilingSprites current alpha and tint and combining them into a single color
     var color = tilingSprite.tint + ((tilingSprite.worldAlpha * 255 | 0) * 0x1000000);
 
     var verticies = this.vertices;

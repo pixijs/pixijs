@@ -295,7 +295,7 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
 
         // xy
         positions[index+15] = a * w1 + c * h0 + tx;
-        positions[index+17] = d * h0 + b * w1 + ty;
+        positions[index+16] = d * h0 + b * w1 + ty;
     }
     
     // uv
