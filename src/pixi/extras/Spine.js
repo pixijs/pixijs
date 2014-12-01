@@ -2423,7 +2423,7 @@ spine.AtlasAttachmentLoader = function (atlas) {
 };
 spine.AtlasAttachmentLoader.prototype = {
 	newRegionAttachment: function (skin, name, path) {
-		var region = this.atlas.findRegion(name);
+		var region = this.atlas.findRegion(path);
 		if (!region) throw "Region not found in atlas: " + path + " (region attachment: " + name + ")";
 		var attachment = new spine.RegionAttachment(name);
 		attachment.rendererObject = region;
@@ -2437,7 +2437,7 @@ spine.AtlasAttachmentLoader.prototype = {
 		return attachment;
 	},
 	newMeshAttachment: function (skin, name, path) {
-		var region = this.atlas.findRegion(name);
+		var region = this.atlas.findRegion(path);
 		if (!region) throw "Region not found in atlas: " + path + " (mesh attachment: " + name + ")";
 		var attachment = new spine.MeshAttachment(name);
 		attachment.rendererObject = region;
@@ -2455,7 +2455,7 @@ spine.AtlasAttachmentLoader.prototype = {
 		return attachment;
 	},
 	newSkinnedMeshAttachment: function (skin, name, path) {
-		var region = this.atlas.findRegion(name);
+		var region = this.atlas.findRegion(path);
 		if (!region) throw "Region not found in atlas: " + path + " (skinned mesh attachment: " + name + ")";
 		var attachment = new spine.SkinnedMeshAttachment(name);
 		attachment.rendererObject = region;
