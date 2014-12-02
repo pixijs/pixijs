@@ -1,4 +1,15 @@
 /**
+ * @license
+ * pixi.js - v2.2.0
+ * Copyright (c) 2012-2014, Mat Groves
+ * http://goodboydigital.com/
+ *
+ * Compiled: 2014-12-02
+ *
+ * pixi.js is licensed under the MIT License.
+ * http://www.opensource.org/licenses/mit-license.php
+ */
+/**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
@@ -44,7 +55,7 @@ PIXI.CANVAS_RENDERER = 1;
  * @property {String} VERSION
  * @static 
  */
-PIXI.VERSION = "v2.1.0";
+PIXI.VERSION = "v2.2.0";
 
 /**
  * Various blend modes supported by pixi.
@@ -20070,4 +20081,3 @@ Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'blue', {
         root.PIXI = PIXI;
     }
 }).call(this);
-//# sourceMappingURL=pixi.dev.js.map
