@@ -218,8 +218,8 @@ PIXI.TilingSprite.prototype._renderCanvas = function(renderSession)
     var resolution = renderSession.resolution;
 
     context.setTransform(transform.a * resolution,
-                         transform.c * resolution,
                          transform.b * resolution,
+                         transform.c * resolution,
                          transform.d * resolution,
                          transform.tx * resolution,
                          transform.ty * resolution);
