@@ -36,7 +36,7 @@ PIXI.CANVAS_RENDERER = 1;
  * @property {String} VERSION
  * @static 
  */
-PIXI.VERSION = "v2.1.0";
+PIXI.VERSION = "v2.2.0";
 
 /**
  * Various blend modes supported by pixi.
