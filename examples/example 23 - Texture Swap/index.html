@@ -31,7 +31,11 @@
 
         console.log("texture loaded !")
 
-    })
+    });
+
+    // create a second texture
+    var secondTexture = PIXI.Texture.fromImage("eggHead.png");
+    
     // create a new Sprite using the texture
     var bunny = new PIXI.Sprite(texture);
 
@@ -47,9 +51,17 @@
 
     // make the sprite interactive
     bunny.interactive = true;
+    
     bunny.click = function()
     {
-        texture.baseTexture.updateSourceImage("eggHead.png");
+        bol = !bol;
+
+        if(bol){
+            bunny.setTexture(secondTexture);
+        }
+        else{
+            bunny.setTexture(texture)
+        }
     }
 
     function animate() {
