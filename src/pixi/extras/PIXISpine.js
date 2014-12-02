@@ -297,7 +297,7 @@ PIXI.Spine.prototype.createMesh = function (slot, attachment) {
 
     var strip = new PIXI.Strip(texture);
     strip.drawMode = PIXI.Strip.DrawModes.TRIANGLES;
-    strip.padding = 5;
+    strip.canvasPadding = 1.5;
 
     strip.vertices = new PIXI.Float32Array(attachment.uvs.length);
     strip.uvs = attachment.uvs;
