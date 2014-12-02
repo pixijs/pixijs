@@ -58,13 +58,12 @@ PIXI.Strip = function(texture)
     this.blendMode = PIXI.blendModes.NORMAL;
 
     /**
-     * if you need a padding, not yet implemented
+     * Triangles in canvas mode are automatically antialiased, use this value to force triangles to overlap a bit with each other.
      *
-     * @property padding
+     * @property canvasPadding
      * @type Number
      */
-    this.padding = 0;
-     // NYI, TODO padding ?
+    this.canvasPadding = 0;
 
     this.drawMode = PIXI.Strip.DrawModes.TRIANGLE_STRIP;
 
@@ -278,8 +277,9 @@ PIXI.Strip.prototype._renderCanvasDrawTriangle = function(context, vertices, uvs
     var u0 = uvs[index0] * textureWidth, u1 = uvs[index1] * textureWidth, u2 = uvs[index2] * textureWidth;
     var v0 = uvs[index0 + 1] * textureHeight, v1 = uvs[index1 + 1] * textureHeight, v2 = uvs[index2 + 1] * textureHeight;
 
-    if (this.padding > 0) {
-        var padding = this.padding;
+    if (this.canvasPadding > 0) {
+        var paddingX = this.canvasPadding / this.worldTransform.a;
+        var paddingY = this.canvasPadding / this.worldTransform.d;
         var centerX = (x0 + x1 + x2) / 3;
         var centerY = (y0 + y1 + y2) / 3;
 
@@ -287,8 +287,8 @@ PIXI.Strip.prototype._renderCanvasDrawTriangle = function(context, vertices, uvs
         var normY = y0 - centerY;
 
         var dist = Math.sqrt(normX * normX + normY * normY);
-        x0 = centerX + (normX / dist) * (dist + padding);
-        y0 = centerY + (normY / dist) * (dist + padding);
+        x0 = centerX + (normX / dist) * (dist + paddingX);
+        y0 = centerY + (normY / dist) * (dist + paddingY);
 
         //
 
@@ -296,15 +296,15 @@ PIXI.Strip.prototype._renderCanvasDrawTriangle = function(context, vertices, uvs
         normY = y1 - centerY;
 
         dist = Math.sqrt(normX * normX + normY * normY);
-        x1 = centerX + (normX / dist) * (dist + padding);
-        y1 = centerY + (normY / dist) * (dist + padding);
+        x1 = centerX + (normX / dist) * (dist + paddingX);
+        y1 = centerY + (normY / dist) * (dist + paddingY);
 
         normX = x2 - centerX;
         normY = y2 - centerY;
 
         dist = Math.sqrt(normX * normX + normY * normY);
-        x2 = centerX + (normX / dist) * (dist + padding);
-        y2 = centerY + (normY / dist) * (dist + padding);
+        x2 = centerX + (normX / dist) * (dist + paddingX);
+        y2 = centerY + (normY / dist) * (dist + paddingY);
     }
 
     context.save();
