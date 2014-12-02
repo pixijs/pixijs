@@ -5,7 +5,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1 maximum-scale=1 user-scalable=0" />
     <link rel="stylesheet" href="storm.css">
-    <script src="jquery-1.8.3.min.js"></script>
     <script src="../../bin/pixi.dev.js"></script>
 </head>
 <body>
@@ -14,8 +13,8 @@
     <a href="http://www.html5gamedevs.com/topic/59-pixijs-has-landed/"><img src="assets/pixi.png" width="56" height="22" id="pixi" title="pixi.js" /></a>
 
     <script>
-    $(window).resize(resize)
-    window.onorientationchange = resize;
+    window.addEventListener('orientationchange',resize,false);
+    window.addEventListener('resize',resize,false);
 
     document.addEventListener('DOMContentLoaded', start, false);
 
@@ -259,8 +258,8 @@
 
     function resize()
     {
-        w = $(window).width() - 16;
-        h = $(window).height() - 16;
+        w = window.innerWidth - 16;
+        h = window.innerHeight - 16;
 
         renderer.resize(w, h);
     }

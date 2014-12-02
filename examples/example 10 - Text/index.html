@@ -35,25 +35,6 @@
         s.parentNode.insertBefore(wf, s);
       })();
 
-    function runList(item)
-    {
-        console.log("_");
-        var safe = 0;
-        var tmp = item;
-        while(tmp._iNext)
-        {
-            safe++;
-            tmp = tmp._iNext;
-            console.log(tmp);
-
-            if(safe > 100)
-            {
-                console.log("BREAK");
-                break;
-            }
-        }
-    }
-
     function init()
     {
         var assetsToLoader = ["desyrel.xml"];
@@ -75,8 +56,6 @@
             var bitmapFontText = new PIXI.BitmapText("bitmap fonts are\n now supported!", { font: "35px Desyrel", align: "right" });
             bitmapFontText.position.x = 620 - bitmapFontText.textWidth - 20;
             bitmapFontText.position.y = 20;
-
-            runList(bitmapFontText);
 
             stage.addChild(bitmapFontText);
         }

@@ -8,6 +8,13 @@
             padding: 0;
             background-color: #000000;
         }
+
+        .rendererView {
+            position: absolute;
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
     </style>
 
     <script src="../../bin/pixi.dev.js"></script>
@@ -20,11 +27,7 @@
 
     // create a renderer instance
     var renderer = new PIXI.autoDetectRenderer(800, 600);
-
-    // set the canvas width and height to fill the screen
-    renderer.view.style.width = window.innerWidth + "px";
-    renderer.view.style.height = window.innerHeight + "px";
-    renderer.view.style.display = "block";
+    renderer.view.className = "rendererView";
 
     // add render view to DOM
     document.body.appendChild(renderer.view);
@@ -96,7 +99,7 @@
 
         count += 0.01;
 
-        // swap the buffers..
+        // swap the buffers ...
         var temp = renderTexture;
         renderTexture = renderTexture2;
         renderTexture2 = temp;
@@ -109,7 +112,7 @@
         outputSprite.scale.x = outputSprite.scale.y = 1 + Math.sin(count) * 0.2;
 
         // render the stage to the texture
-        // the true clears the texture before content is rendered
+        // the "true" clears the texture before the content is rendered
         renderTexture2.render(stage, null, true);
 
         // and finally render the stage

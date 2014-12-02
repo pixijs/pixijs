@@ -23,9 +23,10 @@
 <body>
     <script>
     // create an new instance of a pixi stage
-    // the second parameter is interactivity...
-    var interactive = true;
-    var stage = new PIXI.Stage(0x000000, interactive);
+    var stage = new PIXI.Stage(0x000000);
+
+    // make it interactive
+    stage.interactive = true;
 
     // create a renderer instance.
     var renderer = PIXI.autoDetectRenderer(620, 400);
@@ -105,7 +106,7 @@
             this.isOver = false;
             
             if (this.isdown)
-                return
+                return;
 
             this.setTexture(textureButton)
         };
