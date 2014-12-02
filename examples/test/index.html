@@ -1,8 +1,8 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-	<!--<link href=<script src="http://fonts.googleapis.com/css?family=Snippet|Arvo:700italic|Podkova<script src=" rel=<script src="stylesheet<script src=" type=<script src="text/css<script src=">-->
-	<title>pixi.js example 10 Text</title>
+	<!-- <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Snippet|Arvo:700italic|Podkova"/> -->
+	<title>pixi.js test</title>
 	<style>
 		body {
 			margin: 0;
@@ -12,12 +12,13 @@
 	</style>
 
             <script src="../../src/pixi/Pixi.js"></script>
-            <script src="../../src/pixi/core/Point.js"></script>
-            <script src="../../src/pixi/core/Rectangle.js"></script>
-            <script src="../../src/pixi/core/Polygon.js"></script>
-            <script src="../../src/pixi/core/Circle.js"></script>
-            <script src="../../src/pixi/core/Ellipse.js"></script>
-            <script src="../../src/pixi/core/Matrix.js"></script>
+            <script src="../../src/pixi/geom/Point.js"></script>
+            <script src="../../src/pixi/geom/Rectangle.js"></script>
+            <script src="../../src/pixi/geom/Polygon.js"></script>
+            <script src="../../src/pixi/geom/Circle.js"></script>
+            <script src="../../src/pixi/geom/Ellipse.js"></script>
+            <script src="../../src/pixi/geom/RoundedRectangle.js"></script>
+            <script src="../../src/pixi/geom/Matrix.js"></script>
             <script src="../../src/pixi/display/DisplayObject.js"></script>
             <script src="../../src/pixi/display/DisplayObjectContainer.js"></script>
             <script src="../../src/pixi/display/Sprite.js"></script>
@@ -38,14 +39,18 @@
             <script src="../../src/pixi/renderers/webgl/shaders/PixiFastShader.js"></script>
             <script src="../../src/pixi/renderers/webgl/shaders/StripShader.js"></script>
             <script src="../../src/pixi/renderers/webgl/shaders/PrimitiveShader.js"></script>
+            <script src="../../src/pixi/renderers/webgl/shaders/ComplexPrimitiveShader.js"></script>
             <script src="../../src/pixi/renderers/webgl/utils/WebGLGraphics.js"></script>
             <script src="../../src/pixi/renderers/webgl/WebGLRenderer.js"></script>
+            <script src="../../src/pixi/renderers/webgl/utils/WebGLBlendModeManager.js"></script>
             <script src="../../src/pixi/renderers/webgl/utils/WebGLMaskManager.js"></script>
+            <script src="../../src/pixi/renderers/webgl/utils/WebGLStencilManager.js"></script>
             <script src="../../src/pixi/renderers/webgl/utils/WebGLShaderManager.js"></script>
             <script src="../../src/pixi/renderers/webgl/utils/WebGLSpriteBatch.js"></script>
             <script src="../../src/pixi/renderers/webgl/utils/WebGLFastSpriteBatch.js"></script>
             <script src="../../src/pixi/renderers/webgl/utils/WebGLFilterManager.js"></script>
-			<script src="../../src/pixi/renderers/webgl/utils/FilterTexture.js"></script>
+            <script src="../../src/pixi/renderers/webgl/utils/FilterTexture.js"></script>
+            <script src="../../src/pixi/renderers/canvas/utils/CanvasBuffer.js"></script>
             <script src="../../src/pixi/renderers/canvas/utils/CanvasMaskManager.js"></script>
             <script src="../../src/pixi/renderers/canvas/utils/CanvasTinter.js"></script>
             <script src="../../src/pixi/renderers/canvas/CanvasRenderer.js"></script>
@@ -55,9 +60,11 @@
             <script src="../../src/pixi/extras/Rope.js"></script>
             <script src="../../src/pixi/extras/TilingSprite.js"></script>
             <script src="../../src/pixi/extras/Spine.js"></script>
+            <script src="../../src/pixi/extras/PIXISpine.js"></script>
             <script src="../../src/pixi/textures/BaseTexture.js"></script>
             <script src="../../src/pixi/textures/Texture.js"></script>
             <script src="../../src/pixi/textures/RenderTexture.js"></script>
+            <script src="../../src/pixi/textures/VideoTexture.js"></script>
             <script src="../../src/pixi/loaders/AssetLoader.js"></script>
             <script src="../../src/pixi/loaders/JsonLoader.js"></script>
             <script src="../../src/pixi/loaders/AtlasLoader.js"></script>
