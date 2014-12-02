@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-    <title>pixi.js example 21 loading a sprite sheet</title>
+    <title>pixi.js example 22 complex masking</title>
     <style>
         body {
             margin: 0;
@@ -10,16 +10,13 @@
         }
     </style>
     <script src="../../bin/pixi.dev.js"></script>
-    <!--<script src="pixi.dev.js"></script>-->
 </head>
 <body>
     <script>
-    // create an array of assets to load
-
-    
 
     // holder to store aliens
     var aliens = [];
+    // create an array of assets to load
     var alienFrames = ["eggHead.png", "flowerTop.png", "helmlok.png", "skully.png"];
 
     var count = 0;
@@ -44,10 +41,10 @@
 
     count = 0;
         
-        // start animating
+    // start animating
     requestAnimFrame(animate);
     
-    var graphics = new PIXI.Graphics().beginFill(0xFF0000);//.moveTo(-200, -300).lineTo(200, -300).lineTo(220,100).lineTo(200,300).lineTo(-200,300).endFill();
+    var graphics = new PIXI.Graphics().beginFill(0xFF0000);
 
     var liveGraphics = new PIXI.Graphics().beginFill(0xFF0000);
 
@@ -66,8 +63,8 @@
     label.x = 10;
     label.y = 10;
     
-    for (var i = 0; i < 100; i++)
-        {
+    for (var i = 0; i < 100; i++){
+        
             var frameName = alienFrames[i % 4];
 
             // create an alien using the frame name..
@@ -93,8 +90,8 @@
         isDown = true;
         path = [];
         color = colors[colorCount++ % colors.length]
-    //    liveGraphics.clear().beginFill(color);
-//        liveGraphics.drawCircle(data.global.x, data.global.y, 030);
+    //  liveGraphics.clear().beginFill(color);
+    //  liveGraphics.drawCircle(data.global.x, data.global.y, 030);
         
 
     }
@@ -111,7 +108,6 @@
         if(path.length > 12)liveGraphics.drawPolygon(path);
         liveGraphics.endFill();
 
-        //console.log(">>>>")
     }
 
     stage.mouseup = function()
@@ -123,8 +119,7 @@
         path = [];    
     }
 
-        graphics.mask = liveGraphics;
-//    graphics.drawPolygon(path);
+    graphics.mask = liveGraphics;
 
     stage.addChild(graphics);
     stage.addChild(liveGraphics);
@@ -138,8 +133,7 @@
         
         // render the stage
         renderer.render(stage);
-    //    graphics.x = 300;
-     //   graphics.y = 399
+
 
         requestAnimFrame(animate);
     }

@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-    <title>pixi.js example 1</title>
+    <title>pixi.js example 23 - Texture Swap</title>
     <style>
         body {
             margin: 0;
@@ -29,7 +29,7 @@
     var texture = PIXI.Texture.fromImage("flowerTop.png");
     texture.baseTexture.on("loaded", function(){
 
-        console.log(">>>>>>>")
+        console.log("texture loaded !")
 
     })
     // create a new Sprite using the texture
@@ -39,17 +39,17 @@
     bunny.anchor.x = 0.5;
     bunny.anchor.y = 0.5;
 
-    // move the sprite t the center of the screen
+    // move the sprite to the center of the screen
     bunny.position.x = 200;
     bunny.position.y = 150;
 
     stage.addChild(bunny);
 
+    // make the sprite interactive
     bunny.interactive = true;
     bunny.click = function()
     {
         texture.baseTexture.updateSourceImage("eggHead.png");
-        //console.log("FFDFDF")
     }
 
     function animate() {

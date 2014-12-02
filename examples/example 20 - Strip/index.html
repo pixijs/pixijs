@@ -15,7 +15,6 @@
 <body>
     <script>
 
-    // holder to store aliens
     var count = 0;
 
     // create an new instance of a pixi stage
@@ -29,14 +28,14 @@
     // add the renderer view element to the DOM
     document.body.appendChild(renderer.view);
 
-    // create an empty container
-    count = 0;
-
 
     // build a rope!
     var length = 918 / 20;
-    points = [];
+
+    var points = [];
+
     for (var i = 0; i < 20; i++) {
+        
         var segSize = length;
         points.push(new PIXI.Point(i * length, 0));
     };
@@ -63,6 +62,7 @@
 
         var length = 918 / 20;
 
+        // make the snake 
         for (var i = 0; i < points.length; i++) {
             
             points[i].y = Math.sin(i *0.5  + count) * 30;
