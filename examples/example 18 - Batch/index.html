@@ -46,9 +46,10 @@
     var dudeArray = [];
 
     var totalDudes = renderer instanceof PIXI.WebGLRenderer ? 10000 : 100;
+
     for (var i = 0; i < totalDudes; i++) 
     {
-        // create a new Sprite that uses the image name that we just generated as its source
+        // create a new Sprite
         var dude =  PIXI.Sprite.fromImage("tinyMaggot.png");
 
         dude.tint = Math.random() * 0xE8D4CD;
@@ -91,8 +92,8 @@
                                         viewHeight + dudeBoundsPadding * 2);
 
     var tick = 0;
-    function animate() 
-    {
+    function animate() {
+        
         // iterate through the dude and update the position
         for (var i = 0; i < dudeArray.length; i++) 
         {
