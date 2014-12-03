@@ -4,7 +4,7 @@
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-12-02
+ * Compiled: 2014-12-03
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -2808,7 +2808,7 @@ PIXI.SpriteBatch.prototype.initWebGL = function(gl)
 PIXI.SpriteBatch.prototype.updateTransform = function()
 {
     // TODO don't need to!
-    PIXI.DisplayObject.prototype.updateTransform.call( this );
+    this.displayObjectUpdateTransform();
     //  PIXI.DisplayObjectContainer.prototype.updateTransform.call( this );
 };
 
@@ -2850,7 +2850,7 @@ PIXI.SpriteBatch.prototype._renderCanvas = function(renderSession)
     var context = renderSession.context;
     context.globalAlpha = this.worldAlpha;
 
-    PIXI.DisplayObject.prototype.updateTransform.call(this);
+    this.displayObjectUpdateTransform();
 
     var transform = this.worldTransform;
     // alow for trimming
@@ -2891,7 +2891,7 @@ PIXI.SpriteBatch.prototype._renderCanvas = function(renderSession)
         {
             if(!isRotated)isRotated = true;
     
-            PIXI.DisplayObject.prototype.updateTransform.call(child);
+            child.displayObjectUpdateTransform();
            
             var childTransform = child.worldTransform;
 
@@ -6212,7 +6212,7 @@ PIXI.PixiShader.defaultVertexSrc = [
     'void main(void) {',
     '   gl_Position = vec4( ((aVertexPosition + offsetVector) / projectionVector) + center , 0.0, 1.0);',
     '   vTextureCoord = aTextureCoord;',
-    '   vColor = aColor;',
+    '   vColor = vec4(aColor.rgb * aColor.a, aColor.a);',
     '}'
 ];
 /**
@@ -9078,7 +9078,7 @@ PIXI.WebGLSpriteBatch.prototype.render = function(sprite)
 
     // color and alpha
     var tint = sprite.tint;
-    colors[index+4] = colors[index+9] = colors[index+14] = colors[index+19] = (tint >> 16) + (tint & 0xff00) + ((tint & 0xff) << 16) + (sprite.alpha * 255 << 24);
+    colors[index+4] = colors[index+9] = colors[index+14] = colors[index+19] = (tint >> 16) + (tint & 0xff00) + ((tint & 0xff) << 16) + (sprite.worldAlpha * 255 << 24);
 
     // increment the batchsize
     this.sprites[this.currentBatchSize++] = sprite;
