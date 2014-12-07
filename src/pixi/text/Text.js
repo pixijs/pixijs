@@ -205,6 +205,10 @@ PIXI.Text.prototype.updateText = function()
 
     if(navigator.isCocoonJS) this.context.clearRect(0,0,this.canvas.width,this.canvas.height);
     
+    // used for debugging..
+    //this.context.fillStyle ="#FF0000"
+    //this.context.fillRect(0, 0, this.canvas.width,this.canvas.height);
+
     this.context.font = this.style.font;
     this.context.strokeStyle = this.style.stroke;
     this.context.lineWidth = this.style.strokeThickness;
@@ -433,6 +437,8 @@ PIXI.Text.prototype.determineFontProperties = function(fontStyle)
         }
 
         properties.descent = i - baseline;
+        //TODO might need a tweak. kind of a temp fix!
+        properties.descent += 6;
         properties.fontSize = properties.ascent + properties.descent;
 
         PIXI.Text.fontPropertiesCache[fontStyle] = properties;
