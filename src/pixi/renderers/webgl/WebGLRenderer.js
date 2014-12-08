@@ -356,6 +356,9 @@ PIXI.WebGLRenderer.prototype.renderDisplayObject = function(displayObject, proje
     // reset the render session data..
     this.renderSession.drawCount = 0;
 
+    // make sure to flip the Y if using a render texture..
+    this.renderSession.flipY = buffer ? -1 : 1;
+
     // set the default projection
     this.renderSession.projection = projection;
 
