@@ -4,7 +4,7 @@
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-12-03
+ * Compiled: 2014-12-08
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -58,7 +58,7 @@ PIXI.CANVAS_RENDERER = 1;
 PIXI.VERSION = "v2.2.0";
 
 /**
- * Various blend modes supported by pixi.
+ * Various blend modes supported by pixi. IMPORTANT - The WebGL renderer only supports the NORMAL, ADD, MULTIPLY and SCREEN blend modes.
  * @property {Object} blendModes
  * @property {Number} blendModes.NORMAL
  * @property {Number} blendModes.ADD
@@ -3369,6 +3369,10 @@ PIXI.Text.prototype.updateText = function()
 
     if(navigator.isCocoonJS) this.context.clearRect(0,0,this.canvas.width,this.canvas.height);
     
+    // used for debugging..
+    //this.context.fillStyle ="#FF0000"
+    //this.context.fillRect(0, 0, this.canvas.width,this.canvas.height);
+
     this.context.font = this.style.font;
     this.context.strokeStyle = this.style.stroke;
     this.context.lineWidth = this.style.strokeThickness;
@@ -3597,6 +3601,8 @@ PIXI.Text.prototype.determineFontProperties = function(fontStyle)
         }
 
         properties.descent = i - baseline;
+        //TODO might need a tweak. kind of a temp fix!
+        properties.descent += 6;
         properties.fontSize = properties.ascent + properties.descent;
 
         PIXI.Text.fontPropertiesCache[fontStyle] = properties;
@@ -6552,13 +6558,14 @@ PIXI.PrimitiveShader = function(gl)
         'uniform vec2 projectionVector;',
         'uniform vec2 offsetVector;',
         'uniform float alpha;',
+        'uniform float flipY;',
         'uniform vec3 tint;',
         'varying vec4 vColor;',
 
         'void main(void) {',
         '   vec3 v = translationMatrix * vec3(aVertexPosition , 1.0);',
         '   v -= offsetVector.xyx;',
-        '   gl_Position = vec4( v.x / projectionVector.x -1.0, v.y / -projectionVector.y + 1.0 , 0.0, 1.0);',
+        '   gl_Position = vec4( v.x / projectionVector.x -1.0, (v.y / projectionVector.y * -flipY) + flipY , 0.0, 1.0);',
         '   vColor = aColor * vec4(tint * alpha, alpha);',
         '}'
     ];
@@ -6584,6 +6591,7 @@ PIXI.PrimitiveShader.prototype.init = function()
     this.projectionVector = gl.getUniformLocation(program, 'projectionVector');
     this.offsetVector = gl.getUniformLocation(program, 'offsetVector');
     this.tintColor = gl.getUniformLocation(program, 'tint');
+    this.flipY = gl.getUniformLocation(program, 'flipY');
 
     // get and store the attributes
     this.aVertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
@@ -6673,13 +6681,13 @@ PIXI.ComplexPrimitiveShader = function(gl)
         'uniform vec3 tint;',
         'uniform float alpha;',
         'uniform vec3 color;',
-
+        'uniform float flipY;',
         'varying vec4 vColor;',
 
         'void main(void) {',
         '   vec3 v = translationMatrix * vec3(aVertexPosition , 1.0);',
         '   v -= offsetVector.xyx;',
-        '   gl_Position = vec4( v.x / projectionVector.x -1.0, v.y / -projectionVector.y + 1.0 , 0.0, 1.0);',
+        '   gl_Position = vec4( v.x / projectionVector.x -1.0, (v.y / projectionVector.y * -flipY) + flipY , 0.0, 1.0);',
         '   vColor = vec4(color * alpha * tint, alpha);',//" * vec4(tint * alpha, alpha);',
         '}'
     ];
@@ -6706,6 +6714,7 @@ PIXI.ComplexPrimitiveShader.prototype.init = function()
     this.offsetVector = gl.getUniformLocation(program, 'offsetVector');
     this.tintColor = gl.getUniformLocation(program, 'tint');
     this.color = gl.getUniformLocation(program, 'color');
+    this.flipY = gl.getUniformLocation(program, 'flipY');
 
     // get and store the attributes
     this.aVertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
@@ -6795,7 +6804,9 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
             renderSession.shaderManager.setShader( shader );//activatePrimitiveShader();
             shader = renderSession.shaderManager.primitiveShader;
             gl.uniformMatrix3fv(shader.translationMatrix, false, graphics.worldTransform.toArray(true));
-
+            
+            gl.uniform1f(shader.flipY, 1);
+            
             gl.uniform2f(shader.projectionVector, projection.x, -projection.y);
             gl.uniform2f(shader.offsetVector, -offset.x, -offset.y);
 
@@ -7084,6 +7095,8 @@ PIXI.WebGLGraphics.buildRoundedRectangle = function(graphicsData, webGLData)
 
         var triangles = PIXI.PolyK.Triangulate(recPoints);
 
+        // 
+        
         var i = 0;
         for (i = 0; i < triangles.length; i+=3)
         {
@@ -7093,6 +7106,7 @@ PIXI.WebGLGraphics.buildRoundedRectangle = function(graphicsData, webGLData)
             indices.push(triangles[i+2] + vecPos);
             indices.push(triangles[i+2] + vecPos);
         }
+
 
         for (i = 0; i < recPoints.length; i++)
         {
@@ -7983,6 +7997,9 @@ PIXI.WebGLRenderer.prototype.renderDisplayObject = function(displayObject, proje
     // reset the render session data..
     this.renderSession.drawCount = 0;
 
+    // make sure to flip the Y if using a render texture..
+    this.renderSession.flipY = buffer ? -1 : 1;
+
     // set the default projection
     this.renderSession.projection = projection;
 
@@ -8451,6 +8468,8 @@ PIXI.WebGLStencilManager.prototype.bindGraphics = function(graphics, webGLData, 
 
         renderSession.shaderManager.setShader( shader );
 
+        gl.uniform1f(shader.flipY, renderSession.flipY);
+       
         gl.uniformMatrix3fv(shader.translationMatrix, false, graphics.worldTransform.toArray(true));
 
         gl.uniform2f(shader.projectionVector, projection.x, -projection.y);
@@ -8478,6 +8497,7 @@ PIXI.WebGLStencilManager.prototype.bindGraphics = function(graphics, webGLData, 
 
         gl.uniformMatrix3fv(shader.translationMatrix, false, graphics.worldTransform.toArray(true));
 
+        gl.uniform1f(shader.flipY, renderSession.flipY);
         gl.uniform2f(shader.projectionVector, projection.x, -projection.y);
         gl.uniform2f(shader.offsetVector, -offset.x, -offset.y);
 
