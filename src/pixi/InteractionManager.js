@@ -224,23 +224,34 @@ PIXI.InteractionManager.prototype.setTargetDomElement = function(domElement)
 {
     this.removeEvents();
 
+    this.interactionDOMElement = domElement;
+
+    this.addEvents();
+};
+
+/**
+ * @method addEvents
+ * @private
+ */
+PIXI.InteractionManager.prototype.addEvents = function()
+{
+    if (!this.interactionDOMElement) { return; }
+
     if (window.navigator.msPointerEnabled)
     {
         // time to remove some of that zoom in ja..
-        domElement.style['-ms-content-zooming'] = 'none';
-        domElement.style['-ms-touch-action'] = 'none';
+        this.interactionDOMElement.style['-ms-content-zooming'] = 'none';
+        this.interactionDOMElement.style['-ms-touch-action'] = 'none';
     }
 
-    this.interactionDOMElement = domElement;
-
-    domElement.addEventListener('mousemove',  this.onMouseMove, true);
-    domElement.addEventListener('mousedown',  this.onMouseDown, true);
-    domElement.addEventListener('mouseout',   this.onMouseOut, true);
+    this.interactionDOMElement.addEventListener('mousemove',  this.onMouseMove, true);
+    this.interactionDOMElement.addEventListener('mousedown',  this.onMouseDown, true);
+    this.interactionDOMElement.addEventListener('mouseout',   this.onMouseOut, true);
 
     // aint no multi touch just yet!
-    domElement.addEventListener('touchstart', this.onTouchStart, true);
-    domElement.addEventListener('touchend', this.onTouchEnd, true);
-    domElement.addEventListener('touchmove', this.onTouchMove, true);
+    this.interactionDOMElement.addEventListener('touchstart', this.onTouchStart, true);
+    this.interactionDOMElement.addEventListener('touchend', this.onTouchEnd, true);
+    this.interactionDOMElement.addEventListener('touchmove', this.onTouchMove, true);
 
     window.addEventListener('mouseup',  this.onMouseUp, true);
 };
@@ -251,10 +262,13 @@ PIXI.InteractionManager.prototype.setTargetDomElement = function(domElement)
  */
 PIXI.InteractionManager.prototype.removeEvents = function()
 {
-    if (!this.interactionDOMElement) return;
+    if (!this.interactionDOMElement) { return; }
 
-    this.interactionDOMElement.style['-ms-content-zooming'] = '';
-    this.interactionDOMElement.style['-ms-touch-action'] = '';
+    if (window.navigator.msPointerEnabled)
+    {
+        this.interactionDOMElement.style['-ms-content-zooming'] = '';
+        this.interactionDOMElement.style['-ms-touch-action'] = '';
+    }
 
     this.interactionDOMElement.removeEventListener('mousemove',  this.onMouseMove, true);
     this.interactionDOMElement.removeEventListener('mousedown',  this.onMouseDown, true);
