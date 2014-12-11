@@ -70,10 +70,18 @@ PIXI.InteractionManager = function(stage)
     /**
      * Our canvas
      * @property interactionDOMElement
-     * @type HTMLCanvasElement
+     * @type HTMLElement
      * @private
      */
     this.interactionDOMElement = null;
+
+    /**
+     * Have events been attached to the dom element?
+     * @property eventsAdded
+     * @type Boolean
+     * @private
+     */
+    this.eventsAdded = false;
 
     //this will make it so that you don't have to call bind all the time
 
@@ -254,6 +262,8 @@ PIXI.InteractionManager.prototype.addEvents = function()
     this.interactionDOMElement.addEventListener('touchmove', this.onTouchMove, true);
 
     window.addEventListener('mouseup',  this.onMouseUp, true);
+
+    this.eventsAdded = true;
 };
 
 /**
@@ -282,6 +292,8 @@ PIXI.InteractionManager.prototype.removeEvents = function()
     this.interactionDOMElement = null;
 
     window.removeEventListener('mouseup',  this.onMouseUp, true);
+
+    this.eventsAdded = false;
 };
 
 /**

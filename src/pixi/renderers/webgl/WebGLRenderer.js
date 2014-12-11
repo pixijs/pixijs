@@ -282,17 +282,7 @@ PIXI.WebGLRenderer.prototype.initContext = function()
 PIXI.WebGLRenderer.prototype.render = function(stage)
 {
     // no point rendering if our context has been blown up!
-    if(this.contextLost)return;
-
-    // if rendering a new stage clear the batches..
-    if(this.__stage !== stage)
-    {
-        if(stage.interactive)stage.interactionManager.removeEvents();
-
-        // TODO make this work
-        // dont think this is needed any more?
-        this.__stage = stage;
-    }
+    if(this.contextLost) { return; }
 
     // update the scene graph
     stage.updateTransform();
@@ -302,19 +292,17 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
     // interaction
     if(stage._interactive)
     {
-        //need to add some events!
-        if(!stage._interactiveEventsAdded)
+        // need to add some events!
+        if(!stage.interactionManager.eventsAdded)
         {
-            stage._interactiveEventsAdded = true;
             stage.interactionManager.setTarget(this);
         }
     }
     else
     {
-        if(stage._interactiveEventsAdded)
+        if(stage.interactionManager.eventsAdded)
         {
-            stage._interactiveEventsAdded = false;
-            stage.interactionManager.setTarget(this);
+            stage.interactionManager.removeEvents();
         }
     }
 
