@@ -235,8 +235,6 @@ PIXI.InteractionManager.prototype.setTargetDomElement = function(domElement, res
 
     this.interactionDOMElement = domElement;
 
-    this.target = domElement;
-
     if(resolution) {
         this.resolution = resolution;
     }
@@ -311,7 +309,7 @@ PIXI.InteractionManager.prototype.removeEvents = function()
  */
 PIXI.InteractionManager.prototype.update = function()
 {
-    if (!this.target) return;
+    if (!this.interactionDOMElement) return;
 
     // frequency of 30fps??
     var now = Date.now();
@@ -432,8 +430,8 @@ PIXI.InteractionManager.prototype.onMouseMove = function(event)
     // TODO optimize by not check EVERY TIME! maybe half as often? //
     var rect = this.interactionDOMElement.getBoundingClientRect();
 
-    this.mouse.global.x = (event.clientX - rect.left) * (this.target.width / rect.width) / this.resolution;
-    this.mouse.global.y = (event.clientY - rect.top) * ( this.target.height / rect.height) / this.resolution;
+    this.mouse.global.x = (event.clientX - rect.left) * (this.interactionDOMElement.width / rect.width) / this.resolution;
+    this.mouse.global.y = (event.clientY - rect.top) * ( this.interactionDOMElement.height / rect.height) / this.resolution;
 
     var length = this.interactiveItems.length;
 
@@ -731,8 +729,8 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
         touchData.originalEvent = event;
 
         // update the touch position
-        touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.target.width / rect.width) ) / this.resolution;
-        touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.target.height / rect.height) )  / this.resolution;
+        touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.interactionDOMElement.width / rect.width) ) / this.resolution;
+        touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.interactionDOMElement.height / rect.height) )  / this.resolution;
         if (navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height)
         {
             //Support for CocoonJS fullscreen scale modes
@@ -786,8 +784,8 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
         touchData.originalEvent = event;
 
         this.touches[touchEvent.identifier] = touchData;
-        touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.target.width / rect.width) ) / this.resolution;
-        touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.target.height / rect.height) ) / this.resolution;
+        touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.interactionDOMElement.width / rect.width) ) / this.resolution;
+        touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.interactionDOMElement.height / rect.height) ) / this.resolution;
         if (navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height)
         {
             //Support for CocoonJS fullscreen scale modes
@@ -842,8 +840,8 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
         var touchEvent = changedTouches[i];
         var touchData = this.touches[touchEvent.identifier];
         var up = false;
-        touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.target.width / rect.width) ) / this.resolution;
-        touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.target.height / rect.height) ) / this.resolution;
+        touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.interactionDOMElement.width / rect.width) ) / this.resolution;
+        touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.interactionDOMElement.height / rect.height) ) / this.resolution;
         if (navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height)
         {
             //Support for CocoonJS fullscreen scale modes
