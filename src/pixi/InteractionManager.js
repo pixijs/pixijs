@@ -202,24 +202,6 @@ PIXI.InteractionManager.prototype.collectInteractiveSprite = function(displayObj
 };
 
 /**
- * Sets the target for event delegation
- *
- * @method setTarget
- * @param target {WebGLRenderer|CanvasRenderer} the renderer to bind events to
- * @private
- */
-PIXI.InteractionManager.prototype.setTarget = function(target)
-{
-    this.target = target;
-    this.resolution = target.resolution;
-
-    // Check if the dom element has been set. If it has don't do anything.
-    if (this.interactionDOMElement !== null) return;
-
-    this.setTargetDomElement (target.view);
-};
-
-/**
  * Sets the DOM element which will receive mouse/touch events. This is useful for when you have other DOM
  * elements on top of the renderers Canvas element. With this you'll be able to delegate another DOM element
  * to receive those events
