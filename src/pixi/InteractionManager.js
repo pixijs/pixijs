@@ -226,13 +226,20 @@ PIXI.InteractionManager.prototype.setTarget = function(target)
  *
  * @method setTargetDomElement
  * @param domElement {DOMElement} the DOM element which will receive mouse and touch events
+ * @param resolution {Number} the resolution of the new element (relative to the canvas)
  * @private
  */
-PIXI.InteractionManager.prototype.setTargetDomElement = function(domElement)
+PIXI.InteractionManager.prototype.setTargetDomElement = function(domElement, resolution)
 {
     this.removeEvents();
 
     this.interactionDOMElement = domElement;
+
+    this.target = domElement;
+
+    if(resolution) {
+        this.resolution = resolution;
+    }
 
     this.addEvents();
 };

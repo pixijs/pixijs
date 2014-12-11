@@ -295,7 +295,7 @@ PIXI.WebGLRenderer.prototype.render = function(stage)
         // need to add some events!
         if(!stage.interactionManager.eventsAdded)
         {
-            stage.interactionManager.setTarget(this);
+            stage.interactionManager.setTargetDomElement(this.view, this.resolution);
         }
     }
     else
