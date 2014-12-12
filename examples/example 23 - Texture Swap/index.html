@@ -25,6 +25,8 @@
 
     requestAnimFrame(animate);
 
+    var bol = false;
+
     // create a texture from an image path
     var texture = PIXI.Texture.fromImage("flowerTop.png");
     texture.baseTexture.on("loaded", function(){
