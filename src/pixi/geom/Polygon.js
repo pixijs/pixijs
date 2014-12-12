@@ -44,7 +44,6 @@ PIXI.Polygon = function(points)
      * @type Number
      * @default 0
      */
-    this.type = 0;
 };
 
 /**

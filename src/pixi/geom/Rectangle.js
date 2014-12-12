@@ -48,7 +48,6 @@ PIXI.Rectangle = function(x, y, width, height)
      * @type Number
      * @default 0
      */
-    this.type = 0;
 };
 
 /**
