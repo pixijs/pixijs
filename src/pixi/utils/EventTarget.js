@@ -43,7 +43,7 @@ PIXI.EventTarget = {
          *
          * @method listeners
          * @param eventName {String} The events that should be listed.
-         * @returns {Array} An array of listener functions
+         * @return {Array} An array of listener functions
          */
         obj.listeners = function listeners(eventName) {
             this._listeners = this._listeners || {};
@@ -57,7 +57,7 @@ PIXI.EventTarget = {
          * @method emit
          * @alias dispatchEvent
          * @param eventName {String} The name of the event.
-         * @returns {Boolean} Indication if we've emitted an event.
+         * @return {Boolean} Indication if we've emitted an event.
          */
         obj.emit = obj.dispatchEvent = function emit(eventName, data) {
             this._listeners = this._listeners || {};

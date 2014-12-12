@@ -15,7 +15,10 @@
 <body>
     <script>
     // create an new instance of a pixi stage
-    var stage = new PIXI.Stage(0x97C56E, true);
+    var stage = new PIXI.Stage(0x97C56E);
+    
+    // make it interactive
+    stage.interactive = true;
 
     // create a renderer instance
     var renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight, null);

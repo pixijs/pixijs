@@ -3,8 +3,9 @@
  */
 
 /**
+ * Utility methods for Sprite/Texture tinting.
+ *
  * @class CanvasTinter
- * @constructor
  * @static
  */
 PIXI.CanvasTinter = function()
@@ -15,6 +16,7 @@ PIXI.CanvasTinter = function()
  * Basically this method just needs a sprite and a color and tints the sprite with the given color.
  * 
  * @method getTintedTexture 
+ * @static
  * @param sprite {Sprite} the sprite to tint
  * @param color {Number} the color to use to tint the sprite with
  * @return {HTMLCanvasElement} The tinted canvas
@@ -59,6 +61,7 @@ PIXI.CanvasTinter.getTintedTexture = function(sprite, color)
  * Tint a texture using the "multiply" operation.
  * 
  * @method tintWithMultiply
+ * @static
  * @param texture {Texture} the texture to tint
  * @param color {Number} the color to use to tint the sprite with
  * @param canvas {HTMLCanvasElement} the current canvas
@@ -105,6 +108,7 @@ PIXI.CanvasTinter.tintWithMultiply = function(texture, color, canvas)
  * Tint a texture using the "overlay" operation.
  * 
  * @method tintWithOverlay
+ * @static
  * @param texture {Texture} the texture to tint
  * @param color {Number} the color to use to tint the sprite with
  * @param canvas {HTMLCanvasElement} the current canvas
@@ -140,6 +144,7 @@ PIXI.CanvasTinter.tintWithOverlay = function(texture, color, canvas)
  * Tint a texture pixel per pixel.
  * 
  * @method tintPerPixel
+ * @static
  * @param texture {Texture} the texture to tint
  * @param color {Number} the color to use to tint the sprite with
  * @param canvas {HTMLCanvasElement} the current canvas
@@ -185,6 +190,7 @@ PIXI.CanvasTinter.tintWithPerPixel = function(texture, color, canvas)
  * Rounds the specified color according to the PIXI.CanvasTinter.cacheStepsPerColorChannel.
  * 
  * @method roundColor
+ * @static
  * @param color {number} the color to round, should be a hex color
  */
 PIXI.CanvasTinter.roundColor = function(color)
@@ -203,8 +209,9 @@ PIXI.CanvasTinter.roundColor = function(color)
 /**
  * Number of steps which will be used as a cap when rounding colors.
  *
- * @property cacheStepsPerColorChannel
+ * @property cacheStepsPerColorChannel 
  * @type Number
+ * @static
  */
 PIXI.CanvasTinter.cacheStepsPerColorChannel = 8;
 
@@ -213,6 +220,7 @@ PIXI.CanvasTinter.cacheStepsPerColorChannel = 8;
  *
  * @property convertTintToImage
  * @type Boolean
+ * @static
  */
 PIXI.CanvasTinter.convertTintToImage = false;
 
@@ -221,6 +229,7 @@ PIXI.CanvasTinter.convertTintToImage = false;
  *
  * @property canUseMultiply
  * @type Boolean
+ * @static
  */
 PIXI.CanvasTinter.canUseMultiply = PIXI.canUseNewCanvasBlendModes();
 
@@ -228,5 +237,6 @@ PIXI.CanvasTinter.canUseMultiply = PIXI.canUseNewCanvasBlendModes();
  * The tinting method that will be used.
  * 
  * @method tintMethod
+ * @static
  */
 PIXI.CanvasTinter.tintMethod = PIXI.CanvasTinter.canUseMultiply ? PIXI.CanvasTinter.tintWithMultiply :  PIXI.CanvasTinter.tintWithPerPixel;

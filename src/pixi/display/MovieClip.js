@@ -8,7 +8,7 @@
  * @class MovieClip
  * @extends Sprite
  * @constructor
- * @param textures {Array<Texture>} an array of {Texture} objects that make up the animation
+ * @param textures {Array(Texture)} an array of {Texture} objects that make up the animation
  */
 PIXI.MovieClip = function(textures)
 {
@@ -18,7 +18,7 @@ PIXI.MovieClip = function(textures)
      * The array of textures that make up the animation
      *
      * @property textures
-     * @type Array
+     * @type Array(Texture)
      */
     this.textures = textures;
 
@@ -142,7 +142,7 @@ PIXI.MovieClip.prototype.gotoAndPlay = function(frameNumber)
  */
 PIXI.MovieClip.prototype.updateTransform = function()
 {
-    PIXI.Sprite.prototype.updateTransform.call(this);
+    this.displayObjectContainerUpdateTransform();
 
     if(!this.playing)return;
 

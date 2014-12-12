@@ -16,14 +16,14 @@ PIXI.AbstractFilter = function(fragmentSrc, uniforms)
     * An array of passes - some filters contain a few steps this array simply stores the steps in a liniear fashion.
     * For example the blur filter has two passes blurX and blurY.
     * @property passes
-    * @type Array an array of filter objects
+    * @type Array(Filter)
     * @private
     */
     this.passes = [this];
 
     /**
     * @property shaders
-    * @type Array an array of shaders
+    * @type Array(Shader)
     * @private
     */
     this.shaders = [];

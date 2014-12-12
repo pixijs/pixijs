@@ -57,7 +57,7 @@ PIXI.Graphics = function()
      * @default 0xFFFFFF
      */
     this.tint = 0xFFFFFF;
-    
+
     /**
      * The blend mode to be applied to the graphic shape. Apply a value of PIXI.blendModes.NORMAL to reset the blend mode.
      *
@@ -427,19 +427,27 @@ PIXI.Graphics.prototype.arc = function(cx, cy, radius, startAngle, endAngle, ant
 {
     var startX = cx + Math.cos(startAngle) * radius;
     var startY = cy + Math.sin(startAngle) * radius;
-   
-    var points = this.currentPath.shape.points;
+    var points;
 
-    if(points.length === 0)
+    if( this.currentPath )
+    {
+        points = this.currentPath.shape.points;
+
+        if(points.length === 0)
+        {
+            points.push(startX, startY);
+        }
+        else if( points[points.length-2] !== startX || points[points.length-1] !== startY)
+        {
+            points.push(startX, startY);
+        }
+    }
+    else
     {
         this.moveTo(startX, startY);
         points = this.currentPath.shape.points;
     }
-    else if( points[points.length-2] !== startX || points[points.length-1] !== startY)
-    {
-        points.push(startX, startY);
-    }
-  
+    
     if (startAngle === endAngle)return this;
 
     if( !anticlockwise && endAngle <= startAngle )
@@ -1101,9 +1109,11 @@ PIXI.GraphicsData = function(lineWidth, lineColor, lineAlpha, fillColor, fillAlp
     this.lineWidth = lineWidth;
     this.lineColor = lineColor;
     this.lineAlpha = lineAlpha;
+    this._lineTint = lineColor;
 
     this.fillColor = fillColor;
     this.fillAlpha = fillAlpha;
+    this._fillTint = fillColor;
     this.fill = fill;
 
     this.shape = shape;

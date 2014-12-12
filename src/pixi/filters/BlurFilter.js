@@ -25,7 +25,7 @@ PIXI.BlurFilter.prototype.constructor = PIXI.BlurFilter;
  * Sets the strength of both the blurX and blurY properties simultaneously
  *
  * @property blur
- * @type Number the strength of the blur
+ * @type Number
  * @default 2
  */
 Object.defineProperty(PIXI.BlurFilter.prototype, 'blur', {
@@ -41,7 +41,7 @@ Object.defineProperty(PIXI.BlurFilter.prototype, 'blur', {
  * Sets the strength of the blurX property
  *
  * @property blurX
- * @type Number the strength of the blurX
+ * @type Number
  * @default 2
  */
 Object.defineProperty(PIXI.BlurFilter.prototype, 'blurX', {
@@ -57,7 +57,7 @@ Object.defineProperty(PIXI.BlurFilter.prototype, 'blurX', {
  * Sets the strength of the blurY property
  *
  * @property blurY
- * @type Number the strength of the blurY
+ * @type Number
  * @default 2
  */
 Object.defineProperty(PIXI.BlurFilter.prototype, 'blurY', {
