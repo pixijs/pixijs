@@ -20,8 +20,10 @@
     var stage = new PIXI.Stage(0xFFFFFF, true);
     
     stage.interactive = true;
-    
-    var renderer = PIXI.autoDetectRenderer(620, 380);
+
+    var rendererOptions  = { antialias : true};
+    // create a renderer instance
+    var renderer = PIXI.autoDetectRenderer(620, 380,rendererOptions);
      
     // add render view to DOM
     document.body.appendChild(renderer.view);

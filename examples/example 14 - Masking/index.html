@@ -59,8 +59,10 @@
 
     stage.addChild(container);
 
+    
+    var rendererOptions  = { antialias : true};
     // create a renderer instance
-    var renderer = PIXI.autoDetectRenderer(620, 380);
+    var renderer = PIXI.autoDetectRenderer(620, 380,rendererOptions);
 
     // center the renderer
     renderer.view.style.position = "absolute"
