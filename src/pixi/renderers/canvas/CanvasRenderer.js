@@ -218,14 +218,20 @@ PIXI.CanvasRenderer.prototype.render = function(stage)
     
     this.renderDisplayObject(stage);
 
-    // run interaction!
-    if(stage.interactive)
+    // interaction
+    if(stage._interactive)
     {
-        //need to add some events!
-        if(!stage._interactiveEventsAdded)
+        // need to add some events!
+        if(!stage.interactionManager.eventsAdded)
         {
-            stage._interactiveEventsAdded = true;
-            stage.interactionManager.setTarget(this);
+            stage.interactionManager.setTargetDomElement(this.view, this.resolution);
+        }
+    }
+    else
+    {
+        if(stage.interactionManager.eventsAdded)
+        {
+            stage.interactionManager.removeEvents();
         }
     }
 };

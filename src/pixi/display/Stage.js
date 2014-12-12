@@ -77,9 +77,9 @@ PIXI.Stage.prototype.constructor = PIXI.Stage;
  * @method setInteractionDelegate
  * @param domElement {DOMElement} This new domElement which will receive mouse/touch events
  */
-PIXI.Stage.prototype.setInteractionDelegate = function(domElement)
+PIXI.Stage.prototype.setInteractionDelegate = function(domElement, resolution)
 {
-    this.interactionManager.setTargetDomElement( domElement );
+    this.interactionManager.setTargetDomElement( domElement, resolution );
 };
 
 /*

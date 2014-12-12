@@ -70,10 +70,18 @@ PIXI.InteractionManager = function(stage)
     /**
      * Our canvas
      * @property interactionDOMElement
-     * @type HTMLCanvasElement
+     * @type HTMLElement
      * @private
      */
     this.interactionDOMElement = null;
+
+    /**
+     * Have events been attached to the dom element?
+     * @property eventsAdded
+     * @type Boolean
+     * @private
+     */
+    this.eventsAdded = false;
 
     //this will make it so that you don't have to call bind all the time
 
@@ -194,55 +202,55 @@ PIXI.InteractionManager.prototype.collectInteractiveSprite = function(displayObj
 };
 
 /**
- * Sets the target for event delegation
- *
- * @method setTarget
- * @param target {WebGLRenderer|CanvasRenderer} the renderer to bind events to
- * @private
- */
-PIXI.InteractionManager.prototype.setTarget = function(target)
-{
-    this.target = target;
-    this.resolution = target.resolution;
-
-    // Check if the dom element has been set. If it has don't do anything.
-    if (this.interactionDOMElement !== null) return;
-
-    this.setTargetDomElement (target.view);
-};
-
-/**
  * Sets the DOM element which will receive mouse/touch events. This is useful for when you have other DOM
  * elements on top of the renderers Canvas element. With this you'll be able to delegate another DOM element
  * to receive those events
  *
  * @method setTargetDomElement
  * @param domElement {DOMElement} the DOM element which will receive mouse and touch events
+ * @param resolution {Number} the resolution of the new element (relative to the canvas)
  * @private
  */
-PIXI.InteractionManager.prototype.setTargetDomElement = function(domElement)
+PIXI.InteractionManager.prototype.setTargetDomElement = function(domElement, resolution)
 {
     this.removeEvents();
+
+    this.interactionDOMElement = domElement;
+
+    if(resolution) {
+        this.resolution = resolution;
+    }
+
+    this.addEvents();
+};
+
+/**
+ * @method addEvents
+ * @private
+ */
+PIXI.InteractionManager.prototype.addEvents = function()
+{
+    if (!this.interactionDOMElement) { return; }
 
     if (window.navigator.msPointerEnabled)
     {
         // time to remove some of that zoom in ja..
-        domElement.style['-ms-content-zooming'] = 'none';
-        domElement.style['-ms-touch-action'] = 'none';
+        this.interactionDOMElement.style['-ms-content-zooming'] = 'none';
+        this.interactionDOMElement.style['-ms-touch-action'] = 'none';
     }
 
-    this.interactionDOMElement = domElement;
-
-    domElement.addEventListener('mousemove',  this.onMouseMove, true);
-    domElement.addEventListener('mousedown',  this.onMouseDown, true);
-    domElement.addEventListener('mouseout',   this.onMouseOut, true);
+    this.interactionDOMElement.addEventListener('mousemove',  this.onMouseMove, true);
+    this.interactionDOMElement.addEventListener('mousedown',  this.onMouseDown, true);
+    this.interactionDOMElement.addEventListener('mouseout',   this.onMouseOut, true);
 
     // aint no multi touch just yet!
-    domElement.addEventListener('touchstart', this.onTouchStart, true);
-    domElement.addEventListener('touchend', this.onTouchEnd, true);
-    domElement.addEventListener('touchmove', this.onTouchMove, true);
+    this.interactionDOMElement.addEventListener('touchstart', this.onTouchStart, true);
+    this.interactionDOMElement.addEventListener('touchend', this.onTouchEnd, true);
+    this.interactionDOMElement.addEventListener('touchmove', this.onTouchMove, true);
 
     window.addEventListener('mouseup',  this.onMouseUp, true);
+
+    this.eventsAdded = true;
 };
 
 /**
@@ -251,10 +259,13 @@ PIXI.InteractionManager.prototype.setTargetDomElement = function(domElement)
  */
 PIXI.InteractionManager.prototype.removeEvents = function()
 {
-    if (!this.interactionDOMElement) return;
+    if (!this.interactionDOMElement) { return; }
 
-    this.interactionDOMElement.style['-ms-content-zooming'] = '';
-    this.interactionDOMElement.style['-ms-touch-action'] = '';
+    if (window.navigator.msPointerEnabled)
+    {
+        this.interactionDOMElement.style['-ms-content-zooming'] = '';
+        this.interactionDOMElement.style['-ms-touch-action'] = '';
+    }
 
     this.interactionDOMElement.removeEventListener('mousemove',  this.onMouseMove, true);
     this.interactionDOMElement.removeEventListener('mousedown',  this.onMouseDown, true);
@@ -268,6 +279,8 @@ PIXI.InteractionManager.prototype.removeEvents = function()
     this.interactionDOMElement = null;
 
     window.removeEventListener('mouseup',  this.onMouseUp, true);
+
+    this.eventsAdded = false;
 };
 
 /**
@@ -278,7 +291,7 @@ PIXI.InteractionManager.prototype.removeEvents = function()
  */
 PIXI.InteractionManager.prototype.update = function()
 {
-    if (!this.target) return;
+    if (!this.interactionDOMElement) return;
 
     // frequency of 30fps??
     var now = Date.now();
@@ -399,8 +412,8 @@ PIXI.InteractionManager.prototype.onMouseMove = function(event)
     // TODO optimize by not check EVERY TIME! maybe half as often? //
     var rect = this.interactionDOMElement.getBoundingClientRect();
 
-    this.mouse.global.x = (event.clientX - rect.left) * (this.target.width / rect.width) / this.resolution;
-    this.mouse.global.y = (event.clientY - rect.top) * ( this.target.height / rect.height) / this.resolution;
+    this.mouse.global.x = (event.clientX - rect.left) * (this.interactionDOMElement.width / rect.width) / this.resolution;
+    this.mouse.global.y = (event.clientY - rect.top) * ( this.interactionDOMElement.height / rect.height) / this.resolution;
 
     var length = this.interactiveItems.length;
 
@@ -698,8 +711,8 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
         touchData.originalEvent = event;
 
         // update the touch position
-        touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.target.width / rect.width) ) / this.resolution;
-        touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.target.height / rect.height) )  / this.resolution;
+        touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.interactionDOMElement.width / rect.width) ) / this.resolution;
+        touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.interactionDOMElement.height / rect.height) )  / this.resolution;
         if (navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height)
         {
             //Support for CocoonJS fullscreen scale modes
@@ -753,8 +766,8 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
         touchData.originalEvent = event;
 
         this.touches[touchEvent.identifier] = touchData;
-        touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.target.width / rect.width) ) / this.resolution;
-        touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.target.height / rect.height) ) / this.resolution;
+        touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.interactionDOMElement.width / rect.width) ) / this.resolution;
+        touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.interactionDOMElement.height / rect.height) ) / this.resolution;
         if (navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height)
         {
             //Support for CocoonJS fullscreen scale modes
@@ -809,8 +822,8 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
         var touchEvent = changedTouches[i];
         var touchData = this.touches[touchEvent.identifier];
         var up = false;
-        touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.target.width / rect.width) ) / this.resolution;
-        touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.target.height / rect.height) ) / this.resolution;
+        touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.interactionDOMElement.width / rect.width) ) / this.resolution;
+        touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.interactionDOMElement.height / rect.height) ) / this.resolution;
         if (navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height)
         {
             //Support for CocoonJS fullscreen scale modes
