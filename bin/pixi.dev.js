@@ -1,15 +1,4 @@
 /**
- * @license
- * pixi.js - v2.2.0
- * Copyright (c) 2012-2014, Mat Groves
- * http://goodboydigital.com/
- *
- * Compiled: 2014-12-12
- *
- * pixi.js is licensed under the MIT License.
- * http://www.opensource.org/licenses/mit-license.php
- */
-/**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
@@ -18105,7 +18094,7 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
 
     this.json = JSON.parse(this.ajaxRequest.responseText);
 
-    if(this.json.frames)
+    if(this.json.frames && this.json.meta && this.json.meta.image)
     {
         // sprite sheet
         var textureUrl = this.baseUrl + this.json.meta.image;
@@ -20101,3 +20090,4 @@ Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'blue', {
         root.PIXI = PIXI;
     }
 }).call(this);
+//# sourceMappingURL=pixi.dev.js.map
