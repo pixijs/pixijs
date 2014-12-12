@@ -56,7 +56,6 @@ PIXI.RoundedRectangle = function(x, y, width, height, radius)
      * @type Number
      * @default 0
      */
-    this.type = 0;
 };
 
 /**
