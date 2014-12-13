@@ -52,6 +52,7 @@ PIXI.FilterTexture = function(gl, width, height, scaleMode)
     this.renderBuffer = gl.createRenderbuffer();
     gl.bindRenderbuffer(gl.RENDERBUFFER, this.renderBuffer);
     gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, this.renderBuffer);
+	gl.bindRenderbuffer(gl.RENDERBUFFER, null);
   
     this.resize(width, height);
 };
@@ -92,6 +93,7 @@ PIXI.FilterTexture.prototype.resize = function(width, height)
     // update the stencil buffer width and height
     gl.bindRenderbuffer(gl.RENDERBUFFER, this.renderBuffer);
     gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, width , height );
+	gl.bindRenderbuffer(gl.RENDERBUFFER, null);
 };
 
 /**
