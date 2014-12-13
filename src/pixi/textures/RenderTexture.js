@@ -9,19 +9,19 @@
  *
  * A RenderTexture takes a snapshot of any Display Object given to its render method. The position and rotation of the given Display Objects is ignored. For example:
  *
- *    var renderTexture = new PIXI.RenderTexture(800, 600);
- *    var sprite = PIXI.Sprite.fromImage("spinObj_01.png");
- *    sprite.position.x = 800/2;
- *    sprite.position.y = 600/2;
- *    sprite.anchor.x = 0.5;
- *    sprite.anchor.y = 0.5;
- *    renderTexture.render(sprite);
+ *     var renderTexture = new PIXI.RenderTexture(800, 600);
+ *     var sprite = PIXI.Sprite.fromImage("spinObj_01.png");
+ *     sprite.position.x = 800/2;
+ *     sprite.position.y = 600/2;
+ *     sprite.anchor.x = 0.5;
+ *     sprite.anchor.y = 0.5;
+ *     renderTexture.render(sprite);
  *
  * The Sprite in this case will be rendered to a position of 0,0. To render this sprite at its actual position a DisplayObjectContainer should be used:
  *
- *    var doc = new PIXI.DisplayObjectContainer();
- *    doc.addChild(sprite);
- *    renderTexture.render(doc);  // Renders to center of renderTexture
+ *     var doc = new PIXI.DisplayObjectContainer();
+ *     doc.addChild(sprite);
+ *     renderTexture.render(doc);  // Renders to center of renderTexture
  *
  * @class RenderTexture
  * @extends Texture
@@ -186,20 +186,40 @@ PIXI.RenderTexture.prototype.clear = function()
 };
 
 /**
- * This function will draw the display object to the texture.
+ * Draw/render the given DisplayObject onto the texture.
  *
- * @method renderWebGL
- * @param displayObject {DisplayObject} The display object to render this texture on
+ * The displayObject and descendents are transformed during this operation.
+ * If `restoreWorldTransform` is true then the transformations will be restored before the
+ * method returns. Otherwise it is up to the calling code to correctly use or reset
+ * the transformed display objects.
+ *
+ * The display object is always rendered with a worldAlpha value of 1.
+ *
+ * @method render
+ * @for RenderTexture
+ * @param displayObject {DisplayObject} The display object to render to the texture.
  * @param [matrix] {Matrix} Optional matrix to apply to the display object before rendering.
- * @param [clear] {Boolean} If true the texture will be cleared before the displayObject is drawn
- * @private
+ * @param [clear=false] {Boolean} If true the texture will be cleared before the displayObject is drawn.
+ * @param [restoreWorldTransform=true] {Boolean} If true the displayObject's worldTransform/worldAlpha and all children transformations will be restored. Not restoring this information will be a little faster.
+ * @public
  */
-PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, matrix, clear)
+
+// Internal method assigned to `render` property as appropriate; should honor render method contract.
+PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, matrix, clear, restoreWorldTransform)
 {
     if(!this.valid)return;
+    if(typeof restoreWorldTransform === 'undefined')restoreWorldTransform = true;
+
+    var tempAlpha, tempTransform;
+    if (restoreWorldTransform)
+    {
+        tempAlpha = displayObject.worldAlpha;
+        tempTransform = displayObject.worldTransform.toArray();
+    }
+
     //TOOD replace position with matrix..
-   
     //Lets create a nice matrix to apply to our display object. Frame buffers come in upside down so we need to flip the matrix 
+
     var wt = displayObject.worldTransform;
     wt.identity();
     wt.translate(0, this.projection.y * 2);
@@ -211,8 +231,9 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, matrix, clear
 
     // Time to update all the children of the displayObject with the new matrix..    
     var children = displayObject.children;
+    var i, j;
 
-    for(var i=0,j=children.length; i<j; i++)
+    for(i = 0, j = children.length; i < j; i++)
     {
         children[i].updateTransform();
     }
@@ -231,21 +252,31 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, matrix, clear
     this.renderer.renderDisplayObject(displayObject, this.projection, this.textureBuffer.frameBuffer);
 
     this.renderer.spriteBatch.dirty = true;
+
+    if (restoreWorldTransform)
+    {
+        displayObject.worldAlpha = tempAlpha;
+        displayObject.worldTransform.fromArray(tempTransform);
+
+        for(i = 0, j = children.length; i < j; i++)
+        {
+            children[i].updateTransform();
+        }
+    }
 };
 
-
-/**
- * This function will draw the display object to the texture.
- *
- * @method renderCanvas
- * @param displayObject {DisplayObject} The display object to render this texture on
- * @param [matrix] {Matrix} Optional matrix to apply to the display object before rendering.
- * @param [clear] {Boolean} If true the texture will be cleared before the displayObject is drawn
- * @private
- */
-PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, matrix, clear)
+// Internal method assigned to `render` property as appropriate; should honor render method contract.
+PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, matrix, clear, restoreWorldTransform)
 {
     if(!this.valid)return;
+    if(typeof restoreWorldTransform === 'undefined')restoreWorldTransform = true;
+
+    var tempAlpha, tempTransform;
+    if (restoreWorldTransform)
+    {
+        tempAlpha = displayObject.worldAlpha;
+        tempTransform = displayObject.worldTransform.toArray();
+    }
 
     var wt = displayObject.worldTransform;
     wt.identity();
@@ -256,8 +287,9 @@ PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, matrix, clea
 
     // Time to update all the children of the displayObject with the new matrix..    
     var children = displayObject.children;
+    var i, j;
 
-    for(var i = 0, j = children.length; i < j; i++)
+    for(i = 0, j = children.length; i < j; i++)
     {
         children[i].updateTransform();
     }
@@ -273,6 +305,17 @@ PIXI.RenderTexture.prototype.renderCanvas = function(displayObject, matrix, clea
     this.renderer.renderDisplayObject(displayObject, context);
 
     this.renderer.resolution = realResolution;
+
+    if (restoreWorldTransform)
+    {
+        displayObject.worldAlpha = tempAlpha;
+        displayObject.worldTransform.fromArray(tempTransform);
+
+        for(i = 0, j = children.length; i < j; i++)
+        {
+            children[i].updateTransform();
+        }
+    }
 };
 
 /**
@@ -332,5 +375,3 @@ PIXI.RenderTexture.prototype.getCanvas = function()
         return this.textureBuffer.canvas;
     }
 };
-
-PIXI.RenderTexture.tempMatrix = new PIXI.Matrix();
