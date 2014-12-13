@@ -51,7 +51,7 @@ PIXI._CompileShader = function(gl, shaderSrc, shaderType)
     gl.shaderSource(shader, src);
     gl.compileShader(shader);
 
-    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS))
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS) && !gl.isContextLost())
     {
         window.console.log(gl.getShaderInfoLog(shader));
         return null;
@@ -79,7 +79,7 @@ PIXI.compileProgram = function(gl, vertexSrc, fragmentSrc)
     gl.attachShader(shaderProgram, fragmentShader);
     gl.linkProgram(shaderProgram);
 
-    if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS))
+    if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS) && !gl.isContextLost())
     {
         window.console.log("Could not initialise shaders");
     }
