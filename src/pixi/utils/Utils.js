@@ -22,7 +22,7 @@
  *
  * @method cancelAnimationFrame
  */
-(function(window) {
+(function() {
     var lastTime = 0;
     var vendors = ['ms', 'moz', 'webkit', 'o'];
     for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
@@ -49,7 +49,7 @@
     }
 
     window.requestAnimFrame = window.requestAnimationFrame;
-})(this);
+})();
 
 /**
  * Converts a hex color number to an [R, G, B] array

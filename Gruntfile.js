@@ -1,12 +1,11 @@
 module.exports = function(grunt) {
-    grunt.loadNpmTasks('grunt-concat-sourcemap');
-    grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-connect');
     grunt.loadNpmTasks('grunt-contrib-yuidoc');
     grunt.loadNpmTasks('grunt-contrib-watch');
-    
+    grunt.loadNpmTasks('grunt-browserify');
+
     grunt.loadTasks('tasks');
 
     var srcFiles = [
@@ -120,26 +119,6 @@ module.exports = function(grunt) {
             build: '<%= dirs.build %>/pixi.dev.js',
             buildMin: '<%= dirs.build %>/pixi.js'
         },
-        concat: {
-            options: {
-                banner: banner
-            },
-            dist: {
-                src: srcFiles,
-                dest: '<%= files.build %>'
-            }
-        },
-        /* jshint -W106 */
-        concat_sourcemap: {
-            dev: {
-                files: {
-                    '<%= files.build %>': srcFiles
-                },
-                options: {
-                    sourceRoot: '../'
-                }
-            }
-        },
         jshint: {
             options: {
                 jshintrc: './.jshintrc'
@@ -194,9 +173,12 @@ module.exports = function(grunt) {
         },
         //Watches and builds for _development_ (source maps)
         watch: {
-            scripts: {
-                files: ['<%= dirs.src %>/**/*.js'],
-                tasks: ['concat_sourcemap'],
+            debug: {
+                files: [
+                    '<%= dirs.src %>/**/*.js',
+                    'index.js'
+                ],
+                tasks: ['browserify:dev'],
                 options: {
                     spawn: false,
                 }
@@ -208,20 +190,43 @@ module.exports = function(grunt) {
                 // browsers: ['Chrome'],
                 singleRun: true
             }
+        },
+        browserify: {
+            dist: {
+                options: {
+                    banner: banner
+                },
+                files: {
+                    '<%= files.build %>': [
+                        'index.js'
+                    ]
+                }
+            },
+            dev: {
+                options: {
+                    banner: banner,
+                    browserifyOptions: {
+                        debug: true
+                    }
+                },
+                files: {
+                    '<%= files.build %>': [
+                        'index.js'
+                    ]
+                }
+            }
         }
     });
 
     grunt.registerTask('default', ['build', 'test']);
 
-    grunt.registerTask('build', ['jshint:source', 'concat', 'uglify']);
-    grunt.registerTask('build-debug', ['concat_sourcemap', 'uglify']);
+    grunt.registerTask('build', ['jshint:source', 'browserify:dist', 'uglify']);
+    grunt.registerTask('build-debug', ['browserify:dev', 'uglify']);
 
-    grunt.registerTask('test', ['concat', 'jshint:test', 'karma']);
+    grunt.registerTask('test', ['browserify:dist', 'jshint:test', 'karma']);
 
     grunt.registerTask('docs', ['yuidoc']);
     grunt.registerTask('travis', ['build', 'test']);
 
-    grunt.registerTask('default', ['build', 'test']);
-    
-    grunt.registerTask('debug-watch', ['concat_sourcemap', 'watch:debug']);
+    grunt.registerTask('debug-watch', ['browserify:dev', 'watch:debug']);
 };
