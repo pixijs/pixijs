@@ -12,6 +12,7 @@ describe('pixi/textures/Texture', function () {
     it('Members exist',  function () {
         expect(Texture).itself.to.respondTo('fromImage');
         expect(Texture).itself.to.respondTo('fromFrame');
+        expect(Texture).itself.to.respondTo('fromFrames');
         expect(Texture).itself.to.respondTo('fromCanvas');
         expect(Texture).itself.to.respondTo('addTextureToCache');
         expect(Texture).itself.to.respondTo('removeTextureFromCache');
