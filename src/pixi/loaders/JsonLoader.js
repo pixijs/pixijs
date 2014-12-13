@@ -125,7 +125,7 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
 
     this.json = JSON.parse(this.ajaxRequest.responseText);
 
-    if(this.json.frames)
+    if(this.json.frames && this.json.meta && this.json.meta.image)
     {
         // sprite sheet
         var textureUrl = this.baseUrl + this.json.meta.image;
@@ -134,6 +134,7 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
 
         this.texture = image.texture.baseTexture;
         image.addEventListener('loaded', this.onLoaded.bind(this));
+        image.addEventListener('error', this.onError.bind(this));
 
         for (var i in frameData)
         {
