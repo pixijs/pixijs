@@ -133,3 +133,14 @@ PIXI.Stage.prototype.getMousePosition = function()
 {
     return this.interactionManager.mouse.global;
 };
+
+/**
+ * This will return the point containing global coordinates of the touch.
+ *
+ * @method getTouchPosition
+ * @return {Point} A point containing the coordinates of the global InteractionData position.
+ */
+PIXI.Stage.prototype.getTouchPosition = function()
+{
+    return this.interactionManager.touchData ? this.interactionManager.touchData.global : this.interactionManager.mouse.global;
+};
