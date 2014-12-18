@@ -19,8 +19,6 @@
     // create an array of assets to load
     var alienFrames = ["eggHead.png", "flowerTop.png", "helmlok.png", "skully.png"];
 
-    var count = 0;
-
     // create an new instance of a pixi stage
     var stage = new PIXI.Stage(0x3da8bb);
 
@@ -38,8 +36,6 @@
 
     
     stage.addChild(alienContainer);
-
-    count = 0;
         
     // start animating
     requestAnimFrame(animate);
@@ -59,7 +55,7 @@
     var colors = [0x5D0776, 0xEC8A49, 0xAF3666, 0xF6C84C, 0x4C779A];
     var colorCount = 0;
 
-    var label = new PIXI.Text("Click and drag anywhere do draw complex geometry in pixi / do an art attack", {fill:"white", font:"16px Arial"});
+    var label = new PIXI.Text("Click and drag anywhere do draw complex masks in pixi / do an art attack", {fill:"white", font:"16px Arial"});
     label.x = 10;
     label.y = 10;
     
@@ -71,12 +67,6 @@
             var alien = PIXI.Sprite.fromImage(frameName);
             alien.tint = Math.random() * 0xFFFFFF;
 
-            /*
-             * fun fact for the day :)
-             * another way of doing the above would be
-             * var texture = PIXI.Texture.fromFrame(frameName);
-             * var alien = new PIXI.Sprite(texture);
-             */
             alien.position.x = Math.random() * 800 - 400;
             alien.position.y = Math.random() * 600 - 300;
             alien.anchor.x = 0.5;
@@ -127,9 +117,6 @@
 
 
     function animate() {
-        
-
-        count += 0.1;
         
         // render the stage
         renderer.render(stage);

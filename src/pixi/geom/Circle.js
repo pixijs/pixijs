@@ -33,6 +33,13 @@ PIXI.Circle = function(x, y, radius)
      * @default 0
      */
     this.radius = radius || 0;
+
+    /**
+     * The type of the object, should be one of the Graphics type consts, PIXI.Graphics.CIRC in this case
+     * @property type
+     * @type Number
+     * @default 0
+     */
 };
 
 /**

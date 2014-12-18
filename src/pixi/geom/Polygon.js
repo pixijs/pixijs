@@ -29,7 +29,21 @@ PIXI.Polygon = function(points)
     }
 
     this.closed = true;
+
+    /**
+     * An array of the points of this polygon
+     * @property points
+     * @type Array(Point)|Array(Number)
+     * 
+     */
     this.points = points;
+
+    /**
+     * The type of the object, should be one of the Graphics type consts, PIXI.Graphics.POLY in this case
+     * @property type
+     * @type Number
+     * @default 0
+     */
 };
 
 /**
