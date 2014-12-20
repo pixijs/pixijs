@@ -20,15 +20,10 @@
     loader = new PIXI.AssetLoader(assetsToLoader);
 
     // use callback
-    loader.onComplete = onAssetsLoaded
+    loader.onComplete = onAssetsLoaded;
 
     //begin load
     loader.load();
-
-    // holder to store aliens
-    var aliens = [];
-
-    var count = 0;
 
     // create an new instance of a pixi stage
     var stage = new PIXI.Stage(0xFFFFFF);
@@ -39,13 +34,6 @@
 
     // add the renderer view element to the DOM
     document.body.appendChild(renderer.view);
-
-    // create an empty container
-    var alienContainer = new PIXI.DisplayObjectContainer();
-    alienContainer.position.x = 400;
-    alienContainer.position.y = 300;
-
-    stage.addChild(alienContainer);
 
     function onAssetsLoaded()
     {
