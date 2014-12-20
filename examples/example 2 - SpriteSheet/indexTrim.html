@@ -9,7 +9,7 @@
             background-color: #000000;
         }
     </style>
-    <script src="../../../bin/pixi.dev.js"></script>
+    <script src="../../bin/pixi.dev.js"></script>
 </head>
 <body>
     <script>
@@ -44,9 +44,9 @@
         for (var i = 0; i < 30; i++) {
             var val = i < 10 ? "0" + i : i;
             frames.push(PIXI.Texture.fromFrame("rollSequence00" + val + ".png"));
-        };
+        }
 
-        movie = new PIXI.MovieClip(frames);
+        var movie = new PIXI.MovieClip(frames);
 
         movie.position.x = 300;
         movie.position.y = 300;
