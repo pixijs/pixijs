@@ -15,10 +15,9 @@ function rebundle() {
 }
 
 function createBundler(args, debug) {
-    if (debug) {
-        args = args || {};
-        args.debug = true;
-    }
+    args = args || {};
+    args.debug = debug;
+    args.standalone = 'PIXI';
 
     return browserify(paths.jsEntry, args);
 }
