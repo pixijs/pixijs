@@ -1,6 +1,6 @@
 {
     "name": "pixi.js",
-    "version": "2.2.0",
+    "version": "3.0.0",
 
     "main": "bin/pixi.dev.js",
 
@@ -8,7 +8,9 @@
         "**/.*",
         "node_modules",
         "bower_components",
-        "test"
+        "test",
+        "examples",
+        "tasks"
     ],
     "dependencies": {
     },

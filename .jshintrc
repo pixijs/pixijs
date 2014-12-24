@@ -37,20 +37,9 @@
     "maxcomplexity" : false,    // Restrict the cyclomatic complexity of the code.
     "maxlen"        : 220,      // Require that all lines are 100 characters or less.
     "globals"       : {         // Register globals that are used in the code.
-        //commonjs globals
-        "module": false,
-        "require": false,
-
         // PIXI globals
         "PIXI": false,
         "spine": false,
-
-        //chai globals
-        "chai": false,
-
-        //mocha globals
-        "describe": false,
-        "it": false,
 
         //resemble globals
         "resemble": false
@@ -63,7 +52,7 @@
     // doing.
 
     "asi"           : false,    // Tolerate Automatic Semicolon Insertion (no semicolons).
-    "boss"          : true,     // Tolerate assignments inside if, for & while. Usually conditions & loops are for comparison, not assignments.
+    "boss"          : false,    // Tolerate assignments inside if, for & while. Usually conditions & loops are for comparison, not assignments.
     "debug"         : false,    // Allow debugger statements e.g. browser breakpoints.
     "eqnull"        : false,    // Tolerate use of `== null`.
     "esnext"        : false,    // Allow ES.next specific features such as `const` and `let`.
@@ -93,6 +82,7 @@
     // browser or node.js.
 
     "browser"       : true,     // Standard browser globals e.g. `window`, `document`.
+    "browserify"    : true,     // Enable globals exposed by browserify.
     "couch"         : false,    // Enable globals exposed by CouchDB.
     "devel"         : false,    // Allow development statements e.g. `console.log();`.
     "dojo"          : false,    // Enable globals exposed by Dojo Toolkit.
@@ -115,13 +105,4 @@
     "onevar"        : false,    // Allow only one `var` statement per function.
     "passfail"      : false,    // Stop on first error.
     "white"         : false,    // Check against strict whitespace and indentation rules.
-
-    // == Undocumented Options ============================================
-    //
-    // While I've found these options in some projects, they are not
-    // described in the [JSHint Options documentation][4].
-    //
-    // [4]: http://www.jshint.com/options/
-
-    "maxerr"        : 100       // Maximum errors before stopping.
 }
