@@ -61,8 +61,8 @@ PIXI.WebGLGraphics.renderGraphics = function(graphics, renderSession)//projectio
             shader = renderSession.shaderManager.primitiveShader;
             gl.uniformMatrix3fv(shader.translationMatrix, false, graphics.worldTransform.toArray(true));
             
-            gl.uniform1f(shader.flipY, 1);
-            
+            gl.uniform1f(shader.flipY, renderSession.flipY);
+
             gl.uniform2f(shader.projectionVector, projection.x, -projection.y);
             gl.uniform2f(shader.offsetVector, -offset.x, -offset.y);
 

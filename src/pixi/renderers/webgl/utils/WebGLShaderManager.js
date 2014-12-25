@@ -127,6 +127,7 @@ PIXI.WebGLShaderManager.prototype.setShader = function(shader)
     this.currentShader = shader;
 
     this.gl.useProgram(shader.program);
+    
     this.setAttribs(shader.attributes);
 
     return true;

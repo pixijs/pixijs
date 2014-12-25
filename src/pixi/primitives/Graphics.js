@@ -102,6 +102,7 @@ PIXI.Graphics = function()
     this.boundsPadding = 0;
 
     this._localBounds = new PIXI.Rectangle(0,0,1,1);
+    this.boundsDirty = true;
 
     /**
      * Used to detect if the graphics object has changed. If this is set to true then the graphics object will be recalculated.
@@ -162,7 +163,7 @@ Object.defineProperty(PIXI.Graphics.prototype, "cacheAsBitmap", {
         else
         {
             this.destroyCachedSprite();
-            this.dirty = true;
+            this.dirty = this.boundsDirty = true;
         }
 
     }
@@ -229,7 +230,7 @@ PIXI.Graphics.prototype.moveTo = function(x, y)
 PIXI.Graphics.prototype.lineTo = function(x, y)
 {
     this.currentPath.shape.points.push(x, y);
-    this.dirty = true;
+    this.dirty = this.boundsDirty = true;
 
     return this;
 };
@@ -279,7 +280,7 @@ PIXI.Graphics.prototype.quadraticCurveTo = function(cpX, cpY, toX, toY)
     }
 
 
-    this.dirty = true;
+    this.dirty = this.boundsDirty = true;
 
     return this;
 };
@@ -335,7 +336,7 @@ PIXI.Graphics.prototype.bezierCurveTo = function(cpX, cpY, cpX2, cpY2, toX, toY)
                      dt3 * fromY + 3 * dt2 * j * cpY + 3 * dt * t2 * cpY2 + t3 * toY);
     }
     
-    this.dirty = true;
+    this.dirty = this.boundsDirty = true;
 
     return this;
 };
@@ -381,7 +382,6 @@ PIXI.Graphics.prototype.arcTo = function(x1, y1, x2, y2, radius)
     {
         if( points[points.length-2] !== x1 || points[points.length-1] !== y1)
         {
-            //console.log(">>")
             points.push(x1, y1);
         }
     }
@@ -406,7 +406,7 @@ PIXI.Graphics.prototype.arcTo = function(x1, y1, x2, y2, radius)
         this.arc(cx + x1, cy + y1, radius, startAngle, endAngle, b1 * a2 > b2 * a1);
     }
 
-    this.dirty = true;
+    this.dirty = this.boundsDirty = true;
 
     return this;
 };
@@ -488,7 +488,7 @@ PIXI.Graphics.prototype.arc = function(cx, cy, radius, startAngle, endAngle, ant
                     ( (cTheta * -s) + (sTheta * c) ) * radius + cy);
     }
 
-    this.dirty = true;
+    this.dirty = this.boundsDirty = true;
 
     return this;
 };
@@ -625,7 +625,7 @@ PIXI.Graphics.prototype.clear = function()
     this.lineWidth = 0;
     this.filling = false;
 
-    this.dirty = true;
+    this.dirty = this.boundsDirty = true;
     this.clearDirty = true;
     this.graphicsData = [];
 
@@ -821,13 +821,14 @@ PIXI.Graphics.prototype.getBounds = function( matrix )
     // return an empty object if the item is a mask!
     if(this.isMask)return PIXI.EmptyRectangle;
 
-    if(this.dirty)
+   
+    if(this.boundsDirty)
     {
         this.updateLocalBounds();
-        this.webGLDirty = true;
-        this.cachedSpriteDirty = true;
-        this.dirty = false;
+        this.boundsDirty = false;
     }
+
+
 
     var bounds = this._localBounds;
 
@@ -901,6 +902,8 @@ PIXI.Graphics.prototype.updateLocalBounds = function()
 
     var minY = Infinity;
     var maxY = -Infinity;
+
+
 
     if(this.graphicsData.length)
     {
@@ -1026,6 +1029,7 @@ PIXI.Graphics.prototype._generateCachedSprite = function()
     // now render the graphic..
     PIXI.CanvasGraphics.renderGraphics(this, this._cachedSprite.buffer.context);
     this._cachedSprite.alpha = this.alpha;
+
 };
 
 /**
@@ -1093,7 +1097,7 @@ PIXI.Graphics.prototype.drawShape = function(shape)
         this.currentPath = data;
     }
 
-    this.dirty = true;
+    this.dirty = this.boundsDirty = true;
 
     return data;
 };

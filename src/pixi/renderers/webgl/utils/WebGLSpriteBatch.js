@@ -556,6 +556,10 @@ PIXI.WebGLSpriteBatch.prototype.flush = function()
                 var offsetVector = this.renderSession.offset;
                 gl.uniform2f(shader.offsetVector, offsetVector.x, offsetVector.y);
 
+                // set the correct flip.. 
+                gl.uniform1f(shader.flipY, this.renderSession.flipY);
+
+
                 // set the pointers
             }
         }

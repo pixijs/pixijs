@@ -98,11 +98,13 @@ PIXI.PixiShader.prototype.init = function()
     this.projectionVector = gl.getUniformLocation(program, 'projectionVector');
     this.offsetVector = gl.getUniformLocation(program, 'offsetVector');
     this.dimensions = gl.getUniformLocation(program, 'dimensions');
+    this.flipY = gl.getUniformLocation(program, 'flipY');
 
     // get and store the attributes
     this.aVertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
     this.aTextureCoord = gl.getAttribLocation(program, 'aTextureCoord');
     this.colorAttribute = gl.getAttribLocation(program, 'aColor');
+
 
     // Begin worst hack eva //
 
@@ -373,16 +375,17 @@ PIXI.PixiShader.defaultVertexSrc = [
     'attribute vec2 aTextureCoord;',
     'attribute vec4 aColor;',
 
+    'uniform float flipY;',
+
     'uniform vec2 projectionVector;',
     'uniform vec2 offsetVector;',
 
     'varying vec2 vTextureCoord;',
     'varying vec4 vColor;',
 
-    'const vec2 center = vec2(-1.0, 1.0);',
-
     'void main(void) {',
-    '   gl_Position = vec4( ((aVertexPosition + offsetVector) / projectionVector) + center , 0.0, 1.0);',
+    '   vec2 finalV = aVertexPosition + offsetVector;',
+    '   gl_Position = vec4( finalV.x / projectionVector.x -1.0, (finalV.y / projectionVector.y * +flipY ) + flipY , 0.0, 1.0);',
     '   vTextureCoord = aTextureCoord;',
     '   vColor = vec4(aColor.rgb * aColor.a, aColor.a);',
     '}'

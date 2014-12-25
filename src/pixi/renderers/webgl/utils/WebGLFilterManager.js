@@ -346,6 +346,8 @@ PIXI.WebGLFilterManager.prototype.applyFilterPass = function(filter, filterArea,
     gl.uniform2f(shader.projectionVector, width/2, -height/2);
     gl.uniform2f(shader.offsetVector, 0,0);
 
+    gl.uniform1f(shader.flipY, this.renderSession.flipY);
+
     if(filter.uniforms.dimensions)
     {
         filter.uniforms.dimensions.value[0] = this.width;//width;

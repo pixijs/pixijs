@@ -224,6 +224,7 @@ PIXI.WebGLRenderer = function(width, height, options)
     this.renderSession.stencilManager = this.stencilManager;
     this.renderSession.renderer = this;
     this.renderSession.resolution = this.resolution;
+    this.renderSession.buffer = null;
 
     // time init the context..
     this.initContext();
@@ -355,6 +356,9 @@ PIXI.WebGLRenderer.prototype.renderDisplayObject = function(displayObject, proje
 
     // reset the render session data..
     this.renderSession.drawCount = 0;
+
+    // set the buffer ref..
+    this.renderSession.buffer = buffer;
 
     // make sure to flip the Y if using a render texture..
     this.renderSession.flipY = buffer ? -1 : 1;

@@ -202,9 +202,7 @@ PIXI.RenderTexture.prototype.renderWebGL = function(displayObject, matrix, clear
     //Lets create a nice matrix to apply to our display object. Frame buffers come in upside down so we need to flip the matrix 
     var wt = displayObject.worldTransform;
     wt.identity();
-    wt.translate(0, this.projection.y * 2);
     if(matrix)wt.append(matrix);
-    wt.scale(1,-1);
 
     // setWorld Alpha to ensure that the object is renderer at full opacity
     displayObject.worldAlpha = 1;
