@@ -384,9 +384,14 @@ PIXI.PixiShader.defaultVertexSrc = [
     'varying vec4 vColor;',
 
     'void main(void) {',
-    '   vec2 finalV = aVertexPosition + offsetVector;',
-    '   gl_Position = vec4( finalV.x / projectionVector.x -1.0, (finalV.y / projectionVector.y * +flipY ) + flipY , 0.0, 1.0);',
+
+    '   vec3 temp = vec3(-1.0, 1.0, flipY);',
+
+    '   gl_Position = vec4( (aVertexPosition + offsetVector) / (projectionVector * temp.yz) + temp.xz , 0.0, 1.0);',
+
     '   vTextureCoord = aTextureCoord;',
+
     '   vColor = vec4(aColor.rgb * aColor.a, aColor.a);',
+
     '}'
 ];
