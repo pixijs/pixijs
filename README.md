@@ -187,3 +187,19 @@ This content is released under the (http://opensource.org/licenses/MIT) MIT Lice
 1. Remove tight coupling with Interaction Manager and stage..
 2. Rewrite updateTransform (DO, DOC, etc) to reduce gc grind
 3. Rewrite getBounds (Sprite, Graphics, etc) to reduce gc grind
+
+
+### Folder Status
+
+- [x] `index`
+- [x] `display/`
+- [ ] `extras/`
+- [ ] `filters/`
+- [ ] `geom/` (move to `math/`)
+- [ ] `loaders/`
+- [ ] `primitives/`
+- [ ] `renderers/`
+- [ ] `text/`
+- [ ] `textures/`
+- [ ] `utils/`
+- [ ] `interactions/` (move Interaction* to here)
