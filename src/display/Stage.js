@@ -27,10 +27,10 @@ var math = require('../math'),
  * @param backgroundColor {number} the background color of the stage, e.g.: 0xFFFFFF for white
  */
 function Stage(backgroundColor) {
-    DisplayObjectContainer.call( this );
+    DisplayObjectContainer.call(this);
 
     /**
-     * [read-only] Current transform of the object based on world (parent) factors
+     * Current transform of the object based on world (parent) factors
      *
      * @member {Matrix}
      * @readonly
