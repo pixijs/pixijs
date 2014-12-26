@@ -178,3 +178,12 @@ It also copies the non-minified version to the examples.
 This content is released under the (http://opensource.org/licenses/MIT) MIT License.
 
 [![Analytics](https://ga-beacon.appspot.com/UA-39213431-2/pixi.js/index)](https://github.com/igrigorik/ga-beacon)
+
+
+
+
+## Rewrite TODO
+
+1. Remove tight coupling with Interaction Manager and stage..
+2. Rewrite updateTransform (DO, DOC, etc) to reduce gc grind
+3. Rewrite getBounds (Sprite, Graphics, etc) to reduce gc grind
