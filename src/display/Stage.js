@@ -1,58 +1,61 @@
-/**
- * @author Mat Groves http://matgroves.com/ @Doormat23
- */
+var math = require('../math'),
+    utils = require('../utils'),
+    DisplayObjectContainer = require('./DisplayObjectContainer'),
+    InteractionManager = require('../interaction/InteractionManager');
 
 /**
- * A Stage represents the root of the display tree. Everything connected to the stage is rendered
+ * A Stage represents the root of the display tree. Everything connected to the stage is rendered, but
+ * the stage itself cannot be transformed. If you want to transform everything within a stage use a single
+ * DOC as a child of the stage and transform that one.
  *
- * @class Stage
- * @extends DisplayObjectContainer
- * @constructor
- * @param backgroundColor {Number} the background color of the stage, you have to pass this in is in hex format
- *      like: 0xFFFFFF for white
- * 
- * Creating a stage is a mandatory process when you use Pixi, which is as simple as this : 
- * var stage = new PIXI.Stage(0xFFFFFF);
- * where the parameter given is the background colour of the stage, in hex
- * you will use this stage instance to add your sprites to it and therefore to the renderer
- * Here is how to add a sprite to the stage : 
+ * Creating a stage is a mandatory process when you use Pixi, which is as simple as this:
+ *
+ * ```js
+ * var stage = new Stage(0xFFFFFF);
+ * ```
+ *
+ * Where the parameter given is the background colour of the stage. You will use this stage instance to
+ * add your sprites to it and therefore to the renderer. Here is how to add a sprite to the stage:
+ *
+ * ```js
  * stage.addChild(sprite);
+ * ```
+ *
+ * @class
+ * @extends DisplayObjectContainer
+ * @namespace PIXI
+ * @param backgroundColor {number} the background color of the stage, e.g.: 0xFFFFFF for white
  */
-PIXI.Stage = function(backgroundColor)
-{
-    PIXI.DisplayObjectContainer.call( this );
+function Stage(backgroundColor) {
+    DisplayObjectContainer.call( this );
 
     /**
      * [read-only] Current transform of the object based on world (parent) factors
      *
-     * @property worldTransform
-     * @type Matrix
-     * @readOnly
+     * @member {Matrix}
+     * @readonly
      * @private
      */
-    this.worldTransform = new PIXI.Matrix();
+    this.worldTransform = new math.Matrix();
 
     /**
      * Whether or not the stage is interactive
      *
-     * @property interactive
-     * @type Boolean
+     * @member {boolean}
      */
     this.interactive = true;
 
     /**
      * The interaction manage for this stage, manages all interactive activity on the stage
      *
-     * @property interactionManager
-     * @type InteractionManager
+     * @member {InteractionManager}
      */
-    this.interactionManager = new PIXI.InteractionManager(this);
+    this.interactionManager = new InteractionManager(this);
 
     /**
      * Whether the stage is dirty and needs to have interactions updated
      *
-     * @property dirty
-     * @type Boolean
+     * @member {boolean}
      * @private
      */
     this.dirty = true;
@@ -61,25 +64,23 @@ PIXI.Stage = function(backgroundColor)
     this.stage = this;
 
     //optimize hit detection a bit
-    this.stage.hitArea = new PIXI.Rectangle(0, 0, 100000, 100000);
+    this.stage.hitArea = new math.Rectangle(0, 0, 100000, 100000);
 
     this.setBackgroundColor(backgroundColor);
 };
 
 // constructor
-PIXI.Stage.prototype = Object.create( PIXI.DisplayObjectContainer.prototype );
-PIXI.Stage.prototype.constructor = PIXI.Stage;
+Stage.prototype = Object.create(DisplayObjectContainer.prototype);
+Stage.prototype.constructor = Stage;
 
 /**
  * Sets another DOM element which can receive mouse/touch interactions instead of the default Canvas element.
  * This is useful for when you have other DOM elements on top of the Canvas element.
  *
- * @method setInteractionDelegate
  * @param domElement {DOMElement} This new domElement which will receive mouse/touch events
  */
-PIXI.Stage.prototype.setInteractionDelegate = function(domElement)
-{
-    this.interactionManager.setTargetDomElement( domElement );
+Stage.prototype.setInteractionDelegate = function (domElement) {
+    this.interactionManager.setTargetDomElement(domElement);
 };
 
 /*
@@ -88,48 +89,45 @@ PIXI.Stage.prototype.setInteractionDelegate = function(domElement)
  * @method updateTransform
  * @private
  */
-PIXI.Stage.prototype.updateTransform = function()
-{
+Stage.prototype.updateTransform = function () {
     this.worldAlpha = 1;
 
-    for(var i=0,j=this.children.length; i<j; i++)
-    {
+    for (var i = 0, j = this.children.length; i < j; ++i) {
         this.children[i].updateTransform();
     }
 
-    if(this.dirty)
-    {
+    if (this.dirty) {
         this.dirty = false;
+
         // update interactive!
         this.interactionManager.dirty = true;
     }
 
-    if(this.interactive)this.interactionManager.update();
+    if (this.interactive) {
+        this.interactionManager.update();
+    }
 };
 
 /**
  * Sets the background color for the stage
  *
- * @method setBackgroundColor
- * @param backgroundColor {Number} the color of the background, easiest way to pass this in is in hex format
- *      like: 0xFFFFFF for white
+ * @param backgroundColor {number} The color of the background, e.g.: 0xFFFFFF for white
  */
-PIXI.Stage.prototype.setBackgroundColor = function(backgroundColor)
-{
+Stage.prototype.setBackgroundColor = function (backgroundColor) {
     this.backgroundColor = backgroundColor || 0x000000;
-    this.backgroundColorSplit = PIXI.hex2rgb(this.backgroundColor);
+    this.backgroundColorSplit = utils.hex2rgb(this.backgroundColor);
+
     var hex = this.backgroundColor.toString(16);
     hex = '000000'.substr(0, 6 - hex.length) + hex;
+
     this.backgroundColorString = '#' + hex;
 };
 
 /**
  * This will return the point containing global coordinates of the mouse.
  *
- * @method getMousePosition
  * @return {Point} A point containing the coordinates of the global InteractionData position.
  */
-PIXI.Stage.prototype.getMousePosition = function()
-{
+Stage.prototype.getMousePosition = function () {
     return this.interactionManager.mouse.global;
 };

@@ -1,32 +1,27 @@
-/**
- * @author Mat Groves http://matgroves.com/ @Doormat23
- */
+var Sprite = require('./Sprite');
 
 /**
  * A MovieClip is a simple way to display an animation depicted by a list of textures.
  *
- * @class MovieClip
+ * @class
  * @extends Sprite
- * @constructor
- * @param textures {Array(Texture)} an array of {Texture} objects that make up the animation
+ * @namespace PIXI
+ * @param textures {Texture[]} an array of {Texture} objects that make up the animation
  */
-PIXI.MovieClip = function(textures)
-{
-    PIXI.Sprite.call(this, textures[0]);
+function MovieClip(textures) {
+    Sprite.call(this, textures[0]);
 
     /**
      * The array of textures that make up the animation
      *
-     * @property textures
-     * @type Array(Texture)
+     * @member Texture[]
      */
     this.textures = textures;
 
     /**
      * The speed that the MovieClip will play at. Higher is faster, lower is slower
      *
-     * @property animationSpeed
-     * @type Number
+     * @member number
      * @default 1
      */
     this.animationSpeed = 1;
@@ -34,8 +29,7 @@ PIXI.MovieClip = function(textures)
     /**
      * Whether or not the movie clip repeats after playing.
      *
-     * @property loop
-     * @type Boolean
+     * @member boolean
      * @default true
      */
     this.loop = true;
@@ -43,81 +37,75 @@ PIXI.MovieClip = function(textures)
     /**
      * Function to call when a MovieClip finishes playing
      *
-     * @property onComplete
-     * @type Function
+     * @method
+     * @memberof MovieClip#
      */
     this.onComplete = null;
 
     /**
-     * [read-only] The MovieClips current frame index (this may not have to be a whole number)
+     * The MovieClips current frame index (this may not have to be a whole number)
      *
-     * @property currentFrame
-     * @type Number
+     * @member number
      * @default 0
-     * @readOnly
+     * @readonly
      */
     this.currentFrame = 0;
 
     /**
-     * [read-only] Indicates if the MovieClip is currently playing
+     * Indicates if the MovieClip is currently playing
      *
-     * @property playing
-     * @type Boolean
-     * @readOnly
+     * @member boolean
+     * @readonly
      */
     this.playing = false;
 };
 
 // constructor
-PIXI.MovieClip.prototype = Object.create( PIXI.Sprite.prototype );
-PIXI.MovieClip.prototype.constructor = PIXI.MovieClip;
+MovieClip.prototype = Object.create(Sprite.prototype);
+MovieClip.prototype.constructor = MovieClip;
 
-/**
-* [read-only] totalFrames is the total number of frames in the MovieClip. This is the same as number of textures
-* assigned to the MovieClip.
-*
-* @property totalFrames
-* @type Number
-* @default 0
-* @readOnly
-*/
-Object.defineProperty( PIXI.MovieClip.prototype, 'totalFrames', {
-	get: function() {
-
-		return this.textures.length;
-	}
+Object.defineProperties(MovieClip.prototype, {
+    /**
+     * totalFrames is the total number of frames in the MovieClip. This is the same as number of textures
+     * assigned to the MovieClip.
+     *
+     * @member
+     * @memberof MovieClip#
+     * @default 0
+     * @readonly
+     */
+    totalFrames: {
+        get: function() {
+            return this.textures.length;
+        }
+    }
 });
 
 /**
  * Stops the MovieClip
  *
- * @method stop
  */
-PIXI.MovieClip.prototype.stop = function()
-{
+MovieClip.prototype.stop = function () {
     this.playing = false;
 };
 
 /**
  * Plays the MovieClip
  *
- * @method play
  */
-PIXI.MovieClip.prototype.play = function()
-{
+MovieClip.prototype.play = function () {
     this.playing = true;
 };
 
 /**
  * Stops the MovieClip and goes to a specific frame
  *
- * @method gotoAndStop
- * @param frameNumber {Number} frame index to stop at
+ * @param frameNumber {number} frame index to stop at
  */
-PIXI.MovieClip.prototype.gotoAndStop = function(frameNumber)
-{
+MovieClip.prototype.gotoAndStop = function (frameNumber) {
     this.playing = false;
     this.currentFrame = frameNumber;
+
     var round = (this.currentFrame + 0.5) | 0;
     this.setTexture(this.textures[round % this.textures.length]);
 };
@@ -125,11 +113,9 @@ PIXI.MovieClip.prototype.gotoAndStop = function(frameNumber)
 /**
  * Goes to a specific frame and begins playing the MovieClip
  *
- * @method gotoAndPlay
- * @param frameNumber {Number} frame index to start at
+ * @param frameNumber {number} frame index to start at
  */
-PIXI.MovieClip.prototype.gotoAndPlay = function(frameNumber)
-{
+MovieClip.prototype.gotoAndPlay = function (frameNumber) {
     this.currentFrame = frameNumber;
     this.playing = true;
 };
@@ -137,14 +123,14 @@ PIXI.MovieClip.prototype.gotoAndPlay = function(frameNumber)
 /*
  * Updates the object transform for rendering
  *
- * @method updateTransform
  * @private
  */
-PIXI.MovieClip.prototype.updateTransform = function()
-{
+MovieClip.prototype.updateTransform = function () {
     this.displayObjectContainerUpdateTransform();
 
-    if(!this.playing)return;
+    if (!this.playing) {
+        return;
+    }
 
     this.currentFrame += this.animationSpeed;
 
@@ -152,15 +138,13 @@ PIXI.MovieClip.prototype.updateTransform = function()
 
     this.currentFrame = this.currentFrame % this.textures.length;
 
-    if(this.loop || round < this.textures.length)
-    {
+    if (this.loop || round < this.textures.length) {
         this.setTexture(this.textures[round % this.textures.length]);
     }
-    else if(round >= this.textures.length)
-    {
+    else if (round >= this.textures.length) {
         this.gotoAndStop(this.textures.length - 1);
-        if(this.onComplete)
-        {
+
+        if (this.onComplete) {
             this.onComplete();
         }
     }
@@ -170,36 +154,30 @@ PIXI.MovieClip.prototype.updateTransform = function()
  * A short hand way of creating a movieclip from an array of frame ids
  *
  * @static
- * @method fromFrames
- * @param frames {Array} the array of frames ids the movieclip will use as its texture frames
+ * @param frames {string[]} the array of frames ids the movieclip will use as its texture frames
  */
-PIXI.MovieClip.fromFrames = function(frames)
-{
+MovieClip.fromFrames = function (frames) {
     var textures = [];
 
-    for (var i = 0; i < frames.length; i++)
-    {
+    for (var i = 0; i < frames.length; ++i) {
         textures.push(new PIXI.Texture.fromFrame(frames[i]));
     }
 
-    return new PIXI.MovieClip(textures);
+    return new MovieClip(textures);
 };
 
 /**
  * A short hand way of creating a movieclip from an array of image ids
  *
  * @static
- * @method fromImages
- * @param frames {Array} the array of image ids the movieclip will use as its texture frames
+ * @param images {string[]} the array of image urls the movieclip will use as its texture frames
  */
-PIXI.MovieClip.fromImages = function(images)
-{
+MovieClip.fromImages = function (images) {
     var textures = [];
 
-    for (var i = 0; i < images.length; i++)
-    {
+    for (var i = 0; i < images.length; ++i) {
         textures.push(new PIXI.Texture.fromImage(images[i]));
     }
 
-    return new PIXI.MovieClip(textures);
+    return new MovieClip(textures);
 };
