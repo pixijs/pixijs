@@ -1,37 +1,32 @@
-/**
- * @author Mat Groves http://matgroves.com/ @Doormat23
- */
+var AbstractFilter = require('./AbstractFilter');
 
 /**
  * This filter applies a twist effect making display objects appear twisted in the given direction.
- * 
- * @class TwistFilter
+ *
+ * @class
  * @extends AbstractFilter
- * @constructor
+ * @namespace PIXI
  */
-PIXI.TwistFilter = function()
-{
-    PIXI.AbstractFilter.call( this );
-
-    this.passes = [this];
+function TwistFilter() {
+    AbstractFilter.call(this);
 
     // set the uniforms
     this.uniforms = {
-        radius: {type: '1f', value:0.5},
-        angle: {type: '1f', value:5},
-        offset: {type: '2f', value:{x:0.5, y:0.5}}
+        radius:     { type: '1f', value: 0.5},
+        angle:      { type: '1f', value: 5},
+        offset:     { type: '2f', value: { x: 0.5, y: 0.5 } }
     };
 
     this.fragmentSrc = [
         'precision mediump float;',
+
         'varying vec2 vTextureCoord;',
         'varying vec4 vColor;',
-        'uniform vec4 dimensions;',
-        'uniform sampler2D uSampler;',
 
         'uniform float radius;',
         'uniform float angle;',
         'uniform vec2 offset;',
+        'uniform sampler2D uSampler;',
 
         'void main(void) {',
         '   vec2 coord = vTextureCoord - offset;',
@@ -50,53 +45,53 @@ PIXI.TwistFilter = function()
     ];
 };
 
-PIXI.TwistFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
-PIXI.TwistFilter.prototype.constructor = PIXI.TwistFilter;
+TwistFilter.prototype = Object.create(AbstractFilter.prototype);
+TwistFilter.prototype.constructor = TwistFilter;
+module.exports = TwistFilter;
 
-/**
- * This point describes the the offset of the twist.
- * 
- * @property offset
- * @type Point
- */
-Object.defineProperty(PIXI.TwistFilter.prototype, 'offset', {
-    get: function() {
-        return this.uniforms.offset.value;
+Object.defineProperties(TwistFilter.prototype, {
+    /**
+     * This point describes the the offset of the twist.
+     *
+     * @member {Point}
+     * @memberof TwistFilter#
+     */
+    offset: {
+        get: function () {
+            return this.uniforms.offset.value;
+        },
+        set: function (value) {
+            this.uniforms.offset.value = value;
+        }
     },
-    set: function(value) {
-        this.dirty = true;
-        this.uniforms.offset.value = value;
-    }
-});
 
-/**
- * This radius of the twist.
- * 
- * @property radius
- * @type Number
- */
-Object.defineProperty(PIXI.TwistFilter.prototype, 'radius', {
-    get: function() {
-        return this.uniforms.radius.value;
+    /**
+     * This radius of the twist.
+     *
+     * @member {number}
+     * @memberof TwistFilter#
+     */
+    radius: {
+        get: function () {
+            return this.uniforms.radius.value;
+        },
+        set: function (value) {
+            this.uniforms.radius.value = value;
+        }
     },
-    set: function(value) {
-        this.dirty = true;
-        this.uniforms.radius.value = value;
-    }
-});
 
-/**
- * This angle of the twist.
- * 
- * @property angle
- * @type Number
- */
-Object.defineProperty(PIXI.TwistFilter.prototype, 'angle', {
-    get: function() {
-        return this.uniforms.angle.value;
-    },
-    set: function(value) {
-        this.dirty = true;
-        this.uniforms.angle.value = value;
+    /**
+     * This angle of the twist.
+     *
+     * @member {number}
+     * @memberof TwistFilter#
+     */
+    angle: {
+        get: function () {
+            return this.uniforms.angle.value;
+        },
+        set: function (value) {
+            this.uniforms.angle.value = value;
+        }
     }
 });

@@ -1,38 +1,32 @@
-/**
- * @author Mat Groves http://matgroves.com/ @Doormat23
- */
+var AbstractFilter = require('./AbstractFilter');
 
 /**
  * The AlphaMaskFilter class uses the pixel values from the specified texture (called the displacement map) to perform a displacement of an object.
  * You can use this filter to apply all manor of crazy warping effects
  * Currently the r property of the texture is used to offset the x and the g property of the texture is used to offset the y.
- * 
- * @class AlphaMaskFilter
+ *
+ * @class
  * @extends AbstractFilter
- * @constructor
+ * @namespace PIXI
  * @param texture {Texture} The texture used for the displacement map * must be power of 2 texture at the moment
  */
-PIXI.AlphaMaskFilter = function(texture)
-{
-    PIXI.AbstractFilter.call( this );
+function AlphaMaskFilter(texture) {
+    AbstractFilter.call(this);
 
-    this.passes = [this];
     texture.baseTexture._powerOf2 = true;
 
     // set the uniforms
     this.uniforms = {
-        mask: {type: 'sampler2D', value:texture},
-        mapDimensions:   {type: '2f', value:{x:1, y:5112}},
-        dimensions:   {type: '4fv', value:[0,0,0,0]}
+        mask:           { type: 'sampler2D',    value: texture },
+        mapDimensions:  { type: '2f',           value: { x: 1, y: 5112 } },
+        dimensions:     { type: '4fv',          value: [0, 0, 0, 0] }
     };
 
-    if(texture.baseTexture.hasLoaded)
-    {
+    if (texture.baseTexture.hasLoaded) {
         this.uniforms.mask.value.x = texture.width;
         this.uniforms.mask.value.y = texture.height;
     }
-    else
-    {
+    else {
         this.boundLoadedFunction = this.onTextureLoaded.bind(this);
 
         texture.baseTexture.on('loaded', this.boundLoadedFunction);
@@ -40,15 +34,17 @@ PIXI.AlphaMaskFilter = function(texture)
 
     this.fragmentSrc = [
         'precision mediump float;',
+
         'varying vec2 vTextureCoord;',
         'varying vec4 vColor;',
+
         'uniform sampler2D mask;',
         'uniform sampler2D uSampler;',
         'uniform vec2 offset;',
         'uniform vec4 dimensions;',
         'uniform vec2 mapDimensions;',
 
-        'void main(void) {',
+        'void main() {',
         '   vec2 mapCords = vTextureCoord.xy;',
         '   mapCords += (dimensions.zw + offset)/ dimensions.xy ;',
         '   mapCords.y *= -1.0;',
@@ -65,33 +61,34 @@ PIXI.AlphaMaskFilter = function(texture)
     ];
 };
 
-PIXI.AlphaMaskFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
-PIXI.AlphaMaskFilter.prototype.constructor = PIXI.AlphaMaskFilter;
+AlphaMaskFilter.prototype = Object.create(AbstractFilter.prototype);
+AlphaMaskFilter.prototype.constructor = AlphaMaskFilter;
+module.exports = AlphaMaskFilter;
 
 /**
  * Sets the map dimensions uniforms when the texture becomes available.
  *
- * @method onTextureLoaded
  */
-PIXI.AlphaMaskFilter.prototype.onTextureLoaded = function()
-{
+AlphaMaskFilter.prototype.onTextureLoaded = function () {
     this.uniforms.mapDimensions.value.x = this.uniforms.mask.value.width;
     this.uniforms.mapDimensions.value.y = this.uniforms.mask.value.height;
 
     this.uniforms.mask.value.baseTexture.off('loaded', this.boundLoadedFunction);
 };
 
-/**
- * The texture used for the displacement map. Must be power of 2 sized texture.
- *
- * @property map
- * @type Texture
- */
-Object.defineProperty(PIXI.AlphaMaskFilter.prototype, 'map', {
-    get: function() {
-        return this.uniforms.mask.value;
-    },
-    set: function(value) {
-        this.uniforms.mask.value = value;
+Object.defineProperties(AlphaMaskFilter.prototype, {
+    /**
+     * The texture used for the displacement map. Must be power of 2 sized texture.
+     *
+     * @member {Texture}
+     * @memberof AlphaMaskFilter#
+     */
+    map: {
+        get: function () {
+            return this.uniforms.mask.value;
+        },
+        set: function (value) {
+            this.uniforms.mask.value = value;
+        }
     }
 });

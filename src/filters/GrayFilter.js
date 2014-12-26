@@ -1,29 +1,26 @@
-/**
- * @author Mat Groves http://matgroves.com/ @Doormat23
- */
+var AbstractFilter = require('./AbstractFilter');
 
 /**
  * This greyscales the palette of your Display Objects.
- * 
- * @class GrayFilter
+ *
+ * @class
  * @extends AbstractFilter
- * @constructor
+ * @namespace PIXI
  */
-PIXI.GrayFilter = function()
-{
-    PIXI.AbstractFilter.call( this );
-
-    this.passes = [this];
+function GrayFilter() {
+    AbstractFilter.call(this);
 
     // set the uniforms
     this.uniforms = {
-        gray: {type: '1f', value: 1}
+        gray: { type: '1f', value: 1 }
     };
 
     this.fragmentSrc = [
         'precision mediump float;',
+
         'varying vec2 vTextureCoord;',
         'varying vec4 vColor;',
+
         'uniform sampler2D uSampler;',
         'uniform float gray;',
 
@@ -35,19 +32,23 @@ PIXI.GrayFilter = function()
     ];
 };
 
-PIXI.GrayFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
-PIXI.GrayFilter.prototype.constructor = PIXI.GrayFilter;
+GrayFilter.prototype = Object.create(AbstractFilter.prototype);
+GrayFilter.prototype.constructor = GrayFilter;
+module.exports = GrayFilter;
 
-/**
- * The strength of the gray. 1 will make the object black and white, 0 will make the object its normal color.
- * @property gray
- * @type Number
- */
-Object.defineProperty(PIXI.GrayFilter.prototype, 'gray', {
-    get: function() {
-        return this.uniforms.gray.value;
-    },
-    set: function(value) {
-        this.uniforms.gray.value = value;
+Object.defineProperties(GrayFilter.prototype, {
+    /**
+     * The strength of the gray. 1 will make the object black and white, 0 will make the object its normal color.
+     *
+     * @member {number}
+     * @memberof GrayFilter#
+     */
+    gray: {
+        get: function () {
+            return this.uniforms.gray.value;
+        },
+        set: function (value) {
+            this.uniforms.gray.value = value;
+        }
     }
 });

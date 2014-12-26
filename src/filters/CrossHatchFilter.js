@@ -1,29 +1,26 @@
-/**
- * @author Mat Groves http://matgroves.com/ @Doormat23
- */
+var AbstractFilter = require('./AbstractFilter');
 
 /**
  * A Cross Hatch effect filter.
- * 
- * @class CrossHatchFilter
+ *
+ * @class
  * @extends AbstractFilter
- * @constructor
+ * @namespace PIXI
  */
-PIXI.CrossHatchFilter = function()
-{
-    PIXI.AbstractFilter.call( this );
-
-    this.passes = [this];
+function CrossHatchFilter() {
+    AbstractFilter.call(this);
 
     // set the uniforms
     this.uniforms = {
-        blur: {type: '1f', value: 1 / 512}
+        blur: { type: '1f', value: 1 / 512 }
     };
 
     this.fragmentSrc = [
         'precision mediump float;',
+
         'varying vec2 vTextureCoord;',
         'varying vec4 vColor;',
+
         'uniform float blur;',
         'uniform sampler2D uSampler;',
 
@@ -59,22 +56,25 @@ PIXI.CrossHatchFilter = function()
     ];
 };
 
-PIXI.CrossHatchFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
-PIXI.CrossHatchFilter.prototype.constructor = PIXI.CrossHatchFilter;
+CrossHatchFilter.prototype = Object.create(AbstractFilter.prototype);
+CrossHatchFilter.prototype.constructor = CrossHatchFilter;
+module.exports = CrossHatchFilter;
 
-/**
- * Sets the strength of both the blur.
- *
- * @property blur
- * @type Number
- * @default 2
- */
-Object.defineProperty(PIXI.CrossHatchFilter.prototype, 'blur', {
-    get: function() {
-        return this.uniforms.blur.value / (1/7000);
-    },
-    set: function(value) {
-        //this.padding = value;
-        this.uniforms.blur.value = (1/7000) * value;
+Object.defineProperties(CrossHatchFilter.prototype, {
+    /**
+     * Sets the strength of both the blur.
+     *
+     * @member {number}
+     * @memberof CrossHatchFilter#
+     * @default 2
+     */
+    blur: {
+        get: function () {
+            return this.uniforms.blur.value / (1/7000);
+        },
+        set: function (value) {
+            //this.padding = value;
+            this.uniforms.blur.value = (1/7000) * value;
+        }
     }
 });

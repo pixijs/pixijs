@@ -1,32 +1,34 @@
+var AbstractFilter = require('./AbstractFilter');
+
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  * original filter: https://github.com/evanw/glfx.js/blob/master/src/filters/fun/dotscreen.js
  */
 
 /**
- * This filter applies a dotscreen effect making display objects appear to be made out of black and white halftone dots like an old printer.
- * 
- * @class DotScreenFilter
+ * This filter applies a dotscreen effect making display objects appear to be made out of
+ * black and white halftone dots like an old printer.
+ *
+ * @class
  * @extends AbstractFilter
- * @constructor
+ * @namespace PIXI
  */
-PIXI.DotScreenFilter = function()
-{
-    PIXI.AbstractFilter.call( this );
-
-    this.passes = [this];
+function DotScreenFilter() {
+    AbstractFilter.call(this);
 
     // set the uniforms
     this.uniforms = {
-        scale: {type: '1f', value:1},
-        angle: {type: '1f', value:5},
-        dimensions:   {type: '4fv', value:[0,0,0,0]}
+        scale:      { type: '1f', value: 1 },
+        angle:      { type: '1f', value: 5 },
+        dimensions: { type: '4fv', value: [0, 0, 0, 0] }
     };
 
     this.fragmentSrc = [
         'precision mediump float;',
+
         'varying vec2 vTextureCoord;',
         'varying vec4 vColor;',
+
         'uniform vec4 dimensions;',
         'uniform sampler2D uSampler;',
 
@@ -51,35 +53,36 @@ PIXI.DotScreenFilter = function()
     ];
 };
 
-PIXI.DotScreenFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
-PIXI.DotScreenFilter.prototype.constructor = PIXI.DotScreenFilter;
+DotScreenFilter.prototype = Object.create(AbstractFilter.prototype);
+DotScreenFilter.prototype.constructor = DotScreenFilter;
+module.exports = DotScreenFilter;
 
-/**
- * The scale of the effect.
- * @property scale
- * @type Number
- */
-Object.defineProperty(PIXI.DotScreenFilter.prototype, 'scale', {
-    get: function() {
-        return this.uniforms.scale.value;
+Object.defineProperties(DotScreenFilter.prototype, {
+    /**
+     * The scale of the effect.
+     * @member {number}
+     * @memberof DotScreenFilter#
+     */
+    scale: {
+        get: function () {
+            return this.uniforms.scale.value;
+        },
+        set: function (value) {
+            this.uniforms.scale.value = value;
+        }
     },
-    set: function(value) {
-        this.dirty = true;
-        this.uniforms.scale.value = value;
-    }
-});
 
-/**
- * The radius of the effect.
- * @property angle
- * @type Number
- */
-Object.defineProperty(PIXI.DotScreenFilter.prototype, 'angle', {
-    get: function() {
-        return this.uniforms.angle.value;
-    },
-    set: function(value) {
-        this.dirty = true;
-        this.uniforms.angle.value = value;
+    /**
+     * The radius of the effect.
+     * @member {number}
+     * @memberof DotScreenFilter#
+     */
+    angle: {
+        get: function () {
+            return this.uniforms.angle.value;
+        },
+        set: function (value) {
+            this.uniforms.angle.value = value;
+        }
     }
 });

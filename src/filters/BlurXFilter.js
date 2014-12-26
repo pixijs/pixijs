@@ -1,29 +1,27 @@
-/**
- * @author Mat Groves http://matgroves.com/ @Doormat23
- */
+var AbstractFilter = require('./AbstractFilter'),
+    blurFactor = 1 / 7000;
 
 /**
  * The BlurXFilter applies a horizontal Gaussian blur to an object.
  *
- * @class BlurXFilter
+ * @class
  * @extends AbstractFilter
- * @constructor
+ * @namespace PIXI
  */
-PIXI.BlurXFilter = function()
-{
-    PIXI.AbstractFilter.call( this );
-
-    this.passes = [this];
+function BlurXFilter() {
+    AbstractFilter.call(this);
 
     // set the uniforms
     this.uniforms = {
-        blur: {type: '1f', value: 1/512}
+        blur: { type: '1f', value: 1 / 512 }
     };
 
     this.fragmentSrc = [
         'precision mediump float;',
+
         'varying vec2 vTextureCoord;',
         'varying vec4 vColor;',
+
         'uniform float blur;',
         'uniform sampler2D uSampler;',
 
@@ -45,23 +43,24 @@ PIXI.BlurXFilter = function()
     ];
 };
 
-PIXI.BlurXFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
-PIXI.BlurXFilter.prototype.constructor = PIXI.BlurXFilter;
+BlurXFilter.prototype = Object.create(AbstractFilter.prototype);
+BlurXFilter.prototype.constructor = BlurXFilter;
+module.exports = BlurXFilter;
 
-/**
- * Sets the strength of both the blur.
- *
- * @property blur
- * @type Number
- * @default 2
- */
-Object.defineProperty(PIXI.BlurXFilter.prototype, 'blur', {
-    get: function() {
-        return this.uniforms.blur.value / (1/7000);
-    },
-    set: function(value) {
-
-        this.dirty = true;
-        this.uniforms.blur.value = (1/7000) * value;
+Object.defineProperties(BlurXFilter.prototype, {
+    /**
+     * Sets the strength of both the blur.
+     *
+     * @member {number}
+     * @memberof BlurXFilter#
+     * @default 2
+     */
+    blur: {
+        get: function () {
+            return this.uniforms.blur.value / blurFactor;
+        },
+        set: function (value) {
+            this.uniforms.blur.value = blurFactor * value;
+        }
     }
 });

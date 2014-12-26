@@ -1,32 +1,31 @@
-/**
- * @author Mat Groves http://matgroves.com/ @Doormat23
- */
+var AbstractFilter = require('./AbstractFilter');
 
 /**
  * An RGB Split Filter.
- * 
- * @class RGBSplitFilter
+ *
+ * @class
  * @extends AbstractFilter
- * @constructor
+ * @namespace PIXI
  */
-PIXI.RGBSplitFilter = function()
-{
-    PIXI.AbstractFilter.call( this );
+function RGBSplitFilter() {
+    AbstractFilter.call(this);
 
     this.passes = [this];
 
     // set the uniforms
     this.uniforms = {
-        red: {type: '2f', value: {x:20, y:20}},
-        green: {type: '2f', value: {x:-20, y:20}},
-        blue: {type: '2f', value: {x:20, y:-20}},
-        dimensions:   {type: '4fv', value:[0,0,0,0]}
+        red:        { type: '2f', value: { x: 20, y: 20 } },
+        green:      { type: '2f', value: { x: -20, y: 20 } },
+        blue:       { type: '2f', value: { x: 20, y: -20 } },
+        dimensions: { type: '4fv', value: [0, 0, 0, 0] }
     };
 
     this.fragmentSrc = [
         'precision mediump float;',
+
         'varying vec2 vTextureCoord;',
         'varying vec4 vColor;',
+
         'uniform vec2 red;',
         'uniform vec2 green;',
         'uniform vec2 blue;',
@@ -42,50 +41,53 @@ PIXI.RGBSplitFilter = function()
     ];
 };
 
-PIXI.RGBSplitFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
-PIXI.RGBSplitFilter.prototype.constructor = PIXI.RGBSplitFilter;
+RGBSplitFilter.prototype = Object.create(AbstractFilter.prototype);
+RGBSplitFilter.prototype.constructor = RGBSplitFilter;
+module.exports = RGBSplitFilter;
 
-/**
- * Red channel offset.
- * 
- * @property red
- * @type Point
- */
-Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'red', {
-    get: function() {
-        return this.uniforms.red.value;
+Object.defineProperties(RGBSplitFilter.prototype, {
+    /**
+     * Red channel offset.
+     *
+     * @member {Point}
+     * @memberof RGBSplitFilter#
+     */
+    red: {
+        get: function () {
+            return this.uniforms.red.value;
+        },
+        set: function (value) {
+            this.uniforms.red.value = value;
+        }
     },
-    set: function(value) {
-        this.uniforms.red.value = value;
-    }
-});
 
-/**
- * Green channel offset.
- * 
- * @property green
- * @type Point
- */
-Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'green', {
-    get: function() {
-        return this.uniforms.green.value;
+    /**
+     * Green channel offset.
+     *
+     * @member {Point}
+     * @memberof RGBSplitFilter#
+     */
+    green: {
+        get: function () {
+            return this.uniforms.green.value;
+        },
+        set: function (value) {
+            this.uniforms.green.value = value;
+        }
     },
-    set: function(value) {
-        this.uniforms.green.value = value;
-    }
-});
 
-/**
- * Blue offset.
- * 
- * @property blue
- * @type Point
- */
-Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'blue', {
-    get: function() {
-        return this.uniforms.blue.value;
-    },
-    set: function(value) {
-        this.uniforms.blue.value = value;
+    /**
+     * Blue offset.
+     *
+     * @member {Point}
+     * @memberof RGBSplitFilter#
+     */
+    blue: {
+        get: function () {
+            return this.uniforms.blue.value;
+        },
+        set: function (value) {
+            this.uniforms.blue.value = value;
+        }
     }
 });

@@ -1,30 +1,24 @@
 /**
- * @author Mat Groves http://matgroves.com/ @Doormat23
- */
-
-/**
  * A target and pass info object for filters.
- * 
- * @class FilterBlock
- * @constructor
+ *
+ * @class
+ * @namespace PIXI
  */
-PIXI.FilterBlock = function()
-{
+function FilterBlock() {
     /**
      * The visible state of this FilterBlock.
      *
-     * @property visible
-     * @type Boolean
+     * @member {boolean}
      */
     this.visible = true;
 
     /**
      * The renderable state of this FilterBlock.
      *
-     * @property renderable
-     * @type Boolean
+     * @member {boolean}
      */
     this.renderable = true;
 };
 
-PIXI.FilterBlock.prototype.constructor = PIXI.FilterBlock;
+FilterBlock.prototype.constructor = FilterBlock;
+module.exports = FilterBlock;

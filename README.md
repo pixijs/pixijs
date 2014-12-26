@@ -184,17 +184,15 @@ This content is released under the (http://opensource.org/licenses/MIT) MIT Lice
 
 ## Rewrite TODO
 
-1. Remove tight coupling with Interaction Manager and stage..
-2. Rewrite updateTransform (DO, DOC, etc) to reduce gc grind
-3. Rewrite getBounds (Sprite, Graphics, etc) to reduce gc grind
+See: https://github.com/GoodBoyDigital/pixi.js/issues/1296
 
 
-### Folder Status
+### Phase 1 Folder Browserify Status
 
 - [x] `index`
 - [x] `display/`
 - [ ] `extras/`
-- [ ] `filters/`
+- [x] `filters/`
 - [ ] `geom/` (move to `math/`)
 - [ ] `loaders/`
 - [ ] `primitives/`

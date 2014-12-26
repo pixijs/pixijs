@@ -1,32 +1,22 @@
-/**
- * @author Mat Groves http://matgroves.com/ @Doormat23
- */
+var AbstractFilter = require('./AbstractFilter');
 
 /**
  * A Smart Blur Filter.
- * 
- * @class SmartBlurFilter
+ *
+ * @class
  * @extends AbstractFilter
- * @constructor
+ * @namespace PIXI
  */
-PIXI.SmartBlurFilter = function()
-{
-    PIXI.AbstractFilter.call( this );
-
-    this.passes = [this];
-
-    // set the uniforms
-    this.uniforms = {
-        blur: {type: '1f', value: 1/512}
-    };
+function SmartBlurFilter() {
+    AbstractFilter.call(this);
 
     this.fragmentSrc = [
         'precision mediump float;',
+
         'varying vec2 vTextureCoord;',
+
         'uniform sampler2D uSampler;',
-        //'uniform vec2 delta;',
         'const vec2 delta = vec2(1.0/10.0, 0.0);',
-        //'uniform float darkness;',
 
         'float random(vec3 scale, float seed) {',
         '   return fract(sin(dot(gl_FragCoord.xyz + seed, scale)) * 43758.5453 + seed);',
@@ -50,26 +40,10 @@ PIXI.SmartBlurFilter = function()
 
         '   gl_FragColor = color / total;',
         '   gl_FragColor.rgb /= gl_FragColor.a + 0.00001;',
-        //'   gl_FragColor.rgb *= darkness;',
         '}'
     ];
 };
 
-PIXI.SmartBlurFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
-PIXI.SmartBlurFilter.prototype.constructor = PIXI.SmartBlurFilter;
-
-/**
- * The strength of the blur.
- *
- * @property blur
- * @type Number
- * @default 2
- */
-Object.defineProperty(PIXI.SmartBlurFilter.prototype, 'blur', {
-    get: function() {
-        return this.uniforms.blur.value;
-    },
-    set: function(value) {
-        this.uniforms.blur.value = value;
-    }
-});
+SmartBlurFilter.prototype = Object.create(AbstractFilter.prototype);
+SmartBlurFilter.prototype.constructor = SmartBlurFilter;
+module.exports = SmartBlurFilter;

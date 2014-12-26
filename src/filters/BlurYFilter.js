@@ -1,29 +1,27 @@
-/**
- * @author Mat Groves http://matgroves.com/ @Doormat23
- */
+var AbstractFilter = require('./AbstractFilter'),
+    blurFactor = 1 / 7000;
 
 /**
  * The BlurYFilter applies a vertical Gaussian blur to an object.
  *
- * @class BlurYFilter
+ * @class
  * @extends AbstractFilter
- * @constructor
+ * @namespace PIXI
  */
-PIXI.BlurYFilter = function()
-{
-    PIXI.AbstractFilter.call( this );
-
-    this.passes = [this];
+function BlurYFilter() {
+    AbstractFilter.call(this);
 
     // set the uniforms
     this.uniforms = {
-        blur: {type: '1f', value: 1/512}
+        blur: { type: '1f', value: 1 / 512 }
     };
 
     this.fragmentSrc = [
         'precision mediump float;',
+
         'varying vec2 vTextureCoord;',
         'varying vec4 vColor;',
+
         'uniform float blur;',
         'uniform sampler2D uSampler;',
 
@@ -45,22 +43,25 @@ PIXI.BlurYFilter = function()
     ];
 };
 
-PIXI.BlurYFilter.prototype = Object.create( PIXI.AbstractFilter.prototype );
-PIXI.BlurYFilter.prototype.constructor = PIXI.BlurYFilter;
+BlurYFilter.prototype = Object.create(AbstractFilter.prototype);
+BlurYFilter.prototype.constructor = BlurYFilter;
+module.exports = BlurYFilter;
 
-/**
- * Sets the strength of both the blur.
- *
- * @property blur
- * @type Number
- * @default 2
- */
-Object.defineProperty(PIXI.BlurYFilter.prototype, 'blur', {
-    get: function() {
-        return this.uniforms.blur.value / (1/7000);
-    },
-    set: function(value) {
-        //this.padding = value;
-        this.uniforms.blur.value = (1/7000) * value;
+Object.defineProperties(BlurYFilter.prototype, {
+    /**
+     * Sets the strength of both the blur.
+     *
+     * @member {number}
+     * @memberof BlurYFilter
+     * @default 2
+     */
+    blur: {
+        get: function () {
+            return this.uniforms.blur.value / blurFactor;
+        },
+        set: function (value) {
+            //this.padding = value;
+            this.uniforms.blur.value = blurFactor * value;
+        }
     }
 });
