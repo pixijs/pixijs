@@ -1,89 +1,80 @@
 /**
- * @author Mat Groves http://matgroves.com/ @Doormat23
- */
-
-/**
  * The xml loader is used to load in XML bitmap font data ('xml' or 'fnt')
  * To generate the data you can use http://www.angelcode.com/products/bmfont/
  * This loader will also load the image file as the data.
  * When loaded this class will dispatch a 'loaded' event
  *
- * @class BitmapFontLoader
- * @uses EventTarget
- * @constructor
+ * @class
+ * @mixes EventTarget
+ * @namespace PIXI
  * @param url {String} The url of the sprite sheet JSON file
- * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
+ * @param crossorigin {boolean} Whether requests should be treated as crossorigin
  */
-PIXI.BitmapFontLoader = function(url, crossorigin)
-{
+function BitmapFontLoader(url, crossorigin) {
     /**
      * The url of the bitmap font data
      *
-     * @property url
-     * @type String
+     * @member {String}
      */
     this.url = url;
 
     /**
      * Whether the requests should be treated as cross origin
      *
-     * @property crossorigin
-     * @type Boolean
+     * @member {boolean}
      */
     this.crossorigin = crossorigin;
 
     /**
-     * [read-only] The base url of the bitmap font data
+     * The base url of the bitmap font data
      *
-     * @property baseUrl
-     * @type String
+     * @member {String}
      * @readOnly
      */
     this.baseUrl = url.replace(/[^\/]*$/, '');
 
     /**
-     * [read-only] The texture of the bitmap font
+     * The texture of the bitmap font
      *
-     * @property texture
-     * @type Texture
+     * @member {Texture}
      */
     this.texture = null;
 };
 
 // constructor
-PIXI.BitmapFontLoader.prototype.constructor = PIXI.BitmapFontLoader;
-PIXI.EventTarget.mixin(PIXI.BitmapFontLoader.prototype);
+BitmapFontLoader.prototype.constructor = BitmapFontLoader;
+module.exports = BitmapFontLoader;
+
+EventTarget.mixin(BitmapFontLoader.prototype);
 
 /**
  * Loads the XML font data
  *
- * @method load
  */
-PIXI.BitmapFontLoader.prototype.load = function()
-{
-    this.ajaxRequest = new PIXI.AjaxRequest();
+BitmapFontLoader.prototype.load = function () {
+    this.ajaxRequest = new AjaxRequest();
     this.ajaxRequest.onreadystatechange = this.onXMLLoaded.bind(this);
 
     this.ajaxRequest.open('GET', this.url, true);
-    if (this.ajaxRequest.overrideMimeType) this.ajaxRequest.overrideMimeType('application/xml');
+
+    if (this.ajaxRequest.overrideMimeType) {
+        this.ajaxRequest.overrideMimeType('application/xml');
+    }
+
     this.ajaxRequest.send(null);
 };
 
 /**
  * Invoked when the XML file is loaded, parses the data.
  *
- * @method onXMLLoaded
  * @private
  */
-PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
-{
-    if (this.ajaxRequest.readyState === 4)
-    {
-        if (this.ajaxRequest.status === 200 || window.location.protocol.indexOf('http') === -1)
-        {
+BitmapFontLoader.prototype.onXMLLoaded = function () {
+    if (this.ajaxRequest.readyState === 4) {
+        if (this.ajaxRequest.status === 200 || window.location.protocol.indexOf('http') === -1) {
             var responseXML = this.ajaxRequest.responseXML;
-            if(!responseXML || /MSIE 9/i.test(navigator.userAgent) || navigator.isCocoonJS) {
-                if(typeof(window.DOMParser) === 'function') {
+            if (!responseXML || /MSIE 9/i.test(navigator.userAgent) || navigator.isCocoonJS) {
+                if (typeof(window.DOMParser) === 'function') {
                     var domparser = new DOMParser();
                     responseXML = domparser.parseFromString(this.ajaxRequest.responseText, 'text/xml');
                 } else {
@@ -94,7 +85,7 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
             }
 
             var textureUrl = this.baseUrl + responseXML.getElementsByTagName('page')[0].getAttribute('file');
-            var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
+            var image = new ImageLoader(textureUrl, this.crossorigin);
             this.texture = image.texture.baseTexture;
 
             var data = {};
@@ -108,11 +99,10 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
             //parse letters
             var letters = responseXML.getElementsByTagName('char');
 
-            for (var i = 0; i < letters.length; i++)
-            {
+            for (var i = 0; i < letters.length; i++) {
                 var charCode = parseInt(letters[i].getAttribute('id'), 10);
 
-                var textureRect = new PIXI.Rectangle(
+                var textureRect = new Rectangle(
                     parseInt(letters[i].getAttribute('x'), 10),
                     parseInt(letters[i].getAttribute('y'), 10),
                     parseInt(letters[i].getAttribute('width'), 10),
@@ -124,15 +114,14 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
                     yOffset: parseInt(letters[i].getAttribute('yoffset'), 10),
                     xAdvance: parseInt(letters[i].getAttribute('xadvance'), 10),
                     kerning: {},
-                    texture: PIXI.TextureCache[charCode] = new PIXI.Texture(this.texture, textureRect)
+                    texture: TextureCache[charCode] = new Texture(this.texture, textureRect)
 
                 };
             }
 
             //parse kernings
             var kernings = responseXML.getElementsByTagName('kerning');
-            for (i = 0; i < kernings.length; i++)
-            {
+            for (i = 0; i < kernings.length; i++) {
                 var first = parseInt(kernings[i].getAttribute('first'), 10);
                 var second = parseInt(kernings[i].getAttribute('second'), 10);
                 var amount = parseInt(kernings[i].getAttribute('amount'), 10);
@@ -141,7 +130,7 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
 
             }
 
-            PIXI.BitmapText.fonts[data.font] = data;
+            BitmapText.fonts[data.font] = data;
 
             image.addEventListener('loaded', this.onLoaded.bind(this));
             image.load();
@@ -152,10 +141,8 @@ PIXI.BitmapFontLoader.prototype.onXMLLoaded = function()
 /**
  * Invoked when all files are loaded (xml/fnt and texture)
  *
- * @method onLoaded
  * @private
  */
-PIXI.BitmapFontLoader.prototype.onLoaded = function()
-{
+BitmapFontLoader.prototype.onLoaded = function () {
     this.emit('loaded', { content: this });
 };

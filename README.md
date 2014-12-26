@@ -13,7 +13,7 @@ See: https://github.com/GoodBoyDigital/pixi.js/issues/1296
 - [ ] `extras/`
 - [x] `filters/`
 - [x] `geom/` (move to `math/`)
-- [ ] `loaders/`
+- [x] `loaders/`
 - [ ] `primitives/`
 - [ ] `renderers/`
 - [ ] `text/`

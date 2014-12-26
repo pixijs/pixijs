@@ -1,22 +1,18 @@
 /**
- * @author Martin Kelm http://mkelm.github.com
- */
-
-/**
  * The atlas file loader is used to load in Texture Atlas data and parse it. When loaded this class will dispatch a 'loaded' event. If loading fails this class will dispatch an 'error' event.
  *
  * To generate the data you can use http://www.codeandweb.com/texturepacker and publish in the 'JSON' format.
- * 
+ *
  * It is highly recommended to use texture atlases (also know as 'sprite sheets') as it allowed sprites to be batched and drawn together for highly increased rendering speed.
- * Once the data has been loaded the frames are stored in the PIXI texture cache and can be accessed though PIXI.Texture.fromFrameId() and PIXI.Sprite.fromFrameId()
- * 
- * @class AtlasLoader
- * @uses EventTarget
- * @constructor
+ * Once the data has been loaded the frames are stored in the PIXI texture cache and can be accessed though Texture.fromFrameId() and Sprite.fromFrameId()
+ *
+ * @class
+ * @mixes EventTarget
+ * @namespace PIXI
  * @param url {String} The url of the JSON file
- * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
+ * @param crossorigin {boolean} Whether requests should be treated as crossorigin
  */
-PIXI.AtlasLoader = function (url, crossorigin) {
+function AtlasLoader(url, crossorigin) {
     this.url = url;
     this.baseUrl = url.replace(/[^\/]*$/, '');
     this.crossorigin = crossorigin;
@@ -25,31 +21,34 @@ PIXI.AtlasLoader = function (url, crossorigin) {
 };
 
 // constructor
-PIXI.AtlasLoader.constructor = PIXI.AtlasLoader;
+AtlasLoader.prototype.constructor = AtlasLoader;
+module.exports = AtlasLoader;
 
-PIXI.EventTarget.mixin(PIXI.AtlasLoader.prototype);
+EventTarget.mixin(AtlasLoader.prototype);
 
  /**
  * Starts loading the JSON file
  *
- * @method load
  */
-PIXI.AtlasLoader.prototype.load = function () {
-    this.ajaxRequest = new PIXI.AjaxRequest();
+AtlasLoader.prototype.load = function () {
+    this.ajaxRequest = new AjaxRequest();
     this.ajaxRequest.onreadystatechange = this.onAtlasLoaded.bind(this);
 
     this.ajaxRequest.open('GET', this.url, true);
-    if (this.ajaxRequest.overrideMimeType) this.ajaxRequest.overrideMimeType('application/json');
+
+    if (this.ajaxRequest.overrideMimeType) {
+        this.ajaxRequest.overrideMimeType('application/json');
+    }
+
     this.ajaxRequest.send(null);
 };
 
 /**
  * Invoked when the Atlas has fully loaded. Parses the JSON and builds the texture frames.
- * 
- * @method onAtlasLoaded
+ *
  * @private
  */
-PIXI.AtlasLoader.prototype.onAtlasLoaded = function () {
+AtlasLoader.prototype.onAtlasLoaded = function () {
     if (this.ajaxRequest.readyState === 4) {
         if (this.ajaxRequest.status === 200 || window.location.href.indexOf('http') === -1) {
             this.atlas = {
@@ -72,9 +71,11 @@ PIXI.AtlasLoader.prototype.onAtlasLoaded = function () {
             // parser without rotation support yet!
             for (i = 0; i < result.length; i++) {
                 result[i] = result[i].replace(/^\s+|\s+$/g, '');
+
                 if (result[i] === '') {
                     nameInNextLine = i+1;
                 }
+
                 if (result[i].length > 0) {
                     if (nameInNextLine === i) {
                         this.atlas.meta.image.push(result[i]);
@@ -126,22 +127,22 @@ PIXI.AtlasLoader.prototype.onAtlasLoaded = function () {
                     // sprite sheet
                     var textureUrl = this.baseUrl + this.atlas.meta.image[j];
                     var frameData = this.atlas.frames[j];
-                    this.images.push(new PIXI.ImageLoader(textureUrl, this.crossorigin));
+                    this.images.push(new ImageLoader(textureUrl, this.crossorigin));
 
                     for (i in frameData) {
                         var rect = frameData[i].frame;
                         if (rect) {
-                            PIXI.TextureCache[i] = new PIXI.Texture(this.images[j].texture.baseTexture, {
+                            TextureCache[i] = new Texture(this.images[j].texture.baseTexture, {
                                 x: rect.x,
                                 y: rect.y,
                                 width: rect.w,
                                 height: rect.h
                             });
                             if (frameData[i].trimmed) {
-                                PIXI.TextureCache[i].realSize = frameData[i].realSize;
+                                TextureCache[i].realSize = frameData[i].realSize;
                                 // trim in pixi not supported yet, todo update trim properties if it is done ...
-                                PIXI.TextureCache[i].trim.x = 0;
-                                PIXI.TextureCache[i].trim.y = 0;
+                                TextureCache[i].trim.x = 0;
+                                TextureCache[i].trim.y = 0;
                             }
                         }
                     }
@@ -165,11 +166,10 @@ PIXI.AtlasLoader.prototype.onAtlasLoaded = function () {
 
 /**
  * Invoked when json file has loaded.
- * 
- * @method onLoaded
+ *
  * @private
  */
-PIXI.AtlasLoader.prototype.onLoaded = function () {
+AtlasLoader.prototype.onLoaded = function () {
     if (this.images.length - 1 > this.currentImageId) {
         this.currentImageId++;
         this.images[this.currentImageId].load();
@@ -181,10 +181,9 @@ PIXI.AtlasLoader.prototype.onLoaded = function () {
 
 /**
  * Invoked when an error occurs.
- * 
- * @method onError
+ *
  * @private
  */
-PIXI.AtlasLoader.prototype.onError = function () {
+AtlasLoader.prototype.onError = function () {
     this.emit('error', { content: this });
 };

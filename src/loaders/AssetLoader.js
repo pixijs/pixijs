@@ -1,62 +1,58 @@
 /**
- * @author Mat Groves http://matgroves.com/ @Doormat23
- */
-
-/**
  * A Class that loads a bunch of images / sprite sheet / bitmap font files. Once the
  * assets have been loaded they are added to the PIXI Texture cache and can be accessed
- * easily through PIXI.Texture.fromImage() and PIXI.Sprite.fromImage()
+ * easily through Texture.fromImage() and Sprite.fromImage()
  * When all items have been loaded this class will dispatch a 'onLoaded' event
  * As each individual item is loaded this class will dispatch a 'onProgress' event
  *
- * @class AssetLoader
- * @constructor
- * @uses EventTarget
- * @param assetURLs {Array(String)} An array of image/sprite sheet urls that you would like loaded
+ * @class
+ * @namespace PIXI
+ * @mixes EventTarget
+ * @param assetURLs {string[]} An array of image/sprite sheet urls that you would like loaded
  *      supported. Supported image formats include 'jpeg', 'jpg', 'png', 'gif'. Supported
  *      sprite sheet data formats only include 'JSON' at this time. Supported bitmap font
  *      data formats include 'xml' and 'fnt'.
- * @param crossorigin {Boolean} Whether requests should be treated as crossorigin
+ * @param crossorigin {boolean} Whether requests should be treated as crossorigin
  */
-PIXI.AssetLoader = function(assetURLs, crossorigin)
-{
+function AssetLoader(assetURLs, crossorigin) {
     /**
      * The array of asset URLs that are going to be loaded
      *
-     * @property assetURLs
-     * @type Array(String)
+     * @member {string[]}
      */
     this.assetURLs = assetURLs;
 
     /**
      * Whether the requests should be treated as cross origin
      *
-     * @property crossorigin
-     * @type Boolean
+     * @member {boolean}
      */
     this.crossorigin = crossorigin;
 
     /**
      * Maps file extension to loader types
      *
-     * @property loadersByType
-     * @type Object
+     * @member {object}
      */
     this.loadersByType = {
-        'jpg':  PIXI.ImageLoader,
-        'jpeg': PIXI.ImageLoader,
-        'png':  PIXI.ImageLoader,
-        'gif':  PIXI.ImageLoader,
-        'webp': PIXI.ImageLoader,
-        'json': PIXI.JsonLoader,
-        'atlas': PIXI.AtlasLoader,
-        'anim': PIXI.SpineLoader,
-        'xml':  PIXI.BitmapFontLoader,
-        'fnt':  PIXI.BitmapFontLoader
+        'jpg':  ImageLoader,
+        'jpeg': ImageLoader,
+        'png':  ImageLoader,
+        'gif':  ImageLoader,
+        'webp': ImageLoader,
+        'json': JsonLoader,
+        'atlas': AtlasLoader,
+        'anim': SpineLoader,
+        'xml':  BitmapFontLoader,
+        'fnt':  BitmapFontLoader
     };
 };
 
-PIXI.EventTarget.mixin(PIXI.AssetLoader.prototype);
+// constructor
+AssetLoader.prototype.constructor = AssetLoader;
+module.exports = AssetLoader;
+
+EventTarget.mixin(AssetLoader.prototype);
 
 /**
  * Fired when an item has loaded
@@ -68,34 +64,32 @@ PIXI.EventTarget.mixin(PIXI.AssetLoader.prototype);
  * @event onComplete
  */
 
-// constructor
-PIXI.AssetLoader.prototype.constructor = PIXI.AssetLoader;
-
 /**
  * Given a filename, returns its extension.
  *
- * @method _getDataType
- * @param str {String} the name of the asset
+ * @param str {string} the name of the asset
  */
-PIXI.AssetLoader.prototype._getDataType = function(str)
-{
+AssetLoader.prototype._getDataType = function (str) {
     var test = 'data:';
-    //starts with 'data:'
     var start = str.slice(0, test.length).toLowerCase();
+
     if (start === test) {
         var data = str.slice(test.length);
-
         var sepIdx = data.indexOf(',');
-        if (sepIdx === -1) //malformed data URI scheme
+
+        // check for malformed data URI scheme
+        if (sepIdx === -1) {
             return null;
+        }
 
         //e.g. 'image/gif;base64' => 'image/gif'
         var info = data.slice(0, sepIdx).split(';')[0];
 
         //We might need to handle some special cases here...
         //standardize text/plain to 'txt' file extension
-        if (!info || info.toLowerCase() === 'text/plain')
+        if (!info || info.toLowerCase() === 'text/plain') {
             return 'txt';
+        }
 
         //User specified mime type, try splitting it by '/'
         return info.split('/').pop().toLowerCase();
@@ -107,10 +101,8 @@ PIXI.AssetLoader.prototype._getDataType = function(str)
 /**
  * Starts loading the assets sequentially
  *
- * @method load
  */
-PIXI.AssetLoader.prototype.load = function()
-{
+AssetLoader.prototype.load = function () {
     var scope = this;
 
     function onLoad(evt) {
@@ -119,8 +111,7 @@ PIXI.AssetLoader.prototype.load = function()
 
     this.loadCount = this.assetURLs.length;
 
-    for (var i=0; i < this.assetURLs.length; i++)
-    {
+    for (var i=0; i < this.assetURLs.length; i++) {
         var fileName = this.assetURLs[i];
         //first see if we have a data URI scheme..
         var fileType = this._getDataType(fileName);
@@ -130,7 +121,7 @@ PIXI.AssetLoader.prototype.load = function()
             fileType = fileName.split('?').shift().split('.').pop().toLowerCase();
 
         var Constructor = this.loadersByType[fileType];
-        if(!Constructor)
+        if (!Constructor)
             throw new Error(fileType + ' is an unsupported file type');
 
         var loader = new Constructor(fileName, this.crossorigin);
@@ -143,18 +134,21 @@ PIXI.AssetLoader.prototype.load = function()
 /**
  * Invoked after each file is loaded
  *
- * @method onAssetLoaded
  * @private
  */
-PIXI.AssetLoader.prototype.onAssetLoaded = function(loader)
-{
+AssetLoader.prototype.onAssetLoaded = function (loader) {
     this.loadCount--;
     this.emit('onProgress', { content: this, loader: loader });
-    if (this.onProgress) this.onProgress(loader);
 
-    if (!this.loadCount)
-    {
+    if (this.onProgress) {
+        this.onProgress(loader);
+    }
+
+    if (!this.loadCount) {
         this.emit('onComplete', { content: this });
-        if(this.onComplete) this.onComplete();
+
+        if (this.onComplete) {
+            this.onComplete();
+        }
     }
 };
