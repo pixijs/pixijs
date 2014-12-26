@@ -1,6 +1,27 @@
 Pixi Renderer
 =============
 
+## Rewrite TODO
+
+See: https://github.com/GoodBoyDigital/pixi.js/issues/1296
+
+
+### Phase 1 Folder Browserify Status
+
+- [x] `index`
+- [x] `display/`
+- [ ] `extras/`
+- [x] `filters/`
+- [x] `geom/` (move to `math/`)
+- [ ] `loaders/`
+- [ ] `primitives/`
+- [ ] `renderers/`
+- [ ] `text/`
+- [ ] `textures/`
+- [ ] `utils/`
+- [ ] `interactions/` (move Interaction* to here)
+
+
 #### *** IMPORTANT - V2 API CHANGES *** ####
 
 A heads up for anyone updating their version of pixi.js to version 2, as we have changed a couple of bits that you need to be aware of. Fortunately, there are only two changes, and both are small.
@@ -178,26 +199,3 @@ It also copies the non-minified version to the examples.
 This content is released under the (http://opensource.org/licenses/MIT) MIT License.
 
 [![Analytics](https://ga-beacon.appspot.com/UA-39213431-2/pixi.js/index)](https://github.com/igrigorik/ga-beacon)
-
-
-
-
-## Rewrite TODO
-
-See: https://github.com/GoodBoyDigital/pixi.js/issues/1296
-
-
-### Phase 1 Folder Browserify Status
-
-- [x] `index`
-- [x] `display/`
-- [ ] `extras/`
-- [x] `filters/`
-- [x] `geom/` (move to `math/`)
-- [ ] `loaders/`
-- [ ] `primitives/`
-- [ ] `renderers/`
-- [ ] `text/`
-- [ ] `textures/`
-- [ ] `utils/`
-- [ ] `interactions/` (move Interaction* to here)
