@@ -21,5 +21,9 @@ module.exports = {
      * @constant
      * @static
      */
-    DEG_TO_RAD: Math.PI / 180
+    DEG_TO_RAD: Math.PI / 180,
+
+    Point: require('./Point'),
+    Matrix: require('./Matrix'),
+    Rectangle: require('./Rectangle')
 };

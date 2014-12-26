@@ -1,15 +1,13 @@
 /* global PIXI:true */
 /**
- * @author       Mat Groves <mat@goodboydigital.com>
- * @copyright    2013-2014 GoodBoyDigital
- * @license      {@link https://github.com/GoodBoyDigital/pixi.js/blob/master/LICENSE|MIT License}
- */
-
-/**
- * @namespace PIXI
+ * @file        Main export of the PIXI library
+ * @namespace   PIXI
+ * @author      Mat Groves <mat@goodboydigital.com>
+ * @copyright   2013-2015 GoodBoyDigital
+ * @license     {@link https://github.com/GoodBoyDigital/pixi.js/blob/master/LICENSE|MIT License}
  */
 var PIXI = {
-    math:           require('./math'),
+    math: require('./math'),
 
     /**
      * Constant to identify the WEBGL Renderer Type
@@ -141,14 +139,7 @@ var PIXI = {
      * Logs out the version and renderer information for this running instance of PIXI.
      * If you don't want to see this message you can set PIXI.sayHello = false;
      *
-     * @property {object} defaultRenderOptions
-     * @property {HTMLCanvasElement} defaultRenderOptions.view=null
-     * @property {boolean} defaultRenderOptions.transparent=false
-     * @property {boolean} defaultRenderOptions.antialias=false
-     * @property {boolean} defaultRenderOptions.preserveDrawingBuffer=false
-     * @property {number} defaultRenderOptions.resolution=1
-     * @property {boolean} defaultRenderOptions.clearBeforeRender=true
-     * @property {boolean} defaultRenderOptions.autoResize=false
+     * @param {string} type - The string renderer type to log.
      * @constant
      * @static
      */
