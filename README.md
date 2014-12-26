@@ -193,7 +193,7 @@ See: https://github.com/GoodBoyDigital/pixi.js/issues/1296
 - [x] `display/`
 - [ ] `extras/`
 - [x] `filters/`
-- [ ] `geom/` (move to `math/`)
+- [x] `geom/` (move to `math/`)
 - [ ] `loaders/`
 - [ ] `primitives/`
 - [ ] `renderers/`
