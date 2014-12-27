@@ -1,47 +1,40 @@
 /**
- * @author Mat Groves http://matgroves.com/ @Doormat23
- */
-
-/**
  * A set of functions used to handle masking.
  *
- * @class CanvasMaskManager
- * @constructor
+ * @class
+ * @namespace PIXI
  */
-PIXI.CanvasMaskManager = function()
-{
-};
+function CanvasMaskManager() {
+}
 
-PIXI.CanvasMaskManager.prototype.constructor = PIXI.CanvasMaskManager;
+CanvasMaskManager.prototype.constructor = CanvasMaskManager;
+module.exports = CanvasMaskManager;
 
 /**
  * This method adds it to the current stack of masks.
  *
- * @method pushMask
- * @param maskData {Object} the maskData that will be pushed
- * @param renderSession {Object} The renderSession whose context will be used for this mask manager.
+ * @param maskData {object} the maskData that will be pushed
+ * @param renderSession {object} The renderSession whose context will be used for this mask manager.
  */
-PIXI.CanvasMaskManager.prototype.pushMask = function(maskData, renderSession)
-{
-	var context = renderSession.context;
+CanvasMaskManager.prototype.pushMask = function (maskData, renderSession) {
+    renderSession.context.save();
 
-    context.save();
-    
     var cacheAlpha = maskData.alpha;
     var transform = maskData.worldTransform;
-
     var resolution = renderSession.resolution;
 
-    context.setTransform(transform.a * resolution,
-                         transform.b * resolution,
-                         transform.c * resolution,
-                         transform.d * resolution,
-                         transform.tx * resolution,
-                         transform.ty * resolution);
+    renderSession.context.setTransform(
+        transform.a * resolution,
+        transform.b * resolution,
+        transform.c * resolution,
+        transform.d * resolution,
+        transform.tx * resolution,
+        transform.ty * resolution
+    );
 
-    PIXI.CanvasGraphics.renderGraphicsMask(maskData, context);
+    CanvasGraphics.renderGraphicsMask(maskData, renderSession.context);
 
-    context.clip();
+    renderSession.context.clip();
 
     maskData.worldAlpha = cacheAlpha;
 };
@@ -49,10 +42,8 @@ PIXI.CanvasMaskManager.prototype.pushMask = function(maskData, renderSession)
 /**
  * Restores the current drawing context to the state it was before the mask was applied.
  *
- * @method popMask
- * @param renderSession {Object} The renderSession whose context will be used for this mask manager.
+ * @param renderSession {object} The renderSession whose context will be used for this mask manager.
  */
-PIXI.CanvasMaskManager.prototype.popMask = function(renderSession)
-{
+CanvasMaskManager.prototype.popMask = function (renderSession) {
     renderSession.context.restore();
 };
