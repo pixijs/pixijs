@@ -20,6 +20,7 @@
     "docs": "./node_modules/.bin/jsdoc -c ./gulp/util/jsdoc.conf.json"
   },
   "devDependencies": {
+    "browserify": "^8.0.2",
     "chai": "^1.10.0",
     "del": "^1.1.0",
     "gulp": "^3.8.10",
@@ -28,11 +29,20 @@
     "gulp-util": "^3.0.1",
     "ink-docstrap": "^0.4.12",
     "jsdoc": "^3.3.0-alpha13",
+    "jshint-summary": "^0.4.0",
     "karma": "^0.12.28",
     "karma-firefox-launcher": "^0.1.0",
     "karma-mocha": "^0.1.10",
     "karma-spec-reporter": "^0.0.16",
     "mocha": "^2.1.0",
-    "run-sequence": "^1.0.2"
+    "require-dir": "^0.1.0",
+    "run-sequence": "^1.0.2",
+    "vinyl-source-stream": "^1.0.0",
+    "watchify": "^2.2.1"
+  },
+  "dependencies": {
+    "raf": "^2.0.4",
+    "superagent": "^0.21.0",
+    "webgl-enabled": "^1.0.2"
   }
 }

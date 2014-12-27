@@ -1,3 +1,5 @@
+var utils = require('../../utils');
+
 glContexts = []; // this is where we store the webGL contexts for easy access.
 instances = [];
 
@@ -380,7 +382,7 @@ WebGLRenderer.prototype.updateTexture = function (texture) {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, texture.scaleMode === scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
 
 
-    if (texture.mipmap && isPowerOfTwo(texture.width, texture.height)) {
+    if (texture.mipmap && utils.isPowerOfTwo(texture.width, texture.height)) {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, texture.scaleMode === scaleModes.LINEAR ? gl.LINEAR_MIPMAP_LINEAR : gl.NEAREST_MIPMAP_NEAREST);
         gl.generateMipmap(gl.TEXTURE_2D);
     }

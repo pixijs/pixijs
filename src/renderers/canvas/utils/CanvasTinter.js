@@ -1,3 +1,5 @@
+var utils = require('../../../utils');
+
 /**
  * Utility methods for Sprite/Texture tinting.
  *
@@ -21,7 +23,9 @@ CanvasTinter.getTintedTexture = function (sprite, color) {
 
     texture.tintCache = texture.tintCache || {};
 
-    if (texture.tintCache[stringColor]) return texture.tintCache[stringColor];
+    if (texture.tintCache[stringColor]) {
+        return texture.tintCache[stringColor];
+    }
 
      // clone texture..
     var canvas = CanvasTinter.canvas || document.createElement("canvas");
@@ -156,7 +160,7 @@ CanvasTinter.tintWithPerPixel = function (texture, color, canvas) {
         crop.height
     );
 
-    var rgbValues = hex2rgb(color);
+    var rgbValues = utils.hex2rgb(color);
     var r = rgbValues[0], g = rgbValues[1], b = rgbValues[2];
 
     var pixelData = context.getImageData(0, 0, crop.width, crop.height);
@@ -180,13 +184,13 @@ CanvasTinter.tintWithPerPixel = function (texture, color, canvas) {
 CanvasTinter.roundColor = function (color) {
     var step = CanvasTinter.cacheStepsPerColorChannel;
 
-    var rgbValues = hex2rgb(color);
+    var rgbValues = utils.hex2rgb(color);
 
     rgbValues[0] = Math.min(255, (rgbValues[0] / step) * step);
     rgbValues[1] = Math.min(255, (rgbValues[1] / step) * step);
     rgbValues[2] = Math.min(255, (rgbValues[2] / step) * step);
 
-    return rgb2hex(rgbValues);
+    return utils.rgb2hex(rgbValues);
 };
 
 /**
@@ -208,7 +212,7 @@ CanvasTinter.convertTintToImage = false;
  *
  * @member
  */
-CanvasTinter.canUseMultiply = canUseNewCanvasBlendModes();
+CanvasTinter.canUseMultiply = utils.canUseNewCanvasBlendModes();
 
 /**
  * The tinting method that will be used.

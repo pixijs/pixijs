@@ -1,3 +1,5 @@
+var utils = require('../../../utils');
+
 /**
  * A set of functions used by the webGL renderer to draw the primitive graphics data
  *
@@ -53,7 +55,7 @@ WebGLGraphics.renderGraphics = function (graphics, renderSession)//projection, o
             gl.uniform2f(shader.projectionVector, projection.x, -projection.y);
             gl.uniform2f(shader.offsetVector, -offset.x, -offset.y);
 
-            gl.uniform3fv(shader.tintColor, hex2rgb(graphics.tint));
+            gl.uniform3fv(shader.tintColor, utils.hex2rgb(graphics.tint));
 
             gl.uniform1f(shader.alpha, graphics.worldAlpha);
 
@@ -224,7 +226,7 @@ WebGLGraphics.buildRectangle = function (graphicsData, webGLData) {
     var height = rectData.height;
 
     if (graphicsData.fill) {
-        var color = hex2rgb(graphicsData.fillColor);
+        var color = utils.hex2rgb(graphicsData.fillColor);
         var alpha = graphicsData.fillAlpha;
 
         var r = color[0] * alpha;
@@ -294,7 +296,7 @@ WebGLGraphics.buildRoundedRectangle = function (graphicsData, webGLData) {
     recPoints = recPoints.concat(WebGLGraphics.quadraticBezierCurve(x + radius, y, x, y, x, y + radius));
 
     if (graphicsData.fill) {
-        var color = hex2rgb(graphicsData.fillColor);
+        var color = utils.hex2rgb(graphicsData.fillColor);
         var alpha = graphicsData.fillAlpha;
 
         var r = color[0] * alpha;
@@ -348,7 +350,7 @@ WebGLGraphics.buildRoundedRectangle = function (graphicsData, webGLData) {
  * @param cpY {number} Control point y
  * @param toX {number} Destination point x
  * @param toY {number} Destination point y
- * @return {Array(Number)}
+ * @return {number[]}
  */
 WebGLGraphics.quadraticBezierCurve = function (fromX, fromY, cpX, cpY, toX, toY) {
 
@@ -418,7 +420,7 @@ WebGLGraphics.buildCircle = function (graphicsData, webGLData) {
     var i = 0;
 
     if (graphicsData.fill) {
-        var color = hex2rgb(graphicsData.fillColor);
+        var color = utils.hex2rgb(graphicsData.fillColor);
         var alpha = graphicsData.fillAlpha;
 
         var r = color[0] * alpha;
@@ -513,7 +515,7 @@ WebGLGraphics.buildLine = function (graphicsData, webGLData) {
     var width = graphicsData.lineWidth / 2;
 
     // sort color
-    var color = hex2rgb(graphicsData.lineColor);
+    var color = utils.hex2rgb(graphicsData.lineColor);
     var alpha = graphicsData.lineAlpha;
     var r = color[0] * alpha;
     var g = color[1] * alpha;
@@ -681,7 +683,7 @@ WebGLGraphics.buildComplexPoly = function (graphicsData, webGLData) {
     var indices = webGLData.indices;
     webGLData.points = points;
     webGLData.alpha = graphicsData.fillAlpha;
-    webGLData.color = hex2rgb(graphicsData.fillColor);
+    webGLData.color = utils.hex2rgb(graphicsData.fillColor);
 
     /*
         calclate the bounds..
@@ -741,7 +743,7 @@ WebGLGraphics.buildPoly = function (graphicsData, webGLData) {
     var length = points.length / 2;
 
     // sort color
-    var color = hex2rgb(graphicsData.fillColor);
+    var color = utils.hex2rgb(graphicsData.fillColor);
     var alpha = graphicsData.fillAlpha;
     var r = color[0] * alpha;
     var g = color[1] * alpha;

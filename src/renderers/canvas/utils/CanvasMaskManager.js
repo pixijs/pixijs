@@ -1,3 +1,5 @@
+var CanvasGraphics = require('../CanvasGraphics');
+
 /**
  * A set of functions used to handle masking.
  *

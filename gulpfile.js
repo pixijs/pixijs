@@ -21,8 +21,8 @@ global.paths = {
     src: './src',
     out: './dist',
 
-    get scripts() { return this.source + '/js/**/*.js'; },
-    get jsEntry() { return this.source + '/js/index'; }
+    get scripts() { return this.src + '/**/*.js'; },
+    get jsEntry() { return this.src + '/index'; }
 };
 
 // Require all tasks in gulp/tasks, including subfolders

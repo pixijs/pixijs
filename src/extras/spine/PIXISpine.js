@@ -1,3 +1,5 @@
+var utils = require('../../utils');
+
 /* Esoteric Software SPINE wrapper for pixi.js */
 
 spine.Bone.yDown = true;
@@ -137,7 +139,7 @@ Spine.prototype.update = function (dt) {
 
             slotContainer.rotation = -(slot.bone.worldRotation * spine.degRad);
 
-            slot.currentSprite.tint = rgb2hex([slot.r,slot.g,slot.b]);
+            slot.currentSprite.tint = utils.rgb2hex([slot.r,slot.g,slot.b]);
         }
         else if (type === spine.AttachmentType.skinnedmesh) {
             if (!slot.currentMeshName || slot.currentMeshName !== attachment.name) {

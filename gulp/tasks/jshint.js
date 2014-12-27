@@ -3,8 +3,9 @@ var gulp        = require('gulp'),
     handleErrors = require('../util/handleErrors');
 
 gulp.task('jshint', function () {
+    console.log(paths.scripts, process.cwd());
     return gulp.src(paths.scripts)
         .pipe(handleErrors())
-        .pipe(jshint('../.jshintrc'))
+        .pipe(jshint())
         .pipe(jshint.reporter('jshint-summary'));
 });

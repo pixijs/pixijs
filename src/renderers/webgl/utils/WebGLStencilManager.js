@@ -1,3 +1,5 @@
+var utils = require('../../../utils');
+
 /**
  * @class
  * @namespace PIXI
@@ -130,7 +132,7 @@ WebGLStencilManager.prototype.bindGraphics = function (graphics, webGLData, rend
         gl.uniform2f(shader.projectionVector, projection.x, -projection.y);
         gl.uniform2f(shader.offsetVector, -offset.x, -offset.y);
 
-        gl.uniform3fv(shader.tintColor, hex2rgb(graphics.tint));
+        gl.uniform3fv(shader.tintColor, utils.hex2rgb(graphics.tint));
         gl.uniform3fv(shader.color, webGLData.color);
 
         gl.uniform1f(shader.alpha, graphics.worldAlpha * webGLData.alpha);
@@ -155,7 +157,7 @@ WebGLStencilManager.prototype.bindGraphics = function (graphics, webGLData, rend
         gl.uniform2f(shader.projectionVector, projection.x, -projection.y);
         gl.uniform2f(shader.offsetVector, -offset.x, -offset.y);
 
-        gl.uniform3fv(shader.tintColor, hex2rgb(graphics.tint));
+        gl.uniform3fv(shader.tintColor, utils.hex2rgb(graphics.tint));
 
         gl.uniform1f(shader.alpha, graphics.worldAlpha);
 

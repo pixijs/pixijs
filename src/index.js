@@ -1,4 +1,3 @@
-/* global PIXI:true */
 /**
  * @file        Main export of the PIXI library
  * @namespace   PIXI

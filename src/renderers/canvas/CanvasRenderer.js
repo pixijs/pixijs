@@ -1,3 +1,5 @@
+var utils = require('../../utils');
+
 /**
  * The CanvasRenderer draws the Stage and all its content onto a 2d canvas. This renderer should be used for browsers that do not support webGL.
  * Don't forget to add the CanvasRenderer.view to your DOM or you will not see anything :)
@@ -268,7 +270,7 @@ CanvasRenderer.prototype.mapBlendModes = function () {
     if (!blendModesCanvas) {
         blendModesCanvas = [];
 
-        if (canUseNewCanvasBlendModes()) {
+        if (utils.canUseNewCanvasBlendModes()) {
             blendModesCanvas[blendModes.NORMAL]   = "source-over";
             blendModesCanvas[blendModes.ADD]      = "lighter"; //IS THIS OK???
             blendModesCanvas[blendModes.MULTIPLY] = "multiply";

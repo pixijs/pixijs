@@ -1,3 +1,6 @@
+var Sprite = require('../display/Sprite'),
+    utils = require('../utils');
+
 /**
  * A tiling sprite is a fast way of rendering a tiling image
  *
@@ -366,8 +369,8 @@ TilingSprite.prototype.generateTilingTexture = function (forcePowerOfTwo) {
         }
     }
     else {
-        targetWidth = getNextPowerOfTwo(frame.width);
-        targetHeight = getNextPowerOfTwo(frame.height);
+        targetWidth = utils.getNextPowerOfTwo(frame.width);
+        targetHeight = utils.getNextPowerOfTwo(frame.height);
 
         //  If the BaseTexture dimensions don't match the texture frame then we need a new texture anyway because it's part of a texture atlas
         if (frame.width !== targetWidth || frame.height !== targetHeight || texture.baseTexture.width !== targetWidth || texture.baseTexture.height || targetHeight) newTextureRequired = true;
