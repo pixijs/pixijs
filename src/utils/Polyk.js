@@ -35,30 +35,28 @@
  * Based on the Polyk library http://polyk.ivank.net released under MIT licence.
  * This is an amazing lib!
  * Slightly modified by Mat Groves (matgroves.com);
- * @class PolyK
+ *
+ * @namespace PIXI
  */
-PIXI.PolyK = {};
+var PolyK = module.exports = {};
 
 /**
  * Triangulates shapes for webGL graphic fills.
  *
- * @method Triangulate
  */
-PIXI.PolyK.Triangulate = function(p)
-{
+PolyK.Triangulate = function (p) {
     var sign = true;
 
     var n = p.length >> 1;
-    if(n < 3) return [];
+    if (n < 3) return [];
 
     var tgs = [];
     var avl = [];
-    for(var i = 0; i < n; i++) avl.push(i);
+    for (var i = 0; i < n; i++) avl.push(i);
 
     i = 0;
     var al = n;
-    while(al > 3)
-    {
+    while(al > 3) {
         var i0 = avl[(i+0)%al];
         var i1 = avl[(i+1)%al];
         var i2 = avl[(i+2)%al];
@@ -68,45 +66,39 @@ PIXI.PolyK.Triangulate = function(p)
         var cx = p[2*i2],  cy = p[2*i2+1];
 
         var earFound = false;
-        if(PIXI.PolyK._convex(ax, ay, bx, by, cx, cy, sign))
-        {
+        if (PolyK._convex(ax, ay, bx, by, cx, cy, sign)) {
             earFound = true;
-            for(var j = 0; j < al; j++)
-            {
+            for (var j = 0; j < al; j++) {
                 var vi = avl[j];
-                if(vi === i0 || vi === i1 || vi === i2) continue;
+                if (vi === i0 || vi === i1 || vi === i2) continue;
 
-                if(PIXI.PolyK._PointInTriangle(p[2*vi], p[2*vi+1], ax, ay, bx, by, cx, cy)) {
+                if (PolyK._PointInTriangle(p[2*vi], p[2*vi+1], ax, ay, bx, by, cx, cy)) {
                     earFound = false;
                     break;
                 }
             }
         }
 
-        if(earFound)
-        {
+        if (earFound) {
             tgs.push(i0, i1, i2);
             avl.splice((i+1)%al, 1);
             al--;
             i = 0;
         }
-        else if(i++ > 3*al)
-        {
+        else if (i++ > 3*al) {
             // need to flip flip reverse it!
             // reset!
-            if(sign)
-            {
+            if (sign) {
                 tgs = [];
                 avl = [];
-                for(i = 0; i < n; i++) avl.push(i);
+                for (i = 0; i < n; i++) avl.push(i);
 
                 i = 0;
                 al = n;
 
                 sign = false;
             }
-            else
-            {
+            else {
              //   window.console.log("PIXI Warning: shape too complex to fill");
                 return null;
             }
@@ -120,20 +112,18 @@ PIXI.PolyK.Triangulate = function(p)
 /**
  * Checks whether a point is within a triangle
  *
- * @method _PointInTriangle
- * @param px {Number} x coordinate of the point to test
- * @param py {Number} y coordinate of the point to test
- * @param ax {Number} x coordinate of the a point of the triangle
- * @param ay {Number} y coordinate of the a point of the triangle
- * @param bx {Number} x coordinate of the b point of the triangle
- * @param by {Number} y coordinate of the b point of the triangle
- * @param cx {Number} x coordinate of the c point of the triangle
- * @param cy {Number} y coordinate of the c point of the triangle
+ * @param px {number} x coordinate of the point to test
+ * @param py {number} y coordinate of the point to test
+ * @param ax {number} x coordinate of the a point of the triangle
+ * @param ay {number} y coordinate of the a point of the triangle
+ * @param bx {number} x coordinate of the b point of the triangle
+ * @param by {number} y coordinate of the b point of the triangle
+ * @param cx {number} x coordinate of the c point of the triangle
+ * @param cy {number} y coordinate of the c point of the triangle
  * @private
- * @return {Boolean}
+ * @return {boolean}
  */
-PIXI.PolyK._PointInTriangle = function(px, py, ax, ay, bx, by, cx, cy)
-{
+PolyK._PointInTriangle = function (px, py, ax, ay, bx, by, cx, cy) {
     var v0x = cx-ax;
     var v0y = cy-ay;
     var v1x = bx-ax;
@@ -158,11 +148,9 @@ PIXI.PolyK._PointInTriangle = function(px, py, ax, ay, bx, by, cx, cy)
 /**
  * Checks whether a shape is convex
  *
- * @method _convex
  * @private
- * @return {Boolean}
+ * @return {boolean}
  */
-PIXI.PolyK._convex = function(ax, ay, bx, by, cx, cy, sign)
-{
+PolyK._convex = function (ax, ay, bx, by, cx, cy, sign) {
     return ((ay-by)*(cx-bx) + (bx-ax)*(cy-by) >= 0) === sign;
 };
