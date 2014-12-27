@@ -1,39 +1,29 @@
 /**
- * @author Mat Groves http://matgroves.com/ @Doormat23
- * @author Richard Davey http://www.photonstorm.com @photonstorm
+ * @class
+ * @namespace PIXI
+ * @param gl {WebGLContext} the current WebGL drawing context
  */
-
-/**
-* @class PixiShader
-* @constructor
-* @param gl {WebGLContext} the current WebGL drawing context
-*/
-PIXI.PixiShader = function(gl)
-{
+function PixiShader(gl) {
     /**
-     * @property _UID
-     * @type Number
+     * @member {number}
      * @private
      */
-    this._UID = PIXI._UID++;
+    this._UID = _UID++;
 
     /**
-     * @property gl
-     * @type WebGLContext
+     * @member {WebGLContext}
      */
     this.gl = gl;
 
     /**
      * The WebGL program.
-     * @property program
-     * @type Any
+     * @member {Any}
      */
     this.program = null;
 
     /**
      * The fragment shader.
-     * @property fragmentSrc
-     * @type Array
+     * @member {Array}
      */
     this.fragmentSrc = [
         'precision lowp float;',
@@ -47,49 +37,44 @@ PIXI.PixiShader = function(gl)
 
     /**
      * A local texture counter for multi-texture shaders.
-     * @property textureCount
-     * @type Number
+     * @member {number}
      */
     this.textureCount = 0;
 
     /**
      * A local flag
-     * @property firstRun
-     * @type Boolean
+     * @member {boolean}
      * @private
      */
     this.firstRun = true;
 
     /**
      * A dirty flag
-     * @property dirty
-     * @type Boolean
+     * @member {boolean}
      */
     this.dirty = true;
 
     /**
      * Uniform attributes cache.
-     * @property attributes
-     * @type Array
+     * @member {Array}
      * @private
      */
     this.attributes = [];
 
     this.init();
-};
+}
 
-PIXI.PixiShader.prototype.constructor = PIXI.PixiShader;
+PixiShader.prototype.constructor = PixiShader;
+module.exports = PixiShader;
 
 /**
-* Initialises the shader.
-*
-* @method init
-*/
-PIXI.PixiShader.prototype.init = function()
-{
+ * Initialises the shader.
+ *
+ */
+PixiShader.prototype.init = function () {
     var gl = this.gl;
 
-    var program = PIXI.compileProgram(gl, this.vertexSrc || PIXI.PixiShader.defaultVertexSrc, this.fragmentSrc);
+    var program = compileProgram(gl, this.vertexSrc || PixiShader.defaultVertexSrc, this.fragmentSrc);
 
     gl.useProgram(program);
 
@@ -110,8 +95,7 @@ PIXI.PixiShader.prototype.init = function()
     // maybe its something to do with the current state of the gl context.
     // I'm convinced this is a bug in the chrome browser as there is NO reason why this should be returning -1 especially as it only manifests on my chrome pixel
     // If theres any webGL people that know why could happen please help :)
-    if(this.colorAttribute === -1)
-    {
+    if (this.colorAttribute === -1) {
         this.colorAttribute = 2;
     }
 
@@ -120,8 +104,7 @@ PIXI.PixiShader.prototype.init = function()
     // End worst hack eva //
 
     // add those custom shaders!
-    for (var key in this.uniforms)
-    {
+    for (var key in this.uniforms) {
         // get the uniform locations..
         this.uniforms[key].uniformLocation = gl.getUniformLocation(program, key);
     }
@@ -132,72 +115,58 @@ PIXI.PixiShader.prototype.init = function()
 };
 
 /**
-* Initialises the shader uniform values.
-*
-* Uniforms are specified in the GLSL_ES Specification: http://www.khronos.org/registry/webgl/specs/latest/1.0/
-* http://www.khronos.org/registry/gles/specs/2.0/GLSL_ES_Specification_1.0.17.pdf
-*
-* @method initUniforms
-*/
-PIXI.PixiShader.prototype.initUniforms = function()
-{
+ * Initialises the shader uniform values.
+ *
+ * Uniforms are specified in the GLSL_ES Specification: http://www.khronos.org/registry/webgl/specs/latest/1.0/
+ * http://www.khronos.org/registry/gles/specs/2.0/GLSL_ES_Specification_1.0.17.pdf
+ *
+ */
+PixiShader.prototype.initUniforms = function () {
     this.textureCount = 1;
     var gl = this.gl;
     var uniform;
 
-    for (var key in this.uniforms)
-    {
+    for (var key in this.uniforms) {
         uniform = this.uniforms[key];
 
         var type = uniform.type;
 
-        if (type === 'sampler2D')
-        {
+        if (type === 'sampler2D') {
             uniform._init = false;
 
-            if (uniform.value !== null)
-            {
+            if (uniform.value !== null) {
                 this.initSampler2D(uniform);
             }
         }
-        else if (type === 'mat2' || type === 'mat3' || type === 'mat4')
-        {
+        else if (type === 'mat2' || type === 'mat3' || type === 'mat4') {
             //  These require special handling
             uniform.glMatrix = true;
             uniform.glValueLength = 1;
 
-            if (type === 'mat2')
-            {
+            if (type === 'mat2') {
                 uniform.glFunc = gl.uniformMatrix2fv;
             }
-            else if (type === 'mat3')
-            {
+            else if (type === 'mat3') {
                 uniform.glFunc = gl.uniformMatrix3fv;
             }
-            else if (type === 'mat4')
-            {
+            else if (type === 'mat4') {
                 uniform.glFunc = gl.uniformMatrix4fv;
             }
         }
-        else
-        {
+        else {
             //  GL function reference
             uniform.glFunc = gl['uniform' + type];
 
-            if (type === '2f' || type === '2i')
-            {
+            if (type === '2f' || type === '2i') {
                 uniform.glValueLength = 2;
             }
-            else if (type === '3f' || type === '3i')
-            {
+            else if (type === '3f' || type === '3i') {
                 uniform.glValueLength = 3;
             }
-            else if (type === '4f' || type === '4i')
-            {
+            else if (type === '4f' || type === '4i') {
                 uniform.glValueLength = 4;
             }
-            else
-            {
+            else {
                 uniform.glValueLength = 1;
             }
         }
@@ -206,14 +175,11 @@ PIXI.PixiShader.prototype.initUniforms = function()
 };
 
 /**
-* Initialises a Sampler2D uniform (which may only be available later on after initUniforms once the texture has loaded)
-*
-* @method initSampler2D
-*/
-PIXI.PixiShader.prototype.initSampler2D = function(uniform)
-{
-    if (!uniform.value || !uniform.value.baseTexture || !uniform.value.baseTexture.hasLoaded)
-    {
+ * Initialises a Sampler2D uniform (which may only be available later on after initUniforms once the texture has loaded)
+ *
+ */
+PixiShader.prototype.initSampler2D = function (uniform) {
+    if (!uniform.value || !uniform.value.baseTexture || !uniform.value.baseTexture.hasLoaded) {
         return;
     }
 
@@ -223,8 +189,7 @@ PIXI.PixiShader.prototype.initSampler2D = function(uniform)
     gl.bindTexture(gl.TEXTURE_2D, uniform.value.baseTexture._glTextures[gl.id]);
 
     //  Extended texture data
-    if (uniform.textureData)
-    {
+    if (uniform.textureData) {
         var data = uniform.textureData;
 
         // GLTexture = mag linear, min linear_mipmap_linear, wrap repeat + gl.generateMipmap(gl.TEXTURE_2D);
@@ -243,16 +208,14 @@ PIXI.PixiShader.prototype.initSampler2D = function(uniform)
         var wrapT = (data.wrapT) ? data.wrapT : gl.CLAMP_TO_EDGE;
         var format = (data.luminance) ? gl.LUMINANCE : gl.RGBA;
 
-        if (data.repeat)
-        {
+        if (data.repeat) {
             wrapS = gl.REPEAT;
             wrapT = gl.REPEAT;
         }
 
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, !!data.flipY);
 
-        if (data.width)
-        {
+        if (data.width) {
             var width = (data.width) ? data.width : 512;
             var height = (data.height) ? data.height : 2;
             var border = (data.border) ? data.border : 0;
@@ -260,8 +223,7 @@ PIXI.PixiShader.prototype.initSampler2D = function(uniform)
             // void texImage2D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, ArrayBufferView? pixels);
             gl.texImage2D(gl.TEXTURE_2D, 0, format, width, height, border, format, gl.UNSIGNED_BYTE, null);
         }
-        else
-        {
+        else {
             //  void texImage2D(GLenum target, GLint level, GLenum internalformat, GLenum format, GLenum type, ImageData? pixels);
             gl.texImage2D(gl.TEXTURE_2D, 0, format, gl.RGBA, gl.UNSIGNED_BYTE, uniform.value.baseTexture.source);
         }
@@ -277,84 +239,66 @@ PIXI.PixiShader.prototype.initSampler2D = function(uniform)
     uniform._init = true;
 
     this.textureCount++;
-
 };
 
 /**
-* Updates the shader uniform values.
-*
-* @method syncUniforms
-*/
-PIXI.PixiShader.prototype.syncUniforms = function()
-{
+ * Updates the shader uniform values.
+ *
+ */
+PixiShader.prototype.syncUniforms = function () {
     this.textureCount = 1;
     var uniform;
     var gl = this.gl;
 
     //  This would probably be faster in an array and it would guarantee key order
-    for (var key in this.uniforms)
-    {
+    for (var key in this.uniforms) {
         uniform = this.uniforms[key];
 
-        if (uniform.glValueLength === 1)
-        {
-            if (uniform.glMatrix === true)
-            {
+        if (uniform.glValueLength === 1) {
+            if (uniform.glMatrix === true) {
                 uniform.glFunc.call(gl, uniform.uniformLocation, uniform.transpose, uniform.value);
             }
-            else
-            {
+            else {
                 uniform.glFunc.call(gl, uniform.uniformLocation, uniform.value);
             }
         }
-        else if (uniform.glValueLength === 2)
-        {
+        else if (uniform.glValueLength === 2) {
             uniform.glFunc.call(gl, uniform.uniformLocation, uniform.value.x, uniform.value.y);
         }
-        else if (uniform.glValueLength === 3)
-        {
+        else if (uniform.glValueLength === 3) {
             uniform.glFunc.call(gl, uniform.uniformLocation, uniform.value.x, uniform.value.y, uniform.value.z);
         }
-        else if (uniform.glValueLength === 4)
-        {
+        else if (uniform.glValueLength === 4) {
             uniform.glFunc.call(gl, uniform.uniformLocation, uniform.value.x, uniform.value.y, uniform.value.z, uniform.value.w);
         }
-        else if (uniform.type === 'sampler2D')
-        {
-            if (uniform._init)
-            {
+        else if (uniform.type === 'sampler2D') {
+            if (uniform._init) {
                 gl.activeTexture(gl['TEXTURE' + this.textureCount]);
 
-                if(uniform.value.baseTexture._dirty[gl.id])
-                {
-                    PIXI.instances[gl.id].updateTexture(uniform.value.baseTexture);
+                if (uniform.value.baseTexture._dirty[gl.id]) {
+                    instances[gl.id].updateTexture(uniform.value.baseTexture);
                 }
-                else
-                {
+                else {
                     // bind the current texture
                     gl.bindTexture(gl.TEXTURE_2D, uniform.value.baseTexture._glTextures[gl.id]);
                 }
 
-             //   gl.bindTexture(gl.TEXTURE_2D, uniform.value.baseTexture._glTextures[gl.id] || PIXI.createWebGLTexture( uniform.value.baseTexture, gl));
+             //   gl.bindTexture(gl.TEXTURE_2D, uniform.value.baseTexture._glTextures[gl.id] || createWebGLTexture( uniform.value.baseTexture, gl));
                 gl.uniform1i(uniform.uniformLocation, this.textureCount);
                 this.textureCount++;
             }
-            else
-            {
+            else {
                 this.initSampler2D(uniform);
             }
         }
     }
-
 };
 
 /**
-* Destroys the shader.
-*
-* @method destroy
-*/
-PIXI.PixiShader.prototype.destroy = function()
-{
+ * Destroys the shader.
+ *
+ */
+PixiShader.prototype.destroy = function () {
     this.gl.deleteProgram( this.program );
     this.uniforms = null;
     this.gl = null;
@@ -363,12 +307,12 @@ PIXI.PixiShader.prototype.destroy = function()
 };
 
 /**
-* The Default Vertex shader source.
-*
-* @property defaultVertexSrc
-* @type String
-*/
-PIXI.PixiShader.defaultVertexSrc = [
+ * The Default Vertex shader source.
+ *
+ * @property defaultVertexSrc
+ * @type String
+ */
+PixiShader.defaultVertexSrc = [
     'attribute vec2 aVertexPosition;',
     'attribute vec2 aTextureCoord;',
     'attribute vec4 aColor;',

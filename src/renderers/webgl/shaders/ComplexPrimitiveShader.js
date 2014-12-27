@@ -1,38 +1,29 @@
 /**
- * @author Mat Groves http://matgroves.com/ @Doormat23
+ * @class
+ * @namespace PIXI
+ * @param gl {WebGLContext} the current WebGL drawing context
  */
-
-/**
-* @class ComplexPrimitiveShader
-* @constructor
-* @param gl {WebGLContext} the current WebGL drawing context
-*/
-PIXI.ComplexPrimitiveShader = function(gl)
-{
+function ComplexPrimitiveShader(gl) {
     /**
-     * @property _UID
-     * @type Number
+     * @member {number}
      * @private
      */
-    this._UID = PIXI._UID++;
+    this._UID = _UID++;
 
     /**
-     * @property gl
-     * @type WebGLContext
+     * @member {WebGLContext}
      */
     this.gl = gl;
 
     /**
      * The WebGL program.
-     * @property program
-     * @type Any
+     * @member {Any}
      */
     this.program = null;
 
     /**
      * The fragment shader.
-     * @property fragmentSrc
-     * @type Array
+     * @member {Array}
      */
     this.fragmentSrc = [
 
@@ -47,16 +38,15 @@ PIXI.ComplexPrimitiveShader = function(gl)
 
     /**
      * The vertex shader.
-     * @property vertexSrc
-     * @type Array
+     * @member {Array}
      */
-    this.vertexSrc  = [
+    this.vertexSrc = [
         'attribute vec2 aVertexPosition;',
         //'attribute vec4 aColor;',
         'uniform mat3 translationMatrix;',
         'uniform vec2 projectionVector;',
         'uniform vec2 offsetVector;',
-        
+
         'uniform vec3 tint;',
         'uniform float alpha;',
         'uniform vec3 color;',
@@ -72,20 +62,19 @@ PIXI.ComplexPrimitiveShader = function(gl)
     ];
 
     this.init();
-};
+}
 
-PIXI.ComplexPrimitiveShader.prototype.constructor = PIXI.ComplexPrimitiveShader;
+ComplexPrimitiveShader.prototype.constructor = ComplexPrimitiveShader;
+module.exports = ComplexPrimitiveShader;
 
 /**
-* Initialises the shader.
-* 
-* @method init
-*/
-PIXI.ComplexPrimitiveShader.prototype.init = function()
-{
+ * Initialises the shader.
+ *
+ */
+ComplexPrimitiveShader.prototype.init = function () {
     var gl = this.gl;
 
-    var program = PIXI.compileProgram(gl, this.vertexSrc, this.fragmentSrc);
+    var program = compileProgram(gl, this.vertexSrc, this.fragmentSrc);
     gl.useProgram(program);
 
     // get and store the uniforms for the shader
@@ -108,12 +97,10 @@ PIXI.ComplexPrimitiveShader.prototype.init = function()
 };
 
 /**
-* Destroys the shader.
-* 
-* @method destroy
-*/
-PIXI.ComplexPrimitiveShader.prototype.destroy = function()
-{
+ * Destroys the shader.
+ *
+ */
+ComplexPrimitiveShader.prototype.destroy = function () {
     this.gl.deleteProgram( this.program );
     this.uniforms = null;
     this.gl = null;

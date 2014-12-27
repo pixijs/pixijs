@@ -1,38 +1,29 @@
 /**
- * @author Mat Groves http://matgroves.com/ @Doormat23
+ * @class
+ * @namespace PIXI
+ * @param gl {WebGLContext} the current WebGL drawing context
  */
-
-/**
-* @class PrimitiveShader
-* @constructor
-* @param gl {WebGLContext} the current WebGL drawing context
-*/
-PIXI.PrimitiveShader = function(gl)
-{
+function PrimitiveShader(gl) {
     /**
-     * @property _UID
-     * @type Number
+     * @member {number}
      * @private
      */
-    this._UID = PIXI._UID++;
- 
+    this._UID = _UID++;
+
     /**
-     * @property gl
-     * @type WebGLContext
+     * @member {WebGLContext}
      */
     this.gl = gl;
 
     /**
      * The WebGL program.
-     * @property program
-     * @type Any
+     * @member {Any}
      */
     this.program = null;
 
     /**
      * The fragment shader.
-     * @property fragmentSrc
-     * @type Array
+     * @member {Array}
      */
     this.fragmentSrc = [
         'precision mediump float;',
@@ -45,8 +36,7 @@ PIXI.PrimitiveShader = function(gl)
 
     /**
      * The vertex shader.
-     * @property vertexSrc
-     * @type Array
+     * @member {Array}
      */
     this.vertexSrc  = [
         'attribute vec2 aVertexPosition;',
@@ -68,20 +58,19 @@ PIXI.PrimitiveShader = function(gl)
     ];
 
     this.init();
-};
+}
 
-PIXI.PrimitiveShader.prototype.constructor = PIXI.PrimitiveShader;
+PrimitiveShader.prototype.constructor = PrimitiveShader;
+module.exports = PrimitiveShader;
 
 /**
-* Initialises the shader.
-* 
-* @method init
-*/
-PIXI.PrimitiveShader.prototype.init = function()
-{
+ * Initialises the shader.
+ *
+ */
+PrimitiveShader.prototype.init = function () {
     var gl = this.gl;
 
-    var program = PIXI.compileProgram(gl, this.vertexSrc, this.fragmentSrc);
+    var program = compileProgram(gl, this.vertexSrc, this.fragmentSrc);
     gl.useProgram(program);
 
     // get and store the uniforms for the shader
@@ -103,12 +92,10 @@ PIXI.PrimitiveShader.prototype.init = function()
 };
 
 /**
-* Destroys the shader.
-* 
-* @method destroy
-*/
-PIXI.PrimitiveShader.prototype.destroy = function()
-{
+ * Destroys the shader.
+ *
+ */
+PrimitiveShader.prototype.destroy = function () {
     this.gl.deleteProgram( this.program );
     this.uniforms = null;
     this.gl = null;

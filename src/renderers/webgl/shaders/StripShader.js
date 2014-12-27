@@ -1,38 +1,29 @@
 /**
- * @author Mat Groves http://matgroves.com/ @Doormat23
+ * @class
+ * @namespace PIXI
+ * @param gl {WebGLContext} the current WebGL drawing context
  */
-
-/**
-* @class StripShader
-* @constructor
-* @param gl {WebGLContext} the current WebGL drawing context
-*/
-PIXI.StripShader = function(gl)
-{
+function StripShader(gl) {
     /**
-     * @property _UID
-     * @type Number
+     * @member {number}
      * @private
      */
-    this._UID = PIXI._UID++;
-    
+    this._UID = _UID++;
+
     /**
-     * @property gl
-     * @type WebGLContext
+     * @member {WebGLContext}
      */
     this.gl = gl;
 
     /**
      * The WebGL program.
-     * @property program
-     * @type Any
+     * @member {Any}
      */
     this.program = null;
 
     /**
      * The fragment shader.
-     * @property fragmentSrc
-     * @type Array
+     * @member {Array}
      */
     this.fragmentSrc = [
         'precision mediump float;',
@@ -49,8 +40,7 @@ PIXI.StripShader = function(gl)
 
     /**
      * The vertex shader.
-     * @property vertexSrc
-     * @type Array
+     * @member {Array}
      */
     this.vertexSrc  = [
         'attribute vec2 aVertexPosition;',
@@ -73,20 +63,19 @@ PIXI.StripShader = function(gl)
     ];
 
     this.init();
-};
+}
 
-PIXI.StripShader.prototype.constructor = PIXI.StripShader;
+StripShader.prototype.constructor = StripShader;
+module.exports = StripShader;
 
 /**
-* Initialises the shader.
-* 
-* @method init
-*/
-PIXI.StripShader.prototype.init = function()
-{
+ * Initialises the shader.
+ *
+ */
+StripShader.prototype.init = function () {
     var gl = this.gl;
 
-    var program = PIXI.compileProgram(gl, this.vertexSrc, this.fragmentSrc);
+    var program = compileProgram(gl, this.vertexSrc, this.fragmentSrc);
     gl.useProgram(program);
 
     // get and store the uniforms for the shader
@@ -109,12 +98,10 @@ PIXI.StripShader.prototype.init = function()
 };
 
 /**
-* Destroys the shader.
-* 
-* @method destroy
-*/
-PIXI.StripShader.prototype.destroy = function()
-{
+ * Destroys the shader.
+ *
+ */
+StripShader.prototype.destroy = function () {
     this.gl.deleteProgram( this.program );
     this.uniforms = null;
     this.gl = null;
