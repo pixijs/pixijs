@@ -1,88 +1,80 @@
+var DisplayObjectContainer = require('../display/DisplayObjectContainer');
+
 /**
- * @author Mat Groves http://matgroves.com/
- */
-
- /**
  *
- * @class Strip
+ * @class
  * @extends DisplayObjectContainer
- * @constructor
+ * @namespace PIXI
  * @param texture {Texture} The texture to use
- * @param width {Number} the width
- * @param height {Number} the height
+ * @param width {number} the width
+ * @param height {number} the height
  *
  */
-PIXI.Strip = function(texture)
-{
-    PIXI.DisplayObjectContainer.call( this );
-
+function Strip(texture) {
+    DisplayObjectContainer.call(this);
 
     /**
      * The texture of the strip
      *
-     * @property texture
-     * @type Texture
+     * @member {Texture}
      */
     this.texture = texture;
 
     // set up the main bits..
-    this.uvs = new PIXI.Float32Array([0, 1,
+    this.uvs = new Float32Array([0, 1,
                                       1, 1,
                                       1, 0,
                                       0, 1]);
 
-    this.vertices = new PIXI.Float32Array([0, 0,
+    this.vertices = new Float32Array([0, 0,
                                             100, 0,
                                             100, 100,
                                             0, 100]);
 
-    this.colors = new PIXI.Float32Array([1, 1, 1, 1]);
+    this.colors = new Float32Array([1, 1, 1, 1]);
 
-    this.indices = new PIXI.Uint16Array([0, 1, 2, 3]);
+    this.indices = new Uint16Array([0, 1, 2, 3]);
 
     /**
      * Whether the strip is dirty or not
      *
-     * @property dirty
-     * @type Boolean
+     * @member {boolean}
      */
     this.dirty = true;
 
     /**
-     * The blend mode to be applied to the sprite. Set to PIXI.blendModes.NORMAL to remove any blend mode.
+     * The blend mode to be applied to the sprite. Set to blendModes.NORMAL to remove any blend mode.
      *
-     * @property blendMode
-     * @type Number
-     * @default PIXI.blendModes.NORMAL;
+     * @member {number}
+     * @default blendModes.NORMAL;
      */
-    this.blendMode = PIXI.blendModes.NORMAL;
+    this.blendMode = blendModes.NORMAL;
 
     /**
      * Triangles in canvas mode are automatically antialiased, use this value to force triangles to overlap a bit with each other.
      *
-     * @property canvasPadding
-     * @type Number
+     * @member {number}
      */
     this.canvasPadding = 0;
 
-    this.drawMode = PIXI.Strip.DrawModes.TRIANGLE_STRIP;
+    this.drawMode = Strip.DrawModes.TRIANGLE_STRIP;
 
 };
 
 // constructor
-PIXI.Strip.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
-PIXI.Strip.prototype.constructor = PIXI.Strip;
+Strip.prototype = Object.create(DisplayObjectContainer.prototype);
+Strip.prototype.constructor = Strip;
+module.exports = Strip;
 
-PIXI.Strip.prototype._renderWebGL = function(renderSession)
-{
+Strip.prototype._renderWebGL = function (renderSession) {
     // if the sprite is not visible or the alpha is 0 then no need to render this element
-    if(!this.visible || this.alpha <= 0)return;
+    if (!this.visible || this.alpha <= 0)return;
     // render triangle strip..
 
     renderSession.spriteBatch.stop();
 
     // init! init!
-    if(!this._vertexBuffer)this._initWebGL(renderSession);
+    if (!this._vertexBuffer)this._initWebGL(renderSession);
 
     renderSession.shaderManager.setShader(renderSession.shaderManager.stripShader);
 
@@ -95,8 +87,7 @@ PIXI.Strip.prototype._renderWebGL = function(renderSession)
     //TODO check culling
 };
 
-PIXI.Strip.prototype._initWebGL = function(renderSession)
-{
+Strip.prototype._initWebGL = function (renderSession) {
     // build the strip!
     var gl = renderSession.gl;
 
@@ -118,14 +109,13 @@ PIXI.Strip.prototype._initWebGL = function(renderSession)
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW);
 };
 
-PIXI.Strip.prototype._renderStrip = function(renderSession)
-{
+Strip.prototype._renderStrip = function (renderSession) {
     var gl = renderSession.gl;
     var projection = renderSession.projection,
         offset = renderSession.offset,
         shader = renderSession.shaderManager.stripShader;
 
-    var drawMode = this.drawMode === PIXI.Strip.DrawModes.TRIANGLE_STRIP ? gl.TRIANGLE_STRIP : gl.TRIANGLES;
+    var drawMode = this.drawMode === Strip.DrawModes.TRIANGLE_STRIP ? gl.TRIANGLE_STRIP : gl.TRIANGLES;
 
     // gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mat4Real);
 
@@ -138,8 +128,7 @@ PIXI.Strip.prototype._renderStrip = function(renderSession)
     gl.uniform2f(shader.offsetVector, -offset.x, -offset.y);
     gl.uniform1f(shader.alpha, this.worldAlpha);
 
-    if(!this.dirty)
-    {
+    if (!this.dirty) {
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
         gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vertices);
@@ -152,12 +141,10 @@ PIXI.Strip.prototype._renderStrip = function(renderSession)
         gl.activeTexture(gl.TEXTURE0);
 
         // check if a texture is dirty..
-        if(this.texture.baseTexture._dirty[gl.id])
-        {
+        if (this.texture.baseTexture._dirty[gl.id]) {
             renderSession.renderer.updateTexture(this.texture.baseTexture);
         }
-        else
-        {
+        else {
             // bind the current texture
             gl.bindTexture(gl.TEXTURE_2D, this.texture.baseTexture._glTextures[gl.id]);
         }
@@ -167,8 +154,7 @@ PIXI.Strip.prototype._renderStrip = function(renderSession)
 
 
     }
-    else
-    {
+    else {
 
         this.dirty = false;
         gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
@@ -183,12 +169,10 @@ PIXI.Strip.prototype._renderStrip = function(renderSession)
         gl.activeTexture(gl.TEXTURE0);
 
         // check if a texture is dirty..
-        if(this.texture.baseTexture._dirty[gl.id])
-        {
+        if (this.texture.baseTexture._dirty[gl.id]) {
             renderSession.renderer.updateTexture(this.texture.baseTexture);
         }
-        else
-        {
+        else {
             gl.bindTexture(gl.TEXTURE_2D, this.texture.baseTexture._glTextures[gl.id]);
         }
 
@@ -207,33 +191,27 @@ PIXI.Strip.prototype._renderStrip = function(renderSession)
 
 
 
-PIXI.Strip.prototype._renderCanvas = function(renderSession)
-{
+Strip.prototype._renderCanvas = function (renderSession) {
     var context = renderSession.context;
 
     var transform = this.worldTransform;
 
-    if (renderSession.roundPixels)
-    {
+    if (renderSession.roundPixels) {
         context.setTransform(transform.a, transform.b, transform.c, transform.d, transform.tx | 0, transform.ty | 0);
     }
-    else
-    {
+    else {
         context.setTransform(transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
     }
 
-    if (this.drawMode === PIXI.Strip.DrawModes.TRIANGLE_STRIP)
-    {
+    if (this.drawMode === Strip.DrawModes.TRIANGLE_STRIP) {
         this._renderCanvasTriangleStrip(context);
     }
-    else
-    {
+    else {
         this._renderCanvasTriangles(context);
     }
 };
 
-PIXI.Strip.prototype._renderCanvasTriangleStrip = function(context)
-{
+Strip.prototype._renderCanvasTriangleStrip = function (context) {
     // draw triangles!!
     var vertices = this.vertices;
     var uvs = this.uvs;
@@ -248,8 +226,7 @@ PIXI.Strip.prototype._renderCanvasTriangleStrip = function(context)
     }
 };
 
-PIXI.Strip.prototype._renderCanvasTriangles = function(context)
-{
+Strip.prototype._renderCanvasTriangles = function (context) {
     // draw triangles!!
     var vertices = this.vertices;
     var uvs = this.uvs;
@@ -265,8 +242,7 @@ PIXI.Strip.prototype._renderCanvasTriangles = function(context)
     }
 };
 
-PIXI.Strip.prototype._renderCanvasDrawTriangle = function(context, vertices, uvs, index0, index1, index2)
-{
+Strip.prototype._renderCanvasDrawTriangle = function (context, vertices, uvs, index0, index1, index2) {
     var textureSource = this.texture.baseTexture.source;
     var textureWidth = this.texture.width;
     var textureHeight = this.texture.height;
@@ -341,12 +317,10 @@ PIXI.Strip.prototype._renderCanvasDrawTriangle = function(context, vertices, uvs
 /**
  * Renders a flat strip
  *
- * @method renderStripFlat
  * @param strip {Strip} The Strip to render
  * @private
  */
-PIXI.Strip.prototype.renderStripFlat = function(strip)
-{
+Strip.prototype.renderStripFlat = function (strip) {
     var context = this.context;
     var vertices = strip.vertices;
 
@@ -354,8 +328,7 @@ PIXI.Strip.prototype.renderStripFlat = function(strip)
     this.count++;
 
     context.beginPath();
-    for (var i=1; i < length-2; i++)
-    {
+    for (var i=1; i < length-2; i++) {
         // draw some triangles!
         var index = i*2;
 
@@ -373,8 +346,7 @@ PIXI.Strip.prototype.renderStripFlat = function(strip)
 };
 
 /*
-PIXI.Strip.prototype.setTexture = function(texture)
-{
+Strip.prototype.setTexture = function (texture) {
     //TODO SET THE TEXTURES
     //TODO VISIBILITY
 
@@ -384,30 +356,26 @@ PIXI.Strip.prototype.setTexture = function(texture)
     this.height  = texture.frame.height;
     this.updateFrame = true;
 };
-*/
+ */
 
 /**
  * When the texture is updated, this event will fire to update the scale and frame
  *
- * @method onTextureUpdate
  * @param event
  * @private
  */
 
-PIXI.Strip.prototype.onTextureUpdate = function()
-{
+Strip.prototype.onTextureUpdate = function () {
     this.updateFrame = true;
 };
 
 /**
  * Returns the bounds of the mesh as a rectangle. The bounds calculation takes the worldTransform into account.
  *
- * @method getBounds
  * @param matrix {Matrix} the transformation matrix of the sprite
  * @return {Rectangle} the framing rectangle
  */
-PIXI.Strip.prototype.getBounds = function(matrix)
-{
+Strip.prototype.getBounds = function (matrix) {
     var worldTransform = matrix || this.worldTransform;
 
     var a = worldTransform.a;
@@ -424,8 +392,7 @@ PIXI.Strip.prototype.getBounds = function(matrix)
     var minY = Infinity;
 
     var vertices = this.vertices;
-    for (var i = 0, n = vertices.length; i < n; i += 2)
-    {
+    for (var i = 0, n = vertices.length; i < n; i += 2) {
         var rawX = vertices[i], rawY = vertices[i + 1];
         var x = (a * rawX) + (c * rawY) + tx;
         var y = (d * rawY) + (b * rawX) + ty;
@@ -437,9 +404,8 @@ PIXI.Strip.prototype.getBounds = function(matrix)
         maxY = y > maxY ? y : maxY;
     }
 
-    if (minX === -Infinity || maxY === Infinity)
-    {
-        return PIXI.EmptyRectangle;
+    if (minX === -Infinity || maxY === Infinity) {
+        return EmptyRectangle;
     }
 
     var bounds = this._bounds;
@@ -459,11 +425,13 @@ PIXI.Strip.prototype.getBounds = function(matrix)
 /**
  * Different drawing buffer modes supported
  *
- * @property
- * @type {{TRIANGLE_STRIP: number, TRIANGLES: number}}
  * @static
+ * @constant
+ * @property {object} DrawModes
+ * @property {number} DrawModes.TRIANGLE_STRIP
+ * @property {number} DrawModes.TRIANGLES
  */
-PIXI.Strip.DrawModes = {
+Strip.DrawModes = {
     TRIANGLE_STRIP: 0,
     TRIANGLES: 1
 };

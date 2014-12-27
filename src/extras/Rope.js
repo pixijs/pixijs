@@ -1,26 +1,22 @@
-/**
- * @author Mat Groves http://matgroves.com/ @Doormat23
- * @copyright Mat Groves, Rovanion Luckey
- */
+var Strip = require('./Strip');
 
 /**
  *
- * @class Rope
- * @constructor
+ * @class
+ * @namespace PIXI
  * @extends Strip
  * @param {Texture} texture - The texture to use on the rope.
- * @param {Array} points - An array of {PIXI.Point}.
+ * @param {Array} points - An array of {Point}.
  *
  */
-PIXI.Rope = function(texture, points)
-{
-    PIXI.Strip.call( this, texture );
+function Rope(texture, points) {
+    Strip.call( this, texture );
     this.points = points;
 
-    this.vertices = new PIXI.Float32Array(points.length * 4);
-    this.uvs = new PIXI.Float32Array(points.length * 4);
-    this.colors = new PIXI.Float32Array(points.length * 2);
-    this.indices = new PIXI.Uint16Array(points.length * 2);
+    this.vertices = new Float32Array(points.length * 4);
+    this.uvs = new Float32Array(points.length * 4);
+    this.colors = new Float32Array(points.length * 2);
+    this.indices = new Uint16Array(points.length * 2);
 
 
     this.refresh();
@@ -28,18 +24,20 @@ PIXI.Rope = function(texture, points)
 
 
 // constructor
-PIXI.Rope.prototype = Object.create( PIXI.Strip.prototype );
-PIXI.Rope.prototype.constructor = PIXI.Rope;
+Rope.prototype = Object.create(Strip.prototype);
+Rope.prototype.constructor = Rope;
+module.exports = Rope;
 
-/*
+/**
  * Refreshes
  *
- * @method refresh
  */
-PIXI.Rope.prototype.refresh = function()
-{
+Rope.prototype.refresh = function () {
     var points = this.points;
-    if(points.length < 1) return;
+
+    if (points.length < 1) {
+        return;
+    }
 
     var uvs = this.uvs;
 
@@ -63,23 +61,20 @@ PIXI.Rope.prototype.refresh = function()
     var total = points.length,
         point, index, amount;
 
-    for (var i = 1; i < total; i++)
-    {
+    for (var i = 1; i < total; i++) {
         point = points[i];
         index = i * 4;
         // time to do some smart drawing!
         amount = i / (total-1);
 
-        if(i%2)
-        {
+        if (i%2) {
             uvs[index] = amount;
             uvs[index+1] = 0;
 
             uvs[index+2] = amount;
             uvs[index+3] = 1;
         }
-        else
-        {
+        else {
             uvs[index] = amount;
             uvs[index+1] = 0;
 
@@ -102,14 +97,14 @@ PIXI.Rope.prototype.refresh = function()
 /*
  * Updates the object transform for rendering
  *
- * @method updateTransform
  * @private
  */
-PIXI.Rope.prototype.updateTransform = function()
-{
-
+Rope.prototype.updateTransform = function () {
     var points = this.points;
-    if(points.length < 1)return;
+
+    if (points.length < 1) {
+        return;
+    }
 
     var lastPoint = points[0];
     var nextPoint;
@@ -121,17 +116,14 @@ PIXI.Rope.prototype.updateTransform = function()
     var total = points.length,
         point, index, ratio, perpLength, num;
 
-    for (var i = 0; i < total; i++)
-    {
+    for (var i = 0; i < total; i++) {
         point = points[i];
         index = i * 4;
 
-        if(i < points.length-1)
-        {
+        if (i < points.length-1) {
             nextPoint = points[i+1];
         }
-        else
-        {
+        else {
             nextPoint = point;
         }
 
@@ -140,7 +132,7 @@ PIXI.Rope.prototype.updateTransform = function()
 
         ratio = (1 - (i / (total-1))) * 10;
 
-        if(ratio > 1) ratio = 1;
+        if (ratio > 1) ratio = 1;
 
         perpLength = Math.sqrt(perp.x * perp.x + perp.y * perp.y);
         num = this.texture.height / 2; //(20 + Math.abs(Math.sin((i + this.count) * 0.3) * 50) )* ratio;
@@ -158,16 +150,15 @@ PIXI.Rope.prototype.updateTransform = function()
         lastPoint = point;
     }
 
-    PIXI.DisplayObjectContainer.prototype.updateTransform.call( this );
+    this.displayObjectContainerUpdateTransform();
 };
-/*
+
+/**
  * Sets the texture that the Rope will use
  *
- * @method setTexture
  * @param texture {Texture} the texture that will be used
  */
-PIXI.Rope.prototype.setTexture = function(texture)
-{
+Rope.prototype.setTexture = function (texture) {
     // stop current texture
     this.texture = texture;
     //this.updateFrame = true;
