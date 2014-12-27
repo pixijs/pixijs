@@ -113,7 +113,8 @@ PIXI.Rope.prototype.updateTransform = function()
 
     var lastPoint = points[0];
     var nextPoint;
-    var perp = {x:0, y:0};
+    var perp_x = 0;
+    var perp_y = 0;
 
     this.count-=0.2;
 
@@ -135,25 +136,25 @@ PIXI.Rope.prototype.updateTransform = function()
             nextPoint = point;
         }
 
-        perp.y = -(nextPoint.x - lastPoint.x);
-        perp.x = nextPoint.y - lastPoint.y;
+        perp_y = -(nextPoint.x - lastPoint.x);
+        perp_x = nextPoint.y - lastPoint.y;
 
         ratio = (1 - (i / (total-1))) * 10;
 
         if(ratio > 1) ratio = 1;
 
-        perpLength = Math.sqrt(perp.x * perp.x + perp.y * perp.y);
+        perpLength = Math.sqrt(perp_x * perp_x + perp_y * perp_y);
         num = this.texture.height / 2; //(20 + Math.abs(Math.sin((i + this.count) * 0.3) * 50) )* ratio;
-        perp.x /= perpLength;
-        perp.y /= perpLength;
+        perp_x /= perpLength;
+        perp_y /= perpLength;
 
-        perp.x *= num;
-        perp.y *= num;
+        perp_x *= num;
+        perp_y *= num;
 
-        vertices[index] = point.x + perp.x;
-        vertices[index+1] = point.y + perp.y;
-        vertices[index+2] = point.x - perp.x;
-        vertices[index+3] = point.y - perp.y;
+        vertices[index] = point.x + perp_x;
+        vertices[index+1] = point.y + perp_y;
+        vertices[index+2] = point.x - perp_x;
+        vertices[index+3] = point.y - perp_y;
 
         lastPoint = point;
     }
