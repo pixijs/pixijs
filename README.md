@@ -10,7 +10,7 @@ See: https://github.com/GoodBoyDigital/pixi.js/issues/1296
 
 - [x] `index`
 - [x] `display/`
-- [ ] `extras/`
+- [x] `extras/`
 - [x] `filters/`
 - [x] `geom/` (move to `math/`)
 - [x] `loaders/`
