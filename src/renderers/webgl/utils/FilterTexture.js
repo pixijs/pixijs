@@ -1,46 +1,37 @@
 /**
- * @author Mat Groves http://matgroves.com/ @Doormat23
+ * @class
+ * @namespace PIXI
+ * @param gl {WebGLContext} the current WebGL drawing context
+ * @param width {number} the horizontal range of the filter
+ * @param height {number} the vertical range of the filter
+ * @param scaleMode {number} See {{#crossLink "PIXI/scaleModes:property"}}scaleModes{{/crossLink}} for possible values
  */
-
-/**
-* @class FilterTexture
-* @constructor
-* @param gl {WebGLContext} the current WebGL drawing context
-* @param width {Number} the horizontal range of the filter
-* @param height {Number} the vertical range of the filter
-* @param scaleMode {Number} See {{#crossLink "PIXI/scaleModes:property"}}PIXI.scaleModes{{/crossLink}} for possible values
-*/
-PIXI.FilterTexture = function(gl, width, height, scaleMode)
-{
+function FilterTexture(gl, width, height, scaleMode) {
     /**
-     * @property gl
-     * @type WebGLContext
+     * @member {WebGLContext}
      */
     this.gl = gl;
 
     // next time to create a frame buffer and texture
 
     /**
-     * @property frameBuffer
-     * @type Any
+     * @member {Any}
      */
     this.frameBuffer = gl.createFramebuffer();
 
     /**
-     * @property texture
-     * @type Any
+     * @member {Any}
      */
     this.texture = gl.createTexture();
 
     /**
-     * @property scaleMode
-     * @type Number
+     * @member {number}
      */
-    scaleMode = scaleMode || PIXI.scaleModes.DEFAULT;
+    scaleMode = scaleMode || scaleModes.DEFAULT;
 
     gl.bindTexture(gl.TEXTURE_2D,  this.texture);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, scaleMode === PIXI.scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, scaleMode === PIXI.scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, scaleMode === scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, scaleMode === scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer );
@@ -52,21 +43,20 @@ PIXI.FilterTexture = function(gl, width, height, scaleMode)
     this.renderBuffer = gl.createRenderbuffer();
     gl.bindRenderbuffer(gl.RENDERBUFFER, this.renderBuffer);
     gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, this.renderBuffer);
-  
+
     this.resize(width, height);
 };
 
-PIXI.FilterTexture.prototype.constructor = PIXI.FilterTexture;
+FilterTexture.prototype.constructor = FilterTexture;
+module.exports = FilterTexture;
 
 /**
-* Clears the filter texture.
-* 
-* @method clear
-*/
-PIXI.FilterTexture.prototype.clear = function()
-{
+ * Clears the filter texture.
+ *
+ */
+FilterTexture.prototype.clear = function () {
     var gl = this.gl;
-    
+
     gl.clearColor(0,0,0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);
 };
@@ -74,13 +64,11 @@ PIXI.FilterTexture.prototype.clear = function()
 /**
  * Resizes the texture to the specified width and height
  *
- * @method resize
- * @param width {Number} the new width of the texture
- * @param height {Number} the new height of the texture
+ * @param width {number} the new width of the texture
+ * @param height {number} the new height of the texture
  */
-PIXI.FilterTexture.prototype.resize = function(width, height)
-{
-    if(this.width === width && this.height === height) return;
+FilterTexture.prototype.resize = function (width, height) {
+    if (this.width === width && this.height === height) return;
 
     this.width = width;
     this.height = height;
@@ -95,12 +83,10 @@ PIXI.FilterTexture.prototype.resize = function(width, height)
 };
 
 /**
-* Destroys the filter texture.
-* 
-* @method destroy
-*/
-PIXI.FilterTexture.prototype.destroy = function()
-{
+ * Destroys the filter texture.
+ *
+ */
+FilterTexture.prototype.destroy = function () {
     var gl = this.gl;
     gl.deleteFramebuffer( this.frameBuffer );
     gl.deleteTexture( this.texture );

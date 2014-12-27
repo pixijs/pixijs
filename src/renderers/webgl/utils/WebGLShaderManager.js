@@ -1,111 +1,92 @@
 /**
- * @author Mat Groves http://matgroves.com/ @Doormat23
+ * @class
+ * @namespace PIXI
+ * @private
  */
-
-/**
-* @class WebGLShaderManager
-* @constructor
-* @private
-*/
-PIXI.WebGLShaderManager = function()
-{
+function WebGLShaderManager() {
     /**
-     * @property maxAttibs
-     * @type Number
+     * @member {number}
      */
     this.maxAttibs = 10;
 
     /**
-     * @property attribState
-     * @type Array
+     * @member {Array}
      */
     this.attribState = [];
 
     /**
-     * @property tempAttribState
-     * @type Array
+     * @member {Array}
      */
     this.tempAttribState = [];
 
-    for (var i = 0; i < this.maxAttibs; i++)
-    {
+    for (var i = 0; i < this.maxAttibs; i++) {
         this.attribState[i] = false;
     }
 
     /**
-     * @property stack
-     * @type Array
+     * @member {Array}
      */
     this.stack = [];
 
 };
 
-PIXI.WebGLShaderManager.prototype.constructor = PIXI.WebGLShaderManager;
+WebGLShaderManager.prototype.constructor = WebGLShaderManager;
+module.exports = WebGLShaderManager;
 
 /**
-* Initialises the context and the properties.
-* 
-* @method setContext 
-* @param gl {WebGLContext} the current WebGL drawing context
-*/
-PIXI.WebGLShaderManager.prototype.setContext = function(gl)
-{
+ * Initialises the context and the properties.
+ *
+ * @param gl {WebGLContext} the current WebGL drawing context
+ */
+WebGLShaderManager.prototype.setContext = function (gl) {
     this.gl = gl;
-    
+
     // the next one is used for rendering primitives
-    this.primitiveShader = new PIXI.PrimitiveShader(gl);
+    this.primitiveShader = new PrimitiveShader(gl);
 
     // the next one is used for rendering triangle strips
-    this.complexPrimitiveShader = new PIXI.ComplexPrimitiveShader(gl);
+    this.complexPrimitiveShader = new ComplexPrimitiveShader(gl);
 
     // this shader is used for the default sprite rendering
-    this.defaultShader = new PIXI.PixiShader(gl);
+    this.defaultShader = new PixiShader(gl);
 
     // this shader is used for the fast sprite rendering
-    this.fastShader = new PIXI.PixiFastShader(gl);
+    this.fastShader = new PixiFastShader(gl);
 
     // the next one is used for rendering triangle strips
-    this.stripShader = new PIXI.StripShader(gl);
+    this.stripShader = new StripShader(gl);
     this.setShader(this.defaultShader);
 };
 
 /**
-* Takes the attributes given in parameters.
-* 
-* @method setAttribs
-* @param attribs {Array} attribs 
-*/
-PIXI.WebGLShaderManager.prototype.setAttribs = function(attribs)
-{
+ * Takes the attributes given in parameters.
+ *
+ * @param attribs {Array} attribs
+ */
+WebGLShaderManager.prototype.setAttribs = function (attribs) {
     // reset temp state
     var i;
 
-    for (i = 0; i < this.tempAttribState.length; i++)
-    {
+    for (i = 0; i < this.tempAttribState.length; i++) {
         this.tempAttribState[i] = false;
     }
 
     // set the new attribs
-    for (i = 0; i < attribs.length; i++)
-    {
+    for (i = 0; i < attribs.length; i++) {
         var attribId = attribs[i];
         this.tempAttribState[attribId] = true;
     }
 
     var gl = this.gl;
 
-    for (i = 0; i < this.attribState.length; i++)
-    {
-        if(this.attribState[i] !== this.tempAttribState[i])
-        {
+    for (i = 0; i < this.attribState.length; i++) {
+        if (this.attribState[i] !== this.tempAttribState[i]) {
             this.attribState[i] = this.tempAttribState[i];
 
-            if(this.tempAttribState[i])
-            {
+            if (this.tempAttribState[i]) {
                 gl.enableVertexAttribArray(i);
             }
-            else
-            {
+            else {
                 gl.disableVertexAttribArray(i);
             }
         }
@@ -113,15 +94,13 @@ PIXI.WebGLShaderManager.prototype.setAttribs = function(attribs)
 };
 
 /**
-* Sets the current shader.
-* 
-* @method setShader
-* @param shader {Any}
-*/
-PIXI.WebGLShaderManager.prototype.setShader = function(shader)
-{
-    if(this._currentId === shader._UID)return false;
-    
+ * Sets the current shader.
+ *
+ * @param shader {Any}
+ */
+WebGLShaderManager.prototype.setShader = function (shader) {
+    if (this._currentId === shader._UID)return false;
+
     this._currentId = shader._UID;
 
     this.currentShader = shader;
@@ -133,12 +112,10 @@ PIXI.WebGLShaderManager.prototype.setShader = function(shader)
 };
 
 /**
-* Destroys this object.
-* 
-* @method destroy
-*/
-PIXI.WebGLShaderManager.prototype.destroy = function()
-{
+ * Destroys this object.
+ *
+ */
+WebGLShaderManager.prototype.destroy = function () {
     this.attribState = null;
 
     this.tempAttribState = null;
