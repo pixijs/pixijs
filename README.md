@@ -15,11 +15,11 @@ See: https://github.com/GoodBoyDigital/pixi.js/issues/1296
 - [x] `geom/` (move to `math/`)
 - [x] `loaders/`
 - [x] `primitives/`
-- [ ] `renderers/`
-- [ ] `text/`
-- [ ] `textures/`
-- [ ] `utils/`
-- [ ] `interactions/` (move Interaction* to here)
+- [x] `renderers/`
+- [x] `text/`
+- [x] `textures/`
+- [x] `utils/`
+- [x] `interactions/` (move Interaction* to here)
 
 
 #### *** IMPORTANT - V2 API CHANGES *** ####
