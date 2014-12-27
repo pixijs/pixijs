@@ -14,7 +14,7 @@ See: https://github.com/GoodBoyDigital/pixi.js/issues/1296
 - [x] `filters/`
 - [x] `geom/` (move to `math/`)
 - [x] `loaders/`
-- [ ] `primitives/`
+- [x] `primitives/`
 - [ ] `renderers/`
 - [ ] `text/`
 - [ ] `textures/`
