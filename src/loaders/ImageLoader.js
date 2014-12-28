@@ -1,3 +1,8 @@
+var EventTarget = require('../utils/EventTarget'),
+    Texture = require('../textures/Texture'),
+    math = require('../math'),
+    utils = require('../utils');
+
 /**
  * The image loader class is responsible for loading images file formats ('jpeg', 'jpg', 'png' and 'gif')
  * Once the image has been loaded it is stored in the PIXI texture cache and can be accessed though Texture.fromFrame() and Sprite.fromFrame()
@@ -25,7 +30,7 @@ function ImageLoader(url, crossorigin) {
      * @readOnly
      */
     this.frames = [];
-};
+}
 
 // constructor
 ImageLoader.prototype.constructor = ImageLoader;
@@ -73,7 +78,7 @@ ImageLoader.prototype.loadFramedSpriteSheet = function (frameWidth, frameHeight,
         for (var x = 0; x < cols; ++x, ++i) {
             var texture = new Texture(
                 this.texture.baseTexture,
-                new Rectangle(
+                new math.Rectangle(
                     x * frameWidth,
                     y * frameHeight,
                     frameWidth,
@@ -84,7 +89,7 @@ ImageLoader.prototype.loadFramedSpriteSheet = function (frameWidth, frameHeight,
             this.frames.push(texture);
 
             if (textureName) {
-                TextureCache[textureName + '-' + i] = texture;
+                utils.TextureCache[textureName + '-' + i] = texture;
             }
         }
     }

@@ -17,7 +17,7 @@ function GraphicsData(lineWidth, lineColor, lineAlpha, fillColor, fillAlpha, fil
 
     this.shape = shape;
     this.type = shape.type;
-};
+}
 
 GraphicsData.prototype.constructor = GraphicsData;
 module.exports = GraphicsData;

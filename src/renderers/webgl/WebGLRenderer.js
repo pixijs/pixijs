@@ -1,4 +1,12 @@
-var utils = require('../../utils');
+var WebGLShaderManager = require('./utils/WebGLShaderManager'),
+    WebGLSpriteBatch = require('./utils/WebGLSpriteBatch'),
+    WebGLMaskManager = require('./utils/WebGLMaskManager'),
+    WebGLFilterManager = require('./utils/WebGLFilterManager'),
+    WebGLStencilManager = require('./utils/WebGLStencilManager'),
+    WebGLBlendModeManager = require('./utils/WebGLBlendModeManager'),
+    math = require('../../math'),
+    utils = require('../../utils'),
+    CONST = require('../../const');
 
 glContexts = []; // this is where we store the webGL contexts for easy access.
 instances = [];
@@ -23,23 +31,25 @@ instances = [];
  */
 function WebGLRenderer(width, height, options) {
     if (options) {
-        for (var i in defaultRenderOptions) {
-            if (typeof options[i] === 'undefined') options[i] = defaultRenderOptions[i];
+        for (var i in CONST.defaultRenderOptions) {
+            if (typeof options[i] === 'undefined') {
+                options[i] = CONST.defaultRenderOptions[i];
+            }
         }
     }
     else {
-        options = defaultRenderOptions;
+        options = CONST.defaultRenderOptions;
     }
 
     if (!defaultRenderer) {
-        sayHello('webGL');
+        utils.sayHello('webGL');
         defaultRenderer = this;
     }
 
     /**
      * @member {number}
      */
-    this.type = WEBGL_RENDERER;
+    this.type = CONST.WEBGL_RENDERER;
 
     /**
      * The resolution of the renderer
@@ -136,12 +146,12 @@ function WebGLRenderer(width, height, options) {
     /**
      * @member {Point}
      */
-    this.projection = new Point();
+    this.projection = new math.Point();
 
     /**
      * @member {Point}
      */
-    this.offset = new Point(0, 0);
+    this.offset = new math.Point(0, 0);
 
     // time to create the render managers! each one focuses on managing a state in webGL
 
@@ -202,7 +212,7 @@ function WebGLRenderer(width, height, options) {
 
     // map some webGL blend modes..
     this.mapBlendModes();
-};
+}
 
 // constructor
 WebGLRenderer.prototype.constructor = WebGLRenderer;
@@ -252,11 +262,15 @@ WebGLRenderer.prototype.initContext = function () {
  */
 WebGLRenderer.prototype.render = function (stage) {
     // no point rendering if our context has been blown up!
-    if (this.contextLost)return;
+    if (this.contextLost) {
+        return;
+    }
 
     // if rendering a new stage clear the batches..
     if (this.__stage !== stage) {
-        if (stage.interactive)stage.interactionManager.removeEvents();
+        if (stage.interactive) {
+            stage.interactionManager.removeEvents();
+        }
 
         // TODO make this work
         // dont think this is needed any more?
@@ -311,7 +325,7 @@ WebGLRenderer.prototype.render = function (stage) {
  * @param buffer {Array} a standard WebGL buffer
  */
 WebGLRenderer.prototype.renderDisplayObject = function (displayObject, projection, buffer) {
-    this.renderSession.blendModeManager.setBlendMode(blendModes.NORMAL);
+    this.renderSession.blendModeManager.setBlendMode(CONST.blendModes.NORMAL);
 
     // reset the render session data..
     this.renderSession.drawCount = 0;
@@ -368,26 +382,30 @@ WebGLRenderer.prototype.resize = function (width, height) {
  * @param texture {Texture} the texture to update
  */
 WebGLRenderer.prototype.updateTexture = function (texture) {
-    if (!texture.hasLoaded )return;
+    if (!texture.hasLoaded) {
+        return;
+    }
 
     var gl = this.gl;
 
-    if (!texture._glTextures[gl.id])texture._glTextures[gl.id] = gl.createTexture();
+    if (!texture._glTextures[gl.id]) {
+        texture._glTextures[gl.id] = gl.createTexture();
+    }
 
     gl.bindTexture(gl.TEXTURE_2D, texture._glTextures[gl.id]);
 
     gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, texture.premultipliedAlpha);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.source);
 
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, texture.scaleMode === scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, texture.scaleMode === CONST.scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
 
 
     if (texture.mipmap && utils.isPowerOfTwo(texture.width, texture.height)) {
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, texture.scaleMode === scaleModes.LINEAR ? gl.LINEAR_MIPMAP_LINEAR : gl.NEAREST_MIPMAP_NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, texture.scaleMode === CONST.scaleModes.LINEAR ? gl.LINEAR_MIPMAP_LINEAR : gl.NEAREST_MIPMAP_NEAREST);
         gl.generateMipmap(gl.TEXTURE_2D);
     }
     else {
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, texture.scaleMode === scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, texture.scaleMode === CONST.scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
     }
 
     // reguler...
@@ -426,8 +444,8 @@ WebGLRenderer.prototype.handleContextRestored = function () {
     this.initContext();
 
     // empty all the ol gl textures as they are useless now
-    for (var key in TextureCache) {
-        var texture = TextureCache[key].baseTexture;
+    for (var key in utils.TextureCache) {
+        var texture = utils.TextureCache[key].baseTexture;
         texture._glTextures = [];
     }
 
@@ -473,23 +491,23 @@ WebGLRenderer.prototype.mapBlendModes = function () {
     if (!blendModesWebGL) {
         blendModesWebGL = [];
 
-        blendModesWebGL[blendModes.NORMAL]        = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        blendModesWebGL[blendModes.ADD]           = [gl.SRC_ALPHA, gl.DST_ALPHA];
-        blendModesWebGL[blendModes.MULTIPLY]      = [gl.DST_COLOR, gl.ONE_MINUS_SRC_ALPHA];
-        blendModesWebGL[blendModes.SCREEN]        = [gl.SRC_ALPHA, gl.ONE];
-        blendModesWebGL[blendModes.OVERLAY]       = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        blendModesWebGL[blendModes.DARKEN]        = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        blendModesWebGL[blendModes.LIGHTEN]       = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        blendModesWebGL[blendModes.COLOR_DODGE]   = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        blendModesWebGL[blendModes.COLOR_BURN]    = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        blendModesWebGL[blendModes.HARD_LIGHT]    = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        blendModesWebGL[blendModes.SOFT_LIGHT]    = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        blendModesWebGL[blendModes.DIFFERENCE]    = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        blendModesWebGL[blendModes.EXCLUSION]     = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        blendModesWebGL[blendModes.HUE]           = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        blendModesWebGL[blendModes.SATURATION]    = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        blendModesWebGL[blendModes.COLOR]         = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        blendModesWebGL[blendModes.LUMINOSITY]    = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+        blendModesWebGL[CONST.blendModes.NORMAL]        = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+        blendModesWebGL[CONST.blendModes.ADD]           = [gl.SRC_ALPHA, gl.DST_ALPHA];
+        blendModesWebGL[CONST.blendModes.MULTIPLY]      = [gl.DST_COLOR, gl.ONE_MINUS_SRC_ALPHA];
+        blendModesWebGL[CONST.blendModes.SCREEN]        = [gl.SRC_ALPHA, gl.ONE];
+        blendModesWebGL[CONST.blendModes.OVERLAY]       = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+        blendModesWebGL[CONST.blendModes.DARKEN]        = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+        blendModesWebGL[CONST.blendModes.LIGHTEN]       = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+        blendModesWebGL[CONST.blendModes.COLOR_DODGE]   = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+        blendModesWebGL[CONST.blendModes.COLOR_BURN]    = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+        blendModesWebGL[CONST.blendModes.HARD_LIGHT]    = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+        blendModesWebGL[CONST.blendModes.SOFT_LIGHT]    = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+        blendModesWebGL[CONST.blendModes.DIFFERENCE]    = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+        blendModesWebGL[CONST.blendModes.EXCLUSION]     = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+        blendModesWebGL[CONST.blendModes.HUE]           = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+        blendModesWebGL[CONST.blendModes.SATURATION]    = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+        blendModesWebGL[CONST.blendModes.COLOR]         = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+        blendModesWebGL[CONST.blendModes.LUMINOSITY]    = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
     }
 };
 

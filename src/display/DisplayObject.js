@@ -339,7 +339,7 @@ function DisplayObject() {
      * @param interactionData {InteractionData}
      */
     this.touchendoutside = null;
-};
+}
 
 // constructor
 DisplayObject.prototype.constructor = DisplayObject;
@@ -587,7 +587,7 @@ DisplayObject.prototype.displayObjectUpdateTransform = DisplayObject.prototype.u
  * @param matrix {Matrix}
  * @return {Rectangle} the rectangular bounding area
  */
-DisplayObject.prototype.getBounds = function (matrix) {
+DisplayObject.prototype.getBounds = function (/* matrix */) {
     return math.Rectangle.EMPTY;
 };
 
@@ -749,7 +749,7 @@ DisplayObject.prototype._destroyCachedSprite = function () {
  * @param renderSession {RenderSession}
  * @private
  */
-DisplayObject.prototype._renderWebGL = function (renderSession) {
+DisplayObject.prototype._renderWebGL = function (/* renderSession */) {
     // OVERWRITE;
 };
 
@@ -759,6 +759,6 @@ DisplayObject.prototype._renderWebGL = function (renderSession) {
  * @param renderSession {RenderSession}
  * @private
  */
-DisplayObject.prototype._renderCanvas = function (renderSession) {
+DisplayObject.prototype._renderCanvas = function (/* renderSession */) {
     // OVERWRITE;
 };

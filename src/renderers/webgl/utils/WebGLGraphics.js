@@ -1,4 +1,7 @@
-var utils = require('../../../utils');
+var utils = require('../../../utils'),
+    math = require('../../../math'),
+    Graphics = require('../../../primitives/Graphics'),
+    WebGLGraphicsData = require('./WebGLGraphicsData');
 
 /**
  * A set of functions used by the webGL renderer to draw the primitive graphics data
@@ -16,7 +19,7 @@ var WebGLGraphics = module.exports = {};
  * @param graphics {Graphics}
  * @param renderSession {object}
  */
-WebGLGraphics.renderGraphics = function (graphics, renderSession)//projection, offset) {
+WebGLGraphics.renderGraphics = function (graphics, renderSession) {//projection, offset) {
     var gl = renderSession.gl;
     var projection = renderSession.projection,
         offset = renderSession.offset,
@@ -83,8 +86,11 @@ WebGLGraphics.renderGraphics = function (graphics, renderSession)//projection, o
 WebGLGraphics.updateGraphics = function (graphics, gl) {
     // get the contexts graphics object
     var webGL = graphics._webGL[gl.id];
+
     // if the graphics object does not exist in the webGL context time to create it!
-    if (!webGL)webGL = graphics._webGL[gl.id] = {lastIndex:0, data:[], gl:gl};
+    if (!webGL) {
+        webGL = graphics._webGL[gl.id] = {lastIndex:0, data:[], gl:gl};
+    }
 
     // flag the graphics as not dirty as we are about to update it...
     graphics.dirty = false;
@@ -174,7 +180,10 @@ WebGLGraphics.updateGraphics = function (graphics, gl) {
     // upload all the dirty data...
     for (i = 0; i < webGL.data.length; i++) {
         webGLData = webGL.data[i];
-        if (webGLData.dirty)webGLData.upload();
+
+        if (webGLData.dirty) {
+            webGLData.upload();
+        }
     }
 };
 
@@ -308,7 +317,7 @@ WebGLGraphics.buildRoundedRectangle = function (graphicsData, webGLData) {
 
         var vecPos = verts.length/6;
 
-        var triangles = PolyK.Triangulate(recPoints);
+        var triangles = utils.PolyK.Triangulate(recPoints);
 
         //
 
@@ -475,7 +484,10 @@ WebGLGraphics.buildLine = function (graphicsData, webGLData) {
     // TODO OPTIMISE!
     var i = 0;
     var points = graphicsData.points;
-    if (points.length === 0)return;
+
+    if (points.length === 0) {
+        return;
+    }
 
     // if the line width is an odd number add 0.5 to align to a whole pixel
     if (graphicsData.lineWidth%2) {
@@ -485,8 +497,8 @@ WebGLGraphics.buildLine = function (graphicsData, webGLData) {
     }
 
     // get first and last point.. figure out the middle!
-    var firstPoint = new Point( points[0], points[1] );
-    var lastPoint = new Point( points[points.length - 2], points[points.length - 1] );
+    var firstPoint = new math.Point(points[0], points[1]);
+    var lastPoint = new math.Point(points[points.length - 2], points[points.length - 1]);
 
     // if the first point is the last point - gonna have issues :)
     if (firstPoint.x === lastPoint.x && firstPoint.y === lastPoint.y) {
@@ -496,7 +508,7 @@ WebGLGraphics.buildLine = function (graphicsData, webGLData) {
         points.pop();
         points.pop();
 
-        lastPoint = new Point( points[points.length - 2], points[points.length - 1] );
+        lastPoint = new math.Point(points[points.length - 2], points[points.length - 1]);
 
         var midPointX = lastPoint.x + (firstPoint.x - lastPoint.x) *0.5;
         var midPointY = lastPoint.y + (firstPoint.y - lastPoint.y) *0.5;
@@ -677,7 +689,10 @@ WebGLGraphics.buildLine = function (graphicsData, webGLData) {
 WebGLGraphics.buildComplexPoly = function (graphicsData, webGLData) {
     //TODO - no need to copy this as it gets turned into a FLoat32Array anyways..
     var points = graphicsData.points.slice();
-    if (points.length < 6)return;
+
+    if (points.length < 6) {
+        return;
+    }
 
     // get first and last point.. figure out the middle!
     var indices = webGLData.indices;
@@ -735,7 +750,9 @@ WebGLGraphics.buildComplexPoly = function (graphicsData, webGLData) {
 WebGLGraphics.buildPoly = function (graphicsData, webGLData) {
     var points = graphicsData.points;
 
-    if (points.length < 6)return;
+    if (points.length < 6) {
+        return;
+    }
     // get first and last point.. figure out the middle!
     var verts = webGLData.points;
     var indices = webGLData.indices;
@@ -749,9 +766,11 @@ WebGLGraphics.buildPoly = function (graphicsData, webGLData) {
     var g = color[1] * alpha;
     var b = color[2] * alpha;
 
-    var triangles = PolyK.Triangulate(points);
+    var triangles = utils.PolyK.Triangulate(points);
 
-    if (!triangles)return false;
+    if (!triangles) {
+        return false;
+    }
 
     var vertPos = verts.length / 6;
 
@@ -774,50 +793,3 @@ WebGLGraphics.buildPoly = function (graphicsData, webGLData) {
 };
 
 WebGLGraphics.graphicsDataPool = [];
-
-/**
- * @class
- * @private
- * @static
- */
-function WebGLGraphicsData(gl) {
-    this.gl = gl;
-
-    //TODO does this need to be split before uploding??
-    this.color = [0,0,0]; // color split!
-    this.points = [];
-    this.indices = [];
-    this.buffer = gl.createBuffer();
-    this.indexBuffer = gl.createBuffer();
-    this.mode = 1;
-    this.alpha = 1;
-    this.dirty = true;
-};
-
-/**
- *
- */
-WebGLGraphicsData.prototype.reset = function () {
-    this.points = [];
-    this.indices = [];
-};
-
-/**
- *
- */
-WebGLGraphicsData.prototype.upload = function () {
-    var gl = this.gl;
-
-//    this.lastIndex = graphics.graphicsData.length;
-    this.glPoints = new Float32Array(this.points);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, this.glPoints, gl.STATIC_DRAW);
-
-    this.glIndicies = new Uint16Array(this.indices);
-
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.glIndicies, gl.STATIC_DRAW);
-
-    this.dirty = false;
-};

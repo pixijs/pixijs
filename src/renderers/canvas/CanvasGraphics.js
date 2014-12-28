@@ -1,3 +1,5 @@
+var Graphics = require('../../primitives/Graphics');
+
 /**
  * A set of functions used by the canvas renderer to draw the primitive graphics data.
  *
@@ -271,7 +273,9 @@ CanvasGraphics.renderGraphicsMask = function (graphics, context) {
 };
 
 CanvasGraphics.updateGraphicsTint = function (graphics) {
-    if (graphics.tint === 0xFFFFFF)return;
+    if (graphics.tint === 0xFFFFFF) {
+        return;
+    }
 
     var tintR = (graphics.tint >> 16 & 0xFF) / 255;
     var tintG = (graphics.tint >> 8 & 0xFF) / 255;

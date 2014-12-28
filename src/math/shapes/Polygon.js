@@ -33,7 +33,7 @@ function Polygon(points) {
      * @member {Point[]}
      */
     this.points = points;
-};
+}
 
 Polygon.prototype.constructor = Polygon;
 module.exports = Polygon;

@@ -1,3 +1,10 @@
+var BaseTexture = require('./BaseTexture'),
+    Texture = require('./Texture'),
+    FilterTexture = require('./FilterTexture'),
+    CanvasBuffer = require('../renderers/canvas/utils/CanvasBuffer'),
+    math = require('../math'),
+    CONST = require('../const');
+
 /**
  * A RenderTexture is a special texture that allows any Pixi display object to be rendered to it.
  *
@@ -58,7 +65,7 @@ function RenderTexture(width, height, renderer, scaleMode, resolution) {
      *
      * @member {Rectangle}
      */
-    this.frame = new Rectangle(0, 0, this.width * this.resolution, this.height * this.resolution);
+    this.frame = new math.Rectangle(0, 0, this.width * this.resolution, this.height * this.resolution);
 
     /**
      * This is the area of the BaseTexture image to actually copy to the Canvas / WebGL when rendering,
@@ -66,7 +73,7 @@ function RenderTexture(width, height, renderer, scaleMode, resolution) {
      *
      * @member {Rectangle}
      */
-    this.crop = new Rectangle(0, 0, this.width * this.resolution, this.height * this.resolution);
+    this.crop = new math.Rectangle(0, 0, this.width * this.resolution, this.height * this.resolution);
 
     /**
      * The base texture object that this texture uses
@@ -79,13 +86,13 @@ function RenderTexture(width, height, renderer, scaleMode, resolution) {
     this.baseTexture._glTextures = [];
     this.baseTexture.resolution = this.resolution;
 
-    this.baseTexture.scaleMode = scaleMode || scaleModes.DEFAULT;
+    this.baseTexture.scaleMode = scaleMode || CONST.scaleModes.DEFAULT;
 
     this.baseTexture.hasLoaded = true;
 
     Texture.call(this,
         this.baseTexture,
-        new Rectangle(0, 0, this.width, this.height)
+        new math.Rectangle(0, 0, this.width, this.height)
     );
 
     /**
@@ -95,7 +102,7 @@ function RenderTexture(width, height, renderer, scaleMode, resolution) {
      */
     this.renderer = renderer || defaultRenderer;
 
-    if (this.renderer.type === WEBGL_RENDERER) {
+    if (this.renderer.type === CONST.WEBGL_RENDERER) {
         var gl = this.renderer.gl;
         this.baseTexture._dirty[gl.id] = false;
 
@@ -103,7 +110,7 @@ function RenderTexture(width, height, renderer, scaleMode, resolution) {
         this.baseTexture._glTextures[gl.id] =  this.textureBuffer.texture;
 
         this.render = this.renderWebGL;
-        this.projection = new Point(this.width*0.5, -this.height*0.5);
+        this.projection = new math.Point(this.width*0.5, -this.height*0.5);
     }
     else {
         this.render = this.renderCanvas;
@@ -131,7 +138,9 @@ module.exports = RenderTexture;
  * @param updateBase {boolean} Should the baseTexture.width and height values be resized as well?
  */
 RenderTexture.prototype.resize = function (width, height, updateBase) {
-    if (width === this.width && height === this.height)return;
+    if (width === this.width && height === this.height) {
+        return;
+    }
 
     this.valid = (width > 0 && height > 0);
 
@@ -143,12 +152,14 @@ RenderTexture.prototype.resize = function (width, height, updateBase) {
         this.baseTexture.height = this.height;
     }
 
-    if (this.renderer.type === WEBGL_RENDERER) {
+    if (this.renderer.type === CONST.WEBGL_RENDERER) {
         this.projection.x = this.width / 2;
         this.projection.y = -this.height / 2;
     }
 
-    if (!this.valid)return;
+    if (!this.valid) {
+        return;
+    }
 
     this.textureBuffer.resize(this.width * this.resolution, this.height * this.resolution);
 };
@@ -158,9 +169,11 @@ RenderTexture.prototype.resize = function (width, height, updateBase) {
  *
  */
 RenderTexture.prototype.clear = function () {
-    if (!this.valid)return;
+    if (!this.valid) {
+        return;
+    }
 
-    if (this.renderer.type === WEBGL_RENDERER) {
+    if (this.renderer.type === CONST.WEBGL_RENDERER) {
         this.renderer.gl.bindFramebuffer(this.renderer.gl.FRAMEBUFFER, this.textureBuffer.frameBuffer);
     }
 
@@ -176,14 +189,18 @@ RenderTexture.prototype.clear = function () {
  * @private
  */
 RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear) {
-    if (!this.valid)return;
+    if (!this.valid) {
+        return;
+    }
     //TOOD replace position with matrix..
 
     //Lets create a nice matrix to apply to our display object. Frame buffers come in upside down so we need to flip the matrix
     var wt = displayObject.worldTransform;
     wt.identity();
     wt.translate(0, this.projection.y * 2);
-    if (matrix)wt.append(matrix);
+    if (matrix) {
+        wt.append(matrix);
+    }
     wt.scale(1,-1);
 
     // setWorld Alpha to ensure that the object is renderer at full opacity
@@ -203,7 +220,9 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear) {
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.textureBuffer.frameBuffer );
 
-    if (clear)this.textureBuffer.clear();
+    if (clear) {
+        this.textureBuffer.clear();
+    }
 
     this.renderer.spriteBatch.dirty = true;
 
@@ -222,11 +241,15 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear) {
  * @private
  */
 RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear) {
-    if (!this.valid)return;
+    if (!this.valid) {
+        return;
+    }
 
     var wt = displayObject.worldTransform;
     wt.identity();
-    if (matrix)wt.append(matrix);
+    if (matrix) {
+        wt.append(matrix);
+    }
 
     // setWorld Alpha to ensure that the object is renderer at full opacity
     displayObject.worldAlpha = 1;
@@ -238,7 +261,9 @@ RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear) {
         children[i].updateTransform();
     }
 
-    if (clear)this.textureBuffer.clear();
+    if (clear) {
+        this.textureBuffer.clear();
+    }
 
     var context = this.textureBuffer.context;
 
@@ -277,7 +302,7 @@ RenderTexture.prototype.getBase64 = function () {
  * @return {HTMLCanvasElement} A Canvas element with the texture rendered on.
  */
 RenderTexture.prototype.getCanvas = function () {
-    if (this.renderer.type === WEBGL_RENDERER) {
+    if (this.renderer.type === CONST.WEBGL_RENDERER) {
         var gl =  this.renderer.gl;
         var width = this.textureBuffer.width;
         var height = this.textureBuffer.height;
@@ -301,4 +326,4 @@ RenderTexture.prototype.getCanvas = function () {
     }
 };
 
-RenderTexture.tempMatrix = new Matrix();
+RenderTexture.tempMatrix = new math.Matrix();

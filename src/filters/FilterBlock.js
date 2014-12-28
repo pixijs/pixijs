@@ -18,7 +18,7 @@ function FilterBlock() {
      * @member {boolean}
      */
     this.renderable = true;
-};
+}
 
 FilterBlock.prototype.constructor = FilterBlock;
 module.exports = FilterBlock;

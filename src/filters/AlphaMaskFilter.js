@@ -59,7 +59,7 @@ function AlphaMaskFilter(texture) {
         //'   gl_FragColor = gl_FragColor;',
         '}'
     ];
-};
+}
 
 AlphaMaskFilter.prototype = Object.create(AbstractFilter.prototype);
 AlphaMaskFilter.prototype.constructor = AlphaMaskFilter;

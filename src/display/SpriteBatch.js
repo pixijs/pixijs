@@ -1,4 +1,5 @@
-var DisplayObjectContainer = require('./DisplayObjectContainer');
+var DisplayObjectContainer = require('./DisplayObjectContainer'),
+    WebGLFastSpriteBatch = require('../renderers/webgl/utils/WebGLFastSpriteBatch');
 
 /**
  * The SpriteBatch class is a really fast version of the DisplayObjectContainer built solely for speed,
@@ -30,7 +31,7 @@ function SpriteBatch() {
     DisplayObjectContainer.call(this);
 
     this.ready = false;
-};
+}
 
 SpriteBatch.prototype = Object.create(DisplayObjectContainer.prototype);
 SpriteBatch.prototype.constructor = SpriteBatch;
@@ -42,7 +43,7 @@ SpriteBatch.prototype.constructor = SpriteBatch;
  */
 SpriteBatch.prototype.initWebGL = function (gl) {
     // TODO only one needed for the whole engine really?
-    this.fastSpriteBatch = new PIXI.WebGLFastSpriteBatch(gl);
+    this.fastSpriteBatch = new WebGLFastSpriteBatch(gl);
 
     this.ready = true;
 };
@@ -109,7 +110,7 @@ SpriteBatch.prototype._renderCanvas = function (renderSession) {
             continue;
         }
 
-        var frame = texture.frame;
+        var frame = child.texture.frame;
 
         context.globalAlpha = this.worldAlpha * child.alpha;
 
@@ -140,7 +141,7 @@ SpriteBatch.prototype._renderCanvas = function (renderSession) {
                 frame.height * child.scale.y
             );
         }
-        else {        {
+        else {
             if (!isRotated) {
                 isRotated = true;
             }

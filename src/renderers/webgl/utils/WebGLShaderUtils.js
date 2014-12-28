@@ -35,7 +35,7 @@ var glUtils = module.exports = {
      * @return {Any}
      */
     _CompileShader: function (gl, shaderSrc, shaderType) {
-        var src = shaderSrc.join("\n");
+        var src = shaderSrc.join('\n');
         var shader = gl.createShader(shaderType);
         gl.shaderSource(shader, src);
         gl.compileShader(shader);
@@ -66,7 +66,7 @@ var glUtils = module.exports = {
         gl.linkProgram(shaderProgram);
 
         if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-            window.console.log("Could not initialise shaders");
+            window.console.log('Could not initialise shaders');
         }
 
         return shaderProgram;

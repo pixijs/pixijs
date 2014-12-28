@@ -56,8 +56,7 @@ function ConvolutionFilter(matrix, width, height) {
         '   gl_FragColor.a = c22.a;',
         '}'
     ];
-
-};
+}
 
 ConvolutionFilter.prototype = Object.create(AbstractFilter.prototype);
 ConvolutionFilter.prototype.constructor = ConvolutionFilter;

@@ -1,3 +1,7 @@
+var AbstractFilter = require('../../../filters/AbstractFilter'),
+    PixiShader = require('../shaders/PixiShader'),
+    TextureUvs = require('./TextureUvs');
+
 /**
  * @author Mat Groves
  *
@@ -126,7 +130,7 @@ function WebGLSpriteBatch() {
         '   gl_FragColor = texture2D(uSampler, vTextureCoord) * vColor ;',
         '}'
     ]);
-};
+}
 
 /**
  * @param gl {WebGLContext} the current WebGL drawing context
@@ -189,8 +193,11 @@ WebGLSpriteBatch.prototype.render = function (sprite) {
 
     // get the uvs for the texture
     var uvs = texture._uvs;
+
     // if the uvs have not updated then no point rendering just yet!
-    if (!uvs)return;
+    if (!uvs) {
+        return;
+    }
 
     // TODO trim??
     var aX = sprite.anchor.x;
@@ -309,10 +316,12 @@ WebGLSpriteBatch.prototype.renderTilingSprite = function (tilingSprite) {
         this.currentBaseTexture = texture.baseTexture;
     }
 
-     // set the textures uvs temporarily
+    // set the textures uvs temporarily
     // TODO create a separate texture so that we can tile part of a texture
 
-    if (!tilingSprite._uvs)tilingSprite._uvs = new TextureUvs();
+    if (!tilingSprite._uvs) {
+        tilingSprite._uvs = new TextureUvs();
+    }
 
     var uvs = tilingSprite._uvs;
 
@@ -415,7 +424,9 @@ WebGLSpriteBatch.prototype.renderTilingSprite = function (tilingSprite) {
  */
 WebGLSpriteBatch.prototype.flush = function () {
     // If the batch is length 0 then return as there is nothing to draw
-    if (this.currentBatchSize===0)return;
+    if (this.currentBatchSize === 0) {
+        return;
+    }
 
     var gl = this.gl;
     var shader;
@@ -502,7 +513,9 @@ WebGLSpriteBatch.prototype.flush = function () {
                 // set shader function???
                 this.renderSession.shaderManager.setShader(shader);
 
-                if (shader.dirty)shader.syncUniforms();
+                if (shader.dirty) {
+                    shader.syncUniforms();
+                }
 
                 // both thease only need to be set if they are changing..
                 // set the projection
@@ -532,7 +545,9 @@ WebGLSpriteBatch.prototype.flush = function () {
  * @param startIndex {number}
  */
 WebGLSpriteBatch.prototype.renderBatch = function (texture, size, startIndex) {
-    if (size === 0)return;
+    if (size === 0) {
+        return;
+    }
 
     var gl = this.gl;
 

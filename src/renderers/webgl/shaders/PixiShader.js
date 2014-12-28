@@ -1,3 +1,6 @@
+var utils = require('../../../utils'),
+    glUtils = require('../utils/WebGLShaderUtils');
+
 /**
  * @class
  * @namespace PIXI
@@ -8,7 +11,7 @@ function PixiShader(gl) {
      * @member {number}
      * @private
      */
-    this._UID = _UID++;
+    this._UID = utils.uuid();
 
     /**
      * @member {WebGLContext}
@@ -74,7 +77,7 @@ module.exports = PixiShader;
 PixiShader.prototype.init = function () {
     var gl = this.gl;
 
-    var program = compileProgram(gl, this.vertexSrc || PixiShader.defaultVertexSrc, this.fragmentSrc);
+    var program = glUtils.compileProgram(gl, this.vertexSrc || PixiShader.defaultVertexSrc, this.fragmentSrc);
 
     gl.useProgram(program);
 

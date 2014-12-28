@@ -1,6 +1,9 @@
 var math = require('../math'),
     Texture = require('../textures/Texture'),
-    DisplayObjectContainer = require('./DisplayObjectContainer');
+    DisplayObjectContainer = require('./DisplayObjectContainer'),
+    CanvasTinter = require('../renderers/canvas/utils/CanvasTinter'),
+    utils = require('../utils'),
+    CONST = require('../const');
 
 /**
  * The Sprite object is the base for all textured objects that are rendered to the screen
@@ -64,12 +67,12 @@ function Sprite(texture) {
     this.tint = 0xFFFFFF;
 
     /**
-     * The blend mode to be applied to the sprite. Set to PIXI.blendModes.NORMAL to remove any blend mode.
+     * The blend mode to be applied to the sprite. Set to CONST.blendModes.NORMAL to remove any blend mode.
      *
      * @member {number}
-     * @default PIXI.blendModes.NORMAL;
+     * @default CONST.blendModes.NORMAL;
      */
-    this.blendMode = PIXI.blendModes.NORMAL;
+    this.blendMode = CONST.blendModes.NORMAL;
 
     /**
      * The shader that will be used to render the texture to the stage. Set to null to remove a current shader.
@@ -188,8 +191,13 @@ Sprite.prototype.getBounds = function (matrix) {
     if(b === 0 && c === 0)
     {
         // scale may be negative!
-        if(a < 0)a *= -1;
-        if(d < 0)d *= -1;
+        if (a < 0) {
+            a *= -1;
+        }
+
+        if (d < 0) {
+            d *= -1;
+        }
 
         // this means there is no rotation going on right? RIGHT?
         // if thats the case then we can avoid checking the bound values! yay
@@ -323,7 +331,7 @@ Sprite.prototype._renderCanvas = function (renderSession) {
 
     if (this.blendMode !== renderSession.currentBlendMode) {
         renderSession.currentBlendMode = this.blendMode;
-        renderSession.context.globalCompositeOperation = PIXI.blendModesCanvas[renderSession.currentBlendMode];
+        renderSession.context.globalCompositeOperation = blendModesCanvas[renderSession.currentBlendMode];
     }
 
     if (this._mask) {
@@ -339,7 +347,7 @@ Sprite.prototype._renderCanvas = function (renderSession) {
         // If smoothingEnabled is supported and we need to change the smoothing property for this texture
         if (renderSession.smoothProperty && renderSession.scaleMode !== this.texture.baseTexture.scaleMode) {
             renderSession.scaleMode = this.texture.baseTexture.scaleMode;
-            renderSession.context[renderSession.smoothProperty] = (renderSession.scaleMode === PIXI.scaleModes.LINEAR);
+            renderSession.context[renderSession.smoothProperty] = (renderSession.scaleMode === CONST.scaleModes.LINEAR);
         }
 
         // If the texture is trimmed we offset by the trim x/y, otherwise we use the frame dimensions
@@ -376,7 +384,7 @@ Sprite.prototype._renderCanvas = function (renderSession) {
                 this.cachedTint = this.tint;
 
                 // TODO clean up caching - how to clean up the caches?
-                this.tintedTexture = PIXI.CanvasTinter.getTintedTexture(this, this.tint);
+                this.tintedTexture = CanvasTinter.getTintedTexture(this, this.tint);
             }
 
             renderSession.context.drawImage(
@@ -426,7 +434,7 @@ Sprite.prototype._renderCanvas = function (renderSession) {
  * @return {Sprite} A new Sprite using a texture from the texture cache matching the frameId
  */
 Sprite.fromFrame = function (frameId) {
-    var texture = PIXI.TextureCache[frameId];
+    var texture = utils.TextureCache[frameId];
 
     if (!texture) {
         throw new Error('The frameId "' + frameId + '" does not exist in the texture cache' + this);
@@ -444,5 +452,5 @@ Sprite.fromFrame = function (frameId) {
  * @return {Sprite} A new Sprite using a texture from the texture cache matching the image id
  */
 Sprite.fromImage = function (imageId, crossorigin, scaleMode) {
-    return new Sprite(PIXI.Texture.fromImage(imageId, crossorigin, scaleMode));
+    return new Sprite(Texture.fromImage(imageId, crossorigin, scaleMode));
 };

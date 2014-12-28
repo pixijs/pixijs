@@ -43,7 +43,7 @@ function TwistFilter() {
         '   gl_FragColor = texture2D(uSampler, coord+offset);',
         '}'
     ];
-};
+}
 
 TwistFilter.prototype = Object.create(AbstractFilter.prototype);
 TwistFilter.prototype.constructor = TwistFilter;

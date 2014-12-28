@@ -106,7 +106,7 @@ function WebGLFastSpriteBatch(gl) {
     this.matrix = null;
 
     this.setContext(gl);
-};
+}
 
 WebGLFastSpriteBatch.prototype.constructor = WebGLFastSpriteBatch;
 module.exports = WebGLFastSpriteBatch;
@@ -162,7 +162,9 @@ WebGLFastSpriteBatch.prototype.render = function (spriteBatch) {
     // if the uvs have not updated then no point rendering just yet!
 
     // check texture.
-    if (!sprite.texture._uvs)return;
+    if (!sprite.texture._uvs) {
+        return;
+    }
 
     this.currentBaseTexture = sprite.texture.baseTexture;
 
@@ -184,14 +186,18 @@ WebGLFastSpriteBatch.prototype.render = function (spriteBatch) {
  */
 WebGLFastSpriteBatch.prototype.renderSprite = function (sprite) {
     //sprite = children[i];
-    if (!sprite.visible)return;
+    if (!sprite.visible) {
+        return;
+    }
 
     // TODO trim??
     if (sprite.texture.baseTexture !== this.currentBaseTexture) {
         this.flush();
         this.currentBaseTexture = sprite.texture.baseTexture;
 
-        if (!sprite.texture._uvs)return;
+        if (!sprite.texture._uvs) {
+            return;
+        }
     }
 
     var uvs, vertices = this.vertices, width, height, w0, w1, h0, h1, index;
@@ -319,13 +325,17 @@ WebGLFastSpriteBatch.prototype.renderSprite = function (sprite) {
  */
 WebGLFastSpriteBatch.prototype.flush = function () {
     // If the batch is length 0 then return as there is nothing to draw
-    if (this.currentBatchSize===0)return;
+    if (this.currentBatchSize === 0) {
+        return;
+    }
 
     var gl = this.gl;
 
     // bind the current texture
 
-    if (!this.currentBaseTexture._glTextures[gl.id])this.renderSession.renderer.updateTexture(this.currentBaseTexture, gl);
+    if (!this.currentBaseTexture._glTextures[gl.id]) {
+        this.renderSession.renderer.updateTexture(this.currentBaseTexture, gl);
+    }
 
     gl.bindTexture(gl.TEXTURE_2D, this.currentBaseTexture._glTextures[gl.id]);
 

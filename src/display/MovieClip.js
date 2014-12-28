@@ -1,4 +1,5 @@
-var Sprite = require('./Sprite');
+var Sprite = require('./Sprite'),
+    Texture = require('../textures/Texture');
 
 /**
  * A MovieClip is a simple way to display an animation depicted by a list of textures.
@@ -58,7 +59,7 @@ function MovieClip(textures) {
      * @readonly
      */
     this.playing = false;
-};
+}
 
 // constructor
 MovieClip.prototype = Object.create(Sprite.prototype);
@@ -160,7 +161,7 @@ MovieClip.fromFrames = function (frames) {
     var textures = [];
 
     for (var i = 0; i < frames.length; ++i) {
-        textures.push(new PIXI.Texture.fromFrame(frames[i]));
+        textures.push(new Texture.fromFrame(frames[i]));
     }
 
     return new MovieClip(textures);
@@ -176,7 +177,7 @@ MovieClip.fromImages = function (images) {
     var textures = [];
 
     for (var i = 0; i < images.length; ++i) {
-        textures.push(new PIXI.Texture.fromImage(images[i]));
+        textures.push(new Texture.fromImage(images[i]));
     }
 
     return new MovieClip(textures);

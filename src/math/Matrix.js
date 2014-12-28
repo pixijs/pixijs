@@ -46,7 +46,7 @@ function Matrix() {
      * @default 0
      */
     this.ty = 0;
-};
+}
 
 Matrix.prototype.constructor = Matrix;
 module.exports = Matrix;
@@ -243,4 +243,4 @@ Matrix.prototype.identity = function () {
     return this;
 };
 
-identityMatrix = new Matrix();
+Matrix.IDENTITY = new Matrix();

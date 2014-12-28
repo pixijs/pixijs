@@ -1,3 +1,5 @@
+var Rectangle = require('./Rectangle');
+
 /**
  * The Ellipse object can be used to specify a hit area for displayObjects
  *
@@ -38,7 +40,7 @@ function Ellipse(x, y, width, height) {
      *
      * @member {number}
      */
-};
+}
 
 Ellipse.prototype.constructor = Ellipse;
 module.exports = Ellipse;
@@ -62,8 +64,9 @@ Ellipse.prototype.clone = function () {
  * @return {boolean} Whether the x/y coords are within this ellipse
  */
 Ellipse.prototype.contains = function (x, y) {
-    if (this.width <= 0 || this.height <= 0)
+    if (this.width <= 0 || this.height <= 0) {
         return false;
+    }
 
     //normalize the coords to an ellipse with center 0,0
     var normx = ((x - this.x) / this.width),

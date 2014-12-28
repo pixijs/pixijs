@@ -42,7 +42,7 @@ function SmartBlurFilter() {
         '   gl_FragColor.rgb /= gl_FragColor.a + 0.00001;',
         '}'
     ];
-};
+}
 
 SmartBlurFilter.prototype = Object.create(AbstractFilter.prototype);
 SmartBlurFilter.prototype.constructor = SmartBlurFilter;

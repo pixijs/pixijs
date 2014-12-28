@@ -65,7 +65,7 @@ function TiltShiftXFilter() {
         '    gl_FragColor.rgb /= gl_FragColor.a + 0.00001;',
         '}'
     ];
-};
+}
 
 TiltShiftXFilter.prototype = Object.create(AbstractFilter.prototype);
 TiltShiftXFilter.prototype.constructor = TiltShiftXFilter;

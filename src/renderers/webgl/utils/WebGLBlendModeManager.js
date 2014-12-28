@@ -8,7 +8,7 @@ function WebGLBlendModeManager() {
      * @member {number}
      */
     this.currentBlendMode = 99999;
-};
+}
 
 WebGLBlendModeManager.prototype.constructor = WebGLBlendModeManager;
 module.exports = WebGLBlendModeManager;
@@ -28,7 +28,9 @@ WebGLBlendModeManager.prototype.setContext = function (gl) {
  * @param blendMode {number} the blendMode, should be a Pixi const, such as BlendModes.ADD
  */
 WebGLBlendModeManager.prototype.setBlendMode = function (blendMode) {
-    if (this.currentBlendMode === blendMode)return false;
+    if (this.currentBlendMode === blendMode) {
+        return false;
+    }
 
     this.currentBlendMode = blendMode;
 

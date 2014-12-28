@@ -19,7 +19,7 @@ function DisplayObjectContainer() {
      * @readonly
      */
     this.children = [];
-};
+}
 
 // constructor
 DisplayObjectContainer.prototype = Object.create(DisplayObject.prototype);

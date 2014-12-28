@@ -26,7 +26,7 @@
     "noempty"       : true,     // Prohibit use of empty blocks.
     "nonew"         : true,     // Prohibit use of constructors for side-effects.
     "plusplus"      : false,    // Disallow use of `++` & `--`.
-    "quotmark"      : true,     // Force consistency when using quote marks.
+    "quotmark"      : "single", // Force consistency when using quote marks.
     "undef"         : true,     // Require all non-global variables be declared before they are used.
     "unused"        : true,     // Warn when varaibles are created by not used.
     "strict"        : false,    // Require `use strict` pragma in every file.

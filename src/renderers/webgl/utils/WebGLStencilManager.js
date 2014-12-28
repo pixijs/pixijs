@@ -9,7 +9,7 @@ function WebGLStencilManager() {
     this.stencilStack = [];
     this.reverse = true;
     this.count = 0;
-};
+}
 
 WebGLStencilManager.prototype.constructor = WebGLStencilManager;
 module.exports = WebGLStencilManager;

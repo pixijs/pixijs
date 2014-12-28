@@ -1,3 +1,12 @@
+var InteractionData = require('./InteractionData'),
+    Sprite = require('../display/Sprite'),
+    Graphics = require('../primitives/Graphics'),
+    math = require('../math');
+
+// TODO: Obviously rewrite this...
+var INTERACTION_FREQUENCY = 30;
+var AUTO_PREVENT_DEFAULT = true;
+
 /**
  * The interaction manager deals with mouse and touch events. Any DisplayObject can be interactive
  * if its interactive parameter is set to true
@@ -33,7 +42,7 @@ function InteractionManager(stage) {
      * @member {Point}
      * @private
      */
-    this.tempPoint = new Point();
+    this.tempPoint = new math.Point();
 
     /**
      * @member {boolean}
@@ -122,7 +131,7 @@ function InteractionManager(stage) {
     this.resolution = 1;
 
     // used for hit testing
-    this._tempPoint = new Point();
+    this._tempPoint = new math.Point();
 }
 
 InteractionManager.prototype.constructor = InteractionManager;
@@ -174,7 +183,9 @@ InteractionManager.prototype.setTarget = function (target) {
     this.resolution = target.resolution;
 
     // Check if the dom element has been set. If it has don't do anything.
-    if (this.interactionDOMElement !== null) return;
+    if (this.interactionDOMElement !== null) {
+        return;
+    }
 
     this.setTargetDomElement (target.view);
 };
@@ -214,7 +225,9 @@ InteractionManager.prototype.setTargetDomElement = function (domElement) {
  * @private
  */
 InteractionManager.prototype.removeEvents = function () {
-    if (!this.interactionDOMElement) return;
+    if (!this.interactionDOMElement) {
+        return;
+    }
 
     this.interactionDOMElement.style['-ms-content-zooming'] = '';
     this.interactionDOMElement.style['-ms-touch-action'] = '';
@@ -239,13 +252,18 @@ InteractionManager.prototype.removeEvents = function () {
  * @private
  */
 InteractionManager.prototype.update = function () {
-    if (!this.target) return;
+    if (!this.target) {
+        return;
+    }
 
     // frequency of 30fps??
     var now = Date.now();
     var diff = now - this.last;
     diff = (diff * INTERACTION_FREQUENCY ) / 1000;
-    if (diff < 1) return;
+    if (diff < 1) {
+        return;
+    }
+
     this.last = now;
 
     var i = 0;
@@ -276,7 +294,9 @@ InteractionManager.prototype.update = function () {
         // ok so deal with interactions..
         // looks like there was a hit!
         if (item.__hit && !over) {
-            if (item.buttonMode) cursor = item.defaultCursor;
+            if (item.buttonMode) {
+                cursor = item.defaultCursor;
+            }
 
             if (!item.interactiveChildren) {
                 over = true;
@@ -406,7 +426,9 @@ InteractionManager.prototype.onMouseDown = function (event) {
                 item[isDown] = true;
 
                 // just the one!
-                if (!item.interactiveChildren) break;
+                if (!item.interactiveChildren) {
+                    break;
+                }
             }
         }
     }
@@ -494,7 +516,9 @@ InteractionManager.prototype.onMouseUp = function (event) {
             }
             else {
                 if (item[isDown]) {
-                    if (item[upOutsideFunction]) item[upOutsideFunction](this.mouse);
+                    if (item[upOutsideFunction]) {
+                        item[upOutsideFunction](this.mouse);
+                    }
                 }
             }
 
@@ -550,7 +574,10 @@ InteractionManager.prototype.hitTest = function (item, interactionData) {
         var graphicsData = item.graphicsData;
         for (i = 0; i < graphicsData.length; i++) {
             var data = graphicsData[i];
-            if (!data.fill)continue;
+
+            if (!data.fill) {
+                continue;
+            }
 
             // only deal with fills..
             if (data.shape) {
@@ -662,12 +689,17 @@ InteractionManager.prototype.onTouchStart = function (event) {
 
                 if (item.__hit) {
                     //call the function!
-                    if (item.touchstart)item.touchstart(touchData);
+                    if (item.touchstart) {
+                        item.touchstart(touchData);
+                    }
+
                     item.__isDown = true;
                     item.__touchData = item.__touchData || {};
                     item.__touchData[touchEvent.identifier] = touchData;
 
-                    if (!item.interactiveChildren) break;
+                    if (!item.interactiveChildren) {
+                        break;
+                    }
                 }
             }
         }

@@ -121,7 +121,6 @@ function NormalMapFilter(texture) {
         '   gl_FragColor = vec4(result, 1.0);',*/
         '}'
     ];
-
 }
 
 NormalMapFilter.prototype = Object.create(AbstractFilter.prototype);
@@ -136,7 +135,7 @@ NormalMapFilter.prototype.onTextureLoaded = function () {
     this.uniforms.mapDimensions.value.x = this.uniforms.displacementMap.value.width;
     this.uniforms.mapDimensions.value.y = this.uniforms.displacementMap.value.height;
 
-    this.uniforms.displacementMap.value.baseTexture.off('loaded', this.boundLoadedFunction)
+    this.uniforms.displacementMap.value.baseTexture.off('loaded', this.boundLoadedFunction);
 };
 
 Object.defineProperties(NormalMapFilter.prototype, {

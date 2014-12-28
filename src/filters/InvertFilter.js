@@ -31,7 +31,7 @@ function InvertFilter() {
       //  '   gl_FragColor = gl_FragColor * vColor;',
         '}'
     ];
-};
+}
 
 InvertFilter.prototype = Object.create(AbstractFilter.prototype);
 InvertFilter.prototype.constructor = InvertFilter;

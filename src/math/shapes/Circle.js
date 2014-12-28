@@ -1,3 +1,5 @@
+var Rectangle = require('./Rectangle');
+
 /**
  * The Circle object can be used to specify a hit area for displayObjects
  *
@@ -31,7 +33,7 @@ function Circle(x, y, radius) {
      *
      * @member {number}
      */
-};
+}
 
 Circle.prototype.constructor = Circle;
 module.exports = Circle;
@@ -55,8 +57,9 @@ Circle.prototype.clone = function () {
  * @return {boolean} Whether the x/y coordinates are within this Circle
  */
 Circle.prototype.contains = function (x, y) {
-    if (this.radius <= 0)
+    if (this.radius <= 0) {
         return false;
+    }
 
     var dx = (this.x - x),
         dy = (this.y - y),

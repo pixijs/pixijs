@@ -1,3 +1,6 @@
+var utils = require('../../../utils'),
+    glUtils = require('../utils/WebGLShaderUtils');
+
 /**
  * @class
  * @namespace PIXI
@@ -8,7 +11,7 @@ function PrimitiveShader(gl) {
      * @member {number}
      * @private
      */
-    this._UID = _UID++;
+    this._UID = utils.uuid();
 
     /**
      * @member {WebGLContext}
@@ -70,7 +73,7 @@ module.exports = PrimitiveShader;
 PrimitiveShader.prototype.init = function () {
     var gl = this.gl;
 
-    var program = compileProgram(gl, this.vertexSrc, this.fragmentSrc);
+    var program = glUtils.compileProgram(gl, this.vertexSrc, this.fragmentSrc);
     gl.useProgram(program);
 
     // get and store the uniforms for the shader

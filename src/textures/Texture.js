@@ -1,9 +1,8 @@
-var Rectangle = require('./Rectangle');
-
-TextureCache = {};
-FrameCache = {};
-
-TextureCacheIdGenerator = 0;
+var BaseTexture = require('./BaseTexture'),
+    Rectangle = require('./Rectangle'),
+    EventTarget = require('../utils/EventTarget'),
+    TextureUvs = require('../renderers/webgl/utils/TextureUvs'),
+    utils = require('../utils');
 
 /**
  * A texture stores the information that represents an image or part of an image. It cannot be added
@@ -100,7 +99,9 @@ function Texture(baseTexture, frame, crop, trim) {
     this.crop = crop || new Rectangle(0, 0, 1, 1);
 
     if (baseTexture.hasLoaded) {
-        if (this.noFrame) frame = new Rectangle(0, 0, baseTexture.width, baseTexture.height);
+        if (this.noFrame) {
+            frame = new Rectangle(0, 0, baseTexture.width, baseTexture.height);
+        }
         this.setFrame(frame);
     }
     else {
@@ -122,7 +123,9 @@ Texture.prototype.onBaseTextureLoaded = function () {
     var baseTexture = this.baseTexture;
     baseTexture.removeEventListener('loaded', this.onLoaded);
 
-    if (this.noFrame) this.frame = new Rectangle(0, 0, baseTexture.width, baseTexture.height);
+    if (this.noFrame) {
+        this.frame = new Rectangle(0, 0, baseTexture.width, baseTexture.height);
+    }
 
     this.setFrame(this.frame);
 
@@ -135,7 +138,9 @@ Texture.prototype.onBaseTextureLoaded = function () {
  * @param destroyBase {boolean} Whether to destroy the base texture as well
  */
 Texture.prototype.destroy = function (destroyBase) {
-    if (destroyBase) this.baseTexture.destroy();
+    if (destroyBase) {
+        this.baseTexture.destroy();
+    }
 
     this.valid = false;
 };
@@ -170,7 +175,9 @@ Texture.prototype.setFrame = function (frame) {
         this.frame.height = this.trim.height;
     }
 
-    if (this.valid) this._updateUvs();
+    if (this.valid) {
+        this._updateUvs();
+    }
 
 };
 
@@ -212,11 +219,11 @@ Texture.prototype._updateUvs = function () {
  * @return Texture
  */
 Texture.fromImage = function (imageUrl, crossorigin, scaleMode) {
-    var texture = TextureCache[imageUrl];
+    var texture = utils.TextureCache[imageUrl];
 
     if (!texture) {
         texture = new Texture(BaseTexture.fromImage(imageUrl, crossorigin, scaleMode));
-        TextureCache[imageUrl] = texture;
+        utils.TextureCache[imageUrl] = texture;
     }
 
     return texture;
@@ -231,8 +238,10 @@ Texture.fromImage = function (imageUrl, crossorigin, scaleMode) {
  * @return Texture
  */
 Texture.fromFrame = function (frameId) {
-    var texture = TextureCache[frameId];
-    if (!texture) throw new Error('The frameId "' + frameId + '" does not exist in the texture cache ');
+    var texture = utils.TextureCache[frameId];
+    if (!texture) {
+        throw new Error('The frameId "' + frameId + '" does not exist in the texture cache ');
+    }
     return texture;
 };
 
@@ -252,45 +261,30 @@ Texture.fromCanvas = function (canvas, scaleMode) {
 };
 
 /**
- * Adds a texture to the global TextureCache. This cache is shared across the whole PIXI object.
+ * Adds a texture to the global utils.TextureCache. This cache is shared across the whole PIXI object.
  *
  * @static
  * @param texture {Texture} The Texture to add to the cache.
  * @param id {string} The id that the texture will be stored against.
  */
 Texture.addTextureToCache = function (texture, id) {
-    TextureCache[id] = texture;
+    utils.TextureCache[id] = texture;
 };
 
 /**
- * Remove a texture from the global TextureCache.
+ * Remove a texture from the global utils.TextureCache.
  *
  * @static
  * @param id {string} The id of the texture to be removed
  * @return {Texture} The texture that was removed
  */
 Texture.removeTextureFromCache = function (id) {
-    var texture = TextureCache[id];
+    var texture = utils.TextureCache[id];
 
-    delete TextureCache[id];
-    delete BaseTextureCache[id];
+    delete utils.TextureCache[id];
+    delete utils.BaseTextureCache[id];
 
     return texture;
 };
 
-function TextureUvs() {
-    this.x0 = 0;
-    this.y0 = 0;
-
-    this.x1 = 0;
-    this.y1 = 0;
-
-    this.x2 = 0;
-    this.y2 = 0;
-
-    this.x3 = 0;
-    this.y3 = 0;
-};
-
 Texture.emptyTexture = new Texture(new BaseTexture());
-

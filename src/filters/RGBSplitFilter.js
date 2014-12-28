@@ -39,7 +39,7 @@ function RGBSplitFilter() {
         '   gl_FragColor.a = texture2D(uSampler, vTextureCoord).a;',
         '}'
     ];
-};
+}
 
 RGBSplitFilter.prototype = Object.create(AbstractFilter.prototype);
 RGBSplitFilter.prototype.constructor = RGBSplitFilter;

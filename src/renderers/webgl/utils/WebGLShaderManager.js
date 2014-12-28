@@ -1,3 +1,9 @@
+var PrimitiveShader = require('../shader/PrimitiveShader'),
+    ComplexPrimitiveShader = require('../shader/ComplexPrimitiveShader'),
+    PixiShader = require('../shader/PixiShader'),
+    PixiFastShader = require('../shader/PixiFastShader'),
+    StripShader = require('../shader/StripShader');
+
 /**
  * @class
  * @namespace PIXI
@@ -27,8 +33,7 @@ function WebGLShaderManager() {
      * @member {Array}
      */
     this.stack = [];
-
-};
+}
 
 WebGLShaderManager.prototype.constructor = WebGLShaderManager;
 module.exports = WebGLShaderManager;
@@ -99,7 +104,9 @@ WebGLShaderManager.prototype.setAttribs = function (attribs) {
  * @param shader {Any}
  */
 WebGLShaderManager.prototype.setShader = function (shader) {
-    if (this._currentId === shader._UID)return false;
+    if (this._currentId === shader._UID) {
+        return false;
+    }
 
     this._currentId = shader._UID;
 

@@ -54,7 +54,7 @@ function CrossHatchFilter() {
         '    }',
         '}'
     ];
-};
+}
 
 CrossHatchFilter.prototype = Object.create(AbstractFilter.prototype);
 CrossHatchFilter.prototype.constructor = CrossHatchFilter;

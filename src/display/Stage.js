@@ -67,7 +67,7 @@ function Stage(backgroundColor) {
     this.stage.hitArea = new math.Rectangle(0, 0, 100000, 100000);
 
     this.setBackgroundColor(backgroundColor);
-};
+}
 
 // constructor
 Stage.prototype = Object.create(DisplayObjectContainer.prototype);

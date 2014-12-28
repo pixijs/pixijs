@@ -14,7 +14,7 @@ var AbstractFilter = require('./AbstractFilter'),
  * @extends AbstractFilter
  * @namespace PIXI
  */
-TiltShiftFilter = function () {
+function TiltShiftFilter() {
     AbstractFilter.call(this);
 
     this.tiltShiftXFilter = new TiltShiftXFilter();
@@ -24,7 +24,7 @@ TiltShiftFilter = function () {
     this.tiltShiftXFilter.updateDelta();
 
     this.passes = [this.tiltShiftXFilter, this.tiltShiftYFilter];
-};
+}
 
 TiltShiftFilter.prototype = Object.create(AbstractFilter.prototype);
 TiltShiftFilter.prototype.constructor = TiltShiftFilter;

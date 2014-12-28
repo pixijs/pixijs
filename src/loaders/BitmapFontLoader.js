@@ -1,3 +1,10 @@
+var EventTarget = require('../utils/EventTarget'),
+    Texture = require('../textures/Texture'),
+    BitmapText = require('../text/BitmapText'),
+    ImageLoader = require('./ImageLoader'),
+    math = require('../math'),
+    utils = require('../utils');
+
 /**
  * The xml loader is used to load in XML bitmap font data ('xml' or 'fnt')
  * To generate the data you can use http://www.angelcode.com/products/bmfont/
@@ -39,7 +46,7 @@ function BitmapFontLoader(url, crossorigin) {
      * @member {Texture}
      */
     this.texture = null;
-};
+}
 
 // constructor
 BitmapFontLoader.prototype.constructor = BitmapFontLoader;
@@ -52,7 +59,7 @@ EventTarget.mixin(BitmapFontLoader.prototype);
  *
  */
 BitmapFontLoader.prototype.load = function () {
-    this.ajaxRequest = new AjaxRequest();
+    this.ajaxRequest = new utils.AjaxRequest();
     this.ajaxRequest.onreadystatechange = this.onXMLLoaded.bind(this);
 
     this.ajaxRequest.open('GET', this.url, true);
@@ -102,7 +109,7 @@ BitmapFontLoader.prototype.onXMLLoaded = function () {
             for (var i = 0; i < letters.length; i++) {
                 var charCode = parseInt(letters[i].getAttribute('id'), 10);
 
-                var textureRect = new Rectangle(
+                var textureRect = new math.Rectangle(
                     parseInt(letters[i].getAttribute('x'), 10),
                     parseInt(letters[i].getAttribute('y'), 10),
                     parseInt(letters[i].getAttribute('width'), 10),
@@ -114,7 +121,7 @@ BitmapFontLoader.prototype.onXMLLoaded = function () {
                     yOffset: parseInt(letters[i].getAttribute('yoffset'), 10),
                     xAdvance: parseInt(letters[i].getAttribute('xadvance'), 10),
                     kerning: {},
-                    texture: TextureCache[charCode] = new Texture(this.texture, textureRect)
+                    texture: utils.TextureCache[charCode] = new Texture(this.texture, textureRect)
 
                 };
             }

@@ -34,7 +34,7 @@ function ColorMatrixFilter() {
         '   gl_FragColor = texture2D(uSampler, vTextureCoord) * matrix;',
         '}'
     ];
-};
+}
 
 ColorMatrixFilter.prototype = Object.create(AbstractFilter.prototype);
 ColorMatrixFilter.prototype.constructor = ColorMatrixFilter;

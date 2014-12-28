@@ -1,4 +1,5 @@
-var JsonLoader = require('./JsonLoader');
+var EventTarget = require('../utils/EventTarget'),
+    JsonLoader = require('./JsonLoader');
 
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
@@ -45,7 +46,7 @@ function SpineLoader(url, crossorigin) {
      * @readOnly
      */
     this.loaded = false;
-};
+}
 
 SpineLoader.prototype.constructor = SpineLoader;
 module.exports = SpineLoader;

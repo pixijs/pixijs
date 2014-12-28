@@ -18,9 +18,8 @@ function Rope(texture, points) {
     this.colors = new Float32Array(points.length * 2);
     this.indices = new Uint16Array(points.length * 2);
 
-
     this.refresh();
-};
+}
 
 
 // constructor
@@ -132,7 +131,9 @@ Rope.prototype.updateTransform = function () {
 
         ratio = (1 - (i / (total-1))) * 10;
 
-        if (ratio > 1) ratio = 1;
+        if (ratio > 1) {
+            ratio = 1;
+        }
 
         perpLength = Math.sqrt(perp.x * perp.x + perp.y * perp.y);
         num = this.texture.height / 2; //(20 + Math.abs(Math.sin((i + this.count) * 0.3) * 50) )* ratio;

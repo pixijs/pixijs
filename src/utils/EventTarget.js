@@ -1,4 +1,4 @@
-var Event = require('./Event');
+var EventData = require('./EventData');
 
 /**
  * Mixins event emitter functionality to an object.
@@ -44,7 +44,7 @@ function EventTarget(obj) {
 
         //ensure we are using a real pixi event
         if (!data || data.__isEventObject !== true) {
-            data = new Event(this, eventName, data);
+            data = new EventData(this, eventName, data);
         }
 
         //iterate the listeners
@@ -122,8 +122,9 @@ function EventTarget(obj) {
     obj.off = obj.removeEventListener = function off(eventName, fn) {
         this._listeners = this._listeners || {};
 
-        if (!this._listeners[eventName])
+        if (!this._listeners[eventName]) {
             return this;
+        }
 
         var list = this._listeners[eventName],
             i = fn ? list.length : 0;
@@ -149,14 +150,15 @@ function EventTarget(obj) {
     obj.removeAllListeners = function removeAllListeners(eventName) {
         this._listeners = this._listeners || {};
 
-        if (!this._listeners[eventName])
+        if (!this._listeners[eventName]) {
             return this;
+        }
 
         delete this._listeners[eventName];
 
         return this;
     };
-};
+}
 
 module.exports = {
     /**
@@ -167,4 +169,4 @@ module.exports = {
     mixin: function mixin(obj) {
         EventTarget(obj);
     }
-}
+};

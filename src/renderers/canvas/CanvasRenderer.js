@@ -1,4 +1,6 @@
-var utils = require('../../utils');
+var CanvasMaskManager = require('./utils/CanvasMaskManager'),
+    utils = require('../../utils'),
+    CONST = require('../../const');
 
 /**
  * The CanvasRenderer draws the Stage and all its content onto a 2d canvas. This renderer should be used for browsers that do not support webGL.
@@ -17,16 +19,18 @@ var utils = require('../../utils');
  */
 function CanvasRenderer(width, height, options) {
     if (options) {
-        for (var i in defaultRenderOptions) {
-            if (typeof options[i] === "undefined") options[i] = defaultRenderOptions[i];
+        for (var i in CONST.defaultRenderOptions) {
+            if (typeof options[i] === 'undefined') {
+                options[i] = CONST.defaultRenderOptions[i];
+            }
         }
     }
     else {
-        options = defaultRenderOptions;
+        options = CONST.defaultRenderOptions;
     }
 
     if (!defaultRenderer) {
-        sayHello("Canvas");
+        utils.sayHello('Canvas');
         defaultRenderer = this;
     }
 
@@ -35,7 +39,7 @@ function CanvasRenderer(width, height, options) {
      *
      * @member {number}
      */
-    this.type = CANVAS_RENDERER;
+    this.type = CONST.CANVAS_RENDERER;
 
     /**
      * The resolution of the canvas.
@@ -94,13 +98,13 @@ function CanvasRenderer(width, height, options) {
      *
      * @member {HTMLCanvasElement}
      */
-    this.view = options.view || document.createElement( "canvas" );
+    this.view = options.view || document.createElement('canvas');
 
     /**
      * The canvas 2d context that everything is drawn with
      * @member {CanvasRenderingContext2D}
      */
-    this.context = this.view.getContext( "2d", { alpha: this.transparent } );
+    this.context = this.view.getContext('2d', { alpha: this.transparent });
 
     /**
      * Boolean flag controlling canvas refresh.
@@ -147,21 +151,21 @@ function CanvasRenderer(width, height, options) {
     this.resize(width, height);
 
     if (this.context.imageSmoothingEnabled) {
-        this.renderSession.smoothProperty = "imageSmoothingEnabled";
+        this.renderSession.smoothProperty = 'imageSmoothingEnabled';
     }
     else if (this.context.webkitImageSmoothingEnabled) {
-        this.renderSession.smoothProperty = "webkitImageSmoothingEnabled";
+        this.renderSession.smoothProperty = 'webkitImageSmoothingEnabled';
     }
     else if (this.context.mozImageSmoothingEnabled) {
-        this.renderSession.smoothProperty = "mozImageSmoothingEnabled";
+        this.renderSession.smoothProperty = 'mozImageSmoothingEnabled';
     }
     else if (this.context.oImageSmoothingEnabled) {
-        this.renderSession.smoothProperty = "oImageSmoothingEnabled";
+        this.renderSession.smoothProperty = 'oImageSmoothingEnabled';
     }
     else if (this.context.msImageSmoothingEnabled) {
-        this.renderSession.smoothProperty = "msImageSmoothingEnabled";
+        this.renderSession.smoothProperty = 'msImageSmoothingEnabled';
     }
-};
+}
 
 // constructor
 CanvasRenderer.prototype.constructor = CanvasRenderer;
@@ -179,11 +183,11 @@ CanvasRenderer.prototype.render = function (stage) {
 
     this.context.globalAlpha = 1;
 
-    this.renderSession.currentBlendMode = blendModes.NORMAL;
-    this.context.globalCompositeOperation = blendModesCanvas[blendModes.NORMAL];
+    this.renderSession.currentBlendMode = CONST.blendModes.NORMAL;
+    this.context.globalCompositeOperation = blendModesCanvas[CONST.blendModes.NORMAL];
 
     if (navigator.isCocoonJS && this.view.screencanvas) {
-        this.context.fillStyle = "black";
+        this.context.fillStyle = 'black';
         this.context.clear();
     }
 
@@ -215,7 +219,7 @@ CanvasRenderer.prototype.render = function (stage) {
  * @param [removeView=true] {boolean} Removes the Canvas element from the DOM.
  */
 CanvasRenderer.prototype.destroy = function (removeView) {
-    if (typeof removeView === "undefined") {
+    if (typeof removeView === 'undefined') {
         removeView = true;
     }
 
@@ -243,8 +247,8 @@ CanvasRenderer.prototype.resize = function (width, height) {
     this.view.height = this.height;
 
     if (this.autoResize) {
-        this.view.style.width = this.width / this.resolution + "px";
-        this.view.style.height = this.height / this.resolution + "px";
+        this.view.style.width = this.width / this.resolution + 'px';
+        this.view.style.height = this.height / this.resolution + 'px';
     }
 };
 
@@ -271,43 +275,43 @@ CanvasRenderer.prototype.mapBlendModes = function () {
         blendModesCanvas = [];
 
         if (utils.canUseNewCanvasBlendModes()) {
-            blendModesCanvas[blendModes.NORMAL]   = "source-over";
-            blendModesCanvas[blendModes.ADD]      = "lighter"; //IS THIS OK???
-            blendModesCanvas[blendModes.MULTIPLY] = "multiply";
-            blendModesCanvas[blendModes.SCREEN]   = "screen";
-            blendModesCanvas[blendModes.OVERLAY]  = "overlay";
-            blendModesCanvas[blendModes.DARKEN]   = "darken";
-            blendModesCanvas[blendModes.LIGHTEN]  = "lighten";
-            blendModesCanvas[blendModes.COLOR_DODGE] = "color-dodge";
-            blendModesCanvas[blendModes.COLOR_BURN] = "color-burn";
-            blendModesCanvas[blendModes.HARD_LIGHT] = "hard-light";
-            blendModesCanvas[blendModes.SOFT_LIGHT] = "soft-light";
-            blendModesCanvas[blendModes.DIFFERENCE] = "difference";
-            blendModesCanvas[blendModes.EXCLUSION] = "exclusion";
-            blendModesCanvas[blendModes.HUE]       = "hue";
-            blendModesCanvas[blendModes.SATURATION] = "saturation";
-            blendModesCanvas[blendModes.COLOR]      = "color";
-            blendModesCanvas[blendModes.LUMINOSITY] = "luminosity";
+            blendModesCanvas[CONST.blendModes.NORMAL]   = 'source-over';
+            blendModesCanvas[CONST.blendModes.ADD]      = 'lighter'; //IS THIS OK???
+            blendModesCanvas[CONST.blendModes.MULTIPLY] = 'multiply';
+            blendModesCanvas[CONST.blendModes.SCREEN]   = 'screen';
+            blendModesCanvas[CONST.blendModes.OVERLAY]  = 'overlay';
+            blendModesCanvas[CONST.blendModes.DARKEN]   = 'darken';
+            blendModesCanvas[CONST.blendModes.LIGHTEN]  = 'lighten';
+            blendModesCanvas[CONST.blendModes.COLOR_DODGE] = 'color-dodge';
+            blendModesCanvas[CONST.blendModes.COLOR_BURN] = 'color-burn';
+            blendModesCanvas[CONST.blendModes.HARD_LIGHT] = 'hard-light';
+            blendModesCanvas[CONST.blendModes.SOFT_LIGHT] = 'soft-light';
+            blendModesCanvas[CONST.blendModes.DIFFERENCE] = 'difference';
+            blendModesCanvas[CONST.blendModes.EXCLUSION] = 'exclusion';
+            blendModesCanvas[CONST.blendModes.HUE]       = 'hue';
+            blendModesCanvas[CONST.blendModes.SATURATION] = 'saturation';
+            blendModesCanvas[CONST.blendModes.COLOR]      = 'color';
+            blendModesCanvas[CONST.blendModes.LUMINOSITY] = 'luminosity';
         }
         else {
-            // this means that the browser does not support the cool new blend modes in canvas "cough" ie "cough"
-            blendModesCanvas[blendModes.NORMAL]   = "source-over";
-            blendModesCanvas[blendModes.ADD]      = "lighter"; //IS THIS OK???
-            blendModesCanvas[blendModes.MULTIPLY] = "source-over";
-            blendModesCanvas[blendModes.SCREEN]   = "source-over";
-            blendModesCanvas[blendModes.OVERLAY]  = "source-over";
-            blendModesCanvas[blendModes.DARKEN]   = "source-over";
-            blendModesCanvas[blendModes.LIGHTEN]  = "source-over";
-            blendModesCanvas[blendModes.COLOR_DODGE] = "source-over";
-            blendModesCanvas[blendModes.COLOR_BURN] = "source-over";
-            blendModesCanvas[blendModes.HARD_LIGHT] = "source-over";
-            blendModesCanvas[blendModes.SOFT_LIGHT] = "source-over";
-            blendModesCanvas[blendModes.DIFFERENCE] = "source-over";
-            blendModesCanvas[blendModes.EXCLUSION] = "source-over";
-            blendModesCanvas[blendModes.HUE]       = "source-over";
-            blendModesCanvas[blendModes.SATURATION] = "source-over";
-            blendModesCanvas[blendModes.COLOR]      = "source-over";
-            blendModesCanvas[blendModes.LUMINOSITY] = "source-over";
+            // this means that the browser does not support the cool new blend modes in canvas 'cough' ie 'cough'
+            blendModesCanvas[CONST.blendModes.NORMAL]   = 'source-over';
+            blendModesCanvas[CONST.blendModes.ADD]      = 'lighter'; //IS THIS OK???
+            blendModesCanvas[CONST.blendModes.MULTIPLY] = 'source-over';
+            blendModesCanvas[CONST.blendModes.SCREEN]   = 'source-over';
+            blendModesCanvas[CONST.blendModes.OVERLAY]  = 'source-over';
+            blendModesCanvas[CONST.blendModes.DARKEN]   = 'source-over';
+            blendModesCanvas[CONST.blendModes.LIGHTEN]  = 'source-over';
+            blendModesCanvas[CONST.blendModes.COLOR_DODGE] = 'source-over';
+            blendModesCanvas[CONST.blendModes.COLOR_BURN] = 'source-over';
+            blendModesCanvas[CONST.blendModes.HARD_LIGHT] = 'source-over';
+            blendModesCanvas[CONST.blendModes.SOFT_LIGHT] = 'source-over';
+            blendModesCanvas[CONST.blendModes.DIFFERENCE] = 'source-over';
+            blendModesCanvas[CONST.blendModes.EXCLUSION] = 'source-over';
+            blendModesCanvas[CONST.blendModes.HUE]       = 'source-over';
+            blendModesCanvas[CONST.blendModes.SATURATION] = 'source-over';
+            blendModesCanvas[CONST.blendModes.COLOR]      = 'source-over';
+            blendModesCanvas[CONST.blendModes.LUMINOSITY] = 'source-over';
         }
     }
 };

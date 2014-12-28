@@ -19,7 +19,7 @@ function Point(x, y) {
      * @default 0
      */
     this.y = y || 0;
-};
+}
 
 Point.prototype.constructor = Point;
 module.exports = Point;

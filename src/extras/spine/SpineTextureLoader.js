@@ -1,3 +1,6 @@
+var EventTarget = require('../../utils/EventTarget'),
+    BaseTexture = require('../../textures/BaseTexture');
+
 /**
  * Supporting class to load images from spine atlases as per spine spec.
  *
@@ -13,7 +16,7 @@ function SpineTextureLoader(basePath, crossorigin) {
     this.basePath = basePath;
     this.crossorigin = crossorigin;
     this.loadingCount = 0;
-};
+}
 
 SpineTextureLoader.prototype.constructor = SpineTextureLoader;
 module.exports = SpineTextureLoader;

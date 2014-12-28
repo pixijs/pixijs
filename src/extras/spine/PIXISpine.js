@@ -1,9 +1,13 @@
-var utils = require('../../utils');
+var math = require('../../math'),
+    utils = require('../../utils'),
+    Sprite = require('../../display/Sprite'),
+    Texture = require('../../textures/Texture'),
+    Strip = require('../Strip'),
+    DisplayObjectContainer = require('../../display/DisplayObjectContainer');
 
 /* Esoteric Software SPINE wrapper for pixi.js */
 
 spine.Bone.yDown = true;
-AnimCache = {};
 
 /**
  * A class that enables the you to import and run your spine animations in pixi.
@@ -18,7 +22,7 @@ AnimCache = {};
 function Spine(url) {
     DisplayObjectContainer.call(this);
 
-    this.spineData = AnimCache[url];
+    this.spineData = utils.AnimCache[url];
 
     if (!this.spineData) {
         throw new Error('Spine data must be preloaded using SpineLoader or AssetLoader: ' + url);
@@ -59,7 +63,7 @@ function Spine(url) {
     }
 
     this.autoUpdate = true;
-};
+}
 
 Spine.prototype = Object.create(DisplayObjectContainer.prototype);
 Spine.prototype.constructor = Spine;
@@ -77,7 +81,7 @@ Object.defineProperties(Spine.prototype, {
      * @memberof Spine#
      * @default true
      */
-    Object.defineProperty(Spine.prototype, 'autoUpdate', {
+    autoUpdate: {
         get: function () {
             return (this.updateTransform === Spine.prototype.autoUpdateTransform);
         },
@@ -200,7 +204,7 @@ Spine.prototype.autoUpdateTransform = function () {
 Spine.prototype.createSprite = function (slot, attachment) {
     var descriptor = attachment.rendererObject;
     var baseTexture = descriptor.page.rendererObject;
-    var spriteRect = new Rectangle(descriptor.x,
+    var spriteRect = new math.Rectangle(descriptor.x,
                                         descriptor.y,
                                         descriptor.rotate ? descriptor.height : descriptor.width,
                                         descriptor.rotate ? descriptor.width : descriptor.height);

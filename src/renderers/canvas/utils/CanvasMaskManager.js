@@ -6,8 +6,7 @@ var CanvasGraphics = require('../CanvasGraphics');
  * @class
  * @namespace PIXI
  */
-function CanvasMaskManager() {
-}
+function CanvasMaskManager() {}
 
 CanvasMaskManager.prototype.constructor = CanvasMaskManager;
 module.exports = CanvasMaskManager;

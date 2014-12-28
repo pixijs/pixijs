@@ -1,3 +1,10 @@
+var ImageLoader = require('./ImageLoader'),
+    JsonLoader = require('./JsonLoader'),
+    AtlasLoader = require('./AtlasLoader'),
+    SpineLoader = require('./SpineLoader'),
+    BitmapFontLoader = require('./BitmapFontLoader'),
+    EventTarget = require('../utils/EventTarget');
+
 /**
  * A Class that loads a bunch of images / sprite sheet / bitmap font files. Once the
  * assets have been loaded they are added to the PIXI Texture cache and can be accessed
@@ -46,7 +53,7 @@ function AssetLoader(assetURLs, crossorigin) {
         'xml':  BitmapFontLoader,
         'fnt':  BitmapFontLoader
     };
-};
+}
 
 // constructor
 AssetLoader.prototype.constructor = AssetLoader;
@@ -117,12 +124,14 @@ AssetLoader.prototype.load = function () {
         var fileType = this._getDataType(fileName);
 
         //if not, assume it's a file URI
-        if (!fileType)
+        if (!fileType) {
             fileType = fileName.split('?').shift().split('.').pop().toLowerCase();
+        }
 
         var Constructor = this.loadersByType[fileType];
-        if (!Constructor)
+        if (!Constructor) {
             throw new Error(fileType + ' is an unsupported file type');
+        }
 
         var loader = new Constructor(fileName, this.crossorigin);
 

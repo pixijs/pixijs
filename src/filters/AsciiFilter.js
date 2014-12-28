@@ -64,7 +64,7 @@ function AsciiFilter() {
         '    gl_FragColor = vec4(col, 1.0);',
         '}'
     ];
-};
+}
 
 AsciiFilter.prototype = Object.create(AbstractFilter.prototype);
 AsciiFilter.prototype.constructor = AsciiFilter;

@@ -64,7 +64,7 @@ function DisplacementFilter(texture) {
         '   gl_FragColor.rgb = mix( gl_FragColor.rgb, gl_FragColor.rgb, 1.0);',
         '}'
     ];
-};
+}
 
 DisplacementFilter.prototype = Object.create(AbstractFilter.prototype);
 DisplacementFilter.prototype.constructor = DisplacementFilter;

@@ -1,3 +1,8 @@
+var EventTarget = require('../utils/EventTarget'),
+    ImageLoader = require('./ImageLoader'),
+    Texture = require('../textures/Texture'),
+    utils = require('../utils');
+
 /**
  * The atlas file loader is used to load in Texture Atlas data and parse it. When loaded this class will dispatch a 'loaded' event. If loading fails this class will dispatch an 'error' event.
  *
@@ -17,10 +22,8 @@ function AtlasLoader(url, crossorigin) {
     this.baseUrl = url.replace(/[^\/]*$/, '');
     this.crossorigin = crossorigin;
     this.loaded = false;
+}
 
-};
-
-// constructor
 AtlasLoader.prototype.constructor = AtlasLoader;
 module.exports = AtlasLoader;
 
@@ -31,7 +34,7 @@ EventTarget.mixin(AtlasLoader.prototype);
  *
  */
 AtlasLoader.prototype.load = function () {
-    this.ajaxRequest = new AjaxRequest();
+    this.ajaxRequest = new utils.AjaxRequest();
     this.ajaxRequest.onreadystatechange = this.onAtlasLoaded.bind(this);
 
     this.ajaxRequest.open('GET', this.url, true);
@@ -132,17 +135,17 @@ AtlasLoader.prototype.onAtlasLoaded = function () {
                     for (i in frameData) {
                         var rect = frameData[i].frame;
                         if (rect) {
-                            TextureCache[i] = new Texture(this.images[j].texture.baseTexture, {
+                            utils.TextureCache[i] = new Texture(this.images[j].texture.baseTexture, {
                                 x: rect.x,
                                 y: rect.y,
                                 width: rect.w,
                                 height: rect.h
                             });
                             if (frameData[i].trimmed) {
-                                TextureCache[i].realSize = frameData[i].realSize;
+                                utils.TextureCache[i].realSize = frameData[i].realSize;
                                 // trim in pixi not supported yet, todo update trim properties if it is done ...
-                                TextureCache[i].trim.x = 0;
-                                TextureCache[i].trim.y = 0;
+                                utils.TextureCache[i].trim.x = 0;
+                                utils.TextureCache[i].trim.y = 0;
                             }
                         }
                     }

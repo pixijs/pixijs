@@ -41,7 +41,7 @@ function BlurYFilter() {
         '   gl_FragColor = sum;',
         '}'
     ];
-};
+}
 
 BlurYFilter.prototype = Object.create(AbstractFilter.prototype);
 BlurYFilter.prototype.constructor = BlurYFilter;

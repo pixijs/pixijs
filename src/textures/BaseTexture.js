@@ -1,6 +1,5 @@
-BaseTextureCache = {};
-
-BaseTextureCacheIdGenerator = 0;
+var utils = require('../utils'),
+    CONST = require('../const');
 
 /**
  * A texture stores the information that represents an image. All textures have a base texture.
@@ -41,7 +40,7 @@ function BaseTexture(source, scaleMode) {
      * @member {{number}}
      * @default scaleModes.LINEAR
      */
-    this.scaleMode = scaleMode || scaleModes.DEFAULT;
+    this.scaleMode = scaleMode || CONST.scaleModes.DEFAULT;
 
     /**
      * Set to true once the base texture has loaded
@@ -58,7 +57,7 @@ function BaseTexture(source, scaleMode) {
      */
     this.source = source;
 
-    this._UID = _UID++;
+    this._UID = utils.uuid();
 
     /**
      * Controls if RGB channels should be pre-multiplied by Alpha  (WebGL only)
@@ -139,7 +138,7 @@ function BaseTexture(source, scaleMode) {
 BaseTexture.prototype.constructor = BaseTexture;
 module.exports = BaseTexture;
 
-EventTarget.mixin(BaseTexture.prototype);
+utils.EventTarget.mixin(BaseTexture.prototype);
 
 /**
  * Destroys this base texture
@@ -147,13 +146,15 @@ EventTarget.mixin(BaseTexture.prototype);
  */
 BaseTexture.prototype.destroy = function () {
     if (this.imageUrl) {
-        delete BaseTextureCache[this.imageUrl];
-        delete TextureCache[this.imageUrl];
+        delete utils.BaseTextureCache[this.imageUrl];
+        delete utils.TextureCache[this.imageUrl];
         this.imageUrl = null;
-        if (!navigator.isCocoonJS) this.source.src = '';
+        if (!navigator.isCocoonJS) {
+            this.source.src = '';
+        }
     }
     else if (this.source && this.source._pixiId) {
-        delete BaseTextureCache[this.source._pixiId];
+        delete utils.BaseTextureCache[this.source._pixiId];
     }
     this.source = null;
 
@@ -216,9 +217,11 @@ BaseTexture.prototype.unloadFromGPU = function () {
  * @return BaseTexture
  */
 BaseTexture.fromImage = function (imageUrl, crossorigin, scaleMode) {
-    var baseTexture = BaseTextureCache[imageUrl];
+    var baseTexture = utils.BaseTextureCache[imageUrl];
 
-    if (crossorigin === undefined && imageUrl.indexOf('data:') === -1) crossorigin = true;
+    if (crossorigin === undefined && imageUrl.indexOf('data:') === -1) {
+        crossorigin = true;
+    }
 
     if (!baseTexture) {
         // new Image() breaks tex loading in some versions of Chrome.
@@ -231,10 +234,10 @@ BaseTexture.fromImage = function (imageUrl, crossorigin, scaleMode) {
         image.src = imageUrl;
         baseTexture = new BaseTexture(image, scaleMode);
         baseTexture.imageUrl = imageUrl;
-        BaseTextureCache[imageUrl] = baseTexture;
+        utils.BaseTextureCache[imageUrl] = baseTexture;
 
         // if there is an @2x at the end of the url we are going to assume its a highres image
-        if ( imageUrl.indexOf(RETINA_PREFIX + '.') !== -1) {
+        if ( imageUrl.indexOf(CONST.RETINA_PREFIX + '.') !== -1) {
             baseTexture.resolution = 2;
         }
     }
@@ -252,14 +255,14 @@ BaseTexture.fromImage = function (imageUrl, crossorigin, scaleMode) {
  */
 BaseTexture.fromCanvas = function (canvas, scaleMode) {
     if (!canvas._pixiId) {
-        canvas._pixiId = 'canvas_' + TextureCacheIdGenerator++;
+        canvas._pixiId = 'canvas_' + utils.TextureCacheIdGenerator++;
     }
 
-    var baseTexture = BaseTextureCache[canvas._pixiId];
+    var baseTexture = utils.BaseTextureCache[canvas._pixiId];
 
     if (!baseTexture) {
         baseTexture = new BaseTexture(canvas, scaleMode);
-        BaseTextureCache[canvas._pixiId] = baseTexture;
+        utils.BaseTextureCache[canvas._pixiId] = baseTexture;
     }
 
     return baseTexture;

@@ -45,7 +45,7 @@ function RoundedRectangle(x, y, width, height, radius) {
      *
      * @member {number}
      */
-};
+}
 
 RoundedRectangle.prototype.constructor = RoundedRectangle;
 module.exports = RoundedRectangle;
@@ -67,8 +67,9 @@ RoundedRectangle.prototype.clone = function () {
  * @return {boolean} Whether the x/y coordinates are within this Rounded Rectangle
  */
 RoundedRectangle.prototype.contains = function (x, y) {
-    if (this.width <= 0 || this.height <= 0)
+    if (this.width <= 0 || this.height <= 0) {
         return false;
+    }
 
     if (x >= this.x && x <= this.x + this.width) {
         if (y >= this.y && y <= this.y + this.height) {

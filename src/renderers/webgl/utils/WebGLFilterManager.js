@@ -1,3 +1,6 @@
+var FilterTexture = require('./FilterTexture'),
+    PixiShader = require('../shaders/PixiShader');
+
 /**
  * @class
  * @namespace PIXI
@@ -17,7 +20,7 @@ function WebGLFilterManager() {
      * @member {number}
      */
     this.offsetY = 0;
-};
+}
 
 WebGLFilterManager.prototype.constructor = WebGLFilterManager;
 module.exports = WebGLFilterManager;
@@ -89,10 +92,21 @@ WebGLFilterManager.prototype.pushFilter = function (filterBlock) {
     filterArea.height += padding * 2;
 
     // cap filter to screen size..
-    if (filterArea.x < 0)filterArea.x = 0;
-    if (filterArea.width > this.width)filterArea.width = this.width;
-    if (filterArea.y < 0)filterArea.y = 0;
-    if (filterArea.height > this.height)filterArea.height = this.height;
+    if (filterArea.x < 0) {
+        filterArea.x = 0;
+    }
+
+    if (filterArea.width > this.width) {
+        filterArea.width = this.width;
+    }
+
+    if (filterArea.y < 0) {
+        filterArea.y = 0;
+    }
+
+    if (filterArea.height > this.height) {
+        filterArea.height = this.height;
+    }
 
     //gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  filterArea.width, filterArea.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
     gl.bindFramebuffer(gl.FRAMEBUFFER, texture.frameBuffer);
@@ -162,7 +176,9 @@ WebGLFilterManager.prototype.popFilter = function () {
 
         var inputTexture = texture;
         var outputTexture = this.texturePool.pop();
-        if (!outputTexture)outputTexture = new FilterTexture(this.gl, this.width, this.height);
+        if (!outputTexture) {
+            outputTexture = new FilterTexture(this.gl, this.width, this.height);
+        }
         outputTexture.resize(this.width, this.height);
 
         // need to clear this FBO as it may have some left over elements from a previous filter.

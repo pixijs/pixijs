@@ -1,8 +1,11 @@
 var GraphicsData = require('./GraphicsData'),
     Sprite = require('../display/Sprite'),
+    Texture = require('../textures/Texture'),
     DisplayObjectContainer = require('../display/DisplayObjectContainer'),
+    WebGLGraphics = require('../renderers/webgl/utils/WebGLGraphics'),
     CanvasGraphics = require('../renderers/canvas/CanvasGraphics'),
     CanvasBuffer = require('../renderers/canvas/utils/CanvasBuffer'),
+    CONST = require('../const'),
     math = require('../math');
 
 /**
@@ -62,9 +65,9 @@ function Graphics() {
      * The blend mode to be applied to the graphic shape. Apply a value of blendModes.NORMAL to reset the blend mode.
      *
      * @member {number}
-     * @default blendModes.NORMAL;
+     * @default CONST.blendModes.NORMAL;
      */
-    this.blendMode = blendModes.NORMAL;
+    this.blendMode = CONST.blendModes.NORMAL;
 
     /**
      * Current path
@@ -102,7 +105,7 @@ function Graphics() {
      * @member {REctangle}
      * @private
      */
-    this._localBounds = new Rectangle(0,0,1,1);
+    this._localBounds = new math.Rectangle(0,0,1,1);
 
     /**
      * Used to detect if the graphics object has changed. If this is set to true then the graphics
@@ -129,8 +132,7 @@ function Graphics() {
      * @private
      */
     this.cachedSpriteDirty = false;
-
-};
+}
 
 // constructor
 Graphics.prototype = Object.create(DisplayObjectContainer.prototype);
@@ -184,7 +186,7 @@ Graphics.prototype.lineStyle = function (lineWidth, color, alpha) {
     if (this.currentPath) {
         if (this.currentPath.shape.points.length) {
             // halfway through a line? start a new one!
-            this.drawShape( new Polygon( this.currentPath.shape.points.slice(-2) ));
+            this.drawShape( new math.Polygon( this.currentPath.shape.points.slice(-2) ));
         }
         else {
             // otherwise its empty so lets just set the line properties
@@ -205,7 +207,7 @@ Graphics.prototype.lineStyle = function (lineWidth, color, alpha) {
  * @return {Graphics}
   */
 Graphics.prototype.moveTo = function (x, y) {
-    this.drawShape(new Polygon([x,y]));
+    this.drawShape(new math.Polygon([x,y]));
 
     return this;
 };
@@ -507,7 +509,7 @@ Graphics.prototype.endFill = function () {
  * @return {Graphics}
  */
 Graphics.prototype.drawRect = function ( x, y, width, height ) {
-    this.drawShape(new Rectangle(x,y, width, height));
+    this.drawShape(new math.Rectangle(x,y, width, height));
 
     return this;
 };
@@ -521,7 +523,7 @@ Graphics.prototype.drawRect = function ( x, y, width, height ) {
  * @param radius {number} Radius of the rectangle corners
  */
 Graphics.prototype.drawRoundedRect = function ( x, y, width, height, radius ) {
-    this.drawShape(new RoundedRectangle(x, y, width, height, radius));
+    this.drawShape(new math.RoundedRectangle(x, y, width, height, radius));
 
     return this;
 };
@@ -535,7 +537,7 @@ Graphics.prototype.drawRoundedRect = function ( x, y, width, height, radius ) {
  * @return {Graphics}
  */
 Graphics.prototype.drawCircle = function (x, y, radius) {
-    this.drawShape(new Circle(x,y, radius));
+    this.drawShape(new math.Circle(x,y, radius));
 
     return this;
 };
@@ -550,7 +552,7 @@ Graphics.prototype.drawCircle = function (x, y, radius) {
  * @return {Graphics}
  */
 Graphics.prototype.drawEllipse = function (x, y, width, height) {
-    this.drawShape(new Ellipse(x, y, width, height));
+    this.drawShape(new math.Ellipse(x, y, width, height));
 
     return this;
 };
@@ -566,7 +568,7 @@ Graphics.prototype.drawPolygon = function (path) {
         path = Array.prototype.slice.call(arguments);
     }
 
-    this.drawShape(new Polygon(path));
+    this.drawShape(new math.Polygon(path));
 
     return this;
 };
@@ -1012,7 +1014,9 @@ Graphics.prototype.destroyCachedSprite = function () {
 Graphics.prototype.drawShape = function (shape) {
     if (this.currentPath) {
         // check current path!
-        if (this.currentPath.shape.points.length <= 2)this.graphicsData.pop();
+        if (this.currentPath.shape.points.length <= 2) {
+            this.graphicsData.pop();
+        }
     }
 
     this.currentPath = null;
@@ -1062,9 +1066,9 @@ Graphics.ELIP = 3;
 Graphics.RREC = 4;
 
 // REFACTOR: Move these to their classes, move types to central location.
-Polygon.prototype.type = Graphics.POLY;
-Rectangle.prototype.type = Graphics.RECT;
-Circle.prototype.type = Graphics.CIRC;
-Ellipse.prototype.type = Graphics.ELIP;
-RoundedRectangle.prototype.type = Graphics.RREC;
+math.Polygon.prototype.type = Graphics.POLY;
+math.Rectangle.prototype.type = Graphics.RECT;
+math.Circle.prototype.type = Graphics.CIRC;
+math.Ellipse.prototype.type = Graphics.ELIP;
+math.RoundedRectangle.prototype.type = Graphics.RREC;
 

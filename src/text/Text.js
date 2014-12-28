@@ -1,3 +1,6 @@
+var Sprite = require('../display/Sprite'),
+    Texture = require('../display/Texture');
+
 /**
  * A Text Object will create a line or multiple lines of text. To split a line you can use '\n' in your text string,
  * or add a wordWrap property set to true and and wordWrapWidth property with a value in the style object.
@@ -43,8 +46,7 @@ function Text(text, style) {
 
     this.setText(text);
     this.setStyle(style);
-
-};
+}
 
 // constructor
 Text.prototype = Object.create(Sprite.prototype);
@@ -154,7 +156,9 @@ Text.prototype.updateText = function () {
 
     // word wrap
     // preserve original text
-    if (this.style.wordWrap)outputText = this.wordWrap(this.text);
+    if (this.style.wordWrap) {
+        outputText = this.wordWrap(this.text);
+    }
 
     //split text into lines
     var lines = outputText.split(/(?:\r\n|\r|\n)/);
@@ -170,7 +174,9 @@ Text.prototype.updateText = function () {
     }
 
     var width = maxLineWidth + this.style.strokeThickness;
-    if (this.style.dropShadow)width += this.style.dropShadowDistance;
+    if (this.style.dropShadow) {
+        width += this.style.dropShadowDistance;
+    }
 
     this.canvas.width = ( width + this.context.lineWidth ) * this.resolution;
 
@@ -178,13 +184,17 @@ Text.prototype.updateText = function () {
     var lineHeight = fontProperties.fontSize + this.style.strokeThickness;
 
     var height = lineHeight * lines.length;
-    if (this.style.dropShadow)height += this.style.dropShadowDistance;
+    if (this.style.dropShadow) {
+        height += this.style.dropShadowDistance;
+    }
 
     this.canvas.height = height * this.resolution;
 
     this.context.scale( this.resolution, this.resolution);
 
-    if (navigator.isCocoonJS) this.context.clearRect(0,0,this.canvas.width,this.canvas.height);
+    if (navigator.isCocoonJS) {
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
 
     // used for debugging..
     //this.context.fillStyle ="#FF0000"

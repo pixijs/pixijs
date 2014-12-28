@@ -1,4 +1,5 @@
-var JsonLoader = require('./JsonLoader');
+var EventTarget = require('../utils/EventTarget'),
+    JsonLoader = require('./JsonLoader');
 
 /**
  * The sprite sheet loader is used to load in JSON sprite sheet data
@@ -52,7 +53,7 @@ function SpriteSheetLoader(url, crossorigin) {
      * @member {object}
      */
     this.frames = {};
-};
+}
 
 // constructor
 SpriteSheetLoader.prototype.constructor = SpriteSheetLoader;

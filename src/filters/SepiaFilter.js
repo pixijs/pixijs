@@ -31,7 +31,7 @@ function SepiaFilter() {
         '   gl_FragColor.rgb = mix( gl_FragColor.rgb, gl_FragColor.rgb * sepiaMatrix, sepia);',
         '}'
     ];
-};
+}
 
 SepiaFilter.prototype = Object.create(AbstractFilter.prototype);
 SepiaFilter.prototype.constructor = SepiaFilter;

@@ -38,7 +38,7 @@ function Rectangle(x, y, width, height) {
      *
      * @member {number}
      */
-};
+}
 
 Rectangle.prototype.constructor = Rectangle;
 module.exports = Rectangle;

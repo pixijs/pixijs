@@ -51,7 +51,7 @@ function DotScreenFilter() {
         '   gl_FragColor = vec4(vec3(average * 10.0 - 5.0 + pattern()), color.a);',
         '}'
     ];
-};
+}
 
 DotScreenFilter.prototype = Object.create(AbstractFilter.prototype);
 DotScreenFilter.prototype.constructor = DotScreenFilter;

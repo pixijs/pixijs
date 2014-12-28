@@ -1,3 +1,7 @@
+var BaseTexture = require('./BaseTexture'),
+    Texture = require('./Texture'),
+    utils = require('../utils');
+
 /**
  * A texture of a [playing] Video.
  *
@@ -83,8 +87,8 @@ VideoTexture.prototype.onCanPlay = function () {
 
 VideoTexture.prototype.destroy = function () {
     if (this.source && this.source._pixiId) {
-        BaseTextureCache[ this.source._pixiId ] = null;
-        delete BaseTextureCache[ this.source._pixiId ];
+        utils.BaseTextureCache[ this.source._pixiId ] = null;
+        delete utils.BaseTextureCache[ this.source._pixiId ];
 
         this.source._pixiId = null;
         delete this.source._pixiId;
@@ -103,14 +107,14 @@ VideoTexture.prototype.destroy = function () {
  */
 VideoTexture.baseTextureFromVideo = function (video, scaleMode) {
     if (!video._pixiId) {
-        video._pixiId = 'video_' + TextureCacheIdGenerator++;
+        video._pixiId = 'video_' + utils.TextureCacheIdGenerator++;
     }
 
-    var baseTexture = BaseTextureCache[ video._pixiId ];
+    var baseTexture = utils.BaseTextureCache[ video._pixiId ];
 
     if (!baseTexture) {
         baseTexture = new VideoTexture(video, scaleMode);
-        BaseTextureCache[ video._pixiId ] = baseTexture;
+        utils.BaseTextureCache[ video._pixiId ] = baseTexture;
     }
 
     return baseTexture;

@@ -1,9 +1,20 @@
-var webglEnabled = requrire('webgl-enabled')();
+var CONST = require('../const');
 
 /**
  * @namespace PIXI
  */
 var utils = module.exports = {
+    _uid: 0,
+
+    /**
+     * Gets the next uuid
+     *
+     * @return {number} The next uuid to use.
+     */
+    uuid: function () {
+        return ++utils._uid;
+    },
+
     /**
      * Converts a hex color number to an [R, G, B] array
      *
@@ -86,33 +97,76 @@ var utils = module.exports = {
     },
 
     /**
-     * This helper function will automatically detect which renderer you should be using.
-     * WebGL is the preferred renderer as it is a lot faster. If webGL is not supported by
-     * the browser then this function will return a canvas renderer
+     * Logs out the version and renderer information for this running instance of PIXI.
+     * If you don't want to see this message you can set PIXI.utils.sayHello = false;
      *
-     * @param width=800 {number} the width of the renderers view
-     * @param height=600 {number} the height of the renderers view
-     * @param [options] {object} The optional renderer parameters
-     * @param [options.view] {HTMLCanvasElement} the canvas to use as a view, optional
-     * @param [options.transparent=false] {boolean} If the render view is transparent, default false
-     * @param [options.antialias=false] {boolean} sets antialias (only applicable in chrome at the moment)
-     * @param [options.preserveDrawingBuffer=false] {boolean} enables drawing buffer preservation, enable this if you
-     *      need to call toDataUrl on the webgl context
-     * @param [options.resolution=1] {number} the resolution of the renderer retina would be 2
-     * @return {WebGLRenderer|CanvasRenderer} Returns WebGL renderer if available, otherwise CanvasRenderer
+     * @param {string} type - The string renderer type to log.
+     * @constant
+     * @static
      */
-    autoDetectRenderer: function (width, height, options) {
-        width = width || 800;
-        height = height || 600;
+    sayHello: function (type) {
+        if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
+            var args = [
+                '%c %c %c Pixi.js ' + CONST.VERSION + ' - ' + type + '  %c ' + ' %c ' + ' http://www.pixijs.com/  %c %c ♥%c♥%c♥ ',
+                'background: #ff66a5',
+                'background: #ff66a5',
+                'color: #ff66a5; background: #030307;',
+                'background: #ff66a5',
+                'background: #ffc3dc',
+                'background: #ff66a5',
+                'color: #ff2424; background: #fff',
+                'color: #ff2424; background: #fff',
+                'color: #ff2424; background: #fff'
+            ];
 
-        if (webglEnabled) {
-            return new WebGLRenderer(width, height, options);
+            console.log.apply(console, args); //jshint ignore:line
+        }
+        else if (window.console) {
+            console.log('Pixi.js ' + CONST.VERSION + ' - http://www.pixijs.com/'); //jshint ignore:line
         }
 
-        return new CanvasRenderer(width, height, options);
+        utils.sayHello = false;
+    },
+
+    /**
+     * A wrapper for ajax requests to be handled cross browser
+     *
+     * TODO: Replace this wil superagent
+     *
+     * @class
+     * @namespace PIXI
+     */
+    AjaxRequest: function () {
+        var activexmodes = ['Msxml2.XMLHTTP.6.0', 'Msxml2.XMLHTTP.3.0', 'Microsoft.XMLHTTP']; //activeX versions to check for in IE
+
+        if (window.ActiveXObject) { //Test for support for ActiveXObject in IE first (as XMLHttpRequest in IE7 is broken)
+            for (var i=0; i<activexmodes.length; i++) {
+                try{
+                    return new window.ActiveXObject(activexmodes[i]);
+                }
+                catch(e) {
+                    //suppress error
+                }
+            }
+        }
+        else if (window.XMLHttpRequest) // if Mozilla, Safari etc
+        {
+            return new window.XMLHttpRequest();
+        }
+        else {
+            return false;
+        }
     },
 
     PolyK:      require('./PolyK'),
     Event:      require('./Event'),
-    EventTarget: require('./EventTarget')
+    EventTarget: require('./EventTarget'),
+
+    // TODO: refactor out this
+    AnimCache: {},
+    FrameCache: {},
+    TextureCache: {},
+    TextureCacheIdGenerator: 0,
+    BaseTextureCache: {},
+    BaseTextureCacheIdGenerator: 0
 };

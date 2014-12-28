@@ -39,7 +39,7 @@ function AbstractFilter(fragmentSrc, uniforms) {
      * @private
      */
     this.fragmentSrc = typeof fragmentSrc === 'string' ? fragmentSrc.split('') : (fragmentSrc || []);
-};
+}
 
 AbstractFilter.prototype.constructor = AbstractFilter;
 module.exports = AbstractFilter;

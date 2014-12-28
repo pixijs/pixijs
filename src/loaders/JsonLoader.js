@@ -1,3 +1,10 @@
+var EventTarget = require('../utils/EventTarget'),
+    ImageLoader = require('./ImageLoader'),
+    SpineTextureLoader = require('../extras/spine/SpineTextureLoader'),
+    Texture = require('../textures/Texture'),
+    math = require('../math'),
+    utils = require('../utils');
+
 /**
  * The json file loader is used to load in JSON data and parse it
  * When loaded this class will dispatch a 'loaded' event
@@ -38,9 +45,8 @@ function JsonLoader(url, crossorigin) {
      * @member {boolean}
      * @readOnly
      */
-    this.loaded = false;
-
-};
+     this.loaded = false;
+}
 
 // constructor
 JsonLoader.prototype.constructor = JsonLoader;
@@ -121,7 +127,7 @@ JsonLoader.prototype.onJSONLoaded = function () {
             var rect = frameData[i].frame;
 
             if (rect) {
-                var textureSize = new Rectangle(rect.x, rect.y, rect.w, rect.h);
+                var textureSize = new math.Rectangle(rect.x, rect.y, rect.w, rect.h);
                 var crop = textureSize.clone();
                 var trim = null;
 
@@ -129,9 +135,9 @@ JsonLoader.prototype.onJSONLoaded = function () {
                 if (frameData[i].trimmed) {
                     var actualSize = frameData[i].sourceSize;
                     var realSize = frameData[i].spriteSourceSize;
-                    trim = new Rectangle(realSize.x, realSize.y, actualSize.w, actualSize.h);
+                    trim = new math.Rectangle(realSize.x, realSize.y, actualSize.w, actualSize.h);
                 }
-                TextureCache[i] = new Texture(this.texture, textureSize, crop, trim);
+                utils.TextureCache[i] = new Texture(this.texture, textureSize, crop, trim);
             }
         }
 
@@ -140,7 +146,7 @@ JsonLoader.prototype.onJSONLoaded = function () {
     }
     else if (this.json.bones) {
 		// check if the json was loaded before
-		if (AnimCache[this.url]) {
+		if (utils.AnimCache[this.url]) {
 			this.onLoaded();
 		}
 		else {
@@ -169,7 +175,7 @@ JsonLoader.prototype.onJSONLoaded = function () {
 				// spine animation
 				var spineJsonParser = new spine.SkeletonJson(attachmentLoader);
 				var skeletonData = spineJsonParser.readSkeletonData(originalLoader.json);
-				AnimCache[originalLoader.url] = skeletonData;
+				utils.AnimCache[originalLoader.url] = skeletonData;
 				originalLoader.spine = skeletonData;
 				originalLoader.spineAtlas = spineAtlas;
 				originalLoader.spineAtlasLoader = atlasLoader;

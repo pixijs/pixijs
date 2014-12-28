@@ -12,14 +12,14 @@ function CanvasBuffer(width, height) {
      *
      * @member {HTMLCanvasElement}
      */
-    this.canvas = document.createElement("canvas");
+    this.canvas = document.createElement('canvas');
 
     /**
      * A CanvasRenderingContext2D object representing a two-dimensional rendering context.
      *
      * @member {CanvasRenderingContext2D}
      */
-    this.context = this.canvas.getContext("2d");
+    this.context = this.canvas.getContext('2d');
 
     this.canvas.width = width;
     this.canvas.height = height;

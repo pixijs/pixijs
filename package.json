@@ -41,8 +41,6 @@
     "watchify": "^2.2.1"
   },
   "dependencies": {
-    "raf": "^2.0.4",
-    "superagent": "^0.21.0",
     "webgl-enabled": "^1.0.2"
   }
 }

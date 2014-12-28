@@ -19,7 +19,7 @@ CanvasTinter.getTintedTexture = function (sprite, color) {
 
     color = CanvasTinter.roundColor(color);
 
-    var stringColor = "#" + ("00000" + ( color | 0).toString(16)).substr(-6);
+    var stringColor = '#' + ('00000' + ( color | 0).toString(16)).substr(-6);
 
     texture.tintCache = texture.tintCache || {};
 
@@ -28,7 +28,7 @@ CanvasTinter.getTintedTexture = function (sprite, color) {
     }
 
      // clone texture..
-    var canvas = CanvasTinter.canvas || document.createElement("canvas");
+    var canvas = CanvasTinter.canvas || document.createElement('canvas');
 
     //CanvasTinter.tintWithPerPixel(texture, stringColor, canvas);
     CanvasTinter.tintMethod(texture, color, canvas);
@@ -50,25 +50,25 @@ CanvasTinter.getTintedTexture = function (sprite, color) {
 };
 
 /**
- * Tint a texture using the "multiply" operation.
+ * Tint a texture using the 'multiply' operation.
  *
  * @param texture {Texture} the texture to tint
  * @param color {number} the color to use to tint the sprite with
  * @param canvas {HTMLCanvasElement} the current canvas
  */
 CanvasTinter.tintWithMultiply = function (texture, color, canvas) {
-    var context = canvas.getContext( "2d" );
+    var context = canvas.getContext( '2d' );
 
     var crop = texture.crop;
 
     canvas.width = crop.width;
     canvas.height = crop.height;
 
-    context.fillStyle = "#" + ("00000" + ( color | 0).toString(16)).substr(-6);
+    context.fillStyle = '#' + ('00000' + ( color | 0).toString(16)).substr(-6);
 
     context.fillRect(0, 0, crop.width, crop.height);
 
-    context.globalCompositeOperation = "multiply";
+    context.globalCompositeOperation = 'multiply';
 
     context.drawImage(
         texture.baseTexture.source,
@@ -82,7 +82,7 @@ CanvasTinter.tintWithMultiply = function (texture, color, canvas) {
         crop.height
     );
 
-    context.globalCompositeOperation = "destination-atop";
+    context.globalCompositeOperation = 'destination-atop';
 
     context.drawImage(
         texture.baseTexture.source,
@@ -98,25 +98,25 @@ CanvasTinter.tintWithMultiply = function (texture, color, canvas) {
 };
 
 /**
- * Tint a texture using the "overlay" operation.
+ * Tint a texture using the 'overlay' operation.
  *
  * @param texture {Texture} the texture to tint
  * @param color {number} the color to use to tint the sprite with
  * @param canvas {HTMLCanvasElement} the current canvas
  */
 CanvasTinter.tintWithOverlay = function (texture, color, canvas) {
-    var context = canvas.getContext( "2d" );
+    var context = canvas.getContext( '2d' );
 
     var crop = texture.crop;
 
     canvas.width = crop.width;
     canvas.height = crop.height;
 
-    context.globalCompositeOperation = "copy";
-    context.fillStyle = "#" + ("00000" + ( color | 0).toString(16)).substr(-6);
+    context.globalCompositeOperation = 'copy';
+    context.fillStyle = '#' + ('00000' + ( color | 0).toString(16)).substr(-6);
     context.fillRect(0, 0, crop.width, crop.height);
 
-    context.globalCompositeOperation = "destination-atop";
+    context.globalCompositeOperation = 'destination-atop';
     context.drawImage(
         texture.baseTexture.source,
         crop.x,
@@ -129,7 +129,7 @@ CanvasTinter.tintWithOverlay = function (texture, color, canvas) {
         crop.height
     );
 
-    // context.globalCompositeOperation = "copy";
+    // context.globalCompositeOperation = 'copy';
 };
 
 /**
@@ -140,14 +140,14 @@ CanvasTinter.tintWithOverlay = function (texture, color, canvas) {
  * @param canvas {HTMLCanvasElement} the current canvas
  */
 CanvasTinter.tintWithPerPixel = function (texture, color, canvas) {
-    var context = canvas.getContext( "2d" );
+    var context = canvas.getContext( '2d' );
 
     var crop = texture.crop;
 
     canvas.width = crop.width;
     canvas.height = crop.height;
 
-    context.globalCompositeOperation = "copy";
+    context.globalCompositeOperation = 'copy';
     context.drawImage(
         texture.baseTexture.source,
         crop.x,

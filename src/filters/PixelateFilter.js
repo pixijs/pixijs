@@ -37,7 +37,7 @@ function PixelateFilter() {
         '   gl_FragColor = texture2D(uSampler, color);',
         '}'
     ];
-};
+}
 
 PixelateFilter.prototype = Object.create(AbstractFilter.prototype);
 PixelateFilter.prototype.constructor = PixelateFilter;

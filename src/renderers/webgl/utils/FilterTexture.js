@@ -1,3 +1,5 @@
+var CONST = require('../../../const');
+
 /**
  * @class
  * @namespace PIXI
@@ -27,11 +29,11 @@ function FilterTexture(gl, width, height, scaleMode) {
     /**
      * @member {number}
      */
-    scaleMode = scaleMode || scaleModes.DEFAULT;
+    scaleMode = scaleMode || CONST.scaleModes.DEFAULT;
 
     gl.bindTexture(gl.TEXTURE_2D,  this.texture);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, scaleMode === scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, scaleMode === scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, scaleMode === CONST.scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, scaleMode === CONST.scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer );
@@ -45,7 +47,7 @@ function FilterTexture(gl, width, height, scaleMode) {
     gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, this.renderBuffer);
 
     this.resize(width, height);
-};
+}
 
 FilterTexture.prototype.constructor = FilterTexture;
 module.exports = FilterTexture;
@@ -68,7 +70,9 @@ FilterTexture.prototype.clear = function () {
  * @param height {number} the new height of the texture
  */
 FilterTexture.prototype.resize = function (width, height) {
-    if (this.width === width && this.height === height) return;
+    if (this.width === width && this.height === height) {
+        return;
+    }
 
     this.width = width;
     this.height = height;

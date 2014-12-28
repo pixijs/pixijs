@@ -1,4 +1,6 @@
-var DisplayObjectContainer = require('../display/DisplayObjectContainer');
+var DisplayObjectContainer = require('../display/DisplayObjectContainer'),
+    math = require('../math'),
+    CONST = require('../const');
 
 /**
  *
@@ -22,14 +24,14 @@ function Strip(texture) {
 
     // set up the main bits..
     this.uvs = new Float32Array([0, 1,
-                                      1, 1,
-                                      1, 0,
-                                      0, 1]);
+                                 1, 1,
+                                 1, 0,
+                                 0, 1]);
 
     this.vertices = new Float32Array([0, 0,
-                                            100, 0,
-                                            100, 100,
-                                            0, 100]);
+                                      100, 0,
+                                      100, 100,
+                                      0, 100]);
 
     this.colors = new Float32Array([1, 1, 1, 1]);
 
@@ -46,9 +48,9 @@ function Strip(texture) {
      * The blend mode to be applied to the sprite. Set to blendModes.NORMAL to remove any blend mode.
      *
      * @member {number}
-     * @default blendModes.NORMAL;
+     * @default CONST.blendModes.NORMAL;
      */
-    this.blendMode = blendModes.NORMAL;
+    this.blendMode = CONST.blendModes.NORMAL;
 
     /**
      * Triangles in canvas mode are automatically antialiased, use this value to force triangles to overlap a bit with each other.
@@ -58,8 +60,7 @@ function Strip(texture) {
     this.canvasPadding = 0;
 
     this.drawMode = Strip.DrawModes.TRIANGLE_STRIP;
-
-};
+}
 
 // constructor
 Strip.prototype = Object.create(DisplayObjectContainer.prototype);
@@ -68,13 +69,18 @@ module.exports = Strip;
 
 Strip.prototype._renderWebGL = function (renderSession) {
     // if the sprite is not visible or the alpha is 0 then no need to render this element
-    if (!this.visible || this.alpha <= 0)return;
+    if (!this.visible || this.alpha <= 0) {
+        return;
+    }
+
     // render triangle strip..
 
     renderSession.spriteBatch.stop();
 
     // init! init!
-    if (!this._vertexBuffer)this._initWebGL(renderSession);
+    if (!this._vertexBuffer) {
+        this._initWebGL(renderSession);
+    }
 
     renderSession.shaderManager.setShader(renderSession.shaderManager.stripShader);
 
@@ -405,7 +411,7 @@ Strip.prototype.getBounds = function (matrix) {
     }
 
     if (minX === -Infinity || maxY === Infinity) {
-        return EmptyRectangle;
+        return math.Rectangle.EMPTY;
     }
 
     var bounds = this._bounds;

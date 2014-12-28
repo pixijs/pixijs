@@ -17,7 +17,7 @@ function BlurFilter() {
     this.blurYFilter = new BlurYFilter();
 
     this.passes = [this.blurXFilter, this.blurYFilter];
-};
+}
 
 BlurFilter.prototype = Object.create(AbstractFilter.prototype);
 BlurFilter.prototype.constructor = BlurFilter;

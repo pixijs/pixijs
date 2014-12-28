@@ -44,7 +44,7 @@ function NoiseFilter() {
         '    gl_FragColor = color;',
         '}'
     ];
-};
+}
 
 NoiseFilter.prototype = Object.create(AbstractFilter.prototype);
 NoiseFilter.prototype.constructor = NoiseFilter;

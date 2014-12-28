@@ -28,7 +28,7 @@ function ColorStepFilter() {
         '   gl_FragColor = color;',
         '}'
     ];
-};
+}
 
 ColorStepFilter.prototype = Object.create(AbstractFilter.prototype);
 ColorStepFilter.prototype.constructor = ColorStepFilter;

@@ -1,5 +1,9 @@
 var Sprite = require('../display/Sprite'),
-    utils = require('../utils');
+    Texture = require('../textures/Texture'),
+    CanvasBuffer = require('../renderers/canvas/utils/CanvasBuffer'),
+    math = require('../math'),
+    utils = require('../utils'),
+    CONST = require('../const');
 
 /**
  * A tiling sprite is a fast way of rendering a tiling image
@@ -33,21 +37,21 @@ function TilingSprite(texture, width, height) {
      *
      * @member {Point}
      */
-    this.tileScale = new Point(1,1);
+    this.tileScale = new math.Point(1,1);
 
     /**
      * A point that represents the scale of the texture object
      *
      * @member {Point}
      */
-    this.tileScaleOffset = new Point(1,1);
+    this.tileScaleOffset = new math.Point(1,1);
 
     /**
      * The offset position of the image that is being tiled
      *
      * @member {Point}
      */
-    this.tilePosition = new Point(0,0);
+    this.tilePosition = new math.Point(0,0);
 
     /**
      * Whether this sprite is renderable or not
@@ -71,7 +75,7 @@ function TilingSprite(texture, width, height) {
      * @member {number}
      * @default blendModes.NORMAL;
      */
-    this.blendMode = blendModes.NORMAL;
+    this.blendMode = CONST.blendModes.NORMAL;
 }
 
 TilingSprite.prototype = Object.create(Sprite.prototype);
@@ -169,8 +173,13 @@ TilingSprite.prototype._renderWebGL = function (renderSession) {
 
     renderSession.spriteBatch.stop();
 
-    if (this._filters) renderSession.filterManager.popFilter();
-    if (this._mask) renderSession.maskManager.popMask(this._mask, renderSession);
+    if (this._filters) {
+        renderSession.filterManager.popFilter();
+    }
+
+    if (this._mask) {
+        renderSession.maskManager.popMask(this._mask, renderSession);
+    }
 
     renderSession.spriteBatch.start();
 };
@@ -345,11 +354,12 @@ TilingSprite.prototype.onTextureUpdate = function () {
 
 /**
  *
- *
  * @param forcePowerOfTwo {boolean} Whether we want to force the texture to be a power of two
  */
 TilingSprite.prototype.generateTilingTexture = function (forcePowerOfTwo) {
-    if (!this.texture.baseTexture.hasLoaded) return;
+    if (!this.texture.baseTexture.hasLoaded) {
+        return;
+    }
 
     var texture = this.originalTexture || this.texture;
     var frame = texture.frame;
@@ -373,7 +383,9 @@ TilingSprite.prototype.generateTilingTexture = function (forcePowerOfTwo) {
         targetHeight = utils.getNextPowerOfTwo(frame.height);
 
         //  If the BaseTexture dimensions don't match the texture frame then we need a new texture anyway because it's part of a texture atlas
-        if (frame.width !== targetWidth || frame.height !== targetHeight || texture.baseTexture.width !== targetWidth || texture.baseTexture.height || targetHeight) newTextureRequired = true;
+        if (frame.width !== targetWidth || frame.height !== targetHeight || texture.baseTexture.width !== targetWidth || texture.baseTexture.height || targetHeight) {
+            newTextureRequired = true;
+        }
     }
 
     if (newTextureRequired) {

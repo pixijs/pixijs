@@ -30,7 +30,7 @@ function GrayFilter() {
      //   '   gl_FragColor = gl_FragColor;',
         '}'
     ];
-};
+}
 
 GrayFilter.prototype = Object.create(AbstractFilter.prototype);
 GrayFilter.prototype.constructor = GrayFilter;
