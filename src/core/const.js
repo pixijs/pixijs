@@ -29,7 +29,7 @@ module.exports = {
      * @constant
      * @property {string} VERSION
      */
-    VERSION: require('../package.json').version,
+    VERSION: require('../../package.json').version,
 
     /**
      * Various blend modes supported by PIXI. IMPORTANT - The WebGL renderer only supports

@@ -1,4 +1,4 @@
-var AbstractFilter = require('../../../filters/AbstractFilter'),
+var AbstractFilter = require('../../../../filters/AbstractFilter'),
     PixiShader = require('../shaders/PixiShader'),
     TextureUvs = require('./TextureUvs');
 

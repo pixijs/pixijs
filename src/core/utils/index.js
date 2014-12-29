@@ -159,7 +159,7 @@ var utils = module.exports = {
     },
 
     PolyK:      require('./PolyK'),
-    Event:      require('./Event'),
+    EventData:  require('./EventData'),
     EventTarget: require('./EventTarget'),
 
     // TODO: refactor out this

@@ -9,6 +9,5 @@
  * @namespace PIXI
  */
 module.exports = {
-    Spine:              require('./Spine'),
-    SpineTextureLoader: require('./SpineTextureLoader')
+    Spine:              require('./Spine')
 };

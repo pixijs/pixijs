@@ -1,4 +1,4 @@
-var AbstractFilter = require('AbstractFilter');
+var AbstractFilter = require('./AbstractFilter');
 
 /**
  * @author Vico @vicocotea

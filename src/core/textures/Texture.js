@@ -1,7 +1,7 @@
 var BaseTexture = require('./BaseTexture'),
-    Rectangle = require('./Rectangle'),
     EventTarget = require('../utils/EventTarget'),
     TextureUvs = require('../renderers/webgl/utils/TextureUvs'),
+    math = require('../math'),
     utils = require('../utils');
 
 /**
@@ -26,7 +26,7 @@ function Texture(baseTexture, frame, crop, trim) {
 
     if (!frame) {
         this.noFrame = true;
-        frame = new Rectangle(0,0,1,1);
+        frame = new math.Rectangle(0,0,1,1);
     }
 
     if (baseTexture instanceof Texture) {
@@ -96,11 +96,11 @@ function Texture(baseTexture, frame, crop, trim) {
      *
      * @member {Rectangle}
      */
-    this.crop = crop || new Rectangle(0, 0, 1, 1);
+    this.crop = crop || new math.Rectangle(0, 0, 1, 1);
 
     if (baseTexture.hasLoaded) {
         if (this.noFrame) {
-            frame = new Rectangle(0, 0, baseTexture.width, baseTexture.height);
+            frame = new math.Rectangle(0, 0, baseTexture.width, baseTexture.height);
         }
         this.setFrame(frame);
     }
@@ -124,7 +124,7 @@ Texture.prototype.onBaseTextureLoaded = function () {
     baseTexture.removeEventListener('loaded', this.onLoaded);
 
     if (this.noFrame) {
-        this.frame = new Rectangle(0, 0, baseTexture.width, baseTexture.height);
+        this.frame = new math.Rectangle(0, 0, baseTexture.width, baseTexture.height);
     }
 
     this.setFrame(this.frame);

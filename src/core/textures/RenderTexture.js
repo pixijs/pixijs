@@ -1,6 +1,6 @@
 var BaseTexture = require('./BaseTexture'),
     Texture = require('./Texture'),
-    FilterTexture = require('./FilterTexture'),
+    FilterTexture = require('../renderers/webgl/utils/FilterTexture'),
     CanvasBuffer = require('../renderers/canvas/utils/CanvasBuffer'),
     math = require('../math'),
     CONST = require('../const');

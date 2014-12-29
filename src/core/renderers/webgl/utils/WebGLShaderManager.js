@@ -1,8 +1,8 @@
-var PrimitiveShader = require('../shader/PrimitiveShader'),
-    ComplexPrimitiveShader = require('../shader/ComplexPrimitiveShader'),
-    PixiShader = require('../shader/PixiShader'),
-    PixiFastShader = require('../shader/PixiFastShader'),
-    StripShader = require('../shader/StripShader');
+var PrimitiveShader = require('../shaders/PrimitiveShader'),
+    ComplexPrimitiveShader = require('../shaders/ComplexPrimitiveShader'),
+    PixiShader = require('../shaders/PixiShader'),
+    PixiFastShader = require('../shaders/PixiFastShader'),
+    StripShader = require('../shaders/StripShader');
 
 /**
  * @class

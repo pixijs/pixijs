@@ -1,4 +1,4 @@
-var Graphics = require('../../primitives/Graphics');
+var Graphics = require('../../../primitives/Graphics');
 
 /**
  * A set of functions used by the canvas renderer to draw the primitive graphics data.
