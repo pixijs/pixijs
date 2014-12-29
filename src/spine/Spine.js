@@ -1,9 +1,5 @@
-var math = require('../../math'),
-    utils = require('../../utils'),
-    Sprite = require('../../display/Sprite'),
-    Texture = require('../../textures/Texture'),
-    Strip = require('../Strip'),
-    DisplayObjectContainer = require('../../display/DisplayObjectContainer');
+var core = require('../core'),
+    spine = require('./SpineRuntime');
 
 /* Esoteric Software SPINE wrapper for pixi.js */
 
@@ -20,9 +16,9 @@ spine.Bone.yDown = true;
  * @param url {string} The url of the spine anim file to be used
  */
 function Spine(url) {
-    DisplayObjectContainer.call(this);
+    core.DisplayObjectContainer.call(this);
 
-    this.spineData = utils.AnimCache[url];
+    this.spineData = core.utils.AnimCache[url];
 
     if (!this.spineData) {
         throw new Error('Spine data must be preloaded using SpineLoader or AssetLoader: ' + url);
@@ -39,7 +35,7 @@ function Spine(url) {
     for (var i = 0, n = this.skeleton.drawOrder.length; i < n; i++) {
         var slot = this.skeleton.drawOrder[i];
         var attachment = slot.attachment;
-        var slotContainer = new DisplayObjectContainer();
+        var slotContainer = new core.DisplayObjectContainer();
         this.slotContainers.push(slotContainer);
         this.addChild(slotContainer);
 
@@ -65,7 +61,7 @@ function Spine(url) {
     this.autoUpdate = true;
 }
 
-Spine.prototype = Object.create(DisplayObjectContainer.prototype);
+Spine.prototype = Object.create(core.DisplayObjectContainer.prototype);
 Spine.prototype.constructor = Spine;
 module.exports = Spine;
 
@@ -87,7 +83,7 @@ Object.defineProperties(Spine.prototype, {
         },
 
         set: function (value) {
-            this.updateTransform = value ? Spine.prototype.autoUpdateTransform : DisplayObjectContainer.prototype.updateTransform;
+            this.updateTransform = value ? Spine.prototype.autoUpdateTransform : core.DisplayObjectContainer.prototype.updateTransform;
         }
     }
 });
@@ -143,7 +139,7 @@ Spine.prototype.update = function (dt) {
 
             slotContainer.rotation = -(slot.bone.worldRotation * spine.degRad);
 
-            slot.currentSprite.tint = utils.rgb2hex([slot.r,slot.g,slot.b]);
+            slot.currentSprite.tint = core.utils.rgb2hex([slot.r,slot.g,slot.b]);
         }
         else if (type === spine.AttachmentType.skinnedmesh) {
             if (!slot.currentMeshName || slot.currentMeshName !== attachment.name) {
@@ -191,7 +187,7 @@ Spine.prototype.autoUpdateTransform = function () {
 
     this.update(timeDelta);
 
-    DisplayObjectContainer.prototype.updateTransform.call(this);
+    core.DisplayObjectContainer.prototype.updateTransform.call(this);
 };
 
 /**
@@ -204,12 +200,12 @@ Spine.prototype.autoUpdateTransform = function () {
 Spine.prototype.createSprite = function (slot, attachment) {
     var descriptor = attachment.rendererObject;
     var baseTexture = descriptor.page.rendererObject;
-    var spriteRect = new math.Rectangle(descriptor.x,
+    var spriteRect = new core.math.Rectangle(descriptor.x,
                                         descriptor.y,
                                         descriptor.rotate ? descriptor.height : descriptor.width,
                                         descriptor.rotate ? descriptor.width : descriptor.height);
-    var spriteTexture = new Texture(baseTexture, spriteRect);
-    var sprite = new Sprite(spriteTexture);
+    var spriteTexture = new core.Texture(baseTexture, spriteRect);
+    var sprite = new core.Sprite(spriteTexture);
 
     var baseRotation = descriptor.rotate ? Math.PI * 0.5 : 0.0;
     sprite.scale.set(descriptor.width / descriptor.originalWidth, descriptor.height / descriptor.originalHeight);
@@ -230,10 +226,10 @@ Spine.prototype.createSprite = function (slot, attachment) {
 Spine.prototype.createMesh = function (slot, attachment) {
     var descriptor = attachment.rendererObject;
     var baseTexture = descriptor.page.rendererObject;
-    var texture = new Texture(baseTexture);
+    var texture = new core.Texture(baseTexture);
 
-    var strip = new Strip(texture);
-    strip.drawMode = Strip.DrawModes.TRIANGLES;
+    var strip = new core.Strip(texture);
+    strip.drawMode = core.Strip.DrawModes.TRIANGLES;
     strip.canvasPadding = 1.5;
 
     strip.vertices = new Float32Array(attachment.uvs.length);

@@ -1,4 +1,4 @@
-var math = require('../math');
+var core = require('../core');
 
 /**
  * Holds all information related to an Interaction event
@@ -12,7 +12,7 @@ function InteractionData() {
      *
      * @member {Point}
      */
-    this.global = new math.Point();
+    this.global = new core.math.Point();
 
     /**
      * The target Sprite that was interacted with
@@ -48,7 +48,7 @@ InteractionData.prototype.getLocalPosition = function (displayObject, point) {
         a10 = worldTransform.b, a11 = worldTransform.d, a12 = worldTransform.ty,
         id = 1 / (a00 * a11 + a01 * -a10);
 
-    point = point || new math.Point();
+    point = point || new core.math.Point();
 
     point.x = a11 * id * global.x + -a01 * id * global.y + (a12 * a01 - a02 * a11) * id;
     point.y = a00 * id * global.y + -a10 * id * global.x + (-a12 * a00 + a02 * a10) * id;

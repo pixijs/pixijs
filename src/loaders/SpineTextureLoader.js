@@ -1,5 +1,4 @@
-var EventTarget = require('../../utils/EventTarget'),
-    BaseTexture = require('../../textures/BaseTexture');
+var core = require('../core');
 
 /**
  * Supporting class to load images from spine atlases as per spine spec.
@@ -11,8 +10,6 @@ var EventTarget = require('../../utils/EventTarget'),
  * @param crossorigin {boolean} Whether requests should be treated as crossorigin
  */
 function SpineTextureLoader(basePath, crossorigin) {
-    EventTarget.call(this);
-
     this.basePath = basePath;
     this.crossorigin = crossorigin;
     this.loadingCount = 0;
@@ -21,6 +18,8 @@ function SpineTextureLoader(basePath, crossorigin) {
 SpineTextureLoader.prototype.constructor = SpineTextureLoader;
 module.exports = SpineTextureLoader;
 
+core.utils.EventTarget.mixin(SpineTextureLoader.prototype);
+
 /**
  * Starts loading a base texture as per spine specification
  *
@@ -28,7 +27,7 @@ module.exports = SpineTextureLoader;
  * @param file {string} The file to load, this is just the file path relative to the base path configured in the constructor
  */
 SpineTextureLoader.prototype.load = function (page, file) {
-    page.rendererObject = BaseTexture.fromImage(this.basePath + '/' + file, this.crossorigin);
+    page.rendererObject = core.BaseTexture.fromImage(this.basePath + '/' + file, this.crossorigin);
     if (!page.rendererObject.hasLoaded) {
         var scope = this;
         ++scope.loadingCount;

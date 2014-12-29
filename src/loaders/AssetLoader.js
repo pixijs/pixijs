@@ -1,9 +1,9 @@
-var ImageLoader = require('./ImageLoader'),
+var core = require('../core'),
+    ImageLoader = require('./ImageLoader'),
     JsonLoader = require('./JsonLoader'),
     AtlasLoader = require('./AtlasLoader'),
     SpineLoader = require('./SpineLoader'),
-    BitmapFontLoader = require('./BitmapFontLoader'),
-    EventTarget = require('../utils/EventTarget');
+    BitmapFontLoader = require('./BitmapFontLoader');
 
 /**
  * A Class that loads a bunch of images / sprite sheet / bitmap font files. Once the
@@ -59,7 +59,7 @@ function AssetLoader(assetURLs, crossorigin) {
 AssetLoader.prototype.constructor = AssetLoader;
 module.exports = AssetLoader;
 
-EventTarget.mixin(AssetLoader.prototype);
+core.utils.EventTarget.mixin(AssetLoader.prototype);
 
 /**
  * Fired when an item has loaded

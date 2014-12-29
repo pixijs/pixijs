@@ -1,9 +1,7 @@
-var EventTarget = require('../utils/EventTarget'),
+var core = require('../core'),
+    spine = require('../spine/SpineRuntime'),
     ImageLoader = require('./ImageLoader'),
-    SpineTextureLoader = require('../extras/spine/SpineTextureLoader'),
-    Texture = require('../textures/Texture'),
-    math = require('../math'),
-    utils = require('../utils');
+    SpineTextureLoader = require('./SpineTextureLoader');
 
 /**
  * The json file loader is used to load in JSON data and parse it
@@ -52,7 +50,7 @@ function JsonLoader(url, crossorigin) {
 JsonLoader.prototype.constructor = JsonLoader;
 module.exports = JsonLoader;
 
-EventTarget.mixin(JsonLoader.prototype);
+core.utils.EventTarget.mixin(JsonLoader.prototype);
 
 /**
  * Loads the JSON data
@@ -127,7 +125,7 @@ JsonLoader.prototype.onJSONLoaded = function () {
             var rect = frameData[i].frame;
 
             if (rect) {
-                var textureSize = new math.Rectangle(rect.x, rect.y, rect.w, rect.h);
+                var textureSize = new core.math.Rectangle(rect.x, rect.y, rect.w, rect.h);
                 var crop = textureSize.clone();
                 var trim = null;
 
@@ -135,9 +133,9 @@ JsonLoader.prototype.onJSONLoaded = function () {
                 if (frameData[i].trimmed) {
                     var actualSize = frameData[i].sourceSize;
                     var realSize = frameData[i].spriteSourceSize;
-                    trim = new math.Rectangle(realSize.x, realSize.y, actualSize.w, actualSize.h);
+                    trim = new core.math.Rectangle(realSize.x, realSize.y, actualSize.w, actualSize.h);
                 }
-                utils.TextureCache[i] = new Texture(this.texture, textureSize, crop, trim);
+                core.utils.TextureCache[i] = new core.Texture(this.texture, textureSize, crop, trim);
             }
         }
 
@@ -146,7 +144,7 @@ JsonLoader.prototype.onJSONLoaded = function () {
     }
     else if (this.json.bones) {
 		// check if the json was loaded before
-		if (utils.AnimCache[this.url]) {
+		if (core.utils.AnimCache[this.url]) {
 			this.onLoaded();
 		}
 		else {
@@ -175,7 +173,7 @@ JsonLoader.prototype.onJSONLoaded = function () {
 				// spine animation
 				var spineJsonParser = new spine.SkeletonJson(attachmentLoader);
 				var skeletonData = spineJsonParser.readSkeletonData(originalLoader.json);
-				utils.AnimCache[originalLoader.url] = skeletonData;
+				core.utils.AnimCache[originalLoader.url] = skeletonData;
 				originalLoader.spine = skeletonData;
 				originalLoader.spineAtlas = spineAtlas;
 				originalLoader.spineAtlasLoader = atlasLoader;

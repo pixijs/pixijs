@@ -1,7 +1,4 @@
-var EventTarget = require('../utils/EventTarget'),
-    Texture = require('../textures/Texture'),
-    math = require('../math'),
-    utils = require('../utils');
+var core = require('../core');
 
 /**
  * The image loader class is responsible for loading images file formats ('jpeg', 'jpg', 'png' and 'gif')
@@ -20,7 +17,7 @@ function ImageLoader(url, crossorigin) {
      *
      * @member {Texture}
      */
-    this.texture = Texture.fromImage(url, crossorigin);
+    this.texture = core.Texture.fromImage(url, crossorigin);
 
     /**
      * if the image is loaded with loadFramedSpriteSheet
@@ -36,7 +33,7 @@ function ImageLoader(url, crossorigin) {
 ImageLoader.prototype.constructor = ImageLoader;
 module.exports = ImageLoader;
 
-EventTarget.mixin(ImageLoader.prototype);
+core.utils.EventTarget.mixin(ImageLoader.prototype);
 
 /**
  * Loads image or takes it from cache
@@ -76,9 +73,9 @@ ImageLoader.prototype.loadFramedSpriteSheet = function (frameWidth, frameHeight,
     var i=0;
     for (var y = 0; y < rows; ++y) {
         for (var x = 0; x < cols; ++x, ++i) {
-            var texture = new Texture(
+            var texture = new core.Texture(
                 this.texture.baseTexture,
-                new math.Rectangle(
+                new core.math.Rectangle(
                     x * frameWidth,
                     y * frameHeight,
                     frameWidth,
@@ -89,7 +86,7 @@ ImageLoader.prototype.loadFramedSpriteSheet = function (frameWidth, frameHeight,
             this.frames.push(texture);
 
             if (textureName) {
-                utils.TextureCache[textureName + '-' + i] = texture;
+                core.utils.TextureCache[textureName + '-' + i] = texture;
             }
         }
     }

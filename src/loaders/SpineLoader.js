@@ -1,4 +1,4 @@
-var EventTarget = require('../utils/EventTarget'),
+var core = require('../core'),
     JsonLoader = require('./JsonLoader');
 
 /**
@@ -51,7 +51,7 @@ function SpineLoader(url, crossorigin) {
 SpineLoader.prototype.constructor = SpineLoader;
 module.exports = SpineLoader;
 
-EventTarget.mixin(SpineLoader.prototype);
+core.utils.EventTarget.mixin(SpineLoader.prototype);
 
 /**
  * Loads the JSON data

@@ -28,7 +28,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
 
-var spine = {
+var spine = module.exports = {
 	radDeg: 180 / Math.PI,
 	degRad: Math.PI / 180,
 	temp: [],

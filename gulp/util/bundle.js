@@ -10,7 +10,7 @@ function rebundle() {
     return this.bundle()
         .on('error', handleErrors.handler)
         .pipe(handleErrors())
-        .pipe(source('main.js'))
+        .pipe(source('pixi.js'))
         .pipe(gulp.dest(paths.out));
 }
 

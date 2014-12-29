@@ -1,7 +1,5 @@
-var InteractionData = require('./InteractionData'),
-    Sprite = require('../display/Sprite'),
-    Graphics = require('../primitives/Graphics'),
-    math = require('../math');
+var core = require('../core'),
+    InteractionData = require('./InteractionData');
 
 // TODO: Obviously rewrite this...
 var INTERACTION_FREQUENCY = 30;
@@ -42,7 +40,7 @@ function InteractionManager(stage) {
      * @member {Point}
      * @private
      */
-    this.tempPoint = new math.Point();
+    this.tempPoint = new core.math.Point();
 
     /**
      * @member {boolean}
@@ -131,7 +129,7 @@ function InteractionManager(stage) {
     this.resolution = 1;
 
     // used for hit testing
-    this._tempPoint = new math.Point();
+    this._tempPoint = new core.math.Point();
 }
 
 InteractionManager.prototype.constructor = InteractionManager;
@@ -555,7 +553,7 @@ InteractionManager.prototype.hitTest = function (item, interactionData) {
         return item.hitArea.contains(x, y);
     }
     // a sprite with no hitarea defined
-    else if (item instanceof Sprite) {
+    else if (item instanceof core.Sprite) {
         var width = item.texture.frame.width;
         var height = item.texture.frame.height;
         var x1 = -width * item.anchor.x;
@@ -570,7 +568,7 @@ InteractionManager.prototype.hitTest = function (item, interactionData) {
             }
         }
     }
-    else if (item instanceof Graphics) {
+    else if (item instanceof core.Graphics) {
         var graphicsData = item.graphicsData;
         for (i = 0; i < graphicsData.length; i++) {
             var data = graphicsData[i];

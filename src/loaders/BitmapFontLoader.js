@@ -1,9 +1,5 @@
-var EventTarget = require('../utils/EventTarget'),
-    Texture = require('../textures/Texture'),
-    BitmapText = require('../text/BitmapText'),
-    ImageLoader = require('./ImageLoader'),
-    math = require('../math'),
-    utils = require('../utils');
+var core = require('../core'),
+    ImageLoader = require('./ImageLoader');
 
 /**
  * The xml loader is used to load in XML bitmap font data ('xml' or 'fnt')
@@ -52,14 +48,14 @@ function BitmapFontLoader(url, crossorigin) {
 BitmapFontLoader.prototype.constructor = BitmapFontLoader;
 module.exports = BitmapFontLoader;
 
-EventTarget.mixin(BitmapFontLoader.prototype);
+core.utils.EventTarget.mixin(BitmapFontLoader.prototype);
 
 /**
  * Loads the XML font data
  *
  */
 BitmapFontLoader.prototype.load = function () {
-    this.ajaxRequest = new utils.AjaxRequest();
+    this.ajaxRequest = new core.utils.AjaxRequest();
     this.ajaxRequest.onreadystatechange = this.onXMLLoaded.bind(this);
 
     this.ajaxRequest.open('GET', this.url, true);
@@ -109,7 +105,7 @@ BitmapFontLoader.prototype.onXMLLoaded = function () {
             for (var i = 0; i < letters.length; i++) {
                 var charCode = parseInt(letters[i].getAttribute('id'), 10);
 
-                var textureRect = new math.Rectangle(
+                var textureRect = new core.math.Rectangle(
                     parseInt(letters[i].getAttribute('x'), 10),
                     parseInt(letters[i].getAttribute('y'), 10),
                     parseInt(letters[i].getAttribute('width'), 10),
@@ -121,7 +117,7 @@ BitmapFontLoader.prototype.onXMLLoaded = function () {
                     yOffset: parseInt(letters[i].getAttribute('yoffset'), 10),
                     xAdvance: parseInt(letters[i].getAttribute('xadvance'), 10),
                     kerning: {},
-                    texture: utils.TextureCache[charCode] = new Texture(this.texture, textureRect)
+                    texture: core.utils.TextureCache[charCode] = new core.Texture(this.texture, textureRect)
 
                 };
             }
@@ -137,7 +133,7 @@ BitmapFontLoader.prototype.onXMLLoaded = function () {
 
             }
 
-            BitmapText.fonts[data.font] = data;
+            core.BitmapText.fonts[data.font] = data;
 
             image.addEventListener('loaded', this.onLoaded.bind(this));
             image.load();

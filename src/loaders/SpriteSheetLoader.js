@@ -1,4 +1,4 @@
-var EventTarget = require('../utils/EventTarget'),
+var core = require('../core'),
     JsonLoader = require('./JsonLoader');
 
 /**
@@ -59,7 +59,7 @@ function SpriteSheetLoader(url, crossorigin) {
 SpriteSheetLoader.prototype.constructor = SpriteSheetLoader;
 module.exports = SpriteSheetLoader;
 
-EventTarget.mixin(SpriteSheetLoader.prototype);
+core.utils.EventTarget.mixin(SpriteSheetLoader.prototype);
 
 /**
  * This will begin loading the JSON file

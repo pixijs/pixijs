@@ -1,6 +1,4 @@
-var DisplayObjectContainer = require('../display/DisplayObjectContainer'),
-    Sprite = require('../display/Sprite'),
-    math = require('../math');
+var core = require('../core');
 
 /**
  * A BitmapText object will create a line or multiple lines of text using bitmap font. To
@@ -18,7 +16,7 @@ var DisplayObjectContainer = require('../display/DisplayObjectContainer'),
  * @param [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
  */
 function BitmapText(text, style) {
-    DisplayObjectContainer.call(this);
+    core.DisplayObjectContainer.call(this);
 
     /**
      * The width of the overall text, different from fontSize,
@@ -56,7 +54,7 @@ function BitmapText(text, style) {
 }
 
 // constructor
-BitmapText.prototype = Object.create(DisplayObjectContainer.prototype);
+BitmapText.prototype = Object.create(core.DisplayObjectContainer.prototype);
 BitmapText.prototype.constructor = BitmapText;
 module.exports = BitmapText;
 
@@ -97,7 +95,7 @@ BitmapText.prototype.setStyle = function (style) {
  */
 BitmapText.prototype.updateText = function () {
     var data = BitmapText.fonts[this.fontName];
-    var pos = new math.Point();
+    var pos = new core.math.Point();
     var prevCharCode = null;
     var chars = [];
     var maxLineWidth = 0;
@@ -129,7 +127,7 @@ BitmapText.prototype.updateText = function () {
             pos.x += charData.kerning[prevCharCode];
         }
 
-        chars.push({texture:charData.texture, line: line, charCode: charCode, position: new math.Point(pos.x + charData.xOffset, pos.y + charData.yOffset)});
+        chars.push({texture:charData.texture, line: line, charCode: charCode, position: new core.math.Point(pos.x + charData.xOffset, pos.y + charData.yOffset)});
         pos.x += charData.xAdvance;
 
         prevCharCode = charCode;
@@ -164,7 +162,7 @@ BitmapText.prototype.updateText = function () {
             c.setTexture(chars[i].texture); // check if got one before.
         }
         else {
-            c = new Sprite(chars[i].texture); // if no create new one.
+            c = new core.Sprite(chars[i].texture); // if no create new one.
         }
 
         c.position.x = (chars[i].position.x + lineAlignOffsets[chars[i].line]) * scale;
@@ -200,7 +198,7 @@ BitmapText.prototype.updateTransform = function () {
         this.dirty = false;
     }
 
-    DisplayObjectContainer.prototype.updateTransform.call(this);
+    this.displayObjectContainerUpdateTransform();
 };
 
 BitmapText.fonts = {};

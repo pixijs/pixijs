@@ -1,5 +1,4 @@
-var Sprite = require('../display/Sprite'),
-    Texture = require('../display/Texture');
+var core = require('../core');
 
 /**
  * A Text Object will create a line or multiple lines of text. To split a line you can use '\n' in your text string,
@@ -42,14 +41,14 @@ function Text(text, style) {
      */
     this.resolution = 1;
 
-    Sprite.call(this, Texture.fromCanvas(this.canvas));
+    core.Sprite.call(this, core.Texture.fromCanvas(this.canvas));
 
     this.setText(text);
     this.setStyle(style);
 }
 
 // constructor
-Text.prototype = Object.create(Sprite.prototype);
+Text.prototype = Object.create(core.Sprite.prototype);
 Text.prototype.constructor = Text;
 module.exports = Text;
 
@@ -295,7 +294,7 @@ Text.prototype._renderWebGL = function (renderSession) {
         this.dirty = false;
     }
 
-    Sprite.prototype._renderWebGL.call(this, renderSession);
+    core.Sprite.prototype._renderWebGL.call(this, renderSession);
 };
 
 /**
@@ -312,7 +311,7 @@ Text.prototype._renderCanvas = function (renderSession) {
         this.dirty = false;
     }
 
-    Sprite.prototype._renderCanvas.call(this, renderSession);
+    core.Sprite.prototype._renderCanvas.call(this, renderSession);
 };
 
 /**
@@ -459,7 +458,7 @@ Text.prototype.getBounds = function (matrix) {
         this.dirty = false;
     }
 
-    return Sprite.prototype.getBounds.call(this, matrix);
+    return core.Sprite.prototype.getBounds.call(this, matrix);
 };
 
 /**

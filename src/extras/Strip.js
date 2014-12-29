@@ -1,6 +1,4 @@
-var DisplayObjectContainer = require('../display/DisplayObjectContainer'),
-    math = require('../math'),
-    CONST = require('../const');
+var core = require('../core');
 
 /**
  *
@@ -13,7 +11,7 @@ var DisplayObjectContainer = require('../display/DisplayObjectContainer'),
  *
  */
 function Strip(texture) {
-    DisplayObjectContainer.call(this);
+    core.DisplayObjectContainer.call(this);
 
     /**
      * The texture of the strip
@@ -50,7 +48,7 @@ function Strip(texture) {
      * @member {number}
      * @default CONST.blendModes.NORMAL;
      */
-    this.blendMode = CONST.blendModes.NORMAL;
+    this.blendMode = core.CONST.blendModes.NORMAL;
 
     /**
      * Triangles in canvas mode are automatically antialiased, use this value to force triangles to overlap a bit with each other.
@@ -63,7 +61,7 @@ function Strip(texture) {
 }
 
 // constructor
-Strip.prototype = Object.create(DisplayObjectContainer.prototype);
+Strip.prototype = Object.create(core.DisplayObjectContainer.prototype);
 Strip.prototype.constructor = Strip;
 module.exports = Strip;
 
@@ -411,7 +409,7 @@ Strip.prototype.getBounds = function (matrix) {
     }
 
     if (minX === -Infinity || maxY === Infinity) {
-        return math.Rectangle.EMPTY;
+        return core.math.Rectangle.EMPTY;
     }
 
     var bounds = this._bounds;
