@@ -7,7 +7,7 @@ gulp.task('watch', function () {
     gulp.watch(paths.scripts, ['jshint'])
         .on('change', logChanges);
 
-    return bundle.watch(connect.reload, isDev);
+    return bundle.watch(connect.reload);
 });
 
 function logChanges(event) {

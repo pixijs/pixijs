@@ -26,6 +26,8 @@
     "gulp": "^3.8.10",
     "gulp-jshint": "^1.9.0",
     "gulp-plumber": "^0.6.6",
+    "gulp-rename": "^1.2.0",
+    "gulp-uglify": "^1.0.2",
     "gulp-util": "^3.0.1",
     "ink-docstrap": "^0.4.12",
     "jsdoc": "^3.3.0-alpha13",
@@ -37,6 +39,7 @@
     "mocha": "^2.1.0",
     "require-dir": "^0.1.0",
     "run-sequence": "^1.0.2",
+    "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.0.0",
     "watchify": "^2.2.1"
   },

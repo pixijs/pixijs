@@ -1,7 +1,10 @@
 var path        = require('path'),
     gulp        = require('gulp'),
     gutil       = require('gulp-util'),
+    uglify      = require('gulp-uglify'),
+    rename      = require('gulp-rename'),
     source      = require('vinyl-source-stream'),
+    buffer      = require('vinyl-buffer'),
     browserify  = require('browserify'),
     watchify    = require('watchify'),
     handleErrors = require('../util/handleErrors');
@@ -11,19 +14,23 @@ function rebundle() {
         .on('error', handleErrors.handler)
         .pipe(handleErrors())
         .pipe(source('pixi.js'))
+        .pipe(gulp.dest(paths.out))
+        .pipe(buffer())
+        .pipe(uglify())
+        .pipe(rename({ suffix: '.min' }))
         .pipe(gulp.dest(paths.out));
 }
 
-function createBundler(args, debug) {
+function createBundler(args) {
     args = args || {};
-    args.debug = debug;
+    args.debug = true;
     args.standalone = 'PIXI';
 
     return browserify(paths.jsEntry, args);
 }
 
-function watch(onUpdate, debug) {
-    var bundler = watchify(createBundler(watchify.args, debug));
+function watch(onUpdate) {
+    var bundler = watchify(createBundler(watchify.args));
 
     bundler.on('update', function () {
         rebundle.call(this).on('end', onUpdate);
@@ -32,8 +39,8 @@ function watch(onUpdate, debug) {
     return rebundle.call(bundler);
 }
 
-module.exports = function bundle(debug) {
-    return rebundle.call(createBundler(null, debug));
+module.exports = function bundle() {
+    return rebundle.call(createBundler());
 };
 
 module.exports.watch = watch;
