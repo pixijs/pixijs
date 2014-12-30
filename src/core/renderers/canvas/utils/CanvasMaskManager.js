@@ -15,16 +15,16 @@ module.exports = CanvasMaskManager;
  * This method adds it to the current stack of masks.
  *
  * @param maskData {object} the maskData that will be pushed
- * @param renderSession {object} The renderSession whose context will be used for this mask manager.
+ * @param renderer {WebGLRenderer|CanvasRenderer} The renderer context to use.
  */
-CanvasMaskManager.prototype.pushMask = function (maskData, renderSession) {
-    renderSession.context.save();
+CanvasMaskManager.prototype.pushMask = function (maskData, renderer) {
+    renderer.context.save();
 
     var cacheAlpha = maskData.alpha;
     var transform = maskData.worldTransform;
-    var resolution = renderSession.resolution;
+    var resolution = renderer.resolution;
 
-    renderSession.context.setTransform(
+    renderer.context.setTransform(
         transform.a * resolution,
         transform.b * resolution,
         transform.c * resolution,
@@ -33,9 +33,9 @@ CanvasMaskManager.prototype.pushMask = function (maskData, renderSession) {
         transform.ty * resolution
     );
 
-    CanvasGraphics.renderGraphicsMask(maskData, renderSession.context);
+    CanvasGraphics.renderGraphicsMask(maskData, renderer.context);
 
-    renderSession.context.clip();
+    renderer.context.clip();
 
     maskData.worldAlpha = cacheAlpha;
 };
@@ -43,8 +43,8 @@ CanvasMaskManager.prototype.pushMask = function (maskData, renderSession) {
 /**
  * Restores the current drawing context to the state it was before the mask was applied.
  *
- * @param renderSession {object} The renderSession whose context will be used for this mask manager.
+ * @param renderer {WebGLRenderer|CanvasRenderer} The renderer context to use.
  */
-CanvasMaskManager.prototype.popMask = function (renderSession) {
-    renderSession.context.restore();
+CanvasMaskManager.prototype.popMask = function (renderer) {
+    renderer.context.restore();
 };

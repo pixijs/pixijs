@@ -5,14 +5,12 @@ var DisplayObjectContainer = require('./DisplayObjectContainer'),
  * The SpriteBatch class is a really fast version of the DisplayObjectContainer built solely for speed,
  * so use when you need a lot of sprites or particles. The tradeoff of the SpriteBatch is that advanced
  * functionality will not work. SpriteBatch implements only the basic object transform (position, scale, rotation).
- * Any other functionality like interactions, tinting, etc will not work on sprites in this batch.
+ * Any other functionality like tinting, masking, etc will not work on sprites in this batch.
  *
  * It's extremely easy to use :
  *
  * ```js
  * var container = new SpriteBatch();
- *
- * stage.addChild(container);
  *
  * for(var i = 0; i < 100; ++i) {
  *     var sprite = new PIXI.Sprite.fromImage("myImage.png");
@@ -41,9 +39,8 @@ SpriteBatch.prototype.constructor = SpriteBatch;
  *
  * @param gl {WebGLContext} the current WebGL drawing context
  */
-SpriteBatch.prototype.initWebGL = function (gl) {
-    // TODO only one needed for the whole engine really?
-    this.fastSpriteBatch = new WebGLFastSpriteBatch(gl);
+SpriteBatch.prototype.initWebGL = function (renderer) {
+    this.fastSpriteBatch = new WebGLFastSpriteBatch(renderer);
 
     this.ready = true;
 };
@@ -62,40 +59,40 @@ SpriteBatch.prototype.updateTransform = function () {
 /**
  * Renders the object using the WebGL renderer
  *
- * @param renderSession {RenderSession}
+ * @param renderer {WebGLRenderer} The webgl renderer
  * @private
  */
-SpriteBatch.prototype._renderWebGL = function (renderSession) {
+SpriteBatch.prototype.renderWebGL = function (renderer) {
     if (!this.visible || this.alpha <= 0 || !this.children.length) {
         return;
     }
 
     if (!this.ready) {
-        this.initWebGL(renderSession.gl);
+        this.initWebGL(renderer);
     }
 
-    renderSession.spriteBatch.stop();
+    renderer.spriteBatch.stop();
 
-    renderSession.shaderManager.setShader(renderSession.shaderManager.fastShader);
+    renderer.shaderManager.setShader(renderer.shaderManager.fastShader);
 
-    this.fastSpriteBatch.begin(this, renderSession);
+    this.fastSpriteBatch.begin(this, renderer);
     this.fastSpriteBatch.render(this);
 
-    renderSession.spriteBatch.start();
+    renderer.spriteBatch.start();
 };
 
 /**
  * Renders the object using the Canvas renderer
  *
- * @param renderSession {RenderSession}
+ * @param renderer {CanvasRenderer} The canvas renderer
  * @private
  */
-SpriteBatch.prototype._renderCanvas = function (renderSession) {
+SpriteBatch.prototype.renderCanvas = function (renderer) {
     if (!this.visible || this.alpha <= 0 || !this.children.length) {
         return;
     }
 
-    var context = renderSession.context;
+    var context = renderer.context;
     var transform = this.worldTransform;
     var isRotated = true;
 
@@ -150,7 +147,7 @@ SpriteBatch.prototype._renderCanvas = function (renderSession) {
 
             var childTransform = child.worldTransform;
 
-            if (renderSession.roundPixels) {
+            if (renderer.roundPixels) {
                 context.setTransform(
                     childTransform.a,
                     childTransform.b,

@@ -1,59 +1,41 @@
-var WebGLGraphics = require('./WebGLGraphics');
+var WebGLManager = require('./WebGLManager'),
+    WebGLGraphics = require('./WebGLGraphics');
 
 /**
  * @class
  * @namespace PIXI
- * @private
+ * @param renderer {WebGLRenderer} The renderer this manager works for.
  */
-function WebGLMaskManager() {}
+function WebGLMaskManager(renderer) {
+    WebGLManager.call(this, renderer);
+}
 
+WebGLMaskManager.prototype = Object.create(WebGLManager.prototype);
 WebGLMaskManager.prototype.constructor = WebGLMaskManager;
 module.exports = WebGLMaskManager;
 
 /**
- * Sets the drawing context to the one given in parameter.
- *
- * @param gl {WebGLContext} the current WebGL drawing context
- */
-WebGLMaskManager.prototype.setContext = function (gl) {
-    this.gl = gl;
-};
-
-/**
  * Applies the Mask and adds it to the current filter stack.
  *
- * @param maskData {Array}
- * @param renderSession {object}
+ * @param maskData {any[]}
  */
-WebGLMaskManager.prototype.pushMask = function (maskData, renderSession) {
-    var gl = renderSession.gl;
-
+WebGLMaskManager.prototype.pushMask = function (maskData) {
     if (maskData.dirty) {
-        WebGLGraphics.updateGraphics(maskData, gl);
+        WebGLGraphics.updateGraphics(maskData, this.renderer.gl);
     }
 
-    if (!maskData._webGL[gl.id].data.length) {
+    if (!maskData._webGL[this.renderer.gl.id].data.length) {
         return;
     }
 
-    renderSession.stencilManager.pushStencil(maskData, maskData._webGL[gl.id].data[0], renderSession);
+    this.renderer.stencilManager.pushStencil(maskData, maskData._webGL[this.renderer.gl.id].data[0], this.renderer);
 };
 
 /**
  * Removes the last filter from the filter stack and doesn't return it.
  *
- * @param maskData {Array}
- * @param renderSession {object} an object containing all the useful parameters
+ * @param maskData {any[]}
  */
-WebGLMaskManager.prototype.popMask = function (maskData, renderSession) {
-    var gl = this.gl;
-    renderSession.stencilManager.popStencil(maskData, maskData._webGL[gl.id].data[0], renderSession);
-};
-
-/**
- * Destroys the mask stack.
- *
- */
-WebGLMaskManager.prototype.destroy = function () {
-    this.gl = null;
+WebGLMaskManager.prototype.popMask = function (maskData) {
+    this.renderer.stencilManager.popStencil(maskData, maskData._webGL[this.renderer.gl.id].data[0], this.renderer);
 };

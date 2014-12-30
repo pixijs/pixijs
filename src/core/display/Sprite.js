@@ -12,10 +12,7 @@ var math = require('../math'),
  *
  * ```js
  * var sprite = new Sprite.fromImage('assets/image.png');
- * yourStage.addChild(sprite);
  * ```
- *
- * then obviously don't forget to add it to the stage you have already created
  *
  * @class Sprite
  * @extends DisplayObjectContainer
@@ -39,8 +36,9 @@ function Sprite(texture) {
      * The texture that the sprite is using
      *
      * @member {Texture}
+     * @private
      */
-    this.texture = texture || Texture.EMPTY;
+    this._texture = null;
 
     /**
      * The width of the sprite (this is initially set by the texture)
@@ -75,19 +73,13 @@ function Sprite(texture) {
     this.blendMode = CONST.blendModes.NORMAL;
 
     /**
-     * The shader that will be used to render the texture to the stage. Set to null to remove a current shader.
+     * The shader that will be used to render the sprite. Set to null to remove a current shader.
      *
      * @member {AbstractFilter}
      */
     this.shader = null;
 
-    // wait for the texture to load
-    if (this.texture.baseTexture.hasLoaded) {
-        this.onTextureUpdate();
-    }
-    else {
-        this.texture.on('update', this.onTextureUpdate.bind(this));
-    }
+    this.texture = texture || Texture.EMPTY;
 
     this.renderable = true;
 }
@@ -128,25 +120,41 @@ Object.defineProperties(Sprite.prototype, {
             this.scale.y = value / this.texture.frame.height;
             this._height = value;
         }
-    }
-});
+    },
 
-/**
- * Sets the texture of the sprite
- *
- * @param texture {Texture} The PIXI texture that is displayed by the sprite
- */
-Sprite.prototype.setTexture = function (texture) {
-    this.texture = texture;
-    this.cachedTint = 0xFFFFFF;
-};
+    /**
+     * The height of the sprite, setting this will actually modify the scale to achieve the value set
+     *
+     * @member
+     * @memberof Sprite#
+     */
+    texture: {
+        get: function () {
+            return  this._texture;
+        },
+        set: function (value) {
+            this._texture = value;
+            this.cachedTint = 0xFFFFFF;
+
+            if (value) {
+                // wait for the texture to load
+                if (value.baseTexture.hasLoaded) {
+                    this._onTextureUpdate();
+                }
+                else {
+                    value.once('update', this._onTextureUpdate.bind(this));
+                }
+            }
+        }
+    },
+});
 
 /**
  * When the texture is updated, this event will fire to update the scale and frame
  *
  * @private
  */
-Sprite.prototype.onTextureUpdate = function () {
+Sprite.prototype._onTextureUpdate = function () {
     // so if _width is 0 then width was not set..
     if (this._width) {
         this.scale.x = this._width / this.texture.frame.width;
@@ -258,10 +266,9 @@ Sprite.prototype.getBounds = function (matrix) {
 /**
  * Renders the object using the WebGL renderer
  *
- * @param renderSession {RenderSession}
- * @private
+ * @param renderer {WebGLRenderer} The renderer
  */
-Sprite.prototype._renderWebGL = function (renderSession) {
+Sprite.prototype.renderWebGL = function (renderer) {
     // if the sprite is not visible or the alpha is 0 then no need to render this element
     if (!this.visible || this.alpha <= 0) {
         return;
@@ -271,17 +278,17 @@ Sprite.prototype._renderWebGL = function (renderSession) {
 
     // do a quick check to see if this element has a mask or a filter.
     if (this._mask || this._filters) {
-        var spriteBatch = renderSession.spriteBatch;
+        var spriteBatch = renderer.spriteBatch;
 
         // push filter first as we need to ensure the stencil buffer is correct for any masking
         if (this._filters) {
             spriteBatch.flush();
-            renderSession.filterManager.pushFilter(this._filterBlock);
+            renderer.filterManager.pushFilter(this._filterBlock);
         }
 
         if (this._mask) {
             spriteBatch.stop();
-            renderSession.maskManager.pushMask(this.mask, renderSession);
+            renderer.maskManager.pushMask(this.mask, renderer);
             spriteBatch.start();
         }
 
@@ -290,28 +297,28 @@ Sprite.prototype._renderWebGL = function (renderSession) {
 
         // now loop through the children and make sure they get rendered
         for (i = 0, j = this.children.length; i < j; i++) {
-            this.children[i]._renderWebGL(renderSession);
+            this.children[i].renderWebGL(renderer);
         }
 
         // time to stop the sprite batch as either a mask element or a filter draw will happen next
         spriteBatch.stop();
 
         if (this._mask) {
-            renderSession.maskManager.popMask(this._mask, renderSession);
+            renderer.maskManager.popMask(this._mask, renderer);
         }
 
         if (this._filters) {
-            renderSession.filterManager.popFilter();
+            renderer.filterManager.popFilter();
         }
 
         spriteBatch.start();
     }
     else {
-        renderSession.spriteBatch.render(this);
+        renderer.spriteBatch.render(this);
 
         // simple render children!
         for (i = 0, j = this.children.length; i < j; ++i) {
-            this.children[i]._renderWebGL(renderSession);
+            this.children[i].renderWebGL(renderer);
         }
 
     }
@@ -320,34 +327,32 @@ Sprite.prototype._renderWebGL = function (renderSession) {
 /**
 * Renders the object using the Canvas renderer
 *
-* @param renderSession {RenderSession}
-* @private
+* @param renderer {CanvasRenderer} The renderer
 */
-Sprite.prototype._renderCanvas = function (renderSession) {
-    // If the sprite is not visible or the alpha is 0 then no need to render this element
+Sprite.prototype.renderCanvas = function (renderer) {
     if (!this.visible || this.alpha <= 0 || this.texture.crop.width <= 0 || this.texture.crop.height <= 0) {
         return;
     }
 
-    if (this.blendMode !== renderSession.currentBlendMode) {
-        renderSession.currentBlendMode = this.blendMode;
-        renderSession.context.globalCompositeOperation = blendModesCanvas[renderSession.currentBlendMode];
+    if (this.blendMode !== renderer.currentBlendMode) {
+        renderer.currentBlendMode = this.blendMode;
+        renderer.context.globalCompositeOperation = renderer.blendModes[renderer.currentBlendMode];
     }
 
     if (this._mask) {
-        renderSession.maskManager.pushMask(this._mask, renderSession);
+        renderer.maskManager.pushMask(this._mask, renderer);
     }
 
     //  Ignore null sources
     if (this.texture.valid) {
-        var resolution = this.texture.baseTexture.resolution / renderSession.resolution;
+        var resolution = this.texture.baseTexture.resolution / renderer.resolution;
 
-        renderSession.context.globalAlpha = this.worldAlpha;
+        renderer.context.globalAlpha = this.worldAlpha;
 
         // If smoothingEnabled is supported and we need to change the smoothing property for this texture
-        if (renderSession.smoothProperty && renderSession.scaleMode !== this.texture.baseTexture.scaleMode) {
-            renderSession.scaleMode = this.texture.baseTexture.scaleMode;
-            renderSession.context[renderSession.smoothProperty] = (renderSession.scaleMode === CONST.scaleModes.LINEAR);
+        if (renderer.smoothProperty && renderer.scaleMode !== this.texture.baseTexture.scaleMode) {
+            renderer.scaleMode = this.texture.baseTexture.scaleMode;
+            renderer.context[renderer.smoothProperty] = (renderer.scaleMode === CONST.scaleModes.LINEAR);
         }
 
         // If the texture is trimmed we offset by the trim x/y, otherwise we use the frame dimensions
@@ -355,27 +360,27 @@ Sprite.prototype._renderCanvas = function (renderSession) {
         var dy = (this.texture.trim ? this.texture.trim.y : 0) - (this.anchor.y * this.texture.trim.height);
 
         // Allow for pixel rounding
-        if (renderSession.roundPixels) {
-            renderSession.context.setTransform(
+        if (renderer.roundPixels) {
+            renderer.context.setTransform(
                 this.worldTransform.a,
                 this.worldTransform.b,
                 this.worldTransform.c,
                 this.worldTransform.d,
-                (this.worldTransform.tx * renderSession.resolution) | 0,
-                (this.worldTransform.ty * renderSession.resolution) | 0
+                (this.worldTransform.tx * renderer.resolution) | 0,
+                (this.worldTransform.ty * renderer.resolution) | 0
             );
 
             dx = dx | 0;
             dy = dy | 0;
         }
         else {
-            renderSession.context.setTransform(
+            renderer.context.setTransform(
                 this.worldTransform.a,
                 this.worldTransform.b,
                 this.worldTransform.c,
                 this.worldTransform.d,
-                this.worldTransform.tx * renderSession.resolution,
-                this.worldTransform.ty * renderSession.resolution
+                this.worldTransform.tx * renderer.resolution,
+                this.worldTransform.ty * renderer.resolution
             );
         }
 
@@ -387,7 +392,7 @@ Sprite.prototype._renderCanvas = function (renderSession) {
                 this.tintedTexture = CanvasTinter.getTintedTexture(this, this.tint);
             }
 
-            renderSession.context.drawImage(
+            renderer.context.drawImage(
                 this.tintedTexture,
                 0,
                 0,
@@ -400,7 +405,7 @@ Sprite.prototype._renderCanvas = function (renderSession) {
             );
         }
         else {
-            renderSession.context.drawImage(
+            renderer.context.drawImage(
                 this.texture.baseTexture.source,
                 this.texture.crop.x,
                 this.texture.crop.y,
@@ -415,11 +420,11 @@ Sprite.prototype._renderCanvas = function (renderSession) {
     }
 
     for (var i = 0, j = this.children.length; i < j; i++) {
-        this.children[i]._renderCanvas(renderSession);
+        this.children[i].renderCanvas(renderer);
     }
 
     if (this._mask) {
-        renderSession.maskManager.popMask(renderSession);
+        renderer.maskManager.popMask(renderer);
     }
 };
 

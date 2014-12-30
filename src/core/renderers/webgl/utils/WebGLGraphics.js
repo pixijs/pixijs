@@ -17,13 +17,14 @@ var WebGLGraphics = module.exports = {};
  * @static
  * @private
  * @param graphics {Graphics}
- * @param renderSession {object}
+ * @param renderer {WebGLRenderer}
  */
-WebGLGraphics.renderGraphics = function (graphics, renderSession) {//projection, offset) {
-    var gl = renderSession.gl;
-    var projection = renderSession.projection,
-        offset = renderSession.offset,
-        shader = renderSession.shaderManager.primitiveShader,
+WebGLGraphics.renderGraphics = function (graphics, renderer) {//projection, offset) {
+    var gl = renderer.gl;
+
+    var projection = renderer.projection,
+        offset = renderer.offset,
+        shader = renderer.shaderManager.primitiveShader,
         webGLData;
 
     if (graphics.dirty) {
@@ -38,19 +39,19 @@ WebGLGraphics.renderGraphics = function (graphics, renderSession) {//projection,
         if (webGL.data[i].mode === 1) {
             webGLData = webGL.data[i];
 
-            renderSession.stencilManager.pushStencil(graphics, webGLData, renderSession);
+            renderer.stencilManager.pushStencil(graphics, webGLData, renderer);
 
             // render quad..
             gl.drawElements(gl.TRIANGLE_FAN, 4, gl.UNSIGNED_SHORT, ( webGLData.indices.length - 4 ) * 2 );
 
-            renderSession.stencilManager.popStencil(graphics, webGLData, renderSession);
+            renderer.stencilManager.popStencil(graphics, webGLData, renderer);
         }
         else {
             webGLData = webGL.data[i];
 
 
-            renderSession.shaderManager.setShader( shader );//activatePrimitiveShader();
-            shader = renderSession.shaderManager.primitiveShader;
+            renderer.shaderManager.setShader( shader );//activatePrimitiveShader();
+            shader = renderer.shaderManager.primitiveShader;
             gl.uniformMatrix3fv(shader.translationMatrix, false, graphics.worldTransform.toArray(true));
 
             gl.uniform1f(shader.flipY, 1);

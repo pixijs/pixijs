@@ -21,8 +21,14 @@ var utils = module.exports = {
      * @param hex {number}
      * @return {number[]} An array representing the [R, G, B] of the color.
      */
-    hex2rgb: function (hex) {
-        return [(hex >> 16 & 0xFF) / 255, ( hex >> 8 & 0xFF) / 255, (hex & 0xFF)/ 255];
+    hex2rgb: function (hex, out) {
+        out = out || [];
+
+        out[0] = (hex >> 16 & 0xFF) / 255;
+        out[1] = (hex >> 8 & 0xFF) / 255;
+        out[2] = (hex & 0xFF) / 255;
+
+        return out;
     },
 
     /**

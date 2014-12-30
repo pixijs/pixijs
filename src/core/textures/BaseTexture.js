@@ -57,7 +57,8 @@ function BaseTexture(source, scaleMode) {
      */
     this.source = source;
 
-    this._UID = utils.uuid();
+    // ID for the base texture
+    this.uuid = utils.uuid();
 
     /**
      * Controls if RGB channels should be pre-multiplied by Alpha  (WebGL only)
@@ -88,10 +89,10 @@ function BaseTexture(source, scaleMode) {
     // TODO - this needs to be addressed
 
     /**
-     * @member {Array}
+     * @member {object<number, boolean>}
      * @private
      */
-    this._dirty = [true, true, true, true];
+    this._dirty = {};
 
     if (!source) {
         return;

@@ -117,6 +117,7 @@ module.exports = {
      * @property {boolean} defaultRenderOptions.antialias=false
      * @property {boolean} defaultRenderOptions.preserveDrawingBuffer=false
      * @property {number} defaultRenderOptions.resolution=1
+     * @property {number} defaultRenderOptions.backgroundColor=0x000000
      * @property {boolean} defaultRenderOptions.clearBeforeRender=true
      * @property {boolean} defaultRenderOptions.autoResize=false
      */
@@ -126,6 +127,7 @@ module.exports = {
         antialias: false,
         autoResize: false,
         transparent: false,
+        backgroundColor: 0x000000,
         clearBeforeRender: true,
         preserveDrawingBuffer: false
     }

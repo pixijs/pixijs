@@ -23,14 +23,14 @@ function DisplayObject() {
      *
      * @member {Point}
      */
-    this.scale = new math.Point(1,1);//{x:1, y:1};
+    this.scale = new math.Point(1, 1);
 
     /**
      * The pivot point of the displayObject that it rotates around
      *
      * @member {Point}
      */
-    this.pivot = new math.Point(0,0);
+    this.pivot = new math.Point(0, 0);
 
     /**
      * The rotation of the object in radians.
@@ -55,22 +55,6 @@ function DisplayObject() {
     this.visible = true;
 
     /**
-     * This is the defined area that will pick up mouse / touch events. It is null by default.
-     * Setting it is a neat way of optimising the hitTest function that the interactionManager
-     * will use (as it will not need to hit test all the children)
-     *
-     * @member {Rectangle|Circle|Ellipse|Polygon}
-     */
-    this.hitArea = null;
-
-    /**
-     * This is used to indicate if the displayObject should display a mouse hand cursor on rollover
-     *
-     * @member {boolean}
-     */
-    this.buttonMode = false;
-
-    /**
      * Can this object be rendered, if false the object will not be drawn but the updateTransform
      * methods will still be called.
      *
@@ -87,15 +71,6 @@ function DisplayObject() {
     this.parent = null;
 
     /**
-     * The stage the display object is connected to, or undefined if it is not
-     * connected to the stage.
-     *
-     * @member {Stage}
-     * @readOnly
-     */
-    this.stage = null;
-
-    /**
      * The multiplied alpha of the displayObject
      *
      * @member {number}
@@ -104,32 +79,20 @@ function DisplayObject() {
     this.worldAlpha = 1;
 
     /**
-     * Whether or not the object is interactive, do not toggle directly! use
-     * the `interactive` property
-     *
-     * @member {Boolean}
-     * @readOnly
-     * @private
-     */
-    this._interactive = false;
-
-    /**
-     * This is the cursor that will be used when the mouse is over this object. To enable this
-     * the element must have interaction = true and buttonMode = true
-     *
-     * @member {string}
-     *
-    */
-    this.defaultCursor = 'pointer';
-
-    /**
      * Current transform of the object based on world (parent) factors
      *
      * @member {Matrix}
      * @readOnly
-     * @private
      */
     this.worldTransform = new math.Matrix();
+
+    /**
+     * The area the filter is applied to. This is used as more of an optimisation
+     * rather than figuring out the dimensions of the displayObject each frame you can set this rectangle
+     *
+     * @member {Rectangle}
+     */
+    this.filterArea = null;
 
     /**
      * cached sin rotation and cos rotation
@@ -146,14 +109,6 @@ function DisplayObject() {
      * @private
      */
     this._cr = 1;
-
-    /**
-     * The area the filter is applied to like the hitArea this is used as more of an optimisation
-     * rather than figuring out the dimensions of the displayObject each frame you can set this rectangle
-     *
-     * @member {Rectangle}
-     */
-    this.filterArea = null; // new math.Rectangle(0,0,1,1);
 
     /**
      * The original, cached bounds of the object
@@ -194,151 +149,6 @@ function DisplayObject() {
      * @private
      */
     this._cacheIsDirty = false;
-
-
-    /*
-     * MOUSE Callbacks
-     */
-
-    /**
-     * A callback that is used when the users mouse rolls over the displayObject
-     *
-     * @method mouseover
-     * @memberof DisplayObject#
-     * @param interactionData {InteractionData}
-     */
-    this.mouseover = null;
-
-    /**
-     * A callback that is used when the users mouse leaves the displayObject
-     *
-     * @method mouseout
-     * @memberof DisplayObject#
-     * @param interactionData {InteractionData}
-     */
-    this.mouseout = null;
-
-    //Left button
-    /**
-     * A callback that is used when the users clicks on the displayObject with their mouse's left button
-     *
-     * @method click
-     * @memberof DisplayObject#
-     * @param interactionData {InteractionData}
-     */
-    this.click = null;
-
-    /**
-     * A callback that is used when the user clicks the mouse's left button down over the sprite
-     *
-     * @method mousedown
-     * @memberof DisplayObject#
-     * @param interactionData {InteractionData}
-     */
-    this.mousedown = null;
-
-    /**
-     * A callback that is used when the user releases the mouse's left button that was over the displayObject
-     * for this callback to be fired, the mouse's left button must have been pressed down over the displayObject
-     *
-     * @method mouseup
-     * @memberof DisplayObject#
-     * @param interactionData {InteractionData}
-     */
-    this.mouseup = null;
-
-    /**
-     * A callback that is used when the user releases the mouse's left button that was over the displayObject
-     * but is no longer over the displayObject for this callback to be fired, the mouse's left button must
-     * have been pressed down over the displayObject
-     *
-     * @method mouseupoutside
-     * @memberof DisplayObject#
-     * @param interactionData {InteractionData}
-     */
-    this.mouseupoutside = null;
-
-    //Right button
-    /**
-     * A callback that is used when the users clicks on the displayObject with their mouse's right button
-     *
-     * @method rightclick
-     * @memberof DisplayObject#
-     * @param interactionData {InteractionData}
-     */
-    this.rightclick = null;
-
-    /**
-     * A callback that is used when the user clicks the mouse's right button down over the sprite
-     *
-     * @method rightdown
-     * @memberof DisplayObject#
-     * @param interactionData {InteractionData}
-     */
-    this.rightdown = null;
-
-    /**
-     * A callback that is used when the user releases the mouse's right button that was over the displayObject
-     * for this callback to be fired the mouse's right button must have been pressed down over the displayObject
-     *
-     * @method rightup
-     * @memberof DisplayObject#
-     * @param interactionData {InteractionData}
-     */
-    this.rightup = null;
-
-    /**
-     * A callback that is used when the user releases the mouse's right button that was over the
-     * displayObject but is no longer over the displayObject for this callback to be fired, the mouse's
-     * right button must have been pressed down over the displayObject
-     *
-     * @method rightupoutside
-     * @memberof DisplayObject#
-     * @param interactionData {InteractionData}
-     */
-    this.rightupoutside = null;
-
-    /*
-     * TOUCH Callbacks
-     */
-
-    /**
-     * A callback that is used when the users taps on the sprite with their finger
-     * basically a touch version of click
-     *
-     * @method tap
-     * @memberof DisplayObject#
-     * @param interactionData {InteractionData}
-     */
-    this.tap = null;
-
-    /**
-     * A callback that is used when the user touches over the displayObject
-     *
-     * @method touchstart
-     * @memberof DisplayObject#
-     * @param interactionData {InteractionData}
-     */
-    this.touchstart = null;
-
-    /**
-     * A callback that is used when the user releases a touch over the displayObject
-     *
-     * @method touchend
-     * @memberof DisplayObject#
-     * @param interactionData {InteractionData}
-     */
-    this.touchend = null;
-
-    /**
-     * A callback that is used when the user releases the touch that was over the displayObject
-     * for this callback to be fired, The touch must have started over the sprite
-     *
-     * @method touchendoutside
-     * @memberof DisplayObject#
-     * @param interactionData {InteractionData}
-     */
-    this.touchendoutside = null;
 }
 
 // constructor
@@ -377,33 +187,11 @@ Object.defineProperties(DisplayObject.prototype, {
     },
 
     /**
-     * Indicates if the sprite will have touch and mouse interactivity. It is false by default
-     *
-     * @member {boolean}
-     * @default false
-     * @memberof DisplayObject#
-     */
-    interactive: {
-        get: function () {
-            return this._interactive;
-        },
-        set: function (value) {
-            this._interactive = value;
-
-            // TODO more to be done here..
-            // need to sort out a re-crawl!
-            if(this.stage) {
-                this.stage.dirty = true;
-            }
-        }
-    },
-
-    /**
      * Indicates if the sprite is globally visible.
      *
      * @member {boolean}
-     * @readonly
      * @memberof DisplayObject#
+     * @readonly
      */
     worldVisible: {
         get: function () {
@@ -601,19 +389,6 @@ DisplayObject.prototype.getLocalBounds = function () {
 };
 
 /**
- * Sets the object's stage reference, the stage this object is connected to
- *
- * @param stage {Stage} the stage that the object will have as its current stage reference
- */
-DisplayObject.prototype.setStageReference = function (stage) {
-    this.stage = stage;
-
-    if (this._interactive) {
-        this.stage.dirty = true;
-    }
-};
-
-/**
  * Useful function that returns a texture of the displayObject object that can then be used to create sprites
  * This can be quite useful if your displayObject is static / complicated and needs to be reused multiple times.
  *
@@ -675,17 +450,17 @@ DisplayObject.prototype.toLocal = function (position, from) {
 /**
  * Internal method.
  *
- * @param renderSession {Object} The render session
+ * @param renderer {WebGLRenderer|CanvasRenderer} The renderer
  * @private
  */
-DisplayObject.prototype._renderCachedSprite = function (renderSession) {
+DisplayObject.prototype._renderCachedSprite = function (renderer) {
     this._cachedSprite.worldAlpha = this.worldAlpha;
 
-    if (renderSession.gl) {
-        Sprite.prototype._renderWebGL.call(this._cachedSprite, renderSession);
+    if (renderer.gl) {
+        Sprite.prototype.renderWebGL.call(this._cachedSprite, renderer);
     }
     else {
-        Sprite.prototype._renderCanvas.call(this._cachedSprite, renderSession);
+        Sprite.prototype.renderCanvas.call(this._cachedSprite, renderer);
     }
 };
 
@@ -699,7 +474,7 @@ DisplayObject.prototype._generateCachedSprite = function () {
     var bounds = this.getLocalBounds();
 
     if (!this._cachedSprite) {
-        var renderTexture = new RenderTexture(bounds.width | 0, bounds.height | 0); //, renderSession.renderer);
+        var renderTexture = new RenderTexture(bounds.width | 0, bounds.height | 0); //, renderer);
 
         this._cachedSprite = new Sprite(renderTexture);
         this._cachedSprite.worldTransform = this.worldTransform;
@@ -746,19 +521,19 @@ DisplayObject.prototype._destroyCachedSprite = function () {
 /**
  * Renders the object using the WebGL renderer
  *
- * @param renderSession {RenderSession}
+ * @param renderer {WebGLRenderer} The renderer
  * @private
  */
-DisplayObject.prototype._renderWebGL = function (/* renderSession */) {
+DisplayObject.prototype.renderWebGL = function (/* renderer */) {
     // OVERWRITE;
 };
 
 /**
  * Renders the object using the Canvas renderer
  *
- * @param renderSession {RenderSession}
+ * @param renderer {CanvasRenderer} The renderer
  * @private
  */
-DisplayObject.prototype._renderCanvas = function (/* renderSession */) {
+DisplayObject.prototype.renderCanvas = function (/* renderer */) {
     // OVERWRITE;
 };

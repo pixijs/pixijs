@@ -1,26 +1,22 @@
+var WebGLManager = require('./WebGLManager');
+
 /**
  * @class
  * @namespace PIXI
- * @param gl {WebGLContext} the current WebGL drawing context
+ * @param renderer {WebGLRenderer} The renderer this manager works for.
  */
-function WebGLBlendModeManager() {
+function WebGLBlendModeManager(renderer) {
+    WebGLManager.call(this, renderer);
+
     /**
      * @member {number}
      */
     this.currentBlendMode = 99999;
 }
 
+WebGLBlendModeManager.prototype = Object.create(WebGLManager.prototype);
 WebGLBlendModeManager.prototype.constructor = WebGLBlendModeManager;
 module.exports = WebGLBlendModeManager;
-
-/**
- * Sets the WebGL Context.
- *
- * @param gl {WebGLContext} the current WebGL drawing context
- */
-WebGLBlendModeManager.prototype.setContext = function (gl) {
-    this.gl = gl;
-};
 
 /**
  * Sets-up the given blendMode from WebGL's point of view.
@@ -34,16 +30,8 @@ WebGLBlendModeManager.prototype.setBlendMode = function (blendMode) {
 
     this.currentBlendMode = blendMode;
 
-    var blendModeWebGL = blendModesWebGL[this.currentBlendMode];
-    this.gl.blendFunc(blendModeWebGL[0], blendModeWebGL[1]);
+    var mode = this.renderer.blendModes[this.currentBlendMode];
+    this.renderer.gl.blendFunc(mode[0], mode[1]);
 
     return true;
-};
-
-/**
- * Destroys this object.
- *
- */
-WebGLBlendModeManager.prototype.destroy = function () {
-    this.gl = null;
 };

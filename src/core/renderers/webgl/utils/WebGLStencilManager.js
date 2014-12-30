@@ -1,38 +1,33 @@
-var utils = require('../../../utils');
+var WebGLManager = require('./WebGLManager'),
+    utils = require('../../../utils');
 
 /**
  * @class
  * @namespace PIXI
- * @private
+ * @param renderer {WebGLRenderer} The renderer this manager works for.
  */
-function WebGLStencilManager() {
+function WebGLStencilManager(renderer) {
+    WebGLManager.call(this, renderer);
+
     this.stencilStack = [];
     this.reverse = true;
     this.count = 0;
 }
 
+WebGLStencilManager.prototype = Object.create(WebGLManager.prototype);
 WebGLStencilManager.prototype.constructor = WebGLStencilManager;
 module.exports = WebGLStencilManager;
-
-/**
- * Sets the drawing context to the one given in parameter.
- *
- * @param gl {WebGLContext} the current WebGL drawing context
- */
-WebGLStencilManager.prototype.setContext = function (gl) {
-    this.gl = gl;
-};
 
 /**
  * Applies the Mask and adds it to the current filter stack.
  *
  * @param graphics {Graphics}
- * @param webGLData {Array}
- * @param renderSession {object}
+ * @param webGLData {any[]}
  */
-WebGLStencilManager.prototype.pushStencil = function (graphics, webGLData, renderSession) {
-    var gl = this.gl;
-    this.bindGraphics(graphics, webGLData, renderSession);
+WebGLStencilManager.prototype.pushStencil = function (graphics, webGLData) {
+    var gl = this.renderer.gl;
+
+    this.bindGraphics(graphics, webGLData, this.renderer);
 
     if (this.stencilStack.length === 0) {
         gl.enable(gl.STENCIL_TEST);
@@ -107,25 +102,24 @@ WebGLStencilManager.prototype.pushStencil = function (graphics, webGLData, rende
  *
  * @param graphics {Graphics}
  * @param webGLData {Array}
- * @param renderSession {object}
  */
-WebGLStencilManager.prototype.bindGraphics = function (graphics, webGLData, renderSession) {
+WebGLStencilManager.prototype.bindGraphics = function (graphics, webGLData) {
     //if (this._currentGraphics === graphics)return;
     this._currentGraphics = graphics;
 
-    var gl = this.gl;
+    var gl = this.renderer.gl;
 
      // bind the graphics object..
-    var projection = renderSession.projection,
-        offset = renderSession.offset,
-        shader;// = renderSession.shaderManager.primitiveShader;
+    var projection = this.renderer.projection,
+        offset = this.renderer.offset,
+        shader;// = this.renderer.shaderManager.primitiveShader;
 
     if (webGLData.mode === 1) {
-        shader = renderSession.shaderManager.complexPrimitiveShader;
+        shader = this.renderer.shaderManager.complexPrimitiveShader;
 
-        renderSession.shaderManager.setShader( shader );
+        this.renderer.shaderManager.setShader(shader);
 
-        gl.uniform1f(shader.flipY, renderSession.flipY);
+        gl.uniform1f(shader.flipY, this.renderer.flipY);
 
         gl.uniformMatrix3fv(shader.translationMatrix, false, graphics.worldTransform.toArray(true));
 
@@ -147,13 +141,13 @@ WebGLStencilManager.prototype.bindGraphics = function (graphics, webGLData, rend
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, webGLData.indexBuffer);
     }
     else {
-        //renderSession.shaderManager.activatePrimitiveShader();
-        shader = renderSession.shaderManager.primitiveShader;
-        renderSession.shaderManager.setShader( shader );
+        //this.renderer.shaderManager.activatePrimitiveShader();
+        shader = this.renderer.shaderManager.primitiveShader;
+        this.renderer.shaderManager.setShader( shader );
 
         gl.uniformMatrix3fv(shader.translationMatrix, false, graphics.worldTransform.toArray(true));
 
-        gl.uniform1f(shader.flipY, renderSession.flipY);
+        gl.uniform1f(shader.flipY, this.renderer.flipY);
         gl.uniform2f(shader.projectionVector, projection.x, -projection.y);
         gl.uniform2f(shader.offsetVector, -offset.x, -offset.y);
 
@@ -174,10 +168,10 @@ WebGLStencilManager.prototype.bindGraphics = function (graphics, webGLData, rend
 /**
  * @param graphics {Graphics}
  * @param webGLData {Array}
- * @param renderSession {object}
  */
-WebGLStencilManager.prototype.popStencil = function (graphics, webGLData, renderSession) {
-	var gl = this.gl;
+WebGLStencilManager.prototype.popStencil = function (graphics, webGLData) {
+	var gl = this.renderer.gl;
+
     this.stencilStack.pop();
 
     this.count--;
@@ -191,7 +185,7 @@ WebGLStencilManager.prototype.popStencil = function (graphics, webGLData, render
 
         var level = this.count;
 
-        this.bindGraphics(graphics, webGLData, renderSession);
+        this.bindGraphics(graphics, webGLData, this.renderer);
 
         gl.colorMask(false, false, false, false);
 
@@ -257,6 +251,6 @@ WebGLStencilManager.prototype.popStencil = function (graphics, webGLData, render
  *
  */
 WebGLStencilManager.prototype.destroy = function () {
+    this.renderer = null;
     this.stencilStack = null;
-    this.gl = null;
 };

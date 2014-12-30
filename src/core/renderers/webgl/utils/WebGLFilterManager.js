@@ -1,15 +1,24 @@
-var FilterTexture = require('./FilterTexture'),
+var WebGLManager = require('./WebGLManager'),
+    FilterTexture = require('./FilterTexture'),
     PixiShader = require('../shaders/PixiShader');
 
 /**
  * @class
  * @namespace PIXI
+ * @param renderer {WebGLRenderer} The renderer this manager works for.
  */
-function WebGLFilterManager() {
+function WebGLFilterManager(renderer) {
+    WebGLManager.call(this, renderer);
+
     /**
-     * @member {Array}
+     * @member {any[]}
      */
     this.filterStack = [];
+
+    /**
+     * @member {any[]]}
+     */
+    this.texturePool = [];
 
     /**
      * @member {number}
@@ -20,34 +29,30 @@ function WebGLFilterManager() {
      * @member {number}
      */
     this.offsetY = 0;
+
+    // listen for context and update necessary buffers
+    var self = this;
+    this.renderer.on('context', function () {
+        self.texturePool.length = 0;
+        self.initShaderBuffers();
+    });
 }
 
+WebGLFilterManager.prototype = Object.create(WebGLManager.prototype);
 WebGLFilterManager.prototype.constructor = WebGLFilterManager;
 module.exports = WebGLFilterManager;
 
 /**
- * Initialises the context and the properties.
- *
- * @param gl {WebGLContext} the current WebGL drawing context
- */
-WebGLFilterManager.prototype.setContext = function (gl) {
-    this.gl = gl;
-    this.texturePool = [];
-
-    this.initShaderBuffers();
-};
-
-/**
- * @param renderSession {RenderSession}
+ * @param renderer {WebGLRenderer}
  * @param buffer {ArrayBuffer}
  */
-WebGLFilterManager.prototype.begin = function (renderSession, buffer) {
-    this.renderSession = renderSession;
-    this.defaultShader = renderSession.shaderManager.defaultShader;
+WebGLFilterManager.prototype.begin = function (renderer, buffer) {
+    this.renderer = renderer;
+    this.defaultShader = renderer.shaderManager.defaultShader;
 
-    var projection = this.renderSession.projection;
-    this.width = projection.x * 2;
-    this.height = -projection.y * 2;
+    this.width = renderer.projection.x * 2;
+    this.height = -renderer.projection.y * 2;
+
     this.buffer = buffer;
 };
 
@@ -57,10 +62,10 @@ WebGLFilterManager.prototype.begin = function (renderSession, buffer) {
  * @param filterBlock {object} the filter that will be pushed to the current filter stack
  */
 WebGLFilterManager.prototype.pushFilter = function (filterBlock) {
-    var gl = this.gl;
+    var gl = this.renderer.gl;
 
-    var projection = this.renderSession.projection;
-    var offset = this.renderSession.offset;
+    var projection = this.renderer.projection;
+    var offset = this.renderer.offset;
 
     filterBlock._filterArea = filterBlock.target.filterArea || filterBlock.target.getBounds();
 
@@ -75,7 +80,7 @@ WebGLFilterManager.prototype.pushFilter = function (filterBlock) {
 
     var texture = this.texturePool.pop();
     if (!texture) {
-        texture = new FilterTexture(this.gl, this.width, this.height);
+        texture = new FilterTexture(this.renderer.gl, this.width, this.height);
     }
     else {
         texture.resize(this.width, this.height);
@@ -122,7 +127,7 @@ WebGLFilterManager.prototype.pushFilter = function (filterBlock) {
 
     // update projection
     // now restore the regular shader..
-    // this.renderSession.shaderManager.setShader(this.defaultShader);
+    // this.renderer.shaderManager.setShader(this.defaultShader);
     //gl.uniform2f(this.defaultShader.projectionVector, filterArea.width/2, -filterArea.height/2);
     //gl.uniform2f(this.defaultShader.offsetVector, -filterArea.x, -filterArea.y);
 
@@ -139,12 +144,13 @@ WebGLFilterManager.prototype.pushFilter = function (filterBlock) {
  *
  */
 WebGLFilterManager.prototype.popFilter = function () {
-    var gl = this.gl;
+    var gl = this.renderer.gl;
+
     var filterBlock = this.filterStack.pop();
     var filterArea = filterBlock._filterArea;
     var texture = filterBlock._glFilterTexture;
-    var projection = this.renderSession.projection;
-    var offset = this.renderSession.offset;
+    var projection = this.renderer.projection;
+    var offset = this.renderer.offset;
 
     if (filterBlock.filterPasses.length > 1) {
         gl.viewport(0, 0, filterArea.width, filterArea.height);
@@ -177,7 +183,7 @@ WebGLFilterManager.prototype.popFilter = function () {
         var inputTexture = texture;
         var outputTexture = this.texturePool.pop();
         if (!outputTexture) {
-            outputTexture = new FilterTexture(this.gl, this.width, this.height);
+            outputTexture = new FilterTexture(this.renderer.gl, this.width, this.height);
         }
         outputTexture.resize(this.width, this.height);
 
@@ -297,7 +303,7 @@ WebGLFilterManager.prototype.popFilter = function () {
     this.applyFilterPass(filter, filterArea, sizeX, sizeY);
 
     // now restore the regular shader.. should happen automatically now..
-    // this.renderSession.shaderManager.setShader(this.defaultShader);
+    // this.renderer.shaderManager.setShader(this.defaultShader);
     // gl.uniform2f(this.defaultShader.projectionVector, sizeX/2, -sizeY/2);
     // gl.uniform2f(this.defaultShader.offsetVector, -offsetX, -offsetY);
 
@@ -317,7 +323,8 @@ WebGLFilterManager.prototype.popFilter = function () {
  */
 WebGLFilterManager.prototype.applyFilterPass = function (filter, filterArea, width, height) {
     // use program
-    var gl = this.gl;
+    var gl = this.renderer.gl;
+
     var shader = filter.shaders[gl.id];
 
     if (!shader) {
@@ -331,7 +338,7 @@ WebGLFilterManager.prototype.applyFilterPass = function (filter, filterArea, wid
     }
 
     // set the shader
-    this.renderSession.shaderManager.setShader(shader);
+    this.renderer.shaderManager.setShader(shader);
 
 //    gl.useProgram(shader.program);
 
@@ -361,7 +368,7 @@ WebGLFilterManager.prototype.applyFilterPass = function (filter, filterArea, wid
     // draw the filter...
     gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0 );
 
-    this.renderSession.drawCount++;
+    this.renderer.drawCount++;
 };
 
 /**
@@ -369,7 +376,7 @@ WebGLFilterManager.prototype.applyFilterPass = function (filter, filterArea, wid
  *
  */
 WebGLFilterManager.prototype.initShaderBuffers = function () {
-    var gl = this.gl;
+    var gl = this.renderer.gl;
 
     // create some buffers
     this.vertexBuffer = gl.createBuffer();
@@ -415,7 +422,7 @@ WebGLFilterManager.prototype.initShaderBuffers = function () {
  *
  */
 WebGLFilterManager.prototype.destroy = function () {
-    var gl = this.gl;
+    var gl = this.renderer.gl;
 
     this.filterStack = null;
 
@@ -434,4 +441,6 @@ WebGLFilterManager.prototype.destroy = function () {
     gl.deleteBuffer(this.uvBuffer);
     gl.deleteBuffer(this.colorBuffer);
     gl.deleteBuffer(this.indexBuffer);
+
+    this.renderer = null;
 };

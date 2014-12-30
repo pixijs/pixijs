@@ -12,7 +12,7 @@
  * @class
  * @namespace PIXI
  */
-function WebGLFastSpriteBatch(gl) {
+function WebGLFastSpriteBatch(renderer) {
     /**
      * @member {number}
      */
@@ -93,11 +93,6 @@ function WebGLFastSpriteBatch(gl) {
     /**
      * @member {object}
      */
-    this.renderSession = null;
-
-    /**
-     * @member {object}
-     */
     this.shader = null;
 
     /**
@@ -105,7 +100,9 @@ function WebGLFastSpriteBatch(gl) {
      */
     this.matrix = null;
 
-    this.setContext(gl);
+    this.renderer = renderer;
+
+    this.setupContext();
 }
 
 WebGLFastSpriteBatch.prototype.constructor = WebGLFastSpriteBatch;
@@ -116,8 +113,8 @@ module.exports = WebGLFastSpriteBatch;
  *
  * @param gl {WebGLContext} the current WebGL drawing context
  */
-WebGLFastSpriteBatch.prototype.setContext = function (gl) {
-    this.gl = gl;
+WebGLFastSpriteBatch.prototype.setupContext = function () {
+    var gl = this.renderer.gl;
 
     // create a couple of buffers
     this.vertexBuffer = gl.createBuffer();
@@ -135,11 +132,11 @@ WebGLFastSpriteBatch.prototype.setContext = function (gl) {
 
 /**
  * @param spriteBatch {WebGLSpriteBatch}
- * @param renderSession {object}
+ * @param renderer {WebGLRenderer|CanvasRenderer} The renderer
  */
-WebGLFastSpriteBatch.prototype.begin = function (spriteBatch, renderSession) {
-    this.renderSession = renderSession;
-    this.shader = this.renderSession.shaderManager.fastShader;
+WebGLFastSpriteBatch.prototype.begin = function (spriteBatch, renderer) {
+    this.renderer = renderer;
+    this.shader = renderer.shaderManager.fastShader;
 
     this.matrix = spriteBatch.worldTransform.toArray(true);
 
@@ -169,9 +166,9 @@ WebGLFastSpriteBatch.prototype.render = function (spriteBatch) {
     this.currentBaseTexture = sprite.texture.baseTexture;
 
     // check blend mode
-    if (sprite.blendMode !== this.renderSession.blendModeManager.currentBlendMode) {
+    if (sprite.blendMode !== this.renderer.blendModeManager.currentBlendMode) {
         this.flush();
-        this.renderSession.blendModeManager.setBlendMode(sprite.blendMode);
+        this.renderer.blendModeManager.setBlendMode(sprite.blendMode);
     }
 
     for (var i=0,j= children.length; i<j; i++) {
@@ -329,12 +326,12 @@ WebGLFastSpriteBatch.prototype.flush = function () {
         return;
     }
 
-    var gl = this.gl;
+    var gl = this.renderer.gl;
 
     // bind the current texture
 
     if (!this.currentBaseTexture._glTextures[gl.id]) {
-        this.renderSession.renderer.updateTexture(this.currentBaseTexture, gl);
+        this.renderer.updateTexture(this.currentBaseTexture, gl);
     }
 
     gl.bindTexture(gl.TEXTURE_2D, this.currentBaseTexture._glTextures[gl.id]);
@@ -357,7 +354,7 @@ WebGLFastSpriteBatch.prototype.flush = function () {
     this.currentBatchSize = 0;
 
     // increment the draw count
-    this.renderSession.drawCount++;
+    this.renderer.drawCount++;
 };
 
 
@@ -372,7 +369,7 @@ WebGLFastSpriteBatch.prototype.stop = function () {
  *
  */
 WebGLFastSpriteBatch.prototype.start = function () {
-    var gl = this.gl;
+    var gl = this.renderer.gl;
 
     // bind the main texture
     gl.activeTexture(gl.TEXTURE0);
@@ -382,7 +379,7 @@ WebGLFastSpriteBatch.prototype.start = function () {
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 
     // set the projection
-    var projection = this.renderSession.projection;
+    var projection = this.renderer.projection;
     gl.uniform2f(this.shader.projectionVector, projection.x, projection.y);
 
     // set the matrix
@@ -391,11 +388,10 @@ WebGLFastSpriteBatch.prototype.start = function () {
     // set the pointers
     var stride =  this.vertSize * 4;
 
-    gl.vertexAttribPointer(this.shader.aVertexPosition, 2, gl.FLOAT, false, stride, 0);
-    gl.vertexAttribPointer(this.shader.aPositionCoord, 2, gl.FLOAT, false, stride, 2 * 4);
-    gl.vertexAttribPointer(this.shader.aScale, 2, gl.FLOAT, false, stride, 4 * 4);
-    gl.vertexAttribPointer(this.shader.aRotation, 1, gl.FLOAT, false, stride, 6 * 4);
-    gl.vertexAttribPointer(this.shader.aTextureCoord, 2, gl.FLOAT, false, stride, 7 * 4);
-    gl.vertexAttribPointer(this.shader.colorAttribute, 1, gl.FLOAT, false, stride, 9 * 4);
-
+    gl.vertexAttribPointer(this.shader.attributes.aVertexPosition, 2, gl.FLOAT, false, stride, 0);
+    gl.vertexAttribPointer(this.shader.attributes.aPositionCoord, 2, gl.FLOAT, false, stride, 2 * 4);
+    gl.vertexAttribPointer(this.shader.attributes.aScale, 2, gl.FLOAT, false, stride, 4 * 4);
+    gl.vertexAttribPointer(this.shader.attributes.aRotation, 1, gl.FLOAT, false, stride, 6 * 4);
+    gl.vertexAttribPointer(this.shader.attributes.aTextureCoord, 2, gl.FLOAT, false, stride, 7 * 4);
+    gl.vertexAttribPointer(this.shader.attributes.colorAttribute, 1, gl.FLOAT, false, stride, 9 * 4);
 };

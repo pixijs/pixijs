@@ -1,4 +1,5 @@
-var PrimitiveShader = require('../shaders/PrimitiveShader'),
+var WebGLManager = require('./WebGLManager'),
+    PrimitiveShader = require('../shaders/PrimitiveShader'),
     ComplexPrimitiveShader = require('../shaders/ComplexPrimitiveShader'),
     PixiShader = require('../shaders/PixiShader'),
     PixiFastShader = require('../shaders/PixiFastShader'),
@@ -7,21 +8,23 @@ var PrimitiveShader = require('../shaders/PrimitiveShader'),
 /**
  * @class
  * @namespace PIXI
- * @private
+ * @param renderer {WebGLRenderer} The renderer this manager works for.
  */
-function WebGLShaderManager() {
+function WebGLShaderManager(renderer) {
+    WebGLManager.call(this, renderer);
+
     /**
      * @member {number}
      */
     this.maxAttibs = 10;
 
     /**
-     * @member {Array}
+     * @member {any[]}
      */
     this.attribState = [];
 
     /**
-     * @member {Array}
+     * @member {any[]}
      */
     this.tempAttribState = [];
 
@@ -30,38 +33,62 @@ function WebGLShaderManager() {
     }
 
     /**
-     * @member {Array}
+     * @member {any[]}
      */
     this.stack = [];
-}
 
-WebGLShaderManager.prototype.constructor = WebGLShaderManager;
-module.exports = WebGLShaderManager;
+    /**
+     * @member {number}
+     * @private
+     */
+    this._currentId = -1;
 
-/**
- * Initialises the context and the properties.
- *
- * @param gl {WebGLContext} the current WebGL drawing context
- */
-WebGLShaderManager.prototype.setContext = function (gl) {
-    this.gl = gl;
+    /**
+     * @member {Shader}
+     * @private
+     */
+    this.currentShader = null;
 
-    // the next one is used for rendering primitives
-    this.primitiveShader = new PrimitiveShader(gl);
+    // this shader is used for rendering primitives
+    this.primitiveShader = null;
 
-    // the next one is used for rendering triangle strips
-    this.complexPrimitiveShader = new ComplexPrimitiveShader(gl);
+    // this shader is used for rendering triangle strips
+    this.complexPrimitiveShader = null;
 
     // this shader is used for the default sprite rendering
-    this.defaultShader = new PixiShader(gl);
+    this.defaultShader = null;
 
     // this shader is used for the fast sprite rendering
-    this.fastShader = new PixiFastShader(gl);
+    this.fastShader = null;
 
     // the next one is used for rendering triangle strips
-    this.stripShader = new StripShader(gl);
-    this.setShader(this.defaultShader);
-};
+    this.stripShader = null;
+
+    // listen for context and update necessary shaders
+    var self = this;
+    this.renderer.on('context', function (gl) {
+        // this shader is used for rendering primitives
+        self.primitiveShader = new PrimitiveShader(gl);
+
+        // this shader is used for rendering triangle strips
+        self.complexPrimitiveShader = new ComplexPrimitiveShader(gl);
+
+        // this shader is used for the default sprite rendering
+        self.defaultShader = new PixiShader(gl);
+
+        // this shader is used for the fast sprite rendering
+        self.fastShader = new PixiFastShader(gl);
+
+        // the next one is used for rendering triangle strips
+        self.stripShader = new StripShader(gl);
+
+        self.setShader(self.defaultShader);
+    });
+}
+
+WebGLShaderManager.prototype = Object.create(WebGLManager.prototype);
+WebGLShaderManager.prototype.constructor = WebGLShaderManager;
+module.exports = WebGLShaderManager;
 
 /**
  * Takes the attributes given in parameters.
@@ -77,18 +104,17 @@ WebGLShaderManager.prototype.setAttribs = function (attribs) {
     }
 
     // set the new attribs
-    for (i = 0; i < attribs.length; i++) {
-        var attribId = attribs[i];
-        this.tempAttribState[attribId] = true;
+    for (var a in attribs) {
+        this.tempAttribState[attribs[a]] = true;
     }
 
-    var gl = this.gl;
+    var gl = this.renderer.gl;
 
     for (i = 0; i < this.attribState.length; i++) {
         if (this.attribState[i] !== this.tempAttribState[i]) {
             this.attribState[i] = this.tempAttribState[i];
 
-            if (this.tempAttribState[i]) {
+            if (this.attribState[i]) {
                 gl.enableVertexAttribArray(i);
             }
             else {
@@ -104,15 +130,15 @@ WebGLShaderManager.prototype.setAttribs = function (attribs) {
  * @param shader {Any}
  */
 WebGLShaderManager.prototype.setShader = function (shader) {
-    if (this._currentId === shader._UID) {
+    if (this._currentId === shader.uuid) {
         return false;
     }
 
-    this._currentId = shader._UID;
+    this._currentId = shader.uuid;
 
     this.currentShader = shader;
 
-    this.gl.useProgram(shader.program);
+    this.renderer.gl.useProgram(shader.program);
     this.setAttribs(shader.attributes);
 
     return true;
@@ -128,14 +154,19 @@ WebGLShaderManager.prototype.destroy = function () {
     this.tempAttribState = null;
 
     this.primitiveShader.destroy();
+    this.primitiveShader = null;
 
     this.complexPrimitiveShader.destroy();
+    this.complexPrimitiveShader = null;
 
     this.defaultShader.destroy();
+    this.defaultShader = null;
 
     this.fastShader.destroy();
+    this.fastShader = null;
 
     this.stripShader.destroy();
+    this.stripShader = null;
 
-    this.gl = null;
+    this.renderer = null;
 };

@@ -481,7 +481,7 @@ WebGLSpriteBatch.prototype.flush = function () {
         nextShader = sprite.shader || this.defaultShader;
 
         blendSwap = currentBlendMode !== nextBlendMode;
-        shaderSwap = currentShader !== nextShader; // should I use _UIDS???
+        shaderSwap = currentShader !== nextShader; // should I use uuidS???
 
         if (currentBaseTexture !== nextTexture || blendSwap || shaderSwap) {
             this.renderBatch(currentBaseTexture, batchSize, start);

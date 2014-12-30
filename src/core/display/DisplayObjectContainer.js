@@ -106,10 +106,6 @@ DisplayObjectContainer.prototype.addChildAt = function (child, index) {
 
         this.children.splice(index, 0, child);
 
-        if (this.stage) {
-            child.setStageReference(this.stage);
-        }
-
         return child;
     }
     else {
@@ -211,10 +207,6 @@ DisplayObjectContainer.prototype.removeChild = function (child) {
 DisplayObjectContainer.prototype.removeChildAt = function (index) {
     var child = this.getChildAt(index);
 
-    if (this.stage) {
-        child.removeStageReference();
-    }
-
     child.parent = null;
     this.children.splice(index, 1);
 
@@ -236,13 +228,7 @@ DisplayObjectContainer.prototype.removeChildren = function (beginIndex, endIndex
         var removed = this.children.splice(begin, range);
 
         for (var i = 0; i < removed.length; ++i) {
-            var child = removed[i];
-
-            if (this.stage) {
-                child.removeStageReference();
-            }
-
-            child.parent = null;
+            removed[i].parent = null;
         }
 
         return removed;
@@ -360,51 +346,17 @@ DisplayObjectContainer.prototype.getLocalBounds = function () {
 };
 
 /**
- * Sets the containers Stage reference. This is the Stage that this object, and all of its children, is connected to.
- *
- * @param stage {Stage} the stage that the container will have as its current stage reference
- */
-DisplayObjectContainer.prototype.setStageReference = function (stage) {
-    this.stage = stage;
-
-    if (this._interactive) {
-        this.stage.dirty = true;
-    }
-
-    for (var i = 0, j = this.children.length; i < j; ++i) {
-        this.children[i].setStageReference(stage);
-    }
-};
-
-/**
- * Removes the current stage reference from the container and all of its children.
- *
- */
-DisplayObjectContainer.prototype.removeStageReference = function () {
-    for (var i = 0, j = this.children.length; i < j; ++i) {
-        this.children[i].removeStageReference();
-    }
-
-    if (this._interactive) {
-        this.stage.dirty = true;
-    }
-
-    this.stage = null;
-};
-
-/**
  * Renders the object using the WebGL renderer
  *
- * @param renderSession {RenderSession}
- * @private
+ * @param renderer {WebGLRenderer} The renderer
  */
-DisplayObjectContainer.prototype._renderWebGL = function (renderSession) {
+DisplayObjectContainer.prototype.renderWebGL = function (renderer) {
     if (!this.visible || this.alpha <= 0) {
         return;
     }
 
     if (this._cacheAsBitmap) {
-        this._renderCachedSprite(renderSession);
+        this._renderCachedSprite(renderer);
         return;
     }
 
@@ -413,37 +365,37 @@ DisplayObjectContainer.prototype._renderWebGL = function (renderSession) {
     if (this._mask || this._filters) {
         // push filter first as we need to ensure the stencil buffer is correct for any masking
         if (this._filters) {
-            renderSession.spriteBatch.flush();
-            renderSession.filterManager.pushFilter(this._filterBlock);
+            renderer.spriteBatch.flush();
+            renderer.filterManager.pushFilter(this._filterBlock);
         }
 
         if (this._mask) {
-            renderSession.spriteBatch.stop();
-            renderSession.maskManager.pushMask(this.mask, renderSession);
-            renderSession.spriteBatch.start();
+            renderer.spriteBatch.stop();
+            renderer.maskManager.pushMask(this.mask, renderer);
+            renderer.spriteBatch.start();
         }
 
         // simple render children!
         for (i = 0, j = this.children.length; i < j; ++i) {
-            this.children[i]._renderWebGL(renderSession);
+            this.children[i].renderWebGL(renderer);
         }
 
-        renderSession.spriteBatch.stop();
+        renderer.spriteBatch.stop();
 
         if (this._mask) {
-            renderSession.maskManager.popMask(this._mask, renderSession);
+            renderer.maskManager.popMask(this._mask, renderer);
         }
 
         if (this._filters) {
-            renderSession.filterManager.popFilter();
+            renderer.filterManager.popFilter();
         }
 
-        renderSession.spriteBatch.start();
+        renderer.spriteBatch.start();
     }
     else {
         // simple render children!
         for(i = 0, j = this.children.length; i < j; ++i) {
-            this.children[i]._renderWebGL(renderSession);
+            this.children[i].renderWebGL(renderer);
         }
     }
 };
@@ -451,28 +403,27 @@ DisplayObjectContainer.prototype._renderWebGL = function (renderSession) {
 /**
  * Renders the object using the Canvas renderer
  *
- * @param renderSession {RenderSession}
- * @private
+ * @param renderer {CanvasRenderer} The renderer
  */
-DisplayObjectContainer.prototype._renderCanvas = function (renderSession) {
-    if (this.visible === false || this.alpha === 0) {
+DisplayObjectContainer.prototype.renderCanvas = function (renderer) {
+    if (!this.visible || this.alpha <= 0) {
         return;
     }
 
     if (this._cacheAsBitmap) {
-        this._renderCachedSprite(renderSession);
+        this._renderCachedSprite(renderer);
         return;
     }
 
     if (this._mask) {
-        renderSession.maskManager.pushMask(this._mask, renderSession);
+        renderer.maskManager.pushMask(this._mask, renderer);
     }
 
     for (var i = 0, j = this.children.length; i < j; ++i) {
-        this.children[i]._renderCanvas(renderSession);
+        this.children[i].renderCanvas(renderer);
     }
 
     if (this._mask) {
-        renderSession.maskManager.popMask(renderSession);
+        renderer.maskManager.popMask(renderer);
     }
 };

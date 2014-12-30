@@ -12,7 +12,7 @@ glContexts = []; // this is where we store the webGL contexts for easy access.
 instances = [];
 
 /**
- * The WebGLRenderer draws the stage and all its content onto a webGL enabled canvas. This renderer
+ * The WebGLRenderer draws the scene and all its content onto a webGL enabled canvas. This renderer
  * should be used for browsers that support webGL. This Render works by automatically managing webGLBatchs.
  * So no need for Sprite Batches or Sprite Clouds.
  * Don't forget to add the view to your DOM or you will not see anything :)
@@ -69,6 +69,24 @@ function WebGLRenderer(width, height, options) {
     this.transparent = options.transparent;
 
     /**
+     * The background color as a number.
+     *
+     * @member {number}
+     * @private
+     */
+    this._backgroundColor = 0x000000;
+
+    /**
+     * The background color as an [R, G, B] array.
+     *
+     * @member {number[]}
+     * @private
+     */
+    this._backgroundColorRgb = [0, 0, 0];
+
+    this.backgroundColor = options.backgroundColor || this._backgroundColor; // run bg color setter
+
+    /**
      * Whether the render view should be resized automatically
      *
      * @member {boolean}
@@ -84,8 +102,8 @@ function WebGLRenderer(width, height, options) {
 
     /**
      * This sets if the WebGLRenderer will clear the context texture or not before the new render pass. If true:
-     * If the Stage is NOT transparent, Pixi will clear to alpha (0, 0, 0, 0).
-     * If the Stage is transparent, Pixi will clear to the target Stage's background color.
+     * If the renderer is NOT transparent, Pixi will clear to alpha (0, 0, 0, 0).
+     * If the renderer is transparent, Pixi will clear to the target Stage's background color.
      * Disable this by setting this to false. For example: if your game has a canvas filling background image, you often don't need this set.
      *
      * @member {boolean}
@@ -153,75 +171,83 @@ function WebGLRenderer(width, height, options) {
      */
     this.offset = new math.Point(0, 0);
 
+    /**
+     * Counter for the number of draws made each frame
+     *
+     * @member {number}
+     */
+    this.drawCount = 0;
+
     // time to create the render managers! each one focuses on managing a state in webGL
 
     /**
      * Deals with managing the shader programs and their attribs
      * @member {WebGLShaderManager}
      */
-    this.shaderManager = new WebGLShaderManager();
+    this.shaderManager = new WebGLShaderManager(this);
 
     /**
      * Manages the rendering of sprites
      * @member {WebGLSpriteBatch}
      */
-    this.spriteBatch = new WebGLSpriteBatch();
+    this.spriteBatch = new WebGLSpriteBatch(this);
 
     /**
      * Manages the masks using the stencil buffer
      * @member {WebGLMaskManager}
      */
-    this.maskManager = new WebGLMaskManager();
+    this.maskManager = new WebGLMaskManager(this);
 
     /**
      * Manages the filters
      * @member {WebGLFilterManager}
      */
-    this.filterManager = new WebGLFilterManager();
+    this.filterManager = new WebGLFilterManager(this);
 
     /**
      * Manages the stencil buffer
      * @member {WebGLStencilManager}
      */
-    this.stencilManager = new WebGLStencilManager();
+    this.stencilManager = new WebGLStencilManager(this);
 
     /**
      * Manages the blendModes
      * @member {WebGLBlendModeManager}
      */
-    this.blendModeManager = new WebGLBlendModeManager();
+    this.blendModeManager = new WebGLBlendModeManager(this);
 
-    /**
-     * TODO remove
-     * @member {object}
-     */
-    this.renderSession = {};
-    this.renderSession.gl = this.gl;
-    this.renderSession.drawCount = 0;
-    this.renderSession.shaderManager = this.shaderManager;
-    this.renderSession.maskManager = this.maskManager;
-    this.renderSession.filterManager = this.filterManager;
-    this.renderSession.blendModeManager = this.blendModeManager;
-    this.renderSession.spriteBatch = this.spriteBatch;
-    this.renderSession.stencilManager = this.stencilManager;
-    this.renderSession.renderer = this;
-    this.renderSession.resolution = this.resolution;
+    this.blendModes = null;
 
     // time init the context..
-    this.initContext();
+    this._initContext();
 
     // map some webGL blend modes..
-    this.mapBlendModes();
+    this._mapBlendModes();
 }
 
 // constructor
 WebGLRenderer.prototype.constructor = WebGLRenderer;
 module.exports = WebGLRenderer;
 
+utils.EventTarget.mixin(WebGLRenderer.prototype);
+
+Object.defineProperties(WebGLRenderer.prototype, {
+    backgroundColor: {
+        get: function () {
+            return this._backgroundColor;
+        },
+        set: function (val) {
+            this._backgroundColor = val;
+            utils.hex2rgb(val, this._backgroundColorRgb);
+        }
+    }
+});
+
 /**
-* @method initContext
-*/
-WebGLRenderer.prototype.initContext = function () {
+ *
+ * @private
+ */
+WebGLRenderer.prototype._initContext = function () {
     var gl = this.view.getContext('webgl', this._contextOptions) || this.view.getContext('experimental-webgl', this._contextOptions);
     this.gl = gl;
 
@@ -241,61 +267,27 @@ WebGLRenderer.prototype.initContext = function () {
     gl.disable(gl.CULL_FACE);
     gl.enable(gl.BLEND);
 
-    // need to set the context for all the managers...
-    this.shaderManager.setContext(gl);
-    this.spriteBatch.setContext(gl);
-    this.maskManager.setContext(gl);
-    this.filterManager.setContext(gl);
-    this.blendModeManager.setContext(gl);
-    this.stencilManager.setContext(gl);
-
-    this.renderSession.gl = this.gl;
+    this.emit('context', gl);
 
     // now resize and we are good to go!
     this.resize(this.width, this.height);
 };
 
 /**
- * Renders the stage to its webGL view
+ * Renders the object to its webGL view
  *
- * @param stage {Stage} the Stage element to be rendered
+ * @param object {DisplayObject} the object to be rendered
  */
-WebGLRenderer.prototype.render = function (stage) {
+WebGLRenderer.prototype.render = function (object) {
     // no point rendering if our context has been blown up!
     if (this.contextLost) {
         return;
     }
 
-    // if rendering a new stage clear the batches..
-    if (this.__stage !== stage) {
-        if (stage.interactive) {
-            stage.interactionManager.removeEvents();
-        }
-
-        // TODO make this work
-        // dont think this is needed any more?
-        this.__stage = stage;
-    }
-
     // update the scene graph
-    stage.updateTransform();
+    object.updateTransform();
 
     var gl = this.gl;
-
-    // interaction
-    if (stage._interactive) {
-        //need to add some events!
-        if (!stage._interactiveEventsAdded) {
-            stage._interactiveEventsAdded = true;
-            stage.interactionManager.setTarget(this);
-        }
-    }
-    else {
-        if (stage._interactiveEventsAdded) {
-            stage._interactiveEventsAdded = false;
-            stage.interactionManager.setTarget(this);
-        }
-    }
 
     // -- Does this need to be set every frame? -- //
     gl.viewport(0, 0, this.width, this.height);
@@ -308,13 +300,13 @@ WebGLRenderer.prototype.render = function (stage) {
             gl.clearColor(0, 0, 0, 0);
         }
         else {
-            gl.clearColor(stage.backgroundColorSplit[0],stage.backgroundColorSplit[1],stage.backgroundColorSplit[2], 1);
+            gl.clearColor(object.backgroundColorSplit[0], object.backgroundColorSplit[1], object.backgroundColorSplit[2], 1);
         }
 
-        gl.clear (gl.COLOR_BUFFER_BIT);
+        gl.clear(gl.COLOR_BUFFER_BIT);
     }
 
-    this.renderDisplayObject( stage, this.projection );
+    this.renderDisplayObject(object, this.projection);
 };
 
 /**
@@ -325,28 +317,28 @@ WebGLRenderer.prototype.render = function (stage) {
  * @param buffer {Array} a standard WebGL buffer
  */
 WebGLRenderer.prototype.renderDisplayObject = function (displayObject, projection, buffer) {
-    this.renderSession.blendModeManager.setBlendMode(CONST.blendModes.NORMAL);
+    this.blendModeManager.setBlendMode(CONST.blendModes.NORMAL);
 
     // reset the render session data..
-    this.renderSession.drawCount = 0;
+    this.drawCount = 0;
 
     // make sure to flip the Y if using a render texture..
-    this.renderSession.flipY = buffer ? -1 : 1;
+    this.flipY = buffer ? -1 : 1;
 
     // set the default projection
-    this.renderSession.projection = projection;
+    this.projection = projection;
 
     //set the default offset
-    this.renderSession.offset = this.offset;
+    this.offset = this.offset;
 
     // start the sprite batch
-    this.spriteBatch.begin(this.renderSession);
+    this.spriteBatch.begin(this);
 
     // start the filter manager
-    this.filterManager.begin(this.renderSession, buffer);
+    this.filterManager.begin(this, buffer);
 
     // render the scene!
-    displayObject._renderWebGL(this.renderSession);
+    displayObject.renderWebGL(this);
 
     // finish the sprite batch
     this.spriteBatch.end();
@@ -441,7 +433,7 @@ WebGLRenderer.prototype.handleContextLost = function (event) {
  * @private
  */
 WebGLRenderer.prototype.handleContextRestored = function () {
-    this.initContext();
+    this._initContext();
 
     // empty all the ol gl textures as they are useless now
     for (var key in utils.TextureCache) {
@@ -478,36 +470,36 @@ WebGLRenderer.prototype.destroy = function () {
     this.filterManager = null;
 
     this.gl = null;
-    this.renderSession = null;
 };
 
 /**
  * Maps Pixi blend modes to WebGL blend modes.
  *
+ * @private
  */
 WebGLRenderer.prototype.mapBlendModes = function () {
     var gl = this.gl;
 
-    if (!blendModesWebGL) {
-        blendModesWebGL = [];
+    if (!this.blendModes) {
+        this.blendModes = {};
 
-        blendModesWebGL[CONST.blendModes.NORMAL]        = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        blendModesWebGL[CONST.blendModes.ADD]           = [gl.SRC_ALPHA, gl.DST_ALPHA];
-        blendModesWebGL[CONST.blendModes.MULTIPLY]      = [gl.DST_COLOR, gl.ONE_MINUS_SRC_ALPHA];
-        blendModesWebGL[CONST.blendModes.SCREEN]        = [gl.SRC_ALPHA, gl.ONE];
-        blendModesWebGL[CONST.blendModes.OVERLAY]       = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        blendModesWebGL[CONST.blendModes.DARKEN]        = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        blendModesWebGL[CONST.blendModes.LIGHTEN]       = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        blendModesWebGL[CONST.blendModes.COLOR_DODGE]   = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        blendModesWebGL[CONST.blendModes.COLOR_BURN]    = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        blendModesWebGL[CONST.blendModes.HARD_LIGHT]    = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        blendModesWebGL[CONST.blendModes.SOFT_LIGHT]    = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        blendModesWebGL[CONST.blendModes.DIFFERENCE]    = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        blendModesWebGL[CONST.blendModes.EXCLUSION]     = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        blendModesWebGL[CONST.blendModes.HUE]           = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        blendModesWebGL[CONST.blendModes.SATURATION]    = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        blendModesWebGL[CONST.blendModes.COLOR]         = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
-        blendModesWebGL[CONST.blendModes.LUMINOSITY]    = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+        this.blendModes[CONST.blendModes.NORMAL]        = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+        this.blendModes[CONST.blendModes.ADD]           = [gl.SRC_ALPHA, gl.DST_ALPHA];
+        this.blendModes[CONST.blendModes.MULTIPLY]      = [gl.DST_COLOR, gl.ONE_MINUS_SRC_ALPHA];
+        this.blendModes[CONST.blendModes.SCREEN]        = [gl.SRC_ALPHA, gl.ONE];
+        this.blendModes[CONST.blendModes.OVERLAY]       = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+        this.blendModes[CONST.blendModes.DARKEN]        = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+        this.blendModes[CONST.blendModes.LIGHTEN]       = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+        this.blendModes[CONST.blendModes.COLOR_DODGE]   = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+        this.blendModes[CONST.blendModes.COLOR_BURN]    = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+        this.blendModes[CONST.blendModes.HARD_LIGHT]    = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+        this.blendModes[CONST.blendModes.SOFT_LIGHT]    = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+        this.blendModes[CONST.blendModes.DIFFERENCE]    = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+        this.blendModes[CONST.blendModes.EXCLUSION]     = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+        this.blendModes[CONST.blendModes.HUE]           = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+        this.blendModes[CONST.blendModes.SATURATION]    = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+        this.blendModes[CONST.blendModes.COLOR]         = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
+        this.blendModes[CONST.blendModes.LUMINOSITY]    = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
     }
 };
 
