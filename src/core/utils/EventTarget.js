@@ -36,6 +36,11 @@ function eventTarget(obj) {
     obj.emit = obj.dispatchEvent = function emit(eventName, data) {
         this._listeners = this._listeners || {};
 
+        // fast return when there are no listeners
+        if (!this._listeners[eventName]) {
+            return;
+        }
+
         //backwards compat with old method ".emit({ type: 'something' })"
         if (typeof eventName === 'object') {
             data = eventName;
@@ -48,26 +53,24 @@ function eventTarget(obj) {
         }
 
         //iterate the listeners
-        if (this._listeners && this._listeners[eventName]) {
-            var listeners = this._listeners[eventName].slice(0),
-                length = listeners.length,
-                fn = listeners[0],
-                i;
+        var listeners = this._listeners[eventName].slice(0),
+            length = listeners.length,
+            fn = listeners[0],
+            i;
 
-            for (i = 0; i < length; fn = listeners[++i]) {
-                //call the event listener
-                fn.call(this, data);
+        for (i = 0; i < length; fn = listeners[++i]) {
+            //call the event listener
+            fn.call(this, data);
 
-                //if "stopImmediatePropagation" is called, stop calling sibling events
-                if (data.stoppedImmediate) {
-                    return this;
-                }
-            }
-
-            //if "stopPropagation" is called then don't bubble the event
-            if (data.stopped) {
+            //if "stopImmediatePropagation" is called, stop calling sibling events
+            if (data.stoppedImmediate) {
                 return this;
             }
+        }
+
+        //if "stopPropagation" is called then don't bubble the event
+        if (data.stopped) {
+            return this;
         }
 
         //bubble this event up the scene graph
