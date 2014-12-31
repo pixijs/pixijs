@@ -1,4 +1,5 @@
-var Rectangle = require('./Rectangle');
+var Rectangle = require('./Rectangle'),
+    CONST = require('../../const');
 
 /**
  * The Ellipse object can be used to specify a hit area for displayObjects
@@ -36,10 +37,11 @@ function Ellipse(x, y, width, height) {
     this.height = height || 0;
 
     /**
-     * The type of the object, should be one of the Graphics type consts, Graphics.ELIP in this case
+     * The type of the object, mainly used to avoid `instanceof` checks
      *
      * @member {number}
      */
+    this.type = CONST.SHAPES.ELIP;
 }
 
 Ellipse.prototype.constructor = Ellipse;

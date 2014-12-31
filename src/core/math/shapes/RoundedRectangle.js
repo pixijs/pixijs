@@ -1,3 +1,5 @@
+var CONST = require('../../const');
+
 /**
  * The Rounded Rectangle object is an area defined by its position and has nice rounded corners, as indicated by its top-left corner point (x, y) and by its width and its height.
  *
@@ -41,10 +43,11 @@ function RoundedRectangle(x, y, width, height, radius) {
     this.radius = radius || 20;
 
     /**
-     * The type of the object, should be one of the Graphics type consts, Graphics.RRECT in this case
+     * The type of the object, mainly used to avoid `instanceof` checks
      *
      * @member {number}
      */
+    this.type = CONST.SHAPES.RREC;
 }
 
 RoundedRectangle.prototype.constructor = RoundedRectangle;

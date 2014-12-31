@@ -1,4 +1,5 @@
-var Rectangle = require('./Rectangle');
+var Rectangle = require('./Rectangle'),
+    CONST = require('../../const');
 
 /**
  * The Circle object can be used to specify a hit area for displayObjects
@@ -29,10 +30,11 @@ function Circle(x, y, radius) {
     this.radius = radius || 0;
 
     /**
-     * The type of the object, should be one of the Graphics type consts, Graphics.CIRC in this case
+     * The type of the object, mainly used to avoid `instanceof` checks
      *
      * @member {number}
      */
+    this.type = CONST.SHAPES.CIRC;
 }
 
 Circle.prototype.constructor = Circle;

@@ -130,5 +130,25 @@ module.exports = {
         backgroundColor: 0x000000,
         clearBeforeRender: true,
         preserveDrawingBuffer: false
+    },
+
+    /**
+     * Constants that identify shapes, mainly to prevent `instanceof` calls.
+     *
+     * @static
+     * @constant
+     * @property {object} SHAPES
+     * @property {object} SHAPES.POLY=0
+     * @property {object} SHAPES.RECT=1
+     * @property {object} SHAPES.CIRC=2
+     * @property {object} SHAPES.ELIP=3
+     * @property {object} SHAPES.RREC=4
+     */
+    SHAPES: {
+        POLY = 0;
+        RECT = 1;
+        CIRC = 2;
+        ELIP = 3;
+        RREC = 4;
     }
 };

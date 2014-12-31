@@ -95,7 +95,7 @@ function DisplayObject() {
     this.filterArea = null;
 
     /**
-     * cached sin rotation and cos rotation
+     * cached sin rotation
      *
      * @member {number}
      * @private
@@ -103,7 +103,7 @@ function DisplayObject() {
     this._sr = 0;
 
     /**
-     * cached sin rotation and cos rotation
+     * cached cos rotation
      *
      * @member {number}
      * @private
@@ -400,7 +400,7 @@ DisplayObject.prototype.getLocalBounds = function () {
 DisplayObject.prototype.generateTexture = function (resolution, scaleMode, renderer) {
     var bounds = this.getLocalBounds();
 
-    var renderTexture = new RenderTexture(bounds.width | 0, bounds.height | 0, renderer, scaleMode, resolution);
+    var renderTexture = new RenderTexture(renderer, bounds.width | 0, bounds.height | 0, renderer, scaleMode, resolution);
 
     _tempMatrix.tx = -bounds.x;
     _tempMatrix.ty = -bounds.y;
@@ -474,7 +474,7 @@ DisplayObject.prototype._generateCachedSprite = function () {
     var bounds = this.getLocalBounds();
 
     if (!this._cachedSprite) {
-        var renderTexture = new RenderTexture(bounds.width | 0, bounds.height | 0); //, renderer);
+        var renderTexture = new RenderTexture(renderer, bounds.width | 0, bounds.height | 0);
 
         this._cachedSprite = new Sprite(renderTexture);
         this._cachedSprite.worldTransform = this.worldTransform;

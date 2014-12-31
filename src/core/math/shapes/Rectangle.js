@@ -1,3 +1,5 @@
+var CONST = require('../../const');
+
 /**
  * the Rectangle object is an area defined by its position, as indicated by its top-left corner point (x, y) and by its width and its height.
  *
@@ -34,10 +36,11 @@ function Rectangle(x, y, width, height) {
     this.height = height || 0;
 
     /**
-     * The type of the object, should be one of the Graphics type consts, Graphics.RECT in this case
+     * The type of the object, mainly used to avoid `instanceof` checks
      *
      * @member {number}
      */
+    this.type = CONST.SHAPES.RECT;
 }
 
 Rectangle.prototype.constructor = Rectangle;

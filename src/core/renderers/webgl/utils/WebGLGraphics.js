@@ -1,6 +1,5 @@
 var utils = require('../../../utils'),
     math = require('../../../math'),
-    Graphics = require('../../../../primitives/Graphics'),
     WebGLGraphicsData = require('./WebGLGraphicsData');
 
 /**
@@ -122,7 +121,7 @@ WebGLGraphics.updateGraphics = function (graphics, gl) {
     for (i = webGL.lastIndex; i < graphics.graphicsData.length; i++) {
         var data = graphics.graphicsData[i];
 
-        if (data.type === Graphics.POLY) {
+        if (data.type === CONST.SHAPES.POLY) {
             // need to add the points the the graphics object..
             data.points = data.shape.points.slice();
             if (data.shape.closed) {
@@ -164,13 +163,13 @@ WebGLGraphics.updateGraphics = function (graphics, gl) {
         else {
             webGLData = WebGLGraphics.switchMode(webGL, 0);
 
-            if (data.type === Graphics.RECT) {
+            if (data.type === CONST.SHAPES.RECT) {
                 WebGLGraphics.buildRectangle(data, webGLData);
             }
-            else if (data.type === Graphics.CIRC || data.type === Graphics.ELIP) {
+            else if (data.type === CONST.SHAPES.CIRC || data.type === CONST.SHAPES.ELIP) {
                 WebGLGraphics.buildCircle(data, webGLData);
             }
-            else if (data.type === Graphics.RREC) {
+            else if (data.type === CONST.SHAPES.RREC) {
                 WebGLGraphics.buildRoundedRectangle(data, webGLData);
             }
         }
@@ -415,7 +414,7 @@ WebGLGraphics.buildCircle = function (graphicsData, webGLData) {
     var height;
 
     // TODO - bit hacky??
-    if (graphicsData.type === Graphics.CIRC) {
+    if (graphicsData.type === CONST.SHAPES.CIRC) {
         width = circleData.radius;
         height = circleData.radius;
     }

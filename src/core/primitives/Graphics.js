@@ -858,7 +858,7 @@ Graphics.prototype.updateLocalBounds = function () {
             var lineWidth = data.lineWidth;
             shape = data.shape;
 
-            if (type === Graphics.RECT || type === Graphics.RREC) {
+            if (type === core.CONST.SHAPES.RECT || type === core.CONST.SHAPES.RREC) {
                 x = shape.x - lineWidth/2;
                 y = shape.y - lineWidth/2;
                 w = shape.width + lineWidth;
@@ -870,7 +870,7 @@ Graphics.prototype.updateLocalBounds = function () {
                 minY = y < minY ? y : minY;
                 maxY = y + h > maxY ? y + h : maxY;
             }
-            else if (type === Graphics.CIRC) {
+            else if (type === core.CONST.SHAPES.CIRC) {
                 x = shape.x;
                 y = shape.y;
                 w = shape.radius + lineWidth/2;
@@ -882,7 +882,7 @@ Graphics.prototype.updateLocalBounds = function () {
                 minY = y - h < minY ? y - h : minY;
                 maxY = y + h > maxY ? y + h : maxY;
             }
-            else if (type === Graphics.ELIP) {
+            else if (type === core.CONST.SHAPES.ELIP) {
                 x = shape.x;
                 y = shape.y;
                 w = shape.width + lineWidth/2;
@@ -1018,7 +1018,7 @@ Graphics.prototype.drawShape = function (shape) {
 
     this.graphicsData.push(data);
 
-    if (data.type === Graphics.POLY) {
+    if (data.type === core.CONST.SHAPES.POLY) {
         data.shape.closed = this.filling;
         this.currentPath = data;
     }
@@ -1027,41 +1027,3 @@ Graphics.prototype.drawShape = function (shape) {
 
     return data;
 };
-
-/**
- * @static
- * @constant
- */
-Graphics.POLY = 0;
-
-/**
- * @static
- * @constant
- */
-Graphics.RECT = 1;
-
-/**
- * @static
- * @constant
- */
-Graphics.CIRC = 2;
-
-/**
- * @static
- * @constant
- */
-Graphics.ELIP = 3;
-
-/**
- * @static
- * @constant
- */
-Graphics.RREC = 4;
-
-// REFACTOR: Move these to their classes, move types to central location.
-core.math.Polygon.prototype.type = Graphics.POLY;
-core.math.Rectangle.prototype.type = Graphics.RECT;
-core.math.Circle.prototype.type = Graphics.CIRC;
-core.math.Ellipse.prototype.type = Graphics.ELIP;
-core.math.RoundedRectangle.prototype.type = Graphics.RREC;
-

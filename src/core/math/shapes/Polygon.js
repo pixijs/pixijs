@@ -1,4 +1,5 @@
-var Point = require('../Point');
+var Point = require('../Point'),
+    CONST = require('../../const');
 
 /**
  * @class
@@ -33,6 +34,13 @@ function Polygon(points) {
      * @member {Point[]}
      */
     this.points = points;
+
+    /**
+     * The type of the object, mainly used to avoid `instanceof` checks
+     *
+     * @member {number}
+     */
+    this.type = CONST.SHAPES.POLY;
 }
 
 Polygon.prototype.constructor = Polygon;
