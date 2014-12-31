@@ -18,6 +18,8 @@ var CanvasMaskManager = require('./utils/CanvasMaskManager'),
  * @param [options.clearBeforeRender=true] {boolean} This sets if the CanvasRenderer will clear the canvas or not before the new render pass.
  */
 function CanvasRenderer(width, height, options) {
+    utils.sayHello('Canvas');
+
     if (options) {
         for (var i in CONST.defaultRenderOptions) {
             if (typeof options[i] === 'undefined') {
@@ -27,11 +29,6 @@ function CanvasRenderer(width, height, options) {
     }
     else {
         options = CONST.defaultRenderOptions;
-    }
-
-    if (!defaultRenderer) {
-        utils.sayHello('Canvas');
-        defaultRenderer = this;
     }
 
     /**
@@ -183,7 +180,7 @@ CanvasRenderer.prototype.render = function (object) {
     this.context.globalAlpha = 1;
 
     this.currentBlendMode = CONST.blendModes.NORMAL;
-    this.context.globalCompositeOperation = blendModes[CONST.blendModes.NORMAL];
+    this.context.globalCompositeOperation = this.blendModes[CONST.blendModes.NORMAL];
 
     if (navigator.isCocoonJS && this.view.screencanvas) {
         this.context.fillStyle = 'black';

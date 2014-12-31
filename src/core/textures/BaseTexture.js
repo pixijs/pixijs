@@ -5,7 +5,7 @@ var utils = require('../utils'),
  * A texture stores the information that represents an image. All textures have a base texture.
  *
  * @class
- * @mixes EventTarget
+ * @mixes eventTarget
  * @namespace PIXI
  * @param source {string} the source object (image or canvas)
  * @param scaleMode {number} See {{#crossLink "PIXI/scaleModes:property"}}scaleModes{{/crossLink}} for possible values
@@ -71,28 +71,23 @@ function BaseTexture(source, scaleMode) {
     // used for webGL
 
     /**
-     * @member {Array}
-     * @private
-     */
-    this._glTextures = [];
-
-    /**
      *
      * Set this to true if a mipmap of this texture needs to be generated. This value needs to be set before the texture is used
      * Also the texture must be a power of two size to work
      *
-     * @member {{boolean}}
+     * @member {boolean}
      */
     this.mipmap = false;
 
-    // used for webGL texture updating...
-    // TODO - this needs to be addressed
-
     /**
-     * @member {object<number, boolean>}
+     * A map of renderer IDs to webgl textures
+     *
+     * @member {object<number, WebGLTexture>}
      * @private
      */
-    this._dirty = {};
+    this._glTextures = {};
+
+    this._needsUpdate = false;
 
     if (!source) {
         return;
@@ -102,7 +97,7 @@ function BaseTexture(source, scaleMode) {
         this.hasLoaded = true;
         this.width = this.source.naturalWidth || this.source.width;
         this.height = this.source.naturalHeight || this.source.height;
-        this.dirty();
+        this.needsUpdate = true;
     }
     else {
         var scope = this;
@@ -112,15 +107,13 @@ function BaseTexture(source, scaleMode) {
             scope.hasLoaded = true;
             scope.width = scope.source.naturalWidth || scope.source.width;
             scope.height = scope.source.naturalHeight || scope.source.height;
+            this.needsUpdate = true;
 
-            scope.dirty();
-
-            // add it to somewhere...
-            scope.dispatchEvent( { type: 'loaded', content: scope } );
+            scope.emit('loaded', scope);
         };
 
         this.source.onerror = function () {
-            scope.dispatchEvent( { type: 'error', content: scope } );
+            scope.emit('error', scope);
         };
     }
 
@@ -139,7 +132,22 @@ function BaseTexture(source, scaleMode) {
 BaseTexture.prototype.constructor = BaseTexture;
 module.exports = BaseTexture;
 
-utils.EventTarget.mixin(BaseTexture.prototype);
+utils.eventTarget.mixin(BaseTexture.prototype);
+
+Object.defineProperties(BaseTexture.prototype, {
+    needsUpdate: {
+        get: function () {
+            return this._needsUpdate;
+        },
+        set: function (val) {
+            this._needsUpdate = val;
+
+            if (val) {
+                this.emit('update', this);
+            }
+        }
+    }
+});
 
 /**
  * Destroys this base texture
@@ -159,7 +167,10 @@ BaseTexture.prototype.destroy = function () {
     }
     this.source = null;
 
-    this.unloadFromGPU();
+    // delete the webGL textures if any.
+    for (var i = 0; i < utils.webglRenderers.length; ++i) {
+        utils.webglRenderers[i].destroyTexture(this);
+    }
 };
 
 /**
@@ -169,42 +180,8 @@ BaseTexture.prototype.destroy = function () {
  */
 BaseTexture.prototype.updateSourceImage = function (newSrc) {
     this.hasLoaded = false;
-    this.source.src = null;
+
     this.source.src = newSrc;
-};
-
-/**
- * Sets all glTextures to be dirty.
- *
- */
-BaseTexture.prototype.dirty = function () {
-    for (var i = 0; i < this._glTextures.length; i++) {
-        this._dirty[i] = true;
-    }
-};
-
-/**
- * Removes the base texture from the GPU, useful for managing resources on the GPU.
- * Atexture is still 100% usable and will simply be reuploaded if there is a sprite on screen that is using it.
- *
- */
-BaseTexture.prototype.unloadFromGPU = function () {
-    this.dirty();
-
-    // delete the webGL textures if any.
-    for (var i = this._glTextures.length - 1; i >= 0; i--) {
-        var glTexture = this._glTextures[i];
-        var gl = glContexts[i];
-
-        if (gl && glTexture) {
-            gl.deleteTexture(glTexture);
-        }
-
-    }
-
-    this._glTextures.length = 0;
-
-    this.dirty();
 };
 
 /**
@@ -256,7 +233,7 @@ BaseTexture.fromImage = function (imageUrl, crossorigin, scaleMode) {
  */
 BaseTexture.fromCanvas = function (canvas, scaleMode) {
     if (!canvas._pixiId) {
-        canvas._pixiId = 'canvas_' + utils.TextureCacheIdGenerator++;
+        canvas._pixiId = 'canvas_' + utils.uuid();
     }
 
     var baseTexture = utils.BaseTextureCache[canvas._pixiId];

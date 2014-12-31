@@ -355,11 +355,6 @@ Shader.prototype.syncUniforms = function () {
 
                     uniform._init = true;
                 }
-                // if it has been initialized, check if dirty and needs update
-                else if (uniform.value.baseTexture._dirty[gl.id] !== false) {
-                    instances[gl.id].updateTexture(uniform.value.baseTexture);
-                }
-
                 break;
 
             default:

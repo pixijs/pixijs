@@ -8,12 +8,12 @@ var EventData = require('./EventData');
  * @example
  *      function MyEmitter() {}
  *
- *      EventTarget.mixin(MyEmitter.prototype);
+ *      eventTarget.mixin(MyEmitter.prototype);
  *
  *      var em = new MyEmitter();
  *      em.emit('eventName', 'some data', 'some more data', {}, null, ...);
  */
-function EventTarget(obj) {
+function eventTarget(obj) {
     /**
      * Return a list of assigned event listeners.
      *
@@ -162,11 +162,11 @@ function EventTarget(obj) {
 
 module.exports = {
     /**
-     * Mixes in the properties of the EventTarget prototype onto another object
+     * Mixes in the properties of the eventTarget prototype onto another object
      *
      * @param object {object} The obj to mix into
      */
     mixin: function mixin(obj) {
-        EventTarget(obj);
+        eventTarget(obj);
     }
 };

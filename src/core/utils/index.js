@@ -5,6 +5,7 @@ var CONST = require('../const');
  */
 var utils = module.exports = {
     _uid: 0,
+    _saidHello: false,
 
     /**
      * Gets the next uuid
@@ -104,13 +105,19 @@ var utils = module.exports = {
 
     /**
      * Logs out the version and renderer information for this running instance of PIXI.
-     * If you don't want to see this message you can set PIXI.utils.sayHello = false;
+     * If you don't want to see this message you can set `PIXI.utils._saidHello = true;`
+     * so the library thinks it already said it. Keep in mind that doing that will forever
+     * makes you a jerk face.
      *
      * @param {string} type - The string renderer type to log.
      * @constant
      * @static
      */
     sayHello: function (type) {
+        if (utils._saidHello) {
+            return;
+        }
+
         if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
             var args = [
                 '%c %c %c Pixi.js ' + CONST.VERSION + ' - ' + type + '  %c ' + ' %c ' + ' http://www.pixijs.com/  %c %c ♥%c♥%c♥ ',
@@ -131,7 +138,7 @@ var utils = module.exports = {
             console.log('Pixi.js ' + CONST.VERSION + ' - http://www.pixijs.com/'); //jshint ignore:line
         }
 
-        utils.sayHello = false;
+        utils._saidHello = true;
     },
 
     /**
@@ -166,13 +173,11 @@ var utils = module.exports = {
 
     PolyK:      require('./PolyK'),
     EventData:  require('./EventData'),
-    EventTarget: require('./EventTarget'),
+    eventTarget: require('./eventTarget'),
 
     // TODO: refactor out this
     AnimCache: {},
     FrameCache: {},
     TextureCache: {},
-    TextureCacheIdGenerator: 0,
-    BaseTextureCache: {},
-    BaseTextureCacheIdGenerator: 0
+    BaseTextureCache: {}
 };

@@ -8,9 +8,6 @@ var WebGLShaderManager = require('./utils/WebGLShaderManager'),
     utils = require('../../utils'),
     CONST = require('../../const');
 
-glContexts = []; // this is where we store the webGL contexts for easy access.
-instances = [];
-
 /**
  * The WebGLRenderer draws the scene and all its content onto a webGL enabled canvas. This renderer
  * should be used for browsers that support webGL. This Render works by automatically managing webGLBatchs.
@@ -30,6 +27,8 @@ instances = [];
  * @param [options.resolution=1] {number} the resolution of the renderer retina would be 2
  */
 function WebGLRenderer(width, height, options) {
+    utils.sayHello('webGL');
+
     if (options) {
         for (var i in CONST.defaultRenderOptions) {
             if (typeof options[i] === 'undefined') {
@@ -41,10 +40,7 @@ function WebGLRenderer(width, height, options) {
         options = CONST.defaultRenderOptions;
     }
 
-    if (!defaultRenderer) {
-        utils.sayHello('webGL');
-        defaultRenderer = this;
-    }
+    this.uuid = utils.uuid();
 
     /**
      * @member {number}
@@ -218,6 +214,8 @@ function WebGLRenderer(width, height, options) {
 
     this.blendModes = null;
 
+    utils.webglRenderers.push(this);
+
     // time init the context..
     this._initContext();
 
@@ -229,7 +227,7 @@ function WebGLRenderer(width, height, options) {
 WebGLRenderer.prototype.constructor = WebGLRenderer;
 module.exports = WebGLRenderer;
 
-utils.EventTarget.mixin(WebGLRenderer.prototype);
+utils.eventTarget.mixin(WebGLRenderer.prototype);
 
 Object.defineProperties(WebGLRenderer.prototype, {
     backgroundColor: {
@@ -256,11 +254,9 @@ WebGLRenderer.prototype._initContext = function () {
         throw new Error('This browser does not support webGL. Try using the canvas renderer');
     }
 
-    this.glContextId = gl.id = WebGLRenderer.glContextId ++;
-
-    glContexts[this.glContextId] = gl;
-
-    instances[this.glContextId] = this;
+    this.glContextId = WebGLRenderer.glContextId++;
+    gl.id = this.glContextId;
+    gl.renderer = this;
 
     // set up the default pixi settings..
     gl.disable(gl.DEPTH_TEST);
@@ -371,9 +367,11 @@ WebGLRenderer.prototype.resize = function (width, height) {
 /**
  * Updates and Creates a WebGL texture for the renderers context.
  *
- * @param texture {Texture} the texture to update
+ * @param texture {BaseTexture|Texture} the texture to update
  */
 WebGLRenderer.prototype.updateTexture = function (texture) {
+    texture = texture.baseTexture || texture;
+
     if (!texture.hasLoaded) {
         return;
     }
@@ -382,6 +380,7 @@ WebGLRenderer.prototype.updateTexture = function (texture) {
 
     if (!texture._glTextures[gl.id]) {
         texture._glTextures[gl.id] = gl.createTexture();
+        texture.on('update', this._boundUpdateTexture);
     }
 
     gl.bindTexture(gl.TEXTURE_2D, texture._glTextures[gl.id]);
@@ -410,9 +409,19 @@ WebGLRenderer.prototype.updateTexture = function (texture) {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
     }
 
-    texture._dirty[gl.id] = false;
-
     return  texture._glTextures[gl.id];
+};
+
+WebGLRenderer.prototype.destroyTexture = function (texture) {
+    texture = texture.baseTexture || texture;
+
+    if (!texture.hasLoaded) {
+        return;
+    }
+
+    if (texture._glTextures[this.gl.id]) {
+        this.gl.deleteTexture(texture._glTextures[this.gl.id]);
+    }
 };
 
 /**
@@ -452,8 +461,6 @@ WebGLRenderer.prototype.destroy = function () {
     // remove listeners
     this.view.removeEventListener('webglcontextlost', this.contextLostBound);
     this.view.removeEventListener('webglcontextrestored', this.contextRestoredBound);
-
-    glContexts[this.glContextId] = null;
 
     this.projection = null;
     this.offset = null;

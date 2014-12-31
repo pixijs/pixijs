@@ -32,13 +32,17 @@ var BaseTexture = require('./BaseTexture'),
  * @class
  * @extends Texture
  * @namespace PIXI
- * @param width {number} The width of the render texture
- * @param height {number} The height of the render texture
  * @param renderer {CanvasRenderer|WebGLRenderer} The renderer used for this RenderTexture
- * @param scaleMode {number} See {@link scaleModes} for possible values
- * @param resolution {number} The resolution of the texture being generated
+ * @param [width=100] {number} The width of the render texture
+ * @param [height=100] {number} The height of the render texture
+ * @param [scaleMode] {number} See {@link scaleModes} for possible values
+ * @param [resolution=1] {number} The resolution of the texture being generated
  */
-function RenderTexture(width, height, renderer, scaleMode, resolution) {
+function RenderTexture(renderer, width, height, scaleMode, resolution) {
+    if (!renderer) {
+        throw new Error('Unable to create RenderTexture, you must pass a renderer into the constructor.');
+    }
+
     /**
      * The with of the render texture
      *
@@ -100,11 +104,10 @@ function RenderTexture(width, height, renderer, scaleMode, resolution) {
      *
      * @member {CanvasRenderer|WebGLRenderer}
      */
-    this.renderer = renderer || defaultRenderer;
+    this.renderer = renderer;
 
     if (this.renderer.type === CONST.WEBGL_RENDERER) {
         var gl = this.renderer.gl;
-        this.baseTexture._dirty[gl.id] = false;
 
         this.textureBuffer = new FilterTexture(gl, this.width * this.resolution, this.height * this.resolution, this.baseTexture.scaleMode);
         this.baseTexture._glTextures[gl.id] =  this.textureBuffer.texture;

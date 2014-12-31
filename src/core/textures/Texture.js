@@ -1,5 +1,6 @@
 var BaseTexture = require('./BaseTexture'),
-    EventTarget = require('../utils/EventTarget'),
+    VideoBaseTexture = require('./VideoBaseTexture'),
+    eventTarget = require('../utils/eventTarget'),
     TextureUvs = require('../renderers/webgl/utils/TextureUvs'),
     math = require('../math'),
     utils = require('../utils');
@@ -9,7 +10,7 @@ var BaseTexture = require('./BaseTexture'),
  * to the display list directly. Instead use it as the texture for a Sprite. If no frame is provided then the whole image is used.
  *
  * @class
- * @mixes EventTarget
+ * @mixes eventTarget
  * @namespace PIXI
  * @param baseTexture {BaseTexture} The base texture source to create the texture from
  * @param [frame] {Rectangle} The rectangle frame of the texture to show
@@ -112,7 +113,18 @@ function Texture(baseTexture, frame, crop, trim) {
 Texture.prototype.constructor = Texture;
 module.exports = Texture;
 
-EventTarget.mixin(Texture.prototype);
+eventTarget.mixin(Texture.prototype);
+
+Object.defineProperties(BaseTexture.prototype, {
+    needsUpdate: {
+        get: function () {
+            return this.baseTexture.needsUpdate;
+        },
+        set: function (val) {
+            this.baseTexture.needsUpdate = val;
+        }
+    }
+});
 
 /**
  * Called when the base texture is loaded
@@ -246,18 +258,27 @@ Texture.fromFrame = function (frameId) {
 };
 
 /**
- * Helper function that creates a new a Texture based on the given canvas element.
+ * Helper function that creates a new Texture based on the given canvas element.
  *
  * @static
  * @param canvas {Canvas} The canvas element source of the texture
  * @param scaleMode {number} See {{#crossLink "PIXI/scaleModes:property"}}scaleModes{{/crossLink}} for possible values
- * @return Texture
+ * @return {Texture}
  */
 Texture.fromCanvas = function (canvas, scaleMode) {
-    var baseTexture = BaseTexture.fromCanvas(canvas, scaleMode);
+    return new Texture(BaseTexture.fromCanvas(canvas, scaleMode));
+};
 
-    return new Texture( baseTexture );
-
+/**
+ * Helper function that creates a new Texture based on the given video element.
+ *
+ * @static
+ * @param video {HTMLVideoElement}
+ * @param scaleMode {number} See {{#crossLink "PIXI/scaleModes:property"}}scaleModes{{/crossLink}} for possible values
+ * @return {Texture} A Texture
+ */
+Texture.fromVideo = function (video, scaleMode) {
+    return new Texture(VideoBaseTexture.baseTextureFromVideo(video, scaleMode));
 };
 
 /**

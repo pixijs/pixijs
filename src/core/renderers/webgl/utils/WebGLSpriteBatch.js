@@ -551,14 +551,8 @@ WebGLSpriteBatch.prototype.renderBatch = function (texture, size, startIndex) {
 
     var gl = this.gl;
 
-    // check if a texture is dirty..
-    if (texture._dirty[gl.id]) {
-        this.renderSession.renderer.updateTexture(texture);
-    }
-    else {
-        // bind the current texture
-        gl.bindTexture(gl.TEXTURE_2D, texture._glTextures[gl.id]);
-    }
+    // bind the current texture
+    gl.bindTexture(gl.TEXTURE_2D, texture._glTextures[gl.id]);
 
     // now draw those suckas!
     gl.drawElements(gl.TRIANGLES, size * 6, gl.UNSIGNED_SHORT, startIndex * 6 * 2);
