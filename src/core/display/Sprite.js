@@ -264,67 +264,6 @@ Sprite.prototype.getBounds = function (matrix) {
 };
 
 /**
- * Renders the object using the WebGL renderer
- *
- * @param renderer {WebGLRenderer} The renderer
- */
-Sprite.prototype.renderWebGL = function (renderer) {
-    // if the sprite is not visible or the alpha is 0 then no need to render this element
-    if (!this.visible || this.alpha <= 0) {
-        return;
-    }
-
-    var i, j;
-
-    // do a quick check to see if this element has a mask or a filter.
-    if (this._mask || this._filters) {
-        var spriteBatch = renderer.spriteBatch;
-
-        // push filter first as we need to ensure the stencil buffer is correct for any masking
-        if (this._filters) {
-            spriteBatch.flush();
-            renderer.filterManager.pushFilter(this._filterBlock);
-        }
-
-        if (this._mask) {
-            spriteBatch.stop();
-            renderer.maskManager.pushMask(this.mask, renderer);
-            spriteBatch.start();
-        }
-
-        // add this sprite to the batch
-        spriteBatch.render(this);
-
-        // now loop through the children and make sure they get rendered
-        for (i = 0, j = this.children.length; i < j; i++) {
-            this.children[i].renderWebGL(renderer);
-        }
-
-        // time to stop the sprite batch as either a mask element or a filter draw will happen next
-        spriteBatch.stop();
-
-        if (this._mask) {
-            renderer.maskManager.popMask(this._mask, renderer);
-        }
-
-        if (this._filters) {
-            renderer.filterManager.popFilter();
-        }
-
-        spriteBatch.start();
-    }
-    else {
-        renderer.spriteBatch.render(this);
-
-        // simple render children!
-        for (i = 0, j = this.children.length; i < j; ++i) {
-            this.children[i].renderWebGL(renderer);
-        }
-
-    }
-};
-
-/**
 * Renders the object using the Canvas renderer
 *
 * @param renderer {CanvasRenderer} The renderer

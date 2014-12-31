@@ -419,6 +419,7 @@ DisplayObjectContainer.prototype.getLocalBounds = function () {
  * @param renderer {WebGLRenderer} The renderer
  */
 DisplayObjectContainer.prototype.renderWebGL = function (renderer) {
+    // if the object is not visible or the alpha is 0 then no need to render this element
     if (!this.visible || this.alpha <= 0) {
         return;
     }
@@ -430,6 +431,7 @@ DisplayObjectContainer.prototype.renderWebGL = function (renderer) {
 
     var i, j;
 
+    // do a quick check to see if this element has a mask or a filter.
     if (this._mask || this._filters) {
         // push filter first as we need to ensure the stencil buffer is correct for any masking
         if (this._filters) {
@@ -443,11 +445,15 @@ DisplayObjectContainer.prototype.renderWebGL = function (renderer) {
             renderer.spriteBatch.start();
         }
 
-        // simple render children!
-        for (i = 0, j = this.children.length; i < j; ++i) {
+        // add this object to the batch, only rendered if it has a texture.
+        renderer.spriteBatch.render(this);
+
+        // now loop through the children and make sure they get rendered
+        for (i = 0, j = this.children.length; i < j; i++) {
             this.children[i].renderWebGL(renderer);
         }
 
+        // time to stop the sprite batch as either a mask element or a filter draw will happen next
         renderer.spriteBatch.stop();
 
         if (this._mask) {
@@ -461,10 +467,13 @@ DisplayObjectContainer.prototype.renderWebGL = function (renderer) {
         renderer.spriteBatch.start();
     }
     else {
+        renderer.spriteBatch.render(this);
+
         // simple render children!
-        for(i = 0, j = this.children.length; i < j; ++i) {
+        for (i = 0, j = this.children.length; i < j; ++i) {
             this.children[i].renderWebGL(renderer);
         }
+
     }
 };
 
@@ -506,10 +515,10 @@ DisplayObjectContainer.prototype._renderCachedSprite = function (renderer) {
     this._cachedSprite.worldAlpha = this.worldAlpha;
 
     if (renderer.gl) {
-        Sprite.prototype.renderWebGL.call(this._cachedSprite, renderer);
+        this._cachedSprite.renderWebGL(renderer);
     }
     else {
-        Sprite.prototype.renderCanvas.call(this._cachedSprite, renderer);
+        this._cachedSprite.renderCanvas(renderer);
     }
 };
 

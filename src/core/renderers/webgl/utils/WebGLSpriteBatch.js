@@ -163,7 +163,7 @@ WebGLSpriteBatch.prototype.setContext = function (gl) {
 };
 
 /**
- * @param renderSession {object} The RenderSession object
+ * @param renderer {WebGLRenderer} The renderer
  */
 WebGLSpriteBatch.prototype.begin = function (renderSession) {
     this.renderSession = renderSession;
@@ -182,9 +182,13 @@ WebGLSpriteBatch.prototype.end = function () {
  * @param sprite {Sprite} the sprite to render when using this spritebatch
  */
 WebGLSpriteBatch.prototype.render = function (sprite) {
+    if (!sprite.texture) {
+        return;
+    }
+
     var texture = sprite.texture;
 
-   //TODO set blend modes..
+    //TODO set blend modes..
     // check texture..
     if (this.currentBatchSize >= this.size) {
         this.flush();
