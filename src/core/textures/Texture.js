@@ -27,7 +27,7 @@ function Texture(baseTexture, frame, crop, trim) {
 
     if (!frame) {
         this.noFrame = true;
-        frame = new math.Rectangle(0,0,1,1);
+        frame = new math.Rectangle(0, 0, 1, 1);
     }
 
     if (baseTexture instanceof Texture) {

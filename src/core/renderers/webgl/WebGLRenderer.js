@@ -365,7 +365,7 @@ WebGLRenderer.prototype.resize = function (width, height) {
 };
 
 /**
- * Updates and Creates a WebGL texture for the renderers context.
+ * Updates and/or Creates a WebGL texture for the renderer's context.
  *
  * @param texture {BaseTexture|Texture} the texture to update
  */
@@ -399,7 +399,6 @@ WebGLRenderer.prototype.updateTexture = function (texture) {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, texture.scaleMode === CONST.scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
     }
 
-    // reguler...
     if (!texture._powerOf2) {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);

@@ -6,7 +6,7 @@ function WebGLGraphicsData(gl) {
     this.gl = gl;
 
     //TODO does this need to be split before uploding??
-    this.color = [0,0,0]; // color split!
+    this.color = [0, 0, 0]; // color split!
     this.points = [];
     this.indices = [];
     this.buffer = gl.createBuffer();
@@ -23,8 +23,8 @@ module.exports = WebGLGraphicsData;
  *
  */
 WebGLGraphicsData.prototype.reset = function () {
-    this.points = [];
-    this.indices = [];
+    this.points.length = 0;
+    this.indices.length = 0;
 };
 
 /**
