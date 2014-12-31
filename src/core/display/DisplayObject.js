@@ -1,6 +1,4 @@
 var math = require('../math'),
-    Sprite = require('./Sprite'),
-    RenderTexture = require('../textures/RenderTexture'),
     _tempMatrix = new math.Matrix();
 
 /**
@@ -140,14 +138,6 @@ function DisplayObject() {
      * @member {boolean}
      * @private
      */
-    this._cacheAsBitmap = false;
-
-    /**
-     * Cached internal flag.
-     *
-     * @member {boolean}
-     * @private
-     */
     this._cacheIsDirty = false;
 }
 
@@ -265,34 +255,6 @@ Object.defineProperties(DisplayObject.prototype, {
 
             this._filters = value;
         }
-    },
-
-    /**
-     * Set if this display object is cached as a bitmap.
-     * This basically takes a snap shot of the display object as it is at that moment. It can provide a performance benefit for complex static displayObjects.
-     * To remove simply set this property to 'null'
-     *
-     * @member {boolean}
-     * @memberof DisplayObject#
-     */
-    cacheAsBitmap: {
-        get: function () {
-            return this._cacheAsBitmap;
-        },
-        set: function (value) {
-            if (this._cacheAsBitmap === value) {
-                return;
-            }
-
-            if (value) {
-                this._generateCachedSprite();
-            }
-            else {
-                this._destroyCachedSprite();
-            }
-
-            this._cacheAsBitmap = value;
-        }
     }
 });
 
@@ -389,36 +351,6 @@ DisplayObject.prototype.getLocalBounds = function () {
 };
 
 /**
- * Useful function that returns a texture of the displayObject object that can then be used to create sprites
- * This can be quite useful if your displayObject is static / complicated and needs to be reused multiple times.
- *
- * @param resolution {Number} The resolution of the texture being generated
- * @param scaleMode {Number} See {{#crossLink "PIXI/scaleModes:property"}}PIXI.scaleModes{{/crossLink}} for possible values
- * @param renderer {CanvasRenderer|WebGLRenderer} The renderer used to generate the texture.
- * @return {Texture} a texture of the graphics object
- */
-DisplayObject.prototype.generateTexture = function (resolution, scaleMode, renderer) {
-    var bounds = this.getLocalBounds();
-
-    var renderTexture = new RenderTexture(renderer, bounds.width | 0, bounds.height | 0, renderer, scaleMode, resolution);
-
-    _tempMatrix.tx = -bounds.x;
-    _tempMatrix.ty = -bounds.y;
-
-    renderTexture.render(this, _tempMatrix);
-
-    return renderTexture;
-};
-
-/**
- * Generates and updates the cached sprite for this object.
- *
- */
-DisplayObject.prototype.updateCache = function () {
-    this._generateCachedSprite();
-};
-
-/**
  * Calculates the global position of the display object
  *
  * @param position {Point} The world origin to calculate from
@@ -445,77 +377,6 @@ DisplayObject.prototype.toLocal = function (position, from) {
     // don't need to update the lot
     this.displayObjectUpdateTransform();
     return this.worldTransform.applyInverse(position);
-};
-
-/**
- * Internal method.
- *
- * @param renderer {WebGLRenderer|CanvasRenderer} The renderer
- * @private
- */
-DisplayObject.prototype._renderCachedSprite = function (renderer) {
-    this._cachedSprite.worldAlpha = this.worldAlpha;
-
-    if (renderer.gl) {
-        Sprite.prototype.renderWebGL.call(this._cachedSprite, renderer);
-    }
-    else {
-        Sprite.prototype.renderCanvas.call(this._cachedSprite, renderer);
-    }
-};
-
-/**
- * Internal method.
- *
- * @private
- */
-DisplayObject.prototype._generateCachedSprite = function () {
-    this._cacheAsBitmap = false;
-    var bounds = this.getLocalBounds();
-
-    if (!this._cachedSprite) {
-        var renderTexture = new RenderTexture(renderer, bounds.width | 0, bounds.height | 0);
-
-        this._cachedSprite = new Sprite(renderTexture);
-        this._cachedSprite.worldTransform = this.worldTransform;
-    }
-    else {
-        this._cachedSprite.texture.resize(bounds.width | 0, bounds.height | 0);
-    }
-
-    // REMOVE filter!
-    var tempFilters = this._filters;
-    this._filters = null;
-
-    this._cachedSprite.filters = tempFilters;
-
-    _tempMatrix.tx = -bounds.x;
-    _tempMatrix.ty = -bounds.y;
-
-    this._cachedSprite.texture.render(this, _tempMatrix, true);
-
-    this._cachedSprite.anchor.x = -(bounds.x / bounds.width);
-    this._cachedSprite.anchor.y = -(bounds.y / bounds.height);
-
-    this._filters = tempFilters;
-
-    this._cacheAsBitmap = true;
-};
-
-/**
- * Destroys the cached sprite.
- *
- * @private
- */
-DisplayObject.prototype._destroyCachedSprite = function () {
-    if (!this._cachedSprite) {
-        return;
-    }
-
-    this._cachedSprite.texture.destroy(true);
-
-    // TODO could be object pooled!
-    this._cachedSprite = null;
 };
 
 /**
