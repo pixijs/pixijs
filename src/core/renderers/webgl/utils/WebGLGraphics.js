@@ -1,5 +1,6 @@
 var utils = require('../../../utils'),
     math = require('../../../math'),
+    CONST = require('../../../const'),
     WebGLGraphicsData = require('./WebGLGraphicsData');
 
 /**

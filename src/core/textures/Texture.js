@@ -45,8 +45,9 @@ function Texture(baseTexture, frame, crop, trim) {
      * The frame specifies the region of the base texture that this texture uses
      *
      * @member {Rectangle}
+     * @private
      */
-    this.frame = frame;
+    this._frame = frame;
 
     /**
      * The texture trim data.
@@ -103,7 +104,7 @@ function Texture(baseTexture, frame, crop, trim) {
         if (this.noFrame) {
             frame = new math.Rectangle(0, 0, baseTexture.width, baseTexture.height);
         }
-        this.setFrame(frame);
+        this.frame = frame;
     }
     else {
         baseTexture.addEventListener('loaded', this.onBaseTextureLoaded.bind(this));
@@ -123,6 +124,42 @@ Object.defineProperties(BaseTexture.prototype, {
         set: function (val) {
             this.baseTexture.needsUpdate = val;
         }
+    },
+
+    frame: {
+        get: function () {
+            return this._frame;
+        },
+        set: function (frame) {
+            this._frame = frame;
+
+            this.noFrame = false;
+
+            this.width = frame.width;
+            this.height = frame.height;
+
+            this.crop.x = frame.x;
+            this.crop.y = frame.y;
+            this.crop.width = frame.width;
+            this.crop.height = frame.height;
+
+            if (!this.trim && (frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height)) {
+                throw new Error('Texture Error: frame does not fit inside the base Texture dimensions ' + this);
+            }
+
+            this.valid = frame && frame.width && frame.height && this.baseTexture.source && this.baseTexture.hasLoaded;
+
+            if (this.trim) {
+                this.width = this.trim.width;
+                this.height = this.trim.height;
+                this._frame.width = this.trim.width;
+                this._frame.height = this.trim.height;
+            }
+
+            if (this.valid) {
+                this._updateUvs();
+            }
+        }
     }
 });
 
@@ -139,8 +176,6 @@ Texture.prototype.onBaseTextureLoaded = function () {
         this.frame = new math.Rectangle(0, 0, baseTexture.width, baseTexture.height);
     }
 
-    this.setFrame(this.frame);
-
     this.dispatchEvent( { type: 'update', content: this } );
 };
 
@@ -155,42 +190,6 @@ Texture.prototype.destroy = function (destroyBase) {
     }
 
     this.valid = false;
-};
-
-/**
- * Specifies the region of the baseTexture that this texture will use.
- *
- * @param frame {Rectangle} The frame of the texture to set it to
- */
-Texture.prototype.setFrame = function (frame) {
-    this.noFrame = false;
-
-    this.frame = frame;
-    this.width = frame.width;
-    this.height = frame.height;
-
-    this.crop.x = frame.x;
-    this.crop.y = frame.y;
-    this.crop.width = frame.width;
-    this.crop.height = frame.height;
-
-    if (!this.trim && (frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height)) {
-        throw new Error('Texture Error: frame does not fit inside the base Texture dimensions ' + this);
-    }
-
-    this.valid = frame && frame.width && frame.height && this.baseTexture.source && this.baseTexture.hasLoaded;
-
-    if (this.trim) {
-        this.width = this.trim.width;
-        this.height = this.trim.height;
-        this.frame.width = this.trim.width;
-        this.frame.height = this.trim.height;
-    }
-
-    if (this.valid) {
-        this._updateUvs();
-    }
-
 };
 
 /**

@@ -79,10 +79,24 @@ function Sprite(texture) {
      */
     this.shader = null;
 
-    this.texture = texture || Texture.EMPTY;
-
     this.renderable = true;
+
+    // call texture setter
+    this.texture = texture || Texture.EMPTY;
 }
+
+Sprite.prototype.destroy = function (destroyTexture, destroyBaseTexture) {
+    DisplayObjectContainer.prototype.destroy.call(this);
+
+    this.anchor = null;
+
+    if (destroyTexture) {
+        this._texture.destroy(destroyBaseTexture);
+    }
+
+    this._texture = null;
+    this.shader = null;
+};
 
 // constructor
 Sprite.prototype = Object.create(DisplayObjectContainer.prototype);

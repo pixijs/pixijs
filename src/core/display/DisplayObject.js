@@ -1,5 +1,4 @@
-var math = require('../math'),
-    _tempMatrix = new math.Matrix();
+var math = require('../math');
 
 /**
  * The base class for all objects that are rendered on the screen.

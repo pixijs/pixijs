@@ -1,7 +1,8 @@
 var math = require('../math'),
     DisplayObject = require('./DisplayObject'),
     RenderTexture = require('../textures/RenderTexture'),
-    Sprite = require('./Sprite');
+    Sprite = require('./Sprite'),
+    _tempMatrix = new math.Matrix();
 
 /**
  * A DisplayObjectContainer represents a collection of display objects.
@@ -29,6 +30,8 @@ function DisplayObjectContainer() {
      * @private
      */
     this._cacheAsBitmap = false;
+
+    this._cachedSprite = null;
 }
 
 // constructor
@@ -283,7 +286,7 @@ DisplayObjectContainer.prototype.removeChildren = function (beginIndex, endIndex
  * Generates and updates the cached sprite for this object.
  *
  */
-DisplayObjectContainer.prototype.updateCache = function () {
+DisplayObjectContainer.prototype.updateCachedSprite = function () {
     this._generateCachedSprite();
 };
 
@@ -528,7 +531,6 @@ DisplayObjectContainer.prototype._renderCachedSprite = function (renderer) {
  * @private
  */
 DisplayObjectContainer.prototype._generateCachedSprite = function () {
-    this._cacheAsBitmap = false;
     var bounds = this.getLocalBounds();
 
     if (!this._cachedSprite) {
@@ -541,7 +543,6 @@ DisplayObjectContainer.prototype._generateCachedSprite = function () {
         this._cachedSprite.texture.resize(bounds.width | 0, bounds.height | 0);
     }
 
-    // REMOVE filter!
     var tempFilters = this._filters;
     this._filters = null;
 
@@ -556,8 +557,6 @@ DisplayObjectContainer.prototype._generateCachedSprite = function () {
     this._cachedSprite.anchor.y = -(bounds.y / bounds.height);
 
     this._filters = tempFilters;
-
-    this._cacheAsBitmap = true;
 };
 
 /**
@@ -570,8 +569,7 @@ DisplayObjectContainer.prototype._destroyCachedSprite = function () {
         return;
     }
 
-    this._cachedSprite.texture.destroy(true);
-
-    // TODO could be object pooled!
+    // TODO: Pool this sprite
+    this._cachedSprite.destroy(true, true);
     this._cachedSprite = null;
 };

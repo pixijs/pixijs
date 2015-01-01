@@ -145,10 +145,10 @@ module.exports = {
      * @property {object} SHAPES.RREC=4
      */
     SHAPES: {
-        POLY = 0;
-        RECT = 1;
-        CIRC = 2;
-        ELIP = 3;
-        RREC = 4;
+        POLY: 0,
+        RECT: 1,
+        CIRC: 2,
+        ELIP: 3,
+        RREC: 4
     }
 };
