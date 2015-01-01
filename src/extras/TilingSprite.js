@@ -107,28 +107,31 @@ Object.defineProperties(TilingSprite.prototype, {
         set: function (value) {
             this._height = value;
         }
+    },
+
+    texture: {
+        get: function () {
+            return this._texture;
+        },
+        set: function (value) {
+            if (this._texture === value) {
+                return;
+            }
+
+            this._texture = value;
+            this.refreshTexture = true;
+            this.cachedTint = 0xFFFFFF;
+        }
     }
 });
 
-TilingSprite.prototype.setTexture = function (texture) {
-    if (this.texture === texture) {
-        return;
-    }
-
-    this.texture = texture;
-
-    this.refreshTexture = true;
-
-    this.cachedTint = 0xFFFFFF;
-};
-
 /**
  * Renders the object using the WebGL renderer
-*
- * @param renderSession {RenderSession}
+ *
+ * @param renderer {WebGLRenderer}
  * @private
  */
-TilingSprite.prototype._renderWebGL = function (renderSession) {
+TilingSprite.prototype.renderWebGL = function (renderer) {
     if (!this.visible || this.alpha <= 0) {
         return;
     }
@@ -136,14 +139,14 @@ TilingSprite.prototype._renderWebGL = function (renderSession) {
     var i, j;
 
     if (this._mask) {
-        renderSession.spriteBatch.stop();
-        renderSession.maskManager.pushMask(this.mask, renderSession);
-        renderSession.spriteBatch.start();
+        renderer.spriteBatch.stop();
+        renderer.maskManager.pushMask(this.mask, renderer);
+        renderer.spriteBatch.start();
     }
 
     if (this._filters) {
-        renderSession.spriteBatch.flush();
-        renderSession.filterManager.pushFilter(this._filterBlock);
+        renderer.spriteBatch.flush();
+        renderer.filterManager.pushFilter(this._filterBlock);
     }
 
 
@@ -153,47 +156,47 @@ TilingSprite.prototype._renderWebGL = function (renderSession) {
 
         if (this.tilingTexture && this.tilingTexture.needsUpdate) {
             //TODO - tweaking
-            updateWebGLTexture(this.tilingTexture.baseTexture, renderSession.gl);
+            updateWebGLTexture(this.tilingTexture.baseTexture, renderer.gl);
             this.tilingTexture.needsUpdate = false;
            // this.tilingTexture._uvs = null;
         }
     }
     else {
-        renderSession.spriteBatch.renderTilingSprite(this);
+        renderer.spriteBatch.renderTilingSprite(this);
     }
     // simple render children!
     for (i=0,j=this.children.length; i<j; i++) {
-        this.children[i]._renderWebGL(renderSession);
+        this.children[i]._renderWebGL(renderer);
     }
 
-    renderSession.spriteBatch.stop();
+    renderer.spriteBatch.stop();
 
     if (this._filters) {
-        renderSession.filterManager.popFilter();
+        renderer.filterManager.popFilter();
     }
 
     if (this._mask) {
-        renderSession.maskManager.popMask(this._mask, renderSession);
+        renderer.maskManager.popMask(this._mask, renderer);
     }
 
-    renderSession.spriteBatch.start();
+    renderer.spriteBatch.start();
 };
 
 /**
  * Renders the object using the Canvas renderer
-*
- * @param renderSession {RenderSession}
+ *
+ * @param renderer {CanvasRenderer}
  * @private
  */
-TilingSprite.prototype._renderCanvas = function (renderSession) {
+TilingSprite.prototype.renderCanvas = function (renderer) {
     if (!this.visible || this.alpha <= 0) {
         return;
     }
 
-    var context = renderSession.context;
+    var context = renderer.context;
 
     if (this._mask) {
-        renderSession.maskManager.pushMask(this._mask, context);
+        renderer.maskManager.pushMask(this._mask, context);
     }
 
     context.globalAlpha = this.worldAlpha;
@@ -202,7 +205,7 @@ TilingSprite.prototype._renderCanvas = function (renderSession) {
 
     var i,j;
 
-    var resolution = renderSession.resolution;
+    var resolution = renderer.resolution;
 
     context.setTransform(transform.a * resolution,
                          transform.b * resolution,
@@ -223,9 +226,9 @@ TilingSprite.prototype._renderCanvas = function (renderSession) {
     }
 
     // check blend mode
-    if (this.blendMode !== renderSession.currentBlendMode) {
-        renderSession.currentBlendMode = this.blendMode;
-        context.globalCompositeOperation = blendModesCanvas[renderSession.currentBlendMode];
+    if (this.blendMode !== renderer.currentBlendMode) {
+        renderer.currentBlendMode = this.blendMode;
+        context.globalCompositeOperation = blendModesCanvas[renderer.currentBlendMode];
     }
 
     var tilePosition = this.tilePosition;
@@ -249,11 +252,11 @@ TilingSprite.prototype._renderCanvas = function (renderSession) {
     context.translate(-tilePosition.x + (this.anchor.x * this._width), -tilePosition.y + (this.anchor.y * this._height));
 
     if (this._mask) {
-        renderSession.maskManager.popMask(renderSession.context);
+        renderer.maskManager.popMask(renderer.context);
     }
 
     for (i = 0, j = this.children.length; i < j; ++i) {
-        this.children[i]._renderCanvas(renderSession);
+        this.children[i]._renderCanvas(renderer);
     }
 };
 
@@ -334,8 +337,6 @@ TilingSprite.prototype.getBounds = function () {
     return bounds;
 };
 
-
-
 /**
  * When the texture is updated, this event will fire to update the scale and frame
  *
@@ -345,7 +346,6 @@ TilingSprite.prototype.getBounds = function () {
 TilingSprite.prototype.onTextureUpdate = function () {
    // overriding the sprite version of this!
 };
-
 
 /**
  *

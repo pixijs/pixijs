@@ -10,7 +10,7 @@ var Strip = require('./Strip');
  *
  */
 function Rope(texture, points) {
-    Strip.call( this, texture );
+    Strip.call(this, texture);
     this.points = points;
 
     this.vertices = new Float32Array(points.length * 4);

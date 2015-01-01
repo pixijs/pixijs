@@ -147,6 +147,10 @@ Object.defineProperties(Sprite.prototype, {
             return  this._texture;
         },
         set: function (value) {
+            if (this._texture === value) {
+                return;
+            }
+
             this._texture = value;
             this.cachedTint = 0xFFFFFF;
 

@@ -65,7 +65,13 @@ Strip.prototype = Object.create(core.DisplayObjectContainer.prototype);
 Strip.prototype.constructor = Strip;
 module.exports = Strip;
 
-Strip.prototype._renderWebGL = function (renderSession) {
+/**
+ * Renders the object using the WebGL renderer
+ *
+ * @param renderer {WebGLRenderer}
+ * @private
+ */
+Strip.prototype.renderWebGL = function (renderer) {
     // if the sprite is not visible or the alpha is 0 then no need to render this element
     if (!this.visible || this.alpha <= 0) {
         return;
@@ -73,27 +79,27 @@ Strip.prototype._renderWebGL = function (renderSession) {
 
     // render triangle strip..
 
-    renderSession.spriteBatch.stop();
+    renderer.spriteBatch.stop();
 
     // init! init!
     if (!this._vertexBuffer) {
-        this._initWebGL(renderSession);
+        this._initWebGL(renderer);
     }
 
-    renderSession.shaderManager.setShader(renderSession.shaderManager.stripShader);
+    renderer.shaderManager.setShader(renderer.shaderManager.stripShader);
 
-    this._renderStrip(renderSession);
+    this._renderStrip(renderer);
 
-    ///renderSession.shaderManager.activateDefaultShader();
+    ///renderer.shaderManager.activateDefaultShader();
 
-    renderSession.spriteBatch.start();
+    renderer.spriteBatch.start();
 
     //TODO check culling
 };
 
-Strip.prototype._initWebGL = function (renderSession) {
+Strip.prototype._initWebGL = function (renderer) {
     // build the strip!
-    var gl = renderSession.gl;
+    var gl = renderer.gl;
 
     this._vertexBuffer = gl.createBuffer();
     this._indexBuffer = gl.createBuffer();
@@ -113,17 +119,17 @@ Strip.prototype._initWebGL = function (renderSession) {
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW);
 };
 
-Strip.prototype._renderStrip = function (renderSession) {
-    var gl = renderSession.gl;
-    var projection = renderSession.projection,
-        offset = renderSession.offset,
-        shader = renderSession.shaderManager.stripShader;
+Strip.prototype._renderStrip = function (renderer) {
+    var gl = renderer.gl;
+    var projection = renderer.projection,
+        offset = renderer.offset,
+        shader = renderer.shaderManager.stripShader;
 
     var drawMode = this.drawMode === Strip.DrawModes.TRIANGLE_STRIP ? gl.TRIANGLE_STRIP : gl.TRIANGLES;
 
     // gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mat4Real);
 
-    renderSession.blendModeManager.setBlendMode(this.blendMode);
+    renderer.blendModeManager.setBlendMode(this.blendMode);
 
 
     // set uniforms
@@ -146,7 +152,7 @@ Strip.prototype._renderStrip = function (renderSession) {
 
         // check if a texture is dirty..
         if (this.texture.baseTexture._dirty[gl.id]) {
-            renderSession.renderer.updateTexture(this.texture.baseTexture);
+            renderer.updateTexture(this.texture.baseTexture);
         }
         else {
             // bind the current texture
@@ -174,7 +180,7 @@ Strip.prototype._renderStrip = function (renderSession) {
 
         // check if a texture is dirty..
         if (this.texture.baseTexture._dirty[gl.id]) {
-            renderSession.renderer.updateTexture(this.texture.baseTexture);
+            renderer.updateTexture(this.texture.baseTexture);
         }
         else {
             gl.bindTexture(gl.TEXTURE_2D, this.texture.baseTexture._glTextures[gl.id]);
@@ -193,14 +199,18 @@ Strip.prototype._renderStrip = function (renderSession) {
 
 };
 
-
-
-Strip.prototype._renderCanvas = function (renderSession) {
-    var context = renderSession.context;
+/**
+ * Renders the object using the Canvas renderer
+ *
+ * @param renderer {CanvasRenderer}
+ * @private
+ */
+Strip.prototype._renderCanvas = function (renderer) {
+    var context = renderer.context;
 
     var transform = this.worldTransform;
 
-    if (renderSession.roundPixels) {
+    if (renderer.roundPixels) {
         context.setTransform(transform.a, transform.b, transform.c, transform.d, transform.tx | 0, transform.ty | 0);
     }
     else {
