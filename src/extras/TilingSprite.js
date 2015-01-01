@@ -129,7 +129,6 @@ Object.defineProperties(TilingSprite.prototype, {
  * Renders the object using the WebGL renderer
  *
  * @param renderer {WebGLRenderer}
- * @private
  */
 TilingSprite.prototype.renderWebGL = function (renderer) {
     if (!this.visible || this.alpha <= 0) {
@@ -166,7 +165,7 @@ TilingSprite.prototype.renderWebGL = function (renderer) {
     }
     // simple render children!
     for (i=0,j=this.children.length; i<j; i++) {
-        this.children[i]._renderWebGL(renderer);
+        this.children[i].renderWebGL(renderer);
     }
 
     renderer.spriteBatch.stop();
@@ -186,7 +185,6 @@ TilingSprite.prototype.renderWebGL = function (renderer) {
  * Renders the object using the Canvas renderer
  *
  * @param renderer {CanvasRenderer}
- * @private
  */
 TilingSprite.prototype.renderCanvas = function (renderer) {
     if (!this.visible || this.alpha <= 0) {
@@ -256,7 +254,7 @@ TilingSprite.prototype.renderCanvas = function (renderer) {
     }
 
     for (i = 0, j = this.children.length; i < j; ++i) {
-        this.children[i]._renderCanvas(renderer);
+        this.children[i].renderCanvas(renderer);
     }
 };
 

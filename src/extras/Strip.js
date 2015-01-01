@@ -69,7 +69,6 @@ module.exports = Strip;
  * Renders the object using the WebGL renderer
  *
  * @param renderer {WebGLRenderer}
- * @private
  */
 Strip.prototype.renderWebGL = function (renderer) {
     // if the sprite is not visible or the alpha is 0 then no need to render this element
@@ -203,9 +202,8 @@ Strip.prototype._renderStrip = function (renderer) {
  * Renders the object using the Canvas renderer
  *
  * @param renderer {CanvasRenderer}
- * @private
  */
-Strip.prototype._renderCanvas = function (renderer) {
+Strip.prototype.renderCanvas = function (renderer) {
     var context = renderer.context;
 
     var transform = this.worldTransform;

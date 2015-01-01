@@ -612,11 +612,9 @@ Graphics.prototype.generateTexture = function (resolution, scaleMode) {
 /**
  * Renders the object using the WebGL renderer
  *
- * @method _renderWebGL
- * @param renderSession {RenderSession}
- * @private
+ * @param renderer {WebGLRenderer}
  */
-Graphics.prototype._renderWebGL = function (renderSession) {
+Graphics.prototype.renderWebGL = function (renderer) {
     // if the sprite is not visible or the alpha is 0 then no need to render this element
     if (!this.visible || this.alpha <= 0 || this.isMask === true) {
         return;
@@ -635,29 +633,29 @@ Graphics.prototype._renderWebGL = function (renderSession) {
 
         this._cachedSprite.worldAlpha = this.worldAlpha;
 
-        core.Sprite.prototype._renderWebGL.call(this._cachedSprite, renderSession);
+        core.Sprite.prototype.renderWebGL.call(this._cachedSprite, renderer);
 
         return;
     }
     else {
-        renderSession.spriteBatch.stop();
-        renderSession.blendModeManager.setBlendMode(this.blendMode);
+        renderer.spriteBatch.stop();
+        renderer.blendModeManager.setBlendMode(this.blendMode);
 
         if (this._mask) {
-            renderSession.maskManager.pushMask(this._mask, renderSession);
+            renderer.maskManager.pushMask(this._mask, renderer);
         }
 
         if (this._filters) {
-            renderSession.filterManager.pushFilter(this._filterBlock);
+            renderer.filterManager.pushFilter(this._filterBlock);
         }
 
         // check blend mode
-        if (this.blendMode !== renderSession.spriteBatch.currentBlendMode) {
-            renderSession.spriteBatch.currentBlendMode = this.blendMode;
+        if (this.blendMode !== renderer.spriteBatch.currentBlendMode) {
+            renderer.spriteBatch.currentBlendMode = this.blendMode;
 
-            var blendModeWebGL = blendModesWebGL[renderSession.spriteBatch.currentBlendMode];
+            var blendModeWebGL = blendModesWebGL[renderer.spriteBatch.currentBlendMode];
 
-            renderSession.spriteBatch.gl.blendFunc(blendModeWebGL[0], blendModeWebGL[1]);
+            renderer.spriteBatch.gl.blendFunc(blendModeWebGL[0], blendModeWebGL[1]);
         }
 
         // check if the webgl graphic needs to be updated
@@ -666,42 +664,41 @@ Graphics.prototype._renderWebGL = function (renderSession) {
             this.glDirty = false;
         }
 
-        core.WebGLGraphics.renderGraphics(this, renderSession);
+        core.WebGLGraphics.renderGraphics(this, renderer);
 
         // only render if it has children!
         if (this.children.length) {
-            renderSession.spriteBatch.start();
+            renderer.spriteBatch.start();
 
              // simple render children!
             for (var i = 0, j = this.children.length; i < j; ++i) {
-                this.children[i]._renderWebGL(renderSession);
+                this.children[i].renderWebGL(renderer);
             }
 
-            renderSession.spriteBatch.stop();
+            renderer.spriteBatch.stop();
         }
 
         if (this._filters) {
-            renderSession.filterManager.popFilter();
+            renderer.filterManager.popFilter();
         }
 
         if (this._mask) {
-            renderSession.maskManager.popMask(this.mask, renderSession);
+            renderer.maskManager.popMask(this.mask, renderer);
         }
 
-        renderSession.drawCount++;
+        renderer.drawCount++;
 
-        renderSession.spriteBatch.start();
+        renderer.spriteBatch.start();
     }
 };
 
 /**
  * Renders the object using the Canvas renderer
  *
- * @method _renderCanvas
- * @param renderSession {RenderSession}
+ * @param renderer {CanvasRenderer}
  * @private
  */
-Graphics.prototype._renderCanvas = function (renderSession) {
+Graphics.prototype.renderCanvas = function (renderer) {
     // if the sprite is not visible or the alpha is 0 then no need to render this element
     if (!this.visible || this.alpha <= 0 || this.isMask === true) {
         return;
@@ -720,24 +717,24 @@ Graphics.prototype._renderCanvas = function (renderSession) {
 
         this._cachedSprite.alpha = this.alpha;
 
-        core.Sprite.prototype._renderCanvas.call(this._cachedSprite, renderSession);
+        core.Sprite.prototype.renderCanvas.call(this._cachedSprite, renderer);
 
         return;
     }
     else {
-        var context = renderSession.context;
+        var context = renderer.context;
         var transform = this.worldTransform;
 
-        if (this.blendMode !== renderSession.currentBlendMode) {
-            renderSession.currentBlendMode = this.blendMode;
-            context.globalCompositeOperation = blendModesCanvas[renderSession.currentBlendMode];
+        if (this.blendMode !== renderer.currentBlendMode) {
+            renderer.currentBlendMode = this.blendMode;
+            context.globalCompositeOperation = blendModesCanvas[renderer.currentBlendMode];
         }
 
         if (this._mask) {
-            renderSession.maskManager.pushMask(this._mask, renderSession);
+            renderer.maskManager.pushMask(this._mask, renderer);
         }
 
-        var resolution = renderSession.resolution;
+        var resolution = renderer.resolution;
         context.setTransform(
             transform.a * resolution,
             transform.b * resolution,
@@ -750,11 +747,11 @@ Graphics.prototype._renderCanvas = function (renderSession) {
         core.CanvasGraphics.renderGraphics(this, context);
 
         for (var i = 0, j = this.children.length; i < j; ++i) {
-            this.children[i]._renderCanvas(renderSession);
+            this.children[i].renderCanvas(renderer);
         }
 
         if (this._mask) {
-            renderSession.maskManager.popMask(renderSession);
+            renderer.maskManager.popMask(renderer);
         }
     }
 };

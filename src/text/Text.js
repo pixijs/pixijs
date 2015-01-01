@@ -283,35 +283,33 @@ Text.prototype.updateTexture = function () {
 /**
  * Renders the object using the WebGL renderer
 *
- * @param renderSession {RenderSession}
- * @private
+ * @param renderer {WebGLRenderer}
  */
-Text.prototype._renderWebGL = function (renderSession) {
+Text.prototype.renderWebGL = function (renderer) {
     if (this.dirty) {
-        this.resolution = renderSession.resolution;
+        this.resolution = renderer.resolution;
 
         this.updateText();
         this.dirty = false;
     }
 
-    core.Sprite.prototype._renderWebGL.call(this, renderSession);
+    core.Sprite.prototype.renderWebGL.call(this, renderer);
 };
 
 /**
  * Renders the object using the Canvas renderer
 *
- * @param renderSession {RenderSession}
- * @private
+ * @param renderer {CanvasRenderer}
  */
-Text.prototype._renderCanvas = function (renderSession) {
+Text.prototype.renderCanvas = function (renderer) {
     if (this.dirty) {
-        this.resolution = renderSession.resolution;
+        this.resolution = renderer.resolution;
 
         this.updateText();
         this.dirty = false;
     }
 
-    core.Sprite.prototype._renderCanvas.call(this, renderSession);
+    core.Sprite.prototype.renderCanvas.call(this, renderer);
 };
 
 /**
