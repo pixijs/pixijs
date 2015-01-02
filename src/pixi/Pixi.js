@@ -206,7 +206,7 @@ PIXI.sayHello = function (type)
     }
     else if (window['console'])
     {
-        console.log('Pixi.js ' + PIXI.VERSION + ' - http://www.pixijs.com/');
+        console.log('Pixi.js ' + PIXI.VERSION + ' - ' + type + ' - http://www.pixijs.com/');
     }
 
     PIXI.dontSayHello = true;
