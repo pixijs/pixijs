@@ -106,7 +106,7 @@ MovieClip.prototype.gotoAndStop = function (frameNumber) {
     this.playing = false;
     this.currentFrame = frameNumber;
 
-    var round = (this.currentFrame + 0.5) | 0;
+    var round = Math.round(this.currentFrame);
     this.setTexture(this.textures[round % this.textures.length]);
 };
 
@@ -134,12 +134,23 @@ MovieClip.prototype.updateTransform = function () {
 
     this.currentFrame += this.animationSpeed;
 
-    var round = (this.currentFrame + 0.5) | 0;
+    var round = Math.round(this.currentFrame);
 
-    this.currentFrame = this.currentFrame % this.textures.length;
+    if (round < 0) {
+        if (this.loop) {
+            this.currentFrame += this.textures.length;
+            this.texture = this.textures[this.currentFrame];
+        }
+        else {
+            this.gotoAndStop(0);
 
-    if (this.loop || round < this.textures.length) {
-        this.setTexture(this.textures[round % this.textures.length]);
+            if (this.onComplete) {
+                this.onComplete();
+            }
+        }
+    }
+    else if (this.loop || round < this.textures.length) {
+        this.texture = this.textures[round % this.textures.length];
     }
     else if (round >= this.textures.length) {
         this.gotoAndStop(this.textures.length - 1);
