@@ -4,7 +4,7 @@ var AbstractFilter = require('./AbstractFilter'),
 
 /**
  * The BlurFilter applies a Gaussian blur to an object.
- * The strength of the blur can be set for x- and y-axis separately (always relative to the stage).
+ * The strength of the blur can be set for x- and y-axis separately.
  *
  * @class
  * @extends AbstractFilter
