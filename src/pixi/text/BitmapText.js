@@ -47,6 +47,13 @@ PIXI.BitmapText = function(text, style)
      */
     this._pool = [];
 
+    /**
+     * @property style
+     * @type Object
+     * @readOnly
+     */
+    this.style = {};
+
     this.setText(text);
     this.setStyle(style);
     this.updateText();
@@ -62,6 +69,22 @@ PIXI.BitmapText = function(text, style)
 // constructor
 PIXI.BitmapText.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
 PIXI.BitmapText.prototype.constructor = PIXI.BitmapText;
+
+/**
+ * The tint of the BitmapText object
+ *
+ * @property tint
+ * @type Number
+ */
+Object.defineProperty(PIXI.BitmapText.prototype, 'tint', {
+    get: function() {
+        return this._tint;
+    },
+    set: function(value) {
+        this._tint = value;
+        this.dirty = true;
+    }
+});
 
 /**
  * Set the text string to be rendered.
@@ -85,8 +108,12 @@ PIXI.BitmapText.prototype.setText = function(text)
  */
 PIXI.BitmapText.prototype.setStyle = function(style)
 {
-    style = style || {};
-    style.align = style.align || 'left';
+    if(!style || typeof style !== 'object') return;
+
+    style.align = style.align || this.style.align || 'left';
+    style.font = style.font || this.style.font;
+
+    // Store the updated style definition
     this.style = style;
 
     var font = style.font.split(' ');
@@ -94,7 +121,6 @@ PIXI.BitmapText.prototype.setStyle = function(style)
     this.fontSize = font.length >= 2 ? parseInt(font[font.length - 2], 10) : PIXI.BitmapText.fonts[this.fontName].size;
 
     this.dirty = true;
-    this.tint = style.tint;
 };
 
 /**
