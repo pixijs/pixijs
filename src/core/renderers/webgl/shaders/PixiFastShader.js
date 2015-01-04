@@ -14,11 +14,12 @@ function PixiFastShader(gl) {
         // fragment shader
         [
             'attribute vec2 aVertexPosition;',
+            'attribute vec2 aTextureCoord;',
+            'attribute vec4 aColor;',
+
             'attribute vec2 aPositionCoord;',
             'attribute vec2 aScale;',
             'attribute float aRotation;',
-            'attribute vec2 aTextureCoord;',
-            'attribute float aColor;',
 
             'uniform vec2 projectionVector;',
             'uniform vec2 offsetVector;',

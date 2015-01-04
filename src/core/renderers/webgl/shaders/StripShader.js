@@ -12,6 +12,7 @@ function StripShader(gl) {
         [
             'attribute vec2 aVertexPosition;',
             'attribute vec2 aTextureCoord;',
+            // 'attribute vec4 aColor;',
 
             'uniform mat3 translationMatrix;',
             'uniform vec2 projectionVector;',
