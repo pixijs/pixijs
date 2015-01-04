@@ -135,7 +135,7 @@ var utils = module.exports = {
             console.log.apply(console, args); //jshint ignore:line
         }
         else if (window.console) {
-            console.log('Pixi.js ' + CONST.VERSION + ' - http://www.pixijs.com/'); //jshint ignore:line
+            console.log('Pixi.js ' + CONST.VERSION + ' - ' + type + ' - http://www.pixijs.com/'); //jshint ignore:line
         }
 
         utils._saidHello = true;
