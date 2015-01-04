@@ -46,6 +46,9 @@ function FilterTexture(gl, width, height, scaleMode) {
     gl.bindRenderbuffer(gl.RENDERBUFFER, this.renderBuffer);
     gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, this.renderBuffer);
 
+    // reset render buffer
+    gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+
     this.resize(width, height);
 }
 
@@ -83,7 +86,10 @@ FilterTexture.prototype.resize = function (width, height) {
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  width , height , 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
     // update the stencil buffer width and height
     gl.bindRenderbuffer(gl.RENDERBUFFER, this.renderBuffer);
-    gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, width , height );
+    gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, width , height);
+
+    // reset render buffer
+    gl.bindRenderbuffer(gl.RENDERBUFFER, null);
 };
 
 /**
