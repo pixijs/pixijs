@@ -50,16 +50,42 @@ var core = module.exports = {
      * @param [options.preserveDrawingBuffer=false] {boolean} enables drawing buffer preservation, enable this if you
      *      need to call toDataUrl on the webgl context
      * @param [options.resolution=1] {number} the resolution of the renderer retina would be 2
+     * @param [noWebGL=false] {Boolean} prevents selection of WebGL renderer, even if such is present
+     *
      * @return {WebGLRenderer|CanvasRenderer} Returns WebGL renderer if available, otherwise CanvasRenderer
      */
-    autoDetectRenderer: function (width, height, options) {
+    autoDetectRenderer: function (width, height, options, noWebGL) {
         width = width || 800;
         height = height || 600;
 
-        if (require('webgl-enabled')()) {
+        if (!noWebGL && require('webgl-enabled')()) {
             return new core.WebGLRenderer(width, height, options);
         }
 
         return new core.CanvasRenderer(width, height, options);
+    },
+
+    /**
+     * This helper function will automatically detect which renderer you should be using. This function is very
+     * similar to the autoDetectRenderer function except that is will return a canvas renderer for android.
+     * Even thought both android chrome supports webGL the canvas implementation perform better at the time of writing.
+     * This function will likely change and update as webGL performance improves on these devices.
+     *
+     * @param width=800 {number} the width of the renderers view
+     * @param height=600 {number} the height of the renderers view
+     * @param [options] {object} The optional renderer parameters
+     * @param [options.view] {HTMLCanvasElement} the canvas to use as a view, optional
+     * @param [options.transparent=false] {boolean} If the render view is transparent, default false
+     * @param [options.antialias=false] {boolean} sets antialias (only applicable in chrome at the moment)
+     * @param [options.preserveDrawingBuffer=false] {boolean} enables drawing buffer preservation, enable this if you
+     *      need to call toDataUrl on the webgl context
+     * @param [options.resolution=1] {number} the resolution of the renderer retina would be 2
+     *
+     * @return {WebGLRenderer|CanvasRenderer} Returns WebGL renderer if available, otherwise CanvasRenderer
+     */
+    autoDetectRecommendedRenderer: function (width, height, options) {
+        var isAndroid = /Android/i.test(navigator.userAgent);
+
+        return core.autoDetectRenderer(width, height, options, isAndroid);
     }
 };
