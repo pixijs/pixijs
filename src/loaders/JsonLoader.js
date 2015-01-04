@@ -120,6 +120,7 @@ JsonLoader.prototype.onJSONLoaded = function () {
 
         this.texture = image.texture.baseTexture;
         image.addEventListener('loaded', this.onLoaded.bind(this));
+        image.addEventListener('error', this.onError.bind(this));
 
         for (var i in frameData) {
             var rect = frameData[i].frame;

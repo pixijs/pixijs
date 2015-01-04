@@ -42,6 +42,7 @@ core.utils.EventTarget.mixin(ImageLoader.prototype);
 ImageLoader.prototype.load = function () {
     if (!this.texture.baseTexture.hasLoaded) {
         this.texture.baseTexture.on('loaded', this.onLoaded.bind(this));
+        this.texture.baseTexture.on('error', this.onError.bind(this));
     }
     else {
         this.onLoaded();
@@ -55,6 +56,16 @@ ImageLoader.prototype.load = function () {
  */
 ImageLoader.prototype.onLoaded = function () {
     this.emit('loaded', { content: this });
+};
+
+/**
+ * Invoked when image file failed loading
+ *
+ * @method onError
+ * @private
+ */
+ImageLoader.prototype.onError = function () {
+    this.emit('error', { content: this });
 };
 
 /**
