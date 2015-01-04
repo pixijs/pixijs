@@ -7,10 +7,12 @@ var utils = require('../utils'),
  * @class
  * @mixes eventTarget
  * @namespace PIXI
- * @param source {string} the source object (image or canvas)
- * @param scaleMode {number} See {{#crossLink "PIXI/scaleModes:property"}}scaleModes{{/crossLink}} for possible values
+ * @param source {Image|Canvas} the source object of the texture.
+ * @param [scaleMode=scaleModes.DEFAULT] {number} See {@link scaleModes} for possible values
  */
 function BaseTexture(source, scaleMode) {
+    this.uuid = utils.uuid();
+
     /**
      * The Resolution of the texture.
      *
@@ -43,7 +45,9 @@ function BaseTexture(source, scaleMode) {
     this.scaleMode = scaleMode || CONST.scaleModes.DEFAULT;
 
     /**
-     * Set to true once the base texture has loaded
+     * Set to true once the base texture has successfully loaded.
+     *
+     * This is never true if the underlying source fails to load or has no texture data.
      *
      * @member {boolean}
      * @readOnly
@@ -51,14 +55,23 @@ function BaseTexture(source, scaleMode) {
     this.hasLoaded = false;
 
     /**
+     * Set to true if the source is currently loading.
+     *
+     * If an Image source is loading the 'loaded' or 'error' event will be
+     * dispatched when the operation ends. An underyling source that is
+     * immediately-available bypasses loading entirely.
+     *
+     * @member {boolean}
+     * @readonly
+     */
+    this.isLoading = false;
+
+    /**
      * The image source that is used to create the texture.
      *
-     * @member {Image}
+     * @member {Image|Canvas}
      */
-    this.source = source;
-
-    // ID for the base texture
-    this.uuid = utils.uuid();
+    this.source = null; // set in loadSource, if at all
 
     /**
      * Controls if RGB channels should be pre-multiplied by Alpha  (WebGL only)
@@ -67,6 +80,17 @@ function BaseTexture(source, scaleMode) {
      * @default true
      */
     this.premultipliedAlpha = true;
+
+    /**
+     * @member {string}
+     */
+    this.imageUrl = null;
+
+    /**
+     * @member {boolean}
+     * @private
+     */
+    this._powerOf2 = false;
 
     // used for webGL
 
@@ -87,46 +111,32 @@ function BaseTexture(source, scaleMode) {
      */
     this._glTextures = {};
 
-    this._needsUpdate = false;
-
-    if (!source) {
-        return;
-    }
-
-    if ((this.source.complete || this.source.getContext) && this.source.width && this.source.height) {
-        this.hasLoaded = true;
-        this.width = this.source.naturalWidth || this.source.width;
-        this.height = this.source.naturalHeight || this.source.height;
-        this.needsUpdate = true;
-    }
-    else {
-        var scope = this;
-
-        this.source.onload = function () {
-
-            scope.hasLoaded = true;
-            scope.width = scope.source.naturalWidth || scope.source.width;
-            scope.height = scope.source.naturalHeight || scope.source.height;
-            this.needsUpdate = true;
-
-            scope.emit('loaded', scope);
-        };
-
-        this.source.onerror = function () {
-            scope.emit('error', scope);
-        };
-    }
-
     /**
-     * @member {string}
-     */
-    this.imageUrl = null;
-
-    /**
+     * Does the texture on the GPU need to be updated?
+     *
      * @member {boolean}
      * @private
      */
-    this._powerOf2 = false;
+    this._needsUpdate = false;
+
+    // if no source passed don't try to load
+    if (source) {
+        this.loadSource(source);
+    }
+
+    /**
+     * Fired when a not-immediately-available source finishes loading.
+     *
+     * @event loaded
+     * @protected
+     */
+
+    /**
+     * Fired when a not-immediately-available source fails to load.
+     *
+     * @event error
+     * @protected
+     */
 }
 
 BaseTexture.prototype.constructor = BaseTexture;
@@ -148,6 +158,120 @@ Object.defineProperties(BaseTexture.prototype, {
         }
     }
 });
+
+/**
+ * Load a source.
+ *
+ * If the source is not-immediately-available, such as an image that needs to be
+ * downloaded, then the 'loaded' or 'error' event will be dispatched in the future
+ * and `hasLoaded` will remain false after this call.
+ *
+ * The logic state after calling `loadSource` directly or indirectly (eg. `fromImage`, `new BaseTexture`) is:
+ *
+ *     if (texture.hasLoaded) {
+ *        // texture ready for use
+ *     } else if (texture.isLoading) {
+ *        // listen to 'loaded' and/or 'error' events on texture
+ *     } else {
+ *        // not loading, not going to load UNLESS the source is reloaded
+ *        // (it may still make sense to listen to the events)
+ *     }
+ *
+ * @protected
+ * @param source {Image|Canvas} the source object of the texture.
+ */
+BaseTexture.prototype.loadSource = function (source) {
+    var wasLoading = this.isLoading;
+    this.hasLoaded = false;
+    this.isLoading = false;
+
+    if (wasLoading && this.source) {
+        this.source.onload = null;
+        this.source.onerror = null;
+    }
+
+    this.source = source;
+
+    // Apply source if loaded. Otherwise setup appropriate loading monitors.
+    if ((this.source.complete || this.source.getContext) && this.source.width && this.source.height) {
+        this._sourceLoaded();
+    }
+    else  if(!source.getContext) {
+        // Image fail / not ready
+        this.isLoading = true;
+
+        var scope = this;
+
+        source.onload = function () {
+            source.onload = null;
+            source.onerror = null;
+
+            if(!scope.isLoading) {
+                return;
+            }
+
+            scope.isLoading = false;
+            scope._sourceLoaded();
+
+            scope.emit('loaded', scope);
+        };
+
+        source.onerror = function () {
+            source.onload = null;
+            source.onerror = null;
+
+            if(!scope.isLoading) {
+                return;
+            }
+
+            scope.isLoading = false;
+            scope.emit('error', scope);
+        };
+
+        // Per http://www.w3.org/TR/html5/embedded-content-0.html#the-img-element
+        //   "The value of `complete` can thus change while a script is executing."
+        // So complete needs to be re-checked after the callbacks have been added..
+        if (source.complete) {
+            this.isLoading = false;
+
+            // ..and if we're complete now, no need for callbacks
+            source.onload = null;
+            source.onerror = null;
+
+            if (source.width && source.height) {
+                this._sourceLoaded();
+
+                // If any previous subscribers possible
+                if (wasLoading) {
+                    this.emit('loaded', this);
+                }
+            }
+            else {
+                // If any previous subscribers possible
+                if (wasLoading) {
+                    this.emit('error', this);
+                }
+            }
+        }
+    }
+    }
+};
+
+/**
+ * Used internally to update the width, height, and some other tracking vars once
+ * a source has successfully loaded.
+ *
+ * @private
+ * @param source {Image|Canvas} the source object of the texture.
+ */
+BaseTexture.prototype._sourceLoaded = function (source) {
+    this.hasLoaded = true;
+
+    this.width = source.naturalWidth || source.width;
+    this.height = source.naturalHeight || source.height;
+
+    this.needsUpdate = true;
+};
 
 /**
  * Destroys this base texture
@@ -174,14 +298,14 @@ BaseTexture.prototype.destroy = function () {
 };
 
 /**
- * Changes the source image of the texture
+ * Changes the source image of the texture.
+ * The original source must be an Image element.
  *
  * @param newSrc {string} the path of the image
  */
 BaseTexture.prototype.updateSourceImage = function (newSrc) {
-    this.hasLoaded = false;
-
     this.source.src = newSrc;
+    this.loadSource(this.source);
 };
 
 /**
@@ -190,14 +314,14 @@ BaseTexture.prototype.updateSourceImage = function (newSrc) {
  *
  * @static
  * @param imageUrl {string} The image url of the texture
- * @param crossorigin {boolean}
- * @param scaleMode {number} See {{#crossLink "PIXI/scaleModes:property"}}scaleModes{{/crossLink}} for possible values
+ * @param [crossorigin=(auto)] {boolean} Should use anonymouse CORS? Defaults to true if the URL is not a data-URI.
+ * @param [scaleMode=scaleModes.DEFAULT] {number} See {@link scaleModes} for possible values
  * @return BaseTexture
  */
 BaseTexture.fromImage = function (imageUrl, crossorigin, scaleMode) {
     var baseTexture = utils.BaseTextureCache[imageUrl];
 
-    if (crossorigin === undefined && imageUrl.indexOf('data:') === -1) {
+    if (crossorigin === undefined && imageUrl.indexOf('data:') === 0) {
         crossorigin = true;
     }
 
