@@ -166,7 +166,7 @@ PIXI.BitmapText.prototype.updateText = function()
 
     var lenChildren = this.children.length;
     var lenChars = chars.length;
-    var tint = this.tint || 0xFFFFFF;
+    var tint = (typeof this.tint === 'number' && this.tint >= 0) ? this.tint : 0xFFFFFF;
 
     for(i = 0; i < lenChars; i++)
     {
