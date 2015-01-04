@@ -701,9 +701,7 @@ WebGLGraphics.buildComplexPoly = function (graphicsData, webGLData) {
     webGLData.alpha = graphicsData.fillAlpha;
     webGLData.color = utils.hex2rgb(graphicsData.fillColor);
 
-    /*
-        calclate the bounds..
-    */
+    // calclate the bounds..
     var minX = Infinity;
     var maxX = -Infinity;
 

@@ -208,11 +208,10 @@ Sprite.prototype.getBounds = function (matrix) {
     var tx = worldTransform.tx;
     var ty = worldTransform.ty;
 
-    var maxX = -Infinity;
-    var maxY = -Infinity;
-
-    var minX = Infinity;
-    var minY = Infinity;
+    var minX,
+        maxX,
+        minY,
+        maxY;
 
     if(b === 0 && c === 0)
     {
@@ -246,22 +245,22 @@ Sprite.prototype.getBounds = function (matrix) {
         var x4 =  a * w1 + c * h0 + tx;
         var y4 =  d * h0 + b * w1 + ty;
 
-        minX = x1 < minX ? x1 : minX;
+        minX = x1;
         minX = x2 < minX ? x2 : minX;
         minX = x3 < minX ? x3 : minX;
         minX = x4 < minX ? x4 : minX;
 
-        minY = y1 < minY ? y1 : minY;
+        minY = y1;
         minY = y2 < minY ? y2 : minY;
         minY = y3 < minY ? y3 : minY;
         minY = y4 < minY ? y4 : minY;
 
-        maxX = x1 > maxX ? x1 : maxX;
+        maxX = x1;
         maxX = x2 > maxX ? x2 : maxX;
         maxX = x3 > maxX ? x3 : maxX;
         maxX = x4 > maxX ? x4 : maxX;
 
-        maxY = y1 > maxY ? y1 : maxY;
+        maxY = y1;
         maxY = y2 > maxY ? y2 : maxY;
         maxY = y3 > maxY ? y3 : maxY;
         maxY = y4 > maxY ? y4 : maxY;
