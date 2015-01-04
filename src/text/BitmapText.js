@@ -37,20 +37,43 @@ function BitmapText(text, style) {
     this.textHeight = 0;
 
     /**
-     * @member {Array}
+     * Private tracker for the letter sprite pool.
+     *
+     * @member {Sprite[]}
      * @private
      */
     this._pool = [];
 
-    this.setText(text);
-    this.setStyle(style);
-    this.updateText();
+    /**
+     * Private tracker for the current style.
+     *
+     * @member {object}
+     * @private
+     */
+    this._style = {
+        tint: style.tint,
+        align: style.align,
+        fontName: null,
+        fontSize: 0
+    };
+    this.font = style.font; // run font setter
+
+    /**
+     * Private tracker for the current text.
+     *
+     * @member {string}
+     * @private
+     */
+    this._text = text;
 
     /**
      * The dirty state of this object.
+     *
      * @member {boolean}
      */
     this.dirty = false;
+
+    this.updateText();
 }
 
 // constructor
@@ -58,35 +81,79 @@ BitmapText.prototype = Object.create(core.DisplayObjectContainer.prototype);
 BitmapText.prototype.constructor = BitmapText;
 module.exports = BitmapText;
 
-/**
- * Set the text string to be rendered.
- *
- * @param text {string} The text that you would like displayed
- */
-BitmapText.prototype.setText = function (text) {
-    this.text = text || ' ';
-    this.dirty = true;
-};
+Object.defineProperties(BitmapText.prototype, {
+    /**
+     * The tint of the BitmapText object
+     *
+     * @member {number}
+     * @memberof BitmapText#
+     */
+    tint: {
+        get: function () {
+            return this._style.tint;
+        },
+        set: function (value) {
+            this._style.tint = value;
 
-/**
- * Set the style of the text
- * style.font {string} The size (optional) and bitmap font id (required) eq 'Arial' or '20px Arial' (must have loaded previously)
- * [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect single lines of text
- *
- * @param style {object} The style parameters, contained as properties of an object
- */
-BitmapText.prototype.setStyle = function (style) {
-    style = style || {};
-    style.align = style.align || 'left';
-    this.style = style;
+            this.dirty = true;
+        }
+    },
 
-    var font = style.font.split(' ');
-    this.fontName = font[font.length - 1];
-    this.fontSize = font.length >= 2 ? parseInt(font[font.length - 2], 10) : BitmapText.fonts[this.fontName].size;
+    /**
+     * The tint of the BitmapText object
+     *
+     * @member {string}
+     * @default 'left'
+     * @memberof BitmapText#
+     */
+    align: {
+        get: function () {
+            return this._style.align;
+        },
+        set: function (value) {
+            this._style.align = value;
 
-    this.dirty = true;
-    this.tint = style.tint;
-};
+            this.dirty = true;
+        }
+    },
+
+    /**
+     * The tint of the BitmapText object
+     *
+     * @member {Font}
+     * @memberof BitmapText#
+     */
+    font: {
+        get: function () {
+            return this._style.font;
+        },
+        set: function (value) {
+            value = value.split(' ');
+
+            this._style.fontName = font[font.length - 1];
+            this._style.fontSize = font.length >= 2 ? parseInt(font[font.length - 2], 10) : BitmapText.fonts[this.fontName].size;
+
+            this.dirty = true;
+        }
+    },
+
+    /**
+     * The text of the BitmapText object
+     *
+     * @member {string}
+     * @memberof BitmapText#
+     */
+    text: {
+        get: function () {
+            return this._text;
+        },
+        set: function (value) {
+            this._text = value;
+
+            this.dirty = true;
+        }
+    }
+});
 
 /**
  * Renders text and updates it when needed
