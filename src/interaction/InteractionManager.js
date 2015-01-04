@@ -336,7 +336,7 @@ InteractionManager.prototype.rebuildInteractiveGraph = function () {
         this.interactiveItems[i].interactiveChildren = false;
     }
 
-    this.interactiveItems = [];
+    this.interactiveItems.length = 0;
 
     if (this.stage.interactive) {
         this.interactiveItems.push(this.stage);
