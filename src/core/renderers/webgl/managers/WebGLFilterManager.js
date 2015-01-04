@@ -96,21 +96,33 @@ WebGLFilterManager.prototype.pushFilter = function (filterBlock) {
     filterArea.width += padding * 2;
     filterArea.height += padding * 2;
 
-    // cap filter to screen size..
+    var localX = filterArea.x,
+        localY = filterArea.y;
+
     if (filterArea.x < 0) {
+        filterArea.x = width += filterArea.x;
         filterArea.x = 0;
     }
 
-    if (filterArea.width > this.width) {
-        filterArea.width = this.width;
-    }
-
     if (filterArea.y < 0) {
+        filterArea.height += filterArea.y;
         filterArea.y = 0;
     }
 
-    if (filterArea.height > this.height) {
-        filterArea.height = this.height;
+    if (localX + filterArea.width > this.width) {
+        filterArea.width = this.width - localX;
+    }
+
+    if (localY + filterArea.height > this.height) {
+        filterArea.height = this.height - localY;
+    }
+
+    if (filterArea.width < 0) {
+        filterArea.width = 0;
+    }
+
+    if (filterArea.height < 0) {
+        filterArea.height = 0;
     }
 
     //gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  filterArea.width, filterArea.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
