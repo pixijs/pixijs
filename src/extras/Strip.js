@@ -229,7 +229,7 @@ Strip.prototype._renderCanvasTriangleStrip = function (context) {
     var uvs = this.uvs;
 
     var length = vertices.length / 2;
-    this.count++;
+    // this.count++;
 
     for (var i = 0; i < length - 2; i++) {
         // draw some triangles!
@@ -245,7 +245,7 @@ Strip.prototype._renderCanvasTriangles = function (context) {
     var indices = this.indices;
 
     var length = indices.length;
-    this.count++;
+    // this.count++;
 
     for (var i = 0; i < length; i += 3) {
         // draw some triangles!
@@ -337,7 +337,7 @@ Strip.prototype.renderStripFlat = function (strip) {
     var vertices = strip.vertices;
 
     var length = vertices.length/2;
-    this.count++;
+    // this.count++;
 
     context.beginPath();
     for (var i=1; i < length-2; i++) {

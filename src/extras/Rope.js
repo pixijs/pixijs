@@ -40,11 +40,10 @@ Rope.prototype.refresh = function () {
 
     var uvs = this.uvs;
 
-    var lastPoint = points[0];
     var indices = this.indices;
     var colors = this.colors;
 
-    this.count-=0.2;
+    // this.count -= 0.2;
 
     uvs[0] = 0;
     uvs[1] = 0;
@@ -88,8 +87,6 @@ Rope.prototype.refresh = function () {
         index = i * 2;
         indices[index] = index;
         indices[index + 1] = index + 1;
-
-        lastPoint = point;
     }
 };
 
@@ -110,7 +107,7 @@ Rope.prototype.updateTransform = function () {
     var perpX = 0;
     var perpY = 0;
 
-    this.count-=0.2;
+    // this.count -= 0.2;
 
     var vertices = this.vertices;
     var total = points.length,
