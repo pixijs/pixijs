@@ -50,7 +50,7 @@ PIXI.BitmapText = function(text, style)
     /**
      * @property style
      * @type Object
-     * @private
+     * @readOnly
      */
     this.style = {};
 
@@ -69,6 +69,22 @@ PIXI.BitmapText = function(text, style)
 // constructor
 PIXI.BitmapText.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
 PIXI.BitmapText.prototype.constructor = PIXI.BitmapText;
+
+/**
+ * The tint of the BitmapText object
+ *
+ * @property tint
+ * @type Number
+ */
+Object.defineProperty(PIXI.BitmapText.prototype, 'tint', {
+    get: function() {
+        return this._tint;
+    },
+    set: function(value) {
+        this._tint = value;
+        this.dirty = true;
+    }
+});
 
 /**
  * Set the text string to be rendered.
@@ -97,22 +113,12 @@ PIXI.BitmapText.prototype.setStyle = function(style)
     style.align = style.align || this.style.align || 'left';
     style.font = style.font || this.style.font;
 
-    if(typeof style.tint === 'number') {
-        style.tint = style.tint;
-    } else if(typeof this.style.tint === 'number') {
-        style.tint = this.style.tint;
-    } else {
-        style.tint = 0xFFFFFF;
-    }
-
     // Store the updated style definition
     this.style = style;
 
     var font = style.font.split(' ');
     this.fontName = font[font.length - 1];
     this.fontSize = font.length >= 2 ? parseInt(font[font.length - 2], 10) : PIXI.BitmapText.fonts[this.fontName].size;
-
-    this.tint = style.tint;
 
     this.dirty = true;
 };
