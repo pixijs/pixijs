@@ -107,7 +107,8 @@ Rope.prototype.updateTransform = function () {
 
     var lastPoint = points[0];
     var nextPoint;
-    var perp = {x:0, y:0};
+    var perpX = 0;
+    var perpY = 0;
 
     this.count-=0.2;
 
@@ -126,8 +127,8 @@ Rope.prototype.updateTransform = function () {
             nextPoint = point;
         }
 
-        perp.y = -(nextPoint.x - lastPoint.x);
-        perp.x = nextPoint.y - lastPoint.y;
+        perpY = -(nextPoint.x - lastPoint.x);
+        perpX = nextPoint.y - lastPoint.y;
 
         ratio = (1 - (i / (total-1))) * 10;
 
@@ -135,18 +136,18 @@ Rope.prototype.updateTransform = function () {
             ratio = 1;
         }
 
-        perpLength = Math.sqrt(perp.x * perp.x + perp.y * perp.y);
+        perpLength = Math.sqrt(perpX * perpX + perpY * perpY);
         num = this.texture.height / 2; //(20 + Math.abs(Math.sin((i + this.count) * 0.3) * 50) )* ratio;
-        perp.x /= perpLength;
-        perp.y /= perpLength;
+        perpX /= perpLength;
+        perpY /= perpLength;
 
-        perp.x *= num;
-        perp.y *= num;
+        perpX *= num;
+        perpY *= num;
 
-        vertices[index] = point.x + perp.x;
-        vertices[index+1] = point.y + perp.y;
-        vertices[index+2] = point.x - perp.x;
-        vertices[index+3] = point.y - perp.y;
+        vertices[index] = point.x + perpX;
+        vertices[index+1] = point.y + perpY;
+        vertices[index+2] = point.x - perpX;
+        vertices[index+3] = point.y - perpY;
 
         lastPoint = point;
     }
