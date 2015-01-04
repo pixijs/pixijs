@@ -57,17 +57,27 @@ function InteractionManager(stage) {
 
     /**
      * An array containing all the iterative items from the our interactive tree
+     *
      * @member {Array}
      * @private
      */
     this.interactiveItems = [];
 
     /**
-     * Our canvas
-     * @member {HTMLCanvasElement}
+     * The DOM element to bind to.
+     *
+     * @member {HTMLElement}
      * @private
      */
     this.interactionDOMElement = null;
+
+    /**
+     * Have events been attached to the dom element?
+     *
+     * @member {boolean}
+     * @private
+     */
+    this.eventsAdded = false;
 
     //this will make it so that you don't have to call bind all the time
 
@@ -171,55 +181,53 @@ InteractionManager.prototype.collectInteractiveSprite = function (displayObject,
 };
 
 /**
- * Sets the target for event delegation
+ * Sets the DOM element which will receive mouse/touch events. This is useful for when you have
+ * other DOM elements on top of the renderers Canvas element. With this you'll be bale to deletegate
+ * another DOM element to receive those events.
  *
- * @param target {WebGLRenderer|CanvasRenderer} the renderer to bind events to
+ * @param element {HTMLElement} the DOM element which will receive mouse and touch events.
+ * @param [resolution=1] {number} THe resolution of the new element (relative to the canvas).
  * @private
  */
-InteractionManager.prototype.setTarget = function (target) {
-    this.target = target;
-    this.resolution = target.resolution;
+InteractionManager.prototype.setTargetElement = function (element, resolution) {
+    this.removeEvents();
 
-    // Check if the dom element has been set. If it has don't do anything.
-    if (this.interactionDOMElement !== null) {
+    this.interactionDOMElement = element;
+
+    this.resolution = resolution || 1;
+
+    this.addEvents();
+};
+
+/**
+ *
+ * @private
+ */
+InteractionManager.prototype.addEvents = function () {
+    if (!this.interactionDOMElement) {
         return;
     }
 
-    this.setTargetDomElement (target.view);
-};
-
-/**
- * Sets the DOM element which will receive mouse/touch events. This is useful for when you have other DOM
- * elements on top of the renderers Canvas element. With this you'll be able to delegate another DOM element
- * to receive those events
- *
- * @param domElement {DOMElement} the DOM element which will receive mouse and touch events
- * @private
- */
-InteractionManager.prototype.setTargetDomElement = function (domElement) {
-    this.removeEvents();
-
     if (window.navigator.msPointerEnabled) {
-        // time to remove some of that zoom in ja..
-        domElement.style['-ms-content-zooming'] = 'none';
-        domElement.style['-ms-touch-action'] = 'none';
+        this.interactionDOMElement.style['-ms-content-zooming'] = 'none';
+        this.interactionDOMElement.style['-ms-touch-action'] = 'none';
     }
 
-    this.interactionDOMElement = domElement;
+    this.interactionDOMElement.addEventListener('mousemove',    this.onMouseMove, true);
+    this.interactionDOMElement.addEventListener('mousedown',    this.onMouseDown, true);
+    this.interactionDOMElement.addEventListener('mouseout',     this.onMouseOut, true);
 
-    domElement.addEventListener('mousemove',  this.onMouseMove, true);
-    domElement.addEventListener('mousedown',  this.onMouseDown, true);
-    domElement.addEventListener('mouseout',   this.onMouseOut, true);
-
-    // aint no multi touch just yet!
-    domElement.addEventListener('touchstart', this.onTouchStart, true);
-    domElement.addEventListener('touchend', this.onTouchEnd, true);
-    domElement.addEventListener('touchmove', this.onTouchMove, true);
+    this.interactionDOMElement.addEventListener('touchstart',   this.onTouchStart, true);
+    this.interactionDOMElement.addEventListener('touchend',     this.onTouchEnd, true);
+    this.interactionDOMElement.addEventListener('touchmove',    this.onTouchMove, true);
 
     window.addEventListener('mouseup',  this.onMouseUp, true);
+
+    this.eventsAdded = true;
 };
 
 /**
+ *
  * @private
  */
 InteractionManager.prototype.removeEvents = function () {
@@ -227,21 +235,24 @@ InteractionManager.prototype.removeEvents = function () {
         return;
     }
 
-    this.interactionDOMElement.style['-ms-content-zooming'] = '';
-    this.interactionDOMElement.style['-ms-touch-action'] = '';
+    if (window.navigator.msPointerEnabled) {
+        this.interactionDOMElement.style['-ms-content-zooming'] = '';
+        this.interactionDOMElement.style['-ms-touch-action'] = '';
+    }
 
-    this.interactionDOMElement.removeEventListener('mousemove',  this.onMouseMove, true);
-    this.interactionDOMElement.removeEventListener('mousedown',  this.onMouseDown, true);
-    this.interactionDOMElement.removeEventListener('mouseout',   this.onMouseOut, true);
+    this.interactionDOMElement.removeEventListener('mousemove', this.onMouseMove, true);
+    this.interactionDOMElement.removeEventListener('mousedown', this.onMouseDown, true);
+    this.interactionDOMElement.removeEventListener('mouseout',  this.onMouseOut, true);
 
-    // aint no multi touch just yet!
     this.interactionDOMElement.removeEventListener('touchstart', this.onTouchStart, true);
-    this.interactionDOMElement.removeEventListener('touchend', this.onTouchEnd, true);
+    this.interactionDOMElement.removeEventListener('touchend',  this.onTouchEnd, true);
     this.interactionDOMElement.removeEventListener('touchmove', this.onTouchMove, true);
 
     this.interactionDOMElement = null;
 
     window.removeEventListener('mouseup',  this.onMouseUp, true);
+
+    this.eventsAdded = false;
 };
 
 /**
@@ -250,7 +261,7 @@ InteractionManager.prototype.removeEvents = function () {
  * @private
  */
 InteractionManager.prototype.update = function () {
-    if (!this.target) {
+    if (!this.interactionDOMElement) {
         return;
     }
 
@@ -362,8 +373,8 @@ InteractionManager.prototype.onMouseMove = function (event) {
     // TODO optimize by not check EVERY TIME! maybe half as often? //
     var rect = this.interactionDOMElement.getBoundingClientRect();
 
-    this.mouse.global.x = (event.clientX - rect.left) * (this.target.width / rect.width) / this.resolution;
-    this.mouse.global.y = (event.clientY - rect.top) * ( this.target.height / rect.height) / this.resolution;
+    this.mouse.global.x = (event.clientX - rect.left) * (this.interactionDOMElement.width / rect.width) / this.resolution;
+    this.mouse.global.y = (event.clientY - rect.top) * ( this.interactionDOMElement.height / rect.height) / this.resolution;
 
     var length = this.interactiveItems.length;
 
@@ -623,8 +634,8 @@ InteractionManager.prototype.onTouchMove = function (event) {
         touchData.originalEvent = event;
 
         // update the touch position
-        touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.target.width / rect.width) ) / this.resolution;
-        touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.target.height / rect.height) )  / this.resolution;
+        touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.interactionDOMElement.width / rect.width) ) / this.resolution;
+        touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.interactionDOMElement.height / rect.height) )  / this.resolution;
         if (navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height) {
             //Support for CocoonJS fullscreen scale modes
             touchData.global.x = touchEvent.clientX;
@@ -669,8 +680,8 @@ InteractionManager.prototype.onTouchStart = function (event) {
         touchData.originalEvent = event;
 
         this.touches[touchEvent.identifier] = touchData;
-        touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.target.width / rect.width) ) / this.resolution;
-        touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.target.height / rect.height) ) / this.resolution;
+        touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.interactionDOMElement.width / rect.width) ) / this.resolution;
+        touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.interactionDOMElement.height / rect.height) ) / this.resolution;
         if (navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height) {
             //Support for CocoonJS fullscreen scale modes
             touchData.global.x = touchEvent.clientX;
@@ -722,8 +733,8 @@ InteractionManager.prototype.onTouchEnd = function (event) {
         var touchEvent = changedTouches[i];
         var touchData = this.touches[touchEvent.identifier];
         var up = false;
-        touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.target.width / rect.width) ) / this.resolution;
-        touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.target.height / rect.height) ) / this.resolution;
+        touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.interactionDOMElement.width / rect.width) ) / this.resolution;
+        touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.interactionDOMElement.height / rect.height) ) / this.resolution;
         if (navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height) {
             //Support for CocoonJS fullscreen scale modes
             touchData.global.x = touchEvent.clientX;
