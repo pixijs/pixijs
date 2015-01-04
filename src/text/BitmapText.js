@@ -93,7 +93,7 @@ Object.defineProperties(BitmapText.prototype, {
             return this._style.tint;
         },
         set: function (value) {
-            this._style.tint = value;
+            this._style.tint = (typeof value === 'number' && value >= 0) ? value : 0xFFFFFF;
 
             this.dirty = true;
         }
@@ -220,7 +220,7 @@ BitmapText.prototype.updateText = function () {
 
     var lenChildren = this.children.length;
     var lenChars = chars.length;
-    var tint = this.tint || 0xFFFFFF;
+    var tint = this.tint;
 
     for (i = 0; i < lenChars; i++) {
         var c = i < lenChildren ? this.children[i] : this._pool.pop(); // get old child if have. if not - take from pool.
