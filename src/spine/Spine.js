@@ -112,7 +112,7 @@ Spine.prototype.update = function (dt) {
         var type = attachment.type;
         if (type === spine.AttachmentType.region) {
             if (attachment.rendererObject) {
-                if (!slot.currentSpriteName || slot.currentSpriteName !== attachment.name) {
+                if (!slot.currentSpriteName || slot.currentSpriteName !== attachment.rendererObject.name) {
                     var spriteName = attachment.rendererObject.name;
                     if (slot.currentSprite !== undefined) {
                         slot.currentSprite.visible = false;
