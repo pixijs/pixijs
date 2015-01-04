@@ -14,20 +14,28 @@ var BaseTexture = require('./BaseTexture'),
  * A RenderTexture takes a snapshot of any Display Object given to its render method. The position
  * and rotation of the given Display Objects is ignored. For example:
  *
- *    var renderTexture = new PIXI.RenderTexture(800, 600);
- *    var sprite = PIXI.Sprite.fromImage("spinObj_01.png");
- *    sprite.position.x = 800/2;
- *    sprite.position.y = 600/2;
- *    sprite.anchor.x = 0.5;
- *    sprite.anchor.y = 0.5;
- *    renderTexture.render(sprite);
+ * ```js
+ * var renderTexture = new PIXI.RenderTexture(800, 600);
+ * var sprite = PIXI.Sprite.fromImage("spinObj_01.png");
+ *
+ * sprite.position.x = 800/2;
+ * sprite.position.y = 600/2;
+ * sprite.anchor.x = 0.5;
+ * sprite.anchor.y = 0.5;
+ *
+ * renderTexture.render(sprite);
+ * ```
  *
  * The Sprite in this case will be rendered to a position of 0,0. To render this sprite at its actual
  * position a DisplayObjectContainer should be used:
  *
- *    var doc = new DisplayObjectContainer();
- *    doc.addChild(sprite);
- *    renderTexture.render(doc);  // Renders to center of renderTexture
+ * ```js
+ * var doc = new DisplayObjectContainer();
+ *
+ * doc.addChild(sprite);
+ *
+ * renderTexture.render(doc);  // Renders to center of renderTexture
+ * ```
  *
  * @class
  * @extends Texture
@@ -78,6 +86,25 @@ function RenderTexture(renderer, width, height, scaleMode, resolution) {
      * @member {Rectangle}
      */
     this.crop = new math.Rectangle(0, 0, this.width * this.resolution, this.height * this.resolution);
+
+    /**
+     * Draw/render the given DisplayObject onto the texture.
+     *
+     * The displayObject and descendents are transformed during this operation.
+     * If `restoreWorldTransform` is true then the transformations will be restored before the
+     * method returns. Otherwise it is up to the calling code to correctly use or reset
+     * the transformed display objects.
+     *
+     * The display object is always rendered with a worldAlpha value of 1.
+     *
+     * @method
+     * @param displayObject {DisplayObject} The display object to render this texture on
+     * @param [matrix] {Matrix} Optional matrix to apply to the display object before rendering.
+     * @param [clear=false] {boolean} If true the texture will be cleared before the displayObject is drawn
+     * @param [restoreWorldTransform=true] {boolean} If true the displayObject's worldTransform/worldAlpha and all children
+     *  transformations will be restored. Not restoring this information will be a little faster.
+     */
+    this.render = null;
 
     /**
      * The base texture object that this texture uses
@@ -184,26 +211,44 @@ RenderTexture.prototype.clear = function () {
 };
 
 /**
- * This function will draw the display object to the texture.
+ * Internal method assigned to the `render` property if using a CanvasRenderer.
  *
+ * @private
  * @param displayObject {DisplayObject} The display object to render this texture on
  * @param [matrix] {Matrix} Optional matrix to apply to the display object before rendering.
- * @param [clear] {boolean} If true the texture will be cleared before the displayObject is drawn
- * @private
+ * @param [clear=false] {boolean} If true the texture will be cleared before the displayObject is drawn
+ * @param [restoreWorldTransform=true] {boolean} If true the displayObject's worldTransform/worldAlpha and all children
+ *  transformations will be restored. Not restoring this information will be a little faster.
  */
-RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear) {
+RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, restoreWorldTransform) {
     if (!this.valid) {
         return;
     }
+
+    if (typeof restoreWorldTransform === 'undefined') {
+        restoreWorldTransform = true;
+    }
+
+    var tempAlpha,
+        tempTransform;
+
+    if (restoreWorldTransform) {
+        tempAlpha = displayObject.worldAlpha;
+        tempTransform = displayObject.worldTransform.toArray();
+    }
+
     //TOOD replace position with matrix..
 
     //Lets create a nice matrix to apply to our display object. Frame buffers come in upside down so we need to flip the matrix
     var wt = displayObject.worldTransform;
+
     wt.identity();
     wt.translate(0, this.projection.y * 2);
+
     if (matrix) {
         wt.append(matrix);
     }
+
     wt.scale(1,-1);
 
     // setWorld Alpha to ensure that the object is renderer at full opacity
@@ -211,8 +256,9 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear) {
 
     // Time to update all the children of the displayObject with the new matrix..
     var children = displayObject.children;
+    var i, j;
 
-    for (var i=0,j=children.length; i<j; i++) {
+    for (i = 0, j = children.length; i < j; ++i) {
         children[i].updateTransform();
     }
 
@@ -232,20 +278,43 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear) {
     this.renderer.renderDisplayObject(displayObject, this.projection, this.textureBuffer.frameBuffer);
 
     this.renderer.spriteBatch.dirty = true;
+
+    if (restoreWorldTransform) {
+        displayObject.worldAlpha = tempAlpha;
+        displayObject.worldTransform.fromArray(tempTransform);
+
+        for (i = 0, j = children.length; i < j; ++i) {
+            children[i].updateTransform();
+        }
+    }
 };
 
 
 /**
- * This function will draw the display object to the texture.
+ * Internal method assigned to the `render` property if using a CanvasRenderer.
  *
+ * @private
  * @param displayObject {DisplayObject} The display object to render this texture on
  * @param [matrix] {Matrix} Optional matrix to apply to the display object before rendering.
  * @param [clear] {boolean} If true the texture will be cleared before the displayObject is drawn
- * @private
+ * @param [restoreWorldTransform=true] {boolean} If true the displayObject's worldTransform/worldAlpha and all children
+ *  transformations will be restored. Not restoring this information will be a little faster.
  */
-RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear) {
+RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear, restoreWorldTransform) {
     if (!this.valid) {
         return;
+    }
+
+    if (typeof restoreWorldTransform === 'undefined') {
+        restoreWorldTransform = true;
+    }
+
+    var tempAlpha,
+        tempTransform;
+
+    if (restoreWorldTransform) {
+        tempAlpha = displayObject.worldAlpha;
+        tempTransform = displayObject.worldTransform.toArray();
     }
 
     var wt = displayObject.worldTransform;
@@ -259,8 +328,9 @@ RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear) {
 
     // Time to update all the children of the displayObject with the new matrix..
     var children = displayObject.children;
+    var i, j;
 
-    for (var i = 0, j = children.length; i < j; i++) {
+    for (i = 0, j = children.length; i < j; ++i) {
         children[i].updateTransform();
     }
 
@@ -277,6 +347,15 @@ RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear) {
     this.renderer.renderDisplayObject(displayObject, context);
 
     this.renderer.resolution = realResolution;
+
+    if (restoreWorldTransform) {
+        displayObject.worldAlpha = tempAlpha;
+        displayObject.worldTransform.fromArray(tempTransform);
+
+        for (i = 0, j = children.length; i < j; ++i) {
+            children[i].updateTransform();
+        }
+    }
 };
 
 /**
@@ -328,5 +407,3 @@ RenderTexture.prototype.getCanvas = function () {
         return this.textureBuffer.canvas;
     }
 };
-
-RenderTexture.tempMatrix = new math.Matrix();
