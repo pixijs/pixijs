@@ -47,6 +47,13 @@ PIXI.BitmapText = function(text, style)
      */
     this._pool = [];
 
+    /**
+     * @property style
+     * @type Object
+     * @private
+     */
+    this.style = {};
+
     this.setText(text);
     this.setStyle(style);
     this.updateText();
@@ -85,16 +92,29 @@ PIXI.BitmapText.prototype.setText = function(text)
  */
 PIXI.BitmapText.prototype.setStyle = function(style)
 {
-    style = style || {};
-    style.align = style.align || 'left';
+    if(!style || typeof style !== 'object') return;
+
+    style.align = style.align || this.style.align || 'left';
+    style.font = style.font || this.style.font;
+
+    if(typeof style.tint === 'number') {
+        style.tint = style.tint;
+    } else if(typeof this.style.tint === 'number') {
+        style.tint = this.style.tint;
+    } else {
+        style.tint = 0xFFFFFF;
+    }
+
+    // Store the updated style definition
     this.style = style;
 
     var font = style.font.split(' ');
     this.fontName = font[font.length - 1];
     this.fontSize = font.length >= 2 ? parseInt(font[font.length - 2], 10) : PIXI.BitmapText.fonts[this.fontName].size;
 
-    this.dirty = true;
     this.tint = style.tint;
+
+    this.dirty = true;
 };
 
 /**
