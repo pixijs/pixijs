@@ -11,7 +11,7 @@
  * @param y {Number} The Y coordinate of the upper-left corner of the rounded rectangle
  * @param width {Number} The overall width of this rounded rectangle
  * @param height {Number} The overall height of this rounded rectangle
- * @param radius {Number} The overall radius of this corners of this rounded rectangle
+ * @param radius {Number} Controls the radius of the rounded corners 
  */
 PIXI.RoundedRectangle = function(x, y, width, height, radius)
 {
@@ -49,6 +49,13 @@ PIXI.RoundedRectangle = function(x, y, width, height, radius)
      * @default 20
      */
     this.radius = radius || 20;
+
+    /**
+     * The type of the object, should be one of the Graphics type consts, PIXI.Graphics.RRECT in this case
+     * @property type
+     * @type Number
+     * @default 0
+     */
 };
 
 /**

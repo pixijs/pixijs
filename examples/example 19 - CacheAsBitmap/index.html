@@ -13,16 +13,16 @@
 </head>
 <body>
     <script>
-    // create an array of assets to load
+    // create an array of assets to load, in the form of json files generated from TexturePacker
     var assetsToLoader = [ "SpriteSheet.json"];
 
     // create a new loader
     loader = new PIXI.AssetLoader(assetsToLoader);
 
     // use callback
-    loader.onComplete = onAssetsLoaded
+    loader.onComplete = onAssetsLoaded;
 
-    //begin load
+    // begin load
     loader.load();
 
     // holder to store aliens
@@ -80,17 +80,16 @@
 
     stage.mousedown = stage.touchstart = function()
     {
-alienContainer.cacheAsBitmap = !alienContainer.cacheAsBitmap
-        console.log(alienContainer.getLocalBounds())
-
+        alienContainer.cacheAsBitmap = !alienContainer.cacheAsBitmap;
+//        feel free to play with what's below 
 //        var sprite = new PIXI.Sprite(alienContainer.generateTexture());
 //        stage.addChild(sprite);
-    //sprite.position.x = 800/2;
-//        sprite.position.y = 600/2;
+//        sprite.position.x = Math.random() * 800;
+//        sprite.position.y = Math.random() * 600;
     }
 
     function animate() {
-        // just for fun, lets rotate mr rabbit a little
+        // let's rotate the aliens a little bit
         for (var i = 0; i < 100; i++)
         {
             var alien = aliens[i];

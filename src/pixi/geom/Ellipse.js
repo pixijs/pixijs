@@ -41,6 +41,14 @@ PIXI.Ellipse = function(x, y, width, height)
      * @default 0
      */
     this.height = height || 0;
+
+
+    /**
+     * The type of the object, should be one of the Graphics type consts, PIXI.Graphics.ELIP in this case
+     * @property type
+     * @type Number
+     * @default 0
+     */
 };
 
 /**

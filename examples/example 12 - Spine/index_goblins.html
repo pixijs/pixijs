@@ -19,7 +19,7 @@
 
     // create an array of assets to load
 
-    var assetsToLoader = ["data/goblins.json", "data/goblinsSpineData.json"];
+    var assetsToLoader = ["data/goblins.json"];
 
     // create a new loader
     loader = new PIXI.AssetLoader(assetsToLoader);
@@ -45,7 +45,7 @@
 
     function onAssetsLoaded()
     {
-        var goblin = new PIXI.Spine("data/goblinsSpineData.json");
+        var goblin = new PIXI.Spine("data/goblins.json");
 
         // set current skin
         goblin.skeleton.setSkinByName('goblin');
@@ -58,7 +58,7 @@
         goblin.scale.x = goblin.scale.y = window.innerHeight / 400;
 
         // play animation
-        goblin.state.setAnimationByName("walk", true);
+        goblin.state.setAnimationByName(0, "walk", true);
 
 
         stage.addChild(goblin);
@@ -80,7 +80,7 @@
         logo.position.x = window.innerWidth
         logo.scale.x = logo.scale.y = 0.5;
         logo.position.y = window.innerHeight - 70;
-        logo.setInteractive(true);
+        logo.interactive = true;
         logo.buttonMode = true;
         logo.click = logo.tap = function()
         {

@@ -89,6 +89,16 @@ PIXI.BaseTexture = function(source, scaleMode)
      */
     this._glTextures = [];
 
+    /**
+     *
+     * Set this to true if a mipmap of this texture needs to be generated. This value needs to be set before the texture is used
+     * Also the texture must be a power of two size to work
+     * 
+     * @property mipmap
+     * @type {Boolean}
+     */
+    this.mipmap = false;
+
     // used for webGL texture updating...
     // TODO - this needs to be addressed
 

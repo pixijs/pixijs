@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-    <title>pixi.js example 21 loading a sprite sheet</title>
+    <title>pixi.js example 21 Complex Graphics </title>
     <style>
         body {
             margin: 0;
@@ -14,22 +14,15 @@
 </head>
 <body>
     <script>
-    // create an array of assets to load
-
-    
-
-    // holder to store aliens
-    var aliens = [];
-    var alienFrames = ["eggHead.png", "flowerTop.png", "helmlok.png", "skully.png"];
 
     var count = 0;
 
     // create an new instance of a pixi stage
     var stage = new PIXI.Stage(0x3da8bb);
 
-
-    // create a renderer instance.
-    var renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight);
+    var rendererOptions  = { antialias : true};
+    // create a renderer instance
+    var renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight,rendererOptions);
 
     // add the renderer view element to the DOM
     document.body.appendChild(renderer.view);
@@ -47,7 +40,7 @@
         // start animating
     requestAnimFrame(animate);
     
-    var graphics = new PIXI.Graphics().beginFill(0xFF0000);//.moveTo(-200, -300).lineTo(200, -300).lineTo(220,100).lineTo(200,300).lineTo(-200,300).endFill();
+    var graphics = new PIXI.Graphics().beginFill(0xFF0000);
 
     var liveGraphics = new PIXI.Graphics().beginFill(0xFF0000);
 
@@ -71,9 +64,7 @@
     {
         isDown = true;
         path = [];
-        color = colors[colorCount++ % colors.length]
-    //    liveGraphics.clear().beginFill(color);
-//        liveGraphics.drawCircle(data.global.x, data.global.y, 030);
+        color = colors[colorCount++ % colors.length];
     }
 
     stage.mousemove = function(data)
@@ -83,8 +74,6 @@
         path.push(data.global.x);
         path.push(data.global.y);
 
-
-        //console.log(">>>>")
     }
 
     stage.mouseup = function()
@@ -95,8 +84,6 @@
         graphics.endFill();
         path = [];    
     }
-
-//    graphics.drawPath(path);
 
     stage.addChild(graphics);
     stage.addChild(liveGraphics);
@@ -111,8 +98,6 @@
         liveGraphics.drawPolygon(path);
         // render the stage
         renderer.render(stage);
-    //    graphics.x = 300;
-     //   graphics.y = 399
 
         requestAnimFrame(animate);
     }

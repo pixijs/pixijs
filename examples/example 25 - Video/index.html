@@ -8,12 +8,8 @@
             padding: 0;
             background-color: #000000;
         }
-        canvas {
-            display: block;
-        }
     </style>
     <script src="../../bin/pixi.dev.js"></script>
-     <script src="pixi.js"></script>
 
 </head>
 <body>
@@ -24,19 +20,22 @@
     // create a renderer instance
     var renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight);
 
-   
-
-    // add the renderer view element to the DOM
+    // add the renderer's view element to the DOM
     document.body.appendChild(renderer.view);
 
     requestAnimFrame(animate);
 
+<<<<<<< HEAD
     // create a texture from video options
     var texture = PIXI.VideoTexture.fromUrl(["testVideo.mp4", "testVideo.webm"]);
     // or from a single video option:
     // var texture = PIXI.VideoTexture.fromUrl("testVideo.webm");
+=======
+    // create a video texture from a path
+    var texture = PIXI.VideoTexture.fromUrl("testVideo.mp4");
+>>>>>>> 7fc90c13ff80cb42943f12471b785b16a25cbf50
 
-    // create a new Sprite using the texture
+    // create a new Sprite using the video texture (yes it's that easy)
     var moveSprite = new PIXI.Sprite(texture);
 
     // center the sprites anchor point
@@ -86,14 +85,15 @@
         filter.matrix = colorMatrix;
         filter.syncUniforms();
 
-        // just for fun, let's rotate mr rabbit a little
         // render the stage
         renderer.render(stage);
     }
 
-    window.onresize = function()
-    {
-        renderer.resize(window.innerWidth, window.innerHeight);
+    window.addEventListener('resize',onResize,false);
+
+    function onResize(){
+
+    	renderer.resize(window.innerWidth, window.innerHeight);
         moveSprite.width = window.innerWidth;
         moveSprite.height = window.innerHeight;
 
@@ -105,10 +105,11 @@
             // move the sprite to the center of the screen
         moveSprite.position.x = window.innerWidth/2;
         moveSprite.position.y = window.innerHeight/2;
-
     }
 
-    window.onresize();
+    onResize();
+ 
+    
     
     </script>
 
