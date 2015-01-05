@@ -1,4 +1,15 @@
 /**
+ * @license
+ * pixi.js - v2.2.1
+ * Copyright (c) 2012-2014, Mat Groves
+ * http://goodboydigital.com/
+ *
+ * Compiled: 2015-01-05
+ *
+ * pixi.js is licensed under the MIT License.
+ * http://www.opensource.org/licenses/mit-license.php
+ */
+/**
  * @author Mat Groves http://matgroves.com/ @Doormat23
  */
 
@@ -13429,7 +13440,7 @@ PIXI.TilingSprite.prototype._renderWebGL = function(renderSession)
         if (this.tilingTexture && this.tilingTexture.needsUpdate)
         {
             //TODO - tweaking
-            PIXI.updateWebGLTexture(this.tilingTexture.baseTexture, renderSession.gl);
+            renderSession.renderer.updateTexture(this.tilingTexture.baseTexture);
             this.tilingTexture.needsUpdate = false;
            // this.tilingTexture._uvs = null;
         }
@@ -20090,4 +20101,3 @@ Object.defineProperty(PIXI.RGBSplitFilter.prototype, 'blue', {
         root.PIXI = PIXI;
     }
 }).call(this);
-//# sourceMappingURL=pixi.dev.js.map
