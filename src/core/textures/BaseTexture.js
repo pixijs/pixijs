@@ -321,7 +321,7 @@ BaseTexture.prototype.updateSourceImage = function (newSrc) {
 BaseTexture.fromImage = function (imageUrl, crossorigin, scaleMode) {
     var baseTexture = utils.BaseTextureCache[imageUrl];
 
-    if (crossorigin === undefined && imageUrl.indexOf('data:') === 0) {
+    if (crossorigin === undefined && imageUrl.indexOf('data:') !== 0) {
         crossorigin = true;
     }
 
