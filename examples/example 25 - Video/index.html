@@ -25,15 +25,10 @@
 
     requestAnimFrame(animate);
 
-<<<<<<< HEAD
     // create a texture from video options
     var texture = PIXI.VideoTexture.fromUrl(["testVideo.mp4", "testVideo.webm"]);
     // or from a single video option:
     // var texture = PIXI.VideoTexture.fromUrl("testVideo.webm");
-=======
-    // create a video texture from a path
-    var texture = PIXI.VideoTexture.fromUrl("testVideo.mp4");
->>>>>>> 7fc90c13ff80cb42943f12471b785b16a25cbf50
 
     // create a new Sprite using the video texture (yes it's that easy)
     var moveSprite = new PIXI.Sprite(texture);
