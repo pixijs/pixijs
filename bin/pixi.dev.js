@@ -225,7 +225,7 @@ PIXI.sayHello = function (type)
     }
     else if (window['console'])
     {
-        console.log('Pixi.js ' + PIXI.VERSION + ' - http://www.pixijs.com/');
+        console.log('Pixi.js ' + PIXI.VERSION + ' - http://www.pixijs.com/ - ' + type);
     }
 
     PIXI.dontSayHello = true;
@@ -1438,6 +1438,20 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'cacheAsBitmap', {
         this._cacheAsBitmap = value;
     }
 });
+
+/*
+ * Removes the current object from its parent
+ *
+ * @method remove
+ * @private
+ */
+PIXI.DisplayObject.prototype.remove = function()
+{
+    if(this.parent)
+    {
+        this.parent.removeChild(this);
+    }
+};
 
 /*
  * Updates the object transform for rendering
@@ -3386,8 +3400,8 @@ PIXI.Text.prototype.updateText = function()
     {
         this.context.fillStyle = this.style.dropShadowColor;
 
-        var xShadowOffset = Math.sin(this.style.dropShadowAngle) * this.style.dropShadowDistance;
-        var yShadowOffset = Math.cos(this.style.dropShadowAngle) * this.style.dropShadowDistance;
+        var xShadowOffset = Math.cos(this.style.dropShadowAngle) * this.style.dropShadowDistance;
+        var yShadowOffset = Math.sin(this.style.dropShadowAngle) * this.style.dropShadowDistance;
 
         for (i = 0; i < lines.length; i++)
         {

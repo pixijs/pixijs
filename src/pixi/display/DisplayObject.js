@@ -445,6 +445,20 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'cacheAsBitmap', {
 });
 
 /*
+ * Removes the current object from its parent
+ *
+ * @method remove
+ * @private
+ */
+PIXI.DisplayObject.prototype.remove = function()
+{
+    if(this.parent)
+    {
+        this.parent.removeChild(this);
+    }
+};
+
+/*
  * Updates the object transform for rendering
  *
  * @method updateTransform
