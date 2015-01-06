@@ -1,6 +1,6 @@
 {
     "name": "pixi.js",
-    "version": "2.2.1",
+    "version": "2.2.3",
 
     "main": "bin/pixi.dev.js",
 
