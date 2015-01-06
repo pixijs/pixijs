@@ -36,7 +36,7 @@ PIXI.CANVAS_RENDERER = 1;
  * @property {String} VERSION
  * @static
  */
-PIXI.VERSION = "v2.2.2";
+PIXI.VERSION = "v2.2.3";
 
 /**
  * Various blend modes supported by pixi. IMPORTANT - The WebGL renderer only supports the NORMAL, ADD, MULTIPLY and SCREEN blend modes.
