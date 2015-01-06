@@ -23,7 +23,8 @@ PIXI.AlphaMaskFilter = function(texture)
     this.uniforms = {
         mask: {type: 'sampler2D', value:texture},
         mapDimensions:   {type: '2f', value:{x:1, y:5112}},
-        dimensions:   {type: '4fv', value:[0,0,0,0]}
+        dimensions:   {type: '4fv', value:[0,0,0,0]},
+        offset:          {type: '2f', value:{x:0, y:0}}
     };
 
     if(texture.baseTexture.hasLoaded)
@@ -93,5 +94,20 @@ Object.defineProperty(PIXI.AlphaMaskFilter.prototype, 'map', {
     },
     set: function(value) {
         this.uniforms.mask.value = value;
+    }
+});
+
+/**
+ * The offset used to move the displacement map.
+ *
+ * @property offset
+ * @type Point
+ */
+Object.defineProperty(PIXI.AlphaMaskFilter.prototype, 'offset', {
+    get: function() {
+        return this.uniforms.offset.value;
+    },
+    set: function(value) {
+        this.uniforms.offset.value = value;
     }
 });
