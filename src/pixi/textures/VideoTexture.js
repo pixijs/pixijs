@@ -32,7 +32,6 @@ PIXI.VideoTexture = function( source, scaleMode )
     {
         this._onCanPlay = this.onCanPlay.bind(this);
 
-        source.addEventListener( 'canplay', this._onCanPlay );
         source.addEventListener( 'canplaythrough', this._onCanPlay );
 
         // started playing..
@@ -69,26 +68,22 @@ PIXI.VideoTexture.prototype.onPlayStop = function()
     this.autoUpdate = false;
 };
 
-PIXI.VideoTexture.prototype.onCanPlay = function()
+PIXI.VideoTexture.prototype.onCanPlay = function(event)
 {
-    if( event.type === 'canplaythrough' )
+    this.hasLoaded  = true;
+
+    if( this.source )
     {
-        this.hasLoaded  = true;
+        this.source.play();
+        this.source.removeEventListener( event.type, this._onCanPlay );
 
+        this.width      = this.source.videoWidth;
+        this.height     = this.source.videoHeight;
 
-        if( this.source )
-        {
-            this.source.removeEventListener( 'canplay', this._onCanPlay );
-            this.source.removeEventListener( 'canplaythrough', this._onCanPlay );
-
-            this.width      = this.source.videoWidth;
-            this.height     = this.source.videoHeight;
-
-            // prevent multiple loaded dispatches..
-            if( !this.__loaded ){
-                this.__loaded = true;
-                this.dispatchEvent( { type: 'loaded', content: this } );
-            }
+        // prevent multiple loaded dispatches..
+        if( !this.__loaded ){
+            this.__loaded = true;
+            this.dispatchEvent( { type: 'loaded', content: this } );
         }
     }
 };
@@ -154,15 +149,29 @@ PIXI.VideoTexture.textureFromVideo = function( video, scaleMode )
  *
  * @static
  * @method fromUrl 
- * @param videoSrc {String} The URL for the video.
+ * @param videoSrc {String} The URL for the video. An array [path,type], or an array of such arrays.
  * @param scaleMode {Number} See {{#crossLink "PIXI/scaleModes:property"}}PIXI.scaleModes{{/crossLink}} for possible values
  * @return {VideoTexture}
  */
 PIXI.VideoTexture.fromUrl = function( videoSrc, scaleMode )
 {
-    var video = document.createElement('video');
-    video.src = videoSrc;
-    video.autoPlay = true;
-    video.play();
-    return PIXI.VideoTexture.textureFromVideo( video, scaleMode);
+    var videoElement = document.createElement('video');
+    function appendSourceElement(pathAndType)
+    {
+        var sourceElement = document.createElement('source');
+        sourceElement.src = pathAndType[0];
+        sourceElement.type = pathAndType[1];
+        videoElement.appendChild(sourceElement);
+    }
+    videoElement.autoPlay = true;
+    if( Array.isArray(videoSrc[0]) ) {
+        videoSrc.forEach(function(pathAndType) {
+            appendSourceElement(pathAndType);
+        });
+    } else {
+        appendSourceElement(videoSrc);
+    }
+    videoElement.load();
+    videoElement.play();
+    return PIXI.VideoTexture.textureFromVideo( videoElement, scaleMode );
 };
