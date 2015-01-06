@@ -149,27 +149,29 @@ PIXI.VideoTexture.textureFromVideo = function( video, scaleMode )
  *
  * @static
  * @method fromUrl 
- * @param videoSrc {String} The URL for the video. A string, or an array of strings.
+ * @param videoSrc {String} The URL for the video. An array [path,type], or an array of such arrays.
  * @param scaleMode {Number} See {{#crossLink "PIXI/scaleModes:property"}}PIXI.scaleModes{{/crossLink}} for possible values
  * @return {VideoTexture}
  */
 PIXI.VideoTexture.fromUrl = function( videoSrc, scaleMode )
 {
     var videoElement = document.createElement('video');
-    function appendSourceElement( path )
+    function appendSourceElement(pathAndType)
     {
         var sourceElement = document.createElement('source');
-        sourceElement.src = path;
+        sourceElement.src = pathAndType[0];
+        sourceElement.type = pathAndType[1];
         videoElement.appendChild(sourceElement);
     }
     videoElement.autoPlay = true;
-    if( Array.isArray(videoSrc) ) {
-        videoSrc.forEach(function( path ) {
-            appendSourceElement(path);
+    if( Array.isArray(videoSrc[0]) ) {
+        videoSrc.forEach(function(pathAndType) {
+            appendSourceElement(pathAndType);
         });
     } else {
         appendSourceElement(videoSrc);
     }
     videoElement.load();
+    videoElement.play();
     return PIXI.VideoTexture.textureFromVideo( videoElement, scaleMode );
 };
