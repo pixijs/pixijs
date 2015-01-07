@@ -39,6 +39,8 @@ function VideoBaseTexture(source, scaleMode) {
         source.addEventListener('play', this._onPlayStart.bind(this));
         source.addEventListener('pause', this._onPlayStop.bind(this));
     }
+
+    this.__loaded = false;
 }
 
 VideoBaseTexture.prototype = Object.create(BaseTexture.prototype);
@@ -64,22 +66,21 @@ VideoBaseTexture.prototype._onPlayStop = function () {
 };
 
 VideoBaseTexture.prototype._onCanPlay = function () {
-    if (event.type === 'canplaythrough') {
-        this.hasLoaded  = true;
+    this.hasLoaded = true;
 
+    if (this.source) {
+        this.source.removeEventListener('canplay', this._boundOnCanPlay);
+        this.source.removeEventListener('canplaythrough', this._boundOnCanPlay);
 
-        if (this.source) {
-            this.source.removeEventListener('canplay', this._boundOnCanPlay);
-            this.source.removeEventListener('canplaythrough', this._boundOnCanPlay);
+        this.width = this.source.videoWidth;
+        this.height = this.source.videoHeight;
 
-            this.width = this.source.videoWidth;
-            this.height = this.source.videoHeight;
+        this.source.play();
 
-            // prevent multiple loaded dispatches..
-            if (!this.__loaded){
-                this.__loaded = true;
-                this.dispatchEvent({ type: 'loaded', content: this });
-            }
+        // prevent multiple loaded dispatches..
+        if(!this.__loaded){
+            this.__loaded = true;
+            this.emit('loaded', this);
         }
     }
 };
@@ -122,17 +123,61 @@ VideoBaseTexture.fromVideo = function (video, scaleMode) {
 /**
  * Mimic Pixi BaseTexture.from.... method.
  *
+ * This can be used in a couple ways, such as:
+ *
+ * ```js
+ * var texture = PIXI.VideoBaseTexture.fromUrl('http://mydomain.com/video.mp4');
+ *
+ * var texture = PIXI.VideoBaseTexture.fromUrl({ src: 'http://mydomain.com/video.mp4', mime: 'video/mp4' });
+ *
+ * var texture = PIXI.VideoBaseTexture.fromUrls(['/video.webm', '/video.mp4']);
+ *
+ * var texture = PIXI.VideoBaseTexture.fromUrls([
+ *     { src: '/video.webm', mime: 'video/webm' },
+ *     { src: '/video.mp4', mime: 'video/mp4' }
+ * ]);
+ * ```
+ *
+ * @alias fromUrls
  * @static
- * @param videoSrc {string} The URL for the video.
+ * @param videoSrc {string|object|string[]|object[]} The URL(s) for the video.
+ * @param [videoSrc.src] {string} One of the source urls for the video
+ * @param [videoSrc.mime] {string} The mimetype of the video (e.g. 'video/mp4'). If not specified
+ *  the url's extension will be used as the second part of the mime type.
  * @param scaleMode {number} See {@link scaleModes} for possible values
  * @return {VideoBaseTexture}
  */
 VideoBaseTexture.fromUrl = function (videoSrc, scaleMode) {
     var video = document.createElement('video');
 
-    video.src = videoSrc;
-    video.autoPlay = true;
+    // array of objects or strings
+    if (Array.isArray(videoSrc)) {
+        for (var i = 0; i < videoSrc.length; ++i) {
+            video.appendChild(createSource(videoSrc.src || videoSrc, videoSrc.mime));
+        }
+    }
+    // single object or string
+    else {
+        video.appendChild(createSource(videoSrc.src || videoSrc, videoSrc.mime));
+    }
+
+    video.load();
     video.play();
 
     return VideoBaseTexture.textureFromVideo(video, scaleMode);
 };
+
+VideoBaseTexture.fromUrls = VideoBaseTexture.fromUrl;
+
+function createSource(path, type) {
+    if (!type) {
+        type = 'video/' + path.substr(path.lastIndexOf('.') + 1);
+    }
+
+    var source = document.createElement('source');
+
+    source.src = path;
+    source.type = type;
+
+    return source;
+}
