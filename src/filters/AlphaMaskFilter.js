@@ -19,7 +19,8 @@ function AlphaMaskFilter(texture) {
     this.uniforms = {
         mask:           { type: 'sampler2D',    value: texture },
         mapDimensions:  { type: '2f',           value: { x: 1, y: 5112 } },
-        dimensions:     { type: '4fv',          value: [0, 0, 0, 0] }
+        dimensions:     { type: '4fv',          value: [0, 0, 0, 0] },
+        offset:         { type: '2f',           value: { x: 0, y: 0 } }
     };
 
     if (texture.baseTexture.hasLoaded) {
@@ -38,11 +39,11 @@ function AlphaMaskFilter(texture) {
         'varying vec2 vTextureCoord;',
         'varying vec4 vColor;',
 
-        'uniform sampler2D mask;',
         'uniform sampler2D uSampler;',
-        'uniform vec2 offset;',
-        'uniform vec4 dimensions;',
+        'uniform sampler2D mask;',
         'uniform vec2 mapDimensions;',
+        'uniform vec4 dimensions;',
+        'uniform vec2 offset;',
 
         'void main() {',
         '   vec2 mapCords = vTextureCoord.xy;',
@@ -89,6 +90,21 @@ Object.defineProperties(AlphaMaskFilter.prototype, {
         },
         set: function (value) {
             this.uniforms.mask.value = value;
+        }
+    },
+
+    /**
+     * The offset used to move the displacement map.
+     *
+     * @member {Point}
+     * @memberof AlphaMaskFilter#
+     */
+    offset: {
+        get: function() {
+            return this.uniforms.offset.value;
+        },
+        set: function(value) {
+            this.uniforms.offset.value = value;
         }
     }
 });
