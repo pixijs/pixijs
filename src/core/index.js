@@ -29,7 +29,7 @@ var core = module.exports = {
 
     // renderers - canvas
     CanvasRenderer:         require('./renderers/canvas/CanvasRenderer'),
-    CanvasGraphics:         require('./renderers/canvas/CanvasGraphics'),
+    CanvasGraphics:         require('./renderers/canvas/utils/CanvasGraphics'),
     CanvasBuffer:           require('./renderers/canvas/utils/CanvasBuffer'),
 
     // renderers - webgl

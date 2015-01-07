@@ -1,5 +1,12 @@
-var core = require('../core'),
-    GraphicsData = require('./GraphicsData');
+var DisplayObjectContainer = require('../display/DisplayObjectContainer'),
+    Sprite = require('../display/Sprite'),
+    Texture = require('../textures/Texture'),
+    CanvasBuffer = require('../renderers/canvas/utils/CanvasBuffer'),
+    CanvasGraphics = require('../renderers/canvas/utils/CanvasGraphics'),
+    WebGLGraphics = require('../renderers/webgl/utils/WebGLGraphics'),
+    GraphicsData = require('./GraphicsData'),
+    math = require('../math'),
+    CONST = require('../const');
 
 /**
  * The Graphics class contains methods used to draw primitive shapes such as lines, circles and
@@ -10,7 +17,7 @@ var core = require('../core'),
  * @namespace PIXI
  */
 function Graphics() {
-    core.DisplayObjectContainer.call(this);
+    DisplayObjectContainer.call(this);
 
     this.renderable = true;
 
@@ -60,7 +67,7 @@ function Graphics() {
      * @member {number}
      * @default CONST.blendModes.NORMAL;
      */
-    this.blendMode = core.CONST.blendModes.NORMAL;
+    this.blendMode = CONST.blendModes.NORMAL;
 
     /**
      * Current path
@@ -98,7 +105,7 @@ function Graphics() {
      * @member {REctangle}
      * @private
      */
-    this._localBounds = new core.math.Rectangle(0,0,1,1);
+    this._localBounds = new math.Rectangle(0,0,1,1);
 
     /**
      * Used to detect if the graphics object has changed. If this is set to true then the graphics
@@ -128,7 +135,7 @@ function Graphics() {
 }
 
 // constructor
-Graphics.prototype = Object.create(core.DisplayObjectContainer.prototype);
+Graphics.prototype = Object.create(DisplayObjectContainer.prototype);
 Graphics.prototype.constructor = Graphics;
 module.exports = Graphics;
 
@@ -179,7 +186,7 @@ Graphics.prototype.lineStyle = function (lineWidth, color, alpha) {
     if (this.currentPath) {
         if (this.currentPath.shape.points.length) {
             // halfway through a line? start a new one!
-            this.drawShape( new core.math.Polygon( this.currentPath.shape.points.slice(-2) ));
+            this.drawShape( new math.Polygon( this.currentPath.shape.points.slice(-2) ));
         }
         else {
             // otherwise its empty so lets just set the line properties
@@ -200,7 +207,7 @@ Graphics.prototype.lineStyle = function (lineWidth, color, alpha) {
  * @return {Graphics}
   */
 Graphics.prototype.moveTo = function (x, y) {
-    this.drawShape(new core.math.Polygon([x,y]));
+    this.drawShape(new math.Polygon([x,y]));
 
     return this;
 };
@@ -502,7 +509,7 @@ Graphics.prototype.endFill = function () {
  * @return {Graphics}
  */
 Graphics.prototype.drawRect = function ( x, y, width, height ) {
-    this.drawShape(new core.math.Rectangle(x,y, width, height));
+    this.drawShape(new math.Rectangle(x,y, width, height));
 
     return this;
 };
@@ -516,7 +523,7 @@ Graphics.prototype.drawRect = function ( x, y, width, height ) {
  * @param radius {number} Radius of the rectangle corners
  */
 Graphics.prototype.drawRoundedRect = function ( x, y, width, height, radius ) {
-    this.drawShape(new core.math.RoundedRectangle(x, y, width, height, radius));
+    this.drawShape(new math.RoundedRectangle(x, y, width, height, radius));
 
     return this;
 };
@@ -530,7 +537,7 @@ Graphics.prototype.drawRoundedRect = function ( x, y, width, height, radius ) {
  * @return {Graphics}
  */
 Graphics.prototype.drawCircle = function (x, y, radius) {
-    this.drawShape(new core.math.Circle(x,y, radius));
+    this.drawShape(new math.Circle(x,y, radius));
 
     return this;
 };
@@ -545,7 +552,7 @@ Graphics.prototype.drawCircle = function (x, y, radius) {
  * @return {Graphics}
  */
 Graphics.prototype.drawEllipse = function (x, y, width, height) {
-    this.drawShape(new core.math.Ellipse(x, y, width, height));
+    this.drawShape(new math.Ellipse(x, y, width, height));
 
     return this;
 };
@@ -561,7 +568,7 @@ Graphics.prototype.drawPolygon = function (path) {
         path = Array.prototype.slice.call(arguments);
     }
 
-    this.drawShape(new core.math.Polygon(path));
+    this.drawShape(new math.Polygon(path));
 
     return this;
 };
@@ -595,16 +602,16 @@ Graphics.prototype.generateTexture = function (resolution, scaleMode) {
 
     var bounds = this.getBounds();
 
-    var canvasBuffer = new core.CanvasBuffer(bounds.width * resolution, bounds.height * resolution);
+    var canvasBuffer = new CanvasBuffer(bounds.width * resolution, bounds.height * resolution);
 
-    var texture = core.Texture.fromCanvas(canvasBuffer.canvas, scaleMode);
+    var texture = Texture.fromCanvas(canvasBuffer.canvas, scaleMode);
     texture.baseTexture.resolution = resolution;
 
     canvasBuffer.context.scale(resolution, resolution);
 
     canvasBuffer.context.translate(-bounds.x,-bounds.y);
 
-    core.CanvasGraphics.renderGraphics(this, canvasBuffer.context);
+    CanvasGraphics.renderGraphics(this, canvasBuffer.context);
 
     return texture;
 };
@@ -633,7 +640,7 @@ Graphics.prototype.renderWebGL = function (renderer) {
 
         this._cachedSprite.worldAlpha = this.worldAlpha;
 
-        core.Sprite.prototype.renderWebGL.call(this._cachedSprite, renderer);
+        Sprite.prototype.renderWebGL.call(this._cachedSprite, renderer);
 
         return;
     }
@@ -664,7 +671,7 @@ Graphics.prototype.renderWebGL = function (renderer) {
             this.glDirty = false;
         }
 
-        core.WebGLGraphics.renderGraphics(this, renderer);
+        WebGLGraphics.renderGraphics(this, renderer);
 
         // only render if it has children!
         if (this.children.length) {
@@ -717,7 +724,7 @@ Graphics.prototype.renderCanvas = function (renderer) {
 
         this._cachedSprite.alpha = this.alpha;
 
-        core.Sprite.prototype.renderCanvas.call(this._cachedSprite, renderer);
+        Sprite.prototype.renderCanvas.call(this._cachedSprite, renderer);
 
         return;
     }
@@ -744,7 +751,7 @@ Graphics.prototype.renderCanvas = function (renderer) {
             transform.ty * resolution
         );
 
-        core.CanvasGraphics.renderGraphics(this, context);
+        CanvasGraphics.renderGraphics(this, context);
 
         for (var i = 0, j = this.children.length; i < j; ++i) {
             this.children[i].renderCanvas(renderer);
@@ -764,7 +771,7 @@ Graphics.prototype.renderCanvas = function (renderer) {
 Graphics.prototype.getBounds = function (matrix) {
     // return an empty object if the item is a mask!
     if (this.isMask) {
-        return core.math.Rectangle.EMPTY;
+        return math.Rectangle.EMPTY;
     }
 
     if (this.dirty) {
@@ -855,7 +862,7 @@ Graphics.prototype.updateLocalBounds = function () {
             var lineWidth = data.lineWidth;
             shape = data.shape;
 
-            if (type === core.CONST.SHAPES.RECT || type === core.CONST.SHAPES.RREC) {
+            if (type === CONST.SHAPES.RECT || type === CONST.SHAPES.RREC) {
                 x = shape.x - lineWidth/2;
                 y = shape.y - lineWidth/2;
                 w = shape.width + lineWidth;
@@ -867,7 +874,7 @@ Graphics.prototype.updateLocalBounds = function () {
                 minY = y < minY ? y : minY;
                 maxY = y + h > maxY ? y + h : maxY;
             }
-            else if (type === core.CONST.SHAPES.CIRC) {
+            else if (type === CONST.SHAPES.CIRC) {
                 x = shape.x;
                 y = shape.y;
                 w = shape.radius + lineWidth/2;
@@ -879,7 +886,7 @@ Graphics.prototype.updateLocalBounds = function () {
                 minY = y - h < minY ? y - h : minY;
                 maxY = y + h > maxY ? y + h : maxY;
             }
-            else if (type === core.CONST.SHAPES.ELIP) {
+            else if (type === CONST.SHAPES.ELIP) {
                 x = shape.x;
                 y = shape.y;
                 w = shape.width + lineWidth/2;
@@ -933,10 +940,10 @@ Graphics.prototype._generateCachedSprite = function () {
     var bounds = this.getLocalBounds();
 
     if (!this._cachedSprite) {
-        var canvasBuffer = new core.CanvasBuffer(bounds.width, bounds.height);
-        var texture = core.Texture.fromCanvas(canvasBuffer.canvas);
+        var canvasBuffer = new CanvasBuffer(bounds.width, bounds.height);
+        var texture = Texture.fromCanvas(canvasBuffer.canvas);
 
-        this._cachedSprite = new core.Sprite(texture);
+        this._cachedSprite = new Sprite(texture);
         this._cachedSprite.buffer = canvasBuffer;
 
         this._cachedSprite.worldTransform = this.worldTransform;
@@ -956,7 +963,7 @@ Graphics.prototype._generateCachedSprite = function () {
     this.worldAlpha = 1;
 
     // now render the graphic..
-    core.CanvasGraphics.renderGraphics(this, this._cachedSprite.buffer.context);
+    CanvasGraphics.renderGraphics(this, this._cachedSprite.buffer.context);
 
     this._cachedSprite.alpha = this.alpha;
 };
@@ -1015,7 +1022,7 @@ Graphics.prototype.drawShape = function (shape) {
 
     this.graphicsData.push(data);
 
-    if (data.type === core.CONST.SHAPES.POLY) {
+    if (data.type === CONST.SHAPES.POLY) {
         data.shape.closed = this.filling;
         this.currentPath = data;
     }
