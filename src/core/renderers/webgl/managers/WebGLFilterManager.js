@@ -373,7 +373,7 @@ WebGLFilterManager.prototype.applyFilterPass = function (filter, filterArea, wid
     gl.vertexAttribPointer(shader.aTextureCoord, 2, gl.FLOAT, false, 0, 0);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
-    gl.vertexAttribPointer(shader.colorAttribute, 2, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(shader.aColor, 2, gl.FLOAT, false, 0, 0);
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 

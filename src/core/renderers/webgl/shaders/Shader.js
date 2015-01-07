@@ -113,7 +113,7 @@ Shader.prototype.cacheUniformLocations = function (keys) {
 
 Shader.prototype.cacheAttributeLocations = function (keys) {
     for (var i = 0; i < keys.length; ++i) {
-        this.attributes[keys[i]] = this.gl.getAttributeLocation(this.program, keys[i]);
+        this.attributes[keys[i]] = this.gl.getAttribLocation(this.program, keys[i]);
     }
 
     // TODO: Check if this is needed anymore...

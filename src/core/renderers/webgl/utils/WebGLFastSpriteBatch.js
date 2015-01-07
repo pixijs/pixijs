@@ -393,5 +393,5 @@ WebGLFastSpriteBatch.prototype.start = function () {
     gl.vertexAttribPointer(this.shader.attributes.aScale, 2, gl.FLOAT, false, stride, 4 * 4);
     gl.vertexAttribPointer(this.shader.attributes.aRotation, 1, gl.FLOAT, false, stride, 6 * 4);
     gl.vertexAttribPointer(this.shader.attributes.aTextureCoord, 2, gl.FLOAT, false, stride, 7 * 4);
-    gl.vertexAttribPointer(this.shader.attributes.colorAttribute, 1, gl.FLOAT, false, stride, 9 * 4);
+    gl.vertexAttribPointer(this.shader.attributes.aColor, 1, gl.FLOAT, false, stride, 9 * 4);
 };

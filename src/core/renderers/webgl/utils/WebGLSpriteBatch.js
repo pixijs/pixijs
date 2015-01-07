@@ -452,7 +452,7 @@ WebGLSpriteBatch.prototype.flush = function () {
         gl.vertexAttribPointer(shader.aTextureCoord, 2, gl.FLOAT, false, stride, 2 * 4);
 
         // color attributes will be interpreted as unsigned bytes and normalized
-        gl.vertexAttribPointer(shader.colorAttribute, 4, gl.UNSIGNED_BYTE, true, stride, 4 * 4);
+        gl.vertexAttribPointer(shader.aColor, 4, gl.UNSIGNED_BYTE, true, stride, 4 * 4);
     }
 
     // upload the verts to the buffer
