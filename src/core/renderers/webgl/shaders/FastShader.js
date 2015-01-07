@@ -6,7 +6,7 @@ var Shader = require('./Shader');
  * @namespace PIXI
  * @param gl {WebGLContext} the current WebGL drawing context
  */
-function PixiFastShader(gl) {
+function FastShader(gl) {
     Shader.call(this,
         gl,
         // vertex shader
@@ -55,6 +55,6 @@ function PixiFastShader(gl) {
     );
 }
 
-PixiFastShader.prototype = Object.create(Shader.prototype);
-PixiFastShader.prototype.constructor = PixiFastShader;
-module.exports = PixiFastShader;
+FastShader.prototype = Object.create(Shader.prototype);
+FastShader.prototype.constructor = FastShader;
+module.exports = FastShader;

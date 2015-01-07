@@ -1,8 +1,8 @@
 var WebGLManager = require('./WebGLManager'),
     PrimitiveShader = require('../shaders/PrimitiveShader'),
     ComplexPrimitiveShader = require('../shaders/ComplexPrimitiveShader'),
-    PixiShader = require('../shaders/PixiShader'),
-    PixiFastShader = require('../shaders/PixiFastShader'),
+    Shader = require('../shaders/Shader'),
+    FastShader = require('../shaders/FastShader'),
     StripShader = require('../shaders/StripShader');
 
 /**
@@ -74,10 +74,10 @@ function WebGLShaderManager(renderer) {
         self.complexPrimitiveShader = new ComplexPrimitiveShader(gl);
 
         // this shader is used for the default sprite rendering
-        self.defaultShader = new PixiShader(gl);
+        self.defaultShader = new Shader(gl);
 
         // this shader is used for the fast sprite rendering
-        self.fastShader = new PixiFastShader(gl);
+        self.fastShader = new FastShader(gl);
 
         // the next one is used for rendering triangle strips
         self.stripShader = new StripShader(gl);

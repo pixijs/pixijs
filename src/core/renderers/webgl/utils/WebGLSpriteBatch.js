@@ -1,5 +1,5 @@
 var AbstractFilter = require('../../../../filters/AbstractFilter'),
-    PixiShader = require('../shaders/PixiShader'),
+    Shader = require('../shaders/Shader'),
     TextureUvs = require('./TextureUvs');
 
 /**
@@ -153,7 +153,7 @@ WebGLSpriteBatch.prototype.setContext = function (gl) {
 
     this.currentBlendMode = 99999;
 
-    var shader = new PixiShader(gl);
+    var shader = new Shader(gl);
 
     shader.fragmentSrc = this.defaultShader.fragmentSrc;
     shader.uniforms = {};
@@ -505,7 +505,7 @@ WebGLSpriteBatch.prototype.flush = function () {
                 shader = currentShader.shaders[gl.id];
 
                 if (!shader) {
-                    shader = new PixiShader(gl);
+                    shader = new Shader(gl);
 
                     shader.fragmentSrc =currentShader.fragmentSrc;
                     shader.uniforms =currentShader.uniforms;

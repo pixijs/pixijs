@@ -1,6 +1,6 @@
 var WebGLManager = require('./WebGLManager'),
     FilterTexture = require('./FilterTexture'),
-    PixiShader = require('../shaders/PixiShader');
+    Shader = require('../shaders/Shader');
 
 /**
  * @class
@@ -340,7 +340,7 @@ WebGLFilterManager.prototype.applyFilterPass = function (filter, filterArea, wid
     var shader = filter.shaders[gl.id];
 
     if (!shader) {
-        shader = new PixiShader(gl);
+        shader = new Shader(gl);
 
         shader.fragmentSrc = filter.fragmentSrc;
         shader.uniforms = filter.uniforms;
