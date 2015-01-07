@@ -181,17 +181,13 @@ CanvasGraphics.renderGraphicsMask = function (graphics, context) {
         return;
     }
 
-    if (len > 1) {
-        len = 1;
-        window.console.log('Pixi.js warning: masks in canvas can only mask using the first path in the graphics object');
-    }
+    context.beginPath();
 
-    for (var i = 0; i < 1; i++) {
+    for (var i = 0; i < len; i++) {
         var data = graphics.graphicsData[i];
         var shape = data.shape;
 
         if (data.type === CONST.SHAPES.POLY) {
-            context.beginPath();
 
             var points = shape.points;
 
@@ -208,14 +204,12 @@ CanvasGraphics.renderGraphicsMask = function (graphics, context) {
 
         }
         else if (data.type === CONST.SHAPES.RECT) {
-            context.beginPath();
             context.rect(shape.x, shape.y, shape.width, shape.height);
             context.closePath();
         }
         else if (data.type === CONST.SHAPES.CIRC) {
             // TODO - need to be Undefined!
-            context.beginPath();
-            context.arc(shape.x, shape.y, shape.radius,0,2*Math.PI);
+            context.arc(shape.x, shape.y, shape.radius, 0, 2 * Math.PI);
             context.closePath();
         }
         else if (data.type === CONST.SHAPES.ELIP) {
@@ -227,8 +221,6 @@ CanvasGraphics.renderGraphicsMask = function (graphics, context) {
 
             var x = shape.x - w/2;
             var y = shape.y - h/2;
-
-            context.beginPath();
 
             var kappa = 0.5522848,
                 ox = (w / 2) * kappa, // control point offset horizontal
@@ -247,17 +239,15 @@ CanvasGraphics.renderGraphicsMask = function (graphics, context) {
         }
         else if (data.type === CONST.SHAPES.RREC) {
 
-            var pts = shape.points;
-            var rx = pts[0];
-            var ry = pts[1];
-            var width = pts[2];
-            var height = pts[3];
-            var radius = pts[4];
+            var rx = shape.x;
+            var ry = shape.y;
+            var width = shape.width;
+            var height = shape.height;
+            var radius = shape.radius;
 
             var maxRadius = Math.min(width, height) / 2 | 0;
             radius = radius > maxRadius ? maxRadius : radius;
 
-            context.beginPath();
             context.moveTo(rx, ry + radius);
             context.lineTo(rx, ry + height - radius);
             context.quadraticCurveTo(rx, ry + height, rx + radius, ry + height);
