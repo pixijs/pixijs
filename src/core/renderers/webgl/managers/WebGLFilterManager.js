@@ -1,5 +1,5 @@
 var WebGLManager = require('./WebGLManager'),
-    FilterTexture = require('./FilterTexture'),
+    FilterTexture = require('../utils/FilterTexture'),
     Shader = require('../shaders/Shader');
 
 /**

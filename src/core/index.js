@@ -29,7 +29,7 @@ var core = module.exports = {
     Texture:                require('./textures/Texture'),
     BaseTexture:            require('./textures/BaseTexture'),
     RenderTexture:          require('./textures/RenderTexture'),
-    VideoTexture:           require('./textures/VideoTexture'),
+    VideoBaseTexture:       require('./textures/VideoBaseTexture'),
 
     // renderers - canvas
     CanvasRenderer:         require('./renderers/canvas/CanvasRenderer'),

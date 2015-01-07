@@ -9,6 +9,7 @@ var path        = require('path'),
     watchify    = require('watchify'),
     handleErrors = require('../util/handleErrors');
 
+// TODO - Concat license header to dev/prod build files.
 function rebundle() {
     return this.bundle()
         .on('error', handleErrors.handler)

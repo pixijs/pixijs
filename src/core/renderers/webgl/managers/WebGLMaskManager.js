@@ -1,5 +1,5 @@
 var WebGLManager = require('./WebGLManager'),
-    WebGLGraphics = require('./WebGLGraphics');
+    WebGLGraphics = require('../utils/WebGLGraphics');
 
 /**
  * @class
