@@ -660,7 +660,7 @@ Graphics.prototype.renderWebGL = function (renderer) {
         if (this.blendMode !== renderer.spriteBatch.currentBlendMode) {
             renderer.spriteBatch.currentBlendMode = this.blendMode;
 
-            var blendModeWebGL = blendModesWebGL[renderer.spriteBatch.currentBlendMode];
+            var blendModeWebGL = renderer.blendModes[renderer.spriteBatch.currentBlendMode];
 
             renderer.spriteBatch.gl.blendFunc(blendModeWebGL[0], blendModeWebGL[1]);
         }
@@ -734,7 +734,7 @@ Graphics.prototype.renderCanvas = function (renderer) {
 
         if (this.blendMode !== renderer.currentBlendMode) {
             renderer.currentBlendMode = this.blendMode;
-            context.globalCompositeOperation = blendModesCanvas[renderer.currentBlendMode];
+            context.globalCompositeOperation = renderer.blendModes[renderer.currentBlendMode];
         }
 
         if (this._mask) {

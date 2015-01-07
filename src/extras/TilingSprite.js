@@ -155,7 +155,7 @@ TilingSprite.prototype.renderWebGL = function (renderer) {
 
         if (this.tilingTexture && this.tilingTexture.needsUpdate) {
             //TODO - tweaking
-            updateWebGLTexture(this.tilingTexture.baseTexture, renderer.gl);
+            renderer.updateTexture(this.tilingTexture.baseTexture);
             this.tilingTexture.needsUpdate = false;
            // this.tilingTexture._uvs = null;
         }
@@ -226,7 +226,7 @@ TilingSprite.prototype.renderCanvas = function (renderer) {
     // check blend mode
     if (this.blendMode !== renderer.currentBlendMode) {
         renderer.currentBlendMode = this.blendMode;
-        context.globalCompositeOperation = blendModesCanvas[renderer.currentBlendMode];
+        context.globalCompositeOperation = renderer.blendModes[renderer.currentBlendMode];
     }
 
     var tilePosition = this.tilePosition;

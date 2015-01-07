@@ -534,6 +534,8 @@ DisplayObjectContainer.prototype._generateCachedSprite = function () {
     var bounds = this.getLocalBounds();
 
     if (!this._cachedSprite) {
+        // TODO - RenderTexture now *requires* a renderer instance, so this is like broken
+        // because `renderer` isn't actually in scope here :P
         var renderTexture = new RenderTexture(renderer, bounds.width | 0, bounds.height | 0);
 
         this._cachedSprite = new Sprite(renderTexture);

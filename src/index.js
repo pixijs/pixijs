@@ -4,7 +4,6 @@ module.exports = {
     filters:        require('./filters'),
     interaction:    require('./interaction'),
     loaders:        require('./loaders'),
-    primitives:     require('./primitives'),
     spine:          require('./spine'),
     text:           require('./text')
 };

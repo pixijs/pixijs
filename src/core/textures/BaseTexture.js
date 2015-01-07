@@ -254,7 +254,6 @@ BaseTexture.prototype.loadSource = function (source) {
             }
         }
     }
-    }
 };
 
 /**

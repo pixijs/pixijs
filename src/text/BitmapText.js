@@ -130,8 +130,9 @@ Object.defineProperties(BitmapText.prototype, {
         set: function (value) {
             value = value.split(' ');
 
-            this._style.fontName = font[font.length - 1];
-            this._style.fontSize = font.length >= 2 ? parseInt(font[font.length - 2], 10) : BitmapText.fonts[this.fontName].size;
+            // TODO - This should be object-based not string based like it has been.
+            this._style.fontName = value[value.length - 1];
+            this._style.fontSize = value.length >= 2 ? parseInt(value[value.length - 2], 10) : BitmapText.fonts[this.fontName].size;
 
             this.dirty = true;
         }

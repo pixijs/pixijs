@@ -20,7 +20,7 @@
     "forin"         : false,    // Disallow `for in` loops without `hasOwnPrototype`.
     "immed"         : true,     // Require immediate invocations to be wrapped in parens e.g. `( function(){}() );`
     "indent"        : 4,        // Require that 4 spaces are used for indentation.
-    "latedef"       : true,     // Prohibit variable use before definition.
+    "latedef"       : "func",   // Prohibit variable use before definition.
     "newcap"        : true,     // Require capitalization of all constructor functions e.g. `new F()`.
     "noarg"         : true,     // Prohibit use of `arguments.caller` and `arguments.callee`.
     "noempty"       : true,     // Prohibit use of empty blocks.

@@ -21,6 +21,10 @@ var core = module.exports = {
     Sprite:                 require('./display/Sprite'),
     SpriteBatch:            require('./display/SpriteBatch'),
 
+    // primitives
+    Graphics:               require('./primitives/Graphics'),
+    GraphicsData:           require('./primitives/GraphicsData'),
+
     // textures
     Texture:                require('./textures/Texture'),
     BaseTexture:            require('./textures/BaseTexture'),

@@ -100,7 +100,7 @@ WebGLFilterManager.prototype.pushFilter = function (filterBlock) {
         localY = filterArea.y;
 
     if (filterArea.x < 0) {
-        filterArea.x = width += filterArea.x;
+        filterArea.width += filterArea.x;
         filterArea.x = 0;
     }
 
