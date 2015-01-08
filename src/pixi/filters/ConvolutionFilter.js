@@ -48,7 +48,7 @@ PIXI.ConvolutionFilter = function(matrix, width, height)
             'vec4 c33 = texture2D(texture, vTextureCoord + px );', // bottom right
 
             'gl_FragColor = ',
-            'c11 * m[0] + c12 * m[1] + c22 * m[2] +',
+            'c11 * m[0] + c12 * m[1] + c13 * m[2] +',
             'c21 * m[3] + c22 * m[4] + c23 * m[5] +',
             'c31 * m[6] + c32 * m[7] + c33 * m[8];',
             'gl_FragColor.a = c22.a;',
