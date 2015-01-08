@@ -69,7 +69,10 @@ function BaseTexture(source, scaleMode) {
     /**
      * The image source that is used to create the texture.
      *
+     * TODO: Make this a setter that calls loadSource();
+     *
      * @member {Image|Canvas}
+     * @readonly
      */
     this.source = null; // set in loadSource, if at all
 
