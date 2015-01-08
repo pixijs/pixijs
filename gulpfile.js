@@ -29,4 +29,4 @@ global.paths = {
 requireDir('./gulp/tasks', { recurse: true });
 
 // default task
-gulp.task('default', ['build']);
+gulp.task('default', ['jshint', 'build']);
