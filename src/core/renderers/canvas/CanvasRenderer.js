@@ -203,13 +203,9 @@ CanvasRenderer.prototype.render = function (object) {
 /**
  * Removes everything from the renderer and optionally removes the Canvas DOM element.
  *
- * @param [removeView=true] {boolean} Removes the Canvas element from the DOM.
+ * @param [removeView=false] {boolean} Removes the Canvas element from the DOM.
  */
 CanvasRenderer.prototype.destroy = function (removeView) {
-    if (typeof removeView === 'undefined') {
-        removeView = true;
-    }
-
     if (removeView && this.view.parent) {
         this.view.parent.removeChild(this.view);
     }

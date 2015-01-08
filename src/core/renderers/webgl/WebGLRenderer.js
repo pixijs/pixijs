@@ -452,8 +452,13 @@ WebGLRenderer.prototype.handleContextRestored = function () {
 /**
  * Removes everything from the renderer (event listeners, spritebatch, etc...)
  *
+ * @param [removeView=false] {boolean} Removes the Canvas element from the DOM.
  */
-WebGLRenderer.prototype.destroy = function () {
+WebGLRenderer.prototype.destroy = function (removeView) {
+    if (removeView && this.view.parent) {
+        this.view.parent.removeChild(this.view);
+    }
+
     // remove listeners
     this.view.removeEventListener('webglcontextlost', this.contextLostBound);
     this.view.removeEventListener('webglcontextrestored', this.contextRestoredBound);
