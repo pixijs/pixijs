@@ -222,8 +222,8 @@ PIXI.Text.prototype.updateText = function()
     {
         this.context.fillStyle = this.style.dropShadowColor;
 
-        var xShadowOffset = Math.sin(this.style.dropShadowAngle) * this.style.dropShadowDistance;
-        var yShadowOffset = Math.cos(this.style.dropShadowAngle) * this.style.dropShadowDistance;
+        var xShadowOffset = Math.cos(this.style.dropShadowAngle) * this.style.dropShadowDistance;
+        var yShadowOffset = Math.sin(this.style.dropShadowAngle) * this.style.dropShadowDistance;
 
         for (i = 0; i < lines.length; i++)
         {
