@@ -458,21 +458,53 @@ WebGLRenderer.prototype.destroy = function () {
     this.view.removeEventListener('webglcontextlost', this.contextLostBound);
     this.view.removeEventListener('webglcontextrestored', this.contextRestoredBound);
 
-    this.projection = null;
-    this.offset = null;
-
     // time to create the render managers! each one focuses on managine a state in webGL
     this.shaderManager.destroy();
     this.spriteBatch.destroy();
     this.maskManager.destroy();
     this.filterManager.destroy();
 
+
+    // this.uuid = utils.uuid();
+    // this.type = CONST.WEBGL_RENDERER;
+
+    // this.resolution = options.resolution;
+    // this.transparent = options.transparent;
+
+    this._backgroundColor = 0x000000;
+    this._backgroundColorRgb = null;
+
+    // this.backgroundColor = null;
+    // this.autoResize = options.autoResize || false;
+    // this.preserveDrawingBuffer = options.preserveDrawingBuffer;
+    // this.clearBeforeRender = options.clearBeforeRender;
+    // this.width = width || 800;
+    // this.height = height || 600;
+
+    this.view = null;
+
+    this.contextLostBound = null;
+    this.contextRestoredBound = null;
+
+    this._contextOptions = null;
+
+    this.projection = null;
+    this.offset = null;
+    this.drawCount = 0;
+
     this.shaderManager = null;
     this.spriteBatch = null;
     this.maskManager = null;
     this.filterManager = null;
+    this.stencilManager = null;
+    this.blendModeManager = null;
+
+    this.blendModes = null;
 
     this.gl = null;
+    this.blendModes = null;
+
+    utils.webglRenderers.splice(utils.webglRenderers.indexOf(this), 1);
 };
 
 /**
