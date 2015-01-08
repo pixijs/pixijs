@@ -410,16 +410,29 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
         }
         else
         {
+            //IE fix for issue #1331
+            var normalizedCrop = {};
+            normalizedCrop.width = this.texture.crop.width;
+            normalizedCrop.height = this.texture.crop.height;
+            //check if crop width is greater than source width and if so set the width to source width
+            if(this.texture.baseTexture.source.width < this.texture.crop.width){
+                normalizedCrop.width = this.texture.baseTexture.source.width;
+            }
+            //check if crop height is greater than source height and if so set the height to source height
+            if(this.texture.baseTexture.source.height < this.texture.crop.height){
+                normalizedCrop.height = this.texture.baseTexture.source.height;
+            }
+            
             renderSession.context.drawImage(
                                 this.texture.baseTexture.source,
                                 this.texture.crop.x,
                                 this.texture.crop.y,
-                                this.texture.crop.width,
-                                this.texture.crop.height,
+                                normalizedCrop.width,
+                                normalizedCrop.height,
                                 dx / resolution,
                                 dy / resolution,
-                                this.texture.crop.width / resolution,
-                                this.texture.crop.height / resolution);
+                                normalizedCrop.width / resolution,
+                                normalizedCrop.height / resolution);
         }
     }
 
