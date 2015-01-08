@@ -12,7 +12,7 @@
  * @class AssetLoader
  * @constructor
  * @uses EventTarget
- * @param assetURLs {Array<String>} An array of image/sprite sheet urls that you would like loaded
+ * @param assetURLs {Array(String)} An array of image/sprite sheet urls that you would like loaded
  *      supported. Supported image formats include 'jpeg', 'jpg', 'png', 'gif'. Supported
  *      sprite sheet data formats only include 'JSON' at this time. Supported bitmap font
  *      data formats include 'xml' and 'fnt'.
@@ -24,7 +24,7 @@ PIXI.AssetLoader = function(assetURLs, crossorigin)
      * The array of asset URLs that are going to be loaded
      *
      * @property assetURLs
-     * @type Array<String>
+     * @type Array(String)
      */
     this.assetURLs = assetURLs;
 

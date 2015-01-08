@@ -383,7 +383,7 @@ Object.defineProperty(PIXI.DisplayObject.prototype, 'mask', {
  * * IMPORTANT: This is a webGL only feature and will be ignored by the canvas renderer.
  * To remove filters simply set this property to 'null'
  * @property filters
- * @type Array An array of filters
+ * @type Array(Filter)
  */
 Object.defineProperty(PIXI.DisplayObject.prototype, 'filters', {
 
@@ -459,7 +459,6 @@ PIXI.DisplayObject.prototype.updateTransform = function()
     // temporary matrix variables
     var a, b, c, d, tx, ty;
 
-    // TODO create a const for 2_PI 
     // so if rotation is between 0 then we can simplify the multiplication process..
     if(this.rotation % PIXI.PI_2)
     {
@@ -562,7 +561,7 @@ PIXI.DisplayObject.prototype.setStageReference = function(stage)
  *
  * @method generateTexture
  * @param resolution {Number} The resolution of the texture being generated
- * @param scaleMode {Number} Should be one of the PIXI.scaleMode consts
+ * @param scaleMode {Number} See {{#crossLink "PIXI/scaleModes:property"}}PIXI.scaleModes{{/crossLink}} for possible values
  * @param renderer {CanvasRenderer|WebGLRenderer} The renderer used to generate the texture.
  * @return {Texture} a texture of the graphics object
  */
@@ -599,7 +598,8 @@ PIXI.DisplayObject.prototype.updateCache = function()
  */
 PIXI.DisplayObject.prototype.toGlobal = function(position)
 {
-    this.updateTransform();
+    // don't need to u[date the lot
+    this.displayObjectUpdateTransform();
     return this.worldTransform.apply(position);
 };
 
@@ -613,13 +613,14 @@ PIXI.DisplayObject.prototype.toGlobal = function(position)
  */
 PIXI.DisplayObject.prototype.toLocal = function(position, from)
 {
+     // 
     if (from)
     {
         position = from.toGlobal(position);
     }
 
-    this.updateTransform();
-
+    // don't need to u[date the lot
+    this.displayObjectUpdateTransform();
     return this.worldTransform.applyInverse(position);
 };
 
@@ -676,7 +677,7 @@ PIXI.DisplayObject.prototype._generateCachedSprite = function()
     PIXI.DisplayObject._tempMatrix.tx = -bounds.x;
     PIXI.DisplayObject._tempMatrix.ty = -bounds.y;
     
-    this._cachedSprite.texture.render(this, PIXI.DisplayObject._tempMatrix );
+    this._cachedSprite.texture.render(this, PIXI.DisplayObject._tempMatrix, true);
 
     this._cachedSprite.anchor.x = -( bounds.x / bounds.width );
     this._cachedSprite.anchor.y = -( bounds.y / bounds.height );

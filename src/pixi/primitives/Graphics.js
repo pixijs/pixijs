@@ -57,7 +57,7 @@ PIXI.Graphics = function()
      * @default 0xFFFFFF
      */
     this.tint = 0xFFFFFF;
-    
+
     /**
      * The blend mode to be applied to the graphic shape. Apply a value of PIXI.blendModes.NORMAL to reset the blend mode.
      *
@@ -1109,9 +1109,11 @@ PIXI.GraphicsData = function(lineWidth, lineColor, lineAlpha, fillColor, fillAlp
     this.lineWidth = lineWidth;
     this.lineColor = lineColor;
     this.lineAlpha = lineAlpha;
+    this._lineTint = lineColor;
 
     this.fillColor = fillColor;
     this.fillAlpha = fillAlpha;
+    this._fillTint = fillColor;
     this.fill = fill;
 
     this.shape = shape;

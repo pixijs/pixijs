@@ -36,8 +36,8 @@ PIXI.Sprite = function(texture)
      * @property texture
      * @type Texture
      */
-    this.texture = texture;
-
+    this.texture = texture || PIXI.Texture.emptyTexture;
+    
     /**
      * The width of the sprite (this is initially set by the texture)
      *
@@ -78,12 +78,12 @@ PIXI.Sprite = function(texture)
      * The shader that will be used to render the texture to the stage. Set to null to remove a current shader.
      *
      * @property shader
-     * @type PIXI.AbstractFilter
+     * @type AbstractFilter
      * @default null
      */
     this.shader = null;
 
-    if(texture.baseTexture.hasLoaded)
+    if(this.texture.baseTexture.hasLoaded)
     {
         this.onTextureUpdate();
     }
@@ -187,43 +187,59 @@ PIXI.Sprite.prototype.getBounds = function(matrix)
     var tx = worldTransform.tx;
     var ty = worldTransform.ty;
 
-    var x1 = a * w1 + c * h1 + tx;
-    var y1 = d * h1 + b * w1 + ty;
-
-    var x2 = a * w0 + c * h1 + tx;
-    var y2 = d * h1 + b * w0 + ty;
-
-    var x3 = a * w0 + c * h0 + tx;
-    var y3 = d * h0 + b * w0 + ty;
-
-    var x4 =  a * w1 + c * h0 + tx;
-    var y4 =  d * h0 + b * w1 + ty;
-
     var maxX = -Infinity;
     var maxY = -Infinity;
 
     var minX = Infinity;
     var minY = Infinity;
 
-    minX = x1 < minX ? x1 : minX;
-    minX = x2 < minX ? x2 : minX;
-    minX = x3 < minX ? x3 : minX;
-    minX = x4 < minX ? x4 : minX;
+    if(b === 0 && c === 0)
+    {
+        // scale may be negative!
+        if(a < 0)a *= -1;
+        if(d < 0)d *= -1;
 
-    minY = y1 < minY ? y1 : minY;
-    minY = y2 < minY ? y2 : minY;
-    minY = y3 < minY ? y3 : minY;
-    minY = y4 < minY ? y4 : minY;
+        // this means there is no rotation going on right? RIGHT?
+        // if thats the case then we can avoid checking the bound values! yay         
+        minX = a * w1 + tx;
+        maxX = a * w0 + tx;
+        minY = d * h1 + ty;
+        maxY = d * h0 + ty;
+    }
+    else
+    {
+        var x1 = a * w1 + c * h1 + tx;
+        var y1 = d * h1 + b * w1 + ty;
 
-    maxX = x1 > maxX ? x1 : maxX;
-    maxX = x2 > maxX ? x2 : maxX;
-    maxX = x3 > maxX ? x3 : maxX;
-    maxX = x4 > maxX ? x4 : maxX;
+        var x2 = a * w0 + c * h1 + tx;
+        var y2 = d * h1 + b * w0 + ty;
 
-    maxY = y1 > maxY ? y1 : maxY;
-    maxY = y2 > maxY ? y2 : maxY;
-    maxY = y3 > maxY ? y3 : maxY;
-    maxY = y4 > maxY ? y4 : maxY;
+        var x3 = a * w0 + c * h0 + tx;
+        var y3 = d * h0 + b * w0 + ty;
+
+        var x4 =  a * w1 + c * h0 + tx;
+        var y4 =  d * h0 + b * w1 + ty;
+
+        minX = x1 < minX ? x1 : minX;
+        minX = x2 < minX ? x2 : minX;
+        minX = x3 < minX ? x3 : minX;
+        minX = x4 < minX ? x4 : minX;
+
+        minY = y1 < minY ? y1 : minY;
+        minY = y2 < minY ? y2 : minY;
+        minY = y3 < minY ? y3 : minY;
+        minY = y4 < minY ? y4 : minY;
+
+        maxX = x1 > maxX ? x1 : maxX;
+        maxX = x2 > maxX ? x2 : maxX;
+        maxX = x3 > maxX ? x3 : maxX;
+        maxX = x4 > maxX ? x4 : maxX;
+
+        maxY = y1 > maxY ? y1 : maxY;
+        maxY = y2 > maxY ? y2 : maxY;
+        maxY = y3 > maxY ? y3 : maxY;
+        maxY = y4 > maxY ? y4 : maxY;
+    }
 
     var bounds = this._bounds;
 
@@ -332,6 +348,17 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
 
         renderSession.context.globalAlpha = this.worldAlpha;
 
+         //  If smoothingEnabled is supported and we need to change the smoothing property for this texture
+        if (renderSession.smoothProperty && renderSession.scaleMode !== this.texture.baseTexture.scaleMode)
+        {
+            renderSession.scaleMode = this.texture.baseTexture.scaleMode;
+            renderSession.context[renderSession.smoothProperty] = (renderSession.scaleMode === PIXI.scaleModes.LINEAR);
+        }
+
+        //  If the texture is trimmed we offset by the trim x/y, otherwise we use the frame dimensions
+        var dx = (this.texture.trim) ? this.texture.trim.x - this.anchor.x * this.texture.trim.width : this.anchor.x * -this.texture.frame.width;
+        var dy = (this.texture.trim) ? this.texture.trim.y - this.anchor.y * this.texture.trim.height : this.anchor.y * -this.texture.frame.height;
+
         //  Allow for pixel rounding
         if (renderSession.roundPixels)
         {
@@ -340,8 +367,11 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
                 this.worldTransform.b,
                 this.worldTransform.c,
                 this.worldTransform.d,
-                (this.worldTransform.tx* renderSession.resolution) | 0,
-                (this.worldTransform.ty* renderSession.resolution) | 0);
+                (this.worldTransform.tx * renderSession.resolution) | 0,
+                (this.worldTransform.ty * renderSession.resolution) | 0);
+
+            dx = dx | 0;
+            dy = dy | 0;
         }
         else
         {
@@ -354,17 +384,9 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
                 this.worldTransform.ty * renderSession.resolution);
         }
 
-        //  If smoothingEnabled is supported and we need to change the smoothing property for this texture
-        if (renderSession.smoothProperty && renderSession.scaleMode !== this.texture.baseTexture.scaleMode)
-        {
-            renderSession.scaleMode = this.texture.baseTexture.scaleMode;
-            renderSession.context[renderSession.smoothProperty] = (renderSession.scaleMode === PIXI.scaleModes.LINEAR);
-        }
+       
 
-        //  If the texture is trimmed we offset by the trim x/y, otherwise we use the frame dimensions
-        var dx = (this.texture.trim) ? this.texture.trim.x - this.anchor.x * this.texture.trim.width : this.anchor.x * -this.texture.frame.width;
-        var dy = (this.texture.trim) ? this.texture.trim.y - this.anchor.y * this.texture.trim.height : this.anchor.y * -this.texture.frame.height;
-
+     
         if (this.tint !== 0xFFFFFF)
         {
             if (this.cachedTint !== this.tint)
