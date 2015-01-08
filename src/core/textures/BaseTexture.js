@@ -300,10 +300,7 @@ BaseTexture.prototype.destroy = function () {
  *
  */
 BaseTexture.prototype.dispose = function () {
-    // delete the webGL textures if any.
-    for (var i = 0; i < utils.webglRenderers.length; ++i) {
-        utils.webglRenderers[i].destroyTexture(this);
-    }
+    this.emit('dispose', this);
 };
 
 /**

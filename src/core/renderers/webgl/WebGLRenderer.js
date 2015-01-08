@@ -214,7 +214,8 @@ function WebGLRenderer(width, height, options) {
 
     this.blendModes = null;
 
-    utils.webglRenderers.push(this);
+    this._boundUpdateTexture = this.updateTexture.bind(this);
+    this._boundDestroyTexture = this.destroyTexture.bind(this);
 
     // time init the context..
     this._initContext();
@@ -381,6 +382,7 @@ WebGLRenderer.prototype.updateTexture = function (texture) {
     if (!texture._glTextures[gl.id]) {
         texture._glTextures[gl.id] = gl.createTexture();
         texture.on('update', this._boundUpdateTexture);
+        texture.on('dispose', this._boundDestroyTexture);
     }
 
     gl.bindTexture(gl.TEXTURE_2D, texture._glTextures[gl.id]);
@@ -508,8 +510,6 @@ WebGLRenderer.prototype.destroy = function (removeView) {
 
     this.gl = null;
     this.blendModes = null;
-
-    utils.webglRenderers.splice(utils.webglRenderers.indexOf(this), 1);
 };
 
 /**
