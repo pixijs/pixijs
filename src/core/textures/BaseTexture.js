@@ -290,6 +290,16 @@ BaseTexture.prototype.destroy = function () {
     }
     this.source = null;
 
+    this.dispose();
+};
+
+/**
+ * Frees the texture from WebGL memory without destroying this texture object.
+ * This means you can still use the texture later which will upload it to GPU
+ * memory again.
+ *
+ */
+BaseTexture.prototype.dispose = function () {
     // delete the webGL textures if any.
     for (var i = 0; i < utils.webglRenderers.length; ++i) {
         utils.webglRenderers[i].destroyTexture(this);
