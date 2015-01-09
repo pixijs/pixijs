@@ -75,7 +75,7 @@ SpriteBatch.prototype.renderWebGL = function (renderer) {
 
     renderer.shaderManager.setShader(renderer.shaderManager.fastShader);
 
-    this.fastSpriteBatch.begin(this, renderer);
+    this.fastSpriteBatch.begin(this);
     this.fastSpriteBatch.render(this);
 
     renderer.spriteBatch.start();

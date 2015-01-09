@@ -329,10 +329,10 @@ WebGLRenderer.prototype.renderDisplayObject = function (displayObject, projectio
     this.offset = this.offset;
 
     // start the sprite batch
-    this.spriteBatch.begin(this);
+    this.spriteBatch.begin();
 
     // start the filter manager
-    this.filterManager.begin(this, buffer);
+    this.filterManager.begin(buffer);
 
     // render the scene!
     displayObject.renderWebGL(this);

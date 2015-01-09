@@ -46,12 +46,11 @@ module.exports = WebGLFilterManager;
  * @param renderer {WebGLRenderer}
  * @param buffer {ArrayBuffer}
  */
-WebGLFilterManager.prototype.begin = function (renderer, buffer) {
-    this.renderer = renderer;
-    this.defaultShader = renderer.shaderManager.defaultShader;
+WebGLFilterManager.prototype.begin = function (buffer) {
+    this.defaultShader = this.renderer.shaderManager.defaultShader;
 
-    this.width = renderer.projection.x * 2;
-    this.height = -renderer.projection.y * 2;
+    this.width = this.renderer.projection.x * 2;
+    this.height = -this.renderer.projection.y * 2;
 
     this.buffer = buffer;
 };

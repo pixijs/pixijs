@@ -10,9 +10,16 @@
 
 /**
  * @class
+ * @private
  * @namespace PIXI
+ * @param renderer {WebGLRenderer} The renderer this sprite batch works for.
  */
 function WebGLFastSpriteBatch(renderer) {
+    /**
+     * @member {WebGLRenderer}
+     */
+    this.renderer = renderer;
+
     /**
      * @member {number}
      */
@@ -100,8 +107,6 @@ function WebGLFastSpriteBatch(renderer) {
      */
     this.matrix = null;
 
-    this.renderer = renderer;
-
     this.setupContext();
 }
 
@@ -134,9 +139,8 @@ WebGLFastSpriteBatch.prototype.setupContext = function () {
  * @param spriteBatch {WebGLSpriteBatch}
  * @param renderer {WebGLRenderer|CanvasRenderer} The renderer
  */
-WebGLFastSpriteBatch.prototype.begin = function (spriteBatch, renderer) {
-    this.renderer = renderer;
-    this.shader = renderer.shaderManager.fastShader;
+WebGLFastSpriteBatch.prototype.begin = function (spriteBatch) {
+    this.shader = this.renderer.shaderManager.fastShader;
 
     this.matrix = spriteBatch.worldTransform.toArray(true);
 

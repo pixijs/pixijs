@@ -18,8 +18,14 @@ var AbstractFilter = require('../../../../filters/AbstractFilter'),
  * @class
  * @private
  * @namespace PIXI
+ * @param renderer {WebGLRenderer} The renderer this sprite batch works for.
  */
-function WebGLSpriteBatch() {
+function WebGLSpriteBatch(renderer) {
+    /**
+     * @member {WebGLRenderer}
+     */
+    this.renderer = renderer;
+
     /**
      * @member {number}
      */
@@ -163,11 +169,10 @@ WebGLSpriteBatch.prototype.setContext = function (gl) {
 };
 
 /**
- * @param renderer {WebGLRenderer} The renderer
+ *
  */
-WebGLSpriteBatch.prototype.begin = function (renderSession) {
-    this.renderSession = renderSession;
-    this.shader = this.renderSession.shaderManager.defaultShader;
+WebGLSpriteBatch.prototype.begin = function () {
+    this.shader = this.renderer.shaderManager.defaultShader;
 
     this.start();
 };
@@ -244,7 +249,7 @@ WebGLSpriteBatch.prototype.render = function (sprite) {
     var colors = this.colors;
     var positions = this.positions;
 
-    if (this.renderSession.roundPixels) {
+    if (this.renderer.roundPixels) {
         // xy
         positions[index] = a * w1 + c * h1 + tx | 0;
         positions[index+1] = d * h1 + b * w1 + ty | 0;
@@ -469,7 +474,7 @@ WebGLSpriteBatch.prototype.flush = function () {
     var start = 0;
 
     var currentBaseTexture = null;
-    var currentBlendMode = this.renderSession.blendModeManager.currentBlendMode;
+    var currentBlendMode = this.renderer.blendModeManager.currentBlendMode;
     var currentShader = null;
 
     var blendSwap = false;
@@ -496,7 +501,7 @@ WebGLSpriteBatch.prototype.flush = function () {
 
             if ( blendSwap ) {
                 currentBlendMode = nextBlendMode;
-                this.renderSession.blendModeManager.setBlendMode( currentBlendMode );
+                this.renderer.blendModeManager.setBlendMode( currentBlendMode );
             }
 
             if ( shaderSwap ) {
@@ -515,7 +520,7 @@ WebGLSpriteBatch.prototype.flush = function () {
                 }
 
                 // set shader function???
-                this.renderSession.shaderManager.setShader(shader);
+                this.renderer.shaderManager.setShader(shader);
 
                 if (shader.dirty) {
                     shader.syncUniforms();
@@ -523,11 +528,11 @@ WebGLSpriteBatch.prototype.flush = function () {
 
                 // both thease only need to be set if they are changing..
                 // set the projection
-                var projection = this.renderSession.projection;
+                var projection = this.renderer.projection;
                 gl.uniform2f(shader.projectionVector, projection.x, projection.y);
 
                 // TODO - this is temprorary!
-                var offsetVector = this.renderSession.offset;
+                var offsetVector = this.renderer.offset;
                 gl.uniform2f(shader.offsetVector, offsetVector.x, offsetVector.y);
 
                 // set the pointers
@@ -562,7 +567,7 @@ WebGLSpriteBatch.prototype.renderBatch = function (texture, size, startIndex) {
     gl.drawElements(gl.TRIANGLES, size * 6, gl.UNSIGNED_SHORT, startIndex * 6 * 2);
 
     // increment the draw count
-    this.renderSession.drawCount++;
+    this.renderer.drawCount++;
 };
 
 /**
