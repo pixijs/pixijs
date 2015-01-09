@@ -48,7 +48,7 @@ function Graphics() {
     /**
      * Graphics data
      *
-     * @member {object[]}
+     * @member {GraphicsData[]}
      * @private
      */
     this.graphicsData = [];
@@ -72,7 +72,7 @@ function Graphics() {
     /**
      * Current path
      *
-     * @member {object}
+     * @member {GraphicsData}
      * @private
      */
     this.currentPath = null;
@@ -80,10 +80,11 @@ function Graphics() {
     /**
      * Array containing some WebGL-related properties used by the WebGL renderer.
      *
-     * @member {object[]}
+     * @member {object<number, object>}
      * @private
      */
-    this._webGL = [];
+    // TODO - _webgl should use a prototype object, not a random undocumented object...
+    this._webGL = {};
 
     /**
      * Whether this shape is being used as a mask.
@@ -102,7 +103,7 @@ function Graphics() {
     /**
      * A cache of the local bounds to prevent recalculation.
      *
-     * @member {REctangle}
+     * @member {Rectangle}
      * @private
      */
     this._localBounds = new math.Rectangle(0,0,1,1);
@@ -169,6 +170,38 @@ Object.defineProperties(Graphics.prototype, {
         }
     }
 });
+
+/**
+ * Creates a new Graphics object with the same values as this one.
+ *
+ * @return {Graphics}
+ */
+GraphicsData.prototype.clone = function () {
+    var clone = new Graphics();
+
+    clone.renderable    = this.renderable;
+    clone.fillAlpha     = this.fillAlpha;
+    clone.lineWidth     = this.lineWidth;
+    clone.lineColor     = this.lineColor;
+    clone.tint          = this.tint;
+    clone.blendMode     = this.blendMode;
+    clone.isMask        = this.isMask;
+    clone.boundsPadding = this.boundsPadding;
+    clone.dirty         = this.dirty;
+    clone.glDirty       = this.glDirty;
+    clone.cachedSpriteDirty = this.cachedSpriteDirty;
+
+    // copy graphics data
+    for (var i = 0; i < this.graphicsData.length; ++i) {
+        clone.graphicsData.push(this.graphicsData.clone());
+    }
+
+    clone.currentPath = clone.graphicsData[clone.graphicsData.length - 1];
+
+    clone.updateLocalBounds();
+
+    return clone;
+};
 
 /**
  * Specifies the line style used for subsequent calls to Graphics methods such as the lineTo() method or the drawCircle() method.
@@ -405,6 +438,7 @@ Graphics.prototype.arc = function (cx, cy, radius, startAngle, endAngle, anticlo
     var startY = cy + Math.sin(startAngle) * radius;
     var points;
 
+    // TODO - This if-else makes no sense. It uses currentPath in the else where it doesn't exist...
     if (this.currentPath) {
         points = this.currentPath.shape.points;
 
