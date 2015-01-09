@@ -50,7 +50,7 @@ function ConvolutionFilter(matrix, width, height) {
         '   vec4 c33 = texture2D(texture, vTextureCoord + px );', // bottom right
 
         '   gl_FragColor = ',
-        '       c11 * matrix[0] + c12 * matrix[1] + c22 * matrix[2] +',
+        '       c11 * matrix[0] + c12 * matrix[1] + c13 * matrix[2] +',
         '       c21 * matrix[3] + c22 * matrix[4] + c23 * matrix[5] +',
         '       c31 * matrix[6] + c32 * matrix[7] + c33 * matrix[8];',
         '   gl_FragColor.a = c22.a;',
