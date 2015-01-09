@@ -1,6 +1,6 @@
 var AbstractFilter = require('../../../../filters/AbstractFilter'),
-    Shader = require('../shaders/Shader'),
-    TextureUvs = require('./TextureUvs');
+    TextureUvs = require('../../../textures/TextureUvs'),
+    Shader = require('../shaders/Shader');
 
 /**
  * @author Mat Groves

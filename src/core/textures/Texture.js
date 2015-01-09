@@ -1,7 +1,7 @@
 var BaseTexture = require('./BaseTexture'),
     VideoBaseTexture = require('./VideoBaseTexture'),
+    TextureUvs = require('./TextureUvs'),
     eventTarget = require('../utils/eventTarget'),
-    TextureUvs = require('../renderers/webgl/utils/TextureUvs'),
     math = require('../math'),
     utils = require('../utils');
 
