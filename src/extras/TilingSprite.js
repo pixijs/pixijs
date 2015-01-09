@@ -246,8 +246,8 @@ TilingSprite.prototype.renderCanvas = function (renderer) {
                     this._width / tileScale.x,
                     this._height / tileScale.y);
 
-    context.scale(1 / tileScale.x, 1 / tileScale.y);
     context.translate(-tilePosition.x + (this.anchor.x * this._width), -tilePosition.y + (this.anchor.y * this._height));
+    context.scale(1 / tileScale.x, 1 / tileScale.y);
 
     if (this._mask) {
         renderer.maskManager.popMask(renderer.context);
