@@ -189,6 +189,12 @@ function WebGLRenderer(width, height, options) {
     this.spriteBatch = new WebGLSpriteBatch(this);
 
     /**
+     * Manages the rendering of sprites
+     * @member {WebGLFastSpriteBatch}
+     */
+    this.fastSpriteBatch = new WebGLFastSpriteBatch(this);
+
+    /**
      * Manages the masks using the stencil buffer
      * @member {WebGLMaskManager}
      */

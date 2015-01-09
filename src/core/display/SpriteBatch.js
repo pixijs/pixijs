@@ -27,23 +27,10 @@ var DisplayObjectContainer = require('./DisplayObjectContainer'),
 //TODO RENAME to PARTICLE CONTAINER?
 function SpriteBatch() {
     DisplayObjectContainer.call(this);
-
-    this.ready = false;
 }
 
 SpriteBatch.prototype = Object.create(DisplayObjectContainer.prototype);
 SpriteBatch.prototype.constructor = SpriteBatch;
-
-/**
- * Initialises the spriteBatch for WebGL
- *
- * @param gl {WebGLContext} the current WebGL drawing context
- */
-SpriteBatch.prototype.initWebGL = function (renderer) {
-    this.fastSpriteBatch = new WebGLFastSpriteBatch(renderer);
-
-    this.ready = true;
-};
 
 /**
  * Updates the object transform for rendering
@@ -67,16 +54,12 @@ SpriteBatch.prototype.renderWebGL = function (renderer) {
         return;
     }
 
-    if (!this.ready) {
-        this.initWebGL(renderer);
-    }
-
     renderer.spriteBatch.stop();
 
     renderer.shaderManager.setShader(renderer.shaderManager.fastShader);
 
-    this.fastSpriteBatch.begin(this);
-    this.fastSpriteBatch.render(this);
+    renderer.fastSpriteBatch.begin(this);
+    renderer.fastSpriteBatch.render(this);
 
     renderer.spriteBatch.start();
 };

@@ -16,21 +16,29 @@
  */
 function WebGLFastSpriteBatch(renderer) {
     /**
+     * The renderer instance this sprite batch operates on.
+     *
      * @member {WebGLRenderer}
      */
     this.renderer = renderer;
 
     /**
+     *
+     *
      * @member {number}
      */
     this.vertSize = 10;
 
     /**
+     *
+     *
      * @member {number}
      */
     this.maxSize = 6000;//Math.pow(2, 16) /  this.vertSize;
 
     /**
+     *
+     *
      * @member {number}
      */
     this.size = this.maxSize;
@@ -43,27 +51,35 @@ function WebGLFastSpriteBatch(renderer) {
 
     /**
      * Vertex data
+     *
      * @member {Float32Array}
      */
     this.vertices = new Float32Array(numVerts);
 
     /**
      * Index data
+     *
      * @member {Uint16Array}
      */
     this.indices = new Uint16Array(numIndices);
 
     /**
+     *
+     *
      * @member {object}
      */
     this.vertexBuffer = null;
 
     /**
+     *
+     *
      * @member {object}
      */
     this.indexBuffer = null;
 
     /**
+     *
+     *
      * @member {number}
      */
     this.lastIndexCount = 0;
@@ -78,31 +94,43 @@ function WebGLFastSpriteBatch(renderer) {
     }
 
     /**
+     *
+     *
      * @member {boolean}
      */
     this.drawing = false;
 
     /**
+     *
+     *
      * @member {number}
      */
     this.currentBatchSize = 0;
 
     /**
+     *
+     *
      * @member {BaseTexture}
      */
     this.currentBaseTexture = null;
 
     /**
+     *
+     *
      * @member {number}
      */
     this.currentBlendMode = 0;
 
     /**
+     *
+     *
      * @member {object}
      */
     this.shader = null;
 
     /**
+     *
+     *
      * @member {Matrix}
      */
     this.matrix = null;
@@ -136,8 +164,7 @@ WebGLFastSpriteBatch.prototype.setupContext = function () {
 };
 
 /**
- * @param spriteBatch {WebGLSpriteBatch}
- * @param renderer {WebGLRenderer|CanvasRenderer} The renderer
+ * @param spriteBatch {SpriteBatch} The SpriteBatch container to prepare for.
  */
 WebGLFastSpriteBatch.prototype.begin = function (spriteBatch) {
     this.shader = this.renderer.shaderManager.fastShader;
@@ -154,7 +181,7 @@ WebGLFastSpriteBatch.prototype.end = function () {
 };
 
 /**
- * @param spriteBatch {WebGLSpriteBatch}
+ * @param spriteBatch {SpriteBatch} The SpriteBatch container to render.
  */
 WebGLFastSpriteBatch.prototype.render = function (spriteBatch) {
     var children = spriteBatch.children;
@@ -183,7 +210,7 @@ WebGLFastSpriteBatch.prototype.render = function (spriteBatch) {
 };
 
 /**
- * @param sprite {Sprite}
+ * @param sprite {Sprite} The Sprite to render.
  */
 WebGLFastSpriteBatch.prototype.renderSprite = function (sprite) {
     //sprite = children[i];
@@ -363,6 +390,7 @@ WebGLFastSpriteBatch.prototype.flush = function () {
 
 
 /**
+ * Ends the batch and flushes
  *
  */
 WebGLFastSpriteBatch.prototype.stop = function () {

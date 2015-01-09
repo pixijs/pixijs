@@ -22,17 +22,22 @@ var AbstractFilter = require('../../../../filters/AbstractFilter'),
  */
 function WebGLSpriteBatch(renderer) {
     /**
+     *
+     *
      * @member {WebGLRenderer}
      */
     this.renderer = renderer;
 
     /**
+     *
+     *
      * @member {number}
      */
     this.vertSize = 5;
 
     /**
-     * The number of images in the SpriteBatch before it flushes
+     * The number of images in the SpriteBatch before it flushes.
+     *
      * @member {number}
      */
     this.size = 2000;//Math.pow(2, 16) /  this.vertSize;
@@ -71,6 +76,8 @@ function WebGLSpriteBatch(renderer) {
     this.indices = new Uint16Array(numIndices);
 
     /**
+     *
+     *
      * @member {number}
      */
     this.lastIndexCount = 0;
@@ -85,46 +92,64 @@ function WebGLSpriteBatch(renderer) {
     }
 
     /**
+     *
+     *
      * @member {boolean}
      */
     this.drawing = false;
 
     /**
+     *
+     *
      * @member {number}
      */
     this.currentBatchSize = 0;
 
     /**
+     *
+     *
      * @member {BaseTexture}
      */
     this.currentBaseTexture = null;
 
     /**
+     *
+     *
      * @member {boolean}
      */
     this.dirty = true;
 
     /**
+     *
+     *
      * @member {Array}
      */
     this.textures = [];
 
     /**
+     *
+     *
      * @member {Array}
      */
     this.blendModes = [];
 
     /**
+     *
+     *
      * @member {Array}
      */
     this.shaders = [];
 
     /**
+     *
+     *
      * @member {Array}
      */
     this.sprites = [];
 
     /**
+     * TODO - Shouldn't this be a Shader, not an AbstractFilter?
+     *
      * @member {AbstractFilter}
      */
     this.defaultShader = new AbstractFilter([
