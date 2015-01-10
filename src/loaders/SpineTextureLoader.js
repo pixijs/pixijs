@@ -4,7 +4,7 @@ var core = require('../core');
  * Supporting class to load images from spine atlases as per spine spec.
  *
  * @class
- * @mixes EventTarget
+ * @mixes eventTarget
  * @namespace PIXI
  * @param basePath {string} Tha base path where to look for the images to be loaded
  * @param crossorigin {boolean} Whether requests should be treated as crossorigin
@@ -18,7 +18,7 @@ function SpineTextureLoader(basePath, crossorigin) {
 SpineTextureLoader.prototype.constructor = SpineTextureLoader;
 module.exports = SpineTextureLoader;
 
-core.utils.EventTarget.mixin(SpineTextureLoader.prototype);
+core.utils.eventTarget.mixin(SpineTextureLoader.prototype);
 
 /**
  * Starts loading a base texture as per spine specification

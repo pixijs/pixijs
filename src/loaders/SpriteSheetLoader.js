@@ -11,7 +11,7 @@ var core = require('../core'),
  * When loaded this class will dispatch a 'loaded' event
  *
  * @class
- * @mixes EventTarget
+ * @mixes eventTarget
  * @namespace PIXI
  * @param url {String} The url of the sprite sheet JSON file
  * @param crossorigin {boolean} Whether requests should be treated as crossorigin
@@ -59,7 +59,7 @@ function SpriteSheetLoader(url, crossorigin) {
 SpriteSheetLoader.prototype.constructor = SpriteSheetLoader;
 module.exports = SpriteSheetLoader;
 
-core.utils.EventTarget.mixin(SpriteSheetLoader.prototype);
+core.utils.eventTarget.mixin(SpriteSheetLoader.prototype);
 
 /**
  * This will begin loading the JSON file

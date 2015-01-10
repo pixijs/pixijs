@@ -6,7 +6,7 @@ var core = require('../core');
  * When loaded this class will dispatch a 'loaded' event
  *
  * @class
- * @mixes EventTarget
+ * @mixes eventTarget
  * @namespace PIXI
  * @param url {String} The url of the image
  * @param crossorigin {boolean} Whether requests should be treated as crossorigin
@@ -33,7 +33,7 @@ function ImageLoader(url, crossorigin) {
 ImageLoader.prototype.constructor = ImageLoader;
 module.exports = ImageLoader;
 
-core.utils.EventTarget.mixin(ImageLoader.prototype);
+core.utils.eventTarget.mixin(ImageLoader.prototype);
 
 /**
  * Loads image or takes it from cache

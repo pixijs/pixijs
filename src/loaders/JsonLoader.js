@@ -9,7 +9,7 @@ var core = require('../core'),
  * If loading fails this class will dispatch an 'error' event
  *
  * @class
- * @mixes EventTarget
+ * @mixes eventTarget
  * @namespace PIXI
  * @param url {String} The url of the JSON file
  * @param crossorigin {boolean} Whether requests should be treated as crossorigin
@@ -50,7 +50,7 @@ function JsonLoader(url, crossorigin) {
 JsonLoader.prototype.constructor = JsonLoader;
 module.exports = JsonLoader;
 
-core.utils.EventTarget.mixin(JsonLoader.prototype);
+core.utils.eventTarget.mixin(JsonLoader.prototype);
 
 /**
  * Loads the JSON data

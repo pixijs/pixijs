@@ -64,6 +64,9 @@ function EventData(target, name, data) {
     this.timeStamp = Date.now();
 }
 
+EventData.prototype.constructor = EventData;
+module.exports = EventData;
+
 /**
  * Stops the propagation of events up the scene graph (prevents bubbling).
  *

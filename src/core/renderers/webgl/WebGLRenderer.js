@@ -1,4 +1,5 @@
 var WebGLSpriteBatch = require('./utils/WebGLSpriteBatch'),
+    WebGLFastSpriteBatch = require('./utils/WebGLFastSpriteBatch'),
     WebGLShaderManager = require('./managers/WebGLShaderManager'),
     WebGLMaskManager = require('./managers/WebGLMaskManager'),
     WebGLFilterManager = require('./managers/WebGLFilterManager'),
@@ -523,7 +524,7 @@ WebGLRenderer.prototype.destroy = function (removeView) {
  *
  * @private
  */
-WebGLRenderer.prototype.mapBlendModes = function () {
+WebGLRenderer.prototype._mapBlendModes = function () {
     var gl = this.gl;
 
     if (!this.blendModes) {

@@ -19,7 +19,7 @@ var core = require('../core'),
  * When loaded this class will dispatch a "loaded" event
  *
  * @class
- * @mixes EventTarget
+ * @mixes eventTarget
  * @namespace PIXI
  * @param url {String} The url of the JSON file
  * @param crossorigin {boolean} Whether requests should be treated as crossorigin
@@ -51,7 +51,7 @@ function SpineLoader(url, crossorigin) {
 SpineLoader.prototype.constructor = SpineLoader;
 module.exports = SpineLoader;
 
-core.utils.EventTarget.mixin(SpineLoader.prototype);
+core.utils.eventTarget.mixin(SpineLoader.prototype);
 
 /**
  * Loads the JSON data

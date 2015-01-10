@@ -14,7 +14,7 @@ var core = require('../core'),
  *
  * @class
  * @namespace PIXI
- * @mixes EventTarget
+ * @mixes eventTarget
  * @param assetURLs {string[]} An array of image/sprite sheet urls that you would like loaded
  *      supported. Supported image formats include 'jpeg', 'jpg', 'png', 'gif'. Supported
  *      sprite sheet data formats only include 'JSON' at this time. Supported bitmap font
@@ -59,7 +59,7 @@ function AssetLoader(assetURLs, crossorigin) {
 AssetLoader.prototype.constructor = AssetLoader;
 module.exports = AssetLoader;
 
-core.utils.EventTarget.mixin(AssetLoader.prototype);
+core.utils.eventTarget.mixin(AssetLoader.prototype);
 
 /**
  * Fired when an item has loaded

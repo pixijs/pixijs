@@ -161,13 +161,22 @@ function WebGLSpriteBatch(renderer) {
         '   gl_FragColor = texture2D(uSampler, vTextureCoord) * vColor ;',
         '}'
     ]);
+
+    // listen for context and update necessary buffers
+    var self = this;
+    this.renderer.on('context', function () {
+        self.setupContext();
+    });
 }
+
+WebGLSpriteBatch.prototype.constructor = WebGLSpriteBatch;
+module.exports = WebGLSpriteBatch;
 
 /**
  * @param gl {WebGLContext} the current WebGL drawing context
  */
-WebGLSpriteBatch.prototype.setContext = function (gl) {
-    this.gl = gl;
+WebGLSpriteBatch.prototype.setupContext = function () {
+    var gl = this.renderer.gl;
 
     // create a couple of buffers
     this.vertexBuffer = gl.createBuffer();
@@ -462,7 +471,7 @@ WebGLSpriteBatch.prototype.flush = function () {
         return;
     }
 
-    var gl = this.gl;
+    var gl = this.renderer.gl;
     var shader;
 
     if (this.dirty) {
@@ -583,7 +592,7 @@ WebGLSpriteBatch.prototype.renderBatch = function (texture, size, startIndex) {
         return;
     }
 
-    var gl = this.gl;
+    var gl = this.renderer.gl;
 
     // bind the current texture
     gl.bindTexture(gl.TEXTURE_2D, texture._glTextures[gl.id]);
@@ -615,13 +624,16 @@ WebGLSpriteBatch.prototype.start = function () {
  *
  */
 WebGLSpriteBatch.prototype.destroy = function () {
+    this.renderer.gl.deleteBuffer(this.vertexBuffer);
+    this.renderer.gl.deleteBuffer(this.indexBuffer);
+
     this.vertices = null;
     this.indices = null;
 
-    this.gl.deleteBuffer( this.vertexBuffer );
-    this.gl.deleteBuffer( this.indexBuffer );
+    this.vertexBuffer = null;
+    this.indexBuffer = null;
 
     this.currentBaseTexture = null;
 
-    this.gl = null;
+    this.renderer = null;
 };

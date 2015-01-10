@@ -1,7 +1,7 @@
 var math = require('../math'),
     DisplayObject = require('./DisplayObject'),
     RenderTexture = require('../textures/RenderTexture'),
-    Sprite = require('./Sprite'),
+    // Sprite = require('./Sprite'),
     _tempMatrix = new math.Matrix();
 
 /**

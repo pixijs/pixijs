@@ -116,7 +116,7 @@ module.exports = Texture;
 
 eventTarget.mixin(Texture.prototype);
 
-Object.defineProperties(BaseTexture.prototype, {
+Object.defineProperties(Texture.prototype, {
     needsUpdate: {
         get: function () {
             return this.baseTexture.needsUpdate;

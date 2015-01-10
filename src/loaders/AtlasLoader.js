@@ -10,7 +10,7 @@ var core = require('../core'),
  * Once the data has been loaded the frames are stored in the PIXI texture cache and can be accessed though Texture.fromFrameId() and Sprite.fromFrameId()
  *
  * @class
- * @mixes EventTarget
+ * @mixes eventTarget
  * @namespace PIXI
  * @param url {String} The url of the JSON file
  * @param crossorigin {boolean} Whether requests should be treated as crossorigin
@@ -25,7 +25,7 @@ function AtlasLoader(url, crossorigin) {
 AtlasLoader.prototype.constructor = AtlasLoader;
 module.exports = AtlasLoader;
 
-core.utils.EventTarget.mixin(AtlasLoader.prototype);
+core.utils.eventTarget.mixin(AtlasLoader.prototype);
 
  /**
  * Starts loading the JSON file

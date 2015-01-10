@@ -31,6 +31,7 @@ function SpriteBatch() {
 
 SpriteBatch.prototype = Object.create(DisplayObjectContainer.prototype);
 SpriteBatch.prototype.constructor = SpriteBatch;
+module.exports = SpriteBatch;
 
 /**
  * Updates the object transform for rendering

@@ -135,7 +135,11 @@ function WebGLFastSpriteBatch(renderer) {
      */
     this.matrix = null;
 
-    this.setupContext();
+    // listen for context and update necessary buffers
+    var self = this;
+    this.renderer.on('context', function () {
+        self.setupContext();
+    });
 }
 
 WebGLFastSpriteBatch.prototype.constructor = WebGLFastSpriteBatch;

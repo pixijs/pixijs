@@ -101,8 +101,8 @@ Shader.prototype.init = function () {
 
     this.gl.useProgram(this.program);
 
-    this.cacheUniformLocations(this.builtInUniforms.concat(Object.keys(this.uniforms)));
-    this.cacheAttributeLocations(this.builtInAttributes.concat(Object.keys(this.attributes)));
+    this.cacheUniformLocations(Object.keys(this.uniforms));
+    this.cacheAttributeLocations(Object.keys(this.attributes));
 };
 
 Shader.prototype.cacheUniformLocations = function (keys) {
@@ -123,8 +123,8 @@ Shader.prototype.cacheAttributeLocations = function (keys) {
     // maybe its something to do with the current state of the gl context.
     // I'm convinced this is a bug in the chrome browser as there is NO reason why this should be returning -1 especially as it only manifests on my chrome pixel
     // If theres any webGL people that know why could happen please help :)
-    if (this._shader.attributes.aColor === -1) {
-        this._shader.attributes.aColor = 2;
+    if (this.attributes.aColor === -1) {
+        this.attributes.aColor = 2;
     }
 
     // End worst hack eva //

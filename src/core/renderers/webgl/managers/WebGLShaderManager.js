@@ -66,7 +66,9 @@ function WebGLShaderManager(renderer) {
 
     // listen for context and update necessary shaders
     var self = this;
-    this.renderer.on('context', function (gl) {
+    this.renderer.on('context', function (event) {
+        var gl = event.data;
+
         // this shader is used for rendering primitives
         self.primitiveShader = new PrimitiveShader(gl);
 

@@ -8,7 +8,7 @@ var core = require('../core'),
  * When loaded this class will dispatch a 'loaded' event
  *
  * @class
- * @mixes EventTarget
+ * @mixes eventTarget
  * @namespace PIXI
  * @param url {String} The url of the sprite sheet JSON file
  * @param crossorigin {boolean} Whether requests should be treated as crossorigin
@@ -48,7 +48,7 @@ function BitmapFontLoader(url, crossorigin) {
 BitmapFontLoader.prototype.constructor = BitmapFontLoader;
 module.exports = BitmapFontLoader;
 
-core.utils.EventTarget.mixin(BitmapFontLoader.prototype);
+core.utils.eventTarget.mixin(BitmapFontLoader.prototype);
 
 /**
  * Loads the XML font data

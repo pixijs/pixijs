@@ -138,14 +138,6 @@ function CanvasRenderer(width, height, options) {
 
     this.smoothProperty = null;
 
-    this.currentBlendMode = CONST.blendModes.NORMAL;
-
-    this.blendModes = null;
-
-    this._mapBlendModes();
-
-    this.resize(width, height);
-
     if (this.context.imageSmoothingEnabled) {
         this.smoothProperty = 'imageSmoothingEnabled';
     }
@@ -161,6 +153,14 @@ function CanvasRenderer(width, height, options) {
     else if (this.context.msImageSmoothingEnabled) {
         this.smoothProperty = 'msImageSmoothingEnabled';
     }
+
+    this.currentBlendMode = CONST.blendModes.NORMAL;
+
+    this.blendModes = null;
+
+    this._mapBlendModes();
+
+    this.resize(width, height);
 }
 
 // constructor

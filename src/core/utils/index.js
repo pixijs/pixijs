@@ -7,6 +7,10 @@ var utils = module.exports = {
     _uid: 0,
     _saidHello: false,
 
+    PolyK:      require('./PolyK'),
+    EventData:  require('./EventData'),
+    eventTarget: require('./eventTarget'),
+
     /**
      * Gets the next uuid
      *
@@ -170,10 +174,6 @@ var utils = module.exports = {
             return false;
         }
     },
-
-    PolyK:      require('./PolyK'),
-    EventData:  require('./EventData'),
-    eventTarget: require('./eventTarget'),
 
     // TODO: refactor out this
     AnimCache: {},
