@@ -138,6 +138,11 @@ DisplayObjectContainer.prototype.addChild = function (child) {
  * @return {DisplayObject} The child that was added.
  */
 DisplayObjectContainer.prototype.addChildAt = function (child, index) {
+    // prevent adding self as child
+    if (child === this) {
+        return;
+    }
+
     if (index >= 0 && index <= this.children.length) {
         if (child.parent) {
             child.parent.removeChild(child);
@@ -419,6 +424,8 @@ DisplayObjectContainer.prototype.getLocalBounds = function () {
 /**
  * Renders the object using the WebGL renderer
  *
+ * TODO - Optimization pass!
+ *
  * @param renderer {WebGLRenderer} The renderer
  */
 DisplayObjectContainer.prototype.renderWebGL = function (renderer) {
@@ -449,7 +456,9 @@ DisplayObjectContainer.prototype.renderWebGL = function (renderer) {
         }
 
         // add this object to the batch, only rendered if it has a texture.
-        renderer.spriteBatch.render(this);
+        if (this.texture) {
+            renderer.spriteBatch.render(this);
+        }
 
         // now loop through the children and make sure they get rendered
         for (i = 0, j = this.children.length; i < j; i++) {
@@ -470,7 +479,9 @@ DisplayObjectContainer.prototype.renderWebGL = function (renderer) {
         renderer.spriteBatch.start();
     }
     else {
-        renderer.spriteBatch.render(this);
+        if (this.texture) {
+            renderer.spriteBatch.render(this);
+        }
 
         // simple render children!
         for (i = 0, j = this.children.length; i < j; ++i) {

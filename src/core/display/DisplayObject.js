@@ -260,6 +260,8 @@ Object.defineProperties(DisplayObject.prototype, {
 /*
  * Updates the object transform for rendering
  *
+ * TODO - Optimization pass!
+ *
  * @private
  */
 DisplayObject.prototype.updateTransform = function () {
@@ -271,11 +273,9 @@ DisplayObject.prototype.updateTransform = function () {
     var a, b, c, d, tx, ty;
 
     // so if rotation is between 0 then we can simplify the multiplication process..
-    if(this.rotation % math.PI_2)
-    {
+    if (this.rotation % math.PI_2) {
         // check to see if the rotation is the same as the previous render. This means we only need to use sin and cos when rotation actually changes
-        if(this.rotation !== this.rotationCache)
-        {
+        if (this.rotation !== this.rotationCache) {
             this.rotationCache = this.rotation;
             this._sr = Math.sin(this.rotation);
             this._cr = Math.cos(this.rotation);
@@ -290,8 +290,7 @@ DisplayObject.prototype.updateTransform = function () {
         ty =  this.position.y;
 
         // check for pivot.. not often used so geared towards that fact!
-        if(this.pivot.x || this.pivot.y)
-        {
+        if (this.pivot.x || this.pivot.y) {
             tx -= this.pivot.x * a + this.pivot.y * c;
             ty -= this.pivot.x * b + this.pivot.y * d;
         }
@@ -303,11 +302,8 @@ DisplayObject.prototype.updateTransform = function () {
         wt.d  = c  * pt.b + d  * pt.d;
         wt.tx = tx * pt.a + ty * pt.c + pt.tx;
         wt.ty = tx * pt.b + ty * pt.d + pt.ty;
-
-
     }
-    else
-    {
+    else {
         // lets do the fast version as we know there is no rotation..
         a  = this.scale.x;
         d  = this.scale.y;

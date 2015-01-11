@@ -364,12 +364,13 @@ WebGLFastSpriteBatch.prototype.flush = function () {
     var gl = this.renderer.gl;
 
     // bind the current texture
-
     if (!this.currentBaseTexture._glTextures[gl.id]) {
         this.renderer.updateTexture(this.currentBaseTexture, gl);
     }
-
-    gl.bindTexture(gl.TEXTURE_2D, this.currentBaseTexture._glTextures[gl.id]);
+    //TODO-SHOUD THIS BE ELSE??!?!?!
+    else {
+        gl.bindTexture(gl.TEXTURE_2D, this.currentBaseTexture._glTextures[gl.id]);
+    }
 
     // upload the verts to the buffer
 

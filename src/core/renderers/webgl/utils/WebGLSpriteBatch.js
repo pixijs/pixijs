@@ -207,10 +207,6 @@ WebGLSpriteBatch.prototype.end = function () {
  * @param sprite {Sprite} the sprite to render when using this spritebatch
  */
 WebGLSpriteBatch.prototype.render = function (sprite) {
-    if (!sprite.texture) {
-        return;
-    }
-
     var texture = sprite.texture;
 
     //TODO set blend modes..
@@ -471,11 +467,11 @@ WebGLSpriteBatch.prototype.flush = function () {
 
         // this is the same for each shader?
         var stride =  this.vertSize * 4;
-        gl.vertexAttribPointer(this.shader.aVertexPosition, 2, gl.FLOAT, false, stride, 0);
-        gl.vertexAttribPointer(this.shader.aTextureCoord, 2, gl.FLOAT, false, stride, 2 * 4);
+        gl.vertexAttribPointer(this.shader.attributes.aVertexPosition, 2, gl.FLOAT, false, stride, 0);
+        gl.vertexAttribPointer(this.shader.attributes.aTextureCoord, 2, gl.FLOAT, false, stride, 2 * 4);
 
         // color attributes will be interpreted as unsigned bytes and normalized
-        gl.vertexAttribPointer(this.shader.aColor, 4, gl.UNSIGNED_BYTE, true, stride, 4 * 4);
+        gl.vertexAttribPointer(this.shader.attributes.aColor, 4, gl.UNSIGNED_BYTE, true, stride, 4 * 4);
     }
 
     // upload the verts to the buffer
@@ -525,7 +521,7 @@ WebGLSpriteBatch.prototype.flush = function () {
             if (shaderSwap) {
                 currentShader = nextShader;
 
-                shader = currentShader.shaders ? currentShader.shaders[gl.id] : shader;
+                shader = currentShader.shaders ? currentShader.shaders[gl.id] : currentShader;
 
                 if (!shader) {
                     shader = new Shader(gl, null, currentShader.fragmentSrc, currentShader.uniforms);
@@ -542,11 +538,11 @@ WebGLSpriteBatch.prototype.flush = function () {
                 // both thease only need to be set if they are changing..
                 // set the projection
                 var projection = this.renderer.projection;
-                gl.uniform2f(shader.projectionVector, projection.x, projection.y);
+                gl.uniform2f(shader.uniforms.projectionVector._location, projection.x, projection.y);
 
                 // TODO - this is temprorary!
                 var offsetVector = this.renderer.offset;
-                gl.uniform2f(shader.offsetVector, offsetVector.x, offsetVector.y);
+                gl.uniform2f(shader.uniforms.offsetVector._location, offsetVector.x, offsetVector.y);
 
                 // set the pointers
             }
@@ -573,8 +569,13 @@ WebGLSpriteBatch.prototype.renderBatch = function (texture, size, startIndex) {
 
     var gl = this.renderer.gl;
 
-    // bind the current texture
-    gl.bindTexture(gl.TEXTURE_2D, texture._glTextures[gl.id]);
+    if (!texture._glTextures[gl.id]) {
+        this.renderer.updateTexture(texture);
+    }
+    else {
+        // bind the current texture
+        gl.bindTexture(gl.TEXTURE_2D, texture._glTextures[gl.id]);
+    }
 
     // now draw those suckas!
     gl.drawElements(gl.TRIANGLES, size * 6, gl.UNSIGNED_SHORT, startIndex * 6 * 2);
