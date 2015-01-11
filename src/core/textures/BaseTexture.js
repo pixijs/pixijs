@@ -264,13 +264,12 @@ BaseTexture.prototype.loadSource = function (source) {
  * a source has successfully loaded.
  *
  * @private
- * @param source {Image|Canvas} the source object of the texture.
  */
-BaseTexture.prototype._sourceLoaded = function (source) {
+BaseTexture.prototype._sourceLoaded = function () {
     this.hasLoaded = true;
 
-    this.width = source.naturalWidth || source.width;
-    this.height = source.naturalHeight || source.height;
+    this.width = this.source.naturalWidth || this.source.width;
+    this.height = this.source.naturalHeight || this.source.height;
 
     this.needsUpdate = true;
 };

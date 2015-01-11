@@ -10,8 +10,6 @@ function FastShader(gl) {
     Shader.call(this,
         gl,
         // vertex shader
-        null,
-        // fragment shader
         [
             'attribute vec2 aVertexPosition;',
             'attribute vec2 aTextureCoord;',
@@ -26,7 +24,7 @@ function FastShader(gl) {
             'uniform mat3 uMatrix;',
 
             'varying vec2 vTextureCoord;',
-            'varying float vColor;',
+            'varying vec4 vColor;',
 
             'const vec2 center = vec2(-1.0, 1.0);',
 
@@ -42,6 +40,8 @@ function FastShader(gl) {
             '   vColor = aColor;',
             '}'
         ].join('\n'),
+        // fragment shader, use default
+        null,
         // custom uniforms
         {
             uMatrix: { type: 'mat3', value: new Float32Array(9) }

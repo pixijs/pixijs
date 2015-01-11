@@ -6,7 +6,7 @@ var utils = require('../../../utils');
  * @param [fragmentSrc] {string} The source of the fragment shader.
  * @param [vertexSrc] {string} The source of the vertex shader.
  */
-function Shader(gl, fragmentSrc, vertexSrc, customUniforms, customAttributes) {
+function Shader(gl, vertexSrc, fragmentSrc, customUniforms, customAttributes) {
     /**
      * @member {number}
      * @readonly
@@ -148,13 +148,13 @@ Shader.prototype.compile = function () {
         window.console.error('gl.VALIDATE_STATUS', gl.getProgramParameter(program, gl.VALIDATE_STATUS));
         window.console.error('gl.getError()', gl.getError());
 
+        // if there is a program info log, log it
+        if (gl.getProgramInfoLog(program) !== '') {
+            window.console.warn('Pixi.js Warning: gl.getProgramInfoLog()', gl.getProgramInfoLog(program));
+        }
+
         gl.deleteProgram(program);
         program = null;
-    }
-
-    // if there is a program info log, log it
-    if (gl.getProgramInfoLog(program) !== '') {
-        window.console.warn('Pixi.js Warning: gl.getProgramInfoLog()', gl.getProgramInfoLog(program));
     }
 
     // clean up some shaders
@@ -435,6 +435,10 @@ Shader.prototype.destroy = function () {
 
 Shader.prototype._glCompile = function (type, src) {
     var shader = this.gl.createShader(type);
+
+    if (Array.isArray(src)) {
+        debugger;
+    }
 
     this.gl.shaderSource(shader, src);
     this.gl.compileShader(shader);

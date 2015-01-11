@@ -1,5 +1,4 @@
-var AbstractFilter = require('../../../../filters/AbstractFilter'),
-    TextureUvs = require('../../../textures/TextureUvs'),
+var TextureUvs = require('../../../textures/TextureUvs'),
     Shader = require('../shaders/Shader');
 
 /**
@@ -148,19 +147,11 @@ function WebGLSpriteBatch(renderer) {
     this.sprites = [];
 
     /**
-     * TODO - Shouldn't this be a Shader, not an AbstractFilter?
+     * The default shader that is used if a sprite doesn't have a more specific one.
      *
-     * @member {AbstractFilter}
+     * @member {Shader}
      */
-    this.defaultShader = new AbstractFilter([
-        'precision lowp float;',
-        'varying vec2 vTextureCoord;',
-        'varying vec4 vColor;',
-        'uniform sampler2D uSampler;',
-        'void main(void) {',
-        '   gl_FragColor = texture2D(uSampler, vTextureCoord) * vColor ;',
-        '}'
-    ]);
+    this.shader = null;
 
     // listen for context and update necessary buffers
     var self = this;
@@ -178,6 +169,9 @@ module.exports = WebGLSpriteBatch;
 WebGLSpriteBatch.prototype.setupContext = function () {
     var gl = this.renderer.gl;
 
+    // setup default shader
+    this.shader = new Shader(gl);
+
     // create a couple of buffers
     this.vertexBuffer = gl.createBuffer();
     this.indexBuffer = gl.createBuffer();
@@ -192,21 +186,13 @@ WebGLSpriteBatch.prototype.setupContext = function () {
     gl.bufferData(gl.ARRAY_BUFFER, this.vertices, gl.DYNAMIC_DRAW);
 
     this.currentBlendMode = 99999;
-
-    var shader = new Shader(gl);
-
-    shader.fragmentSrc = this.defaultShader.fragmentSrc;
-    shader.uniforms = {};
-    shader.init();
-
-    this.defaultShader.shaders[gl.id] = shader;
 };
 
 /**
  *
  */
 WebGLSpriteBatch.prototype.begin = function () {
-    this.shader = this.renderer.shaderManager.defaultShader;
+    // this.shader = this.renderer.shaderManager.defaultShader;
 
     this.start();
 };
@@ -483,15 +469,13 @@ WebGLSpriteBatch.prototype.flush = function () {
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 
-        shader =  this.defaultShader.shaders[gl.id];
-
         // this is the same for each shader?
         var stride =  this.vertSize * 4;
-        gl.vertexAttribPointer(shader.aVertexPosition, 2, gl.FLOAT, false, stride, 0);
-        gl.vertexAttribPointer(shader.aTextureCoord, 2, gl.FLOAT, false, stride, 2 * 4);
+        gl.vertexAttribPointer(this.shader.aVertexPosition, 2, gl.FLOAT, false, stride, 0);
+        gl.vertexAttribPointer(this.shader.aTextureCoord, 2, gl.FLOAT, false, stride, 2 * 4);
 
         // color attributes will be interpreted as unsigned bytes and normalized
-        gl.vertexAttribPointer(shader.aColor, 4, gl.UNSIGNED_BYTE, true, stride, 4 * 4);
+        gl.vertexAttribPointer(this.shader.aColor, 4, gl.UNSIGNED_BYTE, true, stride, 4 * 4);
     }
 
     // upload the verts to the buffer
@@ -521,7 +505,7 @@ WebGLSpriteBatch.prototype.flush = function () {
 
         nextTexture = sprite.texture.baseTexture;
         nextBlendMode = sprite.blendMode;
-        nextShader = sprite.shader || this.defaultShader;
+        nextShader = sprite.shader || this.shader;
 
         blendSwap = currentBlendMode !== nextBlendMode;
         shaderSwap = currentShader !== nextShader; // should I use uuidS???
@@ -533,23 +517,18 @@ WebGLSpriteBatch.prototype.flush = function () {
             batchSize = 0;
             currentBaseTexture = nextTexture;
 
-            if ( blendSwap ) {
+            if (blendSwap) {
                 currentBlendMode = nextBlendMode;
                 this.renderer.blendModeManager.setBlendMode( currentBlendMode );
             }
 
-            if ( shaderSwap ) {
+            if (shaderSwap) {
                 currentShader = nextShader;
 
-                shader = currentShader.shaders[gl.id];
+                shader = currentShader.shaders ? currentShader.shaders[gl.id] : shader;
 
                 if (!shader) {
-                    shader = new Shader(gl);
-
-                    shader.fragmentSrc =currentShader.fragmentSrc;
-                    shader.uniforms =currentShader.uniforms;
-                    shader.init();
-
+                    shader = new Shader(gl, null, currentShader.fragmentSrc, currentShader.uniforms);
                     currentShader.shaders[gl.id] = shader;
                 }
 
