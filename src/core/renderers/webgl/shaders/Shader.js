@@ -177,24 +177,29 @@ Shader.prototype.syncUniforms = function () {
             i, il;
 
         switch (uniform.type) {
+            // single int value
             case 'i':
             case '1i':
                 gl.uniform1i(location, value);
                 break;
 
+            // single float value
             case 'f':
             case '1f':
                 gl.uniform1f(location, value);
                 break;
 
+            // Float32Array(2) or JS Arrray
             case '2f':
                 gl.uniform2f(location, value[0], value[1]);
                 break;
 
+            // Float32Array(3) or JS Arrray
             case '3f':
                 gl.uniform3f(location, value[0], value[1], value[2]);
                 break;
 
+            // Float32Array(4) or JS Arrray
             case '4f':
                 gl.uniform4f(location, value[0], value[1], value[2], value[3]);
                 break;
@@ -214,42 +219,61 @@ Shader.prototype.syncUniforms = function () {
                 gl.uniform4f(location, value.x, value.y, value.z, value.w);
                 break;
 
+            // Int32Array or JS Array
             case '1iv':
                 gl.uniform1iv(location, value);
                 break;
 
+            // Int32Array or JS Array
+            case '2iv':
+                gl.uniform2iv(location, value);
+                break;
+
+            // Int32Array or JS Array
             case '3iv':
                 gl.uniform3iv(location, value);
                 break;
 
+            // Int32Array or JS Array
+            case '4iv':
+                gl.uniform4iv(location, value);
+                break;
+
+            // Float32Array or JS Array
             case '1fv':
                 gl.uniform1fv(location, value);
                 break;
 
+            // Float32Array or JS Array
             case '2fv':
                 gl.uniform2fv(location, value);
                 break;
 
+            // Float32Array or JS Array
             case '3fv':
                 gl.uniform3fv(location, value);
                 break;
 
+            // Float32Array or JS Array
             case '4fv':
                 gl.uniform4fv(location, value);
                 break;
 
+            // Float32Array or JS Array
             case 'm2':
             case 'mat2':
             case 'Matrix2fv':
                 gl.uniformMatrix2fv(location, uniform.transpose, value);
                 break;
 
+            // Float32Array or JS Array
             case 'm3':
             case 'mat3':
             case 'Matrix3fv':
                 gl.uniformMatrix3fv(location, uniform.transpose, value);
                 break;
 
+            // Float32Array or JS Array
             case 'm4':
             case 'mat4':
             case 'Matrix4fv':
@@ -332,6 +356,7 @@ Shader.prototype.syncUniforms = function () {
                 gl.uniform4fv(location, uniform._array);
                 break;
 
+            // PIXI.Texture
             case 't':
             case 'sampler2D':
                 if (!uniform.value || !uniform.value.baseTexture || !uniform.value.baseTexture.hasLoaded) {
