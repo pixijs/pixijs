@@ -424,10 +424,10 @@ WebGLFastSpriteBatch.prototype.start = function () {
 
     // set the projection
     var projection = this.renderer.projection;
-    gl.uniform2f(this.shader.projectionVector, projection.x, projection.y);
+    gl.uniform2f(this.shader.uniforms.projectionVector._location, projection.x, projection.y);
 
     // set the matrix
-    gl.uniformMatrix3fv(this.shader.uMatrix, false, this.matrix);
+    gl.uniformMatrix3fv(this.shader.uniforms.uMatrix._location, false, this.matrix);
 
     // set the pointers
     var stride =  this.vertByteSize;

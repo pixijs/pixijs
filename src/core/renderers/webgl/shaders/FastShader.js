@@ -13,7 +13,7 @@ function FastShader(gl) {
         [
             'attribute vec2 aVertexPosition;',
             'attribute vec2 aTextureCoord;',
-            'attribute vec4 aColor;',
+            'attribute float aColor;',
 
             'attribute vec2 aPositionCoord;',
             'attribute vec2 aScale;',
@@ -24,7 +24,7 @@ function FastShader(gl) {
             'uniform mat3 uMatrix;',
 
             'varying vec2 vTextureCoord;',
-            'varying vec4 vColor;',
+            'varying float vColor;',
 
             'const vec2 center = vec2(-1.0, 1.0);',
 
@@ -41,7 +41,18 @@ function FastShader(gl) {
             '}'
         ].join('\n'),
         // fragment shader, use default
-        null,
+        [
+            'precision lowp float;',
+
+            'varying vec2 vTextureCoord;',
+            'varying float vColor;',
+
+            'uniform sampler2D uSampler;',
+
+            'void main(void) {',
+            '   gl_FragColor = texture2D(uSampler, vTextureCoord) * vColor ;',
+            '}'
+        ].join('\n'),
         // custom uniforms
         {
             uMatrix: { type: 'mat3', value: new Float32Array(9) }
