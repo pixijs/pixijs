@@ -183,6 +183,13 @@ Sprite.prototype._onTextureUpdate = function () {
     }
 };
 
+Sprite.prototype._renderWebGL = function (renderer) {
+
+    // this is where content gets renderd..
+    // watch this space for a little render state manager..
+    renderer.spriteBatch.render(this);
+}
+
 /**
  * Returns the bounds of the Sprite as a rectangle. The bounds calculation takes the worldTransform into account.
  *

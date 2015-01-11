@@ -46,6 +46,7 @@ function ComplexPrimitiveShader(gl) {
             tint:   { type: '3f', value: [0, 0, 0] },
             flipY:  { type: '1f', value: 0 },
             alpha:  { type: '1f', value: 0 },
+            color:  { type: '3f', value: [0,0,0] },
             translationMatrix: { type: 'mat3', value: new Float32Array(9) }
         }
     );

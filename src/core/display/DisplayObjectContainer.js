@@ -456,9 +456,7 @@ DisplayObjectContainer.prototype.renderWebGL = function (renderer) {
         }
 
         // add this object to the batch, only rendered if it has a texture.
-        if (this.texture) {
-            renderer.spriteBatch.render(this);
-        }
+        this._renderWebGL(renderer);
 
         // now loop through the children and make sure they get rendered
         for (i = 0, j = this.children.length; i < j; i++) {
@@ -479,9 +477,8 @@ DisplayObjectContainer.prototype.renderWebGL = function (renderer) {
         renderer.spriteBatch.start();
     }
     else {
-        if (this.texture) {
-            renderer.spriteBatch.render(this);
-        }
+        
+        this._renderWebGL(renderer);
 
         // simple render children!
         for (i = 0, j = this.children.length; i < j; ++i) {
@@ -490,6 +487,12 @@ DisplayObjectContainer.prototype.renderWebGL = function (renderer) {
 
     }
 };
+
+DisplayObjectContainer.prototype._renderWebGL = function (renderer) {
+
+    // this is where content itself gets renderd..
+    
+}
 
 /**
  * Renders the object using the Canvas renderer

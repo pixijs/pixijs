@@ -52,22 +52,22 @@ WebGLGraphics.renderGraphics = function (graphics, renderer) {//projection, offs
 
             renderer.shaderManager.setShader( shader );//activatePrimitiveShader();
             shader = renderer.shaderManager.primitiveShader;
-            gl.uniformMatrix3fv(shader.translationMatrix, false, graphics.worldTransform.toArray(true));
+            gl.uniformMatrix3fv(shader.uniforms.translationMatrix._location, false, graphics.worldTransform.toArray(true));
 
-            gl.uniform1f(shader.flipY, 1);
+            gl.uniform1f(shader.uniforms.flipY._location, 1);
 
-            gl.uniform2f(shader.projectionVector, projection.x, -projection.y);
-            gl.uniform2f(shader.offsetVector, -offset.x, -offset.y);
+            gl.uniform2f(shader.uniforms.projectionVector._location, projection.x, -projection.y);
+            gl.uniform2f(shader.uniforms.offsetVector._location, -offset.x, -offset.y);
 
-            gl.uniform3fv(shader.tintColor, utils.hex2rgb(graphics.tint));
+            gl.uniform3fv(shader.uniforms.tint._location, utils.hex2rgb(graphics.tint));
 
-            gl.uniform1f(shader.alpha, graphics.worldAlpha);
+            gl.uniform1f(shader.uniforms.alpha._location, graphics.worldAlpha);
 
 
             gl.bindBuffer(gl.ARRAY_BUFFER, webGLData.buffer);
 
-            gl.vertexAttribPointer(shader.aVertexPosition, 2, gl.FLOAT, false, 4 * 6, 0);
-            gl.vertexAttribPointer(shader.aColor, 4, gl.FLOAT, false,4 * 6, 2 * 4);
+            gl.vertexAttribPointer(shader.attributes.aVertexPosition, 2, gl.FLOAT, false, 4 * 6, 0);
+            gl.vertexAttribPointer(shader.attributes.aColor, 4, gl.FLOAT, false,4 * 6, 2 * 4);
 
             // set the index buffer!
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, webGLData.indexBuffer);

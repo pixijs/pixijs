@@ -655,12 +655,15 @@ Graphics.prototype.generateTexture = function (resolution, scaleMode) {
  *
  * @param renderer {WebGLRenderer}
  */
-Graphics.prototype.renderWebGL = function (renderer) {
+Graphics.prototype._renderWebGL = function (renderer) {
     // if the sprite is not visible or the alpha is 0 then no need to render this element
-    if (!this.visible || this.alpha <= 0 || this.isMask === true) {
+    if (this.isMask === true) {
         return;
     }
 
+    // this code may still be needed so leaving for now..
+    // 
+    /*
     if (this._cacheAsBitmap) {
         if (this.dirty || this.cachedSpriteDirty) {
             this._generateCachedSprite();
@@ -678,26 +681,13 @@ Graphics.prototype.renderWebGL = function (renderer) {
 
         return;
     }
-    else {
+    else */
+
         renderer.spriteBatch.stop();
         renderer.blendModeManager.setBlendMode(this.blendMode);
 
-        if (this._mask) {
-            renderer.maskManager.pushMask(this._mask, renderer);
-        }
-
-        if (this._filters) {
-            renderer.filterManager.pushFilter(this._filterBlock);
-        }
-
         // check blend mode
-        if (this.blendMode !== renderer.spriteBatch.currentBlendMode) {
-            renderer.spriteBatch.currentBlendMode = this.blendMode;
-
-            var blendModeWebGL = renderer.blendModes[renderer.spriteBatch.currentBlendMode];
-
-            renderer.spriteBatch.gl.blendFunc(blendModeWebGL[0], blendModeWebGL[1]);
-        }
+        renderer.blendModeManager.setBlendMode( this.blendMode );
 
         // check if the webgl graphic needs to be updated
         if (this.glDirty) {
@@ -707,30 +697,7 @@ Graphics.prototype.renderWebGL = function (renderer) {
 
         WebGLGraphics.renderGraphics(this, renderer);
 
-        // only render if it has children!
-        if (this.children.length) {
-            renderer.spriteBatch.start();
-
-             // simple render children!
-            for (var i = 0, j = this.children.length; i < j; ++i) {
-                this.children[i].renderWebGL(renderer);
-            }
-
-            renderer.spriteBatch.stop();
-        }
-
-        if (this._filters) {
-            renderer.filterManager.popFilter();
-        }
-
-        if (this._mask) {
-            renderer.maskManager.popMask(this.mask, renderer);
-        }
-
-        renderer.drawCount++;
-
         renderer.spriteBatch.start();
-    }
 };
 
 /**
