@@ -1,9 +1,9 @@
-module.exports = {
-    core:           require('./core'),
-    extras:         require('./extras'),
-    filters:        require('./filters'),
-    interaction:    require('./interaction'),
-    loaders:        require('./loaders'),
-    spine:          require('./spine'),
-    text:           require('./text')
-};
+var core = module.exports = require('./core');
+
+// plugins:
+core.extras         = require('./extras');
+core.filters        = require('./filters');
+core.interaction    = require('./interaction');
+core.loaders        = require('./loaders');
+core.spine          = require('./spine');
+core.text           = require('./text');
