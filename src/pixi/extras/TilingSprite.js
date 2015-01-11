@@ -168,7 +168,7 @@ PIXI.TilingSprite.prototype._renderWebGL = function(renderSession)
         if (this.tilingTexture && this.tilingTexture.needsUpdate)
         {
             //TODO - tweaking
-            PIXI.updateWebGLTexture(this.tilingTexture.baseTexture, renderSession.gl);
+            renderSession.renderer.updateTexture(this.tilingTexture.baseTexture);
             this.tilingTexture.needsUpdate = false;
            // this.tilingTexture._uvs = null;
         }

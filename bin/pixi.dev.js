@@ -1,10 +1,10 @@
 /**
  * @license
- * pixi.js - v2.2.0
+ * pixi.js - v2.2.3
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2014-12-08
+ * Compiled: 2015-01-06
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -26,7 +26,7 @@
  *
  * @module PIXI
  */
- 
+
 /**
  * Namespace-class for [pixi.js](http://www.pixijs.com/).
  *
@@ -40,7 +40,7 @@ var PIXI = PIXI || {};
 /**
  * @property {Number} WEBGL_RENDERER
  * @protected
- * @static 
+ * @static
  */
 PIXI.WEBGL_RENDERER = 0;
 /**
@@ -53,9 +53,9 @@ PIXI.CANVAS_RENDERER = 1;
 /**
  * Version of pixi that is loaded.
  * @property {String} VERSION
- * @static 
+ * @static
  */
-PIXI.VERSION = "v2.2.0";
+PIXI.VERSION = "v2.2.3";
 
 /**
  * Various blend modes supported by pixi. IMPORTANT - The WebGL renderer only supports the NORMAL, ADD, MULTIPLY and SCREEN blend modes.
@@ -139,7 +139,7 @@ else
     PIXI.Uint16Array = Array;
 }
 
-// interaction frequency 
+// interaction frequency
 PIXI.INTERACTION_FREQUENCY = 30;
 PIXI.AUTO_PREVENT_DEFAULT = true;
 
@@ -195,14 +195,14 @@ PIXI.dontSayHello = false;
 PIXI.defaultRenderOptions = {
     view:null,
     transparent:false,
-    antialias:false, 
+    antialias:false,
     preserveDrawingBuffer:false,
     resolution:1,
     clearBeforeRender:true,
     autoResize:false
 }
 
-PIXI.sayHello = function (type) 
+PIXI.sayHello = function (type)
 {
     if(PIXI.dontSayHello)return;
 
@@ -13440,7 +13440,7 @@ PIXI.TilingSprite.prototype._renderWebGL = function(renderSession)
         if (this.tilingTexture && this.tilingTexture.needsUpdate)
         {
             //TODO - tweaking
-            PIXI.updateWebGLTexture(this.tilingTexture.baseTexture, renderSession.gl);
+            renderSession.renderer.updateTexture(this.tilingTexture.baseTexture);
             this.tilingTexture.needsUpdate = false;
            // this.tilingTexture._uvs = null;
         }
@@ -18105,7 +18105,7 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
 
     this.json = JSON.parse(this.ajaxRequest.responseText);
 
-    if(this.json.frames)
+    if(this.json.frames && this.json.meta && this.json.meta.image)
     {
         // sprite sheet
         var textureUrl = this.baseUrl + this.json.meta.image;
