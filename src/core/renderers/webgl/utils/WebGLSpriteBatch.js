@@ -35,6 +35,13 @@ function WebGLSpriteBatch(renderer) {
     this.vertSize = 5;
 
     /**
+     *
+     *
+     * @member {number}
+     */
+    this.vertByteSize = this.vertSize * 4;
+
+    /**
      * The number of images in the SpriteBatch before it flushes.
      *
      * @member {number}
@@ -42,7 +49,7 @@ function WebGLSpriteBatch(renderer) {
     this.size = 2000;//Math.pow(2, 16) /  this.vertSize;
 
     // the total number of bytes in our batch
-    var numVerts = this.size * 4 * 4 * this.vertSize;
+    var numVerts = this.size * 4 * this.vertByteSize;
     // the total number of indices in our batch
     var numIndices = this.size * 6;
 
@@ -249,7 +256,7 @@ WebGLSpriteBatch.prototype.render = function (sprite) {
         h1 = texture.frame.height * -aY;
     }
 
-    var index = this.currentBatchSize * 4 * this.vertSize;
+    var index = this.currentBatchSize * this.vertByteSize;
 
     var resolution = texture.baseTexture.resolution;
 
@@ -390,7 +397,7 @@ WebGLSpriteBatch.prototype.renderTilingSprite = function (tilingSprite) {
     var h0 = height * (1-aY);
     var h1 = height * -aY;
 
-    var index = this.currentBatchSize * 4 * this.vertSize;
+    var index = this.currentBatchSize * this.vertByteSize;
 
     var resolution = texture.baseTexture.resolution;
 
@@ -466,7 +473,7 @@ WebGLSpriteBatch.prototype.flush = function () {
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 
         // this is the same for each shader?
-        var stride =  this.vertSize * 4;
+        var stride =  this.vertByteSize;
         gl.vertexAttribPointer(this.shader.attributes.aVertexPosition, 2, gl.FLOAT, false, stride, 0);
         gl.vertexAttribPointer(this.shader.attributes.aTextureCoord, 2, gl.FLOAT, false, stride, 2 * 4);
 
@@ -479,7 +486,7 @@ WebGLSpriteBatch.prototype.flush = function () {
         gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vertices);
     }
     else {
-        var view = this.positions.subarray(0, this.currentBatchSize * 4 * this.vertSize);
+        var view = this.positions.subarray(0, this.currentBatchSize * this.vertByteSize);
         gl.bufferSubData(gl.ARRAY_BUFFER, 0, view);
     }
 

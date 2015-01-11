@@ -34,6 +34,13 @@ function WebGLFastSpriteBatch(renderer) {
      *
      * @member {number}
      */
+    this.vertByteSize = this.vertSize * 4;
+
+    /**
+     *
+     *
+     * @member {number}
+     */
     this.maxSize = 6000;//Math.pow(2, 16) /  this.vertSize;
 
     /**
@@ -44,7 +51,7 @@ function WebGLFastSpriteBatch(renderer) {
     this.size = this.maxSize;
 
     //the total number of floats in our batch
-    var numVerts = this.size * 4 *  this.vertSize;
+    var numVerts = this.size * this.vertByteSize;
 
     //the total number of indices in our batch
     var numIndices = this.maxSize * 6;
@@ -257,7 +264,7 @@ WebGLFastSpriteBatch.prototype.renderSprite = function (sprite) {
         h1 = sprite.texture.frame.height * -sprite.anchor.y;
     }
 
-    index = this.currentBatchSize * 4 * this.vertSize;
+    index = this.currentBatchSize * this.vertByteSize;
 
     // xy
     vertices[index++] = w1;
@@ -378,7 +385,7 @@ WebGLFastSpriteBatch.prototype.flush = function () {
         gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vertices);
     }
     else {
-        var view = this.vertices.subarray(0, this.currentBatchSize * 4 * this.vertSize);
+        var view = this.vertices.subarray(0, this.currentBatchSize * this.vertByteSize);
 
         gl.bufferSubData(gl.ARRAY_BUFFER, 0, view);
     }
@@ -423,7 +430,7 @@ WebGLFastSpriteBatch.prototype.start = function () {
     gl.uniformMatrix3fv(this.shader.uMatrix, false, this.matrix);
 
     // set the pointers
-    var stride =  this.vertSize * 4;
+    var stride =  this.vertByteSize;
 
     gl.vertexAttribPointer(this.shader.attributes.aVertexPosition, 2, gl.FLOAT, false, stride, 0);
     gl.vertexAttribPointer(this.shader.attributes.aPositionCoord, 2, gl.FLOAT, false, stride, 2 * 4);
