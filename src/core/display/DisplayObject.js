@@ -265,8 +265,12 @@ Object.defineProperties(DisplayObject.prototype, {
  * @private
  */
 DisplayObject.prototype.updateTransform = function () {
+    if (!this.parent) {
+        return;
+    }
+
     // create some matrix refs for easy access
-    var pt = this.parent ? this.parent.worldTransform : math.Matrix.IDENTITY;
+    var pt = this.parent.worldTransform;
     var wt = this.worldTransform;
 
     // temporary matrix variables
@@ -320,7 +324,7 @@ DisplayObject.prototype.updateTransform = function () {
     }
 
     // multiply the alphas..
-    this.worldAlpha = this.alpha * (this.parent ? this.parent.worldAlpha : 1);
+    this.worldAlpha = this.alpha * this.parent.worldAlpha;
 };
 
 // performance increase to avoid using call.. (10x faster)
