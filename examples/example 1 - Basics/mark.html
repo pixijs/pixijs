@@ -1,0 +1,150 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+        <title>Pixi.js - Basic Usage</title>
+
+        <style>
+            * {
+              box-sizing: border-box;
+            }
+            #view {
+              position: absolute;
+              top: 0;
+              left: 0;
+              z-index: -1;
+            }
+        </style>
+
+        <script src="../../bin/pixi.dev.js"></script>
+        <script src="stats.min.js"></script>
+    </head>
+
+    <body>
+        <div id="wrapper">
+            <canvas id="view" width="960" height="720"></canvas>
+
+            <div id="counter"></div>
+            <label>
+                <input type="checkbox" id="useSpriteBatch" />
+                Use SpriteBatch
+            </label>
+
+        </div>
+
+        <script>
+                // starting number based on renderer type
+            var startingNum = 50,
+                // create a texture from an image path
+                tx1 = PIXI.Texture.fromImage('bunny.png'),
+                // create a sprite batch to contain our sprites
+                container = new PIXI.SpriteBatch(),
+                // get the counter element so we can update the text
+                counter = document.getElementById('counter'),
+                // tracker for mouse/touch down state
+                isAdding = false,
+                // we are going to fake some gravity in the update loop
+                gravity = 0.75;
+
+            // use nearest scaling so sprites are crisp and pixely
+            PIXI.scaleModes.DEFAULT = PIXI.scaleModes.NEAREST;
+
+            // create an new instance of a pixi stage
+            var stage = new PIXI.Stage(0xFFFFFF);
+
+            // create a renderer instance
+            var renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight, { view: document.getElementById('view') });
+
+            // add our container to the root
+            // stage.addChild(container);
+            container = stage;
+
+            // add the first bunnies!
+            createBunnies();
+
+            // setup our tick method called each frame
+            var stats = new Stats();
+            stats.domElement.style.position = 'absolute';
+            stats.domElement.style.top = '0';
+            stats.domElement.style.right = '0';
+            document.body.appendChild(stats.domElement);
+
+            animate();
+
+            function animate() {
+                stats.begin();
+
+                // start timer for next loop
+                requestAnimationFrame(animate);
+
+                // if we are adding bunnies, then do it!
+                if (isAdding) {
+                    createBunnies();
+                }
+
+                // go through each bunny and update it to dance a bit
+                for (var j = 0; j < container.children.length; ++j) {
+                    var bunny = container.children[j];
+
+                    bunny.position.x += bunny.speedX;
+                    bunny.position.y += bunny.speedY;
+
+                    bunny.speedY += gravity;
+
+                    if (bunny.position.x > renderer.width) {
+                        bunny.speedX *= -1;
+                        bunny.position.x = renderer.width;
+                    }
+                    else if (bunny.position.x < 0) {
+                        bunny.speedX *= -1;
+                        bunny.position.x = 0;
+                    }
+
+                    if (bunny.position.y > renderer.height) {
+                        bunny.speedY *= -0.85;
+                        bunny.position.y = renderer.height;
+
+                        if (Math.random() > 0.5) {
+                            bunny.speedY -= Math.random() * 6;
+                        }
+                    }
+                    else if (bunny.position.y < 0) {
+                        bunny.speedY *= -1;
+                        bunny.position.y = 0;
+                    }
+                }
+
+                renderer.render(stage);
+
+                stats.end();
+            }
+
+            renderer.view.addEventListener('mousedown', startAdd, false);
+            renderer.view.addEventListener('touchstart', startAdd, false);
+
+            renderer.view.addEventListener('mouseup', startEnd, false);
+            renderer.view.addEventListener('touchend', startEnd, false);
+
+            function startAdd() { isAdding = true; }
+            function startEnd() { isAdding = false; }
+
+            function createBunnies(num) {
+                num = num || startingNum;
+
+                for (var i = 0; i < num; ++i) {
+                    var bunny = new PIXI.Sprite(tx1);
+
+                    bunny.speedX = Math.random() * 5;
+                    bunny.speedY = (Math.random() * 5) - 5;
+
+                    bunny.anchor.set(0.5, 1);
+
+                    container.addChild(bunny);
+                }
+
+                counter.innerHTML = container.children.length + ' bunnies';
+            }
+        </script>
+    </body>
+</html>
