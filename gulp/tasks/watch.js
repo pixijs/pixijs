@@ -1,13 +1,14 @@
 var gulp    = require('gulp'),
     path    = require('path'),
-    gutil   = require('gulp-util');
+    gutil   = require('gulp-util'),
+    bundle  = require('../util/bundle');
 
 
 gulp.task('watch', function () {
     gulp.watch(paths.scripts, ['jshint'])
         .on('change', logChanges);
 
-    return bundle.watch(connect.reload);
+    return bundle.watch();
 });
 
 function logChanges(event) {
