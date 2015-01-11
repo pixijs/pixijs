@@ -238,6 +238,12 @@ module.exports = WebGLRenderer;
 utils.eventTarget.mixin(WebGLRenderer.prototype);
 
 Object.defineProperties(WebGLRenderer.prototype, {
+    /**
+     * The background color to fill if not transparent
+     *
+     * @member {number}
+     * @memberof WebGLRenderer#
+     */
     backgroundColor: {
         get: function () {
             return this._backgroundColor;
@@ -304,7 +310,7 @@ WebGLRenderer.prototype.render = function (object) {
             gl.clearColor(0, 0, 0, 0);
         }
         else {
-            gl.clearColor(object.backgroundColorSplit[0], object.backgroundColorSplit[1], object.backgroundColorSplit[2], 1);
+            gl.clearColor(this._backgroundColorRgb[0], this._backgroundColorRgb[1], this._backgroundColorRgb[2], 1);
         }
 
         gl.clear(gl.COLOR_BUFFER_BIT);

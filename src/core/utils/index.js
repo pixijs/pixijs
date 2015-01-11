@@ -37,6 +37,19 @@ var utils = module.exports = {
     },
 
     /**
+     * Converts a hex color number to a string.
+     *
+     * @param hex {number}
+     * @return {string} The string color.
+     */
+    hex2string: function (hex) {
+        hex = hex.toString(16);
+        hex = '000000'.substr(0, 6 - hex.length) + hex;
+
+        return '#' + hex;
+    },
+
+    /**
      * Converts a color as an [R, G, B] array to a hex number
      *
      * @param rgb {number[]}

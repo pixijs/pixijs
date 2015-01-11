@@ -57,6 +57,24 @@ function CanvasRenderer(width, height, options) {
     this.clearBeforeRender = options.clearBeforeRender;
 
     /**
+     * The background color as a number.
+     *
+     * @member {number}
+     * @private
+     */
+    this._backgroundColor = 0x000000;
+
+    /**
+     * The background color as a string.
+     *
+     * @member {string}
+     * @private
+     */
+    this._backgroundColorString = '#000000';
+
+    this.backgroundColor = options.backgroundColor || this._backgroundColor; // run bg color setter
+
+    /**
      * Whether the render view is transparent
      *
      * @member {boolean}
@@ -167,6 +185,24 @@ function CanvasRenderer(width, height, options) {
 CanvasRenderer.prototype.constructor = CanvasRenderer;
 module.exports = CanvasRenderer;
 
+Object.defineProperties(CanvasRenderer.prototype, {
+    /**
+     * The background color to fill if not transparent
+     *
+     * @member {number}
+     * @memberof CanvasRenderer#
+     */
+    backgroundColor: {
+        get: function () {
+            return this._backgroundColor;
+        },
+        set: function (val) {
+            this._backgroundColor = val;
+            this._backgroundColorString = utils.hex2string(val);
+        }
+    }
+});
+
 /**
  * Renders the object to this canvas view
  *
@@ -192,7 +228,7 @@ CanvasRenderer.prototype.render = function (object) {
             this.context.clearRect(0, 0, this.width, this.height);
         }
         else {
-            this.context.fillStyle = object.backgroundColorString;
+            this.context.fillStyle = this._backgroundColorString;
             this.context.fillRect(0, 0, this.width , this.height);
         }
     }
