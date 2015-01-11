@@ -265,10 +265,7 @@ Object.defineProperties(DisplayObject.prototype, {
  * @private
  */
 DisplayObject.prototype.updateTransform = function () {
-    if (!this.parent) {
-        return;
-    }
-
+   
     // create some matrix refs for easy access
     var pt = this.parent.worldTransform;
     var wt = this.worldTransform;

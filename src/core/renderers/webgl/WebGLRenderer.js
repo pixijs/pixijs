@@ -229,6 +229,13 @@ function WebGLRenderer(width, height, options) {
 
     // map some webGL blend modes..
     this._mapBlendModes();
+
+    /**
+     * This temporary display object used as the parent of the currently being rendered item
+     * @member DisplayObject
+     * @private
+     */
+    this._tempDisplayObjectParent = new PIXI.DisplayObject();
 }
 
 // constructor
@@ -294,8 +301,13 @@ WebGLRenderer.prototype.render = function (object) {
         return;
     }
 
+    var cacheParent = object.parent;
+    object.parent = this._tempDisplayObjectParent;
+
     // update the scene graph
     object.updateTransform();
+
+    object.parent = cacheParent;
 
     var gl = this.gl;
 
