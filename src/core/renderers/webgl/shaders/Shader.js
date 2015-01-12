@@ -40,9 +40,7 @@ function Shader(gl, vertexSrc, fragmentSrc, customUniforms, customAttributes)
     }
 
     this.attributes = {
-        aVertexPosition:    0,
-        aTextureCoord:      0,
-        aColor:             0
+        aVertexPosition:    0
     };
 
     for (var a in customAttributes)
@@ -69,8 +67,7 @@ function Shader(gl, vertexSrc, fragmentSrc, customUniforms, customAttributes)
 
         'const vec2 center = vec2(-1.0, 1.0);',
 
-        'void main(void)
-        {',
+        'void main(void){',
         '   gl_Position = vec4( ((aVertexPosition + offsetVector) / projectionVector) + center , 0.0, 1.0);',
         '   vTextureCoord = aTextureCoord;',
         '   vColor = vec4(aColor.rgb * aColor.a, aColor.a);',
@@ -89,8 +86,7 @@ function Shader(gl, vertexSrc, fragmentSrc, customUniforms, customAttributes)
 
         'uniform sampler2D uSampler;',
 
-        'void main(void)
-        {',
+        'void main(void){',
         '   gl_FragColor = texture2D(uSampler, vTextureCoord) * vColor ;',
         '}'
     ].join('\n');
@@ -134,8 +130,7 @@ Shader.prototype.cacheAttributeLocations = function (keys)
     // maybe its something to do with the current state of the gl context.
     // I'm convinced this is a bug in the chrome browser as there is NO reason why this should be returning -1 especially as it only manifests on my chrome pixel
     // If theres any webGL people that know why could happen please help :)
-    // if (this.attributes.aColor === -1)
-    {
+    // if (this.attributes.aColor === -1){
     //     this.attributes.aColor = 2;
     // }
 

@@ -500,15 +500,13 @@ DisplayObjectContainer.prototype.renderWebGL = function (renderer)
         // push filter first as we need to ensure the stencil buffer is correct for any masking
         if (this._filters)
         {
-            renderer.spriteBatch.flush();
+            renderer.spriteRenderer.flush();
             renderer.filterManager.pushFilter(this._filterBlock);
         }
 
         if (this._mask)
         {
-            renderer.spriteBatch.stop();
             renderer.maskManager.pushMask(this.mask, renderer);
-            renderer.spriteBatch.start();
         }
 
         // add this object to the batch, only rendered if it has a texture.
@@ -520,8 +518,6 @@ DisplayObjectContainer.prototype.renderWebGL = function (renderer)
             this.children[i].renderWebGL(renderer);
         }
 
-        // time to stop the sprite batch as either a mask element or a filter draw will happen next
-        renderer.spriteBatch.stop();
 
         if (this._mask)
         {
@@ -533,7 +529,6 @@ DisplayObjectContainer.prototype.renderWebGL = function (renderer)
             renderer.filterManager.popFilter();
         }
 
-        renderer.spriteBatch.start();
     }
     else
     {

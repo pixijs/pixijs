@@ -1,3 +1,5 @@
+var utils = require('../../../utils');
+
 var Shader = require('./Shader');
 
 /**
@@ -5,40 +7,42 @@ var Shader = require('./Shader');
  * @namespace PIXI
  * @param gl {WebGLContext} the current WebGL drawing context
  */
-function PrimitiveShader(gl)
+function SpriteShader(gl)
 {
     Shader.call(this,
         gl,
         // vertex shader
         [
             'attribute vec2 aVertexPosition;',
-            // 'attribute vec2 aTextureCoord;',
+            'attribute vec2 aTextureCoord;',
             'attribute vec4 aColor;',
 
-            'uniform mat3 translationMatrix;',
             'uniform vec2 projectionVector;',
             'uniform vec2 offsetVector;',
-            'uniform float alpha;',
-            'uniform float flipY;',
-            'uniform vec3 tint;',
 
+            'varying vec2 vTextureCoord;',
             'varying vec4 vColor;',
 
+            'const vec2 center = vec2(-1.0, 1.0);',
+
             'void main(void){',
-            '   vec3 v = translationMatrix * vec3(aVertexPosition , 1.0);',
-            '   v -= offsetVector.xyx;',
-            '   gl_Position = vec4( v.x / projectionVector.x -1.0, (v.y / projectionVector.y * -flipY) + flipY , 0.0, 1.0);',
-            '   vColor = aColor * vec4(tint * alpha, alpha);',
+            '   gl_Position = vec4( ((aVertexPosition + offsetVector) / projectionVector) + center , 0.0, 1.0);',
+            '   vTextureCoord = aTextureCoord;',
+            '   vColor = vec4(aColor.rgb * aColor.a, aColor.a);',
             '}'
+
         ].join('\n'),
         // fragment shader
         [
-            'precision mediump float;',
+            'precision lowp float;',
 
+            'varying vec2 vTextureCoord;',
             'varying vec4 vColor;',
 
+            'uniform sampler2D uSampler;',
+
             'void main(void){',
-            '   gl_FragColor = vColor;',
+            '   gl_FragColor = texture2D(uSampler, vTextureCoord) * vColor ;',
             '}'
         ].join('\n'),
         // custom uniforms
@@ -49,11 +53,12 @@ function PrimitiveShader(gl)
             translationMatrix: { type: 'mat3', value: new Float32Array(9) }
         },
         {
-            aColor:0
+            aTextureCoord:      0,
+            aColor:             0
         }
     );
 }
 
-PrimitiveShader.prototype = Object.create(Shader.prototype);
-PrimitiveShader.prototype.constructor = PrimitiveShader;
-module.exports = PrimitiveShader;
+SpriteShader.prototype = Object.create(Shader.prototype);
+SpriteShader.prototype.constructor = SpriteShader;
+module.exports = SpriteShader;

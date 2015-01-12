@@ -1,6 +1,4 @@
-var WebGLManager = require('./WebGLManager'),
-    WebGLGraphics = require('../utils/WebGLGraphics');
-
+var WebGLManager = require('./WebGLManager')
 /**
  * @class
  * @namespace PIXI
@@ -22,9 +20,11 @@ module.exports = WebGLMaskManager;
  */
 WebGLMaskManager.prototype.pushMask = function (maskData)
 {
+    this.renderer.setObjectRenderer( this.renderer.graphicsRenderer );
+
     if (maskData.dirty)
     {
-        WebGLGraphics.updateGraphics(maskData, this.renderer.gl);
+        this.renderer.graphicsRenderer.updateGraphics(maskData, this.renderer.gl);
     }
 
     if (!maskData._webGL[this.renderer.gl.id].data.length)
@@ -42,5 +42,7 @@ WebGLMaskManager.prototype.pushMask = function (maskData)
  */
 WebGLMaskManager.prototype.popMask = function (maskData)
 {
+    this.renderer.setObjectRenderer( this.renderer.graphicsRenderer );
+    
     this.renderer.stencilManager.popStencil(maskData, maskData._webGL[this.renderer.gl.id].data[0], this.renderer);
 };

@@ -30,7 +30,8 @@ module.exports = GraphicsRenderer;
 
 GraphicsRenderer.prototype.start = function()
 {
-    // flush!
+    // set the shader..
+        
 }
 
 GraphicsRenderer.prototype.stop = function()

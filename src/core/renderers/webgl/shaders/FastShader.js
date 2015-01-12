@@ -29,8 +29,7 @@ function FastShader(gl)
 
             'const vec2 center = vec2(-1.0, 1.0);',
 
-            'void main(void)
-            {',
+            'void main(void){',
             '   vec2 v;',
             '   vec2 sv = aVertexPosition * aScale;',
             '   v.x = (sv.x) * cos(aRotation) - (sv.y) * sin(aRotation);',
@@ -51,8 +50,7 @@ function FastShader(gl)
 
             'uniform sampler2D uSampler;',
 
-            'void main(void)
-            {',
+            'void main(void){',
             '   gl_FragColor = texture2D(uSampler, vTextureCoord) * vColor ;',
             '}'
         ].join('\n'),

@@ -1,4 +1,4 @@
-var WebGLSpriteBatch = require('./utils/WebGLSpriteBatch'),
+var SpriteRenderer = require('./utils/SpriteRenderer'),
     GraphicsRenderer = require('./utils/GraphicsRenderer'),
     WebGLFastSpriteBatch = require('./utils/WebGLFastSpriteBatch'),
     WebGLShaderManager = require('./managers/WebGLShaderManager'),
@@ -191,9 +191,9 @@ function WebGLRenderer(width, height, options)
 
     /**
      * Manages the rendering of sprites
-     * @member {WebGLSpriteBatch}
+     * @member {SpriteRenderer}
      */
-    this.spriteBatch = new WebGLSpriteBatch(this);
+    this.spriteRenderer = new SpriteRenderer(this);
 
     this.graphicsRenderer = new GraphicsRenderer(this);
 
@@ -245,7 +245,7 @@ function WebGLRenderer(width, height, options)
      */
     this._tempDisplayObjectParent = {worldTransform:new math.Matrix(), worldAlpha:1};
 
-    this.currentRenderer = this.spriteBatch;
+    this.currentRenderer = this.spriteRenderer;
 
 }
 
@@ -377,7 +377,7 @@ WebGLRenderer.prototype.renderDisplayObject = function (displayObject, projectio
     this.offset = this.offset;
 
     // start the sprite batch
-    this.spriteBatch.begin();
+    this.spriteRenderer.begin();
 
     // start the filter manager
     this.filterManager.begin(buffer);
@@ -386,7 +386,7 @@ WebGLRenderer.prototype.renderDisplayObject = function (displayObject, projectio
     displayObject.renderWebGL(this);
 
     // finish the sprite batch
-    this.spriteBatch.end();
+    this.spriteRenderer.end();
 };
 
 WebGLRenderer.prototype.setObjectRendererer = function (objectRenderer) 
@@ -544,7 +544,7 @@ WebGLRenderer.prototype.destroy = function (removeView)
 
     // time to create the render managers! each one focuses on managine a state in webGL
     this.shaderManager.destroy();
-    this.spriteBatch.destroy();
+    this.spriteRenderer.destroy();
     this.maskManager.destroy();
     this.filterManager.destroy();
 
@@ -577,7 +577,7 @@ WebGLRenderer.prototype.destroy = function (removeView)
     this.drawCount = 0;
 
     this.shaderManager = null;
-    this.spriteBatch = null;
+    this.spriteRenderer = null;
     this.maskManager = null;
     this.filterManager = null;
     this.stencilManager = null;

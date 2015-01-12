@@ -18,6 +18,9 @@ var core = module.exports = {
     // display
     DisplayObject:          require('./display/DisplayObject'),
     DisplayObjectContainer: require('./display/DisplayObjectContainer'),
+
+    Stage:                  require('./display/DisplayObjectContainer'),
+
     Sprite:                 require('./display/Sprite'),
     SpriteBatch:            require('./display/SpriteBatch'),
 
@@ -38,7 +41,7 @@ var core = module.exports = {
 
     // renderers - webgl
     WebGLRenderer:         require('./renderers/webgl/WebGLRenderer'),
-    WebGLGraphics:         require('./renderers/webgl/utils/WebGLGraphics'),
+   // WebGLGraphics:         require('./renderers/webgl/utils/WebGLGraphics'),
 
     /**
      * This helper function will automatically detect which renderer you should be using.

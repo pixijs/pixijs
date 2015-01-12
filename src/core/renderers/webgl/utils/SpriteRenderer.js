@@ -1,5 +1,5 @@
 var TextureUvs = require('../../../textures/TextureUvs'),
-    Shader = require('../shaders/Shader');
+    SpriteShader = require('../shaders/SpriteShader');
 
 /**
  * @author Mat Groves
@@ -8,8 +8,8 @@ var TextureUvs = require('../../../textures/TextureUvs'),
  * for creating the original pixi version!
  * Also a thanks to https://github.com/bchevalier for tweaking the tint and alpha so that they now share 4 bytes on the vertex buffer
  *
- * Heavily inspired by LibGDX's WebGLSpriteBatch:
- * https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/graphics/g2d/WebGLSpriteBatch.java
+ * Heavily inspired by LibGDX's SpriteRenderer:
+ * https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/graphics/g2d/SpriteRenderer.java
  */
 
 /**
@@ -19,7 +19,7 @@ var TextureUvs = require('../../../textures/TextureUvs'),
  * @namespace PIXI
  * @param renderer {WebGLRenderer} The renderer this sprite batch works for.
  */
-function WebGLSpriteBatch(renderer)
+function SpriteRenderer(renderer)
 {
     /**
      *
@@ -170,18 +170,18 @@ function WebGLSpriteBatch(renderer)
     });
 }
 
-WebGLSpriteBatch.prototype.constructor = WebGLSpriteBatch;
-module.exports = WebGLSpriteBatch;
+SpriteRenderer.prototype.constructor = SpriteRenderer;
+module.exports = SpriteRenderer;
 
 /**
  * @param gl {WebGLContext} the current WebGL drawing context
  */
-WebGLSpriteBatch.prototype.setupContext = function ()
+SpriteRenderer.prototype.setupContext = function ()
 {
     var gl = this.renderer.gl;
 
     // setup default shader
-    this.shader = new Shader(gl);
+    this.shader = new SpriteShader(gl);
 
     // create a couple of buffers
     this.vertexBuffer = gl.createBuffer();
@@ -202,7 +202,7 @@ WebGLSpriteBatch.prototype.setupContext = function ()
 /**
  *
  */
-WebGLSpriteBatch.prototype.begin = function ()
+SpriteRenderer.prototype.begin = function ()
 {
     // this.shader = this.renderer.shaderManager.defaultShader;
 
@@ -211,7 +211,7 @@ WebGLSpriteBatch.prototype.begin = function ()
 
 /**
  */
-WebGLSpriteBatch.prototype.end = function ()
+SpriteRenderer.prototype.end = function ()
 {
     this.flush();
 };
@@ -219,7 +219,7 @@ WebGLSpriteBatch.prototype.end = function ()
 /**
  * @param sprite {Sprite} the sprite to render when using this spritebatch
  */
-WebGLSpriteBatch.prototype.render = function (sprite)
+SpriteRenderer.prototype.render = function (sprite)
 {
     var texture = sprite.texture;
 
@@ -351,7 +351,7 @@ WebGLSpriteBatch.prototype.render = function (sprite)
  *
  * @param sprite {TilingSprite} the tilingSprite to render
  */
-WebGLSpriteBatch.prototype.renderTilingSprite = function (tilingSprite)
+SpriteRenderer.prototype.renderTilingSprite = function (tilingSprite)
 {
     var texture = tilingSprite.tilingTexture;
 
@@ -470,7 +470,7 @@ WebGLSpriteBatch.prototype.renderTilingSprite = function (tilingSprite)
  * Renders the content and empties the current batch.
  *
  */
-WebGLSpriteBatch.prototype.flush = function ()
+SpriteRenderer.prototype.flush = function ()
 {
     // If the batch is length 0 then return as there is nothing to draw
     if (this.currentBatchSize === 0)
@@ -596,7 +596,7 @@ WebGLSpriteBatch.prototype.flush = function ()
  * @param size {number}
  * @param startIndex {number}
  */
-WebGLSpriteBatch.prototype.renderBatch = function (texture, size, startIndex)
+SpriteRenderer.prototype.renderBatch = function (texture, size, startIndex)
 {
     if (size === 0)
     {
@@ -625,7 +625,7 @@ WebGLSpriteBatch.prototype.renderBatch = function (texture, size, startIndex)
 /**
  *
  */
-WebGLSpriteBatch.prototype.stop = function ()
+SpriteRenderer.prototype.stop = function ()
 {
     this.flush();
     this.dirty = true;
@@ -634,7 +634,7 @@ WebGLSpriteBatch.prototype.stop = function ()
 /**
  *
  */
-WebGLSpriteBatch.prototype.start = function ()
+SpriteRenderer.prototype.start = function ()
 {
     this.dirty = true;
 };
@@ -643,7 +643,7 @@ WebGLSpriteBatch.prototype.start = function ()
  * Destroys the SpriteBatch.
  *
  */
-WebGLSpriteBatch.prototype.destroy = function ()
+SpriteRenderer.prototype.destroy = function ()
 {
     this.renderer.gl.deleteBuffer(this.vertexBuffer);
     this.renderer.gl.deleteBuffer(this.indexBuffer);

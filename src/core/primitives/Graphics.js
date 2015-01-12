@@ -3,7 +3,7 @@ var DisplayObjectContainer = require('../display/DisplayObjectContainer'),
     Texture = require('../textures/Texture'),
     CanvasBuffer = require('../renderers/canvas/utils/CanvasBuffer'),
     CanvasGraphics = require('../renderers/canvas/utils/CanvasGraphics'),
-    WebGLGraphics = require('../renderers/webgl/utils/WebGLGraphics'),
+   // WebGLGraphics = require('../renderers/webgl/utils/WebGLGraphics'),
     GraphicsData = require('./GraphicsData'),
     math = require('../math'),
     CONST = require('../const');
@@ -738,24 +738,18 @@ Graphics.prototype._renderWebGL = function (renderer)
 
         return;
     }
-    else */
+    
+    */
+     
+    if (this.glDirty)
+    {
+        this.dirty = true;
+        this.glDirty = false;
+    }
 
-        renderer.spriteBatch.stop();
-        renderer.blendModeManager.setBlendMode(this.blendMode);
+    renderer.setObjectRendererer(renderer.graphicsRenderer);
+    renderer.graphicsRenderer.render(this);
 
-        // check blend mode
-        renderer.blendModeManager.setBlendMode( this.blendMode );
-
-        // check if the webgl graphic needs to be updated
-        if (this.glDirty)
-        {
-            this.dirty = true;
-            this.glDirty = false;
-        }
-
-        WebGLGraphics.renderGraphics(this, renderer);
-
-        renderer.spriteBatch.start();
 };
 
 /**
