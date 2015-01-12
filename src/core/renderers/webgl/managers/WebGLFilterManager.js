@@ -7,7 +7,8 @@ var WebGLManager = require('./WebGLManager'),
  * @namespace PIXI
  * @param renderer {WebGLRenderer} The renderer this manager works for.
  */
-function WebGLFilterManager(renderer) {
+function WebGLFilterManager(renderer)
+{
     WebGLManager.call(this, renderer);
 
     /**
@@ -32,7 +33,8 @@ function WebGLFilterManager(renderer) {
 
     // listen for context and update necessary buffers
     var self = this;
-    this.renderer.on('context', function () {
+    this.renderer.on('context', function ()
+    {
         self.texturePool.length = 0;
         self.initShaderBuffers();
     });
@@ -46,7 +48,8 @@ module.exports = WebGLFilterManager;
  * @param renderer {WebGLRenderer}
  * @param buffer {ArrayBuffer}
  */
-WebGLFilterManager.prototype.begin = function (buffer) {
+WebGLFilterManager.prototype.begin = function (buffer)
+{
     this.defaultShader = this.renderer.shaderManager.defaultShader;
 
     this.width = this.renderer.projection.x * 2;
@@ -60,7 +63,8 @@ WebGLFilterManager.prototype.begin = function (buffer) {
  *
  * @param filterBlock {object} the filter that will be pushed to the current filter stack
  */
-WebGLFilterManager.prototype.pushFilter = function (filterBlock) {
+WebGLFilterManager.prototype.pushFilter = function (filterBlock)
+{
     var gl = this.renderer.gl;
 
     var projection = this.renderer.projection;
@@ -78,10 +82,12 @@ WebGLFilterManager.prototype.pushFilter = function (filterBlock) {
     this.offsetY += filterBlock._filterArea.y;
 
     var texture = this.texturePool.pop();
-    if (!texture) {
+    if (!texture)
+    {
         texture = new FilterTexture(this.renderer.gl, this.width, this.height);
     }
-    else {
+    else
+    {
         texture.resize(this.width, this.height);
     }
 
@@ -98,29 +104,35 @@ WebGLFilterManager.prototype.pushFilter = function (filterBlock) {
     var localX = filterArea.x,
         localY = filterArea.y;
 
-    if (filterArea.x < 0) {
+    if (filterArea.x < 0)
+    {
         filterArea.width += filterArea.x;
         filterArea.x = 0;
     }
 
-    if (filterArea.y < 0) {
+    if (filterArea.y < 0)
+    {
         filterArea.height += filterArea.y;
         filterArea.y = 0;
     }
 
-    if (localX + filterArea.width > this.width) {
+    if (localX + filterArea.width > this.width)
+    {
         filterArea.width = this.width - localX;
     }
 
-    if (localY + filterArea.height > this.height) {
+    if (localY + filterArea.height > this.height)
+    {
         filterArea.height = this.height - localY;
     }
 
-    if (filterArea.width < 0) {
+    if (filterArea.width < 0)
+    {
         filterArea.width = 0;
     }
 
-    if (filterArea.height < 0) {
+    if (filterArea.height < 0)
+    {
         filterArea.height = 0;
     }
 
@@ -154,7 +166,8 @@ WebGLFilterManager.prototype.pushFilter = function (filterBlock) {
  * Removes the last filter from the filter stack and doesn't return it.
  *
  */
-WebGLFilterManager.prototype.popFilter = function () {
+WebGLFilterManager.prototype.popFilter = function ()
+{
     var gl = this.renderer.gl;
 
     var filterBlock = this.filterStack.pop();
@@ -163,7 +176,8 @@ WebGLFilterManager.prototype.popFilter = function () {
     var projection = this.renderer.projection;
     var offset = this.renderer.offset;
 
-    if (filterBlock.filterPasses.length > 1) {
+    if (filterBlock.filterPasses.length > 1)
+    {
         gl.viewport(0, 0, filterArea.width, filterArea.height);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
@@ -193,7 +207,8 @@ WebGLFilterManager.prototype.popFilter = function () {
 
         var inputTexture = texture;
         var outputTexture = this.texturePool.pop();
-        if (!outputTexture) {
+        if (!outputTexture)
+        {
             outputTexture = new FilterTexture(this.renderer.gl, this.width, this.height);
         }
         outputTexture.resize(this.width, this.height);
@@ -204,7 +219,8 @@ WebGLFilterManager.prototype.popFilter = function () {
 
         gl.disable(gl.BLEND);
 
-        for (var i = 0; i < filterBlock.filterPasses.length-1; i++) {
+        for (var i = 0; i < filterBlock.filterPasses.length-1; i++)
+        {
             var filterPass = filterBlock.filterPasses[i];
 
             gl.bindFramebuffer(gl.FRAMEBUFFER, outputTexture.frameBuffer );
@@ -243,10 +259,12 @@ WebGLFilterManager.prototype.popFilter = function () {
     var buffer = this.buffer;
 
     // time to render the filters texture to the previous scene
-    if (this.filterStack.length === 0) {
+    if (this.filterStack.length === 0)
+    {
         gl.colorMask(true, true, true, true);//this.transparent);
     }
-    else {
+    else
+    {
         var currentFilter = this.filterStack[this.filterStack.length-1];
         filterArea = currentFilter._filterArea;
 
@@ -332,13 +350,15 @@ WebGLFilterManager.prototype.popFilter = function () {
  * @param width {number} the horizontal range of the filter
  * @param height {number} the vertical range of the filter
  */
-WebGLFilterManager.prototype.applyFilterPass = function (filter, filterArea, width, height) {
+WebGLFilterManager.prototype.applyFilterPass = function (filter, filterArea, width, height)
+{
     // use program
     var gl = this.renderer.gl;
 
     var shader = filter.shaders[gl.id];
 
-    if (!shader) {
+    if (!shader)
+    {
         shader = new Shader(gl);
 
         shader.fragmentSrc = filter.fragmentSrc;
@@ -356,7 +376,8 @@ WebGLFilterManager.prototype.applyFilterPass = function (filter, filterArea, wid
     gl.uniform2f(shader.projectionVector, width/2, -height/2);
     gl.uniform2f(shader.offsetVector, 0,0);
 
-    if (filter.uniforms.dimensions) {
+    if (filter.uniforms.dimensions)
+    {
         filter.uniforms.dimensions.value[0] = this.width;//width;
         filter.uniforms.dimensions.value[1] = this.height;//height;
         filter.uniforms.dimensions.value[2] = this.vertexArray[0];
@@ -386,7 +407,8 @@ WebGLFilterManager.prototype.applyFilterPass = function (filter, filterArea, wid
  * Initialises the shader buffers.
  *
  */
-WebGLFilterManager.prototype.initShaderBuffers = function () {
+WebGLFilterManager.prototype.initShaderBuffers = function ()
+{
     var gl = this.renderer.gl;
 
     // create some buffers
@@ -432,7 +454,8 @@ WebGLFilterManager.prototype.initShaderBuffers = function () {
  * Destroys the filter and removes it from the filter stack.
  *
  */
-WebGLFilterManager.prototype.destroy = function () {
+WebGLFilterManager.prototype.destroy = function ()
+{
     var gl = this.renderer.gl;
 
     this.filterStack = null;
@@ -441,7 +464,8 @@ WebGLFilterManager.prototype.destroy = function () {
     this.offsetY = 0;
 
     // destroy textures
-    for (var i = 0; i < this.texturePool.length; i++) {
+    for (var i = 0; i < this.texturePool.length; i++)
+    {
         this.texturePool[i].destroy();
     }
 

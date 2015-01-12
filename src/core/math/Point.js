@@ -7,7 +7,8 @@
  * @param [x=0] {number} position of the point on the x axis
  * @param [y=0] {number} position of the point on the y axis
  */
-function Point(x, y) {
+function Point(x, y)
+{
     /**
      * @member {number}
      * @default 0
@@ -29,7 +30,8 @@ module.exports = Point;
  *
  * @return {Point} a copy of the point
  */
-Point.prototype.clone = function () {
+Point.prototype.clone = function ()
+{
     return new Point(this.x, this.y);
 };
 
@@ -40,7 +42,8 @@ Point.prototype.clone = function () {
  * @param [x=0] {number} position of the point on the x axis
  * @param [y=0] {number} position of the point on the y axis
  */
-Point.prototype.set = function (x, y) {
+Point.prototype.set = function (x, y)
+{
     this.x = x || 0;
     this.y = y || ( (y !== 0) ? this.x : 0 ) ;
 };

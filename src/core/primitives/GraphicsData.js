@@ -4,7 +4,8 @@
  * @class
  * @namespace PIXI
  */
-function GraphicsData(lineWidth, lineColor, lineAlpha, fillColor, fillAlpha, fill, shape) {
+function GraphicsData(lineWidth, lineColor, lineAlpha, fillColor, fillAlpha, fill, shape)
+{
     this.lineWidth = lineWidth;
     this.lineColor = lineColor;
     this.lineAlpha = lineAlpha;
@@ -27,7 +28,8 @@ module.exports = GraphicsData;
  *
  * @return {GraphicsData}
  */
-GraphicsData.prototype.clone = function () {
+GraphicsData.prototype.clone = function ()
+{
     return new GraphicsData(
         this.lineWidth,
         this.lineColor,

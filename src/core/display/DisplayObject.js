@@ -7,7 +7,8 @@ var math = require('../math');
  * @class
  * @namespace PIXI
  */
-function DisplayObject() {
+function DisplayObject()
+{
     /**
      * The coordinate of the object relative to the local coordinates of the parent.
      *
@@ -152,10 +153,12 @@ Object.defineProperties(DisplayObject.prototype, {
      * @memberof DisplayObject#
      */
     x: {
-        get: function () {
+        get: function ()
+        {
             return this.position.x;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.position.x = value;
         }
     },
@@ -167,10 +170,12 @@ Object.defineProperties(DisplayObject.prototype, {
      * @memberof DisplayObject#
      */
     y: {
-        get: function () {
+        get: function ()
+        {
             return this.position.y;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.position.y = value;
         }
     },
@@ -183,11 +188,13 @@ Object.defineProperties(DisplayObject.prototype, {
      * @readonly
      */
     worldVisible: {
-        get: function () {
+        get: function ()
+        {
             var item = this;
 
             do {
-                if (!item.visible) {
+                if (!item.visible)
+                {
                     return false;
                 }
 
@@ -207,17 +214,21 @@ Object.defineProperties(DisplayObject.prototype, {
      * @memberof DisplayObject#
      */
     mask: {
-        get: function () {
+        get: function ()
+        {
             return this._mask;
         },
-        set: function (value) {
-            if (this._mask) {
+        set: function (value)
+        {
+            if (this._mask)
+            {
                 this._mask.isMask = false;
             }
 
             this._mask = value;
 
-            if (this._mask) {
+            if (this._mask)
+            {
                 this._mask.isMask = true;
             }
         }
@@ -232,18 +243,23 @@ Object.defineProperties(DisplayObject.prototype, {
      * @memberof DisplayObject#
      */
     filters: {
-        get: function () {
+        get: function ()
+        {
             return this._filters;
         },
-        set: function (value) {
-            if (value) {
+        set: function (value)
+        {
+            if (value)
+            {
                 // now put all the passes in one place..
                 var passes = [];
 
-                for (var i = 0; i < value.length; i++) {
+                for (var i = 0; i < value.length; i++)
+                {
                     var filterPasses = value[i].passes;
 
-                    for (var j = 0; j < filterPasses.length; j++) {
+                    for (var j = 0; j < filterPasses.length; j++)
+                    {
                         passes.push(filterPasses[j]);
                     }
                 }
@@ -264,8 +280,9 @@ Object.defineProperties(DisplayObject.prototype, {
  *
  * @private
  */
-DisplayObject.prototype.updateTransform = function () {
-   
+DisplayObject.prototype.updateTransform = function ()
+{
+
     // create some matrix refs for easy access
     var pt = this.parent.worldTransform;
     var wt = this.worldTransform;
@@ -274,9 +291,11 @@ DisplayObject.prototype.updateTransform = function () {
     var a, b, c, d, tx, ty;
 
     // so if rotation is between 0 then we can simplify the multiplication process..
-    if (this.rotation % math.PI_2) {
+    if (this.rotation % math.PI_2)
+    {
         // check to see if the rotation is the same as the previous render. This means we only need to use sin and cos when rotation actually changes
-        if (this.rotation !== this.rotationCache) {
+        if (this.rotation !== this.rotationCache)
+        {
             this.rotationCache = this.rotation;
             this._sr = Math.sin(this.rotation);
             this._cr = Math.cos(this.rotation);
@@ -291,7 +310,8 @@ DisplayObject.prototype.updateTransform = function () {
         ty =  this.position.y;
 
         // check for pivot.. not often used so geared towards that fact!
-        if (this.pivot.x || this.pivot.y) {
+        if (this.pivot.x || this.pivot.y)
+        {
             tx -= this.pivot.x * a + this.pivot.y * c;
             ty -= this.pivot.x * b + this.pivot.y * d;
         }
@@ -304,7 +324,8 @@ DisplayObject.prototype.updateTransform = function () {
         wt.tx = tx * pt.a + ty * pt.c + pt.tx;
         wt.ty = tx * pt.b + ty * pt.d + pt.ty;
     }
-    else {
+    else
+    {
         // lets do the fast version as we know there is no rotation..
         a  = this.scale.x;
         d  = this.scale.y;
@@ -333,7 +354,8 @@ DisplayObject.prototype.displayObjectUpdateTransform = DisplayObject.prototype.u
  * @param matrix {Matrix}
  * @return {Rectangle} the rectangular bounding area
  */
-DisplayObject.prototype.getBounds = function (/* matrix */) {
+DisplayObject.prototype.getBounds = function (/* matrix */)
+{
     return math.Rectangle.EMPTY;
 };
 
@@ -342,7 +364,8 @@ DisplayObject.prototype.getBounds = function (/* matrix */) {
  *
  * @return {Rectangle} the rectangular bounding area
  */
-DisplayObject.prototype.getLocalBounds = function () {
+DisplayObject.prototype.getLocalBounds = function ()
+{
     return this.getBounds(math.Matrix.IDENTITY);
 };
 
@@ -352,7 +375,8 @@ DisplayObject.prototype.getLocalBounds = function () {
  * @param position {Point} The world origin to calculate from
  * @return {Point} A point object representing the position of this object
  */
-DisplayObject.prototype.toGlobal = function (position) {
+DisplayObject.prototype.toGlobal = function (position)
+{
     // don't need to u[date the lot
     this.displayObjectUpdateTransform();
     return this.worldTransform.apply(position);
@@ -365,8 +389,10 @@ DisplayObject.prototype.toGlobal = function (position) {
  * @param [from] {DisplayObject} The DisplayObject to calculate the global position from
  * @return {Point} A point object representing the position of this object
  */
-DisplayObject.prototype.toLocal = function (position, from) {
-    if (from) {
+DisplayObject.prototype.toLocal = function (position, from)
+{
+    if (from)
+    {
         position = from.toGlobal(position);
     }
 
@@ -381,7 +407,8 @@ DisplayObject.prototype.toLocal = function (position, from) {
  * @param renderer {WebGLRenderer} The renderer
  * @private
  */
-DisplayObject.prototype.renderWebGL = function (/* renderer */) {
+DisplayObject.prototype.renderWebGL = function (/* renderer */)
+{
     // OVERWRITE;
 };
 
@@ -391,6 +418,7 @@ DisplayObject.prototype.renderWebGL = function (/* renderer */) {
  * @param renderer {CanvasRenderer} The renderer
  * @private
  */
-DisplayObject.prototype.renderCanvas = function (/* renderer */) {
+DisplayObject.prototype.renderCanvas = function (/* renderer */)
+{
     // OVERWRITE;
 };

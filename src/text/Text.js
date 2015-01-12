@@ -21,7 +21,8 @@ var core = require('../core');
  * @param [style.dropShadowAngle=Math.PI/4] {number} Set a angle of the drop shadow
  * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
  */
-function Text(text, style) {
+function Text(text, style)
+{
     /**
      * The canvas element that everything is drawn to
      *
@@ -60,15 +61,18 @@ Object.defineProperties(Text.prototype, {
      * @memberof Text#
      */
     width: {
-        get: function () {
-            if (this.dirty) {
+        get: function ()
+        {
+            if (this.dirty)
+            {
                 this.updateText();
                 this.dirty = false;
             }
 
             return this.scale.x * this.texture.frame.width;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.scale.x = value / this.texture.frame.width;
             this._width = value;
         }
@@ -81,15 +85,18 @@ Object.defineProperties(Text.prototype, {
      * @memberof Text#
      */
     height: {
-        get: function () {
-            if (this.dirty) {
+        get: function ()
+        {
+            if (this.dirty)
+            {
                 this.updateText();
                 this.dirty = false;
             }
 
             return  this.scale.y * this.texture.frame.height;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.scale.y = value / this.texture.frame.height;
             this._height = value;
         }
@@ -112,7 +119,8 @@ Object.defineProperties(Text.prototype, {
  * @param [style.dropShadowAngle=Math.PI/4] {number} Set a angle of the drop shadow
  * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
  */
-Text.prototype.setStyle = function (style) {
+Text.prototype.setStyle = function (style)
+{
     style = style || {};
     style.font = style.font || 'bold 20pt Arial';
     style.fill = style.fill || 'black';
@@ -136,7 +144,8 @@ Text.prototype.setStyle = function (style) {
  *
  * @param text {string} The copy that you would like the text to display
  */
-Text.prototype.setText = function (text) {
+Text.prototype.setText = function (text)
+{
     this.text = text.toString() || ' ';
     this.dirty = true;
 };
@@ -146,7 +155,8 @@ Text.prototype.setText = function (text) {
  *
  * @private
  */
-Text.prototype.updateText = function () {
+Text.prototype.updateText = function ()
+{
     this.texture.baseTexture.resolution = this.resolution;
 
     this.context.font = this.style.font;
@@ -155,7 +165,8 @@ Text.prototype.updateText = function () {
 
     // word wrap
     // preserve original text
-    if (this.style.wordWrap) {
+    if (this.style.wordWrap)
+    {
         outputText = this.wordWrap(this.text);
     }
 
@@ -166,14 +177,16 @@ Text.prototype.updateText = function () {
     var lineWidths = [];
     var maxLineWidth = 0;
     var fontProperties = this.determineFontProperties(this.style.font);
-    for (var i = 0; i < lines.length; i++) {
+    for (var i = 0; i < lines.length; i++)
+    {
         var lineWidth = this.context.measureText(lines[i]).width;
         lineWidths[i] = lineWidth;
         maxLineWidth = Math.max(maxLineWidth, lineWidth);
     }
 
     var width = maxLineWidth + this.style.strokeThickness;
-    if (this.style.dropShadow) {
+    if (this.style.dropShadow)
+    {
         width += this.style.dropShadowDistance;
     }
 
@@ -183,7 +196,8 @@ Text.prototype.updateText = function () {
     var lineHeight = fontProperties.fontSize + this.style.strokeThickness;
 
     var height = lineHeight * lines.length;
-    if (this.style.dropShadow) {
+    if (this.style.dropShadow)
+    {
         height += this.style.dropShadowDistance;
     }
 
@@ -191,7 +205,8 @@ Text.prototype.updateText = function () {
 
     this.context.scale( this.resolution, this.resolution);
 
-    if (navigator.isCocoonJS) {
+    if (navigator.isCocoonJS)
+    {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
 
@@ -208,24 +223,29 @@ Text.prototype.updateText = function () {
     var linePositionX;
     var linePositionY;
 
-    if (this.style.dropShadow) {
+    if (this.style.dropShadow)
+    {
         this.context.fillStyle = this.style.dropShadowColor;
 
         var xShadowOffset = Math.cos(this.style.dropShadowAngle) * this.style.dropShadowDistance;
         var yShadowOffset = Math.sin(this.style.dropShadowAngle) * this.style.dropShadowDistance;
 
-        for (i = 0; i < lines.length; i++) {
+        for (i = 0; i < lines.length; i++)
+        {
             linePositionX = this.style.strokeThickness / 2;
             linePositionY = (this.style.strokeThickness / 2 + i * lineHeight) + fontProperties.ascent;
 
-            if (this.style.align === 'right') {
+            if (this.style.align === 'right')
+            {
                 linePositionX += maxLineWidth - lineWidths[i];
             }
-            else if (this.style.align === 'center') {
+            else if (this.style.align === 'center')
+            {
                 linePositionX += (maxLineWidth - lineWidths[i]) / 2;
             }
 
-            if (this.style.fill) {
+            if (this.style.fill)
+            {
                 this.context.fillText(lines[i], linePositionX + xShadowOffset, linePositionY + yShadowOffset);
             }
 
@@ -237,22 +257,27 @@ Text.prototype.updateText = function () {
     this.context.fillStyle = this.style.fill;
 
     //draw lines line by line
-    for (i = 0; i < lines.length; i++) {
+    for (i = 0; i < lines.length; i++)
+    {
         linePositionX = this.style.strokeThickness / 2;
         linePositionY = (this.style.strokeThickness / 2 + i * lineHeight) + fontProperties.ascent;
 
-        if (this.style.align === 'right') {
+        if (this.style.align === 'right')
+        {
             linePositionX += maxLineWidth - lineWidths[i];
         }
-        else if (this.style.align === 'center') {
+        else if (this.style.align === 'center')
+        {
             linePositionX += (maxLineWidth - lineWidths[i]) / 2;
         }
 
-        if (this.style.stroke && this.style.strokeThickness) {
+        if (this.style.stroke && this.style.strokeThickness)
+        {
             this.context.strokeText(lines[i], linePositionX, linePositionY);
         }
 
-        if (this.style.fill) {
+        if (this.style.fill)
+        {
             this.context.fillText(lines[i], linePositionX, linePositionY);
         }
 
@@ -267,7 +292,8 @@ Text.prototype.updateText = function () {
  *
  * @private
  */
-Text.prototype.updateTexture = function () {
+Text.prototype.updateTexture = function ()
+{
     this.texture.baseTexture.width = this.canvas.width;
     this.texture.baseTexture.height = this.canvas.height;
     this.texture.crop.width = this.texture.frame.width = this.canvas.width;
@@ -285,8 +311,10 @@ Text.prototype.updateTexture = function () {
 *
  * @param renderer {WebGLRenderer}
  */
-Text.prototype.renderWebGL = function (renderer) {
-    if (this.dirty) {
+Text.prototype.renderWebGL = function (renderer)
+{
+    if (this.dirty)
+    {
         this.resolution = renderer.resolution;
 
         this.updateText();
@@ -301,8 +329,10 @@ Text.prototype.renderWebGL = function (renderer) {
 *
  * @param renderer {CanvasRenderer}
  */
-Text.prototype.renderCanvas = function (renderer) {
-    if (this.dirty) {
+Text.prototype.renderCanvas = function (renderer)
+{
+    if (this.dirty)
+    {
         this.resolution = renderer.resolution;
 
         this.updateText();
@@ -318,10 +348,12 @@ Text.prototype.renderCanvas = function (renderer) {
  * @param fontStyle {object}
  * @private
  */
-Text.prototype.determineFontProperties = function (fontStyle) {
+Text.prototype.determineFontProperties = function (fontStyle)
+{
     var properties = Text.fontPropertiesCache[fontStyle];
 
-    if (!properties) {
+    if (!properties)
+    {
         properties = {};
 
         var canvas = Text.fontPropertiesCanvas;
@@ -357,17 +389,22 @@ Text.prototype.determineFontProperties = function (fontStyle) {
         var stop = false;
 
         // ascent. scan from top to bottom until we find a non red pixel
-        for (i = 0; i < baseline; i++) {
-            for (j = 0; j < line; j += 4) {
-                if (imagedata[idx + j] !== 255) {
+        for (i = 0; i < baseline; i++)
+        {
+            for (j = 0; j < line; j += 4)
+            {
+                if (imagedata[idx + j] !== 255)
+                {
                     stop = true;
                     break;
                 }
             }
-            if (!stop) {
+            if (!stop)
+            {
                 idx += line;
             }
-            else {
+            else
+            {
                 break;
             }
         }
@@ -378,17 +415,22 @@ Text.prototype.determineFontProperties = function (fontStyle) {
         stop = false;
 
         // descent. scan from bottom to top until we find a non red pixel
-        for (i = height; i > baseline; i--) {
-            for (j = 0; j < line; j += 4) {
-                if (imagedata[idx + j] !== 255) {
+        for (i = height; i > baseline; i--)
+        {
+            for (j = 0; j < line; j += 4)
+            {
+                if (imagedata[idx + j] !== 255)
+                {
                     stop = true;
                     break;
                 }
             }
-            if (!stop) {
+            if (!stop)
+            {
                 idx -= line;
             }
-            else {
+            else
+            {
                 break;
             }
         }
@@ -411,33 +453,40 @@ Text.prototype.determineFontProperties = function (fontStyle) {
  * @param text {string}
  * @private
  */
-Text.prototype.wordWrap = function (text) {
+Text.prototype.wordWrap = function (text)
+{
     // Greedy wrapping algorithm that will wrap words as the line grows longer
     // than its horizontal bounds.
     var result = '';
     var lines = text.split('\n');
-    for (var i = 0; i < lines.length; i++) {
+    for (var i = 0; i < lines.length; i++)
+    {
         var spaceLeft = this.style.wordWrapWidth;
         var words = lines[i].split(' ');
-        for (var j = 0; j < words.length; j++) {
+        for (var j = 0; j < words.length; j++)
+        {
             var wordWidth = this.context.measureText(words[j]).width;
             var wordWidthWithSpace = wordWidth + this.context.measureText(' ').width;
-            if (j === 0 || wordWidthWithSpace > spaceLeft) {
+            if (j === 0 || wordWidthWithSpace > spaceLeft)
+            {
                 // Skip printing the newline if it's the first word of the line that is
                 // greater than the word wrap width.
-                if (j > 0) {
+                if (j > 0)
+                {
                     result += '\n';
                 }
                 result += words[j];
                 spaceLeft = this.style.wordWrapWidth - wordWidth;
             }
-            else {
+            else
+            {
                 spaceLeft -= wordWidthWithSpace;
                 result += ' ' + words[j];
             }
         }
 
-        if (i < lines.length-1) {
+        if (i < lines.length-1)
+        {
             result += '\n';
         }
     }
@@ -450,8 +499,10 @@ Text.prototype.wordWrap = function (text) {
  * @param matrix {Matrix} the transformation matrix of the Text
  * @return {Rectangle} the framing rectangle
  */
-Text.prototype.getBounds = function (matrix) {
-    if (this.dirty) {
+Text.prototype.getBounds = function (matrix)
+{
+    if (this.dirty)
+    {
         this.updateText();
         this.dirty = false;
     }
@@ -464,7 +515,8 @@ Text.prototype.getBounds = function (matrix) {
  *
  * @param destroyBaseTexture {boolean} whether to destroy the base texture as well
  */
-Text.prototype.destroy = function (destroyBaseTexture) {
+Text.prototype.destroy = function (destroyBaseTexture)
+{
     // make sure to reset the the context and canvas.. dont want this hanging around in memory!
     this.context = null;
     this.canvas = null;

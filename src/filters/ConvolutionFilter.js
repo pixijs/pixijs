@@ -14,7 +14,8 @@ var AbstractFilter = require('./AbstractFilter');
  * @param width {number} Width of the object you are transforming
  * @param height {number} Height of the object you are transforming
  */
-function ConvolutionFilter(matrix, width, height) {
+function ConvolutionFilter(matrix, width, height)
+{
     AbstractFilter.call(this);
 
     // set the uniforms
@@ -36,7 +37,8 @@ function ConvolutionFilter(matrix, width, height) {
 
         'vec2 px = vec2(texelSizeX, texelSizeY);',
 
-        'void main(void) {',
+        'void main(void)
+        {',
         '   vec4 c11 = texture2D(texture, vTextureCoord - px);', // top left
         '   vec4 c12 = texture2D(texture, vec2(vTextureCoord.x, vTextureCoord.y - px.y));', // top center
         '   vec4 c13 = texture2D(texture, vec2(vTextureCoord.x + px.x, vTextureCoord.y - px.y));', // top right
@@ -70,10 +72,12 @@ Object.defineProperties(ConvolutionFilter.prototype, {
      * @memberof ConvolutionFilter#
      */
     matrix: {
-        get: function () {
+        get: function ()
+        {
             return this.uniforms.matrix.value;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.uniforms.matrix.value = new Float32Array(value);
         }
     },
@@ -85,10 +89,12 @@ Object.defineProperties(ConvolutionFilter.prototype, {
      * @memberof ConvolutionFilter#
      */
     width: {
-        get: function () {
+        get: function ()
+        {
             return this.uniforms.texelSizeX.value;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.uniforms.texelSizeX.value = 1/value;
         }
     },
@@ -100,10 +106,12 @@ Object.defineProperties(ConvolutionFilter.prototype, {
      * @memberof ConvolutionFilter#
      */
     height: {
-        get: function () {
+        get: function ()
+        {
             return this.uniforms.texelSizeY.value;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.uniforms.texelSizeY.value = 1/value;
         }
     }

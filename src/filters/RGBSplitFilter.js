@@ -7,7 +7,8 @@ var AbstractFilter = require('./AbstractFilter');
  * @extends AbstractFilter
  * @namespace PIXI
  */
-function RGBSplitFilter() {
+function RGBSplitFilter()
+{
     AbstractFilter.call(this);
 
     this.passes = [this];
@@ -32,7 +33,8 @@ function RGBSplitFilter() {
         'uniform vec4 dimensions;',
         'uniform sampler2D uSampler;',
 
-        'void main(void) {',
+        'void main(void)
+        {',
         '   gl_FragColor.r = texture2D(uSampler, vTextureCoord + red/dimensions.xy).r;',
         '   gl_FragColor.g = texture2D(uSampler, vTextureCoord + green/dimensions.xy).g;',
         '   gl_FragColor.b = texture2D(uSampler, vTextureCoord + blue/dimensions.xy).b;',
@@ -53,10 +55,12 @@ Object.defineProperties(RGBSplitFilter.prototype, {
      * @memberof RGBSplitFilter#
      */
     red: {
-        get: function () {
+        get: function ()
+        {
             return this.uniforms.red.value;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.uniforms.red.value = value;
         }
     },
@@ -68,10 +72,12 @@ Object.defineProperties(RGBSplitFilter.prototype, {
      * @memberof RGBSplitFilter#
      */
     green: {
-        get: function () {
+        get: function ()
+        {
             return this.uniforms.green.value;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.uniforms.green.value = value;
         }
     },
@@ -83,10 +89,12 @@ Object.defineProperties(RGBSplitFilter.prototype, {
      * @memberof RGBSplitFilter#
      */
     blue: {
-        get: function () {
+        get: function ()
+        {
             return this.uniforms.blue.value;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.uniforms.blue.value = value;
         }
     }

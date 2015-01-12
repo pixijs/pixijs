@@ -10,7 +10,8 @@ var AbstractFilter = require('./AbstractFilter');
  * @namespace PIXI
  * @param texture {Texture} The texture used for the displacement map * must be power of 2 texture at the moment
  */
-function DisplacementFilter(texture) {
+function DisplacementFilter(texture)
+{
     AbstractFilter.call(this);
 
     texture.baseTexture._powerOf2 = true;
@@ -24,10 +25,12 @@ function DisplacementFilter(texture) {
         dimensions:      { type: '4fv', value: [0, 0, 0, 0] }
     };
 
-    if (texture.baseTexture.hasLoaded) {
+    if (texture.baseTexture.hasLoaded)
+    {
         this.onTextureLoaded();
     }
-    else {
+    else
+    {
         this.boundLoadedFunction = this.onTextureLoaded.bind(this);
 
         texture.baseTexture.on('loaded', this.boundLoadedFunction);
@@ -47,7 +50,8 @@ function DisplacementFilter(texture) {
         'uniform vec2 mapDimensions;',// = vec2(256.0, 256.0);',
         // 'const vec2 textureDimensions = vec2(750.0, 750.0);',
 
-        'void main(void) {',
+        'void main(void)
+        {',
         '   vec2 mapCords = vTextureCoord.xy;',
         '   mapCords += (dimensions.zw + offset)/ dimensions.xy ;',
         '   mapCords.y *= -1.0;',
@@ -75,7 +79,8 @@ module.exports = DisplacementFilter;
  *
  * @private
  */
-DisplacementFilter.prototype.onTextureLoaded = function () {
+DisplacementFilter.prototype.onTextureLoaded = function ()
+{
     this.uniforms.mapDimensions.value.x = this.uniforms.displacementMap.value.width;
     this.uniforms.mapDimensions.value.y = this.uniforms.displacementMap.value.height;
 
@@ -90,10 +95,12 @@ Object.defineProperties(DisplacementFilter.prototype, {
      * @memberof DisplacementFilter#
      */
     map: {
-        get: function () {
+        get: function ()
+        {
             return this.uniforms.displacementMap.value;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.uniforms.displacementMap.value = value;
         }
     },
@@ -105,10 +112,12 @@ Object.defineProperties(DisplacementFilter.prototype, {
      * @memberof DisplacementFilter#
      */
     scale: {
-        get: function () {
+        get: function ()
+        {
             return this.uniforms.scale.value;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.uniforms.scale.value = value;
         }
     },
@@ -120,10 +129,12 @@ Object.defineProperties(DisplacementFilter.prototype, {
      * @memberof DisplacementFilter#
      */
     offset: {
-        get: function () {
+        get: function ()
+        {
             return this.uniforms.offset.value;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.uniforms.offset.value = value;
         }
     }

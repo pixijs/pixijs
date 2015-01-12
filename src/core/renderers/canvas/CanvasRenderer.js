@@ -17,17 +17,22 @@ var CanvasMaskManager = require('./utils/CanvasMaskManager'),
  * @param [options.resolution=1] {number} the resolution of the renderer retina would be 2
  * @param [options.clearBeforeRender=true] {boolean} This sets if the CanvasRenderer will clear the canvas or not before the new render pass.
  */
-function CanvasRenderer(width, height, options) {
+function CanvasRenderer(width, height, options)
+{
     utils.sayHello('Canvas');
 
-    if (options) {
-        for (var i in CONST.defaultRenderOptions) {
-            if (typeof options[i] === 'undefined') {
+    if (options)
+    {
+        for (var i in CONST.defaultRenderOptions)
+        {
+            if (typeof options[i] === 'undefined')
+            {
                 options[i] = CONST.defaultRenderOptions[i];
             }
         }
     }
-    else {
+    else
+    {
         options = CONST.defaultRenderOptions;
     }
 
@@ -156,19 +161,24 @@ function CanvasRenderer(width, height, options) {
 
     this.smoothProperty = null;
 
-    if (this.context.imageSmoothingEnabled) {
+    if (this.context.imageSmoothingEnabled)
+    {
         this.smoothProperty = 'imageSmoothingEnabled';
     }
-    else if (this.context.webkitImageSmoothingEnabled) {
+    else if (this.context.webkitImageSmoothingEnabled)
+    {
         this.smoothProperty = 'webkitImageSmoothingEnabled';
     }
-    else if (this.context.mozImageSmoothingEnabled) {
+    else if (this.context.mozImageSmoothingEnabled)
+    {
         this.smoothProperty = 'mozImageSmoothingEnabled';
     }
-    else if (this.context.oImageSmoothingEnabled) {
+    else if (this.context.oImageSmoothingEnabled)
+    {
         this.smoothProperty = 'oImageSmoothingEnabled';
     }
-    else if (this.context.msImageSmoothingEnabled) {
+    else if (this.context.msImageSmoothingEnabled)
+    {
         this.smoothProperty = 'msImageSmoothingEnabled';
     }
 
@@ -193,10 +203,12 @@ Object.defineProperties(CanvasRenderer.prototype, {
      * @memberof CanvasRenderer#
      */
     backgroundColor: {
-        get: function () {
+        get: function ()
+        {
             return this._backgroundColor;
         },
-        set: function (val) {
+        set: function (val)
+        {
             this._backgroundColor = val;
             this._backgroundColorString = utils.hex2string(val);
         }
@@ -208,7 +220,8 @@ Object.defineProperties(CanvasRenderer.prototype, {
  *
  * @param object {DisplayObject} the object to be rendered
  */
-CanvasRenderer.prototype.render = function (object) {
+CanvasRenderer.prototype.render = function (object)
+{
     object.updateTransform();
 
     this.context.setTransform(1,0,0,1,0,0);
@@ -218,16 +231,20 @@ CanvasRenderer.prototype.render = function (object) {
     this.currentBlendMode = CONST.blendModes.NORMAL;
     this.context.globalCompositeOperation = this.blendModes[CONST.blendModes.NORMAL];
 
-    if (navigator.isCocoonJS && this.view.screencanvas) {
+    if (navigator.isCocoonJS && this.view.screencanvas)
+    {
         this.context.fillStyle = 'black';
         this.context.clear();
     }
 
-    if (this.clearBeforeRender) {
-        if (this.transparent) {
+    if (this.clearBeforeRender)
+    {
+        if (this.transparent)
+        {
             this.context.clearRect(0, 0, this.width, this.height);
         }
-        else {
+        else
+        {
             this.context.fillStyle = this._backgroundColorString;
             this.context.fillRect(0, 0, this.width , this.height);
         }
@@ -241,8 +258,10 @@ CanvasRenderer.prototype.render = function (object) {
  *
  * @param [removeView=false] {boolean} Removes the Canvas element from the DOM.
  */
-CanvasRenderer.prototype.destroy = function (removeView) {
-    if (removeView && this.view.parent) {
+CanvasRenderer.prototype.destroy = function (removeView)
+{
+    if (removeView && this.view.parent)
+    {
         this.view.parent.removeChild(this.view);
     }
 
@@ -257,14 +276,16 @@ CanvasRenderer.prototype.destroy = function (removeView) {
  * @param width {number} the new width of the canvas view
  * @param height {number} the new height of the canvas view
  */
-CanvasRenderer.prototype.resize = function (width, height) {
+CanvasRenderer.prototype.resize = function (width, height)
+{
     this.width = width * this.resolution;
     this.height = height * this.resolution;
 
     this.view.width = this.width;
     this.view.height = this.height;
 
-    if (this.autoResize) {
+    if (this.autoResize)
+    {
         this.view.style.width = this.width / this.resolution + 'px';
         this.view.style.height = this.height / this.resolution + 'px';
     }
@@ -276,7 +297,8 @@ CanvasRenderer.prototype.resize = function (width, height) {
  * @param displayObject {DisplayObject} The displayObject to render
  * @private
  */
-CanvasRenderer.prototype.renderDisplayObject = function (displayObject) {
+CanvasRenderer.prototype.renderDisplayObject = function (displayObject)
+{
     displayObject.renderCanvas(this);
 };
 
@@ -285,11 +307,14 @@ CanvasRenderer.prototype.renderDisplayObject = function (displayObject) {
  *
  * @private
  */
-CanvasRenderer.prototype._mapBlendModes = function () {
-    if (!this.blendModes) {
+CanvasRenderer.prototype._mapBlendModes = function ()
+{
+    if (!this.blendModes)
+    {
         this.blendModes = {};
 
-        if (utils.canUseNewCanvasBlendModes()) {
+        if (utils.canUseNewCanvasBlendModes())
+        {
             this.blendModes[CONST.blendModes.NORMAL]        = 'source-over';
             this.blendModes[CONST.blendModes.ADD]           = 'lighter'; //IS THIS OK???
             this.blendModes[CONST.blendModes.MULTIPLY]      = 'multiply';
@@ -308,7 +333,8 @@ CanvasRenderer.prototype._mapBlendModes = function () {
             this.blendModes[CONST.blendModes.COLOR]         = 'color';
             this.blendModes[CONST.blendModes.LUMINOSITY]    = 'luminosity';
         }
-        else {
+        else
+        {
             // this means that the browser does not support the cool new blend modes in canvas 'cough' ie 'cough'
             this.blendModes[CONST.blendModes.NORMAL]        = 'source-over';
             this.blendModes[CONST.blendModes.ADD]           = 'lighter'; //IS THIS OK???

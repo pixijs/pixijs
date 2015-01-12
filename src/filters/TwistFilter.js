@@ -7,7 +7,8 @@ var AbstractFilter = require('./AbstractFilter');
  * @extends AbstractFilter
  * @namespace PIXI
  */
-function TwistFilter() {
+function TwistFilter()
+{
     AbstractFilter.call(this);
 
     // set the uniforms
@@ -28,11 +29,13 @@ function TwistFilter() {
         'uniform vec2 offset;',
         'uniform sampler2D uSampler;',
 
-        'void main(void) {',
+        'void main(void)
+        {',
         '   vec2 coord = vTextureCoord - offset;',
         '   float distance = length(coord);',
 
-        '   if (distance < radius) {',
+        '   if (distance < radius)
+        {',
         '       float ratio = (radius - distance) / radius;',
         '       float angleMod = ratio * ratio * angle;',
         '       float s = sin(angleMod);',
@@ -57,10 +60,12 @@ Object.defineProperties(TwistFilter.prototype, {
      * @memberof TwistFilter#
      */
     offset: {
-        get: function () {
+        get: function ()
+        {
             return this.uniforms.offset.value;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.uniforms.offset.value = value;
         }
     },
@@ -72,10 +77,12 @@ Object.defineProperties(TwistFilter.prototype, {
      * @memberof TwistFilter#
      */
     radius: {
-        get: function () {
+        get: function ()
+        {
             return this.uniforms.radius.value;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.uniforms.radius.value = value;
         }
     },
@@ -87,10 +94,12 @@ Object.defineProperties(TwistFilter.prototype, {
      * @memberof TwistFilter#
      */
     angle: {
-        get: function () {
+        get: function ()
+        {
             return this.uniforms.angle.value;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.uniforms.angle.value = value;
         }
     }

@@ -7,7 +7,8 @@ var AbstractFilter = require('./AbstractFilter');
  * @extends AbstractFilter
  * @namespace PIXI
  */
-function GrayFilter() {
+function GrayFilter()
+{
     AbstractFilter.call(this);
 
     // set the uniforms
@@ -24,7 +25,8 @@ function GrayFilter() {
         'uniform sampler2D uSampler;',
         'uniform float gray;',
 
-        'void main(void) {',
+        'void main(void)
+        {',
         '   gl_FragColor = texture2D(uSampler, vTextureCoord);',
         '   gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.2126*gl_FragColor.r + 0.7152*gl_FragColor.g + 0.0722*gl_FragColor.b), gray);',
      //   '   gl_FragColor = gl_FragColor;',
@@ -44,10 +46,12 @@ Object.defineProperties(GrayFilter.prototype, {
      * @memberof GrayFilter#
      */
     gray: {
-        get: function () {
+        get: function ()
+        {
             return this.uniforms.gray.value;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.uniforms.gray.value = value;
         }
     }

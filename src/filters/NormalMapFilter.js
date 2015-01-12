@@ -10,7 +10,8 @@ var AbstractFilter = require('./AbstractFilter');
  * @namespace PIXI
  * @param texture {Texture} The texture used for the normal map, must be power of 2 texture at the moment
  */
-function NormalMapFilter(texture) {
+function NormalMapFilter(texture)
+{
     AbstractFilter.call(this);
 
     texture.baseTexture._powerOf2 = true;
@@ -26,10 +27,12 @@ function NormalMapFilter(texture) {
         LightPos:         { type: '3f', value: [0, 1, 0] }
     };
 
-    if (texture.baseTexture.hasLoaded) {
+    if (texture.baseTexture.hasLoaded)
+    {
         this.onTextureLoaded();
     }
-    else {
+    else
+    {
         this.boundLoadedFunction = this.onTextureLoaded.bind(this);
 
         texture.baseTexture.on('loaded', this.boundLoadedFunction);
@@ -58,7 +61,8 @@ function NormalMapFilter(texture) {
         'uniform vec2 mapDimensions;',// = vec2(256.0, 256.0);',
 
 
-        'void main(void) {',
+        'void main(void)
+        {',
         '   vec2 mapCords = vTextureCoord.xy;',
 
         '   vec4 color = texture2D(uSampler, vTextureCoord.st);',
@@ -131,7 +135,8 @@ module.exports = NormalMapFilter;
  * Sets the map dimensions uniforms when the texture becomes available.
  *
  */
-NormalMapFilter.prototype.onTextureLoaded = function () {
+NormalMapFilter.prototype.onTextureLoaded = function ()
+{
     this.uniforms.mapDimensions.value.x = this.uniforms.displacementMap.value.width;
     this.uniforms.mapDimensions.value.y = this.uniforms.displacementMap.value.height;
 
@@ -146,10 +151,12 @@ Object.defineProperties(NormalMapFilter.prototype, {
      * @memberof NormalMapFilter#
      */
     map: {
-        get: function () {
+        get: function ()
+        {
             return this.uniforms.displacementMap.value;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.uniforms.displacementMap.value = value;
         }
     },
@@ -161,10 +168,12 @@ Object.defineProperties(NormalMapFilter.prototype, {
      * @memberof NormalMapFilter#
      */
     scale: {
-        get: function () {
+        get: function ()
+        {
             return this.uniforms.scale.value;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.uniforms.scale.value = value;
         }
     },
@@ -176,10 +185,12 @@ Object.defineProperties(NormalMapFilter.prototype, {
      * @memberof NormalMapFilter#
      */
     offset: {
-        get: function () {
+        get: function ()
+        {
             return this.uniforms.offset.value;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.uniforms.offset.value = value;
         }
     }

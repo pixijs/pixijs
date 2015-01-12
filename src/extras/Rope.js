@@ -9,7 +9,8 @@ var Strip = require('./Strip');
  * @param {Array} points - An array of {Point}.
  *
  */
-function Rope(texture, points) {
+function Rope(texture, points)
+{
     Strip.call(this, texture);
     this.points = points;
 
@@ -31,10 +32,12 @@ module.exports = Rope;
  * Refreshes
  *
  */
-Rope.prototype.refresh = function () {
+Rope.prototype.refresh = function ()
+{
     var points = this.points;
 
-    if (points.length < 1) {
+    if (points.length < 1)
+    {
         return;
     }
 
@@ -59,20 +62,23 @@ Rope.prototype.refresh = function () {
     var total = points.length,
         point, index, amount;
 
-    for (var i = 1; i < total; i++) {
+    for (var i = 1; i < total; i++)
+    {
         point = points[i];
         index = i * 4;
         // time to do some smart drawing!
         amount = i / (total-1);
 
-        if (i%2) {
+        if (i%2)
+        {
             uvs[index] = amount;
             uvs[index+1] = 0;
 
             uvs[index+2] = amount;
             uvs[index+3] = 1;
         }
-        else {
+        else
+        {
             uvs[index] = amount;
             uvs[index+1] = 0;
 
@@ -95,10 +101,12 @@ Rope.prototype.refresh = function () {
  *
  * @private
  */
-Rope.prototype.updateTransform = function () {
+Rope.prototype.updateTransform = function ()
+{
     var points = this.points;
 
-    if (points.length < 1) {
+    if (points.length < 1)
+    {
         return;
     }
 
@@ -113,14 +121,17 @@ Rope.prototype.updateTransform = function () {
     var total = points.length,
         point, index, ratio, perpLength, num;
 
-    for (var i = 0; i < total; i++) {
+    for (var i = 0; i < total; i++)
+    {
         point = points[i];
         index = i * 4;
 
-        if (i < points.length-1) {
+        if (i < points.length-1)
+        {
             nextPoint = points[i+1];
         }
-        else {
+        else
+        {
             nextPoint = point;
         }
 
@@ -129,7 +140,8 @@ Rope.prototype.updateTransform = function () {
 
         ratio = (1 - (i / (total-1))) * 10;
 
-        if (ratio > 1) {
+        if (ratio > 1)
+        {
             ratio = 1;
         }
 
@@ -157,7 +169,8 @@ Rope.prototype.updateTransform = function () {
  *
  * @param texture {Texture} the texture that will be used
  */
-Rope.prototype.setTexture = function (texture) {
+Rope.prototype.setTexture = function (texture)
+{
     // stop current texture
     this.texture = texture;
     //this.updateFrame = true;

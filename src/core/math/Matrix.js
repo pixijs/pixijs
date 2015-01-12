@@ -10,7 +10,8 @@ var Point = require('./Point');
  * @class
  * @namespace PIXI
  */
-function Matrix() {
+function Matrix()
+{
     /**
      * @member {number}
      * @default 1
@@ -63,7 +64,8 @@ module.exports = Matrix;
  *
  * @param array {number[]} The array that the matrix will be populated from.
  */
-Matrix.prototype.fromArray = function (array) {
+Matrix.prototype.fromArray = function (array)
+{
     this.a = array[0];
     this.b = array[1];
     this.c = array[3];
@@ -78,14 +80,17 @@ Matrix.prototype.fromArray = function (array) {
  * @param transpose {boolean} Whether we need to transpose the matrix or not
  * @return {number[]} the newly created array which contains the matrix
  */
-Matrix.prototype.toArray = function (transpose) {
-    if (!this.array) {
+Matrix.prototype.toArray = function (transpose)
+{
+    if (!this.array)
+    {
         this.array = new Float32Array(9);
     }
 
     var array = this.array;
 
-    if (transpose) {
+    if (transpose)
+    {
         array[0] = this.a;
         array[1] = this.b;
         array[2] = 0;
@@ -96,7 +101,8 @@ Matrix.prototype.toArray = function (transpose) {
         array[7] = this.ty;
         array[8] = 1;
     }
-    else {
+    else
+    {
         array[0] = this.a;
         array[1] = this.c;
         array[2] = this.tx;
@@ -119,7 +125,8 @@ Matrix.prototype.toArray = function (transpose) {
  * @param [newPos] {Point} The point that the new position is assigned to (allowed to be same as input)
  * @return {Point} The new point, transformed through this matrix
  */
-Matrix.prototype.apply = function (pos, newPos) {
+Matrix.prototype.apply = function (pos, newPos)
+{
     newPos = newPos || new Point();
 
     newPos.x = this.a * pos.x + this.c * pos.y + this.tx;
@@ -136,7 +143,8 @@ Matrix.prototype.apply = function (pos, newPos) {
  * @param [newPos] {Point} The point that the new position is assigned to (allowed to be same as input)
  * @return {Point} The new point, inverse-transformed through this matrix
  */
-Matrix.prototype.applyInverse = function (pos, newPos) {
+Matrix.prototype.applyInverse = function (pos, newPos)
+{
     newPos = newPos || new Point();
 
     var id = 1 / (this.a * this.d + this.c * -this.b);
@@ -154,7 +162,8 @@ Matrix.prototype.applyInverse = function (pos, newPos) {
  * @param {number} y
  * @return {Matrix} This matrix. Good for chaining method calls.
  */
-Matrix.prototype.translate = function (x, y) {
+Matrix.prototype.translate = function (x, y)
+{
     this.tx += x;
     this.ty += y;
 
@@ -168,7 +177,8 @@ Matrix.prototype.translate = function (x, y) {
  * @param {number} y The amount to scale vertically
  * @return {Matrix} This matrix. Good for chaining method calls.
  */
-Matrix.prototype.scale = function (x, y) {
+Matrix.prototype.scale = function (x, y)
+{
     this.a *= x;
     this.d *= y;
     this.c *= x;
@@ -186,7 +196,8 @@ Matrix.prototype.scale = function (x, y) {
  * @param {number} angle - The angle in radians.
  * @return {Matrix} This matrix. Good for chaining method calls.
  */
-Matrix.prototype.rotate = function (angle) {
+Matrix.prototype.rotate = function (angle)
+{
     var cos = Math.cos( angle );
     var sin = Math.sin( angle );
 
@@ -210,7 +221,8 @@ Matrix.prototype.rotate = function (angle) {
  * @param {Matrix} matrix
  * @return {Matrix} This matrix. Good for chaining method calls.
  */
-Matrix.prototype.append = function (matrix) {
+Matrix.prototype.append = function (matrix)
+{
     var a1 = this.a;
     var b1 = this.b;
     var c1 = this.c;
@@ -232,7 +244,8 @@ Matrix.prototype.append = function (matrix) {
  *
  * @return {Matrix} This matrix. Good for chaining method calls.
  */
-Matrix.prototype.identity = function () {
+Matrix.prototype.identity = function ()
+{
     this.a = 1;
     this.b = 0;
     this.c = 0;

@@ -13,7 +13,8 @@ var core = require('../core'),
  * @param url {String} The url of the sprite sheet JSON file
  * @param crossorigin {boolean} Whether requests should be treated as crossorigin
  */
-function BitmapFontLoader(url, crossorigin) {
+function BitmapFontLoader(url, crossorigin)
+{
     /**
      * The url of the bitmap font data
      *
@@ -54,13 +55,15 @@ core.utils.eventTarget.mixin(BitmapFontLoader.prototype);
  * Loads the XML font data
  *
  */
-BitmapFontLoader.prototype.load = function () {
+BitmapFontLoader.prototype.load = function ()
+{
     this.ajaxRequest = new core.utils.AjaxRequest();
     this.ajaxRequest.onreadystatechange = this.onXMLLoaded.bind(this);
 
     this.ajaxRequest.open('GET', this.url, true);
 
-    if (this.ajaxRequest.overrideMimeType) {
+    if (this.ajaxRequest.overrideMimeType)
+    {
         this.ajaxRequest.overrideMimeType('application/xml');
     }
 
@@ -72,12 +75,17 @@ BitmapFontLoader.prototype.load = function () {
  *
  * @private
  */
-BitmapFontLoader.prototype.onXMLLoaded = function () {
-    if (this.ajaxRequest.readyState === 4) {
-        if (this.ajaxRequest.status === 200 || window.location.protocol.indexOf('http') === -1) {
+BitmapFontLoader.prototype.onXMLLoaded = function ()
+{
+    if (this.ajaxRequest.readyState === 4)
+    {
+        if (this.ajaxRequest.status === 200 || window.location.protocol.indexOf('http') === -1)
+        {
             var responseXML = this.ajaxRequest.responseXML;
-            if (!responseXML || /MSIE 9/i.test(navigator.userAgent) || navigator.isCocoonJS) {
-                if (typeof(window.DOMParser) === 'function') {
+            if (!responseXML || /MSIE 9/i.test(navigator.userAgent) || navigator.isCocoonJS)
+            {
+                if (typeof(window.DOMParser) === 'function')
+                {
                     var domparser = new DOMParser();
                     responseXML = domparser.parseFromString(this.ajaxRequest.responseText, 'text/xml');
                 } else {
@@ -102,7 +110,8 @@ BitmapFontLoader.prototype.onXMLLoaded = function () {
             //parse letters
             var letters = responseXML.getElementsByTagName('char');
 
-            for (var i = 0; i < letters.length; i++) {
+            for (var i = 0; i < letters.length; i++)
+            {
                 var charCode = parseInt(letters[i].getAttribute('id'), 10);
 
                 var textureRect = new core.math.Rectangle(
@@ -124,7 +133,8 @@ BitmapFontLoader.prototype.onXMLLoaded = function () {
 
             //parse kernings
             var kernings = responseXML.getElementsByTagName('kerning');
-            for (i = 0; i < kernings.length; i++) {
+            for (i = 0; i < kernings.length; i++)
+            {
                 var first = parseInt(kernings[i].getAttribute('first'), 10);
                 var second = parseInt(kernings[i].getAttribute('second'), 10);
                 var amount = parseInt(kernings[i].getAttribute('amount'), 10);
@@ -146,6 +156,7 @@ BitmapFontLoader.prototype.onXMLLoaded = function () {
  *
  * @private
  */
-BitmapFontLoader.prototype.onLoaded = function () {
+BitmapFontLoader.prototype.onLoaded = function ()
+{
     this.emit('loaded', { content: this });
 };

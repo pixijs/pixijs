@@ -9,7 +9,8 @@ var AbstractFilter = require('./AbstractFilter');
  * @extends AbstractFilter
  * @namespace PIXI
  */
-function ColorMatrixFilter() {
+function ColorMatrixFilter()
+{
     AbstractFilter.call(this);
 
     // set the uniforms
@@ -30,7 +31,8 @@ function ColorMatrixFilter() {
         'uniform mat4 matrix;',
         'uniform sampler2D uSampler;',
 
-        'void main(void) {',
+        'void main(void)
+        {',
         '   gl_FragColor = texture2D(uSampler, vTextureCoord) * matrix;',
         '}'
     ];
@@ -49,10 +51,12 @@ Object.defineProperties(ColorMatrixFilter.prototype, {
      * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
      */
     matrix: {
-        get: function () {
+        get: function ()
+        {
             return this.uniforms.matrix.value;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.uniforms.matrix.value = value;
         }
     }

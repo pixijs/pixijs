@@ -46,8 +46,10 @@ var BaseTexture = require('./BaseTexture'),
  * @param [scaleMode] {number} See {@link scaleModes} for possible values
  * @param [resolution=1] {number} The resolution of the texture being generated
  */
-function RenderTexture(renderer, width, height, scaleMode, resolution) {
-    if (!renderer) {
+function RenderTexture(renderer, width, height, scaleMode, resolution)
+{
+    if (!renderer)
+    {
         throw new Error('Unable to create RenderTexture, you must pass a renderer into the constructor.');
     }
 
@@ -133,7 +135,8 @@ function RenderTexture(renderer, width, height, scaleMode, resolution) {
      */
     this.renderer = renderer;
 
-    if (this.renderer.type === CONST.WEBGL_RENDERER) {
+    if (this.renderer.type === CONST.WEBGL_RENDERER)
+    {
         var gl = this.renderer.gl;
 
         this.textureBuffer = new FilterTexture(gl, this.width * this.resolution, this.height * this.resolution, this.baseTexture.scaleMode);
@@ -142,7 +145,8 @@ function RenderTexture(renderer, width, height, scaleMode, resolution) {
         this.render = this.renderWebGL;
         this.projection = new math.Point(this.width*0.5, -this.height*0.5);
     }
-    else {
+    else
+    {
         this.render = this.renderCanvas;
         this.textureBuffer = new CanvasBuffer(this.width* this.resolution, this.height* this.resolution);
         this.baseTexture.source = this.textureBuffer.canvas;
@@ -167,8 +171,10 @@ module.exports = RenderTexture;
  * @param height {number} The height to resize to.
  * @param updateBase {boolean} Should the baseTexture.width and height values be resized as well?
  */
-RenderTexture.prototype.resize = function (width, height, updateBase) {
-    if (width === this.width && height === this.height) {
+RenderTexture.prototype.resize = function (width, height, updateBase)
+{
+    if (width === this.width && height === this.height)
+    {
         return;
     }
 
@@ -177,17 +183,20 @@ RenderTexture.prototype.resize = function (width, height, updateBase) {
     this.width = this.frame.width = this.crop.width = width;
     this.height =  this.frame.height = this.crop.height = height;
 
-    if (updateBase) {
+    if (updateBase)
+    {
         this.baseTexture.width = this.width;
         this.baseTexture.height = this.height;
     }
 
-    if (this.renderer.type === CONST.WEBGL_RENDERER) {
+    if (this.renderer.type === CONST.WEBGL_RENDERER)
+    {
         this.projection.x = this.width / 2;
         this.projection.y = -this.height / 2;
     }
 
-    if (!this.valid) {
+    if (!this.valid)
+    {
         return;
     }
 
@@ -198,12 +207,15 @@ RenderTexture.prototype.resize = function (width, height, updateBase) {
  * Clears the RenderTexture.
  *
  */
-RenderTexture.prototype.clear = function () {
-    if (!this.valid) {
+RenderTexture.prototype.clear = function ()
+{
+    if (!this.valid)
+    {
         return;
     }
 
-    if (this.renderer.type === CONST.WEBGL_RENDERER) {
+    if (this.renderer.type === CONST.WEBGL_RENDERER)
+    {
         this.renderer.gl.bindFramebuffer(this.renderer.gl.FRAMEBUFFER, this.textureBuffer.frameBuffer);
     }
 
@@ -220,19 +232,23 @@ RenderTexture.prototype.clear = function () {
  * @param [restoreWorldTransform=true] {boolean} If true the displayObject's worldTransform/worldAlpha and all children
  *  transformations will be restored. Not restoring this information will be a little faster.
  */
-RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, restoreWorldTransform) {
-    if (!this.valid) {
+RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, restoreWorldTransform)
+{
+    if (!this.valid)
+    {
         return;
     }
 
-    if (typeof restoreWorldTransform === 'undefined') {
+    if (typeof restoreWorldTransform === 'undefined')
+    {
         restoreWorldTransform = true;
     }
 
     var tempAlpha,
         tempTransform;
 
-    if (restoreWorldTransform) {
+    if (restoreWorldTransform)
+    {
         tempAlpha = displayObject.worldAlpha;
         tempTransform = displayObject.worldTransform.toArray();
     }
@@ -245,7 +261,8 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, re
     wt.identity();
     wt.translate(0, this.projection.y * 2);
 
-    if (matrix) {
+    if (matrix)
+    {
         wt.append(matrix);
     }
 
@@ -258,7 +275,8 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, re
     var children = displayObject.children;
     var i, j;
 
-    for (i = 0, j = children.length; i < j; ++i) {
+    for (i = 0, j = children.length; i < j; ++i)
+    {
         children[i].updateTransform();
     }
 
@@ -269,7 +287,8 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, re
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.textureBuffer.frameBuffer );
 
-    if (clear) {
+    if (clear)
+    {
         this.textureBuffer.clear();
     }
 
@@ -279,11 +298,13 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, re
 
     this.renderer.spriteBatch.dirty = true;
 
-    if (restoreWorldTransform) {
+    if (restoreWorldTransform)
+    {
         displayObject.worldAlpha = tempAlpha;
         displayObject.worldTransform.fromArray(tempTransform);
 
-        for (i = 0, j = children.length; i < j; ++i) {
+        for (i = 0, j = children.length; i < j; ++i)
+        {
             children[i].updateTransform();
         }
     }
@@ -300,26 +321,31 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, re
  * @param [restoreWorldTransform=true] {boolean} If true the displayObject's worldTransform/worldAlpha and all children
  *  transformations will be restored. Not restoring this information will be a little faster.
  */
-RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear, restoreWorldTransform) {
-    if (!this.valid) {
+RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear, restoreWorldTransform)
+{
+    if (!this.valid)
+    {
         return;
     }
 
-    if (typeof restoreWorldTransform === 'undefined') {
+    if (typeof restoreWorldTransform === 'undefined')
+    {
         restoreWorldTransform = true;
     }
 
     var tempAlpha,
         tempTransform;
 
-    if (restoreWorldTransform) {
+    if (restoreWorldTransform)
+    {
         tempAlpha = displayObject.worldAlpha;
         tempTransform = displayObject.worldTransform.toArray();
     }
 
     var wt = displayObject.worldTransform;
     wt.identity();
-    if (matrix) {
+    if (matrix)
+    {
         wt.append(matrix);
     }
 
@@ -330,11 +356,13 @@ RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear, r
     var children = displayObject.children;
     var i, j;
 
-    for (i = 0, j = children.length; i < j; ++i) {
+    for (i = 0, j = children.length; i < j; ++i)
+    {
         children[i].updateTransform();
     }
 
-    if (clear) {
+    if (clear)
+    {
         this.textureBuffer.clear();
     }
 
@@ -348,11 +376,13 @@ RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear, r
 
     this.renderer.resolution = realResolution;
 
-    if (restoreWorldTransform) {
+    if (restoreWorldTransform)
+    {
         displayObject.worldAlpha = tempAlpha;
         displayObject.worldTransform.fromArray(tempTransform);
 
-        for (i = 0, j = children.length; i < j; ++i) {
+        for (i = 0, j = children.length; i < j; ++i)
+        {
             children[i].updateTransform();
         }
     }
@@ -363,7 +393,8 @@ RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear, r
  *
  * @return {Image}
  */
-RenderTexture.prototype.getImage = function () {
+RenderTexture.prototype.getImage = function ()
+{
     var image = new Image();
     image.src = this.getBase64();
     return image;
@@ -374,7 +405,8 @@ RenderTexture.prototype.getImage = function () {
  *
  * @return {string} A base64 encoded string of the texture.
  */
-RenderTexture.prototype.getBase64 = function () {
+RenderTexture.prototype.getBase64 = function ()
+{
     return this.getCanvas().toDataURL();
 };
 
@@ -383,8 +415,10 @@ RenderTexture.prototype.getBase64 = function () {
  *
  * @return {HTMLCanvasElement} A Canvas element with the texture rendered on.
  */
-RenderTexture.prototype.getCanvas = function () {
-    if (this.renderer.type === CONST.WEBGL_RENDERER) {
+RenderTexture.prototype.getCanvas = function ()
+{
+    if (this.renderer.type === CONST.WEBGL_RENDERER)
+    {
         var gl =  this.renderer.gl;
         var width = this.textureBuffer.width;
         var height = this.textureBuffer.height;
@@ -403,7 +437,8 @@ RenderTexture.prototype.getCanvas = function () {
 
         return tempCanvas.canvas;
     }
-    else {
+    else
+    {
         return this.textureBuffer.canvas;
     }
 };

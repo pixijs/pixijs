@@ -7,7 +7,8 @@
  * @param fragmentSrc {string|string[]} The fragment source in an array of strings.
  * @param uniforms {object} An object containing the uniforms for this filter.
  */
-function AbstractFilter(fragmentSrc, uniforms) {
+function AbstractFilter(fragmentSrc, uniforms)
+{
     /**
      * An array of passes - some filters contain a few steps this array simply stores the steps in a liniear fashion.
      * For example the blur filter has two passes blurX and blurY.
@@ -48,14 +49,17 @@ module.exports = AbstractFilter;
  * Syncs the uniforms between the class object and the shaders.
  *
  */
-AbstractFilter.prototype.syncUniforms = function () {
-    for (var i = 0, j = this.shaders.length; i < j; ++i) {
+AbstractFilter.prototype.syncUniforms = function ()
+{
+    for (var i = 0, j = this.shaders.length; i < j; ++i)
+    {
         this.shaders[i].dirty = true;
     }
 };
 
 /*
-AbstractFilter.prototype.apply = function (frameBuffer) {
+AbstractFilter.prototype.apply = function (frameBuffer)
+{
     // TODO :)
 };
 */

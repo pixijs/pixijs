@@ -7,7 +7,8 @@ var AbstractFilter = require('./AbstractFilter');
  * @extends AbstractFilter
  * @namespace PIXI
  */
-function InvertFilter() {
+function InvertFilter()
+{
     AbstractFilter.call(this);
 
     // set the uniforms
@@ -24,7 +25,8 @@ function InvertFilter() {
         'uniform float invert;',
         'uniform sampler2D uSampler;',
 
-        'void main(void) {',
+        'void main(void)
+        {',
         '   gl_FragColor = texture2D(uSampler, vTextureCoord);',
         '   gl_FragColor.rgb = mix( (vec3(1)-gl_FragColor.rgb) * gl_FragColor.a, gl_FragColor.rgb, 1.0 - invert);',
         //'   gl_FragColor.rgb = gl_FragColor.rgb  * gl_FragColor.a;',
@@ -45,10 +47,12 @@ Object.defineProperties(InvertFilter.prototype, {
      * @memberof InvertFilter#
      */
     invert: {
-        get: function () {
+        get: function ()
+        {
             return this.uniforms.invert.value;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.uniforms.invert.value = value;
         }
     }

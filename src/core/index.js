@@ -58,11 +58,13 @@ var core = module.exports = {
      *
      * @return {WebGLRenderer|CanvasRenderer} Returns WebGL renderer if available, otherwise CanvasRenderer
      */
-    autoDetectRenderer: function (width, height, options, noWebGL) {
+    autoDetectRenderer: function (width, height, options, noWebGL)
+    {
         width = width || 800;
         height = height || 600;
 
-        if (!noWebGL && require('webgl-enabled')()) {
+        if (!noWebGL && require('webgl-enabled')())
+        {
             return new core.WebGLRenderer(width, height, options);
         }
 
@@ -87,7 +89,8 @@ var core = module.exports = {
      *
      * @return {WebGLRenderer|CanvasRenderer} Returns WebGL renderer if available, otherwise CanvasRenderer
      */
-    autoDetectRecommendedRenderer: function (width, height, options) {
+    autoDetectRecommendedRenderer: function (width, height, options)
+    {
         var isAndroid = /Android/i.test(navigator.userAgent);
 
         return core.autoDetectRenderer(width, height, options, isAndroid);

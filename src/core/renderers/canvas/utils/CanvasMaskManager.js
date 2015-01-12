@@ -6,7 +6,8 @@ var CanvasGraphics = require('./CanvasGraphics');
  * @class
  * @namespace PIXI
  */
-function CanvasMaskManager() {}
+function CanvasMaskManager()
+{}
 
 CanvasMaskManager.prototype.constructor = CanvasMaskManager;
 module.exports = CanvasMaskManager;
@@ -17,7 +18,8 @@ module.exports = CanvasMaskManager;
  * @param maskData {object} the maskData that will be pushed
  * @param renderer {WebGLRenderer|CanvasRenderer} The renderer context to use.
  */
-CanvasMaskManager.prototype.pushMask = function (maskData, renderer) {
+CanvasMaskManager.prototype.pushMask = function (maskData, renderer)
+{
     renderer.context.save();
 
     var cacheAlpha = maskData.alpha;
@@ -45,6 +47,7 @@ CanvasMaskManager.prototype.pushMask = function (maskData, renderer) {
  *
  * @param renderer {WebGLRenderer|CanvasRenderer} The renderer context to use.
  */
-CanvasMaskManager.prototype.popMask = function (renderer) {
+CanvasMaskManager.prototype.popMask = function (renderer)
+{
     renderer.context.restore();
 };

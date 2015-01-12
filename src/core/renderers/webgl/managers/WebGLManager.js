@@ -3,7 +3,8 @@
  * @namespace PIXI
  * @param renderer {WebGLRenderer} The renderer this manager works for.
  */
-function WebGLManager(renderer) {
+function WebGLManager(renderer)
+{
     /**
      * The renderer this manager works for.
      *
@@ -15,6 +16,7 @@ function WebGLManager(renderer) {
 WebGLManager.prototype.constructor = WebGLManager;
 module.exports = WebGLManager;
 
-WebGLManager.prototype.destroy = function () {
+WebGLManager.prototype.destroy = function ()
+{
     this.renderer = null;
 };

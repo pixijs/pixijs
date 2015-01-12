@@ -6,7 +6,8 @@ var WebGLManager = require('./WebGLManager'),
  * @namespace PIXI
  * @param renderer {WebGLRenderer} The renderer this manager works for.
  */
-function WebGLMaskManager(renderer) {
+function WebGLMaskManager(renderer)
+{
     WebGLManager.call(this, renderer);
 }
 
@@ -19,12 +20,15 @@ module.exports = WebGLMaskManager;
  *
  * @param maskData {any[]}
  */
-WebGLMaskManager.prototype.pushMask = function (maskData) {
-    if (maskData.dirty) {
+WebGLMaskManager.prototype.pushMask = function (maskData)
+{
+    if (maskData.dirty)
+    {
         WebGLGraphics.updateGraphics(maskData, this.renderer.gl);
     }
 
-    if (!maskData._webGL[this.renderer.gl.id].data.length) {
+    if (!maskData._webGL[this.renderer.gl.id].data.length)
+    {
         return;
     }
 
@@ -36,6 +40,7 @@ WebGLMaskManager.prototype.pushMask = function (maskData) {
  *
  * @param maskData {any[]}
  */
-WebGLMaskManager.prototype.popMask = function (maskData) {
+WebGLMaskManager.prototype.popMask = function (maskData)
+{
     this.renderer.stencilManager.popStencil(maskData, maskData._webGL[this.renderer.gl.id].data[0], this.renderer);
 };

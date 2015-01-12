@@ -21,7 +21,8 @@ var core = require('../core'),
  *      data formats include 'xml' and 'fnt'.
  * @param crossorigin {boolean} Whether requests should be treated as crossorigin
  */
-function AssetLoader(assetURLs, crossorigin) {
+function AssetLoader(assetURLs, crossorigin)
+{
     /**
      * The array of asset URLs that are going to be loaded
      *
@@ -76,16 +77,19 @@ core.utils.eventTarget.mixin(AssetLoader.prototype);
  *
  * @param str {string} the name of the asset
  */
-AssetLoader.prototype._getDataType = function (str) {
+AssetLoader.prototype._getDataType = function (str)
+{
     var test = 'data:';
     var start = str.slice(0, test.length).toLowerCase();
 
-    if (start === test) {
+    if (start === test)
+    {
         var data = str.slice(test.length);
         var sepIdx = data.indexOf(',');
 
         // check for malformed data URI scheme
-        if (sepIdx === -1) {
+        if (sepIdx === -1)
+        {
             return null;
         }
 
@@ -94,7 +98,8 @@ AssetLoader.prototype._getDataType = function (str) {
 
         //We might need to handle some special cases here...
         //standardize text/plain to 'txt' file extension
-        if (!info || info.toLowerCase() === 'text/plain') {
+        if (!info || info.toLowerCase() === 'text/plain')
+        {
             return 'txt';
         }
 
@@ -109,27 +114,32 @@ AssetLoader.prototype._getDataType = function (str) {
  * Starts loading the assets sequentially
  *
  */
-AssetLoader.prototype.load = function () {
+AssetLoader.prototype.load = function ()
+{
     var scope = this;
 
-    function onLoad(evt) {
+    function onLoad(evt)
+    {
         scope.onAssetLoaded(evt.data.content);
     }
 
     this.loadCount = this.assetURLs.length;
 
-    for (var i=0; i < this.assetURLs.length; i++) {
+    for (var i=0; i < this.assetURLs.length; i++)
+    {
         var fileName = this.assetURLs[i];
         //first see if we have a data URI scheme..
         var fileType = this._getDataType(fileName);
 
         //if not, assume it's a file URI
-        if (!fileType) {
+        if (!fileType)
+        {
             fileType = fileName.split('?').shift().split('.').pop().toLowerCase();
         }
 
         var Constructor = this.loadersByType[fileType];
-        if (!Constructor) {
+        if (!Constructor)
+        {
             throw new Error(fileType + ' is an unsupported file type');
         }
 
@@ -145,18 +155,22 @@ AssetLoader.prototype.load = function () {
  *
  * @private
  */
-AssetLoader.prototype.onAssetLoaded = function (loader) {
+AssetLoader.prototype.onAssetLoaded = function (loader)
+{
     this.loadCount--;
     this.emit('onProgress', { content: this, loader: loader });
 
-    if (this.onProgress) {
+    if (this.onProgress)
+    {
         this.onProgress(loader);
     }
 
-    if (!this.loadCount) {
+    if (!this.loadCount)
+    {
         this.emit('onComplete', { content: this });
 
-        if (this.onComplete) {
+        if (this.onComplete)
+        {
             this.onComplete();
         }
     }

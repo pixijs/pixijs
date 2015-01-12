@@ -7,7 +7,8 @@
  * @param name {string} The string name of the event that was triggered
  * @param data {object} Arbitrary event data to pass along
  */
-function EventData(target, name, data) {
+function EventData(target, name, data)
+{
     // for duck typing in the ".on()" function
     this.__isEventObject = true;
 
@@ -71,7 +72,8 @@ module.exports = EventData;
  * Stops the propagation of events up the scene graph (prevents bubbling).
  *
  */
-EventData.prototype.stopPropagation = function stopPropagation() {
+EventData.prototype.stopPropagation = function stopPropagation()
+{
     this.stopped = true;
 };
 
@@ -79,6 +81,7 @@ EventData.prototype.stopPropagation = function stopPropagation() {
  * Stops the propagation of events to sibling listeners (no longer calls any listeners).
  *
  */
-EventData.prototype.stopImmediatePropagation = function stopImmediatePropagation() {
+EventData.prototype.stopImmediatePropagation = function stopImmediatePropagation()
+{
     this.stoppedImmediate = true;
 };

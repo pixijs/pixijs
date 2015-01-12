@@ -14,7 +14,8 @@ var CanvasTinter = module.exports = {};
  * @param color {number} the color to use to tint the sprite with
  * @return {HTMLCanvasElement} The tinted canvas
  */
-CanvasTinter.getTintedTexture = function (sprite, color) {
+CanvasTinter.getTintedTexture = function (sprite, color)
+{
     var texture = sprite.texture;
 
     color = CanvasTinter.roundColor(color);
@@ -23,7 +24,8 @@ CanvasTinter.getTintedTexture = function (sprite, color) {
 
     texture.tintCache = texture.tintCache || {};
 
-    if (texture.tintCache[stringColor]) {
+    if (texture.tintCache[stringColor])
+    {
         return texture.tintCache[stringColor];
     }
 
@@ -33,14 +35,16 @@ CanvasTinter.getTintedTexture = function (sprite, color) {
     //CanvasTinter.tintWithPerPixel(texture, stringColor, canvas);
     CanvasTinter.tintMethod(texture, color, canvas);
 
-    if (CanvasTinter.convertTintToImage) {
+    if (CanvasTinter.convertTintToImage)
+    {
         // is this better?
         var tintImage = new Image();
         tintImage.src = canvas.toDataURL();
 
         texture.tintCache[stringColor] = tintImage;
     }
-    else {
+    else
+    {
         texture.tintCache[stringColor] = canvas;
         // if we are not converting the texture to an image then we need to lose the reference to the canvas
         CanvasTinter.canvas = null;
@@ -56,7 +60,8 @@ CanvasTinter.getTintedTexture = function (sprite, color) {
  * @param color {number} the color to use to tint the sprite with
  * @param canvas {HTMLCanvasElement} the current canvas
  */
-CanvasTinter.tintWithMultiply = function (texture, color, canvas) {
+CanvasTinter.tintWithMultiply = function (texture, color, canvas)
+{
     var context = canvas.getContext( '2d' );
 
     var crop = texture.crop;
@@ -104,7 +109,8 @@ CanvasTinter.tintWithMultiply = function (texture, color, canvas) {
  * @param color {number} the color to use to tint the sprite with
  * @param canvas {HTMLCanvasElement} the current canvas
  */
-CanvasTinter.tintWithOverlay = function (texture, color, canvas) {
+CanvasTinter.tintWithOverlay = function (texture, color, canvas)
+{
     var context = canvas.getContext( '2d' );
 
     var crop = texture.crop;
@@ -139,7 +145,8 @@ CanvasTinter.tintWithOverlay = function (texture, color, canvas) {
  * @param color {number} the color to use to tint the sprite with
  * @param canvas {HTMLCanvasElement} the current canvas
  */
-CanvasTinter.tintWithPerPixel = function (texture, color, canvas) {
+CanvasTinter.tintWithPerPixel = function (texture, color, canvas)
+{
     var context = canvas.getContext( '2d' );
 
     var crop = texture.crop;
@@ -167,7 +174,8 @@ CanvasTinter.tintWithPerPixel = function (texture, color, canvas) {
 
     var pixels = pixelData.data;
 
-    for (var i = 0; i < pixels.length; i += 4) {
+    for (var i = 0; i < pixels.length; i += 4)
+    {
         pixels[i+0] *= r;
         pixels[i+1] *= g;
         pixels[i+2] *= b;
@@ -181,7 +189,8 @@ CanvasTinter.tintWithPerPixel = function (texture, color, canvas) {
  *
  * @param color {number} the color to round, should be a hex color
  */
-CanvasTinter.roundColor = function (color) {
+CanvasTinter.roundColor = function (color)
+{
     var step = CanvasTinter.cacheStepsPerColorChannel;
 
     var rgbValues = utils.hex2rgb(color);

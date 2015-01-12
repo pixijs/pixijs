@@ -16,7 +16,8 @@ var utils = module.exports = {
      *
      * @return {number} The next uuid to use.
      */
-    uuid: function () {
+    uuid: function ()
+    {
         return ++utils._uid;
     },
 
@@ -26,7 +27,8 @@ var utils = module.exports = {
      * @param hex {number}
      * @return {number[]} An array representing the [R, G, B] of the color.
      */
-    hex2rgb: function (hex, out) {
+    hex2rgb: function (hex, out)
+    {
         out = out || [];
 
         out[0] = (hex >> 16 & 0xFF) / 255;
@@ -42,7 +44,8 @@ var utils = module.exports = {
      * @param hex {number}
      * @return {string} The string color.
      */
-    hex2string: function (hex) {
+    hex2string: function (hex)
+    {
         hex = hex.toString(16);
         hex = '000000'.substr(0, 6 - hex.length) + hex;
 
@@ -55,7 +58,8 @@ var utils = module.exports = {
      * @param rgb {number[]}
      * @return {number} The color number
      */
-    rgb2hex: function (rgb) {
+    rgb2hex: function (rgb)
+    {
         return ((rgb[0]*255 << 16) + (rgb[1]*255 << 8) + rgb[2]*255);
     },
 
@@ -64,8 +68,10 @@ var utils = module.exports = {
      *
      * @return {boolean} whether they are supported
      */
-    canUseNewCanvasBlendModes: function () {
-        if (typeof document === 'undefined') {
+    canUseNewCanvasBlendModes: function ()
+    {
+        if (typeof document === 'undefined')
+        {
             return false;
         }
 
@@ -93,15 +99,19 @@ var utils = module.exports = {
      * @param number {number}
      * @return {number} the closest number that is a power of two
      */
-    getNextPowerOfTwo: function (number) {
+    getNextPowerOfTwo: function (number)
+    {
         // see: http://en.wikipedia.org/wiki/Power_of_two#Fast_algorithm_to_check_if_a_positive_number_is_a_power_of_two
-        if (number > 0 && (number & (number - 1)) === 0) {
+        if (number > 0 && (number & (number - 1)) === 0)
+        {
             return number;
         }
-        else {
+        else
+        {
             var result = 1;
 
-            while (result < number) {
+            while (result < number)
+            {
                 result <<= 1;
             }
 
@@ -116,7 +126,8 @@ var utils = module.exports = {
      * @param height {number}
      * @return {boolean}
      */
-    isPowerOfTwo: function (width, height) {
+    isPowerOfTwo: function (width, height)
+    {
         return (width > 0 && (width & (width - 1)) === 0 && height > 0 && (height & (height - 1)) === 0);
     },
 
@@ -130,12 +141,15 @@ var utils = module.exports = {
      * @constant
      * @static
      */
-    sayHello: function (type) {
-        if (utils._saidHello) {
+    sayHello: function (type)
+    {
+        if (utils._saidHello)
+        {
             return;
         }
 
-        if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
+        if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1)
+        {
             var args = [
                 '%c %c %c Pixi.js ' + CONST.VERSION + ' - ' + type + '  %c ' + ' %c ' + ' http://www.pixijs.com/  %c %c ♥%c♥%c♥ ',
                 'background: #ff66a5',
@@ -151,7 +165,8 @@ var utils = module.exports = {
 
             console.log.apply(console, args); //jshint ignore:line
         }
-        else if (window.console) {
+        else if (window.console)
+        {
             console.log('Pixi.js ' + CONST.VERSION + ' - ' + type + ' - http://www.pixijs.com/'); //jshint ignore:line
         }
 
@@ -166,15 +181,19 @@ var utils = module.exports = {
      * @class
      * @namespace PIXI
      */
-    AjaxRequest: function () {
+    AjaxRequest: function ()
+    {
         var activexmodes = ['Msxml2.XMLHTTP.6.0', 'Msxml2.XMLHTTP.3.0', 'Microsoft.XMLHTTP']; //activeX versions to check for in IE
 
-        if (window.ActiveXObject) { //Test for support for ActiveXObject in IE first (as XMLHttpRequest in IE7 is broken)
-            for (var i=0; i<activexmodes.length; i++) {
+        if (window.ActiveXObject)
+        { //Test for support for ActiveXObject in IE first (as XMLHttpRequest in IE7 is broken)
+            for (var i=0; i<activexmodes.length; i++)
+            {
                 try{
                     return new window.ActiveXObject(activexmodes[i]);
                 }
-                catch(e) {
+                catch(e)
+                {
                     //suppress error
                 }
             }
@@ -183,7 +202,8 @@ var utils = module.exports = {
         {
             return new window.XMLHttpRequest();
         }
-        else {
+        else
+        {
             return false;
         }
     },

@@ -14,7 +14,8 @@
  * @namespace PIXI
  * @param renderer {WebGLRenderer} The renderer this sprite batch works for.
  */
-function WebGLFastSpriteBatch(renderer) {
+function WebGLFastSpriteBatch(renderer)
+{
     /**
      * The renderer instance this sprite batch operates on.
      *
@@ -91,7 +92,8 @@ function WebGLFastSpriteBatch(renderer) {
      */
     this.lastIndexCount = 0;
 
-    for (var i=0, j=0; i < numIndices; i += 6, j += 4) {
+    for (var i=0, j=0; i < numIndices; i += 6, j += 4)
+    {
         this.indices[i + 0] = j + 0;
         this.indices[i + 1] = j + 1;
         this.indices[i + 2] = j + 2;
@@ -144,7 +146,8 @@ function WebGLFastSpriteBatch(renderer) {
 
     // listen for context and update necessary buffers
     var self = this;
-    this.renderer.on('context', function () {
+    this.renderer.on('context', function ()
+    {
         self.setupContext();
     });
 }
@@ -157,7 +160,8 @@ module.exports = WebGLFastSpriteBatch;
  *
  * @param gl {WebGLContext} the current WebGL drawing context
  */
-WebGLFastSpriteBatch.prototype.setupContext = function () {
+WebGLFastSpriteBatch.prototype.setupContext = function ()
+{
     var gl = this.renderer.gl;
 
     // create a couple of buffers
@@ -177,7 +181,8 @@ WebGLFastSpriteBatch.prototype.setupContext = function () {
 /**
  * @param spriteBatch {SpriteBatch} The SpriteBatch container to prepare for.
  */
-WebGLFastSpriteBatch.prototype.begin = function (spriteBatch) {
+WebGLFastSpriteBatch.prototype.begin = function (spriteBatch)
+{
     this.shader = this.renderer.shaderManager.fastShader;
 
     this.matrix = spriteBatch.worldTransform.toArray(true);
@@ -187,33 +192,38 @@ WebGLFastSpriteBatch.prototype.begin = function (spriteBatch) {
 
 /**
  */
-WebGLFastSpriteBatch.prototype.end = function () {
+WebGLFastSpriteBatch.prototype.end = function ()
+{
     this.flush();
 };
 
 /**
  * @param spriteBatch {SpriteBatch} The SpriteBatch container to render.
  */
-WebGLFastSpriteBatch.prototype.render = function (spriteBatch) {
+WebGLFastSpriteBatch.prototype.render = function (spriteBatch)
+{
     var children = spriteBatch.children;
     var sprite = children[0];
 
     // if the uvs have not updated then no point rendering just yet!
 
     // check texture.
-    if (!sprite.texture._uvs) {
+    if (!sprite.texture._uvs)
+    {
         return;
     }
 
     this.currentBaseTexture = sprite.texture.baseTexture;
 
     // check blend mode
-    if (sprite.blendMode !== this.renderer.blendModeManager.currentBlendMode) {
+    if (sprite.blendMode !== this.renderer.blendModeManager.currentBlendMode)
+    {
         this.flush();
         this.renderer.blendModeManager.setBlendMode(sprite.blendMode);
     }
 
-    for (var i=0,j= children.length; i<j; i++) {
+    for (var i=0,j= children.length; i<j; i++)
+    {
         this.renderSprite(children[i]);
     }
 
@@ -223,18 +233,22 @@ WebGLFastSpriteBatch.prototype.render = function (spriteBatch) {
 /**
  * @param sprite {Sprite} The Sprite to render.
  */
-WebGLFastSpriteBatch.prototype.renderSprite = function (sprite) {
+WebGLFastSpriteBatch.prototype.renderSprite = function (sprite)
+{
     //sprite = children[i];
-    if (!sprite.visible) {
+    if (!sprite.visible)
+    {
         return;
     }
 
     // TODO trim??
-    if (sprite.texture.baseTexture !== this.currentBaseTexture) {
+    if (sprite.texture.baseTexture !== this.currentBaseTexture)
+    {
         this.flush();
         this.currentBaseTexture = sprite.texture.baseTexture;
 
-        if (!sprite.texture._uvs) {
+        if (!sprite.texture._uvs)
+        {
             return;
         }
     }
@@ -246,7 +260,8 @@ WebGLFastSpriteBatch.prototype.renderSprite = function (sprite) {
     width = sprite.texture.frame.width;
     height = sprite.texture.frame.height;
 
-    if (sprite.texture.trim) {
+    if (sprite.texture.trim)
+    {
         // if the sprite is trimmed then we need to add the extra space before transforming the sprite coords..
         var trim = sprite.texture.trim;
 
@@ -256,7 +271,8 @@ WebGLFastSpriteBatch.prototype.renderSprite = function (sprite) {
         h1 = trim.y - sprite.anchor.y * trim.height;
         h0 = h1 + sprite.texture.crop.height;
     }
-    else {
+    else
+    {
         w0 = (sprite.texture.frame.width ) * (1-sprite.anchor.x);
         w1 = (sprite.texture.frame.width ) * -sprite.anchor.x;
 
@@ -354,7 +370,8 @@ WebGLFastSpriteBatch.prototype.renderSprite = function (sprite) {
     // increment the batchs
     this.currentBatchSize++;
 
-    if (this.currentBatchSize >= this.size) {
+    if (this.currentBatchSize >= this.size)
+    {
         this.flush();
     }
 };
@@ -362,29 +379,35 @@ WebGLFastSpriteBatch.prototype.renderSprite = function (sprite) {
 /**
  *
  */
-WebGLFastSpriteBatch.prototype.flush = function () {
+WebGLFastSpriteBatch.prototype.flush = function ()
+{
     // If the batch is length 0 then return as there is nothing to draw
-    if (this.currentBatchSize === 0) {
+    if (this.currentBatchSize === 0)
+    {
         return;
     }
 
     var gl = this.renderer.gl;
 
     // bind the current texture
-    if (!this.currentBaseTexture._glTextures[gl.id]) {
+    if (!this.currentBaseTexture._glTextures[gl.id])
+    {
         this.renderer.updateTexture(this.currentBaseTexture, gl);
     }
     //TODO-SHOUD THIS BE ELSE??!?!?!
-    else {
+    else
+    {
         gl.bindTexture(gl.TEXTURE_2D, this.currentBaseTexture._glTextures[gl.id]);
     }
 
     // upload the verts to the buffer
 
-    if (this.currentBatchSize > ( this.size * 0.5 ) ) {
+    if (this.currentBatchSize > ( this.size * 0.5 ) )
+    {
         gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vertices);
     }
-    else {
+    else
+    {
         var view = this.vertices.subarray(0, this.currentBatchSize * this.vertByteSize);
 
         gl.bufferSubData(gl.ARRAY_BUFFER, 0, view);
@@ -405,14 +428,16 @@ WebGLFastSpriteBatch.prototype.flush = function () {
  * Ends the batch and flushes
  *
  */
-WebGLFastSpriteBatch.prototype.stop = function () {
+WebGLFastSpriteBatch.prototype.stop = function ()
+{
     this.flush();
 };
 
 /**
  *
  */
-WebGLFastSpriteBatch.prototype.start = function () {
+WebGLFastSpriteBatch.prototype.start = function ()
+{
     var gl = this.renderer.gl;
 
     // bind the main texture

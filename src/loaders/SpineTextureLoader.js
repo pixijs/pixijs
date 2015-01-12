@@ -9,7 +9,8 @@ var core = require('../core');
  * @param basePath {string} Tha base path where to look for the images to be loaded
  * @param crossorigin {boolean} Whether requests should be treated as crossorigin
  */
-function SpineTextureLoader(basePath, crossorigin) {
+function SpineTextureLoader(basePath, crossorigin)
+{
     this.basePath = basePath;
     this.crossorigin = crossorigin;
     this.loadingCount = 0;
@@ -26,12 +27,15 @@ core.utils.eventTarget.mixin(SpineTextureLoader.prototype);
  * @param page {spine.AtlasPage} Atlas page to which texture belongs
  * @param file {string} The file to load, this is just the file path relative to the base path configured in the constructor
  */
-SpineTextureLoader.prototype.load = function (page, file) {
+SpineTextureLoader.prototype.load = function (page, file)
+{
     page.rendererObject = core.BaseTexture.fromImage(this.basePath + '/' + file, this.crossorigin);
-    if (!page.rendererObject.hasLoaded) {
+    if (!page.rendererObject.hasLoaded)
+    {
         var scope = this;
         ++scope.loadingCount;
-        page.rendererObject.addEventListener('loaded', function (){
+        page.rendererObject.addEventListener('loaded', function ()
+        {
             --scope.loadingCount;
             scope.dispatchEvent({
                 type: 'loadedBaseTexture',
@@ -46,6 +50,7 @@ SpineTextureLoader.prototype.load = function (page, file) {
  *
  * @param texture {BaseTexture} Texture object to destroy
  */
-SpineTextureLoader.prototype.unload = function (texture) {
+SpineTextureLoader.prototype.unload = function (texture)
+{
     texture.destroy(true);
 };

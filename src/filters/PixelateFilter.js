@@ -7,7 +7,8 @@ var AbstractFilter = require('./AbstractFilter');
  * @extends AbstractFilter
  * @namespace PIXI
  */
-function PixelateFilter() {
+function PixelateFilter()
+{
     AbstractFilter.call(this);
 
     // set the uniforms
@@ -28,7 +29,8 @@ function PixelateFilter() {
         'uniform vec2 pixelSize;',
         'uniform sampler2D uSampler;',
 
-        'void main(void) {',
+        'void main(void)
+        {',
         '   vec2 coord = vTextureCoord;',
 
         '   vec2 size = dimensions.xy/pixelSize;',
@@ -51,10 +53,12 @@ Object.defineProperties(PixelateFilter.prototype, {
      * @memberof PixelateFilter#
      */
     size: {
-        get: function () {
+        get: function ()
+        {
             return this.uniforms.pixelSize.value;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.uniforms.pixelSize.value = value;
         }
     }

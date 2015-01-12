@@ -8,7 +8,8 @@ var CONST = require('../../../const');
  * @param height {number} the vertical range of the filter
  * @param scaleMode {number} See {{#crossLink "PIXI/scaleModes:property"}}scaleModes{{/crossLink}} for possible values
  */
-function FilterTexture(gl, width, height, scaleMode) {
+function FilterTexture(gl, width, height, scaleMode)
+{
     /**
      * @member {WebGLContext}
      */
@@ -59,7 +60,8 @@ module.exports = FilterTexture;
  * Clears the filter texture.
  *
  */
-FilterTexture.prototype.clear = function () {
+FilterTexture.prototype.clear = function ()
+{
     var gl = this.gl;
 
     gl.clearColor(0,0,0, 0);
@@ -72,8 +74,10 @@ FilterTexture.prototype.clear = function () {
  * @param width {number} the new width of the texture
  * @param height {number} the new height of the texture
  */
-FilterTexture.prototype.resize = function (width, height) {
-    if (this.width === width && this.height === height) {
+FilterTexture.prototype.resize = function (width, height)
+{
+    if (this.width === width && this.height === height)
+    {
         return;
     }
 
@@ -96,7 +100,8 @@ FilterTexture.prototype.resize = function (width, height) {
  * Destroys the filter texture.
  *
  */
-FilterTexture.prototype.destroy = function () {
+FilterTexture.prototype.destroy = function ()
+{
     var gl = this.gl;
     gl.deleteFramebuffer( this.frameBuffer );
     gl.deleteTexture( this.texture );

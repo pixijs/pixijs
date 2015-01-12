@@ -7,7 +7,8 @@ var AbstractFilter = require('./AbstractFilter');
  * @extends AbstractFilter
  * @namespace PIXI
  */
-function ColorStepFilter() {
+function ColorStepFilter()
+{
     AbstractFilter.call(this);
 
     // set the uniforms
@@ -22,7 +23,8 @@ function ColorStepFilter() {
         'uniform sampler2D uSampler;',
         'uniform float step;',
 
-        'void main(void) {',
+        'void main(void)
+        {',
         '   vec4 color = texture2D(uSampler, vTextureCoord);',
         '   color = floor(color * step) / step;',
         '   gl_FragColor = color;',
@@ -42,10 +44,12 @@ Object.defineProperties(ColorStepFilter.prototype, {
      * @memberof ColorStepFilter#
      */
     step: {
-        get: function () {
+        get: function ()
+        {
             return this.uniforms.step.value;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.uniforms.step.value = value;
         }
     }

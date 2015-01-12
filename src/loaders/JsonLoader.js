@@ -14,7 +14,8 @@ var core = require('../core'),
  * @param url {String} The url of the JSON file
  * @param crossorigin {boolean} Whether requests should be treated as crossorigin
  */
-function JsonLoader(url, crossorigin) {
+function JsonLoader(url, crossorigin)
+{
     /**
      * The url of the bitmap font data
      *
@@ -56,8 +57,10 @@ core.utils.eventTarget.mixin(JsonLoader.prototype);
  * Loads the JSON data
  *
  */
-JsonLoader.prototype.load = function () {
-    if (window.XDomainRequest && this.crossorigin) {
+JsonLoader.prototype.load = function ()
+{
+    if (window.XDomainRequest && this.crossorigin)
+    {
         this.ajaxRequest = new window.XDomainRequest();
 
         // XDomainRequest has a few quirks. Occasionally it will abort requests
@@ -68,15 +71,19 @@ JsonLoader.prototype.load = function () {
         this.ajaxRequest.onerror = this.onError.bind(this);
         this.ajaxRequest.ontimeout = this.onError.bind(this);
 
-        this.ajaxRequest.onprogress = function () {};
+        this.ajaxRequest.onprogress = function ()
+        {};
 
         this.ajaxRequest.onload = this.onJSONLoaded.bind(this);
     }
-    else {
-        if (window.XMLHttpRequest) {
+    else
+    {
+        if (window.XMLHttpRequest)
+        {
             this.ajaxRequest = new window.XMLHttpRequest();
         }
-        else {
+        else
+        {
             this.ajaxRequest = new window.ActiveXObject('Microsoft.XMLHTTP');
         }
 
@@ -93,8 +100,10 @@ JsonLoader.prototype.load = function () {
  *
  * @private
  */
-JsonLoader.prototype.onReadyStateChanged = function () {
-    if (this.ajaxRequest.readyState === 4 && (this.ajaxRequest.status === 200 || window.location.href.indexOf('http') === -1)) {
+JsonLoader.prototype.onReadyStateChanged = function ()
+{
+    if (this.ajaxRequest.readyState === 4 && (this.ajaxRequest.status === 200 || window.location.href.indexOf('http') === -1))
+    {
         this.onJSONLoaded();
     }
 };
@@ -104,15 +113,18 @@ JsonLoader.prototype.onReadyStateChanged = function () {
  *
  * @private
  */
-JsonLoader.prototype.onJSONLoaded = function () {
-    if (!this.ajaxRequest.responseText) {
+JsonLoader.prototype.onJSONLoaded = function ()
+{
+    if (!this.ajaxRequest.responseText)
+    {
         this.onError();
         return;
     }
 
     this.json = JSON.parse(this.ajaxRequest.responseText);
 
-    if (this.json.frames) {
+    if (this.json.frames)
+    {
         // sprite sheet
         var textureUrl = this.baseUrl + this.json.meta.image;
         var image = new ImageLoader(textureUrl, this.crossorigin);
@@ -122,16 +134,19 @@ JsonLoader.prototype.onJSONLoaded = function () {
         image.addEventListener('loaded', this.onLoaded.bind(this));
         image.addEventListener('error', this.onError.bind(this));
 
-        for (var i in frameData) {
+        for (var i in frameData)
+        {
             var rect = frameData[i].frame;
 
-            if (rect) {
+            if (rect)
+            {
                 var textureSize = new core.math.Rectangle(rect.x, rect.y, rect.w, rect.h);
                 var crop = textureSize.clone();
                 var trim = null;
 
                 //  Check to see if the sprite is trimmed
-                if (frameData[i].trimmed) {
+                if (frameData[i].trimmed)
+                {
                     var actualSize = frameData[i].sourceSize;
                     var realSize = frameData[i].spriteSourceSize;
                     trim = new core.math.Rectangle(realSize.x, realSize.y, actualSize.w, actualSize.h);
@@ -143,12 +158,15 @@ JsonLoader.prototype.onJSONLoaded = function () {
         image.load();
 
     }
-    else if (this.json.bones) {
+    else if (this.json.bones)
+    {
 		// check if the json was loaded before
-		if (core.utils.AnimCache[this.url]) {
+        if (core.utils.AnimCache[this.url])
+        {
 			this.onLoaded();
 		}
-		else {
+        else
+        {
 			/**
              * use a bit of hackery to load the atlas file, here we assume that the .json, .atlas and .png files
 			 * that correspond to the spine file are in the same base URL and that the .json and .atlas files
@@ -159,9 +177,11 @@ JsonLoader.prototype.onJSONLoaded = function () {
 			// save a copy of the current object for future reference //
 			var originalLoader = this;
 			// before loading the file, replace the "onJSONLoaded" function for our own //
-			atlasLoader.onJSONLoaded = function () {
+            atlasLoader.onJSONLoaded = function ()
+            {
 				// at this point "this" points at the atlasLoader (JsonLoader) instance //
-				if (!this.ajaxRequest.responseText) {
+                if (!this.ajaxRequest.responseText)
+                {
 					this.onError(); // FIXME: hmm, this is funny because we are not responding to errors yet
 					return;
 				}
@@ -179,14 +199,18 @@ JsonLoader.prototype.onJSONLoaded = function () {
 				originalLoader.spineAtlas = spineAtlas;
 				originalLoader.spineAtlasLoader = atlasLoader;
 				// wait for textures to finish loading if needed
-				if (textureLoader.loadingCount > 0) {
-					textureLoader.addEventListener('loadedBaseTexture', function (evt){
-						if (evt.content.content.loadingCount <= 0) {
+                if (textureLoader.loadingCount > 0)
+                {
+                    textureLoader.addEventListener('loadedBaseTexture', function (evt)
+                    {
+                        if (evt.content.content.loadingCount <= 0)
+                        {
 							originalLoader.onLoaded();
 						}
 					});
 				}
-				else {
+                else
+                {
 					originalLoader.onLoaded();
 				}
 			};
@@ -194,7 +218,8 @@ JsonLoader.prototype.onJSONLoaded = function () {
 			atlasLoader.load();
 		}
     }
-    else {
+    else
+    {
         this.onLoaded();
     }
 };
@@ -204,7 +229,8 @@ JsonLoader.prototype.onJSONLoaded = function () {
  *
  * @private
  */
-JsonLoader.prototype.onLoaded = function () {
+JsonLoader.prototype.onLoaded = function ()
+{
     this.loaded = true;
     this.dispatchEvent({
         type: 'loaded',
@@ -217,7 +243,8 @@ JsonLoader.prototype.onLoaded = function () {
  *
  * @private
  */
-JsonLoader.prototype.onError = function () {
+JsonLoader.prototype.onError = function ()
+{
 
     this.dispatchEvent({
         type: 'error',

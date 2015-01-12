@@ -12,7 +12,8 @@ var DisplayObjectContainer = require('./DisplayObjectContainer'),
  * ```js
  * var container = new SpriteBatch();
  *
- * for(var i = 0; i < 100; ++i) {
+ * for(var i = 0; i < 100; ++i)
+ * {
  *     var sprite = new PIXI.Sprite.fromImage("myImage.png");
  *     container.addChild(sprite);
  * }
@@ -25,7 +26,8 @@ var DisplayObjectContainer = require('./DisplayObjectContainer'),
  */
 
 //TODO RENAME to PARTICLE CONTAINER?
-function SpriteBatch() {
+function SpriteBatch()
+{
     DisplayObjectContainer.call(this);
 }
 
@@ -38,7 +40,8 @@ module.exports = SpriteBatch;
  *
  * @private
  */
-SpriteBatch.prototype.updateTransform = function () {
+SpriteBatch.prototype.updateTransform = function ()
+{
     // TODO don't need to!
     this.displayObjectUpdateTransform();
     //  PIXI.DisplayObjectContainer.prototype.updateTransform.call( this );
@@ -50,8 +53,10 @@ SpriteBatch.prototype.updateTransform = function () {
  * @param renderer {WebGLRenderer} The webgl renderer
  * @private
  */
-SpriteBatch.prototype.renderWebGL = function (renderer) {
-    if (!this.visible || this.alpha <= 0 || !this.children.length) {
+SpriteBatch.prototype.renderWebGL = function (renderer)
+{
+    if (!this.visible || this.alpha <= 0 || !this.children.length)
+    {
         return;
     }
 
@@ -71,8 +76,10 @@ SpriteBatch.prototype.renderWebGL = function (renderer) {
  * @param renderer {CanvasRenderer} The canvas renderer
  * @private
  */
-SpriteBatch.prototype.renderCanvas = function (renderer) {
-    if (!this.visible || this.alpha <= 0 || !this.children.length) {
+SpriteBatch.prototype.renderCanvas = function (renderer)
+{
+    if (!this.visible || this.alpha <= 0 || !this.children.length)
+    {
         return;
     }
 
@@ -84,10 +91,12 @@ SpriteBatch.prototype.renderCanvas = function (renderer) {
 
     this.displayObjectUpdateTransform();
 
-    for (var i = 0; i < this.children.length; ++i) {
+    for (var i = 0; i < this.children.length; ++i)
+    {
         var child = this.children[i];
 
-        if (!child.visible) {
+        if (!child.visible)
+        {
             continue;
         }
 
@@ -95,9 +104,11 @@ SpriteBatch.prototype.renderCanvas = function (renderer) {
 
         context.globalAlpha = this.worldAlpha * child.alpha;
 
-        if (child.rotation % (Math.PI * 2) === 0) {
+        if (child.rotation % (Math.PI * 2) === 0)
+        {
             // this is the fastest  way to optimise! - if rotation is 0 then we can avoid any kind of setTransform call
-            if (isRotated) {
+            if (isRotated)
+            {
                 context.setTransform(
                     transform.a,
                     transform.b,
@@ -122,8 +133,10 @@ SpriteBatch.prototype.renderCanvas = function (renderer) {
                 frame.height * child.scale.y
             );
         }
-        else {
-            if (!isRotated) {
+        else
+        {
+            if (!isRotated)
+            {
                 isRotated = true;
             }
 
@@ -131,7 +144,8 @@ SpriteBatch.prototype.renderCanvas = function (renderer) {
 
             var childTransform = child.worldTransform;
 
-            if (renderer.roundPixels) {
+            if (renderer.roundPixels)
+            {
                 context.setTransform(
                     childTransform.a,
                     childTransform.b,
@@ -141,7 +155,8 @@ SpriteBatch.prototype.renderCanvas = function (renderer) {
                     childTransform.ty | 0
                 );
             }
-            else {
+            else
+            {
                 context.setTransform(
                     childTransform.a,
                     childTransform.b,

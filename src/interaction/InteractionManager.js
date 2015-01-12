@@ -14,7 +14,8 @@ var AUTO_PREVENT_DEFAULT = true;
  * @namespace PIXI
  * @param stage {Stage} The stage to handle interactions
  */
-function InteractionManager(stage) {
+function InteractionManager(stage)
+{
     /**
      * A reference to the stage
      *
@@ -152,27 +153,33 @@ module.exports = InteractionManager;
  * @param iParent {DisplayObject} the display object's parent
  * @private
  */
-InteractionManager.prototype.collectInteractiveSprite = function (displayObject, iParent) {
+InteractionManager.prototype.collectInteractiveSprite = function (displayObject, iParent)
+{
     var children = displayObject.children;
     var length = children.length;
 
     // make an interaction tree... {item.__interactiveParent}
-    for (var i = length - 1; i >= 0; i--) {
+    for (var i = length - 1; i >= 0; i--)
+    {
         var child = children[i];
 
         // push all interactive bits
-        if (child._interactive) {
+        if (child._interactive)
+        {
             iParent.interactiveChildren = true;
             //child.__iParent = iParent;
             this.interactiveItems.push(child);
 
-            if (child.children.length > 0) {
+            if (child.children.length > 0)
+            {
                 this.collectInteractiveSprite(child, child);
             }
         }
-        else {
+        else
+        {
             child.__iParent = null;
-            if (child.children.length > 0) {
+            if (child.children.length > 0)
+            {
                 this.collectInteractiveSprite(child, iParent);
             }
         }
@@ -189,7 +196,8 @@ InteractionManager.prototype.collectInteractiveSprite = function (displayObject,
  * @param [resolution=1] {number} THe resolution of the new element (relative to the canvas).
  * @private
  */
-InteractionManager.prototype.setTargetElement = function (element, resolution) {
+InteractionManager.prototype.setTargetElement = function (element, resolution)
+{
     this.removeEvents();
 
     this.interactionDOMElement = element;
@@ -203,12 +211,15 @@ InteractionManager.prototype.setTargetElement = function (element, resolution) {
  *
  * @private
  */
-InteractionManager.prototype.addEvents = function () {
-    if (!this.interactionDOMElement) {
+InteractionManager.prototype.addEvents = function ()
+{
+    if (!this.interactionDOMElement)
+    {
         return;
     }
 
-    if (window.navigator.msPointerEnabled) {
+    if (window.navigator.msPointerEnabled)
+    {
         this.interactionDOMElement.style['-ms-content-zooming'] = 'none';
         this.interactionDOMElement.style['-ms-touch-action'] = 'none';
     }
@@ -230,12 +241,15 @@ InteractionManager.prototype.addEvents = function () {
  *
  * @private
  */
-InteractionManager.prototype.removeEvents = function () {
-    if (!this.interactionDOMElement) {
+InteractionManager.prototype.removeEvents = function ()
+{
+    if (!this.interactionDOMElement)
+    {
         return;
     }
 
-    if (window.navigator.msPointerEnabled) {
+    if (window.navigator.msPointerEnabled)
+    {
         this.interactionDOMElement.style['-ms-content-zooming'] = '';
         this.interactionDOMElement.style['-ms-touch-action'] = '';
     }
@@ -260,8 +274,10 @@ InteractionManager.prototype.removeEvents = function () {
  *
  * @private
  */
-InteractionManager.prototype.update = function () {
-    if (!this.interactionDOMElement) {
+InteractionManager.prototype.update = function ()
+{
+    if (!this.interactionDOMElement)
+    {
         return;
     }
 
@@ -269,7 +285,8 @@ InteractionManager.prototype.update = function () {
     var now = Date.now();
     var diff = now - this.last;
     diff = (diff * INTERACTION_FREQUENCY ) / 1000;
-    if (diff < 1) {
+    if (diff < 1)
+    {
         return;
     }
 
@@ -280,7 +297,8 @@ InteractionManager.prototype.update = function () {
     // ok.. so mouse events??
     // yes for now :)
     // OPTIMISE - how often to check??
-    if (this.dirty) {
+    if (this.dirty)
+    {
         this.rebuildInteractiveGraph();
     }
 
@@ -289,7 +307,8 @@ InteractionManager.prototype.update = function () {
     var cursor = 'inherit';
     var over = false;
 
-    for (i = 0; i < length; i++) {
+    for (i = 0; i < length; i++)
+    {
         var item = this.interactiveItems[i];
 
         // OPTIMISATION - only calculate every time if the mousemove function exists..
@@ -302,26 +321,34 @@ InteractionManager.prototype.update = function () {
         this.mouse.target = item;
         // ok so deal with interactions..
         // looks like there was a hit!
-        if (item.__hit && !over) {
-            if (item.buttonMode) {
+        if (item.__hit && !over)
+        {
+            if (item.buttonMode)
+            {
                 cursor = item.defaultCursor;
             }
 
-            if (!item.interactiveChildren) {
+            if (!item.interactiveChildren)
+            {
                 over = true;
             }
 
-            if (!item.__isOver) {
-                if (item.mouseover) {
+            if (!item.__isOver)
+            {
+                if (item.mouseover)
+                {
                     item.mouseover (this.mouse);
                 }
                 item.__isOver = true;
             }
         }
-        else {
-            if (item.__isOver) {
+        else
+        {
+            if (item.__isOver)
+            {
                 // roll out!
-                if (item.mouseout) {
+                if (item.mouseout)
+                {
                     item.mouseout (this.mouse);
                 }
                 item.__isOver = false;
@@ -329,7 +356,8 @@ InteractionManager.prototype.update = function () {
         }
     }
 
-    if (this.currentCursorStyle !== cursor) {
+    if (this.currentCursorStyle !== cursor)
+    {
         this.currentCursorStyle = cursor;
         this.interactionDOMElement.style.cursor = cursor;
     }
@@ -338,18 +366,21 @@ InteractionManager.prototype.update = function () {
 /**
  * @private
  */
-InteractionManager.prototype.rebuildInteractiveGraph = function () {
+InteractionManager.prototype.rebuildInteractiveGraph = function ()
+{
     this.dirty = false;
 
     var len = this.interactiveItems.length;
 
-    for (var i = 0; i < len; i++) {
+    for (var i = 0; i < len; i++)
+    {
         this.interactiveItems[i].interactiveChildren = false;
     }
 
     this.interactiveItems.length = 0;
 
-    if (this.stage.interactive) {
+    if (this.stage.interactive)
+    {
         this.interactiveItems.push(this.stage);
     }
 
@@ -363,8 +394,10 @@ InteractionManager.prototype.rebuildInteractiveGraph = function () {
  * @param event {Event} The DOM event of the mouse moving
  * @private
  */
-InteractionManager.prototype.onMouseMove = function (event) {
-    if (this.dirty) {
+InteractionManager.prototype.onMouseMove = function (event)
+{
+    if (this.dirty)
+    {
         this.rebuildInteractiveGraph();
     }
 
@@ -378,11 +411,13 @@ InteractionManager.prototype.onMouseMove = function (event) {
 
     var length = this.interactiveItems.length;
 
-    for (var i = 0; i < length; i++) {
+    for (var i = 0; i < length; i++)
+    {
         var item = this.interactiveItems[i];
 
         // Call the function!
-        if (item.mousemove) {
+        if (item.mousemove)
+        {
             item.mousemove(this.mouse);
         }
     }
@@ -394,14 +429,17 @@ InteractionManager.prototype.onMouseMove = function (event) {
  * @param event {Event} The DOM event of a mouse button being pressed down
  * @private
  */
-InteractionManager.prototype.onMouseDown = function (event) {
-    if (this.dirty) {
+InteractionManager.prototype.onMouseDown = function (event)
+{
+    if (this.dirty)
+    {
         this.rebuildInteractiveGraph();
     }
 
     this.mouse.originalEvent = event;
 
-    if (AUTO_PREVENT_DEFAULT) {
+    if (AUTO_PREVENT_DEFAULT)
+    {
         this.mouse.originalEvent.preventDefault();
     }
 
@@ -420,22 +458,27 @@ InteractionManager.prototype.onMouseDown = function (event) {
 
     // while
     // hit test
-    for (var i = 0; i < length; i++) {
+    for (var i = 0; i < length; i++)
+    {
         var item = this.interactiveItems[i];
 
-        if (item[downFunction] || item[clickFunction]) {
+        if (item[downFunction] || item[clickFunction])
+        {
             item[buttonIsDown] = true;
             item.__hit = this.hitTest(item, this.mouse);
 
-            if (item.__hit) {
+            if (item.__hit)
+            {
                 //call the function!
-                if (item[downFunction]) {
+                if (item[downFunction])
+                {
                     item[downFunction](this.mouse);
                 }
                 item[isDown] = true;
 
                 // just the one!
-                if (!item.interactiveChildren) {
+                if (!item.interactiveChildren)
+                {
                     break;
                 }
             }
@@ -449,8 +492,10 @@ InteractionManager.prototype.onMouseDown = function (event) {
  * @param event {Event} The DOM event of a mouse being moved out
  * @private
  */
-InteractionManager.prototype.onMouseOut = function (event) {
-    if (this.dirty) {
+InteractionManager.prototype.onMouseOut = function (event)
+{
+    if (this.dirty)
+    {
         this.rebuildInteractiveGraph();
     }
 
@@ -460,11 +505,14 @@ InteractionManager.prototype.onMouseOut = function (event) {
 
     this.interactionDOMElement.style.cursor = 'inherit';
 
-    for (var i = 0; i < length; i++) {
+    for (var i = 0; i < length; i++)
+    {
         var item = this.interactiveItems[i];
-        if (item.__isOver) {
+        if (item.__isOver)
+        {
             this.mouse.target = item;
-            if (item.mouseout) {
+            if (item.mouseout)
+            {
                 item.mouseout(this.mouse);
             }
             item.__isOver = false;
@@ -484,8 +532,10 @@ InteractionManager.prototype.onMouseOut = function (event) {
  * @param event {Event} The DOM event of a mouse button being released
  * @private
  */
-InteractionManager.prototype.onMouseUp = function (event) {
-    if (this.dirty) {
+InteractionManager.prototype.onMouseUp = function (event)
+{
+    if (this.dirty)
+    {
         this.rebuildInteractiveGraph();
     }
 
@@ -502,30 +552,40 @@ InteractionManager.prototype.onMouseUp = function (event) {
     var upOutsideFunction = isRightButton ? 'rightupoutside' : 'mouseupoutside';
     var isDown = isRightButton ? '__isRightDown' : '__isDown';
 
-    for (var i = 0; i < length; i++) {
+    for (var i = 0; i < length; i++)
+    {
         var item = this.interactiveItems[i];
 
-        if (item[clickFunction] || item[upFunction] || item[upOutsideFunction]) {
+        if (item[clickFunction] || item[upFunction] || item[upOutsideFunction])
+        {
             item.__hit = this.hitTest(item, this.mouse);
 
-            if (item.__hit && !up) {
+            if (item.__hit && !up)
+            {
                 //call the function!
-                if (item[upFunction]) {
+                if (item[upFunction])
+                {
                     item[upFunction](this.mouse);
                 }
-                if (item[isDown]) {
-                    if (item[clickFunction]) {
+                if (item[isDown])
+                {
+                    if (item[clickFunction])
+                    {
                         item[clickFunction](this.mouse);
                     }
                 }
 
-                if (!item.interactiveChildren) {
+                if (!item.interactiveChildren)
+                {
                     up = true;
                 }
             }
-            else {
-                if (item[isDown]) {
-                    if (item[upOutsideFunction]) {
+            else
+            {
+                if (item[isDown])
+                {
+                    if (item[upOutsideFunction])
+                    {
                         item[upOutsideFunction](this.mouse);
                     }
                 }
@@ -543,10 +603,12 @@ InteractionManager.prototype.onMouseUp = function (event) {
  * @param interactionData {InteractionData} The interactionData object to update in the case there is a hit
  * @private
  */
-InteractionManager.prototype.hitTest = function (item, interactionData) {
+InteractionManager.prototype.hitTest = function (item, interactionData)
+{
     var global = interactionData.global;
 
-    if (!item.worldVisible) {
+    if (!item.worldVisible)
+    {
         return false;
     }
 
@@ -560,37 +622,46 @@ InteractionManager.prototype.hitTest = function (item, interactionData) {
     interactionData.target = item;
 
     //a sprite or display object with a hit area defined
-    if (item.hitArea && item.hitArea.contains) {
+    if (item.hitArea && item.hitArea.contains)
+    {
         return item.hitArea.contains(x, y);
     }
     // a sprite with no hitarea defined
-    else if (item instanceof core.Sprite) {
+    else if (item instanceof core.Sprite)
+    {
         var width = item.texture.frame.width;
         var height = item.texture.frame.height;
         var x1 = -width * item.anchor.x;
         var y1;
 
-        if (x > x1 && x < x1 + width) {
+        if (x > x1 && x < x1 + width)
+        {
             y1 = -height * item.anchor.y;
 
-            if (y > y1 && y < y1 + height) {
+            if (y > y1 && y < y1 + height)
+            {
                 // set the target property if a hit is true!
                 return true;
             }
         }
     }
-    else if (item instanceof core.Graphics) {
+    else if (item instanceof core.Graphics)
+    {
         var graphicsData = item.graphicsData;
-        for (i = 0; i < graphicsData.length; i++) {
+        for (i = 0; i < graphicsData.length; i++)
+        {
             var data = graphicsData[i];
 
-            if (!data.fill) {
+            if (!data.fill)
+            {
                 continue;
             }
 
             // only deal with fills..
-            if (data.shape) {
-                if (data.shape.contains(x, y)) {
+            if (data.shape)
+            {
+                if (data.shape.contains(x, y))
+                {
                     //interactionData.target = item;
                     return true;
                 }
@@ -600,10 +671,12 @@ InteractionManager.prototype.hitTest = function (item, interactionData) {
 
     var length = item.children.length;
 
-    for (i = 0; i < length; i++) {
+    for (i = 0; i < length; i++)
+    {
         var tempItem = item.children[i];
         var hit = this.hitTest(tempItem, interactionData);
-        if (hit) {
+        if (hit)
+        {
             // hmm.. TODO SET CORRECT TARGET?
             interactionData.target = item;
             return true;
@@ -618,8 +691,10 @@ InteractionManager.prototype.hitTest = function (item, interactionData) {
  * @param event {Event} The DOM event of a touch moving across the renderer view
  * @private
  */
-InteractionManager.prototype.onTouchMove = function (event) {
-    if (this.dirty) {
+InteractionManager.prototype.onTouchMove = function (event)
+{
+    if (this.dirty)
+    {
         this.rebuildInteractiveGraph();
     }
 
@@ -628,7 +703,8 @@ InteractionManager.prototype.onTouchMove = function (event) {
     var touchData;
     var i = 0;
 
-    for (i = 0; i < changedTouches.length; i++) {
+    for (i = 0; i < changedTouches.length; i++)
+    {
         var touchEvent = changedTouches[i];
         touchData = this.touches[touchEvent.identifier];
         touchData.originalEvent = event;
@@ -636,15 +712,18 @@ InteractionManager.prototype.onTouchMove = function (event) {
         // update the touch position
         touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.interactionDOMElement.width / rect.width) ) / this.resolution;
         touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.interactionDOMElement.height / rect.height) )  / this.resolution;
-        if (navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height) {
+        if (navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height)
+        {
             //Support for CocoonJS fullscreen scale modes
             touchData.global.x = touchEvent.clientX;
             touchData.global.y = touchEvent.clientY;
         }
 
-        for (var j = 0; j < this.interactiveItems.length; j++) {
+        for (var j = 0; j < this.interactiveItems.length; j++)
+        {
             var item = this.interactiveItems[j];
-            if (item.touchmove && item.__touchData && item.__touchData[touchEvent.identifier]) {
+            if (item.touchmove && item.__touchData && item.__touchData[touchEvent.identifier])
+            {
                 item.touchmove(touchData);
             }
         }
@@ -657,23 +736,28 @@ InteractionManager.prototype.onTouchMove = function (event) {
  * @param event {Event} The DOM event of a touch starting on the renderer view
  * @private
  */
-InteractionManager.prototype.onTouchStart = function (event) {
-    if (this.dirty) {
+InteractionManager.prototype.onTouchStart = function (event)
+{
+    if (this.dirty)
+    {
         this.rebuildInteractiveGraph();
     }
 
     var rect = this.interactionDOMElement.getBoundingClientRect();
 
-    if (AUTO_PREVENT_DEFAULT) {
+    if (AUTO_PREVENT_DEFAULT)
+    {
         event.preventDefault();
     }
 
     var changedTouches = event.changedTouches;
-    for (var i=0; i < changedTouches.length; i++) {
+    for (var i=0; i < changedTouches.length; i++)
+    {
         var touchEvent = changedTouches[i];
 
         var touchData = this.pool.pop();
-        if (!touchData) {
+        if (!touchData)
+        {
             touchData = new InteractionData();
         }
 
@@ -682,7 +766,8 @@ InteractionManager.prototype.onTouchStart = function (event) {
         this.touches[touchEvent.identifier] = touchData;
         touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.interactionDOMElement.width / rect.width) ) / this.resolution;
         touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.interactionDOMElement.height / rect.height) ) / this.resolution;
-        if (navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height) {
+        if (navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height)
+        {
             //Support for CocoonJS fullscreen scale modes
             touchData.global.x = touchEvent.clientX;
             touchData.global.y = touchEvent.clientY;
@@ -690,15 +775,19 @@ InteractionManager.prototype.onTouchStart = function (event) {
 
         var length = this.interactiveItems.length;
 
-        for (var j = 0; j < length; j++) {
+        for (var j = 0; j < length; j++)
+        {
             var item = this.interactiveItems[j];
 
-            if (item.touchstart || item.tap) {
+            if (item.touchstart || item.tap)
+            {
                 item.__hit = this.hitTest(item, touchData);
 
-                if (item.__hit) {
+                if (item.__hit)
+                {
                     //call the function!
-                    if (item.touchstart) {
+                    if (item.touchstart)
+                    {
                         item.touchstart(touchData);
                     }
 
@@ -706,7 +795,8 @@ InteractionManager.prototype.onTouchStart = function (event) {
                     item.__touchData = item.__touchData || {};
                     item.__touchData[touchEvent.identifier] = touchData;
 
-                    if (!item.interactiveChildren) {
+                    if (!item.interactiveChildren)
+                    {
                         break;
                     }
                 }
@@ -721,31 +811,37 @@ InteractionManager.prototype.onTouchStart = function (event) {
  * @param event {Event} The DOM event of a touch ending on the renderer view
  * @private
  */
-InteractionManager.prototype.onTouchEnd = function (event) {
-    if (this.dirty) {
+InteractionManager.prototype.onTouchEnd = function (event)
+{
+    if (this.dirty)
+    {
         this.rebuildInteractiveGraph();
     }
 
     var rect = this.interactionDOMElement.getBoundingClientRect();
     var changedTouches = event.changedTouches;
 
-    for (var i=0; i < changedTouches.length; i++) {
+    for (var i=0; i < changedTouches.length; i++)
+    {
         var touchEvent = changedTouches[i];
         var touchData = this.touches[touchEvent.identifier];
         var up = false;
         touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.interactionDOMElement.width / rect.width) ) / this.resolution;
         touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.interactionDOMElement.height / rect.height) ) / this.resolution;
-        if (navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height) {
+        if (navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height)
+        {
             //Support for CocoonJS fullscreen scale modes
             touchData.global.x = touchEvent.clientX;
             touchData.global.y = touchEvent.clientY;
         }
 
         var length = this.interactiveItems.length;
-        for (var j = 0; j < length; j++) {
+        for (var j = 0; j < length; j++)
+        {
             var item = this.interactiveItems[j];
 
-            if (item.__touchData && item.__touchData[touchEvent.identifier]) {
+            if (item.__touchData && item.__touchData[touchEvent.identifier])
+            {
 
                 item.__hit = this.hitTest(item, item.__touchData[touchEvent.identifier]);
 
@@ -753,20 +849,27 @@ InteractionManager.prototype.onTouchEnd = function (event) {
                 touchData.originalEvent = event;
                 // hitTest??
 
-                if (item.touchend || item.tap) {
-                    if (item.__hit && !up) {
-                        if (item.touchend) {
+                if (item.touchend || item.tap)
+                {
+                    if (item.__hit && !up)
+                    {
+                        if (item.touchend)
+                        {
                             item.touchend(touchData);
                         }
-                        if (item.__isDown && item.tap) {
+                        if (item.__isDown && item.tap)
+                        {
                             item.tap(touchData);
                         }
-                        if (!item.interactiveChildren) {
+                        if (!item.interactiveChildren)
+                        {
                             up = true;
                         }
                     }
-                    else {
-                        if (item.__isDown && item.touchendoutside) {
+                    else
+                    {
+                        if (item.__isDown && item.touchendoutside)
+                        {
                             item.touchendoutside(touchData);
                         }
                     }
