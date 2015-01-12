@@ -477,7 +477,7 @@ DisplayObjectContainer.prototype.renderWebGL = function (renderer) {
         renderer.spriteBatch.start();
     }
     else {
-        
+
         this._renderWebGL(renderer);
 
         // simple render children!
@@ -491,8 +491,8 @@ DisplayObjectContainer.prototype.renderWebGL = function (renderer) {
 DisplayObjectContainer.prototype._renderWebGL = function (renderer) {
 
     // this is where content itself gets renderd..
-    
-}
+
+};
 
 /**
  * Renders the object using the Canvas renderer

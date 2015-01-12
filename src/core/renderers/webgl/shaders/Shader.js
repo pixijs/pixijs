@@ -462,10 +462,6 @@ Shader.prototype.destroy = function () {
 Shader.prototype._glCompile = function (type, src) {
     var shader = this.gl.createShader(type);
 
-    if (Array.isArray(src)) {
-        debugger;
-    }
-
     this.gl.shaderSource(shader, src);
     this.gl.compileShader(shader);
 
