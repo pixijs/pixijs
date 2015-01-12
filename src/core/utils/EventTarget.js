@@ -6,8 +6,7 @@ var EventData = require('./EventData');
  * @mixin
  * @namespace PIXI
  * @example
- *      function MyEmitter()
- {}
+ *      function MyEmitter() {}
  *
  *      eventTarget.mixin(MyEmitter.prototype);
  *

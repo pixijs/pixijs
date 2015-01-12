@@ -13,7 +13,7 @@ var DisplayObjectContainer = require('./DisplayObjectContainer'),
  * var container = new SpriteBatch();
  *
  * for(var i = 0; i < 100; ++i)
- {
+ * {
  *     var sprite = new PIXI.Sprite.fromImage("myImage.png");
  *     container.addChild(sprite);
  * }
