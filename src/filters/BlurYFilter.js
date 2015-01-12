@@ -8,7 +8,8 @@ var AbstractFilter = require('./AbstractFilter'),
  * @extends AbstractFilter
  * @namespace PIXI
  */
-function BlurYFilter() {
+function BlurYFilter()
+{
     AbstractFilter.call(this);
 
     // set the uniforms
@@ -25,7 +26,8 @@ function BlurYFilter() {
         'uniform float blur;',
         'uniform sampler2D uSampler;',
 
-        'void main(void) {',
+        'void main(void)
+        {',
         '   vec4 sum = vec4(0.0);',
 
         '   sum += texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y - 4.0*blur)) * 0.05;',
@@ -56,10 +58,12 @@ Object.defineProperties(BlurYFilter.prototype, {
      * @default 2
      */
     blur: {
-        get: function () {
+        get: function ()
+        {
             return this.uniforms.blur.value / blurFactor;
         },
-        set: function (value) {
+        set: function (value)
+        {
             //this.padding = value;
             this.uniforms.blur.value = blurFactor * value;
         }

@@ -10,7 +10,8 @@ var AbstractFilter = require('./AbstractFilter');
  * @namespace PIXI
  * @param texture {Texture} The texture used for the displacement map * must be power of 2 texture at the moment
  */
-function AlphaMaskFilter(texture) {
+function AlphaMaskFilter(texture)
+{
     AbstractFilter.call(this);
 
     texture.baseTexture._powerOf2 = true;
@@ -23,11 +24,13 @@ function AlphaMaskFilter(texture) {
         offset:         { type: '2f',           value: { x: 0, y: 0 } }
     };
 
-    if (texture.baseTexture.hasLoaded) {
+    if (texture.baseTexture.hasLoaded)
+    {
         this.uniforms.mask.value.x = texture.width;
         this.uniforms.mask.value.y = texture.height;
     }
-    else {
+    else
+    {
         this.boundLoadedFunction = this.onTextureLoaded.bind(this);
 
         texture.baseTexture.on('loaded', this.boundLoadedFunction);
@@ -45,7 +48,8 @@ function AlphaMaskFilter(texture) {
         'uniform vec4 dimensions;',
         'uniform vec2 offset;',
 
-        'void main() {',
+        'void main()
+        {',
         '   vec2 mapCords = vTextureCoord.xy;',
         '   mapCords += (dimensions.zw + offset)/ dimensions.xy ;',
         '   mapCords.y *= -1.0;',
@@ -70,7 +74,8 @@ module.exports = AlphaMaskFilter;
  * Sets the map dimensions uniforms when the texture becomes available.
  *
  */
-AlphaMaskFilter.prototype.onTextureLoaded = function () {
+AlphaMaskFilter.prototype.onTextureLoaded = function ()
+{
     this.uniforms.mapDimensions.value.x = this.uniforms.mask.value.width;
     this.uniforms.mapDimensions.value.y = this.uniforms.mask.value.height;
 
@@ -85,10 +90,12 @@ Object.defineProperties(AlphaMaskFilter.prototype, {
      * @memberof AlphaMaskFilter#
      */
     map: {
-        get: function () {
+        get: function ()
+        {
             return this.uniforms.mask.value;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.uniforms.mask.value = value;
         }
     },
@@ -100,10 +107,12 @@ Object.defineProperties(AlphaMaskFilter.prototype, {
      * @memberof AlphaMaskFilter#
      */
     offset: {
-        get: function() {
+        get: function()
+        {
             return this.uniforms.offset.value;
         },
-        set: function(value) {
+        set: function(value)
+        {
             this.uniforms.offset.value = value;
         }
     }

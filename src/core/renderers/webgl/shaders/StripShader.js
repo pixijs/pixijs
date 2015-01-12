@@ -5,7 +5,8 @@ var Shader = require('./Shader');
  * @namespace PIXI
  * @param gl {WebGLContext} the current WebGL drawing context
  */
-function StripShader(gl) {
+function StripShader(gl)
+{
     Shader.call(this,
         gl,
         // vertex shader
@@ -20,7 +21,8 @@ function StripShader(gl) {
 
             'varying vec2 vTextureCoord;',
 
-            'void main(void) {',
+            'void main(void)
+            {',
             '   vec3 v = translationMatrix * vec3(aVertexPosition , 1.0);',
             '   v -= offsetVector.xyx;',
             '   gl_Position = vec4( v.x / projectionVector.x -1.0, v.y / -projectionVector.y + 1.0 , 0.0, 1.0);',
@@ -36,7 +38,8 @@ function StripShader(gl) {
 
             'varying vec2 vTextureCoord;',
 
-            'void main(void) {',
+            'void main(void)
+            {',
             '   gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y)) * alpha;',
             '}'
         ].join('\n'),

@@ -24,7 +24,8 @@ var core = require('../core'),
  * @param url {String} The url of the JSON file
  * @param crossorigin {boolean} Whether requests should be treated as crossorigin
  */
-function SpineLoader(url, crossorigin) {
+function SpineLoader(url, crossorigin)
+{
     /**
      * The url of the bitmap font data
      *
@@ -57,11 +58,13 @@ core.utils.eventTarget.mixin(SpineLoader.prototype);
  * Loads the JSON data
  *
  */
-SpineLoader.prototype.load = function () {
+SpineLoader.prototype.load = function ()
+{
     var scope = this;
     var jsonLoader = new JsonLoader(this.url, this.crossorigin);
 
-    jsonLoader.on('loaded', function (event) {
+    jsonLoader.on('loaded', function (event)
+    {
         scope.json = event.data.content.json;
         scope.onLoaded();
     });
@@ -74,7 +77,8 @@ SpineLoader.prototype.load = function () {
  *
  * @private
  */
-SpineLoader.prototype.onLoaded = function () {
+SpineLoader.prototype.onLoaded = function ()
+{
     this.loaded = true;
     this.emit('loaded', { content: this });
 };

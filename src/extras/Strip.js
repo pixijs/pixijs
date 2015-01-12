@@ -10,7 +10,8 @@ var core = require('../core');
  * @param height {number} the height
  *
  */
-function Strip(texture) {
+function Strip(texture)
+{
     core.DisplayObjectContainer.call(this);
 
     /**
@@ -70,9 +71,11 @@ module.exports = Strip;
  *
  * @param renderer {WebGLRenderer}
  */
-Strip.prototype.renderWebGL = function (renderer) {
+Strip.prototype.renderWebGL = function (renderer)
+{
     // if the sprite is not visible or the alpha is 0 then no need to render this element
-    if (!this.visible || this.alpha <= 0) {
+    if (!this.visible || this.alpha <= 0)
+    {
         return;
     }
 
@@ -81,7 +84,8 @@ Strip.prototype.renderWebGL = function (renderer) {
     renderer.spriteBatch.stop();
 
     // init! init!
-    if (!this._vertexBuffer) {
+    if (!this._vertexBuffer)
+    {
         this._initWebGL(renderer);
     }
 
@@ -96,7 +100,8 @@ Strip.prototype.renderWebGL = function (renderer) {
     //TODO check culling
 };
 
-Strip.prototype._initWebGL = function (renderer) {
+Strip.prototype._initWebGL = function (renderer)
+{
     // build the strip!
     var gl = renderer.gl;
 
@@ -118,7 +123,8 @@ Strip.prototype._initWebGL = function (renderer) {
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW);
 };
 
-Strip.prototype._renderStrip = function (renderer) {
+Strip.prototype._renderStrip = function (renderer)
+{
     var gl = renderer.gl;
     var projection = renderer.projection,
         offset = renderer.offset,
@@ -137,7 +143,8 @@ Strip.prototype._renderStrip = function (renderer) {
     gl.uniform2f(shader.offsetVector, -offset.x, -offset.y);
     gl.uniform1f(shader.alpha, this.worldAlpha);
 
-    if (!this.dirty) {
+    if (!this.dirty)
+    {
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
         gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vertices);
@@ -150,10 +157,12 @@ Strip.prototype._renderStrip = function (renderer) {
         gl.activeTexture(gl.TEXTURE0);
 
         // check if a texture is dirty..
-        if (this.texture.baseTexture._dirty[gl.id]) {
+        if (this.texture.baseTexture._dirty[gl.id])
+        {
             renderer.updateTexture(this.texture.baseTexture);
         }
-        else {
+        else
+        {
             // bind the current texture
             gl.bindTexture(gl.TEXTURE_2D, this.texture.baseTexture._glTextures[gl.id]);
         }
@@ -163,7 +172,8 @@ Strip.prototype._renderStrip = function (renderer) {
 
 
     }
-    else {
+    else
+    {
 
         this.dirty = false;
         gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
@@ -178,10 +188,12 @@ Strip.prototype._renderStrip = function (renderer) {
         gl.activeTexture(gl.TEXTURE0);
 
         // check if a texture is dirty..
-        if (this.texture.baseTexture._dirty[gl.id]) {
+        if (this.texture.baseTexture._dirty[gl.id])
+        {
             renderer.updateTexture(this.texture.baseTexture);
         }
-        else {
+        else
+        {
             gl.bindTexture(gl.TEXTURE_2D, this.texture.baseTexture._glTextures[gl.id]);
         }
 
@@ -203,27 +215,33 @@ Strip.prototype._renderStrip = function (renderer) {
  *
  * @param renderer {CanvasRenderer}
  */
-Strip.prototype.renderCanvas = function (renderer) {
+Strip.prototype.renderCanvas = function (renderer)
+{
     var context = renderer.context;
 
     var transform = this.worldTransform;
 
-    if (renderer.roundPixels) {
+    if (renderer.roundPixels)
+    {
         context.setTransform(transform.a, transform.b, transform.c, transform.d, transform.tx | 0, transform.ty | 0);
     }
-    else {
+    else
+    {
         context.setTransform(transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
     }
 
-    if (this.drawMode === Strip.DrawModes.TRIANGLE_STRIP) {
+    if (this.drawMode === Strip.DrawModes.TRIANGLE_STRIP)
+    {
         this._renderCanvasTriangleStrip(context);
     }
-    else {
+    else
+    {
         this._renderCanvasTriangles(context);
     }
 };
 
-Strip.prototype._renderCanvasTriangleStrip = function (context) {
+Strip.prototype._renderCanvasTriangleStrip = function (context)
+{
     // draw triangles!!
     var vertices = this.vertices;
     var uvs = this.uvs;
@@ -231,14 +249,16 @@ Strip.prototype._renderCanvasTriangleStrip = function (context) {
     var length = vertices.length / 2;
     // this.count++;
 
-    for (var i = 0; i < length - 2; i++) {
+    for (var i = 0; i < length - 2; i++)
+    {
         // draw some triangles!
         var index = i * 2;
         this._renderCanvasDrawTriangle(context, vertices, uvs, index, (index + 2), (index + 4));
     }
 };
 
-Strip.prototype._renderCanvasTriangles = function (context) {
+Strip.prototype._renderCanvasTriangles = function (context)
+{
     // draw triangles!!
     var vertices = this.vertices;
     var uvs = this.uvs;
@@ -247,14 +267,16 @@ Strip.prototype._renderCanvasTriangles = function (context) {
     var length = indices.length;
     // this.count++;
 
-    for (var i = 0; i < length; i += 3) {
+    for (var i = 0; i < length; i += 3)
+    {
         // draw some triangles!
         var index0 = indices[i] * 2, index1 = indices[i + 1] * 2, index2 = indices[i + 2] * 2;
         this._renderCanvasDrawTriangle(context, vertices, uvs, index0, index1, index2);
     }
 };
 
-Strip.prototype._renderCanvasDrawTriangle = function (context, vertices, uvs, index0, index1, index2) {
+Strip.prototype._renderCanvasDrawTriangle = function (context, vertices, uvs, index0, index1, index2)
+{
     var textureSource = this.texture.baseTexture.source;
     var textureWidth = this.texture.width;
     var textureHeight = this.texture.height;
@@ -265,7 +287,8 @@ Strip.prototype._renderCanvasDrawTriangle = function (context, vertices, uvs, in
     var u0 = uvs[index0] * textureWidth, u1 = uvs[index1] * textureWidth, u2 = uvs[index2] * textureWidth;
     var v0 = uvs[index0 + 1] * textureHeight, v1 = uvs[index1 + 1] * textureHeight, v2 = uvs[index2 + 1] * textureHeight;
 
-    if (this.canvasPadding > 0) {
+    if (this.canvasPadding > 0)
+    {
         var paddingX = this.canvasPadding / this.worldTransform.a;
         var paddingY = this.canvasPadding / this.worldTransform.d;
         var centerX = (x0 + x1 + x2) / 3;
@@ -332,7 +355,8 @@ Strip.prototype._renderCanvasDrawTriangle = function (context, vertices, uvs, in
  * @param strip {Strip} The Strip to render
  * @private
  */
-Strip.prototype.renderStripFlat = function (strip) {
+Strip.prototype.renderStripFlat = function (strip)
+{
     var context = this.context;
     var vertices = strip.vertices;
 
@@ -340,7 +364,8 @@ Strip.prototype.renderStripFlat = function (strip) {
     // this.count++;
 
     context.beginPath();
-    for (var i=1; i < length-2; i++) {
+    for (var i=1; i < length-2; i++)
+    {
         // draw some triangles!
         var index = i*2;
 
@@ -358,7 +383,8 @@ Strip.prototype.renderStripFlat = function (strip) {
 };
 
 /*
-Strip.prototype.setTexture = function (texture) {
+Strip.prototype.setTexture = function (texture)
+{
     //TODO SET THE TEXTURES
     //TODO VISIBILITY
 
@@ -377,7 +403,8 @@ Strip.prototype.setTexture = function (texture) {
  * @private
  */
 
-Strip.prototype.onTextureUpdate = function () {
+Strip.prototype.onTextureUpdate = function ()
+{
     this.updateFrame = true;
 };
 
@@ -387,7 +414,8 @@ Strip.prototype.onTextureUpdate = function () {
  * @param matrix {Matrix} the transformation matrix of the sprite
  * @return {Rectangle} the framing rectangle
  */
-Strip.prototype.getBounds = function (matrix) {
+Strip.prototype.getBounds = function (matrix)
+{
     var worldTransform = matrix || this.worldTransform;
 
     var a = worldTransform.a;
@@ -404,7 +432,8 @@ Strip.prototype.getBounds = function (matrix) {
     var minY = Infinity;
 
     var vertices = this.vertices;
-    for (var i = 0, n = vertices.length; i < n; i += 2) {
+    for (var i = 0, n = vertices.length; i < n; i += 2)
+    {
         var rawX = vertices[i], rawY = vertices[i + 1];
         var x = (a * rawX) + (c * rawY) + tx;
         var y = (d * rawY) + (b * rawX) + ty;
@@ -416,7 +445,8 @@ Strip.prototype.getBounds = function (matrix) {
         maxY = y > maxY ? y : maxY;
     }
 
-    if (minX === -Infinity || maxY === Infinity) {
+    if (minX === -Infinity || maxY === Infinity)
+    {
         return core.math.Rectangle.EMPTY;
     }
 

@@ -2,7 +2,8 @@
  * @class
  * @private
  */
-function WebGLGraphicsData(gl) {
+function WebGLGraphicsData(gl)
+{
     this.gl = gl;
 
     //TODO does this need to be split before uploding??
@@ -22,7 +23,8 @@ module.exports = WebGLGraphicsData;
 /**
  *
  */
-WebGLGraphicsData.prototype.reset = function () {
+WebGLGraphicsData.prototype.reset = function ()
+{
     this.points.length = 0;
     this.indices.length = 0;
 };
@@ -30,7 +32,8 @@ WebGLGraphicsData.prototype.reset = function () {
 /**
  *
  */
-WebGLGraphicsData.prototype.upload = function () {
+WebGLGraphicsData.prototype.upload = function ()
+{
     var gl = this.gl;
 
 //    this.lastIndex = graphics.graphicsData.length;

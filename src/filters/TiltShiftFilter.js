@@ -14,7 +14,8 @@ var AbstractFilter = require('./AbstractFilter'),
  * @extends AbstractFilter
  * @namespace PIXI
  */
-function TiltShiftFilter() {
+function TiltShiftFilter()
+{
     AbstractFilter.call(this);
 
     this.tiltShiftXFilter = new TiltShiftXFilter();
@@ -38,10 +39,12 @@ Object.defineProperties(TiltShiftFilter.prototype, {
      * @memberof TiltShiftFilter#
      */
     blur: {
-        get: function () {
+        get: function ()
+        {
             return this.tiltShiftXFilter.blur;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.tiltShiftXFilter.blur = this.tiltShiftYFilter.blur = value;
         }
     },
@@ -53,10 +56,12 @@ Object.defineProperties(TiltShiftFilter.prototype, {
      * @memberof TiltShiftFilter#
      */
     gradientBlur: {
-        get: function () {
+        get: function ()
+        {
             return this.tiltShiftXFilter.gradientBlur;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.tiltShiftXFilter.gradientBlur = this.tiltShiftYFilter.gradientBlur = value;
         }
     },
@@ -68,10 +73,12 @@ Object.defineProperties(TiltShiftFilter.prototype, {
      * @memberof TiltShiftFilter#
      */
     start: {
-        get: function () {
+        get: function ()
+        {
             return this.tiltShiftXFilter.start;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.tiltShiftXFilter.start = this.tiltShiftYFilter.start = value;
         }
     },
@@ -83,10 +90,12 @@ Object.defineProperties(TiltShiftFilter.prototype, {
      * @memberof TiltShiftFilter#
      */
     end: {
-        get: function () {
+        get: function ()
+        {
             return this.tiltShiftXFilter.end;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.tiltShiftXFilter.end = this.tiltShiftYFilter.end = value;
         }
     },

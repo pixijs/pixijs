@@ -11,7 +11,8 @@ var core = require('../core');
  * @param url {String} The url of the image
  * @param crossorigin {boolean} Whether requests should be treated as crossorigin
  */
-function ImageLoader(url, crossorigin) {
+function ImageLoader(url, crossorigin)
+{
     /**
      * The texture being loaded
      *
@@ -39,12 +40,15 @@ core.utils.eventTarget.mixin(ImageLoader.prototype);
  * Loads image or takes it from cache
  *
  */
-ImageLoader.prototype.load = function () {
-    if (!this.texture.baseTexture.hasLoaded) {
+ImageLoader.prototype.load = function ()
+{
+    if (!this.texture.baseTexture.hasLoaded)
+    {
         this.texture.baseTexture.on('loaded', this.onLoaded.bind(this));
         this.texture.baseTexture.on('error', this.onError.bind(this));
     }
-    else {
+    else
+    {
         this.onLoaded();
     }
 };
@@ -54,7 +58,8 @@ ImageLoader.prototype.load = function () {
  *
  * @private
  */
-ImageLoader.prototype.onLoaded = function () {
+ImageLoader.prototype.onLoaded = function ()
+{
     this.emit('loaded', { content: this });
 };
 
@@ -64,7 +69,8 @@ ImageLoader.prototype.onLoaded = function () {
  * @method onError
  * @private
  */
-ImageLoader.prototype.onError = function () {
+ImageLoader.prototype.onError = function ()
+{
     this.emit('error', { content: this });
 };
 
@@ -75,15 +81,18 @@ ImageLoader.prototype.onError = function () {
  * @param frameHeight {number} height of each frame
  * @param textureName {String} if given, the frames will be cached in <textureName>-<ord> format
  */
-ImageLoader.prototype.loadFramedSpriteSheet = function (frameWidth, frameHeight, textureName) {
+ImageLoader.prototype.loadFramedSpriteSheet = function (frameWidth, frameHeight, textureName)
+{
     this.frames = [];
 
     var cols = Math.floor(this.texture.width / frameWidth);
     var rows = Math.floor(this.texture.height / frameHeight);
 
     var i=0;
-    for (var y = 0; y < rows; ++y) {
-        for (var x = 0; x < cols; ++x, ++i) {
+    for (var y = 0; y < rows; ++y)
+    {
+        for (var x = 0; x < cols; ++x, ++i)
+        {
             var texture = new core.Texture(
                 this.texture.baseTexture,
                 new core.math.Rectangle(
@@ -96,7 +105,8 @@ ImageLoader.prototype.loadFramedSpriteSheet = function (frameWidth, frameHeight,
 
             this.frames.push(texture);
 
-            if (textureName) {
+            if (textureName)
+            {
                 core.utils.TextureCache[textureName + '-' + i] = texture;
             }
         }

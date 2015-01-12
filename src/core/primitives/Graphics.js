@@ -16,7 +16,8 @@ var DisplayObjectContainer = require('../display/DisplayObjectContainer'),
  * @extends DisplayObjectContainer
  * @namespace PIXI
  */
-function Graphics() {
+function Graphics()
+{
     DisplayObjectContainer.call(this);
 
     this.renderable = true;
@@ -154,16 +155,20 @@ Object.defineProperties(Graphics.prototype, {
      * @private
      */
     cacheAsBitmap: {
-        get: function () {
+        get: function ()
+        {
             return this._cacheAsBitmap;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this._cacheAsBitmap = value;
 
-            if (this._cacheAsBitmap) {
+            if (this._cacheAsBitmap)
+            {
                 this._generateCachedSprite();
             }
-            else {
+            else
+            {
                 this.destroyCachedSprite();
                 this.dirty = true;
             }
@@ -176,7 +181,8 @@ Object.defineProperties(Graphics.prototype, {
  *
  * @return {Graphics}
  */
-GraphicsData.prototype.clone = function () {
+GraphicsData.prototype.clone = function ()
+{
     var clone = new Graphics();
 
     clone.renderable    = this.renderable;
@@ -192,7 +198,8 @@ GraphicsData.prototype.clone = function () {
     clone.cachedSpriteDirty = this.cachedSpriteDirty;
 
     // copy graphics data
-    for (var i = 0; i < this.graphicsData.length; ++i) {
+    for (var i = 0; i < this.graphicsData.length; ++i)
+    {
         clone.graphicsData.push(this.graphicsData.clone());
     }
 
@@ -211,17 +218,21 @@ GraphicsData.prototype.clone = function () {
  * @param alpha {number} alpha of the line to draw, will update the objects stored style
  * @return {Graphics}
  */
-Graphics.prototype.lineStyle = function (lineWidth, color, alpha) {
+Graphics.prototype.lineStyle = function (lineWidth, color, alpha)
+{
     this.lineWidth = lineWidth || 0;
     this.lineColor = color || 0;
     this.lineAlpha = (arguments.length < 3) ? 1 : alpha;
 
-    if (this.currentPath) {
-        if (this.currentPath.shape.points.length) {
+    if (this.currentPath)
+    {
+        if (this.currentPath.shape.points.length)
+        {
             // halfway through a line? start a new one!
             this.drawShape( new math.Polygon( this.currentPath.shape.points.slice(-2) ));
         }
-        else {
+        else
+        {
             // otherwise its empty so lets just set the line properties
             this.currentPath.lineWidth = this.lineWidth;
             this.currentPath.lineColor = this.lineColor;
@@ -239,7 +250,8 @@ Graphics.prototype.lineStyle = function (lineWidth, color, alpha) {
  * @param y {number} the Y coordinate to move to
  * @return {Graphics}
   */
-Graphics.prototype.moveTo = function (x, y) {
+Graphics.prototype.moveTo = function (x, y)
+{
     this.drawShape(new math.Polygon([x,y]));
 
     return this;
@@ -253,7 +265,8 @@ Graphics.prototype.moveTo = function (x, y) {
  * @param y {number} the Y coordinate to draw to
  * @return {Graphics}
  */
-Graphics.prototype.lineTo = function (x, y) {
+Graphics.prototype.lineTo = function (x, y)
+{
     this.currentPath.shape.points.push(x, y);
     this.dirty = true;
 
@@ -270,13 +283,17 @@ Graphics.prototype.lineTo = function (x, y) {
  * @param toY {number} Destination point y
  * @return {Graphics}
  */
-Graphics.prototype.quadraticCurveTo = function (cpX, cpY, toX, toY) {
-    if (this.currentPath) {
-        if (this.currentPath.shape.points.length === 0) {
+Graphics.prototype.quadraticCurveTo = function (cpX, cpY, toX, toY)
+{
+    if (this.currentPath)
+    {
+        if (this.currentPath.shape.points.length === 0)
+        {
             this.currentPath.shape.points = [0, 0];
         }
     }
-    else {
+    else
+    {
         this.moveTo(0,0);
     }
 
@@ -285,7 +302,8 @@ Graphics.prototype.quadraticCurveTo = function (cpX, cpY, toX, toY) {
         n = 20,
         points = this.currentPath.shape.points;
 
-    if (points.length === 0) {
+    if (points.length === 0)
+    {
         this.moveTo(0, 0);
     }
 
@@ -293,7 +311,8 @@ Graphics.prototype.quadraticCurveTo = function (cpX, cpY, toX, toY) {
     var fromY = points[points.length-1];
 
     var j = 0;
-    for (var i = 1; i <= n; ++i) {
+    for (var i = 1; i <= n; ++i)
+    {
         j = i / n;
 
         xa = fromX + ( (cpX - fromX) * j );
@@ -319,13 +338,17 @@ Graphics.prototype.quadraticCurveTo = function (cpX, cpY, toX, toY) {
  * @param toY {number} Destination point y
  * @return {Graphics}
  */
-Graphics.prototype.bezierCurveTo = function (cpX, cpY, cpX2, cpY2, toX, toY) {
-    if (this.currentPath) {
-        if (this.currentPath.shape.points.length === 0) {
+Graphics.prototype.bezierCurveTo = function (cpX, cpY, cpX2, cpY2, toX, toY)
+{
+    if (this.currentPath)
+    {
+        if (this.currentPath.shape.points.length === 0)
+        {
             this.currentPath.shape.points = [0, 0];
         }
     }
-    else {
+    else
+    {
         this.moveTo(0,0);
     }
 
@@ -342,7 +365,8 @@ Graphics.prototype.bezierCurveTo = function (cpX, cpY, cpX2, cpY2, toX, toY) {
 
     var j = 0;
 
-    for (var i = 1; i <= n; ++i) {
+    for (var i = 1; i <= n; ++i)
+    {
         j = i / n;
 
         dt = (1 - j);
@@ -373,13 +397,17 @@ Graphics.prototype.bezierCurveTo = function (cpX, cpY, cpX2, cpY2, toX, toY) {
  * @param radius {number} The radius of the arc
  * @return {Graphics}
  */
-Graphics.prototype.arcTo = function (x1, y1, x2, y2, radius) {
-    if (this.currentPath) {
-        if (this.currentPath.shape.points.length === 0) {
+Graphics.prototype.arcTo = function (x1, y1, x2, y2, radius)
+{
+    if (this.currentPath)
+    {
+        if (this.currentPath.shape.points.length === 0)
+        {
             this.currentPath.shape.points.push(x1, y1);
         }
     }
-    else {
+    else
+    {
         this.moveTo(x1, y1);
     }
 
@@ -392,12 +420,15 @@ Graphics.prototype.arcTo = function (x1, y1, x2, y2, radius) {
         b2 = x2   - x1,
         mm = Math.abs(a1 * b2 - b1 * a2);
 
-    if (mm < 1.0e-8 || radius === 0) {
-        if (points[points.length-2] !== x1 || points[points.length-1] !== y1) {
+    if (mm < 1.0e-8 || radius === 0)
+    {
+        if (points[points.length-2] !== x1 || points[points.length-1] !== y1)
+        {
             points.push(x1, y1);
         }
     }
-    else {
+    else
+    {
         var dd = a1 * a1 + b1 * b1,
             cc = a2 * a2 + b2 * b2,
             tt = a1 * a2 + b1 * b2,
@@ -433,42 +464,51 @@ Graphics.prototype.arcTo = function (x1, y1, x2, y2, radius) {
  * @param anticlockwise {boolean} Optional. Specifies whether the drawing should be counterclockwise or clockwise. False is default, and indicates clockwise, while true indicates counter-clockwise.
  * @return {Graphics}
  */
-Graphics.prototype.arc = function (cx, cy, radius, startAngle, endAngle, anticlockwise) {
+Graphics.prototype.arc = function (cx, cy, radius, startAngle, endAngle, anticlockwise)
+{
     var startX = cx + Math.cos(startAngle) * radius;
     var startY = cy + Math.sin(startAngle) * radius;
     var points;
 
     // TODO - This if-else makes no sense. It uses currentPath in the else where it doesn't exist...
-    if (this.currentPath) {
+    if (this.currentPath)
+    {
         points = this.currentPath.shape.points;
 
-        if (points.length === 0) {
+        if (points.length === 0)
+        {
             points.push(startX, startY);
         }
-        else if (points[points.length-2] !== startX || points[points.length-1] !== startY) {
+        else if (points[points.length-2] !== startX || points[points.length-1] !== startY)
+        {
             points.push(startX, startY);
         }
     }
-    else {
+    else
+    {
         this.moveTo(startX, startY);
         points = this.currentPath.shape.points;
     }
 
-    if (startAngle === endAngle) {
+    if (startAngle === endAngle)
+    {
         return this;
     }
 
-    if (!anticlockwise && endAngle <= startAngle) {
+    if (!anticlockwise && endAngle <= startAngle)
+    {
         endAngle += Math.PI * 2;
     }
-    else if (anticlockwise && startAngle <= endAngle) {
+    else if (anticlockwise && startAngle <= endAngle)
+    {
         startAngle += Math.PI * 2;
     }
 
     var sweep = anticlockwise ? (startAngle - endAngle) *-1 : (endAngle - startAngle);
     var segs = (Math.abs(sweep)/ (Math.PI * 2)) * 40;
 
-    if (sweep === 0) {
+    if (sweep === 0)
+    {
         return this;
     }
 
@@ -482,7 +522,8 @@ Graphics.prototype.arc = function (cx, cy, radius, startAngle, endAngle, anticlo
 
     var remainder = ( segMinus % 1 ) / segMinus;
 
-    for (var i = 0; i <= segMinus; ++i) {
+    for (var i = 0; i <= segMinus; ++i)
+    {
         var real =  i + remainder * i;
         var angle = ((theta) + startAngle + (theta2 * real));
 
@@ -506,13 +547,16 @@ Graphics.prototype.arc = function (cx, cy, radius, startAngle, endAngle, anticlo
  * @param alpha {number} the alpha of the fill
  * @return {Graphics}
  */
-Graphics.prototype.beginFill = function (color, alpha) {
+Graphics.prototype.beginFill = function (color, alpha)
+{
     this.filling = true;
     this.fillColor = color || 0;
     this.fillAlpha = (alpha === undefined) ? 1 : alpha;
 
-    if (this.currentPath) {
-        if (this.currentPath.shape.points.length <= 2) {
+    if (this.currentPath)
+    {
+        if (this.currentPath.shape.points.length <= 2)
+        {
             this.currentPath.fill = this.filling;
             this.currentPath.fillColor = this.fillColor;
             this.currentPath.fillAlpha = this.fillAlpha;
@@ -526,7 +570,8 @@ Graphics.prototype.beginFill = function (color, alpha) {
  *
  * @return {Graphics}
  */
-Graphics.prototype.endFill = function () {
+Graphics.prototype.endFill = function ()
+{
     this.filling = false;
     this.fillColor = null;
     this.fillAlpha = 1;
@@ -542,7 +587,8 @@ Graphics.prototype.endFill = function () {
  * @param height {number} The height of the rectangle
  * @return {Graphics}
  */
-Graphics.prototype.drawRect = function ( x, y, width, height ) {
+Graphics.prototype.drawRect = function ( x, y, width, height )
+{
     this.drawShape(new math.Rectangle(x,y, width, height));
 
     return this;
@@ -556,7 +602,8 @@ Graphics.prototype.drawRect = function ( x, y, width, height ) {
  * @param height {number} The height of the rectangle
  * @param radius {number} Radius of the rectangle corners
  */
-Graphics.prototype.drawRoundedRect = function ( x, y, width, height, radius ) {
+Graphics.prototype.drawRoundedRect = function ( x, y, width, height, radius )
+{
     this.drawShape(new math.RoundedRectangle(x, y, width, height, radius));
 
     return this;
@@ -570,7 +617,8 @@ Graphics.prototype.drawRoundedRect = function ( x, y, width, height, radius ) {
  * @param radius {number} The radius of the circle
  * @return {Graphics}
  */
-Graphics.prototype.drawCircle = function (x, y, radius) {
+Graphics.prototype.drawCircle = function (x, y, radius)
+{
     this.drawShape(new math.Circle(x,y, radius));
 
     return this;
@@ -585,7 +633,8 @@ Graphics.prototype.drawCircle = function (x, y, radius) {
  * @param height {number} The half height of the ellipse
  * @return {Graphics}
  */
-Graphics.prototype.drawEllipse = function (x, y, width, height) {
+Graphics.prototype.drawEllipse = function (x, y, width, height)
+{
     this.drawShape(new math.Ellipse(x, y, width, height));
 
     return this;
@@ -597,8 +646,10 @@ Graphics.prototype.drawEllipse = function (x, y, width, height) {
  * @param path {Array} The path data used to construct the polygon.
  * @return {Graphics}
  */
-Graphics.prototype.drawPolygon = function (path) {
-    if (!(path instanceof Array)) {
+Graphics.prototype.drawPolygon = function (path)
+{
+    if (!(path instanceof Array))
+    {
         path = Array.prototype.slice.call(arguments);
     }
 
@@ -612,7 +663,8 @@ Graphics.prototype.drawPolygon = function (path) {
  *
  * @return {Graphics}
  */
-Graphics.prototype.clear = function () {
+Graphics.prototype.clear = function ()
+{
     this.lineWidth = 0;
     this.filling = false;
 
@@ -631,7 +683,8 @@ Graphics.prototype.clear = function () {
  * @param scaleMode {number} Should be one of the scaleMode consts
  * @return {Texture} a texture of the graphics object
  */
-Graphics.prototype.generateTexture = function (resolution, scaleMode) {
+Graphics.prototype.generateTexture = function (resolution, scaleMode)
+{
     resolution = resolution || 1;
 
     var bounds = this.getBounds();
@@ -655,17 +708,21 @@ Graphics.prototype.generateTexture = function (resolution, scaleMode) {
  *
  * @param renderer {WebGLRenderer}
  */
-Graphics.prototype._renderWebGL = function (renderer) {
+Graphics.prototype._renderWebGL = function (renderer)
+{
     // if the sprite is not visible or the alpha is 0 then no need to render this element
-    if (this.isMask === true) {
+    if (this.isMask === true)
+    {
         return;
     }
 
     // this code may still be needed so leaving for now..
-    // 
+    //
     /*
-    if (this._cacheAsBitmap) {
-        if (this.dirty || this.cachedSpriteDirty) {
+    if (this._cacheAsBitmap)
+    {
+        if (this.dirty || this.cachedSpriteDirty)
+        {
             this._generateCachedSprite();
 
             // we will also need to update the texture on the gpu too!
@@ -690,7 +747,8 @@ Graphics.prototype._renderWebGL = function (renderer) {
         renderer.blendModeManager.setBlendMode( this.blendMode );
 
         // check if the webgl graphic needs to be updated
-        if (this.glDirty) {
+        if (this.glDirty)
+        {
             this.dirty = true;
             this.glDirty = false;
         }
@@ -706,14 +764,18 @@ Graphics.prototype._renderWebGL = function (renderer) {
  * @param renderer {CanvasRenderer}
  * @private
  */
-Graphics.prototype.renderCanvas = function (renderer) {
+Graphics.prototype.renderCanvas = function (renderer)
+{
     // if the sprite is not visible or the alpha is 0 then no need to render this element
-    if (!this.visible || this.alpha <= 0 || this.isMask === true) {
+    if (!this.visible || this.alpha <= 0 || this.isMask === true)
+    {
         return;
     }
 
-    if (this._cacheAsBitmap) {
-        if (this.dirty || this.cachedSpriteDirty) {
+    if (this._cacheAsBitmap)
+    {
+        if (this.dirty || this.cachedSpriteDirty)
+        {
             this._generateCachedSprite();
 
             // we will also need to update the texture
@@ -729,16 +791,19 @@ Graphics.prototype.renderCanvas = function (renderer) {
 
         return;
     }
-    else {
+    else
+    {
         var context = renderer.context;
         var transform = this.worldTransform;
 
-        if (this.blendMode !== renderer.currentBlendMode) {
+        if (this.blendMode !== renderer.currentBlendMode)
+        {
             renderer.currentBlendMode = this.blendMode;
             context.globalCompositeOperation = renderer.blendModes[renderer.currentBlendMode];
         }
 
-        if (this._mask) {
+        if (this._mask)
+        {
             renderer.maskManager.pushMask(this._mask, renderer);
         }
 
@@ -754,11 +819,13 @@ Graphics.prototype.renderCanvas = function (renderer) {
 
         CanvasGraphics.renderGraphics(this, context);
 
-        for (var i = 0, j = this.children.length; i < j; ++i) {
+        for (var i = 0, j = this.children.length; i < j; ++i)
+        {
             this.children[i].renderCanvas(renderer);
         }
 
-        if (this._mask) {
+        if (this._mask)
+        {
             renderer.maskManager.popMask(renderer);
         }
     }
@@ -769,13 +836,16 @@ Graphics.prototype.renderCanvas = function (renderer) {
  *
  * @return {Rectangle} the rectangular bounding area
  */
-Graphics.prototype.getBounds = function (matrix) {
+Graphics.prototype.getBounds = function (matrix)
+{
     // return an empty object if the item is a mask!
-    if (this.isMask) {
+    if (this.isMask)
+    {
         return math.Rectangle.EMPTY;
     }
 
-    if (this.dirty) {
+    if (this.dirty)
+    {
         this.updateLocalBounds();
 
         this.glDirty = true;
@@ -847,23 +917,27 @@ Graphics.prototype.getBounds = function (matrix) {
  * Update the bounds of the object
  *
  */
-Graphics.prototype.updateLocalBounds = function () {
+Graphics.prototype.updateLocalBounds = function ()
+{
     var minX = Infinity;
     var maxX = -Infinity;
 
     var minY = Infinity;
     var maxY = -Infinity;
 
-    if (this.graphicsData.length) {
+    if (this.graphicsData.length)
+    {
         var shape, points, x, y, w, h;
 
-        for (var i = 0; i < this.graphicsData.length; i++) {
+        for (var i = 0; i < this.graphicsData.length; i++)
+        {
             var data = this.graphicsData[i];
             var type = data.type;
             var lineWidth = data.lineWidth;
             shape = data.shape;
 
-            if (type === CONST.SHAPES.RECT || type === CONST.SHAPES.RREC) {
+            if (type === CONST.SHAPES.RECT || type === CONST.SHAPES.RREC)
+            {
                 x = shape.x - lineWidth/2;
                 y = shape.y - lineWidth/2;
                 w = shape.width + lineWidth;
@@ -875,7 +949,8 @@ Graphics.prototype.updateLocalBounds = function () {
                 minY = y < minY ? y : minY;
                 maxY = y + h > maxY ? y + h : maxY;
             }
-            else if (type === CONST.SHAPES.CIRC) {
+            else if (type === CONST.SHAPES.CIRC)
+            {
                 x = shape.x;
                 y = shape.y;
                 w = shape.radius + lineWidth/2;
@@ -887,7 +962,8 @@ Graphics.prototype.updateLocalBounds = function () {
                 minY = y - h < minY ? y - h : minY;
                 maxY = y + h > maxY ? y + h : maxY;
             }
-            else if (type === CONST.SHAPES.ELIP) {
+            else if (type === CONST.SHAPES.ELIP)
+            {
                 x = shape.x;
                 y = shape.y;
                 w = shape.width + lineWidth/2;
@@ -899,11 +975,13 @@ Graphics.prototype.updateLocalBounds = function () {
                 minY = y - h < minY ? y - h : minY;
                 maxY = y + h > maxY ? y + h : maxY;
             }
-            else {
+            else
+            {
                 // POLY
                 points = shape.points;
 
-                for (var j = 0; j < points.length; j += 2) {
+                for (var j = 0; j < points.length; j += 2)
+                {
                     x = points[j];
                     y = points[j+1];
 
@@ -916,7 +994,8 @@ Graphics.prototype.updateLocalBounds = function () {
             }
         }
     }
-    else {
+    else
+    {
         minX = 0;
         maxX = 0;
         minY = 0;
@@ -937,10 +1016,12 @@ Graphics.prototype.updateLocalBounds = function () {
  *
  * @private
  */
-Graphics.prototype._generateCachedSprite = function () {
+Graphics.prototype._generateCachedSprite = function ()
+{
     var bounds = this.getLocalBounds();
 
-    if (!this._cachedSprite) {
+    if (!this._cachedSprite)
+    {
         var canvasBuffer = new CanvasBuffer(bounds.width, bounds.height);
         var texture = Texture.fromCanvas(canvasBuffer.canvas);
 
@@ -949,7 +1030,8 @@ Graphics.prototype._generateCachedSprite = function () {
 
         this._cachedSprite.worldTransform = this.worldTransform;
     }
-    else {
+    else
+    {
         this._cachedSprite.buffer.resize(bounds.width, bounds.height);
     }
 
@@ -974,7 +1056,8 @@ Graphics.prototype._generateCachedSprite = function () {
  *
  * @private
  */
-Graphics.prototype.updateCachedSpriteTexture = function () {
+Graphics.prototype.updateCachedSpriteTexture = function ()
+{
     var cachedSprite = this._cachedSprite;
     var texture = cachedSprite.texture;
     var canvas = cachedSprite.buffer.canvas;
@@ -995,7 +1078,8 @@ Graphics.prototype.updateCachedSpriteTexture = function () {
  * Destroys a previous cached sprite.
  *
  */
-Graphics.prototype.destroyCachedSprite = function () {
+Graphics.prototype.destroyCachedSprite = function ()
+{
     this._cachedSprite.texture.destroy(true);
 
     // let the gc collect the unused sprite
@@ -1009,10 +1093,13 @@ Graphics.prototype.destroyCachedSprite = function () {
  * @param {Circle|Rectangle|Ellipse|Line|Polygon} shape The Shape object to draw.
  * @return {GraphicsData} The generated GraphicsData object.
  */
-Graphics.prototype.drawShape = function (shape) {
-    if (this.currentPath) {
+Graphics.prototype.drawShape = function (shape)
+{
+    if (this.currentPath)
+    {
         // check current path!
-        if (this.currentPath.shape.points.length <= 2) {
+        if (this.currentPath.shape.points.length <= 2)
+        {
             this.graphicsData.pop();
         }
     }
@@ -1023,7 +1110,8 @@ Graphics.prototype.drawShape = function (shape) {
 
     this.graphicsData.push(data);
 
-    if (data.type === CONST.SHAPES.POLY) {
+    if (data.type === CONST.SHAPES.POLY)
+    {
         data.shape.closed = this.filling;
         this.currentPath = data;
     }

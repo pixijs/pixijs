@@ -5,7 +5,8 @@ var Shader = require('./Shader');
  * @namespace PIXI
  * @param gl {WebGLContext} the current WebGL drawing context
  */
-function PrimitiveShader(gl) {
+function PrimitiveShader(gl)
+{
     Shader.call(this,
         gl,
         // vertex shader
@@ -23,7 +24,8 @@ function PrimitiveShader(gl) {
 
             'varying vec4 vColor;',
 
-            'void main(void) {',
+            'void main(void)
+            {',
             '   vec3 v = translationMatrix * vec3(aVertexPosition , 1.0);',
             '   v -= offsetVector.xyx;',
             '   gl_Position = vec4( v.x / projectionVector.x -1.0, (v.y / projectionVector.y * -flipY) + flipY , 0.0, 1.0);',
@@ -36,7 +38,8 @@ function PrimitiveShader(gl) {
 
             'varying vec4 vColor;',
 
-            'void main(void) {',
+            'void main(void)
+            {',
             '   gl_FragColor = vColor;',
             '}'
         ].join('\n'),

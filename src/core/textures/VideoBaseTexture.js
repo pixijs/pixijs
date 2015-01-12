@@ -12,15 +12,18 @@ var BaseTexture = require('./BaseTexture'),
  * @param source {HTMLVideoElement}
  * @param [scaleMode] {number} See {@link scaleModes} for possible values
  */
-function VideoBaseTexture(source, scaleMode) {
-    if (!source){
+function VideoBaseTexture(source, scaleMode)
+{
+    if (!source)
+    {
         throw new Error('No video source element specified.');
     }
 
     // hook in here to check if video is already available.
     // BaseTexture looks for a source.complete boolean, plus width & height.
 
-    if ((source.readyState === source.HAVE_ENOUGH_DATA || source.readyState === source.HAVE_FUTURE_DATA) && source.width && source.height) {
+    if ((source.readyState === source.HAVE_ENOUGH_DATA || source.readyState === source.HAVE_FUTURE_DATA) && source.width && source.height)
+    {
         source.complete = true;
     }
 
@@ -31,7 +34,8 @@ function VideoBaseTexture(source, scaleMode) {
     this._boundOnUpdate = this._onUpdate.bind(this);
     this._boundOnCanPlay = this._onCanPlay.bind(this);
 
-    if (!source.complete) {
+    if (!source.complete)
+    {
         source.addEventListener('canplay', this._boundOnCanPlay);
         source.addEventListener('canplaythrough', this._boundOnCanPlay);
 
@@ -47,28 +51,35 @@ VideoBaseTexture.prototype = Object.create(BaseTexture.prototype);
 VideoBaseTexture.prototype.constructor = VideoBaseTexture;
 module.exports = VideoBaseTexture;
 
-VideoBaseTexture.prototype._onUpdate = function () {
-    if (this.autoUpdate) {
+VideoBaseTexture.prototype._onUpdate = function ()
+{
+    if (this.autoUpdate)
+    {
         window.requestAnimationFrame(this._boundOnUpdate);
         this.needsUpdate = true;
     }
 };
 
-VideoBaseTexture.prototype._onPlayStart = function () {
-    if (!this.autoUpdate) {
+VideoBaseTexture.prototype._onPlayStart = function ()
+{
+    if (!this.autoUpdate)
+    {
         window.requestAnimationFrame(this._boundOnUpdate);
         this.autoUpdate = true;
     }
 };
 
-VideoBaseTexture.prototype._onPlayStop = function () {
+VideoBaseTexture.prototype._onPlayStop = function ()
+{
     this.autoUpdate = false;
 };
 
-VideoBaseTexture.prototype._onCanPlay = function () {
+VideoBaseTexture.prototype._onCanPlay = function ()
+{
     this.hasLoaded = true;
 
-    if (this.source) {
+    if (this.source)
+    {
         this.source.removeEventListener('canplay', this._boundOnCanPlay);
         this.source.removeEventListener('canplaythrough', this._boundOnCanPlay);
 
@@ -78,15 +89,18 @@ VideoBaseTexture.prototype._onCanPlay = function () {
         this.source.play();
 
         // prevent multiple loaded dispatches..
-        if(!this.__loaded){
+        if(!this.__loaded)
+        {
             this.__loaded = true;
             this.emit('loaded', this);
         }
     }
 };
 
-VideoBaseTexture.prototype.destroy = function () {
-    if (this.source && this.source._pixiId) {
+VideoBaseTexture.prototype.destroy = function ()
+{
+    if (this.source && this.source._pixiId)
+    {
         utils.BaseTextureCache[ this.source._pixiId ] = null;
         delete utils.BaseTextureCache[ this.source._pixiId ];
 
@@ -105,14 +119,17 @@ VideoBaseTexture.prototype.destroy = function () {
  * @param scaleMode {number} See {@link scaleModes} for possible values
  * @return {VideoBaseTexture}
  */
-VideoBaseTexture.fromVideo = function (video, scaleMode) {
-    if (!video._pixiId) {
+VideoBaseTexture.fromVideo = function (video, scaleMode)
+{
+    if (!video._pixiId)
+    {
         video._pixiId = 'video_' + utils.uuid();
     }
 
     var baseTexture = utils.BaseTextureCache[video._pixiId];
 
-    if (!baseTexture) {
+    if (!baseTexture)
+    {
         baseTexture = new VideoBaseTexture(video, scaleMode);
         utils.BaseTextureCache[ video._pixiId ] = baseTexture;
     }
@@ -147,17 +164,21 @@ VideoBaseTexture.fromVideo = function (video, scaleMode) {
  * @param scaleMode {number} See {@link scaleModes} for possible values
  * @return {VideoBaseTexture}
  */
-VideoBaseTexture.fromUrl = function (videoSrc, scaleMode) {
+VideoBaseTexture.fromUrl = function (videoSrc, scaleMode)
+{
     var video = document.createElement('video');
 
     // array of objects or strings
-    if (Array.isArray(videoSrc)) {
-        for (var i = 0; i < videoSrc.length; ++i) {
+    if (Array.isArray(videoSrc))
+    {
+        for (var i = 0; i < videoSrc.length; ++i)
+        {
             video.appendChild(createSource(videoSrc.src || videoSrc, videoSrc.mime));
         }
     }
     // single object or string
-    else {
+    else
+    {
         video.appendChild(createSource(videoSrc.src || videoSrc, videoSrc.mime));
     }
 
@@ -169,8 +190,10 @@ VideoBaseTexture.fromUrl = function (videoSrc, scaleMode) {
 
 VideoBaseTexture.fromUrls = VideoBaseTexture.fromUrl;
 
-function createSource(path, type) {
-    if (!type) {
+function createSource(path, type)
+{
+    if (!type)
+    {
         type = 'video/' + path.substr(path.lastIndexOf('.') + 1);
     }
 

@@ -4,7 +4,8 @@
  * @class
  * @namespace PIXI
  */
-function FilterBlock() {
+function FilterBlock()
+{
     /**
      * The visible state of this FilterBlock.
      *

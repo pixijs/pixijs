@@ -6,7 +6,8 @@ var utils = require('../../../utils');
  * @param [fragmentSrc] {string} The source of the fragment shader.
  * @param [vertexSrc] {string} The source of the vertex shader.
  */
-function Shader(gl, vertexSrc, fragmentSrc, customUniforms, customAttributes) {
+function Shader(gl, vertexSrc, fragmentSrc, customUniforms, customAttributes)
+{
     /**
      * @member {number}
      * @readonly
@@ -33,7 +34,8 @@ function Shader(gl, vertexSrc, fragmentSrc, customUniforms, customAttributes) {
         dimensions:         { type: '4f', value: new Float32Array(4) }
     };
 
-    for (var u in customUniforms) {
+    for (var u in customUniforms)
+    {
         this.uniforms[u] = customUniforms[u];
     }
 
@@ -43,7 +45,8 @@ function Shader(gl, vertexSrc, fragmentSrc, customUniforms, customAttributes) {
         aColor:             0
     };
 
-    for (var a in customAttributes) {
+    for (var a in customAttributes)
+    {
         this.attributes[a] = customAttributes[a];
     }
 
@@ -66,7 +69,8 @@ function Shader(gl, vertexSrc, fragmentSrc, customUniforms, customAttributes) {
 
         'const vec2 center = vec2(-1.0, 1.0);',
 
-        'void main(void) {',
+        'void main(void)
+        {',
         '   gl_Position = vec4( ((aVertexPosition + offsetVector) / projectionVector) + center , 0.0, 1.0);',
         '   vTextureCoord = aTextureCoord;',
         '   vColor = vec4(aColor.rgb * aColor.a, aColor.a);',
@@ -85,7 +89,8 @@ function Shader(gl, vertexSrc, fragmentSrc, customUniforms, customAttributes) {
 
         'uniform sampler2D uSampler;',
 
-        'void main(void) {',
+        'void main(void)
+        {',
         '   gl_FragColor = texture2D(uSampler, vTextureCoord) * vColor ;',
         '}'
     ].join('\n');
@@ -96,7 +101,8 @@ function Shader(gl, vertexSrc, fragmentSrc, customUniforms, customAttributes) {
 Shader.prototype.constructor = Shader;
 module.exports = Shader;
 
-Shader.prototype.init = function () {
+Shader.prototype.init = function ()
+{
     this.compile();
 
     this.gl.useProgram(this.program);
@@ -105,14 +111,18 @@ Shader.prototype.init = function () {
     this.cacheAttributeLocations(Object.keys(this.attributes));
 };
 
-Shader.prototype.cacheUniformLocations = function (keys) {
-    for (var i = 0; i < keys.length; ++i) {
+Shader.prototype.cacheUniformLocations = function (keys)
+{
+    for (var i = 0; i < keys.length; ++i)
+    {
         this.uniforms[keys[i]]._location = this.gl.getUniformLocation(this.program, keys[i]);
     }
 };
 
-Shader.prototype.cacheAttributeLocations = function (keys) {
-    for (var i = 0; i < keys.length; ++i) {
+Shader.prototype.cacheAttributeLocations = function (keys)
+{
+    for (var i = 0; i < keys.length; ++i)
+    {
         this.attributes[keys[i]] = this.gl.getAttribLocation(this.program, keys[i]);
     }
 
@@ -124,14 +134,16 @@ Shader.prototype.cacheAttributeLocations = function (keys) {
     // maybe its something to do with the current state of the gl context.
     // I'm convinced this is a bug in the chrome browser as there is NO reason why this should be returning -1 especially as it only manifests on my chrome pixel
     // If theres any webGL people that know why could happen please help :)
-    // if (this.attributes.aColor === -1) {
+    // if (this.attributes.aColor === -1)
+    {
     //     this.attributes.aColor = 2;
     // }
 
     // End worst hack eva //
 };
 
-Shader.prototype.compile = function () {
+Shader.prototype.compile = function ()
+{
     var gl = this.gl;
 
     var glVertShader = this._glCompile(gl.VERTEX_SHADER, this.vertexSrc);
@@ -144,13 +156,15 @@ Shader.prototype.compile = function () {
     gl.linkProgram(program);
 
     // if linking fails, then log and cleanup
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS))
+    {
         window.console.error('Pixi.js Error: Could not initialize shader.');
         window.console.error('gl.VALIDATE_STATUS', gl.getProgramParameter(program, gl.VALIDATE_STATUS));
         window.console.error('gl.getError()', gl.getError());
 
         // if there is a program info log, log it
-        if (gl.getProgramInfoLog(program) !== '') {
+        if (gl.getProgramInfoLog(program) !== '')
+        {
             window.console.warn('Pixi.js Warning: gl.getProgramInfoLog()', gl.getProgramInfoLog(program));
         }
 
@@ -165,18 +179,21 @@ Shader.prototype.compile = function () {
     return (this.program = program);
 };
 
-Shader.prototype.syncUniforms = function () {
+Shader.prototype.syncUniforms = function ()
+{
     var gl = this.gl;
 
     this.textureCount = 1;
 
-    for (var key in this.uniforms) {
+    for (var key in this.uniforms)
+    {
         var uniform = this.uniforms[key],
             location = uniform._location,
             value = uniform.value,
             i, il;
 
-        switch (uniform.type) {
+        switch (uniform.type)
+        {
             // single int value
             case 'i':
             case '1i':
@@ -282,7 +299,8 @@ Shader.prototype.syncUniforms = function () {
 
             // a Color Value
             case 'c':
-                if (typeof value === 'number') {
+                if (typeof value === 'number')
+                {
                     value = utils.hex2rgb(value);
                 }
 
@@ -311,11 +329,13 @@ Shader.prototype.syncUniforms = function () {
 
             // array of 2D Point objects
             case 'v2v':
-                if (!uniform._array) {
+                if (!uniform._array)
+                {
                     uniform._array = new Float32Array(2 * value.length);
                 }
 
-                for (i = 0, il = value.length; i < il; ++i) {
+                for (i = 0, il = value.length; i < il; ++i)
+                {
                     uniform._array[i * 2]       = value[i].x;
                     uniform._array[i * 2 + 1]   = value[i].y;
                 }
@@ -325,11 +345,13 @@ Shader.prototype.syncUniforms = function () {
 
             // array of 3D Point objects
             case 'v3v':
-                if (!uniform._array) {
+                if (!uniform._array)
+                {
                     uniform._array = new Float32Array(3 * value.length);
                 }
 
-                for (i = 0, il = value.length; i < il; ++i) {
+                for (i = 0, il = value.length; i < il; ++i)
+                {
                     uniform._array[i * 3]       = value[i].x;
                     uniform._array[i * 3 + 1]   = value[i].y;
                     uniform._array[i * 3 + 2]   = value[i].z;
@@ -341,11 +363,13 @@ Shader.prototype.syncUniforms = function () {
 
             // array of 4D Point objects
             case 'v4v':
-                if (!uniform._array) {
+                if (!uniform._array)
+                {
                     uniform._array = new Float32Array(4 * value.length);
                 }
 
-                for (i = 0, il = value.length; i < il; ++i) {
+                for (i = 0, il = value.length; i < il; ++i)
+                {
                     uniform._array[i * 4]       = value[i].x;
                     uniform._array[i * 4 + 1]   = value[i].y;
                     uniform._array[i * 4 + 2]   = value[i].z;
@@ -359,7 +383,8 @@ Shader.prototype.syncUniforms = function () {
             // PIXI.Texture
             case 't':
             case 'sampler2D':
-                if (!uniform.value || !uniform.value.baseTexture || !uniform.value.baseTexture.hasLoaded) {
+                if (!uniform.value || !uniform.value.baseTexture || !uniform.value.baseTexture.hasLoaded)
+                {
                     break;
                 }
 
@@ -376,7 +401,8 @@ Shader.prototype.syncUniforms = function () {
                 this.textureCount++;
 
                 // initialize the texture if we haven't yet
-                if (!uniform._init) {
+                if (!uniform._init)
+                {
                     this.initSampler2D(uniform);
 
                     uniform._init = true;
@@ -394,11 +420,13 @@ Shader.prototype.syncUniforms = function () {
  * Initialises a Sampler2D uniform (which may only be available later on after initUniforms once the texture has loaded)
  *
  */
-Shader.prototype.initSampler2D = function (uniform) {
+Shader.prototype.initSampler2D = function (uniform)
+{
     var gl = this.gl;
 
     //  Extended texture data
-    if (uniform.textureData) {
+    if (uniform.textureData)
+    {
         var data = uniform.textureData;
 
         // GLTexture = mag linear, min linear_mipmap_linear, wrap repeat + gl.generateMipmap(gl.TEXTURE_2D);
@@ -417,14 +445,16 @@ Shader.prototype.initSampler2D = function (uniform) {
         var wrapT = (data.wrapT) ? data.wrapT : gl.CLAMP_TO_EDGE;
         var format = (data.luminance) ? gl.LUMINANCE : gl.RGBA;
 
-        if (data.repeat) {
+        if (data.repeat)
+        {
             wrapS = gl.REPEAT;
             wrapT = gl.REPEAT;
         }
 
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, !!data.flipY);
 
-        if (data.width) {
+        if (data.width)
+        {
             var width = (data.width) ? data.width : 512;
             var height = (data.height) ? data.height : 2;
             var border = (data.border) ? data.border : 0;
@@ -432,7 +462,8 @@ Shader.prototype.initSampler2D = function (uniform) {
             // void texImage2D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, ArrayBufferView? pixels);
             gl.texImage2D(gl.TEXTURE_2D, 0, format, width, height, border, format, gl.UNSIGNED_BYTE, null);
         }
-        else {
+        else
+        {
             //  void texImage2D(GLenum target, GLint level, GLenum internalformat, GLenum format, GLenum type, ImageData? pixels);
             gl.texImage2D(gl.TEXTURE_2D, 0, format, gl.RGBA, gl.UNSIGNED_BYTE, uniform.value.baseTexture.source);
         }
@@ -448,7 +479,8 @@ Shader.prototype.initSampler2D = function (uniform) {
  * Destroys the shader.
  *
  */
-Shader.prototype.destroy = function () {
+Shader.prototype.destroy = function ()
+{
     this.gl.deleteProgram(this.program);
 
     this.gl = null;
@@ -459,13 +491,15 @@ Shader.prototype.destroy = function () {
     this.fragmentSrc = null;
 };
 
-Shader.prototype._glCompile = function (type, src) {
+Shader.prototype._glCompile = function (type, src)
+{
     var shader = this.gl.createShader(type);
 
     this.gl.shaderSource(shader, src);
     this.gl.compileShader(shader);
 
-    if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
+    if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS))
+    {
         window.console.log(this.gl.getShaderInfoLog(shader));
         return null;
     }

@@ -17,7 +17,8 @@ var BaseTexture = require('./BaseTexture'),
  * @param [crop] {Rectangle} The area of original texture
  * @param [trim] {Rectangle} Trimmed texture rectangle
  */
-function Texture(baseTexture, frame, crop, trim) {
+function Texture(baseTexture, frame, crop, trim)
+{
     /**
      * Does this Texture have any frame data assigned to it?
      *
@@ -25,12 +26,14 @@ function Texture(baseTexture, frame, crop, trim) {
      */
     this.noFrame = false;
 
-    if (!frame) {
+    if (!frame)
+    {
         this.noFrame = true;
         frame = new math.Rectangle(0, 0, 1, 1);
     }
 
-    if (baseTexture instanceof Texture) {
+    if (baseTexture instanceof Texture)
+    {
         baseTexture = baseTexture.baseTexture;
     }
 
@@ -100,13 +103,16 @@ function Texture(baseTexture, frame, crop, trim) {
      */
     this.crop = crop || new math.Rectangle(0, 0, 1, 1);
 
-    if (baseTexture.hasLoaded) {
-        if (this.noFrame) {
+    if (baseTexture.hasLoaded)
+    {
+        if (this.noFrame)
+        {
             frame = new math.Rectangle(0, 0, baseTexture.width, baseTexture.height);
         }
         this.frame = frame;
     }
-    else {
+    else
+    {
         baseTexture.addEventListener('loaded', this.onBaseTextureLoaded.bind(this));
     }
 }
@@ -118,19 +124,23 @@ eventTarget.mixin(Texture.prototype);
 
 Object.defineProperties(Texture.prototype, {
     needsUpdate: {
-        get: function () {
+        get: function ()
+        {
             return this.baseTexture.needsUpdate;
         },
-        set: function (val) {
+        set: function (val)
+        {
             this.baseTexture.needsUpdate = val;
         }
     },
 
     frame: {
-        get: function () {
+        get: function ()
+        {
             return this._frame;
         },
-        set: function (frame) {
+        set: function (frame)
+        {
             this._frame = frame;
 
             this.noFrame = false;
@@ -143,20 +153,23 @@ Object.defineProperties(Texture.prototype, {
             this.crop.width = frame.width;
             this.crop.height = frame.height;
 
-            if (!this.trim && (frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height)) {
+            if (!this.trim && (frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height))
+            {
                 throw new Error('Texture Error: frame does not fit inside the base Texture dimensions ' + this);
             }
 
             this.valid = frame && frame.width && frame.height && this.baseTexture.source && this.baseTexture.hasLoaded;
 
-            if (this.trim) {
+            if (this.trim)
+            {
                 this.width = this.trim.width;
                 this.height = this.trim.height;
                 this._frame.width = this.trim.width;
                 this._frame.height = this.trim.height;
             }
 
-            if (this.valid) {
+            if (this.valid)
+            {
                 this._updateUvs();
             }
         }
@@ -168,11 +181,13 @@ Object.defineProperties(Texture.prototype, {
  *
  * @private
  */
-Texture.prototype.onBaseTextureLoaded = function () {
+Texture.prototype.onBaseTextureLoaded = function ()
+{
     var baseTexture = this.baseTexture;
     baseTexture.removeEventListener('loaded', this.onLoaded);
 
-    if (this.noFrame) {
+    if (this.noFrame)
+    {
         this.frame = new math.Rectangle(0, 0, baseTexture.width, baseTexture.height);
     }
 
@@ -184,8 +199,10 @@ Texture.prototype.onBaseTextureLoaded = function () {
  *
  * @param destroyBase {boolean} Whether to destroy the base texture as well
  */
-Texture.prototype.destroy = function (destroyBase) {
-    if (destroyBase) {
+Texture.prototype.destroy = function (destroyBase)
+{
+    if (destroyBase)
+    {
         this.baseTexture.destroy();
     }
 
@@ -197,8 +214,10 @@ Texture.prototype.destroy = function (destroyBase) {
  *
  * @private
  */
-Texture.prototype._updateUvs = function () {
-    if (!this._uvs) {
+Texture.prototype._updateUvs = function ()
+{
+    if (!this._uvs)
+    {
         this._uvs = new TextureUvs();
     }
 
@@ -229,10 +248,12 @@ Texture.prototype._updateUvs = function () {
  * @param scaleMode {number} See {{#crossLink "PIXI/scaleModes:property"}}scaleModes{{/crossLink}} for possible values
  * @return Texture
  */
-Texture.fromImage = function (imageUrl, crossorigin, scaleMode) {
+Texture.fromImage = function (imageUrl, crossorigin, scaleMode)
+{
     var texture = utils.TextureCache[imageUrl];
 
-    if (!texture) {
+    if (!texture)
+    {
         texture = new Texture(BaseTexture.fromImage(imageUrl, crossorigin, scaleMode));
         utils.TextureCache[imageUrl] = texture;
     }
@@ -248,9 +269,11 @@ Texture.fromImage = function (imageUrl, crossorigin, scaleMode) {
  * @param frameId {string} The frame id of the texture
  * @return Texture
  */
-Texture.fromFrame = function (frameId) {
+Texture.fromFrame = function (frameId)
+{
     var texture = utils.TextureCache[frameId];
-    if (!texture) {
+    if (!texture)
+    {
         throw new Error('The frameId "' + frameId + '" does not exist in the texture cache ');
     }
     return texture;
@@ -264,7 +287,8 @@ Texture.fromFrame = function (frameId) {
  * @param scaleMode {number} See {{#crossLink "PIXI/scaleModes:property"}}scaleModes{{/crossLink}} for possible values
  * @return {Texture}
  */
-Texture.fromCanvas = function (canvas, scaleMode) {
+Texture.fromCanvas = function (canvas, scaleMode)
+{
     return new Texture(BaseTexture.fromCanvas(canvas, scaleMode));
 };
 
@@ -276,7 +300,8 @@ Texture.fromCanvas = function (canvas, scaleMode) {
  * @param scaleMode {number} See {{#crossLink "PIXI/scaleModes:property"}}scaleModes{{/crossLink}} for possible values
  * @return {Texture} A Texture
  */
-Texture.fromVideo = function (video, scaleMode) {
+Texture.fromVideo = function (video, scaleMode)
+{
     return new Texture(VideoBaseTexture.baseTextureFromVideo(video, scaleMode));
 };
 
@@ -287,7 +312,8 @@ Texture.fromVideo = function (video, scaleMode) {
  * @param texture {Texture} The Texture to add to the cache.
  * @param id {string} The id that the texture will be stored against.
  */
-Texture.addTextureToCache = function (texture, id) {
+Texture.addTextureToCache = function (texture, id)
+{
     utils.TextureCache[id] = texture;
 };
 
@@ -298,7 +324,8 @@ Texture.addTextureToCache = function (texture, id) {
  * @param id {string} The id of the texture to be removed
  * @return {Texture} The texture that was removed
  */
-Texture.removeTextureFromCache = function (id) {
+Texture.removeTextureFromCache = function (id)
+{
     var texture = utils.TextureCache[id];
 
     delete utils.TextureCache[id];

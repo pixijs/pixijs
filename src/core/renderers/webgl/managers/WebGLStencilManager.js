@@ -6,7 +6,8 @@ var WebGLManager = require('./WebGLManager'),
  * @namespace PIXI
  * @param renderer {WebGLRenderer} The renderer this manager works for.
  */
-function WebGLStencilManager(renderer) {
+function WebGLStencilManager(renderer)
+{
     WebGLManager.call(this, renderer);
 
     this.stencilStack = [];
@@ -24,12 +25,14 @@ module.exports = WebGLStencilManager;
  * @param graphics {Graphics}
  * @param webGLData {any[]}
  */
-WebGLStencilManager.prototype.pushStencil = function (graphics, webGLData) {
+WebGLStencilManager.prototype.pushStencil = function (graphics, webGLData)
+{
     var gl = this.renderer.gl;
 
     this.bindGraphics(graphics, webGLData, this.renderer);
 
-    if (this.stencilStack.length === 0) {
+    if (this.stencilStack.length === 0)
+    {
         gl.enable(gl.STENCIL_TEST);
         gl.clear(gl.STENCIL_BUFFER_BIT);
         this.reverse = true;
@@ -47,14 +50,17 @@ WebGLStencilManager.prototype.pushStencil = function (graphics, webGLData) {
 
     // draw the triangle strip!
 
-    if (webGLData.mode === 1) {
+    if (webGLData.mode === 1)
+    {
         gl.drawElements(gl.TRIANGLE_FAN,  webGLData.indices.length - 4, gl.UNSIGNED_SHORT, 0 );
 
-        if (this.reverse) {
+        if (this.reverse)
+        {
             gl.stencilFunc(gl.EQUAL, 0xFF - level, 0xFF);
             gl.stencilOp(gl.KEEP,gl.KEEP,gl.DECR);
         }
-        else {
+        else
+        {
             gl.stencilFunc(gl.EQUAL,level, 0xFF);
             gl.stencilOp(gl.KEEP,gl.KEEP,gl.INCR);
         }
@@ -62,31 +68,38 @@ WebGLStencilManager.prototype.pushStencil = function (graphics, webGLData) {
         // draw a quad to increment..
         gl.drawElements(gl.TRIANGLE_FAN, 4, gl.UNSIGNED_SHORT, ( webGLData.indices.length - 4 ) * 2 );
 
-        if (this.reverse) {
+        if (this.reverse)
+        {
             gl.stencilFunc(gl.EQUAL,0xFF-(level+1), 0xFF);
         }
-        else {
+        else
+        {
             gl.stencilFunc(gl.EQUAL,level+1, 0xFF);
         }
 
         this.reverse = !this.reverse;
     }
-    else {
-        if (!this.reverse) {
+    else
+    {
+        if (!this.reverse)
+        {
             gl.stencilFunc(gl.EQUAL, 0xFF - level, 0xFF);
             gl.stencilOp(gl.KEEP,gl.KEEP,gl.DECR);
         }
-        else {
+        else
+        {
             gl.stencilFunc(gl.EQUAL,level, 0xFF);
             gl.stencilOp(gl.KEEP,gl.KEEP,gl.INCR);
         }
 
         gl.drawElements(gl.TRIANGLE_STRIP,  webGLData.indices.length, gl.UNSIGNED_SHORT, 0 );
 
-        if (!this.reverse) {
+        if (!this.reverse)
+        {
             gl.stencilFunc(gl.EQUAL,0xFF-(level+1), 0xFF);
         }
-        else {
+        else
+        {
             gl.stencilFunc(gl.EQUAL,level+1, 0xFF);
         }
     }
@@ -103,7 +116,8 @@ WebGLStencilManager.prototype.pushStencil = function (graphics, webGLData) {
  * @param graphics {Graphics}
  * @param webGLData {Array}
  */
-WebGLStencilManager.prototype.bindGraphics = function (graphics, webGLData) {
+WebGLStencilManager.prototype.bindGraphics = function (graphics, webGLData)
+{
     //if (this._currentGraphics === graphics)return;
     this._currentGraphics = graphics;
 
@@ -114,7 +128,8 @@ WebGLStencilManager.prototype.bindGraphics = function (graphics, webGLData) {
         offset = this.renderer.offset,
         shader;// = this.renderer.shaderManager.primitiveShader;
 
-    if (webGLData.mode === 1) {
+    if (webGLData.mode === 1)
+    {
         shader = this.renderer.shaderManager.complexPrimitiveShader;
 
         this.renderer.shaderManager.setShader(shader);
@@ -141,7 +156,8 @@ WebGLStencilManager.prototype.bindGraphics = function (graphics, webGLData) {
         // set the index buffer!
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, webGLData.indexBuffer);
     }
-    else {
+    else
+    {
         //this.renderer.shaderManager.activatePrimitiveShader();
         shader = this.renderer.shaderManager.primitiveShader;
         this.renderer.shaderManager.setShader( shader );
@@ -154,7 +170,7 @@ WebGLStencilManager.prototype.bindGraphics = function (graphics, webGLData) {
         gl.uniform2f(shader.uniforms.offsetVector._location, -offset.x, -offset.y);
 
         gl.uniform3fv(shader.uniforms.tint._location, utils.hex2rgb(graphics.tint));
-        
+
         gl.uniform1f(shader.uniforms.alpha._location, graphics.worldAlpha);
 
 
@@ -172,19 +188,22 @@ WebGLStencilManager.prototype.bindGraphics = function (graphics, webGLData) {
  * @param graphics {Graphics}
  * @param webGLData {Array}
  */
-WebGLStencilManager.prototype.popStencil = function (graphics, webGLData) {
+WebGLStencilManager.prototype.popStencil = function (graphics, webGLData)
+{
 	var gl = this.renderer.gl;
 
     this.stencilStack.pop();
 
     this.count--;
 
-    if (this.stencilStack.length === 0) {
+    if (this.stencilStack.length === 0)
+    {
         // the stack is empty!
         gl.disable(gl.STENCIL_TEST);
 
     }
-    else {
+    else
+    {
 
         var level = this.count;
 
@@ -192,14 +211,17 @@ WebGLStencilManager.prototype.popStencil = function (graphics, webGLData) {
 
         gl.colorMask(false, false, false, false);
 
-        if (webGLData.mode === 1) {
+        if (webGLData.mode === 1)
+        {
             this.reverse = !this.reverse;
 
-            if (this.reverse) {
+            if (this.reverse)
+            {
                 gl.stencilFunc(gl.EQUAL, 0xFF - (level+1), 0xFF);
                 gl.stencilOp(gl.KEEP,gl.KEEP,gl.INCR);
             }
-            else {
+            else
+            {
                 gl.stencilFunc(gl.EQUAL,level+1, 0xFF);
                 gl.stencilOp(gl.KEEP,gl.KEEP,gl.DECR);
             }
@@ -213,31 +235,38 @@ WebGLStencilManager.prototype.popStencil = function (graphics, webGLData) {
             // draw the triangle strip!
             gl.drawElements(gl.TRIANGLE_FAN,  webGLData.indices.length - 4, gl.UNSIGNED_SHORT, 0 );
 
-            if (!this.reverse) {
+            if (!this.reverse)
+            {
                 gl.stencilFunc(gl.EQUAL,0xFF-(level), 0xFF);
             }
-            else {
+            else
+            {
                 gl.stencilFunc(gl.EQUAL,level, 0xFF);
             }
 
         }
-        else {
+        else
+        {
           //  console.log("<<>>")
-            if (!this.reverse) {
+            if (!this.reverse)
+            {
                 gl.stencilFunc(gl.EQUAL, 0xFF - (level+1), 0xFF);
                 gl.stencilOp(gl.KEEP,gl.KEEP,gl.INCR);
             }
-            else {
+            else
+            {
                 gl.stencilFunc(gl.EQUAL,level+1, 0xFF);
                 gl.stencilOp(gl.KEEP,gl.KEEP,gl.DECR);
             }
 
             gl.drawElements(gl.TRIANGLE_STRIP,  webGLData.indices.length, gl.UNSIGNED_SHORT, 0 );
 
-            if (!this.reverse) {
+            if (!this.reverse)
+            {
                 gl.stencilFunc(gl.EQUAL,0xFF-(level), 0xFF);
             }
-            else {
+            else
+            {
                 gl.stencilFunc(gl.EQUAL,level, 0xFF);
             }
         }
@@ -253,7 +282,8 @@ WebGLStencilManager.prototype.popStencil = function (graphics, webGLData) {
  * Destroys the mask stack.
  *
  */
-WebGLStencilManager.prototype.destroy = function () {
+WebGLStencilManager.prototype.destroy = function ()
+{
     this.renderer = null;
     this.stencilStack = null;
 };

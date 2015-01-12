@@ -8,7 +8,8 @@ var core = require('../core');
  * @namespace PIXI
  * @param textures {Texture[]} an array of {Texture} objects that make up the animation
  */
-function MovieClip(textures) {
+function MovieClip(textures)
+{
     core.Sprite.call(this, textures[0]);
 
     /**
@@ -75,7 +76,8 @@ Object.defineProperties(MovieClip.prototype, {
      * @readonly
      */
     totalFrames: {
-        get: function() {
+        get: function()
+        {
             return this.textures.length;
         }
     }
@@ -85,7 +87,8 @@ Object.defineProperties(MovieClip.prototype, {
  * Stops the MovieClip
  *
  */
-MovieClip.prototype.stop = function () {
+MovieClip.prototype.stop = function ()
+{
     this.playing = false;
 };
 
@@ -93,7 +96,8 @@ MovieClip.prototype.stop = function () {
  * Plays the MovieClip
  *
  */
-MovieClip.prototype.play = function () {
+MovieClip.prototype.play = function ()
+{
     this.playing = true;
 };
 
@@ -102,7 +106,8 @@ MovieClip.prototype.play = function () {
  *
  * @param frameNumber {number} frame index to stop at
  */
-MovieClip.prototype.gotoAndStop = function (frameNumber) {
+MovieClip.prototype.gotoAndStop = function (frameNumber)
+{
     this.playing = false;
     this.currentFrame = frameNumber;
 
@@ -115,7 +120,8 @@ MovieClip.prototype.gotoAndStop = function (frameNumber) {
  *
  * @param frameNumber {number} frame index to start at
  */
-MovieClip.prototype.gotoAndPlay = function (frameNumber) {
+MovieClip.prototype.gotoAndPlay = function (frameNumber)
+{
     this.currentFrame = frameNumber;
     this.playing = true;
 };
@@ -125,10 +131,12 @@ MovieClip.prototype.gotoAndPlay = function (frameNumber) {
  *
  * @private
  */
-MovieClip.prototype.updateTransform = function () {
+MovieClip.prototype.updateTransform = function ()
+{
     this.displayObjectContainerUpdateTransform();
 
-    if (!this.playing) {
+    if (!this.playing)
+    {
         return;
     }
 
@@ -136,26 +144,33 @@ MovieClip.prototype.updateTransform = function () {
 
     var round = Math.round(this.currentFrame);
 
-    if (round < 0) {
-        if (this.loop) {
+    if (round < 0)
+    {
+        if (this.loop)
+        {
             this.currentFrame += this.textures.length;
             this.texture = this.textures[this.currentFrame];
         }
-        else {
+        else
+        {
             this.gotoAndStop(0);
 
-            if (this.onComplete) {
+            if (this.onComplete)
+            {
                 this.onComplete();
             }
         }
     }
-    else if (this.loop || round < this.textures.length) {
+    else if (this.loop || round < this.textures.length)
+    {
         this.texture = this.textures[round % this.textures.length];
     }
-    else if (round >= this.textures.length) {
+    else if (round >= this.textures.length)
+    {
         this.gotoAndStop(this.textures.length - 1);
 
-        if (this.onComplete) {
+        if (this.onComplete)
+        {
             this.onComplete();
         }
     }
@@ -167,10 +182,12 @@ MovieClip.prototype.updateTransform = function () {
  * @static
  * @param frames {string[]} the array of frames ids the movieclip will use as its texture frames
  */
-MovieClip.fromFrames = function (frames) {
+MovieClip.fromFrames = function (frames)
+{
     var textures = [];
 
-    for (var i = 0; i < frames.length; ++i) {
+    for (var i = 0; i < frames.length; ++i)
+    {
         textures.push(new core.Texture.fromFrame(frames[i]));
     }
 
@@ -183,10 +200,12 @@ MovieClip.fromFrames = function (frames) {
  * @static
  * @param images {string[]} the array of image urls the movieclip will use as its texture frames
  */
-MovieClip.fromImages = function (images) {
+MovieClip.fromImages = function (images)
+{
     var textures = [];
 
-    for (var i = 0; i < images.length; ++i) {
+    for (var i = 0; i < images.length; ++i)
+    {
         textures.push(new core.Texture.fromImage(images[i]));
     }
 

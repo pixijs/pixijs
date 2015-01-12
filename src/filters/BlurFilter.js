@@ -10,7 +10,8 @@ var AbstractFilter = require('./AbstractFilter'),
  * @extends AbstractFilter
  * @namespace PIXI
  */
-function BlurFilter() {
+function BlurFilter()
+{
     AbstractFilter.call(this);
 
     this.blurXFilter = new BlurXFilter();
@@ -32,10 +33,12 @@ Object.defineProperties(BlurFilter.prototype, {
      * @default 2
      */
     blur: {
-        get: function () {
+        get: function ()
+        {
             return this.blurXFilter.blur;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.blurXFilter.blur = this.blurYFilter.blur = value;
         }
     },
@@ -48,10 +51,12 @@ Object.defineProperties(BlurFilter.prototype, {
      * @default 2
      */
     blurX: {
-        get: function () {
+        get: function ()
+        {
             return this.blurXFilter.blur;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.blurXFilter.blur = value;
         }
     },
@@ -64,10 +69,12 @@ Object.defineProperties(BlurFilter.prototype, {
      * @default 2
      */
     blurY: {
-        get: function () {
+        get: function ()
+        {
             return this.blurYFilter.blur;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.blurYFilter.blur = value;
         }
     }

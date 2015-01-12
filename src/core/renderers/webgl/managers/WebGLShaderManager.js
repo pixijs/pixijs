@@ -10,7 +10,8 @@ var WebGLManager = require('./WebGLManager'),
  * @namespace PIXI
  * @param renderer {WebGLRenderer} The renderer this manager works for.
  */
-function WebGLShaderManager(renderer) {
+function WebGLShaderManager(renderer)
+{
     WebGLManager.call(this, renderer);
 
     /**
@@ -28,7 +29,8 @@ function WebGLShaderManager(renderer) {
      */
     this.tempAttribState = [];
 
-    for (var i = 0; i < this.maxAttibs; i++) {
+    for (var i = 0; i < this.maxAttibs; i++)
+    {
         this.attribState[i] = false;
     }
 
@@ -66,7 +68,8 @@ function WebGLShaderManager(renderer) {
 
     // listen for context and update necessary shaders
     var self = this;
-    this.renderer.on('context', function (event) {
+    this.renderer.on('context', function (event)
+    {
         var gl = event.data;
 
         // this shader is used for rendering primitives
@@ -97,29 +100,36 @@ module.exports = WebGLShaderManager;
  *
  * @param attribs {Array} attribs
  */
-WebGLShaderManager.prototype.setAttribs = function (attribs) {
+WebGLShaderManager.prototype.setAttribs = function (attribs)
+{
     // reset temp state
     var i;
 
-    for (i = 0; i < this.tempAttribState.length; i++) {
+    for (i = 0; i < this.tempAttribState.length; i++)
+    {
         this.tempAttribState[i] = false;
     }
 
     // set the new attribs
-    for (var a in attribs) {
+    for (var a in attribs)
+    {
         this.tempAttribState[attribs[a]] = true;
     }
 
     var gl = this.renderer.gl;
 
-    for (i = 0; i < this.attribState.length; i++) {
-        if (this.attribState[i] !== this.tempAttribState[i]) {
+    for (i = 0; i < this.attribState.length; i++)
+    {
+        if (this.attribState[i] !== this.tempAttribState[i])
+        {
             this.attribState[i] = this.tempAttribState[i];
 
-            if (this.attribState[i]) {
+            if (this.attribState[i])
+            {
                 gl.enableVertexAttribArray(i);
             }
-            else {
+            else
+            {
                 gl.disableVertexAttribArray(i);
             }
         }
@@ -131,8 +141,10 @@ WebGLShaderManager.prototype.setAttribs = function (attribs) {
  *
  * @param shader {Any}
  */
-WebGLShaderManager.prototype.setShader = function (shader) {
-    if (this._currentId === shader.uuid) {
+WebGLShaderManager.prototype.setShader = function (shader)
+{
+    if (this._currentId === shader.uuid)
+    {
         return false;
     }
 
@@ -150,7 +162,8 @@ WebGLShaderManager.prototype.setShader = function (shader) {
  * Destroys this object.
  *
  */
-WebGLShaderManager.prototype.destroy = function () {
+WebGLShaderManager.prototype.destroy = function ()
+{
     this.attribState = null;
 
     this.tempAttribState = null;

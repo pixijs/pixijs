@@ -7,7 +7,8 @@ var AbstractFilter = require('./AbstractFilter');
  * @extends AbstractFilter
  * @namespace PIXI
  */
-function SepiaFilter() {
+function SepiaFilter()
+{
     AbstractFilter.call(this);
 
     // set the uniforms
@@ -26,7 +27,8 @@ function SepiaFilter() {
 
         'const mat3 sepiaMatrix = mat3(0.3588, 0.7044, 0.1368, 0.2990, 0.5870, 0.1140, 0.2392, 0.4696, 0.0912);',
 
-        'void main(void) {',
+        'void main(void)
+        {',
         '   gl_FragColor = texture2D(uSampler, vTextureCoord);',
         '   gl_FragColor.rgb = mix( gl_FragColor.rgb, gl_FragColor.rgb * sepiaMatrix, sepia);',
         '}'
@@ -45,10 +47,12 @@ Object.defineProperties(SepiaFilter.prototype, {
      * @memberof SepiaFilter#
      */
     sepia: {
-        get: function () {
+        get: function ()
+        {
             return this.uniforms.sepia.value;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.uniforms.sepia.value = value;
         }
     }

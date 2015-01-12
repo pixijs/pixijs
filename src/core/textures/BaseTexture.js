@@ -10,7 +10,8 @@ var utils = require('../utils'),
  * @param source {Image|Canvas} the source object of the texture.
  * @param [scaleMode=scaleModes.DEFAULT] {number} See {@link scaleModes} for possible values
  */
-function BaseTexture(source, scaleMode) {
+function BaseTexture(source, scaleMode)
+{
     this.uuid = utils.uuid();
 
     /**
@@ -123,7 +124,8 @@ function BaseTexture(source, scaleMode) {
     this._needsUpdate = false;
 
     // if no source passed don't try to load
-    if (source) {
+    if (source)
+    {
         this.loadSource(source);
     }
 
@@ -149,13 +151,16 @@ utils.eventTarget.mixin(BaseTexture.prototype);
 
 Object.defineProperties(BaseTexture.prototype, {
     needsUpdate: {
-        get: function () {
+        get: function ()
+        {
             return this._needsUpdate;
         },
-        set: function (val) {
+        set: function (val)
+        {
             this._needsUpdate = val;
 
-            if (val) {
+            if (val)
+            {
                 this.emit('update', this);
             }
         }
@@ -171,9 +176,11 @@ Object.defineProperties(BaseTexture.prototype, {
  *
  * The logic state after calling `loadSource` directly or indirectly (eg. `fromImage`, `new BaseTexture`) is:
  *
- *     if (texture.hasLoaded) {
+ *     if (texture.hasLoaded)
+ {
  *        // texture ready for use
- *     } else if (texture.isLoading) {
+ *     } else if (texture.isLoading)
+ {
  *        // listen to 'loaded' and/or 'error' events on texture
  *     } else {
  *        // not loading, not going to load UNLESS the source is reloaded
@@ -183,12 +190,14 @@ Object.defineProperties(BaseTexture.prototype, {
  * @protected
  * @param source {Image|Canvas} the source object of the texture.
  */
-BaseTexture.prototype.loadSource = function (source) {
+BaseTexture.prototype.loadSource = function (source)
+{
     var wasLoading = this.isLoading;
     this.hasLoaded = false;
     this.isLoading = false;
 
-    if (wasLoading && this.source) {
+    if (wasLoading && this.source)
+    {
         this.source.onload = null;
         this.source.onerror = null;
     }
@@ -196,20 +205,24 @@ BaseTexture.prototype.loadSource = function (source) {
     this.source = source;
 
     // Apply source if loaded. Otherwise setup appropriate loading monitors.
-    if ((this.source.complete || this.source.getContext) && this.source.width && this.source.height) {
+    if ((this.source.complete || this.source.getContext) && this.source.width && this.source.height)
+    {
         this._sourceLoaded();
     }
-    else  if(!source.getContext) {
+    else  if(!source.getContext)
+    {
         // Image fail / not ready
         this.isLoading = true;
 
         var scope = this;
 
-        source.onload = function () {
+        source.onload = function ()
+        {
             source.onload = null;
             source.onerror = null;
 
-            if(!scope.isLoading) {
+            if(!scope.isLoading)
+            {
                 return;
             }
 
@@ -219,11 +232,13 @@ BaseTexture.prototype.loadSource = function (source) {
             scope.emit('loaded', scope);
         };
 
-        source.onerror = function () {
+        source.onerror = function ()
+        {
             source.onload = null;
             source.onerror = null;
 
-            if(!scope.isLoading) {
+            if(!scope.isLoading)
+            {
                 return;
             }
 
@@ -234,24 +249,29 @@ BaseTexture.prototype.loadSource = function (source) {
         // Per http://www.w3.org/TR/html5/embedded-content-0.html#the-img-element
         //   "The value of `complete` can thus change while a script is executing."
         // So complete needs to be re-checked after the callbacks have been added..
-        if (source.complete) {
+        if (source.complete)
+        {
             this.isLoading = false;
 
             // ..and if we're complete now, no need for callbacks
             source.onload = null;
             source.onerror = null;
 
-            if (source.width && source.height) {
+            if (source.width && source.height)
+            {
                 this._sourceLoaded();
 
                 // If any previous subscribers possible
-                if (wasLoading) {
+                if (wasLoading)
+                {
                     this.emit('loaded', this);
                 }
             }
-            else {
+            else
+            {
                 // If any previous subscribers possible
-                if (wasLoading) {
+                if (wasLoading)
+                {
                     this.emit('error', this);
                 }
             }
@@ -265,7 +285,8 @@ BaseTexture.prototype.loadSource = function (source) {
  *
  * @private
  */
-BaseTexture.prototype._sourceLoaded = function () {
+BaseTexture.prototype._sourceLoaded = function ()
+{
     this.hasLoaded = true;
 
     this.width = this.source.naturalWidth || this.source.width;
@@ -278,16 +299,20 @@ BaseTexture.prototype._sourceLoaded = function () {
  * Destroys this base texture
  *
  */
-BaseTexture.prototype.destroy = function () {
-    if (this.imageUrl) {
+BaseTexture.prototype.destroy = function ()
+{
+    if (this.imageUrl)
+    {
         delete utils.BaseTextureCache[this.imageUrl];
         delete utils.TextureCache[this.imageUrl];
         this.imageUrl = null;
-        if (!navigator.isCocoonJS) {
+        if (!navigator.isCocoonJS)
+        {
             this.source.src = '';
         }
     }
-    else if (this.source && this.source._pixiId) {
+    else if (this.source && this.source._pixiId)
+    {
         delete utils.BaseTextureCache[this.source._pixiId];
     }
     this.source = null;
@@ -301,7 +326,8 @@ BaseTexture.prototype.destroy = function () {
  * memory again.
  *
  */
-BaseTexture.prototype.dispose = function () {
+BaseTexture.prototype.dispose = function ()
+{
     this.emit('dispose', this);
 };
 
@@ -311,7 +337,8 @@ BaseTexture.prototype.dispose = function () {
  *
  * @param newSrc {string} the path of the image
  */
-BaseTexture.prototype.updateSourceImage = function (newSrc) {
+BaseTexture.prototype.updateSourceImage = function (newSrc)
+{
     this.source.src = newSrc;
     this.loadSource(this.source);
 };
@@ -326,18 +353,22 @@ BaseTexture.prototype.updateSourceImage = function (newSrc) {
  * @param [scaleMode=scaleModes.DEFAULT] {number} See {@link scaleModes} for possible values
  * @return BaseTexture
  */
-BaseTexture.fromImage = function (imageUrl, crossorigin, scaleMode) {
+BaseTexture.fromImage = function (imageUrl, crossorigin, scaleMode)
+{
     var baseTexture = utils.BaseTextureCache[imageUrl];
 
-    if (crossorigin === undefined && imageUrl.indexOf('data:') !== 0) {
+    if (crossorigin === undefined && imageUrl.indexOf('data:') !== 0)
+    {
         crossorigin = true;
     }
 
-    if (!baseTexture) {
+    if (!baseTexture)
+    {
         // new Image() breaks tex loading in some versions of Chrome.
         // See https://code.google.com/p/chromium/issues/detail?id=238071
         var image = new Image();//document.createElement('img');
-        if (crossorigin) {
+        if (crossorigin)
+        {
             image.crossOrigin = '';
         }
 
@@ -347,7 +378,8 @@ BaseTexture.fromImage = function (imageUrl, crossorigin, scaleMode) {
         utils.BaseTextureCache[imageUrl] = baseTexture;
 
         // if there is an @2x at the end of the url we are going to assume its a highres image
-        if ( imageUrl.indexOf(CONST.RETINA_PREFIX + '.') !== -1) {
+        if ( imageUrl.indexOf(CONST.RETINA_PREFIX + '.') !== -1)
+        {
             baseTexture.resolution = 2;
         }
     }
@@ -363,14 +395,17 @@ BaseTexture.fromImage = function (imageUrl, crossorigin, scaleMode) {
  * @param scaleMode {number} See {{#crossLink "PIXI/scaleModes:property"}}scaleModes{{/crossLink}} for possible values
  * @return BaseTexture
  */
-BaseTexture.fromCanvas = function (canvas, scaleMode) {
-    if (!canvas._pixiId) {
+BaseTexture.fromCanvas = function (canvas, scaleMode)
+{
+    if (!canvas._pixiId)
+    {
         canvas._pixiId = 'canvas_' + utils.uuid();
     }
 
     var baseTexture = utils.BaseTextureCache[canvas._pixiId];
 
-    if (!baseTexture) {
+    if (!baseTexture)
+    {
         baseTexture = new BaseTexture(canvas, scaleMode);
         utils.BaseTextureCache[canvas._pixiId] = baseTexture;
     }

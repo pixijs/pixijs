@@ -47,7 +47,8 @@ var PolyK = module.exports = {};
  * Triangulates shapes for webGL graphic fills.
  *
  */
-PolyK.Triangulate = function (p) {
+PolyK.Triangulate = function (p)
+{
     var sign = true;
 
     var n = p.length >> 1;
@@ -59,7 +60,8 @@ PolyK.Triangulate = function (p) {
 
     i = 0;
     var al = n;
-    while(al > 3) {
+    while(al > 3)
+    {
         var i0 = avl[(i+0)%al];
         var i1 = avl[(i+1)%al];
         var i2 = avl[(i+2)%al];
@@ -69,29 +71,35 @@ PolyK.Triangulate = function (p) {
         var cx = p[2*i2],  cy = p[2*i2+1];
 
         var earFound = false;
-        if (PolyK._convex(ax, ay, bx, by, cx, cy, sign)) {
+        if (PolyK._convex(ax, ay, bx, by, cx, cy, sign))
+        {
             earFound = true;
-            for (var j = 0; j < al; j++) {
+            for (var j = 0; j < al; j++)
+            {
                 var vi = avl[j];
                 if (vi === i0 || vi === i1 || vi === i2) continue;
 
-                if (PolyK._PointInTriangle(p[2*vi], p[2*vi+1], ax, ay, bx, by, cx, cy)) {
+                if (PolyK._PointInTriangle(p[2*vi], p[2*vi+1], ax, ay, bx, by, cx, cy))
+                {
                     earFound = false;
                     break;
                 }
             }
         }
 
-        if (earFound) {
+        if (earFound)
+        {
             tgs.push(i0, i1, i2);
             avl.splice((i+1)%al, 1);
             al--;
             i = 0;
         }
-        else if (i++ > 3*al) {
+        else if (i++ > 3*al)
+        {
             // need to flip flip reverse it!
             // reset!
-            if (sign) {
+            if (sign)
+            {
                 tgs = [];
                 avl = [];
                 for (i = 0; i < n; i++) avl.push(i);
@@ -101,7 +109,8 @@ PolyK.Triangulate = function (p) {
 
                 sign = false;
             }
-            else {
+            else
+            {
              //   window.console.log("PIXI Warning: shape too complex to fill");
                 return null;
             }
@@ -126,7 +135,8 @@ PolyK.Triangulate = function (p) {
  * @private
  * @return {boolean}
  */
-PolyK._PointInTriangle = function (px, py, ax, ay, bx, by, cx, cy) {
+PolyK._PointInTriangle = function (px, py, ax, ay, bx, by, cx, cy)
+{
     var v0x = cx-ax;
     var v0y = cy-ay;
     var v1x = bx-ax;
@@ -154,6 +164,7 @@ PolyK._PointInTriangle = function (px, py, ax, ay, bx, by, cx, cy) {
  * @private
  * @return {boolean}
  */
-PolyK._convex = function (ax, ay, bx, by, cx, cy, sign) {
+PolyK._convex = function (ax, ay, bx, by, cx, cy, sign)
+{
     return ((ay-by)*(cx-bx) + (bx-ax)*(cy-by) >= 0) === sign;
 };

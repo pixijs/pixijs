@@ -10,7 +10,8 @@ var core = require('../core');
  * @param width {number}  the width of the tiling sprite
  * @param height {number} the height of the tiling sprite
  */
-function TilingSprite(texture, width, height) {
+function TilingSprite(texture, width, height)
+{
     core.Sprite.call( this, texture);
 
     /**
@@ -86,10 +87,12 @@ Object.defineProperties(TilingSprite.prototype, {
      * @memberof TilingSprite#
      */
     width: {
-        get: function () {
+        get: function ()
+        {
             return this._width;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this._width = value;
         }
     },
@@ -101,20 +104,25 @@ Object.defineProperties(TilingSprite.prototype, {
      * @memberof TilingSprite#
      */
     height: {
-        get: function () {
+        get: function ()
+        {
             return this._height;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this._height = value;
         }
     },
 
     texture: {
-        get: function () {
+        get: function ()
+        {
             return this._texture;
         },
-        set: function (value) {
-            if (this._texture === value) {
+        set: function (value)
+        {
+            if (this._texture === value)
+            {
                 return;
             }
 
@@ -130,51 +138,61 @@ Object.defineProperties(TilingSprite.prototype, {
  *
  * @param renderer {WebGLRenderer}
  */
-TilingSprite.prototype.renderWebGL = function (renderer) {
-    if (!this.visible || this.alpha <= 0) {
+TilingSprite.prototype.renderWebGL = function (renderer)
+{
+    if (!this.visible || this.alpha <= 0)
+    {
         return;
     }
 
     var i, j;
 
-    if (this._mask) {
+    if (this._mask)
+    {
         renderer.spriteBatch.stop();
         renderer.maskManager.pushMask(this.mask, renderer);
         renderer.spriteBatch.start();
     }
 
-    if (this._filters) {
+    if (this._filters)
+    {
         renderer.spriteBatch.flush();
         renderer.filterManager.pushFilter(this._filterBlock);
     }
 
 
 
-    if (!this.tilingTexture || this.refreshTexture) {
+    if (!this.tilingTexture || this.refreshTexture)
+    {
         this.generateTilingTexture(true);
 
-        if (this.tilingTexture && this.tilingTexture.needsUpdate) {
+        if (this.tilingTexture && this.tilingTexture.needsUpdate)
+        {
             //TODO - tweaking
             renderer.updateTexture(this.tilingTexture.baseTexture);
             this.tilingTexture.needsUpdate = false;
            // this.tilingTexture._uvs = null;
         }
     }
-    else {
+    else
+    {
         renderer.spriteBatch.renderTilingSprite(this);
     }
     // simple render children!
-    for (i=0,j=this.children.length; i<j; i++) {
+    for (i=0,j=this.children.length; i<j; i++)
+    {
         this.children[i].renderWebGL(renderer);
     }
 
     renderer.spriteBatch.stop();
 
-    if (this._filters) {
+    if (this._filters)
+    {
         renderer.filterManager.popFilter();
     }
 
-    if (this._mask) {
+    if (this._mask)
+    {
         renderer.maskManager.popMask(this._mask, renderer);
     }
 
@@ -186,14 +204,17 @@ TilingSprite.prototype.renderWebGL = function (renderer) {
  *
  * @param renderer {CanvasRenderer}
  */
-TilingSprite.prototype.renderCanvas = function (renderer) {
-    if (!this.visible || this.alpha <= 0) {
+TilingSprite.prototype.renderCanvas = function (renderer)
+{
+    if (!this.visible || this.alpha <= 0)
+    {
         return;
     }
 
     var context = renderer.context;
 
-    if (this._mask) {
+    if (this._mask)
+    {
         renderer.maskManager.pushMask(this._mask, context);
     }
 
@@ -212,19 +233,23 @@ TilingSprite.prototype.renderCanvas = function (renderer) {
                          transform.tx * resolution,
                          transform.ty * resolution);
 
-    if (!this.__tilePattern ||  this.refreshTexture) {
+    if (!this.__tilePattern ||  this.refreshTexture)
+    {
         this.generateTilingTexture(false);
 
-        if (this.tilingTexture) {
+        if (this.tilingTexture)
+        {
             this.__tilePattern = context.createPattern(this.tilingTexture.baseTexture.source, 'repeat');
         }
-        else {
+        else
+        {
             return;
         }
     }
 
     // check blend mode
-    if (this.blendMode !== renderer.currentBlendMode) {
+    if (this.blendMode !== renderer.currentBlendMode)
+    {
         renderer.currentBlendMode = this.blendMode;
         context.globalCompositeOperation = renderer.blendModes[renderer.currentBlendMode];
     }
@@ -249,11 +274,13 @@ TilingSprite.prototype.renderCanvas = function (renderer) {
     context.translate(-tilePosition.x + (this.anchor.x * this._width), -tilePosition.y + (this.anchor.y * this._height));
     context.scale(1 / tileScale.x, 1 / tileScale.y);
 
-    if (this._mask) {
+    if (this._mask)
+    {
         renderer.maskManager.popMask(renderer.context);
     }
 
-    for (i = 0, j = this.children.length; i < j; ++i) {
+    for (i = 0, j = this.children.length; i < j; ++i)
+    {
         this.children[i].renderCanvas(renderer);
     }
 };
@@ -264,7 +291,8 @@ TilingSprite.prototype.renderCanvas = function (renderer) {
 *
  * @return {Rectangle} the framing rectangle
  */
-TilingSprite.prototype.getBounds = function () {
+TilingSprite.prototype.getBounds = function ()
+{
     var width = this._width;
     var height = this._height;
 
@@ -340,7 +368,8 @@ TilingSprite.prototype.getBounds = function () {
  * @param event
  * @private
  */
-TilingSprite.prototype.onTextureUpdate = function () {
+TilingSprite.prototype.onTextureUpdate = function ()
+{
    // overriding the sprite version of this!
 };
 
@@ -348,8 +377,10 @@ TilingSprite.prototype.onTextureUpdate = function () {
  *
  * @param forcePowerOfTwo {boolean} Whether we want to force the texture to be a power of two
  */
-TilingSprite.prototype.generateTilingTexture = function (forcePowerOfTwo) {
-    if (!this.texture.baseTexture.hasLoaded) {
+TilingSprite.prototype.generateTilingTexture = function (forcePowerOfTwo)
+{
+    if (!this.texture.baseTexture.hasLoaded)
+    {
         return;
     }
 
@@ -362,35 +393,42 @@ TilingSprite.prototype.generateTilingTexture = function (forcePowerOfTwo) {
 
     var newTextureRequired = false;
 
-    if (!forcePowerOfTwo) {
-        if (isFrame) {
+    if (!forcePowerOfTwo)
+    {
+        if (isFrame)
+        {
             targetWidth = frame.width;
             targetHeight = frame.height;
 
             newTextureRequired = true;
         }
     }
-    else {
+    else
+    {
         targetWidth = core.utils.getNextPowerOfTwo(frame.width);
         targetHeight = core.utils.getNextPowerOfTwo(frame.height);
 
         //  If the BaseTexture dimensions don't match the texture frame then we need a new texture anyway because it's part of a texture atlas
-        if (frame.width !== targetWidth || frame.height !== targetHeight || texture.baseTexture.width !== targetWidth || texture.baseTexture.height || targetHeight) {
+        if (frame.width !== targetWidth || frame.height !== targetHeight || texture.baseTexture.width !== targetWidth || texture.baseTexture.height || targetHeight)
+        {
             newTextureRequired = true;
         }
     }
 
-    if (newTextureRequired) {
+    if (newTextureRequired)
+    {
         var canvasBuffer;
 
-        if (this.tilingTexture && this.tilingTexture.isTiling) {
+        if (this.tilingTexture && this.tilingTexture.isTiling)
+        {
             canvasBuffer = this.tilingTexture.canvasBuffer;
             canvasBuffer.resize(targetWidth, targetHeight);
             this.tilingTexture.baseTexture.width = targetWidth;
             this.tilingTexture.baseTexture.height = targetHeight;
             this.tilingTexture.needsUpdate = true;
         }
-        else {
+        else
+        {
             canvasBuffer = new core.CanvasBuffer(targetWidth, targetHeight);
 
             this.tilingTexture = core.Texture.fromCanvas(canvasBuffer.canvas);
@@ -411,9 +449,11 @@ TilingSprite.prototype.generateTilingTexture = function (forcePowerOfTwo) {
         this.tileScaleOffset.x = frame.width / targetWidth;
         this.tileScaleOffset.y = frame.height / targetHeight;
     }
-    else {
+    else
+    {
         //  TODO - switching?
-        if (this.tilingTexture && this.tilingTexture.isTiling) {
+        if (this.tilingTexture && this.tilingTexture.isTiling)
+        {
             // destroy the tiling texture!
             // TODO could store this somewhere?
             this.tilingTexture.destroy(true);

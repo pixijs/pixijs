@@ -12,7 +12,8 @@ var AbstractFilter = require('./AbstractFilter');
  * @extends AbstractFilter
  * @namespace PIXI
  */
-function AsciiFilter() {
+function AsciiFilter()
+{
     AbstractFilter.call(this);
 
     // set the uniforms
@@ -78,10 +79,12 @@ Object.defineProperties(AsciiFilter.prototype, {
      * @memberof AsciiFilter#
      */
     size: {
-        get: function () {
+        get: function ()
+        {
             return this.uniforms.pixelSize.value;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.uniforms.pixelSize.value = value;
         }
     }

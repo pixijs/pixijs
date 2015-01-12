@@ -10,7 +10,8 @@ var Rectangle = require('./Rectangle'),
  * @param y {number} The Y coordinate of the center of this circle
  * @param radius {number} The radius of the circle
  */
-function Circle(x, y, radius) {
+function Circle(x, y, radius)
+{
     /**
      * @member {number}
      * @default 0
@@ -46,7 +47,8 @@ module.exports = Circle;
  * @method clone
  * @return {Circle} a copy of the Circle
  */
-Circle.prototype.clone = function () {
+Circle.prototype.clone = function ()
+{
     return new Circle(this.x, this.y, this.radius);
 };
 
@@ -58,8 +60,10 @@ Circle.prototype.clone = function () {
  * @param y {number} The Y coordinate of the point to test
  * @return {boolean} Whether the x/y coordinates are within this Circle
  */
-Circle.prototype.contains = function (x, y) {
-    if (this.radius <= 0) {
+Circle.prototype.contains = function (x, y)
+{
+    if (this.radius <= 0)
+    {
         return false;
     }
 
@@ -79,6 +83,7 @@ Circle.prototype.contains = function (x, y) {
 * @method getBounds
 * @return {Rectangle} the framing rectangle
 */
-Circle.prototype.getBounds = function () {
+Circle.prototype.getBounds = function ()
+{
     return new Rectangle(this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2);
 };

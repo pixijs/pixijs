@@ -12,7 +12,8 @@ var math = require('../math'),
  * @extends DisplayObject
  * @namespace PIXI
  */
-function DisplayObjectContainer() {
+function DisplayObjectContainer()
+{
     DisplayObject.call(this);
 
     /**
@@ -47,17 +48,21 @@ Object.defineProperties(DisplayObjectContainer.prototype, {
      * @memberof DisplayObjectContainer#
      */
     width: {
-        get: function () {
+        get: function ()
+        {
             return this.scale.x * this.getLocalBounds().width;
         },
-        set: function (value) {
+        set: function (value)
+        {
 
             var width = this.getLocalBounds().width;
 
-            if(width !== 0) {
+            if(width !== 0)
+            {
                 this.scale.x = value / width;
             }
-            else {
+            else
+            {
                 this.scale.x = 1;
             }
 
@@ -73,17 +78,21 @@ Object.defineProperties(DisplayObjectContainer.prototype, {
      * @memberof DisplayObjectContainer#
      */
     height: {
-        get: function () {
+        get: function ()
+        {
             return  this.scale.y * this.getLocalBounds().height;
         },
-        set: function (value) {
+        set: function (value)
+        {
 
             var height = this.getLocalBounds().height;
 
-            if (height !== 0) {
+            if (height !== 0)
+            {
                 this.scale.y = value / height ;
             }
-            else {
+            else
+            {
                 this.scale.y = 1;
             }
 
@@ -100,18 +109,23 @@ Object.defineProperties(DisplayObjectContainer.prototype, {
      * @memberof DisplayObject#
      */
     cacheAsBitmap: {
-        get: function () {
+        get: function ()
+        {
             return this._cacheAsBitmap;
         },
-        set: function (value) {
-            if (this._cacheAsBitmap === value) {
+        set: function (value)
+        {
+            if (this._cacheAsBitmap === value)
+            {
                 return;
             }
 
-            if (value) {
+            if (value)
+            {
                 this._generateCachedSprite();
             }
-            else {
+            else
+            {
                 this._destroyCachedSprite();
             }
 
@@ -126,7 +140,8 @@ Object.defineProperties(DisplayObjectContainer.prototype, {
  * @param child {DisplayObject} The DisplayObject to add to the container
  * @return {DisplayObject} The child that was added.
  */
-DisplayObjectContainer.prototype.addChild = function (child) {
+DisplayObjectContainer.prototype.addChild = function (child)
+{
     return this.addChildAt(child, this.children.length);
 };
 
@@ -137,14 +152,18 @@ DisplayObjectContainer.prototype.addChild = function (child) {
  * @param index {Number} The index to place the child in
  * @return {DisplayObject} The child that was added.
  */
-DisplayObjectContainer.prototype.addChildAt = function (child, index) {
+DisplayObjectContainer.prototype.addChildAt = function (child, index)
+{
     // prevent adding self as child
-    if (child === this) {
+    if (child === this)
+    {
         return;
     }
 
-    if (index >= 0 && index <= this.children.length) {
-        if (child.parent) {
+    if (index >= 0 && index <= this.children.length)
+    {
+        if (child.parent)
+        {
             child.parent.removeChild(child);
         }
 
@@ -154,7 +173,8 @@ DisplayObjectContainer.prototype.addChildAt = function (child, index) {
 
         return child;
     }
-    else {
+    else
+    {
         throw new Error(child + 'addChildAt: The index '+ index +' supplied is out of bounds ' + this.children.length);
     }
 };
@@ -165,15 +185,18 @@ DisplayObjectContainer.prototype.addChildAt = function (child, index) {
  * @param child {DisplayObject}
  * @param child2 {DisplayObject}
  */
-DisplayObjectContainer.prototype.swapChildren = function (child, child2) {
-    if (child === child2) {
+DisplayObjectContainer.prototype.swapChildren = function (child, child2)
+{
+    if (child === child2)
+    {
         return;
     }
 
     var index1 = this.getChildIndex(child);
     var index2 = this.getChildIndex(child2);
 
-    if (index1 < 0 || index2 < 0) {
+    if (index1 < 0 || index2 < 0)
+    {
         throw new Error('swapChildren: Both the supplied DisplayObjects must be a child of the caller.');
     }
 
@@ -187,10 +210,12 @@ DisplayObjectContainer.prototype.swapChildren = function (child, child2) {
  * @param child {DisplayObject} The DisplayObject instance to identify
  * @return {Number} The index position of the child display object to identify
  */
-DisplayObjectContainer.prototype.getChildIndex = function (child) {
+DisplayObjectContainer.prototype.getChildIndex = function (child)
+{
     var index = this.children.indexOf(child);
 
-    if (index === -1) {
+    if (index === -1)
+    {
         throw new Error('The supplied DisplayObject must be a child of the caller');
     }
 
@@ -203,8 +228,10 @@ DisplayObjectContainer.prototype.getChildIndex = function (child) {
  * @param child {DisplayObject} The child DisplayObject instance for which you want to change the index number
  * @param index {Number} The resulting index number for the child display object
  */
-DisplayObjectContainer.prototype.setChildIndex = function (child, index) {
-    if (index < 0 || index >= this.children.length) {
+DisplayObjectContainer.prototype.setChildIndex = function (child, index)
+{
+    if (index < 0 || index >= this.children.length)
+    {
         throw new Error('The supplied index is out of bounds');
     }
 
@@ -220,8 +247,10 @@ DisplayObjectContainer.prototype.setChildIndex = function (child, index) {
  * @param index {Number} The index to get the child from
  * @return {DisplayObject} The child at the given index, if any.
  */
-DisplayObjectContainer.prototype.getChildAt = function (index) {
-    if (index < 0 || index >= this.children.length) {
+DisplayObjectContainer.prototype.getChildAt = function (index)
+{
+    if (index < 0 || index >= this.children.length)
+    {
         throw new Error('getChildAt: Supplied index ' + index + ' does not exist in the child list, or the supplied DisplayObject must be a child of the caller');
     }
 
@@ -234,10 +263,12 @@ DisplayObjectContainer.prototype.getChildAt = function (index) {
  * @param child {DisplayObject} The DisplayObject to remove
  * @return {DisplayObject} The child that was removed.
  */
-DisplayObjectContainer.prototype.removeChild = function (child) {
+DisplayObjectContainer.prototype.removeChild = function (child)
+{
     var index = this.children.indexOf(child);
 
-    if (index === -1) {
+    if (index === -1)
+    {
         return;
     }
 
@@ -250,7 +281,8 @@ DisplayObjectContainer.prototype.removeChild = function (child) {
  * @param index {Number} The index to get the child from
  * @return {DisplayObject} The child that was removed.
  */
-DisplayObjectContainer.prototype.removeChildAt = function (index) {
+DisplayObjectContainer.prototype.removeChildAt = function (index)
+{
     var child = this.getChildAt(index);
 
     child.parent = null;
@@ -265,24 +297,29 @@ DisplayObjectContainer.prototype.removeChildAt = function (index) {
  * @param beginIndex {Number} The beginning position. Default value is 0.
  * @param endIndex {Number} The ending position. Default value is size of the container.
  */
-DisplayObjectContainer.prototype.removeChildren = function (beginIndex, endIndex) {
+DisplayObjectContainer.prototype.removeChildren = function (beginIndex, endIndex)
+{
     var begin = beginIndex || 0;
     var end = typeof endIndex === 'number' ? endIndex : this.children.length;
     var range = end - begin;
 
-    if (range > 0 && range <= end) {
+    if (range > 0 && range <= end)
+    {
         var removed = this.children.splice(begin, range);
 
-        for (var i = 0; i < removed.length; ++i) {
+        for (var i = 0; i < removed.length; ++i)
+        {
             removed[i].parent = null;
         }
 
         return removed;
     }
-    else if (range === 0 && this.children.length === 0) {
+    else if (range === 0 && this.children.length === 0)
+    {
         return [];
     }
-    else {
+    else
+    {
         throw new RangeError('removeChildren: numeric values are outside the acceptable range.');
     }
 };
@@ -291,7 +328,8 @@ DisplayObjectContainer.prototype.removeChildren = function (beginIndex, endIndex
  * Generates and updates the cached sprite for this object.
  *
  */
-DisplayObjectContainer.prototype.updateCachedSprite = function () {
+DisplayObjectContainer.prototype.updateCachedSprite = function ()
+{
     this._generateCachedSprite();
 };
 
@@ -304,7 +342,8 @@ DisplayObjectContainer.prototype.updateCachedSprite = function () {
  * @param renderer {CanvasRenderer|WebGLRenderer} The renderer used to generate the texture.
  * @return {Texture} a texture of the graphics object
  */
-DisplayObjectContainer.prototype.generateTexture = function (resolution, scaleMode, renderer) {
+DisplayObjectContainer.prototype.generateTexture = function (resolution, scaleMode, renderer)
+{
     var bounds = this.getLocalBounds();
 
     var renderTexture = new RenderTexture(renderer, bounds.width | 0, bounds.height | 0, renderer, scaleMode, resolution);
@@ -322,18 +361,22 @@ DisplayObjectContainer.prototype.generateTexture = function (resolution, scaleMo
  *
  * @private
  */
-DisplayObjectContainer.prototype.updateTransform = function () {
-    if (!this.visible) {
+DisplayObjectContainer.prototype.updateTransform = function ()
+{
+    if (!this.visible)
+    {
         return;
     }
 
     this.displayObjectUpdateTransform();
 
-    if (this._cacheAsBitmap) {
+    if (this._cacheAsBitmap)
+    {
         return;
     }
 
-    for (var i = 0, j = this.children.length; i < j; ++i) {
+    for (var i = 0, j = this.children.length; i < j; ++i)
+    {
         this.children[i].updateTransform();
     }
 };
@@ -346,8 +389,10 @@ DisplayObjectContainer.prototype.displayObjectContainerUpdateTransform = Display
  *
  * @return {Rectangle} The rectangular bounding area
  */
-DisplayObjectContainer.prototype.getBounds = function () {
-    if (this.children.length === 0) {
+DisplayObjectContainer.prototype.getBounds = function ()
+{
+    if (this.children.length === 0)
+    {
         return math.Rectangle.EMPTY;
     }
 
@@ -365,10 +410,12 @@ DisplayObjectContainer.prototype.getBounds = function () {
 
     var childVisible = false;
 
-    for (var i = 0, j = this.children.length; i < j; ++i) {
+    for (var i = 0, j = this.children.length; i < j; ++i)
+    {
         var child = this.children[i];
 
-        if (!child.visible) {
+        if (!child.visible)
+        {
             continue;
         }
 
@@ -386,7 +433,8 @@ DisplayObjectContainer.prototype.getBounds = function () {
         maxY = maxY > childMaxY ? maxY : childMaxY;
     }
 
-    if (!childVisible) {
+    if (!childVisible)
+    {
         return math.Rectangle.EMPTY;
     }
 
@@ -407,12 +455,14 @@ DisplayObjectContainer.prototype.getBounds = function () {
  *
  * @return {Rectangle} The rectangular bounding area
  */
-DisplayObjectContainer.prototype.getLocalBounds = function () {
+DisplayObjectContainer.prototype.getLocalBounds = function ()
+{
     var matrixCache = this.worldTransform;
 
     this.worldTransform = math.Matrix.IDENTITY;
 
-    for (var i = 0, j = this.children.length; i < j; ++i) {
+    for (var i = 0, j = this.children.length; i < j; ++i)
+    {
         this.children[i].updateTransform();
     }
 
@@ -428,13 +478,16 @@ DisplayObjectContainer.prototype.getLocalBounds = function () {
  *
  * @param renderer {WebGLRenderer} The renderer
  */
-DisplayObjectContainer.prototype.renderWebGL = function (renderer) {
+DisplayObjectContainer.prototype.renderWebGL = function (renderer)
+{
     // if the object is not visible or the alpha is 0 then no need to render this element
-    if (!this.visible || this.alpha <= 0) {
+    if (!this.visible || this.alpha <= 0)
+    {
         return;
     }
 
-    if (this._cacheAsBitmap) {
+    if (this._cacheAsBitmap)
+    {
         this._renderCachedSprite(renderer);
         return;
     }
@@ -442,14 +495,17 @@ DisplayObjectContainer.prototype.renderWebGL = function (renderer) {
     var i, j;
 
     // do a quick check to see if this element has a mask or a filter.
-    if (this._mask || this._filters) {
+    if (this._mask || this._filters)
+    {
         // push filter first as we need to ensure the stencil buffer is correct for any masking
-        if (this._filters) {
+        if (this._filters)
+        {
             renderer.spriteBatch.flush();
             renderer.filterManager.pushFilter(this._filterBlock);
         }
 
-        if (this._mask) {
+        if (this._mask)
+        {
             renderer.spriteBatch.stop();
             renderer.maskManager.pushMask(this.mask, renderer);
             renderer.spriteBatch.start();
@@ -459,36 +515,42 @@ DisplayObjectContainer.prototype.renderWebGL = function (renderer) {
         this._renderWebGL(renderer);
 
         // now loop through the children and make sure they get rendered
-        for (i = 0, j = this.children.length; i < j; i++) {
+        for (i = 0, j = this.children.length; i < j; i++)
+        {
             this.children[i].renderWebGL(renderer);
         }
 
         // time to stop the sprite batch as either a mask element or a filter draw will happen next
         renderer.spriteBatch.stop();
 
-        if (this._mask) {
+        if (this._mask)
+        {
             renderer.maskManager.popMask(this._mask, renderer);
         }
 
-        if (this._filters) {
+        if (this._filters)
+        {
             renderer.filterManager.popFilter();
         }
 
         renderer.spriteBatch.start();
     }
-    else {
+    else
+    {
 
         this._renderWebGL(renderer);
 
         // simple render children!
-        for (i = 0, j = this.children.length; i < j; ++i) {
+        for (i = 0, j = this.children.length; i < j; ++i)
+        {
             this.children[i].renderWebGL(renderer);
         }
 
     }
 };
 
-DisplayObjectContainer.prototype._renderWebGL = function (renderer) {
+DisplayObjectContainer.prototype._renderWebGL = function (renderer)
+{
 
     // this is where content itself gets renderd..
 
@@ -499,25 +561,31 @@ DisplayObjectContainer.prototype._renderWebGL = function (renderer) {
  *
  * @param renderer {CanvasRenderer} The renderer
  */
-DisplayObjectContainer.prototype.renderCanvas = function (renderer) {
-    if (!this.visible || this.alpha <= 0) {
+DisplayObjectContainer.prototype.renderCanvas = function (renderer)
+{
+    if (!this.visible || this.alpha <= 0)
+    {
         return;
     }
 
-    if (this._cacheAsBitmap) {
+    if (this._cacheAsBitmap)
+    {
         this._renderCachedSprite(renderer);
         return;
     }
 
-    if (this._mask) {
+    if (this._mask)
+    {
         renderer.maskManager.pushMask(this._mask, renderer);
     }
 
-    for (var i = 0, j = this.children.length; i < j; ++i) {
+    for (var i = 0, j = this.children.length; i < j; ++i)
+    {
         this.children[i].renderCanvas(renderer);
     }
 
-    if (this._mask) {
+    if (this._mask)
+    {
         renderer.maskManager.popMask(renderer);
     }
 };
@@ -528,13 +596,16 @@ DisplayObjectContainer.prototype.renderCanvas = function (renderer) {
  * @param renderer {WebGLRenderer|CanvasRenderer} The renderer
  * @private
  */
-DisplayObjectContainer.prototype._renderCachedSprite = function (renderer) {
+DisplayObjectContainer.prototype._renderCachedSprite = function (renderer)
+{
     this._cachedSprite.worldAlpha = this.worldAlpha;
 
-    if (renderer.gl) {
+    if (renderer.gl)
+    {
         this._cachedSprite.renderWebGL(renderer);
     }
-    else {
+    else
+    {
         this._cachedSprite.renderCanvas(renderer);
     }
 };
@@ -544,10 +615,12 @@ DisplayObjectContainer.prototype._renderCachedSprite = function (renderer) {
  *
  * @private
  */
-DisplayObjectContainer.prototype._generateCachedSprite = function () {
+DisplayObjectContainer.prototype._generateCachedSprite = function ()
+{
     var bounds = this.getLocalBounds();
 
-    if (!this._cachedSprite) {
+    if (!this._cachedSprite)
+    {
         // TODO - RenderTexture now *requires* a renderer instance, so this is like broken
         // because `renderer` isn't actually in scope here :P
         var renderTexture = new RenderTexture(renderer, bounds.width | 0, bounds.height | 0);
@@ -555,7 +628,8 @@ DisplayObjectContainer.prototype._generateCachedSprite = function () {
         this._cachedSprite = new Sprite(renderTexture);
         this._cachedSprite.worldTransform = this.worldTransform;
     }
-    else {
+    else
+    {
         this._cachedSprite.texture.resize(bounds.width | 0, bounds.height | 0);
     }
 
@@ -580,8 +654,10 @@ DisplayObjectContainer.prototype._generateCachedSprite = function () {
  *
  * @private
  */
-DisplayObjectContainer.prototype._destroyCachedSprite = function () {
-    if (!this._cachedSprite) {
+DisplayObjectContainer.prototype._destroyCachedSprite = function ()
+{
+    if (!this._cachedSprite)
+    {
         return;
     }
 

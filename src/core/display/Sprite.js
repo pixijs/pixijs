@@ -19,7 +19,8 @@ var math = require('../math'),
  * @namespace PIXI
  * @param texture {Texture} The texture for this sprite
  */
-function Sprite(texture) {
+function Sprite(texture)
+{
     DisplayObjectContainer.call(this);
 
     /**
@@ -85,12 +86,14 @@ function Sprite(texture) {
     this.texture = texture || Texture.EMPTY;
 }
 
-Sprite.prototype.destroy = function (destroyTexture, destroyBaseTexture) {
+Sprite.prototype.destroy = function (destroyTexture, destroyBaseTexture)
+{
     DisplayObjectContainer.prototype.destroy.call(this);
 
     this.anchor = null;
 
-    if (destroyTexture) {
+    if (destroyTexture)
+    {
         this._texture.destroy(destroyBaseTexture);
     }
 
@@ -111,10 +114,12 @@ Object.defineProperties(Sprite.prototype, {
      * @memberof Sprite#
      */
     width: {
-        get: function () {
+        get: function ()
+        {
             return this.scale.x * this.texture.frame.width;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.scale.x = value / this.texture.frame.width;
             this._width = value;
         }
@@ -127,10 +132,12 @@ Object.defineProperties(Sprite.prototype, {
      * @memberof Sprite#
      */
     height: {
-        get: function () {
+        get: function ()
+        {
             return  this.scale.y * this.texture.frame.height;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.scale.y = value / this.texture.frame.height;
             this._height = value;
         }
@@ -143,23 +150,29 @@ Object.defineProperties(Sprite.prototype, {
      * @memberof Sprite#
      */
     texture: {
-        get: function () {
+        get: function ()
+        {
             return  this._texture;
         },
-        set: function (value) {
-            if (this._texture === value) {
+        set: function (value)
+        {
+            if (this._texture === value)
+            {
                 return;
             }
 
             this._texture = value;
             this.cachedTint = 0xFFFFFF;
 
-            if (value) {
+            if (value)
+            {
                 // wait for the texture to load
-                if (value.baseTexture.hasLoaded) {
+                if (value.baseTexture.hasLoaded)
+                {
                     this._onTextureUpdate();
                 }
-                else {
+                else
+                {
                     value.once('update', this._onTextureUpdate.bind(this));
                 }
             }
@@ -172,18 +185,22 @@ Object.defineProperties(Sprite.prototype, {
  *
  * @private
  */
-Sprite.prototype._onTextureUpdate = function () {
+Sprite.prototype._onTextureUpdate = function ()
+{
     // so if _width is 0 then width was not set..
-    if (this._width) {
+    if (this._width)
+    {
         this.scale.x = this._width / this.texture.frame.width;
     }
 
-    if (this._height) {
+    if (this._height)
+    {
         this.scale.y = this._height / this.texture.frame.height;
     }
 };
 
-Sprite.prototype._renderWebGL = function (renderer) {
+Sprite.prototype._renderWebGL = function (renderer)
+{
 
     // this is where content gets renderd..
     // watch this space for a little render state manager..
@@ -196,7 +213,8 @@ Sprite.prototype._renderWebGL = function (renderer) {
  * @param matrix {Matrix} the transformation matrix of the sprite
  * @return {Rectangle} the framing rectangle
  */
-Sprite.prototype.getBounds = function (matrix) {
+Sprite.prototype.getBounds = function (matrix)
+{
     var width = this.texture.frame.width;
     var height = this.texture.frame.height;
 
@@ -223,11 +241,13 @@ Sprite.prototype.getBounds = function (matrix) {
     if(b === 0 && c === 0)
     {
         // scale may be negative!
-        if (a < 0) {
+        if (a < 0)
+        {
             a *= -1;
         }
 
-        if (d < 0) {
+        if (d < 0)
+        {
             d *= -1;
         }
 
@@ -292,28 +312,34 @@ Sprite.prototype.getBounds = function (matrix) {
 *
 * @param renderer {CanvasRenderer} The renderer
 */
-Sprite.prototype.renderCanvas = function (renderer) {
-    if (!this.visible || this.alpha <= 0 || this.texture.crop.width <= 0 || this.texture.crop.height <= 0) {
+Sprite.prototype.renderCanvas = function (renderer)
+{
+    if (!this.visible || this.alpha <= 0 || this.texture.crop.width <= 0 || this.texture.crop.height <= 0)
+    {
         return;
     }
 
-    if (this.blendMode !== renderer.currentBlendMode) {
+    if (this.blendMode !== renderer.currentBlendMode)
+    {
         renderer.currentBlendMode = this.blendMode;
         renderer.context.globalCompositeOperation = renderer.blendModes[renderer.currentBlendMode];
     }
 
-    if (this._mask) {
+    if (this._mask)
+    {
         renderer.maskManager.pushMask(this._mask, renderer);
     }
 
     //  Ignore null sources
-    if (this.texture.valid) {
+    if (this.texture.valid)
+    {
         var resolution = this.texture.baseTexture.resolution / renderer.resolution;
 
         renderer.context.globalAlpha = this.worldAlpha;
 
         // If smoothingEnabled is supported and we need to change the smoothing property for this texture
-        if (renderer.smoothProperty && renderer.scaleMode !== this.texture.baseTexture.scaleMode) {
+        if (renderer.smoothProperty && renderer.scaleMode !== this.texture.baseTexture.scaleMode)
+        {
             renderer.scaleMode = this.texture.baseTexture.scaleMode;
             renderer.context[renderer.smoothProperty] = (renderer.scaleMode === CONST.scaleModes.LINEAR);
         }
@@ -323,7 +349,8 @@ Sprite.prototype.renderCanvas = function (renderer) {
         var dy = (this.texture.trim ? this.texture.trim.y : 0) - (this.anchor.y * this.texture.trim.height);
 
         // Allow for pixel rounding
-        if (renderer.roundPixels) {
+        if (renderer.roundPixels)
+        {
             renderer.context.setTransform(
                 this.worldTransform.a,
                 this.worldTransform.b,
@@ -336,7 +363,8 @@ Sprite.prototype.renderCanvas = function (renderer) {
             dx = dx | 0;
             dy = dy | 0;
         }
-        else {
+        else
+        {
             renderer.context.setTransform(
                 this.worldTransform.a,
                 this.worldTransform.b,
@@ -347,8 +375,10 @@ Sprite.prototype.renderCanvas = function (renderer) {
             );
         }
 
-        if (this.tint !== 0xFFFFFF) {
-            if (this.cachedTint !== this.tint) {
+        if (this.tint !== 0xFFFFFF)
+        {
+            if (this.cachedTint !== this.tint)
+            {
                 this.cachedTint = this.tint;
 
                 // TODO clean up caching - how to clean up the caches?
@@ -367,7 +397,8 @@ Sprite.prototype.renderCanvas = function (renderer) {
                 this.texture.crop.height / resolution
             );
         }
-        else {
+        else
+        {
             renderer.context.drawImage(
                 this.texture.baseTexture.source,
                 this.texture.crop.x,
@@ -382,11 +413,13 @@ Sprite.prototype.renderCanvas = function (renderer) {
         }
     }
 
-    for (var i = 0, j = this.children.length; i < j; i++) {
+    for (var i = 0, j = this.children.length; i < j; i++)
+    {
         this.children[i].renderCanvas(renderer);
     }
 
-    if (this._mask) {
+    if (this._mask)
+    {
         renderer.maskManager.popMask(renderer);
     }
 };
@@ -401,10 +434,12 @@ Sprite.prototype.renderCanvas = function (renderer) {
  * @param frameId {String} The frame Id of the texture in the cache
  * @return {Sprite} A new Sprite using a texture from the texture cache matching the frameId
  */
-Sprite.fromFrame = function (frameId) {
+Sprite.fromFrame = function (frameId)
+{
     var texture = utils.TextureCache[frameId];
 
-    if (!texture) {
+    if (!texture)
+    {
         throw new Error('The frameId "' + frameId + '" does not exist in the texture cache' + this);
     }
 
@@ -419,6 +454,7 @@ Sprite.fromFrame = function (frameId) {
  * @param imageId {String} The image url of the texture
  * @return {Sprite} A new Sprite using a texture from the texture cache matching the image id
  */
-Sprite.fromImage = function (imageId, crossorigin, scaleMode) {
+Sprite.fromImage = function (imageId, crossorigin, scaleMode)
+{
     return new Sprite(Texture.fromImage(imageId, crossorigin, scaleMode));
 };

@@ -12,7 +12,8 @@ var AbstractFilter = require('./AbstractFilter');
  * @extends AbstractFilter
  * @namespace PIXI
  */
-function TiltShiftYFilter() {
+function TiltShiftYFilter()
+{
     AbstractFilter.call(this);
 
     // set the uniforms
@@ -40,11 +41,13 @@ function TiltShiftYFilter() {
         'uniform vec2 delta;',
         'uniform vec2 texSize;',
 
-        'float random(vec3 scale, float seed) {',
+        'float random(vec3 scale, float seed)
+        {',
         '   return fract(sin(dot(gl_FragCoord.xyz + seed, scale)) * 43758.5453 + seed);',
         '}',
 
-        'void main(void) {',
+        'void main(void)
+        {',
         '    vec4 color = vec4(0.0);',
         '    float total = 0.0;',
 
@@ -52,7 +55,8 @@ function TiltShiftYFilter() {
         '    vec2 normal = normalize(vec2(start.y - end.y, end.x - start.x));',
         '    float radius = smoothstep(0.0, 1.0, abs(dot(vTextureCoord * texSize - start, normal)) / gradientBlur) * blur;',
 
-        '    for (float t = -30.0; t <= 30.0; t++) {',
+        '    for (float t = -30.0; t <= 30.0; t++)
+        {',
         '        float percent = (t + offset - 0.5) / 30.0;',
         '        float weight = 1.0 - abs(percent);',
         '        vec4 sample = texture2D(uSampler, vTextureCoord + delta / texSize * percent * radius);',
@@ -75,7 +79,8 @@ module.exports = TiltShiftYFilter;
  * Updates the filter delta values.
  *
  */
-TiltShiftYFilter.prototype.updateDelta = function (){
+TiltShiftYFilter.prototype.updateDelta = function ()
+{
     var dx = this.uniforms.end.value.x - this.uniforms.start.value.x;
     var dy = this.uniforms.end.value.y - this.uniforms.start.value.y;
     var d = Math.sqrt(dx * dx + dy * dy);
@@ -91,10 +96,12 @@ Object.defineProperties(TiltShiftYFilter.prototype, {
      * @memberof TiltShiftYFilter#
      */
     blur: {
-        get: function () {
+        get: function ()
+        {
             return this.uniforms.blur.value;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.uniforms.blur.value = value;
         }
     },
@@ -106,10 +113,12 @@ Object.defineProperties(TiltShiftYFilter.prototype, {
      * @memberof TiltShiftYFilter#
      */
     gradientBlur: {
-        get: function () {
+        get: function ()
+        {
             return this.uniforms.gradientBlur.value;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.uniforms.gradientBlur.value = value;
         }
     },
@@ -121,10 +130,12 @@ Object.defineProperties(TiltShiftYFilter.prototype, {
      * @memberof TiltShiftYFilter#
      */
     start: {
-        get: function () {
+        get: function ()
+        {
             return this.uniforms.start.value;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.uniforms.start.value = value;
             this.updateDelta();
         }
@@ -137,10 +148,12 @@ Object.defineProperties(TiltShiftYFilter.prototype, {
      * @memberof TiltShiftYFilter#
      */
     end: {
-        get: function () {
+        get: function ()
+        {
             return this.uniforms.end.value;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.uniforms.end.value = value;
             this.updateDelta();
         }

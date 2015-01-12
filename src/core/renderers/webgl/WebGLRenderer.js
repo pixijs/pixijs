@@ -27,17 +27,22 @@ var WebGLSpriteBatch = require('./utils/WebGLSpriteBatch'),
  * @param [options.preserveDrawingBuffer=false] {boolean} enables drawing buffer preservation, enable this if you need to call toDataUrl on the webgl context
  * @param [options.resolution=1] {number} the resolution of the renderer retina would be 2
  */
-function WebGLRenderer(width, height, options) {
+function WebGLRenderer(width, height, options)
+{
     utils.sayHello('webGL');
 
-    if (options) {
-        for (var i in CONST.defaultRenderOptions) {
-            if (typeof options[i] === 'undefined') {
+    if (options)
+    {
+        for (var i in CONST.defaultRenderOptions)
+        {
+            if (typeof options[i] === 'undefined')
+            {
                 options[i] = CONST.defaultRenderOptions[i];
             }
         }
     }
-    else {
+    else
+    {
         options = CONST.defaultRenderOptions;
     }
 
@@ -252,10 +257,12 @@ Object.defineProperties(WebGLRenderer.prototype, {
      * @memberof WebGLRenderer#
      */
     backgroundColor: {
-        get: function () {
+        get: function ()
+        {
             return this._backgroundColor;
         },
-        set: function (val) {
+        set: function (val)
+        {
             this._backgroundColor = val;
             utils.hex2rgb(val, this._backgroundColorRgb);
         }
@@ -266,11 +273,13 @@ Object.defineProperties(WebGLRenderer.prototype, {
  *
  * @private
  */
-WebGLRenderer.prototype._initContext = function () {
+WebGLRenderer.prototype._initContext = function ()
+{
     var gl = this.view.getContext('webgl', this._contextOptions) || this.view.getContext('experimental-webgl', this._contextOptions);
     this.gl = gl;
 
-    if (!gl) {
+    if (!gl)
+    {
         // fail, not able to get a context
         throw new Error('This browser does not support webGL. Try using the canvas renderer');
     }
@@ -295,9 +304,11 @@ WebGLRenderer.prototype._initContext = function () {
  *
  * @param object {DisplayObject} the object to be rendered
  */
-WebGLRenderer.prototype.render = function (object) {
+WebGLRenderer.prototype.render = function (object)
+{
     // no point rendering if our context has been blown up!
-    if (this.gl.isContextLost()) {
+    if (this.gl.isContextLost())
+    {
         return;
     }
 
@@ -317,11 +328,14 @@ WebGLRenderer.prototype.render = function (object) {
     // make sure we are bound to the main frame buffer
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
-    if (this.clearBeforeRender) {
-        if (this.transparent) {
+    if (this.clearBeforeRender)
+    {
+        if (this.transparent)
+        {
             gl.clearColor(0, 0, 0, 0);
         }
-        else {
+        else
+        {
             gl.clearColor(this._backgroundColorRgb[0], this._backgroundColorRgb[1], this._backgroundColorRgb[2], 1);
         }
 
@@ -338,7 +352,8 @@ WebGLRenderer.prototype.render = function (object) {
  * @param projection {Point} The projection
  * @param buffer {Array} a standard WebGL buffer
  */
-WebGLRenderer.prototype.renderDisplayObject = function (displayObject, projection, buffer) {
+WebGLRenderer.prototype.renderDisplayObject = function (displayObject, projection, buffer)
+{
     this.blendModeManager.setBlendMode(CONST.blendModes.NORMAL);
 
     // reset the render session data..
@@ -372,14 +387,16 @@ WebGLRenderer.prototype.renderDisplayObject = function (displayObject, projectio
  * @param width {number} the new width of the webGL view
  * @param height {number} the new height of the webGL view
  */
-WebGLRenderer.prototype.resize = function (width, height) {
+WebGLRenderer.prototype.resize = function (width, height)
+{
     this.width = width * this.resolution;
     this.height = height * this.resolution;
 
     this.view.width = this.width;
     this.view.height = this.height;
 
-    if (this.autoResize) {
+    if (this.autoResize)
+    {
         this.view.style.width = this.width / this.resolution + 'px';
         this.view.style.height = this.height / this.resolution + 'px';
     }
@@ -395,16 +412,19 @@ WebGLRenderer.prototype.resize = function (width, height) {
  *
  * @param texture {BaseTexture|Texture} the texture to update
  */
-WebGLRenderer.prototype.updateTexture = function (texture) {
+WebGLRenderer.prototype.updateTexture = function (texture)
+{
     texture = texture.baseTexture || texture;
 
-    if (!texture.hasLoaded) {
+    if (!texture.hasLoaded)
+    {
         return;
     }
 
     var gl = this.gl;
 
-    if (!texture._glTextures[gl.id]) {
+    if (!texture._glTextures[gl.id])
+    {
         texture._glTextures[gl.id] = gl.createTexture();
         texture.on('update', this._boundUpdateTexture);
         texture.on('dispose', this._boundDestroyTexture);
@@ -418,19 +438,23 @@ WebGLRenderer.prototype.updateTexture = function (texture) {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, texture.scaleMode === CONST.scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
 
 
-    if (texture.mipmap && utils.isPowerOfTwo(texture.width, texture.height)) {
+    if (texture.mipmap && utils.isPowerOfTwo(texture.width, texture.height))
+    {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, texture.scaleMode === CONST.scaleModes.LINEAR ? gl.LINEAR_MIPMAP_LINEAR : gl.NEAREST_MIPMAP_NEAREST);
         gl.generateMipmap(gl.TEXTURE_2D);
     }
-    else {
+    else
+    {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, texture.scaleMode === CONST.scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
     }
 
-    if (!texture._powerOf2) {
+    if (!texture._powerOf2)
+    {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     }
-    else {
+    else
+    {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
     }
@@ -438,14 +462,17 @@ WebGLRenderer.prototype.updateTexture = function (texture) {
     return  texture._glTextures[gl.id];
 };
 
-WebGLRenderer.prototype.destroyTexture = function (texture) {
+WebGLRenderer.prototype.destroyTexture = function (texture)
+{
     texture = texture.baseTexture || texture;
 
-    if (!texture.hasLoaded) {
+    if (!texture.hasLoaded)
+    {
         return;
     }
 
-    if (texture._glTextures[this.gl.id]) {
+    if (texture._glTextures[this.gl.id])
+    {
         this.gl.deleteTexture(texture._glTextures[this.gl.id]);
     }
 };
@@ -456,7 +483,8 @@ WebGLRenderer.prototype.destroyTexture = function (texture) {
  * @param event {Event}
  * @private
  */
-WebGLRenderer.prototype.handleContextLost = function (event) {
+WebGLRenderer.prototype.handleContextLost = function (event)
+{
     event.preventDefault();
 };
 
@@ -466,11 +494,13 @@ WebGLRenderer.prototype.handleContextLost = function (event) {
  * @param event {Event}
  * @private
  */
-WebGLRenderer.prototype.handleContextRestored = function () {
+WebGLRenderer.prototype.handleContextRestored = function ()
+{
     this._initContext();
 
     // empty all the ol gl textures as they are useless now
-    for (var key in utils.TextureCache) {
+    for (var key in utils.TextureCache)
+    {
         var texture = utils.TextureCache[key].baseTexture;
         texture._glTextures = [];
     }
@@ -481,8 +511,10 @@ WebGLRenderer.prototype.handleContextRestored = function () {
  *
  * @param [removeView=false] {boolean} Removes the Canvas element from the DOM.
  */
-WebGLRenderer.prototype.destroy = function (removeView) {
-    if (removeView && this.view.parent) {
+WebGLRenderer.prototype.destroy = function (removeView)
+{
+    if (removeView && this.view.parent)
+    {
         this.view.parent.removeChild(this.view);
     }
 
@@ -542,10 +574,12 @@ WebGLRenderer.prototype.destroy = function (removeView) {
  *
  * @private
  */
-WebGLRenderer.prototype._mapBlendModes = function () {
+WebGLRenderer.prototype._mapBlendModes = function ()
+{
     var gl = this.gl;
 
-    if (!this.blendModes) {
+    if (!this.blendModes)
+    {
         this.blendModes = {};
 
         this.blendModes[CONST.blendModes.NORMAL]        = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];

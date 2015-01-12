@@ -16,7 +16,8 @@ var core = require('../core'),
  * @param url {String} The url of the sprite sheet JSON file
  * @param crossorigin {boolean} Whether requests should be treated as crossorigin
  */
-function SpriteSheetLoader(url, crossorigin) {
+function SpriteSheetLoader(url, crossorigin)
+{
 
     /**
      * The url of the atlas data
@@ -65,11 +66,13 @@ core.utils.eventTarget.mixin(SpriteSheetLoader.prototype);
  * This will begin loading the JSON file
  *
  */
-SpriteSheetLoader.prototype.load = function () {
+SpriteSheetLoader.prototype.load = function ()
+{
     var scope = this;
     var jsonLoader = new JsonLoader(this.url, this.crossorigin);
 
-    jsonLoader.on('loaded', function (event) {
+    jsonLoader.on('loaded', function (event)
+    {
         scope.json = event.data.content.json;
         scope.onLoaded();
     });
@@ -82,7 +85,8 @@ SpriteSheetLoader.prototype.load = function () {
  *
  * @private
  */
-SpriteSheetLoader.prototype.onLoaded = function () {
+SpriteSheetLoader.prototype.onLoaded = function ()
+{
     this.emit('loaded', {
         content: this
     });

@@ -6,7 +6,8 @@
  * @param width {number} the width for the newly created canvas
  * @param height {number} the height for the newly created canvas
  */
-function CanvasBuffer(width, height) {
+function CanvasBuffer(width, height)
+{
     /**
      * The Canvas object that belongs to this CanvasBuffer.
      *
@@ -36,10 +37,12 @@ Object.defineProperties(CanvasBuffer.prototype, {
      * @memberof CanvasBuffer#
      */
     width: {
-        get: function () {
+        get: function ()
+        {
             return this.canvas.width;
         },
-        set: function (val) {
+        set: function (val)
+        {
             this.canvas.width = val;
         }
     },
@@ -50,10 +53,12 @@ Object.defineProperties(CanvasBuffer.prototype, {
      * @memberof CanvasBuffer#
      */
     height: {
-        get: function () {
+        get: function ()
+        {
             return this.canvas.height;
         },
-        set: function (val) {
+        set: function (val)
+        {
             this.canvas.height = val;
         }
     }
@@ -64,7 +69,8 @@ Object.defineProperties(CanvasBuffer.prototype, {
  *
  * @private
  */
-CanvasBuffer.prototype.clear = function () {
+CanvasBuffer.prototype.clear = function ()
+{
     this.context.setTransform(1, 0, 0, 1, 0, 0);
     this.context.clearRect(0,0, this.canvas.width, this.canvas.height);
 };
@@ -75,7 +81,8 @@ CanvasBuffer.prototype.clear = function () {
  * @param width {number} the new width of the canvas
  * @param height {number} the new height of the canvas
  */
-CanvasBuffer.prototype.resize = function (width, height) {
+CanvasBuffer.prototype.resize = function (width, height)
+{
     this.canvas.width = width;
     this.canvas.height = height;
 };

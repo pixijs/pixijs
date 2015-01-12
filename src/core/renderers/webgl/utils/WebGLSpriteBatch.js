@@ -19,7 +19,8 @@ var TextureUvs = require('../../../textures/TextureUvs'),
  * @namespace PIXI
  * @param renderer {WebGLRenderer} The renderer this sprite batch works for.
  */
-function WebGLSpriteBatch(renderer) {
+function WebGLSpriteBatch(renderer)
+{
     /**
      *
      *
@@ -88,7 +89,8 @@ function WebGLSpriteBatch(renderer) {
      */
     this.lastIndexCount = 0;
 
-    for (var i=0, j=0; i < numIndices; i += 6, j += 4) {
+    for (var i=0, j=0; i < numIndices; i += 6, j += 4)
+    {
         this.indices[i + 0] = j + 0;
         this.indices[i + 1] = j + 1;
         this.indices[i + 2] = j + 2;
@@ -162,7 +164,8 @@ function WebGLSpriteBatch(renderer) {
 
     // listen for context and update necessary buffers
     var self = this;
-    this.renderer.on('context', function () {
+    this.renderer.on('context', function ()
+    {
         self.setupContext();
     });
 }
@@ -173,7 +176,8 @@ module.exports = WebGLSpriteBatch;
 /**
  * @param gl {WebGLContext} the current WebGL drawing context
  */
-WebGLSpriteBatch.prototype.setupContext = function () {
+WebGLSpriteBatch.prototype.setupContext = function ()
+{
     var gl = this.renderer.gl;
 
     // setup default shader
@@ -198,7 +202,8 @@ WebGLSpriteBatch.prototype.setupContext = function () {
 /**
  *
  */
-WebGLSpriteBatch.prototype.begin = function () {
+WebGLSpriteBatch.prototype.begin = function ()
+{
     // this.shader = this.renderer.shaderManager.defaultShader;
 
     this.start();
@@ -206,19 +211,22 @@ WebGLSpriteBatch.prototype.begin = function () {
 
 /**
  */
-WebGLSpriteBatch.prototype.end = function () {
+WebGLSpriteBatch.prototype.end = function ()
+{
     this.flush();
 };
 
 /**
  * @param sprite {Sprite} the sprite to render when using this spritebatch
  */
-WebGLSpriteBatch.prototype.render = function (sprite) {
+WebGLSpriteBatch.prototype.render = function (sprite)
+{
     var texture = sprite.texture;
 
     //TODO set blend modes..
     // check texture..
-    if (this.currentBatchSize >= this.size) {
+    if (this.currentBatchSize >= this.size)
+    {
         this.flush();
         this.currentBaseTexture = texture.baseTexture;
     }
@@ -227,7 +235,8 @@ WebGLSpriteBatch.prototype.render = function (sprite) {
     var uvs = texture._uvs;
 
     // if the uvs have not updated then no point rendering just yet!
-    if (!uvs) {
+    if (!uvs)
+    {
         return;
     }
 
@@ -237,7 +246,8 @@ WebGLSpriteBatch.prototype.render = function (sprite) {
 
     var w0, w1, h0, h1;
 
-    if (texture.trim) {
+    if (texture.trim)
+    {
         // if the sprite is trimmed then we need to add the extra space before transforming the sprite coords..
         var trim = texture.trim;
 
@@ -248,7 +258,8 @@ WebGLSpriteBatch.prototype.render = function (sprite) {
         h0 = h1 + texture.crop.height;
 
     }
-    else {
+    else
+    {
         w0 = (texture.frame.width ) * (1-aX);
         w1 = (texture.frame.width ) * -aX;
 
@@ -272,7 +283,8 @@ WebGLSpriteBatch.prototype.render = function (sprite) {
     var colors = this.colors;
     var positions = this.positions;
 
-    if (this.renderer.roundPixels) {
+    if (this.renderer.roundPixels)
+    {
         // xy
         positions[index] = a * w1 + c * h1 + tx | 0;
         positions[index+1] = d * h1 + b * w1 + ty | 0;
@@ -289,7 +301,8 @@ WebGLSpriteBatch.prototype.render = function (sprite) {
         positions[index+15] = a * w1 + c * h0 + tx | 0;
         positions[index+16] = d * h0 + b * w1 + ty | 0;
     }
-    else {
+    else
+    {
         // xy
         positions[index] = a * w1 + c * h1 + tx;
         positions[index+1] = d * h1 + b * w1 + ty;
@@ -338,11 +351,13 @@ WebGLSpriteBatch.prototype.render = function (sprite) {
  *
  * @param sprite {TilingSprite} the tilingSprite to render
  */
-WebGLSpriteBatch.prototype.renderTilingSprite = function (tilingSprite) {
+WebGLSpriteBatch.prototype.renderTilingSprite = function (tilingSprite)
+{
     var texture = tilingSprite.tilingTexture;
 
     // check texture..
-    if (this.currentBatchSize >= this.size) {
+    if (this.currentBatchSize >= this.size)
+    {
         //return;
         this.flush();
         this.currentBaseTexture = texture.baseTexture;
@@ -351,7 +366,8 @@ WebGLSpriteBatch.prototype.renderTilingSprite = function (tilingSprite) {
     // set the textures uvs temporarily
     // TODO create a separate texture so that we can tile part of a texture
 
-    if (!tilingSprite._uvs) {
+    if (!tilingSprite._uvs)
+    {
         tilingSprite._uvs = new TextureUvs();
     }
 
@@ -454,16 +470,19 @@ WebGLSpriteBatch.prototype.renderTilingSprite = function (tilingSprite) {
  * Renders the content and empties the current batch.
  *
  */
-WebGLSpriteBatch.prototype.flush = function () {
+WebGLSpriteBatch.prototype.flush = function ()
+{
     // If the batch is length 0 then return as there is nothing to draw
-    if (this.currentBatchSize === 0) {
+    if (this.currentBatchSize === 0)
+    {
         return;
     }
 
     var gl = this.renderer.gl;
     var shader;
 
-    if (this.dirty) {
+    if (this.dirty)
+    {
         this.dirty = false;
         // bind the main texture
         gl.activeTexture(gl.TEXTURE0);
@@ -482,10 +501,12 @@ WebGLSpriteBatch.prototype.flush = function () {
     }
 
     // upload the verts to the buffer
-    if (this.currentBatchSize > ( this.size * 0.5 ) ) {
+    if (this.currentBatchSize > ( this.size * 0.5 ) )
+    {
         gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vertices);
     }
-    else {
+    else
+    {
         var view = this.positions.subarray(0, this.currentBatchSize * this.vertByteSize);
         gl.bufferSubData(gl.ARRAY_BUFFER, 0, view);
     }
@@ -502,7 +523,8 @@ WebGLSpriteBatch.prototype.flush = function () {
     var shaderSwap = false;
     var sprite;
 
-    for (var i = 0, j = this.currentBatchSize; i < j; i++) {
+    for (var i = 0, j = this.currentBatchSize; i < j; i++)
+    {
 
         sprite = this.sprites[i];
 
@@ -513,24 +535,28 @@ WebGLSpriteBatch.prototype.flush = function () {
         blendSwap = currentBlendMode !== nextBlendMode;
         shaderSwap = currentShader !== nextShader; // should I use uuidS???
 
-        if (currentBaseTexture !== nextTexture || blendSwap || shaderSwap) {
+        if (currentBaseTexture !== nextTexture || blendSwap || shaderSwap)
+        {
             this.renderBatch(currentBaseTexture, batchSize, start);
 
             start = i;
             batchSize = 0;
             currentBaseTexture = nextTexture;
 
-            if (blendSwap) {
+            if (blendSwap)
+            {
                 currentBlendMode = nextBlendMode;
                 this.renderer.blendModeManager.setBlendMode( currentBlendMode );
             }
 
-            if (shaderSwap) {
+            if (shaderSwap)
+            {
                 currentShader = nextShader;
 
                 shader = currentShader.shaders ? currentShader.shaders[gl.id] : currentShader;
 
-                if (!shader) {
+                if (!shader)
+                {
                     shader = new Shader(gl, null, currentShader.fragmentSrc, currentShader.uniforms);
                     currentShader.shaders[gl.id] = shader;
                 }
@@ -538,7 +564,8 @@ WebGLSpriteBatch.prototype.flush = function () {
                 // set shader function???
                 this.renderer.shaderManager.setShader(shader);
 
-                if (shader.dirty) {
+                if (shader.dirty)
+                {
                     shader.syncUniforms();
                 }
 
@@ -569,17 +596,21 @@ WebGLSpriteBatch.prototype.flush = function () {
  * @param size {number}
  * @param startIndex {number}
  */
-WebGLSpriteBatch.prototype.renderBatch = function (texture, size, startIndex) {
-    if (size === 0) {
+WebGLSpriteBatch.prototype.renderBatch = function (texture, size, startIndex)
+{
+    if (size === 0)
+    {
         return;
     }
 
     var gl = this.renderer.gl;
 
-    if (!texture._glTextures[gl.id]) {
+    if (!texture._glTextures[gl.id])
+    {
         this.renderer.updateTexture(texture);
     }
-    else {
+    else
+    {
         // bind the current texture
         gl.bindTexture(gl.TEXTURE_2D, texture._glTextures[gl.id]);
     }
@@ -594,7 +625,8 @@ WebGLSpriteBatch.prototype.renderBatch = function (texture, size, startIndex) {
 /**
  *
  */
-WebGLSpriteBatch.prototype.stop = function () {
+WebGLSpriteBatch.prototype.stop = function ()
+{
     this.flush();
     this.dirty = true;
 };
@@ -602,7 +634,8 @@ WebGLSpriteBatch.prototype.stop = function () {
 /**
  *
  */
-WebGLSpriteBatch.prototype.start = function () {
+WebGLSpriteBatch.prototype.start = function ()
+{
     this.dirty = true;
 };
 
@@ -610,7 +643,8 @@ WebGLSpriteBatch.prototype.start = function () {
  * Destroys the SpriteBatch.
  *
  */
-WebGLSpriteBatch.prototype.destroy = function () {
+WebGLSpriteBatch.prototype.destroy = function ()
+{
     this.renderer.gl.deleteBuffer(this.vertexBuffer);
     this.renderer.gl.deleteBuffer(this.indexBuffer);
 

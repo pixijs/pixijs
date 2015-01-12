@@ -12,7 +12,8 @@ var AbstractFilter = require('./AbstractFilter');
  * @extends AbstractFilter
  * @namespace PIXI
  */
-function NoiseFilter() {
+function NoiseFilter()
+{
     AbstractFilter.call(this);
 
     // set the uniforms
@@ -29,11 +30,13 @@ function NoiseFilter() {
         'uniform float noise;',
         'uniform sampler2D uSampler;',
 
-        'float rand(vec2 co) {',
+        'float rand(vec2 co)
+        {',
         '    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);',
         '}',
 
-        'void main() {',
+        'void main()
+        {',
         '    vec4 color = texture2D(uSampler, vTextureCoord);',
 
         '    float diff = (rand(vTextureCoord) - 0.5) * noise;',
@@ -59,10 +62,12 @@ Object.defineProperties(NoiseFilter.prototype, {
      * @default 0.5
      */
     noise: {
-        get: function () {
+        get: function ()
+        {
             return this.uniforms.noise.value;
         },
-        set: function (value) {
+        set: function (value)
+        {
             this.dirty = true;
             this.uniforms.noise.value = value;
         }
