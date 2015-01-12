@@ -187,6 +187,7 @@ Sprite.prototype._renderWebGL = function (renderer) {
 
     // this is where content gets renderd..
     // watch this space for a little render state manager..
+    renderer.setObjectRendererer(renderer.spriteBatch);
     renderer.spriteBatch.render(this);
 };
 

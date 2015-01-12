@@ -681,23 +681,17 @@ Graphics.prototype._renderWebGL = function (renderer) {
 
         return;
     }
-    else */
+    */
+   
+    // check if the webgl graphic needs to be updated
+    if (this.glDirty) {
+        this.dirty = true;
+        this.glDirty = false;
+    }
 
-        renderer.spriteBatch.stop();
-        renderer.blendModeManager.setBlendMode(this.blendMode);
+    renderer.setObjectRendererer(renderer.graphicsRenderer);
+    renderer.graphicsRenderer.render(this);
 
-        // check blend mode
-        renderer.blendModeManager.setBlendMode( this.blendMode );
-
-        // check if the webgl graphic needs to be updated
-        if (this.glDirty) {
-            this.dirty = true;
-            this.glDirty = false;
-        }
-
-        WebGLGraphics.renderGraphics(this, renderer);
-
-        renderer.spriteBatch.start();
 };
 
 /**
