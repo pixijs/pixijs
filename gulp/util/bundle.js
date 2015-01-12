@@ -33,9 +33,11 @@ function createBundler(args) {
 function watch(onUpdate) {
     var bundler = watchify(createBundler(watchify.args));
 
-    bundler.on('update', function () {
-        rebundle.call(this).on('end', onUpdate);
-    });
+    if (onUpdate) {
+        bundler.on('update', function () {
+            rebundle.call(this).on('end', onUpdate);
+        });
+    }
 
     return rebundle.call(bundler);
 }
