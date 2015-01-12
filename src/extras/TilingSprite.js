@@ -1,4 +1,5 @@
 var core = require('../core');
+var TextureUvs = require('../core/textures/TextureUvs')
 
 /**
  * A tiling sprite is a fast way of rendering a tiling image
@@ -50,28 +51,15 @@ function TilingSprite(texture, width, height)
     this.tilePosition = new core.math.Point(0,0);
 
     /**
-     * Whether this sprite is renderable or not
-     *
-     * @member {boolean}
-     * @default true
-     */
-    this.renderable = true;
-
-    /**
-     * The tint applied to the sprite. This is a hex value
-     *
-     * @member {number}
-     * @default 0xFFFFFF
-     */
-    this.tint = 0xFFFFFF;
-
-    /**
      * The blend mode to be applied to the sprite
      *
      * @member {number}
      * @default blendModes.NORMAL;
      */
     this.blendMode = core.CONST.blendModes.NORMAL;
+
+    
+    this._uvs = new TextureUvs();
 }
 
 TilingSprite.prototype = Object.create(core.Sprite.prototype);
@@ -138,29 +126,9 @@ Object.defineProperties(TilingSprite.prototype, {
  *
  * @param renderer {WebGLRenderer}
  */
-TilingSprite.prototype.renderWebGL = function (renderer)
+TilingSprite.prototype._renderWebGL = function (renderer)
 {
-    if (!this.visible || this.alpha <= 0)
-    {
-        return;
-    }
-
-    var i, j;
-
-    if (this._mask)
-    {
-        renderer.spriteBatch.stop();
-        renderer.maskManager.pushMask(this.mask, renderer);
-        renderer.spriteBatch.start();
-    }
-
-    if (this._filters)
-    {
-        renderer.spriteBatch.flush();
-        renderer.filterManager.pushFilter(this._filterBlock);
-    }
-
-
+  
 
     if (!this.tilingTexture || this.refreshTexture)
     {
@@ -173,30 +141,45 @@ TilingSprite.prototype.renderWebGL = function (renderer)
             this.tilingTexture.needsUpdate = false;
            // this.tilingTexture._uvs = null;
         }
+
     }
     else
     {
-        renderer.spriteBatch.renderTilingSprite(this);
-    }
-    // simple render children!
-    for (i=0,j=this.children.length; i<j; i++)
-    {
-        this.children[i].renderWebGL(renderer);
-    }
+        // tweak our texture temporarily..
+        
+        var texture = this.tilingTexture;
 
-    renderer.spriteBatch.stop();
 
-    if (this._filters)
-    {
-        renderer.filterManager.popFilter();
+        var uvs = this._uvs;
+
+        this.tilePosition.x %= texture.baseTexture.width * this.tileScaleOffset.x;
+        this.tilePosition.y %= texture.baseTexture.height * this.tileScaleOffset.y;
+
+        var offsetX =  this.tilePosition.x/(texture.baseTexture.width*this.tileScaleOffset.x);
+        var offsetY =  this.tilePosition.y/(texture.baseTexture.height*this.tileScaleOffset.y);
+
+        var scaleX =  (this.width / texture.baseTexture.width)  / (this.tileScale.x * this.tileScaleOffset.x);
+        var scaleY =  (this.height / texture.baseTexture.height) / (this.tileScale.y * this.tileScaleOffset.y);
+
+        uvs.x0 = 0 - offsetX;
+        uvs.y0 = 0 - offsetY;
+
+        uvs.x1 = (1 * scaleX) - offsetX;
+        uvs.y1 = 0 - offsetY;
+
+        uvs.x2 = (1 * scaleX) - offsetX;
+        uvs.y2 = (1 * scaleY) - offsetY;
+
+        uvs.x3 = 0 - offsetX;
+        uvs.y3 = (1 * scaleY) - offsetY;
+
+        var tempUvs = texture._uvs;
+        texture._uvs = uvs;
+        renderer.spriteRenderer.renderTilingSprite(this);
+        texture._uvs = tempUvs;
+
     }
-
-    if (this._mask)
-    {
-        renderer.maskManager.popMask(this._mask, renderer);
-    }
-
-    renderer.spriteBatch.start();
+    
 };
 
 /**

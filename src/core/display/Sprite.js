@@ -204,7 +204,7 @@ Sprite.prototype._renderWebGL = function (renderer)
 
     // this is where content gets renderd..
     // watch this space for a little render state manager..
-    renderer.setObjectRendererer(renderer.spriteRenderer);
+    renderer.setObjectRenderer(renderer.spriteRenderer);
     renderer.spriteRenderer.render(this);
 };
 

@@ -303,7 +303,7 @@ Text.prototype.updateTexture = function ()
     this._height = this.canvas.height;
 
     // update the dirty base textures
-    this.texture.baseTexture.dirty();
+    //this.texture.baseTexture.dirty();
 };
 
 /**

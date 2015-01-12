@@ -77,7 +77,7 @@ function WebGLRenderer(width, height, options)
      * @member {number}
      * @private
      */
-    this._backgroundColor = 0x000000;
+    this._backgroundColor = 0xFFFFFF//000000;
 
     /**
      * The background color as an [R, G, B] array.
@@ -376,9 +376,6 @@ WebGLRenderer.prototype.renderDisplayObject = function (displayObject, projectio
     //set the default offset
     this.offset = this.offset;
 
-    // start the sprite batch
-    this.spriteRenderer.begin();
-
     // start the filter manager
     this.filterManager.begin(buffer);
 
@@ -386,10 +383,10 @@ WebGLRenderer.prototype.renderDisplayObject = function (displayObject, projectio
     displayObject.renderWebGL(this);
 
     // finish the sprite batch
-    this.spriteRenderer.end();
+    this.currentRenderer.flush();
 };
 
-WebGLRenderer.prototype.setObjectRendererer = function (objectRenderer) 
+WebGLRenderer.prototype.setObjectRenderer = function (objectRenderer) 
 {
     if(this.currentRenderer === objectRenderer)
     {

@@ -39,6 +39,12 @@ GraphicsRenderer.prototype.stop = function()
     // flush!
 }
 
+GraphicsRenderer.prototype.flush = function()
+{
+    // flush!
+}
+
+
 
 GraphicsRenderer.prototype.render = function(graphics)
 {
