@@ -2,7 +2,6 @@ var WebGLFastSpriteBatch = require('./utils/WebGLFastSpriteBatch'),
     WebGLShaderManager = require('./managers/WebGLShaderManager'),
     WebGLMaskManager = require('./managers/WebGLMaskManager'),
     WebGLFilterManager = require('./managers/WebGLFilterManager'),
-    WebGLStencilManager = require('./managers/WebGLStencilManager'),
     WebGLBlendModeManager = require('./managers/WebGLBlendModeManager'),
     ObjectRenderer = require('./utils/ObjectRenderer'),
     math = require('../../math'),
@@ -205,12 +204,6 @@ function WebGLRenderer(width, height, options)
      * @member {WebGLFilterManager}
      */
     this.filterManager = new WebGLFilterManager(this);
-
-    /**
-     * Manages the stencil buffer
-     * @member {WebGLStencilManager}
-     */
-    this.stencilManager = new WebGLStencilManager(this);
 
     /**
      * Manages the blendModes
@@ -583,7 +576,6 @@ WebGLRenderer.prototype.destroy = function (removeView)
     this.shaderManager = null;
     this.maskManager = null;
     this.filterManager = null;
-    this.stencilManager = null;
     this.blendModeManager = null;
 
     this.blendModes = null;

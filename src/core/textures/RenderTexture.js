@@ -377,9 +377,6 @@ RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear, r
         this.textureBuffer.clear();
     }
 
-
-
-
 //    this.textureBuffer.
     var context = this.textureBuffer.context;
 

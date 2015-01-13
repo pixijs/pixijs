@@ -3,7 +3,7 @@ var utils = require('../utils'),
     CONST = require('../const'),
     ObjectRenderer = require('../renderers/webgl/utils/ObjectRenderer'),
     WebGLRenderer = require('../renderers/webgl/WebGLRenderer'),
-    WebGLGraphicsData = require('./GraphicsData');
+    WebGLGraphicsData = require('./WebGLGraphicsData');
 
 /**
  * Renders the graphics object.
@@ -66,12 +66,12 @@ GraphicsRenderer.prototype.render = function(graphics)
         {
             webGLData = webGL.data[i];
 
-            renderer.stencilManager.pushStencil(graphics, webGLData, renderer);
+            renderer.maskManager.pushStencil(graphics, webGLData, renderer);
 
             // render quad..
             gl.drawElements(gl.TRIANGLE_FAN, 4, gl.UNSIGNED_SHORT, ( webGLData.indices.length - 4 ) * 2 );
 
-            renderer.stencilManager.popStencil(graphics, webGLData, renderer);
+            renderer.maskManager.popStencil(graphics, webGLData, renderer);
         }
         else
         {
