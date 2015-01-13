@@ -398,7 +398,6 @@ Sprite.prototype.renderCanvas = function (renderer)
         }
         else
         {
-//            console.log(resolution + " " + this.texture.crop)
             renderer.context.drawImage(
                 this.texture.baseTexture.source,
                 this.texture.crop.x,

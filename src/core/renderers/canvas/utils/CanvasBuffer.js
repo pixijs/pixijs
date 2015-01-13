@@ -22,7 +22,8 @@ function CanvasBuffer(width, height)
      */
     this.context = this.canvas.getContext('2d');
 
-   
+    this.canvas.width = width;
+    this.canvas.height = height;
 }
 
 CanvasBuffer.prototype.constructor = CanvasBuffer;

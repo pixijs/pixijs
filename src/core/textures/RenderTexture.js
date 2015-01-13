@@ -387,12 +387,12 @@ RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear, r
 
     this.renderer.resolution = this.resolution;
 
-//    this.renderer.renderDisplayObject(displayObject, context);
+    this.renderer.renderDisplayObject(displayObject, context);
 
     this.renderer.resolution = realResolution;
-    context.setTransform(1, 0, 0, 1, 0, 0);
-    context.fillStyle ="#FF0000"
-    context.fillRect(0, 0, 800, 600);
+ //   context.setTransform(1, 0, 0, 1, 0, 0);
+   // context.fillStyle ="#FF0000"
+//    context.fillRect(0, 0, 800, 600);
 
 };
 
