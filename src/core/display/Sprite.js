@@ -346,8 +346,9 @@ Sprite.prototype.renderCanvas = function (renderer)
         }
 
         // If the texture is trimmed we offset by the trim x/y, otherwise we use the frame dimensions
-        var dx = (this.texture.trim ? this.texture.trim.x : 0) - (this.anchor.x * this.texture.trim.width);
-        var dy = (this.texture.trim ? this.texture.trim.y : 0) - (this.anchor.y * this.texture.trim.height);
+        var dx = (this.texture.trim) ? this.texture.trim.x - this.anchor.x * this.texture.trim.width : this.anchor.x * -this.texture._frame.width;
+        var dy = (this.texture.trim) ? this.texture.trim.y - this.anchor.y * this.texture.trim.height : this.anchor.y * -this.texture._frame.height;
+
 
         // Allow for pixel rounding
         if (renderer.roundPixels)
@@ -400,6 +401,7 @@ Sprite.prototype.renderCanvas = function (renderer)
         }
         else
         {
+//            console.log(resolution + " " + this.texture.crop)
             renderer.context.drawImage(
                 this.texture.baseTexture.source,
                 this.texture.crop.x,

@@ -174,10 +174,18 @@ TilingSprite.prototype._renderWebGL = function (renderer)
         uvs.y3 = (1 * scaleY) - offsetY;
 
         var tempUvs = texture._uvs;
-        texture._uvs = uvs;
-        renderer.spriteRenderer.renderTilingSprite(this);
-        texture._uvs = tempUvs;
+        var tempWidth = texture._frame.width;
+        var tempHeight = texture._frame.height;
 
+        texture._uvs = uvs;
+        texture._frame.width = this.width;
+        texture._frame.height = this.height;
+
+        renderer.spriteRenderer.render(this);
+     
+        texture._uvs = tempUvs;
+        texture._frame.width = tempWidth;
+        texture._frame.height = tempHeight;
     }
     
 };
