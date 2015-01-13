@@ -21,7 +21,6 @@ module.exports = {
     CrossHatchFilter:   require('./CrossHatchFilter'),
     DisplacementFilter: require('./DisplacementFilter'),
     DotScreenFilter:    require('./DotScreenFilter'),
-    FilterBlock:        require('./FilterBlock'),
     GrayFilter:         require('./GrayFilter'),
     InvertFilter:       require('./InvertFilter'),
     NoiseFilter:        require('./NoiseFilter'),
