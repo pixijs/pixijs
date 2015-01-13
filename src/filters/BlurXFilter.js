@@ -26,8 +26,8 @@ function BlurXFilter()
         'uniform float blur;',
         'uniform sampler2D uSampler;',
 
-        'void main(void)
-        {',
+        'void main(void)',
+        '{',
         '   vec4 sum = vec4(0.0);',
 
         '   sum += texture2D(uSampler, vec2(vTextureCoord.x - 4.0*blur, vTextureCoord.y)) * 0.05;',

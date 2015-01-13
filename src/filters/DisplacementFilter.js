@@ -50,8 +50,8 @@ function DisplacementFilter(texture)
         'uniform vec2 mapDimensions;',// = vec2(256.0, 256.0);',
         // 'const vec2 textureDimensions = vec2(750.0, 750.0);',
 
-        'void main(void)
-        {',
+        'void main(void)',
+        '{',
         '   vec2 mapCords = vTextureCoord.xy;',
         '   mapCords += (dimensions.zw + offset)/ dimensions.xy ;',
         '   mapCords.y *= -1.0;',

@@ -31,8 +31,8 @@ function ColorMatrixFilter()
         'uniform mat4 matrix;',
         'uniform sampler2D uSampler;',
 
-        'void main(void)
-        {',
+        'void main(void)',
+        '{',
         '   gl_FragColor = texture2D(uSampler, vTextureCoord) * matrix;',
         '}'
     ];
