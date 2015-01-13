@@ -97,8 +97,8 @@ AtlasLoader.prototype.onAtlasLoaded = function ()
                     {
                         if (lineCount % 7 === 1)
                         { // frame name
-                            if (currentFrame != null)
-                            { //jshint ignore:line
+                            if (currentFrame)
+                            {
                                 this.atlas.frames[currentImageId][currentFrame.name] = currentFrame;
                             }
                             currentFrame = { name: result[i], frame : {} };
@@ -135,8 +135,8 @@ AtlasLoader.prototype.onAtlasLoaded = function ()
                 }
             }
 
-            if (currentFrame != null)
-            { //jshint ignore:line
+            if (currentFrame)
+            {
                 this.atlas.frames[currentImageId][currentFrame.name] = currentFrame;
             }
 

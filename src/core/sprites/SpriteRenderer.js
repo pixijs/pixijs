@@ -1,5 +1,5 @@
-var TextureUvs = require('../../../textures/TextureUvs'),
-    ObjectRenderer = require('../renderers/webgl/utils/ObjectRenderer'),
+var ObjectRenderer = require('../renderers/webgl/utils/ObjectRenderer'),
+    Shader = require('../renderers/webgl/shaders/Shader'),
     SpriteShader = require('../renderers/webgl/shaders/SpriteShader'),
     WebGLRenderer = require('../renderers/webgl/WebGLRenderer');
 

@@ -544,11 +544,9 @@ DisplayObjectContainer.prototype.renderWebGL = function (renderer)
     }
 };
 
-DisplayObjectContainer.prototype._renderWebGL = function (renderer)
+DisplayObjectContainer.prototype._renderWebGL = function (/* renderer */)
 {
-
     // this is where content itself gets renderd..
-
 };
 
 /**
