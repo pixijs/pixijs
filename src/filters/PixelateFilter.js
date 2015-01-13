@@ -29,8 +29,8 @@ function PixelateFilter()
         'uniform vec2 pixelSize;',
         'uniform sampler2D uSampler;',
 
-        'void main(void)
-        {',
+        'void main(void)',
+        '{',
         '   vec2 coord = vTextureCoord;',
 
         '   vec2 size = dimensions.xy/pixelSize;',

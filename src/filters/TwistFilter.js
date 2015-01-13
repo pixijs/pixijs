@@ -29,13 +29,13 @@ function TwistFilter()
         'uniform vec2 offset;',
         'uniform sampler2D uSampler;',
 
-        'void main(void)
-        {',
+        'void main(void)',
+        '{',
         '   vec2 coord = vTextureCoord - offset;',
         '   float distance = length(coord);',
 
-        '   if (distance < radius)
-        {',
+        '   if (distance < radius)',
+        '   {',
         '       float ratio = (radius - distance) / radius;',
         '       float angleMod = ratio * ratio * angle;',
         '       float s = sin(angleMod);',

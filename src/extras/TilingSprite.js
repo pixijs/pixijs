@@ -1,5 +1,5 @@
 var core = require('../core');
-var TextureUvs = require('../core/textures/TextureUvs')
+var TextureUvs = require('../core/textures/TextureUvs');
 
 /**
  * A tiling sprite is a fast way of rendering a tiling image
@@ -58,7 +58,7 @@ function TilingSprite(texture, width, height)
      */
     this.blendMode = core.CONST.blendModes.NORMAL;
 
-    
+
     this._uvs = new TextureUvs();
 }
 
@@ -128,7 +128,7 @@ Object.defineProperties(TilingSprite.prototype, {
  */
 TilingSprite.prototype._renderWebGL = function (renderer)
 {
-  
+
 
     if (!this.tilingTexture || this.refreshTexture)
     {
@@ -146,7 +146,7 @@ TilingSprite.prototype._renderWebGL = function (renderer)
     else
     {
         // tweak our texture temporarily..
-        
+
         var texture = this.tilingTexture;
 
 
@@ -187,7 +187,7 @@ TilingSprite.prototype._renderWebGL = function (renderer)
         texture._frame.width = tempWidth;
         texture._frame.height = tempHeight;
     }
-    
+
 };
 
 /**

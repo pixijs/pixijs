@@ -500,7 +500,7 @@ DisplayObjectContainer.prototype.renderWebGL = function (renderer)
         // push filter first as we need to ensure the stencil buffer is correct for any masking
         if (this._filters)
         {
-            renderer.spriteRenderer.flush();
+            renderer.objectRenderers.sprite.flush();
             renderer.filterManager.pushFilter(this._filterBlock);
         }
 
@@ -544,11 +544,9 @@ DisplayObjectContainer.prototype.renderWebGL = function (renderer)
     }
 };
 
-DisplayObjectContainer.prototype._renderWebGL = function (renderer)
+DisplayObjectContainer.prototype._renderWebGL = function (/* renderer */)
 {
-
     // this is where content itself gets renderd..
-
 };
 
 /**

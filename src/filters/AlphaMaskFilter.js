@@ -48,8 +48,8 @@ function AlphaMaskFilter(texture)
         'uniform vec4 dimensions;',
         'uniform vec2 offset;',
 
-        'void main()
-        {',
+        'void main()',
+        '{',
         '   vec2 mapCords = vTextureCoord.xy;',
         '   mapCords += (dimensions.zw + offset)/ dimensions.xy ;',
         '   mapCords.y *= -1.0;',

@@ -1,5 +1,3 @@
-var utils = require('../../../utils');
-
 var Shader = require('./Shader');
 
 /**

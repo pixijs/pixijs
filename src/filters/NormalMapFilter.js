@@ -61,8 +61,8 @@ function NormalMapFilter(texture)
         'uniform vec2 mapDimensions;',// = vec2(256.0, 256.0);',
 
 
-        'void main(void)
-        {',
+        'void main(void)',
+        '{',
         '   vec2 mapCords = vTextureCoord.xy;',
 
         '   vec4 color = texture2D(uSampler, vTextureCoord.st);',

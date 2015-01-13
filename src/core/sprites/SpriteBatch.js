@@ -1,5 +1,4 @@
-var DisplayObjectContainer = require('./DisplayObjectContainer'),
-    WebGLFastSpriteBatch = require('../renderers/webgl/utils/WebGLFastSpriteBatch');
+var DisplayObjectContainer = require('./DisplayObjectContainer');
 
 /**
  * The SpriteBatch class is a really fast version of the DisplayObjectContainer built solely for speed,

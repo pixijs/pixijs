@@ -37,8 +37,8 @@ function ConvolutionFilter(matrix, width, height)
 
         'vec2 px = vec2(texelSizeX, texelSizeY);',
 
-        'void main(void)
-        {',
+        'void main(void)',
+        '{',
         '   vec4 c11 = texture2D(texture, vTextureCoord - px);', // top left
         '   vec4 c12 = texture2D(texture, vec2(vTextureCoord.x, vTextureCoord.y - px.y));', // top center
         '   vec4 c13 = texture2D(texture, vec2(vTextureCoord.x + px.x, vTextureCoord.y - px.y));', // top right
