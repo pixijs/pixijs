@@ -21,24 +21,24 @@ module.exports = ObjectRenderer;
 ObjectRenderer.prototype.start = function ()
 {
     // set the shader..
-}
+};
 
 ObjectRenderer.prototype.stop = function ()
 {
     // flush!
-}
+};
 
 ObjectRenderer.prototype.flush = function ()
 {
     // flush!
-}
+};
 
 ObjectRenderer.prototype.render = function (/* object */)
 {
     // render the object
-}
+};
 
 ObjectRenderer.prototype.destroy = function ()
 {
     this.renderer = null;
-}
+};

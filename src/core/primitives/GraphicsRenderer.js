@@ -104,7 +104,7 @@ GraphicsRenderer.prototype.render = function(graphics)
             gl.drawElements(gl.TRIANGLE_STRIP,  webGLData.indices.length, gl.UNSIGNED_SHORT, 0 );
         }
     }
-}
+};
 
 /**
  * Updates the graphics object
@@ -236,7 +236,7 @@ GraphicsRenderer.prototype.updateGraphics = function(graphics)
             webGLData.upload();
         }
     }
-}
+};
 
 /**
  *

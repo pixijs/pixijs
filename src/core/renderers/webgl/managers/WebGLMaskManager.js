@@ -1,4 +1,5 @@
-var WebGLManager = require('./WebGLManager')
+var WebGLManager = require('./WebGLManager');
+
 /**
  * @class
  * @namespace PIXI

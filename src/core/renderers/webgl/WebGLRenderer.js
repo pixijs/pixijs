@@ -75,7 +75,7 @@ function WebGLRenderer(width, height, options)
      * @member {number}
      * @private
      */
-    this._backgroundColor = 0xFFFFFF//000000;
+    this._backgroundColor = 0xFFFFFF;
 
     /**
      * The background color as an [R, G, B] array.
