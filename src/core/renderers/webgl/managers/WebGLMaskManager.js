@@ -20,11 +20,11 @@ module.exports = WebGLMaskManager;
  */
 WebGLMaskManager.prototype.pushMask = function (maskData)
 {
-    this.renderer.setObjectRenderer( this.renderer.graphicsRenderer );
+    this.renderer.setObjectRenderer(this.renderer.objectRenderers.graphics);
 
     if (maskData.dirty)
     {
-        this.renderer.graphicsRenderer.updateGraphics(maskData, this.renderer.gl);
+        this.renderer.objectRenderers.graphics.updateGraphics(maskData, this.renderer.gl);
     }
 
     if (!maskData._webGL[this.renderer.gl.id].data.length)
@@ -42,7 +42,7 @@ WebGLMaskManager.prototype.pushMask = function (maskData)
  */
 WebGLMaskManager.prototype.popMask = function (maskData)
 {
-    this.renderer.setObjectRenderer( this.renderer.graphicsRenderer );
-    
+    this.renderer.setObjectRenderer(this.renderer.objectRenderers.graphics);
+
     this.renderer.stencilManager.popStencil(maskData, maskData._webGL[this.renderer.gl.id].data[0], this.renderer);
 };

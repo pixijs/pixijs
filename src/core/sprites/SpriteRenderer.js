@@ -1,5 +1,7 @@
 var TextureUvs = require('../../../textures/TextureUvs'),
-    SpriteShader = require('../shaders/SpriteShader');
+    ObjectRenderer = require('../renderers/webgl/utils/ObjectRenderer'),
+    SpriteShader = require('../renderers/webgl/shaders/SpriteShader'),
+    WebGLRenderer = require('../renderers/webgl/WebGLRenderer');
 
 /**
  * @author Mat Groves
@@ -21,6 +23,8 @@ var TextureUvs = require('../../../textures/TextureUvs'),
  */
 function SpriteRenderer(renderer)
 {
+    ObjectRenderer.call(this, renderer);
+
     /**
      *
      *
@@ -170,10 +174,16 @@ function SpriteRenderer(renderer)
     });
 }
 
+SpriteRenderer.prototype = Object.create(ObjectRenderer.prototype);
 SpriteRenderer.prototype.constructor = SpriteRenderer;
 module.exports = SpriteRenderer;
 
+WebGLRenderer.registerObjectRenderer('sprite', SpriteRenderer);
+
 /**
+ * Sets up the renderer context and necessary buffers.
+ *
+ * @private
  * @param gl {WebGLContext} the current WebGL drawing context
  */
 SpriteRenderer.prototype.setupContext = function ()
@@ -199,8 +209,9 @@ SpriteRenderer.prototype.setupContext = function ()
     this.currentBlendMode = 99999;
 };
 
-
 /**
+ * Renders the sprite object.
+ *
  * @param sprite {Sprite} the sprite to render when using this spritebatch
  */
 SpriteRenderer.prototype.render = function (sprite)
@@ -326,10 +337,7 @@ SpriteRenderer.prototype.render = function (sprite)
 
     // increment the batchsize
     this.sprites[this.currentBatchSize++] = sprite;
-
-
 };
-
 
 /**
  * Renders the content and empties the current batch.
@@ -457,6 +465,9 @@ SpriteRenderer.prototype.flush = function ()
 };
 
 /**
+ * Draws the currently batches sprites.
+ *
+ * @private
  * @param texture {Texture}
  * @param size {number}
  * @param startIndex {number}
@@ -488,6 +499,7 @@ SpriteRenderer.prototype.renderBatch = function (texture, size, startIndex)
 };
 
 /**
+ * Flushes the sprite renderer's current batch.
  *
  */
 SpriteRenderer.prototype.stop = function ()
@@ -497,6 +509,7 @@ SpriteRenderer.prototype.stop = function ()
 };
 
 /**
+ * Starts a new sprite batch.
  *
  */
 SpriteRenderer.prototype.start = function ()
@@ -513,13 +526,20 @@ SpriteRenderer.prototype.destroy = function ()
     this.renderer.gl.deleteBuffer(this.vertexBuffer);
     this.renderer.gl.deleteBuffer(this.indexBuffer);
 
+    this.renderer = null;
+
     this.vertices = null;
+    this.positions = null;
+    this.colors = null;
     this.indices = null;
-
-    this.vertexBuffer = null;
-    this.indexBuffer = null;
-
     this.currentBaseTexture = null;
 
-    this.renderer = null;
+    this.drawing = false;
+    this.dirty = false;
+
+    this.textures = null;
+    this.blendModes = null;
+    this.shaders = null;
+    this.sprites = null;
+    this.shader = null;
 };

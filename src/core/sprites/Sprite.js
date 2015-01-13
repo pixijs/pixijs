@@ -201,11 +201,8 @@ Sprite.prototype._onTextureUpdate = function ()
 
 Sprite.prototype._renderWebGL = function (renderer)
 {
-
-    // this is where content gets renderd..
-    // watch this space for a little render state manager..
-    renderer.setObjectRenderer(renderer.spriteRenderer);
-    renderer.spriteRenderer.render(this);
+    renderer.setObjectRenderer(renderer.objectRenderer.sprite);
+    renderer.objectRenderer.sprite.render(this);
 };
 
 /**
