@@ -53,33 +53,57 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
         throw new Error('Unable to create RenderTexture, you must pass a renderer into the constructor.');
     }
 
+    width = width || 100; 
+    height = height || 100;
+    resolution = resolution || 1;
+
+    /**
+     * The base texture object that this texture uses
+     *
+     * @member {BaseTexture}
+     */
+    var baseTexture = new BaseTexture();
+    baseTexture.width = width * resolution;
+    baseTexture.height = height * resolution;
+    baseTexture._glTextures = [];
+    baseTexture.resolution = resolution;
+    baseTexture.scaleMode = scaleMode || CONST.scaleModes.DEFAULT;
+    baseTexture.hasLoaded = true;
+
+
+    Texture.call(this,
+        baseTexture,
+        new math.Rectangle(0, 0, width, height)
+    );
+
+
     /**
      * The with of the render texture
      *
      * @member {number}
      */
-    this.width = width || 100;
+    this.width = width;
 
     /**
      * The height of the render texture
      *
      * @member {number}
      */
-    this.height = height || 100;
+    this.height = height;
 
     /**
      * The Resolution of the texture.
      *
      * @member {number}
      */
-    this.resolution = resolution || 1;
+    this.resolution = resolution;
 
     /**
      * The framing rectangle of the render texture
      *
      * @member {Rectangle}
      */
-    this.frame = new math.Rectangle(0, 0, this.width * this.resolution, this.height * this.resolution);
+    //this._frame = new math.Rectangle(0, 0, this.width * this.resolution, this.height * this.resolution);
 
     /**
      * This is the area of the BaseTexture image to actually copy to the Canvas / WebGL when rendering,
@@ -87,7 +111,7 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
      *
      * @member {Rectangle}
      */
-    this.crop = new math.Rectangle(0, 0, this.width * this.resolution, this.height * this.resolution);
+    //this.crop = new math.Rectangle(0, 0, this.width * this.resolution, this.height * this.resolution);
 
     /**
      * Draw/render the given DisplayObject onto the texture.
@@ -108,26 +132,8 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
      */
     this.render = null;
 
-    /**
-     * The base texture object that this texture uses
-     *
-     * @member {BaseTexture}
-     */
-    this.baseTexture = new BaseTexture();
-    this.baseTexture.width = this.width * this.resolution;
-    this.baseTexture.height = this.height * this.resolution;
-    this.baseTexture._glTextures = [];
-    this.baseTexture.resolution = this.resolution;
 
-    this.baseTexture.scaleMode = scaleMode || CONST.scaleModes.DEFAULT;
-
-    this.baseTexture.hasLoaded = true;
-
-    Texture.call(this,
-        this.baseTexture,
-        new math.Rectangle(0, 0, this.width, this.height)
-    );
-
+  
     /**
      * The renderer this RenderTexture uses. A RenderTexture can only belong to one renderer at the moment if its webGL.
      *
@@ -147,9 +153,20 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
     }
     else
     {
+        
         this.render = this.renderCanvas;
         this.textureBuffer = new CanvasBuffer(this.width* this.resolution, this.height* this.resolution);
         this.baseTexture.source = this.textureBuffer.canvas;
+      /*  document.body.appendChild( this.textureBuffer.canvas);
+        
+        this.textureBuffer.canvas.style.position = "absolute";
+        this.textureBuffer.canvas.style.top = 0;
+        this.textureBuffer.canvas.style.left= 0;
+        this.textureBuffer.canvas.style.zIndex = 1000;
+        this.textureBuffer.canvas.width = width;
+        this.textureBuffer.canvas.height = height;
+
+        console.log(this.textureBuffer.canvas);*/
     }
 
     /**
@@ -158,6 +175,8 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
     this.valid = true;
 
     this._updateUvs();
+
+    console.log(baseTexture);
 }
 
 RenderTexture.prototype = Object.create(Texture.prototype);
@@ -180,8 +199,8 @@ RenderTexture.prototype.resize = function (width, height, updateBase)
 
     this.valid = (width > 0 && height > 0);
 
-    this.width = this.frame.width = this.crop.width = width;
-    this.height =  this.frame.height = this.crop.height = height;
+    this.width = this._frame.width = this.crop.width = width;
+    this.height =  this._frame.height = this.crop.height = height;
 
     if (updateBase)
     {
@@ -292,11 +311,11 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, re
         this.textureBuffer.clear();
     }
 
-    this.renderer.spriteBatch.dirty = true;
+//    this.renderer.spriteRenderer.dirty = true;
 
     this.renderer.renderDisplayObject(displayObject, this.projection, this.textureBuffer.frameBuffer);
 
-    this.renderer.spriteBatch.dirty = true;
+  //  this.renderer.spriteRenderer.dirty = true;
 
     if (restoreWorldTransform)
     {
@@ -328,19 +347,11 @@ RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear, r
         return;
     }
 
-    if (typeof restoreWorldTransform === 'undefined')
-    {
-        restoreWorldTransform = true;
-    }
-
+   
     var tempAlpha,
         tempTransform;
 
-    if (restoreWorldTransform)
-    {
-        tempAlpha = displayObject.worldAlpha;
-        tempTransform = displayObject.worldTransform.toArray();
-    }
+    
 
     var wt = displayObject.worldTransform;
     wt.identity();
@@ -366,26 +377,23 @@ RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear, r
         this.textureBuffer.clear();
     }
 
+
+
+
+//    this.textureBuffer.
     var context = this.textureBuffer.context;
 
     var realResolution = this.renderer.resolution;
 
     this.renderer.resolution = this.resolution;
 
-    this.renderer.renderDisplayObject(displayObject, context);
+//    this.renderer.renderDisplayObject(displayObject, context);
 
     this.renderer.resolution = realResolution;
+    context.setTransform(1, 0, 0, 1, 0, 0);
+    context.fillStyle ="#FF0000"
+    context.fillRect(0, 0, 800, 600);
 
-    if (restoreWorldTransform)
-    {
-        displayObject.worldAlpha = tempAlpha;
-        displayObject.worldTransform.fromArray(tempTransform);
-
-        for (i = 0, j = children.length; i < j; ++i)
-        {
-            children[i].updateTransform();
-        }
-    }
 };
 
 /**

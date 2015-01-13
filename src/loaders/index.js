@@ -9,6 +9,7 @@
  * @namespace PIXI
  */
 module.exports = {
+	AssetLoader:        require('./AssetLoader'),
     AtlasLoader:        require('./AtlasLoader'),
     BitmapFontLoader:   require('./BitmapFontLoader'),
     ImageLoader:        require('./ImageLoader'),

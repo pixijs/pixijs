@@ -1,4 +1,4 @@
-var DisplayObjectContainer = require('./DisplayObjectContainer');
+var DisplayObjectContainer = require('../display/DisplayObjectContainer');
 
 /**
  * The SpriteBatch class is a really fast version of the DisplayObjectContainer built solely for speed,

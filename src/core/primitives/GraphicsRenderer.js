@@ -1,9 +1,9 @@
-var utils = require('../../../utils'),
-    math = require('../../../math'),
-    CONST = require('../../../const'),
+var utils = require('../utils'),
+    math = require('../math'),
+    CONST = require('../const'),
     ObjectRenderer = require('../renderers/webgl/utils/ObjectRenderer'),
     WebGLRenderer = require('../renderers/webgl/WebGLRenderer'),
-    WebGLGraphicsData = require('./WebGLGraphicsData');
+    WebGLGraphicsData = require('./GraphicsData');
 
 /**
  * Renders the graphics object.
@@ -23,8 +23,6 @@ function GraphicsRenderer(renderer)
 GraphicsRenderer.prototype = Object.create(ObjectRenderer.prototype);
 GraphicsRenderer.prototype.constructor = GraphicsRenderer;
 module.exports = GraphicsRenderer;
-
-WebGLRenderer.registerObjectRenderer('graphics', GraphicsRenderer);
 
 /**
  * Destroys this renderer.

@@ -1,6 +1,6 @@
 var math = require('../math'),
     Texture = require('../textures/Texture'),
-    DisplayObjectContainer = require('./DisplayObjectContainer'),
+    DisplayObjectContainer = require('../display/DisplayObjectContainer'),
     CanvasTinter = require('../renderers/canvas/utils/CanvasTinter'),
     utils = require('../utils'),
     CONST = require('../const');
@@ -201,8 +201,8 @@ Sprite.prototype._onTextureUpdate = function ()
 
 Sprite.prototype._renderWebGL = function (renderer)
 {
-    renderer.setObjectRenderer(renderer.objectRenderer.sprite);
-    renderer.objectRenderer.sprite.render(this);
+    renderer.setObjectRenderer(renderer.objectRenderers.sprite);
+    renderer.objectRenderers.sprite.render(this);
 };
 
 /**

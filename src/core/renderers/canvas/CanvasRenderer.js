@@ -1,5 +1,6 @@
 var CanvasMaskManager = require('./utils/CanvasMaskManager'),
     utils = require('../../utils'),
+    math = require('../../math'),
     CONST = require('../../const');
 
 /**
@@ -92,7 +93,6 @@ function CanvasRenderer(width, height, options)
      * @member {boolean}
      */
     this.autoResize = options.autoResize || false;
-
 
     /**
      * The width of the canvas view
@@ -188,6 +188,13 @@ function CanvasRenderer(width, height, options)
 
     this._mapBlendModes();
 
+    /**
+     * This temporary display object used as the parent of the currently being rendered item
+     * @member DisplayObject
+     * @private
+     */
+    this._tempDisplayObjectParent = {worldTransform:new math.Matrix(), worldAlpha:1};
+
     this.resize(width, height);
 }
 
@@ -222,7 +229,13 @@ Object.defineProperties(CanvasRenderer.prototype, {
  */
 CanvasRenderer.prototype.render = function (object)
 {
+    var cacheParent = object.parent;
+    object.parent = this._tempDisplayObjectParent;
+
+    // update the scene graph
     object.updateTransform();
+
+    object.parent = cacheParent;
 
     this.context.setTransform(1,0,0,1,0,0);
 
@@ -250,7 +263,7 @@ CanvasRenderer.prototype.render = function (object)
         }
     }
 
-    this.renderDisplayObject(object);
+    this.renderDisplayObject(object, this.context);
 };
 
 /**
@@ -297,9 +310,13 @@ CanvasRenderer.prototype.resize = function (width, height)
  * @param displayObject {DisplayObject} The displayObject to render
  * @private
  */
-CanvasRenderer.prototype.renderDisplayObject = function (displayObject)
+CanvasRenderer.prototype.renderDisplayObject = function (displayObject, context)
 {
+    var tempContext = this.context;
+
+    this.context = context;
     displayObject.renderCanvas(this);
+    this.context = tempContext;
 };
 
 /**

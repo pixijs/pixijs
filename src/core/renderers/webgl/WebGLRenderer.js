@@ -4,6 +4,7 @@ var WebGLFastSpriteBatch = require('./utils/WebGLFastSpriteBatch'),
     WebGLFilterManager = require('./managers/WebGLFilterManager'),
     WebGLStencilManager = require('./managers/WebGLStencilManager'),
     WebGLBlendModeManager = require('./managers/WebGLBlendModeManager'),
+    ObjectRenderer = require('./utils/ObjectRenderer'),
     math = require('../../math'),
     utils = require('../../utils'),
     CONST = require('../../const');
@@ -242,6 +243,8 @@ function WebGLRenderer(width, height, options)
      */
     this.objectRenderers = {};
 
+    this.currentRenderer = new ObjectRenderer();
+    
     // create an instance of each registered object renderer
     for (var o in WebGLRenderer._objectRenderers) {
         this.objectRenderers[o] = new (WebGLRenderer._objectRenderers[o])(this);
@@ -382,6 +385,7 @@ WebGLRenderer.prototype.renderDisplayObject = function (displayObject, projectio
 
     // finish the sprite batch
     this.currentRenderer.flush();
+
 };
 
 WebGLRenderer.prototype.setObjectRenderer = function (objectRenderer)

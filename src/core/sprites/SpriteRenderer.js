@@ -168,17 +168,15 @@ function SpriteRenderer(renderer)
 
     // listen for context and update necessary buffers
     var self = this;
-    this.renderer.on('context', function ()
-    {
-        self.setupContext();
-    });
+
+    this.setupContext();
 }
 
 SpriteRenderer.prototype = Object.create(ObjectRenderer.prototype);
 SpriteRenderer.prototype.constructor = SpriteRenderer;
 module.exports = SpriteRenderer;
 
-WebGLRenderer.registerObjectRenderer('sprite', SpriteRenderer);
+
 
 /**
  * Sets up the renderer context and necessary buffers.
