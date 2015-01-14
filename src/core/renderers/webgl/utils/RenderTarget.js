@@ -42,8 +42,6 @@ var RenderTarget = function(gl, width, height, scaleMode, root)
 
     this.projectionMatrix = new math.Matrix();
 
-    
-
     /**
      * @property scaleMode
      * @type Number

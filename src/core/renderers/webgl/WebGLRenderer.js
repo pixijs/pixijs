@@ -164,15 +164,6 @@ function WebGLRenderer(width, height, options)
         preserveDrawingBuffer: options.preserveDrawingBuffer
     };
 
-    /**
-     * @member {Point}
-     */
-    this.projection = new math.Point();
-
-    /**
-     * @member {Point}
-     */
-    this.offset = new math.Point(0, 0);
 
     /**
      * Counter for the number of draws made each frame
@@ -377,11 +368,8 @@ WebGLRenderer.prototype.renderDisplayObject = function (displayObject, renderTar
     // reset the render session data..
     this.drawCount = 0;
 
-    // make sure to flip the Y if using a render texture..
-//    this.flipY = renderTarget.frameBuffer ? -1 : 1;
-
     // start the filter manager
-    this.filterManager.begin(renderTarget.frameBuffer);
+   // this.filterManager.begin(renderTarget.frameBuffer);
 
     // render the scene!
     displayObject.renderWebGL(this);
@@ -426,9 +414,6 @@ WebGLRenderer.prototype.resize = function (width, height)
     this.gl.viewport(0, 0, this.width, this.height);
 
     this.renderTarget.resize(width, height);
-
-    this.projection.x =  this.width / 2 / this.resolution;
-    this.projection.y =  -this.height / 2 / this.resolution;
 };
 
 /**
@@ -581,8 +566,6 @@ WebGLRenderer.prototype.destroy = function (removeView)
 
     this._contextOptions = null;
 
-    this.projection = null;
-    this.offset = null;
     this.drawCount = 0;
 
     this.shaderManager = null;
