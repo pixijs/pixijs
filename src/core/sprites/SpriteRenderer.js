@@ -2,6 +2,7 @@ var ObjectRenderer = require('../renderers/webgl/utils/ObjectRenderer'),
     Shader = require('../renderers/webgl/shaders/Shader'),
     SpriteShader = require('../renderers/webgl/shaders/SpriteShader'),
     WebGLRenderer = require('../renderers/webgl/WebGLRenderer');
+    math = require('../math');
 
 /**
  * @author Mat Groves
@@ -386,7 +387,7 @@ SpriteRenderer.prototype.flush = function ()
     var batchSize = 0;
     var start = 0;
 
-    var currentBaseTexture = null;
+    var currentBaseTexture = sprite;
     var currentBlendMode = this.renderer.blendModeManager.currentBlendMode;
     var currentShader = null;
 
@@ -442,14 +443,7 @@ SpriteRenderer.prototype.flush = function ()
 
                 // both thease only need to be set if they are changing..
                 // set the projection
-                var projection = this.renderer.projection;
-                gl.uniform2f(shader.uniforms.projectionVector._location, projection.x, projection.y);
-
-                // TODO - this is temprorary!
-                var offsetVector = this.renderer.offset;
-                gl.uniform2f(shader.uniforms.offsetVector._location, offsetVector.x, offsetVector.y);
-
-                // set the pointers
+                gl.uniformMatrix3fv(shader.uniforms.projectionMatrix._location, false, this.renderer.currentRenderTarget.projectionMatrix.toArray(true));
             }
         }
 

@@ -12,12 +12,11 @@ function PrimitiveShader(gl)
         // vertex shader
         [
             'attribute vec2 aVertexPosition;',
-            // 'attribute vec2 aTextureCoord;',
             'attribute vec4 aColor;',
 
             'uniform mat3 translationMatrix;',
-            'uniform vec2 projectionVector;',
-            'uniform vec2 offsetVector;',
+            'uniform mat3 projectionMatrix;',
+
             'uniform float alpha;',
             'uniform float flipY;',
             'uniform vec3 tint;',
@@ -25,9 +24,7 @@ function PrimitiveShader(gl)
             'varying vec4 vColor;',
 
             'void main(void){',
-            '   vec3 v = translationMatrix * vec3(aVertexPosition , 1.0);',
-            '   v -= offsetVector.xyx;',
-            '   gl_Position = vec4( v.x / projectionVector.x -1.0, (v.y / projectionVector.y * -flipY) + flipY , 0.0, 1.0);',
+            '   gl_Position = vec4((projectionMatrix * translationMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);',
             '   vColor = aColor * vec4(tint * alpha, alpha);',
             '}'
         ].join('\n'),
@@ -44,7 +41,6 @@ function PrimitiveShader(gl)
         // custom uniforms
         {
             tint:   { type: '3f', value: [0, 0, 0] },
-            flipY:  { type: '1f', value: 0 },
             alpha:  { type: '1f', value: 0 },
             translationMatrix: { type: 'mat3', value: new Float32Array(9) }
         },

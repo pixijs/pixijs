@@ -256,4 +256,18 @@ Matrix.prototype.identity = function ()
     return this;
 };
 
+
+Matrix.prototype.clone = function ()
+{
+    var matrix = new Matrix();
+    matrix.a = this.a;
+    matrix.b = this.b;
+    matrix.c = this.c;
+    matrix.d = this.d;
+    matrix.tx = this.tx;
+    matrix.ty = this.ty;
+
+    return matrix;
+}
+
 Matrix.IDENTITY = new Matrix();

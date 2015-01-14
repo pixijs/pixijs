@@ -3,9 +3,11 @@ var WebGLFastSpriteBatch = require('./utils/WebGLFastSpriteBatch'),
     WebGLMaskManager = require('./managers/WebGLMaskManager'),
     WebGLFilterManager = require('./managers/WebGLFilterManager'),
     WebGLBlendModeManager = require('./managers/WebGLBlendModeManager'),
+    RenderTarget = require('./utils/RenderTarget'),
     ObjectRenderer = require('./utils/ObjectRenderer'),
     math = require('../../math'),
     utils = require('../../utils'),
+
     CONST = require('../../const');
 
 /**
@@ -211,13 +213,19 @@ function WebGLRenderer(width, height, options)
      */
     this.blendModeManager = new WebGLBlendModeManager(this);
 
+    
+
     this.blendModes = null;
 
     this._boundUpdateTexture = this.updateTexture.bind(this);
     this._boundDestroyTexture = this.destroyTexture.bind(this);
 
+    
+
     // time init the context..
     this._initContext();
+
+    this.currentRenderTarget = this.renderTarget;
 
     // map some webGL blend modes..
     this._mapBlendModes();
@@ -242,6 +250,8 @@ function WebGLRenderer(width, height, options)
     for (var o in WebGLRenderer._objectRenderers) {
         this.objectRenderers[o] = new (WebGLRenderer._objectRenderers[o])(this);
     }
+
+
 }
 
 // constructor
@@ -295,7 +305,11 @@ WebGLRenderer.prototype._initContext = function ()
     gl.disable(gl.CULL_FACE);
     gl.enable(gl.BLEND);
 
+    this.renderTarget = new RenderTarget(this.gl, this.width, this.height, null, true);
+    
+
     this.emit('context', gl);
+
 
     // now resize and we are good to go!
     this.resize(this.width, this.height);
@@ -344,7 +358,7 @@ WebGLRenderer.prototype.render = function (object)
         gl.clear(gl.COLOR_BUFFER_BIT);
     }
 
-    this.renderDisplayObject(object, this.projection);
+    this.renderDisplayObject(object, this.renderTarget)//this.projection);
 };
 
 /**
@@ -354,24 +368,20 @@ WebGLRenderer.prototype.render = function (object)
  * @param projection {Point} The projection
  * @param buffer {Array} a standard WebGL buffer
  */
-WebGLRenderer.prototype.renderDisplayObject = function (displayObject, projection, buffer)
+WebGLRenderer.prototype.renderDisplayObject = function (displayObject, renderTarget)//projection, buffer)
 {
     this.blendModeManager.setBlendMode(CONST.blendModes.NORMAL);
+
+    this.currentRenderTarget = renderTarget;
 
     // reset the render session data..
     this.drawCount = 0;
 
     // make sure to flip the Y if using a render texture..
-    this.flipY = buffer ? -1 : 1;
-
-    // set the default projection
-    this.projection = projection;
-
-    //set the default offset
-    this.offset = this.offset;
+//    this.flipY = renderTarget.frameBuffer ? -1 : 1;
 
     // start the filter manager
-    this.filterManager.begin(buffer);
+    this.filterManager.begin(renderTarget.frameBuffer);
 
     // render the scene!
     displayObject.renderWebGL(this);
@@ -414,6 +424,8 @@ WebGLRenderer.prototype.resize = function (width, height)
     }
 
     this.gl.viewport(0, 0, this.width, this.height);
+
+    this.renderTarget.resize(width, height);
 
     this.projection.x =  this.width / 2 / this.resolution;
     this.projection.y =  -this.height / 2 / this.resolution;

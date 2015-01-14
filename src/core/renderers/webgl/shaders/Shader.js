@@ -31,6 +31,9 @@ function Shader(gl, vertexSrc, fragmentSrc, customUniforms, customAttributes)
         uSampler:           { type: 'sampler2D', value: 0 },
         projectionVector:   { type: '2f', value: { x: 0, y: 0 } },
         offsetVector:       { type: '2f', value: { x: 0, y: 0 } },
+        projectionMatrix:    { type: 'mat3', value: new Float32Array(1, 0, 0, 
+                                                                    0, 1, 0, 
+                                                                    0, 0, 1) },
         dimensions:         { type: '4f', value: new Float32Array(4) }
     };
 
@@ -59,6 +62,7 @@ function Shader(gl, vertexSrc, fragmentSrc, customUniforms, customAttributes)
         'attribute vec2 aTextureCoord;',
         'attribute vec4 aColor;',
 
+        'uniform mat3 projectionMatrix;',
         'uniform vec2 projectionVector;',
         'uniform vec2 offsetVector;',
 
@@ -68,7 +72,9 @@ function Shader(gl, vertexSrc, fragmentSrc, customUniforms, customAttributes)
         'const vec2 center = vec2(-1.0, 1.0);',
 
         'void main(void){',
-        '   gl_Position = vec4( ((aVertexPosition + offsetVector) / projectionVector) + center , 0.0, 1.0);',
+      //  '   gl_Position = vec4( ((aVertexPosition + offsetVector) / projectionVector) + center , 0.0, 1.0);',
+     //   '   gl_Position = vec4( projectionMatrix * vec3(aVertexPosition, 1.0) ), 0.0, 1.0);',
+        'gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);',
         '   vTextureCoord = aTextureCoord;',
         '   vColor = vec4(aColor.rgb * aColor.a, aColor.a);',
         '}'

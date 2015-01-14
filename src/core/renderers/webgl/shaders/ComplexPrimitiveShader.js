@@ -12,23 +12,18 @@ function ComplexPrimitiveShader(gl)
         // vertex shader
         [
             'attribute vec2 aVertexPosition;',
-            // 'attribute vec2 aTextureCoord;',
-            // 'attribute vec4 aColor;',
 
             'uniform mat3 translationMatrix;',
-            'uniform vec2 projectionVector;',
-            'uniform vec2 offsetVector;',
+            'uniform mat3 projectionMatrix;',
 
             'uniform vec3 tint;',
             'uniform float alpha;',
             'uniform vec3 color;',
-            'uniform float flipY;',
+
             'varying vec4 vColor;',
 
             'void main(void){',
-            '   vec3 v = translationMatrix * vec3(aVertexPosition , 1.0);',
-            '   v -= offsetVector.xyx;',
-            '   gl_Position = vec4( v.x / projectionVector.x -1.0, (v.y / projectionVector.y * -flipY) + flipY , 0.0, 1.0);',
+            '   gl_Position = vec4((projectionMatrix * translationMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);',
             '   vColor = vec4(color * alpha * tint, alpha);',//" * vec4(tint * alpha, alpha);',
             '}'
         ].join('\n'),

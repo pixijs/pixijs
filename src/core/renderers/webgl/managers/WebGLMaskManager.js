@@ -136,10 +136,7 @@ WebGLMaskManager.prototype.bindGraphics = function (graphics, webGLData)
 
         gl.uniformMatrix3fv(shader.uniforms.translationMatrix._location, false, graphics.worldTransform.toArray(true));
 
-        gl.uniform1f(shader.uniforms.flipY._location, 1);
-
-        gl.uniform2f(shader.uniforms.projectionVector._location, projection.x, -projection.y);
-        gl.uniform2f(shader.uniforms.offsetVector._location, -offset.x, -offset.y);
+        gl.uniformMatrix3fv(shader.uniforms.projectionMatrix._location, false, this.renderer.currentRenderTarget.projectionMatrix.toArray(true));
 
         gl.uniform3fv(shader.uniforms.tint._location, utils.hex2rgb(graphics.tint));
 
