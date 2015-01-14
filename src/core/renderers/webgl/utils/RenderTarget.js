@@ -35,8 +35,8 @@ var RenderTarget = function(gl, width, height, scaleMode, root)
      */
     this.texture = null
 
-    this.width = width;
-    this.height = height;
+    this.width = 0;
+    this.height = 0;
 
     this.resolution = 1;
 
@@ -54,14 +54,7 @@ var RenderTarget = function(gl, width, height, scaleMode, root)
 
     if(!this.root)
     {
-        this.flipY = true;
-
-        this.projectionMatrix.a = 1/width*2;
-        this.projectionMatrix.d = 1/height*2;
-
-        this.projectionMatrix.tx = -1;
-        this.projectionMatrix.ty = -1;
-
+       // this.flipY = true;
         this.frameBuffer = gl.createFramebuffer();
 
 
@@ -79,9 +72,11 @@ var RenderTarget = function(gl, width, height, scaleMode, root)
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, scaleMode === CONST.scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-       
+        
         gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer );
         gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.texture, 0);
+
+       
 
         /*   
             The stencil buffer is used for masking in pixi
@@ -91,16 +86,9 @@ var RenderTarget = function(gl, width, height, scaleMode, root)
         gl.bindRenderbuffer(gl.RENDERBUFFER, this.stencilBuffer);
         gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, this.stencilBuffer);
     }
-    else
-    {
-        this.projectionMatrix.a = 1/width*2;
-        this.projectionMatrix.d = -1/height*2;
 
-        this.projectionMatrix.tx = -1;
-        this.projectionMatrix.ty = 1;
-
-        
-    }
+    this.resize(width, height);
+    
 };
 
 RenderTarget.prototype.constructor = RenderTarget;
@@ -140,27 +128,21 @@ RenderTarget.prototype.resize = function(width, height)
 
     this.projectionMatrix = new math.Matrix();
 
-    this.projectionMatrix.a = 1/width*2;
-    this.projectionMatrix.d = -1/height*2;
-
-    this.projectionMatrix.tx = -1;
-    this.projectionMatrix.ty = 1;
-
     
     if(!this.root)
     {
         var gl = this.gl;
 
         this.projectionMatrix.a = 1/width*2;
-        this.projectionMatrix.d = 1/height*2;
+        this.projectionMatrix.d = -1/height*2;
 
         this.projectionMatrix.tx = -1;
-        this.projectionMatrix.ty = -1;
-        
+        this.projectionMatrix.ty = 1;
+
         gl.bindTexture(gl.TEXTURE_2D,  this.texture);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  width , height , 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
         // update the stencil buffer width and height
-        gl.bindRenderbuffer(gl.RENDERBUFFER, this.renderBuffer);
+        gl.bindRenderbuffer(gl.RENDERBUFFER, this.stencilBuffer);
         gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, width , height );
     }
     else

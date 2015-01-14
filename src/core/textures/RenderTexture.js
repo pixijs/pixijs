@@ -1,6 +1,6 @@
 var BaseTexture = require('./BaseTexture'),
     Texture = require('./Texture'),
-    FilterTexture = require('../renderers/webgl/utils/FilterTexture'),
+    RenderTarget = require('../renderers/webgl/utils/RenderTarget'),
     CanvasBuffer = require('../renderers/canvas/utils/CanvasBuffer'),
     math = require('../math'),
     CONST = require('../const');
@@ -145,9 +145,9 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
     {
         var gl = this.renderer.gl;
 
-        this.textureBuffer = new FilterTexture(gl, this.width * this.resolution, this.height * this.resolution, this.baseTexture.scaleMode);
+        this.textureBuffer = new RenderTarget(gl, this.width * this.resolution, this.height * this.resolution)//, this.baseTexture.scaleMode);
         this.baseTexture._glTextures[gl.id] =  this.textureBuffer.texture;
-
+        
         this.render = this.renderWebGL;
         this.projection = new math.Point(this.width*0.5, -this.height*0.5);
     }
@@ -305,7 +305,7 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, re
     gl.viewport(0, 0, this.width * this.resolution, this.height * this.resolution);
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.textureBuffer.frameBuffer );
-
+    
     if (clear)
     {
         this.textureBuffer.clear();
@@ -313,7 +313,7 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, re
 
 //    this.renderer.spriteRenderer.dirty = true;
 
-    this.renderer.renderDisplayObject(displayObject, this.projection, this.textureBuffer.frameBuffer);
+    this.renderer.renderDisplayObject(displayObject, this.textureBuffer)//this.projection, this.textureBuffer.frameBuffer);
 
   //  this.renderer.spriteRenderer.dirty = true;
 
