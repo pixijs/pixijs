@@ -67,7 +67,7 @@ function Shader(shaderManager, vertexSrc, fragmentSrc, customUniforms, customAtt
         'attribute vec4 aColor;',
 
         'uniform mat3 projectionMatrix;',
-        'uniform vec2 projectionVector;',
+        // 'uniform vec2 projectionVector;',
         'uniform vec2 offsetVector;',
 
         'varying vec2 vTextureCoord;',

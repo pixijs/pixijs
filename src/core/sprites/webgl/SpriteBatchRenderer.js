@@ -1,3 +1,8 @@
+var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
+    Shader = require('../../renderers/webgl/shaders/Shader'),
+    WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
+    SpriteBatchShader = require('./SpriteBatchShader');
+
 /**
  * @author Mat Groves
  *
@@ -14,14 +19,9 @@
  * @namespace PIXI
  * @param renderer {WebGLRenderer} The renderer this sprite batch works for.
  */
-function WebGLFastSpriteBatch(renderer)
+function SpriteBatchRenderer(renderer)
 {
-    /**
-     * The renderer instance this sprite batch operates on.
-     *
-     * @member {WebGLRenderer}
-     */
-    this.renderer = renderer;
+    ObjectRenderer.call(this, renderer);
 
     /**
      *
@@ -137,36 +137,32 @@ function WebGLFastSpriteBatch(renderer)
      */
     this.shader = null;
 
-    /**
-     *
-     *
-     * @member {Matrix}
-     */
-    this.matrix = null;
+    this.setupContext();
 
-    // listen for context and update necessary buffers
-    var self = this;
-    this.renderer.on('context', function ()
-    {
-        self.setupContext();
-    });
+    // handle when the renderer's context changes.
+    this.renderer.on('context', this.setupContext.bind(this));
 }
 
-WebGLFastSpriteBatch.prototype.constructor = WebGLFastSpriteBatch;
-module.exports = WebGLFastSpriteBatch;
+SpriteBatchRenderer.prototype = Object.create(ObjectRenderer.prototype);
+SpriteBatchRenderer.prototype.constructor = SpriteBatchRenderer;
+module.exports = SpriteBatchRenderer;
+
+WebGLRenderer.registerPlugin('spriteBatch', SpriteBatchRenderer);
 
 /**
  * Sets the WebGL Context.
  *
  * @param gl {WebGLContext} the current WebGL drawing context
  */
-WebGLFastSpriteBatch.prototype.setupContext = function ()
+SpriteBatchRenderer.prototype.setupContext = function ()
 {
     var gl = this.renderer.gl;
 
     // create a couple of buffers
     this.vertexBuffer = gl.createBuffer();
     this.indexBuffer = gl.createBuffer();
+
+    this.shader = new SpriteBatchShader(this.renderer.shaderManager);
 
     // 65535 is max index, so 65535 / 6 = 10922.
 
@@ -179,29 +175,20 @@ WebGLFastSpriteBatch.prototype.setupContext = function ()
 };
 
 /**
- * @param spriteBatch {SpriteBatch} The SpriteBatch container to prepare for.
  */
-WebGLFastSpriteBatch.prototype.begin = function (spriteBatch)
-{
-    this.shader = this.renderer.shaderManager.plugins.fastShader;
-
-    this.matrix = spriteBatch.worldTransform.toArray(true);
-
-    this.start();
-};
-
-/**
- */
-WebGLFastSpriteBatch.prototype.end = function ()
-{
-    this.flush();
-};
+// SpriteBatchRenderer.prototype.stop = function ()
+// {
+//     this.flush();
+// };
 
 /**
  * @param spriteBatch {SpriteBatch} The SpriteBatch container to render.
  */
-WebGLFastSpriteBatch.prototype.render = function (spriteBatch)
+SpriteBatchRenderer.prototype.render = function (spriteBatch)
 {
+    // set the matrix from the spriteBatch
+    this.renderer.gl.uniformMatrix3fv(this.shader.uniforms.uMatrix._location, false, spriteBatch.worldTransform.toArray(true));
+
     var children = spriteBatch.children;
     var sprite = children[0];
 
@@ -233,7 +220,7 @@ WebGLFastSpriteBatch.prototype.render = function (spriteBatch)
 /**
  * @param sprite {Sprite} The Sprite to render.
  */
-WebGLFastSpriteBatch.prototype.renderSprite = function (sprite)
+SpriteBatchRenderer.prototype.renderSprite = function (sprite)
 {
     //sprite = children[i];
     if (!sprite.visible)
@@ -379,7 +366,7 @@ WebGLFastSpriteBatch.prototype.renderSprite = function (sprite)
 /**
  *
  */
-WebGLFastSpriteBatch.prototype.flush = function ()
+SpriteBatchRenderer.prototype.flush = function ()
 {
     // If the batch is length 0 then return as there is nothing to draw
     if (this.currentBatchSize === 0)
@@ -423,20 +410,10 @@ WebGLFastSpriteBatch.prototype.flush = function ()
     this.renderer.drawCount++;
 };
 
-
-/**
- * Ends the batch and flushes
- *
- */
-WebGLFastSpriteBatch.prototype.stop = function ()
-{
-    this.flush();
-};
-
 /**
  *
  */
-WebGLFastSpriteBatch.prototype.start = function ()
+SpriteBatchRenderer.prototype.start = function ()
 {
     var gl = this.renderer.gl;
 
@@ -448,11 +425,9 @@ WebGLFastSpriteBatch.prototype.start = function ()
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 
     // set the projection
-    var projection = this.renderer.projection;
-    gl.uniform2f(this.shader.uniforms.projectionVector._location, projection.x, projection.y);
-
-    // set the matrix
-    gl.uniformMatrix3fv(this.shader.uniforms.uMatrix._location, false, this.matrix);
+    // var projection = this.renderer.projection;
+    // gl.uniform2f(this.shader.uniforms.projectionVector._location, projection.x, projection.y);
+    gl.uniformMatrix3fv(this.shader.uniforms.projectionMatrix._location, false, this.renderer.currentRenderTarget.projectionMatrix.toArray(true));
 
     // set the pointers
     var stride =  this.vertByteSize;
@@ -463,4 +438,30 @@ WebGLFastSpriteBatch.prototype.start = function ()
     gl.vertexAttribPointer(this.shader.attributes.aRotation, 1, gl.FLOAT, false, stride, 6 * 4);
     gl.vertexAttribPointer(this.shader.attributes.aTextureCoord, 2, gl.FLOAT, false, stride, 7 * 4);
     gl.vertexAttribPointer(this.shader.attributes.aColor, 1, gl.FLOAT, false, stride, 9 * 4);
+};
+
+/**
+ * Destroys the SpriteBatch.
+ *
+ */
+SpriteBatchRenderer.prototype.destroy = function ()
+{
+    this.renderer.gl.deleteBuffer(this.vertexBuffer);
+    this.renderer.gl.deleteBuffer(this.indexBuffer);
+
+    this.shader.destroy();
+
+    this.renderer = null;
+
+    this.vertices = null;
+    this.indices = null;
+
+    this.vertexBuffer = null;
+    this.indexBuffer = null;
+
+    this.currentBaseTexture = null;
+
+    this.drawing = false;
+
+    this.shader = null;
 };

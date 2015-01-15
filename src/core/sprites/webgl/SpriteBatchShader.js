@@ -1,5 +1,4 @@
-var Shader = require('./Shader'),
-    WebGLShaderManager = require('../managers/WebGLShaderManager');
+var Shader = require('../../renderers/webgl/shaders/Shader');
 
 /**
  * @class
@@ -21,7 +20,8 @@ function FastShader(shaderManager)
             'attribute vec2 aScale;',
             'attribute float aRotation;',
 
-            'uniform vec2 projectionVector;',
+            'uniform mat3 projectionMatrix;',
+            // 'uniform vec2 projectionVector;',
             'uniform vec2 offsetVector;',
             'uniform mat3 uMatrix;',
 
@@ -36,7 +36,13 @@ function FastShader(shaderManager)
             '   v.x = (sv.x) * cos(aRotation) - (sv.y) * sin(aRotation);',
             '   v.y = (sv.x) * sin(aRotation) + (sv.y) * cos(aRotation);',
             '   v = ( uMatrix * vec3(v + aPositionCoord , 1.0) ).xy ;',
-            '   gl_Position = vec4( ( v / projectionVector) + center , 0.0, 1.0);',
+
+
+            // '   gl_Position = vec4( ( v / projectionVector) + center , 0.0, 1.0);',
+            // '   gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);',
+            '   gl_Position = vec4((v / projectionMatrix[0].xy) + center, 0.0, 1.0);',
+
+
             '   vTextureCoord = aTextureCoord;',
           //  '   vec3 color = mod(vec3(aColor.y/65536.0, aColor.y/256.0, aColor.y), 256.0) / 256.0;',
             '   vColor = aColor;',
@@ -71,5 +77,3 @@ function FastShader(shaderManager)
 FastShader.prototype = Object.create(Shader.prototype);
 FastShader.prototype.constructor = FastShader;
 module.exports = FastShader;
-
-WebGLShaderManager.registerPlugin('fastShader', FastShader);

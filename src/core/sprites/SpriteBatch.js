@@ -59,14 +59,17 @@ SpriteBatch.prototype.renderWebGL = function (renderer)
         return;
     }
 
-    renderer.spriteBatch.stop();
+    // renderer.spriteBatch.stop();
 
-    renderer.shaderManager.setShader(renderer.shaderManager.plugins.fastShader);
+    // renderer.shaderManager.setShader(renderer.shaderManager.plugins.fastShader);
 
-    renderer.fastSpriteBatch.begin(this);
-    renderer.fastSpriteBatch.render(this);
+    // renderer.fastSpriteBatch.begin(this);
+    // renderer.fastSpriteBatch.render(this);
 
-    renderer.spriteBatch.start();
+    // renderer.spriteBatch.start();
+
+    renderer.setObjectRenderer(renderer.plugins.spriteBatch);
+    renderer.plugins.spriteBatch.render(this);
 };
 
 /**
