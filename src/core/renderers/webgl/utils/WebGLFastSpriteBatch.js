@@ -183,7 +183,7 @@ WebGLFastSpriteBatch.prototype.setupContext = function ()
  */
 WebGLFastSpriteBatch.prototype.begin = function (spriteBatch)
 {
-    this.shader = this.renderer.shaderManager.fastShader;
+    this.shader = this.renderer.shaderManager.plugins.fastShader;
 
     this.matrix = spriteBatch.worldTransform.toArray(true);
 

@@ -1,5 +1,5 @@
 var DisplayObjectContainer = require('../display/DisplayObjectContainer'),
-    //Sprite = require('../display/Sprite'),
+    Sprite = require('../sprites/Sprite'),
     Texture = require('../textures/Texture'),
     CanvasBuffer = require('../renderers/canvas/utils/CanvasBuffer'),
     CanvasGraphics = require('../renderers/canvas/utils/CanvasGraphics'),
@@ -747,8 +747,8 @@ Graphics.prototype._renderWebGL = function (renderer)
         this.glDirty = false;
     }
 
-    renderer.setObjectRenderer(renderer.objectRenderers.graphics);
-    renderer.objectRenderers.graphics.render(this);
+    renderer.setObjectRenderer(renderer.plugins.graphics);
+    renderer.plugins.graphics.render(this);
 
 };
 

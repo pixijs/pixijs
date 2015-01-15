@@ -201,8 +201,8 @@ Sprite.prototype._onTextureUpdate = function ()
 
 Sprite.prototype._renderWebGL = function (renderer)
 {
-    renderer.setObjectRenderer(renderer.objectRenderers.sprite);
-    renderer.objectRenderers.sprite.render(this);
+    renderer.setObjectRenderer(renderer.plugins.sprite);
+    renderer.plugins.sprite.render(this);
 };
 
 /**

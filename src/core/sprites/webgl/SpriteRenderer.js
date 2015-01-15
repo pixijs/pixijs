@@ -1,8 +1,7 @@
-var ObjectRenderer = require('../renderers/webgl/utils/ObjectRenderer'),
-    Shader = require('../renderers/webgl/shaders/Shader'),
-    SpriteShader = require('../renderers/webgl/shaders/SpriteShader'),
-    WebGLRenderer = require('../renderers/webgl/WebGLRenderer');
-    math = require('../math');
+var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
+    Shader = require('../../renderers/webgl/shaders/Shader'),
+    WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
+    SpriteShader = require('./SpriteShader');
 
 /**
  * @author Mat Groves
@@ -167,9 +166,6 @@ function SpriteRenderer(renderer)
      */
     this.shader = null;
 
-    // listen for context and update necessary buffers
-    var self = this;
-
     this.setupContext();
 }
 
@@ -177,7 +173,7 @@ SpriteRenderer.prototype = Object.create(ObjectRenderer.prototype);
 SpriteRenderer.prototype.constructor = SpriteRenderer;
 module.exports = SpriteRenderer;
 
-
+WebGLRenderer.registerPlugin('sprite', SpriteRenderer);
 
 /**
  * Sets up the renderer context and necessary buffers.
@@ -190,7 +186,7 @@ SpriteRenderer.prototype.setupContext = function ()
     var gl = this.renderer.gl;
 
     // setup default shader
-    this.shader = new SpriteShader(gl);
+    this.shader = new SpriteShader(this.renderer.shaderManager);
 
     // create a couple of buffers
     this.vertexBuffer = gl.createBuffer();
@@ -387,7 +383,7 @@ SpriteRenderer.prototype.flush = function ()
     var batchSize = 0;
     var start = 0;
 
-    var currentBaseTexture = sprite;
+    var currentBaseTexture = null;
     var currentBlendMode = this.renderer.blendModeManager.currentBlendMode;
     var currentShader = null;
 
@@ -429,7 +425,7 @@ SpriteRenderer.prototype.flush = function ()
 
                 if (!shader)
                 {
-                    shader = new Shader(gl, null, currentShader.fragmentSrc, currentShader.uniforms);
+                    shader = new Shader(this.renderer.shaderManager, null, currentShader.fragmentSrc, currentShader.uniforms);
                     currentShader.shaders[gl.id] = shader;
                 }
 

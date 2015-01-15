@@ -23,12 +23,12 @@ var core = module.exports = {
 
     Sprite:                 require('./sprites/Sprite'),
     SpriteBatch:            require('./sprites/SpriteBatch'),
-    SpriteRenderer:            require('./sprites/SpriteRenderer'),
+    SpriteRenderer:         require('./sprites/webgl/SpriteRenderer'),
 
     // primitives
-    Graphics:               require('./primitives/Graphics'),
-    GraphicsData:           require('./primitives/GraphicsData'),
-    GraphicsRenderer:       require('./primitives/GraphicsRenderer'),
+    Graphics:               require('./graphics/Graphics'),
+    GraphicsData:           require('./graphics/GraphicsData'),
+    GraphicsRenderer:       require('./graphics/webgl/GraphicsRenderer'),
 
     // textures
     Texture:                require('./textures/Texture'),
@@ -42,10 +42,8 @@ var core = module.exports = {
     CanvasBuffer:           require('./renderers/canvas/utils/CanvasBuffer'),
 
     // renderers - webgl
-    WebGLRenderer:         require('./renderers/webgl/WebGLRenderer'),
-   // WebGLGraphics:         require('./renderers/webgl/utils/WebGLGraphics'),
-
-    
+    WebGLRenderer:          require('./renderers/webgl/WebGLRenderer'),
+    Shader:                 require('./renderers/webgl/shaders/Shader'),
 
     /**
      * This helper function will automatically detect which renderer you should be using.
@@ -103,7 +101,3 @@ var core = module.exports = {
         return core.autoDetectRenderer(width, height, options, isAndroid);
     }
 };
-
-// Adding here for now.. sure there is a better place!
-core.WebGLRenderer.registerObjectRenderer('sprite', core.SpriteRenderer);
-core.WebGLRenderer.registerObjectRenderer('graphics', core.GraphicsRenderer);

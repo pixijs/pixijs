@@ -1,14 +1,14 @@
-var Shader = require('./Shader');
+var core = require('../core');
 
 /**
  * @class
  * @namespace PIXI
- * @param gl {WebGLContext} the current WebGL drawing context
+ * @param shaderManager {WebGLShaderManager} The webgl shader manager this shader works for.
  */
-function StripShader(gl)
+function StripShader(shaderManager)
 {
-    Shader.call(this,
-        gl,
+    core.Shader.call(this,
+        shaderManager,
         // vertex shader
         [
             'attribute vec2 aVertexPosition;',
@@ -49,6 +49,8 @@ function StripShader(gl)
     );
 }
 
-StripShader.prototype = Object.create(Shader.prototype);
+StripShader.prototype = Object.create(core.Shader.prototype);
 StripShader.prototype.constructor = StripShader;
 module.exports = StripShader;
+
+core.WebGLShaderManager.registerPlugin('stripShader', StripShader);

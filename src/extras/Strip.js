@@ -89,7 +89,7 @@ Strip.prototype.renderWebGL = function (renderer)
         this._initWebGL(renderer);
     }
 
-    renderer.shaderManager.setShader(renderer.shaderManager.stripShader);
+    renderer.shaderManager.setShader(renderer.shaderManager.plugins.stripShader);
 
     this._renderStrip(renderer);
 
@@ -128,7 +128,7 @@ Strip.prototype._renderStrip = function (renderer)
     var gl = renderer.gl;
     var projection = renderer.projection,
         offset = renderer.offset,
-        shader = renderer.shaderManager.stripShader;
+        shader = renderer.shaderManager.plugins.stripShader;
 
     var drawMode = this.drawMode === Strip.DrawModes.TRIANGLE_STRIP ? gl.TRIANGLE_STRIP : gl.TRIANGLES;
 

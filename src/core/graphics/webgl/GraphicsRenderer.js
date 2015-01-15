@@ -1,8 +1,8 @@
-var utils = require('../utils'),
-    math = require('../math'),
-    CONST = require('../const'),
-    ObjectRenderer = require('../renderers/webgl/utils/ObjectRenderer'),
-    WebGLRenderer = require('../renderers/webgl/WebGLRenderer'),
+var utils = require('../../utils'),
+    math = require('../../math'),
+    CONST = require('../../const'),
+    ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
+    WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
     WebGLGraphicsData = require('./WebGLGraphicsData');
 
 /**
@@ -24,6 +24,8 @@ GraphicsRenderer.prototype = Object.create(ObjectRenderer.prototype);
 GraphicsRenderer.prototype.constructor = GraphicsRenderer;
 module.exports = GraphicsRenderer;
 
+WebGLRenderer.registerPlugin('graphics', GraphicsRenderer);
+
 /**
  * Destroys this renderer.
  *
@@ -44,9 +46,7 @@ GraphicsRenderer.prototype.render = function(graphics)
     var renderer = this.renderer;
     var gl = renderer.gl;
 
-    var projection = renderer.projection,
-        offset = renderer.offset,
-        shader = renderer.shaderManager.primitiveShader,
+    var shader = renderer.shaderManager.plugins.primitiveShader,
         webGLData;
 
     if (graphics.dirty)
@@ -83,7 +83,7 @@ GraphicsRenderer.prototype.render = function(graphics)
 
 
             renderer.shaderManager.setShader( shader );//activatePrimitiveShader();
-            shader = renderer.shaderManager.primitiveShader;
+            shader = renderer.shaderManager.plugins.primitiveShader;
 
             gl.uniformMatrix3fv(shader.uniforms.translationMatrix._location, false, graphics.worldTransform.toArray(true));
 

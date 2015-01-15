@@ -1,12 +1,16 @@
-var utils = require('../../../utils');
+var utils = require('../../../utils'),
+    WebGLShaderManager = require('../managers/WebGLShaderManager');
 
 /**
  * @class
  * @namespace PIXI
- * @param [fragmentSrc] {string} The source of the fragment shader.
+ * @param shaderManager {WebGLShaderManager} The webgl shader manager this shader works for.
  * @param [vertexSrc] {string} The source of the vertex shader.
+ * @param [fragmentSrc] {string} The source of the fragment shader.
+ * @param customUniforms {object} Custom uniforms to use to augment the built-in ones.
+ * @param [fragmentSrc] {string} The source of the fragment shader.
  */
-function Shader(gl, vertexSrc, fragmentSrc, customUniforms, customAttributes)
+function Shader(shaderManager, vertexSrc, fragmentSrc, customUniforms, customAttributes)
 {
     /**
      * @member {number}
@@ -18,7 +22,7 @@ function Shader(gl, vertexSrc, fragmentSrc, customUniforms, customAttributes)
      * @member {WebGLContext}
      * @readonly
      */
-    this.gl = gl;
+    this.gl = shaderManager.renderer.gl;
 
     /**
      * The WebGL program.
@@ -31,8 +35,8 @@ function Shader(gl, vertexSrc, fragmentSrc, customUniforms, customAttributes)
         uSampler:           { type: 'sampler2D', value: 0 },
         projectionVector:   { type: '2f', value: { x: 0, y: 0 } },
         offsetVector:       { type: '2f', value: { x: 0, y: 0 } },
-        projectionMatrix:    { type: 'mat3', value: new Float32Array(1, 0, 0, 
-                                                                    0, 1, 0, 
+        projectionMatrix:    { type: 'mat3', value: new Float32Array(1, 0, 0,
+                                                                    0, 1, 0,
                                                                     0, 0, 1) },
         dimensions:         { type: '4f', value: new Float32Array(4) }
     };
@@ -102,6 +106,8 @@ function Shader(gl, vertexSrc, fragmentSrc, customUniforms, customAttributes)
 
 Shader.prototype.constructor = Shader;
 module.exports = Shader;
+
+WebGLShaderManager.registerPlugin('defaultShader', Shader);
 
 Shader.prototype.init = function ()
 {

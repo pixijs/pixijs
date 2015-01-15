@@ -1,14 +1,15 @@
-var Shader = require('./Shader');
+var Shader = require('../../renderers/webgl/shaders/Shader'),
+    WebGLShaderManager = require('../../renderers/webgl/managers/WebGLShaderManager');
 
 /**
  * @class
  * @namespace PIXI
- * @param gl {WebGLContext} the current WebGL drawing context
+ * @param shaderManager {WebGLShaderManager} The webgl shader manager this shader works for.
  */
-function SpriteShader(gl)
+function SpriteShader(shaderManager)
 {
     Shader.call(this,
-        gl,
+        shaderManager,
         null,
         // fragment shader
         [
@@ -40,3 +41,5 @@ function SpriteShader(gl)
 SpriteShader.prototype = Object.create(Shader.prototype);
 SpriteShader.prototype.constructor = SpriteShader;
 module.exports = SpriteShader;
+
+WebGLShaderManager.registerPlugin('fastShader', SpriteShader);

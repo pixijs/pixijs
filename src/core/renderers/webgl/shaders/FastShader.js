@@ -1,15 +1,16 @@
-var Shader = require('./Shader');
+var Shader = require('./Shader'),
+    WebGLShaderManager = require('../managers/WebGLShaderManager');
 
 /**
  * @class
  * @extends Shader
  * @namespace PIXI
- * @param gl {WebGLContext} the current WebGL drawing context
+ * @param shaderManager {WebGLShaderManager} The webgl shader manager this shader works for.
  */
-function FastShader(gl)
+function FastShader(shaderManager)
 {
     Shader.call(this,
-        gl,
+        shaderManager,
         // vertex shader
         [
             'attribute vec2 aVertexPosition;',
@@ -70,3 +71,5 @@ function FastShader(gl)
 FastShader.prototype = Object.create(Shader.prototype);
 FastShader.prototype.constructor = FastShader;
 module.exports = FastShader;
+
+WebGLShaderManager.registerPlugin('fastShader', FastShader);
