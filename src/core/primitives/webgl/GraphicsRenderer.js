@@ -24,6 +24,8 @@ GraphicsRenderer.prototype = Object.create(ObjectRenderer.prototype);
 GraphicsRenderer.prototype.constructor = GraphicsRenderer;
 module.exports = GraphicsRenderer;
 
+WebGLRenderer.registerObjectRenderer('graphics', GraphicsRenderer);
+
 /**
  * Destroys this renderer.
  *
