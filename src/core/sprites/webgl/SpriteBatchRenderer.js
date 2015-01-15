@@ -186,9 +186,6 @@ SpriteBatchRenderer.prototype.setupContext = function ()
  */
 SpriteBatchRenderer.prototype.render = function (spriteBatch)
 {
-    // set the matrix from the spriteBatch
-    this.renderer.gl.uniformMatrix3fv(this.shader.uniforms.uMatrix._location, false, spriteBatch.worldTransform.toArray(true));
-
     var children = spriteBatch.children;
     var sprite = children[0];
 
@@ -413,7 +410,7 @@ SpriteBatchRenderer.prototype.flush = function ()
 /**
  *
  */
-SpriteBatchRenderer.prototype.start = function ()
+SpriteBatchRenderer.prototype.start = function (spriteBatch)
 {
     var gl = this.renderer.gl;
 
@@ -429,15 +426,19 @@ SpriteBatchRenderer.prototype.start = function ()
     // gl.uniform2f(this.shader.uniforms.projectionVector._location, projection.x, projection.y);
     gl.uniformMatrix3fv(this.shader.uniforms.projectionMatrix._location, false, this.renderer.currentRenderTarget.projectionMatrix.toArray(true));
 
+    // set the matrix from the spriteBatch
+    gl.uniformMatrix3fv(this.shader.uniforms.uMatrix._location, false, spriteBatch.worldTransform.toArray(true));
+
     // set the pointers
-    var stride =  this.vertByteSize;
+    var stride = this.vertByteSize;
 
     gl.vertexAttribPointer(this.shader.attributes.aVertexPosition, 2, gl.FLOAT, false, stride, 0);
-    gl.vertexAttribPointer(this.shader.attributes.aPositionCoord, 2, gl.FLOAT, false, stride, 2 * 4);
-    gl.vertexAttribPointer(this.shader.attributes.aScale, 2, gl.FLOAT, false, stride, 4 * 4);
-    gl.vertexAttribPointer(this.shader.attributes.aRotation, 1, gl.FLOAT, false, stride, 6 * 4);
-    gl.vertexAttribPointer(this.shader.attributes.aTextureCoord, 2, gl.FLOAT, false, stride, 7 * 4);
-    gl.vertexAttribPointer(this.shader.attributes.aColor, 1, gl.FLOAT, false, stride, 9 * 4);
+    gl.vertexAttribPointer(this.shader.attributes.aTextureCoord, 2, gl.FLOAT, false, stride, 2 * 4);
+    gl.vertexAttribPointer(this.shader.attributes.aColor, 1, gl.FLOAT, false, stride, 4 * 4);
+
+    gl.vertexAttribPointer(this.shader.attributes.aPositionCoord, 2, gl.FLOAT, false, stride, 5 * 4);
+    gl.vertexAttribPointer(this.shader.attributes.aScale, 2, gl.FLOAT, false, stride, 7 * 4);
+    gl.vertexAttribPointer(this.shader.attributes.aRotation, 1, gl.FLOAT, false, stride, 9 * 4);
 };
 
 /**

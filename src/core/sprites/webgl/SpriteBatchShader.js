@@ -6,7 +6,7 @@ var Shader = require('../../renderers/webgl/shaders/Shader');
  * @namespace PIXI
  * @param shaderManager {WebGLShaderManager} The webgl shader manager this shader works for.
  */
-function FastShader(shaderManager)
+function SpriteBatchShader(shaderManager)
 {
     Shader.call(this,
         shaderManager,
@@ -22,13 +22,13 @@ function FastShader(shaderManager)
 
             'uniform mat3 projectionMatrix;',
             // 'uniform vec2 projectionVector;',
-            'uniform vec2 offsetVector;',
+            // 'uniform vec2 offsetVector;',
             'uniform mat3 uMatrix;',
 
             'varying vec2 vTextureCoord;',
             'varying float vColor;',
 
-            'const vec2 center = vec2(-1.0, 1.0);',
+            // 'const vec2 center = vec2(-1.0, 1.0);',
 
             'void main(void){',
             '   vec2 v;',
@@ -39,8 +39,7 @@ function FastShader(shaderManager)
 
 
             // '   gl_Position = vec4( ( v / projectionVector) + center , 0.0, 1.0);',
-            // '   gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);',
-            '   gl_Position = vec4((v / projectionMatrix[0].xy) + center, 0.0, 1.0);',
+            '   gl_Position = vec4((projectionMatrix * vec3(v, 1.0)).xy, 0.0, 1.0);',
 
 
             '   vTextureCoord = aTextureCoord;',
@@ -68,12 +67,12 @@ function FastShader(shaderManager)
         // custom attributes
         {
             aPositionCoord: 0,
-            aRotation:      0,
-            aScale:         0
+            aScale:         0,
+            aRotation:      0
         }
     );
 }
 
-FastShader.prototype = Object.create(Shader.prototype);
-FastShader.prototype.constructor = FastShader;
-module.exports = FastShader;
+SpriteBatchShader.prototype = Object.create(Shader.prototype);
+SpriteBatchShader.prototype.constructor = SpriteBatchShader;
+module.exports = SpriteBatchShader;

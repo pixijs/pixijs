@@ -68,8 +68,14 @@ SpriteBatch.prototype.renderWebGL = function (renderer)
 
     // renderer.spriteBatch.start();
 
-    renderer.setObjectRenderer(renderer.plugins.spriteBatch);
+    renderer.currentRenderer.stop();
+
+    renderer.shaderManager.setShader(renderer.plugins.spriteBatch.shader);
+
+    renderer.plugins.spriteBatch.start(this);
     renderer.plugins.spriteBatch.render(this);
+
+    renderer.currentRenderer.start();
 };
 
 /**

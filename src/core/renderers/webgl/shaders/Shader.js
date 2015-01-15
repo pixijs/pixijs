@@ -47,7 +47,9 @@ function Shader(shaderManager, vertexSrc, fragmentSrc, customUniforms, customAtt
     }
 
     this.attributes = {
-        aVertexPosition:    0
+        aVertexPosition:    0,
+        aTextureCoord:      0,
+        aColor:             0
     };
 
     for (var a in customAttributes)
