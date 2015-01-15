@@ -42,4 +42,4 @@ SpriteShader.prototype = Object.create(Shader.prototype);
 SpriteShader.prototype.constructor = SpriteShader;
 module.exports = SpriteShader;
 
-WebGLShaderManager.registerPlugin('fastShader', SpriteShader);
+WebGLShaderManager.registerPlugin('spriteShader', SpriteShader);
