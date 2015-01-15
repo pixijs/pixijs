@@ -1,5 +1,4 @@
-var Shader = require('./Shader'),
-    WebGLShaderManager = require('../managers/WebGLShaderManager');
+var core = require('../core');
 
 /**
  * @class
@@ -8,7 +7,7 @@ var Shader = require('./Shader'),
  */
 function StripShader(shaderManager)
 {
-    Shader.call(this,
+    core.Shader.call(this,
         shaderManager,
         // vertex shader
         [
@@ -50,8 +49,8 @@ function StripShader(shaderManager)
     );
 }
 
-StripShader.prototype = Object.create(Shader.prototype);
+StripShader.prototype = Object.create(core.Shader.prototype);
 StripShader.prototype.constructor = StripShader;
 module.exports = StripShader;
 
-WebGLShaderManager.registerPlugin('stripShader', StripShader);
+core.WebGLShaderManager.registerPlugin('stripShader', StripShader);

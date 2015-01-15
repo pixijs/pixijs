@@ -42,10 +42,8 @@ var core = module.exports = {
     CanvasBuffer:           require('./renderers/canvas/utils/CanvasBuffer'),
 
     // renderers - webgl
-    WebGLRenderer:         require('./renderers/webgl/WebGLRenderer'),
-   // WebGLGraphics:         require('./renderers/webgl/utils/WebGLGraphics'),
-
-
+    WebGLRenderer:          require('./renderers/webgl/WebGLRenderer'),
+    Shader:                 require('./renderers/webgl/shaders/Shader'),
 
     /**
      * This helper function will automatically detect which renderer you should be using.

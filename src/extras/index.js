@@ -12,5 +12,6 @@ module.exports = {
     MovieClip:      require('./MovieClip'),
     Rope:           require('./Rope'),
     Strip:          require('./Strip'),
+    StripShader:    require('./StripShader'),
     TilingSprite:   require('./TilingSprite')
 };
