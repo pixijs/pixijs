@@ -64,9 +64,11 @@ function WebGLShaderManager(renderer)
 
 WebGLShaderManager.prototype = Object.create(WebGLManager.prototype);
 WebGLShaderManager.prototype.constructor = WebGLShaderManager;
+utils.pluginTarget.mixin(WebGLShaderManager);
+
 module.exports = WebGLShaderManager;
 
-utils.pluginTarget.mixin(WebGLShaderManager);
+
 
 /**
  * Takes the attributes given in parameters.
