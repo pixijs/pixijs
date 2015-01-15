@@ -1,7 +1,7 @@
 var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
     Shader = require('../../renderers/webgl/shaders/Shader'),
-    SpriteShader = require('../../renderers/webgl/shaders/SpriteShader'),
-    WebGLRenderer = require('../../renderers/webgl/WebGLRenderer');
+    WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
+    SpriteShader = require('./SpriteShader');
 
 /**
  * @author Mat Groves

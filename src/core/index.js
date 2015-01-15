@@ -23,12 +23,12 @@ var core = module.exports = {
 
     Sprite:                 require('./sprites/Sprite'),
     SpriteBatch:            require('./sprites/SpriteBatch'),
-    SpriteRenderer:         require('./sprites/SpriteRenderer'),
+    SpriteRenderer:         require('./sprites/webgl/SpriteRenderer'),
 
     // primitives
-    Graphics:               require('./primitives/Graphics'),
-    GraphicsData:           require('./primitives/GraphicsData'),
-    GraphicsRenderer:       require('./primitives/GraphicsRenderer'),
+    Graphics:               require('./graphics/Graphics'),
+    GraphicsData:           require('./graphics/GraphicsData'),
+    GraphicsRenderer:       require('./graphics/webgl/GraphicsRenderer'),
 
     // textures
     Texture:                require('./textures/Texture'),
