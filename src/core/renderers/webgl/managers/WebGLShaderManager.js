@@ -137,24 +137,11 @@ WebGLShaderManager.prototype.setShader = function (shader)
  */
 WebGLShaderManager.prototype.destroy = function ()
 {
+    this.destroyPlugins();
+
     this.attribState = null;
 
     this.tempAttribState = null;
-
-    this.primitiveShader.destroy();
-    this.primitiveShader = null;
-
-    this.complexPrimitiveShader.destroy();
-    this.complexPrimitiveShader = null;
-
-    this.defaultShader.destroy();
-    this.defaultShader = null;
-
-    this.fastShader.destroy();
-    this.fastShader = null;
-
-    this.stripShader.destroy();
-    this.stripShader = null;
 
     this.renderer = null;
 };
