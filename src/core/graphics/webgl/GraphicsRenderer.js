@@ -46,7 +46,7 @@ GraphicsRenderer.prototype.render = function(graphics)
     var renderer = this.renderer;
     var gl = renderer.gl;
 
-    var shader = renderer.shaderManager.primitiveShader,
+    var shader = renderer.shaderManager.plugins.primitiveShader,
         webGLData;
 
     if (graphics.dirty)
@@ -83,7 +83,7 @@ GraphicsRenderer.prototype.render = function(graphics)
 
 
             renderer.shaderManager.setShader( shader );//activatePrimitiveShader();
-            shader = renderer.shaderManager.primitiveShader;
+            shader = renderer.shaderManager.plugins.primitiveShader;
 
             gl.uniformMatrix3fv(shader.uniforms.translationMatrix._location, false, graphics.worldTransform.toArray(true));
 

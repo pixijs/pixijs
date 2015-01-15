@@ -126,11 +126,11 @@ WebGLMaskManager.prototype.bindGraphics = function (graphics, webGLData)
      // bind the graphics object..
     var projection = this.renderer.projection,
         offset = this.renderer.offset,
-        shader;// = this.renderer.shaderManager.primitiveShader;
+        shader;// = this.renderer.shaderManager.plugins.primitiveShader;
 
     if (webGLData.mode === 1)
     {
-        shader = this.renderer.shaderManager.complexPrimitiveShader;
+        shader = this.renderer.shaderManager.plugins.complexPrimitiveShader;
 
         this.renderer.shaderManager.setShader(shader);
 
@@ -156,7 +156,7 @@ WebGLMaskManager.prototype.bindGraphics = function (graphics, webGLData)
     else
     {
         //this.renderer.shaderManager.activatePrimitiveShader();
-        shader = this.renderer.shaderManager.primitiveShader;
+        shader = this.renderer.shaderManager.plugins.primitiveShader;
         this.renderer.shaderManager.setShader( shader );
 
         gl.uniformMatrix3fv(shader.uniforms.translationMatrix._location, false, graphics.worldTransform.toArray(true));

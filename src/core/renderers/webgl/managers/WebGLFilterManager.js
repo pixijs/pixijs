@@ -50,7 +50,7 @@ module.exports = WebGLFilterManager;
  */
 WebGLFilterManager.prototype.begin = function (buffer)
 {
-    this.defaultShader = this.renderer.shaderManager.defaultShader;
+    this.defaultShader = this.renderer.shaderManager.plugins.defaultShader;
 
     this.width = this.renderer.projection.x * 2;
     this.height = -this.renderer.projection.y * 2;
