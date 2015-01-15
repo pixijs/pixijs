@@ -527,12 +527,7 @@ WebGLRenderer.prototype.destroy = function (removeView)
     this.maskManager.destroy();
     this.filterManager.destroy();
 
-    for (var o in this.objectRenderers) {
-        this.objectRenderers[o].destroy();
-        this.objectRenderers[o] = null;
-    }
-
-    this.objectRenderers = null;
+    this.destroyPlugins();
 
     // this.uuid = utils.uuid();
     // this.type = CONST.WEBGL_RENDERER;

@@ -23,6 +23,15 @@ function pluginTarget(obj) {
             this.plugins[o] = new (obj.__plugins[o])(this);
         }
     };
+
+    obj.prototype.destroyPlugins = function () {
+        for (var o in this.plugins) {
+            this.plugins[o].destroy();
+            this.plugins[o] = null;
+        }
+
+        this.plugins = null;
+    }
 }
 
 module.exports = pluginTarget;
