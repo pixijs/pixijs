@@ -190,7 +190,7 @@ SpriteRenderer.prototype.setupContext = function ()
     var gl = this.renderer.gl;
 
     // setup default shader
-    this.shader = new SpriteShader(gl);
+    this.shader = new SpriteShader(this.renderer.shaderManager);
 
     // create a couple of buffers
     this.vertexBuffer = gl.createBuffer();

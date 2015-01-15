@@ -174,6 +174,9 @@ function WebGLRenderer(width, height, options)
 
     // time to create the render managers! each one focuses on managing a state in webGL
 
+    // initialize the context so it is ready for the managers.
+    this._initContext();
+
     /**
      * Deals with managing the shader programs and their attribs
      * @member {WebGLShaderManager}
@@ -204,17 +207,11 @@ function WebGLRenderer(width, height, options)
      */
     this.blendModeManager = new WebGLBlendModeManager(this);
 
-
-
     this.blendModes = null;
 
     this._boundUpdateTexture = this.updateTexture.bind(this);
     this._boundDestroyTexture = this.destroyTexture.bind(this);
 
-
-
-    // time init the context..
-    this._initContext();
 
     this.currentRenderTarget = this.renderTarget;
 
@@ -289,9 +286,7 @@ WebGLRenderer.prototype._initContext = function ()
 
     this.renderTarget = new RenderTarget(this.gl, this.width, this.height, null, true);
 
-
     this.emit('context', gl);
-
 
     // now resize and we are good to go!
     this.resize(this.width, this.height);

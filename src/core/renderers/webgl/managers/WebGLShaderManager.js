@@ -1,9 +1,4 @@
-var WebGLManager = require('./WebGLManager'),
-    PrimitiveShader = require('../shaders/PrimitiveShader'),
-    ComplexPrimitiveShader = require('../shaders/ComplexPrimitiveShader'),
-    Shader = require('../shaders/Shader'),
-    FastShader = require('../shaders/FastShader'),
-    StripShader = require('../shaders/StripShader');
+var WebGLManager = require('./WebGLManager');
 
 /**
  * @class
@@ -51,41 +46,16 @@ function WebGLShaderManager(renderer)
      */
     this.currentShader = null;
 
-    // this shader is used for rendering primitives
-    this.primitiveShader = null;
-
-    // this shader is used for rendering triangle strips
-    this.complexPrimitiveShader = null;
-
-    // this shader is used for the default sprite rendering
-    this.defaultShader = null;
-
-    // this shader is used for the fast sprite rendering
-    this.fastShader = null;
-
-    // the next one is used for rendering triangle strips
-    this.stripShader = null;
+    this.initPlugins();
 
     // listen for context and update necessary shaders
     var self = this;
     this.renderer.on('context', function (event)
     {
-        var gl = event.data;
-
-        // this shader is used for rendering primitives
-        self.primitiveShader = new PrimitiveShader(gl);
-
-        // this shader is used for rendering triangle strips
-        self.complexPrimitiveShader = new ComplexPrimitiveShader(gl);
-
-        // this shader is used for the default sprite rendering
-        self.defaultShader = new Shader(gl);
-
-        // this shader is used for the fast sprite rendering
-        self.fastShader = new FastShader(gl);
-
-        // the next one is used for rendering triangle strips
-        self.stripShader = new StripShader(gl);
+        for (var o in this.plugins)
+        {
+            this.plugins[o] = new (this.plugins[o].constructor)(self);
+        }
 
         self.setShader(self.defaultShader);
     });
@@ -94,6 +64,8 @@ function WebGLShaderManager(renderer)
 WebGLShaderManager.prototype = Object.create(WebGLManager.prototype);
 WebGLShaderManager.prototype.constructor = WebGLShaderManager;
 module.exports = WebGLShaderManager;
+
+utils.pluginTarget.mixin(WebGLShaderManager);
 
 /**
  * Takes the attributes given in parameters.

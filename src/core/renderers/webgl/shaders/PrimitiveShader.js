@@ -1,14 +1,15 @@
-var Shader = require('./Shader');
+var Shader = require('./Shader'),
+    WebGLShaderManager = require('../managers/WebGLShaderManager');
 
 /**
  * @class
  * @namespace PIXI
- * @param gl {WebGLContext} the current WebGL drawing context
+ * @param shaderManager {WebGLShaderManager} The webgl shader manager this shader works for.
  */
-function PrimitiveShader(gl)
+function PrimitiveShader(shaderManager)
 {
     Shader.call(this,
-        gl,
+        shaderManager,
         // vertex shader
         [
             'attribute vec2 aVertexPosition;',
@@ -53,3 +54,5 @@ function PrimitiveShader(gl)
 PrimitiveShader.prototype = Object.create(Shader.prototype);
 PrimitiveShader.prototype.constructor = PrimitiveShader;
 module.exports = PrimitiveShader;
+
+WebGLShaderManager.registerPlugin('primitiveShader', PrimitiveShader);
