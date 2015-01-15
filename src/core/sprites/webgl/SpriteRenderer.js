@@ -1,8 +1,8 @@
-var ObjectRenderer = require('../renderers/webgl/utils/ObjectRenderer'),
-    Shader = require('../renderers/webgl/shaders/Shader'),
-    SpriteShader = require('../renderers/webgl/shaders/SpriteShader'),
-    WebGLRenderer = require('../renderers/webgl/WebGLRenderer');
-    math = require('../math');
+var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
+    Shader = require('../../renderers/webgl/shaders/Shader'),
+    SpriteShader = require('../../renderers/webgl/shaders/SpriteShader'),
+    WebGLRenderer = require('../../renderers/webgl/WebGLRenderer');
+    math = require('../../math');
 
 /**
  * @author Mat Groves
@@ -429,7 +429,7 @@ SpriteRenderer.prototype.flush = function ()
 
                 if (!shader)
                 {
-                    shader = new Shader(gl, null, currentShader.fragmentSrc, currentShader.uniforms);
+                    shader = new Shader(this.renderer.shaderManager, null, currentShader.fragmentSrc, currentShader.uniforms);
                     currentShader.shaders[gl.id] = shader;
                 }
 

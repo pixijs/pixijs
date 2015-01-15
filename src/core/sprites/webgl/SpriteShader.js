@@ -1,5 +1,5 @@
-var Shader = require('./Shader'),
-    WebGLShaderManager = require('../managers/WebGLShaderManager');
+var Shader = require('../../renderers/webgl/shaders/Shader'),
+    WebGLShaderManager = require('../../renderers/webgl/managers/WebGLShaderManager');
 
 /**
  * @class

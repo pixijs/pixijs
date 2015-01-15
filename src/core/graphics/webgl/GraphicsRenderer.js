@@ -1,8 +1,8 @@
-var utils = require('../utils'),
-    math = require('../math'),
-    CONST = require('../const'),
-    ObjectRenderer = require('../renderers/webgl/utils/ObjectRenderer'),
-    WebGLRenderer = require('../renderers/webgl/WebGLRenderer'),
+var utils = require('../../utils'),
+    math = require('../../math'),
+    CONST = require('../../const'),
+    ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
+    WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
     WebGLGraphicsData = require('./WebGLGraphicsData');
 
 /**

@@ -359,7 +359,7 @@ WebGLFilterManager.prototype.applyFilterPass = function (filter, filterArea, wid
 
     if (!shader)
     {
-        shader = new Shader(gl);
+        shader = new Shader(this.renderer.shaderManager);
 
         shader.fragmentSrc = filter.fragmentSrc;
         shader.uniforms = filter.uniforms;
