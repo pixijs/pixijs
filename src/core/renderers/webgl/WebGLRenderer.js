@@ -228,6 +228,8 @@ function WebGLRenderer(width, height, options)
      */
     this._tempDisplayObjectParent = {worldTransform:new math.Matrix(), worldAlpha:1};
 
+    this.currentRenderer = new ObjectRenderer();
+
     this.initPlugins();
 }
 
