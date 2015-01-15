@@ -34,9 +34,10 @@ function pluginTarget(obj) {
     };
 }
 
+
 module.exports = {
     /**
-     * Mixes in the properties of the eventTarget prototype onto another object
+     * Mixes in the properties of the pluginTarget into another object
      *
      * @param object {object} The obj to mix into
      */

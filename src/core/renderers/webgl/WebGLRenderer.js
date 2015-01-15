@@ -1,5 +1,4 @@
-var WebGLFastSpriteBatch = require('./utils/WebGLFastSpriteBatch'),
-    WebGLShaderManager = require('./managers/WebGLShaderManager'),
+var WebGLShaderManager = require('./managers/WebGLShaderManager'),
     WebGLMaskManager = require('./managers/WebGLMaskManager'),
     WebGLFilterManager = require('./managers/WebGLFilterManager'),
     WebGLBlendModeManager = require('./managers/WebGLBlendModeManager'),
@@ -182,12 +181,6 @@ function WebGLRenderer(width, height, options)
      * @member {WebGLShaderManager}
      */
     this.shaderManager = new WebGLShaderManager(this);
-
-    /**
-     * Manages the rendering of sprites
-     * @member {WebGLFastSpriteBatch}
-     */
-    this.fastSpriteBatch = new WebGLFastSpriteBatch(this);
 
     /**
      * Manages the masks using the stencil buffer

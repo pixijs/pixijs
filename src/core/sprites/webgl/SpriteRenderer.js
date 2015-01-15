@@ -28,13 +28,6 @@ function SpriteRenderer(renderer)
     /**
      *
      *
-     * @member {WebGLRenderer}
-     */
-    this.renderer = renderer;
-
-    /**
-     *
-     *
      * @member {number}
      */
     this.vertSize = 5;
@@ -127,13 +120,6 @@ function SpriteRenderer(renderer)
     /**
      *
      *
-     * @member {boolean}
-     */
-    this.dirty = true;
-
-    /**
-     *
-     *
      * @member {Array}
      */
     this.textures = [];
@@ -167,6 +153,9 @@ function SpriteRenderer(renderer)
     this.shader = null;
 
     this.setupContext();
+
+    // handle when the renderer's context changes.
+    this.renderer.on('context', this.setupContext.bind(this));
 }
 
 SpriteRenderer.prototype = Object.create(ObjectRenderer.prototype);
@@ -349,25 +338,6 @@ SpriteRenderer.prototype.flush = function ()
     var gl = this.renderer.gl;
     var shader;
 
-    if (this.dirty)
-    {
-        this.dirty = false;
-        // bind the main texture
-        gl.activeTexture(gl.TEXTURE0);
-
-        // bind the buffers
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-
-        // this is the same for each shader?
-        var stride =  this.vertByteSize;
-        gl.vertexAttribPointer(this.shader.attributes.aVertexPosition, 2, gl.FLOAT, false, stride, 0);
-        gl.vertexAttribPointer(this.shader.attributes.aTextureCoord, 2, gl.FLOAT, false, stride, 2 * 4);
-
-        // color attributes will be interpreted as unsigned bytes and normalized
-        gl.vertexAttribPointer(this.shader.attributes.aColor, 4, gl.UNSIGNED_BYTE, true, stride, 4 * 4);
-    }
-
     // upload the verts to the buffer
     if (this.currentBatchSize > ( this.size * 0.5 ) )
     {
@@ -487,22 +457,27 @@ SpriteRenderer.prototype.renderBatch = function (texture, size, startIndex)
 };
 
 /**
- * Flushes the sprite renderer's current batch.
- *
- */
-SpriteRenderer.prototype.stop = function ()
-{
-    this.flush();
-    this.dirty = true;
-};
-
-/**
  * Starts a new sprite batch.
  *
  */
 SpriteRenderer.prototype.start = function ()
 {
-    this.dirty = true;
+    var gl = this.renderer.gl;
+
+    // bind the main texture
+    gl.activeTexture(gl.TEXTURE0);
+
+    // bind the buffers
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+
+    // this is the same for each shader?
+    var stride =  this.vertByteSize;
+    gl.vertexAttribPointer(this.shader.attributes.aVertexPosition, 2, gl.FLOAT, false, stride, 0);
+    gl.vertexAttribPointer(this.shader.attributes.aTextureCoord, 2, gl.FLOAT, false, stride, 2 * 4);
+
+    // color attributes will be interpreted as unsigned bytes and normalized
+    gl.vertexAttribPointer(this.shader.attributes.aColor, 4, gl.UNSIGNED_BYTE, true, stride, 4 * 4);
 };
 
 /**
@@ -514,16 +489,21 @@ SpriteRenderer.prototype.destroy = function ()
     this.renderer.gl.deleteBuffer(this.vertexBuffer);
     this.renderer.gl.deleteBuffer(this.indexBuffer);
 
+    this.shader.destroy();
+
     this.renderer = null;
 
     this.vertices = null;
     this.positions = null;
     this.colors = null;
     this.indices = null;
+
+    this.vertexBuffer = null;
+    this.indexBuffer = null;
+
     this.currentBaseTexture = null;
 
     this.drawing = false;
-    this.dirty = false;
 
     this.textures = null;
     this.blendModes = null;

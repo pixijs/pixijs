@@ -25,7 +25,7 @@ ObjectRenderer.prototype.start = function ()
 
 ObjectRenderer.prototype.stop = function ()
 {
-    // flush!
+    this.flush();
 };
 
 ObjectRenderer.prototype.flush = function ()

@@ -1,5 +1,4 @@
-var Shader = require('../../renderers/webgl/shaders/Shader'),
-    WebGLShaderManager = require('../../renderers/webgl/managers/WebGLShaderManager');
+var Shader = require('../../renderers/webgl/shaders/Shader');
 
 /**
  * @class
@@ -41,5 +40,3 @@ function SpriteShader(shaderManager)
 SpriteShader.prototype = Object.create(Shader.prototype);
 SpriteShader.prototype.constructor = SpriteShader;
 module.exports = SpriteShader;
-
-WebGLShaderManager.registerPlugin('spriteShader', SpriteShader);

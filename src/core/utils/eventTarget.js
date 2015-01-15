@@ -147,7 +147,7 @@ function eventTarget(obj)
         var list = this._listeners[eventName],
             i = fn ? list.length : 0;
 
-        while(i-- > 0)
+        while (i-- > 0)
         {
             if (list[i] === fn || list[i]._originalHandler === fn)
             {
@@ -185,7 +185,7 @@ function eventTarget(obj)
 
 module.exports = {
     /**
-     * Mixes in the properties of the eventTarget prototype onto another object
+     * Mixes in the properties of the eventTarget into another object
      *
      * @param object {object} The obj to mix into
      */

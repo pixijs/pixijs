@@ -24,6 +24,7 @@ var core = module.exports = {
     Sprite:                 require('./sprites/Sprite'),
     SpriteBatch:            require('./sprites/SpriteBatch'),
     SpriteRenderer:         require('./sprites/webgl/SpriteRenderer'),
+    SpriteBatchRenderer:    require('./sprites/webgl/SpriteBatchRenderer'),
 
     // primitives
     Graphics:               require('./graphics/Graphics'),
@@ -43,6 +44,7 @@ var core = module.exports = {
 
     // renderers - webgl
     WebGLRenderer:          require('./renderers/webgl/WebGLRenderer'),
+    WebGLShaderManager:     require('./renderers/webgl/managers/WebGLShaderManager'),
     Shader:                 require('./renderers/webgl/shaders/Shader'),
 
     /**
