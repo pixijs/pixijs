@@ -268,6 +268,6 @@ Matrix.prototype.clone = function ()
     matrix.ty = this.ty;
 
     return matrix;
-}
+};
 
 Matrix.IDENTITY = new Matrix();

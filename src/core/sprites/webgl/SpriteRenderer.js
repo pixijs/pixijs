@@ -2,7 +2,6 @@ var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
     Shader = require('../../renderers/webgl/shaders/Shader'),
     SpriteShader = require('../../renderers/webgl/shaders/SpriteShader'),
     WebGLRenderer = require('../../renderers/webgl/WebGLRenderer');
-    math = require('../../math');
 
 /**
  * @author Mat Groves
@@ -166,9 +165,6 @@ function SpriteRenderer(renderer)
      * @member {Shader}
      */
     this.shader = null;
-
-    // listen for context and update necessary buffers
-    var self = this;
 
     this.setupContext();
 }
@@ -387,7 +383,7 @@ SpriteRenderer.prototype.flush = function ()
     var batchSize = 0;
     var start = 0;
 
-    var currentBaseTexture = sprite;
+    var currentBaseTexture = null;
     var currentBlendMode = this.renderer.blendModeManager.currentBlendMode;
     var currentShader = null;
 

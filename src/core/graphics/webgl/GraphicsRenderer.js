@@ -46,9 +46,7 @@ GraphicsRenderer.prototype.render = function(graphics)
     var renderer = this.renderer;
     var gl = renderer.gl;
 
-    var projection = renderer.projection,
-        offset = renderer.offset,
-        shader = renderer.shaderManager.primitiveShader,
+    var shader = renderer.shaderManager.primitiveShader,
         webGLData;
 
     if (graphics.dirty)

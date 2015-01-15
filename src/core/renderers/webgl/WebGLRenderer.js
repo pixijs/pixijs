@@ -335,7 +335,7 @@ WebGLRenderer.prototype.render = function (object)
         gl.clear(gl.COLOR_BUFFER_BIT);
     }
 
-    this.renderDisplayObject(object, this.renderTarget)//this.projection);
+    this.renderDisplayObject(object, this.renderTarget);//this.projection);
 };
 
 /**

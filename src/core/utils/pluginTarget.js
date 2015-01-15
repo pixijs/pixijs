@@ -31,7 +31,7 @@ function pluginTarget(obj) {
         }
 
         this.plugins = null;
-    }
+    };
 }
 
 module.exports = pluginTarget;

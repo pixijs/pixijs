@@ -1,4 +1,5 @@
-var WebGLManager = require('./WebGLManager');
+var WebGLManager = require('./WebGLManager'),
+    utils = require('../../../utils');
 
 /**
  * @class
@@ -50,7 +51,7 @@ function WebGLShaderManager(renderer)
 
     // listen for context and update necessary shaders
     var self = this;
-    this.renderer.on('context', function (event)
+    this.renderer.on('context', function ()
     {
         for (var o in this.plugins)
         {
