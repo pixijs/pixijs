@@ -747,8 +747,8 @@ Graphics.prototype._renderWebGL = function (renderer)
         this.glDirty = false;
     }
 
-    renderer.setObjectRenderer(renderer.objectRenderers.graphics);
-    renderer.objectRenderers.graphics.render(this);
+    renderer.setObjectRenderer(renderer.plugins.graphics);
+    renderer.plugins.graphics.render(this);
 
 };
 

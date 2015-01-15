@@ -181,9 +181,9 @@ TilingSprite.prototype._renderWebGL = function (renderer)
         texture._frame.width = this.width;
         texture._frame.height = this.height;
 
-        renderer.setObjectRenderer(renderer.objectRenderers.sprite);
-        renderer.objectRenderers.sprite.render(this);
-     
+        renderer.setObjectRenderer(renderer.plugins.sprite);
+        renderer.plugins.sprite.render(this);
+
         texture._uvs = tempUvs;
         texture._frame.width = tempWidth;
         texture._frame.height = tempHeight;
