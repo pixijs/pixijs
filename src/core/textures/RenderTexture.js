@@ -147,7 +147,7 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
 
         this.textureBuffer = new RenderTarget(gl, this.width * this.resolution, this.height * this.resolution)//, this.baseTexture.scaleMode);
         this.baseTexture._glTextures[gl.id] =  this.textureBuffer.texture;
-        
+
         this.render = this.renderWebGL;
         this.projection = new math.Point(this.width*0.5, -this.height*0.5);
     }
@@ -278,14 +278,14 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, re
     var wt = displayObject.worldTransform;
 
     wt.identity();
-    wt.translate(0, this.projection.y * 2);
+ //   wt.translate(0, this.projection.y * 2);
 
     if (matrix)
     {
         wt.append(matrix);
     }
 
-    wt.scale(1,-1);
+   // wt.scale(1,-1);
 
     // setWorld Alpha to ensure that the object is renderer at full opacity
     displayObject.worldAlpha = 1;
@@ -305,7 +305,7 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, re
     gl.viewport(0, 0, this.width * this.resolution, this.height * this.resolution);
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.textureBuffer.frameBuffer );
-    
+
     if (clear)
     {
         this.textureBuffer.clear();

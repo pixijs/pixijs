@@ -1,6 +1,5 @@
 var WebGLManager = require('./WebGLManager'),
     FilterTexture = require('../utils/FilterTexture'),
-    RenderTarget = require('../utils/RenderTarget');
     Shader = require('../shaders/Shader');
 
 /**
@@ -64,29 +63,10 @@ WebGLFilterManager.prototype.begin = function (buffer)
  *
  * @param filterBlock {object} the filter that will be pushed to the current filter stack
  */
-WebGLFilterManager.prototype.pushFilter = function (target, filters)
+WebGLFilterManager.prototype.pushFilter = function (filterBlock)
 {
     var gl = this.renderer.gl;
 
-    var texture = this.texturePool.pop();
-
-    // get the bounds of the object..
-    var bounds = target.filterArea || target.getBounds();
-
-    if (!texture)
-    {
-        texture = new RenderTarget(this.renderer.gl, bounds.width, bounds.height);
-    }
-    else
-    {
-        texture.resize(bounds.width, bounds.height);
-    }
-
-    this.texture = texture;
-
-    this.texture.activate();
-  //  this.texture.
-    /*
     var projection = this.renderer.projection;
     var offset = this.renderer.offset;
 
@@ -179,7 +159,7 @@ WebGLFilterManager.prototype.pushFilter = function (target, filters)
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     filterBlock._glFilterTexture = texture;
-`   */
+
 };
 
 /**
@@ -188,11 +168,6 @@ WebGLFilterManager.prototype.pushFilter = function (target, filters)
  */
 WebGLFilterManager.prototype.popFilter = function ()
 {
-    this.texturePool.push(this.texture);
-
-    this.renderer.currentRenderTarget.activate();
-    
-    /*
     var gl = this.renderer.gl;
 
     var filterBlock = this.filterStack.pop();
@@ -364,7 +339,6 @@ WebGLFilterManager.prototype.popFilter = function ()
     // return the texture to the pool
     this.texturePool.push(texture);
     filterBlock._glFilterTexture = null;
-    */
 };
 
 

@@ -107,7 +107,7 @@ RenderTarget.prototype.clear = function()
 
 RenderTarget.prototype.activate = function()
 {
-    this.gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer );    
+    this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.frameBuffer );    
 }
 
 /**
@@ -119,12 +119,14 @@ RenderTarget.prototype.activate = function()
  */
 RenderTarget.prototype.resize = function(width, height)
 {
+    width = width | 0;
+    height = height | 0;
+
     if(this.width === width && this.height === height) return;
 
     this.width = width;
     this.height = height;
 
-    this.projectionMatrix = new math.Matrix();
 
     
     if(!this.root)
@@ -132,10 +134,10 @@ RenderTarget.prototype.resize = function(width, height)
         var gl = this.gl;
 
         this.projectionMatrix.a = 1/width*2;
-        this.projectionMatrix.d = -1/height*2;
+        this.projectionMatrix.d = 1/height*2;
 
         this.projectionMatrix.tx = -1;
-        this.projectionMatrix.ty = 1;
+        this.projectionMatrix.ty = -1;
 
         gl.bindTexture(gl.TEXTURE_2D,  this.texture);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  width , height , 0, gl.RGBA, gl.UNSIGNED_BYTE, null);

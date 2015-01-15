@@ -501,7 +501,7 @@ DisplayObjectContainer.prototype.renderWebGL = function (renderer)
         if (this._filters)
         {
             renderer.objectRenderers.sprite.flush();
-            renderer.filterManager.pushFilter(this._filterBlock);
+            renderer.filterManager.pushFilter(this, this._filters)//this._filterBlock);
         }
 
         if (this._mask)
