@@ -204,14 +204,14 @@ function WebGLRenderer(width, height, options)
      */
     this.blendModeManager = new WebGLBlendModeManager(this);
 
-    
+
 
     this.blendModes = null;
 
     this._boundUpdateTexture = this.updateTexture.bind(this);
     this._boundDestroyTexture = this.destroyTexture.bind(this);
 
-    
+
 
     // time init the context..
     this._initContext();
@@ -228,27 +228,16 @@ function WebGLRenderer(width, height, options)
      */
     this._tempDisplayObjectParent = {worldTransform:new math.Matrix(), worldAlpha:1};
 
-    /**
-     * Manages the renderer of specific objects.
-     *
-     * @member {object<string, ObjectRenderer>}
-     */
-    this.objectRenderers = {};
-
-    this.currentRenderer = new ObjectRenderer();
-    
-    // create an instance of each registered object renderer
-    for (var o in WebGLRenderer._objectRenderers) {
-        this.objectRenderers[o] = new (WebGLRenderer._objectRenderers[o])(this);
-    }
-
-
+    this.initPlugins();
 }
 
 // constructor
 WebGLRenderer.prototype.constructor = WebGLRenderer;
 module.exports = WebGLRenderer;
 
+WebGLRenderer.glContextId = 0;
+
+utils.pluginTarget.mixin(WebGLRenderer);
 utils.eventTarget.mixin(WebGLRenderer.prototype);
 
 Object.defineProperties(WebGLRenderer.prototype, {
@@ -297,7 +286,7 @@ WebGLRenderer.prototype._initContext = function ()
     gl.enable(gl.BLEND);
 
     this.renderTarget = new RenderTarget(this.gl, this.width, this.height, null, true);
-    
+
 
     this.emit('context', gl);
 
@@ -611,11 +600,3 @@ WebGLRenderer.prototype._mapBlendModes = function ()
         this.blendModes[CONST.blendModes.LUMINOSITY]    = [gl.ONE,       gl.ONE_MINUS_SRC_ALPHA];
     }
 };
-
-WebGLRenderer.glContextId = 0;
-WebGLRenderer._objectRenderers = {};
-
-WebGLRenderer.registerObjectRenderer = function (name, ctor) {
-    WebGLRenderer._objectRenderers[name] = ctor;
-};
-

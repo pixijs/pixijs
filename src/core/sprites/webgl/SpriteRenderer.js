@@ -177,7 +177,7 @@ SpriteRenderer.prototype = Object.create(ObjectRenderer.prototype);
 SpriteRenderer.prototype.constructor = SpriteRenderer;
 module.exports = SpriteRenderer;
 
-WebGLRenderer.registerObjectRenderer('sprite', SpriteRenderer);
+WebGLRenderer.registerPlugin('sprite', SpriteRenderer);
 
 /**
  * Sets up the renderer context and necessary buffers.
