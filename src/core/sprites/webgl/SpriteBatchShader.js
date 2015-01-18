@@ -18,6 +18,7 @@ function SpriteBatchShader(shaderManager)
 
             'attribute vec2 aPositionCoord;',
             'attribute vec2 aScale;',
+            'attribute vec2 aSkew;',
             'attribute float aRotation;',
 
             'uniform mat3 projectionMatrix;',
@@ -33,8 +34,8 @@ function SpriteBatchShader(shaderManager)
             'void main(void){',
             '   vec2 v;',
             '   vec2 sv = aVertexPosition * aScale;',
-            '   v.x = (sv.x) * cos(aRotation) - (sv.y) * sin(aRotation);',
-            '   v.y = (sv.x) * sin(aRotation) + (sv.y) * cos(aRotation);',
+            '   v.x = (sv.x) * cos(aRotation + aSkew.y) - (sv.y) * sin(aRotation + aSkew.x);',
+            '   v.y = (sv.x) * sin(aRotation + aSkew.y) + (sv.y) * cos(aRotation + aSkew.x);',
             '   v = ( uMatrix * vec3(v + aPositionCoord , 1.0) ).xy ;',
 
 
@@ -68,6 +69,7 @@ function SpriteBatchShader(shaderManager)
         {
             aPositionCoord: 0,
             aScale:         0,
+            aSkew:          0,
             aRotation:      0
         }
     );
