@@ -249,6 +249,8 @@ Object.defineProperties(DisplayObject.prototype, {
         },
         set: function (value)
         {
+            this._filters = value;
+            /*
             if (value)
             {
                 // now put all the passes in one place..
@@ -268,7 +270,7 @@ Object.defineProperties(DisplayObject.prototype, {
                 this._filterBlock = { target: this, filterPasses: passes };
             }
 
-            this._filters = value;
+            this._filters = value;*/
         }
     }
 });

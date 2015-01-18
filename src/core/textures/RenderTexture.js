@@ -157,16 +157,6 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
         this.render = this.renderCanvas;
         this.textureBuffer = new CanvasBuffer(this.width* this.resolution, this.height* this.resolution);
         this.baseTexture.source = this.textureBuffer.canvas;
-      /*  document.body.appendChild( this.textureBuffer.canvas);
-        
-        this.textureBuffer.canvas.style.position = "absolute";
-        this.textureBuffer.canvas.style.top = 0;
-        this.textureBuffer.canvas.style.left= 0;
-        this.textureBuffer.canvas.style.zIndex = 1000;
-        this.textureBuffer.canvas.width = width;
-        this.textureBuffer.canvas.height = height;
-
-        console.log(this.textureBuffer.canvas);*/
     }
 
     /**
@@ -175,8 +165,6 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
     this.valid = true;
 
     this._updateUvs();
-
-    console.log(baseTexture);
 }
 
 RenderTexture.prototype = Object.create(Texture.prototype);

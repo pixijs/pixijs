@@ -1,7 +1,9 @@
 var WebGLManager = require('./WebGLManager'),
     FilterTexture = require('../utils/FilterTexture'),
     RenderTarget = require('../utils/RenderTarget');
-    Shader = require('../shaders/Shader');
+    Shader = require('../shaders/Shader'),
+    Quad = require('./Quad'),
+    math =  require('../../../math');
 
 /**
  * @class
@@ -17,20 +19,16 @@ function WebGLFilterManager(renderer)
      */
     this.filterStack = [];
 
+    this.filterStack.push({
+        renderTarget:renderer.currentRenderTarget,
+        filter:[],
+        bounds:null
+    });
+
     /**
      * @member {any[]]}
      */
     this.texturePool = [];
-
-    /**
-     * @member {number}
-     */
-    this.offsetX = 0;
-
-    /**
-     * @member {number}
-     */
-    this.offsetY = 0;
 
     // listen for context and update necessary buffers
     var self = this;
@@ -39,6 +37,10 @@ function WebGLFilterManager(renderer)
         self.texturePool.length = 0;
         self.initShaderBuffers();
     });
+
+    this.textureSize = new math.Rectangle(0,0,800, 600);
+
+    
 }
 
 WebGLFilterManager.prototype = Object.create(WebGLManager.prototype);
@@ -51,12 +53,10 @@ module.exports = WebGLFilterManager;
  */
 WebGLFilterManager.prototype.begin = function (buffer)
 {
-    this.defaultShader = this.renderer.shaderManager.plugins.defaultShader;
-
-    this.width = this.renderer.projection.x * 2;
-    this.height = -this.renderer.projection.y * 2;
-
-    this.buffer = buffer;
+//    this.defaultShader = this.renderer.shaderManager.plugins.defaultShader;
+    //console.log("<-------->")
+    this.filterStack[0].renderTarget = this.renderer.currentRenderTarget;
+    this.filterStack[0].bounds = new math.Rectangle(0, 0, this.renderer.currentRenderTarget.width, this.renderer.currentRenderTarget.height);
 };
 
 /**
@@ -67,25 +67,114 @@ WebGLFilterManager.prototype.begin = function (buffer)
 WebGLFilterManager.prototype.pushFilter = function (target, filters)
 {
     var gl = this.renderer.gl;
-
-    var texture = this.texturePool.pop();
-
+    //console.log("push")
     // get the bounds of the object..
     var bounds = target.filterArea || target.getBounds();
 
-    if (!texture)
+    this.realSize = bounds;//.clone();
+
+    var texture = this.texturePool.pop() || new RenderTarget(this.renderer.gl, this.textureSize.width, this.textureSize.height);
+
+    //  texture.
+    // TODO setting frame is lame..
+    texture.frame = bounds;//new math.Rectangle(, 0, this.realSize.width, this.realSize.height);
+    texture.activate();
+    texture.clear();
+    texture.frame = null;    
+    
+    this.renderer.currentRenderTarget = texture;
+
+    
+
+       // TODO get rid of object creation!
+    this.filterStack.push({
+        renderTarget:texture,
+        filter:filters,
+        bounds:bounds
+    });
+
+};
+
+
+/**
+ * Removes the last filter from the filter stack and doesn't return it.
+ *
+ */
+WebGLFilterManager.prototype.popFilter = function ()
+{
+    var filterData = this.filterStack.pop();
+    
+
+    var input = filterData.renderTarget;
+
+    // use program
+    var gl = this.renderer.gl;
+    var filter = filterData.filter[0];
+    var shader = filter.shaders[gl.id];
+
+      // shader.syncUniforms();
+
+
+    this.quad.map(this.textureSize, filterData.bounds);
+
+    //
+    //
+    if (!shader)
     {
-        texture = new RenderTarget(this.renderer.gl, bounds.width, bounds.height);
-    }
-    else
-    {
-        texture.resize(bounds.width, bounds.height);
+        shader = new Shader(this,
+            filter.vertexSrc,
+            filter.fragmentSrc,
+            filter.uniforms,
+            filter.attributes
+        );
+
+        filter.shaders[gl.id] = shader;
     }
 
-    this.texture = texture;
+    // set the shader
+    this.renderer.shaderManager.setShader(shader);
 
-    this.texture.activate();
-  //  this.texture.
+    // RENDER 
+    
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.quad.vertexBuffer);
+    
+    gl.vertexAttribPointer(shader.attributes.aVertexPosition, 2, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(shader.attributes.aTextureCoord, 2, gl.FLOAT, false, 0, 2 * 4 * 4);
+    gl.vertexAttribPointer(shader.attributes.aColor, 1, gl.FLOAT, false, 0, 0);
+
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.quad.indexBuffer);
+
+    // draw the filter...
+
+    var previousFilter = this.filterStack[this.filterStack.length-1];
+
+    this.renderer.currentRenderTarget = previousFilter.renderTarget;
+    
+    this.renderer.currentRenderTarget.frame = previousFilter.bounds;
+    this.renderer.currentRenderTarget.activate();
+    this.renderer.currentRenderTarget.frame = null;
+
+    gl.uniformMatrix3fv(shader.uniforms.projectionMatrix._location, false, this.renderer.currentRenderTarget.projectionMatrix.toArray(true));
+
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, input.texture);
+
+    gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0 );
+
+    this.texturePool.push(filterData.renderTarget);
+};
+
+
+//        this.projectionMatrix.d = 1/height*2;
+    // offset..
+
+    
+  
+
+    // ----- //
+    
+
+    //  this.texture.
     /*
     var projection = this.renderer.projection;
     var offset = this.renderer.offset;
@@ -180,18 +269,9 @@ WebGLFilterManager.prototype.pushFilter = function (target, filters)
 
     filterBlock._glFilterTexture = texture;
 `   */
-};
 
-/**
- * Removes the last filter from the filter stack and doesn't return it.
- *
- */
-WebGLFilterManager.prototype.popFilter = function ()
-{
-    this.texturePool.push(this.texture);
+  //  this.texturePool.push(output);
 
-    this.renderer.currentRenderTarget.activate();
-    
     /*
     var gl = this.renderer.gl;
 
@@ -362,11 +442,8 @@ WebGLFilterManager.prototype.popFilter = function ()
     // gl.uniform2f(this.defaultShader.offsetVector, -offsetX, -offsetY);
 
     // return the texture to the pool
-    this.texturePool.push(texture);
     filterBlock._glFilterTexture = null;
     */
-};
-
 
 /**
  * Applies the filter to the specified area.
@@ -437,7 +514,9 @@ WebGLFilterManager.prototype.initShaderBuffers = function ()
 {
     var gl = this.renderer.gl;
 
-    // create some buffers
+    this.quad = new Quad(gl);
+
+    //   create some buffers
     this.vertexBuffer = gl.createBuffer();
     this.uvBuffer = gl.createBuffer();
     this.colorBuffer = gl.createBuffer();

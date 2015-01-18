@@ -10,6 +10,7 @@ var utils = require('../../../utils'),
  * @param customUniforms {object} Custom uniforms to use to augment the built-in ones.
  * @param [fragmentSrc] {string} The source of the fragment shader.
  */
+//TODO change shaderManager to gl
 function Shader(shaderManager, vertexSrc, fragmentSrc, customUniforms, customAttributes)
 {
     /**
@@ -119,6 +120,11 @@ Shader.prototype.init = function ()
 
     this.cacheUniformLocations(Object.keys(this.uniforms));
     this.cacheAttributeLocations(Object.keys(this.attributes));
+
+
+    //this.buildSync();
+
+   // console.log(this.syncUniforms)
 };
 
 Shader.prototype.cacheUniformLocations = function (keys)
@@ -187,6 +193,29 @@ Shader.prototype.compile = function ()
 
     return (this.program = program);
 };
+
+Shader.prototype.buildSync = function ()
+{
+    var str = ""
+
+    str =  "Shader.prototype.syncUniforms = function()";
+    str += "{\n";
+
+    for (var key in this.uniforms)
+    {
+        var uniform = this.uniforms[key];
+        //    location = uniform._location,
+          //  value = uniform.value,
+            //i, il;
+
+        str += "gl.uniform1i(this.uniforms."+ key +"._location, this.uniforms." + key + ".value );\n"
+
+    }
+
+    str += "}";
+   // console.log(str)
+    eval(str);
+}
 
 Shader.prototype.syncUniforms = function ()
 {

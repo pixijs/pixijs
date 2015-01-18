@@ -3,7 +3,9 @@ var utils = require('../../utils'),
     CONST = require('../../const'),
     ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
     WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
-    WebGLGraphicsData = require('./WebGLGraphicsData');
+    WebGLGraphicsData = require('./WebGLGraphicsData'),
+    ComplexPrimitiveShader = require('./ComplexPrimitiveShader'),
+    PrimitiveShader = require('./PrimitiveShader');
 
 /**
  * Renders the graphics object.

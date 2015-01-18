@@ -194,6 +194,9 @@ function WebGLRenderer(width, height, options)
      */
     this.filterManager = new WebGLFilterManager(this);
 
+    //TODO FIX THIS EVENT>>
+    this.filterManager.initShaderBuffers();
+
     /**
      * Manages the blendModes
      * @member {WebGLBlendModeManager}
@@ -308,9 +311,6 @@ WebGLRenderer.prototype.render = function (object)
 
     var gl = this.gl;
 
-    // -- Does this need to be set every frame? -- //
-    gl.viewport(0, 0, this.width, this.height);
-
     // make sure we are bound to the main frame buffer
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
@@ -344,11 +344,13 @@ WebGLRenderer.prototype.renderDisplayObject = function (displayObject, renderTar
 
     this.currentRenderTarget = renderTarget;
 
+    this.currentRenderTarget.activate();
+
     // reset the render session data..
     this.drawCount = 0;
 
     // start the filter manager
-   // this.filterManager.begin(renderTarget.frameBuffer);
+    this.filterManager.begin()//renderTarget.frameBuffer);
 
     // render the scene!
     displayObject.renderWebGL(this);

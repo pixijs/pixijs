@@ -42,6 +42,8 @@ var RenderTarget = function(gl, width, height, scaleMode, root)
 
     this.projectionMatrix = new math.Matrix();
 
+    this.frame = null;
+
     /**
      * @property scaleMode
      * @type Number
@@ -101,13 +103,68 @@ RenderTarget.prototype.clear = function()
 {
     var gl = this.gl;
 
-    gl.clearColor(0,0,0, 0);
+    gl.clearColor(0,0,0,0);
     gl.clear(gl.COLOR_BUFFER_BIT);
 };
 
 RenderTarget.prototype.activate = function()
 {
-    this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.frameBuffer);
+    //TOOD refactor usage of frame..
+    var gl = this.gl;
+    gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer);
+        
+
+    if(this.frame)
+    {
+       // gl.viewport(this.frame.x, this.frame.y, this.frame.width, this.frame.height);
+
+        gl.viewport(0,0, this.frame.width, this.frame.height);
+
+        if (!this.root)
+        {
+
+            this.projectionMatrix.a = 1/(this.frame.width)*2;
+            this.projectionMatrix.d = 1/(this.frame.height)*2;
+
+            this.projectionMatrix.tx = -1 - this.frame.x * this.projectionMatrix.a; 
+            this.projectionMatrix.ty = -1 - this.frame.y * this.projectionMatrix.d;
+        }
+        else
+        {
+            this.projectionMatrix.a = 1/(this.frame.width)*2;
+            this.projectionMatrix.d = -1/(this.frame.height)*2;
+
+            this.projectionMatrix.tx = -1 - this.frame.x * this.projectionMatrix.a; 
+            this.projectionMatrix.ty = 1 - this.frame.y * this.projectionMatrix.d;
+        }
+
+
+    }
+    else
+    {
+        if (!this.root)
+        {
+            this.projectionMatrix.a = 1/(this.width)*2;
+            this.projectionMatrix.d = 1/(this.height)*2;
+
+            this.projectionMatrix.tx = -1;
+            this.projectionMatrix.ty = -1;
+        }
+        else
+        {
+            this.projectionMatrix.a = 1/(this.width)*2;
+            this.projectionMatrix.d = -1/(this.height)*2;
+
+            this.projectionMatrix.tx = -1;
+            this.projectionMatrix.ty = 1;
+        }
+
+        
+        //  this.projectionMatrix.tx = -1;
+        // this.projectionMatrix.ty = 1;
+
+        gl.viewport(0, 0, this.width, this.height);
+    }
 };
 
 /**
@@ -119,6 +176,9 @@ RenderTarget.prototype.activate = function()
  */
 RenderTarget.prototype.resize = function(width, height)
 {
+    width = width | 0;
+    height = height | 0;
+
     if (this.width === width && this.height === height) {
         return;
     }
@@ -127,7 +187,6 @@ RenderTarget.prototype.resize = function(width, height)
     this.height = height;
 
     this.projectionMatrix = new math.Matrix();
-
 
     if (!this.root)
     {
@@ -140,10 +199,11 @@ RenderTarget.prototype.resize = function(width, height)
         this.projectionMatrix.ty = -1;
 
         gl.bindTexture(gl.TEXTURE_2D,  this.texture);
+
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  width , height , 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
         // update the stencil buffer width and height
         gl.bindRenderbuffer(gl.RENDERBUFFER, this.stencilBuffer);
-        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, width , height );
+        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL,  width  , height );
     }
     else
     {
