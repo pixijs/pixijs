@@ -143,12 +143,11 @@ PIXI.RAD_TO_DEG = 180 / Math.PI;
 PIXI.DEG_TO_RAD = Math.PI / 180;
 
 /**
- * @property {String} RETINA_PREFIX
+ * @property {RegExp} RETINA_PREFIX
  * @protected
  * @static
  */
-PIXI.RETINA_PREFIX = "@2x";
-//PIXI.SCALE_PREFIX "@x%%";
+PIXI.RETINA_PREFIX = /@(.+)x/;
 
 /**
  * If true the default pixi startup (console) banner message will be suppressed.

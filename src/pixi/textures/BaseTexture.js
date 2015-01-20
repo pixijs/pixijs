@@ -267,10 +267,9 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
         baseTexture.imageUrl = imageUrl;
         PIXI.BaseTextureCache[imageUrl] = baseTexture;
 
-        // if there is an @2x at the end of the url we are going to assume its a highres image
-        if( imageUrl.indexOf(PIXI.RETINA_PREFIX + '.') !== -1)
-        {
-            baseTexture.resolution = 2;
+        var resolution = PIXI.RETINA_PREFIX.exec(imageUrl);
+        if (resolution) {
+            baseTexture.resolution = resolution ? parseFloat(resolution[1]) : 1;
         }
     }
 
