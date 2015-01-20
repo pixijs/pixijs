@@ -269,7 +269,7 @@ PIXI.BaseTexture.fromImage = function(imageUrl, crossorigin, scaleMode)
 
         var resolution = PIXI.RETINA_PREFIX.exec(imageUrl);
         if (resolution) {
-            baseTexture.resolution = resolution ? parseFloat(resolution[1]) : 1;
+            baseTexture.resolution = parseFloat(resolution[1]);
         }
     }
 
