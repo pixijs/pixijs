@@ -28,7 +28,7 @@ function SpriteBatchRenderer(renderer)
      *
      * @member {number}
      */
-    this.vertSize = 12;
+    this.vertSize = 10;
 
     /**
      *
@@ -277,21 +277,15 @@ SpriteBatchRenderer.prototype.renderSprite = function (sprite)
     vertices[index++] = sprite.scale.x;
     vertices[index++] = sprite.scale.y;
 
-    //skew
-    vertices[index++] = sprite.skew.x;
-    vertices[index++] = sprite.skew.y;
-
     //rotation
     vertices[index++] = sprite.rotation;
 
     // uv
     vertices[index++] = uvs.x0;
     vertices[index++] = uvs.y1;
-
     // color
     vertices[index++] = sprite.alpha;
 
-    // ----
 
     // xy
     vertices[index++] = w0;
@@ -304,21 +298,15 @@ SpriteBatchRenderer.prototype.renderSprite = function (sprite)
     vertices[index++] = sprite.scale.x;
     vertices[index++] = sprite.scale.y;
 
-    //skew
-    vertices[index++] = sprite.skew.x;
-    vertices[index++] = sprite.skew.y;
-
      //rotation
     vertices[index++] = sprite.rotation;
 
     // uv
     vertices[index++] = uvs.x1;
     vertices[index++] = uvs.y1;
-
     // color
     vertices[index++] = sprite.alpha;
 
-    // ----
 
     // xy
     vertices[index++] = w0;
@@ -331,21 +319,17 @@ SpriteBatchRenderer.prototype.renderSprite = function (sprite)
     vertices[index++] = sprite.scale.x;
     vertices[index++] = sprite.scale.y;
 
-    //skew
-    vertices[index++] = sprite.skew.x;
-    vertices[index++] = sprite.skew.y;
-
      //rotation
     vertices[index++] = sprite.rotation;
 
     // uv
     vertices[index++] = uvs.x2;
     vertices[index++] = uvs.y2;
-
     // color
     vertices[index++] = sprite.alpha;
 
-    // ----
+
+
 
     // xy
     vertices[index++] = w1;
@@ -358,17 +342,12 @@ SpriteBatchRenderer.prototype.renderSprite = function (sprite)
     vertices[index++] = sprite.scale.x;
     vertices[index++] = sprite.scale.y;
 
-    //skew
-    vertices[index++] = sprite.skew.x;
-    vertices[index++] = sprite.skew.y;
-
      //rotation
     vertices[index++] = sprite.rotation;
 
     // uv
     vertices[index++] = uvs.x3;
     vertices[index++] = uvs.y3;
-
     // color
     vertices[index++] = sprite.alpha;
 
@@ -459,8 +438,7 @@ SpriteBatchRenderer.prototype.start = function (spriteBatch)
 
     gl.vertexAttribPointer(this.shader.attributes.aPositionCoord, 2, gl.FLOAT, false, stride, 5 * 4);
     gl.vertexAttribPointer(this.shader.attributes.aScale, 2, gl.FLOAT, false, stride, 7 * 4);
-    gl.vertexAttribPointer(this.shader.attributes.aSkew, 2, gl.FLOAT, false, stride, 9 * 4);
-    gl.vertexAttribPointer(this.shader.attributes.aRotation, 1, gl.FLOAT, false, stride, 11 * 4);
+    gl.vertexAttribPointer(this.shader.attributes.aRotation, 1, gl.FLOAT, false, stride, 9 * 4);
 };
 
 /**
