@@ -4,11 +4,13 @@ var Loader = require('asset-loader'),
     loader = new Loader();
 
 loader
-    // parse any json strings into json
-    .after(Loader.middleware.parsing.json())
-    // parse any image objects into textures
-    .after(textureParser())
+    // parse any json strings into objects
+    .use(Loader.middleware.parsing.json())
+    // parse any blob into more usable objects (e.g. Image)
+    .use(Loader.middleware.parsing.json())
+    // parse any Image objects into textures
+    .use(textureParser())
     // parse any spritesheet data into multiple textures
-    .after(spritesheetParser())
+    .use(spritesheetParser())
 
 module.exports = loader;
