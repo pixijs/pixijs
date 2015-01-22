@@ -109,6 +109,7 @@ PIXI.BitmapText.prototype.updateText = function()
     var pos = new PIXI.Point();
     var prevCharCode = null;
     var chars = [];
+    var lastLineWidth = 0;
     var maxLineWidth = 0;
     var lineWidths = [];
     var line = 0;
@@ -120,8 +121,8 @@ PIXI.BitmapText.prototype.updateText = function()
 
         if(/(?:\r\n|\r|\n)/.test(this.text.charAt(i)))
         {
-            lineWidths.push(pos.x);
-            maxLineWidth = Math.max(maxLineWidth, pos.x);
+            lineWidths.push(lastLineWidth);
+            maxLineWidth = Math.max(maxLineWidth, lastLineWidth);
             line++;
 
             pos.x = 0;
@@ -141,12 +142,13 @@ PIXI.BitmapText.prototype.updateText = function()
 
         chars.push({texture:charData.texture, line: line, charCode: charCode, position: new PIXI.Point(pos.x + charData.xOffset, pos.y + charData.yOffset)});
         pos.x += charData.xAdvance;
+        lastLineWidth = pos.x + (charData.texture.width + charData.xOffset) - charData.xAdvance;
 
         prevCharCode = charCode;
     }
 
-    lineWidths.push(pos.x);
-    maxLineWidth = Math.max(maxLineWidth, pos.x);
+    lineWidths.push(lastLineWidth);
+    maxLineWidth = Math.max(maxLineWidth, lastLineWidth);
 
     var lineAlignOffsets = [];
 
