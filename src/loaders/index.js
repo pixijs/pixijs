@@ -9,11 +9,11 @@
  * @namespace PIXI
  */
 module.exports = {
-	AssetLoader:        require('./AssetLoader'),
-    AtlasLoader:        require('./AtlasLoader'),
-    BitmapFontLoader:   require('./BitmapFontLoader'),
-    ImageLoader:        require('./ImageLoader'),
-    JsonLoader:         require('./JsonLoader'),
-    SpineLoader:        require('./SpineLoader'),
-    SpriteSheetLoader:  require('./SpriteSheetLoader')
+    Loader:     require('asset-loader'),
+    loader:     require('./loader'),
+
+    // parsers
+    textureParser:      require('./textureParser'),
+    spritesheetParser:  require('./spritesheetParser'),
+    spineAtlasParser:   require('./spineAtlasParser')
 };

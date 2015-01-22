@@ -9,5 +9,6 @@
  * @namespace PIXI
  */
 module.exports = {
-    Spine:              require('./Spine')
+    Spine:      require('./Spine'),
+    runtime:    require('./SpineRuntime')
 };
