@@ -83,10 +83,10 @@ FilterManager.prototype.pushFilter = function (target, filters)
     // TODO setting frame is lame..
     texture.frame = bounds;//new math.Rectangle(, 0, this.realSize.width, this.realSize.height);
     texture.activate();
-    
+
     // clear the texture..
     texture.clear();
-    
+
     this.renderer.currentRenderTarget = texture;
 
     // TODO get rid of object creation!
@@ -106,7 +106,7 @@ FilterManager.prototype.pushFilter = function (target, filters)
 FilterManager.prototype.popFilter = function ()
 {
     var filterData = this.filterStack.pop();
-    
+
 
     var input = filterData.renderTarget;
 
@@ -135,10 +135,10 @@ FilterManager.prototype.popFilter = function ()
     // set the shader
     this.renderer.shaderManager.setShader(shader);
 
-    // RENDER 
-    
+    // RENDER
+
     gl.bindBuffer(gl.ARRAY_BUFFER, this.quad.vertexBuffer);
-    
+
     gl.vertexAttribPointer(shader.attributes.aVertexPosition, 2, gl.FLOAT, false, 0, 0);
     gl.vertexAttribPointer(shader.attributes.aTextureCoord, 2, gl.FLOAT, false, 0, 2 * 4 * 4);
     gl.vertexAttribPointer(shader.attributes.aColor, 1, gl.FLOAT, false, 0, 0);
@@ -150,10 +150,10 @@ FilterManager.prototype.popFilter = function ()
     var previousFilter = this.filterStack[this.filterStack.length-1];
 
     this.renderer.currentRenderTarget = previousFilter.renderTarget;
-    
+
     this.renderer.currentRenderTarget.frame = previousFilter.bounds;
     this.renderer.currentRenderTarget.activate();
-    
+
     gl.uniformMatrix3fv(shader.uniforms.projectionMatrix._location, false, this.renderer.currentRenderTarget.projectionMatrix.toArray(true));
 
     var m = this.calculateMappedMatrix(filterData.bounds, filter.sprite)
@@ -178,14 +178,14 @@ FilterManager.prototype.popFilter = function ()
         gl.bindTexture(gl.TEXTURE_2D, filter.uniforms.mask.value.baseTexture._glTextures[gl.id]);
     }
 
-    
+
     // set uniform to texture index
     gl.uniform1i(filter.uniforms.mask._location, 1);
 
     // increment next texture id
     this.textureCount++;
 
-            
+
 
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, input.texture);
@@ -210,7 +210,7 @@ FilterManager.prototype.calculateMappedMatrix = function (filterArea, sprite)
     var ratio = this.textureSize.height / this.textureSize.width;
 
     mappedMatrix.translate(filterArea.x / this.textureSize.width, filterArea.y / this.textureSize.height );
-    
+
     mappedMatrix.scale(1 , ratio);
 
     var translateScaleX = (this.textureSize.width / texture.width);
@@ -240,13 +240,13 @@ FilterManager.prototype.calculateMappedMatrix = function (filterArea, sprite)
     // var ratio = this.textureSize.height / this.textureSize.width;
 
     // m.translate(filterArea.x / this.textureSize.width, filterArea.y / this.textureSize.height);
-    
+
 
     // m.scale(1 , ratio);
 
 
     // var transform = wt.clone();
-    
+
     // var translateScaleX = (this.textureSize.width / 620);
     // var translateScaleY = (this.textureSize.height / 380);
 
@@ -307,6 +307,8 @@ FilterManager.prototype.initShaderBuffers = function ()
  */
 FilterManager.prototype.destroy = function ()
 {
+    WebGLManager.prototype.destroy.call(this);
+
     var gl = this.renderer.gl;
 
     this.filterStack = null;

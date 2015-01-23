@@ -276,7 +276,8 @@ WebGLMaskManager.prototype.popStencil = function (graphics, webGLData)
  */
 WebGLMaskManager.prototype.destroy = function ()
 {
-    this.renderer = null;
+    WebGLManager.prototype.destroy.call(this);
+
     this.stencilStack = null;
 };
 

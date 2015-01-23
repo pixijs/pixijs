@@ -21,11 +21,6 @@ MaskManager.prototype = Object.create(WebGLManager.prototype);
 MaskManager.prototype.constructor = MaskManager;
 module.exports = MaskManager;
 
-MaskManager.prototype.destroy = function ()
-{
-
-};
-
 /**
  * Applies the Mask and adds it to the current filter stack.
  *

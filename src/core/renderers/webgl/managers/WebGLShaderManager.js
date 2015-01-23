@@ -138,11 +138,11 @@ WebGLShaderManager.prototype.setShader = function (shader)
  */
 WebGLShaderManager.prototype.destroy = function ()
 {
+    WebGLManager.prototype.destroy.call(this);
+
     this.destroyPlugins();
 
     this.attribState = null;
 
     this.tempAttribState = null;
-
-    this.renderer = null;
 };
