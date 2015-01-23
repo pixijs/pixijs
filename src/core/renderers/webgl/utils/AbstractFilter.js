@@ -45,6 +45,34 @@ function AbstractFilter(fragmentSrc, uniforms)
 AbstractFilter.prototype.constructor = AbstractFilter;
 module.exports = AbstractFilter;
 
+AbstractFilter.prototype.getShader = function (renderer)
+{
+    var gl = renderer.gl;
+
+    var shader = this.shaders[gl.id];
+
+    if (!shader)
+    {
+        shader = new DefaultShader(renderer.shaderManager,
+            this.vertexSrc,
+            this.fragmentSrc,
+            this.uniforms,
+            this.attributes
+        );
+
+        this.shaders[gl.id] = shader;
+    }
+    
+    return shader;
+}
+
+AbstractFilter.prototype.applyWebGL = function (renderer, inputs, output, blendMode)
+{
+    var gl = renderer.gl;
+
+
+}
+
 /**
  * Syncs a uniform between the class object and the shaders.
  *

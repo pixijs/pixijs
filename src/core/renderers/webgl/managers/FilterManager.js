@@ -48,7 +48,9 @@ module.exports = FilterManager;
 FilterManager.prototype.onContextChange = function ()
 {
     this.texturePool.length = 0;
-    this.initShaderBuffers();
+    
+    var gl = this.renderer.gl;
+    this.quad = new Quad(gl);
 }
 
 /**
@@ -113,24 +115,16 @@ FilterManager.prototype.popFilter = function ()
     // use program
     var gl = this.renderer.gl;
     var filter = filterData.filter[0];
-    var shader = filter.shaders[gl.id];
+    var shader = filter.getShader(renderer)
+
+ //   ;filter.shaders[gl.id];
 
     // shader.syncUniforms();
 
     this.quad.map(this.textureSize, filterData.bounds);
 
-    //
-    if (!shader)
-    {
-        shader = new DefaultShader(this,
-            filter.vertexSrc,
-            filter.fragmentSrc,
-            filter.uniforms,
-            filter.attributes
-        );
 
-        filter.shaders[gl.id] = shader;
-    }
+
 
     // set the shader
     this.renderer.shaderManager.setShader(shader);
@@ -197,6 +191,13 @@ FilterManager.prototype.popFilter = function ()
     return filterData.filter;
 };
 
+FilterManager.prototype.applyFilter = function (inputTarget, outputTarget, blendMode)
+{
+
+
+    // assuming theese things are the same size!
+    // 
+}
 
 // TODO playing around here.. this is temporary - (will end up in the shader)
 FilterManager.prototype.calculateMappedMatrix = function (filterArea, sprite)
@@ -289,17 +290,6 @@ FilterManager.prototype.capFilterArea = function (filterArea)
         filterArea.height = this.textureSize.height - filterArea.y;
     }
 }
-
-
-/**
- * Initialises the shader buffers.
- *
- */
-FilterManager.prototype.initShaderBuffers = function ()
-{
-    var gl = this.renderer.gl;
-    this.quad = new Quad(gl);
-};
 
 /**
  * Destroys the filter and removes it from the filter stack.
