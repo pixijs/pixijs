@@ -1,4 +1,7 @@
 var WebGLManager = require('./WebGLManager'),
+    DefaultShader = require('../shaders/DefaultShader'),
+    ComplexPrimitiveShader = require('../shaders/ComplexPrimitiveShader'),
+    PrimitiveShader = require('../shaders/PrimitiveShader'),
     utils = require('../../../utils');
 
 /**
@@ -51,15 +54,7 @@ function WebGLShaderManager(renderer)
 
     // listen for context and update necessary shaders
     var self = this;
-    this.renderer.on('context', function ()
-    {
-        for (var o in this.plugins)
-        {
-            this.plugins[o] = new (this.plugins[o].constructor)(self);
-        }
 
-        self.setShader(self.defaultShader);
-    });
 }
 
 WebGLShaderManager.prototype = Object.create(WebGLManager.prototype);
@@ -68,6 +63,18 @@ utils.pluginTarget.mixin(WebGLShaderManager);
 
 module.exports = WebGLShaderManager;
 
+WebGLShaderManager.prototype.onContextChange = function ()
+{
+    for (var o in this.plugins)
+    {
+        this.plugins[o] = new (this.plugins[o].constructor)(self);
+    }
+
+    this.defaultShader = new DefaultShader(this);
+      // init webGL stuff!
+    this.primitiveShader = new PrimitiveShader(this);
+    this.complexPrimitiveShader = new ComplexPrimitiveShader(this);
+}
 
 
 /**

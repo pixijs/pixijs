@@ -9,7 +9,6 @@
  * @namespace PIXI
  */
 module.exports = {
-    AbstractFilter:     require('./AbstractFilter'),
     AlphaMaskFilter:    require('./AlphaMaskFilter'),
     AsciiFilter:        require('./AsciiFilter'),
     BlurFilter:         require('./BlurFilter'),

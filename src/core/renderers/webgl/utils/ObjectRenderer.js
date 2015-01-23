@@ -1,3 +1,6 @@
+
+var WebGLManager = require('../managers/WebGLManager');
+
 /**
  *
  * @class
@@ -7,14 +10,11 @@
  */
 function ObjectRenderer(renderer)
 {
-    /**
-     * The renderer used by this object renderer.
-     *
-     * @member {WebGLRenderer}
-     */
-    this.renderer = renderer;
+    WebGLManager.call(this, renderer);
 }
 
+
+ObjectRenderer.prototype = Object.create(WebGLManager.prototype);
 ObjectRenderer.prototype.constructor = ObjectRenderer;
 module.exports = ObjectRenderer;
 
@@ -36,9 +36,4 @@ ObjectRenderer.prototype.flush = function ()
 ObjectRenderer.prototype.render = function (/* object */)
 {
     // render the object
-};
-
-ObjectRenderer.prototype.destroy = function ()
-{
-    this.renderer = null;
 };

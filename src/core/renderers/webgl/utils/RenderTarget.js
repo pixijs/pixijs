@@ -110,61 +110,37 @@ RenderTarget.prototype.clear = function()
 RenderTarget.prototype.activate = function()
 {
     //TOOD refactor usage of frame..
-    var gl = this.gl;
+    var gl = this.gl,
+        pm = this.projectionMatrix;
+
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer);
         
+    var frame = this.frame;
 
-    if(this.frame)
-    {
-       // gl.viewport(this.frame.x, this.frame.y, this.frame.width, this.frame.height);
-
-        gl.viewport(0,0, this.frame.width, this.frame.height);
-
-        if (!this.root)
-        {
-
-            this.projectionMatrix.a = 1/(this.frame.width)*2;
-            this.projectionMatrix.d = 1/(this.frame.height)*2;
-
-            this.projectionMatrix.tx = -1 - this.frame.x * this.projectionMatrix.a; 
-            this.projectionMatrix.ty = -1 - this.frame.y * this.projectionMatrix.d;
-        }
-        else
-        {
-            this.projectionMatrix.a = 1/(this.frame.width)*2;
-            this.projectionMatrix.d = -1/(this.frame.height)*2;
-
-            this.projectionMatrix.tx = -1 - this.frame.x * this.projectionMatrix.a; 
-            this.projectionMatrix.ty = 1 - this.frame.y * this.projectionMatrix.d;
-        }
-
-
-    }
-    else
+    if(frame)
     {
         if (!this.root)
         {
-            this.projectionMatrix.a = 1/(this.width)*2;
-            this.projectionMatrix.d = 1/(this.height)*2;
+            pm.a = 1 / frame.width*2;
+            pm.d = 1 / frame.height*2;
 
-            this.projectionMatrix.tx = -1;
-            this.projectionMatrix.ty = -1;
+            pm.tx = -1 - frame.x * pm.a; 
+            pm.ty = -1 - frame.y * pm.d;
         }
         else
         {
-            this.projectionMatrix.a = 1/(this.width)*2;
-            this.projectionMatrix.d = -1/(this.height)*2;
+            pm.a = 1 / frame.width*2;
+            pm.d = -1 / frame.height*2;
 
-            this.projectionMatrix.tx = -1;
-            this.projectionMatrix.ty = 1;
+            pm.tx = -1 - frame.x * pm.a; 
+            pm.ty = 1 - frame.y * pm.d;
         }
 
-        
-        //  this.projectionMatrix.tx = -1;
-        // this.projectionMatrix.ty = 1;
+        gl.viewport(0,0, frame.width, frame.height);
 
-        gl.viewport(0, 0, this.width, this.height);
     }
+    
+    // gl.viewport(frame.x, frame.y, frame.width, frame.height);
 };
 
 /**

@@ -1,7 +1,6 @@
 var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
     Shader = require('../../renderers/webgl/shaders/Shader'),
-    WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
-    SpriteShader = require('./SpriteShader');
+    WebGLRenderer = require('../../renderers/webgl/WebGLRenderer');
 
 /**
  * @author Mat Groves
@@ -152,10 +151,6 @@ function SpriteRenderer(renderer)
      */
     this.shader = null;
 
-    this.setupContext();
-
-    // handle when the renderer's context changes.
-    this.renderer.on('context', this.setupContext.bind(this));
 }
 
 SpriteRenderer.prototype = Object.create(ObjectRenderer.prototype);
@@ -170,12 +165,12 @@ WebGLRenderer.registerPlugin('sprite', SpriteRenderer);
  * @private
  * @param gl {WebGLContext} the current WebGL drawing context
  */
-SpriteRenderer.prototype.setupContext = function ()
+SpriteRenderer.prototype.onContextChange = function ()
 {
     var gl = this.renderer.gl;
 
     // setup default shader
-    this.shader = new SpriteShader(this.renderer.shaderManager);
+    this.shader = this.renderer.shaderManager.defaultShader;
 
     // create a couple of buffers
     this.vertexBuffer = gl.createBuffer();
@@ -402,13 +397,11 @@ SpriteRenderer.prototype.flush = function ()
                 // set shader function???
                 this.renderer.shaderManager.setShader(shader);
 
-                if (shader.dirty)
-                {
-                    shader.syncUniforms();
-                }
+                ///console.log(shader.uniforms.projectionMatrix);
 
                 // both thease only need to be set if they are changing..
                 // set the projection
+                
                 gl.uniformMatrix3fv(shader.uniforms.projectionMatrix._location, false, this.renderer.currentRenderTarget.projectionMatrix.toArray(true));
             }
         }

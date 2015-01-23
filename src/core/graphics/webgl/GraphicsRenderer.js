@@ -3,9 +3,7 @@ var utils = require('../../utils'),
     CONST = require('../../const'),
     ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
     WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
-    WebGLGraphicsData = require('./WebGLGraphicsData'),
-    ComplexPrimitiveShader = require('./ComplexPrimitiveShader'),
-    PrimitiveShader = require('./PrimitiveShader');
+    WebGLGraphicsData = require('./WebGLGraphicsData');
 
 /**
  * Renders the graphics object.
@@ -20,6 +18,9 @@ function GraphicsRenderer(renderer)
     ObjectRenderer.call(this, renderer);
 
     this.graphicsDataPool = [];
+
+    this.primitiveShader = null;
+    this.complexPrimitiveShader = null;
 }
 
 GraphicsRenderer.prototype = Object.create(ObjectRenderer.prototype);
@@ -27,6 +28,11 @@ GraphicsRenderer.prototype.constructor = GraphicsRenderer;
 module.exports = GraphicsRenderer;
 
 WebGLRenderer.registerPlugin('graphics', GraphicsRenderer);
+
+GraphicsRenderer.prototype.onContextChange = function()
+{
+  
+}
 
 /**
  * Destroys this renderer.
@@ -84,8 +90,9 @@ GraphicsRenderer.prototype.render = function(graphics)
             webGLData = webGL.data[i];
 
 
+            shader = renderer.shaderManager.primitiveShader;
+            
             renderer.shaderManager.setShader( shader );//activatePrimitiveShader();
-            shader = renderer.shaderManager.plugins.primitiveShader;
 
             gl.uniformMatrix3fv(shader.uniforms.translationMatrix._location, false, graphics.worldTransform.toArray(true));
 

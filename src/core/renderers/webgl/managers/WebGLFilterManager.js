@@ -1,7 +1,8 @@
 var WebGLManager = require('./WebGLManager'),
     FilterTexture = require('../utils/FilterTexture'),
     RenderTarget = require('../utils/RenderTarget');
-    Shader = require('../shaders/Shader'),
+    DefaultShader = require('../shaders/DefaultShader'),
+
     Quad = require('./Quad'),
     math =  require('../../../math');
 
@@ -10,9 +11,11 @@ var WebGLManager = require('./WebGLManager'),
  * @namespace PIXI
  * @param renderer {WebGLRenderer} The renderer this manager works for.
  */
-function WebGLFilterManager(renderer)
+function FilterManager(renderer)
 {
     WebGLManager.call(this, renderer);
+
+    this.count = 0;
 
     /**
      * @member {any[]}
@@ -31,30 +34,31 @@ function WebGLFilterManager(renderer)
     this.texturePool = [];
 
     // listen for context and update necessary buffers
-    var self = this;
-    this.renderer.on('context', function ()
-    {
-        self.texturePool.length = 0;
-        self.initShaderBuffers();
-    });
+    //TODO make this dynamic!
+    this.textureSize = new math.Rectangle(0, 0, 800, 600);
 
-    this.textureSize = new math.Rectangle(0,0,800, 600);
-
-    
+    this.tempMatrix = new math.Matrix();
 }
 
-WebGLFilterManager.prototype = Object.create(WebGLManager.prototype);
-WebGLFilterManager.prototype.constructor = WebGLFilterManager;
-module.exports = WebGLFilterManager;
+FilterManager.prototype = Object.create(WebGLManager.prototype);
+FilterManager.prototype.constructor = FilterManager;
+module.exports = FilterManager;
+
+
+FilterManager.prototype.onContextChange = function ()
+{
+    this.texturePool.length = 0;
+    this.initShaderBuffers();
+}
 
 /**
  * @param renderer {WebGLRenderer}
  * @param buffer {ArrayBuffer}
  */
-WebGLFilterManager.prototype.begin = function (buffer)
+FilterManager.prototype.begin = function (buffer)
 {
-//    this.defaultShader = this.renderer.shaderManager.plugins.defaultShader;
-    //console.log("<-------->")
+    //TODO sort out bounds - no point creating a new rect each frame!
+    //this.defaultShader = this.renderer.shaderManager.plugins.defaultShader;
     this.filterStack[0].renderTarget = this.renderer.currentRenderTarget;
     this.filterStack[0].bounds = new math.Rectangle(0, 0, this.renderer.currentRenderTarget.width, this.renderer.currentRenderTarget.height);
 };
@@ -64,14 +68,14 @@ WebGLFilterManager.prototype.begin = function (buffer)
  *
  * @param filterBlock {object} the filter that will be pushed to the current filter stack
  */
-WebGLFilterManager.prototype.pushFilter = function (target, filters)
+FilterManager.prototype.pushFilter = function (target, filters)
 {
     var gl = this.renderer.gl;
     //console.log("push")
     // get the bounds of the object..
     var bounds = target.filterArea || target.getBounds();
 
-    this.realSize = bounds;//.clone();
+    this.capFilterArea( bounds );
 
     var texture = this.texturePool.pop() || new RenderTarget(this.renderer.gl, this.textureSize.width, this.textureSize.height);
 
@@ -79,14 +83,13 @@ WebGLFilterManager.prototype.pushFilter = function (target, filters)
     // TODO setting frame is lame..
     texture.frame = bounds;//new math.Rectangle(, 0, this.realSize.width, this.realSize.height);
     texture.activate();
+    
+    // clear the texture..
     texture.clear();
-    texture.frame = null;    
     
     this.renderer.currentRenderTarget = texture;
 
-    
-
-       // TODO get rid of object creation!
+    // TODO get rid of object creation!
     this.filterStack.push({
         renderTarget:texture,
         filter:filters,
@@ -100,7 +103,7 @@ WebGLFilterManager.prototype.pushFilter = function (target, filters)
  * Removes the last filter from the filter stack and doesn't return it.
  *
  */
-WebGLFilterManager.prototype.popFilter = function ()
+FilterManager.prototype.popFilter = function ()
 {
     var filterData = this.filterStack.pop();
     
@@ -112,16 +115,14 @@ WebGLFilterManager.prototype.popFilter = function ()
     var filter = filterData.filter[0];
     var shader = filter.shaders[gl.id];
 
-      // shader.syncUniforms();
-
+    // shader.syncUniforms();
 
     this.quad.map(this.textureSize, filterData.bounds);
 
     //
-    //
     if (!shader)
     {
-        shader = new Shader(this,
+        shader = new DefaultShader(this,
             filter.vertexSrc,
             filter.fragmentSrc,
             filter.uniforms,
@@ -152,9 +153,39 @@ WebGLFilterManager.prototype.popFilter = function ()
     
     this.renderer.currentRenderTarget.frame = previousFilter.bounds;
     this.renderer.currentRenderTarget.activate();
-    this.renderer.currentRenderTarget.frame = null;
-
+    
     gl.uniformMatrix3fv(shader.uniforms.projectionMatrix._location, false, this.renderer.currentRenderTarget.projectionMatrix.toArray(true));
+
+    var m = this.calculateMappedMatrix(filterData.bounds, filter.sprite)
+    ///  m.ty = 0.1;
+    //m.translate(0.5,0.5)
+    // m.a = 2;
+    gl.uniformMatrix3fv(shader.uniforms.otherMatrix._location, false, m.toArray(true));
+
+    /// custom //
+    this.textureCount = 1;
+    gl.activeTexture(gl.TEXTURE1);
+
+    var maskTexture = filter.uniforms.mask.value.baseTexture;
+
+    if (!maskTexture._glTextures[gl.id])
+    {
+        this.renderer.updateTexture(maskTexture);
+    }
+    else
+    {
+        // bind the texture
+        gl.bindTexture(gl.TEXTURE_2D, filter.uniforms.mask.value.baseTexture._glTextures[gl.id]);
+    }
+
+    
+    // set uniform to texture index
+    gl.uniform1i(filter.uniforms.mask._location, 1);
+
+    // increment next texture id
+    this.textureCount++;
+
+            
 
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, input.texture);
@@ -162,57 +193,80 @@ WebGLFilterManager.prototype.popFilter = function ()
     gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0 );
 
     this.texturePool.push(filterData.renderTarget);
+
+    return filterData.filter;
 };
 
 
-//        this.projectionMatrix.d = 1/height*2;
-    // offset..
+// TODO playing around here.. this is temporary - (will end up in the shader)
+FilterManager.prototype.calculateMappedMatrix = function (filterArea, sprite)
+{
+    var worldTransform = sprite.worldTransform.copy(math.Matrix.TEMP_MATRIX);
+    var texture = sprite.texture.baseTexture;
 
+    var mappedMatrix = this.tempMatrix.identity();
+
+    // scale..
+    var ratio = this.textureSize.height / this.textureSize.width;
+
+    mappedMatrix.translate(filterArea.x / this.textureSize.width, filterArea.y / this.textureSize.height );
     
-  
+    mappedMatrix.scale(1 , ratio);
 
-    // ----- //
+    var translateScaleX = (this.textureSize.width / texture.width);
+    var translateScaleY = (this.textureSize.height / texture.height);
+
+    worldTransform.tx /= texture.width * translateScaleX;
+    worldTransform.ty /= texture.width * translateScaleX;
+
+    worldTransform.invert();
+
+    mappedMatrix.prepend(worldTransform);
+
+    // apply inverse scale..
+    mappedMatrix.scale(1 , 1/ratio);
+
+    mappedMatrix.scale( translateScaleX , translateScaleY );
+
+    mappedMatrix.translate(sprite.anchor.x, sprite.anchor.y);
+
+    return mappedMatrix;
+
+    // Keeping the orginal as a reminder to me on how this works!
+    //
+    // var m = new math.Matrix();
+
+    // // scale..
+    // var ratio = this.textureSize.height / this.textureSize.width;
+
+    // m.translate(filterArea.x / this.textureSize.width, filterArea.y / this.textureSize.height);
     
 
-    //  this.texture.
-    /*
-    var projection = this.renderer.projection;
-    var offset = this.renderer.offset;
+    // m.scale(1 , ratio);
 
-    filterBlock._filterArea = filterBlock.target.filterArea || filterBlock.target.getBounds();
 
-    // filter program
-    // OPTIMISATION - the first filter is free if its a simple color change?
-    this.filterStack.push(filterBlock);
+    // var transform = wt.clone();
+    
+    // var translateScaleX = (this.textureSize.width / 620);
+    // var translateScaleY = (this.textureSize.height / 380);
 
-    var filter = filterBlock.filterPasses[0];
+    // transform.tx /= 620 * translateScaleX;
+    // transform.ty /= 620 * translateScaleX;
 
-    this.offsetX += filterBlock._filterArea.x;
-    this.offsetY += filterBlock._filterArea.y;
+    // transform.invert();
 
-    var texture = this.texturePool.pop();
-    if (!texture)
-    {
-        texture = new FilterTexture(this.renderer.gl, this.width, this.height);
-    }
-    else
-    {
-        texture.resize(this.width, this.height);
-    }
+    // transform.append(m);
 
-    gl.bindTexture(gl.TEXTURE_2D,  texture.texture);
+    // // apply inverse scale..
+    // transform.scale(1 , 1/ratio);
 
-    var filterArea = filterBlock._filterArea;// filterBlock.target.getBounds();///filterBlock.target.filterArea;
+    // transform.scale( translateScaleX , translateScaleY );
 
-    var padding = filter.padding;
-    filterArea.x -= padding;
-    filterArea.y -= padding;
-    filterArea.width += padding * 2;
-    filterArea.height += padding * 2;
+    // return transform;
+}
 
-    var localX = filterArea.x,
-        localY = filterArea.y;
-
+FilterManager.prototype.capFilterArea = function (filterArea)
+{
     if (filterArea.x < 0)
     {
         filterArea.width += filterArea.x;
@@ -225,347 +279,37 @@ WebGLFilterManager.prototype.popFilter = function ()
         filterArea.y = 0;
     }
 
-    if (localX + filterArea.width > this.width)
+    if ( filterArea.x + filterArea.width > this.textureSize.width )
     {
-        filterArea.width = this.width - localX;
+        filterArea.width = this.textureSize.width - filterArea.x;
     }
 
-    if (localY + filterArea.height > this.height)
+    if ( filterArea.y + filterArea.height > this.textureSize.height )
     {
-        filterArea.height = this.height - localY;
+        filterArea.height = this.textureSize.height - filterArea.y;
     }
+}
 
-    if (filterArea.width < 0)
-    {
-        filterArea.width = 0;
-    }
-
-    if (filterArea.height < 0)
-    {
-        filterArea.height = 0;
-    }
-
-    //gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  filterArea.width, filterArea.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
-    gl.bindFramebuffer(gl.FRAMEBUFFER, texture.frameBuffer);
-
-    // set view port
-    gl.viewport(0, 0, filterArea.width, filterArea.height);
-
-    projection.x = filterArea.width/2;
-    projection.y = -filterArea.height/2;
-
-    offset.x = -filterArea.x;
-    offset.y = -filterArea.y;
-
-    // update projection
-    // now restore the regular shader..
-    // this.renderer.shaderManager.setShader(this.defaultShader);
-    //gl.uniform2f(this.defaultShader.projectionVector, filterArea.width/2, -filterArea.height/2);
-    //gl.uniform2f(this.defaultShader.offsetVector, -filterArea.x, -filterArea.y);
-
-    gl.colorMask(true, true, true, true);
-    gl.clearColor(0,0,0, 0);
-    gl.clear(gl.COLOR_BUFFER_BIT);
-
-    filterBlock._glFilterTexture = texture;
-`   */
-
-  //  this.texturePool.push(output);
-
-    /*
-    var gl = this.renderer.gl;
-
-    var filterBlock = this.filterStack.pop();
-    var filterArea = filterBlock._filterArea;
-    var texture = filterBlock._glFilterTexture;
-    var projection = this.renderer.projection;
-    var offset = this.renderer.offset;
-
-    if (filterBlock.filterPasses.length > 1)
-    {
-        gl.viewport(0, 0, filterArea.width, filterArea.height);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-
-        this.vertexArray[0] = 0;
-        this.vertexArray[1] = filterArea.height;
-
-        this.vertexArray[2] = filterArea.width;
-        this.vertexArray[3] = filterArea.height;
-
-        this.vertexArray[4] = 0;
-        this.vertexArray[5] = 0;
-
-        this.vertexArray[6] = filterArea.width;
-        this.vertexArray[7] = 0;
-
-        gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vertexArray);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer);
-        // now set the uvs..
-        this.uvArray[2] = filterArea.width/this.width;
-        this.uvArray[5] = filterArea.height/this.height;
-        this.uvArray[6] = filterArea.width/this.width;
-        this.uvArray[7] = filterArea.height/this.height;
-
-        gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.uvArray);
-
-        var inputTexture = texture;
-        var outputTexture = this.texturePool.pop();
-        if (!outputTexture)
-        {
-            outputTexture = new FilterTexture(this.renderer.gl, this.width, this.height);
-        }
-        outputTexture.resize(this.width, this.height);
-
-        // need to clear this FBO as it may have some left over elements from a previous filter.
-        gl.bindFramebuffer(gl.FRAMEBUFFER, outputTexture.frameBuffer );
-        gl.clear(gl.COLOR_BUFFER_BIT);
-
-        gl.disable(gl.BLEND);
-
-        for (var i = 0; i < filterBlock.filterPasses.length-1; i++)
-        {
-            var filterPass = filterBlock.filterPasses[i];
-
-            gl.bindFramebuffer(gl.FRAMEBUFFER, outputTexture.frameBuffer );
-
-            // set texture
-            gl.activeTexture(gl.TEXTURE0);
-            gl.bindTexture(gl.TEXTURE_2D, inputTexture.texture);
-
-            // draw texture..
-            //filterPass.applyFilterPass(filterArea.width, filterArea.height);
-            this.applyFilterPass(filterPass, filterArea, filterArea.width, filterArea.height);
-
-            // swap the textures..
-            var temp = inputTexture;
-            inputTexture = outputTexture;
-            outputTexture = temp;
-        }
-
-        gl.enable(gl.BLEND);
-
-        texture = inputTexture;
-        this.texturePool.push(outputTexture);
-    }
-
-    var filter = filterBlock.filterPasses[filterBlock.filterPasses.length-1];
-
-    this.offsetX -= filterArea.x;
-    this.offsetY -= filterArea.y;
-
-    var sizeX = this.width;
-    var sizeY = this.height;
-
-    var offsetX = 0;
-    var offsetY = 0;
-
-    var buffer = this.buffer;
-
-    // time to render the filters texture to the previous scene
-    if (this.filterStack.length === 0)
-    {
-        gl.colorMask(true, true, true, true);//this.transparent);
-    }
-    else
-    {
-        var currentFilter = this.filterStack[this.filterStack.length-1];
-        filterArea = currentFilter._filterArea;
-
-        sizeX = filterArea.width;
-        sizeY = filterArea.height;
-
-        offsetX = filterArea.x;
-        offsetY = filterArea.y;
-
-        buffer =  currentFilter._glFilterTexture.frameBuffer;
-    }
-
-    // TODO need to remove these global elements..
-    projection.x = sizeX/2;
-    projection.y = -sizeY/2;
-
-    offset.x = offsetX;
-    offset.y = offsetY;
-
-    filterArea = filterBlock._filterArea;
-
-    var x = filterArea.x-offsetX;
-    var y = filterArea.y-offsetY;
-
-    // update the buffers..
-    // make sure to flip the y!
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-
-    this.vertexArray[0] = x;
-    this.vertexArray[1] = y + filterArea.height;
-
-    this.vertexArray[2] = x + filterArea.width;
-    this.vertexArray[3] = y + filterArea.height;
-
-    this.vertexArray[4] = x;
-    this.vertexArray[5] = y;
-
-    this.vertexArray[6] = x + filterArea.width;
-    this.vertexArray[7] = y;
-
-    gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vertexArray);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer);
-
-    this.uvArray[2] = filterArea.width/this.width;
-    this.uvArray[5] = filterArea.height/this.height;
-    this.uvArray[6] = filterArea.width/this.width;
-    this.uvArray[7] = filterArea.height/this.height;
-
-    gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.uvArray);
-
-    gl.viewport(0, 0, sizeX, sizeY);
-
-    // bind the buffer
-    gl.bindFramebuffer(gl.FRAMEBUFFER, buffer );
-
-    // set the blend mode!
-    //gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
-
-    // set texture
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, texture.texture);
-
-    // apply!
-    this.applyFilterPass(filter, filterArea, sizeX, sizeY);
-
-    // now restore the regular shader.. should happen automatically now..
-    // this.renderer.shaderManager.setShader(this.defaultShader);
-    // gl.uniform2f(this.defaultShader.projectionVector, sizeX/2, -sizeY/2);
-    // gl.uniform2f(this.defaultShader.offsetVector, -offsetX, -offsetY);
-
-    // return the texture to the pool
-    filterBlock._glFilterTexture = null;
-    */
-
-/**
- * Applies the filter to the specified area.
- *
- * @param filter {AbstractFilter} the filter that needs to be applied
- * @param filterArea {Texture} TODO - might need an update
- * @param width {number} the horizontal range of the filter
- * @param height {number} the vertical range of the filter
- */
-WebGLFilterManager.prototype.applyFilterPass = function (filter, filterArea, width, height)
-{
-    // use program
-    var gl = this.renderer.gl;
-
-    var shader = filter.shaders[gl.id];
-
-    if (!shader)
-    {
-        shader = new Shader(this.renderer.shaderManager);
-
-        shader.fragmentSrc = filter.fragmentSrc;
-        shader.uniforms = filter.uniforms;
-        shader.init();
-
-        filter.shaders[gl.id] = shader;
-    }
-
-    // set the shader
-    this.renderer.shaderManager.setShader(shader);
-
-//    gl.useProgram(shader.program);
-
-    gl.uniform2f(shader.projectionVector, width/2, -height/2);
-    gl.uniform2f(shader.offsetVector, 0,0);
-
-    if (filter.uniforms.dimensions)
-    {
-        filter.uniforms.dimensions.value[0] = this.width;//width;
-        filter.uniforms.dimensions.value[1] = this.height;//height;
-        filter.uniforms.dimensions.value[2] = this.vertexArray[0];
-        filter.uniforms.dimensions.value[3] = this.vertexArray[5];//filterArea.height;
-    }
-
-    shader.syncUniforms();
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-    gl.vertexAttribPointer(shader.aVertexPosition, 2, gl.FLOAT, false, 0, 0);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer);
-    gl.vertexAttribPointer(shader.aTextureCoord, 2, gl.FLOAT, false, 0, 0);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
-    gl.vertexAttribPointer(shader.aColor, 2, gl.FLOAT, false, 0, 0);
-
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-
-    // draw the filter...
-    gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0 );
-
-    this.renderer.drawCount++;
-};
 
 /**
  * Initialises the shader buffers.
  *
  */
-WebGLFilterManager.prototype.initShaderBuffers = function ()
+FilterManager.prototype.initShaderBuffers = function ()
 {
     var gl = this.renderer.gl;
-
     this.quad = new Quad(gl);
-
-    //   create some buffers
-    this.vertexBuffer = gl.createBuffer();
-    this.uvBuffer = gl.createBuffer();
-    this.colorBuffer = gl.createBuffer();
-    this.indexBuffer = gl.createBuffer();
-
-    // bind and upload the vertexs..
-    // keep a reference to the vertexFloatData..
-    this.vertexArray = new Float32Array([0.0, 0.0,
-                                         1.0, 0.0,
-                                         0.0, 1.0,
-                                         1.0, 1.0]);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, this.vertexArray, gl.STATIC_DRAW);
-
-    // bind and upload the uv buffer
-    this.uvArray = new Float32Array([0.0, 0.0,
-                                     1.0, 0.0,
-                                     0.0, 1.0,
-                                     1.0, 1.0]);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.uvBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, this.uvArray, gl.STATIC_DRAW);
-
-    this.colorArray = new Float32Array([1.0, 0xFFFFFF,
-                                        1.0, 0xFFFFFF,
-                                        1.0, 0xFFFFFF,
-                                        1.0, 0xFFFFFF]);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, this.colorArray, gl.STATIC_DRAW);
-
-    // bind and upload the index
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array([0, 1, 2, 1, 3, 2]), gl.STATIC_DRAW);
-
 };
 
 /**
  * Destroys the filter and removes it from the filter stack.
  *
  */
-WebGLFilterManager.prototype.destroy = function ()
+FilterManager.prototype.destroy = function ()
 {
     var gl = this.renderer.gl;
 
     this.filterStack = null;
-
-    this.offsetX = 0;
     this.offsetY = 0;
 
     // destroy textures
@@ -575,12 +319,4 @@ WebGLFilterManager.prototype.destroy = function ()
     }
 
     this.texturePool = null;
-
-    //destroy buffers..
-    gl.deleteBuffer(this.vertexBuffer);
-    gl.deleteBuffer(this.uvBuffer);
-    gl.deleteBuffer(this.colorBuffer);
-    gl.deleteBuffer(this.indexBuffer);
-
-    this.renderer = null;
 };

@@ -11,10 +11,22 @@ function WebGLManager(renderer)
      * @member {WebGLRenderer}
      */
     this.renderer = renderer;
+
+    var self = this;
+    this.renderer.on('context', function(){
+
+    	self.onContextChange();
+
+    });
 }
 
 WebGLManager.prototype.constructor = WebGLManager;
 module.exports = WebGLManager;
+
+WebGLManager.prototype.onContextChange = function ()
+{
+	// do some codes init!
+}
 
 WebGLManager.prototype.destroy = function ()
 {

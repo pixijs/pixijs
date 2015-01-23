@@ -1,5 +1,4 @@
-var Shader = require('../../renderers/webgl/shaders/Shader'),
-    WebGLShaderManager = require('../../renderers/webgl/managers/WebGLShaderManager');
+var Shader = require('./Shader');
 
 /**
  * @class
@@ -41,10 +40,14 @@ function ComplexPrimitiveShader(shaderManager)
         // custom uniforms
         {
             tint:   { type: '3f', value: [0, 0, 0] },
-            flipY:  { type: '1f', value: 0 },
             alpha:  { type: '1f', value: 0 },
             color:  { type: '3f', value: [0,0,0] },
-            translationMatrix: { type: 'mat3', value: new Float32Array(9) }
+            translationMatrix: { type: 'mat3', value: new Float32Array(9) },
+            projectionMatrix: { type: 'mat3', value: new Float32Array(9) }
+        },
+        // attributes
+        {
+            aVertexPosition:0
         }
     );
 }
@@ -52,5 +55,3 @@ function ComplexPrimitiveShader(shaderManager)
 ComplexPrimitiveShader.prototype = Object.create(Shader.prototype);
 ComplexPrimitiveShader.prototype.constructor = ComplexPrimitiveShader;
 module.exports = ComplexPrimitiveShader;
-
-WebGLShaderManager.registerPlugin('complexPrimitiveShader', ComplexPrimitiveShader);

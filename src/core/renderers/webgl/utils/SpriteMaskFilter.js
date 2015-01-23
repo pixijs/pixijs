@@ -85,21 +85,10 @@ function AlphaMaskFilter(sprite)
 
         'void main()',
         '{',
-     /*   '   vec2 mapCords = vTextureCoord.xy;',
-        '   mapCords += (dimensions.zw + offset)/ dimensions.xy ;',
-        '   mapCords.y *= -1.0;',
-        '   mapCords.y += 1.0;',
-        '   mapCords *= dimensions.xy / mapDimensions;',
-
-        '   float maskAlpha =  texture2D(mask, mapCords).r;',*/
         '   vec4 original =  texture2D(uSampler, vTextureCoord);',
-
         '   vec4 masky =  texture2D(mask, vMaskCoord);',
-
         '   original *= (masky.r * masky.a);',
-        //'   original.rgb *= maskAlpha;',
         '   gl_FragColor =  original;',
-        //'   gl_FragColor = masky;',
         '}'
     ].join('\n');
 }

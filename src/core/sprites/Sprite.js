@@ -23,6 +23,7 @@ function Sprite(texture)
 {
     DisplayObjectContainer.call(this);
 
+
     /**
      * The anchor sets the origin point of the texture.
      * The default is 0,0 this means the texture's origin is the top left

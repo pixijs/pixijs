@@ -1,5 +1,4 @@
-var utils = require('../../../utils'),
-    WebGLShaderManager = require('../managers/WebGLShaderManager');
+var utils = require('../../../utils');
 
 /**
  * @class
@@ -10,8 +9,7 @@ var utils = require('../../../utils'),
  * @param customUniforms {object} Custom uniforms to use to augment the built-in ones.
  * @param [fragmentSrc] {string} The source of the fragment shader.
  */
-//TODO change shaderManager to gl
-function Shader(shaderManager, vertexSrc, fragmentSrc, customUniforms, customAttributes)
+function Shader(shaderManager, vertexSrc, fragmentSrc, uniforms, attributes)
 {
     /**
      * @member {number}
@@ -32,31 +30,9 @@ function Shader(shaderManager, vertexSrc, fragmentSrc, customUniforms, customAtt
      */
     this.program = null;
 
-    this.uniforms = {
-        uSampler:           { type: 'sampler2D', value: 0 },
-        projectionVector:   { type: '2f', value: { x: 0, y: 0 } },
-        offsetVector:       { type: '2f', value: { x: 0, y: 0 } },
-        projectionMatrix:    { type: 'mat3', value: new Float32Array(1, 0, 0,
-                                                                    0, 1, 0,
-                                                                    0, 0, 1) },
-        dimensions:         { type: '4f', value: new Float32Array(4) }
-    };
+    this.uniforms = uniforms || {}
 
-    for (var u in customUniforms)
-    {
-        this.uniforms[u] = customUniforms[u];
-    }
-
-    this.attributes = {
-        aVertexPosition:    0,
-        aTextureCoord:      0,
-        aColor:             0
-    };
-
-    for (var a in customAttributes)
-    {
-        this.attributes[a] = customAttributes[a];
-    }
+    this.attributes = attributes || {};
 
     this.textureCount = 0;
 
@@ -70,8 +46,6 @@ function Shader(shaderManager, vertexSrc, fragmentSrc, customUniforms, customAtt
         'attribute vec4 aColor;',
 
         'uniform mat3 projectionMatrix;',
-        // 'uniform vec2 projectionVector;',
-        'uniform vec2 offsetVector;',
 
         'varying vec2 vTextureCoord;',
         'varying vec4 vColor;',
@@ -79,9 +53,7 @@ function Shader(shaderManager, vertexSrc, fragmentSrc, customUniforms, customAtt
         'const vec2 center = vec2(-1.0, 1.0);',
 
         'void main(void){',
-      //  '   gl_Position = vec4( ((aVertexPosition + offsetVector) / projectionVector) + center , 0.0, 1.0);',
-     //   '   gl_Position = vec4( projectionMatrix * vec3(aVertexPosition, 1.0) ), 0.0, 1.0);',
-        'gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);',
+        '   gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);',
         '   vTextureCoord = aTextureCoord;',
         '   vColor = vec4(aColor.rgb * aColor.a, aColor.a);',
         '}'
@@ -110,8 +82,6 @@ function Shader(shaderManager, vertexSrc, fragmentSrc, customUniforms, customAtt
 Shader.prototype.constructor = Shader;
 module.exports = Shader;
 
-WebGLShaderManager.registerPlugin('defaultShader', Shader);
-
 Shader.prototype.init = function ()
 {
     this.compile();
@@ -120,11 +90,6 @@ Shader.prototype.init = function ()
 
     this.cacheUniformLocations(Object.keys(this.uniforms));
     this.cacheAttributeLocations(Object.keys(this.attributes));
-
-
-    //this.buildSync();
-
-   // console.log(this.syncUniforms)
 };
 
 Shader.prototype.cacheUniformLocations = function (keys)
@@ -194,262 +159,281 @@ Shader.prototype.compile = function ()
     return (this.program = program);
 };
 
+/*
 Shader.prototype.buildSync = function ()
 {
-    var str = ""
+   // var str = ""
 
-    str =  "Shader.prototype.syncUniforms = function()";
-    str += "{\n";
+   // str =  "Shader.prototype.syncUniforms = function()";
+   // str += "{\n";
 
     for (var key in this.uniforms)
     {
         var uniform = this.uniforms[key];
+
+        Object.defineProperty(this, key, {
+                
+            get: function ()
+            {
+                return uniform.value
+            },
+            set: function (value)
+            {
+                this.setUniform(uniform, value);
+            }
+        });
+
+        console.log( makePropSetter( key, " bloop", uniform.type )  )
+  //      Object.def
         //    location = uniform._location,
           //  value = uniform.value,
             //i, il;
 
-        str += "gl.uniform1i(this.uniforms."+ key +"._location, this.uniforms." + key + ".value );\n"
+    //    str += "gl.uniform1i(this.uniforms."+ key +"._location, this.uniforms." + key + ".value );\n"
 
     }
 
-    str += "}";
-   // console.log(str)
-    eval(str);
+}*/
+
+Shader.prototype.syncUniform = function (uniform)
+{
+    var location = uniform._location,
+        value = uniform.value,
+        gl = this.gl,
+        i, il;
+
+    switch (uniform.type)
+    {
+        // single int value
+        case 'i':
+        case '1i':
+            gl.uniform1i(location, value);
+            break;
+
+        // single float value
+        case 'f':
+        case '1f':
+            gl.uniform1f(location, value);
+            break;
+
+        // Float32Array(2) or JS Arrray
+        case '2f':
+            gl.uniform2f(location, value[0], value[1]);
+            break;
+
+        // Float32Array(3) or JS Arrray
+        case '3f':
+            gl.uniform3f(location, value[0], value[1], value[2]);
+            break;
+
+        // Float32Array(4) or JS Arrray
+        case '4f':
+            gl.uniform4f(location, value[0], value[1], value[2], value[3]);
+            break;
+
+        // a 2D Point object
+        case 'v2':
+            gl.uniform2f(location, value.x, value.y);
+            break;
+
+        // a 3D Point object
+        case 'v3':
+            gl.uniform3f(location, value.x, value.y, value.z);
+            break;
+
+        // a 4D Point object
+        case 'v4':
+            gl.uniform4f(location, value.x, value.y, value.z, value.w);
+            break;
+
+        // Int32Array or JS Array
+        case '1iv':
+            gl.uniform1iv(location, value);
+            break;
+
+        // Int32Array or JS Array
+        case '2iv':
+            gl.uniform2iv(location, value);
+            break;
+
+        // Int32Array or JS Array
+        case '3iv':
+            gl.uniform3iv(location, value);
+            break;
+
+        // Int32Array or JS Array
+        case '4iv':
+            gl.uniform4iv(location, value);
+            break;
+
+        // Float32Array or JS Array
+        case '1fv':
+            gl.uniform1fv(location, value);
+            break;
+
+        // Float32Array or JS Array
+        case '2fv':
+            gl.uniform2fv(location, value);
+            break;
+
+        // Float32Array or JS Array
+        case '3fv':
+            gl.uniform3fv(location, value);
+            break;
+
+        // Float32Array or JS Array
+        case '4fv':
+            gl.uniform4fv(location, value);
+            break;
+
+        // Float32Array or JS Array
+        case 'm2':
+        case 'mat2':
+        case 'Matrix2fv':
+            gl.uniformMatrix2fv(location, uniform.transpose, value);
+            break;
+
+        // Float32Array or JS Array
+        case 'm3':
+        case 'mat3':
+        case 'Matrix3fv':
+
+            gl.uniformMatrix3fv(location, uniform.transpose, value);
+            break;
+
+        // Float32Array or JS Array
+        case 'm4':
+        case 'mat4':
+        case 'Matrix4fv':
+            gl.uniformMatrix4fv(location, uniform.transpose, value);
+            break;
+
+        // a Color Value
+        case 'c':
+            if (typeof value === 'number')
+            {
+                value = utils.hex2rgb(value);
+            }
+
+            gl.uniform3f(location, value[0], value[1], value[2]);
+            break;
+
+        // flat array of integers (JS or typed array)
+        case 'iv1':
+            gl.uniform1iv(location, value);
+            break;
+
+        // flat array of integers with 3 x N size (JS or typed array)
+        case 'iv':
+            gl.uniform3iv(location, value);
+            break;
+
+        // flat array of floats (JS or typed array)
+        case 'fv1':
+            gl.uniform1fv(location, value);
+            break;
+
+        // flat array of floats with 3 x N size (JS or typed array)
+        case 'fv':
+            gl.uniform3fv(location, value);
+            break;
+
+        // array of 2D Point objects
+        case 'v2v':
+            if (!uniform._array)
+            {
+                uniform._array = new Float32Array(2 * value.length);
+            }
+
+            for (i = 0, il = value.length; i < il; ++i)
+            {
+                uniform._array[i * 2]       = value[i].x;
+                uniform._array[i * 2 + 1]   = value[i].y;
+            }
+
+            gl.uniform2fv(location, uniform._array);
+            break;
+
+        // array of 3D Point objects
+        case 'v3v':
+            if (!uniform._array)
+            {
+                uniform._array = new Float32Array(3 * value.length);
+            }
+
+            for (i = 0, il = value.length; i < il; ++i)
+            {
+                uniform._array[i * 3]       = value[i].x;
+                uniform._array[i * 3 + 1]   = value[i].y;
+                uniform._array[i * 3 + 2]   = value[i].z;
+
+            }
+
+            gl.uniform3fv(location, uniform._array);
+            break;
+
+        // array of 4D Point objects
+        case 'v4v':
+            if (!uniform._array)
+            {
+                uniform._array = new Float32Array(4 * value.length);
+            }
+
+            for (i = 0, il = value.length; i < il; ++i)
+            {
+                uniform._array[i * 4]       = value[i].x;
+                uniform._array[i * 4 + 1]   = value[i].y;
+                uniform._array[i * 4 + 2]   = value[i].z;
+                uniform._array[i * 4 + 3]   = value[i].w;
+
+            }
+
+            gl.uniform4fv(location, uniform._array);
+            break;
+
+        // PIXI.Texture
+        case 't':
+        case 'sampler2D':
+            if (!uniform.value || !uniform.value.baseTexture || !uniform.value.baseTexture.hasLoaded)
+            {
+                break;
+            }
+
+            // activate this texture
+            gl.activeTexture(gl['TEXTURE' + this.textureCount]);
+
+            // bind the texture
+            gl.bindTexture(gl.TEXTURE_2D, uniform.value.baseTexture._glTextures[gl.id]);
+
+            // set uniform to texture index
+            gl.uniform1i(uniform._location, this.textureCount);
+
+            // increment next texture id
+            this.textureCount++;
+
+            // initialize the texture if we haven't yet
+            if (!uniform._init)
+            {
+                this.initSampler2D(uniform);
+
+                uniform._init = true;
+            }
+            break;
+
+        default:
+            window.console.warn('Pixi.js Shader Warning: Unknown uniform type: ' + uniform.type);
+    }
 }
 
 Shader.prototype.syncUniforms = function ()
 {
     var gl = this.gl;
 
-    this.textureCount = 1;
+    this.textureCount = 0;
 
     for (var key in this.uniforms)
     {
-        var uniform = this.uniforms[key],
-            location = uniform._location,
-            value = uniform.value,
-            i, il;
-
-        switch (uniform.type)
-        {
-            // single int value
-            case 'i':
-            case '1i':
-                gl.uniform1i(location, value);
-                break;
-
-            // single float value
-            case 'f':
-            case '1f':
-                gl.uniform1f(location, value);
-                break;
-
-            // Float32Array(2) or JS Arrray
-            case '2f':
-                gl.uniform2f(location, value[0], value[1]);
-                break;
-
-            // Float32Array(3) or JS Arrray
-            case '3f':
-                gl.uniform3f(location, value[0], value[1], value[2]);
-                break;
-
-            // Float32Array(4) or JS Arrray
-            case '4f':
-                gl.uniform4f(location, value[0], value[1], value[2], value[3]);
-                break;
-
-            // a 2D Point object
-            case 'v2':
-                gl.uniform2f(location, value.x, value.y);
-                break;
-
-            // a 3D Point object
-            case 'v3':
-                gl.uniform3f(location, value.x, value.y, value.z);
-                break;
-
-            // a 4D Point object
-            case 'v4':
-                gl.uniform4f(location, value.x, value.y, value.z, value.w);
-                break;
-
-            // Int32Array or JS Array
-            case '1iv':
-                gl.uniform1iv(location, value);
-                break;
-
-            // Int32Array or JS Array
-            case '2iv':
-                gl.uniform2iv(location, value);
-                break;
-
-            // Int32Array or JS Array
-            case '3iv':
-                gl.uniform3iv(location, value);
-                break;
-
-            // Int32Array or JS Array
-            case '4iv':
-                gl.uniform4iv(location, value);
-                break;
-
-            // Float32Array or JS Array
-            case '1fv':
-                gl.uniform1fv(location, value);
-                break;
-
-            // Float32Array or JS Array
-            case '2fv':
-                gl.uniform2fv(location, value);
-                break;
-
-            // Float32Array or JS Array
-            case '3fv':
-                gl.uniform3fv(location, value);
-                break;
-
-            // Float32Array or JS Array
-            case '4fv':
-                gl.uniform4fv(location, value);
-                break;
-
-            // Float32Array or JS Array
-            case 'm2':
-            case 'mat2':
-            case 'Matrix2fv':
-                gl.uniformMatrix2fv(location, uniform.transpose, value);
-                break;
-
-            // Float32Array or JS Array
-            case 'm3':
-            case 'mat3':
-            case 'Matrix3fv':
-                gl.uniformMatrix3fv(location, uniform.transpose, value);
-                break;
-
-            // Float32Array or JS Array
-            case 'm4':
-            case 'mat4':
-            case 'Matrix4fv':
-                gl.uniformMatrix4fv(location, uniform.transpose, value);
-                break;
-
-            // a Color Value
-            case 'c':
-                if (typeof value === 'number')
-                {
-                    value = utils.hex2rgb(value);
-                }
-
-                gl.uniform3f(location, value[0], value[1], value[2]);
-                break;
-
-            // flat array of integers (JS or typed array)
-            case 'iv1':
-                gl.uniform1iv(location, value);
-                break;
-
-            // flat array of integers with 3 x N size (JS or typed array)
-            case 'iv':
-                gl.uniform3iv(location, value);
-                break;
-
-            // flat array of floats (JS or typed array)
-            case 'fv1':
-                gl.uniform1fv(location, value);
-                break;
-
-            // flat array of floats with 3 x N size (JS or typed array)
-            case 'fv':
-                gl.uniform3fv(location, value);
-                break;
-
-            // array of 2D Point objects
-            case 'v2v':
-                if (!uniform._array)
-                {
-                    uniform._array = new Float32Array(2 * value.length);
-                }
-
-                for (i = 0, il = value.length; i < il; ++i)
-                {
-                    uniform._array[i * 2]       = value[i].x;
-                    uniform._array[i * 2 + 1]   = value[i].y;
-                }
-
-                gl.uniform2fv(location, uniform._array);
-                break;
-
-            // array of 3D Point objects
-            case 'v3v':
-                if (!uniform._array)
-                {
-                    uniform._array = new Float32Array(3 * value.length);
-                }
-
-                for (i = 0, il = value.length; i < il; ++i)
-                {
-                    uniform._array[i * 3]       = value[i].x;
-                    uniform._array[i * 3 + 1]   = value[i].y;
-                    uniform._array[i * 3 + 2]   = value[i].z;
-
-                }
-
-                gl.uniform3fv(location, uniform._array);
-                break;
-
-            // array of 4D Point objects
-            case 'v4v':
-                if (!uniform._array)
-                {
-                    uniform._array = new Float32Array(4 * value.length);
-                }
-
-                for (i = 0, il = value.length; i < il; ++i)
-                {
-                    uniform._array[i * 4]       = value[i].x;
-                    uniform._array[i * 4 + 1]   = value[i].y;
-                    uniform._array[i * 4 + 2]   = value[i].z;
-                    uniform._array[i * 4 + 3]   = value[i].w;
-
-                }
-
-                gl.uniform4fv(location, uniform._array);
-                break;
-
-            // PIXI.Texture
-            case 't':
-            case 'sampler2D':
-                if (!uniform.value || !uniform.value.baseTexture || !uniform.value.baseTexture.hasLoaded)
-                {
-                    break;
-                }
-
-                // activate this texture
-                gl.activeTexture(gl['TEXTURE' + this.textureCount]);
-
-                // bind the texture
-                gl.bindTexture(gl.TEXTURE_2D, uniform.value.baseTexture._glTextures[gl.id]);
-
-                // set uniform to texture index
-                gl.uniform1i(uniform._location, this.textureCount);
-
-                // increment next texture id
-                this.textureCount++;
-
-                // initialize the texture if we haven't yet
-                if (!uniform._init)
-                {
-                    this.initSampler2D(uniform);
-
-                    uniform._init = true;
-                }
-                break;
-
-            default:
-                window.console.warn('Pixi.js Shader Warning: Unknown uniform type: ' + uniform.type);
-        }
+        this.syncUniform();
     }
 };
 

@@ -137,10 +137,6 @@ function SpriteBatchRenderer(renderer)
      */
     this.shader = null;
 
-    this.setupContext();
-
-    // handle when the renderer's context changes.
-    this.renderer.on('context', this.setupContext.bind(this));
 }
 
 SpriteBatchRenderer.prototype = Object.create(ObjectRenderer.prototype);
@@ -154,7 +150,7 @@ WebGLRenderer.registerPlugin('spriteBatch', SpriteBatchRenderer);
  *
  * @param gl {WebGLContext} the current WebGL drawing context
  */
-SpriteBatchRenderer.prototype.setupContext = function ()
+SpriteBatchRenderer.prototype.onContextChange = function ()
 {
     var gl = this.renderer.gl;
 

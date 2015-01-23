@@ -24,13 +24,6 @@ function DisplayObject()
     this.scale = new math.Point(1, 1);
 
     /**
-     * The skew of the object.
-     *
-     * @member {Point}
-     */
-    this.skew = new math.Point(0, 0);
-
-    /**
      * The pivot point of the displayObject that it rotates around
      *
      * @member {Point}
@@ -105,8 +98,7 @@ function DisplayObject()
      * @member {number}
      * @private
      */
-    this._srB = 0;
-    this._srC = 0;
+    this._sr = 0;
 
     /**
      * cached cos rotation
@@ -114,8 +106,7 @@ function DisplayObject()
      * @member {number}
      * @private
      */
-    this._crA = 1;
-    this._crD = 1;
+    this._cr = 1;
 
     /**
      * The original, cached bounds of the object
@@ -141,21 +132,15 @@ function DisplayObject()
      */
     this._mask = null;
 
-    /**
-     * Used internally to optimize updateTransform.
-     *
-     * @member {number}
-     * @private
-     */
-    this._cachedRotX = 0;
+    this._isMask = false;
 
     /**
-     * Used internally to optimize updateTransform.
+     * Cached internal flag.
      *
-     * @member {number}
+     * @member {boolean}
      * @private
      */
-    this._cachedRotY = 0;
+    this._cacheIsDirty = false;
 }
 
 // constructor
@@ -262,32 +247,14 @@ Object.defineProperties(DisplayObject.prototype, {
     filters: {
         get: function ()
         {
-            return this._filters;
+            return this._filters.slice();
         },
         set: function (value)
         {
-            this._filters = value;
-            /*
-            if (value)
-            {
-                // now put all the passes in one place..
-                var passes = [];
+            this._filters = value.slice();
 
-                for (var i = 0; i < value.length; i++)
-                {
-                    var filterPasses = value[i].passes;
+            //if(this._mask)
 
-                    for (var j = 0; j < filterPasses.length; j++)
-                    {
-                        passes.push(filterPasses[j]);
-                    }
-                }
-
-                // TODO change this as it is legacy
-                this._filterBlock = { target: this, filterPasses: passes };
-            }
-
-            this._filters = value;*/
         }
     }
 });
@@ -307,35 +274,26 @@ DisplayObject.prototype.updateTransform = function ()
     var wt = this.worldTransform;
 
     // temporary matrix variables
-    var a, b, c, d, tx, ty,
-        rotY = this.rotation + this.skew.y,
-        rotX = this.rotation + this.skew.x;
+    var a, b, c, d, tx, ty;
 
     // so if rotation is between 0 then we can simplify the multiplication process..
-    if (rotY % math.PI_2 || rotX % math.PI_2)
+    if (this.rotation % math.PI_2)
     {
         // check to see if the rotation is the same as the previous render. This means we only need to use sin and cos when rotation actually changes
-        if (rotX !== this._cachedRotX || rotY !== this._cachedRotY)
+        if (this.rotation !== this.rotationCache)
         {
-            // cache new values
-            this._cachedRotX = rotX;
-            this._cachedRotY = rotY;
-
-            // recalculate expensive ops
-            this._crA = Math.cos(rotY);
-            this._srB = Math.sin(rotY);
-
-            this._srC = Math.sin(-rotX);
-            this._crD = Math.cos(rotX);
+            this.rotationCache = this.rotation;
+            this._sr = Math.sin(this.rotation);
+            this._cr = Math.cos(this.rotation);
         }
 
         // get the matrix values of the displayobject based on its transform properties..
-        a  = this._crA * this.scale.x;
-        b  = this._srB * this.scale.x;
-        c  = this._srC * this.scale.y;
-        d  = this._crD * this.scale.y;
-        tx = this.position.x;
-        ty = this.position.y;
+        a  =  this._cr * this.scale.x;
+        b  =  this._sr * this.scale.x;
+        c  = -this._sr * this.scale.y;
+        d  =  this._cr * this.scale.y;
+        tx =  this.position.x;
+        ty =  this.position.y;
 
         // check for pivot.. not often used so geared towards that fact!
         if (this.pivot.x || this.pivot.y)

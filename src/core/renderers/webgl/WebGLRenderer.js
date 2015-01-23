@@ -1,5 +1,6 @@
 var WebGLShaderManager = require('./managers/WebGLShaderManager'),
-    WebGLMaskManager = require('./managers/WebGLMaskManager'),
+    MaskManager = require('./managers/MaskManager'),
+    StencilManager = require('./managers/StencilManager'),
     WebGLFilterManager = require('./managers/WebGLFilterManager'),
     WebGLBlendModeManager = require('./managers/WebGLBlendModeManager'),
     RenderTarget = require('./utils/RenderTarget'),
@@ -173,8 +174,7 @@ function WebGLRenderer(width, height, options)
 
     // time to create the render managers! each one focuses on managing a state in webGL
 
-    // initialize the context so it is ready for the managers.
-    this._initContext();
+    
 
     /**
      * Deals with managing the shader programs and their attribs
@@ -184,9 +184,11 @@ function WebGLRenderer(width, height, options)
 
     /**
      * Manages the masks using the stencil buffer
-     * @member {WebGLMaskManager}
+     * @member {MaskManager}
      */
-    this.maskManager = new WebGLMaskManager(this);
+    this.maskManager = new MaskManager(this);
+
+    this.stencilManager = new StencilManager(this);
 
     /**
      * Manages the filters
@@ -194,8 +196,6 @@ function WebGLRenderer(width, height, options)
      */
     this.filterManager = new WebGLFilterManager(this);
 
-    //TODO FIX THIS EVENT>>
-    this.filterManager.initShaderBuffers();
 
     /**
      * Manages the blendModes
@@ -205,14 +205,13 @@ function WebGLRenderer(width, height, options)
 
     this.blendModes = null;
 
+    
+
     this._boundUpdateTexture = this.updateTexture.bind(this);
     this._boundDestroyTexture = this.destroyTexture.bind(this);
 
 
     this.currentRenderTarget = this.renderTarget;
-
-    // map some webGL blend modes..
-    this._mapBlendModes();
 
     /**
      * This temporary display object used as the parent of the currently being rendered item
@@ -221,9 +220,15 @@ function WebGLRenderer(width, height, options)
      */
     this._tempDisplayObjectParent = {worldTransform:new math.Matrix(), worldAlpha:1};
 
-    this.currentRenderer = new ObjectRenderer();
+    this.currentRenderer = new ObjectRenderer(this);
 
     this.initPlugins();
+
+     // initialize the context so it is ready for the managers.
+    this._initContext();
+
+    // map some webGL blend modes..
+    this._mapBlendModes();
 }
 
 // constructor

@@ -1,5 +1,4 @@
-var Shader = require('../../renderers/webgl/shaders/Shader'),
-    WebGLShaderManager = require('../../renderers/webgl/managers/WebGLShaderManager');
+var Shader = require('./Shader');
 
 /**
  * @class
@@ -43,9 +42,12 @@ function PrimitiveShader(shaderManager)
         {
             tint:   { type: '3f', value: [0, 0, 0] },
             alpha:  { type: '1f', value: 0 },
-            translationMatrix: { type: 'mat3', value: new Float32Array(9) }
+            translationMatrix: { type: 'mat3', value: new Float32Array(9) },
+            projectionMatrix: { type: 'mat3', value: new Float32Array(9) }
         },
+        // custom attributes
         {
+            aVertexPosition:0,
             aColor:0
         }
     );
@@ -54,5 +56,3 @@ function PrimitiveShader(shaderManager)
 PrimitiveShader.prototype = Object.create(Shader.prototype);
 PrimitiveShader.prototype.constructor = PrimitiveShader;
 module.exports = PrimitiveShader;
-
-WebGLShaderManager.registerPlugin('primitiveShader', PrimitiveShader);

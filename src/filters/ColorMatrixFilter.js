@@ -33,7 +33,8 @@ function ColorMatrixFilter()
 
         'void main(void)',
         '{',
-        '   gl_FragColor = texture2D(uSampler, vTextureCoord) * 2.0;',
+        '   gl_FragColor = texture2D(uSampler, vTextureCoord) * 1.0;',
+     //   '   gl_FragColor *= gl_FragCoord.x;',
 //        '   gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);',//texture2D(uSampler, vTextureCoord) * matrix;',
         '}'
     ].join('\n');

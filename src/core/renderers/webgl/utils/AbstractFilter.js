@@ -46,16 +46,16 @@ AbstractFilter.prototype.constructor = AbstractFilter;
 module.exports = AbstractFilter;
 
 /**
- * Syncs the uniforms between the class object and the shaders.
+ * Syncs a uniform between the class object and the shaders.
  *
  */
-AbstractFilter.prototype.syncUniforms = function ()
+AbstractFilter.prototype.syncUniform = function (uniform)
 {
     for (var i = 0, j = this.shaders.length; i < j; ++i)
     {
-        this.shaders[i].dirty = true;
-    }
-};
+        this.shaders[i].syncUniform(uniform)
+    }  
+}
 
 /*
 AbstractFilter.prototype.apply = function (frameBuffer)

@@ -481,7 +481,7 @@ DisplayObjectContainer.prototype.getLocalBounds = function ()
 DisplayObjectContainer.prototype.renderWebGL = function (renderer)
 {
     // if the object is not visible or the alpha is 0 then no need to render this element
-    if (!this.visible || this.alpha <= 0)
+    if (this.isMask || !this.visible || this.alpha <= 0)
     {
         return;
     }
@@ -497,18 +497,21 @@ DisplayObjectContainer.prototype.renderWebGL = function (renderer)
     // do a quick check to see if this element has a mask or a filter.
     if (this._mask || this._filters)
     {
+        renderer.currentRenderer.flush();
+
         // push filter first as we need to ensure the stencil buffer is correct for any masking
         if (this._filters)
         {
-            renderer.currentRenderer.flush();
             renderer.filterManager.pushFilter(this, this._filters);
-            renderer.currentRenderer.start();
         }
 
         if (this._mask)
         {
-            renderer.maskManager.pushMask(this.mask, renderer);
+            renderer.maskManager.pushMask(this, this._mask);
         }
+
+        renderer.currentRenderer.start();
+
 
         // add this object to the batch, only rendered if it has a texture.
         this._renderWebGL(renderer);
@@ -519,18 +522,19 @@ DisplayObjectContainer.prototype.renderWebGL = function (renderer)
             this.children[i].renderWebGL(renderer);
         }
 
+        renderer.currentRenderer.flush();
 
         if (this._mask)
         {
-            renderer.maskManager.popMask(this._mask, renderer);
+            renderer.maskManager.popMask(this, this._mask);
         }
 
         if (this._filters)
         {
-            renderer.currentRenderer.flush();
             renderer.filterManager.popFilter();
-            renderer.currentRenderer.start();
+
         }
+        renderer.currentRenderer.start();
 
     }
     else

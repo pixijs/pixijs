@@ -186,10 +186,17 @@ Texture.prototype.onBaseTextureLoaded = function ()
     var baseTexture = this.baseTexture;
     baseTexture.removeEventListener('loaded', this.onLoaded);
 
+    // TODO this code looks confusing.. boo to abusing getters and setterss!
     if (this.noFrame)
     {
         this.frame = new math.Rectangle(0, 0, baseTexture.width, baseTexture.height);
     }
+    else
+    {
+        this.frame = this._frame;
+    }
+
+   
 
     this.dispatchEvent( { type: 'update', content: this } );
 };

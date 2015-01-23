@@ -53,4 +53,4 @@ StripShader.prototype = Object.create(core.Shader.prototype);
 StripShader.prototype.constructor = StripShader;
 module.exports = StripShader;
 
-core.WebGLShaderManager.registerPlugin('stripShader', StripShader);
+//core.WebGLShaderManager.registerPlugin('stripShader', StripShader);

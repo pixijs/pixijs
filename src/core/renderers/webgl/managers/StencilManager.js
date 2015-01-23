@@ -130,7 +130,7 @@ WebGLMaskManager.prototype.bindGraphics = function (graphics, webGLData)
 
     if (webGLData.mode === 1)
     {
-        shader = this.renderer.shaderManager.plugins.complexPrimitiveShader;
+        shader = this.renderer.shaderManager.complexPrimitiveShader;
 
         this.renderer.shaderManager.setShader(shader);
 
@@ -156,20 +156,17 @@ WebGLMaskManager.prototype.bindGraphics = function (graphics, webGLData)
     else
     {
         //this.renderer.shaderManager.activatePrimitiveShader();
-        shader = this.renderer.shaderManager.plugins.primitiveShader;
+        shader = this.renderer.shaderManager.primitiveShader;
+
         this.renderer.shaderManager.setShader( shader );
 
         gl.uniformMatrix3fv(shader.uniforms.translationMatrix._location, false, graphics.worldTransform.toArray(true));
 
-        gl.uniform1f(shader.uniforms.flipY._location, 1);
-
-        gl.uniform2f(shader.uniforms.projectionVector._location, projection.x, -projection.y);
-        gl.uniform2f(shader.uniforms.offsetVector._location, -offset.x, -offset.y);
-
+        gl.uniformMatrix3fv(shader.uniforms.projectionMatrix._location, false, this.renderer.currentRenderTarget.projectionMatrix.toArray(true));
+        
         gl.uniform3fv(shader.uniforms.tint._location, utils.hex2rgb(graphics.tint));
 
         gl.uniform1f(shader.uniforms.alpha._location, graphics.worldAlpha);
-
 
         gl.bindBuffer(gl.ARRAY_BUFFER, webGLData.buffer);
 

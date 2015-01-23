@@ -240,6 +240,53 @@ Matrix.prototype.append = function (matrix)
 };
 
 /**
+ * Prepends the given Matrix to this Matrix.
+ *
+ * @param {Matrix} matrix
+ * @return {Matrix} This matrix. Good for chaining method calls.
+ */
+Matrix.prototype.prepend = function(matrix) 
+{
+    var tx1 = this.tx;
+
+    if (matrix.a != 1 || matrix.b != 0 || matrix.c != 0 || matrix.d != 1) 
+    {
+        var a1 = this.a;
+        var c1 = this.c;
+        this.a  = a1*matrix.a+this.b*matrix.c;
+        this.b  = a1*matrix.b+this.b*matrix.d;
+        this.c  = c1*matrix.a+this.d*matrix.c;
+        this.d  = c1*matrix.b+this.d*matrix.d;
+    }
+    
+    this.tx = tx1*matrix.a+this.ty*matrix.c+matrix.tx;
+    this.ty = tx1*matrix.b+this.ty*matrix.d+matrix.ty;
+
+    return this;
+};
+
+
+Matrix.prototype.invert = function() 
+{
+    var a1 = this.a;
+    var b1 = this.b;
+    var c1 = this.c;
+    var d1 = this.d;
+    var tx1 = this.tx;
+    var n = a1*d1-b1*c1;
+
+    this.a = d1/n;
+    this.b = -b1/n;
+    this.c = -c1/n;
+    this.d = a1/n;
+    this.tx = (c1*this.ty-d1*tx1)/n;
+    this.ty = -(a1*this.ty-b1*tx1)/n;
+
+    return this;
+};
+
+
+/**
  * Resets this Matix to an identity (default) matrix.
  *
  * @return {Matrix} This matrix. Good for chaining method calls.
@@ -270,4 +317,18 @@ Matrix.prototype.clone = function ()
     return matrix;
 };
 
+Matrix.prototype.copy = function (matrix)
+{
+    matrix.a = this.a;
+    matrix.b = this.b;
+    matrix.c = this.c;
+    matrix.d = this.d;
+    matrix.tx = this.tx;
+    matrix.ty = this.ty;
+
+    return matrix;
+};
+
+
 Matrix.IDENTITY = new Matrix();
+Matrix.TEMP_MATRIX = new Matrix();
