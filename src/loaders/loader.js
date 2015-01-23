@@ -11,6 +11,6 @@ loader
     // parse any Image objects into textures
     .use(textureParser())
     // parse any spritesheet data into multiple textures
-    .use(spritesheetParser())
+    .use(spritesheetParser());
 
 module.exports = loader;
