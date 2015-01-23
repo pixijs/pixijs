@@ -1,7 +1,7 @@
 var WebGLShaderManager = require('./managers/WebGLShaderManager'),
     MaskManager = require('./managers/MaskManager'),
     StencilManager = require('./managers/StencilManager'),
-    WebGLFilterManager = require('./managers/WebGLFilterManager'),
+    FilterManager = require('./managers/FilterManager'),
     WebGLBlendModeManager = require('./managers/WebGLBlendModeManager'),
     RenderTarget = require('./utils/RenderTarget'),
     ObjectRenderer = require('./utils/ObjectRenderer'),
@@ -192,9 +192,9 @@ function WebGLRenderer(width, height, options)
 
     /**
      * Manages the filters
-     * @member {WebGLFilterManager}
+     * @member {FilterManager}
      */
-    this.filterManager = new WebGLFilterManager(this);
+    this.filterManager = new FilterManager(this);
 
 
     /**
