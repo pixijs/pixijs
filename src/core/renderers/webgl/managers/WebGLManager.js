@@ -13,7 +13,7 @@ function WebGLManager(renderer)
     this.renderer = renderer;
 
     var self = this;
-    this.renderer.on('context', function(){
+    this.renderer.on('context', this._onContextChangeFn = function(){
 
     	self.onContextChange();
 
@@ -30,5 +30,7 @@ WebGLManager.prototype.onContextChange = function ()
 
 WebGLManager.prototype.destroy = function ()
 {
+    this.renderer.off('context', _onContextChangeFn);
+
     this.renderer = null;
 };
