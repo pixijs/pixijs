@@ -30,7 +30,7 @@ module.exports = function ()
                         var trim = null;
 
                         //  Check to see if the sprite is trimmed
-                        if (frameData[i].trimmed)
+                        if (frames[i].trimmed)
                         {
                             trim = new core.math.Rectangle(
                                 frames[i].spriteSourceSize.x,
@@ -40,7 +40,7 @@ module.exports = function ()
                             );
                         }
 
-                        cresource.textures[i] = new core.Texture(resource.texture.baseTexture, size, size.clone(), trim);
+                        resource.textures[i] = new core.Texture(res.texture.baseTexture, size, size.clone(), trim);
                     }
                 }
 

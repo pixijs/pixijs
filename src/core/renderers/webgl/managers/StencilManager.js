@@ -124,9 +124,7 @@ WebGLMaskManager.prototype.bindGraphics = function (graphics, webGLData)
     var gl = this.renderer.gl;
 
      // bind the graphics object..
-    var projection = this.renderer.projection,
-        offset = this.renderer.offset,
-        shader;
+    var shader;// = this.renderer.shaderManager.plugins.primitiveShader;
 
     if (webGLData.mode === 1)
     {
@@ -155,12 +153,13 @@ WebGLMaskManager.prototype.bindGraphics = function (graphics, webGLData)
     }
     else
     {
+        //this.renderer.shaderManager.activatePrimitiveShader();
         shader = this.renderer.shaderManager.primitiveShader;
 
         this.renderer.shaderManager.setShader( shader );
 
         gl.uniformMatrix3fv(shader.uniforms.translationMatrix._location, false, graphics.worldTransform.toArray(true));
-        
+
         gl.uniformMatrix3fv(shader.uniforms.projectionMatrix._location, false, this.renderer.currentRenderTarget.projectionMatrix.toArray(true));
 
         gl.uniform3fv(shader.uniforms.tint._location, utils.hex2rgb(graphics.tint));
@@ -277,7 +276,8 @@ WebGLMaskManager.prototype.popStencil = function (graphics, webGLData)
  */
 WebGLMaskManager.prototype.destroy = function ()
 {
-    this.renderer = null;
+    WebGLManager.prototype.destroy.call(this);
+
     this.stencilStack = null;
 };
 

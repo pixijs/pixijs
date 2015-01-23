@@ -44,7 +44,7 @@ var core = module.exports = {
 
     // renderers - webgl
     WebGLRenderer:          require('./renderers/webgl/WebGLRenderer'),
-    WebGLShaderManager:     require('./renderers/webgl/managers/WebGLShaderManager'),
+    ShaderManager:     require('./renderers/webgl/managers/ShaderManager'),
     Shader:                 require('./renderers/webgl/shaders/Shader'),
 
     /**

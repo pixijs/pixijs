@@ -1,33 +1,33 @@
-var utils = require('../../../utils'),
-    Shader = require('./Shader');
+var Shader = require('./Shader');
+
 /**
  * @class
  * @namespace PIXI
- * @param shaderManager {WebGLShaderManager} The webgl shader manager this shader works for.
+ * @param shaderManager {ShaderManager} The webgl shader manager this shader works for.
  * @param [vertexSrc] {string} The source of the vertex shader.
  * @param [fragmentSrc] {string} The source of the fragment shader.
- * @param customUniforms {object} Custom uniforms to use to augment the built-in ones.
+ * @param [customUniforms] {object} Custom uniforms to use to augment the built-in ones.
  * @param [fragmentSrc] {string} The source of the fragment shader.
  */
-function DefaultShader(shaderManager, vertexSrc, fragmentSrc, customUniforms, customAttributes)
+function TextureShader(shaderManager, vertexSrc, fragmentSrc, customUniforms, customAttributes)
 {
     var uniforms = {
 
         uSampler:           { type: 'sampler2D', value: 0 },
         projectionMatrix:   { type: 'mat3', value: new Float32Array(1, 0, 0,
                                                                     0, 1, 0,
-                                                                    0, 0, 1) },
+                                                                    0, 0, 1) }
     };
 
     if(customUniforms)
-    {    
+    {
         for (var u in customUniforms)
         {
             uniforms[u] = customUniforms[u];
         }
     }
 
-        
+
     var attributes = {
         aVertexPosition:    0,
         aTextureCoord:      0,
@@ -86,6 +86,6 @@ function DefaultShader(shaderManager, vertexSrc, fragmentSrc, customUniforms, cu
 }
 
 // constructor
-DefaultShader.prototype = Object.create(Shader.prototype);
-DefaultShader.prototype.constructor = DefaultShader;
-module.exports = DefaultShader;
+TextureShader.prototype = Object.create(Shader.prototype);
+TextureShader.prototype.constructor = TextureShader;
+module.exports = TextureShader;

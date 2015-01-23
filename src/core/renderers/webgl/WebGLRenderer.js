@@ -1,4 +1,4 @@
-var WebGLShaderManager = require('./managers/WebGLShaderManager'),
+var ShaderManager = require('./managers/ShaderManager'),
     MaskManager = require('./managers/MaskManager'),
     StencilManager = require('./managers/StencilManager'),
     FilterManager = require('./managers/FilterManager'),
@@ -174,13 +174,13 @@ function WebGLRenderer(width, height, options)
 
     // time to create the render managers! each one focuses on managing a state in webGL
 
-    
+
 
     /**
      * Deals with managing the shader programs and their attribs
-     * @member {WebGLShaderManager}
+     * @member {ShaderManager}
      */
-    this.shaderManager = new WebGLShaderManager(this);
+    this.shaderManager = new ShaderManager(this);
 
     /**
      * Manages the masks using the stencil buffer
@@ -205,7 +205,7 @@ function WebGLRenderer(width, height, options)
 
     this.blendModes = null;
 
-    
+
 
     this._boundUpdateTexture = this.updateTexture.bind(this);
     this._boundDestroyTexture = this.destroyTexture.bind(this);
@@ -355,7 +355,7 @@ WebGLRenderer.prototype.renderDisplayObject = function (displayObject, renderTar
     this.drawCount = 0;
 
     // start the filter manager
-    this.filterManager.begin()//renderTarget.frameBuffer);
+    this.filterManager.begin();
 
     // render the scene!
     displayObject.renderWebGL(this);

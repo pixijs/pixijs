@@ -1,5 +1,5 @@
 var WebGLManager = require('./WebGLManager'),
-    DefaultShader = require('../shaders/DefaultShader'),
+    TextureShader = require('../shaders/TextureShader'),
     ComplexPrimitiveShader = require('../shaders/ComplexPrimitiveShader'),
     PrimitiveShader = require('../shaders/PrimitiveShader'),
     utils = require('../../../utils');
@@ -9,7 +9,7 @@ var WebGLManager = require('./WebGLManager'),
  * @namespace PIXI
  * @param renderer {WebGLRenderer} The renderer this manager works for.
  */
-function WebGLShaderManager(renderer)
+function ShaderManager(renderer)
 {
     WebGLManager.call(this, renderer);
 
@@ -51,38 +51,30 @@ function WebGLShaderManager(renderer)
     this.currentShader = null;
 
     this.initPlugins();
-
-    // listen for context and update necessary shaders
-    var self = this;
-
 }
 
-WebGLShaderManager.prototype = Object.create(WebGLManager.prototype);
-WebGLShaderManager.prototype.constructor = WebGLShaderManager;
-utils.pluginTarget.mixin(WebGLShaderManager);
+ShaderManager.prototype = Object.create(WebGLManager.prototype);
+ShaderManager.prototype.constructor = ShaderManager;
+utils.pluginTarget.mixin(ShaderManager);
 
-module.exports = WebGLShaderManager;
+module.exports = ShaderManager;
 
-WebGLShaderManager.prototype.onContextChange = function ()
+ShaderManager.prototype.onContextChange = function ()
 {
-    for (var o in this.plugins)
-    {
-        this.plugins[o] = new (this.plugins[o].constructor)(self);
-    }
+    this.initPlugins();
 
-    this.defaultShader = new DefaultShader(this);
-      // init webGL stuff!
+    // TODO - Why are these not plugins? We can't decouple primitives unless they are....
+    this.defaultShader = new TextureShader(this);
     this.primitiveShader = new PrimitiveShader(this);
     this.complexPrimitiveShader = new ComplexPrimitiveShader(this);
-}
-
+};
 
 /**
  * Takes the attributes given in parameters.
  *
  * @param attribs {Array} attribs
  */
-WebGLShaderManager.prototype.setAttribs = function (attribs)
+ShaderManager.prototype.setAttribs = function (attribs)
 {
     // reset temp state
     var i;
@@ -123,7 +115,7 @@ WebGLShaderManager.prototype.setAttribs = function (attribs)
  *
  * @param shader {Any}
  */
-WebGLShaderManager.prototype.setShader = function (shader)
+ShaderManager.prototype.setShader = function (shader)
 {
     if (this._currentId === shader.uuid)
     {
@@ -144,13 +136,13 @@ WebGLShaderManager.prototype.setShader = function (shader)
  * Destroys this object.
  *
  */
-WebGLShaderManager.prototype.destroy = function ()
+ShaderManager.prototype.destroy = function ()
 {
+    WebGLManager.prototype.destroy.call(this);
+
     this.destroyPlugins();
 
     this.attribState = null;
 
     this.tempAttribState = null;
-
-    this.renderer = null;
 };

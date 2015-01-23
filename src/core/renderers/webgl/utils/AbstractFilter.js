@@ -81,9 +81,9 @@ AbstractFilter.prototype.syncUniform = function (uniform)
 {
     for (var i = 0, j = this.shaders.length; i < j; ++i)
     {
-        this.shaders[i].syncUniform(uniform)
-    }  
-}
+        this.shaders[i].syncUniform(uniform);
+    }
+};
 
 /*
 AbstractFilter.prototype.apply = function (frameBuffer)

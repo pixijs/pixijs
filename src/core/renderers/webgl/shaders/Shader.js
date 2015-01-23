@@ -3,11 +3,11 @@ var utils = require('../../../utils');
 /**
  * @class
  * @namespace PIXI
- * @param shaderManager {WebGLShaderManager} The webgl shader manager this shader works for.
+ * @param shaderManager {ShaderManager} The webgl shader manager this shader works for.
  * @param [vertexSrc] {string} The source of the vertex shader.
  * @param [fragmentSrc] {string} The source of the fragment shader.
- * @param customUniforms {object} Custom uniforms to use to augment the built-in ones.
- * @param [fragmentSrc] {string} The source of the fragment shader.
+ * @param [uniforms] {object} Uniforms for this shader.
+ * @param [attributes] {object} Attributes for this shader.
  */
 function Shader(shaderManager, vertexSrc, fragmentSrc, uniforms, attributes)
 {
@@ -30,7 +30,7 @@ function Shader(shaderManager, vertexSrc, fragmentSrc, uniforms, attributes)
      */
     this.program = null;
 
-    this.uniforms = uniforms || {}
+    this.uniforms = uniforms || {};
 
     this.attributes = attributes || {};
 
@@ -172,7 +172,7 @@ Shader.prototype.buildSync = function ()
         var uniform = this.uniforms[key];
 
         Object.defineProperty(this, key, {
-                
+
             get: function ()
             {
                 return uniform.value
@@ -423,17 +423,15 @@ Shader.prototype.syncUniform = function (uniform)
         default:
             window.console.warn('Pixi.js Shader Warning: Unknown uniform type: ' + uniform.type);
     }
-}
+};
 
 Shader.prototype.syncUniforms = function ()
 {
-    var gl = this.gl;
-
     this.textureCount = 0;
 
     for (var key in this.uniforms)
     {
-        this.syncUniform();
+        this.syncUniform(this.uniforms[key]);
     }
 };
 
