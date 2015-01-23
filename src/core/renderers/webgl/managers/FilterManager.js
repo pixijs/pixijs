@@ -1,5 +1,4 @@
 var WebGLManager = require('./WebGLManager'),
-    FilterTexture = require('../utils/FilterTexture'),
     RenderTarget = require('../utils/RenderTarget'),
     TextureShader = require('../shaders/TextureShader'),
     Quad = require('../utils/Quad'),
@@ -53,7 +52,7 @@ FilterManager.prototype.onContextChange = function ()
  * @param renderer {WebGLRenderer}
  * @param buffer {ArrayBuffer}
  */
-FilterManager.prototype.begin = function (buffer)
+FilterManager.prototype.begin = function ()
 {
     //TODO sort out bounds - no point creating a new rect each frame!
     //this.defaultShader = this.renderer.shaderManager.plugins.defaultShader;
@@ -68,7 +67,6 @@ FilterManager.prototype.begin = function (buffer)
  */
 FilterManager.prototype.pushFilter = function (target, filters)
 {
-    var gl = this.renderer.gl;
     //console.log("push")
     // get the bounds of the object..
     var bounds = target.filterArea || target.getBounds();
@@ -305,8 +303,6 @@ FilterManager.prototype.initShaderBuffers = function ()
 FilterManager.prototype.destroy = function ()
 {
     WebGLManager.prototype.destroy.call(this);
-
-    var gl = this.renderer.gl;
 
     this.filterStack = null;
     this.offsetY = 0;

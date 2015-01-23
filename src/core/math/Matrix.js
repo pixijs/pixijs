@@ -245,11 +245,11 @@ Matrix.prototype.append = function (matrix)
  * @param {Matrix} matrix
  * @return {Matrix} This matrix. Good for chaining method calls.
  */
-Matrix.prototype.prepend = function(matrix) 
+Matrix.prototype.prepend = function(matrix)
 {
     var tx1 = this.tx;
 
-    if (matrix.a != 1 || matrix.b != 0 || matrix.c != 0 || matrix.d != 1) 
+    if (matrix.a !== 1 || matrix.b !== 0 || matrix.c !== 0 || matrix.d !== 1)
     {
         var a1 = this.a;
         var c1 = this.c;
@@ -258,7 +258,7 @@ Matrix.prototype.prepend = function(matrix)
         this.c  = c1*matrix.a+this.d*matrix.c;
         this.d  = c1*matrix.b+this.d*matrix.d;
     }
-    
+
     this.tx = tx1*matrix.a+this.ty*matrix.c+matrix.tx;
     this.ty = tx1*matrix.b+this.ty*matrix.d+matrix.ty;
 
@@ -266,7 +266,7 @@ Matrix.prototype.prepend = function(matrix)
 };
 
 
-Matrix.prototype.invert = function() 
+Matrix.prototype.invert = function()
 {
     var a1 = this.a;
     var b1 = this.b;

@@ -1,10 +1,7 @@
-var WebGLManager = require('./WebGLManager'),
-    utils = require('../../../utils');
-
 /**
  * @class
  * @namespace PIXI
- * @param renderer {WebGLRenderer} The renderer this manager works for.
+ * @param gl {WebGLRenderingContext} The gl context for this quad to use.
  */
 function Quad(gl)
 {
@@ -33,7 +30,7 @@ function Quad(gl)
         white,
         white,
         white
-    ])
+    ]);
 
     this.indices = new Uint16Array([
         0, 1, 2, 0, 3, 2
@@ -55,8 +52,8 @@ Quad.prototype.constructor = Quad;
 
 Quad.prototype.map = function(rect, rect2)
 {
-    var x = 0//rect2.x / rect.width;
-    var y = 0//rect2.y / rect.height;
+    var x = 0; //rect2.x / rect.width;
+    var y = 0; //rect2.y / rect.height;
 
     this.uvs[0] = x;
     this.uvs[1] = y;
@@ -87,7 +84,7 @@ Quad.prototype.map = function(rect, rect2)
     this.vertices[7] = y + rect2.height;
 
     this.upload();
-}
+};
 
 Quad.prototype.upload = function()
 {
@@ -100,7 +97,7 @@ Quad.prototype.upload = function()
     gl.bufferSubData(gl.ARRAY_BUFFER, 8 * 4, this.uvs);
 
     gl.bufferSubData(gl.ARRAY_BUFFER, (8 + 8) * 4, this.colors);
-}
+};
 
 module.exports = Quad;
 
