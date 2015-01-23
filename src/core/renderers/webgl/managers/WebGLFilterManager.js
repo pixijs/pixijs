@@ -1,10 +1,9 @@
 var WebGLManager = require('./WebGLManager'),
     FilterTexture = require('../utils/FilterTexture'),
-    RenderTarget = require('../utils/RenderTarget');
-    DefaultShader = require('../shaders/DefaultShader'),
-
+    RenderTarget = require('../utils/RenderTarget'),
+    TextureShader = require('../shaders/TextureShader'),
     Quad = require('./Quad'),
-    math =  require('../../../math');
+    math = require('../../../math');
 
 /**
  * @class
@@ -44,12 +43,11 @@ FilterManager.prototype = Object.create(WebGLManager.prototype);
 FilterManager.prototype.constructor = FilterManager;
 module.exports = FilterManager;
 
-
 FilterManager.prototype.onContextChange = function ()
 {
     this.texturePool.length = 0;
     this.initShaderBuffers();
-}
+};
 
 /**
  * @param renderer {WebGLRenderer}
@@ -122,7 +120,7 @@ FilterManager.prototype.popFilter = function ()
     //
     if (!shader)
     {
-        shader = new DefaultShader(this,
+        shader = new TextureShader(this,
             filter.vertexSrc,
             filter.fragmentSrc,
             filter.uniforms,
@@ -156,7 +154,7 @@ FilterManager.prototype.popFilter = function ()
 
     gl.uniformMatrix3fv(shader.uniforms.projectionMatrix._location, false, this.renderer.currentRenderTarget.projectionMatrix.toArray(true));
 
-    var m = this.calculateMappedMatrix(filterData.bounds, filter.sprite)
+    var m = this.calculateMappedMatrix(filterData.bounds, filter.sprite);
     ///  m.ty = 0.1;
     //m.translate(0.5,0.5)
     // m.a = 2;
@@ -263,7 +261,7 @@ FilterManager.prototype.calculateMappedMatrix = function (filterArea, sprite)
     // transform.scale( translateScaleX , translateScaleY );
 
     // return transform;
-}
+};
 
 FilterManager.prototype.capFilterArea = function (filterArea)
 {
@@ -288,8 +286,7 @@ FilterManager.prototype.capFilterArea = function (filterArea)
     {
         filterArea.height = this.textureSize.height - filterArea.y;
     }
-}
-
+};
 
 /**
  * Initialises the shader buffers.

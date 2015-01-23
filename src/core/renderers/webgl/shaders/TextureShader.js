@@ -9,7 +9,7 @@ var Shader = require('./Shader');
  * @param [customUniforms] {object} Custom uniforms to use to augment the built-in ones.
  * @param [fragmentSrc] {string} The source of the fragment shader.
  */
-function DefaultShader(shaderManager, vertexSrc, fragmentSrc, customUniforms, customAttributes)
+function TextureShader(shaderManager, vertexSrc, fragmentSrc, customUniforms, customAttributes)
 {
     var uniforms = {
 
@@ -86,6 +86,6 @@ function DefaultShader(shaderManager, vertexSrc, fragmentSrc, customUniforms, cu
 }
 
 // constructor
-DefaultShader.prototype = Object.create(Shader.prototype);
-DefaultShader.prototype.constructor = DefaultShader;
-module.exports = DefaultShader;
+TextureShader.prototype = Object.create(Shader.prototype);
+TextureShader.prototype.constructor = TextureShader;
+module.exports = TextureShader;

@@ -1,5 +1,5 @@
 var WebGLManager = require('./WebGLManager'),
-    DefaultShader = require('../shaders/DefaultShader'),
+    TextureShader = require('../shaders/TextureShader'),
     ComplexPrimitiveShader = require('../shaders/ComplexPrimitiveShader'),
     PrimitiveShader = require('../shaders/PrimitiveShader'),
     utils = require('../../../utils');
@@ -64,7 +64,7 @@ WebGLShaderManager.prototype.onContextChange = function ()
     this.initPlugins();
 
     // TODO - Why are these not plugins? We can't decouple primitives unless they are....
-    this.defaultShader = new DefaultShader(this);
+    this.defaultShader = new TextureShader(this);
     this.primitiveShader = new PrimitiveShader(this);
     this.complexPrimitiveShader = new ComplexPrimitiveShader(this);
 };
