@@ -2,7 +2,7 @@ var WebGLManager = require('./WebGLManager'),
     FilterTexture = require('../utils/FilterTexture'),
     RenderTarget = require('../utils/RenderTarget'),
     TextureShader = require('../shaders/TextureShader'),
-    Quad = require('./Quad'),
+    Quad = require('../utils/Quad'),
     math = require('../../../math');
 
 /**

@@ -10,8 +10,8 @@ function Quad(gl)
 {
     this.gl = gl;
 
-//    this.textures = new TextureUvs(); 
-    
+//    this.textures = new TextureUvs();
+
     this.vertices = new Float32Array([
         0,0,
         200,0,
@@ -27,7 +27,7 @@ function Quad(gl)
     ]);
 
     var white = (0xFFFFFF >> 16) + (0xFFFFFF & 0xff00) + ((0xFFFFFF & 0xff) << 16) + (1 * 255 << 24);
-    
+
     this.colors = new Float32Array([
         white,
         white,
@@ -73,13 +73,13 @@ Quad.prototype.map = function(rect, rect2)
     /// -----
     x = rect2.x;
     y = rect2.y;
-    
+
     this.vertices[0] = x;
     this.vertices[1] = y;
-    
+
     this.vertices[2] = x + rect2.width;
     this.vertices[3] = y;
-    
+
     this.vertices[4] = x + rect2.width;
     this.vertices[5] = y + rect2.height;
 
