@@ -9,7 +9,7 @@ var WebGLManager = require('./WebGLManager'),
  * @namespace PIXI
  * @param renderer {WebGLRenderer} The renderer this manager works for.
  */
-function WebGLShaderManager(renderer)
+function ShaderManager(renderer)
 {
     WebGLManager.call(this, renderer);
 
@@ -53,13 +53,13 @@ function WebGLShaderManager(renderer)
     this.initPlugins();
 }
 
-WebGLShaderManager.prototype = Object.create(WebGLManager.prototype);
-WebGLShaderManager.prototype.constructor = WebGLShaderManager;
-utils.pluginTarget.mixin(WebGLShaderManager);
+ShaderManager.prototype = Object.create(WebGLManager.prototype);
+ShaderManager.prototype.constructor = ShaderManager;
+utils.pluginTarget.mixin(ShaderManager);
 
-module.exports = WebGLShaderManager;
+module.exports = ShaderManager;
 
-WebGLShaderManager.prototype.onContextChange = function ()
+ShaderManager.prototype.onContextChange = function ()
 {
     this.initPlugins();
 
@@ -74,7 +74,7 @@ WebGLShaderManager.prototype.onContextChange = function ()
  *
  * @param attribs {Array} attribs
  */
-WebGLShaderManager.prototype.setAttribs = function (attribs)
+ShaderManager.prototype.setAttribs = function (attribs)
 {
     // reset temp state
     var i;
@@ -115,7 +115,7 @@ WebGLShaderManager.prototype.setAttribs = function (attribs)
  *
  * @param shader {Any}
  */
-WebGLShaderManager.prototype.setShader = function (shader)
+ShaderManager.prototype.setShader = function (shader)
 {
     if (this._currentId === shader.uuid)
     {
@@ -136,7 +136,7 @@ WebGLShaderManager.prototype.setShader = function (shader)
  * Destroys this object.
  *
  */
-WebGLShaderManager.prototype.destroy = function ()
+ShaderManager.prototype.destroy = function ()
 {
     WebGLManager.prototype.destroy.call(this);
 

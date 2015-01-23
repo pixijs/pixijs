@@ -1,4 +1,4 @@
-var WebGLShaderManager = require('./managers/WebGLShaderManager'),
+var ShaderManager = require('./managers/ShaderManager'),
     MaskManager = require('./managers/MaskManager'),
     StencilManager = require('./managers/StencilManager'),
     FilterManager = require('./managers/FilterManager'),
@@ -178,9 +178,9 @@ function WebGLRenderer(width, height, options)
 
     /**
      * Deals with managing the shader programs and their attribs
-     * @member {WebGLShaderManager}
+     * @member {ShaderManager}
      */
-    this.shaderManager = new WebGLShaderManager(this);
+    this.shaderManager = new ShaderManager(this);
 
     /**
      * Manages the masks using the stencil buffer

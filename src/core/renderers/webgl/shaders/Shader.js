@@ -3,7 +3,7 @@ var utils = require('../../../utils');
 /**
  * @class
  * @namespace PIXI
- * @param shaderManager {WebGLShaderManager} The webgl shader manager this shader works for.
+ * @param shaderManager {ShaderManager} The webgl shader manager this shader works for.
  * @param [vertexSrc] {string} The source of the vertex shader.
  * @param [fragmentSrc] {string} The source of the fragment shader.
  * @param [uniforms] {object} Uniforms for this shader.

@@ -4,7 +4,7 @@ var Shader = require('../../renderers/webgl/shaders/Shader');
  * @class
  * @extends Shader
  * @namespace PIXI
- * @param shaderManager {WebGLShaderManager} The webgl shader manager this shader works for.
+ * @param shaderManager {ShaderManager} The webgl shader manager this shader works for.
  */
 function SpriteBatchShader(shaderManager)
 {

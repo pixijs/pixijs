@@ -3,7 +3,7 @@ var core = require('../core');
 /**
  * @class
  * @namespace PIXI
- * @param shaderManager {WebGLShaderManager} The webgl shader manager this shader works for.
+ * @param shaderManager {ShaderManager} The webgl shader manager this shader works for.
  */
 function StripShader(shaderManager)
 {
@@ -53,4 +53,4 @@ StripShader.prototype = Object.create(core.Shader.prototype);
 StripShader.prototype.constructor = StripShader;
 module.exports = StripShader;
 
-//core.WebGLShaderManager.registerPlugin('stripShader', StripShader);
+//core.ShaderManager.registerPlugin('stripShader', StripShader);
