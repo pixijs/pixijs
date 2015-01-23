@@ -51,10 +51,6 @@ function WebGLShaderManager(renderer)
     this.currentShader = null;
 
     this.initPlugins();
-
-    // listen for context and update necessary shaders
-    var self = this;
-
 }
 
 WebGLShaderManager.prototype = Object.create(WebGLManager.prototype);
@@ -65,17 +61,13 @@ module.exports = WebGLShaderManager;
 
 WebGLShaderManager.prototype.onContextChange = function ()
 {
-    for (var o in this.plugins)
-    {
-        this.plugins[o] = new (this.plugins[o].constructor)(self);
-    }
+    this.initPlugins();
 
+    // TODO - Why are these not plugins? We can't decouple primitives unless they are....
     this.defaultShader = new DefaultShader(this);
-      // init webGL stuff!
     this.primitiveShader = new PrimitiveShader(this);
     this.complexPrimitiveShader = new ComplexPrimitiveShader(this);
-}
-
+};
 
 /**
  * Takes the attributes given in parameters.

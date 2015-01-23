@@ -26,7 +26,7 @@ module.exports = WebGLManager;
 WebGLManager.prototype.onContextChange = function ()
 {
 	// do some codes init!
-}
+};
 
 WebGLManager.prototype.destroy = function ()
 {

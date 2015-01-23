@@ -53,7 +53,7 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
         throw new Error('Unable to create RenderTexture, you must pass a renderer into the constructor.');
     }
 
-    width = width || 100; 
+    width = width || 100;
     height = height || 100;
     resolution = resolution || 1;
 
@@ -132,8 +132,6 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
      */
     this.render = null;
 
-
-  
     /**
      * The renderer this RenderTexture uses. A RenderTexture can only belong to one renderer at the moment if its webGL.
      *
@@ -145,7 +143,7 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
     {
         var gl = this.renderer.gl;
 
-        this.textureBuffer = new RenderTarget(gl, this.width * this.resolution, this.height * this.resolution)//, this.baseTexture.scaleMode);
+        this.textureBuffer = new RenderTarget(gl, this.width * this.resolution, this.height * this.resolution);//, this.baseTexture.scaleMode);
         this.baseTexture._glTextures[gl.id] =  this.textureBuffer.texture;
 
         this.render = this.renderWebGL;
@@ -153,7 +151,7 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
     }
     else
     {
-        
+
         this.render = this.renderCanvas;
         this.textureBuffer = new CanvasBuffer(this.width* this.resolution, this.height* this.resolution);
         this.baseTexture.source = this.textureBuffer.canvas;
@@ -301,7 +299,7 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, re
 
 //    this.renderer.spriteRenderer.dirty = true;
 
-    this.renderer.renderDisplayObject(displayObject, this.textureBuffer)//this.projection, this.textureBuffer.frameBuffer);
+this.renderer.renderDisplayObject(displayObject, this.textureBuffer);//this.projection, this.textureBuffer.frameBuffer);
 
   //  this.renderer.spriteRenderer.dirty = true;
 
@@ -335,11 +333,11 @@ RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear, r
         return;
     }
 
-   
+
     var tempAlpha,
         tempTransform;
 
-    
+
 
     var wt = displayObject.worldTransform;
     wt.identity();

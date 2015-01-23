@@ -401,7 +401,6 @@ SpriteRenderer.prototype.flush = function ()
 
                 // both thease only need to be set if they are changing..
                 // set the projection
-                
                 gl.uniformMatrix3fv(shader.uniforms.projectionMatrix._location, false, this.renderer.currentRenderTarget.projectionMatrix.toArray(true));
             }
         }

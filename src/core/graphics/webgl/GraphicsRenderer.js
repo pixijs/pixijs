@@ -31,8 +31,8 @@ WebGLRenderer.registerPlugin('graphics', GraphicsRenderer);
 
 GraphicsRenderer.prototype.onContextChange = function()
 {
-  
-}
+
+};
 
 /**
  * Destroys this renderer.
@@ -91,7 +91,7 @@ GraphicsRenderer.prototype.render = function(graphics)
 
 
             shader = renderer.shaderManager.primitiveShader;
-            
+
             renderer.shaderManager.setShader( shader );//activatePrimitiveShader();
 
             gl.uniformMatrix3fv(shader.uniforms.translationMatrix._location, false, graphics.worldTransform.toArray(true));
