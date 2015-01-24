@@ -1,4 +1,5 @@
-var utils = require('../../../utils');
+var utils = require('../../../utils'),
+    CONST = require('../../../const');
 
 /**
  * @class
@@ -7,7 +8,7 @@ var utils = require('../../../utils');
  * @param [vertexSrc] {string} The source of the vertex shader.
  * @param [fragmentSrc] {string} The source of the fragment shader.
  * @param [uniforms] {object} Uniforms for this shader.
- * @param [attributes] {object} Attributes for this shader.
+ * @param [attributes] {obje=ct} Attributes for this shader.
  */
 function Shader(shaderManager, vertexSrc, fragmentSrc, uniforms, attributes)
 {
@@ -34,7 +35,7 @@ function Shader(shaderManager, vertexSrc, fragmentSrc, uniforms, attributes)
 
     this.attributes = attributes || {};
 
-    this.textureCount = 0;
+    this.textureCount = 1;
 
     /**
      * The vertex shader.
@@ -394,13 +395,21 @@ Shader.prototype.syncUniform = function (uniform)
         // PIXI.Texture
         case 't':
         case 'sampler2D':
-            if (!uniform.value || !uniform.value.baseTexture || !uniform.value.baseTexture.hasLoaded)
+
+            if (!uniform.value || !uniform.value.baseTexture.hasLoaded)
             {
                 break;
             }
 
             // activate this texture
             gl.activeTexture(gl['TEXTURE' + this.textureCount]);
+
+            var texture = uniform.value.baseTexture._glTextures[gl.id];
+
+            if(!texture)
+            {
+                this.initSampler2D(uniform);
+            }
 
             // bind the texture
             gl.bindTexture(gl.TEXTURE_2D, uniform.value.baseTexture._glTextures[gl.id]);
@@ -411,13 +420,6 @@ Shader.prototype.syncUniform = function (uniform)
             // increment next texture id
             this.textureCount++;
 
-            // initialize the texture if we haven't yet
-            if (!uniform._init)
-            {
-                this.initSampler2D(uniform);
-
-                uniform._init = true;
-            }
             break;
 
         default:
@@ -427,7 +429,7 @@ Shader.prototype.syncUniform = function (uniform)
 
 Shader.prototype.syncUniforms = function ()
 {
-    this.textureCount = 0;
+    this.textureCount = 1;
 
     for (var key in this.uniforms)
     {
@@ -444,7 +446,14 @@ Shader.prototype.initSampler2D = function (uniform)
 {
     var gl = this.gl;
 
-    //  Extended texture data
+    var texture = uniform.value.baseTexture;
+
+    texture._glTextures[gl.id] = gl.createTexture();
+
+    gl.bindTexture(gl.TEXTURE_2D, texture._glTextures[gl.id]);
+
+    gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, texture.premultipliedAlpha);
+    
     if (uniform.textureData)
     {
         var data = uniform.textureData;
@@ -459,40 +468,25 @@ Shader.prototype.initSampler2D = function (uniform)
         //  magFilter can be: gl.LINEAR, gl.LINEAR_MIPMAP_LINEAR or gl.NEAREST
         //  wrapS/T can be: gl.CLAMP_TO_EDGE or gl.REPEAT
 
-        var magFilter = (data.magFilter) ? data.magFilter : gl.LINEAR;
-        var minFilter = (data.minFilter) ? data.minFilter : gl.LINEAR;
-        var wrapS = (data.wrapS) ? data.wrapS : gl.CLAMP_TO_EDGE;
-        var wrapT = (data.wrapT) ? data.wrapT : gl.CLAMP_TO_EDGE;
-        var format = (data.luminance) ? gl.LUMINANCE : gl.RGBA;
+        gl.texImage2D(gl.TEXTURE_2D, 0, data.luminance ? gl.LUMINANCE : gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.source);
 
-        if (data.repeat)
-        {
-            wrapS = gl.REPEAT;
-            wrapT = gl.REPEAT;
-        }
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, data.magFilter ? data.magFilter : gl.LINEAR );
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, data.wrapS ? data.wrapS : gl.CLAMP_TO_EDGE );
 
-        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, !!data.flipY);
-
-        if (data.width)
-        {
-            var width = (data.width) ? data.width : 512;
-            var height = (data.height) ? data.height : 2;
-            var border = (data.border) ? data.border : 0;
-
-            // void texImage2D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, ArrayBufferView? pixels);
-            gl.texImage2D(gl.TEXTURE_2D, 0, format, width, height, border, format, gl.UNSIGNED_BYTE, null);
-        }
-        else
-        {
-            //  void texImage2D(GLenum target, GLint level, GLenum internalformat, GLenum format, GLenum type, ImageData? pixels);
-            gl.texImage2D(gl.TEXTURE_2D, 0, format, gl.RGBA, gl.UNSIGNED_BYTE, uniform.value.baseTexture.source);
-        }
-
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, magFilter);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, minFilter);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, wrapS);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, wrapT);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, data.wrapS ? data.wrapS : gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, data.wrapT ? data.wrapT : gl.CLAMP_TO_EDGE);
     }
+    else
+    {
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.source);
+
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, texture.scaleMode === CONST.scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, texture.scaleMode === CONST.scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
+
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);   
+    }
+
 };
 
 /**

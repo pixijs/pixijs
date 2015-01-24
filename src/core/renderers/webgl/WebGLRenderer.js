@@ -32,6 +32,8 @@ function WebGLRenderer(width, height, options)
 {
     utils.sayHello('webGL');
 
+    WebGLRenderer._TEMP__ = this;
+    
     if (options)
     {
         for (var i in CONST.defaultRenderOptions)
@@ -430,6 +432,7 @@ WebGLRenderer.prototype.updateTexture = function (texture)
         texture.on('update', this._boundUpdateTexture);
         texture.on('dispose', this._boundDestroyTexture);
     }
+
 
     gl.bindTexture(gl.TEXTURE_2D, texture._glTextures[gl.id]);
 

@@ -11,6 +11,8 @@ var AbstractFilter = require('../core/renderers/webGL/utils/AbstractFilter'),
 function BlurXFilter()
 {
     AbstractFilter.call(this,
+    // vertex shader
+    null,
     // fragment shader
     [
         'precision mediump float;',

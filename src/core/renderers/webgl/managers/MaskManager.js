@@ -55,7 +55,7 @@ MaskManager.prototype.popMask = function (target, maskData)
 MaskManager.prototype.pushSpriteMask = function (target, maskData)
 {
     var alphaMaskFilter = this.alphaMaskPool.pop();
-
+    
     if (!alphaMaskFilter)
     {
         alphaMaskFilter = [new AlphaMaskFilter(maskData)];

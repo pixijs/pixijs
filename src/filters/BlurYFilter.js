@@ -11,7 +11,7 @@ var AbstractFilter = require('../core/renderers/webGL/utils/AbstractFilter'),
 function BlurYFilter()
 {
     AbstractFilter.call(this,
-
+    null,
     [
         'precision mediump float;',
 

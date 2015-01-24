@@ -9,7 +9,7 @@ var DefaultShader = require('../shaders/TextureShader');
  * @param fragmentSrc {string|string[]} The fragment source in an array of strings.
  * @param uniforms {object} An object containing the uniforms for this filter.
  */
-function AbstractFilter(fragmentSrc, uniforms)
+function AbstractFilter(vertexSrc, fragmentSrc, uniforms)
 {
     /**
      * An array of passes - some filters contain a few steps this array simply stores the steps in a liniear fashion.
@@ -38,11 +38,14 @@ function AbstractFilter(fragmentSrc, uniforms)
     this.uniforms = uniforms || {};
 
    
+    this.vertexSrc = vertexSrc;
+   
     /**
      * @member {string[]}
      * @private
      */
     this.fragmentSrc = fragmentSrc;
+
 
     //typeof fragmentSrc === 'string' ? fragmentSrc.split('') : (fragmentSrc || []);
 

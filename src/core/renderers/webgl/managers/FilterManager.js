@@ -198,12 +198,12 @@ FilterManager.prototype.applyFilter = function (shader, inputTarget, outputTarge
 
 
 // TODO playing around here.. this is temporary - (will end up in the shader)
-FilterManager.prototype.calculateMappedMatrix = function (filterArea, sprite)
+FilterManager.prototype.calculateMappedMatrix = function (filterArea, sprite, outputMatrix)
 {
-    var worldTransform = sprite.worldTransform.copy(math.Matrix.TEMP_MATRIX);
-    var texture = sprite.texture.baseTexture;
+    worldTransform = sprite.worldTransform.copy(math.Matrix.TEMP_MATRIX);
+    texture = sprite.texture.baseTexture;
 
-    var mappedMatrix = this.tempMatrix.identity();
+    var mappedMatrix = outputMatrix.identity();
 
     // scale..
     var ratio = this.textureSize.height / this.textureSize.width;
