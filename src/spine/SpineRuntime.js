@@ -27,6 +27,8 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
+var core = require('../core');
+
 
 var spine = module.exports = {
 	radDeg: 180 / Math.PI,
@@ -1905,11 +1907,11 @@ spine.AnimationState.prototype = {
 	}
 };
 
-spine.SkeletonJson = function (attachmentLoader)
+spine.SkeletonJsonParser = function (attachmentLoader)
 {
 	this.attachmentLoader = attachmentLoader;
 };
-spine.SkeletonJson.prototype = {
+spine.SkeletonJsonParser.prototype = {
 	scale: 1,
     readSkeletonData: function (root, name)
     {
@@ -2486,11 +2488,19 @@ spine.SkeletonJson.prototype = {
 	}
 };
 
-spine.Atlas = function (atlasText, textureLoader)
+spine.Atlas = function (atlasText, baseUrl, crossOrigin)
 {
-	this.textureLoader = textureLoader;
+    if (baseUrl && baseUrl.indexOf('/') !== baseUrl.length)
+    {
+        baseUrl += '/';
+    }
+
 	this.pages = [];
 	this.regions = [];
+
+    this.texturesLoading = 0;
+
+    var self = this;
 
 	var reader = new spine.AtlasReader(atlasText);
 	var tuple = [];
@@ -2530,7 +2540,7 @@ spine.Atlas = function (atlasText, textureLoader)
 			else if (direction == "xy")
 				page.uWrap = page.vWrap = spine.Atlas.TextureWrap.repeat;
 
-			textureLoader.load(page, line, this);
+            page.rendererObject = core.BaseTexture.fromImage(baseUrl + line, crossOrigin);
 
 			this.pages.push(page);
 
@@ -2601,7 +2611,7 @@ spine.Atlas.prototype = {
     {
 		var pages = this.pages;
 		for (var i = 0, n = pages.length; i < n; i++)
-			this.textureLoader.unload(pages[i].rendererObject);
+			pages[i].rendererObject.destroy(true);
 	},
     updateUVs: function (page)
     {
@@ -2721,11 +2731,11 @@ spine.AtlasReader.prototype = {
 	}
 };
 
-spine.AtlasAttachmentLoader = function (atlas)
+spine.AtlasAttachmentParser = function (atlas)
 {
 	this.atlas = atlas;
 };
-spine.AtlasAttachmentLoader.prototype = {
+spine.AtlasAttachmentParser.prototype = {
     newRegionAttachment: function (skin, name, path)
     {
 		var region = this.atlas.findRegion(path);
