@@ -10,6 +10,8 @@ var AbstractFilter = require('../core/renderers/webGL/utils/AbstractFilter');
 function GrayFilter()
 {
     AbstractFilter.call(this,
+    null,
+    // fragment
     [
         'precision mediump float;',
 

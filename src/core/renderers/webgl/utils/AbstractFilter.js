@@ -75,13 +75,13 @@ AbstractFilter.prototype.getShader = function (renderer)
     return shader;
 };
 
-AbstractFilter.prototype.applyFilter = function (renderer, input, output)
+AbstractFilter.prototype.applyFilter = function (renderer, input, output, clear)
 {
     var filterManager = renderer.filterManager,
     shader = this.getShader(renderer);
 
      // draw the filter...
-    filterManager.applyFilter(shader, input, output);
+    filterManager.applyFilter(shader, input, output, clear);
 };
 
 /**

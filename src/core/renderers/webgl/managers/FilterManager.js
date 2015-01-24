@@ -132,6 +132,7 @@ FilterManager.prototype.getRenderTarget = function ()
 {
     var renderTarget = this.texturePool.pop() || new RenderTarget(this.renderer.gl, this.textureSize.width, this.textureSize.height);
     renderTarget.frame = this.currentFrame; 
+
     return renderTarget;
 };
 
@@ -140,11 +141,16 @@ FilterManager.prototype.returnRenderTarget = function (renderTarget)
     this.texturePool.push( renderTarget );
 };
 
-FilterManager.prototype.applyFilter = function (shader, inputTarget, outputTarget)
+FilterManager.prototype.applyFilter = function (shader, inputTarget, outputTarget, clear)
 {
     var gl = this.renderer.gl;
 
     this.renderer.setRenderTarget( outputTarget );
+
+    if(clear)
+    {
+        outputTarget.clear();
+    }
 
     // set the shader
     this.renderer.shaderManager.setShader(shader);
@@ -162,45 +168,13 @@ FilterManager.prototype.applyFilter = function (shader, inputTarget, outputTarge
     gl.bindTexture(gl.TEXTURE_2D, inputTarget.texture);
 
     gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0 );
-
-
-      // var m = this.calculateMappedMatrix(inputTarget.frame, this.__TEMP__)
-
-//    gl.uniformMatrix3fv(shader.uniforms.projectionMatrix._location, false, this.renderer.currentRenderTarget.projectionMatrix.toArray(true));
-  //  gl.uniformMatrix3fv(shader.uniforms.otherMatrix._location, false, m.toArray(true));
-/*
-    /// custom //
-    this.textureCount = 1;
-    gl.activeTexture(gl.TEXTURE1);
-
-    var maskTexture = shader.uniforms.mask.value.baseTexture;
-
-    if (!maskTexture._glTextures[gl.id])
-    {
-        this.renderer.updateTexture(maskTexture);
-    }
-    else
-    {
-        // bind the texture
-        gl.bindTexture(gl.TEXTURE_2D, shader.uniforms.mask.value.baseTexture._glTextures[gl.id]);
-    }
-    
-    // set uniform to texture index
-    gl.uniform1i(shader.uniforms.mask._location, 1);
-
-    // increment next texture id
-    this.textureCount++;
-
-*/
-
-
 };
 
 
 // TODO playing around here.. this is temporary - (will end up in the shader)
 FilterManager.prototype.calculateMappedMatrix = function (filterArea, sprite, outputMatrix)
 {
-    worldTransform = sprite.worldTransform.copy(math.Matrix.TEMP_MATRIX);
+    var worldTransform = sprite.worldTransform.copy(math.Matrix.TEMP_MATRIX),
     texture = sprite.texture.baseTexture;
 
     var mappedMatrix = outputMatrix.identity();
