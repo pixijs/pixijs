@@ -209,7 +209,7 @@ BaseTexture.prototype.loadSource = function (source)
     {
         this._sourceLoaded();
     }
-    else  if(!source.getContext)
+    else if (!source.getContext)
     {
         // Image fail / not ready
         this.isLoading = true;
