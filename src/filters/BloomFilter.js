@@ -1,16 +1,17 @@
 var AbstractFilter = require('../core/renderers/webGL/utils/AbstractFilter'),
     BlurXFilter = require('./BlurXFilter'),
-    BlurYFilter = require('./BlurYFilter');
+    BlurYFilter = require('./BlurYFilter'),
+    CONST = require('../core/const');
 
 /**
- * The BlurFilter applies a Gaussian blur to an object.
+ * The BloomFilter applies a Gaussian blur to an object.
  * The strength of the blur can be set for x- and y-axis separately.
  *
  * @class
  * @extends AbstractFilter
  * @namespace PIXI
  */
-function BlurFilter()
+function BloomFilter()
 {
     AbstractFilter.call(this);
 
@@ -20,29 +21,33 @@ function BlurFilter()
     this.defaultFilter = new AbstractFilter();
 }
 
-BlurFilter.prototype = Object.create( AbstractFilter.prototype );
-BlurFilter.prototype.constructor = BlurFilter;
-module.exports = BlurFilter;
+BloomFilter.prototype = Object.create( AbstractFilter.prototype );
+BloomFilter.prototype.constructor = BloomFilter;
+module.exports = BloomFilter;
 
-BlurFilter.prototype.applyFilter = function (renderer, input, output)
+BloomFilter.prototype.applyFilter = function (renderer, input, output)
 {
     var filterManager = renderer.filterManager;
 
     var renderTarget = filterManager.getRenderTarget();
 
+    this.defaultFilter.applyFilter(renderer, input, output);
+
     this.blurXFilter.applyFilter(renderer, input, renderTarget);
     
+    renderer.blendModeManager.setBlendMode( CONST.blendModes.SCREEN );
+
     this.blurYFilter.applyFilter(renderer, renderTarget, output);
 
     filterManager.returnRenderTarget( renderTarget );
 };
 
-Object.defineProperties(BlurFilter.prototype, {
+Object.defineProperties(BloomFilter.prototype, {
     /**
      * Sets the strength of both the blurX and blurY properties simultaneously
      *
      * @member {number}
-     * @memberOf BlurFilter#
+     * @memberOf BloomFilter#
      * @default 2
      */
     blur: {
@@ -60,7 +65,7 @@ Object.defineProperties(BlurFilter.prototype, {
      * Sets the strength of the blurX property
      *
      * @member {number}
-     * @memberOf BlurFilter#
+     * @memberOf BloomFilter#
      * @default 2
      */
     blurX: {
@@ -78,7 +83,7 @@ Object.defineProperties(BlurFilter.prototype, {
      * Sets the strength of the blurY property
      *
      * @member {number}
-     * @memberOf BlurFilter#
+     * @memberOf BloomFilter#
      * @default 2
      */
     blurY: {

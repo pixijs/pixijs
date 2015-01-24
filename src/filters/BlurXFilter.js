@@ -1,4 +1,4 @@
-var AbstractFilter = require('./AbstractFilter'),
+var AbstractFilter = require('../core/renderers/webGL/utils/AbstractFilter'),
     blurFactor = 1 / 7000;
 
 /**
@@ -10,14 +10,9 @@ var AbstractFilter = require('./AbstractFilter'),
  */
 function BlurXFilter()
 {
-    AbstractFilter.call(this);
-
-    // set the uniforms
-    this.uniforms = {
-        blur: { type: '1f', value: 1 / 512 }
-    };
-
-    this.fragmentSrc = [
+    AbstractFilter.call(this,
+    // fragment shader
+    [
         'precision mediump float;',
 
         'varying vec2 vTextureCoord;',
@@ -42,10 +37,15 @@ function BlurXFilter()
 
         '   gl_FragColor = sum;',
         '}'
-    ];
+    ].join('\n'),
+    // set the uniforms
+    {
+        blur: { type: '1f', value: 1 / 512 }
+    });
+
 }
 
-BlurXFilter.prototype = Object.create(AbstractFilter.prototype);
+BlurXFilter.prototype = Object.create( AbstractFilter.prototype );
 BlurXFilter.prototype.constructor = BlurXFilter;
 module.exports = BlurXFilter;
 

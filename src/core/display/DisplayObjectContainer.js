@@ -616,7 +616,7 @@ DisplayObjectContainer.prototype._renderCachedSprite = function (renderer)
  * @private
  */
 DisplayObjectContainer.prototype._generateCachedSprite = function ()
-{
+{/*
     var bounds = this.getLocalBounds();
 
     if (!this._cachedSprite)
@@ -646,7 +646,7 @@ DisplayObjectContainer.prototype._generateCachedSprite = function ()
     this._cachedSprite.anchor.x = -(bounds.x / bounds.width);
     this._cachedSprite.anchor.y = -(bounds.y / bounds.height);
 
-    this._filters = tempFilters;
+    this._filters = tempFilters;*/
 };
 
 /**

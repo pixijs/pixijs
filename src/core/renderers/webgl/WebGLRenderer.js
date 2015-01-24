@@ -347,9 +347,9 @@ WebGLRenderer.prototype.renderDisplayObject = function (displayObject, renderTar
 {
     this.blendModeManager.setBlendMode(CONST.blendModes.NORMAL);
 
-    this.currentRenderTarget = renderTarget;
+    this.setRenderTarget(renderTarget);
 
-    this.currentRenderTarget.activate();
+   
 
     // reset the render session data..
     this.drawCount = 0;
@@ -375,6 +375,12 @@ WebGLRenderer.prototype.setObjectRenderer = function (objectRenderer)
     this.currentRenderer.stop();
     this.currentRenderer = objectRenderer;
     this.currentRenderer.start();
+};
+
+WebGLRenderer.prototype.setRenderTarget = function (renderTarget)
+{
+    this.currentRenderTarget = renderTarget;
+    this.currentRenderTarget.activate();
 };
 
 /**

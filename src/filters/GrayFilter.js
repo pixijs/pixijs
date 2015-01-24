@@ -1,4 +1,4 @@
-var AbstractFilter = require('./AbstractFilter');
+var AbstractFilter = require('../core/renderers/webGL/utils/AbstractFilter');
 
 /**
  * This greyscales the palette of your Display Objects.
@@ -9,14 +9,8 @@ var AbstractFilter = require('./AbstractFilter');
  */
 function GrayFilter()
 {
-    AbstractFilter.call(this);
-
-    // set the uniforms
-    this.uniforms = {
-        gray: { type: '1f', value: 1 }
-    };
-
-    this.fragmentSrc = [
+    AbstractFilter.call(this,
+    [
         'precision mediump float;',
 
         'varying vec2 vTextureCoord;',
@@ -31,7 +25,12 @@ function GrayFilter()
         '   gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.2126*gl_FragColor.r + 0.7152*gl_FragColor.g + 0.0722*gl_FragColor.b), gray);',
      //   '   gl_FragColor = gl_FragColor;',
         '}'
-    ];
+    ].join('\n'),
+    // set the uniforms
+    {
+        gray: { type: '1f', value: 1 }
+    });
+
 }
 
 GrayFilter.prototype = Object.create(AbstractFilter.prototype);

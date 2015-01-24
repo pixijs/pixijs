@@ -385,6 +385,7 @@ GraphicsRenderer.prototype.buildRoundedRectangle = function (graphicsData, webGL
 
         var vecPos = verts.length/6;
 
+        //TODO use this https://github.com/mapbox/earcut
         var triangles = utils.PolyK.Triangulate(recPoints);
 
         //

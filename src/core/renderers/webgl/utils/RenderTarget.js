@@ -15,6 +15,8 @@ var math = require('../../../math'),
 */
 var RenderTarget = function(gl, width, height, scaleMode, root)
 {
+    //TODO Resolution could go here ( eg low res blurs ) 
+    
     /**
      * @property gl
      * @type WebGLContext
@@ -35,8 +37,7 @@ var RenderTarget = function(gl, width, height, scaleMode, root)
      */
     this.texture = null;
 
-    this.width = 0;
-    this.height = 0;
+    this.size = new math.Rectangle(0, 0, 1, 1);
 
     this.resolution = 1;
 
@@ -110,38 +111,42 @@ RenderTarget.prototype.clear = function()
 RenderTarget.prototype.activate = function()
 {
     //TOOD refactor usage of frame..
-    var gl = this.gl,
-        pm = this.projectionMatrix;
+    var gl = this.gl;
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer);
         
-    var frame = this.frame;
+    var projectionFrame = this.frame || this.size;
 
-    if(frame)
-    {
-        if (!this.root)
-        {
-            pm.a = 1 / frame.width*2;
-            pm.d = 1 / frame.height*2;
+    // TODO add a dirty flag to this of a setter for the frame?
+    this.calculateProjection( projectionFrame );
 
-            pm.tx = -1 - frame.x * pm.a; 
-            pm.ty = -1 - frame.y * pm.d;
-        }
-        else
-        {
-            pm.a = 1 / frame.width*2;
-            pm.d = -1 / frame.height*2;
-
-            pm.tx = -1 - frame.x * pm.a; 
-            pm.ty = 1 - frame.y * pm.d;
-        }
-
-        gl.viewport(0,0, frame.width, frame.height);
-
-    }
-    
-    // gl.viewport(frame.x, frame.y, frame.width, frame.height);
+    gl.viewport(0,0, projectionFrame.width, projectionFrame.height);
 };
+
+RenderTarget.prototype.calculateProjection = function( projectionFrame )
+{
+    var pm = this.projectionMatrix;
+
+    pm.identity();
+
+    if (!this.root)
+    {
+        pm.a = 1 / projectionFrame.width*2;
+        pm.d = 1 / projectionFrame.height*2;
+
+        pm.tx = -1 - projectionFrame.x * pm.a; 
+        pm.ty = -1 - projectionFrame.y * pm.d;
+    }
+    else
+    {
+        pm.a = 1 / projectionFrame.width*2;
+        pm.d = -1 / projectionFrame.height*2;
+
+        pm.tx = -1 - projectionFrame.x * pm.a; 
+        pm.ty = 1 - projectionFrame.y * pm.d;
+    }
+};
+
 
 /**
  * Resizes the texture to the specified width and height
@@ -155,40 +160,29 @@ RenderTarget.prototype.resize = function(width, height)
     width = width | 0;
     height = height | 0;
 
-    if (this.width === width && this.height === height) {
+    if (this.size.width === width && this.size.height === height) {
         return;
     }
 
-    this.width = width;
-    this.height = height;
-
-    this.projectionMatrix = new math.Matrix();
+    this.size.width = width;
+    this.size.height = height;
 
     if (!this.root)
     {
         var gl = this.gl;
 
-        this.projectionMatrix.a = 1/width*2;
-        this.projectionMatrix.d = 1/height*2;
-
-        this.projectionMatrix.tx = -1;
-        this.projectionMatrix.ty = -1;
-
         gl.bindTexture(gl.TEXTURE_2D,  this.texture);
 
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  width , height , 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+    
         // update the stencil buffer width and height
         gl.bindRenderbuffer(gl.RENDERBUFFER, this.stencilBuffer);
         gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL,  width  , height );
     }
-    else
-    {
-        this.projectionMatrix.a = 1/width*2;
-        this.projectionMatrix.d = -1/height*2;
 
-        this.projectionMatrix.tx = -1;
-        this.projectionMatrix.ty = 1;
-    }
+    var projectionFrame = this.frame || this.size;
+
+    this.calculateProjection( projectionFrame );
 };
 
 /**

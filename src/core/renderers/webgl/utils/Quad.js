@@ -23,13 +23,13 @@ function Quad(gl)
         0,1
     ]);
 
-    var white = (0xFFFFFF >> 16) + (0xFFFFFF & 0xff00) + ((0xFFFFFF & 0xff) << 16) + (1 * 255 << 24);
-
+//    var white = (0xFFFFFF >> 16) + (0xFFFFFF & 0xff00) + ((0xFFFFFF & 0xff) << 16) + (1 * 255 << 24);
+    //TODO convert this to a 32 unsigned int array
     this.colors = new Float32Array([
-        white,
-        white,
-        white,
-        white
+        1,1,1,1,
+        1,1,1,1,
+        1,1,1,1,
+        1,1,1,1
     ]);
 
     this.indices = new Uint16Array([
@@ -40,7 +40,7 @@ function Quad(gl)
     this.indexBuffer = gl.createBuffer();
 
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, (8 + 8 + 4) * 4, gl.DYNAMIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, (8 + 8 + 16) * 4, gl.DYNAMIC_DRAW);
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW);

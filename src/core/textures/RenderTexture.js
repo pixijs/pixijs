@@ -299,7 +299,7 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, re
 
 //    this.renderer.spriteRenderer.dirty = true;
 
-this.renderer.renderDisplayObject(displayObject, this.textureBuffer);//this.projection, this.textureBuffer.frameBuffer);
+    this.renderer.renderDisplayObject(displayObject, this.textureBuffer);//this.projection, this.textureBuffer.frameBuffer);
 
   //  this.renderer.spriteRenderer.dirty = true;
 

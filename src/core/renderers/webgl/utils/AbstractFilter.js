@@ -1,3 +1,5 @@
+var DefaultShader = require('../shaders/TextureShader');
+
 /**
  * This is the base class for creating a PIXI filter. Currently only WebGL supports filters.
  * If you want to make a custom filter this should be your base class.
@@ -35,11 +37,15 @@ function AbstractFilter(fragmentSrc, uniforms)
      */
     this.uniforms = uniforms || {};
 
+   
     /**
      * @member {string[]}
      * @private
      */
-    this.fragmentSrc = typeof fragmentSrc === 'string' ? fragmentSrc.split('') : (fragmentSrc || []);
+    this.fragmentSrc = fragmentSrc;
+
+    //typeof fragmentSrc === 'string' ? fragmentSrc.split('') : (fragmentSrc || []);
+
 }
 
 AbstractFilter.prototype.constructor = AbstractFilter;
@@ -64,14 +70,16 @@ AbstractFilter.prototype.getShader = function (renderer)
     }
     
     return shader;
-}
+};
 
-AbstractFilter.prototype.applyWebGL = function (renderer, inputs, output, blendMode)
+AbstractFilter.prototype.applyFilter = function (renderer, input, output)
 {
-    var gl = renderer.gl;
+    var filterManager = renderer.filterManager,
+    shader = this.getShader(renderer);
 
-
-}
+     // draw the filter...
+    filterManager.applyFilter(shader, input, output);
+};
 
 /**
  * Syncs a uniform between the class object and the shaders.
