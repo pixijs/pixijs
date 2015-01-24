@@ -1,4 +1,5 @@
 var Resource = require('asset-loader').Resource,
+    async = require('async'),
     core = require('../core'),
     spine = require('../spine');
 
@@ -15,51 +16,38 @@ module.exports = function ()
              * have the same name
              */
             var atlasPath = resource.url.substr(0, resource.url.lastIndexOf('.')) + '.atlas';
-            var atlasOptions = { crossOrigin: resource.crossOrigin, xhrType: Resource.XHR_RESPONSE_TYPE.TEXT };
+            var atlasOptions = {
+                crossOrigin: resource.crossOrigin,
+                xhrType: Resource.XHR_RESPONSE_TYPE.TEXT
+            };
 
-            this.loadResource(new Resource(atlasPath, atlasOptions), function (res) {
-                /////////////////////////////////////////////////
-                // TODO: THIS IS OLD STYLE
-
-
-                // create a new instance of a spine texture loader for this spine object //
-                var textureLoader = new SpineTextureLoader(this.url.substring(0, this.url.lastIndexOf('/')));
-
-                // create a spine atlas using the loaded text and a spine texture loader instance //
-                var spineAtlas = new spine.Atlas(this.ajaxRequest.responseText, textureLoader);
-
-                // now we use an atlas attachment loader //
-                var attachmentLoader = new spine.AtlasAttachmentLoader(spineAtlas);
+            this.loadResource(new Resource(atlasPath, atlasOptions), function (res)
+            {
+                // create a spine atlas using the loaded text
+                var spineAtlas = new spine.Atlas(this.ajaxRequest.responseText, this.baseUrl, res.crossOrigin);
 
                 // spine animation
-                var spineJsonParser = new spine.SkeletonJson(attachmentLoader);
-                var skeletonData = spineJsonParser.readSkeletonData(originalLoader.json);
+                var spineJsonParser = new spine.SkeletonJsonParser(new spine.AtlasAttachmentParser(spineAtlas));
+                var skeletonData = spineJsonParser.readSkeletonData(resource.data);
 
-                core.utils.AnimCache[originalLoader.url] = skeletonData;
-                originalLoader.spine = skeletonData;
-                originalLoader.spineAtlas = spineAtlas;
-                originalLoader.spineAtlasLoader = atlasLoader;
+                // core.utils.AnimCache[originalLoader.url] = skeletonData;
 
-                // wait for textures to finish loading if needed
-                if (textureLoader.loadingCount > 0)
+                resource.spine = skeletonData;
+                resource.spineAtlas = spineAtlas;
+
+                // Go through each spineAtlas.pages and wait for page.rendererObject (a baseTexture) to
+                // load. Once all loaded, then call the next function.
+                async.each(spineAtlas.pages, function (page, done)
                 {
-                    textureLoader.addEventListener('loadedBaseTexture', function (evt)
+                    if (page.rendererObject.hasLoaded)
                     {
-                        if (evt.content.content.loadingCount <= 0)
-                        {
-                            originalLoader.onLoaded();
-                        }
-                    });
-                }
-                else
-                {
-                    originalLoader.onLoaded();
-                }
-
-
-                /////////////////////////////////////////////////
-
-                next();
+                        done();
+                    }
+                    else
+                    {
+                        page.rendererObject.once('loaded', done);
+                    }
+                }, next);
             });
         }
         else {

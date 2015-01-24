@@ -21,7 +21,8 @@ module.exports = function ()
         }
 
         // skip if no data
-        if (!resource.data) {
+        if (!resource.data)
+        {
             return next();
         }
 
@@ -80,6 +81,7 @@ module.exports = function ()
             }
 
             resource.bitmapFont = data;
+
             next();
         });
     };
