@@ -1,6 +1,5 @@
 var Resource = require('asset-loader').Resource,
     async = require('async'),
-    core = require('../core'),
     spine = require('../spine');
 
 module.exports = function ()
