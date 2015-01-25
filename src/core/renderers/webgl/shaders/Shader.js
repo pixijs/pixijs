@@ -12,6 +12,12 @@ var utils = require('../../../utils'),
  */
 function Shader(shaderManager, vertexSrc, fragmentSrc, uniforms, attributes)
 {
+
+    if(!vertexSrc || !fragmentSrc)
+    {
+         throw new Error('Pixi.js Error. Shader requires vertexSrc and fragmentSrc');
+    }
+
     /**
      * @member {number}
      * @readonly
@@ -41,41 +47,12 @@ function Shader(shaderManager, vertexSrc, fragmentSrc, uniforms, attributes)
      * The vertex shader.
      * @member {Array}
      */
-    this.vertexSrc = vertexSrc || [
-        'attribute vec2 aVertexPosition;',
-        'attribute vec2 aTextureCoord;',
-        'attribute vec4 aColor;',
-
-        'uniform mat3 projectionMatrix;',
-
-        'varying vec2 vTextureCoord;',
-        'varying vec4 vColor;',
-
-        'const vec2 center = vec2(-1.0, 1.0);',
-
-        'void main(void){',
-        '   gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);',
-        '   vTextureCoord = aTextureCoord;',
-        '   vColor = vec4(aColor.rgb * aColor.a, aColor.a);',
-        '}'
-    ].join('\n');
-
+    this.vertexSrc = vertexSrc;
     /**
      * The fragment shader.
      * @member {Array}
      */
-    this.fragmentSrc = fragmentSrc || [
-        'precision lowp float;',
-
-        'varying vec2 vTextureCoord;',
-        'varying vec4 vColor;',
-
-        'uniform sampler2D uSampler;',
-
-        'void main(void){',
-        '   gl_FragColor = texture2D(uSampler, vTextureCoord) * vColor ;',
-        '}'
-    ].join('\n');
+    this.fragmentSrc = fragmentSrc;
 
     this.init();
 }
@@ -453,7 +430,7 @@ Shader.prototype.initSampler2D = function (uniform)
     gl.bindTexture(gl.TEXTURE_2D, texture._glTextures[gl.id]);
 
     gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, texture.premultipliedAlpha);
-    
+
     if (uniform.textureData)
     {
         var data = uniform.textureData;
@@ -484,7 +461,7 @@ Shader.prototype.initSampler2D = function (uniform)
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, texture.scaleMode === CONST.scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
 
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);   
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     }
 
 };
