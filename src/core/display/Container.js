@@ -157,7 +157,7 @@ Container.prototype.addChildAt = function (child, index)
     // prevent adding self as child
     if (child === this)
     {
-        return;
+        return child;
     }
 
     if (index >= 0 && index <= this.children.length)
