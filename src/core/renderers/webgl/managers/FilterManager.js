@@ -32,7 +32,7 @@ function FilterManager(renderer)
 
     // listen for context and update necessary buffers
     //TODO make this dynamic!
-    this.textureSize = new math.Rectangle(0, 0, 800, 600);
+    this.textureSize = new math.Rectangle( 0, 0, renderer.width, renderer.height );
 
     this.currentFrame = null;
 
@@ -76,10 +76,9 @@ FilterManager.prototype.pushFilter = function (target, filters)
 
     this.capFilterArea( bounds );
 
-    var texture = this.getRenderTarget();
+    this.currentFrame = bounds;
 
-    // set the frame so the render target knows how much to render!
-    texture.frame = bounds;
+    var texture = this.getRenderTarget();
 
     this.renderer.setRenderTarget( texture );
 
@@ -108,7 +107,6 @@ FilterManager.prototype.popFilter = function ()
 
     var output = previousFilterData.renderTarget;
 
-
     // use program
     var gl = this.renderer.gl;
     var filter = filterData.filter[0];
@@ -116,6 +114,7 @@ FilterManager.prototype.popFilter = function ()
     this.currentFrame = input.frame;
 
     this.quad.map(this.textureSize, input.frame);
+
     // TODO.. this probably only needs to be done once!
     gl.bindBuffer(gl.ARRAY_BUFFER, this.quad.vertexBuffer);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.quad.indexBuffer);
@@ -260,6 +259,14 @@ FilterManager.prototype.capFilterArea = function (filterArea)
     if ( filterArea.y + filterArea.height > this.textureSize.height )
     {
         filterArea.height = this.textureSize.height - filterArea.y;
+    }
+};
+
+FilterManager.prototype.resize = function ( width, height )
+{
+    for (var i = 0; i < this.texturePool.length; i++)
+    {
+        this.texturePool[i].resize( width, height );
     }
 };
 
