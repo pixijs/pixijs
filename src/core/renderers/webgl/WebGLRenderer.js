@@ -2,7 +2,7 @@ var ShaderManager = require('./managers/ShaderManager'),
     MaskManager = require('./managers/MaskManager'),
     StencilManager = require('./managers/StencilManager'),
     FilterManager = require('./managers/FilterManager'),
-    WebGLBlendModeManager = require('./managers/WebGLBlendModeManager'),
+    BlendModeManager = require('./managers/BlendModeManager'),
     RenderTarget = require('./utils/RenderTarget'),
     ObjectRenderer = require('./utils/ObjectRenderer'),
     math = require('../../math'),
@@ -201,9 +201,9 @@ function WebGLRenderer(width, height, options)
 
     /**
      * Manages the blendModes
-     * @member {WebGLBlendModeManager}
+     * @member {BlendModeManager}
      */
-    this.blendModeManager = new WebGLBlendModeManager(this);
+    this.blendModeManager = new BlendModeManager(this);
 
     this.blendModes = null;
 

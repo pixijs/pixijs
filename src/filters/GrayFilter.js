@@ -1,4 +1,4 @@
-var AbstractFilter = require('../core/renderers/webGL/utils/AbstractFilter');
+var AbstractFilter = require('../core/renderers/webGL/filters/AbstractFilter');
 
 /**
  * This greyscales the palette of your Display Objects.

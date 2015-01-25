@@ -1,4 +1,4 @@
-var AbstractFilter = require('../core/renderers/webGL/utils/AbstractFilter'),
+var AbstractFilter = require('../core/renderers/webGL/filters/AbstractFilter'),
     blurFactor = 1 / 7000;
 
 /**

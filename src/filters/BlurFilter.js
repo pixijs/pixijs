@@ -1,4 +1,4 @@
-var AbstractFilter = require('../core/renderers/webGL/utils/AbstractFilter'),
+var AbstractFilter = require('../core/renderers/webGL/filters/AbstractFilter'),
     BlurXFilter = require('./BlurXFilter'),
     BlurYFilter = require('./BlurYFilter');
 
@@ -28,10 +28,10 @@ BlurFilter.prototype.applyFilter = function (renderer, input, output)
 {
     var filterManager = renderer.filterManager;
 
-    var renderTarget = filterManager.getRenderTarget();
+    var renderTarget = filterManager.getRenderTarget(true);
 
     this.blurXFilter.applyFilter(renderer, input, renderTarget);
-    
+
     this.blurYFilter.applyFilter(renderer, renderTarget, output);
 
     filterManager.returnRenderTarget( renderTarget );
