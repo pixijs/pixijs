@@ -31,10 +31,11 @@ BloomFilter.prototype.applyFilter = function (renderer, input, output)
 
     var renderTarget = filterManager.getRenderTarget();
 
+    //TODO - copyTexSubImage2D could be used here?
     this.defaultFilter.applyFilter(renderer, input, output);
 
     this.blurXFilter.applyFilter(renderer, input, renderTarget, true);
-    
+
     renderer.blendModeManager.setBlendMode( CONST.blendModes.SCREEN );
 
     this.blurYFilter.applyFilter(renderer, renderTarget, output);
