@@ -2,7 +2,7 @@ var AbstractFilter = require('./AbstractFilter'),
     math =  require('../../../math');
 
 /**
- * The AlphaMaskFilter class uses the pixel values from the specified texture (called the displacement map) to perform a displacement of an object.
+ * The SpriteMaskFilter class uses the pixel values from the specified texture (called the displacement map) to perform a displacement of an object.
  * You can use this filter to apply all manor of crazy warping effects
  * Currently the r property of the texture is used to offset the x and the g property of the texture is used to offset the y.
  *
@@ -11,7 +11,7 @@ var AbstractFilter = require('./AbstractFilter'),
  * @namespace PIXI
  * @param texture {Texture} The texture used for the displacement map * must be power of 2 texture at the moment
  */
-function AlphaMaskFilter(sprite)
+function SpriteMaskFilter(sprite)
 {
     var maskMatrix = new math.Matrix();
 
@@ -66,11 +66,11 @@ function AlphaMaskFilter(sprite)
     this.maskMatrix = maskMatrix;
 }
 
-AlphaMaskFilter.prototype = Object.create(AbstractFilter.prototype);
-AlphaMaskFilter.prototype.constructor = AlphaMaskFilter;
-module.exports = AlphaMaskFilter;
+SpriteMaskFilter.prototype = Object.create(AbstractFilter.prototype);
+SpriteMaskFilter.prototype.constructor = SpriteMaskFilter;
+module.exports = SpriteMaskFilter;
 
-AlphaMaskFilter.prototype.applyFilter = function (renderer, input, output)
+SpriteMaskFilter.prototype.applyFilter = function (renderer, input, output)
 {
     var filterManager = renderer.filterManager;
 
@@ -78,18 +78,18 @@ AlphaMaskFilter.prototype.applyFilter = function (renderer, input, output)
 
     this.uniforms.otherMatrix.value = this.maskMatrix.toArray(true);
 
-    shader = this.getShader(renderer);
+    var shader = this.getShader(renderer);
      // draw the filter...
     filterManager.applyFilter(shader, input, output);
 };
 
 
-Object.defineProperties(AlphaMaskFilter.prototype, {
+Object.defineProperties(SpriteMaskFilter.prototype, {
     /**
      * The texture used for the displacement map. Must be power of 2 sized texture.
      *
      * @member {Texture}
-     * @memberof AlphaMaskFilter#
+     * @memberof SpriteMaskFilter#
      */
     map: {
         get: function ()
@@ -106,7 +106,7 @@ Object.defineProperties(AlphaMaskFilter.prototype, {
      * The offset used to move the displacement map.
      *
      * @member {Point}
-     * @memberof AlphaMaskFilter#
+     * @memberof SpriteMaskFilter#
      */
     offset: {
         get: function()

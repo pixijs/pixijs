@@ -1,5 +1,7 @@
 var math = require('../../../math'),
-    CONST = require('../../../const');
+    CONST = require('../../../const'),
+    //StencilManager = require('../managers/StencilManager'),
+    StencilMaskStack = require('./StencilMaskStack');
 
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
@@ -13,10 +15,10 @@ var math = require('../../../math'),
 * @param height {Number} the vertical range of the filter
 * @param scaleMode {Number} See {{#crossLink "PIXI/scaleModes:property"}}PIXI.scaleModes{{/crossLink}} for possible values
 */
-var RenderTarget = function(gl, width, height, scaleMode, root)
+var RenderTarget = function(gl, width, height, scaleMode, root, createStencilBuffer)
 {
-    //TODO Resolution could go here ( eg low res blurs ) 
-    
+    //TODO Resolution could go here ( eg low res blurs )
+
     /**
      * @property gl
      * @type WebGLContext
@@ -45,6 +47,9 @@ var RenderTarget = function(gl, width, height, scaleMode, root)
 
     this.frame = null;
 
+    this.stencilBuffer = null;
+    this.stencilMaskStack = new StencilMaskStack();
+
     /**
      * @property scaleMode
      * @type Number
@@ -57,7 +62,6 @@ var RenderTarget = function(gl, width, height, scaleMode, root)
     {
        // this.flipY = true;
         this.frameBuffer = gl.createFramebuffer();
-
 
         /*
             A frame buffer needs a target to render to..
@@ -76,19 +80,16 @@ var RenderTarget = function(gl, width, height, scaleMode, root)
 
         gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer );
         gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.texture, 0);
-
-
-
-        /*
-            The stencil buffer is used for masking in pixi
-            lets create one and then add attach it to the framebuffer..
-         */
-        this.stencilBuffer = gl.createRenderbuffer();
-        gl.bindRenderbuffer(gl.RENDERBUFFER, this.stencilBuffer);
-        gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, this.stencilBuffer);
     }
 
+
     this.resize(width, height);
+
+    if(createStencilBuffer)
+    {
+        this.attachStenilBuffer();
+    }
+
 
 };
 
@@ -108,13 +109,36 @@ RenderTarget.prototype.clear = function()
     gl.clear(gl.COLOR_BUFFER_BIT);
 };
 
+RenderTarget.prototype.attachStenilBuffer = function()
+{
+
+    if( this.stencilBuffer )
+    {
+        return;
+    }
+
+    /*
+        The stencil buffer is used for masking in pixi
+        lets create one and then add attach it to the framebuffer..
+     */
+    if(!this.root)
+    {
+        var gl = this.gl;
+
+        this.stencilBuffer = gl.createRenderbuffer();
+        gl.bindRenderbuffer(gl.RENDERBUFFER, this.stencilBuffer);
+        gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, this.stencilBuffer);
+        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL,  this.width  , this.height );
+    }
+};
+
 RenderTarget.prototype.activate = function()
 {
     //TOOD refactor usage of frame..
     var gl = this.gl;
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer);
-        
+
     var projectionFrame = this.frame || this.size;
 
     // TODO add a dirty flag to this of a setter for the frame?
@@ -134,7 +158,7 @@ RenderTarget.prototype.calculateProjection = function( projectionFrame )
         pm.a = 1 / projectionFrame.width*2;
         pm.d = 1 / projectionFrame.height*2;
 
-        pm.tx = -1 - projectionFrame.x * pm.a; 
+        pm.tx = -1 - projectionFrame.x * pm.a;
         pm.ty = -1 - projectionFrame.y * pm.d;
     }
     else
@@ -142,7 +166,7 @@ RenderTarget.prototype.calculateProjection = function( projectionFrame )
         pm.a = 1 / projectionFrame.width*2;
         pm.d = -1 / projectionFrame.height*2;
 
-        pm.tx = -1 - projectionFrame.x * pm.a; 
+        pm.tx = -1 - projectionFrame.x * pm.a;
         pm.ty = 1 - projectionFrame.y * pm.d;
     }
 };
@@ -174,10 +198,13 @@ RenderTarget.prototype.resize = function(width, height)
         gl.bindTexture(gl.TEXTURE_2D,  this.texture);
 
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  width , height , 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
-    
-        // update the stencil buffer width and height
-        gl.bindRenderbuffer(gl.RENDERBUFFER, this.stencilBuffer);
-        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL,  width  , height );
+
+        if(this.stencilBuffer )
+        {
+            // update the stencil buffer width and height
+            gl.bindRenderbuffer(gl.RENDERBUFFER, this.stencilBuffer);
+            gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL,  width  , height );
+        }
     }
 
     var projectionFrame = this.frame || this.size;

@@ -55,7 +55,7 @@ MaskManager.prototype.popMask = function (target, maskData)
 MaskManager.prototype.pushSpriteMask = function (target, maskData)
 {
     var alphaMaskFilter = this.alphaMaskPool.pop();
-    
+
     if (!alphaMaskFilter)
     {
         alphaMaskFilter = [new AlphaMaskFilter(maskData)];
@@ -84,6 +84,7 @@ MaskManager.prototype.popSpriteMask = function ()
 
 MaskManager.prototype.pushStencilMask = function (target, maskData)
 {
+    this.renderer.currentRenderTarget.attachStenilBuffer();
     this.renderer.stencilManager.pushMask(maskData);
 };
 

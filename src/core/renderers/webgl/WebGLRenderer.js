@@ -33,7 +33,7 @@ function WebGLRenderer(width, height, options)
     utils.sayHello('webGL');
 
     WebGLRenderer._TEMP__ = this;
-    
+
     if (options)
     {
         for (var i in CONST.defaultRenderOptions)
@@ -351,7 +351,7 @@ WebGLRenderer.prototype.renderDisplayObject = function (displayObject, renderTar
 
     this.setRenderTarget(renderTarget);
 
-   
+
 
     // reset the render session data..
     this.drawCount = 0;
@@ -383,6 +383,7 @@ WebGLRenderer.prototype.setRenderTarget = function (renderTarget)
 {
     this.currentRenderTarget = renderTarget;
     this.currentRenderTarget.activate();
+    this.stencilManager.setMaskStack( renderTarget.stencilMaskStack );
 };
 
 /**

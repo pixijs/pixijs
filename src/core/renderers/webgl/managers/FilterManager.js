@@ -47,7 +47,7 @@ module.exports = FilterManager;
 FilterManager.prototype.onContextChange = function ()
 {
     this.texturePool.length = 0;
-    
+
     var gl = this.renderer.gl;
     this.quad = new Quad(gl);
 };
@@ -80,12 +80,12 @@ FilterManager.prototype.pushFilter = function (target, filters)
 
     // set the frame so the render target knows how much to render!
     texture.frame = bounds;
-    
+
     this.renderer.setRenderTarget( texture );
 
     // clear the texture..
     texture.clear();
-    
+
     // TODO get rid of object creation!
     this.filterStack.push({
         renderTarget:texture,
@@ -107,12 +107,12 @@ FilterManager.prototype.popFilter = function ()
     var input = filterData.renderTarget;
 
     var output = previousFilterData.renderTarget;
-    
+
 
     // use program
     var gl = this.renderer.gl;
     var filter = filterData.filter[0];
-    
+
     this.currentFrame = input.frame;
 
     this.quad.map(this.textureSize, input.frame);
@@ -131,7 +131,7 @@ FilterManager.prototype.popFilter = function ()
 FilterManager.prototype.getRenderTarget = function ()
 {
     var renderTarget = this.texturePool.pop() || new RenderTarget(this.renderer.gl, this.textureSize.width, this.textureSize.height);
-    renderTarget.frame = this.currentFrame; 
+    renderTarget.frame = this.currentFrame;
 
     return renderTarget;
 };
@@ -154,7 +154,7 @@ FilterManager.prototype.applyFilter = function (shader, inputTarget, outputTarge
 
     // set the shader
     this.renderer.shaderManager.setShader(shader);
-    
+
     shader.uniforms.projectionMatrix.value = this.renderer.currentRenderTarget.projectionMatrix.toArray(true);
 
     //TODO can this be optimised?
@@ -183,7 +183,7 @@ FilterManager.prototype.calculateMappedMatrix = function (filterArea, sprite, ou
     var ratio = this.textureSize.height / this.textureSize.width;
 
     mappedMatrix.translate(filterArea.x / this.textureSize.width, filterArea.y / this.textureSize.height );
-    
+
     mappedMatrix.scale(1 , ratio);
 
     var translateScaleX = (this.textureSize.width / texture.width);
@@ -213,13 +213,13 @@ FilterManager.prototype.calculateMappedMatrix = function (filterArea, sprite, ou
     // var ratio = this.textureSize.height / this.textureSize.width;
 
     // m.translate(filterArea.x / this.textureSize.width, filterArea.y / this.textureSize.height);
-    
+
 
     // m.scale(1 , ratio);
 
 
     // var transform = wt.clone();
-    
+
     // var translateScaleX = (this.textureSize.width / 620);
     // var translateScaleY = (this.textureSize.height / 380);
 
