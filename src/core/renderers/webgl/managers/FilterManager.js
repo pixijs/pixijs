@@ -109,7 +109,7 @@ FilterManager.prototype.popFilter = function ()
 
     // use program
     var gl = this.renderer.gl;
-    var filter = filterData.filter[0];
+
 
     this.currentFrame = input.frame;
 
@@ -119,18 +119,43 @@ FilterManager.prototype.popFilter = function ()
     gl.bindBuffer(gl.ARRAY_BUFFER, this.quad.vertexBuffer);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.quad.indexBuffer);
 
-    // this.__TEMP__ = filter.sprite;
-    filter.applyFilter( this.renderer, input, output );
+    var filters = filterData.filter;
 
-    this.returnRenderTarget( input );
+    if(filters.length === 1)
+    {
+        filters[0].applyFilter( this.renderer, input, output );
+        this.returnRenderTarget( input );
+
+    }
+    else
+    {
+        var flipTexture = input;
+        var flopTexture = this.getRenderTarget(true);
+
+        for (var i = 0; i < filters.length-1; i++)
+        {
+            var filter = filters[i];
+            filter.applyFilter( this.renderer, flipTexture, flopTexture );
+
+            var temp = flipTexture;
+            flipTexture = flopTexture;
+            flopTexture = temp;
+        }
+
+        filters[filters.length-1].applyFilter( this.renderer, flipTexture, output );
+
+        this.returnRenderTarget( flipTexture );
+        this.returnRenderTarget( flopTexture );
+    }
 
     return filterData.filter;
 };
 
-FilterManager.prototype.getRenderTarget = function ()
+FilterManager.prototype.getRenderTarget = function ( clear )
 {
     var renderTarget = this.texturePool.pop() || new RenderTarget(this.renderer.gl, this.textureSize.width, this.textureSize.height);
     renderTarget.frame = this.currentFrame;
+    if(clear)renderTarget.clear();
 
     return renderTarget;
 };
@@ -174,7 +199,7 @@ FilterManager.prototype.applyFilter = function (shader, inputTarget, outputTarge
 FilterManager.prototype.calculateMappedMatrix = function (filterArea, sprite, outputMatrix)
 {
     var worldTransform = sprite.worldTransform.copy(math.Matrix.TEMP_MATRIX),
-    texture = sprite.texture.baseTexture;
+    texture = sprite._texture.baseTexture;
 
     var mappedMatrix = outputMatrix.identity();
 

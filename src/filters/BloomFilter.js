@@ -29,16 +29,18 @@ BloomFilter.prototype.applyFilter = function (renderer, input, output)
 {
     var filterManager = renderer.filterManager;
 
-    var renderTarget = filterManager.getRenderTarget();
+    var renderTarget = filterManager.getRenderTarget( true );
 
     //TODO - copyTexSubImage2D could be used here?
     this.defaultFilter.applyFilter(renderer, input, output);
 
-    this.blurXFilter.applyFilter(renderer, input, renderTarget, true);
+    this.blurXFilter.applyFilter(renderer, input, renderTarget);
 
     renderer.blendModeManager.setBlendMode( CONST.blendModes.SCREEN );
 
     this.blurYFilter.applyFilter(renderer, renderTarget, output);
+
+    renderer.blendModeManager.setBlendMode( CONST.blendModes.NORMAL );
 
     filterManager.returnRenderTarget( renderTarget );
 };
