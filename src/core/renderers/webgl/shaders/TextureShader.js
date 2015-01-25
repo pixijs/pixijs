@@ -56,8 +56,6 @@ function TextureShader(shaderManager, vertexSrc, fragmentSrc, customUniforms, cu
         'varying vec2 vTextureCoord;',
         'varying vec4 vColor;',
 
-        'const vec2 center = vec2(-1.0, 1.0);',
-
         'void main(void){',
         '   gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);',
         '   vTextureCoord = aTextureCoord;',

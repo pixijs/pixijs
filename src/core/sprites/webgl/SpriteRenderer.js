@@ -234,11 +234,11 @@ SpriteRenderer.prototype.render = function (sprite)
     }
     else
     {
-        w0 = (texture.frame.width ) * (1-aX);
-        w1 = (texture.frame.width ) * -aX;
+        w0 = (texture._frame.width ) * (1-aX);
+        w1 = (texture._frame.width ) * -aX;
 
-        h0 = texture.frame.height * (1-aY);
-        h1 = texture.frame.height * -aY;
+        h0 = texture._frame.height * (1-aY);
+        h1 = texture._frame.height * -aY;
     }
 
     var index = this.currentBatchSize * this.vertByteSize;
