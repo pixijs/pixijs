@@ -209,7 +209,7 @@ BaseTexture.prototype.loadSource = function (source)
     {
         this._sourceLoaded();
     }
-    else  if(!source.getContext)
+    else if (!source.getContext)
     {
         // Image fail / not ready
         this.isLoading = true;
@@ -372,9 +372,11 @@ BaseTexture.fromImage = function (imageUrl, crossorigin, scaleMode)
             image.crossOrigin = '';
         }
 
-        image.src = imageUrl;
         baseTexture = new BaseTexture(image, scaleMode);
         baseTexture.imageUrl = imageUrl;
+
+        image.src = imageUrl;
+
         utils.BaseTextureCache[imageUrl] = baseTexture;
 
         // if there is an @2x at the end of the url we are going to assume its a highres image

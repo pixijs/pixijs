@@ -176,6 +176,7 @@ BitmapText.prototype.updateText = function ()
     var pos = new core.math.Point();
     var prevCharCode = null;
     var chars = [];
+    var lastLineWidth = 0;
     var maxLineWidth = 0;
     var lineWidths = [];
     var line = 0;
@@ -187,8 +188,8 @@ BitmapText.prototype.updateText = function ()
 
         if (/(?:\r\n|\r|\n)/.test(this.text.charAt(i)))
         {
-            lineWidths.push(pos.x);
-            maxLineWidth = Math.max(maxLineWidth, pos.x);
+            lineWidths.push(lastLineWidth);
+            maxLineWidth = Math.max(maxLineWidth, lastLineWidth);
             line++;
 
             pos.x = 0;
@@ -210,13 +211,14 @@ BitmapText.prototype.updateText = function ()
         }
 
         chars.push({texture:charData.texture, line: line, charCode: charCode, position: new core.math.Point(pos.x + charData.xOffset, pos.y + charData.yOffset)});
+        lastLineWidth = pos.x + (charData.texture.width + charData.xOffset);
         pos.x += charData.xAdvance;
 
         prevCharCode = charCode;
     }
 
-    lineWidths.push(pos.x);
-    maxLineWidth = Math.max(maxLineWidth, pos.x);
+    lineWidths.push(lastLineWidth);
+    maxLineWidth = Math.max(maxLineWidth, lastLineWidth);
 
     var lineAlignOffsets = [];
 
