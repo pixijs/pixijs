@@ -161,7 +161,7 @@ Rope.prototype.updateTransform = function ()
         lastPoint = point;
     }
 
-    this.displayObjectContainerUpdateTransform();
+    this.ContainerUpdateTransform();
 };
 
 /**

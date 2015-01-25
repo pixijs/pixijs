@@ -17,9 +17,9 @@ var core = module.exports = {
 
     // display
     DisplayObject:          require('./display/DisplayObject'),
-    DisplayObjectContainer: require('./display/DisplayObjectContainer'),
+    Container: require('./display/Container'),
 
-    Stage:                  require('./display/DisplayObjectContainer'),
+    Stage:                  require('./display/Container'),
 
     Sprite:                 require('./sprites/Sprite'),
     SpriteBatch:            require('./sprites/SpriteBatch'),

@@ -8,7 +8,7 @@ var core = require('../core');
  * http://www.bmglyph.com/ for mac.
  *
  * @class
- * @extends DisplayObjectContainer
+ * @extends Container
  * @namespace PIXI
  * @param text {string} The copy that you would like the text to display
  * @param style {object} The style parameters
@@ -17,7 +17,7 @@ var core = require('../core');
  */
 function BitmapText(text, style)
 {
-    core.DisplayObjectContainer.call(this);
+    core.Container.call(this);
 
     /**
      * The width of the overall text, different from fontSize,
@@ -78,7 +78,7 @@ function BitmapText(text, style)
 }
 
 // constructor
-BitmapText.prototype = Object.create(core.DisplayObjectContainer.prototype);
+BitmapText.prototype = Object.create(core.Container.prototype);
 BitmapText.prototype.constructor = BitmapText;
 module.exports = BitmapText;
 
@@ -292,7 +292,7 @@ BitmapText.prototype.updateTransform = function ()
         this.dirty = false;
     }
 
-    this.displayObjectContainerUpdateTransform();
+    this.ContainerUpdateTransform();
 };
 
 BitmapText.fonts = {};

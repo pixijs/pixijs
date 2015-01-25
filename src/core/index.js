@@ -17,9 +17,11 @@ var core = module.exports = {
 
     // display
     DisplayObject:          require('./display/DisplayObject'),
-    DisplayObjectContainer: require('./display/DisplayObjectContainer'),
+    Container: require('./display/Container'),
 
-    Stage:                  require('./display/DisplayObjectContainer'),
+    // legacy..
+    Stage:                  require('./display/Container'),
+    DisplayObjectContainer: require('./display/Container'),
 
     Sprite:                 require('./sprites/Sprite'),
     SpriteBatch:            require('./sprites/SpriteBatch'),
@@ -44,7 +46,7 @@ var core = module.exports = {
 
     // renderers - webgl
     WebGLRenderer:          require('./renderers/webgl/WebGLRenderer'),
-    ShaderManager:     require('./renderers/webgl/managers/ShaderManager'),
+    ShaderManager:          require('./renderers/webgl/managers/ShaderManager'),
     Shader:                 require('./renderers/webgl/shaders/Shader'),
 
     /**

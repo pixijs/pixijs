@@ -11,13 +11,13 @@ spine.Bone.yDown = true;
  * See example 12 (http://www.goodboydigital.com/pixijs/examples/12/) to see a working example and check out the source
  *
  * @class
- * @extends DisplayObjectContainer
+ * @extends Container
  * @namespace PIXI
  * @param url {string} The url of the spine anim file to be used
  */
 function Spine(url)
 {
-    core.DisplayObjectContainer.call(this);
+    core.Container.call(this);
 
     this.spineData = core.utils.AnimCache[url];
 
@@ -38,7 +38,7 @@ function Spine(url)
     {
         var slot = this.skeleton.drawOrder[i];
         var attachment = slot.attachment;
-        var slotContainer = new core.DisplayObjectContainer();
+        var slotContainer = new core.Container();
         this.slotContainers.push(slotContainer);
         this.addChild(slotContainer);
 
@@ -67,7 +67,7 @@ function Spine(url)
     this.autoUpdate = true;
 }
 
-Spine.prototype = Object.create(core.DisplayObjectContainer.prototype);
+Spine.prototype = Object.create(core.Container.prototype);
 Spine.prototype.constructor = Spine;
 module.exports = Spine;
 
@@ -91,7 +91,7 @@ Object.defineProperties(Spine.prototype, {
 
         set: function (value)
         {
-            this.updateTransform = value ? Spine.prototype.autoUpdateTransform : core.DisplayObjectContainer.prototype.updateTransform;
+            this.updateTransform = value ? Spine.prototype.autoUpdateTransform : core.Container.prototype.updateTransform;
         }
     }
 });
@@ -211,7 +211,7 @@ Spine.prototype.autoUpdateTransform = function ()
 
     this.update(timeDelta);
 
-    core.DisplayObjectContainer.prototype.updateTransform.call(this);
+    core.Container.prototype.updateTransform.call(this);
 };
 
 /**

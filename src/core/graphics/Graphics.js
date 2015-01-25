@@ -1,4 +1,4 @@
-var DisplayObjectContainer = require('../display/DisplayObjectContainer'),
+var Container = require('../display/Container'),
     Sprite = require('../sprites/Sprite'),
     Texture = require('../textures/Texture'),
     CanvasBuffer = require('../renderers/canvas/utils/CanvasBuffer'),
@@ -13,12 +13,12 @@ var DisplayObjectContainer = require('../display/DisplayObjectContainer'),
  * rectangles to the display, and color and fill them.
  *
  * @class
- * @extends DisplayObjectContainer
+ * @extends Container
  * @namespace PIXI
  */
 function Graphics()
 {
-    DisplayObjectContainer.call(this);
+    Container.call(this);
 
     this.renderable = true;
 
@@ -137,7 +137,7 @@ function Graphics()
 }
 
 // constructor
-Graphics.prototype = Object.create(DisplayObjectContainer.prototype);
+Graphics.prototype = Object.create(Container.prototype);
 Graphics.prototype.constructor = Graphics;
 module.exports = Graphics;
 

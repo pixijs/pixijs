@@ -27,10 +27,10 @@ var BaseTexture = require('./BaseTexture'),
  * ```
  *
  * The Sprite in this case will be rendered to a position of 0,0. To render this sprite at its actual
- * position a DisplayObjectContainer should be used:
+ * position a Container should be used:
  *
  * ```js
- * var doc = new DisplayObjectContainer();
+ * var doc = new Container();
  *
  * doc.addChild(sprite);
  *

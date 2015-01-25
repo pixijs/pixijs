@@ -1,7 +1,7 @@
-var DisplayObjectContainer = require('../display/DisplayObjectContainer');
+var Container = require('../display/Container');
 
 /**
- * The SpriteBatch class is a really fast version of the DisplayObjectContainer built solely for speed,
+ * The SpriteBatch class is a really fast version of the Container built solely for speed,
  * so use when you need a lot of sprites or particles. The tradeoff of the SpriteBatch is that advanced
  * functionality will not work. SpriteBatch implements only the basic object transform (position, scale, rotation).
  * Any other functionality like tinting, masking, etc will not work on sprites in this batch.
@@ -27,10 +27,10 @@ var DisplayObjectContainer = require('../display/DisplayObjectContainer');
 //TODO RENAME to PARTICLE CONTAINER?
 function SpriteBatch()
 {
-    DisplayObjectContainer.call(this);
+    Container.call(this);
 }
 
-SpriteBatch.prototype = Object.create(DisplayObjectContainer.prototype);
+SpriteBatch.prototype = Object.create(Container.prototype);
 SpriteBatch.prototype.constructor = SpriteBatch;
 module.exports = SpriteBatch;
 
@@ -43,7 +43,7 @@ SpriteBatch.prototype.updateTransform = function ()
 {
     // TODO don't need to!
     this.displayObjectUpdateTransform();
-    //  PIXI.DisplayObjectContainer.prototype.updateTransform.call( this );
+    //  PIXI.Container.prototype.updateTransform.call( this );
 };
 
 /**

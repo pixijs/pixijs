@@ -1,6 +1,6 @@
 var math = require('../math'),
     Texture = require('../textures/Texture'),
-    DisplayObjectContainer = require('../display/DisplayObjectContainer'),
+    Container = require('../display/Container'),
     CanvasTinter = require('../renderers/canvas/utils/CanvasTinter'),
     utils = require('../utils'),
     CONST = require('../const');
@@ -15,13 +15,13 @@ var math = require('../math'),
  * ```
  *
  * @class Sprite
- * @extends DisplayObjectContainer
+ * @extends Container
  * @namespace PIXI
  * @param texture {Texture} The texture for this sprite
  */
 function Sprite(texture)
 {
-    DisplayObjectContainer.call(this);
+    Container.call(this);
 
 
     /**
@@ -89,7 +89,7 @@ function Sprite(texture)
 
 Sprite.prototype.destroy = function (destroyTexture, destroyBaseTexture)
 {
-    DisplayObjectContainer.prototype.destroy.call(this);
+    Container.prototype.destroy.call(this);
 
     this.anchor = null;
 
@@ -103,7 +103,7 @@ Sprite.prototype.destroy = function (destroyTexture, destroyBaseTexture)
 };
 
 // constructor
-Sprite.prototype = Object.create(DisplayObjectContainer.prototype);
+Sprite.prototype = Object.create(Container.prototype);
 Sprite.prototype.constructor = Sprite;
 module.exports = Sprite;
 
@@ -300,8 +300,14 @@ Sprite.prototype.getBounds = function (matrix)
     bounds.y = minY;
     bounds.height = maxY - minY;
 
+    if(this.children.length)
+    {
+
+    }
+
     // store a reference so that if this function gets called again in the render cycle we do not have to recalculate
     this._currentBounds = bounds;
+
 
     return bounds;
 };

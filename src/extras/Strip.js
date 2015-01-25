@@ -3,7 +3,7 @@ var core = require('../core');
 /**
  *
  * @class
- * @extends DisplayObjectContainer
+ * @extends Container
  * @namespace PIXI
  * @param texture {Texture} The texture to use
  * @param width {number} the width
@@ -12,7 +12,7 @@ var core = require('../core');
  */
 function Strip(texture)
 {
-    core.DisplayObjectContainer.call(this);
+    core.Container.call(this);
 
     /**
      * The texture of the strip
@@ -62,7 +62,7 @@ function Strip(texture)
 }
 
 // constructor
-Strip.prototype = Object.create(core.DisplayObjectContainer.prototype);
+Strip.prototype = Object.create(core.Container.prototype);
 Strip.prototype.constructor = Strip;
 module.exports = Strip;
 

@@ -63,7 +63,7 @@ function DisplayObject()
     /**
      * The display object container that contains this display object.
      *
-     * @member {DisplayObjectContainer}
+     * @member {Container}
      * @readOnly
      */
     this.parent = null;

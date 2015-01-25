@@ -5,14 +5,14 @@ var math = require('../math'),
     _tempMatrix = new math.Matrix();
 
 /**
- * A DisplayObjectContainer represents a collection of display objects.
+ * A Container represents a collection of display objects.
  * It is the base class of all display objects that act as a container for other objects.
  *
  * @class
  * @extends DisplayObject
  * @namespace PIXI
  */
-function DisplayObjectContainer()
+function Container()
 {
     DisplayObject.call(this);
 
@@ -36,16 +36,16 @@ function DisplayObjectContainer()
 }
 
 // constructor
-DisplayObjectContainer.prototype = Object.create(DisplayObject.prototype);
-DisplayObjectContainer.prototype.constructor = DisplayObjectContainer;
-module.exports = DisplayObjectContainer;
+Container.prototype = Object.create(DisplayObject.prototype);
+Container.prototype.constructor = Container;
+module.exports = Container;
 
-Object.defineProperties(DisplayObjectContainer.prototype, {
+Object.defineProperties(Container.prototype, {
     /**
-     * The width of the displayObjectContainer, setting this will actually modify the scale to achieve the value set
+     * The width of the Container, setting this will actually modify the scale to achieve the value set
      *
      * @member {number}
-     * @memberof DisplayObjectContainer#
+     * @memberof Container#
      */
     width: {
         get: function ()
@@ -72,10 +72,10 @@ Object.defineProperties(DisplayObjectContainer.prototype, {
     },
 
     /**
-     * The height of the displayObjectContainer, setting this will actually modify the scale to achieve the value set
+     * The height of the Container, setting this will actually modify the scale to achieve the value set
      *
      * @member {number}
-     * @memberof DisplayObjectContainer#
+     * @memberof Container#
      */
     height: {
         get: function ()
@@ -140,7 +140,7 @@ Object.defineProperties(DisplayObjectContainer.prototype, {
  * @param child {DisplayObject} The DisplayObject to add to the container
  * @return {DisplayObject} The child that was added.
  */
-DisplayObjectContainer.prototype.addChild = function (child)
+Container.prototype.addChild = function (child)
 {
     return this.addChildAt(child, this.children.length);
 };
@@ -152,7 +152,7 @@ DisplayObjectContainer.prototype.addChild = function (child)
  * @param index {Number} The index to place the child in
  * @return {DisplayObject} The child that was added.
  */
-DisplayObjectContainer.prototype.addChildAt = function (child, index)
+Container.prototype.addChildAt = function (child, index)
 {
     // prevent adding self as child
     if (child === this)
@@ -185,7 +185,7 @@ DisplayObjectContainer.prototype.addChildAt = function (child, index)
  * @param child {DisplayObject}
  * @param child2 {DisplayObject}
  */
-DisplayObjectContainer.prototype.swapChildren = function (child, child2)
+Container.prototype.swapChildren = function (child, child2)
 {
     if (child === child2)
     {
@@ -210,7 +210,7 @@ DisplayObjectContainer.prototype.swapChildren = function (child, child2)
  * @param child {DisplayObject} The DisplayObject instance to identify
  * @return {Number} The index position of the child display object to identify
  */
-DisplayObjectContainer.prototype.getChildIndex = function (child)
+Container.prototype.getChildIndex = function (child)
 {
     var index = this.children.indexOf(child);
 
@@ -228,7 +228,7 @@ DisplayObjectContainer.prototype.getChildIndex = function (child)
  * @param child {DisplayObject} The child DisplayObject instance for which you want to change the index number
  * @param index {Number} The resulting index number for the child display object
  */
-DisplayObjectContainer.prototype.setChildIndex = function (child, index)
+Container.prototype.setChildIndex = function (child, index)
 {
     if (index < 0 || index >= this.children.length)
     {
@@ -247,7 +247,7 @@ DisplayObjectContainer.prototype.setChildIndex = function (child, index)
  * @param index {Number} The index to get the child from
  * @return {DisplayObject} The child at the given index, if any.
  */
-DisplayObjectContainer.prototype.getChildAt = function (index)
+Container.prototype.getChildAt = function (index)
 {
     if (index < 0 || index >= this.children.length)
     {
@@ -263,7 +263,7 @@ DisplayObjectContainer.prototype.getChildAt = function (index)
  * @param child {DisplayObject} The DisplayObject to remove
  * @return {DisplayObject} The child that was removed.
  */
-DisplayObjectContainer.prototype.removeChild = function (child)
+Container.prototype.removeChild = function (child)
 {
     var index = this.children.indexOf(child);
 
@@ -281,7 +281,7 @@ DisplayObjectContainer.prototype.removeChild = function (child)
  * @param index {Number} The index to get the child from
  * @return {DisplayObject} The child that was removed.
  */
-DisplayObjectContainer.prototype.removeChildAt = function (index)
+Container.prototype.removeChildAt = function (index)
 {
     var child = this.getChildAt(index);
 
@@ -297,7 +297,7 @@ DisplayObjectContainer.prototype.removeChildAt = function (index)
  * @param beginIndex {Number} The beginning position. Default value is 0.
  * @param endIndex {Number} The ending position. Default value is size of the container.
  */
-DisplayObjectContainer.prototype.removeChildren = function (beginIndex, endIndex)
+Container.prototype.removeChildren = function (beginIndex, endIndex)
 {
     var begin = beginIndex || 0;
     var end = typeof endIndex === 'number' ? endIndex : this.children.length;
@@ -328,7 +328,7 @@ DisplayObjectContainer.prototype.removeChildren = function (beginIndex, endIndex
  * Generates and updates the cached sprite for this object.
  *
  */
-DisplayObjectContainer.prototype.updateCachedSprite = function ()
+Container.prototype.updateCachedSprite = function ()
 {
     this._generateCachedSprite();
 };
@@ -342,7 +342,7 @@ DisplayObjectContainer.prototype.updateCachedSprite = function ()
  * @param renderer {CanvasRenderer|WebGLRenderer} The renderer used to generate the texture.
  * @return {Texture} a texture of the graphics object
  */
-DisplayObjectContainer.prototype.generateTexture = function (resolution, scaleMode, renderer)
+Container.prototype.generateTexture = function (resolution, scaleMode, renderer)
 {
     var bounds = this.getLocalBounds();
 
@@ -361,7 +361,7 @@ DisplayObjectContainer.prototype.generateTexture = function (resolution, scaleMo
  *
  * @private
  */
-DisplayObjectContainer.prototype.updateTransform = function ()
+Container.prototype.updateTransform = function ()
 {
     if (!this.visible)
     {
@@ -382,14 +382,14 @@ DisplayObjectContainer.prototype.updateTransform = function ()
 };
 
 // performance increase to avoid using call.. (10x faster)
-DisplayObjectContainer.prototype.displayObjectContainerUpdateTransform = DisplayObjectContainer.prototype.updateTransform;
+Container.prototype.ContainerUpdateTransform = Container.prototype.updateTransform;
 
 /**
- * Retrieves the bounds of the displayObjectContainer as a rectangle. The bounds calculation takes all visible children into consideration.
+ * Retrieves the bounds of the Container as a rectangle. The bounds calculation takes all visible children into consideration.
  *
  * @return {Rectangle} The rectangular bounding area
  */
-DisplayObjectContainer.prototype.getBounds = function ()
+Container.prototype.getBounds = function ()
 {
     if (this.children.length === 0)
     {
@@ -449,13 +449,15 @@ DisplayObjectContainer.prototype.getBounds = function ()
     return this._bounds;
 };
 
+Container.prototype.getBounds
+
 /**
- * Retrieves the non-global local bounds of the displayObjectContainer as a rectangle.
+ * Retrieves the non-global local bounds of the Container as a rectangle.
  * The calculation takes all visible children into consideration.
  *
  * @return {Rectangle} The rectangular bounding area
  */
-DisplayObjectContainer.prototype.getLocalBounds = function ()
+Container.prototype.getLocalBounds = function ()
 {
     var matrixCache = this.worldTransform;
 
@@ -478,7 +480,7 @@ DisplayObjectContainer.prototype.getLocalBounds = function ()
  *
  * @param renderer {WebGLRenderer} The renderer
  */
-DisplayObjectContainer.prototype.renderWebGL = function (renderer)
+Container.prototype.renderWebGL = function (renderer)
 {
     // if the object is not visible or the alpha is 0 then no need to render this element
     if (this.isMask || !this.visible || this.alpha <= 0)
@@ -551,7 +553,7 @@ DisplayObjectContainer.prototype.renderWebGL = function (renderer)
     }
 };
 
-DisplayObjectContainer.prototype._renderWebGL = function (/* renderer */)
+Container.prototype._renderWebGL = function (/* renderer */)
 {
     // this is where content itself gets renderd..
 };
@@ -561,7 +563,7 @@ DisplayObjectContainer.prototype._renderWebGL = function (/* renderer */)
  *
  * @param renderer {CanvasRenderer} The renderer
  */
-DisplayObjectContainer.prototype.renderCanvas = function (renderer)
+Container.prototype.renderCanvas = function (renderer)
 {
     if (!this.visible || this.alpha <= 0)
     {
@@ -596,7 +598,7 @@ DisplayObjectContainer.prototype.renderCanvas = function (renderer)
  * @param renderer {WebGLRenderer|CanvasRenderer} The renderer
  * @private
  */
-DisplayObjectContainer.prototype._renderCachedSprite = function (renderer)
+Container.prototype._renderCachedSprite = function (renderer)
 {
     this._cachedSprite.worldAlpha = this.worldAlpha;
 
@@ -615,7 +617,7 @@ DisplayObjectContainer.prototype._renderCachedSprite = function (renderer)
  *
  * @private
  */
-DisplayObjectContainer.prototype._generateCachedSprite = function ()
+Container.prototype._generateCachedSprite = function ()
 {/*
     var bounds = this.getLocalBounds();
 
@@ -654,7 +656,7 @@ DisplayObjectContainer.prototype._generateCachedSprite = function ()
  *
  * @private
  */
-DisplayObjectContainer.prototype._destroyCachedSprite = function ()
+Container.prototype._destroyCachedSprite = function ()
 {
     if (!this._cachedSprite)
     {
