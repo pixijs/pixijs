@@ -211,6 +211,7 @@ BaseTexture.prototype.loadSource = function (source)
     }
     else if (!source.getContext)
     {
+
         // Image fail / not ready
         this.isLoading = true;
 
@@ -249,7 +250,8 @@ BaseTexture.prototype.loadSource = function (source)
         // Per http://www.w3.org/TR/html5/embedded-content-0.html#the-img-element
         //   "The value of `complete` can thus change while a script is executing."
         // So complete needs to be re-checked after the callbacks have been added..
-        if (source.complete)
+        // NOTE: complete will be true if the image has no src so best to check if the src is set.
+        if (source.complete && source.src)
         {
             this.isLoading = false;
 
