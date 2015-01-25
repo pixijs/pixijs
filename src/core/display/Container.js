@@ -157,7 +157,7 @@ Container.prototype.addChildAt = function (child, index)
     // prevent adding self as child
     if (child === this)
     {
-        return;
+        return child;
     }
 
     if (index >= 0 && index <= this.children.length)
@@ -448,8 +448,6 @@ Container.prototype.getBounds = function ()
 
     return this._bounds;
 };
-
-Container.prototype.getBounds
 
 /**
  * Retrieves the non-global local bounds of the Container as a rectangle.
