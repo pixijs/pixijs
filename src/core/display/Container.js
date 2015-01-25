@@ -449,8 +449,6 @@ Container.prototype.getBounds = function ()
     return this._bounds;
 };
 
-Container.prototype.getBounds
-
 /**
  * Retrieves the non-global local bounds of the Container as a rectangle.
  * The calculation takes all visible children into consideration.
