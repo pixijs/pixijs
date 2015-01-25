@@ -292,7 +292,7 @@ BitmapText.prototype.updateTransform = function ()
         this.dirty = false;
     }
 
-    this.ContainerUpdateTransform();
+    this.containerUpdateTransform();
 };
 
 BitmapText.fonts = {};

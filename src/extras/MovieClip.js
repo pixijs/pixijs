@@ -133,7 +133,7 @@ MovieClip.prototype.gotoAndPlay = function (frameNumber)
  */
 MovieClip.prototype.updateTransform = function ()
 {
-    this.ContainerUpdateTransform();
+    this.containerUpdateTransform();
 
     if (!this.playing)
     {
