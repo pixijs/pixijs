@@ -1,6 +1,7 @@
 var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
     Shader = require('../../renderers/webgl/shaders/Shader'),
-    WebGLRenderer = require('../../renderers/webgl/WebGLRenderer');
+    WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
+    CONST = require('../../const');
 
 /**
  * @author Mat Groves
@@ -43,7 +44,7 @@ function SpriteRenderer(renderer)
      *
      * @member {number}
      */
-    this.size = 2000;//Math.pow(2, 16) /  this.vertSize;
+    this.size = CONST.SPRITE_BATCH_SIZE; // 2000 is a nice balance between mobile / desktop
 
     // the total number of bytes in our batch
     var numVerts = this.size * 4 * this.vertByteSize;

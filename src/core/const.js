@@ -150,5 +150,7 @@ module.exports = {
         CIRC: 2,
         ELIP: 3,
         RREC: 4
-    }
+    },
+
+    SPRITE_BATCH_SIZE: 2000 //nice balance between mobile and desktop machines
 };
