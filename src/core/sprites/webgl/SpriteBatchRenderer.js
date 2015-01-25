@@ -1,18 +1,21 @@
 var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
     WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
-    SpriteBatchShader = require('./SpriteBatchShader');
+    SpriteBatchShader = require('./SpriteBatchShader'),
+    math            = require('../../math');
 
 /**
  * @author Mat Groves
  *
  * Big thanks to the very clever Matt DesLauriers <mattdesl> https://github.com/mattdesl/
  * for creating the original pixi version!
+ * Also a thanks to https://github.com/bchevalier for tweaking the tint and alpha so that they now share 4 bytes on the vertex buffer
  *
- * Heavily inspired by LibGDX's WebGLSpriteBatch:
- * https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/graphics/g2d/WebGLSpriteBatch.java
+ * Heavily inspired by LibGDX's SpriteBatchRenderer:
+ * https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/graphics/g2d/SpriteBatchRenderer.java
  */
 
 /**
+ *
  * @class
  * @private
  * @namespace PIXI
@@ -37,52 +40,30 @@ function SpriteBatchRenderer(renderer)
     this.vertByteSize = this.vertSize * 4;
 
     /**
-     *
-     *
-     * @member {number}
-     */
-    this.maxSize = 6000;//Math.pow(2, 16) /  this.vertSize;
-
-    /**
-     *
+     * The number of images in the SpriteBatch before it flushes.
      *
      * @member {number}
      */
-    this.size = this.maxSize;
+    this.size = 2000;//CONST.SPRITE_BATCH_SIZE; // 2000 is a nice balance between mobile / desktop
 
-    //the total number of floats in our batch
-    var numVerts = this.size * this.vertByteSize;
-
-    //the total number of indices in our batch
-    var numIndices = this.maxSize * 6;
+    // the total number of bytes in our batch
+    var numVerts = this.size * 4 * this.vertByteSize;
+    // the total number of indices in our batch
+    var numIndices = this.size * 6;
 
     /**
-     * Vertex data
+     * Holds the vertices
      *
-     * @member {Float32Array}
+     * @member {ArrayBuffer}
      */
     this.vertices = new Float32Array(numVerts);
 
     /**
-     * Index data
+     * Holds the indices
      *
      * @member {Uint16Array}
      */
     this.indices = new Uint16Array(numIndices);
-
-    /**
-     *
-     *
-     * @member {object}
-     */
-    this.vertexBuffer = null;
-
-    /**
-     *
-     *
-     * @member {object}
-     */
-    this.indexBuffer = null;
 
     /**
      *
@@ -125,17 +106,39 @@ function SpriteBatchRenderer(renderer)
     /**
      *
      *
-     * @member {number}
+     * @member {Array}
      */
-    this.currentBlendMode = 0;
+    this.textures = [];
 
     /**
      *
      *
-     * @member {object}
+     * @member {Array}
+     */
+    this.blendModes = [];
+
+    /**
+     *
+     *
+     * @member {Array}
+     */
+    this.shaders = [];
+
+    /**
+     *
+     *
+     * @member {Array}
+     */
+    this.sprites = [];
+
+    /**
+     * The default shader that is used if a sprite doesn't have a more specific one.
+     *
+     * @member {Shader}
      */
     this.shader = null;
 
+    this.tempMatrix = new math.Matrix();
 }
 
 SpriteBatchRenderer.prototype = Object.create(ObjectRenderer.prototype);
@@ -145,19 +148,21 @@ module.exports = SpriteBatchRenderer;
 WebGLRenderer.registerPlugin('spriteBatch', SpriteBatchRenderer);
 
 /**
- * Sets the WebGL Context.
+ * Sets up the renderer context and necessary buffers.
  *
+ * @private
  * @param gl {WebGLContext} the current WebGL drawing context
  */
 SpriteBatchRenderer.prototype.onContextChange = function ()
 {
     var gl = this.renderer.gl;
 
+    // setup default shader
+    this.shader = new SpriteBatchShader(this.renderer.shaderManager);
+
     // create a couple of buffers
     this.vertexBuffer = gl.createBuffer();
     this.indexBuffer = gl.createBuffer();
-
-    this.shader = new SpriteBatchShader(this.renderer.shaderManager);
 
     // 65535 is max index, so 65535 / 6 = 10922.
 
@@ -167,101 +172,88 @@ SpriteBatchRenderer.prototype.onContextChange = function ()
 
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, this.vertices, gl.DYNAMIC_DRAW);
+
+    this.currentBlendMode = 99999;
 };
 
 /**
+ * Renders the sprite object.
+ *
+ * @param sprite {Sprite} the sprite to render when using this spritebatch
  */
-// SpriteBatchRenderer.prototype.stop = function ()
-// {
-//     this.flush();
-// };
-
-/**
- * @param spriteBatch {SpriteBatch} The SpriteBatch container to render.
- */
-SpriteBatchRenderer.prototype.render = function (spriteBatch)
+SpriteBatchRenderer.prototype.render = function ( spriteBatch )
 {
     var children = spriteBatch.children;
-    var sprite = children[0];
 
     // if the uvs have not updated then no point rendering just yet!
+    //this.renderer.blendModeManager.setBlendMode(sprite.blendMode);
+    var gl = this.renderer.gl;
 
-    // check texture.
-    if (!sprite.texture._uvs)
-    {
-        return;
-    }
+    var m =  spriteBatch.worldTransform.copy( this.tempMatrix );
+    m.prepend( this.renderer.currentRenderTarget.projectionMatrix );
 
-    this.currentBaseTexture = sprite.texture.baseTexture;
-
-    // check blend mode
-    if (sprite.blendMode !== this.renderer.blendModeManager.currentBlendMode)
-    {
-        this.flush();
-        this.renderer.blendModeManager.setBlendMode(sprite.blendMode);
-    }
+    gl.uniformMatrix3fv(this.shader.uniforms.projectionMatrix._location, false, m.toArray(true));
 
     for (var i=0,j= children.length; i<j; i++)
     {
-        this.renderSprite(children[i]);
+        this.renderSprite( children[i] );
     }
 
     this.flush();
 };
 
 /**
- * @param sprite {Sprite} The Sprite to render.
+ * Renders the sprite object.
+ *
+ * @param sprite {Sprite} the sprite to render when using this spritebatch
  */
 SpriteBatchRenderer.prototype.renderSprite = function (sprite)
 {
-    //sprite = children[i];
-    if (!sprite.visible)
+    var texture = sprite._texture;
+
+    //TODO set blend modes..
+    // check texture..
+    if (this.currentBatchSize >= this.size)
+    {
+        this.flush();
+        this.currentBaseTexture = texture.baseTexture;
+    }
+
+    // get the uvs for the texture
+    var uvs = texture._uvs;
+
+    // if the uvs have not updated then no point rendering just yet!
+    if (!uvs)
     {
         return;
     }
 
-    // TODO trim??
-    if (sprite.texture.baseTexture !== this.currentBaseTexture)
-    {
-        this.flush();
-        this.currentBaseTexture = sprite.texture.baseTexture;
+    var vertices = this.vertices, w0, w1, h0, h1, index;
 
-        if (!sprite.texture._uvs)
-        {
-            return;
-        }
-    }
-
-    var uvs, vertices = this.vertices, width, height, w0, w1, h0, h1, index;
-
-    uvs = sprite.texture._uvs;
-
-    width = sprite.texture.frame.width;
-    height = sprite.texture.frame.height;
-
-    if (sprite.texture.trim)
+    if (texture.trim)
     {
         // if the sprite is trimmed then we need to add the extra space before transforming the sprite coords..
-        var trim = sprite.texture.trim;
+        var trim = texture.trim;
 
         w1 = trim.x - sprite.anchor.x * trim.width;
-        w0 = w1 + sprite.texture.crop.width;
+        w0 = w1 + texture.crop.width;
 
         h1 = trim.y - sprite.anchor.y * trim.height;
-        h0 = h1 + sprite.texture.crop.height;
+        h0 = h1 + texture.crop.height;
     }
     else
     {
-        w0 = (sprite.texture.frame.width ) * (1-sprite.anchor.x);
-        w1 = (sprite.texture.frame.width ) * -sprite.anchor.x;
+        w0 = (texture._frame.width ) * (1-sprite.anchor.x);
+        w1 = (texture._frame.width ) * -sprite.anchor.x;
 
-        h0 = sprite.texture.frame.height * (1-sprite.anchor.y);
-        h1 = sprite.texture.frame.height * -sprite.anchor.y;
+        h0 = texture._frame.height * (1-sprite.anchor.y);
+        h1 = texture._frame.height * -sprite.anchor.y;
     }
+
 
     index = this.currentBatchSize * this.vertByteSize;
 
-    // xy
+    // lets upload!
     vertices[index++] = w1;
     vertices[index++] = h1;
 
@@ -324,8 +316,6 @@ SpriteBatchRenderer.prototype.renderSprite = function (sprite)
     vertices[index++] = sprite.alpha;
 
 
-
-
     // xy
     vertices[index++] = w1;
     vertices[index++] = h0;
@@ -346,16 +336,14 @@ SpriteBatchRenderer.prototype.renderSprite = function (sprite)
     // color
     vertices[index++] = sprite.alpha;
 
-    // increment the batchs
-    this.currentBatchSize++;
+    // color and alpha
 
-    if (this.currentBatchSize >= this.size)
-    {
-        this.flush();
-    }
+    // increment the batchsize
+    this.sprites[this.currentBatchSize++] = sprite;
 };
 
 /**
+ * Renders the content and empties the current batch.
  *
  */
 SpriteBatchRenderer.prototype.flush = function ()
@@ -368,19 +356,7 @@ SpriteBatchRenderer.prototype.flush = function ()
 
     var gl = this.renderer.gl;
 
-    // bind the current texture
-    if (!this.currentBaseTexture._glTextures[gl.id])
-    {
-        this.renderer.updateTexture(this.currentBaseTexture, gl);
-    }
-    //TODO-SHOUD THIS BE ELSE??!?!?!
-    else
-    {
-        gl.bindTexture(gl.TEXTURE_2D, this.currentBaseTexture._glTextures[gl.id]);
-    }
-
     // upload the verts to the buffer
-
     if (this.currentBatchSize > ( this.size * 0.5 ) )
     {
         gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vertices);
@@ -388,24 +364,81 @@ SpriteBatchRenderer.prototype.flush = function ()
     else
     {
         var view = this.vertices.subarray(0, this.currentBatchSize * this.vertByteSize);
-
         gl.bufferSubData(gl.ARRAY_BUFFER, 0, view);
     }
 
-    // now draw those suckas!
-    gl.drawElements(gl.TRIANGLES, this.currentBatchSize * 6, gl.UNSIGNED_SHORT, 0);
+    var nextTexture;
+    var batchSize = 0;
+    var start = 0;
+
+    var currentBaseTexture = null;
+
+    var sprite;
+
+    for (var i = 0, j = this.currentBatchSize; i < j; i++)
+    {
+
+        sprite = this.sprites[i];
+
+        nextTexture = sprite._texture.baseTexture;
+
+        if (currentBaseTexture !== nextTexture)
+        {
+            this.renderBatch(currentBaseTexture, batchSize, start);
+
+            start = i;
+            batchSize = 0;
+            currentBaseTexture = nextTexture;
+        }
+
+        batchSize++;
+    }
+
+    this.renderBatch(currentBaseTexture, batchSize, start);
 
     // then reset the batch!
     this.currentBatchSize = 0;
+};
+
+/**
+ * Draws the currently batches sprites.
+ *
+ * @private
+ * @param texture {Texture}
+ * @param size {number}
+ * @param startIndex {number}
+ */
+SpriteBatchRenderer.prototype.renderBatch = function (texture, size, startIndex)
+{
+    if (size === 0)
+    {
+        return;
+    }
+
+    var gl = this.renderer.gl;
+
+    if (!texture._glTextures[gl.id])
+    {
+        this.renderer.updateTexture(texture);
+    }
+    else
+    {
+        // bind the current texture
+        gl.bindTexture(gl.TEXTURE_2D, texture._glTextures[gl.id]);
+    }
+
+    // now draw those suckas!
+    gl.drawElements(gl.TRIANGLES, size * 6, gl.UNSIGNED_SHORT, startIndex * 6 * 2);
 
     // increment the draw count
     this.renderer.drawCount++;
 };
 
 /**
+ * Starts a new sprite batch.
  *
  */
-SpriteBatchRenderer.prototype.start = function (spriteBatch)
+SpriteBatchRenderer.prototype.start = function ()
 {
     var gl = this.renderer.gl;
 
@@ -416,24 +449,21 @@ SpriteBatchRenderer.prototype.start = function (spriteBatch)
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 
-    // set the projection
-    // var projection = this.renderer.projection;
-    // gl.uniform2f(this.shader.uniforms.projectionVector._location, projection.x, projection.y);
-    gl.uniformMatrix3fv(this.shader.uniforms.projectionMatrix._location, false, this.renderer.currentRenderTarget.projectionMatrix.toArray(true));
+    var shader = this.shader;
 
-    // set the matrix from the spriteBatch
-    gl.uniformMatrix3fv(this.shader.uniforms.uMatrix._location, false, spriteBatch.worldTransform.toArray(true));
+   this.renderer.shaderManager.setShader(shader);
+    // this is the same for each shader?
+    var stride =  this.vertByteSize;
 
-    // set the pointers
-    var stride = this.vertByteSize;
+    gl.vertexAttribPointer(shader.attributes.aVertexPosition, 2, gl.FLOAT, false, stride, 0);
+    gl.vertexAttribPointer(shader.attributes.aPositionCoord, 2, gl.FLOAT, false, stride, 2 * 4);
+    gl.vertexAttribPointer(shader.attributes.aScale, 2, gl.FLOAT, false, stride, 4 * 4);
 
-    gl.vertexAttribPointer(this.shader.attributes.aVertexPosition, 2, gl.FLOAT, false, stride, 0);
-    gl.vertexAttribPointer(this.shader.attributes.aTextureCoord, 2, gl.FLOAT, false, stride, 2 * 4);
-    gl.vertexAttribPointer(this.shader.attributes.aColor, 1, gl.FLOAT, false, stride, 4 * 4);
+    gl.vertexAttribPointer(shader.attributes.aRotation, 1, gl.FLOAT, false, stride, 6 * 4);
+    gl.vertexAttribPointer(shader.attributes.aTextureCoord, 2, gl.FLOAT, false, stride, 7 * 4);
+    gl.vertexAttribPointer(shader.attributes.aColor, 1, gl.FLOAT, false, stride, 9 * 4);
 
-    gl.vertexAttribPointer(this.shader.attributes.aPositionCoord, 2, gl.FLOAT, false, stride, 5 * 4);
-    gl.vertexAttribPointer(this.shader.attributes.aScale, 2, gl.FLOAT, false, stride, 7 * 4);
-    gl.vertexAttribPointer(this.shader.attributes.aRotation, 1, gl.FLOAT, false, stride, 9 * 4);
+ //   gl.uniformMatrix3fv(shader.uniforms.projectionMatrix._location, false, this.renderer.currentRenderTarget.projectionMatrix.toArray(true));
 };
 
 /**
@@ -459,5 +489,9 @@ SpriteBatchRenderer.prototype.destroy = function ()
 
     this.drawing = false;
 
+    this.textures = null;
+    this.blendModes = null;
+    this.shaders = null;
+    this.sprites = null;
     this.shader = null;
 };

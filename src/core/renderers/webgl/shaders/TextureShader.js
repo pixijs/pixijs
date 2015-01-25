@@ -36,7 +36,7 @@ function TextureShader(shaderManager, vertexSrc, fragmentSrc, customUniforms, cu
 
     if(customAttributes)
     {
-        for (var a in attributes)
+        for (var a in customAttributes)
         {
             attributes[a] = customAttributes[a];
         }
@@ -47,7 +47,7 @@ function TextureShader(shaderManager, vertexSrc, fragmentSrc, customUniforms, cu
      * @member {Array}
      */
     vertexSrc = vertexSrc || [
-        'precision highp float;',
+        'precision lowp float;',
         'attribute vec2 aVertexPosition;',
         'attribute vec2 aTextureCoord;',
         'attribute vec4 aColor;',
@@ -69,7 +69,7 @@ function TextureShader(shaderManager, vertexSrc, fragmentSrc, customUniforms, cu
      * @member {Array}
      */
     fragmentSrc = fragmentSrc || [
-        'precision highp float;',
+        'precision lowp float;',
 
         'varying vec2 vTextureCoord;',
         'varying vec4 vColor;',

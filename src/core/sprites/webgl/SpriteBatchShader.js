@@ -1,4 +1,4 @@
-var Shader = require('../../renderers/webgl/shaders/Shader');
+var TextureShader = require('../../renderers/webgl/shaders/TextureShader');
 
 /**
  * @class
@@ -8,7 +8,7 @@ var Shader = require('../../renderers/webgl/shaders/Shader');
  */
 function SpriteBatchShader(shaderManager)
 {
-    Shader.call(this,
+    TextureShader.call(this,
         shaderManager,
         // vertex shader
         [
@@ -21,34 +21,27 @@ function SpriteBatchShader(shaderManager)
             'attribute float aRotation;',
 
             'uniform mat3 projectionMatrix;',
-            // 'uniform vec2 projectionVector;',
-            // 'uniform vec2 offsetVector;',
-            'uniform mat3 uMatrix;',
+
+           // 'uniform mat3 uMatrix;',
 
             'varying vec2 vTextureCoord;',
             'varying float vColor;',
-
-            // 'const vec2 center = vec2(-1.0, 1.0);',
 
             'void main(void){',
             '   vec2 v;',
             '   vec2 sv = aVertexPosition * aScale;',
             '   v.x = (sv.x) * cos(aRotation) - (sv.y) * sin(aRotation);',
             '   v.y = (sv.x) * sin(aRotation) + (sv.y) * cos(aRotation);',
-            '   v = ( uMatrix * vec3(v + aPositionCoord , 1.0) ).xy ;',
+            '   v = v + aPositionCoord ;',
 
-
-            // '   gl_Position = vec4( ( v / projectionVector) + center , 0.0, 1.0);',
             '   gl_Position = vec4((projectionMatrix * vec3(v, 1.0)).xy, 0.0, 1.0);',
 
-
             '   vTextureCoord = aTextureCoord;',
-          //  '   vec3 color = mod(vec3(aColor.y/65536.0, aColor.y/256.0, aColor.y), 256.0) / 256.0;',
-            '   vColor = aColor;',
+            '   vColor = 1.0;',
             '}'
         ].join('\n'),
-        // fragment shader, use default
-        [
+        // hello
+         [
             'precision lowp float;',
 
             'varying vec2 vTextureCoord;',
@@ -62,7 +55,7 @@ function SpriteBatchShader(shaderManager)
         ].join('\n'),
         // custom uniforms
         {
-            uMatrix: { type: 'mat3', value: new Float32Array(9) }
+          //  uMatrix: { type: 'mat3', value: new Float32Array(9) }
         },
         // custom attributes
         {
@@ -71,8 +64,11 @@ function SpriteBatchShader(shaderManager)
             aRotation:      0
         }
     );
+
+    // TEMP HACK
+
 }
 
-SpriteBatchShader.prototype = Object.create(Shader.prototype);
+SpriteBatchShader.prototype = Object.create(TextureShader.prototype);
 SpriteBatchShader.prototype.constructor = SpriteBatchShader;
 module.exports = SpriteBatchShader;
