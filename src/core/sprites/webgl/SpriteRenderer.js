@@ -195,7 +195,7 @@ SpriteRenderer.prototype.onContextChange = function ()
  */
 SpriteRenderer.prototype.render = function (sprite)
 {
-    var texture = sprite.texture;
+    var texture = sprite._texture;
 
     //TODO set blend modes..
     // check texture..
@@ -361,7 +361,7 @@ SpriteRenderer.prototype.flush = function ()
 
         sprite = this.sprites[i];
 
-        nextTexture = sprite.texture.baseTexture;
+        nextTexture = sprite._texture.baseTexture;
         nextBlendMode = sprite.blendMode;
         nextShader = sprite.shader || this.shader;
 
