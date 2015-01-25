@@ -74,6 +74,12 @@ FilterManager.prototype.pushFilter = function (target, filters)
     // get the bounds of the object..
     var bounds = target.filterArea || target.getBounds();
 
+    // round off the rectangle to get a nice smoooooooth filter :)
+    bounds.x = bounds.x | 0;
+    bounds.y = bounds.y | 0;
+    bounds.width = bounds.width | 0;
+    bounds.height = bounds.height | 0;
+
     this.capFilterArea( bounds );
 
     this.currentFrame = bounds;
@@ -155,7 +161,11 @@ FilterManager.prototype.getRenderTarget = function ( clear )
 {
     var renderTarget = this.texturePool.pop() || new RenderTarget(this.renderer.gl, this.textureSize.width, this.textureSize.height);
     renderTarget.frame = this.currentFrame;
-    if(clear)renderTarget.clear();
+
+    if(clear)
+    {
+        renderTarget.clear();
+    }
 
     return renderTarget;
 };

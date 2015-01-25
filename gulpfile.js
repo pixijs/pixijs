@@ -19,7 +19,7 @@ var gulp        = require('gulp'),
 // Specify game project paths for tasks.
 global.paths = {
     src: './src',
-    out: './dist',
+    out: './bin',
 
     get scripts() { return this.src + '/**/*.js'; },
     get jsEntry() { return this.src + '/index'; }
