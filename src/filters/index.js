@@ -19,10 +19,10 @@ module.exports = {
   //  ConvolutionFilter:  require('./ConvolutionFilter'),
   //  CrossHatchFilter:   require('./CrossHatchFilter'),
   //  DisplacementFilter: require('./DisplacementFilter'),
-  //  DotScreenFilter:    require('./DotScreenFilter'),
-    GrayFilter:         require('./gray/GrayFilter')
+    DotScreenFilter:    require('./dot/DotScreenFilter'),
+    GrayFilter:         require('./gray/GrayFilter'),
   //  InvertFilter:       require('./InvertFilter'),
-  //  NoiseFilter:        require('./NoiseFilter'),
+    NoiseFilter:        require('./noise/NoiseFilter'),
   //  NormalMapFilter:    require('./NormalMapFilter'),
   //  PixelateFilter:     require('./PixelateFilter'),
   //  RGBSplitFilter:     require('./RGBSplitFilter'),
