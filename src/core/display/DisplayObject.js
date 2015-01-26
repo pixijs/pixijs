@@ -247,11 +247,11 @@ Object.defineProperties(DisplayObject.prototype, {
     filters: {
         get: function ()
         {
-            return this._filters.slice();
+            return this._filters && this._filters.slice();
         },
         set: function (value)
         {
-            this._filters = value.slice();
+            this._filters = value && value.slice();
 
             //if(this._mask)
 
