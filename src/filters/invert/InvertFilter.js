@@ -1,4 +1,4 @@
-var AbstractFilter = require('./AbstractFilter');
+var core = require('../../core');
 
 /**
  * This inverts your Display Objects colors.
@@ -9,7 +9,7 @@ var AbstractFilter = require('./AbstractFilter');
  */
 function InvertFilter()
 {
-    AbstractFilter.call(this,
+    core.AbstractFilter.call(this,
         // vertex shader
         null,
         // fragment shader
@@ -21,7 +21,7 @@ function InvertFilter()
     );
 }
 
-InvertFilter.prototype = Object.create(AbstractFilter.prototype);
+InvertFilter.prototype = Object.create(core.AbstractFilter.prototype);
 InvertFilter.prototype.constructor = InvertFilter;
 module.exports = InvertFilter;
 
