@@ -1,4 +1,4 @@
-var AbstractFilter = require('../core/renderers/webGL/filters/AbstractFilter'),
+var core = require('../core'),
     BlurXFilter = require('./BlurXFilter'),
     BlurYFilter = require('./BlurYFilter'),
     CONST = require('../core/const');
@@ -9,40 +9,38 @@ var AbstractFilter = require('../core/renderers/webGL/filters/AbstractFilter'),
  *
  * @class
  * @extends AbstractFilter
- * @namespace PIXI
+ * @namespace PIXI.filters
  */
 function BloomFilter()
 {
-    AbstractFilter.call(this);
+    core.AbstractFilter.call(this);
 
     this.blurXFilter = new BlurXFilter();
     this.blurYFilter = new BlurYFilter();
 
-    this.defaultFilter = new AbstractFilter();
+    this.defaultFilter = new core.AbstractFilter();
 }
 
-BloomFilter.prototype = Object.create( AbstractFilter.prototype );
+BloomFilter.prototype = Object.create(core.AbstractFilter.prototype);
 BloomFilter.prototype.constructor = BloomFilter;
 module.exports = BloomFilter;
 
 BloomFilter.prototype.applyFilter = function (renderer, input, output)
 {
-    var filterManager = renderer.filterManager;
-
-    var renderTarget = filterManager.getRenderTarget( true );
+    var renderTarget = renderer.filterManager.getRenderTarget(true);
 
     //TODO - copyTexSubImage2D could be used here?
     this.defaultFilter.applyFilter(renderer, input, output);
 
     this.blurXFilter.applyFilter(renderer, input, renderTarget);
 
-    renderer.blendModeManager.setBlendMode( CONST.blendModes.SCREEN );
+    renderer.blendModeManager.setBlendMode(CONST.blendModes.SCREEN);
 
     this.blurYFilter.applyFilter(renderer, renderTarget, output);
 
-    renderer.blendModeManager.setBlendMode( CONST.blendModes.NORMAL );
+    renderer.blendModeManager.setBlendMode(CONST.blendModes.NORMAL);
 
-    filterManager.returnRenderTarget( renderTarget );
+    renderer.filterManager.returnRenderTarget(renderTarget);
 };
 
 Object.defineProperties(BloomFilter.prototype, {

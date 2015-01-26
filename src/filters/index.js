@@ -9,19 +9,19 @@
  * @namespace PIXI
  */
 module.exports = {
-    BloomFilter:        require('./BloomFilter'),
+    BloomFilter:        require('./bloom/BloomFilter'),
   //  AlphaMaskFilter:    require('./AlphaMaskFilter'),
   //  AsciiFilter:        require('./AsciiFilter'),
-    BlurFilter:         require('./BlurFilter'),
-    BlurXFilter:        require('./BlurXFilter'),
-    BlurYFilter:        require('./BlurYFilter'),
+    BlurFilter:         require('./blur/BlurFilter'),
+    BlurXFilter:        require('./blur/BlurXFilter'),
+    BlurYFilter:        require('./blur/BlurYFilter'),
   //  ColorMatrixFilter:  require('./ColorMatrixFilter'),
   //  ColorStepFilter:    require('./ColorStepFilter'),
   //  ConvolutionFilter:  require('./ConvolutionFilter'),
   //  CrossHatchFilter:   require('./CrossHatchFilter'),
   //  DisplacementFilter: require('./DisplacementFilter'),
   //  DotScreenFilter:    require('./DotScreenFilter'),
-    GrayFilter:         require('./GrayFilter')
+    GrayFilter:         require('./gray/GrayFilter')
   //  InvertFilter:       require('./InvertFilter'),
   //  NoiseFilter:        require('./NoiseFilter'),
   //  NormalMapFilter:    require('./NormalMapFilter'),

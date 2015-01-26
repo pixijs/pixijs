@@ -37,9 +37,9 @@ function AbstractFilter(vertexSrc, fragmentSrc, uniforms)
      */
     this.uniforms = uniforms || {};
 
-   
+
     this.vertexSrc = vertexSrc;
-   
+
     /**
      * @member {string[]}
      * @private
@@ -71,17 +71,15 @@ AbstractFilter.prototype.getShader = function (renderer)
 
         this.shaders[gl.id] = shader;
     }
-    
+
     return shader;
 };
 
 AbstractFilter.prototype.applyFilter = function (renderer, input, output, clear)
 {
-    var filterManager = renderer.filterManager,
-    shader = this.getShader(renderer);
+    var shader = this.getShader(renderer);
 
-     // draw the filter...
-    filterManager.applyFilter(shader, input, output, clear);
+    renderer.filterManager.applyFilter(shader, input, output, clear);
 };
 
 /**

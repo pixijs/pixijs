@@ -1,4 +1,4 @@
-var AbstractFilter = require('../core/renderers/webGL/filters/AbstractFilter'),
+var core = require('../core'),
     BlurXFilter = require('./BlurXFilter'),
     BlurYFilter = require('./BlurYFilter');
 
@@ -8,33 +8,31 @@ var AbstractFilter = require('../core/renderers/webGL/filters/AbstractFilter'),
  *
  * @class
  * @extends AbstractFilter
- * @namespace PIXI
+ * @namespace PIXI.filters
  */
 function BlurFilter()
 {
-    AbstractFilter.call(this);
+    core.AbstractFilter.call(this);
 
     this.blurXFilter = new BlurXFilter();
     this.blurYFilter = new BlurYFilter();
 
-    this.defaultFilter = new AbstractFilter();
+    this.defaultFilter = new core.AbstractFilter();
 }
 
-BlurFilter.prototype = Object.create( AbstractFilter.prototype );
+BlurFilter.prototype = Object.create(core.AbstractFilter.prototype);
 BlurFilter.prototype.constructor = BlurFilter;
 module.exports = BlurFilter;
 
 BlurFilter.prototype.applyFilter = function (renderer, input, output)
 {
-    var filterManager = renderer.filterManager;
-
-    var renderTarget = filterManager.getRenderTarget(true);
+    var renderTarget = renderer.filterManager.getRenderTarget(true);
 
     this.blurXFilter.applyFilter(renderer, input, renderTarget);
 
     this.blurYFilter.applyFilter(renderer, renderTarget, output);
 
-    filterManager.returnRenderTarget( renderTarget );
+    renderer.filterManager.returnRenderTarget(renderTarget);
 };
 
 Object.defineProperties(BlurFilter.prototype, {

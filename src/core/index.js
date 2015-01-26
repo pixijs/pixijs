@@ -49,6 +49,9 @@ var core = module.exports = {
     ShaderManager:          require('./renderers/webgl/managers/ShaderManager'),
     Shader:                 require('./renderers/webgl/shaders/Shader'),
 
+    // filters - webgl
+    AbstractFilter:         require('./renderers/webgl/filters/AbstractFilter'),
+
     /**
      * This helper function will automatically detect which renderer you should be using.
      * WebGL is the preferred renderer as it is a lot faster. If webGL is not supported by
