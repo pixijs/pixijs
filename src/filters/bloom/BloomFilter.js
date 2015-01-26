@@ -1,7 +1,6 @@
-var core = require('../core'),
-    BlurXFilter = require('./BlurXFilter'),
-    BlurYFilter = require('./BlurYFilter'),
-    CONST = require('../core/const');
+var core = require('../../core'),
+    BlurXFilter = require('../blur/BlurXFilter'),
+    BlurYFilter = require('../blur/BlurYFilter');
 
 /**
  * The BloomFilter applies a Gaussian blur to an object.
@@ -34,11 +33,11 @@ BloomFilter.prototype.applyFilter = function (renderer, input, output)
 
     this.blurXFilter.applyFilter(renderer, input, renderTarget);
 
-    renderer.blendModeManager.setBlendMode(CONST.blendModes.SCREEN);
+    renderer.blendModeManager.setBlendMode(core.CONST.blendModes.SCREEN);
 
     this.blurYFilter.applyFilter(renderer, renderTarget, output);
 
-    renderer.blendModeManager.setBlendMode(CONST.blendModes.NORMAL);
+    renderer.blendModeManager.setBlendMode(core.CONST.blendModes.NORMAL);
 
     renderer.filterManager.returnRenderTarget(renderTarget);
 };

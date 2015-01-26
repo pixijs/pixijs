@@ -1,4 +1,4 @@
-var core = require('../core'),
+var core = require('../../core'),
     BlurXFilter = require('./BlurXFilter'),
     BlurYFilter = require('./BlurYFilter');
 

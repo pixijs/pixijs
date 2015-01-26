@@ -1,4 +1,4 @@
-var core = require('../core');
+var core = require('../../core');
 
 /**
  * This greyscales the palette of your Display Objects.
@@ -13,7 +13,7 @@ function GrayFilter()
         // vertex shader
         null,
         // fragment shader
-        require('fs').readFileSync('./gray.frag'),
+        require('fs').readFileSync(__dirname + '/gray.frag', 'utf8'),
         // set the uniforms
         {
             gray: { type: '1f', value: 1 }
