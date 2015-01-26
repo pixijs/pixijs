@@ -20,7 +20,7 @@ function ShockwaveFilter()
         {
             center: { type: 'v2', value: { x: 0.5, y: 0.5 } },
             params: { type: 'v3', value: { x: 10, y: 0.8, z: 0.1 } },
-            time: { type: 'f', value: 0 }
+            time: { type: '1f', value: 0 }
         }
     );
 }
