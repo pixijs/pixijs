@@ -101,7 +101,6 @@ Object.defineProperties(TiltShiftYFilter.prototype, {
         },
         set: function (value)
         {
-            console.log('START!', value);
             this.uniforms.start.value = value;
             this.updateDelta();
         }

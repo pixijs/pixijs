@@ -23,7 +23,7 @@ module.exports = {
     GrayFilter:         require('./gray/GrayFilter'),
     InvertFilter:       require('./invert/InvertFilter'),
     NoiseFilter:        require('./noise/NoiseFilter'),
-  //  NormalMapFilter:    require('./NormalMapFilter'),
+    NormalMapFilter:    require('./normal/NormalMapFilter'),
     PixelateFilter:     require('./pixelate/PixelateFilter'),
     RGBSplitFilter:     require('./rgb/RGBSplitFilter'),
     ShockwaveFilter:    require('./shockwave/ShockwaveFilter'),
