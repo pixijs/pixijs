@@ -25,12 +25,12 @@ module.exports = {
     NoiseFilter:        require('./noise/NoiseFilter'),
   //  NormalMapFilter:    require('./NormalMapFilter'),
     PixelateFilter:     require('./pixelate/PixelateFilter'),
-  //  RGBSplitFilter:     require('./RGBSplitFilter'),
+    RGBSplitFilter:     require('./rgb/RGBSplitFilter'),
     ShockwaveFilter:    require('./shockwave/ShockwaveFilter'),
   //  SepiaFilter:        require('./SepiaFilter'),
     SmartBlurFilter:    require('./blur/SmartBlurFilter'),
-  //  TiltShiftFilter:    require('./TiltShiftFilter'),
-  //  TiltShiftXFilter:   require('./TiltShiftXFilter'),
-  //  TiltShiftYFilter:   require('./TiltShiftYFilter'),
+    TiltShiftFilter:    require('./tiltshift/TiltShiftFilter'),
+    TiltShiftXFilter:   require('./tiltshift/TiltShiftXFilter'),
+    TiltShiftYFilter:   require('./tiltshift/TiltShiftYFilter'),
   //  TwistFilter:        require('./TwistFilter')
 };

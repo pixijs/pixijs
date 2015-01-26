@@ -16,8 +16,6 @@ function BlurFilter()
 
     this.blurXFilter = new BlurXFilter();
     this.blurYFilter = new BlurYFilter();
-
-    this.defaultFilter = new core.AbstractFilter();
 }
 
 BlurFilter.prototype = Object.create(core.AbstractFilter.prototype);

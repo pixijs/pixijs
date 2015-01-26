@@ -1,4 +1,4 @@
-var AbstractFilter = require('./AbstractFilter'),
+var core = require('../../core'),
     TiltShiftXFilter = require('./TiltShiftXFilter'),
     TiltShiftYFilter = require('./TiltShiftYFilter');
 
@@ -12,24 +12,30 @@ var AbstractFilter = require('./AbstractFilter'),
  *
  * @class
  * @extends AbstractFilter
- * @namespace PIXI
+ * @namespace PIXI.filters
  */
 function TiltShiftFilter()
 {
-    AbstractFilter.call(this);
+    core.AbstractFilter.call(this);
 
     this.tiltShiftXFilter = new TiltShiftXFilter();
     this.tiltShiftYFilter = new TiltShiftYFilter();
-
-    this.tiltShiftXFilter.updateDelta();
-    this.tiltShiftXFilter.updateDelta();
-
-    this.passes = [this.tiltShiftXFilter, this.tiltShiftYFilter];
 }
 
-TiltShiftFilter.prototype = Object.create(AbstractFilter.prototype);
+TiltShiftFilter.prototype = Object.create(core.AbstractFilter.prototype);
 TiltShiftFilter.prototype.constructor = TiltShiftFilter;
 module.exports = TiltShiftFilter;
+
+TiltShiftFilter.prototype.applyFilter = function (renderer, input, output)
+{
+    var renderTarget = renderer.filterManager.getRenderTarget(true);
+
+    this.tiltShiftXFilter.applyFilter(renderer, input, renderTarget);
+
+    this.tiltShiftYFilter.applyFilter(renderer, renderTarget, output);
+
+    renderer.filterManager.returnRenderTarget(renderTarget);
+};
 
 Object.defineProperties(TiltShiftFilter.prototype, {
     /**
