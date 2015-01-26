@@ -127,9 +127,10 @@ FilterManager.prototype.popFilter = function ()
 
     var filters = filterData.filter;
 
-    if(filters.length === 1)
+    if (filters.length === 1)
     {
-        if(filters[0].uniforms.dimensions)
+        // TODO (cengler) - There has to be a better way then setting this each time?
+        if (filters[0].uniforms.dimensions)
         {
             filters[0].uniforms.dimensions.value[0] = this.renderer.width;
             filters[0].uniforms.dimensions.value[1] = this.renderer.height;
@@ -150,7 +151,8 @@ FilterManager.prototype.popFilter = function ()
         {
             var filter = filters[i];
 
-            if(filter.uniforms.dimensions)
+            // TODO (cengler) - There has to be a better way then setting this each time?
+            if (filter.uniforms.dimensions)
             {
                 filter.uniforms.dimensions.value[0] = this.renderer.width;
                 filter.uniforms.dimensions.value[1] = this.renderer.height;
@@ -179,7 +181,7 @@ FilterManager.prototype.getRenderTarget = function ( clear )
     var renderTarget = this.texturePool.pop() || new RenderTarget(this.renderer.gl, this.textureSize.width, this.textureSize.height);
     renderTarget.frame = this.currentFrame;
 
-    if(clear)
+    if (clear)
     {
         renderTarget.clear();
     }
@@ -198,7 +200,7 @@ FilterManager.prototype.applyFilter = function (shader, inputTarget, outputTarge
 
     this.renderer.setRenderTarget( outputTarget );
 
-    if(clear)
+    if (clear)
     {
         outputTarget.clear();
     }
