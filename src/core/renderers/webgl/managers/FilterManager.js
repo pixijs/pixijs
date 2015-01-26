@@ -129,6 +129,14 @@ FilterManager.prototype.popFilter = function ()
 
     if(filters.length === 1)
     {
+        if(filters[0].uniforms.dimensions)
+        {
+            filters[0].uniforms.dimensions.value[0] = this.renderer.width;
+            filters[0].uniforms.dimensions.value[1] = this.renderer.height;
+            filters[0].uniforms.dimensions.value[2] = this.quad.vertices[0];
+            filters[0].uniforms.dimensions.value[3] = this.quad.vertices[5];
+        }
+
         filters[0].applyFilter( this.renderer, input, output );
         this.returnRenderTarget( input );
 
@@ -141,6 +149,15 @@ FilterManager.prototype.popFilter = function ()
         for (var i = 0; i < filters.length-1; i++)
         {
             var filter = filters[i];
+
+            if(filter.uniforms.dimensions)
+            {
+                filter.uniforms.dimensions.value[0] = this.renderer.width;
+                filter.uniforms.dimensions.value[1] = this.renderer.height;
+                filter.uniforms.dimensions.value[2] = this.quad.vertices[0];
+                filter.uniforms.dimensions.value[3] = this.quad.vertices[5];
+            }
+
             filter.applyFilter( this.renderer, flipTexture, flopTexture );
 
             var temp = flipTexture;
