@@ -198,7 +198,7 @@ FilterManager.prototype.applyFilter = function (shader, inputTarget, outputTarge
 {
     var gl = this.renderer.gl;
 
-    this.renderer.setRenderTarget( outputTarget );
+    this.renderer.setRenderTarget(outputTarget);
 
     if (clear)
     {
@@ -208,6 +208,7 @@ FilterManager.prototype.applyFilter = function (shader, inputTarget, outputTarge
     // set the shader
     this.renderer.shaderManager.setShader(shader);
 
+    // TODO (cengler) - Can this be cached and not `toArray`ed each frame?
     shader.uniforms.projectionMatrix.value = this.renderer.currentRenderTarget.projectionMatrix.toArray(true);
 
     //TODO can this be optimised?

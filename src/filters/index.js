@@ -26,6 +26,7 @@ module.exports = {
   //  NormalMapFilter:    require('./NormalMapFilter'),
   //  PixelateFilter:     require('./PixelateFilter'),
   //  RGBSplitFilter:     require('./RGBSplitFilter'),
+    ShockwaveFilter:    require('./shockwave/ShockwaveFilter'),
   //  SepiaFilter:        require('./SepiaFilter'),
   //  SmartBlurFilter:    require('./SmartBlurFilter'),
   //  TiltShiftFilter:    require('./TiltShiftFilter'),
