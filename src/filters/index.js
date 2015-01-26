@@ -27,10 +27,10 @@ module.exports = {
     PixelateFilter:     require('./pixelate/PixelateFilter'),
     RGBSplitFilter:     require('./rgb/RGBSplitFilter'),
     ShockwaveFilter:    require('./shockwave/ShockwaveFilter'),
-  //  SepiaFilter:        require('./SepiaFilter'),
+    SepiaFilter:        require('./sepia/SepiaFilter'),
     SmartBlurFilter:    require('./blur/SmartBlurFilter'),
     TiltShiftFilter:    require('./tiltshift/TiltShiftFilter'),
     TiltShiftXFilter:   require('./tiltshift/TiltShiftXFilter'),
     TiltShiftYFilter:   require('./tiltshift/TiltShiftYFilter'),
-  //  TwistFilter:        require('./TwistFilter')
+    TwistFilter:        require('./twist/TwistFilter')
 };

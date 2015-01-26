@@ -1,54 +1,29 @@
-var AbstractFilter = require('./AbstractFilter');
+var core = require('../../core');
 
 /**
  * This filter applies a twist effect making display objects appear twisted in the given direction.
  *
  * @class
  * @extends AbstractFilter
- * @namespace PIXI
+ * @namespace PIXI.filters
  */
 function TwistFilter()
 {
-    AbstractFilter.call(this);
-
-    // set the uniforms
-    this.uniforms = {
-        radius:     { type: '1f', value: 0.5},
-        angle:      { type: '1f', value: 5},
-        offset:     { type: '2f', value: { x: 0.5, y: 0.5 } }
-    };
-
-    this.fragmentSrc = [
-        'precision mediump float;',
-
-        'varying vec2 vTextureCoord;',
-        'varying vec4 vColor;',
-
-        'uniform float radius;',
-        'uniform float angle;',
-        'uniform vec2 offset;',
-        'uniform sampler2D uSampler;',
-
-        'void main(void)',
-        '{',
-        '   vec2 coord = vTextureCoord - offset;',
-        '   float distance = length(coord);',
-
-        '   if (distance < radius)',
-        '   {',
-        '       float ratio = (radius - distance) / radius;',
-        '       float angleMod = ratio * ratio * angle;',
-        '       float s = sin(angleMod);',
-        '       float c = cos(angleMod);',
-        '       coord = vec2(coord.x * c - coord.y * s, coord.x * s + coord.y * c);',
-        '   }',
-
-        '   gl_FragColor = texture2D(uSampler, coord+offset);',
-        '}'
-    ];
+    core.AbstractFilter.call(this,
+        // vertex shader
+        null,
+        // fragment shader
+        require('fs').readFileSync(__dirname + '/twist.frag', 'utf8'),
+        // custom uniforms
+        {
+            radius:     { type: '1f', value: 0.5 },
+            angle:      { type: '1f', value: 5 },
+            offset:     { type: 'v2', value: { x: 0.5, y: 0.5 } }
+        }
+    );
 }
 
-TwistFilter.prototype = Object.create(AbstractFilter.prototype);
+TwistFilter.prototype = Object.create(core.AbstractFilter.prototype);
 TwistFilter.prototype.constructor = TwistFilter;
 module.exports = TwistFilter;
 
