@@ -17,13 +17,10 @@ float character(float n, vec2 p)
 void main()
 {
     vec2 uv = gl_FragCoord.xy;
+
     vec3 col = texture2D(uSampler, floor( uv / pixelSize ) * pixelSize / dimensions.xy).rgb;
 
-    #ifdef HAS_GREENSCREEN
-    float gray = (col.r + col.b)/2.0;
-    #else
-    float gray = (col.r + col.g + col.b)/3.0;
-    #endif
+    float gray = (col.r + col.g + col.b) / 3.0;
 
     float n =  65536.0;             // .
     if (gray > 0.2) n = 65600.0;    // :

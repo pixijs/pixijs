@@ -10,7 +10,7 @@ var core = require('../../core');
  *
  * @class
  * @extends AbstractFilter
- * @namespace PIXI
+ * @namespace PIXI.filters
  */
 function AsciiFilter()
 {
@@ -21,8 +21,8 @@ function AsciiFilter()
         require('fs').readFileSync(__dirname + '/ascii.frag', 'utf8'),
         // custom uniforms
         {
-            dimensions: { type: '4fv', value: new Float32Array([10000, 100, 10, 10]) },
-            pixelSize:  { type: '1f', value: 8}
+            dimensions: { type: '4fv', value: new Float32Array([0, 0, 0, 0]) },
+            pixelSize:  { type: '1f', value: 8 }
         }
     );
 }
