@@ -1,5 +1,7 @@
 var core = require('../../core');
 
+// TODO (cengler) - The Y is flipped in this shader for some reason.
+
 /**
  * @author Vico @vicocotea
  * original shader : https://www.shadertoy.com/view/lssGDj by @movAX13h
