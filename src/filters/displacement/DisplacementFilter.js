@@ -1,4 +1,4 @@
-var AbstractFilter = require('./AbstractFilter');
+var core = require('../../core');
 
 /**
  * The DisplacementFilter class uses the pixel values from the specified texture (called the displacement map) to perform a displacement of an object.
@@ -7,23 +7,27 @@ var AbstractFilter = require('./AbstractFilter');
  *
  * @class
  * @extends AbstractFilter
- * @namespace PIXI
- * @param texture {Texture} The texture used for the displacement map * must be power of 2 texture at the moment
+ * @namespace PIXI.filters
+ * @param texture {Texture} The texture used for the displacement map, must be power of 2 texture at the moment
  */
 function DisplacementFilter(texture)
 {
-    AbstractFilter.call(this);
+    core.AbstractFilter.call(this,
+        // vertex shader
+        null,
+        // fragment shader
+        require('fs').readFileSync(__dirname + '/displacement.frag', 'utf8'),
+        // custom uniforms
+        {
+            displacementMap: { type: 'sampler2D', value: texture },
+            scale:           { type: 'v2',  value: { x: 30, y: 30 } },
+            offset:          { type: 'v2',  value: { x: 0,  y: 0 } },
+            mapDimensions:   { type: 'v2',  value: { x: 1,  y: 5112 } },
+            dimensions:      { type: '4fv', value: [0, 0, 0, 0] }
+        }
+    );
 
     texture.baseTexture._powerOf2 = true;
-
-    // set the uniforms
-    this.uniforms = {
-        displacementMap: { type: 'sampler2D', value: texture },
-        scale:           { type: '2f',  value: { x: 30, y: 30 } },
-        offset:          { type: '2f',  value: { x: 0,  y: 0 } },
-        mapDimensions:   { type: '2f',  value: { x: 1,  y: 5112 } },
-        dimensions:      { type: '4fv', value: [0, 0, 0, 0] }
-    };
 
     if (texture.baseTexture.hasLoaded)
     {
@@ -31,46 +35,11 @@ function DisplacementFilter(texture)
     }
     else
     {
-        this.boundLoadedFunction = this.onTextureLoaded.bind(this);
-
-        texture.baseTexture.on('loaded', this.boundLoadedFunction);
+        texture.baseTexture.once('loaded', this.onTextureLoaded.bind(this));
     }
-
-    this.fragmentSrc = [
-        'precision mediump float;',
-
-        'varying vec2 vTextureCoord;',
-        'varying vec4 vColor;',
-
-        'uniform sampler2D displacementMap;',
-        'uniform sampler2D uSampler;',
-        'uniform vec2 scale;',
-        'uniform vec2 offset;',
-        'uniform vec4 dimensions;',
-        'uniform vec2 mapDimensions;',// = vec2(256.0, 256.0);',
-        // 'const vec2 textureDimensions = vec2(750.0, 750.0);',
-
-        'void main(void)',
-        '{',
-        '   vec2 mapCords = vTextureCoord.xy;',
-        '   mapCords += (dimensions.zw + offset)/ dimensions.xy ;',
-        '   mapCords.y *= -1.0;',
-        '   mapCords.y += 1.0;',
-
-        '   vec2 matSample = texture2D(displacementMap, mapCords).xy;',
-        '   matSample -= 0.5;',
-        '   matSample *= scale;',
-        '   matSample /= mapDimensions;',
-
-        '   gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x + matSample.x, vTextureCoord.y + matSample.y));',
-
-        //TODO: Is this needed?
-        '   gl_FragColor.rgb = mix( gl_FragColor.rgb, gl_FragColor.rgb, 1.0);',
-        '}'
-    ];
 }
 
-DisplacementFilter.prototype = Object.create(AbstractFilter.prototype);
+DisplacementFilter.prototype = Object.create(core.AbstractFilter.prototype);
 DisplacementFilter.prototype.constructor = DisplacementFilter;
 module.exports = DisplacementFilter;
 
@@ -83,8 +52,6 @@ DisplacementFilter.prototype.onTextureLoaded = function ()
 {
     this.uniforms.mapDimensions.value.x = this.uniforms.displacementMap.value.width;
     this.uniforms.mapDimensions.value.y = this.uniforms.displacementMap.value.height;
-
-    this.uniforms.displacementMap.value.baseTexture.off('loaded', this.boundLoadedFunction);
 };
 
 Object.defineProperties(DisplacementFilter.prototype, {
