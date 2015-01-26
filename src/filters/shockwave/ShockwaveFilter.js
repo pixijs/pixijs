@@ -31,7 +31,8 @@ module.exports = ShockwaveFilter;
 
 Object.defineProperties(ShockwaveFilter.prototype, {
     /**
-     * Sets the center of the shockwave
+     * Sets the center of the shockwave in normalized screen coords. That is
+     * (0,0) is the top-left and (1,1) is the bottom right.
      *
      * @member {object<string, number>}
      * @memberof ShockwaveFilter#
@@ -47,7 +48,8 @@ Object.defineProperties(ShockwaveFilter.prototype, {
         }
     },
     /**
-     * Sets the params of the shockwave
+     * Sets the params of the shockwave. These modify the look and behavior of
+     * the shockwave as it ripples out.
      *
      * @member {object<string, number>}
      * @memberof ShockwaveFilter#
@@ -63,7 +65,8 @@ Object.defineProperties(ShockwaveFilter.prototype, {
         }
     },
     /**
-     * Sets the elapsed time of the shockwave
+     * Sets the elapsed time of the shockwave. This controls the speed at which
+     * the shockwave ripples out.
      *
      * @member {number}
      * @memberof ShockwaveFilter#
