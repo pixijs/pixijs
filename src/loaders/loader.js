@@ -1,4 +1,4 @@
-var Loader = require('asset-loader'),
+var Loader = require('resource-loader'),
     textureParser = require('./textureParser'),
     spritesheetParser = require('./spritesheetParser'),
     spineAtlasParser = require('./spineAtlasParser'),

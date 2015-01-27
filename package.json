@@ -46,6 +46,7 @@
     "watchify": "^2.2.1"
   },
   "dependencies": {
+    "resource-loader": "^1.0.0",
     "webgl-enabled": "^1.0.2"
   },
   "browserify": {
