@@ -1,15 +1,15 @@
 var Container = require('../display/Container');
 
 /**
- * The Particle class is a really fast version of the Container built solely for speed,
- * so use when you need a lot of sprites or particles. The tradeoff of the Particle is that advanced
- * functionality will not work. Particle implements only the basic object transform (position, scale, rotation).
+ * The ParticleContainer class is a really fast version of the Container built solely for speed,
+ * so use when you need a lot of sprites or particles. The tradeoff of the ParticleContainer is that advanced
+ * functionality will not work. ParticleContainer implements only the basic object transform (position, scale, rotation).
  * Any other functionality like tinting, masking, etc will not work on sprites in this batch.
  *
  * It's extremely easy to use :
  *
  * ```js
- * var container = new Particle();
+ * var container = new ParticleContainer();
  *
  * for(var i = 0; i < 100; ++i)
  * {
@@ -25,21 +25,21 @@ var Container = require('../display/Container');
  */
 
 //TODO RENAME to PARTICLE CONTAINER?
-function Particle()
+function ParticleContainer()
 {
     Container.call(this);
 }
 
-Particle.prototype = Object.create(Container.prototype);
-Particle.prototype.constructor = Particle;
-module.exports = Particle;
+ParticleContainer.prototype = Object.create(Container.prototype);
+ParticleContainer.prototype.constructor = ParticleContainer;
+module.exports = ParticleContainer;
 
 /**
  * Updates the object transform for rendering
  *
  * @private
  */
-Particle.prototype.updateTransform = function ()
+ParticleContainer.prototype.updateTransform = function ()
 {
     // TODO don't need to!
     this.displayObjectUpdateTransform();
@@ -52,7 +52,7 @@ Particle.prototype.updateTransform = function ()
  * @param renderer {WebGLRenderer} The webgl renderer
  * @private
  */
-Particle.prototype.renderWebGL = function (renderer)
+ParticleContainer.prototype.renderWebGL = function (renderer)
 {
     if (!this.visible || this.alpha <= 0 || !this.children.length)
     {
@@ -60,7 +60,11 @@ Particle.prototype.renderWebGL = function (renderer)
     }
 
     renderer.setObjectRenderer( renderer.plugins.particle );
+
+
+
     renderer.plugins.particle.render( this );
+
 };
 
 /**
@@ -69,7 +73,7 @@ Particle.prototype.renderWebGL = function (renderer)
  * @param renderer {CanvasRenderer} The canvas renderer
  * @private
  */
-Particle.prototype.renderCanvas = function (renderer)
+ParticleContainer.prototype.renderCanvas = function (renderer)
 {
     if (!this.visible || this.alpha <= 0 || !this.children.length)
     {
