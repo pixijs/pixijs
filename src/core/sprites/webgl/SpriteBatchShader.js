@@ -22,22 +22,20 @@ function SpriteBatchShader(shaderManager)
 
             'uniform mat3 projectionMatrix;',
 
-           // 'uniform mat3 uMatrix;',
-
             'varying vec2 vTextureCoord;',
             'varying float vColor;',
 
             'void main(void){',
-            '   vec2 v;',
-            '   vec2 sv = aVertexPosition * aScale;',
-            '   v.x = (sv.x) * cos(aRotation) - (sv.y) * sin(aRotation);',
-            '   v.y = (sv.x) * sin(aRotation) + (sv.y) * cos(aRotation);',
-            '   v = v + aPositionCoord ;',
+            '   vec2 v = aVertexPosition;',
+
+            '   v.x = (aVertexPosition.x) * cos(aRotation) - (aVertexPosition.y) * sin(aRotation);',
+            '   v.y = (aVertexPosition.x) * sin(aRotation) + (aVertexPosition.y) * cos(aRotation);',
+            '   v = v + aPositionCoord;',
 
             '   gl_Position = vec4((projectionMatrix * vec3(v, 1.0)).xy, 0.0, 1.0);',
 
             '   vTextureCoord = aTextureCoord;',
-            '   vColor = 1.0;',
+            '   vColor = aColor;',
             '}'
         ].join('\n'),
         // hello
@@ -54,13 +52,11 @@ function SpriteBatchShader(shaderManager)
             '}'
         ].join('\n'),
         // custom uniforms
-        {
-          //  uMatrix: { type: 'mat3', value: new Float32Array(9) }
-        },
+        null,
         // custom attributes
         {
             aPositionCoord: 0,
-            aScale:         0,
+           // aScale:         0,
             aRotation:      0
         }
     );
@@ -71,4 +67,5 @@ function SpriteBatchShader(shaderManager)
 
 SpriteBatchShader.prototype = Object.create(TextureShader.prototype);
 SpriteBatchShader.prototype.constructor = SpriteBatchShader;
+
 module.exports = SpriteBatchShader;

@@ -60,6 +60,9 @@ SpriteBatch.prototype.renderWebGL = function (renderer)
     }
 
     renderer.setObjectRenderer( renderer.plugins.spriteBatch );
+
+
+
     renderer.plugins.spriteBatch.render( this );
 
 };
