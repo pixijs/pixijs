@@ -6,7 +6,7 @@ var TextureShader = require('../../renderers/webgl/shaders/TextureShader');
  * @namespace PIXI
  * @param shaderManager {ShaderManager} The webgl shader manager this shader works for.
  */
-function SpriteBatchShader(shaderManager)
+function ParticleShader(shaderManager)
 {
     TextureShader.call(this,
         shaderManager,
@@ -65,7 +65,7 @@ function SpriteBatchShader(shaderManager)
 
 }
 
-SpriteBatchShader.prototype = Object.create(TextureShader.prototype);
-SpriteBatchShader.prototype.constructor = SpriteBatchShader;
+ParticleShader.prototype = Object.create(TextureShader.prototype);
+ParticleShader.prototype.constructor = ParticleShader;
 
-module.exports = SpriteBatchShader;
+module.exports = ParticleShader;

@@ -24,9 +24,9 @@ var core = module.exports = {
     DisplayObjectContainer: require('./display/Container'),
 
     Sprite:                 require('./sprites/Sprite'),
-    SpriteBatch:            require('./sprites/SpriteBatch'),
+    ParticleContainer:            require('./particles/ParticleContainer'),
     SpriteRenderer:         require('./sprites/webgl/SpriteRenderer'),
-    SpriteBatchRenderer:    require('./sprites/webgl/SpriteBatchRenderer'),
+    ParticleRenderer:    require('./particles/webgl/ParticleRenderer'),
 
     // primitives
     Graphics:               require('./graphics/Graphics'),

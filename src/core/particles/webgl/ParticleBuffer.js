@@ -6,8 +6,8 @@
  * for creating the original pixi version!
  * Also a thanks to https://github.com/bchevalier for tweaking the tint and alpha so that they now share 4 bytes on the vertex buffer
  *
- * Heavily inspired by LibGDX's SpriteBatchBuffers:
- * https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/graphics/g2d/SpriteBatchBuffers.java
+ * Heavily inspired by LibGDX's ParticleBuffer:
+ * https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/graphics/g2d/ParticleBuffer.java
  */
 
 /**
@@ -17,7 +17,7 @@
  * @namespace PIXI
  * @param renderer {WebGLRenderer} The renderer this sprite batch works for.
  */
-function SpriteBatchBuffers(gl, size )
+function ParticleBuffer(gl, size )
 {
     this.gl = gl;
 
@@ -61,8 +61,8 @@ function SpriteBatchBuffers(gl, size )
 
 }
 
-SpriteBatchBuffers.prototype.constructor = SpriteBatchBuffers;
-module.exports = SpriteBatchBuffers;
+ParticleBuffer.prototype.constructor = ParticleBuffer;
+module.exports = ParticleBuffer;
 
 /**
  * Sets up the renderer context and necessary buffers.
@@ -70,7 +70,7 @@ module.exports = SpriteBatchBuffers;
  * @private
  * @param gl {WebGLContext} the current WebGL drawing context
  */
-SpriteBatchBuffers.prototype.initBuffers = function ()
+ParticleBuffer.prototype.initBuffers = function ()
 {
     var gl = this.gl;
 
@@ -99,7 +99,7 @@ SpriteBatchBuffers.prototype.initBuffers = function ()
 };
 
 
-SpriteBatchBuffers.prototype.refresh = function(children, startIndex, amount)
+ParticleBuffer.prototype.refresh = function(children, startIndex, amount)
 {
     this.uploadVerticies(children,startIndex, amount);
     this.uploadRotation(children,startIndex, amount);
@@ -108,7 +108,7 @@ SpriteBatchBuffers.prototype.refresh = function(children, startIndex, amount)
 
 };
 
-SpriteBatchBuffers.prototype.uploadVerticies = function (children,startIndex, amount)
+ParticleBuffer.prototype.uploadVerticies = function (children,startIndex, amount)
 {
     var vertices = this.vertices,
         index = 0,
@@ -162,7 +162,7 @@ SpriteBatchBuffers.prototype.uploadVerticies = function (children,startIndex, am
     this.uploadToBuffer(this.vertexBuffer, this.vertices, 2 * 4, amount);
 };
 
-SpriteBatchBuffers.prototype.uploadPosition = function (children,startIndex, amount)
+ParticleBuffer.prototype.uploadPosition = function (children,startIndex, amount)
 {
     var position = this.position,
         index = 0,
@@ -190,7 +190,7 @@ SpriteBatchBuffers.prototype.uploadPosition = function (children,startIndex, amo
     this.uploadToBuffer(this.positionBuffer, this.position, 2 * 4, amount);
 };
 
-SpriteBatchBuffers.prototype.uploadRotation = function (children,startIndex, amount)
+ParticleBuffer.prototype.uploadRotation = function (children,startIndex, amount)
 {
     var rotation = this.rotation,
         index = 0,
@@ -209,7 +209,7 @@ SpriteBatchBuffers.prototype.uploadRotation = function (children,startIndex, amo
     this.uploadToBuffer(this.rotationBuffer, this.rotation, 1 * 4, amount);
 };
 
-SpriteBatchBuffers.prototype.uploadUvs = function (children,startIndex, amount)
+ParticleBuffer.prototype.uploadUvs = function (children,startIndex, amount)
 {
     var uvs = this.uvs,
         index = 0,
@@ -242,7 +242,7 @@ SpriteBatchBuffers.prototype.uploadUvs = function (children,startIndex, amount)
     this.uploadToBuffer(this.uvsBuffer, this.uvs, 2 * 4, amount);
 };
 
-SpriteBatchBuffers.prototype.uploadAlpha = function (children,startIndex, amount)
+ParticleBuffer.prototype.uploadAlpha = function (children,startIndex, amount)
 {
     var alpha = this.alpha,
         index = 0,
@@ -263,7 +263,7 @@ SpriteBatchBuffers.prototype.uploadAlpha = function (children,startIndex, amount
 
 };
 
-SpriteBatchBuffers.prototype.uploadToBuffer = function (buffer, data, dataSize, amount)
+ParticleBuffer.prototype.uploadToBuffer = function (buffer, data, dataSize, amount)
 {
     var gl = this.gl;
 
@@ -284,7 +284,7 @@ SpriteBatchBuffers.prototype.uploadToBuffer = function (buffer, data, dataSize, 
  * Starts a new sprite batch.
  *
  */
-SpriteBatchBuffers.prototype.bind = function (shader)
+ParticleBuffer.prototype.bind = function (shader)
 {
     var gl = this.gl;
 
@@ -311,7 +311,7 @@ SpriteBatchBuffers.prototype.bind = function (shader)
  * Destroys the SpriteBatch.
  *
  */
-SpriteBatchBuffers.prototype.destroy = function ()
+ParticleBuffer.prototype.destroy = function ()
 {
     //TODO implement this :) to busy making the fun bits..
 };

@@ -1,15 +1,15 @@
 var Container = require('../display/Container');
 
 /**
- * The SpriteBatch class is a really fast version of the Container built solely for speed,
- * so use when you need a lot of sprites or particles. The tradeoff of the SpriteBatch is that advanced
- * functionality will not work. SpriteBatch implements only the basic object transform (position, scale, rotation).
+ * The Particle class is a really fast version of the Container built solely for speed,
+ * so use when you need a lot of sprites or particles. The tradeoff of the Particle is that advanced
+ * functionality will not work. Particle implements only the basic object transform (position, scale, rotation).
  * Any other functionality like tinting, masking, etc will not work on sprites in this batch.
  *
  * It's extremely easy to use :
  *
  * ```js
- * var container = new SpriteBatch();
+ * var container = new Particle();
  *
  * for(var i = 0; i < 100; ++i)
  * {
@@ -25,21 +25,21 @@ var Container = require('../display/Container');
  */
 
 //TODO RENAME to PARTICLE CONTAINER?
-function SpriteBatch()
+function Particle()
 {
     Container.call(this);
 }
 
-SpriteBatch.prototype = Object.create(Container.prototype);
-SpriteBatch.prototype.constructor = SpriteBatch;
-module.exports = SpriteBatch;
+Particle.prototype = Object.create(Container.prototype);
+Particle.prototype.constructor = Particle;
+module.exports = Particle;
 
 /**
  * Updates the object transform for rendering
  *
  * @private
  */
-SpriteBatch.prototype.updateTransform = function ()
+Particle.prototype.updateTransform = function ()
 {
     // TODO don't need to!
     this.displayObjectUpdateTransform();
@@ -52,19 +52,15 @@ SpriteBatch.prototype.updateTransform = function ()
  * @param renderer {WebGLRenderer} The webgl renderer
  * @private
  */
-SpriteBatch.prototype.renderWebGL = function (renderer)
+Particle.prototype.renderWebGL = function (renderer)
 {
     if (!this.visible || this.alpha <= 0 || !this.children.length)
     {
         return;
     }
 
-    renderer.setObjectRenderer( renderer.plugins.spriteBatch );
-
-
-
-    renderer.plugins.spriteBatch.render( this );
-
+    renderer.setObjectRenderer( renderer.plugins.particle );
+    renderer.plugins.particle.render( this );
 };
 
 /**
@@ -73,7 +69,7 @@ SpriteBatch.prototype.renderWebGL = function (renderer)
  * @param renderer {CanvasRenderer} The canvas renderer
  * @private
  */
-SpriteBatch.prototype.renderCanvas = function (renderer)
+Particle.prototype.renderCanvas = function (renderer)
 {
     if (!this.visible || this.alpha <= 0 || !this.children.length)
     {

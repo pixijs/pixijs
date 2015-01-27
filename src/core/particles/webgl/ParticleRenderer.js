@@ -1,8 +1,20 @@
 var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
     WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
-    SpriteBatchShader = require('./SpriteBatchShader'),
-    SpriteBatchBuffers = require('./SpriteBatchBuffers'),
+    ParticleShader = require('./ParticleShader'),
+    ParticleBuffer = require('./ParticleBuffer'),
     math            = require('../../math');
+
+var SpriteDataCache = function ()
+{
+    this.rotation = 0;
+    this.pX = 0;
+    this.pY = 0;
+    this.texture = null;
+    this.sX = 0;
+    this.sY = 0;
+    this.alpha = 0;
+};
+
 
 /**
  * @author Mat Groves
@@ -11,8 +23,8 @@ var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
  * for creating the original pixi version!
  * Also a thanks to https://github.com/bchevalier for tweaking the tint and alpha so that they now share 4 bytes on the vertex buffer
  *
- * Heavily inspired by LibGDX's SpriteBatchRenderer:
- * https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/graphics/g2d/SpriteBatchRenderer.java
+ * Heavily inspired by LibGDX's ParticleRenderer:
+ * https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/graphics/g2d/ParticleRenderer.java
  */
 
 /**
@@ -22,13 +34,13 @@ var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
  * @namespace PIXI
  * @param renderer {WebGLRenderer} The renderer this sprite batch works for.
  */
-function SpriteBatchRenderer(renderer)
+function ParticleRenderer(renderer)
 {
     ObjectRenderer.call(this, renderer);
 
 
     /**
-     * The number of images in the SpriteBatch before it flushes.
+     * The number of images in the Particle before it flushes.
      *
      * @member {number}
      */
@@ -81,11 +93,11 @@ function SpriteBatchRenderer(renderer)
     this.tempMatrix = new math.Matrix();
 }
 
-SpriteBatchRenderer.prototype = Object.create(ObjectRenderer.prototype);
-SpriteBatchRenderer.prototype.constructor = SpriteBatchRenderer;
-module.exports = SpriteBatchRenderer;
+ParticleRenderer.prototype = Object.create(ObjectRenderer.prototype);
+ParticleRenderer.prototype.constructor = ParticleRenderer;
+module.exports = ParticleRenderer;
 
-WebGLRenderer.registerPlugin('spriteBatch', SpriteBatchRenderer);
+WebGLRenderer.registerPlugin('particle', ParticleRenderer);
 
 /**
  * Sets up the renderer context and necessary buffers.
@@ -93,12 +105,12 @@ WebGLRenderer.registerPlugin('spriteBatch', SpriteBatchRenderer);
  * @private
  * @param gl {WebGLContext} the current WebGL drawing context
  */
-SpriteBatchRenderer.prototype.onContextChange = function ()
+ParticleRenderer.prototype.onContextChange = function ()
 {
     var gl = this.renderer.gl;
 
     // setup default shader
-    this.shader = new SpriteBatchShader(this.renderer.shaderManager);
+    this.shader = new ParticleShader(this.renderer.shaderManager);
 
     this.indexBuffer = gl.createBuffer();
 
@@ -111,47 +123,49 @@ SpriteBatchRenderer.prototype.onContextChange = function ()
     this.setSize(this.maxSprites);
 };
 
-SpriteBatchRenderer.prototype.setSize = function ( totalSize )
+ParticleRenderer.prototype.setSize = function ( totalSize )
 {
     var gl = this.renderer.gl;
 
-    for (var i = 0; i < totalSize; i += this.size)
+    var i;
+
+    for (i = 0; i < totalSize; i += this.size)
     {
-        this.buffers.push( new SpriteBatchBuffers(gl, this.size) );
+        this.buffers.push( new ParticleBuffer(gl, this.size) );
     }
 
-    for (var i = 0; i < totalSize; i++)
+    for (i = 0; i < totalSize; i++)
     {
         this.spriteDataCache.push(new SpriteDataCache());
-    };
+    }
 };
 
 
 /**
  * Renders the sprite object.
  *
- * @param sprite {Sprite} the sprite to render when using this spritebatch
+ * @param sprite {Sprite} the sprite to render when using this Particle
  */
-SpriteBatchRenderer.prototype.render = function ( spriteBatch )
+ParticleRenderer.prototype.render = function ( Particle )
 {
-    var children = spriteBatch.children;
+    var children = Particle.children;
 
     // if the uvs have not updated then no point rendering just yet!
     //this.renderer.blendModeManager.setBlendMode(sprite.blendMode);
     var gl = this.renderer.gl;
 
-    var m =  spriteBatch.worldTransform.copy( this.tempMatrix );
+    var m =  Particle.worldTransform.copy( this.tempMatrix );
     m.prepend( this.renderer.currentRenderTarget.projectionMatrix );
 
     gl.uniformMatrix3fv(this.shader.uniforms.projectionMatrix._location, false, m.toArray(true));
 
     this.currentBatchSize = 0;
-
+/*
     var rotationDirty = false;
     var positionDirty = false;
     var vertsDirty = false;
     var uvsDirty = false;
-    var alphaDirty = false;
+    var alphaDirty = false;*/
 
     this.sprites = children;
 
@@ -159,8 +173,8 @@ SpriteBatchRenderer.prototype.render = function ( spriteBatch )
 
     for (var i=0,j= children.length; i<j; i++)
     {
-        var sprite = children[i]
-        var spriteCache = this.spriteDataCache[i];
+       // var sprite = children[i]
+    //    var spriteCache = this.spriteDataCache[i];
 
         this.currentBatchSize++;
 /*
@@ -203,12 +217,13 @@ SpriteBatchRenderer.prototype.render = function ( spriteBatch )
 
     }
 
+/*
     if(vertsDirty)this.uploadVerticies(children);
     if(positionDirty)this.uploadPosition(children);
     if(rotationDirty)this.uploadRotation(children);
     if(uvsDirty)this.uploadUvs(children);
     if(alphaDirty)this.uploadAlpha(children);
-
+*/
      this.uploadPosition(children);
     if(this._childCache !== children.length)
     {
@@ -220,7 +235,7 @@ SpriteBatchRenderer.prototype.render = function ( spriteBatch )
 };
 
 
-SpriteBatchRenderer.prototype.refresh = function(children)
+ParticleRenderer.prototype.refresh = function(children)
 {
     this.uploadVerticies(children);
 
@@ -229,7 +244,7 @@ SpriteBatchRenderer.prototype.refresh = function(children)
     this.uploadAlpha(children);
 };
 
-SpriteBatchRenderer.prototype.uploadVerticies = function (children)
+ParticleRenderer.prototype.uploadVerticies = function (children)
 {
     var j = 0;
     for (var i = 0; i < children.length; i+=this.size)
@@ -244,7 +259,7 @@ SpriteBatchRenderer.prototype.uploadVerticies = function (children)
     }
 };
 
-SpriteBatchRenderer.prototype.uploadPosition = function (children)
+ParticleRenderer.prototype.uploadPosition = function (children)
 {
     var j = 0;
     for (var i = 0; i < children.length; i+= this.size)
@@ -259,7 +274,7 @@ SpriteBatchRenderer.prototype.uploadPosition = function (children)
     }
 };
 
-SpriteBatchRenderer.prototype.uploadRotation = function (children)
+ParticleRenderer.prototype.uploadRotation = function (children)
 {
     var j = 0;
     for (var i = 0; i < children.length; i+=this.size)
@@ -274,7 +289,7 @@ SpriteBatchRenderer.prototype.uploadRotation = function (children)
     }
 };
 
-SpriteBatchRenderer.prototype.uploadUvs = function (children)
+ParticleRenderer.prototype.uploadUvs = function (children)
 {
     var j = 0;
     for (var i = 0; i < children.length; i+=this.size)
@@ -289,7 +304,7 @@ SpriteBatchRenderer.prototype.uploadUvs = function (children)
     }
 };
 
-SpriteBatchRenderer.prototype.uploadAlpha = function (children)
+ParticleRenderer.prototype.uploadAlpha = function (children)
 {
     var j = 0;
     for (var i = 0; i < children.length; i+=this.size)
@@ -308,7 +323,7 @@ SpriteBatchRenderer.prototype.uploadAlpha = function (children)
  * Renders the content and empties the current batch.
  *
  */
-SpriteBatchRenderer.prototype.flush = function ()
+ParticleRenderer.prototype.flush = function ()
 {
     // If the batch is length 0 then return as there is nothing to draw
     if (this.currentBatchSize === 0)
@@ -357,7 +372,7 @@ SpriteBatchRenderer.prototype.flush = function ()
  * @param size {number}
  * @param startIndex {number}
  */
-SpriteBatchRenderer.prototype.renderBatch = function (texture, size, startIndex)
+ParticleRenderer.prototype.renderBatch = function (texture, size, startIndex)
 {
     if (size === 0)
     {
@@ -402,7 +417,7 @@ SpriteBatchRenderer.prototype.renderBatch = function (texture, size, startIndex)
  * Starts a new sprite batch.
  *
  */
-SpriteBatchRenderer.prototype.start = function ()
+ParticleRenderer.prototype.start = function ()
 {
     var gl = this.renderer.gl;
 
@@ -419,10 +434,10 @@ SpriteBatchRenderer.prototype.start = function ()
 };
 
 /**
- * Destroys the SpriteBatch.
+ * Destroys the Particle.
  *
  */
-SpriteBatchRenderer.prototype.destroy = function ()
+ParticleRenderer.prototype.destroy = function ()
 {
     this.renderer.gl.deleteBuffer(this.vertexBuffer);
     this.renderer.gl.deleteBuffer(this.indexBuffer);
@@ -446,14 +461,4 @@ SpriteBatchRenderer.prototype.destroy = function ()
     this.shader = null;
 };
 
-var SpriteDataCache = function ()
-{
-    this.rotation = 0;
-    this.pX = 0;
-    this.pY = 0;
-    this.texture = null;
-    this.sX = 0;
-    this.sY = 0;
-    this.alpha = 0;
-}
 
