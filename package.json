@@ -38,6 +38,7 @@
     "karma-firefox-launcher": "^0.1.0",
     "karma-mocha": "^0.1.10",
     "karma-spec-reporter": "^0.0.16",
+    "minimist": "^1.1.0",
     "mocha": "^2.1.0",
     "require-dir": "^0.1.0",
     "run-sequence": "^1.0.2",

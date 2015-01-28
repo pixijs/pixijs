@@ -27,7 +27,15 @@ function createBundler(args) {
     args.debug = true;
     args.standalone = 'PIXI';
 
-    return browserify(paths.jsEntry, args);
+    var bundle = browserify(paths.jsEntry, args),
+        argv = require('minimist')(process.argv.slice(2)),
+        exclude = (argv.exclude || []).concat(argv.e || []);
+
+    for (var i = 0; i < exclude.length; ++i) {
+        bundle.ignore('./' + exclude[i]);
+    }
+
+    return bundle;
 }
 
 function watch(onUpdate) {
