@@ -155,7 +155,6 @@ function SystemRenderer(system, width, height, options)
 SystemRenderer.prototype.constructor = SystemRenderer;
 module.exports = SystemRenderer;
 
-utils.pluginTarget.mixin(SystemRenderer);
 utils.eventTarget.mixin(SystemRenderer.prototype);
 
 Object.defineProperties(SystemRenderer.prototype, {
@@ -232,6 +231,4 @@ SystemRenderer.prototype.destroy = function (removeView) {
     this._backgroundColor = 0;
     this._backgroundColorRgb = null;
     this._backgroundColorString = null;
-
-    this.destroyPlugins();
 };

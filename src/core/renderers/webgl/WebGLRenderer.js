@@ -130,6 +130,8 @@ module.exports = WebGLRenderer;
 
 WebGLRenderer.glContextId = 0;
 
+utils.pluginTarget.mixin(WebGLRenderer);
+
 /**
  *
  * @private
@@ -375,6 +377,8 @@ WebGLRenderer.prototype.handleContextRestored = function ()
  */
 WebGLRenderer.prototype.destroy = function (removeView)
 {
+    this.destroyPlugins();
+
     // remove listeners
     this.view.removeEventListener('webglcontextlost', this._boundContextLost);
     this.view.removeEventListener('webglcontextrestored', this._boundContextRestored);
