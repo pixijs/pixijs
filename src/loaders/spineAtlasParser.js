@@ -29,8 +29,6 @@ module.exports = function ()
                 var spineJsonParser = new spine.SkeletonJsonParser(new spine.AtlasAttachmentParser(spineAtlas));
                 var skeletonData = spineJsonParser.readSkeletonData(resource.data);
 
-                // core.utils.AnimCache[originalLoader.url] = skeletonData;
-
                 resource.spine = skeletonData;
                 resource.spineAtlas = spineAtlas;
 

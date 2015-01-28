@@ -210,8 +210,6 @@ var utils = module.exports = {
     },
 
     // TODO: refactor out this
-    AnimCache: {},
-    FrameCache: {},
     TextureCache: {},
     BaseTextureCache: {}
 };

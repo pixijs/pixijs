@@ -13,13 +13,13 @@ spine.Bone.yDown = true;
  * @class
  * @extends Container
  * @namespace PIXI
- * @param url {string} The url of the spine anim file to be used
+ * @param spineData {object} The spine data loaded from a spine atlas.
  */
-function Spine(url)
+function Spine(spineData)
 {
     core.Container.call(this);
 
-    this.spineData = core.utils.AnimCache[url];
+    this.spineData = spineData;
 
     if (!this.spineData)
     {
