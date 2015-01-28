@@ -39,7 +39,6 @@ function InteractionManager(stage, renderer)
      */
     this.down = null;
 
-
     /**
      * The mouse data
      *
@@ -125,11 +124,6 @@ function InteractionManager(stage, renderer)
      * @member {Function}
      */
     this.onTouchMove = this.onTouchMove.bind(this);
-
-    /**
-     * @member {number}
-     */
-    this.last = 0;
 
     /**
      * Is set to true when the mouse is moved out of the canvas
