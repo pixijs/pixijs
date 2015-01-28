@@ -11,6 +11,8 @@ var SystemRenderer = require('../SystemRenderer'),
 
     CONST = require('../../const');
 
+
+console.log(WebGLRenderer);
 /**
  * The WebGLRenderer draws the scene and all its content onto a webGL enabled canvas. This renderer
  * should be used for browsers that support webGL. This Render works by automatically managing webGLBatchs.
@@ -124,7 +126,7 @@ function WebGLRenderer(width, height, options)
 }
 
 // constructor
-WebGLRenderer.prototype = Object.create(SystemRenderer);
+WebGLRenderer.prototype = Object.create(SystemRenderer.prototype);
 WebGLRenderer.prototype.constructor = WebGLRenderer;
 module.exports = WebGLRenderer;
 
