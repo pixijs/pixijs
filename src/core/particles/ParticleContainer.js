@@ -23,8 +23,6 @@ var Container = require('../display/Container');
  * @class
  * @namespace PIXI
  */
-
-//TODO RENAME to PARTICLE CONTAINER?
 function ParticleContainer()
 {
     Container.call(this);
