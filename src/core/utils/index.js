@@ -174,7 +174,6 @@ var utils = module.exports = {
         utils._saidHello = true;
     },
 
-    // TODO: refactor out this
     TextureCache: {},
     BaseTextureCache: {}
 };
