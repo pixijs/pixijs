@@ -127,6 +127,8 @@ function WebGLRenderer(width, height, options)
 WebGLRenderer.prototype = Object.create(SystemRenderer);
 WebGLRenderer.prototype.constructor = WebGLRenderer;
 module.exports = WebGLRenderer;
+utils.pluginTarget.mixin(WebGLRenderer);
+utils.eventTarget.mixin(WebGLRenderer.prototype);
 
 WebGLRenderer.glContextId = 0;
 

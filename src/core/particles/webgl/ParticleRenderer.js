@@ -49,6 +49,7 @@ function ParticleRenderer(renderer)
 
     var numIndices = this.size * 6;
 
+
     /**
      * Holds the indices
      *
@@ -131,7 +132,7 @@ ParticleRenderer.prototype.setSize = function ( totalSize )
 
     for (i = 0; i < totalSize; i += this.size)
     {
-        this.buffers.push( new ParticleBuffer(gl, this.size) );
+        this.buffers.push( new ParticleBuffer(gl, this.size, this.shader) );
     }
 
     for (i = 0; i < totalSize; i++)
@@ -178,7 +179,7 @@ ParticleRenderer.prototype.render = function ( Particle )
 
         this.currentBatchSize++;
 /*
-        if (sprite._texture !== spriteCache.texture)
+        if(sprite._texture !== spriteCache.texture)
         {
             spriteCache.texture = sprite._texture;
             vertsDirty = true;
@@ -187,7 +188,7 @@ ParticleRenderer.prototype.render = function ( Particle )
         }
 
         var sx = sprite.scale.x, sy = sprite.scale.y;
-        if (sx !== spriteCache.sX || sy !== spriteCache.sY)
+        if(sx !== spriteCache.sX || sy !== spriteCache.sY)
         {
             spriteCache.sX = sx;
             spriteCache.sY = sy;
@@ -195,7 +196,7 @@ ParticleRenderer.prototype.render = function ( Particle )
         }
 
         var px = sprite.position.x, py = sprite.position.y
-        if (px !== spriteCache.pX || py !== spriteCache.pY)
+        if(px !== spriteCache.pX || py !== spriteCache.pY)
         {
             spriteCache.pX = px;
             spriteCache.pY = py;
@@ -203,13 +204,13 @@ ParticleRenderer.prototype.render = function ( Particle )
             positionDirty = true;
         }
 
-        if (sprite.rotation !== spriteCache.rotation)
+        if(sprite.rotation !== spriteCache.rotation)
         {
             spriteCache.rotation = sprite.rotation;
             rotationDirty = true;
         }
 
-        if (sprite.alpha !== spriteCache.alpha)
+        if(sprite.alpha !== spriteCache.alpha)
         {
             spriteCache.alpha = sprite.alpha;
             alphaDirty = true;
@@ -218,20 +219,37 @@ ParticleRenderer.prototype.render = function ( Particle )
     }
 
 /*
-    if (vertsDirty)this.uploadVerticies(children);
-    if (positionDirty)this.uploadPosition(children);
-    if (rotationDirty)this.uploadRotation(children);
-    if (uvsDirty)this.uploadUvs(children);
-    if (alphaDirty)this.uploadAlpha(children);
+    if(vertsDirty)this.uploadVerticies(children);
+    if(positionDirty)this.uploadPosition(children);
+    if(rotationDirty)this.uploadRotation(children);
+    if(uvsDirty)this.uploadUvs(children);
+    if(alphaDirty)this.uploadAlpha(children);
 */
-     this.uploadPosition(children);
-    if (this._childCache !== children.length)
+ //    this.uploadPosition(children);
+
+    var uploadStatic = false;
+
+    if(this._childCache !== children.length)
     {
-        this.refresh(children);
+        uploadStatic = true
+      //  this.refresh(children);
         this._childCache = children.length;
     }
 
-    this.flush();
+    var j = 0;
+    for (var i = 0; i < children.length; i+=this.size)
+    {
+        var amount = ( children.length - i );
+        if(amount > this.size)
+        {
+            amount = this.size;
+        }
+
+        this.buffers[j++].upload(children, i, amount, uploadStatic);
+    }
+
+    var baseTexture = children[0]._texture.baseTexture;
+    this.renderBatch(baseTexture, children.length, 0);
 };
 
 
@@ -244,125 +262,6 @@ ParticleRenderer.prototype.refresh = function(children)
     this.uploadAlpha(children);
 };
 
-ParticleRenderer.prototype.uploadVerticies = function (children)
-{
-    var j = 0;
-    for (var i = 0; i < children.length; i+=this.size)
-    {
-        var amount = ( children.length - i );
-        if (amount > this.size)
-        {
-            amount = this.size;
-        }
-
-        this.buffers[j++].uploadVerticies(children, i, amount);
-    }
-};
-
-ParticleRenderer.prototype.uploadPosition = function (children)
-{
-    var j = 0;
-    for (var i = 0; i < children.length; i+= this.size)
-    {
-        var amount = ( children.length - i );
-        if (amount > this.size)
-        {
-            amount = this.size;
-        }
-
-        this.buffers[j++].uploadPosition(children, i,  amount);
-    }
-};
-
-ParticleRenderer.prototype.uploadRotation = function (children)
-{
-    var j = 0;
-    for (var i = 0; i < children.length; i+=this.size)
-    {
-        var amount = ( children.length - i );
-        if (amount > this.size)
-        {
-            amount = this.size;
-        }
-
-        this.buffers[j++].uploadRotation(children, i, amount);
-    }
-};
-
-ParticleRenderer.prototype.uploadUvs = function (children)
-{
-    var j = 0;
-    for (var i = 0; i < children.length; i+=this.size)
-    {
-        var amount = ( children.length - i );
-        if (amount > this.size)
-        {
-            amount = this.size;
-        }
-
-        this.buffers[j++].uploadUvs(children, i, amount);
-    }
-};
-
-ParticleRenderer.prototype.uploadAlpha = function (children)
-{
-    var j = 0;
-    for (var i = 0; i < children.length; i+=this.size)
-    {
-        var amount = ( children.length - i );
-        if (amount > this.size)
-        {
-            amount = this.size;
-        }
-
-        this.buffers[j++].uploadAlpha(children, i, amount);
-    }
-};
-
-/**
- * Renders the content and empties the current batch.
- *
- */
-ParticleRenderer.prototype.flush = function ()
-{
-    // If the batch is length 0 then return as there is nothing to draw
-    if (this.currentBatchSize === 0)
-    {
-        return;
-    }
-
-    var nextTexture;
-    var batchSize = 0;
-    var start = 0;
-
-    var currentBaseTexture = null;
-
-    var sprite;
-
-    for (var i = 0, j = this.currentBatchSize; i < j; i++)
-    {
-
-        sprite = this.sprites[i];
-
-        nextTexture = sprite._texture.baseTexture;
-
-        if (currentBaseTexture !== nextTexture)
-        {
-            this.renderBatch(currentBaseTexture, batchSize, start);
-
-            start = i;
-            batchSize = 0;
-            currentBaseTexture = nextTexture;
-        }
-
-        batchSize++;
-    }
-
-    this.renderBatch(currentBaseTexture, batchSize, start);
-
-    // then reset the batch!
-    this.currentBatchSize = 0;
-};
 
 /**
  * Draws the currently batches sprites.
@@ -398,15 +297,14 @@ ParticleRenderer.prototype.renderBatch = function (texture, size, startIndex)
 
 
         var amount = ( size - i) ;
-        if (amount > this.size)
+        if(amount > this.size)
         {
             amount = this.size;
         }
-
+      //  amount = 1;
          // now draw those suckas!
-        gl.drawElements(gl.TRIANGLES, this.size * 6, gl.UNSIGNED_SHORT, 0);//(startIndex % this.size) * 6 * 2);
+        gl.drawElements(gl.TRIANGLES, amount * 6, gl.UNSIGNED_SHORT, 0);//(startIndex % this.size) * 6 * 2);
     }
-
 
 
     // increment the draw count
