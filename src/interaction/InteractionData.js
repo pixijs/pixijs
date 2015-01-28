@@ -16,13 +16,6 @@ function InteractionData()
     this.global = new core.math.Point();
 
     /**
-     * The target Sprite that was interacted with
-     *
-     * @member {Sprite}
-     */
-    this.target = null;
-
-    /**
      * When passed to an event handler, this will be the original DOM Event that was captured
      *
      * @member {Event}
