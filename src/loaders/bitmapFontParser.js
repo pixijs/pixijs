@@ -1,4 +1,4 @@
-var Resource = require('asset-loader').Resource,
+var Resource = require('resource-loader').Resource,
     core = require('../core');
 
 module.exports = function ()
