@@ -1,11 +1,16 @@
-; This file is for unifying the coding style for different editors and IDEs.
-; More information at http://EditorConfig.org
+# This file is for unifying the coding style for different editors and IDEs.
+# More information at http://EditorConfig.org
 root = true
 
-[**.js]
+[*]
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
 indent_style = space
 indent_size = 4
-end_of_line = lf
-charset = utf-8
-trim_trailing_whitespace = true
-insert_final_newline = true
+
+[*.md]
+trim_trailing_whitespace = false
+
+[{package.json,bower.json,.travis.yml}]
+indent_size = 2

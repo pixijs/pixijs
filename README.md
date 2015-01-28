@@ -1,29 +1,50 @@
-Pixi Renderer 
+Pixi Renderer
 =============
+
+## Rewrite TODO
+
+See: https://github.com/GoodBoyDigital/pixi.js/issues/1296
+
+
+### Phase 1 Folder Browserify Status
+
+- [x] `index`
+- [x] `display/`
+- [x] `extras/`
+- [x] `filters/`
+- [x] `geom/` (move to `math/`)
+- [x] `loaders/`
+- [x] `primitives/`
+- [x] `renderers/`
+- [x] `text/`
+- [x] `textures/`
+- [x] `utils/`
+- [x] `interactions/` (move Interaction* to here)
+
 
 #### *** IMPORTANT - V2 API CHANGES *** ####
 
 A heads up for anyone updating their version of pixi.js to version 2, as we have changed a couple of bits that you need to be aware of. Fortunately, there are only two changes, and both are small.
 
 1: Creating a renderer now accepts an options parameter that you can add specific settings to:
-``` 
+```
 // an optional object that contains the settings for the renderer
 var options = {
     view:myCanvas,
     resolution:1
 };
 
-var renderer = new PIXI.WebGLRenderer(800, 600, options) 
+var renderer = new PIXI.WebGLRenderer(800, 600, options)
 ```
 
-2: A ```PIXI.RenderTexture``` now accepts a ```PIXI.Matrix``` as its second parameter instead of a point. This gives you much more flexibility: 
+2: A ```PIXI.RenderTexture``` now accepts a ```PIXI.Matrix``` as its second parameter instead of a point. This gives you much more flexibility:
 
 ``` myRenderTexture.render(myDisplayObject, myMatrix) ```
 
 Check out the docs for more info!
 
 
-![pixi.js logo](http://www.goodboydigital.com/pixijs/logo_small.png) 
+![pixi.js logo](http://www.goodboydigital.com/pixijs/logo_small.png)
 
 [<img src="http://www.pixijs.com/wp-content/uploads/2013/05/headerPanel_projects-898x342.jpg">](http://www.pixijs.com/projects)
 #### JavaScript 2D Renderer ####
@@ -50,7 +71,7 @@ any breakthroughs will be posted up there too!
 - [Flash vs HTML](<http://flashvhtml.com>)
 
 - [Bunny Demo](<http://www.goodboydigital.com/pixijs/bunnymark>)
- 
+
 - [Storm Brewing](<http://www.goodboydigital.com/pixijs/storm/>)
 
 - [Filters Demo](<http://www.goodboydigital.com/pixijs/examples/15/indexAll.html>)
