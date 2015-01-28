@@ -323,24 +323,18 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, re
  * @param displayObject {DisplayObject} The display object to render this texture on
  * @param [matrix] {Matrix} Optional matrix to apply to the display object before rendering.
  * @param [clear] {boolean} If true the texture will be cleared before the displayObject is drawn
- * @param [restoreWorldTransform=true] {boolean} If true the displayObject's worldTransform/worldAlpha and all children
- *  transformations will be restored. Not restoring this information will be a little faster.
  */
-RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear, restoreWorldTransform)
+RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear)
 {
     if (!this.valid)
     {
         return;
     }
 
-
-    var tempAlpha,
-        tempTransform;
-
-
-
     var wt = displayObject.worldTransform;
+
     wt.identity();
+
     if (matrix)
     {
         wt.append(matrix);
