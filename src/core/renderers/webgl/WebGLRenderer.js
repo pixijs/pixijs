@@ -504,7 +504,7 @@ WebGLRenderer.prototype.handleContextRestored = function ()
 {
     this._initContext();
 
-    // empty all the ol gl textures as they are useless now
+    // empty all the old gl textures as they are useless now
     for (var key in utils.TextureCache)
     {
         var texture = utils.TextureCache[key].baseTexture;
