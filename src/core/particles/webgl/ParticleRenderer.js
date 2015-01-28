@@ -160,83 +160,20 @@ ParticleRenderer.prototype.render = function ( Particle )
 
     gl.uniformMatrix3fv(this.shader.uniforms.projectionMatrix._location, false, m.toArray(true));
 
-    this.currentBatchSize = 0;
-/*
-    var rotationDirty = false;
-    var positionDirty = false;
-    var vertsDirty = false;
-    var uvsDirty = false;
-    var alphaDirty = false;*/
-
     this.sprites = children;
 
     this.vertDirty = 0;
-
-    for (var i=0,j= children.length; i<j; i++)
-    {
-       // var sprite = children[i]
-    //    var spriteCache = this.spriteDataCache[i];
-
-        this.currentBatchSize++;
-/*
-        if(sprite._texture !== spriteCache.texture)
-        {
-            spriteCache.texture = sprite._texture;
-            vertsDirty = true;
-
-            uvsDirty = true;
-        }
-
-        var sx = sprite.scale.x, sy = sprite.scale.y;
-        if(sx !== spriteCache.sX || sy !== spriteCache.sY)
-        {
-            spriteCache.sX = sx;
-            spriteCache.sY = sy;
-            vertsDirty = true;
-        }
-
-        var px = sprite.position.x, py = sprite.position.y
-        if(px !== spriteCache.pX || py !== spriteCache.pY)
-        {
-            spriteCache.pX = px;
-            spriteCache.pY = py;
-
-            positionDirty = true;
-        }
-
-        if(sprite.rotation !== spriteCache.rotation)
-        {
-            spriteCache.rotation = sprite.rotation;
-            rotationDirty = true;
-        }
-
-        if(sprite.alpha !== spriteCache.alpha)
-        {
-            spriteCache.alpha = sprite.alpha;
-            alphaDirty = true;
-        }*/
-
-    }
-
-/*
-    if(vertsDirty)this.uploadVerticies(children);
-    if(positionDirty)this.uploadPosition(children);
-    if(rotationDirty)this.uploadRotation(children);
-    if(uvsDirty)this.uploadUvs(children);
-    if(alphaDirty)this.uploadAlpha(children);
-*/
- //    this.uploadPosition(children);
 
     var uploadStatic = false;
 
     if(this._childCache !== children.length)
     {
-        uploadStatic = true
-      //  this.refresh(children);
+        uploadStatic = true;
         this._childCache = children.length;
     }
 
     var j = 0;
+
     for (var i = 0; i < children.length; i+=this.size)
     {
         var amount = ( children.length - i );
