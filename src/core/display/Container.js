@@ -1,7 +1,6 @@
 var math = require('../math'),
     DisplayObject = require('./DisplayObject'),
     RenderTexture = require('../textures/RenderTexture'),
-    // Sprite = require('./Sprite'),
     _tempMatrix = new math.Matrix();
 
 /**
@@ -23,16 +22,6 @@ function Container()
      * @readonly
      */
     this.children = [];
-
-    /**
-     * Cached internal flag.
-     *
-     * @member {boolean}
-     * @private
-     */
-    this._cacheAsBitmap = false;
-
-    this._cachedSprite = null;
 }
 
 // constructor
@@ -97,39 +86,6 @@ Object.defineProperties(Container.prototype, {
             }
 
             this._height = value;
-        }
-    },
-
-    /**
-     * Set if this display object is cached as a bitmap.
-     * This basically takes a snap shot of the display object as it is at that moment. It can provide a performance benefit for complex static displayObjects.
-     * To remove simply set this property to 'null'
-     *
-     * @member {boolean}
-     * @memberof DisplayObject#
-     */
-    cacheAsBitmap: {
-        get: function ()
-        {
-            return this._cacheAsBitmap;
-        },
-        set: function (value)
-        {
-            if (this._cacheAsBitmap === value)
-            {
-                return;
-            }
-
-            if (value)
-            {
-                this._generateCachedSprite();
-            }
-            else
-            {
-                this._destroyCachedSprite();
-            }
-
-            this._cacheAsBitmap = value;
         }
     }
 });
@@ -325,15 +281,6 @@ Container.prototype.removeChildren = function (beginIndex, endIndex)
 };
 
 /**
- * Generates and updates the cached sprite for this object.
- *
- */
-Container.prototype.updateCachedSprite = function ()
-{
-    this._generateCachedSprite();
-};
-
-/**
  * Useful function that returns a texture of the displayObject object that can then be used to create sprites
  * This can be quite useful if your displayObject is static / complicated and needs to be reused multiple times.
  *
@@ -369,11 +316,6 @@ Container.prototype.updateTransform = function ()
     }
 
     this.displayObjectUpdateTransform();
-
-    if (this._cacheAsBitmap)
-    {
-        return;
-    }
 
     for (var i = 0, j = this.children.length; i < j; ++i)
     {
@@ -474,8 +416,6 @@ Container.prototype.getLocalBounds = function ()
 /**
  * Renders the object using the WebGL renderer
  *
- * TODO - Optimization pass!
- *
  * @param renderer {WebGLRenderer} The renderer
  */
 Container.prototype.renderWebGL = function (renderer)
@@ -483,12 +423,6 @@ Container.prototype.renderWebGL = function (renderer)
     // if the object is not visible or the alpha is 0 then no need to render this element
     if (this.isMask || !this.visible || this.alpha <= 0)
     {
-        return;
-    }
-
-    if (this._cacheAsBitmap)
-    {
-        this._renderCachedSprite(renderer);
         return;
     }
 
@@ -512,7 +446,6 @@ Container.prototype.renderWebGL = function (renderer)
 
         renderer.currentRenderer.start();
 
-
         // add this object to the batch, only rendered if it has a texture.
         this._renderWebGL(renderer);
 
@@ -535,11 +468,9 @@ Container.prototype.renderWebGL = function (renderer)
 
         }
         renderer.currentRenderer.start();
-
     }
     else
     {
-
         this._renderWebGL(renderer);
 
         // simple render children!
@@ -547,7 +478,6 @@ Container.prototype.renderWebGL = function (renderer)
         {
             this.children[i].renderWebGL(renderer);
         }
-
     }
 };
 
@@ -568,12 +498,6 @@ Container.prototype.renderCanvas = function (renderer)
         return;
     }
 
-    if (this._cacheAsBitmap)
-    {
-        this._renderCachedSprite(renderer);
-        return;
-    }
-
     if (this._mask)
     {
         renderer.maskManager.pushMask(this._mask, renderer);
@@ -588,80 +512,4 @@ Container.prototype.renderCanvas = function (renderer)
     {
         renderer.maskManager.popMask(renderer);
     }
-};
-
-/**
- * Internal method.
- *
- * @param renderer {WebGLRenderer|CanvasRenderer} The renderer
- * @private
- */
-Container.prototype._renderCachedSprite = function (renderer)
-{
-    this._cachedSprite.worldAlpha = this.worldAlpha;
-
-    if (renderer.gl)
-    {
-        this._cachedSprite.renderWebGL(renderer);
-    }
-    else
-    {
-        this._cachedSprite.renderCanvas(renderer);
-    }
-};
-
-/**
- * Internal method.
- *
- * @private
- */
-Container.prototype._generateCachedSprite = function ()
-{/*
-    var bounds = this.getLocalBounds();
-
-    if (!this._cachedSprite)
-    {
-        // TODO - RenderTexture now *requires* a renderer instance, so this is like broken
-        // because `renderer` isn't actually in scope here :P
-        var renderTexture = new RenderTexture(renderer, bounds.width | 0, bounds.height | 0);
-
-        this._cachedSprite = new Sprite(renderTexture);
-        this._cachedSprite.worldTransform = this.worldTransform;
-    }
-    else
-    {
-        this._cachedSprite.texture.resize(bounds.width | 0, bounds.height | 0);
-    }
-
-    var tempFilters = this._filters;
-    this._filters = null;
-
-    this._cachedSprite.filters = tempFilters;
-
-    _tempMatrix.tx = -bounds.x;
-    _tempMatrix.ty = -bounds.y;
-
-    this._cachedSprite.texture.render(this, _tempMatrix, true);
-
-    this._cachedSprite.anchor.x = -(bounds.x / bounds.width);
-    this._cachedSprite.anchor.y = -(bounds.y / bounds.height);
-
-    this._filters = tempFilters;*/
-};
-
-/**
- * Destroys the cached sprite.
- *
- * @private
- */
-Container.prototype._destroyCachedSprite = function ()
-{
-    if (!this._cachedSprite)
-    {
-        return;
-    }
-
-    // TODO: Pool this sprite
-    this._cachedSprite.destroy(true, true);
-    this._cachedSprite = null;
 };
