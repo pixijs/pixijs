@@ -307,7 +307,9 @@ BaseTexture.prototype.destroy = function ()
     {
         delete utils.BaseTextureCache[this.imageUrl];
         delete utils.TextureCache[this.imageUrl];
+
         this.imageUrl = null;
+
         if (!navigator.isCocoonJS)
         {
             this.source.src = '';
@@ -317,6 +319,7 @@ BaseTexture.prototype.destroy = function ()
     {
         delete utils.BaseTextureCache[this.source._pixiId];
     }
+
     this.source = null;
 
     this.dispose();
@@ -342,6 +345,7 @@ BaseTexture.prototype.dispose = function ()
 BaseTexture.prototype.updateSourceImage = function (newSrc)
 {
     this.source.src = newSrc;
+
     this.loadSource(this.source);
 };
 
