@@ -1,5 +1,5 @@
-var core = require('../core');
-var TextureUvs = require('../core/textures/TextureUvs');
+var core = require('../core'),
+    TextureUvs = require('../core/textures/TextureUvs');
 
 /**
  * A tiling sprite is a fast way of rendering a tiling image
@@ -58,6 +58,8 @@ function TilingSprite(texture, width, height)
      */
     this.blendMode = core.CONST.blendModes.NORMAL;
 
+    this.tilingTexture = null;
+    this._refreshTexture = false;
 
     this._uvs = new TextureUvs();
 }
@@ -100,26 +102,20 @@ Object.defineProperties(TilingSprite.prototype, {
         {
             this._height = value;
         }
-    },
-
-    texture: {
-        get: function ()
-        {
-            return this._texture;
-        },
-        set: function (value)
-        {
-            if (this._texture === value)
-            {
-                return;
-            }
-
-            this._texture = value;
-            this.refreshTexture = true;
-            this.cachedTint = 0xFFFFFF;
-        }
     }
 });
+
+/**
+ * When the texture is updated, this event will fire,
+ *
+ * @private
+ */
+TilingSprite.prototype._onTextureUpdate = function ()
+{
+    core.Sprite.prototype._onTextureUpdate.call(this);
+
+    this._refreshTexture = true;
+};
 
 /**
  * Renders the object using the WebGL renderer
@@ -130,7 +126,7 @@ TilingSprite.prototype._renderWebGL = function (renderer)
 {
 
 
-    if (!this.tilingTexture || this.refreshTexture)
+    if (!this.tilingTexture || this._refreshTexture)
     {
         this.generateTilingTexture(true);
 
@@ -225,7 +221,7 @@ TilingSprite.prototype.renderCanvas = function (renderer)
                          transform.tx * resolution,
                          transform.ty * resolution);
 
-    if (!this.__tilePattern ||  this.refreshTexture)
+    if (!this.__tilePattern ||  this._refreshTexture)
     {
         this.generateTilingTexture(false);
 
@@ -456,10 +452,23 @@ TilingSprite.prototype.generateTilingTexture = function (forcePowerOfTwo)
         this.tilingTexture = texture;
     }
 
-    this.refreshTexture = false;
+    this._refreshTexture = false;
 
     this.originalTexture = this.texture;
     this.texture = this.tilingTexture;
 
     this.tilingTexture.baseTexture._powerOf2 = true;
+};
+
+TilingSprite.prototype.destroy = function () {
+    core.Sprite.prototype.destroy.call(this);
+
+    this.tileScale = null;
+    this.tileScaleOffset = null;
+    this.tilePosition = null;
+
+    this.tilingTexture.destroy(true);
+    this.tilingTexture = null;
+
+    this._uvs = null;
 };
