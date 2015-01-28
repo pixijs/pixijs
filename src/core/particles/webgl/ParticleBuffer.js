@@ -219,7 +219,7 @@ ParticleBuffer.prototype.uploadUvs = function (children,startIndex, amount)
 
         textureUvs = children[startIndex + i]._texture._uvs;
 
-        if(textureUvs)
+        if (textureUvs)
         {
             uvs[index++] = textureUvs.x0;
             uvs[index++] = textureUvs.y0;

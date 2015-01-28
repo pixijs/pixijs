@@ -58,7 +58,7 @@ var RenderTarget = function(gl, width, height, scaleMode, root, createStencilBuf
 
     this.root = root;
 
-    if(!this.root)
+    if (!this.root)
     {
        // this.flipY = true;
         this.frameBuffer = gl.createFramebuffer();
@@ -85,7 +85,7 @@ var RenderTarget = function(gl, width, height, scaleMode, root, createStencilBuf
 
     this.resize(width, height);
 
-    if(createStencilBuffer)
+    if (createStencilBuffer)
     {
         this.attachStenilBuffer();
     }
@@ -112,7 +112,7 @@ RenderTarget.prototype.clear = function()
 RenderTarget.prototype.attachStenilBuffer = function()
 {
 
-    if( this.stencilBuffer )
+    if ( this.stencilBuffer )
     {
         return;
     }
@@ -121,7 +121,7 @@ RenderTarget.prototype.attachStenilBuffer = function()
         The stencil buffer is used for masking in pixi
         lets create one and then add attach it to the framebuffer..
      */
-    if(!this.root)
+    if (!this.root)
     {
         var gl = this.gl;
 
@@ -199,7 +199,7 @@ RenderTarget.prototype.resize = function(width, height)
 
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  width , height , 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
 
-        if(this.stencilBuffer )
+        if (this.stencilBuffer )
         {
             // update the stencil buffer width and height
             gl.bindRenderbuffer(gl.RENDERBUFFER, this.stencilBuffer);

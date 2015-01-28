@@ -89,7 +89,7 @@ VideoBaseTexture.prototype._onCanPlay = function ()
         this.source.play();
 
         // prevent multiple loaded dispatches..
-        if(!this.__loaded)
+        if (!this.__loaded)
         {
             this.__loaded = true;
             this.emit('loaded', this);

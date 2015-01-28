@@ -236,7 +236,7 @@ Sprite.prototype.getBounds = function (matrix)
         minY,
         maxY;
 
-    if(b === 0 && c === 0)
+    if (b === 0 && c === 0)
     {
         // scale may be negative!
         if (a < 0)

@@ -12,8 +12,7 @@ var utils = require('../../../utils'),
  */
 function Shader(shaderManager, vertexSrc, fragmentSrc, uniforms, attributes)
 {
-
-    if(!vertexSrc || !fragmentSrc)
+    if (!vertexSrc || !fragmentSrc)
     {
          throw new Error('Pixi.js Error. Shader requires vertexSrc and fragmentSrc');
     }
@@ -383,7 +382,7 @@ Shader.prototype.syncUniform = function (uniform)
 
             var texture = uniform.value.baseTexture._glTextures[gl.id];
 
-            if(!texture)
+            if (!texture)
             {
                 this.initSampler2D(uniform);
             }

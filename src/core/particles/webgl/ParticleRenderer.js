@@ -178,7 +178,7 @@ ParticleRenderer.prototype.render = function ( Particle )
 
         this.currentBatchSize++;
 /*
-        if(sprite._texture !== spriteCache.texture)
+        if (sprite._texture !== spriteCache.texture)
         {
             spriteCache.texture = sprite._texture;
             vertsDirty = true;
@@ -187,7 +187,7 @@ ParticleRenderer.prototype.render = function ( Particle )
         }
 
         var sx = sprite.scale.x, sy = sprite.scale.y;
-        if(sx !== spriteCache.sX || sy !== spriteCache.sY)
+        if (sx !== spriteCache.sX || sy !== spriteCache.sY)
         {
             spriteCache.sX = sx;
             spriteCache.sY = sy;
@@ -195,7 +195,7 @@ ParticleRenderer.prototype.render = function ( Particle )
         }
 
         var px = sprite.position.x, py = sprite.position.y
-        if(px !== spriteCache.pX || py !== spriteCache.pY)
+        if (px !== spriteCache.pX || py !== spriteCache.pY)
         {
             spriteCache.pX = px;
             spriteCache.pY = py;
@@ -203,13 +203,13 @@ ParticleRenderer.prototype.render = function ( Particle )
             positionDirty = true;
         }
 
-        if(sprite.rotation !== spriteCache.rotation)
+        if (sprite.rotation !== spriteCache.rotation)
         {
             spriteCache.rotation = sprite.rotation;
             rotationDirty = true;
         }
 
-        if(sprite.alpha !== spriteCache.alpha)
+        if (sprite.alpha !== spriteCache.alpha)
         {
             spriteCache.alpha = sprite.alpha;
             alphaDirty = true;
@@ -218,14 +218,14 @@ ParticleRenderer.prototype.render = function ( Particle )
     }
 
 /*
-    if(vertsDirty)this.uploadVerticies(children);
-    if(positionDirty)this.uploadPosition(children);
-    if(rotationDirty)this.uploadRotation(children);
-    if(uvsDirty)this.uploadUvs(children);
-    if(alphaDirty)this.uploadAlpha(children);
+    if (vertsDirty)this.uploadVerticies(children);
+    if (positionDirty)this.uploadPosition(children);
+    if (rotationDirty)this.uploadRotation(children);
+    if (uvsDirty)this.uploadUvs(children);
+    if (alphaDirty)this.uploadAlpha(children);
 */
      this.uploadPosition(children);
-    if(this._childCache !== children.length)
+    if (this._childCache !== children.length)
     {
         this.refresh(children);
         this._childCache = children.length;
@@ -250,7 +250,7 @@ ParticleRenderer.prototype.uploadVerticies = function (children)
     for (var i = 0; i < children.length; i+=this.size)
     {
         var amount = ( children.length - i );
-        if(amount > this.size)
+        if (amount > this.size)
         {
             amount = this.size;
         }
@@ -265,7 +265,7 @@ ParticleRenderer.prototype.uploadPosition = function (children)
     for (var i = 0; i < children.length; i+= this.size)
     {
         var amount = ( children.length - i );
-        if(amount > this.size)
+        if (amount > this.size)
         {
             amount = this.size;
         }
@@ -280,7 +280,7 @@ ParticleRenderer.prototype.uploadRotation = function (children)
     for (var i = 0; i < children.length; i+=this.size)
     {
         var amount = ( children.length - i );
-        if(amount > this.size)
+        if (amount > this.size)
         {
             amount = this.size;
         }
@@ -295,7 +295,7 @@ ParticleRenderer.prototype.uploadUvs = function (children)
     for (var i = 0; i < children.length; i+=this.size)
     {
         var amount = ( children.length - i );
-        if(amount > this.size)
+        if (amount > this.size)
         {
             amount = this.size;
         }
@@ -310,7 +310,7 @@ ParticleRenderer.prototype.uploadAlpha = function (children)
     for (var i = 0; i < children.length; i+=this.size)
     {
         var amount = ( children.length - i );
-        if(amount > this.size)
+        if (amount > this.size)
         {
             amount = this.size;
         }
@@ -398,7 +398,7 @@ ParticleRenderer.prototype.renderBatch = function (texture, size, startIndex)
 
 
         var amount = ( size - i) ;
-        if(amount > this.size)
+        if (amount > this.size)
         {
             amount = this.size;
         }

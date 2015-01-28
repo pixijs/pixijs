@@ -57,7 +57,7 @@ Object.defineProperties(Container.prototype, {
 
             var width = this.getLocalBounds().width;
 
-            if(width !== 0)
+            if (width !== 0)
             {
                 this.scale.x = value / width;
             }

@@ -19,7 +19,7 @@ function TextureShader(shaderManager, vertexSrc, fragmentSrc, customUniforms, cu
                                                                     0, 0, 1) }
     };
 
-    if(customUniforms)
+    if (customUniforms)
     {
         for (var u in customUniforms)
         {
@@ -34,7 +34,7 @@ function TextureShader(shaderManager, vertexSrc, fragmentSrc, customUniforms, cu
         aColor:             0
     };
 
-    if(customAttributes)
+    if (customAttributes)
     {
         for (var a in customAttributes)
         {

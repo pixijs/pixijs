@@ -222,7 +222,7 @@ BaseTexture.prototype.loadSource = function (source)
             source.onload = null;
             source.onerror = null;
 
-            if(!scope.isLoading)
+            if (!scope.isLoading)
             {
                 return;
             }
@@ -238,7 +238,7 @@ BaseTexture.prototype.loadSource = function (source)
             source.onload = null;
             source.onerror = null;
 
-            if(!scope.isLoading)
+            if (!scope.isLoading)
             {
                 return;
             }

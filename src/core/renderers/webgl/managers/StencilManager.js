@@ -22,7 +22,7 @@ WebGLMaskManager.prototype.setMaskStack = function ( stencilMaskStack )
 
     var gl = this.renderer.gl;
 
-    if(stencilMaskStack.stencilStack.length === 0)
+    if (stencilMaskStack.stencilStack.length === 0)
     {
         gl.disable(gl.STENCIL_TEST);
     }
