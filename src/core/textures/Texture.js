@@ -196,8 +196,6 @@ Texture.prototype.onBaseTextureLoaded = function ()
         this.frame = this._frame;
     }
 
-   
-
     this.dispatchEvent( { type: 'update', content: this } );
 };
 
@@ -265,24 +263,6 @@ Texture.fromImage = function (imageUrl, crossorigin, scaleMode)
         utils.TextureCache[imageUrl] = texture;
     }
 
-    return texture;
-};
-
-/**
- * Helper function that returns a Texture objected based on the given frame id.
- * If the frame id is not in the texture cache an error will be thrown.
- *
- * @static
- * @param frameId {string} The frame id of the texture
- * @return Texture
- */
-Texture.fromFrame = function (frameId)
-{
-    var texture = utils.TextureCache[frameId];
-    if (!texture)
-    {
-        throw new Error('The frameId "' + frameId + '" does not exist in the texture cache ');
-    }
     return texture;
 };
 
