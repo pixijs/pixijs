@@ -19,4 +19,4 @@ before_script:
     - sh -e /etc/init.d/xvfb start
 
 script:
-    - ./node_modules/.bin/gulp travis
+    - ./node_modules/.bin/gulp
