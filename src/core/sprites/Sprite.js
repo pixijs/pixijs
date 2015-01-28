@@ -82,6 +82,8 @@ function Sprite(texture)
 
     this.renderable = true;
 
+    this.cachedTint = 0xFFFFFF;
+
     // call texture setter
     this.texture = texture || Texture.EMPTY;
 }
