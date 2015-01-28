@@ -1,46 +1,57 @@
 {
-    "name": "pixi.js",
-    "version": "2.2.3",
-    "description": "Pixi.js is a fast lightweight 2D library that works across all devices.",
-
-    "author": "Mat Groves",
-    "contributors": [
-        "Chad Engler <chad@pantherdev.com>"
-    ],
-    "logo": "http://www.goodboydigital.com/pixijs/logo_small.png",
-
-    "homepage": "http://goodboydigital.com/",
-    "bugs": "https://github.com/GoodBoyDigital/pixi.js/issues",
-    "license": "MIT",
-    "licenseUrl": "http://www.opensource.org/licenses/mit-license.php",
-
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/GoodBoyDigital/pixi.js.git"
-    },
-
-    "main": "bin/pixi.js",
-
-    "scripts": {
-        "test": "grunt travis --verbose"
-    },
-
-    "dependencies": {},
-    "devDependencies": {
-        "grunt": "~0.4.1",
-        "grunt-contrib-jshint": "~0.8",
-        "grunt-contrib-uglify": "~0.2",
-        "grunt-contrib-connect": "~0.5",
-        "grunt-contrib-yuidoc": "~0.5",
-        "grunt-concat-sourcemap": "~0.4",
-        "grunt-contrib-concat": "~0.3",
-        "mocha": "~1.15",
-        "chai": "~1.8",
-        "karma": "~0.12",
-        "karma-chrome-launcher": "~0.1",
-        "karma-firefox-launcher": "~0.1",
-        "karma-mocha": "~0.1",
-        "karma-spec-reporter": "~0.0.6",
-        "grunt-contrib-watch": "~0.5.3"
-    }
+  "name": "pixi.js",
+  "version": "3.0.0",
+  "description": "Pixi.js is a fast lightweight 2D library that works across all devices.",
+  "author": "Mat Groves",
+  "contributors": [
+    "Chad Engler <chad@pantherdev.com>",
+    "Richard Davey <rdavey@gmail.com>"
+  ],
+  "main": "./src/index.js",
+  "homepage": "http://goodboydigital.com/",
+  "bugs": "https://github.com/GoodBoyDigital/pixi.js/issues",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GoodBoyDigital/pixi.js.git"
+  },
+  "scripts": {
+    "test": "gulp test",
+    "docs": "./node_modules/.bin/jsdoc -c ./gulp/util/jsdoc.conf.json"
+  },
+  "devDependencies": {
+    "brfs": "^1.2.0",
+    "browserify": "^8.0.2",
+    "chai": "^1.10.0",
+    "del": "^1.1.0",
+    "gulp": "^3.8.10",
+    "gulp-cached": "^1.0.1",
+    "gulp-jshint": "^1.9.0",
+    "gulp-plumber": "^0.6.6",
+    "gulp-rename": "^1.2.0",
+    "gulp-uglify": "^1.0.2",
+    "gulp-util": "^3.0.1",
+    "ink-docstrap": "^0.4.12",
+    "jsdoc": "^3.3.0-alpha13",
+    "jshint-summary": "^0.4.0",
+    "karma": "^0.12.28",
+    "karma-firefox-launcher": "^0.1.0",
+    "karma-mocha": "^0.1.10",
+    "karma-spec-reporter": "^0.0.16",
+    "mocha": "^2.1.0",
+    "require-dir": "^0.1.0",
+    "run-sequence": "^1.0.2",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.0.0",
+    "watchify": "^2.2.1"
+  },
+  "dependencies": {
+    "resource-loader": "^1.0.0",
+    "webgl-enabled": "^1.0.2"
+  },
+  "browserify": {
+    "transform": [
+      "brfs"
+    ]
+  }
 }

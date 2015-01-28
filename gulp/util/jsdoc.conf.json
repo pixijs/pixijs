@@ -1,0 +1,51 @@
+{
+    "tags": {
+        "allowUnknownTags": false
+    },
+    "source": {
+        "include": [
+            "./src/index.js",
+            "./src/display/DisplayObject.js"
+        ],
+        "exclude": [
+        ],
+        "includePattern": ".+\\.js(doc)?$",
+        "excludePattern": "(^|\\/|\\\\)_"
+    },
+    "plugins": [
+        // "./tasks/jsdoc-plugins/namealias",
+        // "./tasks/jsdoc-plugins/filterpixi",
+        // "./tasks/jsdoc-plugins/proptomember",
+        // "./tasks/jsdoc-plugins/sourceproxy",
+        // "./tasks/jsdoc-plugins/shortlinks",
+        "plugins/markdown"
+    ],
+    "templates": {
+        "cleverLinks"   : false,
+        "monospaceLinks": false,
+        "default"       : {
+            "outputSourceFiles" : true
+        },
+        "systemName"    : "PIXI",
+        "footer"        : "",
+        "copyright"     : "PIXI Copyright © 2013-2015 Mat Groves.",
+        "navType"       : "vertical",
+        "theme"         : "cerulean",
+        "linenums"      : true,
+        "collapseSymbols": false,
+        "inverseNav"    : true
+    },
+    "markdown"  : {
+        "parser"        : "gfm",
+        "hardwrap"      : true
+    },
+    "opts": {
+        "encoding"      : "utf8",
+        "recurse"       : true,
+        "private"       : false,
+        "lenient"       : true,
+        "destination"   : "./docs",
+        "template"      : "./node_modules/ink-docstrap/template"
+
+    }
+}
