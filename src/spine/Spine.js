@@ -30,7 +30,7 @@ function Spine(spineData)
     this.skeleton.updateWorldTransform();
 
     this.stateData = new spine.AnimationStateData(spineData);
-    this.state = new spine.AnimationState(stateData);
+    this.state = new spine.AnimationState(this.stateData);
 
     this.slotContainers = [];
 
