@@ -19,18 +19,18 @@ function Spine(spineData)
 {
     core.Container.call(this);
 
-    this.spineData = spineData;
-
-    if (!this.spineData)
+    if (!spineData)
     {
-        throw new Error('Spine data must be preloaded using SpineLoader or AssetLoader: ' + url);
+        throw new Error('The spineData param is required.');
     }
 
-    this.skeleton = new spine.Skeleton(this.spineData);
+    this.spineData = spineData;
+
+    this.skeleton = new spine.Skeleton(spineData);
     this.skeleton.updateWorldTransform();
 
-    this.stateData = new spine.AnimationStateData(this.spineData);
-    this.state = new spine.AnimationState(this.stateData);
+    this.stateData = new spine.AnimationStateData(spineData);
+    this.state = new spine.AnimationState(stateData);
 
     this.slotContainers = [];
 
