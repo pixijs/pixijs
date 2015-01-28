@@ -60,7 +60,7 @@ PolyK.Triangulate = function (p)
 
     i = 0;
     var al = n;
-    while(al > 3)
+    while (al > 3)
     {
         var i0 = avl[(i+0)%al];
         var i1 = avl[(i+1)%al];

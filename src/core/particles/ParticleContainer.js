@@ -11,7 +11,7 @@ var Container = require('../display/Container');
  * ```js
  * var container = new ParticleContainer();
  *
- * for(var i = 0; i < 100; ++i)
+ * for (var i = 0; i < 100; ++i)
  * {
  *     var sprite = new PIXI.Sprite.fromImage("myImage.png");
  *     container.addChild(sprite);

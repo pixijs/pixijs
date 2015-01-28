@@ -268,7 +268,7 @@ BitmapText.prototype.updateText = function ()
 
     // remove unnecessary children.
     // and put their into the pool.
-    while(this.children.length > lenChars)
+    while (this.children.length > lenChars)
     {
         var child = this.getChildAt(this.children.length - 1);
         this._pool.push(child);

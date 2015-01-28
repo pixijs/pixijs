@@ -201,7 +201,7 @@ Object.defineProperties(DisplayObject.prototype, {
                 }
 
                 item = item.parent;
-            } while(item);
+            } while (item);
 
             return true;
         }
