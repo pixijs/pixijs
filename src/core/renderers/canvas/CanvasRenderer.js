@@ -1,4 +1,5 @@
-var CanvasMaskManager = require('./utils/CanvasMaskManager'),
+var SystemRenderer = require('../SystemRenderer'),
+    CanvasMaskManager = require('./utils/CanvasMaskManager'),
     utils = require('../../utils'),
     math = require('../../math'),
     CONST = require('../../const');
@@ -15,113 +16,20 @@ var CanvasMaskManager = require('./utils/CanvasMaskManager'),
  * @param [options.view] {HTMLCanvasElement} the canvas to use as a view, optional
  * @param [options.transparent=false] {boolean} If the render view is transparent, default false
  * @param [options.autoResize=false] {boolean} If the render view is automatically resized, default false
+ * @param [options.antialias=false] {boolean} sets antialias (only applicable in chrome at the moment)
  * @param [options.resolution=1] {number} the resolution of the renderer retina would be 2
- * @param [options.clearBeforeRender=true] {boolean} This sets if the CanvasRenderer will clear the canvas or not before the new render pass.
+ * @param [options.clearBeforeRender=true] {boolean} This sets if the CanvasRenderer will clear the canvas or
+ *      not before the new render pass.
  */
 function CanvasRenderer(width, height, options)
 {
-    utils.sayHello('Canvas');
+    SystemRenderer.call(this, 'Canvas', width, height, options);
 
-    if (options)
-    {
-        for (var i in CONST.defaultRenderOptions)
-        {
-            if (typeof options[i] === 'undefined')
-            {
-                options[i] = CONST.defaultRenderOptions[i];
-            }
-        }
-    }
-    else
-    {
-        options = CONST.defaultRenderOptions;
-    }
+    this.type = CONST.RENDERER_TYPE.CANVAS;
 
     /**
-     * The renderer type.
+     * The canvas 2d context that everything is drawn with.
      *
-     * @member {number}
-     */
-    this.type = CONST.CANVAS_RENDERER;
-
-    /**
-     * The resolution of the canvas.
-     *
-     * @member {number}
-     */
-    this.resolution = options.resolution;
-
-    /**
-     * This sets if the CanvasRenderer will clear the canvas or not before the new render pass.
-     * If the scene is NOT transparent Pixi will use a canvas sized fillRect operation every frame to set the canvas background color.
-     * If the scene is transparent Pixi will use clearRect to clear the canvas every frame.
-     * Disable this by setting this to false. For example if your game has a canvas filling background image you often don't need this set.
-     *
-     * @member {boolean}
-     * @default
-     */
-    this.clearBeforeRender = options.clearBeforeRender;
-
-    /**
-     * The background color as a number.
-     *
-     * @member {number}
-     * @private
-     */
-    this._backgroundColor = 0x000000;
-
-    /**
-     * The background color as a string.
-     *
-     * @member {string}
-     * @private
-     */
-    this._backgroundColorString = '#000000';
-
-    this.backgroundColor = options.backgroundColor || this._backgroundColor; // run bg color setter
-
-    /**
-     * Whether the render view is transparent
-     *
-     * @member {boolean}
-     */
-    this.transparent = options.transparent;
-
-    /**
-     * Whether the render view should be resized automatically
-     *
-     * @member {boolean}
-     */
-    this.autoResize = options.autoResize || false;
-
-    /**
-     * The width of the canvas view
-     *
-     * @member {number}
-     * @default 800
-     */
-    this.width = width || 800;
-
-    /**
-     * The height of the canvas view
-     *
-     * @member {number}
-     * @default 600
-     */
-    this.height = height || 600;
-
-    this.width *= this.resolution;
-    this.height *= this.resolution;
-
-    /**
-     * The canvas element that everything is drawn to.
-     *
-     * @member {HTMLCanvasElement}
-     */
-    this.view = options.view || document.createElement('canvas');
-
-    /**
-     * The canvas 2d context that everything is drawn with
      * @member {CanvasRenderingContext2D}
      */
     this.context = this.view.getContext('2d', { alpha: this.transparent });
@@ -133,18 +41,9 @@ function CanvasRenderer(width, height, options)
      */
     this.refresh = true;
 
-    this.view.width = this.width * this.resolution;
-    this.view.height = this.height * this.resolution;
-
     /**
-     * Internal var.
+     * Instance of a CanvasMaskManager, handles masking when using the canvas renderer.
      *
-     * @member {number}
-     */
-    this.count = 0;
-
-    /**
-     * Instance of a CanvasMaskManager, handles masking when using the canvas renderer
      * @member {CanvasMaskManager}
      */
     this.maskManager = new CanvasMaskManager();
@@ -157,70 +56,67 @@ function CanvasRenderer(width, height, options)
      */
     this.roundPixels = false;
 
-    this.scaleMode = null;
+    /**
+     * Tracks the active scale mode for this renderer.
+     *
+     * @member {CONST.SCALE_MODE}
+     */
+    this.currentScaleMode = CONST.scaleModes.DEFAULT;
 
-    this.smoothProperty = null;
-
-    if (this.context.imageSmoothingEnabled)
-    {
-        this.smoothProperty = 'imageSmoothingEnabled';
-    }
-    else if (this.context.webkitImageSmoothingEnabled)
-    {
-        this.smoothProperty = 'webkitImageSmoothingEnabled';
-    }
-    else if (this.context.mozImageSmoothingEnabled)
-    {
-        this.smoothProperty = 'mozImageSmoothingEnabled';
-    }
-    else if (this.context.oImageSmoothingEnabled)
-    {
-        this.smoothProperty = 'oImageSmoothingEnabled';
-    }
-    else if (this.context.msImageSmoothingEnabled)
-    {
-        this.smoothProperty = 'msImageSmoothingEnabled';
-    }
-
+    /**
+     * Tracks the active blend mode for this renderer.
+     *
+     * @member {CONST.SCALE_MODE}
+     */
     this.currentBlendMode = CONST.blendModes.NORMAL;
 
-    this.blendModes = null;
+    /**
+     * The canvas property used to set the canvas smoothing property.
+     *
+     * @member {string}
+     */
+    this.smoothProperty = 'imageSmoothingEnabled';
+
+    if (!this.context.imageSmoothingEnabled)
+    {
+        if (this.context.webkitImageSmoothingEnabled)
+        {
+            this.smoothProperty = 'webkitImageSmoothingEnabled';
+        }
+        else if (this.context.mozImageSmoothingEnabled)
+        {
+            this.smoothProperty = 'mozImageSmoothingEnabled';
+        }
+        else if (this.context.oImageSmoothingEnabled)
+        {
+            this.smoothProperty = 'oImageSmoothingEnabled';
+        }
+        else if (this.context.msImageSmoothingEnabled)
+        {
+            this.smoothProperty = 'msImageSmoothingEnabled';
+        }
+    }
 
     this._mapBlendModes();
 
     /**
      * This temporary display object used as the parent of the currently being rendered item
+     *
      * @member DisplayObject
      * @private
      */
-    this._tempDisplayObjectParent = {worldTransform:new math.Matrix(), worldAlpha:1};
+    this._tempDisplayObjectParent = {
+        worldTransform: new math.Matrix(),
+        worldAlpha: 1
+    };
 
     this.resize(width, height);
 }
 
 // constructor
+CanvasRenderer.prototype = Object.create(SystemRenderer);
 CanvasRenderer.prototype.constructor = CanvasRenderer;
 module.exports = CanvasRenderer;
-
-Object.defineProperties(CanvasRenderer.prototype, {
-    /**
-     * The background color to fill if not transparent
-     *
-     * @member {number}
-     * @memberof CanvasRenderer#
-     */
-    backgroundColor: {
-        get: function ()
-        {
-            return this._backgroundColor;
-        },
-        set: function (val)
-        {
-            this._backgroundColor = val;
-            this._backgroundColorString = utils.hex2string(val);
-        }
-    }
-});
 
 /**
  * Renders the object to this canvas view
@@ -237,7 +133,7 @@ CanvasRenderer.prototype.render = function (object)
 
     object.parent = cacheParent;
 
-    this.context.setTransform(1,0,0,1,0,0);
+    this.context.setTransform(1, 0, 0, 1, 0, 0);
 
     this.context.globalAlpha = 1;
 
@@ -273,35 +169,22 @@ CanvasRenderer.prototype.render = function (object)
  */
 CanvasRenderer.prototype.destroy = function (removeView)
 {
-    if (removeView && this.view.parent)
-    {
-        this.view.parent.removeChild(this.view);
-    }
+    // call the base destroy
+    SystemRenderer.prototype.destroy.call(this, removeView);
 
-    this.view = null;
     this.context = null;
+
+    this.refresh = true;
+
+    this.maskManager.destroy();
     this.maskManager = null;
-};
 
-/**
- * Resizes the canvas view to the specified width and height
- *
- * @param width {number} the new width of the canvas view
- * @param height {number} the new height of the canvas view
- */
-CanvasRenderer.prototype.resize = function (width, height)
-{
-    this.width = width * this.resolution;
-    this.height = height * this.resolution;
+    this.roundPixels = false;
 
-    this.view.width = this.width;
-    this.view.height = this.height;
+    this.currentScaleMode = 0;
+    this.currentBlendMode = 0;
 
-    if (this.autoResize)
-    {
-        this.view.style.width = this.width / this.resolution + 'px';
-        this.view.style.height = this.height / this.resolution + 'px';
-    }
+    this.smoothProperty = null;
 };
 
 /**

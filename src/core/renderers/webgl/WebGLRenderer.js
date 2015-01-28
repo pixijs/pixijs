@@ -1,4 +1,5 @@
-var ShaderManager = require('./managers/ShaderManager'),
+var SystemRenderer = require('../SystemRenderer'),
+    ShaderManager = require('./managers/ShaderManager'),
     MaskManager = require('./managers/MaskManager'),
     StencilManager = require('./managers/StencilManager'),
     FilterManager = require('./managers/FilterManager'),
@@ -25,147 +26,40 @@ var ShaderManager = require('./managers/ShaderManager'),
  * @param [options.transparent=false] {boolean} If the render view is transparent, default false
  * @param [options.autoResize=false] {boolean} If the render view is automatically resized, default false
  * @param [options.antialias=false] {boolean} sets antialias (only applicable in chrome at the moment)
- * @param [options.preserveDrawingBuffer=false] {boolean} enables drawing buffer preservation, enable this if you need to call toDataUrl on the webgl context
  * @param [options.resolution=1] {number} the resolution of the renderer retina would be 2
+ * @param [options.clearBeforeRender=true] {boolean} This sets if the CanvasRenderer will clear the canvas or
+ *      not before the new render pass.
+ * @param [options.preserveDrawingBuffer=false] {boolean} enables drawing buffer preservation, enable this if
+ *      you need to call toDataUrl on the webgl context.
  */
 function WebGLRenderer(width, height, options)
 {
-    utils.sayHello('webGL');
+    SystemRenderer.call(this, 'WebGL', width, height, options);
 
-    WebGLRenderer._TEMP__ = this;
+    this.type = CONST.RENDERER_TYPE.WEBGL;
 
-    if (options)
-    {
-        for (var i in CONST.defaultRenderOptions)
-        {
-            if (typeof options[i] === 'undefined')
-            {
-                options[i] = CONST.defaultRenderOptions[i];
-            }
-        }
-    }
-    else
-    {
-        options = CONST.defaultRenderOptions;
-    }
 
-    this.uuid = utils.uuid();
+    this._boundUpdateTexture = this.updateTexture.bind(this);
+    this._boundDestroyTexture = this.destroyTexture.bind(this);
+    this._boundContextLost = this.handleContextLost.bind(this);
+    this._boundContextRestored = this.handleContextRestored.bind(this);
+
+    this.view.addEventListener('webglcontextlost', this._boundContextLost, false);
+    this.view.addEventListener('webglcontextrestored', this._boundContextRestored, false);
 
     /**
-     * @member {number}
-     */
-    this.type = CONST.WEBGL_RENDERER;
-
-    /**
-     * The resolution of the renderer
+     * The options passed in to create a new webgl context.
      *
-     * @member {number}
-     * @default 1
-     */
-    this.resolution = options.resolution;
-
-    // do a catch.. only 1 webGL renderer..
-
-    /**
-     * Whether the render view is transparent
-     *
-     * @member {boolean}
-     */
-    this.transparent = options.transparent;
-
-    /**
-     * The background color as a number.
-     *
-     * @member {number}
-     * @private
-     */
-    this._backgroundColor = 0x000000;
-
-    /**
-     * The background color as an [R, G, B] array.
-     *
-     * @member {number[]}
-     * @private
-     */
-    this._backgroundColorRgb = [0, 0, 0];
-
-    this.backgroundColor = options.backgroundColor || this._backgroundColor; // run bg color setter
-
-    /**
-     * Whether the render view should be resized automatically
-     *
-     * @member {boolean}
-     */
-    this.autoResize = options.autoResize || false;
-
-    /**
-     * The value of the preserveDrawingBuffer flag affects whether or not the contents of the stencil buffer is retained after rendering.
-     *
-     * @member {boolean}
-     */
-    this.preserveDrawingBuffer = options.preserveDrawingBuffer;
-
-    /**
-     * This sets if the WebGLRenderer will clear the context texture or not before the new render pass. If true:
-     * If the renderer is NOT transparent, Pixi will clear to alpha (0, 0, 0, 0).
-     * If the renderer is transparent, Pixi will clear to the target Stage's background color.
-     * Disable this by setting this to false. For example: if your game has a canvas filling background image, you often don't need this set.
-     *
-     * @member {boolean}
-     * @default
-     */
-    this.clearBeforeRender = options.clearBeforeRender;
-
-    /**
-     * The width of the canvas view
-     *
-     * @member {number}
-     * @default 800
-     */
-    this.width = width || 800;
-
-    /**
-     * The height of the canvas view
-     *
-     * @member {number}
-     * @default 600
-     */
-    this.height = height || 600;
-
-    /**
-     * The canvas element that everything is drawn to
-     *
-     * @member {HTMLCanvasElement}
-     */
-    this.view = options.view || document.createElement( 'canvas' );
-
-    // deal with losing context..
-
-    /**
-     * @member {Function}
-     */
-    this.contextLostBound = this.handleContextLost.bind(this);
-
-    /**
-     * @member {Function}
-     */
-    this.contextRestoredBound = this.handleContextRestored.bind(this);
-
-    this.view.addEventListener('webglcontextlost', this.contextLostBound, false);
-    this.view.addEventListener('webglcontextrestored', this.contextRestoredBound, false);
-
-    /**
      * @member {object}
      * @private
      */
     this._contextOptions = {
         alpha: this.transparent,
-        antialias: options.antialias, // SPEED UP??
-        premultipliedAlpha:this.transparent && this.transparent !== 'notMultiplied',
-        stencil:true,
+        antialias: options.antialias,
+        premultipliedAlpha: this.transparent && this.transparent !== 'notMultiplied',
+        stencil: true,
         preserveDrawingBuffer: options.preserveDrawingBuffer
     };
-
 
     /**
      * Counter for the number of draws made each frame
@@ -174,26 +68,30 @@ function WebGLRenderer(width, height, options)
      */
     this.drawCount = 0;
 
-    // time to create the render managers! each one focuses on managing a state in webGL
-
-
-
     /**
-     * Deals with managing the shader programs and their attribs
+     * Deals with managing the shader programs and their attribs.
+     *
      * @member {ShaderManager}
      */
     this.shaderManager = new ShaderManager(this);
 
     /**
-     * Manages the masks using the stencil buffer
+     * Manages the masks using the stencil buffer.
+     *
      * @member {MaskManager}
      */
     this.maskManager = new MaskManager(this);
 
+    /**
+     * Manages the stencil buffer.
+     *
+     * @member {StencilManager}
+     */
     this.stencilManager = new StencilManager(this);
 
     /**
-     * Manages the filters
+     * Manages the filters.
+     *
      * @member {FilterManager}
      */
     this.filterManager = new FilterManager(this);
@@ -204,14 +102,6 @@ function WebGLRenderer(width, height, options)
      * @member {BlendModeManager}
      */
     this.blendModeManager = new BlendModeManager(this);
-
-    this.blendModes = null;
-
-
-
-    this._boundUpdateTexture = this.updateTexture.bind(this);
-    this._boundDestroyTexture = this.destroyTexture.bind(this);
-
 
     this.currentRenderTarget = this.renderTarget;
 
@@ -234,34 +124,11 @@ function WebGLRenderer(width, height, options)
 }
 
 // constructor
+WebGLRenderer.prototype = Object.create(SystemRenderer);
 WebGLRenderer.prototype.constructor = WebGLRenderer;
 module.exports = WebGLRenderer;
 
 WebGLRenderer.glContextId = 0;
-
-utils.pluginTarget.mixin(WebGLRenderer);
-utils.eventTarget.mixin(WebGLRenderer.prototype);
-
-Object.defineProperties(WebGLRenderer.prototype, {
-    /**
-     * The background color to fill if not transparent
-     *
-     * @member {number}
-     * @memberof WebGLRenderer#
-     */
-    backgroundColor:
-    {
-        get: function ()
-        {
-            return this._backgroundColor;
-        },
-        set: function (val)
-        {
-            this._backgroundColor = val;
-            utils.hex2rgb(val, this._backgroundColorRgb);
-        }
-    }
-});
 
 /**
  *
@@ -291,7 +158,7 @@ WebGLRenderer.prototype._initContext = function ()
 
     this.emit('context', gl);
 
-    // now resize and we are good to go!
+    // setup the width/height properties and gl viewport
     this.resize(this.width, this.height);
 };
 
@@ -394,17 +261,7 @@ WebGLRenderer.prototype.setRenderTarget = function (renderTarget)
  */
 WebGLRenderer.prototype.resize = function (width, height)
 {
-    this.width = width * this.resolution;
-    this.height = height * this.resolution;
-
-    this.view.width = this.width;
-    this.view.height = this.height;
-
-    if (this.autoResize)
-    {
-        this.view.style.width = this.width / this.resolution + 'px';
-        this.view.style.height = this.height / this.resolution + 'px';
-    }
+    SystemRenderer.prototype.resize.call(this, width, height);
 
     this.gl.viewport(0, 0, this.width, this.height);
 
@@ -518,56 +375,34 @@ WebGLRenderer.prototype.handleContextRestored = function ()
  */
 WebGLRenderer.prototype.destroy = function (removeView)
 {
-    if (removeView && this.view.parent)
-    {
-        this.view.parent.removeChild(this.view);
-    }
-
     // remove listeners
-    this.view.removeEventListener('webglcontextlost', this.contextLostBound);
-    this.view.removeEventListener('webglcontextrestored', this.contextRestoredBound);
+    this.view.removeEventListener('webglcontextlost', this._boundContextLost);
+    this.view.removeEventListener('webglcontextrestored', this._boundContextRestored);
 
-    // time to create the render managers! each one focuses on managine a state in webGL
+    // call base destroy
+    SystemRenderer.prototype.destroy.call(this, removeView);
+
+    this.uuid = 0;
+
+    // destroy the managers
     this.shaderManager.destroy();
     this.maskManager.destroy();
+    this.stencilManager.destroy();
     this.filterManager.destroy();
-
-    this.destroyPlugins();
-
-    // this.uuid = utils.uuid();
-    // this.type = CONST.WEBGL_RENDERER;
-
-    // this.resolution = options.resolution;
-    // this.transparent = options.transparent;
-
-    this._backgroundColor = 0x000000;
-    this._backgroundColorRgb = null;
-
-    // this.backgroundColor = null;
-    // this.autoResize = options.autoResize || false;
-    // this.preserveDrawingBuffer = options.preserveDrawingBuffer;
-    // this.clearBeforeRender = options.clearBeforeRender;
-    // this.width = width || 800;
-    // this.height = height || 600;
-
-    this.view = null;
-
-    this.contextLostBound = null;
-    this.contextRestoredBound = null;
-
-    this._contextOptions = null;
-
-    this.drawCount = 0;
 
     this.shaderManager = null;
     this.maskManager = null;
     this.filterManager = null;
     this.blendModeManager = null;
 
-    this.blendModes = null;
+    this._boundContextLost = null;
+    this._boundContextRestored = null;
+
+    this._contextOptions = null;
+
+    this.drawCount = 0;
 
     this.gl = null;
-    this.blendModes = null;
 };
 
 /**

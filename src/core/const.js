@@ -1,27 +1,9 @@
 /**
  * Constant values used in pixi
  *
- * @mixin const
+ * @namespace PIXI.CONST
  */
 module.exports = {
-    /**
-     * Constant to identify the WEBGL Renderer Type
-     *
-     * @static
-     * @constant
-     * @property {number} WEBGL_RENDERER
-     */
-    WEBGL_RENDERER: 1,
-
-    /**
-     * Constant to identify the CANVAS Renderer Type
-     *
-     * @static
-     * @constant
-     * @property {number} CANVAS_RENDERER
-     */
-    CANVAS_RENDERER: 2,
-
     /**
      * String of the current PIXI version
      *
@@ -30,6 +12,22 @@ module.exports = {
      * @property {string} VERSION
      */
     VERSION: require('../../package.json').version,
+
+    /**
+     * Constant to identify the Renderer Type.
+     *
+     * @static
+     * @constant
+     * @property {object} RENDERER_TYPE
+     * @property {number} RENDERER_TYPE.UNKNOWN
+     * @property {number} RENDERER_TYPE.WEBGL
+     * @property {number} RENDERER_TYPE.CANVAS
+     */
+    RENDERER_TYPE: {
+        UNKNOWN:    0,
+        WEBGL:      1,
+        CANVAS:     2
+    },
 
     /**
      * Various blend modes supported by PIXI. IMPORTANT - The WebGL renderer only supports

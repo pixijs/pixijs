@@ -343,10 +343,10 @@ Sprite.prototype.renderCanvas = function (renderer)
         renderer.context.globalAlpha = this.worldAlpha;
 
         // If smoothingEnabled is supported and we need to change the smoothing property for this texture
-        if (renderer.smoothProperty && renderer.scaleMode !== this.texture.baseTexture.scaleMode)
+        if (renderer.smoothProperty && renderer.currentScaleMode !== this.texture.baseTexture.scaleMode)
         {
-            renderer.scaleMode = this.texture.baseTexture.scaleMode;
-            renderer.context[renderer.smoothProperty] = (renderer.scaleMode === CONST.scaleModes.LINEAR);
+            renderer.currentScaleMode = this.texture.baseTexture.scaleMode;
+            renderer.context[renderer.smoothProperty] = (renderer.currentScaleMode === CONST.scaleModes.LINEAR);
         }
 
         // If the texture is trimmed we offset by the trim x/y, otherwise we use the frame dimensions
