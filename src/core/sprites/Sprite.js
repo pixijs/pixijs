@@ -23,7 +23,6 @@ function Sprite(texture)
 {
     Container.call(this);
 
-
     /**
      * The anchor sets the origin point of the texture.
      * The default is 0,0 this means the texture's origin is the top left
@@ -300,14 +299,8 @@ Sprite.prototype.getBounds = function (matrix)
     bounds.y = minY;
     bounds.height = maxY - minY;
 
-    if(this.children.length)
-    {
-
-    }
-
     // store a reference so that if this function gets called again in the render cycle we do not have to recalculate
     this._currentBounds = bounds;
-
 
     return bounds;
 };
