@@ -23,9 +23,15 @@ var Container = require('../display/Container');
  * @class
  * @namespace PIXI
  */
-function ParticleContainer()
+function ParticleContainer(size, properties)
 {
     Container.call(this);
+
+
+    this._properties = properties || [false, true, false, false, false];;
+    this._size = size || 15000;
+    this._buffers = null;
+    this._updateStatic = false;
 }
 
 ParticleContainer.prototype = Object.create(Container.prototype);
@@ -63,6 +69,52 @@ ParticleContainer.prototype.renderWebGL = function (renderer)
 
     renderer.plugins.particle.render( this );
 
+};
+
+ParticleContainer.prototype.addChildAt = function (child, index)
+{
+    // prevent adding self as child
+    if (child === this)
+    {
+        return child;
+    }
+
+    if (index >= 0 && index <= this.children.length)
+    {
+        if (child.parent)
+        {
+            child.parent.removeChild(child);
+        }
+
+        child.parent = this;
+
+        this.children.splice(index, 0, child);
+
+        this._updateStatic = true;
+
+        return child;
+    }
+    else
+    {
+        throw new Error(child + 'addChildAt: The index '+ index +' supplied is out of bounds ' + this.children.length);
+    }
+};
+
+/**
+ * Removes a child from the specified index position.
+ *
+ * @param index {Number} The index to get the child from
+ * @return {DisplayObject} The child that was removed.
+ */
+ParticleContainer.prototype.removeChildAt = function (index)
+{
+    var child = this.getChildAt(index);
+
+    child.parent = null;
+    this.children.splice(index, 1);
+    this._updateStatic = true;
+
+    return child;
 };
 
 /**

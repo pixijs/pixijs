@@ -130,7 +130,7 @@ function SystemRenderer(system, width, height, options)
      * @member {number}
      * @private
      */
-    this._backgroundColor = 0x000000;
+    this._backgroundColor = 0xFFFFFF;
 
     /**
      * The background color as an [R, G, B] array.
@@ -138,7 +138,7 @@ function SystemRenderer(system, width, height, options)
      * @member {number[]}
      * @private
      */
-    this._backgroundColorRgb = [0, 0, 0];
+    this._backgroundColorRgb = [1, 1, 1];
 
     /**
      * The background color as a string.
