@@ -761,7 +761,7 @@ Graphics.prototype._renderWebGL = function (renderer)
 Graphics.prototype.renderCanvas = function (renderer)
 {
     // if the sprite is not visible or the alpha is 0 then no need to render this element
-    if (!this.visible || this.alpha <= 0 || this.isMask === true)
+    if (!this.visible || this.alpha <= 0 || this.isMask === true  || !this.renderable)
     {
         return;
     }

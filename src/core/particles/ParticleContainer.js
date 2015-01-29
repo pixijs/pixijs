@@ -52,17 +52,14 @@ ParticleContainer.prototype.updateTransform = function ()
  */
 ParticleContainer.prototype.renderWebGL = function (renderer)
 {
-    if (!this.visible || this.alpha <= 0 || !this.children.length)
+    if (!this.visible || this.alpha <= 0 || !this.children.length || !this.renderable)
     {
         return;
     }
 
     renderer.setObjectRenderer( renderer.plugins.particle );
 
-
-
     renderer.plugins.particle.render( this );
-
 };
 
 /**
@@ -73,7 +70,7 @@ ParticleContainer.prototype.renderWebGL = function (renderer)
  */
 ParticleContainer.prototype.renderCanvas = function (renderer)
 {
-    if (!this.visible || this.alpha <= 0 || !this.children.length)
+    if (!this.visible || this.alpha <= 0 || !this.children.length || !this.renderable)
     {
         return;
     }
