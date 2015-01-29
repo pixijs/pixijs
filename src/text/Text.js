@@ -42,6 +42,22 @@ function Text(text, style)
      */
     this.resolution = 1;
 
+    /**
+     * Private tracker for the current text.
+     *
+     * @member {string}
+     * @private
+     */
+    this._text = null;
+
+    /**
+     * Private tracker for the current style.
+     *
+     * @member {object}
+     * @private
+     */
+    this._style = null;
+
     core.Sprite.call(this, core.Texture.fromCanvas(this.canvas));
 
     this.text = text;
@@ -174,11 +190,12 @@ Text.prototype.updateText = function ()
 {
     this.texture.baseTexture.resolution = this.resolution;
 
-    this.context.font = this.style.font;
+    var style = this._style;
+    this.context.font = style.font;
 
     // word wrap
     // preserve original text
-    var outputText = this.style.wordWrap ? this.wordWrap(this.text) : this.text;
+    var outputText = style.wordWrap ? this.wordWrap(this._text) : this._text;
 
     //split text into lines
     var lines = outputText.split(/(?:\r\n|\r|\n)/);
@@ -186,7 +203,7 @@ Text.prototype.updateText = function ()
     //calculate text width
     var lineWidths = new Array(lines.length);
     var maxLineWidth = 0;
-    var fontProperties = this.determineFontProperties(this.style.font);
+    var fontProperties = this.determineFontProperties(style.font);
     for (var i = 0; i < lines.length; i++)
     {
         var lineWidth = this.context.measureText(lines[i]).width;
@@ -194,16 +211,16 @@ Text.prototype.updateText = function ()
         maxLineWidth = Math.max(maxLineWidth, lineWidth);
     }
 
-    var width = maxLineWidth + this.style.strokeThickness;
-    if (this.style.dropShadow)
+    var width = maxLineWidth + style.strokeThickness;
+    if (style.dropShadow)
     {
-        width += this.style.dropShadowDistance;
+        width += style.dropShadowDistance;
     }
 
     this.canvas.width = ( width + this.context.lineWidth ) * this.resolution;
 
     //calculate text height
-    var lineHeight = fontProperties.fontSize + this.style.strokeThickness;
+    var lineHeight = fontProperties.fontSize + style.strokeThickness;
 
     var height = lineHeight * lines.length;
     if (this.style.dropShadow)
