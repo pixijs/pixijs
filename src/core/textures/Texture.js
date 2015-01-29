@@ -37,6 +37,8 @@ function Texture(baseTexture, frame, crop, trim)
         baseTexture = baseTexture.baseTexture;
     }
 
+  //  console.log(frame);
+
     /**
      * The base texture that this texture uses.
      *
@@ -101,7 +103,7 @@ function Texture(baseTexture, frame, crop, trim)
      *
      * @member {Rectangle}
      */
-    this.crop = crop || new math.Rectangle(0, 0, 1, 1);
+    this.crop = crop || frame;//new math.Rectangle(0, 0, 1, 1);
 
     if (baseTexture.hasLoaded)
     {
@@ -148,10 +150,7 @@ Object.defineProperties(Texture.prototype, {
             this.width = frame.width;
             this.height = frame.height;
 
-            this.crop.x = frame.x;
-            this.crop.y = frame.y;
-            this.crop.width = frame.width;
-            this.crop.height = frame.height;
+            this.crop = frame;
 
             if (!this.trim && (frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height))
             {
@@ -189,6 +188,7 @@ Texture.prototype.onBaseTextureLoaded = function ()
     // TODO this code looks confusing.. boo to abusing getters and setterss!
     if (this.noFrame)
     {
+        console.log("NO FRAME")
         this.frame = new math.Rectangle(0, 0, baseTexture.width, baseTexture.height);
     }
     else

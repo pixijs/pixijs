@@ -215,8 +215,8 @@ Sprite.prototype._renderWebGL = function (renderer)
  */
 Sprite.prototype.getBounds = function (matrix)
 {
-    var width = this.texture.frame.width;
-    var height = this.texture.frame.height;
+    var width = this._texture._frame.width;
+    var height = this._texture._frame.height;
 
     var w0 = width * (1-this.anchor.x);
     var w1 = width * -this.anchor.x;
