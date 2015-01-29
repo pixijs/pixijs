@@ -17,7 +17,7 @@
  * @namespace PIXI
  * @param renderer {WebGLRenderer} The renderer this sprite batch works for.
  */
-function ParticleBuffer(gl, properties, size, shader )
+function ParticleBuffer(gl, properties, size)
 {
     this.gl = gl;
 
@@ -45,8 +45,10 @@ function ParticleBuffer(gl, properties, size, shader )
     this.dynamicProperties = [];
     this.staticProperties = [];
 
-    for (var i = 0; i < properties.length; i++) {
+    for (var i = 0; i < properties.length; i++)
+    {
         var property = properties[i];
+
         if(property.dynamic)
         {
             this.dynamicProperties.push(property);
@@ -55,7 +57,7 @@ function ParticleBuffer(gl, properties, size, shader )
         {
             this.staticProperties.push(property);
         }
-    };
+    }
 
     this.staticStride = 0;
     this.staticBuffer = null;
@@ -124,7 +126,7 @@ ParticleBuffer.prototype.initBuffers = function ()
 
 };
 
-ParticleBuffer.prototype.uploadDynamic = function(children, startIndex, amount, uploadStatic)
+ParticleBuffer.prototype.uploadDynamic = function(children, startIndex, amount)
 {
     var gl = this.gl;
 
@@ -136,9 +138,9 @@ ParticleBuffer.prototype.uploadDynamic = function(children, startIndex, amount, 
 
     gl.bindBuffer(gl.ARRAY_BUFFER, this.dynamicBuffer);
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.dynamicData);
-}
+};
 
-ParticleBuffer.prototype.uploadStatic = function(children, startIndex, amount, uploadStatic)
+ParticleBuffer.prototype.uploadStatic = function(children, startIndex, amount)
 {
     var gl = this.gl;
 
@@ -150,7 +152,7 @@ ParticleBuffer.prototype.uploadStatic = function(children, startIndex, amount, u
 
     gl.bindBuffer(gl.ARRAY_BUFFER, this.staticBuffer);
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.staticData);
-}
+};
 
 /**
  * Starts a new sprite batch.

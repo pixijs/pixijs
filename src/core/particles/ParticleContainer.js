@@ -27,8 +27,9 @@ function ParticleContainer(size, properties)
 {
     Container.call(this);
 
-
-    this._properties = properties || [false, true, false, false, false];;
+    // set properties to be dynamic (true) / static (false)
+    // TODO this could be easier to understand!
+    this._properties = properties || [false, true, false, false, false];
     this._size = size || 15000;
     this._buffers = null;
     this._updateStatic = false;

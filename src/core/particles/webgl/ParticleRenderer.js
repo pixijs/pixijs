@@ -249,17 +249,18 @@ ParticleRenderer.prototype.render = function ( container )
 
 ParticleRenderer.prototype.generateBuffers = function ( container )
 {
-    var gl = this.renderer.gl;
-    var buffers = [];
-    var size = container._size;
+    var gl = this.renderer.gl,
+        buffers = [],
+        size = container._size,
+        i;
 
     // update the properties to match the state of the container..
-    for (var i = 0; i < container._properties.length; i++)
+    for (i = 0; i < container._properties.length; i++)
     {
         this.properties[i].dynamic = container._properties[i];
     }
 
-    for (var i = 0; i < size; i += this.size)
+    for (i = 0; i < size; i += this.size)
     {
         buffers.push( new ParticleBuffer(gl,  this.properties, this.size, this.shader) );
     }
