@@ -163,15 +163,3 @@ Rope.prototype.updateTransform = function ()
 
     this.containerUpdateTransform();
 };
-
-/**
- * Sets the texture that the Rope will use
- *
- * @param texture {Texture} the texture that will be used
- */
-Rope.prototype.setTexture = function (texture)
-{
-    // stop current texture
-    this.texture = texture;
-    //this.updateFrame = true;
-};

@@ -393,6 +393,7 @@ Strip.prototype.setTexture = function (texture)
 {
     //TODO SET THE TEXTURES
     //TODO VISIBILITY
+    //TODO SETTER
 
     // stop current texture
     this.texture = texture;
