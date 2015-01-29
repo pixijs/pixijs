@@ -69,6 +69,10 @@ Text.prototype = Object.create(core.Sprite.prototype);
 Text.prototype.constructor = Text;
 module.exports = Text;
 
+Text.fontPropertiesCache = {};
+Text.fontPropertiesCanvas = document.createElement('canvas');
+Text.fontPropertiesContext = Text.fontPropertiesCanvas.getContext('2d');
+
 Object.defineProperties(Text.prototype, {
     /**
      * The width of the Text, setting this will actually modify the scale to achieve the value set
@@ -117,22 +121,22 @@ Object.defineProperties(Text.prototype, {
     },
 
     /**
-    * Set the style of the text
-    *
-    * @param [style] {object} The style parameters
-    * @param [style.font='bold 20pt Arial'] {string} The style and size of the font
-    * @param [style.fill='black'] {object} A canvas fillstyle that will be used on the text eg 'red', '#00FF00'
-    * @param [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
-    * @param [style.stroke='black'] {string} A canvas fillstyle that will be used on the text stroke eg 'blue', '#FCFF00'
-    * @param [style.strokeThickness=0] {number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
-    * @param [style.wordWrap=false] {boolean} Indicates if word wrap should be used
-    * @param [style.wordWrapWidth=100] {number} The width at which text will wrap
-    * @param [style.dropShadow=false] {boolean} Set a drop shadow for the text
-    * @param [style.dropShadowColor='#000000'] {string} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
-    * @param [style.dropShadowAngle=Math.PI/4] {number} Set a angle of the drop shadow
-    * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
-    * @memberof Text#
-    */
+     * Set the style of the text
+     *
+     * @param [style] {object} The style parameters
+     * @param [style.font='bold 20pt Arial'] {string} The style and size of the font
+     * @param [style.fill='black'] {object} A canvas fillstyle that will be used on the text eg 'red', '#00FF00'
+     * @param [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
+     * @param [style.stroke='black'] {string} A canvas fillstyle that will be used on the text stroke eg 'blue', '#FCFF00'
+     * @param [style.strokeThickness=0] {number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
+     * @param [style.wordWrap=false] {boolean} Indicates if word wrap should be used
+     * @param [style.wordWrapWidth=100] {number} The width at which text will wrap
+     * @param [style.dropShadow=false] {boolean} Set a drop shadow for the text
+     * @param [style.dropShadowColor='#000000'] {string} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
+     * @param [style.dropShadowAngle=Math.PI/6] {number} Set a angle of the drop shadow
+     * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
+     * @memberof Text#
+     */
     style: {
         get: function ()
         {
@@ -150,9 +154,9 @@ Object.defineProperties(Text.prototype, {
             style.wordWrapWidth = style.wordWrapWidth || 100;
 
             style.dropShadow = style.dropShadow || false;
+            style.dropShadowColor = style.dropShadowColor || '#000000';
             style.dropShadowAngle = style.dropShadowAngle || Math.PI / 6;
-            style.dropShadowDistance = style.dropShadowDistance || 4;
-            style.dropShadowColor = style.dropShadowColor || 'black';
+            style.dropShadowDistance = style.dropShadowDistance || 5;
 
             this._style = style;
             this.dirty = true;
@@ -160,10 +164,10 @@ Object.defineProperties(Text.prototype, {
     },
 
     /**
-    * Set the copy for the text object. To split a line you can use '\n'.
-    *
-    * @param text {string} The copy that you would like the text to display
-    */
+     * Set the copy for the text object. To split a line you can use '\n'.
+     *
+     * @param text {string} The copy that you would like the text to display
+     */
     text: {
         get: function()
         {
@@ -237,10 +241,6 @@ Text.prototype.updateText = function ()
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
 
-    // used for debugging..
-    //this.context.fillStyle ="#FF0000"
-    //this.context.fillRect(0, 0, this.canvas.width,this.canvas.height);
-
     this.context.font = style.font;
     this.context.strokeStyle = style.stroke;
     this.context.lineWidth = style.strokeThickness;
@@ -275,8 +275,6 @@ Text.prototype.updateText = function ()
             {
                 this.context.fillText(lines[i], linePositionX + xShadowOffset, linePositionY + yShadowOffset);
             }
-
-          //  if (dropShadow)
         }
     }
 
@@ -307,8 +305,6 @@ Text.prototype.updateText = function ()
         {
             this.context.fillText(lines[i], linePositionX, linePositionY);
         }
-
-      //  if (dropShadow)
     }
 
     this.updateTexture();
@@ -329,12 +325,14 @@ Text.prototype.updateTexture = function ()
     this._width = this.canvas.width;
     this._height = this.canvas.height;
 
+    this.texture.needsUpdate = true;
+
     this.dirty = false;
 };
 
 /**
  * Renders the object using the WebGL renderer
-*
+ *
  * @param renderer {WebGLRenderer}
  */
 Text.prototype.renderWebGL = function (renderer)
@@ -351,7 +349,7 @@ Text.prototype.renderWebGL = function (renderer)
 
 /**
  * Renders the object using the Canvas renderer
-*
+ *
  * @param renderer {CanvasRenderer}
  */
 Text.prototype.renderCanvas = function (renderer)
@@ -368,7 +366,7 @@ Text.prototype.renderCanvas = function (renderer)
 
 /**
  * Calculates the ascent, descent and fontSize of a given fontStyle
-*
+ *
  * @param fontStyle {object}
  * @private
  */
@@ -547,7 +545,3 @@ Text.prototype.destroy = function (destroyBaseTexture)
 
     this.texture.destroy(destroyBaseTexture === undefined ? true : destroyBaseTexture);
 };
-
-Text.fontPropertiesCache = {};
-Text.fontPropertiesCanvas = document.createElement('canvas');
-Text.fontPropertiesContext = Text.fontPropertiesCanvas.getContext('2d');
