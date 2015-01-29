@@ -248,7 +248,7 @@ BitmapText.prototype.updateText = function ()
 
         if (c)
         {
-            c.setTexture(chars[i].texture); // check if got one before.
+            c.texture = chars[i].texture; // check if got one before.
         }
         else
         {

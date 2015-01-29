@@ -112,7 +112,7 @@ MovieClip.prototype.gotoAndStop = function (frameNumber)
     this.currentFrame = frameNumber;
 
     var round = Math.round(this.currentFrame);
-    this.setTexture(this.textures[round % this.textures.length]);
+    this.texture = this.textures[round % this.textures.length];
 };
 
 /**

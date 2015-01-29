@@ -44,8 +44,8 @@ function Text(text, style)
 
     core.Sprite.call(this, core.Texture.fromCanvas(this.canvas));
 
-    this.setText(text);
-    this.setStyle(style);
+    this.text = text;
+    this.style = style;
 }
 
 // constructor
@@ -66,7 +66,6 @@ Object.defineProperties(Text.prototype, {
             if (this.dirty)
             {
                 this.updateText();
-                this.dirty = false;
             }
 
             return this.scale.x * this.texture.frame.width;
@@ -90,7 +89,6 @@ Object.defineProperties(Text.prototype, {
             if (this.dirty)
             {
                 this.updateText();
-                this.dirty = false;
             }
 
             return  this.scale.y * this.texture.frame.height;
@@ -100,55 +98,72 @@ Object.defineProperties(Text.prototype, {
             this.scale.y = value / this.texture.frame.height;
             this._height = value;
         }
+    },
+
+    /**
+    * Set the style of the text
+    *
+    * @param [style] {object} The style parameters
+    * @param [style.font='bold 20pt Arial'] {string} The style and size of the font
+    * @param [style.fill='black'] {object} A canvas fillstyle that will be used on the text eg 'red', '#00FF00'
+    * @param [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
+    * @param [style.stroke='black'] {string} A canvas fillstyle that will be used on the text stroke eg 'blue', '#FCFF00'
+    * @param [style.strokeThickness=0] {number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
+    * @param [style.wordWrap=false] {boolean} Indicates if word wrap should be used
+    * @param [style.wordWrapWidth=100] {number} The width at which text will wrap
+    * @param [style.dropShadow=false] {boolean} Set a drop shadow for the text
+    * @param [style.dropShadowColor='#000000'] {string} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
+    * @param [style.dropShadowAngle=Math.PI/4] {number} Set a angle of the drop shadow
+    * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
+    * @memberof Text#
+    */
+    style: {
+        get: function ()
+        {
+            return this._style;
+        },
+        set: function (style)
+        {
+            style = style || {};
+            style.font = style.font || 'bold 20pt Arial';
+            style.fill = style.fill || 'black';
+            style.align = style.align || 'left';
+            style.stroke = style.stroke || 'black'; //provide a default, see: https://github.com/GoodBoyDigital/pixi.js/issues/136
+            style.strokeThickness = style.strokeThickness || 0;
+            style.wordWrap = style.wordWrap || false;
+            style.wordWrapWidth = style.wordWrapWidth || 100;
+
+            style.dropShadow = style.dropShadow || false;
+            style.dropShadowAngle = style.dropShadowAngle || Math.PI / 6;
+            style.dropShadowDistance = style.dropShadowDistance || 4;
+            style.dropShadowColor = style.dropShadowColor || 'black';
+
+            this._style = style;
+            this.dirty = true;
+        }
+    },
+
+    /**
+    * Set the copy for the text object. To split a line you can use '\n'.
+    *
+    * @param text {string} The copy that you would like the text to display
+    */
+    text: {
+        get: function()
+        {
+            return this._text;
+        },
+        set: function (text){
+            text = text.toString() || ' ';
+            if (this._text === text)
+            {
+                return;
+            }
+            this._text = text;
+            this.dirty = true;
+        }
     }
 });
-
-/**
- * Set the style of the text
- *
- * @param [style] {object} The style parameters
- * @param [style.font='bold 20pt Arial'] {string} The style and size of the font
- * @param [style.fill='black'] {object} A canvas fillstyle that will be used on the text eg 'red', '#00FF00'
- * @param [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
- * @param [style.stroke='black'] {string} A canvas fillstyle that will be used on the text stroke eg 'blue', '#FCFF00'
- * @param [style.strokeThickness=0] {number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
- * @param [style.wordWrap=false] {boolean} Indicates if word wrap should be used
- * @param [style.wordWrapWidth=100] {number} The width at which text will wrap
- * @param [style.dropShadow=false] {boolean} Set a drop shadow for the text
- * @param [style.dropShadowColor='#000000'] {string} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
- * @param [style.dropShadowAngle=Math.PI/4] {number} Set a angle of the drop shadow
- * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
- */
-Text.prototype.setStyle = function (style)
-{
-    style = style || {};
-    style.font = style.font || 'bold 20pt Arial';
-    style.fill = style.fill || 'black';
-    style.align = style.align || 'left';
-    style.stroke = style.stroke || 'black'; //provide a default, see: https://github.com/GoodBoyDigital/pixi.js/issues/136
-    style.strokeThickness = style.strokeThickness || 0;
-    style.wordWrap = style.wordWrap || false;
-    style.wordWrapWidth = style.wordWrapWidth || 100;
-
-    style.dropShadow = style.dropShadow || false;
-    style.dropShadowAngle = style.dropShadowAngle || Math.PI / 6;
-    style.dropShadowDistance = style.dropShadowDistance || 4;
-    style.dropShadowColor = style.dropShadowColor || 'black';
-
-    this.style = style;
-    this.dirty = true;
-};
-
-/**
- * Set the copy for the text object. To split a line you can use '\n'.
- *
- * @param text {string} The copy that you would like the text to display
- */
-Text.prototype.setText = function (text)
-{
-    this.text = text.toString() || ' ';
-    this.dirty = true;
-};
 
 /**
  * Renders text and updates it when needed
@@ -161,20 +176,15 @@ Text.prototype.updateText = function ()
 
     this.context.font = this.style.font;
 
-    var outputText = this.text;
-
     // word wrap
     // preserve original text
-    if (this.style.wordWrap)
-    {
-        outputText = this.wordWrap(this.text);
-    }
+    var outputText = this.style.wordWrap ? this.wordWrap(this.text) : this.text;
 
     //split text into lines
     var lines = outputText.split(/(?:\r\n|\r|\n)/);
 
     //calculate text width
-    var lineWidths = [];
+    var lineWidths = new Array(lines.length);
     var maxLineWidth = 0;
     var fontProperties = this.determineFontProperties(this.style.font);
     for (var i = 0; i < lines.length; i++)
@@ -302,8 +312,7 @@ Text.prototype.updateTexture = function ()
     this._width = this.canvas.width;
     this._height = this.canvas.height;
 
-    // update the dirty base textures
-    //this.texture.baseTexture.dirty();
+    this.dirty = false;
 };
 
 /**
@@ -318,7 +327,6 @@ Text.prototype.renderWebGL = function (renderer)
         this.resolution = renderer.resolution;
 
         this.updateText();
-        this.dirty = false;
     }
 
     core.Sprite.prototype.renderWebGL.call(this, renderer);
@@ -336,7 +344,6 @@ Text.prototype.renderCanvas = function (renderer)
         this.resolution = renderer.resolution;
 
         this.updateText();
-        this.dirty = false;
     }
 
     core.Sprite.prototype.renderCanvas.call(this, renderer);
@@ -377,7 +384,7 @@ Text.prototype.determineFontProperties = function (fontStyle)
 
         context.textBaseline = 'alphabetic';
         context.fillStyle = '#000';
-        context.fillText('|MÃ‰q', 0, baseline);
+        context.fillText('|MÉq', 0, baseline);
 
         var imagedata = context.getImageData(0, 0, width, height).data;
         var pixels = imagedata.length;
@@ -504,7 +511,6 @@ Text.prototype.getBounds = function (matrix)
     if (this.dirty)
     {
         this.updateText();
-        this.dirty = false;
     }
 
     return core.Sprite.prototype.getBounds.call(this, matrix);
