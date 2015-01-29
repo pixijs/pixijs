@@ -223,9 +223,9 @@ Text.prototype.updateText = function ()
     var lineHeight = fontProperties.fontSize + style.strokeThickness;
 
     var height = lineHeight * lines.length;
-    if (this.style.dropShadow)
+    if (style.dropShadow)
     {
-        height += this.style.dropShadowDistance;
+        height += style.dropShadowDistance;
     }
 
     this.canvas.height = height * this.resolution;
@@ -241,37 +241,37 @@ Text.prototype.updateText = function ()
     //this.context.fillStyle ="#FF0000"
     //this.context.fillRect(0, 0, this.canvas.width,this.canvas.height);
 
-    this.context.font = this.style.font;
-    this.context.strokeStyle = this.style.stroke;
-    this.context.lineWidth = this.style.strokeThickness;
+    this.context.font = style.font;
+    this.context.strokeStyle = style.stroke;
+    this.context.lineWidth = style.strokeThickness;
     this.context.textBaseline = 'alphabetic';
     //this.context.lineJoin = 'round';
 
     var linePositionX;
     var linePositionY;
 
-    if (this.style.dropShadow)
+    if (style.dropShadow)
     {
-        this.context.fillStyle = this.style.dropShadowColor;
+        this.context.fillStyle = style.dropShadowColor;
 
-        var xShadowOffset = Math.cos(this.style.dropShadowAngle) * this.style.dropShadowDistance;
-        var yShadowOffset = Math.sin(this.style.dropShadowAngle) * this.style.dropShadowDistance;
+        var xShadowOffset = Math.cos(style.dropShadowAngle) * style.dropShadowDistance;
+        var yShadowOffset = Math.sin(style.dropShadowAngle) * style.dropShadowDistance;
 
         for (i = 0; i < lines.length; i++)
         {
-            linePositionX = this.style.strokeThickness / 2;
-            linePositionY = (this.style.strokeThickness / 2 + i * lineHeight) + fontProperties.ascent;
+            linePositionX = style.strokeThickness / 2;
+            linePositionY = (style.strokeThickness / 2 + i * lineHeight) + fontProperties.ascent;
 
-            if (this.style.align === 'right')
+            if (style.align === 'right')
             {
                 linePositionX += maxLineWidth - lineWidths[i];
             }
-            else if (this.style.align === 'center')
+            else if (style.align === 'center')
             {
                 linePositionX += (maxLineWidth - lineWidths[i]) / 2;
             }
 
-            if (this.style.fill)
+            if (style.fill)
             {
                 this.context.fillText(lines[i], linePositionX + xShadowOffset, linePositionY + yShadowOffset);
             }
@@ -281,29 +281,29 @@ Text.prototype.updateText = function ()
     }
 
     //set canvas text styles
-    this.context.fillStyle = this.style.fill;
+    this.context.fillStyle = style.fill;
 
     //draw lines line by line
     for (i = 0; i < lines.length; i++)
     {
-        linePositionX = this.style.strokeThickness / 2;
-        linePositionY = (this.style.strokeThickness / 2 + i * lineHeight) + fontProperties.ascent;
+        linePositionX = style.strokeThickness / 2;
+        linePositionY = (style.strokeThickness / 2 + i * lineHeight) + fontProperties.ascent;
 
-        if (this.style.align === 'right')
+        if (style.align === 'right')
         {
             linePositionX += maxLineWidth - lineWidths[i];
         }
-        else if (this.style.align === 'center')
+        else if (style.align === 'center')
         {
             linePositionX += (maxLineWidth - lineWidths[i]) / 2;
         }
 
-        if (this.style.stroke && this.style.strokeThickness)
+        if (style.stroke && style.strokeThickness)
         {
             this.context.strokeText(lines[i], linePositionX, linePositionY);
         }
 
-        if (this.style.fill)
+        if (style.fill)
         {
             this.context.fillText(lines[i], linePositionX, linePositionY);
         }
@@ -483,9 +483,10 @@ Text.prototype.wordWrap = function (text)
     // than its horizontal bounds.
     var result = '';
     var lines = text.split('\n');
+    var wordWrapWidth = this._style.wordWrapWidth;
     for (var i = 0; i < lines.length; i++)
     {
-        var spaceLeft = this.style.wordWrapWidth;
+        var spaceLeft = wordWrapWidth;
         var words = lines[i].split(' ');
         for (var j = 0; j < words.length; j++)
         {
@@ -500,7 +501,7 @@ Text.prototype.wordWrap = function (text)
                     result += '\n';
                 }
                 result += words[j];
-                spaceLeft = this.style.wordWrapWidth - wordWidth;
+                spaceLeft = wordWrapWidth - wordWidth;
             }
             else
             {
