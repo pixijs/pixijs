@@ -126,12 +126,6 @@ function InteractionManager(stage, renderer)
     this.onTouchMove = this.onTouchMove.bind(this);
 
     /**
-     * Is set to true when the mouse is moved out of the canvas
-     * @member {boolean}
-     */
-    this.mouseOut = false;
-
-    /**
      * @member {number}
      */
     this.resolution = 1;
@@ -375,12 +369,6 @@ InteractionManager.prototype.onMouseOut = function (event)
         }
         this.over = null;
     }
-
-    this.mouseOut = true;
-
-    // move the mouse to an impossible position
-    this.mouse.global.x = -10000;
-    this.mouse.global.y = -10000;
 };
 
 /**
