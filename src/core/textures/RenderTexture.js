@@ -139,7 +139,7 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
      */
     this.renderer = renderer;
 
-    if (this.renderer.type === CONST.WEBGL_RENDERER)
+    if (this.renderer.type === CONST.RENDERER_TYPE.WEBGL)
     {
         var gl = this.renderer.gl;
 
@@ -194,7 +194,7 @@ RenderTexture.prototype.resize = function (width, height, updateBase)
         this.baseTexture.height = this.height;
     }
 
-    if (this.renderer.type === CONST.WEBGL_RENDERER)
+    if (this.renderer.type === CONST.RENDERER_TYPE.WEBGL)
     {
         this.projection.x = this.width / 2;
         this.projection.y = -this.height / 2;
@@ -219,7 +219,7 @@ RenderTexture.prototype.clear = function ()
         return;
     }
 
-    if (this.renderer.type === CONST.WEBGL_RENDERER)
+    if (this.renderer.type === CONST.RENDERER_TYPE.WEBGL)
     {
         this.renderer.gl.bindFramebuffer(this.renderer.gl.FRAMEBUFFER, this.textureBuffer.frameBuffer);
     }
@@ -402,7 +402,7 @@ RenderTexture.prototype.getBase64 = function ()
  */
 RenderTexture.prototype.getCanvas = function ()
 {
-    if (this.renderer.type === CONST.WEBGL_RENDERER)
+    if (this.renderer.type === CONST.RENDERER_TYPE.WEBGL)
     {
         var gl =  this.renderer.gl;
         var width = this.textureBuffer.width;

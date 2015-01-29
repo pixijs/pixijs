@@ -203,7 +203,7 @@ TilingSprite.prototype.renderCanvas = function (renderer)
 
     if (this._mask)
     {
-        renderer.maskManager.pushMask(this._mask, context);
+        renderer.maskManager.pushMask(this._mask, renderer);
     }
 
     context.globalAlpha = this.worldAlpha;
@@ -264,7 +264,7 @@ TilingSprite.prototype.renderCanvas = function (renderer)
 
     if (this._mask)
     {
-        renderer.maskManager.popMask(renderer.context);
+        renderer.maskManager.popMask(renderer);
     }
 
     for (i = 0, j = this.children.length; i < j; ++i)

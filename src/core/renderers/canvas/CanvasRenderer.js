@@ -114,7 +114,7 @@ function CanvasRenderer(width, height, options)
 }
 
 // constructor
-CanvasRenderer.prototype = Object.create(SystemRenderer);
+CanvasRenderer.prototype = Object.create(SystemRenderer.prototype);
 CanvasRenderer.prototype.constructor = CanvasRenderer;
 module.exports = CanvasRenderer;
 

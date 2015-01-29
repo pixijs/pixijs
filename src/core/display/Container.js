@@ -421,7 +421,7 @@ Container.prototype.getLocalBounds = function ()
 Container.prototype.renderWebGL = function (renderer)
 {
     // if the object is not visible or the alpha is 0 then no need to render this element
-    if (this.isMask || !this.visible || this.alpha <= 0)
+    if (this.isMask || !this.visible || this.alpha <= 0 || !this.renderable)
     {
         return;
     }
@@ -493,7 +493,7 @@ Container.prototype._renderWebGL = function (/* renderer */)
  */
 Container.prototype.renderCanvas = function (renderer)
 {
-    if (!this.visible || this.alpha <= 0)
+    if (!this.visible || this.alpha <= 0 || !this.renderable)
     {
         return;
     }

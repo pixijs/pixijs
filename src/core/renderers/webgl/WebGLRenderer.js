@@ -124,13 +124,15 @@ function WebGLRenderer(width, height, options)
 }
 
 // constructor
-WebGLRenderer.prototype = Object.create(SystemRenderer);
+WebGLRenderer.prototype = Object.create(SystemRenderer.prototype);
 WebGLRenderer.prototype.constructor = WebGLRenderer;
 module.exports = WebGLRenderer;
 utils.pluginTarget.mixin(WebGLRenderer);
 utils.eventTarget.mixin(WebGLRenderer.prototype);
 
 WebGLRenderer.glContextId = 0;
+
+utils.pluginTarget.mixin(WebGLRenderer);
 
 /**
  *
@@ -377,6 +379,8 @@ WebGLRenderer.prototype.handleContextRestored = function ()
  */
 WebGLRenderer.prototype.destroy = function (removeView)
 {
+    this.destroyPlugins();
+
     // remove listeners
     this.view.removeEventListener('webglcontextlost', this._boundContextLost);
     this.view.removeEventListener('webglcontextrestored', this._boundContextRestored);
