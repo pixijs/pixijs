@@ -42,10 +42,26 @@ function Text(text, style)
      */
     this.resolution = 1;
 
+    /**
+     * Private tracker for the current text.
+     *
+     * @member {string}
+     * @private
+     */
+    this._text = null;
+
+    /**
+     * Private tracker for the current style.
+     *
+     * @member {object}
+     * @private
+     */
+    this._style = null;
+
     core.Sprite.call(this, core.Texture.fromCanvas(this.canvas));
 
-    this.setText(text);
-    this.setStyle(style);
+    this.text = text;
+    this.style = style;
 }
 
 // constructor
@@ -66,7 +82,6 @@ Object.defineProperties(Text.prototype, {
             if (this.dirty)
             {
                 this.updateText();
-                this.dirty = false;
             }
 
             return this.scale.x * this.texture.frame.width;
@@ -90,7 +105,6 @@ Object.defineProperties(Text.prototype, {
             if (this.dirty)
             {
                 this.updateText();
-                this.dirty = false;
             }
 
             return  this.scale.y * this.texture.frame.height;
@@ -100,55 +114,72 @@ Object.defineProperties(Text.prototype, {
             this.scale.y = value / this.texture.frame.height;
             this._height = value;
         }
+    },
+
+    /**
+    * Set the style of the text
+    *
+    * @param [style] {object} The style parameters
+    * @param [style.font='bold 20pt Arial'] {string} The style and size of the font
+    * @param [style.fill='black'] {object} A canvas fillstyle that will be used on the text eg 'red', '#00FF00'
+    * @param [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
+    * @param [style.stroke='black'] {string} A canvas fillstyle that will be used on the text stroke eg 'blue', '#FCFF00'
+    * @param [style.strokeThickness=0] {number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
+    * @param [style.wordWrap=false] {boolean} Indicates if word wrap should be used
+    * @param [style.wordWrapWidth=100] {number} The width at which text will wrap
+    * @param [style.dropShadow=false] {boolean} Set a drop shadow for the text
+    * @param [style.dropShadowColor='#000000'] {string} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
+    * @param [style.dropShadowAngle=Math.PI/4] {number} Set a angle of the drop shadow
+    * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
+    * @memberof Text#
+    */
+    style: {
+        get: function ()
+        {
+            return this._style;
+        },
+        set: function (style)
+        {
+            style = style || {};
+            style.font = style.font || 'bold 20pt Arial';
+            style.fill = style.fill || 'black';
+            style.align = style.align || 'left';
+            style.stroke = style.stroke || 'black'; //provide a default, see: https://github.com/GoodBoyDigital/pixi.js/issues/136
+            style.strokeThickness = style.strokeThickness || 0;
+            style.wordWrap = style.wordWrap || false;
+            style.wordWrapWidth = style.wordWrapWidth || 100;
+
+            style.dropShadow = style.dropShadow || false;
+            style.dropShadowAngle = style.dropShadowAngle || Math.PI / 6;
+            style.dropShadowDistance = style.dropShadowDistance || 4;
+            style.dropShadowColor = style.dropShadowColor || 'black';
+
+            this._style = style;
+            this.dirty = true;
+        }
+    },
+
+    /**
+    * Set the copy for the text object. To split a line you can use '\n'.
+    *
+    * @param text {string} The copy that you would like the text to display
+    */
+    text: {
+        get: function()
+        {
+            return this._text;
+        },
+        set: function (text){
+            text = text.toString() || ' ';
+            if (this._text === text)
+            {
+                return;
+            }
+            this._text = text;
+            this.dirty = true;
+        }
     }
 });
-
-/**
- * Set the style of the text
- *
- * @param [style] {object} The style parameters
- * @param [style.font='bold 20pt Arial'] {string} The style and size of the font
- * @param [style.fill='black'] {object} A canvas fillstyle that will be used on the text eg 'red', '#00FF00'
- * @param [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
- * @param [style.stroke='black'] {string} A canvas fillstyle that will be used on the text stroke eg 'blue', '#FCFF00'
- * @param [style.strokeThickness=0] {number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
- * @param [style.wordWrap=false] {boolean} Indicates if word wrap should be used
- * @param [style.wordWrapWidth=100] {number} The width at which text will wrap
- * @param [style.dropShadow=false] {boolean} Set a drop shadow for the text
- * @param [style.dropShadowColor='#000000'] {string} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
- * @param [style.dropShadowAngle=Math.PI/4] {number} Set a angle of the drop shadow
- * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
- */
-Text.prototype.setStyle = function (style)
-{
-    style = style || {};
-    style.font = style.font || 'bold 20pt Arial';
-    style.fill = style.fill || 'black';
-    style.align = style.align || 'left';
-    style.stroke = style.stroke || 'black'; //provide a default, see: https://github.com/GoodBoyDigital/pixi.js/issues/136
-    style.strokeThickness = style.strokeThickness || 0;
-    style.wordWrap = style.wordWrap || false;
-    style.wordWrapWidth = style.wordWrapWidth || 100;
-
-    style.dropShadow = style.dropShadow || false;
-    style.dropShadowAngle = style.dropShadowAngle || Math.PI / 6;
-    style.dropShadowDistance = style.dropShadowDistance || 4;
-    style.dropShadowColor = style.dropShadowColor || 'black';
-
-    this.style = style;
-    this.dirty = true;
-};
-
-/**
- * Set the copy for the text object. To split a line you can use '\n'.
- *
- * @param text {string} The copy that you would like the text to display
- */
-Text.prototype.setText = function (text)
-{
-    this.text = text.toString() || ' ';
-    this.dirty = true;
-};
 
 /**
  * Renders text and updates it when needed
@@ -159,24 +190,20 @@ Text.prototype.updateText = function ()
 {
     this.texture.baseTexture.resolution = this.resolution;
 
-    this.context.font = this.style.font;
-
-    var outputText = this.text;
+    var style = this._style;
+    this.context.font = style.font;
 
     // word wrap
     // preserve original text
-    if (this.style.wordWrap)
-    {
-        outputText = this.wordWrap(this.text);
-    }
+    var outputText = style.wordWrap ? this.wordWrap(this._text) : this._text;
 
     //split text into lines
     var lines = outputText.split(/(?:\r\n|\r|\n)/);
 
     //calculate text width
-    var lineWidths = [];
+    var lineWidths = new Array(lines.length);
     var maxLineWidth = 0;
-    var fontProperties = this.determineFontProperties(this.style.font);
+    var fontProperties = this.determineFontProperties(style.font);
     for (var i = 0; i < lines.length; i++)
     {
         var lineWidth = this.context.measureText(lines[i]).width;
@@ -184,21 +211,21 @@ Text.prototype.updateText = function ()
         maxLineWidth = Math.max(maxLineWidth, lineWidth);
     }
 
-    var width = maxLineWidth + this.style.strokeThickness;
-    if (this.style.dropShadow)
+    var width = maxLineWidth + style.strokeThickness;
+    if (style.dropShadow)
     {
-        width += this.style.dropShadowDistance;
+        width += style.dropShadowDistance;
     }
 
     this.canvas.width = ( width + this.context.lineWidth ) * this.resolution;
 
     //calculate text height
-    var lineHeight = fontProperties.fontSize + this.style.strokeThickness;
+    var lineHeight = fontProperties.fontSize + style.strokeThickness;
 
     var height = lineHeight * lines.length;
-    if (this.style.dropShadow)
+    if (style.dropShadow)
     {
-        height += this.style.dropShadowDistance;
+        height += style.dropShadowDistance;
     }
 
     this.canvas.height = height * this.resolution;
@@ -214,37 +241,37 @@ Text.prototype.updateText = function ()
     //this.context.fillStyle ="#FF0000"
     //this.context.fillRect(0, 0, this.canvas.width,this.canvas.height);
 
-    this.context.font = this.style.font;
-    this.context.strokeStyle = this.style.stroke;
-    this.context.lineWidth = this.style.strokeThickness;
+    this.context.font = style.font;
+    this.context.strokeStyle = style.stroke;
+    this.context.lineWidth = style.strokeThickness;
     this.context.textBaseline = 'alphabetic';
     //this.context.lineJoin = 'round';
 
     var linePositionX;
     var linePositionY;
 
-    if (this.style.dropShadow)
+    if (style.dropShadow)
     {
-        this.context.fillStyle = this.style.dropShadowColor;
+        this.context.fillStyle = style.dropShadowColor;
 
-        var xShadowOffset = Math.cos(this.style.dropShadowAngle) * this.style.dropShadowDistance;
-        var yShadowOffset = Math.sin(this.style.dropShadowAngle) * this.style.dropShadowDistance;
+        var xShadowOffset = Math.cos(style.dropShadowAngle) * style.dropShadowDistance;
+        var yShadowOffset = Math.sin(style.dropShadowAngle) * style.dropShadowDistance;
 
         for (i = 0; i < lines.length; i++)
         {
-            linePositionX = this.style.strokeThickness / 2;
-            linePositionY = (this.style.strokeThickness / 2 + i * lineHeight) + fontProperties.ascent;
+            linePositionX = style.strokeThickness / 2;
+            linePositionY = (style.strokeThickness / 2 + i * lineHeight) + fontProperties.ascent;
 
-            if (this.style.align === 'right')
+            if (style.align === 'right')
             {
                 linePositionX += maxLineWidth - lineWidths[i];
             }
-            else if (this.style.align === 'center')
+            else if (style.align === 'center')
             {
                 linePositionX += (maxLineWidth - lineWidths[i]) / 2;
             }
 
-            if (this.style.fill)
+            if (style.fill)
             {
                 this.context.fillText(lines[i], linePositionX + xShadowOffset, linePositionY + yShadowOffset);
             }
@@ -254,29 +281,29 @@ Text.prototype.updateText = function ()
     }
 
     //set canvas text styles
-    this.context.fillStyle = this.style.fill;
+    this.context.fillStyle = style.fill;
 
     //draw lines line by line
     for (i = 0; i < lines.length; i++)
     {
-        linePositionX = this.style.strokeThickness / 2;
-        linePositionY = (this.style.strokeThickness / 2 + i * lineHeight) + fontProperties.ascent;
+        linePositionX = style.strokeThickness / 2;
+        linePositionY = (style.strokeThickness / 2 + i * lineHeight) + fontProperties.ascent;
 
-        if (this.style.align === 'right')
+        if (style.align === 'right')
         {
             linePositionX += maxLineWidth - lineWidths[i];
         }
-        else if (this.style.align === 'center')
+        else if (style.align === 'center')
         {
             linePositionX += (maxLineWidth - lineWidths[i]) / 2;
         }
 
-        if (this.style.stroke && this.style.strokeThickness)
+        if (style.stroke && style.strokeThickness)
         {
             this.context.strokeText(lines[i], linePositionX, linePositionY);
         }
 
-        if (this.style.fill)
+        if (style.fill)
         {
             this.context.fillText(lines[i], linePositionX, linePositionY);
         }
@@ -302,8 +329,7 @@ Text.prototype.updateTexture = function ()
     this._width = this.canvas.width;
     this._height = this.canvas.height;
 
-    // update the dirty base textures
-    //this.texture.baseTexture.dirty();
+    this.dirty = false;
 };
 
 /**
@@ -318,7 +344,6 @@ Text.prototype.renderWebGL = function (renderer)
         this.resolution = renderer.resolution;
 
         this.updateText();
-        this.dirty = false;
     }
 
     core.Sprite.prototype.renderWebGL.call(this, renderer);
@@ -336,7 +361,6 @@ Text.prototype.renderCanvas = function (renderer)
         this.resolution = renderer.resolution;
 
         this.updateText();
-        this.dirty = false;
     }
 
     core.Sprite.prototype.renderCanvas.call(this, renderer);
@@ -377,7 +401,7 @@ Text.prototype.determineFontProperties = function (fontStyle)
 
         context.textBaseline = 'alphabetic';
         context.fillStyle = '#000';
-        context.fillText('|MÃ‰q', 0, baseline);
+        context.fillText('|MÉq', 0, baseline);
 
         var imagedata = context.getImageData(0, 0, width, height).data;
         var pixels = imagedata.length;
@@ -459,9 +483,10 @@ Text.prototype.wordWrap = function (text)
     // than its horizontal bounds.
     var result = '';
     var lines = text.split('\n');
+    var wordWrapWidth = this._style.wordWrapWidth;
     for (var i = 0; i < lines.length; i++)
     {
-        var spaceLeft = this.style.wordWrapWidth;
+        var spaceLeft = wordWrapWidth;
         var words = lines[i].split(' ');
         for (var j = 0; j < words.length; j++)
         {
@@ -476,7 +501,7 @@ Text.prototype.wordWrap = function (text)
                     result += '\n';
                 }
                 result += words[j];
-                spaceLeft = this.style.wordWrapWidth - wordWidth;
+                spaceLeft = wordWrapWidth - wordWidth;
             }
             else
             {
@@ -504,7 +529,6 @@ Text.prototype.getBounds = function (matrix)
     if (this.dirty)
     {
         this.updateText();
-        this.dirty = false;
     }
 
     return core.Sprite.prototype.getBounds.call(this, matrix);
