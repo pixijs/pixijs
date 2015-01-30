@@ -153,8 +153,8 @@ PIXI.RenderTexture.prototype.resize = function(width, height, updateBase)
 
     if (updateBase)
     {
-        this.baseTexture.width = this.width;
-        this.baseTexture.height = this.height;
+        this.baseTexture.width = this.width * this.resolution;
+        this.baseTexture.height = this.height * this.resolution;
     }
 
     if (this.renderer.type === PIXI.WEBGL_RENDERER)
