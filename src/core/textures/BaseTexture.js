@@ -113,7 +113,7 @@ function BaseTexture(source, scaleMode)
      * @member {object<number, WebGLTexture>}
      * @private
      */
-    this._glTextures = {};
+    this._glTextures = [];
 
     // if no source passed don't try to load
     if (source)
