@@ -6,7 +6,7 @@
 * @class WebGLFilterManager
 * @constructor
 */
-PIXI.WebGLFilterManager = function()
+PIXI.WebGLFilterManager = function(resolution)
 {
     /**
      * @property filterStack
@@ -25,6 +25,12 @@ PIXI.WebGLFilterManager = function()
      * @type Number
      */
     this.offsetY = 0;
+
+    /**
+     * @property resolution
+     * @type Number
+     */
+    this.resolution = resolution || 1;
 };
 
 PIXI.WebGLFilterManager.prototype.constructor = PIXI.WebGLFilterManager;
@@ -286,7 +292,7 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
 
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.uvArray);
 
-    gl.viewport(0, 0, sizeX, sizeY);
+    gl.viewport(0, 0, sizeX * this.resolution, sizeY * this.resolution);
 
     // bind the buffer
     gl.bindFramebuffer(gl.FRAMEBUFFER, buffer );

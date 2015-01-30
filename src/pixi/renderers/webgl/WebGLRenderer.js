@@ -192,7 +192,7 @@ PIXI.WebGLRenderer = function(width, height, options)
      * @property filterManager
      * @type WebGLFilterManager
      */
-    this.filterManager = new PIXI.WebGLFilterManager();
+    this.filterManager = new PIXI.WebGLFilterManager(this.resolution);
 
     /**
      * Manages the stencil buffer
