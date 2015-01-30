@@ -325,7 +325,7 @@ Text.prototype.updateTexture = function ()
     this._width = this.canvas.width;
     this._height = this.canvas.height;
 
-    this.texture.needsUpdate = true;
+    this.texture.update();
 
     this.dirty = false;
 };

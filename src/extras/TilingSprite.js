@@ -13,7 +13,7 @@ var core = require('../core'),
  */
 function TilingSprite(texture, width, height)
 {
-    core.Sprite.call( this, texture);
+    core.Sprite.call(this, texture);
 
     /**
      * The with of the tiling sprite
@@ -129,15 +129,6 @@ TilingSprite.prototype._renderWebGL = function (renderer)
     if (!this.tilingTexture || this._refreshTexture)
     {
         this.generateTilingTexture(true);
-
-        if (this.tilingTexture && this.tilingTexture.needsUpdate)
-        {
-            //TODO - tweaking
-            renderer.updateTexture(this.tilingTexture.baseTexture);
-            this.tilingTexture.needsUpdate = false;
-           // this.tilingTexture._uvs = null;
-        }
-
     }
     else
     {
@@ -413,7 +404,7 @@ TilingSprite.prototype.generateTilingTexture = function (forcePowerOfTwo)
             canvasBuffer.resize(targetWidth, targetHeight);
             this.tilingTexture.baseTexture.width = targetWidth;
             this.tilingTexture.baseTexture.height = targetHeight;
-            this.tilingTexture.needsUpdate = true;
+            this.tilingTexture.update();
         }
         else
         {

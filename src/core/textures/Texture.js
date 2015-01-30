@@ -125,17 +125,6 @@ module.exports = Texture;
 eventTarget.mixin(Texture.prototype);
 
 Object.defineProperties(Texture.prototype, {
-    needsUpdate: {
-        get: function ()
-        {
-            return this.baseTexture.needsUpdate;
-        },
-        set: function (val)
-        {
-            this.baseTexture.needsUpdate = val;
-        }
-    },
-
     frame: {
         get: function ()
         {
@@ -174,6 +163,15 @@ Object.defineProperties(Texture.prototype, {
         }
     }
 });
+
+/**
+ * Updates this texture on the gpu.
+ *
+ */
+Texture.prototype.update = function ()
+{
+    this.baseTexture.update();
+};
 
 /**
  * Called when the base texture is loaded
