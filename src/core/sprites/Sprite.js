@@ -80,8 +80,6 @@ function Sprite(texture)
      */
     this.shader = null;
 
-    this.renderable = true;
-
     this.cachedTint = 0xFFFFFF;
 
     // call texture setter

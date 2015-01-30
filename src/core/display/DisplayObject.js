@@ -58,7 +58,7 @@ function DisplayObject()
      *
      * @member {boolean}
      */
-    this.renderable = false;
+    this.renderable = true;
 
     /**
      * The display object container that contains this display object.

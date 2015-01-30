@@ -20,8 +20,6 @@ function Graphics()
 {
     Container.call(this);
 
-    this.renderable = true;
-
     /**
      * The alpha value used when filling the Graphics object.
      *
