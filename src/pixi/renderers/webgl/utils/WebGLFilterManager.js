@@ -286,7 +286,7 @@ PIXI.WebGLFilterManager.prototype.popFilter = function()
 
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.uvArray);
 
-    gl.viewport(0, 0, sizeX, sizeY);
+    gl.viewport(0, 0, sizeX * this.renderSession.resolution, sizeY * this.renderSession.resolution);
 
     // bind the buffer
     gl.bindFramebuffer(gl.FRAMEBUFFER, buffer );
