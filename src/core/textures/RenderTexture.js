@@ -65,7 +65,6 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
     var baseTexture = new BaseTexture();
     baseTexture.width = width * resolution;
     baseTexture.height = height * resolution;
-    baseTexture._glTextures = [];
     baseTexture.resolution = resolution;
     baseTexture.scaleMode = scaleMode || CONST.scaleModes.DEFAULT;
     baseTexture.hasLoaded = true;
