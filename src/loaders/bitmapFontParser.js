@@ -20,8 +20,10 @@ module.exports = function ()
             }
         }
 
+        var name = resource.data.nodeName;
+
         // skip if no data
-        if (!resource.data)
+        if (!resource.data || !name || name.toLowerCase() !== '#document' || name.toLowerCase() !== 'div')
         {
             return next();
         }
