@@ -629,8 +629,8 @@ InteractionManager.prototype.hitTest = function (item, interactionData)
     // a sprite with no hitarea defined
     else if (item instanceof core.Sprite)
     {
-        var width = item.texture.frame.width;
-        var height = item.texture.frame.height;
+        var width = item.width || item.texture.frame.width;
+        var height = item.height || item.texture.frame.height;
         var x1 = -width * item.anchor.x;
         var y1;
 
