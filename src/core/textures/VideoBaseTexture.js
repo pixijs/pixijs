@@ -56,7 +56,7 @@ VideoBaseTexture.prototype._onUpdate = function ()
     if (this.autoUpdate)
     {
         window.requestAnimationFrame(this._boundOnUpdate);
-        this.needsUpdate = true;
+        this.update();
     }
 };
 

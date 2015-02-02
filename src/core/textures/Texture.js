@@ -105,6 +105,20 @@ function Texture(baseTexture, frame, crop, trim)
      */
     this.crop = crop || frame;//new math.Rectangle(0, 0, 1, 1);
 
+    /**
+     * The pivot point to used for a sprite this texture belongs to.
+     *
+     * @member {Point}
+     */
+    this.spritePivot = new math.Point();
+
+    /**
+     * The rotation value of the texture, copied to a sprite when assigned to it.
+     *
+     * @member {number}
+     */
+    this.rotation = 0;
+
     if (baseTexture.hasLoaded)
     {
         if (this.noFrame)
@@ -125,17 +139,6 @@ module.exports = Texture;
 eventTarget.mixin(Texture.prototype);
 
 Object.defineProperties(Texture.prototype, {
-    needsUpdate: {
-        get: function ()
-        {
-            return this.baseTexture.needsUpdate;
-        },
-        set: function (val)
-        {
-            this.baseTexture.needsUpdate = val;
-        }
-    },
-
     frame: {
         get: function ()
         {
@@ -174,6 +177,15 @@ Object.defineProperties(Texture.prototype, {
         }
     }
 });
+
+/**
+ * Updates this texture on the gpu.
+ *
+ */
+Texture.prototype.update = function ()
+{
+    this.baseTexture.update();
+};
 
 /**
  * Called when the base texture is loaded

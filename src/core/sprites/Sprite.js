@@ -80,8 +80,6 @@ function Sprite(texture)
      */
     this.shader = null;
 
-    this.renderable = true;
-
     this.cachedTint = 0xFFFFFF;
 
     // call texture setter
@@ -198,6 +196,12 @@ Sprite.prototype._onTextureUpdate = function ()
     if (this._height)
     {
         this.scale.y = this._height / this.texture.frame.height;
+    }
+
+    if (this.texture.rotation) {
+        this.rotation = this.texture.rotation;
+        // this.pivot.x = this.texture.spritePivot.x;
+        // this.pivot.y = this.texture.spritePivot.y;
     }
 };
 

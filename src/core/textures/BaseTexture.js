@@ -113,15 +113,7 @@ function BaseTexture(source, scaleMode)
      * @member {object<number, WebGLTexture>}
      * @private
      */
-    this._glTextures = {};
-
-    /**
-     * Does the texture on the GPU need to be updated?
-     *
-     * @member {boolean}
-     * @private
-     */
-    this._needsUpdate = false;
+    this._glTextures = [];
 
     // if no source passed don't try to load
     if (source)
@@ -149,23 +141,14 @@ module.exports = BaseTexture;
 
 utils.eventTarget.mixin(BaseTexture.prototype);
 
-Object.defineProperties(BaseTexture.prototype, {
-    needsUpdate: {
-        get: function ()
-        {
-            return this._needsUpdate;
-        },
-        set: function (val)
-        {
-            this._needsUpdate = val;
-
-            if (val)
-            {
-                this.emit('update', this);
-            }
-        }
-    }
-});
+/**
+ * Updates the texture on all the webgl renderers.
+ *
+ * @fires update
+ */
+BaseTexture.prototype.update = function () {
+    this.emit('update', this);
+};
 
 /**
  * Load a source.
@@ -294,7 +277,7 @@ BaseTexture.prototype._sourceLoaded = function ()
     this.width = this.source.naturalWidth || this.source.width;
     this.height = this.source.naturalHeight || this.source.height;
 
-    this.needsUpdate = true;
+    this.update();
 };
 
 /**
