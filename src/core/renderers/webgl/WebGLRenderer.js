@@ -40,11 +40,11 @@ function WebGLRenderer(width, height, options)
 
     this.type = CONST.RENDERER_TYPE.WEBGL;
 
-
-    this.updateTexture = this.updateTexture.bind(this);
-    this.destroyTexture = this.destroyTexture.bind(this);
     this.handleContextLost = this.handleContextLost.bind(this);
     this.handleContextRestored = this.handleContextRestored.bind(this);
+
+    this._updateTextureBound = this.updateTexture.bind(this);
+    this._destroyTextureBound = this.destroyTexture.bind(this);
 
     this.view.addEventListener('webglcontextlost', this.handleContextLost, false);
     this.view.addEventListener('webglcontextrestored', this.handleContextRestored, false);
@@ -287,8 +287,8 @@ WebGLRenderer.prototype.updateTexture = function (texture)
     if (!texture._glTextures[gl.id])
     {
         texture._glTextures[gl.id] = gl.createTexture();
-        texture.on('update', this.updateTexture);
-        texture.on('dispose', this.destroyTexture);
+        texture.on('update', this._updateTextureBound);
+        texture.on('dispose', this._destroyTextureBound);
     }
 
 
