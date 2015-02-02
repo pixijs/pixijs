@@ -41,13 +41,13 @@ function WebGLRenderer(width, height, options)
     this.type = CONST.RENDERER_TYPE.WEBGL;
 
 
-    this._boundUpdateTexture = this.updateTexture.bind(this);
-    this._boundDestroyTexture = this.destroyTexture.bind(this);
-    this._boundContextLost = this.handleContextLost.bind(this);
-    this._boundContextRestored = this.handleContextRestored.bind(this);
+    this.updateTexture = this.updateTexture.bind(this);
+    this.destroyTexture = this.destroyTexture.bind(this);
+    this.handleContextLost = this.handleContextLost.bind(this);
+    this.handleContextRestored = this.handleContextRestored.bind(this);
 
-    this.view.addEventListener('webglcontextlost', this._boundContextLost, false);
-    this.view.addEventListener('webglcontextrestored', this._boundContextRestored, false);
+    this.view.addEventListener('webglcontextlost', this.handleContextLost, false);
+    this.view.addEventListener('webglcontextrestored', this.handleContextRestored, false);
 
     /**
      * The options passed in to create a new webgl context.
@@ -287,8 +287,8 @@ WebGLRenderer.prototype.updateTexture = function (texture)
     if (!texture._glTextures[gl.id])
     {
         texture._glTextures[gl.id] = gl.createTexture();
-        texture.on('update', this._boundUpdateTexture);
-        texture.on('dispose', this._boundDestroyTexture);
+        texture.on('update', this.updateTexture);
+        texture.on('dispose', this.destroyTexture);
     }
 
 
@@ -377,8 +377,8 @@ WebGLRenderer.prototype.destroy = function (removeView)
     this.destroyPlugins();
 
     // remove listeners
-    this.view.removeEventListener('webglcontextlost', this._boundContextLost);
-    this.view.removeEventListener('webglcontextrestored', this._boundContextRestored);
+    this.view.removeEventListener('webglcontextlost', this.handleContextLost);
+    this.view.removeEventListener('webglcontextrestored', this.handleContextRestored);
 
     // call base destroy
     SystemRenderer.prototype.destroy.call(this, removeView);
@@ -396,8 +396,8 @@ WebGLRenderer.prototype.destroy = function (removeView)
     this.filterManager = null;
     this.blendModeManager = null;
 
-    this._boundContextLost = null;
-    this._boundContextRestored = null;
+    this.handleContextLost = null;
+    this.handleContextRestored = null;
 
     this._contextOptions = null;
 

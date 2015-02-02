@@ -31,13 +31,13 @@ function VideoBaseTexture(source, scaleMode)
 
     this.autoUpdate = false;
 
-    this._boundOnUpdate = this._onUpdate.bind(this);
-    this._boundOnCanPlay = this._onCanPlay.bind(this);
+    this._onUpdate = this._onUpdate.bind(this);
+    this._onCanPlay = this._onCanPlay.bind(this);
 
     if (!source.complete)
     {
-        source.addEventListener('canplay', this._boundOnCanPlay);
-        source.addEventListener('canplaythrough', this._boundOnCanPlay);
+        source.addEventListener('canplay', this._onCanPlay);
+        source.addEventListener('canplaythrough', this._onCanPlay);
 
         // started playing..
         source.addEventListener('play', this._onPlayStart.bind(this));
@@ -55,7 +55,7 @@ VideoBaseTexture.prototype._onUpdate = function ()
 {
     if (this.autoUpdate)
     {
-        window.requestAnimationFrame(this._boundOnUpdate);
+        window.requestAnimationFrame(this._onUpdate);
         this.update();
     }
 };
@@ -64,7 +64,7 @@ VideoBaseTexture.prototype._onPlayStart = function ()
 {
     if (!this.autoUpdate)
     {
-        window.requestAnimationFrame(this._boundOnUpdate);
+        window.requestAnimationFrame(this._onUpdate);
         this.autoUpdate = true;
     }
 };
@@ -80,8 +80,8 @@ VideoBaseTexture.prototype._onCanPlay = function ()
 
     if (this.source)
     {
-        this.source.removeEventListener('canplay', this._boundOnCanPlay);
-        this.source.removeEventListener('canplaythrough', this._boundOnCanPlay);
+        this.source.removeEventListener('canplay', this._onCanPlay);
+        this.source.removeEventListener('canplaythrough', this._onCanPlay);
 
         this.width = this.source.videoWidth;
         this.height = this.source.videoHeight;
