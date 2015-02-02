@@ -126,7 +126,6 @@ Container.prototype.addChildAt = function (child, index)
         child.parent = this;
 
         this.children.splice(index, 0, child);
-
         return child;
     }
     else
@@ -420,8 +419,9 @@ Container.prototype.getLocalBounds = function ()
  */
 Container.prototype.renderWebGL = function (renderer)
 {
+
     // if the object is not visible or the alpha is 0 then no need to render this element
-    if (this.isMask || !this.visible || this.alpha <= 0 || !this.renderable)
+    if (this.isMask || !this.visible || this.worldAlpha <= 0 || !this.renderable)
     {
         return;
     }

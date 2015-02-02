@@ -1,4 +1,5 @@
-var math = require('../math');
+var math = require('../math'),
+    utils = require('../utils');
 
 /**
  * The base class for all objects that are rendered on the screen.
@@ -58,7 +59,7 @@ function DisplayObject()
      *
      * @member {boolean}
      */
-    this.renderable = false;
+    this.renderable = true;
 
     /**
      * The display object container that contains this display object.
@@ -132,7 +133,8 @@ function DisplayObject()
      */
     this._mask = null;
 
-    this._isMask = false;
+    //TODO rename to _isMask
+    this.isMask = false;
 
     /**
      * Cached internal flag.
@@ -141,10 +143,13 @@ function DisplayObject()
      * @private
      */
     this._cacheIsDirty = false;
+
+   // this.cacheAsBitmap = false;
 }
 
 // constructor
 DisplayObject.prototype.constructor = DisplayObject;
+utils.eventTarget.mixin(DisplayObject.prototype);
 module.exports = DisplayObject;
 
 Object.defineProperties(DisplayObject.prototype, {
@@ -332,6 +337,9 @@ DisplayObject.prototype.updateTransform = function ()
 DisplayObject.prototype.displayObjectUpdateTransform = DisplayObject.prototype.updateTransform;
 
 /**
+ *
+ *
+ *
  * Retrieves the bounds of the displayObject as a rectangle object
  *
  * @param matrix {Matrix}
