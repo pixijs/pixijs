@@ -84,21 +84,25 @@ function InteractionManager( renderer )
      * @member {Function}
      */
     this.onMouseMove = this.onMouseMove.bind( this );
+    this.mouseMove = this.mouseMove.bind( this );
 
     /**
      * @member {Function}
      */
     this.onMouseDown = this.onMouseDown.bind(this);
+    this.mouseDown = this.mouseDown.bind( this );
 
     /**
      * @member {Function}
      */
     this.onMouseOut = this.onMouseOut.bind(this);
+    this.mouseOverOut = this.mouseOverOut.bind( this );
 
     /**
      * @member {Function}
      */
     this.onMouseUp = this.onMouseUp.bind(this);
+    this.mouseUp = this.mouseUp.bind( this );
 
     /**
      * @member {Function}
@@ -428,7 +432,7 @@ InteractionManager.prototype.onMouseMove = function (event)
 
     this.mouseEventData.stopped = false;
 
-    this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered , this.mouseMove.bind(this) , true );
+    this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered , this.mouseMove , true );
 
     if (this.currentCursorStyle !== this.cursor)
     {
@@ -454,7 +458,7 @@ InteractionManager.prototype.onMouseDown = function (event)
         this.mouse.originalEvent.preventDefault();
     }
 
-    this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered , this.mouseDown.bind(this) , true );
+    this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered , this.mouseDown , true );
 };
 
 /**
@@ -468,7 +472,7 @@ InteractionManager.prototype.onMouseUp = function (event)
     this.mouse.originalEvent = event;
     this.mouseEventData.stopped = false;
 
-    this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered , this.mouseUp.bind(this) , true );
+    this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered , this.mouseUp , true );
 };
 
 
@@ -489,7 +493,7 @@ InteractionManager.prototype.onMouseOut = function (event)
     // this.mouse.global.x = -10000;
     // this.mouse.global.y = -10000;
 
-    this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered , this.mouseOverOut.bind(this) , false );
+    this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered , this.mouseOverOut , false );
 };
 
 
