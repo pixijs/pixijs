@@ -64,7 +64,7 @@ function InteractionManager( renderer )
      * @member {Function}
      */
     this.onMouseUp = this.onMouseUp.bind(this);
-    this.mouseUp = this.mouseUp.bind( this );
+    this.processMouseUp = this.processMouseUp.bind( this );
 
 
     /**
@@ -255,11 +255,15 @@ InteractionManager.prototype.dispatchEvent = function ( displayObject, eventStri
 {
     if(!eventData.stopped)
     {
-
         eventData.target = displayObject;
         eventData.type = eventString;
 
-        displayObject.emit( eventString, this.eventData, eventData );
+        displayObject.emit( eventString, eventData );
+
+        if( displayObject[eventString] )
+        {
+            displayObject[eventString]( eventData );
+        }
     }
 };
 
@@ -331,7 +335,7 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
 
 
 
-InteractionManager.prototype.mouseUp = function ( displayObject, hit )
+InteractionManager.prototype.processMouseUp = function ( displayObject, hit )
 {
     var e = this.mouse.originalEvent;
 
@@ -340,7 +344,7 @@ InteractionManager.prototype.mouseUp = function ( displayObject, hit )
 
     if(hit)
     {
-        displayObject.emit( isRightButton ? 'rightup' : 'mouseup' );
+        this.dispatchEvent( displayObject, isRightButton ? 'rightup' : 'mouseup', this.eventData );
 
         if( displayObject[ isDown ] )
         {
@@ -384,7 +388,7 @@ InteractionManager.prototype.processMouseOverOut = function ( displayObject, hit
         if(!displayObject._over)
         {
             displayObject._over = true;
-            displayObject.emit( 'mouseover', this.eventData);
+            this.dispatchEvent( displayObject, 'mouseover', this.eventData );
         }
 
         if (displayObject.buttonMode)
@@ -397,7 +401,7 @@ InteractionManager.prototype.processMouseOverOut = function ( displayObject, hit
         if(displayObject._over)
         {
             displayObject._over = false;
-            displayObject.emit( 'mouseout', this.eventData);
+            this.dispatchEvent( displayObject, 'mouseout', this.eventData);
         }
     }
 };
@@ -415,7 +419,7 @@ InteractionManager.prototype.onMouseUp = function (event)
     this.mouse.originalEvent = event;
     this.eventData.stopped = false;
 
-    this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered, this.mouseUp, true );
+    this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered, this.processMouseUp, true );
 };
 
 
