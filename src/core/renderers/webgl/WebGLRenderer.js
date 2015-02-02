@@ -107,12 +107,6 @@ function WebGLRenderer(width, height, options)
 
     this.currentRenderTarget = this.renderTarget;
 
-    /**
-     * This temporary display object used as the parent of the currently being rendered item
-     * @member DisplayObject
-     * @private
-     */
-    this._tempDisplayObjectParent = {worldTransform:new math.Matrix(), worldAlpha:1};
 
     this.currentRenderer = new ObjectRenderer(this);
 
@@ -177,6 +171,8 @@ WebGLRenderer.prototype.render = function (object)
     {
         return;
     }
+
+    this._lastObjectRendered = object;
 
     var cacheParent = object.parent;
     object.parent = this._tempDisplayObjectParent;

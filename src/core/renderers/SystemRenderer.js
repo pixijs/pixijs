@@ -1,4 +1,5 @@
 var utils = require('../utils'),
+    math = require('../math'),
     CONST = require('../const');
 
 /**
@@ -149,6 +150,18 @@ function SystemRenderer(system, width, height, options)
     this._backgroundColorString = '#000000';
 
     this.backgroundColor = options.backgroundColor || this._backgroundColor; // run bg color setter
+
+
+
+    /**
+     * This temporary display object used as the parent of the currently being rendered item
+     * @member DisplayObject
+     * @private
+     */
+    this._tempDisplayObjectParent = {worldTransform:new math.Matrix(), worldAlpha:1, children:[]};
+
+    //
+    this._lastObjectRendered = this._tempDisplayObjectParent;
 }
 
 // constructor

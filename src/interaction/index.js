@@ -10,5 +10,6 @@
  */
 module.exports = {
     InteractionData:    require('./InteractionData'),
-    InteractionManager: require('./InteractionManager')
+    InteractionManager: require('./InteractionManager'),
+    interactiveTarget: require('./interactiveTarget')
 };
