@@ -462,22 +462,21 @@ Graphics.prototype.arcTo = function (x1, y1, x2, y2, radius)
  * @param anticlockwise {boolean} Optional. Specifies whether the drawing should be counterclockwise or clockwise. False is default, and indicates clockwise, while true indicates counter-clockwise.
  * @return {Graphics}
  */
-Graphics.prototype.arc = function (cx, cy, radius, startAngle, endAngle, anticlockwise)
+Graphics.prototype.arc = function(cx, cy, radius, startAngle, endAngle, anticlockwise)
 {
     var startX = cx + Math.cos(startAngle) * radius;
     var startY = cy + Math.sin(startAngle) * radius;
     var points;
 
-    // TODO - This if-else makes no sense. It uses currentPath in the else where it doesn't exist...
-    if (this.currentPath)
+    if( this.currentPath )
     {
         points = this.currentPath.shape.points;
 
-        if (points.length === 0)
+        if(points.length === 0)
         {
             points.push(startX, startY);
         }
-        else if (points[points.length-2] !== startX || points[points.length-1] !== startY)
+        else if( points[points.length-2] !== startX || points[points.length-1] !== startY)
         {
             points.push(startX, startY);
         }
@@ -488,27 +487,21 @@ Graphics.prototype.arc = function (cx, cy, radius, startAngle, endAngle, anticlo
         points = this.currentPath.shape.points;
     }
 
-    if (startAngle === endAngle)
-    {
-        return this;
-    }
+    if (startAngle === endAngle)return this;
 
-    if (!anticlockwise && endAngle <= startAngle)
+    if( !anticlockwise && endAngle <= startAngle )
     {
         endAngle += Math.PI * 2;
     }
-    else if (anticlockwise && startAngle <= endAngle)
+    else if( anticlockwise && startAngle <= endAngle )
     {
         startAngle += Math.PI * 2;
     }
 
     var sweep = anticlockwise ? (startAngle - endAngle) *-1 : (endAngle - startAngle);
-    var segs = (Math.abs(sweep)/ (Math.PI * 2)) * 40;
+    var segs =  Math.ceil( Math.abs(sweep)/ (Math.PI * 2) ) * 40;
 
-    if (sweep === 0)
-    {
-        return this;
-    }
+    if( sweep === 0 ) return this;
 
     var theta = sweep/(segs*2);
     var theta2 = theta*2;
@@ -520,9 +513,11 @@ Graphics.prototype.arc = function (cx, cy, radius, startAngle, endAngle, anticlo
 
     var remainder = ( segMinus % 1 ) / segMinus;
 
-    for (var i = 0; i <= segMinus; ++i)
+    for(var i=0; i<=segMinus; i++)
     {
         var real =  i + remainder * i;
+
+
         var angle = ((theta) + startAngle + (theta2 * real));
 
         var c = Math.cos(angle);
