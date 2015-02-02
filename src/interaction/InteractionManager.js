@@ -558,13 +558,7 @@ InteractionManager.prototype.onTouchStart = function (event)
     {
         var touchEvent = changedTouches[i];
         //TODO POOL
-        var touchData = this.pool.pop();
-        if(!touchData)
-        {
-            touchData = new InteractionData();
-        }
-
-        touchData.identifier = touchEvent.identifier;
+        var touchData = getTouchData( touchEvent );
 
         touchData.originalEvent = event;
 
@@ -572,7 +566,7 @@ InteractionManager.prototype.onTouchStart = function (event)
 
         this.processInteractive( touchData, this.renderer._lastObjectRendered, this.processTouchStart, true );
 
-        this.pool.push( touchData );
+        this.returnTouchData( touchData );
     }
 };
 
@@ -584,17 +578,12 @@ InteractionManager.prototype.onTouchEnd = function (event)
     }
 
     var changedTouches = event.changedTouches;
+
     for (var i=0; i < changedTouches.length; i++)
     {
         var touchEvent = changedTouches[i];
 
-        var touchData = this.pool.pop();
-        if(!touchData)
-        {
-            touchData = new InteractionData();
-        }
-
-        touchData.identifier = touchEvent.identifier;
+        var touchData = getTouchData( touchEvent );
 
         touchData.originalEvent = event;
 
@@ -602,7 +591,7 @@ InteractionManager.prototype.onTouchEnd = function (event)
 
         this.processInteractive( touchData, this.renderer._lastObjectRendered, this.processTouchEnd, true );
 
-        this.pool.push( touchData );
+        this.returnTouchData( touchData );
     }
 };
 
@@ -620,28 +609,39 @@ InteractionManager.prototype.onTouchMove = function (event)
     }
 
     var changedTouches = event.changedTouches;
+
     for (var i=0; i < changedTouches.length; i++)
     {
         var touchEvent = changedTouches[i];
 
-        var touchData = this.pool.pop();
-        if(!touchData)
-        {
-            touchData = new InteractionData();
-        }
-
-        touchData.identifier = touchEvent.identifier;
+        var touchData = getTouchData( touchEvent );
 
         touchData.originalEvent = event;
 
-        this.mapPositionToPoint( touchData, touchEvent.clientX, touchEvent.clientY );
-
         this.processInteractive( touchData, this.renderer._lastObjectRendered, this.processTouchMove, false );
 
-        this.pool.push( touchData );
+        this.returnTouchData( touchData );
     }
 };
 
+InteractionManager.prototype.getTouchData = function (touchEvent)
+{
+    var touchData = this.pool.pop();
+
+    if(!touchData)
+    {
+        touchData = new InteractionData();
+    }
+
+    touchData.identifier = touchEvent.identifier;
+
+    this.mapPositionToPoint( touchData, touchEvent.clientX, touchEvent.clientY );
+};
+
+InteractionManager.prototype.returnTouchData = function ( touchData )
+{
+    this.pool.push( touchData );
+};
 
 
 
