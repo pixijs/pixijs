@@ -82,12 +82,6 @@ function eventTarget(obj)
             return this;
         }
 
-        //bubble this event up the scene graph
-        if (this.parent && this.parent.emit)
-        {
-            this.parent.emit.call(this.parent, eventName, data);
-        }
-
         return this;
     };
 
