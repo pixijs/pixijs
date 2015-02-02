@@ -288,6 +288,11 @@ InteractionManager.prototype.mapPositionToPoint = function ( point, x, y )
 
 InteractionManager.prototype.processInteractive = function (point, displayObject, func, hitTest )
 {
+    if(!displayObject.interactiveChildren || !displayObject.visible)
+    {
+        return false;
+    }
+
     var children = displayObject.children;
 
     var hit = false;
@@ -558,7 +563,7 @@ InteractionManager.prototype.onTouchStart = function (event)
     {
         var touchEvent = changedTouches[i];
         //TODO POOL
-        var touchData = getTouchData( touchEvent );
+        var touchData = this.getTouchData( touchEvent );
 
         touchData.originalEvent = event;
 
@@ -583,7 +588,7 @@ InteractionManager.prototype.onTouchEnd = function (event)
     {
         var touchEvent = changedTouches[i];
 
-        var touchData = getTouchData( touchEvent );
+        var touchData = this.getTouchData( touchEvent );
 
         touchData.originalEvent = event;
 
@@ -614,7 +619,7 @@ InteractionManager.prototype.onTouchMove = function (event)
     {
         var touchEvent = changedTouches[i];
 
-        var touchData = getTouchData( touchEvent );
+        var touchData = this.getTouchData( touchEvent );
 
         touchData.originalEvent = event;
 

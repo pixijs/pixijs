@@ -4,7 +4,9 @@ var tempPoint = new core.math.Point();
 
 core.DisplayObject.prototype.interactive = false;
 core.DisplayObject.prototype.buttomMode = false;
+core.DisplayObject.prototype.interactiveChildren = true;
 core.DisplayObject.prototype.defaultCursor = 'pointer';
+
 
 core.Sprite.prototype.hitTest = function( point )
 {
@@ -15,18 +17,18 @@ core.Sprite.prototype.hitTest = function( point )
     var x1 = -width * this.anchor.x;
     var y1;
 
-    if (tempPoint.x > x1 && tempPoint.x < x1 + width)
+    if ( tempPoint.x > x1 && tempPoint.x < x1 + width )
     {
         y1 = -height * this.anchor.y;
 
-        if (tempPoint.y > y1 && tempPoint.y < y1 + height)
+        if ( tempPoint.y > y1 && tempPoint.y < y1 + height )
         {
             return true;
         }
     }
 
     return false;
-}
+};
 
 
 core.Graphics.prototype.hitTest = function( point )
@@ -35,7 +37,7 @@ core.Graphics.prototype.hitTest = function( point )
 
     var graphicsData = this.graphicsData;
 
-    for (i = 0; i < graphicsData.length; i++)
+    for (var i = 0; i < graphicsData.length; i++)
     {
         var data = graphicsData[i];
 
@@ -47,7 +49,7 @@ core.Graphics.prototype.hitTest = function( point )
         // only deal with fills..
         if (data.shape)
         {
-            if (data.shape.contains(x, y))
+            if ( data.shape.contains( tempPoint.x, tempPoint.y ) )
             {
                 return true;
             }
@@ -55,6 +57,6 @@ core.Graphics.prototype.hitTest = function( point )
     }
 
     return false;
-}
+};
 
 module.exports = {};
