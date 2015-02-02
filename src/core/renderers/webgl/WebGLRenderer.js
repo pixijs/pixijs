@@ -34,6 +34,8 @@ var SystemRenderer = require('../SystemRenderer'),
  */
 function WebGLRenderer(width, height, options)
 {
+    options = options || {};
+
     SystemRenderer.call(this, 'WebGL', width, height, options);
 
     this.type = CONST.RENDERER_TYPE.WEBGL;
@@ -128,11 +130,8 @@ WebGLRenderer.prototype = Object.create(SystemRenderer.prototype);
 WebGLRenderer.prototype.constructor = WebGLRenderer;
 module.exports = WebGLRenderer;
 utils.pluginTarget.mixin(WebGLRenderer);
-utils.eventTarget.mixin(WebGLRenderer.prototype);
 
 WebGLRenderer.glContextId = 0;
-
-utils.pluginTarget.mixin(WebGLRenderer);
 
 /**
  *
