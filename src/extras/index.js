@@ -15,3 +15,6 @@ module.exports = {
     StripShader:    require('./StripShader'),
     TilingSprite:   require('./TilingSprite')
 };
+
+// activate the cachAsBitmap
+var cacheAsBitmap = require('./cacheAsBitmap');

@@ -109,6 +109,5 @@ var core = module.exports = {
     }
 };
 
-//TODO this needs to be moved!
-var cacheAsBitmap = require('./display/cacheAsBitmap');
+
 

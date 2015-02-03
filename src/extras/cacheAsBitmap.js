@@ -1,7 +1,7 @@
-var math = require('../math'),
-    RenderTexture = require('../textures/RenderTexture'),
-    DisplayObject = require('./DisplayObject'),
-    Sprite = require('../sprites/Sprite'),
+var math = require('../core/math'),
+    RenderTexture = require('../core/textures/RenderTexture'),
+    DisplayObject = require('../core/display/DisplayObject'),
+    Sprite = require('../core/sprites/Sprite'),
 
     _tempMatrix = new math.Matrix();
 
@@ -10,6 +10,7 @@ DisplayObject.prototype._originalRenderWebGL = false;
 
 DisplayObject.prototype._originalUpdateTransform = null;
 DisplayObject.prototype._cachedSprite = null;
+
 
 
 Object.defineProperties(DisplayObject.prototype, {
