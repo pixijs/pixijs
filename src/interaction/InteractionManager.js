@@ -121,6 +121,7 @@ function InteractionManager( renderer )
      */
     this.mouseOut = false;
 
+    this.tempPoint = new core.math.Point();
     /**
      * @member {number}
      */
@@ -283,6 +284,13 @@ InteractionManager.prototype.throttleUpdate = function ()
     return false;
 };
 
+/**
+ * Maps x and y coords from a DOM object and maps them correctly to the pixi view. The resulting value is stored in the point.
+ * This takes into account the fact that the DOM element could be scaled and position anywhere on the screen.
+ * @param  {[type]} point The point that the result will be stored in
+ * @param  {[type]} x     the x coord of the position to map
+ * @param  {[type]} y     the y coord of the position to map
+ */
 InteractionManager.prototype.mapPositionToPoint = function ( point, x, y )
 {
     var rect = this.interactionDOMElement.getBoundingClientRect();
@@ -290,9 +298,18 @@ InteractionManager.prototype.mapPositionToPoint = function ( point, x, y )
     point.y = ( ( y - rect.top  ) * (this.interactionDOMElement.height / rect.height ) ) / this.resolution;
 };
 
+/**
+ * This function is provides a neat way of crawling through the scene graph and running a specified function on all interactive objects it finds.
+ * It will also take care of hit testing the interactive objects and passes the hit across in the function.
+ * @param  {Point} point the point that is tested for collision
+ * @param  {DisplayObject} displayObject the displayObject that will be hit test (recurcsivly crawls its children)
+ * @param  {function} func the function that will be called on each interactive object. The displayObject and hit will be passed to the function
+ * @param  {boolean} hitTest this indicates if the objects inside should be hit test against the point
+ * @return {boolean} returns true if the displayObject hit the point
+ */
 InteractionManager.prototype.processInteractive = function (point, displayObject, func, hitTest )
 {
-    if(!displayObject.interactiveChildren || !displayObject.visible)
+    if(!displayObject.visible)
     {
         return false;
     }
@@ -301,25 +318,35 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
 
     var hit = false;
 
-    for (var i = children.length-1; i >= 0; i--)
+    if(displayObject.interactiveChildren)
     {
-        if(! hit  && hitTest)
+
+        for (var i = children.length-1; i >= 0; i--)
         {
-            hit = this.processInteractive(point, children[i], func, true );
+            if(! hit  && hitTest)
+            {
+                hit = this.processInteractive(point, children[i], func, true );
+            }
+            else
+            {
+                // now we know we can miss it all!
+                this.processInteractive(point, children[i], func, false );
+            }
         }
-        else
-        {
-            // now we know we can miss it all!
-            this.processInteractive(point, children[i], func, false );
-        }
+
     }
 
     if(displayObject.interactive)
     {
         if(hitTest)
         {
-            //TODO test only graphics and sprites at the mo..
-            if(displayObject.hitTest)
+            if(displayObject.hitArea)
+            {
+                // lets use the hit object first!
+                displayObject.worldTransform.applyInverse(point,  this.tempPoint);
+                hit = displayObject.hitArea.contains( this.tempPoint.x, this.tempPoint.y );
+            }
+            else if(displayObject.hitTest)
             {
                 hit = displayObject.hitTest(point);
             }
@@ -334,6 +361,53 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
 
 
 
+/**
+ * Is called when the mouse button is pressed down on the renderer element
+ *
+ * @param event {Event} The DOM event of a mouse button being pressed down
+ * @private
+ */
+InteractionManager.prototype.onMouseDown = function (event)
+{
+    this.mouse.originalEvent = event;
+    this.eventData.stopped = false;
+
+    if (AUTO_PREVENT_DEFAULT)
+    {
+        this.mouse.originalEvent.preventDefault();
+    }
+
+    this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered, this.processMouseDown, true );
+};
+
+InteractionManager.prototype.processMouseDown = function ( displayObject, hit )
+{
+    var e = this.mouse.originalEvent;
+
+    var isRightButton = e.button === 2 || e.which === 3;
+
+    if(hit)
+    {
+        displayObject[ isRightButton ? '_isRightDown' : '_isLeftDown' ] = true;
+        this.dispatchEvent( displayObject, isRightButton ? 'rightdown' : 'mousedown', this.eventData );
+    }
+};
+
+
+
+/**
+ * Is called when the mouse button is released on the renderer element
+ *
+ * @param event {Event} The DOM event of a mouse button being released
+ * @private
+ */
+InteractionManager.prototype.onMouseUp = function (event)
+{
+    this.mouse.originalEvent = event;
+    this.eventData.stopped = false;
+
+    this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered, this.processMouseUp, true );
+};
 
 InteractionManager.prototype.processMouseUp = function ( displayObject, hit )
 {
@@ -360,86 +434,6 @@ InteractionManager.prototype.processMouseUp = function ( displayObject, hit )
             this.dispatchEvent( displayObject, isRightButton ? 'rightupoutside' : 'mouseupoutside', this.eventData );
         }
     }
-};
-
-InteractionManager.prototype.processMouseDown = function ( displayObject, hit )
-{
-    var e = this.mouse.originalEvent;
-
-    var isRightButton = e.button === 2 || e.which === 3;
-
-    if(hit)
-    {
-        displayObject[ isRightButton ? '_isRightDown' : '_isLeftDown' ] = true;
-        this.dispatchEvent( displayObject, isRightButton ? 'rightdown' : 'mousedown', this.eventData );
-    }
-};
-
-InteractionManager.prototype.processMouseMove = function ( displayObject, hit )
-{
-    displayObject.emit('mousemove', this.eventData);
-    this.processMouseOverOut(displayObject, hit);
-};
-
-InteractionManager.prototype.processMouseOverOut = function ( displayObject, hit )
-{
-    if(hit)
-    {
-        if(!displayObject._over)
-        {
-            displayObject._over = true;
-            this.dispatchEvent( displayObject, 'mouseover', this.eventData );
-        }
-
-        if (displayObject.buttonMode)
-        {
-            this.cursor = displayObject.defaultCursor;
-        }
-    }
-    else
-    {
-        if(displayObject._over)
-        {
-            displayObject._over = false;
-            this.dispatchEvent( displayObject, 'mouseout', this.eventData);
-        }
-    }
-};
-
-
-
-/**
- * Is called when the mouse button is released on the renderer element
- *
- * @param event {Event} The DOM event of a mouse button being released
- * @private
- */
-InteractionManager.prototype.onMouseUp = function (event)
-{
-    this.mouse.originalEvent = event;
-    this.eventData.stopped = false;
-
-    this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered, this.processMouseUp, true );
-};
-
-
-/**
- * Is called when the mouse button is pressed down on the renderer element
- *
- * @param event {Event} The DOM event of a mouse button being pressed down
- * @private
- */
-InteractionManager.prototype.onMouseDown = function (event)
-{
-    this.mouse.originalEvent = event;
-    this.eventData.stopped = false;
-
-    if (AUTO_PREVENT_DEFAULT)
-    {
-        this.mouse.originalEvent.preventDefault();
-    }
-
-    this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered, this.processMouseDown, true );
 };
 
 
@@ -479,6 +473,13 @@ InteractionManager.prototype.onMouseMove = function (event)
 
 };
 
+InteractionManager.prototype.processMouseMove = function ( displayObject, hit )
+{
+    this.dispatchEvent( displayObject, 'mousemove', this.eventData);
+    this.processMouseOverOut(displayObject, hit);
+};
+
+
 /**
  * Is called when the mouse is moved out of the renderer element
  *
@@ -498,53 +499,29 @@ InteractionManager.prototype.onMouseOut = function (event)
     this.processInteractive( this.mouse.global, this.renderer._lastObjectRendered, this.processMouseOverOut, false );
 };
 
-
-
-/////////// STILL REDOING..
-
-
-/**
- * Is called when a touch is ended on the renderer element
- *
- * @param event {Event} The DOM event of a touch ending on the renderer view
- * @private
- */
-InteractionManager.prototype.processTouchStart = function ( displayObject, hit )
-{
-    //console.log("hit" + hit)
-    if(hit)
-    {
-        displayObject._touchDown = true;
-        this.dispatchEvent( displayObject, 'touchstart', this.eventData );
-    }
-};
-
-InteractionManager.prototype.processTouchEnd = function ( displayObject, hit )
+InteractionManager.prototype.processMouseOverOut = function ( displayObject, hit )
 {
     if(hit)
     {
-        displayObject.emit( 'touchend' );
-
-        if( displayObject._touchDown )
+        if(!displayObject._over)
         {
-            displayObject._touchDown = false;
-            this.dispatchEvent( displayObject, 'tap', this.eventData );
+            displayObject._over = true;
+            this.dispatchEvent( displayObject, 'mouseover', this.eventData );
+        }
+
+        if (displayObject.buttonMode)
+        {
+            this.cursor = displayObject.defaultCursor;
         }
     }
     else
     {
-        if( displayObject._touchDown )
+        if(displayObject._over)
         {
-            displayObject._touchDown = false;
-            this.dispatchEvent( displayObject, 'touchendoutside', this.eventData );
+            displayObject._over = false;
+            this.dispatchEvent( displayObject, 'mouseout', this.eventData);
         }
     }
-};
-
-InteractionManager.prototype.processTouchMove = function ( displayObject, hit )
-{
-    hit = hit;
-    displayObject.emit('touchmove', this.eventData);
 };
 
 
@@ -579,6 +556,29 @@ InteractionManager.prototype.onTouchStart = function (event)
     }
 };
 
+
+/**
+ * Is called when a touch is ended on the renderer element
+ *
+ * @param event {Event} The DOM event of a touch ending on the renderer view
+ * @private
+ */
+InteractionManager.prototype.processTouchStart = function ( displayObject, hit )
+{
+    //console.log("hit" + hit)
+    if(hit)
+    {
+        displayObject._touchDown = true;
+        this.dispatchEvent( displayObject, 'touchstart', this.eventData );
+    }
+};
+
+
+/**
+ * [onTouchEnd description]
+ * @param  {[type]} event [description]
+ * @return {[type]}       [description]
+ */
 InteractionManager.prototype.onTouchEnd = function (event)
 {
     if (AUTO_PREVENT_DEFAULT)
@@ -601,6 +601,28 @@ InteractionManager.prototype.onTouchEnd = function (event)
         this.processInteractive( touchData, this.renderer._lastObjectRendered, this.processTouchEnd, true );
 
         this.returnTouchData( touchData );
+    }
+};
+
+InteractionManager.prototype.processTouchEnd = function ( displayObject, hit )
+{
+    if(hit)
+    {
+        this.dispatchEvent( displayObject, 'touchend', this.eventData );
+
+        if( displayObject._touchDown )
+        {
+            displayObject._touchDown = false;
+            this.dispatchEvent( displayObject, 'tap', this.eventData );
+        }
+    }
+    else
+    {
+        if( displayObject._touchDown )
+        {
+            displayObject._touchDown = false;
+            this.dispatchEvent( displayObject, 'touchendoutside', this.eventData );
+        }
     }
 };
 
@@ -632,6 +654,14 @@ InteractionManager.prototype.onTouchMove = function (event)
         this.returnTouchData( touchData );
     }
 };
+
+
+InteractionManager.prototype.processTouchMove = function ( displayObject, hit )
+{
+    hit = hit;
+    this.dispatchEvent( displayObject, 'touchmove', this.eventData);
+};
+
 
 InteractionManager.prototype.getTouchData = function (touchEvent)
 {
