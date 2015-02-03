@@ -467,18 +467,18 @@ DisplayObject.prototype._generateCachedDisplayObject = function( renderer )
     var renderTexture = new RenderTexture(renderer, bounds.width | 0, bounds.height | 0);//, renderSession.renderer);
 
     // need to set //
-    var m = new math.Matrix();
+    var m = new _tempMatrix;
 
     m.tx = -bounds.x;
     m.ty = -bounds.y;
 
-    this.cacheAsBitmap = false;
+    this._cacheAsBitmap = false;
 
     renderTexture.render(this, m, true);
 
     renderer.setRenderTarget(cachedRenderTarget);
 
-    this.cacheAsBitmap = true;
+    this._cacheAsBitmap = true;
 
     this._cachedObject = {
                             worldTransform:this.worldTransform,
@@ -490,7 +490,7 @@ DisplayObject.prototype._generateCachedDisplayObject = function( renderer )
                         };
 };
 
-DisplayObject.prototype._destroyCachedDisplayObject = function( renderer )
+DisplayObject.prototype._destroyCachedDisplayObject = function()
 {
     this._cachedObject._texture.destroy();
     this._cachedObject = null;
@@ -501,7 +501,6 @@ DisplayObject.prototype._renderCached = function( renderer )
     this._generateCachedDisplayObject( renderer );
 
     this._cachedObject.worldAlpha = this.worldAlpha;
-   // this._cachedObject.tint = this.tint;
 
     renderer.plugins.sprite.render( this._cachedObject );
 };
