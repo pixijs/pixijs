@@ -94,7 +94,7 @@ function BaseTexture(source, scaleMode)
      * @member {boolean}
      * @private
      */
-    this._powerOf2 = false;
+    this.isPowerOfTwo = false;
 
     // used for webGL
 
@@ -276,6 +276,8 @@ BaseTexture.prototype._sourceLoaded = function ()
 
     this.width = this.source.naturalWidth || this.source.width;
     this.height = this.source.naturalHeight || this.source.height;
+
+    this.isPowerOfTwo = utils.isPowerOfTwo(this.width, this.height);
 
     this.update();
 };

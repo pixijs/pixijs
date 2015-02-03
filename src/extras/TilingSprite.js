@@ -124,8 +124,6 @@ TilingSprite.prototype._onTextureUpdate = function ()
  */
 TilingSprite.prototype._renderWebGL = function (renderer)
 {
-
-
     if (!this.tilingTexture || this._refreshTexture)
     {
         this.generateTilingTexture(true);
@@ -448,7 +446,6 @@ TilingSprite.prototype.generateTilingTexture = function (forcePowerOfTwo)
     this.originalTexture = this.texture;
     this.texture = this.tilingTexture;
 
-    this.tilingTexture.baseTexture._powerOf2 = true;
 };
 
 TilingSprite.prototype.destroy = function () {
