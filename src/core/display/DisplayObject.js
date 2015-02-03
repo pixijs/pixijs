@@ -259,31 +259,8 @@ Object.defineProperties(DisplayObject.prototype, {
         {
             this._filters = value && value.slice();
         }
-    },
-
-    cacheAsBitmap: {
-        get: function ()
-        {
-            return this._cacheAsBitmap;
-        },
-        set: function (value)
-        {
-            if(this._cacheAsBitmap === value)
-            {
-                return;
-            }
-
-            this._cacheAsBitmap = value;
-
-            if(!value)
-            {
-                if(this._cachedObject)
-                {
-                    this._destroyCachedDisplayObject();
-                }
-            }
-        }
     }
+
 });
 
 /*
@@ -452,58 +429,3 @@ DisplayObject.prototype.generateTexture = function (renderer, resolution, scaleM
 
     return renderTexture;
 };
-
-DisplayObject.prototype._generateCachedDisplayObject = function( renderer )
-{
-    if(this._cachedObject)
-    {
-        return;
-    }
-
-    var bounds = this.getLocalBounds();
-
-    var cachedRenderTarget = renderer.currentRenderTarget;
-
-    var renderTexture = new RenderTexture(renderer, bounds.width | 0, bounds.height | 0);//, renderSession.renderer);
-
-    // need to set //
-    var m = new _tempMatrix;
-
-    m.tx = -bounds.x;
-    m.ty = -bounds.y;
-
-    this._cacheAsBitmap = false;
-
-    renderTexture.render(this, m, true);
-
-    renderer.setRenderTarget(cachedRenderTarget);
-
-    this._cacheAsBitmap = true;
-
-    this._cachedObject = {
-                            worldTransform:this.worldTransform,
-                            anchor:new math.Point(-( bounds.x / bounds.width ), -( bounds.y / bounds.height )),
-                            _texture:renderTexture,
-                            blendMode:0,
-                            worldAlpha:1,
-                            tint:0xFFFFFF
-                        };
-};
-
-DisplayObject.prototype._destroyCachedDisplayObject = function()
-{
-    this._cachedObject._texture.destroy();
-    this._cachedObject = null;
-};
-
-DisplayObject.prototype._renderCached = function( renderer )
-{
-    this._generateCachedDisplayObject( renderer );
-
-    this._cachedObject.worldAlpha = this.worldAlpha;
-
-    renderer.plugins.sprite.render( this._cachedObject );
-};
-
-
-

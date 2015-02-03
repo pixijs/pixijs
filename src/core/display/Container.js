@@ -426,12 +426,6 @@ Container.prototype.renderWebGL = function (renderer)
         return;
     }
 
-    if(this.cacheAsBitmap)
-    {
-        this._renderCached( renderer );
-        return;
-    }
-
     var i, j;
 
     // do a quick check to see if this element has a mask or a filter.
