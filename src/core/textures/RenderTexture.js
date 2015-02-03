@@ -372,6 +372,15 @@ RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear)
 
 };
 
+RenderTexture.prototype.destroy = function ()
+{
+    Texture.prototype.destroy.call(this, true);
+
+    this.textureBuffer.destroy();
+
+    this.renderer = null;
+};
+
 /**
  * Will return a HTML Image of the texture
  *

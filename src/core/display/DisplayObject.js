@@ -1,5 +1,7 @@
 var math = require('../math'),
-    utils = require('../utils');
+    utils = require('../utils'),
+    RenderTexture = require('../textures/RenderTexture'),
+    _tempMatrix = new math.Matrix();
 
 /**
  * The base class for all objects that are rendered on the screen.
@@ -142,9 +144,8 @@ function DisplayObject()
      * @member {boolean}
      * @private
      */
-    this._cacheIsDirty = false;
-
-   // this.cacheAsBitmap = false;
+    this._cacheAsBitmap = false;
+    this._cachedObject = null;
 }
 
 // constructor
@@ -257,6 +258,30 @@ Object.defineProperties(DisplayObject.prototype, {
         set: function (value)
         {
             this._filters = value && value.slice();
+        }
+    },
+
+    cacheAsBitmap: {
+        get: function ()
+        {
+            return this._cacheAsBitmap;
+        },
+        set: function (value)
+        {
+            if(this._cacheAsBitmap === value)
+            {
+                return;
+            }
+
+            this._cacheAsBitmap = value;
+
+            if(!value)
+            {
+                if(this._cachedObject)
+                {
+                    this._destroyCachedDisplayObject();
+                }
+            }
         }
     }
 });
@@ -413,3 +438,73 @@ DisplayObject.prototype.renderCanvas = function (/* renderer */)
 {
     // OVERWRITE;
 };
+
+DisplayObject.prototype.generateTexture = function (renderer, resolution, scaleMode)
+{
+    var bounds = this.getLocalBounds();
+
+    var renderTexture = new RenderTexture(renderer, bounds.width | 0, bounds.height | 0, renderer, scaleMode, resolution);
+
+    _tempMatrix.tx = -bounds.x;
+    _tempMatrix.ty = -bounds.y;
+
+    renderTexture.render(this, _tempMatrix);
+
+    return renderTexture;
+};
+
+DisplayObject.prototype._generateCachedDisplayObject = function( renderer )
+{
+    if(this._cachedObject)
+    {
+        return;
+    }
+
+    var bounds = this.getLocalBounds();
+
+    var cachedRenderTarget = renderer.currentRenderTarget;
+
+    var renderTexture = new RenderTexture(renderer, bounds.width | 0, bounds.height | 0);//, renderSession.renderer);
+
+    // need to set //
+    var m = new math.Matrix();
+
+    m.tx = -bounds.x;
+    m.ty = -bounds.y;
+
+    this.cacheAsBitmap = false;
+
+    renderTexture.render(this, m, true);
+
+    renderer.setRenderTarget(cachedRenderTarget);
+
+    this.cacheAsBitmap = true;
+
+    this._cachedObject = {
+                            worldTransform:this.worldTransform,
+                            anchor:new math.Point(-( bounds.x / bounds.width ), -( bounds.y / bounds.height )),
+                            _texture:renderTexture,
+                            blendMode:0,
+                            worldAlpha:1,
+                            tint:0xFFFFFF
+                        };
+};
+
+DisplayObject.prototype._destroyCachedDisplayObject = function( renderer )
+{
+    this._cachedObject._texture.destroy();
+    this._cachedObject = null;
+};
+
+DisplayObject.prototype._renderCached = function( renderer )
+{
+    this._generateCachedDisplayObject( renderer );
+
+    this._cachedObject.worldAlpha = this.worldAlpha;
+   // this._cachedObject.tint = this.tint;
+
+    renderer.plugins.sprite.render( this._cachedObject );
+};
+
+
+

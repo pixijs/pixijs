@@ -30,13 +30,6 @@ function InteractionManager( renderer )
     this.eventData.data = this.mouse;
 
     /**
-     * An object that stores current touches (InteractionData) by id reference
-     *
-     * @member {object}
-     */
-    this.touches = {};
-
-    /**
      * Tiny little interactiveData pool !
      *
      * @member {Array}

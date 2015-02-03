@@ -288,7 +288,7 @@ Container.prototype.removeChildren = function (beginIndex, endIndex)
  * @param renderer {CanvasRenderer|WebGLRenderer} The renderer used to generate the texture.
  * @return {Texture} a texture of the graphics object
  */
-Container.prototype.generateTexture = function (resolution, scaleMode, renderer)
+Container.prototype.generateTexture = function (renderer, resolution, scaleMode)
 {
     var bounds = this.getLocalBounds();
 
@@ -426,6 +426,12 @@ Container.prototype.renderWebGL = function (renderer)
         return;
     }
 
+    if(this.cacheAsBitmap)
+    {
+        this._renderCached( renderer );
+        return;
+    }
+
     var i, j;
 
     // do a quick check to see if this element has a mask or a filter.
@@ -485,6 +491,8 @@ Container.prototype._renderWebGL = function (/* renderer */)
 {
     // this is where content itself gets renderd..
 };
+
+
 
 /**
  * Renders the object using the Canvas renderer
