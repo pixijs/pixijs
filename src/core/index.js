@@ -108,3 +108,7 @@ var core = module.exports = {
         return core.autoDetectRenderer(width, height, options, isAndroid);
     }
 };
+
+//TODO this needs to be moved!
+var cacheAsBitmap = require('./display/cacheAsBitmap');
+
