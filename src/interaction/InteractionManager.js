@@ -25,6 +25,7 @@ function InteractionManager( renderer )
      * @member {InteractionData}
      */
     this.mouse = new InteractionData();
+
     this.eventData = new core.utils.EventData();
     this.eventData.data = this.mouse;
 
@@ -40,7 +41,7 @@ function InteractionManager( renderer )
      *
      * @member {Array}
      */
-    this.pool = [];
+    this.interactiveDataPool = [];
 
     /**
      * The DOM element to bind to.
@@ -115,13 +116,8 @@ function InteractionManager( renderer )
      */
     this.currentCursorStyle = 'inherit';
 
-    /**
-     * Is set to true when the mouse is moved out of the canvas
-     * @member {boolean}
-     */
-    this.mouseOut = false;
+    this._tempPoint = new core.math.Point();
 
-    this.tempPoint = new core.math.Point();
     /**
      * @member {number}
      */
@@ -343,8 +339,8 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
             if(displayObject.hitArea)
             {
                 // lets use the hit object first!
-                displayObject.worldTransform.applyInverse(point,  this.tempPoint);
-                hit = displayObject.hitArea.contains( this.tempPoint.x, this.tempPoint.y );
+                displayObject.worldTransform.applyInverse(point,  this._tempPoint);
+                hit = displayObject.hitArea.contains( this._tempPoint.x, this._tempPoint.y );
             }
             else if(displayObject.hitTest)
             {
@@ -370,6 +366,7 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
 InteractionManager.prototype.onMouseDown = function (event)
 {
     this.mouse.originalEvent = event;
+    this.eventData.data = this.mouse;
     this.eventData.stopped = false;
 
     if (AUTO_PREVENT_DEFAULT)
@@ -404,6 +401,7 @@ InteractionManager.prototype.processMouseDown = function ( displayObject, hit )
 InteractionManager.prototype.onMouseUp = function (event)
 {
     this.mouse.originalEvent = event;
+    this.eventData.data = this.mouse;
     this.eventData.stopped = false;
 
     this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered, this.processMouseUp, true );
@@ -447,21 +445,15 @@ InteractionManager.prototype.processMouseUp = function ( displayObject, hit )
  */
 InteractionManager.prototype.onMouseMove = function (event)
 {
-    if (this.dirty)
-    {
-        this.rebuildInteractiveGraph();
-    }
-
     this.mouse.originalEvent = event;
+    this.eventData.data = this.mouse;
+    this.eventData.stopped = false;
 
-    // TODO optimize by not check EVERY TIME! maybe half as often? //
     this.mapPositionToPoint( this.mouse.global, event.clientX, event.clientY);
 
     this.didMove = true;
 
     this.cursor = 'inherit';
-
-    this.eventData.stopped = false;
 
     this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered, this.processMouseMove, true );
 
@@ -665,7 +657,7 @@ InteractionManager.prototype.processTouchMove = function ( displayObject, hit )
 
 InteractionManager.prototype.getTouchData = function (touchEvent)
 {
-    var touchData = this.pool.pop();
+    var touchData = this.interactiveDataPool.pop();
 
     if(!touchData)
     {
@@ -679,7 +671,7 @@ InteractionManager.prototype.getTouchData = function (touchEvent)
 
 InteractionManager.prototype.returnTouchData = function ( touchData )
 {
-    this.pool.push( touchData );
+    this.interactiveDataPool.push( touchData );
 };
 
 
