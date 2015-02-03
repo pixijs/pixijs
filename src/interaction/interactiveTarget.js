@@ -3,10 +3,13 @@ var core = require('../core');
 var tempPoint = new core.math.Point();
 
 core.DisplayObject.prototype.interactive = false;
-core.DisplayObject.prototype.buttomMode = false;
+core.DisplayObject.prototype.buttonMode = false;
 core.DisplayObject.prototype.interactiveChildren = true;
 core.DisplayObject.prototype.defaultCursor = 'pointer';
 
+// some internal checks..
+core.DisplayObject.prototype._over = false;
+core.DisplayObject.prototype._touchDown = false;
 
 core.Sprite.prototype.hitTest = function( point )
 {
