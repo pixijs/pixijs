@@ -106,18 +106,12 @@ function Texture(baseTexture, frame, crop, trim)
     this.crop = crop || frame;//new math.Rectangle(0, 0, 1, 1);
 
     /**
-     * The pivot point to used for a sprite this texture belongs to.
+     * The rotation value of the texture.
      *
-     * @member {Point}
-     */
-    this.spritePivot = new math.Point();
-
-    /**
-     * The rotation value of the texture, copied to a sprite when assigned to it.
-     *
+     * @private
      * @member {number}
      */
-    this.rotation = 0;
+    this._rotation = 0;
 
     if (baseTexture.hasLoaded)
     {
@@ -174,6 +168,17 @@ Object.defineProperties(Texture.prototype, {
             {
                 this._updateUvs();
             }
+        }
+    },
+    rotation: {
+        get: function ()
+        {
+            return this._rotation;
+        },
+        set: function (val) {
+            this._rotation = val;
+
+            this._updateUvs();
         }
     }
 });
@@ -253,6 +258,8 @@ Texture.prototype._updateUvs = function ()
 
     this._uvs.x3 = frame.x / tw;
     this._uvs.y3 = (frame.y + frame.height) / th;
+
+    this._uvs.rotate(this.rotation);
 };
 
 /**
