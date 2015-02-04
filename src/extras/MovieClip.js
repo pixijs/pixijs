@@ -20,7 +20,7 @@ function MovieClip(textures)
      *
      * @member Texture[]
      */
-    this.textures = textures;
+    this._textures = textures;
 
     /**
      * The speed that the MovieClip will play at. Higher is faster, lower is slower
@@ -88,9 +88,23 @@ Object.defineProperties(MovieClip.prototype, {
     totalFrames: {
         get: function()
         {
-            return this.textures.length;
+            return this._textures.length;
+        }
+    },
+
+    textures: {
+        get: function ()
+        {
+            return this._textures;
+        },
+        set: function (value)
+        {
+            this._textures = value;
+
+            this.texture = this._textures[Math.floor(this.currentFrame) % this._textures.length];
         }
     }
+
 });
 
 /**
@@ -135,7 +149,7 @@ MovieClip.prototype.gotoAndStop = function (frameNumber)
     this.currentFrame = frameNumber;
 
     var round = Math.round(this.currentFrame);
-    this.texture = this.textures[round % this.textures.length];
+    this.texture = this._textures[round % this._textures.length];
 };
 
 /**
@@ -165,8 +179,8 @@ MovieClip.prototype.update = function ( event )
     {
         if (this.loop)
         {
-            this.currentFrame += this.textures.length;
-            this.texture = this.textures[this.currentFrame];
+            this.currentFrame += this._textures.length;
+            this.texture = this._textures[this.currentFrame];
         }
         else
         {
@@ -178,11 +192,11 @@ MovieClip.prototype.update = function ( event )
             }
         }
     }
-    else if (this.loop || floor < this.textures.length)
+    else if (this.loop || floor < this._textures.length)
     {
-        this.texture = this.textures[floor % this.textures.length];
+        this.texture = this._textures[floor % this._textures.length];
     }
-    else if (floor >= this.textures.length)
+    else if (floor >= this._textures.length)
     {
         this.gotoAndStop(this.textures.length - 1);
 
@@ -198,7 +212,7 @@ MovieClip.prototype.destroy = function ( )
 {
     this.stop();
     core.Sprite.prototype.destroy.call(this);
-}
+};
 
 /**
  * A short hand way of creating a movieclip from an array of frame ids
