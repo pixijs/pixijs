@@ -18,62 +18,38 @@ function TextureUvs()
 
 module.exports = TextureUvs;
 
-TextureUvs.prototype.rotate = function (angle)
+TextureUvs.prototype.set = function (frame, baseFrame, rotate)
 {
-    if (!angle)
-    {
-        return;
-    }
+    var tw = baseFrame.width;
+    var th = baseFrame.height;
 
-    // if not a multiple of (PI/2)
-    if (angle % halfPI)
+    if(rotate)
     {
-        // TODO: Not a multiple of (PI/2)...
+        this.x0 = (frame.x + frame.height) / tw;
+        this.y0 = frame.y / th;
+
+        this.x1 = (frame.x + frame.height) / tw;
+        this.y1 = (frame.y + frame.width) / th;
+
+        this.x2 = frame.x / tw;
+        this.y2 = (frame.y + frame.width) / th;
+
+        this.x3 = frame.x / tw;
+        this.y3 = frame.y / th;
     }
-    // shift values for multiples of (PI/2)
     else
     {
-        // rotate the uvs by (PI/2) however many times are needed
-        if (angle > 0)
-        {
-            for (var i = angle / halfPI; i > 0; --i)
-            {
-                x = this.x3;
-                y = this.y3;
 
-                this.x3 = this.x2;
-                this.y3 = this.y2;
+        this.x0 = frame.x / tw;
+        this.y0 = frame.y / th;
 
-                this.x2 = this.x1;
-                this.y2 = this.y1;
+        this.x1 = (frame.x + frame.width) / tw;
+        this.y1 = frame.y / th;
 
-                this.x1 = this.x0;
-                this.y1 = this.y0;
+        this.x2 = (frame.x + frame.width) / tw;
+        this.y2 = (frame.y + frame.height) / th;
 
-                this.x0 = x;
-                this.y0 = y;
-            }
-        }
-        // rotate the uvs by -(PI/2) however many times are needed
-        else
-        {
-            for (var i = angle / halfPI; i < 0; ++i)
-            {
-                x = this.x0;
-                y = this.y0;
-
-                this.x0 = this.x1;
-                this.y0 = this.y1;
-
-                this.x1 = this.x2;
-                this.y1 = this.y2;
-
-                this.x2 = this.x3;
-                this.y2 = this.y3;
-
-                this.x3 = x;
-                this.y3 = y;
-            }
-        }
+        this.x3 = frame.x / tw;
+        this.y3 = (frame.y + frame.height) / th;
     }
-};
+}

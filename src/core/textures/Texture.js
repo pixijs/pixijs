@@ -17,7 +17,7 @@ var BaseTexture = require('./BaseTexture'),
  * @param [crop] {Rectangle} The area of original texture
  * @param [trim] {Rectangle} Trimmed texture rectangle
  */
-function Texture(baseTexture, frame, crop, trim)
+function Texture(baseTexture, frame, crop, trim, rotate)
 {
     /**
      * Does this Texture have any frame data assigned to it?
@@ -111,7 +111,7 @@ function Texture(baseTexture, frame, crop, trim)
      * @private
      * @member {number}
      */
-    this._rotation = 0;
+    this.rotate = !!rotate;
 
     if (baseTexture.hasLoaded)
     {
@@ -149,7 +149,7 @@ Object.defineProperties(Texture.prototype, {
 
             this.crop = frame;
 
-            if (!this.trim && (frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height))
+            if (!this.trim && !this.rotate && (frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height))
             {
                 throw new Error('Texture Error: frame does not fit inside the base Texture dimensions ' + this);
             }
@@ -168,17 +168,6 @@ Object.defineProperties(Texture.prototype, {
             {
                 this._updateUvs();
             }
-        }
-    },
-    rotation: {
-        get: function ()
-        {
-            return this._rotation;
-        },
-        set: function (val) {
-            this._rotation = val;
-
-            this._updateUvs();
         }
     }
 });
@@ -243,23 +232,7 @@ Texture.prototype._updateUvs = function ()
         this._uvs = new TextureUvs();
     }
 
-    var frame = this.crop;
-    var tw = this.baseTexture.width;
-    var th = this.baseTexture.height;
-
-    this._uvs.x0 = frame.x / tw;
-    this._uvs.y0 = frame.y / th;
-
-    this._uvs.x1 = (frame.x + frame.width) / tw;
-    this._uvs.y1 = frame.y / th;
-
-    this._uvs.x2 = (frame.x + frame.width) / tw;
-    this._uvs.y2 = (frame.y + frame.height) / th;
-
-    this._uvs.x3 = frame.x / tw;
-    this._uvs.y3 = (frame.y + frame.height) / th;
-
-    this._uvs.rotate(this.rotation);
+    this._uvs.set(this.crop, this.baseTexture, this.rotate);
 };
 
 /**
