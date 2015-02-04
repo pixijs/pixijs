@@ -1,3 +1,4 @@
+'use strict';
 var Container = require('../display/Container'),
     Sprite = require('../sprites/Sprite'),
     Texture = require('../textures/Texture'),

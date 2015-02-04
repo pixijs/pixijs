@@ -1,3 +1,4 @@
+'use strict';
 var Point = require('../Point'),
     CONST = require('../../const');
 

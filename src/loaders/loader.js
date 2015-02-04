@@ -1,3 +1,4 @@
+'use strict';
 var Loader = require('resource-loader'),
     textureParser = require('./textureParser'),
     spritesheetParser = require('./spritesheetParser'),

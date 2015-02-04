@@ -1,3 +1,4 @@
+'use strict';
 var AbstractFilter = require('./AbstractFilter'),
     math =  require('../../../math');
 

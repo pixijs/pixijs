@@ -1,3 +1,4 @@
+'use strict';
 /******************************************************************************
  * Spine Runtimes Software License
  * Version 2.1

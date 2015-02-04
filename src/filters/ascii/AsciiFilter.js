@@ -1,3 +1,4 @@
+'use strict';
 var core = require('../../core');
 
 // TODO (cengler) - The Y is flipped in this shader for some reason.

@@ -1,3 +1,4 @@
+'use strict';
 /**
  * Creates an homogenous object for tracking events so users can know what to expect.
  *

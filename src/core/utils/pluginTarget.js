@@ -1,3 +1,4 @@
+'use strict';
 /**
  * Mixins functionality to make an object have "plugins".
  *

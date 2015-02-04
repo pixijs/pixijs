@@ -1,3 +1,4 @@
+'use strict';
 var Resource = require('resource-loader').Resource,
     core = require('../core');
 

@@ -1,3 +1,4 @@
+'use strict';
 /**
  * @file        Main export of the PIXI spine library
  * @author      Mat Groves <mat@goodboydigital.com>
