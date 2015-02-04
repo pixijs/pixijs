@@ -13,6 +13,9 @@ var EventData = require('./EventData');
  *      var em = new MyEmitter();
  *      em.emit('eventName', 'some data', 'some more data', {}, null, ...);
  */
+
+var tempEventObject = new EventData(null, null, {});
+
 function eventTarget(obj)
 {
     /**
@@ -46,16 +49,24 @@ function eventTarget(obj)
         }
 
         //backwards compat with old method ".emit({ type: 'something' })"
+        //lets not worry about old ways of using stuff for v3
+        /*
         if (typeof eventName === 'object')
         {
             data = eventName;
             eventName = eventName.type;
         }
+        */
 
         //ensure we are using a real pixi event
-        if (!data || data.__isEventObject !== true)
+        //instead of creating a new object lets use an the temp one ( save new creation for each event )
+        if ( !data || !data.__isEventObject )
         {
-            data = new EventData(this, eventName, data);
+            tempEventObject.target=  this;
+            tempEventObject.type = eventName;
+            tempEventObject.data = data;
+
+            data = tempEventObject;
         }
 
         //iterate the listeners
@@ -66,8 +77,9 @@ function eventTarget(obj)
 
         for (i = 0; i < length; fn = listeners[++i])
         {
-            //call the event listener
-            fn.call(this, data);
+            //call the event listener scope is currently determined by binding the listener
+            //way faster than 'call'
+            fn(data);
 
             //if "stopImmediatePropagation" is called, stop calling sibling events
             if (data.stoppedImmediate)
@@ -151,7 +163,9 @@ function eventTarget(obj)
 
         if (list.length === 0)
         {
-            delete this._listeners[eventName];
+            // delete causes deoptimization
+            // lets set it to null
+            this._listeners[eventName] = null;
         }
 
         return this;
@@ -171,7 +185,9 @@ function eventTarget(obj)
             return this;
         }
 
-        delete this._listeners[eventName];
+        // delete causes deoptimization
+        // lets set it to null
+        this._listeners[eventName] = null;
 
         return this;
     };
