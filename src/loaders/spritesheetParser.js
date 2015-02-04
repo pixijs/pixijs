@@ -17,7 +17,7 @@ module.exports = function ()
             var route = path.dirname(resource.url.replace(this.baseUrl, ''));
 
             // load the image for this sheet
-            this.loadResource(new Resource(this.baseUrl + route + '/' + resource.data.meta.image, loadOptions), function (res)
+            this.loadResource(new Resource(resource.name + '_image', this.baseUrl + route + '/' + resource.data.meta.image, loadOptions), function (res)
             {
                 resource.textures = {};
 
@@ -53,8 +53,8 @@ module.exports = function ()
                         resource.textures[i] = new core.Texture(res.texture.baseTexture, size, size.clone(), trim);
 
                         if (frames[i].rotated) {
-                            resource.textures[i].spritePivot.x = frames[i].pivot.x;
-                            resource.textures[i].spritePivot.y = frames[i].pivot.y;
+                            // resource.textures[i].pivot.x = frames[i].pivot.x;
+                            // resource.textures[i].pivot.y = frames[i].pivot.y;
                             resource.textures[i].rotation = -Math.PI / 2;
                         }
                     }
