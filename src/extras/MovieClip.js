@@ -1,4 +1,7 @@
-var core = require('../core');
+var core = require('../core'),
+    utils = require('../core/utils');
+
+
 
 /**
  * A MovieClip is a simple way to display an animation depicted by a list of textures.
@@ -59,11 +62,18 @@ function MovieClip(textures)
      * @readonly
      */
     this.playing = false;
+
+    /**
+     * private cache of the bound function
+     * @type {[type]}
+     */
+    this._updateBound = this.update.bind(this);
 }
 
 // constructor
 MovieClip.prototype = Object.create(core.Sprite.prototype);
 MovieClip.prototype.constructor = MovieClip;
+module.exports = MovieClip;
 
 Object.defineProperties(MovieClip.prototype, {
     /**
@@ -89,7 +99,13 @@ Object.defineProperties(MovieClip.prototype, {
  */
 MovieClip.prototype.stop = function ()
 {
+    if(!this.playing)
+    {
+        return;
+    }
+
     this.playing = false;
+    utils.Ticker.off('tick', this._updateBound);
 };
 
 /**
@@ -98,7 +114,13 @@ MovieClip.prototype.stop = function ()
  */
 MovieClip.prototype.play = function ()
 {
+    if(this.playing)
+    {
+        return;
+    }
+
     this.playing = true;
+    utils.Ticker.on('tick', this._updateBound);
 };
 
 /**
@@ -108,7 +130,8 @@ MovieClip.prototype.play = function ()
  */
 MovieClip.prototype.gotoAndStop = function (frameNumber)
 {
-    this.playing = false;
+    this.stop();
+
     this.currentFrame = frameNumber;
 
     var round = Math.round(this.currentFrame);
@@ -123,7 +146,7 @@ MovieClip.prototype.gotoAndStop = function (frameNumber)
 MovieClip.prototype.gotoAndPlay = function (frameNumber)
 {
     this.currentFrame = frameNumber;
-    this.playing = true;
+    this.play();
 };
 
 /*
@@ -131,16 +154,10 @@ MovieClip.prototype.gotoAndPlay = function (frameNumber)
  *
  * @private
  */
-MovieClip.prototype.updateTransform = function ()
+MovieClip.prototype.update = function ( event )
 {
-    this.containerUpdateTransform();
 
-    if (!this.playing)
-    {
-        return;
-    }
-
-    this.currentFrame += this.animationSpeed;
+    this.currentFrame += this.animationSpeed * event.data.deltaTime;
 
     var round = Math.round(this.currentFrame);
 
@@ -175,6 +192,13 @@ MovieClip.prototype.updateTransform = function ()
         }
     }
 };
+
+
+MovieClip.prototype.destroy = function ( )
+{
+    this.stop();
+    core.Sprite.prototype.destroy.call(this);
+}
 
 /**
  * A short hand way of creating a movieclip from an array of frame ids
