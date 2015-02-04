@@ -34,8 +34,10 @@ TextureUvs.prototype.rotate = function (angle)
     else
     {
         // rotate the uvs by (PI/2) however many times are needed
-        if (angle > 0) {
-            for (var i = angle / halfPI; i > 0; --i) {
+        if (angle > 0)
+        {
+            for (var i = angle / halfPI; i > 0; --i)
+            {
                 x = this.x3;
                 y = this.y3;
 
@@ -53,8 +55,10 @@ TextureUvs.prototype.rotate = function (angle)
             }
         }
         // rotate the uvs by -(PI/2) however many times are needed
-        else {
-            for (var i = angle / halfPI; i < 0; ++i) {
+        else
+        {
+            for (var i = angle / halfPI; i < 0; ++i)
+            {
                 x = this.x0;
                 y = this.y0;
 
