@@ -48,7 +48,7 @@
   },
   "dependencies": {
     "async": "^0.9.0",
-    "resource-loader": "^1.0.0",
+    "resource-loader": "^1.1.1",
     "webgl-enabled": "^1.0.2"
   },
   "browserify": {

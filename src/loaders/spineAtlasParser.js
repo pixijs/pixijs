@@ -20,7 +20,7 @@ module.exports = function ()
                 xhrType: Resource.XHR_RESPONSE_TYPE.TEXT
             };
 
-            this.loadResource(new Resource(atlasPath, atlasOptions), function (res)
+            this.loadResource(new Resource(resource.name + '_atlas', atlasPath, atlasOptions), function (res)
             {
                 // create a spine atlas using the loaded text
                 var spineAtlas = new spine.Atlas(this.ajaxRequest.responseText, this.baseUrl, res.crossOrigin);

@@ -197,12 +197,6 @@ Sprite.prototype._onTextureUpdate = function ()
     {
         this.scale.y = this._height / this.texture.frame.height;
     }
-
-    if (this.texture.rotation) {
-        this.rotation = this.texture.rotation;
-        // this.pivot.x = this.texture.spritePivot.x;
-        // this.pivot.y = this.texture.spritePivot.y;
-    }
 };
 
 Sprite.prototype._renderWebGL = function (renderer)
