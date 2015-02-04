@@ -35,7 +35,7 @@ module.exports = function ()
         };
 
         // load the texture for the font
-        this.loadResource(new Resource(resource.name + '_image', textureUrl, loadOptions), function (res)
+        this.add(resource.name + '_image', textureUrl, loadOptions, function (res)
         {
             var data = {};
             var info = resource.data.getElementsByTagName('info')[0];

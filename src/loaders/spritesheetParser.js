@@ -17,7 +17,7 @@ module.exports = function ()
             var route = path.dirname(resource.url.replace(this.baseUrl, ''));
 
             // load the image for this sheet
-            this.loadResource(new Resource(resource.name + '_image', this.baseUrl + route + '/' + resource.data.meta.image, loadOptions), function (res)
+            this.add(resource.name + '_image', this.baseUrl + route + '/' + resource.data.meta.image, loadOptions, function (res)
             {
                 resource.textures = {};
 
