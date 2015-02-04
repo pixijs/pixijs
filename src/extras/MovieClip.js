@@ -159,9 +159,9 @@ MovieClip.prototype.update = function ( event )
 
     this.currentFrame += this.animationSpeed * event.data.deltaTime;
 
-    var round = Math.round(this.currentFrame);
+    var floor = Math.floor(this.currentFrame);
 
-    if (round < 0)
+    if (floor < 0)
     {
         if (this.loop)
         {
@@ -178,11 +178,11 @@ MovieClip.prototype.update = function ( event )
             }
         }
     }
-    else if (this.loop || round < this.textures.length)
+    else if (this.loop || floor < this.textures.length)
     {
-        this.texture = this.textures[round % this.textures.length];
+        this.texture = this.textures[floor % this.textures.length];
     }
-    else if (round >= this.textures.length)
+    else if (floor >= this.textures.length)
     {
         this.gotoAndStop(this.textures.length - 1);
 
