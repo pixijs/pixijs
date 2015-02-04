@@ -29,7 +29,8 @@
     "quotmark"      : "single", // Force consistency when using quote marks.
     "undef"         : true,     // Require all non-global variables be declared before they are used.
     "unused"        : true,     // Warn when varaibles are created by not used.
-    "strict"        : true,    // Require `use strict` pragma in every file.
+    "strict"        : true,     // Require `use strict` pragma in every file.
+    "globalstrict"  : true,     // Allow `use strict` pragma at top of file.
     "trailing"      : true,     // Prohibit trailing whitespaces.
     "maxparams"     : 8,        // Prohibit having more than X number of params in a function.
     "maxdepth"      : 8,        // Prohibit nested blocks from going more than X levels deep.
