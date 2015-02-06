@@ -45,6 +45,8 @@ var RenderTarget = function(gl, width, height, scaleMode, root, createStencilBuf
 
     this.projectionMatrix = new math.Matrix();
 
+    this.transform = null;
+
     this.frame = null;
 
     // stores masking data for the render target
@@ -154,6 +156,11 @@ RenderTarget.prototype.activate = function()
 
     // TODO add a dirty flag to this of a setter for the frame?
     this.calculateProjection( projectionFrame );
+
+    if(this.transform)
+    {
+        this.projectionMatrix.append(this.transform);
+    }
 
     gl.viewport(0,0, projectionFrame.width, projectionFrame.height);
 };

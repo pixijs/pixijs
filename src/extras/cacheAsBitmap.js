@@ -67,6 +67,7 @@ DisplayObject.prototype._initCachedDisplayObject = function( renderer )
         return;
     }
 
+    //get bounds actually transforms the object for us already!
     var bounds = this.getLocalBounds();
 
     var cachedRenderTarget = renderer.currentRenderTarget;
@@ -82,17 +83,12 @@ DisplayObject.prototype._initCachedDisplayObject = function( renderer )
     // set all properties to there original so we can render to a texture
     this._cacheAsBitmap = false;
     this.renderWebGL = this._originalRenderWebGL;
-    this.updateTransform = this._originalUpdateTransform;
 
     renderTexture.render(this, m, true);
-
-    // TODO this could mess up the filter stack
-    // TODO as this happens at runtime now this can be optimise this by removing the updateTransfom
 
     // now restore the state be setting the new properties
     renderer.setRenderTarget(cachedRenderTarget);
 
-    this.updateTransform = this.displayObjectUpdateTransform;
     this.renderWebGL = this._renderCachedWebGL;
     this._cacheAsBitmap = true;
 
@@ -101,7 +97,6 @@ DisplayObject.prototype._initCachedDisplayObject = function( renderer )
     this._cachedSprite.worldTransform = this.worldTransform;
     this._cachedSprite.anchor.x = -( bounds.x / bounds.width );
     this._cachedSprite.anchor.y = -( bounds.y / bounds.height );
-
 };
 
 DisplayObject.prototype._destroyCachedDisplayObject = function()

@@ -116,7 +116,7 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
      * Draw/render the given DisplayObject onto the texture.
      *
      * The displayObject and descendents are transformed during this operation.
-     * If `restoreWorldTransform` is true then the transformations will be restored before the
+     * If `updateTransform` is true then the transformations will be restored before the
      * method returns. Otherwise it is up to the calling code to correctly use or reset
      * the transformed display objects.
      *
@@ -126,7 +126,7 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
      * @param displayObject {DisplayObject} The display object to render this texture on
      * @param [matrix] {Matrix} Optional matrix to apply to the display object before rendering.
      * @param [clear=false] {boolean} If true the texture will be cleared before the displayObject is drawn
-     * @param [restoreWorldTransform=true] {boolean} If true the displayObject's worldTransform/worldAlpha and all children
+     * @param [updateTransform=true] {boolean} If true the displayObject's worldTransform/worldAlpha and all children
      *  transformations will be restored. Not restoring this information will be a little faster.
      */
     this.render = null;
@@ -232,49 +232,41 @@ RenderTexture.prototype.clear = function ()
  * @param displayObject {DisplayObject} The display object to render this texture on
  * @param [matrix] {Matrix} Optional matrix to apply to the display object before rendering.
  * @param [clear=false] {boolean} If true the texture will be cleared before the displayObject is drawn
- * @param [restoreWorldTransform=true] {boolean} If true the displayObject's worldTransform/worldAlpha and all children
+ * @param [updateTransform=true] {boolean} If true the displayObject's worldTransform/worldAlpha and all children
  *  transformations will be restored. Not restoring this information will be a little faster.
  */
-RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, restoreWorldTransform)
+RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, updateTransform)
 {
     if (!this.valid)
     {
         return;
     }
 
-    restoreWorldTransform = !!restoreWorldTransform;
+    updateTransform = !!updateTransform;
 
     var tempAlpha,
         tempTransform;
 
-    if (restoreWorldTransform)
-    {
-        tempAlpha = displayObject.worldAlpha;
-        tempTransform = displayObject.worldTransform.toArray();
-    }
 
-    //TOOD replace position with matrix..
+    this.textureBuffer.transform = matrix;
 
-    //Lets create a nice matrix to apply to our display object. Frame buffers come in upside down so we need to flip the matrix
-    var wt = displayObject.worldTransform;
-
-    wt.identity();
-
-    if (matrix)
-    {
-        wt.append(matrix);
-    }
 
     // setWorld Alpha to ensure that the object is renderer at full opacity
     displayObject.worldAlpha = 1;
 
-    // Time to update all the children of the displayObject with the new matrix..
-    var children = displayObject.children;
-    var i, j;
-
-    for (i = 0, j = children.length; i < j; ++i)
+    if (updateTransform)
     {
-        children[i].updateTransform();
+        // reset the matrix of the displatyObject..
+        displayObject.worldTransform.identity();
+
+        // Time to update all the children of the displayObject with the new matrix..
+        var children = displayObject.children;
+        var i, j;
+
+        for (i = 0, j = children.length; i < j; ++i)
+        {
+            children[i].updateTransform();
+        }
     }
 
     // time for the webGL fun stuff!
@@ -285,18 +277,10 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, re
         this.textureBuffer.clear();
     }
 
+    //TODO rename textureBuffer to renderTarget..
+
     this.renderer.renderDisplayObject(displayObject, this.textureBuffer);
 
-    if (restoreWorldTransform)
-    {
-        displayObject.worldAlpha = tempAlpha;
-        displayObject.worldTransform.fromArray(tempTransform);
-
-        for (i = 0, j = children.length; i < j; ++i)
-        {
-            children[i].updateTransform();
-        }
-    }
 };
 
 
