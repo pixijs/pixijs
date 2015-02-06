@@ -16,6 +16,7 @@ var BaseTexture = require('./BaseTexture'),
  * @param [frame] {Rectangle} The rectangle frame of the texture to show
  * @param [crop] {Rectangle} The area of original texture
  * @param [trim] {Rectangle} Trimmed texture rectangle
+ * @param [rotate] {Rectangle} indicates if the texture should be rotated 90 degrees ( used by texture packer )
  */
 function Texture(baseTexture, frame, crop, trim, rotate)
 {
