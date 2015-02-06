@@ -47,8 +47,19 @@ var RenderTarget = function(gl, width, height, scaleMode, root, createStencilBuf
 
     this.frame = null;
 
+    // stores masking data for the render target
     this.stencilBuffer = null;
     this.stencilMaskStack = new StencilMaskStack();
+
+    // stores filter data for the render target
+    this.filterStack = [
+        {
+            renderTarget:this,
+            filter:[],
+            bounds:this.size
+        }
+    ];
+
 
     /**
      * @property scaleMode

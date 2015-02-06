@@ -117,6 +117,8 @@ function WebGLRenderer(width, height, options)
 
     // map some webGL blend modes..
     this._mapBlendModes();
+
+    this._renderTargetStack = [];
 }
 
 // constructor
@@ -213,24 +215,19 @@ WebGLRenderer.prototype.render = function (object)
  */
 WebGLRenderer.prototype.renderDisplayObject = function (displayObject, renderTarget)//projection, buffer)
 {
-    this.blendModeManager.setBlendMode(CONST.blendModes.NORMAL);
+    // TODO is this needed...
+    //this.blendModeManager.setBlendMode(CONST.blendModes.NORMAL);
 
     this.setRenderTarget(renderTarget);
 
-
-
-    // reset the render session data..
-    this.drawCount = 0;
-
     // start the filter manager
-    this.filterManager.begin();
+    this.filterManager.setFilterStack( renderTarget.filterStack );
 
     // render the scene!
     displayObject.renderWebGL(this);
 
-    // finish the sprite batch
+    // finish the current renderer..
     this.currentRenderer.flush();
-
 };
 
 WebGLRenderer.prototype.setObjectRenderer = function (objectRenderer)
@@ -247,10 +244,12 @@ WebGLRenderer.prototype.setObjectRenderer = function (objectRenderer)
 
 WebGLRenderer.prototype.setRenderTarget = function (renderTarget)
 {
+    // TODO - maybe down the line this should be a push pos thing? Leaving for now though.
     this.currentRenderTarget = renderTarget;
     this.currentRenderTarget.activate();
     this.stencilManager.setMaskStack( renderTarget.stencilMaskStack );
 };
+
 
 /**
  * Resizes the webGL view to the specified width and height.
