@@ -6,6 +6,7 @@ var SystemRenderer = require('../SystemRenderer'),
     BlendModeManager = require('./managers/BlendModeManager'),
     RenderTarget = require('./utils/RenderTarget'),
     ObjectRenderer = require('./utils/ObjectRenderer'),
+    FXAAFilter = require('./filters/FXAAFilter'),
     math = require('../../math'),
     utils = require('../../utils'),
 
@@ -48,6 +49,10 @@ function WebGLRenderer(width, height, options)
 
     this.view.addEventListener('webglcontextlost', this.handleContextLost, false);
     this.view.addEventListener('webglcontextrestored', this.handleContextRestored, false);
+
+    //TODO possibility to force FXAA as it may offer better performance?
+    this._useFXAA = false;
+    this._FXAAFilter = null;
 
     /**
      * The options passed in to create a new webgl context.
@@ -159,6 +164,14 @@ WebGLRenderer.prototype._initContext = function ()
 
     // setup the width/height properties and gl viewport
     this.resize(this.width, this.height);
+
+    this._useFXAA = this._contextOptions.antialias && ! gl.getContextAttributes().antialias;
+
+    if(this._useFXAA)
+    {
+        this._FXAAFilter = [new FXAAFilter()];
+        console.warn('WebGL native antialising not available switching to FXAA antialiasing');
+    }
 };
 
 /**
@@ -176,6 +189,13 @@ WebGLRenderer.prototype.render = function (object)
 
     this._lastObjectRendered = object;
 
+    if(this._useFXAA)
+    {
+        this._FXAAFilter[0].uniforms.resolution.value.x = this.width;
+        this._FXAAFilter[0].uniforms.resolution.value.y = this.height;
+
+        object.filters = this._FXAAFilter
+    }
     var cacheParent = object.parent;
     object.parent = this._tempDisplayObjectParent;
 
@@ -217,7 +237,6 @@ WebGLRenderer.prototype.renderDisplayObject = function (displayObject, renderTar
 {
     // TODO is this needed...
     //this.blendModeManager.setBlendMode(CONST.blendModes.NORMAL);
-
     this.setRenderTarget(renderTarget);
 
     // start the filter manager

@@ -84,7 +84,6 @@ MaskManager.prototype.popSpriteMask = function ()
 
 MaskManager.prototype.pushStencilMask = function (target, maskData)
 {
-    this.renderer.currentRenderTarget.attachStenilBuffer();
     this.renderer.stencilManager.pushMask(maskData);
 };
 

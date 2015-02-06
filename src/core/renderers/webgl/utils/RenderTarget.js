@@ -104,6 +104,7 @@ var RenderTarget = function(gl, width, height, scaleMode, root, createStencilBuf
     }
 
 
+
 };
 
 RenderTarget.prototype.constructor = RenderTarget;
@@ -141,7 +142,7 @@ RenderTarget.prototype.attachStenilBuffer = function()
         this.stencilBuffer = gl.createRenderbuffer();
         gl.bindRenderbuffer(gl.RENDERBUFFER, this.stencilBuffer);
         gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, this.stencilBuffer);
-        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL,  this.width  , this.height );
+        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL,  this.size.width  , this.size.height );
     }
 };
 
