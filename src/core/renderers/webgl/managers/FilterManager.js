@@ -12,8 +12,6 @@ function FilterManager(renderer)
 {
     WebGLManager.call(this, renderer);
 
-    this.count = 0;
-
     /**
      * @member {any[]}
      */
@@ -32,11 +30,10 @@ function FilterManager(renderer)
 
     // listen for context and update necessary buffers
     //TODO make this dynamic!
+    //TODO test this out by forces power of two?
     this.textureSize = new math.Rectangle( 0, 0, renderer.width, renderer.height );
 
     this.currentFrame = null;
-
-    this.tempMatrix = new math.Matrix();
 }
 
 FilterManager.prototype = Object.create(WebGLManager.prototype);
@@ -56,12 +53,9 @@ FilterManager.prototype.onContextChange = function ()
  * @param renderer {WebGLRenderer}
  * @param buffer {ArrayBuffer}
  */
-FilterManager.prototype.begin = function ()
+FilterManager.prototype.setFilterStack = function ( filterStack )
 {
-    //TODO sort out bounds - no point creating a new rect each frame!
-    //this.defaultShader = this.renderer.shaderManager.plugins.defaultShader;
-    this.filterStack[0].renderTarget = this.renderer.currentRenderTarget;
-    this.filterStack[0].bounds = this.renderer.currentRenderTarget.size;
+    this.filterStack = filterStack;
 };
 
 /**
@@ -94,7 +88,7 @@ FilterManager.prototype.pushFilter = function (target, filters)
     // TODO get rid of object creation!
     this.filterStack.push({
         renderTarget:texture,
-        filter:filters
+        filter:filters,
     });
 
 };
