@@ -1,3 +1,4 @@
+'use strict';
 var WebGLManager = require('./WebGLManager');
 
 /**

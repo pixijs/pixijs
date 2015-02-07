@@ -1,3 +1,4 @@
+'use strict';
 /**
  * Constant values used in pixi
  *

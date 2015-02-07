@@ -1,3 +1,4 @@
+'use strict';
 /**
  * A GraphicsData object.
  *

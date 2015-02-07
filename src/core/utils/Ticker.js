@@ -1,3 +1,4 @@
+'use strict';
 
 var eventTarget = require('./eventTarget'),
     EventData   = require('./EventData');

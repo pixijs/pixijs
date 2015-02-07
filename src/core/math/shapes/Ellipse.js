@@ -1,3 +1,4 @@
+'use strict';
 var Rectangle = require('./Rectangle'),
     CONST = require('../../const');
 

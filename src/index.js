@@ -1,3 +1,4 @@
+'use strict';
 var core = module.exports = require('./core');
 
 // plugins:

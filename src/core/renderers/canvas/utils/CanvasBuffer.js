@@ -1,3 +1,4 @@
+'use strict';
 /**
  * Creates a Canvas element of the given size.
  *

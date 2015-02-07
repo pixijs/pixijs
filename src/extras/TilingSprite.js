@@ -1,3 +1,4 @@
+'use strict';
 var core = require('../core'),
     TextureUvs = require('../core/textures/TextureUvs');
 

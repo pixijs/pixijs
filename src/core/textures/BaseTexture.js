@@ -1,3 +1,4 @@
+'use strict';
 var utils = require('../utils'),
     CONST = require('../const');
 

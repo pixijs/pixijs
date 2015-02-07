@@ -1,3 +1,4 @@
+'use strict';
 /**
  * @file        Main export of the PIXI core library
  * @author      Mat Groves <mat@goodboydigital.com>

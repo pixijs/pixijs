@@ -1,3 +1,4 @@
+'use strict';
 var math = require('../../../math'),
     CONST = require('../../../const'),
     //StencilManager = require('../managers/StencilManager'),

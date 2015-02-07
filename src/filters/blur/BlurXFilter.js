@@ -1,3 +1,4 @@
+'use strict';
 var core = require('../../core'),
     blurFactor = 1 / 7000;
 
