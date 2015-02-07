@@ -61,5 +61,3 @@ core.Graphics.prototype.hitTest = function( point )
 
     return false;
 };
-
-module.exports = {};

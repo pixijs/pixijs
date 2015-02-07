@@ -41,7 +41,7 @@
  *
  * @namespace PIXI
  */
-var PolyK = module.exports = {};
+var PolyK = exports;
 
 /**
  * Triangulates shapes for webGL graphic fills.
