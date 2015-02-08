@@ -1,4 +1,5 @@
 var math = require('../../../math'),
+    utils = require('../../../utils'),
     CONST = require('../../../const'),
     //StencilManager = require('../managers/StencilManager'),
     StencilMaskStack = require('./StencilMaskStack');
@@ -88,8 +89,21 @@ var RenderTarget = function(gl, width, height, scaleMode, root, createStencilBuf
         // set the scale properties of the texture..
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, scaleMode === CONST.scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, scaleMode === CONST.scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+        // check to see if the texture is a power of two!
+        var isPowerOfTwo = utils.isPowerOfTwo(this.size.width, this.size.height);
+
+        //TODO for 99% of use cases if a texture is power of two we should tile the texture...
+         if (!isPowerOfTwo)
+        {
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        }
+        else
+        {
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+        }
 
         gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer );
         gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.texture, 0);

@@ -24,3 +24,4 @@ npm-debug.log
 node_modules
 docs/
 bin/
+examples_old/
