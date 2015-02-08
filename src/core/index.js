@@ -75,7 +75,7 @@ var core = module.exports = {
         width = width || 800;
         height = height || 600;
 
-        if (!noWebGL && require('webgl-enabled')())
+        if (!noWebGL && require('webgl-enabled')(options && options.view))
         {
             return new core.WebGLRenderer(width, height, options);
         }
