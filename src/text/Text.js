@@ -383,7 +383,7 @@ Text.prototype.determineFontProperties = function (fontStyle)
 
         context.font = fontStyle;
 
-        var width = Math.ceil(context.measureText('|Mq').width);
+        var width = Math.ceil(context.measureText('|MÉq').width);
         var baseline = Math.ceil(context.measureText('M').width);
         var height = 2 * baseline;
 
@@ -458,8 +458,6 @@ Text.prototype.determineFontProperties = function (fontStyle)
         }
 
         properties.descent = i - baseline;
-        //TODO might need a tweak. kind of a temp fix!
-        properties.descent += 6;
         properties.fontSize = properties.ascent + properties.descent;
 
         Text.fontPropertiesCache[fontStyle] = properties;
