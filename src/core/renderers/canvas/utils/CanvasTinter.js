@@ -5,7 +5,7 @@ var utils = require('../../../utils');
  *
  * @namespace PIXI
  */
-var CanvasTinter = module.exports = {};
+var CanvasTinter = exports;
 
 /**
  * Basically this method just needs a sprite and a color and tints the sprite with the given color.
