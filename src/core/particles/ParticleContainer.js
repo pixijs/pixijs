@@ -33,6 +33,9 @@ function ParticleContainer(size, properties)
     this._size = size || 15000;
     this._buffers = null;
     this._updateStatic = false;
+
+    this.interactiveChildren = false;
+
 }
 
 ParticleContainer.prototype = Object.create(Container.prototype);

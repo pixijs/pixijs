@@ -15,6 +15,7 @@ function SpriteMaskFilter(sprite)
 {
     var maskMatrix = new math.Matrix();
 
+    //TODO move this code out to a frag and vert file.
     AbstractFilter.call(this,
     // vertex shader
     [

@@ -193,9 +193,10 @@ WebGLRenderer.prototype.render = function (object)
     {
         this._FXAAFilter[0].uniforms.resolution.value.x = this.width;
         this._FXAAFilter[0].uniforms.resolution.value.y = this.height;
-
-        object.filters = this._FXAAFilter
+        object.filterArea = this.renderTarget.size;
+        object.filters = this._FXAAFilter;
     }
+
     var cacheParent = object.parent;
     object.parent = this._tempDisplayObjectParent;
 
