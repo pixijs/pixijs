@@ -10,7 +10,7 @@ loader
     .use(Loader.middleware.parsing.json())
 
     // parse any blob into more usable objects (e.g. Image)
-    .use(Loader.middleware.parsing.json())
+    .use(Loader.middleware.parsing.blob())
 
     // parse any Image objects into textures
     .use(textureParser())
