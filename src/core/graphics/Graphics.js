@@ -152,26 +152,7 @@ Object.defineProperties(Graphics.prototype, {
      * @default false
      * @private
      */
-    cacheAsBitmap: {
-        get: function ()
-        {
-            return this._cacheAsBitmap;
-        },
-        set: function (value)
-        {
-            this._cacheAsBitmap = value;
 
-            if (this._cacheAsBitmap)
-            {
-                this._generateCachedSprite();
-            }
-            else
-            {
-                this.destroyCachedSprite();
-                this.dirty = true;
-            }
-        }
-    }
 });
 
 /**
@@ -1003,6 +984,7 @@ Graphics.prototype.updateLocalBounds = function ()
  *
  * @private
  */
+/*
 Graphics.prototype._generateCachedSprite = function ()
 {
     var bounds = this.getLocalBounds();
@@ -1037,12 +1019,13 @@ Graphics.prototype._generateCachedSprite = function ()
 
     this._cachedSprite.alpha = this.alpha;
 };
-
+*/
 /**
  * Updates texture size based on canvas size
  *
  * @private
  */
+/*
 Graphics.prototype.updateCachedSpriteTexture = function ()
 {
     var cachedSprite = this._cachedSprite;
@@ -1059,12 +1042,13 @@ Graphics.prototype.updateCachedSpriteTexture = function ()
 
     // update the dirty base textures
     texture.baseTexture.dirty();
-};
+};*/
 
 /**
  * Destroys a previous cached sprite.
  *
  */
+/*
 Graphics.prototype.destroyCachedSprite = function ()
 {
     this._cachedSprite.texture.destroy(true);
@@ -1072,7 +1056,7 @@ Graphics.prototype.destroyCachedSprite = function ()
     // let the gc collect the unused sprite
     // TODO could be object pooled!
     this._cachedSprite = null;
-};
+};*/
 
 /**
  * Draws the given shape to this Graphics object. Can be any of Circle, Rectangle, Ellipse, Line or Polygon.
