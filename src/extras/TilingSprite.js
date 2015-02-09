@@ -3,7 +3,8 @@ var core = require('../core'),
     RenderTexture = require('../core/textures/RenderTexture'),
     utils = require('../core/utils/'),
     // a sprite use dfor rendering textures..
-    tempSprite = new core.Sprite();
+    tempSprite = new core.Sprite(),
+    tempPoint = new core.math.Point();
 
 /**
  * A tiling sprite is a fast way of rendering a tiling image
@@ -420,6 +421,29 @@ TilingSprite.prototype.generate_TilingTexture = function (renderer, texture, for
     this._texture = this._tilingTexture;
 
 };
+
+TilingSprite.prototype.hitTest = function( point )
+{
+    this.worldTransform.applyInverse(point,  tempPoint);
+
+    var width = this._width;
+    var height = this._height;
+    var x1 = -width * this.anchor.x;
+    var y1;
+
+    if ( tempPoint.x > x1 && tempPoint.x < x1 + width )
+    {
+        y1 = -height * this.anchor.y;
+
+        if ( tempPoint.y > y1 && tempPoint.y < y1 + height )
+        {
+            return true;
+        }
+    }
+
+    return false;
+};
+
 
 TilingSprite.prototype.destroy = function () {
     core.Sprite.prototype.destroy.call(this);
