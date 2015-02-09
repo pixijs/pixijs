@@ -296,7 +296,7 @@ InteractionManager.prototype.mapPositionToPoint = function ( point, x, y )
  * @param  {boolean} hitTest this indicates if the objects inside should be hit test against the point
  * @return {boolean} returns true if the displayObject hit the point
  */
-InteractionManager.prototype.processInteractive = function (point, displayObject, func, hitTest )
+InteractionManager.prototype.processInteractive = function (point, displayObject, func, hitTest, interactive )
 {
     if(!displayObject.visible)
     {
@@ -307,6 +307,9 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
 
     var hit = false;
 
+    // if the object is interactive we must hit test all its children..
+    interactive = interactive || displayObject.interactive;
+
     if(displayObject.interactiveChildren)
     {
 
@@ -314,18 +317,18 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
         {
             if(! hit  && hitTest)
             {
-                hit = this.processInteractive(point, children[i], func, true );
+                hit = this.processInteractive(point, children[i], func, true, interactive );
             }
             else
             {
                 // now we know we can miss it all!
-                this.processInteractive(point, children[i], func, false );
+                this.processInteractive(point, children[i], func, false, false );
             }
         }
 
     }
 
-    if(displayObject.interactive)
+    if(interactive)
     {
         if(hitTest)
         {
@@ -341,7 +344,10 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
             }
         }
 
-        func(displayObject, hit);
+        if(displayObject.interactive)
+        {
+            func(displayObject, hit);
+        }
     }
 
     return hit;
