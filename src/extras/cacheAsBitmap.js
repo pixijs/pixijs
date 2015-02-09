@@ -9,6 +9,7 @@ DisplayObject.prototype._cacheAsBitmap = false;
 DisplayObject.prototype._originalRenderWebGL = false;
 
 DisplayObject.prototype._originalUpdateTransform = null;
+DisplayObject.prototype._originalHitTest = null;
 DisplayObject.prototype._cachedSprite = null;
 
 
@@ -33,9 +34,11 @@ Object.defineProperties(DisplayObject.prototype, {
             {
                 this._originalRenderWebGL = this.renderWebGL;
                 this._originalUpdateTransform = this.updateTransform;
+                this._originalHitTest = this.hitTest;
 
                 this.renderWebGL = this._renderCachedWebGL;
                 this.updateTransform = this.displayObjectUpdateTransform;
+
             }
             else
             {
@@ -46,6 +49,7 @@ Object.defineProperties(DisplayObject.prototype, {
 
                 this.renderWebGL = this._originalRenderWebGL;
                 this.updateTransform = this._originalUpdateTransform;
+                this.hitTest = this._originalHitTest;
             }
         }
     }
@@ -97,6 +101,7 @@ DisplayObject.prototype._initCachedDisplayObject = function( renderer )
     this._cachedSprite.worldTransform = this.worldTransform;
     this._cachedSprite.anchor.x = -( bounds.x / bounds.width );
     this._cachedSprite.anchor.y = -( bounds.y / bounds.height );
+    this.hitTest = this._cachedSprite.hitTest.bind(this._cachedSprite);
 };
 
 DisplayObject.prototype._destroyCachedDisplayObject = function()
