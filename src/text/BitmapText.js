@@ -12,7 +12,10 @@ var core = require('../core');
  * @namespace PIXI
  * @param text {string} The copy that you would like the text to display
  * @param style {object} The style parameters
- * @param style.font {string} The size (optional) and bitmap font id (required) eq 'Arial' or '20px Arial' (must have loaded previously)
+ * @param style.font {string|object} The font descriptor for the object, can be passed as a string of form
+ *      "24px FontName" or "FontName" or as an object with explicit name/size properties.
+ * @param [style.font.size] {number} The size of the font in pixels, e.g. 24
+ * @param [style.font.name] {string} The bitmap font id
  * @param [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
  */
 function BitmapText(text, style)
@@ -135,11 +138,16 @@ Object.defineProperties(BitmapText.prototype, {
         },
         set: function (value)
         {
-            value = value.split(' ');
+            if (typeof value === 'string') {
+                value = value.split(' ');
 
-            // TODO - This should be object-based not string based like it has been.
-            this._style.fontName = value[value.length - 1];
-            this._style.fontSize = value.length >= 2 ? parseInt(value[value.length - 2], 10) : BitmapText.fonts[this.fontName].size;
+                this._style.fontName = value.slice(1).join(' ');
+                this._style.fontSize = value.length >= 2 ? parseInt(value[0], 10) : BitmapText.fonts[this.fontName].size;
+            }
+            else {
+                this._style.fontName = value.name;
+                this._style.fontSize = typeof value.size === 'number' ? value.size : parseInt(value.size, 10);
+            }
 
             this.dirty = true;
         }
