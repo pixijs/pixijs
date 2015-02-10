@@ -59,14 +59,14 @@ function CanvasRenderer(width, height, options)
     /**
      * Tracks the active scale mode for this renderer.
      *
-     * @member {CONST.SCALE_MODE}
+     * @member {SCALE_MODE}
      */
     this.currentScaleMode = CONST.SCALE_MODES.DEFAULT;
 
     /**
      * Tracks the active blend mode for this renderer.
      *
-     * @member {CONST.SCALE_MODE}
+     * @member {SCALE_MODE}
      */
     this.currentBlendMode = CONST.BLEND_MODES.NORMAL;
 

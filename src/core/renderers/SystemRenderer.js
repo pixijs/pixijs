@@ -43,7 +43,7 @@ function SystemRenderer(system, width, height, options)
     /**
      * The type of the renderer.
      *
-     * @member {CONST.RENDERER_TYPE}
+     * @member {RENDERER_TYPE}
      * @default CONT.RENDERER_TYPE.UNKNOWN
      */
     this.type = CONST.RENDERER_TYPE.UNKNOWN;
