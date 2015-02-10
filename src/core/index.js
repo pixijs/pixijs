@@ -9,8 +9,6 @@
  * @namespace PIXI
  */
 var core = module.exports = {
-    CONST: require('./const'),
-
     // utils
     utils: require('./utils'),
     math: require('./math'),
@@ -109,5 +107,10 @@ var core = module.exports = {
     }
 };
 
+// add constants to export
+var CONST = require('./const');
 
+for (var c in CONST) {
+    core[c] = CONST[c];
+}
 
