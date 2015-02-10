@@ -8,6 +8,8 @@ module.exports = function ()
         if (resource.data && resource.data.nodeName && resource.data.nodeName.toLowerCase() === 'img')
         {
             resource.texture = new core.Texture(new core.BaseTexture(resource.data));
+            // lets also add the frame to pixi's global cache for fromFrame and fromImage fucntions
+            core.utils.TextureCache[resource.url] = resource.texture;
         }
 
         next();
