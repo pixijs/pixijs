@@ -64,9 +64,9 @@ function Graphics()
      * The blend mode to be applied to the graphic shape. Apply a value of blendModes.NORMAL to reset the blend mode.
      *
      * @member {number}
-     * @default CONST.blendModes.NORMAL;
+     * @default CONST.BLEND_MODES.NORMAL;
      */
-    this.blendMode = CONST.blendModes.NORMAL;
+    this.blendMode = CONST.BLEND_MODES.NORMAL;
 
     /**
      * Current path

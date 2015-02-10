@@ -10,7 +10,7 @@ var BaseTexture = require('./BaseTexture'),
  * @extends BaseTexture
  * @namespace PIXI
  * @param source {HTMLVideoElement}
- * @param [scaleMode] {number} See {@link scaleModes} for possible values
+ * @param [scaleMode] {number} See {@link SCALE_MODES} for possible values
  */
 function VideoBaseTexture(source, scaleMode)
 {
@@ -116,7 +116,7 @@ VideoBaseTexture.prototype.destroy = function ()
  *
  * @static
  * @param video {HTMLVideoElement}
- * @param scaleMode {number} See {@link scaleModes} for possible values
+ * @param scaleMode {number} See {@link SCALE_MODES} for possible values
  * @return {VideoBaseTexture}
  */
 VideoBaseTexture.fromVideo = function (video, scaleMode)
@@ -161,7 +161,7 @@ VideoBaseTexture.fromVideo = function (video, scaleMode)
  * @param [videoSrc.src] {string} One of the source urls for the video
  * @param [videoSrc.mime] {string} The mimetype of the video (e.g. 'video/mp4'). If not specified
  *  the url's extension will be used as the second part of the mime type.
- * @param scaleMode {number} See {@link scaleModes} for possible values
+ * @param scaleMode {number} See {@link SCALE_MODES} for possible values
  * @return {VideoBaseTexture}
  */
 VideoBaseTexture.fromUrl = function (videoSrc, scaleMode)

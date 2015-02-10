@@ -36,26 +36,26 @@ module.exports = {
      *
      * @static
      * @constant
-     * @property {object} blendModes
-     * @property {number} blendModes.NORMAL
-     * @property {number} blendModes.ADD
-     * @property {number} blendModes.MULTIPLY
-     * @property {number} blendModes.SCREEN
-     * @property {number} blendModes.OVERLAY
-     * @property {number} blendModes.DARKEN
-     * @property {number} blendModes.LIGHTEN
-     * @property {number} blendModes.COLOR_DODGE
-     * @property {number} blendModes.COLOR_BURN
-     * @property {number} blendModes.HARD_LIGHT
-     * @property {number} blendModes.SOFT_LIGHT
-     * @property {number} blendModes.DIFFERENCE
-     * @property {number} blendModes.EXCLUSION
-     * @property {number} blendModes.HUE
-     * @property {number} blendModes.SATURATION
-     * @property {number} blendModes.COLOR
-     * @property {number} blendModes.LUMINOSITY
+     * @property {object} BLEND_MODES
+     * @property {number} BLEND_MODES.NORMAL
+     * @property {number} BLEND_MODES.ADD
+     * @property {number} BLEND_MODES.MULTIPLY
+     * @property {number} BLEND_MODES.SCREEN
+     * @property {number} BLEND_MODES.OVERLAY
+     * @property {number} BLEND_MODES.DARKEN
+     * @property {number} BLEND_MODES.LIGHTEN
+     * @property {number} BLEND_MODES.COLOR_DODGE
+     * @property {number} BLEND_MODES.COLOR_BURN
+     * @property {number} BLEND_MODES.HARD_LIGHT
+     * @property {number} BLEND_MODES.SOFT_LIGHT
+     * @property {number} BLEND_MODES.DIFFERENCE
+     * @property {number} BLEND_MODES.EXCLUSION
+     * @property {number} BLEND_MODES.HUE
+     * @property {number} BLEND_MODES.SATURATION
+     * @property {number} BLEND_MODES.COLOR
+     * @property {number} BLEND_MODES.LUMINOSITY
      */
-    blendModes: {
+    BLEND_MODES: {
         NORMAL:         0,
         ADD:            1,
         MULTIPLY:       2,
@@ -83,12 +83,12 @@ module.exports = {
      *
      * @static
      * @constant
-     * @property {object} scaleModes
-     * @property {number} scaleModes.DEFAULT=LINEAR
-     * @property {number} scaleModes.LINEAR Smooth scaling
-     * @property {number} scaleModes.NEAREST Pixelating scaling
+     * @property {object} SCALE_MODES
+     * @property {number} SCALE_MODES.DEFAULT=LINEAR
+     * @property {number} SCALE_MODES.LINEAR Smooth scaling
+     * @property {number} SCALE_MODES.NEAREST Pixelating scaling
      */
-    scaleModes: {
+    SCALE_MODES: {
         DEFAULT:    0,
         LINEAR:     0,
         NEAREST:    1
@@ -109,17 +109,17 @@ module.exports = {
      *
      * @static
      * @constant
-     * @property {object} defaultRenderOptions
-     * @property {HTMLCanvasElement} defaultRenderOptions.view=null
-     * @property {boolean} defaultRenderOptions.transparent=false
-     * @property {boolean} defaultRenderOptions.antialias=false
-     * @property {boolean} defaultRenderOptions.preserveDrawingBuffer=false
-     * @property {number} defaultRenderOptions.resolution=1
-     * @property {number} defaultRenderOptions.backgroundColor=0x000000
-     * @property {boolean} defaultRenderOptions.clearBeforeRender=true
-     * @property {boolean} defaultRenderOptions.autoResize=false
+     * @property {object} DEFAULT_RENDER_OPTIONS
+     * @property {HTMLCanvasElement} DEFAULT_RENDER_OPTIONS.view=null
+     * @property {boolean} DEFAULT_RENDER_OPTIONS.transparent=false
+     * @property {boolean} DEFAULT_RENDER_OPTIONS.antialias=false
+     * @property {boolean} DEFAULT_RENDER_OPTIONS.preserveDrawingBuffer=false
+     * @property {number} DEFAULT_RENDER_OPTIONS.resolution=1
+     * @property {number} DEFAULT_RENDER_OPTIONS.backgroundColor=0x000000
+     * @property {boolean} DEFAULT_RENDER_OPTIONS.clearBeforeRender=true
+     * @property {boolean} DEFAULT_RENDER_OPTIONS.autoResize=false
      */
-    defaultRenderOptions: {
+    DEFAULT_RENDER_OPTIONS: {
         view: null,
         resolution: 1,
         antialias: false,

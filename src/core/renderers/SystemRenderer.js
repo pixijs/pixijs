@@ -27,17 +27,17 @@ function SystemRenderer(system, width, height, options)
     // prepare options
     if (options)
     {
-        for (var i in CONST.defaultRenderOptions)
+        for (var i in CONST.DEFAULT_RENDER_OPTIONS)
         {
             if (typeof options[i] === 'undefined')
             {
-                options[i] = CONST.defaultRenderOptions[i];
+                options[i] = CONST.DEFAULT_RENDER_OPTIONS[i];
             }
         }
     }
     else
     {
-        options = CONST.defaultRenderOptions;
+        options = CONST.DEFAULT_RENDER_OPTIONS;
     }
 
     /**

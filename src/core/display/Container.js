@@ -284,7 +284,7 @@ Container.prototype.removeChildren = function (beginIndex, endIndex)
  * This can be quite useful if your displayObject is static / complicated and needs to be reused multiple times.
  *
  * @param resolution {Number} The resolution of the texture being generated
- * @param scaleMode {Number} See {{#crossLink "PIXI/scaleModes:property"}}PIXI.scaleModes{{/crossLink}} for possible values
+ * @param scaleMode {Number} See {@link SCALE_MODES} for possible values
  * @param renderer {CanvasRenderer|WebGLRenderer} The renderer used to generate the texture.
  * @return {Texture} a texture of the graphics object
  */

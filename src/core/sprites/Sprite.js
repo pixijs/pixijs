@@ -66,12 +66,12 @@ function Sprite(texture)
     this.tint = 0xFFFFFF;
 
     /**
-     * The blend mode to be applied to the sprite. Set to CONST.blendModes.NORMAL to remove any blend mode.
+     * The blend mode to be applied to the sprite. Set to CONST.BLEND_MODES.NORMAL to remove any blend mode.
      *
      * @member {number}
-     * @default CONST.blendModes.NORMAL;
+     * @default CONST.BLEND_MODES.NORMAL;
      */
-    this.blendMode = CONST.blendModes.NORMAL;
+    this.blendMode = CONST.BLEND_MODES.NORMAL;
 
     /**
      * The shader that will be used to render the sprite. Set to null to remove a current shader.
@@ -339,7 +339,7 @@ Sprite.prototype.renderCanvas = function (renderer)
         if (renderer.smoothProperty && renderer.currentScaleMode !== this.texture.baseTexture.scaleMode)
         {
             renderer.currentScaleMode = this.texture.baseTexture.scaleMode;
-            renderer.context[renderer.smoothProperty] = (renderer.currentScaleMode === CONST.scaleModes.LINEAR);
+            renderer.context[renderer.smoothProperty] = (renderer.currentScaleMode === CONST.SCALE_MODES.LINEAR);
         }
 
         // If the texture is trimmed we offset by the trim x/y, otherwise we use the frame dimensions

@@ -8,7 +8,7 @@ var utils = require('../utils'),
  * @mixes eventTarget
  * @namespace PIXI
  * @param source {Image|Canvas} the source object of the texture.
- * @param [scaleMode=scaleModes.DEFAULT] {number} See {@link scaleModes} for possible values
+ * @param [scaleMode=scaleModes.DEFAULT] {number} See {@link SCALE_MODES} for possible values
  */
 function BaseTexture(source, scaleMode)
 {
@@ -43,7 +43,7 @@ function BaseTexture(source, scaleMode)
      * @member {{number}}
      * @default scaleModes.LINEAR
      */
-    this.scaleMode = scaleMode || CONST.scaleModes.DEFAULT;
+    this.scaleMode = scaleMode || CONST.SCALE_MODES.DEFAULT;
 
     /**
      * Set to true once the base texture has successfully loaded.
@@ -341,7 +341,7 @@ BaseTexture.prototype.updateSourceImage = function (newSrc)
  * @static
  * @param imageUrl {string} The image url of the texture
  * @param [crossorigin=(auto)] {boolean} Should use anonymouse CORS? Defaults to true if the URL is not a data-URI.
- * @param [scaleMode=scaleModes.DEFAULT] {number} See {@link scaleModes} for possible values
+ * @param [scaleMode=scaleModes.DEFAULT] {number} See {@link SCALE_MODES} for possible values
  * @return BaseTexture
  */
 BaseTexture.fromImage = function (imageUrl, crossorigin, scaleMode)

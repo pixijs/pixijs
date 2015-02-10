@@ -61,14 +61,14 @@ function CanvasRenderer(width, height, options)
      *
      * @member {CONST.SCALE_MODE}
      */
-    this.currentScaleMode = CONST.scaleModes.DEFAULT;
+    this.currentScaleMode = CONST.SCALE_MODES.DEFAULT;
 
     /**
      * Tracks the active blend mode for this renderer.
      *
      * @member {CONST.SCALE_MODE}
      */
-    this.currentBlendMode = CONST.blendModes.NORMAL;
+    this.currentBlendMode = CONST.BLEND_MODES.NORMAL;
 
     /**
      * The canvas property used to set the canvas smoothing property.
@@ -137,8 +137,8 @@ CanvasRenderer.prototype.render = function (object)
 
     this.context.globalAlpha = 1;
 
-    this.currentBlendMode = CONST.blendModes.NORMAL;
-    this.context.globalCompositeOperation = this.blendModes[CONST.blendModes.NORMAL];
+    this.currentBlendMode = CONST.BLEND_MODES.NORMAL;
+    this.context.globalCompositeOperation = this.blendModes[CONST.BLEND_MODES.NORMAL];
 
     if (navigator.isCocoonJS && this.view.screencanvas)
     {
@@ -215,44 +215,44 @@ CanvasRenderer.prototype._mapBlendModes = function ()
 
         if (utils.canUseNewCanvasBlendModes())
         {
-            this.blendModes[CONST.blendModes.NORMAL]        = 'source-over';
-            this.blendModes[CONST.blendModes.ADD]           = 'lighter'; //IS THIS OK???
-            this.blendModes[CONST.blendModes.MULTIPLY]      = 'multiply';
-            this.blendModes[CONST.blendModes.SCREEN]        = 'screen';
-            this.blendModes[CONST.blendModes.OVERLAY]       = 'overlay';
-            this.blendModes[CONST.blendModes.DARKEN]        = 'darken';
-            this.blendModes[CONST.blendModes.LIGHTEN]       = 'lighten';
-            this.blendModes[CONST.blendModes.COLOR_DODGE]   = 'color-dodge';
-            this.blendModes[CONST.blendModes.COLOR_BURN]    = 'color-burn';
-            this.blendModes[CONST.blendModes.HARD_LIGHT]    = 'hard-light';
-            this.blendModes[CONST.blendModes.SOFT_LIGHT]    = 'soft-light';
-            this.blendModes[CONST.blendModes.DIFFERENCE]    = 'difference';
-            this.blendModes[CONST.blendModes.EXCLUSION]     = 'exclusion';
-            this.blendModes[CONST.blendModes.HUE]           = 'hue';
-            this.blendModes[CONST.blendModes.SATURATION]    = 'saturation';
-            this.blendModes[CONST.blendModes.COLOR]         = 'color';
-            this.blendModes[CONST.blendModes.LUMINOSITY]    = 'luminosity';
+            this.blendModes[CONST.BLEND_MODES.NORMAL]        = 'source-over';
+            this.blendModes[CONST.BLEND_MODES.ADD]           = 'lighter'; //IS THIS OK???
+            this.blendModes[CONST.BLEND_MODES.MULTIPLY]      = 'multiply';
+            this.blendModes[CONST.BLEND_MODES.SCREEN]        = 'screen';
+            this.blendModes[CONST.BLEND_MODES.OVERLAY]       = 'overlay';
+            this.blendModes[CONST.BLEND_MODES.DARKEN]        = 'darken';
+            this.blendModes[CONST.BLEND_MODES.LIGHTEN]       = 'lighten';
+            this.blendModes[CONST.BLEND_MODES.COLOR_DODGE]   = 'color-dodge';
+            this.blendModes[CONST.BLEND_MODES.COLOR_BURN]    = 'color-burn';
+            this.blendModes[CONST.BLEND_MODES.HARD_LIGHT]    = 'hard-light';
+            this.blendModes[CONST.BLEND_MODES.SOFT_LIGHT]    = 'soft-light';
+            this.blendModes[CONST.BLEND_MODES.DIFFERENCE]    = 'difference';
+            this.blendModes[CONST.BLEND_MODES.EXCLUSION]     = 'exclusion';
+            this.blendModes[CONST.BLEND_MODES.HUE]           = 'hue';
+            this.blendModes[CONST.BLEND_MODES.SATURATION]    = 'saturation';
+            this.blendModes[CONST.BLEND_MODES.COLOR]         = 'color';
+            this.blendModes[CONST.BLEND_MODES.LUMINOSITY]    = 'luminosity';
         }
         else
         {
             // this means that the browser does not support the cool new blend modes in canvas 'cough' ie 'cough'
-            this.blendModes[CONST.blendModes.NORMAL]        = 'source-over';
-            this.blendModes[CONST.blendModes.ADD]           = 'lighter'; //IS THIS OK???
-            this.blendModes[CONST.blendModes.MULTIPLY]      = 'source-over';
-            this.blendModes[CONST.blendModes.SCREEN]        = 'source-over';
-            this.blendModes[CONST.blendModes.OVERLAY]       = 'source-over';
-            this.blendModes[CONST.blendModes.DARKEN]        = 'source-over';
-            this.blendModes[CONST.blendModes.LIGHTEN]       = 'source-over';
-            this.blendModes[CONST.blendModes.COLOR_DODGE]   = 'source-over';
-            this.blendModes[CONST.blendModes.COLOR_BURN]    = 'source-over';
-            this.blendModes[CONST.blendModes.HARD_LIGHT]    = 'source-over';
-            this.blendModes[CONST.blendModes.SOFT_LIGHT]    = 'source-over';
-            this.blendModes[CONST.blendModes.DIFFERENCE]    = 'source-over';
-            this.blendModes[CONST.blendModes.EXCLUSION]     = 'source-over';
-            this.blendModes[CONST.blendModes.HUE]           = 'source-over';
-            this.blendModes[CONST.blendModes.SATURATION]    = 'source-over';
-            this.blendModes[CONST.blendModes.COLOR]         = 'source-over';
-            this.blendModes[CONST.blendModes.LUMINOSITY]    = 'source-over';
+            this.blendModes[CONST.BLEND_MODES.NORMAL]        = 'source-over';
+            this.blendModes[CONST.BLEND_MODES.ADD]           = 'lighter'; //IS THIS OK???
+            this.blendModes[CONST.BLEND_MODES.MULTIPLY]      = 'source-over';
+            this.blendModes[CONST.BLEND_MODES.SCREEN]        = 'source-over';
+            this.blendModes[CONST.BLEND_MODES.OVERLAY]       = 'source-over';
+            this.blendModes[CONST.BLEND_MODES.DARKEN]        = 'source-over';
+            this.blendModes[CONST.BLEND_MODES.LIGHTEN]       = 'source-over';
+            this.blendModes[CONST.BLEND_MODES.COLOR_DODGE]   = 'source-over';
+            this.blendModes[CONST.BLEND_MODES.COLOR_BURN]    = 'source-over';
+            this.blendModes[CONST.BLEND_MODES.HARD_LIGHT]    = 'source-over';
+            this.blendModes[CONST.BLEND_MODES.SOFT_LIGHT]    = 'source-over';
+            this.blendModes[CONST.BLEND_MODES.DIFFERENCE]    = 'source-over';
+            this.blendModes[CONST.BLEND_MODES.EXCLUSION]     = 'source-over';
+            this.blendModes[CONST.BLEND_MODES.HUE]           = 'source-over';
+            this.blendModes[CONST.BLEND_MODES.SATURATION]    = 'source-over';
+            this.blendModes[CONST.BLEND_MODES.COLOR]         = 'source-over';
+            this.blendModes[CONST.BLEND_MODES.LUMINOSITY]    = 'source-over';
         }
     }
 };

@@ -43,7 +43,7 @@ var BaseTexture = require('./BaseTexture'),
  * @param renderer {CanvasRenderer|WebGLRenderer} The renderer used for this RenderTexture
  * @param [width=100] {number} The width of the render texture
  * @param [height=100] {number} The height of the render texture
- * @param [scaleMode] {number} See {@link scaleModes} for possible values
+ * @param [scaleMode] {number} See {@link SCALE_MODES} for possible values
  * @param [resolution=1] {number} The resolution of the texture being generated
  */
 function RenderTexture(renderer, width, height, scaleMode, resolution)
@@ -66,7 +66,7 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
     baseTexture.width = width * resolution;
     baseTexture.height = height * resolution;
     baseTexture.resolution = resolution;
-    baseTexture.scaleMode = scaleMode || CONST.scaleModes.DEFAULT;
+    baseTexture.scaleMode = scaleMode || CONST.SCALE_MODES.DEFAULT;
     baseTexture.hasLoaded = true;
 
 

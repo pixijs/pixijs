@@ -47,9 +47,9 @@ function Strip(texture)
      * The blend mode to be applied to the sprite. Set to blendModes.NORMAL to remove any blend mode.
      *
      * @member {number}
-     * @default CONST.blendModes.NORMAL;
+     * @default CONST.BLEND_MODES.NORMAL;
      */
-    this.blendMode = core.CONST.blendModes.NORMAL;
+    this.blendMode = core.CONST.BLEND_MODES.NORMAL;
 
     /**
      * Triangles in canvas mode are automatically antialiased, use this value to force triangles to overlap a bit with each other.

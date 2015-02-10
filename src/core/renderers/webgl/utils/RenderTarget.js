@@ -68,7 +68,7 @@ var RenderTarget = function(gl, width, height, scaleMode, root, createStencilBuf
      * @property scaleMode
      * @type Number
      */
-    this.scaleMode = scaleMode || CONST.scaleModes.DEFAULT;
+    this.scaleMode = scaleMode || CONST.SCALE_MODES.DEFAULT;
 
     this.root = root;
 
@@ -87,8 +87,8 @@ var RenderTarget = function(gl, width, height, scaleMode, root, createStencilBuf
         gl.bindTexture(gl.TEXTURE_2D,  this.texture);
 
         // set the scale properties of the texture..
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, scaleMode === CONST.scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, scaleMode === CONST.scaleModes.LINEAR ? gl.LINEAR : gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, scaleMode === CONST.SCALE_MODES.LINEAR ? gl.LINEAR : gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, scaleMode === CONST.SCALE_MODES.LINEAR ? gl.LINEAR : gl.NEAREST);
 
         // check to see if the texture is a power of two!
         var isPowerOfTwo = utils.isPowerOfTwo(width, height);
