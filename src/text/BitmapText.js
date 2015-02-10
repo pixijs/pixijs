@@ -43,7 +43,7 @@ function BitmapText(text, style)
      * @member {Sprite[]}
      * @private
      */
-    this._pool = [];
+    this._glyphs = [];
 
     /**
      * Private tracker for the current style.
@@ -238,21 +238,21 @@ BitmapText.prototype.updateText = function ()
         lineAlignOffsets.push(alignOffset);
     }
 
-    var lenChildren = this.children.length;
     var lenChars = chars.length;
     var tint = this.tint;
 
     for (i = 0; i < lenChars; i++)
     {
-        var c = i < lenChildren ? this.children[i] : this._pool.pop(); // get old child if have. if not - take from pool.
+        var c = this._glyphs[i]; // get the next glyph sprite
 
         if (c)
         {
-            c.texture = chars[i].texture; // check if got one before.
+            c.texture = chars[i].texture;
         }
         else
         {
-            c = new core.Sprite(chars[i].texture); // if no create new one.
+            c = new core.Sprite(chars[i].texture);
+            this._glyphs.push(c);
         }
 
         c.position.x = (chars[i].position.x + lineAlignOffsets[chars[i].line]) * scale;
@@ -267,12 +267,9 @@ BitmapText.prototype.updateText = function ()
     }
 
     // remove unnecessary children.
-    // and put their into the pool.
-    while (this.children.length > lenChars)
+    for (var i = lenChars; i < this._glyphs.length; ++i)
     {
-        var child = this.getChildAt(this.children.length - 1);
-        this._pool.push(child);
-        this.removeChild(child);
+        this.removeChild(this._glyphs[i]);
     }
 
     this.textWidth = maxLineWidth * scale;
