@@ -80,15 +80,15 @@ FilterManager.prototype.pushFilter = function (target, filters)
 
     var texture = this.getRenderTarget();
 
-    this.renderer.setRenderTarget( texture );
+    this.renderer.setRenderTarget(texture);
 
     // clear the texture..
     texture.clear();
 
     // TODO get rid of object creation!
     this.filterStack.push({
-        renderTarget:texture,
-        filter:filters,
+        renderTarget: texture,
+        filter: filters
     });
 
 };

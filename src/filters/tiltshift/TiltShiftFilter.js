@@ -104,5 +104,5 @@ Object.defineProperties(TiltShiftFilter.prototype, {
         {
             this.tiltShiftXFilter.end = this.tiltShiftYFilter.end = value;
         }
-    },
+    }
 });

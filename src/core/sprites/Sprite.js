@@ -177,7 +177,7 @@ Object.defineProperties(Sprite.prototype, {
                 }
             }
         }
-    },
+    }
 });
 
 /**

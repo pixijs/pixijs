@@ -15,14 +15,15 @@ function FXAAFilter()
     var fs = require('fs');
 
     AbstractFilter.call(this,
-    // fragment shader
-    fs.readFileSync(__dirname + '/FXAA.frag', 'utf8'),
-    // vertex shader
-    fs.readFileSync(__dirname + '/FXAA.vert', 'utf8'),
-    // uniforms
-    {
-        resolution:{ type: 'v2',    value:{ x: 1, y: 1 }},
-    });
+        // fragment shader
+        fs.readFileSync(__dirname + '/FXAA.frag', 'utf8'),
+        // vertex shader
+        fs.readFileSync(__dirname + '/FXAA.vert', 'utf8'),
+        // uniforms
+        {
+            resolution: { type: 'v2', value: { x: 1, y: 1 } }
+        }
+    );
 
     /**
 Basic FXAA implementation based on the code on geeks3d.com with the
