@@ -64,11 +64,10 @@ ParticleContainer.prototype.renderWebGL = function (renderer)
 {
     if (!this.visible || this.worldAlpha <= 0 || !this.children.length || !this.renderable)
     {
-      //  return;
+        return;
     }
 
     renderer.setObjectRenderer( renderer.plugins.particle );
-
     renderer.plugins.particle.render( this );
 };
 

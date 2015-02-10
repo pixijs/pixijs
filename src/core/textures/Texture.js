@@ -195,7 +195,6 @@ Texture.prototype.onBaseTextureLoaded = function ()
     // TODO this code looks confusing.. boo to abusing getters and setterss!
     if (this.noFrame)
     {
-        console.log("NO FRAME")
         this.frame = new math.Rectangle(0, 0, baseTexture.width, baseTexture.height);
     }
     else

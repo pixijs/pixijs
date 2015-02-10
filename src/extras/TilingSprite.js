@@ -1,7 +1,6 @@
 var core = require('../core'),
     TextureUvs = require('../core/textures/TextureUvs'),
     RenderTexture = require('../core/textures/RenderTexture'),
-    utils = require('../core/utils/'),
     // a sprite use dfor rendering textures..
     tempSprite = new core.Sprite(),
     tempPoint = new core.math.Point();
@@ -131,7 +130,7 @@ TilingSprite.prototype._renderWebGL = function (renderer)
 {
     if (!this._tilingTexture || this._refreshTexture)
     {
-        this.generate_TilingTexture(renderer, this.texture, true);
+        this.generateTilingTexture(renderer, this.texture, true);
     }
 
     // tweak our texture temporarily..
@@ -150,8 +149,8 @@ TilingSprite.prototype._renderWebGL = function (renderer)
     var offsetX =  this.tilePosition.x/(texture.baseTexture.width*this._tileScaleOffset.x);
     var offsetY =  this.tilePosition.y/(texture.baseTexture.height*this._tileScaleOffset.y);
 
-    var scaleX =  (this._width / texture.baseTexture.width)
-    var scaleY =  (this._height / texture.baseTexture.height)
+    var scaleX =  (this._width / texture.baseTexture.width);
+    var scaleY =  (this._height / texture.baseTexture.height);
 
     scaleX /= this.tileScale.x;
     scaleY /= this.tileScale.y;
@@ -221,7 +220,7 @@ TilingSprite.prototype.renderCanvas = function (renderer)
 
     if (!this.__tilePattern ||  this._refreshTexture)
     {
-        this.generate_TilingTexture(false);
+        this.generateTilingTexture(false);
 
         if (this._tilingTexture)
         {
@@ -363,14 +362,14 @@ TilingSprite.prototype.onTextureUpdate = function ()
  *
  * @param forcePowerOfTwo {boolean} Whether we want to force the texture to be a power of two
  */
-TilingSprite.prototype.generate_TilingTexture = function (renderer, texture, forcePowerOfTwo)
+TilingSprite.prototype.generateTilingTexture = function (renderer, texture, forcePowerOfTwo)
 {
     if (!this.texture.baseTexture.hasLoaded)
     {
         return;
     }
 
-    var texture = this.originalTexture || this.texture;
+    texture = this.originalTexture || this.texture;
     var frame = texture.frame;
     var targetWidth, targetHeight;
 
@@ -385,7 +384,7 @@ TilingSprite.prototype.generate_TilingTexture = function (renderer, texture, for
         tempSprite.texture = texture;
 
         //TODO not create a new one each time you refresh
-        var renderTexture = new RenderTexture(renderer, targetWidth, targetHeight)
+        var renderTexture = new RenderTexture(renderer, targetWidth, targetHeight);
 
         tempSprite.worldTransform.a = targetWidth / frame.width;
         tempSprite.worldTransform.d = targetHeight / frame.height;

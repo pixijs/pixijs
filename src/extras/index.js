@@ -13,8 +13,6 @@ module.exports = {
     Rope:           require('./Rope'),
     Strip:          require('./Strip'),
     StripShader:    require('./StripShader'),
-    TilingSprite:   require('./TilingSprite')
+    TilingSprite:   require('./TilingSprite'),
+    cacheAsBitmap:  require('./cacheAsBitmap')
 };
-
-// activate the cachAsBitmap
-var cacheAsBitmap = require('./cacheAsBitmap');

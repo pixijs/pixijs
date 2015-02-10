@@ -1,8 +1,7 @@
-var AbstractFilter = require('./AbstractFilter'),
-    math =  require('../../../math');
+var AbstractFilter = require('./AbstractFilter');
 
 /**
- * The SpriteMaskFilter class uses the pixel values from the specified texture (called the displacement map) to perform a displacement of an object.
+ * The FXAAFilter class uses the pixel values from the specified texture (called the displacement map) to perform a displacement of an object.
  * You can use this filter to apply all manor of crazy warping effects
  * Currently the r property of the texture is used to offset the x and the g property of the texture is used to offset the y.
  *
@@ -11,7 +10,7 @@ var AbstractFilter = require('./AbstractFilter'),
  * @namespace PIXI
  * @param texture {Texture} The texture used for the displacement map * must be power of 2 texture at the moment
  */
-function SpriteMaskFilter(sprite)
+function FXAAFilter()
 {
     var fs = require('fs');
 
@@ -73,11 +72,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 }
 
-SpriteMaskFilter.prototype = Object.create(AbstractFilter.prototype);
-SpriteMaskFilter.prototype.constructor = SpriteMaskFilter;
-module.exports = SpriteMaskFilter;
+FXAAFilter.prototype = Object.create(AbstractFilter.prototype);
+FXAAFilter.prototype.constructor = FXAAFilter;
+module.exports = FXAAFilter;
 
-SpriteMaskFilter.prototype.applyFilter = function (renderer, input, output)
+FXAAFilter.prototype.applyFilter = function (renderer, input, output)
 {
     var filterManager = renderer.filterManager;
 

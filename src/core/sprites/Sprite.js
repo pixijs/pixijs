@@ -346,7 +346,6 @@ Sprite.prototype.renderCanvas = function (renderer)
         var dx = (this.texture.trim) ? this.texture.trim.x - this.anchor.x * this.texture.trim.width : this.anchor.x * -this.texture._frame.width;
         var dy = (this.texture.trim) ? this.texture.trim.y - this.anchor.y * this.texture.trim.height : this.anchor.y * -this.texture._frame.height;
 
-
         // Allow for pixel rounding
         if (renderer.roundPixels)
         {

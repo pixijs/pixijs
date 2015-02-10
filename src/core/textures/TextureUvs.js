@@ -1,5 +1,3 @@
-var halfPI = Math.PI / 2,
-    x, y;
 
 function TextureUvs()
 {
@@ -52,4 +50,4 @@ TextureUvs.prototype.set = function (frame, baseFrame, rotate)
         this.x3 = frame.x / tw;
         this.y3 = (frame.y + frame.height) / th;
     }
-}
+};

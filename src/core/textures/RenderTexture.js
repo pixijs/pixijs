@@ -244,10 +244,6 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, up
 
     updateTransform = !!updateTransform;
 
-    var tempAlpha,
-        tempTransform;
-
-
     this.textureBuffer.transform = matrix;
 
 
@@ -269,8 +265,6 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, up
         }
     }
 
-    // time for the webGL fun stuff!
-    var gl = this.renderer.gl;
 
    if (clear)
     {

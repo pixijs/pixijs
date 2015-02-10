@@ -7,7 +7,6 @@ var SystemRenderer = require('../SystemRenderer'),
     RenderTarget = require('./utils/RenderTarget'),
     ObjectRenderer = require('./utils/ObjectRenderer'),
     FXAAFilter = require('./filters/FXAAFilter'),
-    math = require('../../math'),
     utils = require('../../utils'),
 
     CONST = require('../../const');
@@ -170,7 +169,6 @@ WebGLRenderer.prototype._initContext = function ()
     if(this._useFXAA)
     {
         this._FXAAFilter = [new FXAAFilter()];
-        console.warn('WebGL native antialising not available switching to FXAA antialiasing');
     }
 };
 
