@@ -16,6 +16,7 @@
  * @param [options.autoResize=false] {Boolean} If the render view is automatically resized, default false
  * @param [options.resolution=1] {Number} the resolution of the renderer retina would be 2
  * @param [options.clearBeforeRender=true] {Boolean} This sets if the CanvasRenderer will clear the canvas or not before the new render pass.
+ * @param [options.roundPixels=false] {Boolean} If true Pixi will round x/y values when rendering, stopping pixel interpolation.
  */
 PIXI.CanvasRenderer = function(width, height, options)
 {
@@ -159,7 +160,7 @@ PIXI.CanvasRenderer = function(width, height, options)
          * Handy for crisp pixel art and speed on legacy devices.
          *
          */
-        roundPixels: false
+        roundPixels: options.roundPixels
     };
 
     this.mapBlendModes();

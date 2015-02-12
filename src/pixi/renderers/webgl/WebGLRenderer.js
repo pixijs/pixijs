@@ -22,6 +22,7 @@ PIXI.instances = [];
  * @param [options.antialias=false] {Boolean} sets antialias (only applicable in chrome at the moment)
  * @param [options.preserveDrawingBuffer=false] {Boolean} enables drawing buffer preservation, enable this if you need to call toDataUrl on the webgl context
  * @param [options.resolution=1] {Number} the resolution of the renderer retina would be 2
+ * @param [options.roundPixels=false] {Boolean} If true Pixi will round x/y values when rendering, stopping pixel interpolation.
  */
 PIXI.WebGLRenderer = function(width, height, options)
 {
@@ -224,6 +225,7 @@ PIXI.WebGLRenderer = function(width, height, options)
     this.renderSession.stencilManager = this.stencilManager;
     this.renderSession.renderer = this;
     this.renderSession.resolution = this.resolution;
+    this.renderSession.roundPixels = this.roundPixels;
 
     // time init the context..
     this.initContext();
