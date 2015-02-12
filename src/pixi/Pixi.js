@@ -171,6 +171,7 @@ PIXI.dontSayHello = false;
  * @property {Number} defaultRenderOptions.resolution=1
  * @property {Boolean} defaultRenderOptions.clearBeforeRender=true
  * @property {Boolean} defaultRenderOptions.autoResize=false
+ * @property {Boolean} defaultRenderOptions.roundPixels=false 
  * @static
  */
 PIXI.defaultRenderOptions = {
@@ -180,7 +181,8 @@ PIXI.defaultRenderOptions = {
     preserveDrawingBuffer:false,
     resolution:1,
     clearBeforeRender:true,
-    autoResize:false
+    autoResize:false,
+    roundPixels:false
 }
 
 PIXI.sayHello = function (type)
