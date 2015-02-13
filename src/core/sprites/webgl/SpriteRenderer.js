@@ -248,10 +248,10 @@ SpriteRenderer.prototype.render = function (sprite)
 
     var worldTransform = sprite.worldTransform;
 
-    var a = worldTransform.a / resolution;
-    var b = worldTransform.b / resolution;
-    var c = worldTransform.c / resolution;
-    var d = worldTransform.d / resolution;
+    var a = worldTransform.a// / resolution;
+    var b = worldTransform.b// / resolution;
+    var c = worldTransform.c// / resolution;
+    var d = worldTransform.d// / resolution;
     var tx = worldTransform.tx;
     var ty = worldTransform.ty;
 

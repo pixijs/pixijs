@@ -10,7 +10,7 @@ var utils = require('../utils'),
  * @param source {Image|Canvas} the source object of the texture.
  * @param [scaleMode=scaleModes.DEFAULT] {number} See {@link SCALE_MODES} for possible values
  */
-function BaseTexture(source, scaleMode)
+function BaseTexture(source, scaleMode, resolution)
 {
     this.uuid = utils.uuid();
 
@@ -19,7 +19,7 @@ function BaseTexture(source, scaleMode)
      *
      * @member {number}
      */
-    this.resolution = 1;
+    this.resolution = resolution || 1;
 
     /**
      * The width of the base texture set when the image has loaded
@@ -36,6 +36,11 @@ function BaseTexture(source, scaleMode)
      * @readOnly
      */
     this.height = 100;
+
+    // TODO docs
+    // used to store the actual dimensions of the source
+    this.realWidth = 100;
+    this.realHeight = 100;
 
     /**
      * The scale mode to apply when scaling this texture
@@ -274,8 +279,12 @@ BaseTexture.prototype._sourceLoaded = function ()
 {
     this.hasLoaded = true;
 
-    this.width = this.source.naturalWidth || this.source.width;
-    this.height = this.source.naturalHeight || this.source.height;
+    this.realWidth = this.source.naturalWidth || this.source.width;
+    this.realHeight = this.source.naturalHeight || this.source.height;
+
+    this.width = this.realWidth / this.resolution;
+    this.height = this.realHeight / this.resolution;
+
 
     this.isPowerOfTwo = utils.isPowerOfTwo(this.width, this.height);
 
@@ -371,10 +380,7 @@ BaseTexture.fromImage = function (imageUrl, crossorigin, scaleMode)
         utils.BaseTextureCache[imageUrl] = baseTexture;
 
         // if there is an @2x at the end of the url we are going to assume its a highres image
-        if ( imageUrl.indexOf(CONST.RETINA_PREFIX + '.') !== -1)
-        {
-            baseTexture.resolution = 2;
-        }
+        this.resolution = utils.getResolutionOfUrl(imageUrl);
     }
 
     return baseTexture;

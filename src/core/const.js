@@ -103,6 +103,8 @@ module.exports = {
      */
     RETINA_PREFIX: '@2x',
 
+    RESOLUTION:2,
+
     /**
      * The default render options if none are supplied to {@link PIXI.WebGLRenderer}
      * or {@link PIXI.CanvasRenderer}.

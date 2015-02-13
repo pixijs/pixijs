@@ -16,6 +16,8 @@ module.exports = function ()
 
             var route = path.dirname(resource.url.replace(this.baseUrl, ''));
 
+            var resolution = core.utils.getResolutionOfUrl( resource.url )
+
             // load the image for this sheet
             this.add(resource.name + '_image', this.baseUrl + route + '/' + resource.data.meta.image, loadOptions, function (res)
             {
@@ -43,11 +45,11 @@ module.exports = function ()
                         if (frames[i].trimmed)
                         {
                             trim = new core.math.Rectangle(
-                                frames[i].spriteSourceSize.x,
-                                frames[i].spriteSourceSize.y,
-                                frames[i].sourceSize.w,
-                                frames[i].sourceSize.h
-                            );
+                                frames[i].spriteSourceSize.x / resolution,
+                                frames[i].spriteSourceSize.y / resolution,
+                                frames[i].sourceSize.w / resolution,
+                                frames[i].sourceSize.h / resolution
+                             );
                         }
 
                         // flip the width and height!
@@ -57,6 +59,11 @@ module.exports = function ()
                             size.width = size.height;
                             size.height = temp;
                         }
+
+                        size.x /= resolution;
+                        size.y /= resolution;
+                        size.width /= resolution;
+                        size.height /= resolution;
 
                         resource.textures[i] = new core.Texture(res.texture.baseTexture, size, size.clone(), trim, frames[i].rotated);
 

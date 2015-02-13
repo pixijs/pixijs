@@ -134,6 +134,27 @@ var utils = module.exports = {
     },
 
     /**
+     * get the resolution of an asset by looking for the prefix
+     * used by spritesheets and image urls
+     * TODO make this smarter!
+     *
+     * @param width {number}
+     * @param height {number}
+     * @return {boolean}
+     */
+    getResolutionOfUrl: function (url)
+    {
+        if ( url.indexOf(CONST.RETINA_PREFIX + '.') !== -1)
+        {
+            return 2;
+        }
+        else
+        {
+            return 1;
+        }
+    },
+
+    /**
      * Logs out the version and renderer information for this running instance of PIXI.
      * If you don't want to see this message you can set `PIXI.utils._saidHello = true;`
      * so the library thinks it already said it. Keep in mind that doing that will forever
