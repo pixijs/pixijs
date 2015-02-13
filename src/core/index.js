@@ -15,16 +15,16 @@ var core = module.exports = {
 
     // display
     DisplayObject:          require('./display/DisplayObject'),
-    Container: require('./display/Container'),
+    Container:              require('./display/Container'),
 
     // legacy..
     Stage:                  require('./display/Container'),
     DisplayObjectContainer: require('./display/Container'),
 
     Sprite:                 require('./sprites/Sprite'),
-    ParticleContainer:            require('./particles/ParticleContainer'),
+    ParticleContainer:      require('./particles/ParticleContainer'),
     SpriteRenderer:         require('./sprites/webgl/SpriteRenderer'),
-    ParticleRenderer:    require('./particles/webgl/ParticleRenderer'),
+    ParticleRenderer:       require('./particles/webgl/ParticleRenderer'),
 
     // primitives
     Graphics:               require('./graphics/Graphics'),
@@ -73,37 +73,12 @@ var core = module.exports = {
         width = width || 800;
         height = height || 600;
 
-        if (!noWebGL && require('webgl-enabled')(options && options.view))
+        if (!noWebGL && checkWebGL())
         {
             return new core.WebGLRenderer(width, height, options);
         }
 
         return new core.CanvasRenderer(width, height, options);
-    },
-
-    /**
-     * This helper function will automatically detect which renderer you should be using. This function is very
-     * similar to the autoDetectRenderer function except that is will return a canvas renderer for android.
-     * Even thought both android chrome supports webGL the canvas implementation perform better at the time of writing.
-     * This function will likely change and update as webGL performance improves on these devices.
-     *
-     * @param width=800 {number} the width of the renderers view
-     * @param height=600 {number} the height of the renderers view
-     * @param [options] {object} The optional renderer parameters
-     * @param [options.view] {HTMLCanvasElement} the canvas to use as a view, optional
-     * @param [options.transparent=false] {boolean} If the render view is transparent, default false
-     * @param [options.antialias=false] {boolean} sets antialias (only applicable in chrome at the moment)
-     * @param [options.preserveDrawingBuffer=false] {boolean} enables drawing buffer preservation, enable this if you
-     *      need to call toDataUrl on the webgl context
-     * @param [options.resolution=1] {number} the resolution of the renderer retina would be 2
-     *
-     * @return {WebGLRenderer|CanvasRenderer} Returns WebGL renderer if available, otherwise CanvasRenderer
-     */
-    autoDetectRecommendedRenderer: function (width, height, options)
-    {
-        var isAndroid = /Android/i.test(navigator.userAgent);
-
-        return core.autoDetectRenderer(width, height, options, isAndroid);
     }
 };
 
@@ -114,3 +89,19 @@ for (var c in CONST) {
     core[c] = CONST[c];
 }
 
+
+var contextOptions = { stencil: true };
+function checkWebGL() {
+    try {
+        if (!window.WebGLRenderingContext) {
+            return false;
+        }
+
+        var canvas = document.createElement('canvas'),
+            gl = canvas.getContext('webgl', contextOptions) || canvas.getContext('experimental-webgl', contextOptions)
+
+        return !!(gl && gl.getContextAttributes().stencil);
+    } catch (e) {
+        return false;
+    }
+}
