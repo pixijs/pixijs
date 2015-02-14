@@ -282,6 +282,8 @@ PIXI.Spine.prototype.createSprite = function (slot, attachment) {
 
     var baseRotation = descriptor.rotate ? Math.PI * 0.5 : 0.0;
     sprite.scale.set(descriptor.width / descriptor.originalWidth, descriptor.height / descriptor.originalHeight);
+    attachment.scaleX!=1 && (sprite.scale.x = attachment.scaleX);
+    attachment.scaleY!=1 && (sprite.scale.y = attachment.scaleY);
     sprite.rotation = baseRotation - (attachment.rotation * spine.degRad);
     sprite.anchor.x = sprite.anchor.y = 0.5;
 
