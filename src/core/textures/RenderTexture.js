@@ -142,7 +142,7 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
     {
         var gl = this.renderer.gl;
 
-        this.textureBuffer = new RenderTarget(gl, this.width * this.resolution, this.height * this.resolution);//, this.baseTexture.scaleMode);
+        this.textureBuffer = new RenderTarget(gl, this.width, this.height, null, this.resolution);//, this.baseTexture.scaleMode);
         this.baseTexture._glTextures[gl.id] =  this.textureBuffer.texture;
 
         this.render = this.renderWebGL;

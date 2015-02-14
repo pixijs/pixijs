@@ -16,7 +16,7 @@ var math = require('../../../math'),
 * @param height {Number} the vertical range of the filter
 * @param scaleMode {Number} See {{#crossLink "PIXI/scaleModes:property"}}PIXI.scaleModes{{/crossLink}} for possible values
 */
-var RenderTarget = function(gl, width, height, scaleMode, root, createStencilBuffer)
+var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
 {
     //TODO Resolution could go here ( eg low res blurs )
 
@@ -42,7 +42,7 @@ var RenderTarget = function(gl, width, height, scaleMode, root, createStencilBuf
 
     this.size = new math.Rectangle(0, 0, 1, 1);
 
-    this.resolution = 1;
+    this.resolution = resolution || CONST.RESOLUTION;
 
     this.projectionMatrix = new math.Matrix();
 
@@ -112,14 +112,6 @@ var RenderTarget = function(gl, width, height, scaleMode, root, createStencilBuf
 
 
     this.resize(width, height);
-
-    if (createStencilBuffer)
-    {
-        this.attachStenilBuffer();
-    }
-
-
-
 };
 
 RenderTarget.prototype.constructor = RenderTarget;
@@ -157,7 +149,7 @@ RenderTarget.prototype.attachStenilBuffer = function()
         this.stencilBuffer = gl.createRenderbuffer();
         gl.bindRenderbuffer(gl.RENDERBUFFER, this.stencilBuffer);
         gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, this.stencilBuffer);
-        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL,  this.size.width  , this.size.height );
+        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL,  this.size.width * this.resolution  , this.size.height * this.resolution );
     }
 };
 
@@ -178,7 +170,7 @@ RenderTarget.prototype.activate = function()
         this.projectionMatrix.append(this.transform);
     }
 
-    gl.viewport(0,0, projectionFrame.width, projectionFrame.height);
+    gl.viewport(0,0, projectionFrame.width * this.resolution, projectionFrame.height * this.resolution);
 };
 
 RenderTarget.prototype.calculateProjection = function( projectionFrame )
@@ -231,13 +223,13 @@ RenderTarget.prototype.resize = function(width, height)
 
         gl.bindTexture(gl.TEXTURE_2D,  this.texture);
 
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  width , height , 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,  width * this.resolution, height * this.resolution , 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
 
         if (this.stencilBuffer )
         {
             // update the stencil buffer width and height
             gl.bindRenderbuffer(gl.RENDERBUFFER, this.stencilBuffer);
-            gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL,  width  , height );
+            gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL,  width * this.resolution, height * this.resolution );
         }
     }
 

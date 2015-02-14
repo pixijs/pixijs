@@ -162,7 +162,7 @@ WebGLRenderer.prototype._initContext = function ()
     gl.disable(gl.CULL_FACE);
     gl.enable(gl.BLEND);
 
-    this.renderTarget = new RenderTarget(this.gl, this.width, this.height, null, true);
+    this.renderTarget = new RenderTarget(this.gl, this.width, this.height, null, this.resolution, true);
 
     this.emit('context', gl);
 
@@ -284,8 +284,7 @@ WebGLRenderer.prototype.resize = function (width, height)
 {
     SystemRenderer.prototype.resize.call(this, width, height);
 
-    this.gl.viewport(0, 0, this.width, this.height);
-
+   // console.log(width)
     this.filterManager.resize(width, height);
     this.renderTarget.resize(width, height);
 };
