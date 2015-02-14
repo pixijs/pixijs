@@ -43,8 +43,13 @@ function WebGLRenderer(width, height, options)
     this.handleContextLost = this.handleContextLost.bind(this);
     this.handleContextRestored = this.handleContextRestored.bind(this);
 
-    this._updateTextureBound = this.updateTexture.bind(this);
-    this._destroyTextureBound = this.destroyTexture.bind(this);
+    this._updateTextureBound = function(e){
+        this.updateTexture(e.target);
+    }.bind(this);
+
+    this._destroyTextureBound = function(e){
+        this.destroyTexture(e.target);
+    }.bind(this);
 
     this.view.addEventListener('webglcontextlost', this.handleContextLost, false);
     this.view.addEventListener('webglcontextrestored', this.handleContextRestored, false);
