@@ -21,7 +21,7 @@ var core = require('../core');
  * @param [style.dropShadowAngle=Math.PI/4] {number} Set a angle of the drop shadow
  * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
  */
-function Text(text, style)
+function Text(text, style, resolution)
 {
     /**
      * The canvas element that everything is drawn to
@@ -40,7 +40,7 @@ function Text(text, style)
      * The resolution of the canvas.
      * @member {number}
      */
-    this.resolution = 1;
+    this.resolution = resolution || core.RESOLUTION;
 
     /**
      * Private tracker for the current text.
@@ -88,11 +88,11 @@ Object.defineProperties(Text.prototype, {
                 this.updateText();
             }
 
-            return this.scale.x * this.texture.frame.width;
+            return this.scale.x * this._texture._frame.width;
         },
         set: function (value)
         {
-            this.scale.x = value / this.texture.frame.width;
+            this.scale.x = value / this._texture._frame.width;
             this._width = value;
         }
     },
@@ -111,11 +111,11 @@ Object.defineProperties(Text.prototype, {
                 this.updateText();
             }
 
-            return  this.scale.y * this.texture.frame.height;
+            return  this.scale.y * this._texture._frame.height;
         },
         set: function (value)
         {
-            this.scale.y = value / this.texture.frame.height;
+            this.scale.y = value / this._texture._frame.height;
             this._height = value;
         }
     },
@@ -192,8 +192,6 @@ Object.defineProperties(Text.prototype, {
  */
 Text.prototype.updateText = function ()
 {
-    this.texture.baseTexture.resolution = this.resolution;
-
     var style = this._style;
     this.context.font = style.font;
 
@@ -317,15 +315,18 @@ Text.prototype.updateText = function ()
  */
 Text.prototype.updateTexture = function ()
 {
-    this.texture.baseTexture.width = this.canvas.width;
-    this.texture.baseTexture.height = this.canvas.height;
-    this.texture.crop.width = this.texture.frame.width = this.canvas.width;
-    this.texture.crop.height = this.texture.frame.height = this.canvas.height;
+    this._texture.baseTexture.hasLoaded = true;
+    this._texture.baseTexture.resolution = this.resolution;
 
-    this._width = this.canvas.width;
-    this._height = this.canvas.height;
+    this._texture.baseTexture.width = this.canvas.width / this.resolution;
+    this._texture.baseTexture.height = this.canvas.height / this.resolution;
+    this._texture.crop.width = this._texture._frame.width = this.canvas.width / this.resolution;
+    this._texture.crop.height = this._texture._frame.height = this.canvas.height / this.resolution;
 
-    this.texture.update();
+    this._width = this.canvas.width / this.resolution;
+    this._height = this.canvas.height / this.resolution;
+
+    this._texture.update();
 
     this.dirty = false;
 };
@@ -543,5 +544,5 @@ Text.prototype.destroy = function (destroyBaseTexture)
     this.context = null;
     this.canvas = null;
 
-    this.texture.destroy(destroyBaseTexture === undefined ? true : destroyBaseTexture);
+    this._texture.destroy(destroyBaseTexture === undefined ? true : destroyBaseTexture);
 };
