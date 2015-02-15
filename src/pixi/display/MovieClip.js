@@ -172,6 +172,7 @@ PIXI.MovieClip.prototype.updateTransform = function()
  * @static
  * @method fromFrames
  * @param frames {Array} the array of frames ids the movieclip will use as its texture frames
+ * @return {MovieClip}
  */
 PIXI.MovieClip.fromFrames = function(frames)
 {
@@ -191,6 +192,7 @@ PIXI.MovieClip.fromFrames = function(frames)
  * @static
  * @method fromImages
  * @param frames {Array} the array of image ids the movieclip will use as its texture frames
+ * @return {MovieClip}
  */
 PIXI.MovieClip.fromImages = function(images)
 {
