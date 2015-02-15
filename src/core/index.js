@@ -12,6 +12,7 @@ var core = module.exports = {
     // utils
     utils: require('./utils'),
     math: require('./math'),
+    CONST: require('./const'),
 
     // display
     DisplayObject:          require('./display/DisplayObject'),
