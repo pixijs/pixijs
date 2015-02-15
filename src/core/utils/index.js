@@ -144,14 +144,14 @@ var utils = module.exports = {
      */
     getResolutionOfUrl: function (url)
     {
-        if ( url.indexOf(CONST.RETINA_PREFIX + '.') !== -1)
+        var resolution = PIXI.RETINA_PREFIX.exec(url);
+
+        if (resolution)
         {
-            return 2;
+           return parseFloat(resolution[1]);
         }
-        else
-        {
-            return 1;
-        }
+
+        return 1;
     },
 
     /**

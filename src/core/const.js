@@ -101,7 +101,8 @@ module.exports = {
      * @constant
      * @property {string} RETINA_PREFIX
      */
-    RETINA_PREFIX: '@2x',
+    //example: '@2x',
+    RETINA_PREFIX: /@(.+)x/,
 
     RESOLUTION:1,
 
