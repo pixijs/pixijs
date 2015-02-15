@@ -559,6 +559,7 @@ PIXI.Graphics.prototype.drawRect = function( x, y, width, height )
  * @param width {Number} The width of the rectangle
  * @param height {Number} The height of the rectangle
  * @param radius {Number} Radius of the rectangle corners
+ * @return {Graphics}
  */
 PIXI.Graphics.prototype.drawRoundedRect = function( x, y, width, height, radius )
 {
