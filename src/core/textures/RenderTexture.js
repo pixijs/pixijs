@@ -55,7 +55,7 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
 
     width = width || 100;
     height = height || 100;
-    resolution = resolution || 1;
+    resolution = resolution || CONST.RESOLUTION;
 
     /**
      * The base texture object that this texture uses
@@ -63,8 +63,8 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
      * @member {BaseTexture}
      */
     var baseTexture = new BaseTexture();
-    baseTexture.width = width * resolution;
-    baseTexture.height = height * resolution;
+    baseTexture.width = width;
+    baseTexture.height = height;
     baseTexture.resolution = resolution;
     baseTexture.scaleMode = scaleMode || CONST.SCALE_MODES.DEFAULT;
     baseTexture.hasLoaded = true;
