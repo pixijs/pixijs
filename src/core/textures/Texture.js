@@ -20,6 +20,7 @@ var BaseTexture = require('./BaseTexture'),
  */
 function Texture(baseTexture, frame, crop, trim, rotate)
 {
+    console.log(trim, frame, crop, "......")
     /**
      * Does this Texture have any frame data assigned to it?
      *
@@ -159,6 +160,7 @@ Object.defineProperties(Texture.prototype, {
 
             if (this.trim)
             {
+
                 this.width = this.trim.width;
                 this.height = this.trim.height;
                 this._frame.width = this.trim.width;
@@ -253,6 +255,19 @@ Texture.fromImage = function (imageUrl, crossorigin, scaleMode)
     {
         texture = new Texture(BaseTexture.fromImage(imageUrl, crossorigin, scaleMode));
         utils.TextureCache[imageUrl] = texture;
+    }
+
+    return texture;
+};
+
+
+Texture.fromFrame = function (frameId)
+{
+    var texture = utils.TextureCache[frameId];
+
+    if (!texture)
+    {
+        throw new Error('The frameId "' + frameId + '" does not exist in the texture cache' + this);
     }
 
     return texture;
