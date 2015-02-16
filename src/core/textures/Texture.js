@@ -20,7 +20,6 @@ var BaseTexture = require('./BaseTexture'),
  */
 function Texture(baseTexture, frame, crop, trim, rotate)
 {
-    console.log(trim, frame, crop, "......")
     /**
      * Does this Texture have any frame data assigned to it?
      *

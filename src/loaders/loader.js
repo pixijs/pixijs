@@ -1,16 +1,19 @@
-var Loader = require('resource-loader'),
+var ResourceLoader = require('resource-loader'),
     textureParser = require('./textureParser'),
     spritesheetParser = require('./spritesheetParser'),
     spineAtlasParser = require('./spineAtlasParser'),
-    bitmapFontParser = require('./bitmapFontParser'),
-    loader = new Loader();
+    bitmapFontParser = require('./bitmapFontParser')
+ //   loader = new Loader();
 
-loader
-    // parse any json strings into objects
-    .use(Loader.middleware.parsing.json())
+var Loader = function()
+{
+    ResourceLoader.call(this);
+
+     // parse any json strings into objects
+    this.use(ResourceLoader.middleware.parsing.json())
 
     // parse any blob into more usable objects (e.g. Image)
-    .use(Loader.middleware.parsing.blob())
+    .use(ResourceLoader.middleware.parsing.blob())
 
     // parse any Image objects into textures
     .use(textureParser())
@@ -23,5 +26,9 @@ loader
 
     // parse any spritesheet data into multiple textures
     .use(bitmapFontParser());
+}
 
-module.exports = loader;
+Loader.prototype = Object.create(ResourceLoader.prototype);
+Loader.prototype.constructor = Loader;
+
+module.exports = Loader;
