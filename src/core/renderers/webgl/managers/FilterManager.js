@@ -172,7 +172,7 @@ FilterManager.prototype.popFilter = function ()
 
 FilterManager.prototype.getRenderTarget = function ( clear )
 {
-    var renderTarget = this.texturePool.pop() || new RenderTarget(this.renderer.gl, this.textureSize.width, this.textureSize.height);
+    var renderTarget = this.texturePool.pop() || new RenderTarget(this.renderer.gl, this.textureSize.width, this.textureSize.height, null, renderer.resolution);
     renderTarget.frame = this.currentFrame;
 
     if (clear)
