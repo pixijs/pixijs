@@ -149,7 +149,7 @@ Object.defineProperties(Texture.prototype, {
             this.width = frame.width;
             this.height = frame.height;
 
-            this.crop = frame;
+
 
             if (!this.trim && !this.rotate && (frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height))
             {
@@ -165,6 +165,10 @@ Object.defineProperties(Texture.prototype, {
                 this.height = this.trim.height;
                 this._frame.width = this.trim.width;
                 this._frame.height = this.trim.height;
+            }
+            else
+            {
+                this.crop = frame;
             }
 
             if (this.valid)
