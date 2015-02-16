@@ -313,6 +313,9 @@ FilterManager.prototype.capFilterArea = function (filterArea)
 
 FilterManager.prototype.resize = function ( width, height )
 {
+    this.textureSize.width = width;
+    this.textureSize.height = height;
+
     for (var i = 0; i < this.texturePool.length; i++)
     {
         this.texturePool[i].resize( width, height );
