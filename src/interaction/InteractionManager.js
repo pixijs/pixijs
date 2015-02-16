@@ -116,7 +116,7 @@ function InteractionManager( renderer )
      */
     this.resolution = 1;
 
-    this.setTargetElement(this.renderer.view);
+    this.setTargetElement(this.renderer.view, this.renderer.resolution);
 
     this.update();
 }

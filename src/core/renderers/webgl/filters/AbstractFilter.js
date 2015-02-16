@@ -46,6 +46,7 @@ function AbstractFilter(vertexSrc, fragmentSrc, uniforms)
      */
     this.fragmentSrc = fragmentSrc;
 
+    //TODO a reminder - would be cool to have lower res filters as this would give better performance.
 
     //typeof fragmentSrc === 'string' ? fragmentSrc.split('') : (fragmentSrc || []);
 
