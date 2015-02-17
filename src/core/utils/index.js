@@ -144,7 +144,7 @@ var utils = module.exports = {
      */
     getResolutionOfUrl: function (url)
     {
-        var resolution = PIXI.RETINA_PREFIX.exec(url);
+        var resolution = CONST.RETINA_PREFIX.exec(url);
 
         if (resolution)
         {
