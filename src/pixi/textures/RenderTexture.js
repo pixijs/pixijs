@@ -93,7 +93,7 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode, resolution)
 
     PIXI.Texture.call(this,
         this.baseTexture,
-        new PIXI.Rectangle(0, 0, this.width, this.height)
+        new PIXI.Rectangle(0, 0, this.width * this.resolution, this.height * this.resolution)
     );
 
     /**
@@ -109,7 +109,7 @@ PIXI.RenderTexture = function(width, height, renderer, scaleMode, resolution)
         var gl = this.renderer.gl;
         this.baseTexture._dirty[gl.id] = false;
 
-        this.textureBuffer = new PIXI.FilterTexture(gl, this.width * this.resolution, this.height * this.resolution, this.baseTexture.scaleMode);
+        this.textureBuffer = new PIXI.FilterTexture(gl, this.width, this.height, this.baseTexture.scaleMode);
         this.baseTexture._glTextures[gl.id] =  this.textureBuffer.texture;
 
         this.render = this.renderWebGL;
@@ -148,13 +148,16 @@ PIXI.RenderTexture.prototype.resize = function(width, height, updateBase)
 
     this.valid = (width > 0 && height > 0);
 
-    this.width = this.frame.width = this.crop.width = width;
-    this.height =  this.frame.height = this.crop.height = height;
+    this.width = width;
+    this.height = height;
+
+    this.frame.width = this.crop.width = width * this.resolution;
+    this.frame.height = this.crop.height = height * this.resolution;
 
     if (updateBase)
     {
-        this.baseTexture.width = this.width;
-        this.baseTexture.height = this.height;
+        this.baseTexture.width = this.width * this.resolution;
+        this.baseTexture.height = this.height * this.resolution;
     }
 
     if (this.renderer.type === PIXI.WEBGL_RENDERER)
@@ -165,7 +168,7 @@ PIXI.RenderTexture.prototype.resize = function(width, height, updateBase)
 
     if(!this.valid)return;
 
-    this.textureBuffer.resize(this.width * this.resolution, this.height * this.resolution);
+    this.textureBuffer.resize(this.width, this.height);
 };
 
 /**
