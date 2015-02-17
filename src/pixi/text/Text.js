@@ -37,7 +37,7 @@ PIXI.Text = function(text, style)
     /**
      * The canvas 2d context that everything is drawn with
      * @property context
-     * @type HTMLCanvasElement
+     * @type CanvasRenderingContext2D
      */
     this.context = this.canvas.getContext('2d');
 

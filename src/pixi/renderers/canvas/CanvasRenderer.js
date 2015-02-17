@@ -139,7 +139,7 @@ PIXI.CanvasRenderer = function(width, height, options)
 
     /**
      * Instance of a PIXI.CanvasMaskManager, handles masking when using the canvas renderer
-     * @property CanvasMaskManager
+     * @property maskManager
      * @type CanvasMaskManager
      */
     this.maskManager = new PIXI.CanvasMaskManager();

@@ -464,3 +464,14 @@ PIXI.TilingSprite.prototype.generateTilingTexture = function(forcePowerOfTwo)
 
     this.tilingTexture.baseTexture._powerOf2 = true;
 };
+
+PIXI.TilingSprite.prototype.destroy = function () {
+    PIXI.Sprite.prototype.destroy.call(this);
+
+    this.tileScale = null;
+    this.tileScaleOffset = null;
+    this.tilePosition = null;
+
+    this.tilingTexture.destroy(true);
+    this.tilingTexture = null;
+};

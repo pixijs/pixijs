@@ -536,6 +536,8 @@ PIXI.Graphics.prototype.endFill = function()
 };
 
 /**
+ * Draws a rectangle.
+ * 
  * @method drawRect
  *
  * @param x {Number} The X coord of the top-left of the rectangle
@@ -552,6 +554,8 @@ PIXI.Graphics.prototype.drawRect = function( x, y, width, height )
 };
 
 /**
+ * Draws a rounded rectangle.
+ * 
  * @method drawRoundedRect
  *
  * @param x {Number} The X coord of the top-left of the rectangle
@@ -559,6 +563,7 @@ PIXI.Graphics.prototype.drawRect = function( x, y, width, height )
  * @param width {Number} The width of the rectangle
  * @param height {Number} The height of the rectangle
  * @param radius {Number} Radius of the rectangle corners
+ * @return {Graphics}
  */
 PIXI.Graphics.prototype.drawRoundedRect = function( x, y, width, height, radius )
 {
