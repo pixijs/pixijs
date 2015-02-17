@@ -462,6 +462,7 @@ InteractionManager.prototype.onMouseMove = function (event)
         this.interactionDOMElement.style.cursor = this.cursor;
     }
 
+    //TODO BUG for parents ineractive object (border order issue)
 };
 
 InteractionManager.prototype.processMouseMove = function ( displayObject, hit )
@@ -539,9 +540,10 @@ InteractionManager.prototype.onTouchStart = function (event)
 
         touchData.originalEvent = event;
 
-        this.mapPositionToPoint( touchData, touchEvent.clientX, touchEvent.clientY );
+        this.eventData.data = touchData;
+        this.eventData.stopped = false;
 
-        this.processInteractive( touchData, this.renderer._lastObjectRendered, this.processTouchStart, true );
+        this.processInteractive( touchData.global, this.renderer._lastObjectRendered, this.processTouchStart, true );
 
         this.returnTouchData( touchData );
     }
@@ -587,9 +589,12 @@ InteractionManager.prototype.onTouchEnd = function (event)
 
         touchData.originalEvent = event;
 
-        this.mapPositionToPoint( touchData, touchEvent.clientX, touchEvent.clientY );
+        //TODO this should be passed along.. no set
+        this.eventData.data = touchData;
+        this.eventData.stopped = false;
 
-        this.processInteractive( touchData, this.renderer._lastObjectRendered, this.processTouchEnd, true );
+
+        this.processInteractive( touchData.global, this.renderer._lastObjectRendered, this.processTouchEnd, true );
 
         this.returnTouchData( touchData );
     }
@@ -640,7 +645,10 @@ InteractionManager.prototype.onTouchMove = function (event)
 
         touchData.originalEvent = event;
 
-        this.processInteractive( touchData, this.renderer._lastObjectRendered, this.processTouchMove, false );
+        this.eventData.data = touchData;
+        this.eventData.stopped = false;
+
+        this.processInteractive( touchData.global, this.renderer._lastObjectRendered, this.processTouchMove, false );
 
         this.returnTouchData( touchData );
     }
@@ -664,8 +672,9 @@ InteractionManager.prototype.getTouchData = function (touchEvent)
     }
 
     touchData.identifier = touchEvent.identifier;
+    this.mapPositionToPoint( touchData.global, touchEvent.clientX, touchEvent.clientY );
 
-    this.mapPositionToPoint( touchData, touchEvent.clientX, touchEvent.clientY );
+    return touchData;
 };
 
 InteractionManager.prototype.returnTouchData = function ( touchData )
