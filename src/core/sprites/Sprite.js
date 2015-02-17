@@ -116,11 +116,11 @@ Object.defineProperties(Sprite.prototype, {
     width: {
         get: function ()
         {
-            return this.scale.x * this.texture.frame.width;
+            return this.scale.x * this.texture._frame.width;
         },
         set: function (value)
         {
-            this.scale.x = value / this.texture.frame.width;
+            this.scale.x = value / this.texture._frame.width;
             this._width = value;
         }
     },
@@ -134,11 +134,11 @@ Object.defineProperties(Sprite.prototype, {
     height: {
         get: function ()
         {
-            return  this.scale.y * this.texture.frame.height;
+            return  this.scale.y * this.texture._frame.height;
         },
         set: function (value)
         {
-            this.scale.y = value / this.texture.frame.height;
+            this.scale.y = value / this.texture._frame.height;
             this._height = value;
         }
     },
@@ -213,96 +213,100 @@ Sprite.prototype._renderWebGL = function (renderer)
  */
 Sprite.prototype.getBounds = function (matrix)
 {
-    var width = this._texture._frame.width;
-    var height = this._texture._frame.height;
-
-    var w0 = width * (1-this.anchor.x);
-    var w1 = width * -this.anchor.x;
-
-    var h0 = height * (1-this.anchor.y);
-    var h1 = height * -this.anchor.y;
-
-    var worldTransform = matrix || this.worldTransform ;
-
-    var a = worldTransform.a;
-    var b = worldTransform.b;
-    var c = worldTransform.c;
-    var d = worldTransform.d;
-    var tx = worldTransform.tx;
-    var ty = worldTransform.ty;
-
-    var minX,
-        maxX,
-        minY,
-        maxY;
-
-    if (b === 0 && c === 0)
+    if(!this._currentBounds)
     {
-        // scale may be negative!
-        if (a < 0)
+
+        var width = this._texture._frame.width;
+        var height = this._texture._frame.height;
+
+        var w0 = width * (1-this.anchor.x);
+        var w1 = width * -this.anchor.x;
+
+        var h0 = height * (1-this.anchor.y);
+        var h1 = height * -this.anchor.y;
+
+        var worldTransform = matrix || this.worldTransform ;
+
+        var a = worldTransform.a;
+        var b = worldTransform.b;
+        var c = worldTransform.c;
+        var d = worldTransform.d;
+        var tx = worldTransform.tx;
+        var ty = worldTransform.ty;
+
+        var minX,
+            maxX,
+            minY,
+            maxY;
+
+        if (b === 0 && c === 0)
         {
-            a *= -1;
+            // scale may be negative!
+            if (a < 0)
+            {
+                a *= -1;
+            }
+
+            if (d < 0)
+            {
+                d *= -1;
+            }
+
+            // this means there is no rotation going on right? RIGHT?
+            // if thats the case then we can avoid checking the bound values! yay
+            minX = a * w1 + tx;
+            maxX = a * w0 + tx;
+            minY = d * h1 + ty;
+            maxY = d * h0 + ty;
+        }
+        else
+        {
+            var x1 = a * w1 + c * h1 + tx;
+            var y1 = d * h1 + b * w1 + ty;
+
+            var x2 = a * w0 + c * h1 + tx;
+            var y2 = d * h1 + b * w0 + ty;
+
+            var x3 = a * w0 + c * h0 + tx;
+            var y3 = d * h0 + b * w0 + ty;
+
+            var x4 =  a * w1 + c * h0 + tx;
+            var y4 =  d * h0 + b * w1 + ty;
+
+            minX = x1;
+            minX = x2 < minX ? x2 : minX;
+            minX = x3 < minX ? x3 : minX;
+            minX = x4 < minX ? x4 : minX;
+
+            minY = y1;
+            minY = y2 < minY ? y2 : minY;
+            minY = y3 < minY ? y3 : minY;
+            minY = y4 < minY ? y4 : minY;
+
+            maxX = x1;
+            maxX = x2 > maxX ? x2 : maxX;
+            maxX = x3 > maxX ? x3 : maxX;
+            maxX = x4 > maxX ? x4 : maxX;
+
+            maxY = y1;
+            maxY = y2 > maxY ? y2 : maxY;
+            maxY = y3 > maxY ? y3 : maxY;
+            maxY = y4 > maxY ? y4 : maxY;
         }
 
-        if (d < 0)
-        {
-            d *= -1;
-        }
+        var bounds = this._bounds;
 
-        // this means there is no rotation going on right? RIGHT?
-        // if thats the case then we can avoid checking the bound values! yay
-        minX = a * w1 + tx;
-        maxX = a * w0 + tx;
-        minY = d * h1 + ty;
-        maxY = d * h0 + ty;
-    }
-    else
-    {
-        var x1 = a * w1 + c * h1 + tx;
-        var y1 = d * h1 + b * w1 + ty;
+        bounds.x = minX;
+        bounds.width = maxX - minX;
 
-        var x2 = a * w0 + c * h1 + tx;
-        var y2 = d * h1 + b * w0 + ty;
+        bounds.y = minY;
+        bounds.height = maxY - minY;
 
-        var x3 = a * w0 + c * h0 + tx;
-        var y3 = d * h0 + b * w0 + ty;
-
-        var x4 =  a * w1 + c * h0 + tx;
-        var y4 =  d * h0 + b * w1 + ty;
-
-        minX = x1;
-        minX = x2 < minX ? x2 : minX;
-        minX = x3 < minX ? x3 : minX;
-        minX = x4 < minX ? x4 : minX;
-
-        minY = y1;
-        minY = y2 < minY ? y2 : minY;
-        minY = y3 < minY ? y3 : minY;
-        minY = y4 < minY ? y4 : minY;
-
-        maxX = x1;
-        maxX = x2 > maxX ? x2 : maxX;
-        maxX = x3 > maxX ? x3 : maxX;
-        maxX = x4 > maxX ? x4 : maxX;
-
-        maxY = y1;
-        maxY = y2 > maxY ? y2 : maxY;
-        maxY = y3 > maxY ? y3 : maxY;
-        maxY = y4 > maxY ? y4 : maxY;
+        // store a reference so that if this function gets called again in the render cycle we do not have to recalculate
+        this._currentBounds = bounds;
     }
 
-    var bounds = this._bounds;
-
-    bounds.x = minX;
-    bounds.width = maxX - minX;
-
-    bounds.y = minY;
-    bounds.height = maxY - minY;
-
-    // store a reference so that if this function gets called again in the render cycle we do not have to recalculate
-    this._currentBounds = bounds;
-
-    return bounds;
+    return this._currentBounds;
 };
 
 /**

@@ -136,7 +136,7 @@ function DisplayObject()
     this._mask = null;
 
     //TODO rename to _isMask
-    this.isMask = false;
+   // this.isMask = false;
 
     /**
      * Cached internal flag.
@@ -230,14 +230,14 @@ Object.defineProperties(DisplayObject.prototype, {
         {
             if (this._mask)
             {
-                this._mask.isMask = false;
+                this._mask.renderable = true;
             }
 
             this._mask = value;
 
             if (this._mask)
             {
-                this._mask.isMask = true;
+                this._mask.renderable = false;
             }
         }
     },
@@ -333,6 +333,9 @@ DisplayObject.prototype.updateTransform = function ()
 
     // multiply the alphas..
     this.worldAlpha = this.alpha * this.parent.worldAlpha;
+
+    // reset the bounds each time this is called!
+    this._currentBounds = null;
 };
 
 // performance increase to avoid using call.. (10x faster)

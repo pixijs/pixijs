@@ -332,62 +332,67 @@ Container.prototype.containerUpdateTransform = Container.prototype.updateTransfo
  */
 Container.prototype.getBounds = function ()
 {
-    if (this.children.length === 0)
+    if(!this._currentBounds)
     {
-        return math.Rectangle.EMPTY;
-    }
 
-    // TODO the bounds have already been calculated this render session so return what we have
-
-    var minX = Infinity;
-    var minY = Infinity;
-
-    var maxX = -Infinity;
-    var maxY = -Infinity;
-
-    var childBounds;
-    var childMaxX;
-    var childMaxY;
-
-    var childVisible = false;
-
-    for (var i = 0, j = this.children.length; i < j; ++i)
-    {
-        var child = this.children[i];
-
-        if (!child.visible)
+        if (this.children.length === 0)
         {
-            continue;
+            return math.Rectangle.EMPTY;
         }
 
-        childVisible = true;
+        // TODO the bounds have already been calculated this render session so return what we have
 
-        childBounds = this.children[i].getBounds();
+        var minX = Infinity;
+        var minY = Infinity;
 
-        minX = minX < childBounds.x ? minX : childBounds.x;
-        minY = minY < childBounds.y ? minY : childBounds.y;
+        var maxX = -Infinity;
+        var maxY = -Infinity;
 
-        childMaxX = childBounds.width + childBounds.x;
-        childMaxY = childBounds.height + childBounds.y;
+        var childBounds;
+        var childMaxX;
+        var childMaxY;
 
-        maxX = maxX > childMaxX ? maxX : childMaxX;
-        maxY = maxY > childMaxY ? maxY : childMaxY;
+        var childVisible = false;
+
+        for (var i = 0, j = this.children.length; i < j; ++i)
+        {
+            var child = this.children[i];
+
+            if (!child.visible)
+            {
+                continue;
+            }
+
+            childVisible = true;
+
+            childBounds = this.children[i].getBounds();
+
+            minX = minX < childBounds.x ? minX : childBounds.x;
+            minY = minY < childBounds.y ? minY : childBounds.y;
+
+            childMaxX = childBounds.width + childBounds.x;
+            childMaxY = childBounds.height + childBounds.y;
+
+            maxX = maxX > childMaxX ? maxX : childMaxX;
+            maxY = maxY > childMaxY ? maxY : childMaxY;
+        }
+
+        if (!childVisible)
+        {
+            return math.Rectangle.EMPTY;
+        }
+
+        var bounds = this._bounds;
+
+        bounds.x = minX;
+        bounds.y = minY;
+        bounds.width = maxX - minX;
+        bounds.height = maxY - minY;
+
+        this._currentBounds = bounds;
     }
 
-    if (!childVisible)
-    {
-        return math.Rectangle.EMPTY;
-    }
-
-    this._bounds.x = minX;
-    this._bounds.y = minY;
-    this._bounds.width = maxX - minX;
-    this._bounds.height = maxY - minY;
-
-    // TODO: store a reference so that if this function gets called again in the render cycle we do not have to recalculate
-    //this._currentBounds = bounds;
-
-    return this._bounds;
+    return this._currentBounds;
 };
 
 /**
@@ -421,7 +426,7 @@ Container.prototype.renderWebGL = function (renderer)
 {
 
     // if the object is not visible or the alpha is 0 then no need to render this element
-    if (this.isMask || !this.visible || this.worldAlpha <= 0 || !this.renderable)
+    if (!this.visible || this.worldAlpha <= 0 || !this.renderable)
     {
         return;
     }
