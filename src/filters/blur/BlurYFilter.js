@@ -14,7 +14,7 @@ function BlurYFilter()
         // vertex shader
         null,
         // fragment shader
-        require('fs').readFileSync(__dirname + '/blurX.frag', 'utf8'),
+        require('fs').readFileSync(__dirname + '/blurY.frag', 'utf8'),
         // set the uniforms
         {
             blur: { type: '1f', value: 1 / 512 }
