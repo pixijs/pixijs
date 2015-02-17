@@ -691,10 +691,6 @@ Graphics.prototype.generateTexture = function (resolution, scaleMode)
 Graphics.prototype._renderWebGL = function (renderer)
 {
     // if the sprite is not visible or the alpha is 0 then no need to render this element
-    if (this.isMask === true)
-    {
-        return;
-    }
 
     // this code may still be needed so leaving for now..
     //
@@ -816,7 +812,7 @@ Graphics.prototype.getBounds = function (matrix)
     {
 
         // return an empty object if the item is a mask!
-        if (this.renderable)
+        if (!this.renderable)
         {
             return math.Rectangle.EMPTY;
         }
