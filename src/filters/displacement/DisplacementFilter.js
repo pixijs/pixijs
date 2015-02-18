@@ -64,7 +64,7 @@ function DisplacementFilter(sprite)
         {
             mapSampler:     { type: 'sampler2D', value: sprite.texture },
             otherMatrix:    { type: 'mat3', value: maskMatrix.toArray(true) },
-            scale:          { type: 'v2', value: { x: 0.01, y: 0.01 } }
+            scale:          { type: 'v2', value: { x: 1, y: 1 } }
         }
     );
 
@@ -72,7 +72,7 @@ function DisplacementFilter(sprite)
     this.maskMatrix = maskMatrix;
 
 
-    this.scale = new PIXI.Point(0,0);
+    this.scale = new PIXI.Point(20,20);
 
 }
 
