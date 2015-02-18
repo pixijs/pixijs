@@ -268,7 +268,7 @@ GraphicsRenderer.prototype.switchMode = function (webGL, type)
     {
         webGLData = webGL.data[webGL.data.length-1];
 
-        if (webGLData.mode !== type || type === 1)
+        if ((webGLData.points.length > 320000) || webGLData.mode !== type || type === 1)
         {
             webGLData = this.graphicsDataPool.pop() || new WebGLGraphicsData(webGL.gl);
             webGLData.mode = type;
