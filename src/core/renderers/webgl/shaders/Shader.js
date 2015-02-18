@@ -424,6 +424,8 @@ Shader.prototype.initSampler2D = function (uniform)
 
     var texture = uniform.value.baseTexture;
 
+    if(!texture.hasLoaded)return;
+
     texture._glTextures[gl.id] = gl.createTexture();
 
     gl.bindTexture(gl.TEXTURE_2D, texture._glTextures[gl.id]);
