@@ -301,7 +301,7 @@ BitmapText.prototype.updateText = function ()
     }
 
     // remove unnecessary children.
-    for (var i = lenChars; i < this._glyphs.length; ++i)
+    for (i = lenChars; i < this._glyphs.length; ++i)
     {
         this.removeChild(this._glyphs[i]);
     }

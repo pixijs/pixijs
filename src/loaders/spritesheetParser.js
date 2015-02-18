@@ -16,7 +16,7 @@ module.exports = function ()
 
             var route = path.dirname(resource.url.replace(this.baseUrl, ''));
 
-            var resolution = core.utils.getResolutionOfUrl( resource.url )
+            var resolution = core.utils.getResolutionOfUrl( resource.url );
 
             // load the image for this sheet
             this.add(resource.name + '_image', this.baseUrl + route + '/' + resource.data.meta.image, loadOptions, function (res)

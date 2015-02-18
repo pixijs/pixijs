@@ -2,7 +2,7 @@ var ResourceLoader = require('resource-loader'),
     textureParser = require('./textureParser'),
     spritesheetParser = require('./spritesheetParser'),
     spineAtlasParser = require('./spineAtlasParser'),
-    bitmapFontParser = require('./bitmapFontParser')
+    bitmapFontParser = require('./bitmapFontParser');
  //   loader = new Loader();
 
 var Loader = function()
@@ -26,7 +26,7 @@ var Loader = function()
 
     // parse any spritesheet data into multiple textures
     .use(bitmapFontParser());
-}
+};
 
 Loader.prototype = Object.create(ResourceLoader.prototype);
 Loader.prototype.constructor = Loader;

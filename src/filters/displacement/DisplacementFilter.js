@@ -72,7 +72,7 @@ function DisplacementFilter(sprite)
     this.maskMatrix = maskMatrix;
 
 
-    this.scale = new PIXI.Point(20,20);
+    this.scale = new core.math.Point(20,20);
 
 }
 

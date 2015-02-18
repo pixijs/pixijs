@@ -92,17 +92,23 @@ for (var c in CONST) {
 
 
 var contextOptions = { stencil: true };
-function checkWebGL() {
-    try {
-        if (!window.WebGLRenderingContext) {
+
+function checkWebGL()
+{
+    try
+    {
+        if (!window.WebGLRenderingContext)
+        {
             return false;
         }
 
         var canvas = document.createElement('canvas'),
-            gl = canvas.getContext('webgl', contextOptions) || canvas.getContext('experimental-webgl', contextOptions)
+            gl = canvas.getContext('webgl', contextOptions) || canvas.getContext('experimental-webgl', contextOptions);
 
         return !!(gl && gl.getContextAttributes().stencil);
-    } catch (e) {
+    }
+    catch (e)
+    {
         return false;
     }
 }

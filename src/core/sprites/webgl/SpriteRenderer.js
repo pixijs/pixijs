@@ -244,14 +244,12 @@ SpriteRenderer.prototype.render = function (sprite)
 
     var index = this.currentBatchSize * this.vertByteSize;
 
-    var resolution = texture.baseTexture.resolution;
-
     var worldTransform = sprite.worldTransform;
 
-    var a = worldTransform.a// / resolution;
-    var b = worldTransform.b// / resolution;
-    var c = worldTransform.c// / resolution;
-    var d = worldTransform.d// / resolution;
+    var a = worldTransform.a;
+    var b = worldTransform.b;
+    var c = worldTransform.c;
+    var d = worldTransform.d;
     var tx = worldTransform.tx;
     var ty = worldTransform.ty;
 
