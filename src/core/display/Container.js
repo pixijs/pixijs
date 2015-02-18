@@ -414,6 +414,8 @@ Container.prototype.getLocalBounds = function ()
 
     this.worldTransform = matrixCache;
 
+    this._currentBounds = null;
+
     return this.getBounds();
 };
 

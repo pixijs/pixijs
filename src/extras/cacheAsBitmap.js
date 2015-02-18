@@ -45,7 +45,7 @@ Object.defineProperties(DisplayObject.prototype, {
                 this.renderWebGL = this._renderCachedWebGL;
                 this.renderCanvas = this._renderCachedCanvas;
 
-                this.updateTransform = this.displayObjectUpdateTransform;
+
 
             }
             else
@@ -57,7 +57,7 @@ Object.defineProperties(DisplayObject.prototype, {
 
                 this.renderWebGL = this._originalRenderWebGL;
                 this.renderCanvas = this._originalRenderCanvas;
-                this.getBounds = this._originalGetBounds
+                this.getBounds = this._originalGetBounds;
 
                 this.updateTransform = this._originalUpdateTransform;
                 this.hitTest = this._originalHitTest;
@@ -83,11 +83,20 @@ DisplayObject.prototype._initCachedDisplayObject = function( renderer )
         return;
     }
 
-    //get bounds actually transforms the object for us already!
+    // first we flush anything left in the renderer (otherwise it would get rendered to the cached texture)
+    renderer.currentRenderer.flush();
+
+    // next we find the dimensions of the untransformed object
+    // this function also calls updatetransform on all its children as part of the measuring. This means we don't need to update the transform again in this function
     var bounds = this.getLocalBounds();
 
+    // for now we cache the current renderTarget that the webGL renderer is currently using.
+    // this could be more elegent..
     var cachedRenderTarget = renderer.currentRenderTarget;
+    // We also store the filter stack - I will definitely look to change how this works a little later down the line.
+    var stack = renderer.filterManager.filterStack;
 
+    // this renderTexture will be used to store the cached DisplayObject
     var renderTexture = new RenderTexture(renderer, bounds.width | 0, bounds.height | 0);
 
     // need to set //
@@ -97,39 +106,40 @@ DisplayObject.prototype._initCachedDisplayObject = function( renderer )
     m.ty = -bounds.y;
 
     // set all properties to there original so we can render to a texture
-    this._cacheAsBitmap = false;
     this.renderWebGL = this._originalRenderWebGL;
 
     renderTexture.render(this, m, true);
 
     // now restore the state be setting the new properties
     renderer.setRenderTarget(cachedRenderTarget);
+    renderer.filterManager.filterStack = stack;
 
-    this.renderWebGL = this._renderCachedWebGL;
-    this.getBounds  = this._getCahcedBounds;
+    this.renderWebGL     = this._renderCachedWebGL;
+    this.updateTransform = this.displayObjectUpdateTransform;
+    this.getBounds       = this._getCahcedBounds;
 
-
-    this._cacheAsBitmap = true;
 
     // create our cached sprite
     this._cachedSprite = new Sprite(renderTexture);
     this._cachedSprite.worldTransform = this.worldTransform;
     this._cachedSprite.anchor.x = -( bounds.x / bounds.width );
     this._cachedSprite.anchor.y = -( bounds.y / bounds.height );
+
+    // map the hit test..
     this.hitTest = this._cachedSprite.hitTest.bind(this._cachedSprite);
 };
 
 
 DisplayObject.prototype._renderCachedCanvas = function(renderer)
 {
- //   console.log("!!!!")
     this._initCachedDisplayObjectCanvas( renderer );
-   // console.log("<>")
+
     this._cachedSprite.worldAlpha = this.worldAlpha;
 
     this._cachedSprite.renderCanvas(renderer);
 };
 
+//TODO this can be the same as the webGL verison.. will need to do a little tweaking first though..
 DisplayObject.prototype._initCachedDisplayObjectCanvas = function( renderer )
 {
     if(this._cachedSprite)
@@ -151,7 +161,6 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function( renderer )
     m.ty = -bounds.y;
 
     // set all properties to there original so we can render to a texture
-    this._cacheAsBitmap = false;
     this.renderCanvas = this._originalRenderCanvas;
 
     renderTexture.render(this, m, true);
@@ -160,10 +169,9 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function( renderer )
     renderer.context = cachedRenderTarget;
 
     this.renderCanvas = this._renderCachedCanvas;
+    this.updateTransform = this.displayObjectUpdateTransform;
     this.getBounds  = this._getCahcedBounds;
 
-
-    this._cacheAsBitmap = true;
 
     // create our cached sprite
     this._cachedSprite = new Sprite(renderTexture);
@@ -175,8 +183,10 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function( renderer )
 
 DisplayObject.prototype._getCahcedBounds = function()
 {
+    this._cachedSprite._currentBounds = null;
+
     return this._cachedSprite.getBounds();
-}
+};
 
 DisplayObject.prototype._destroyCachedDisplayObject = function()
 {
