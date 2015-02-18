@@ -97,6 +97,8 @@ function CanvasRenderer(width, height, options)
         }
     }
 
+    this.initPlugins();
+
     this._mapBlendModes();
 
     /**
@@ -110,6 +112,7 @@ function CanvasRenderer(width, height, options)
         worldAlpha: 1
     };
 
+
     this.resize(width, height);
 }
 
@@ -117,6 +120,7 @@ function CanvasRenderer(width, height, options)
 CanvasRenderer.prototype = Object.create(SystemRenderer.prototype);
 CanvasRenderer.prototype.constructor = CanvasRenderer;
 module.exports = CanvasRenderer;
+utils.pluginTarget.mixin(CanvasRenderer);
 
 /**
  * Renders the object to this canvas view
@@ -126,6 +130,9 @@ module.exports = CanvasRenderer;
 CanvasRenderer.prototype.render = function (object)
 {
     var cacheParent = object.parent;
+
+    this._lastObjectRendered = object;
+
     object.parent = this._tempDisplayObjectParent;
 
     // update the scene graph
@@ -169,6 +176,8 @@ CanvasRenderer.prototype.render = function (object)
  */
 CanvasRenderer.prototype.destroy = function (removeView)
 {
+    this.destroyPlugins();
+
     // call the base destroy
     SystemRenderer.prototype.destroy.call(this, removeView);
 

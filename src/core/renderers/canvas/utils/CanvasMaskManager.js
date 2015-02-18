@@ -20,6 +20,7 @@ module.exports = CanvasMaskManager;
  */
 CanvasMaskManager.prototype.pushMask = function (maskData, renderer)
 {
+
     renderer.context.save();
 
     var cacheAlpha = maskData.alpha;
@@ -35,9 +36,13 @@ CanvasMaskManager.prototype.pushMask = function (maskData, renderer)
         transform.ty * resolution
     );
 
-    CanvasGraphics.renderGraphicsMask(maskData, renderer.context);
-
-    renderer.context.clip();
+    //TODO suport sprite alpha masks??
+    //lots of effort required. If demand is great enough..
+    if(!maskData.texture)
+    {
+        CanvasGraphics.renderGraphicsMask(maskData, renderer.context);
+        renderer.context.clip();
+    }
 
     maskData.worldAlpha = cacheAlpha;
 };

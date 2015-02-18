@@ -685,3 +685,4 @@ InteractionManager.prototype.returnTouchData = function ( touchData )
 
 
 core.WebGLRenderer.registerPlugin('interaction', InteractionManager);
+core.CanvasRenderer.registerPlugin('interaction', InteractionManager);

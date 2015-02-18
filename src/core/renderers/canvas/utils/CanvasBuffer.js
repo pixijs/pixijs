@@ -86,3 +86,9 @@ CanvasBuffer.prototype.resize = function (width, height)
     this.canvas.width = width;
     this.canvas.height = height;
 };
+
+CanvasBuffer.prototype.destroy = function (width, height)
+{
+    this.context = null;
+    this.canvas = null;
+};

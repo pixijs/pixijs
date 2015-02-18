@@ -3,7 +3,8 @@ var BaseTexture = require('./BaseTexture'),
     RenderTarget = require('../renderers/webgl/utils/RenderTarget'),
     CanvasBuffer = require('../renderers/canvas/utils/CanvasBuffer'),
     math = require('../math'),
-    CONST = require('../const');
+    CONST = require('../const'),
+    tempMatrix = new math.Matrix();
 
 /**
  * A RenderTexture is a special texture that allows any Pixi display object to be rendered to it.
@@ -286,14 +287,17 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, up
  * @param [matrix] {Matrix} Optional matrix to apply to the display object before rendering.
  * @param [clear] {boolean} If true the texture will be cleared before the displayObject is drawn
  */
-RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear)
+RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear, updateTransform)
 {
     if (!this.valid)
     {
         return;
     }
 
-    var wt = displayObject.worldTransform;
+    updateTransform = !!updateTransform;
+    var cachedWt = displayObject.worldTransform;
+
+    var wt = tempMatrix;
 
     wt.identity();
 
@@ -301,6 +305,8 @@ RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear)
     {
         wt.append(matrix);
     }
+
+    displayObject.worldTransform = wt;
 
     // setWorld Alpha to ensure that the object is renderer at full opacity
     displayObject.worldAlpha = 1;
@@ -318,6 +324,8 @@ RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear)
     {
         this.textureBuffer.clear();
     }
+
+    displayObject.worldTransform = cachedWt;
 
 //    this.textureBuffer.
     var context = this.textureBuffer.context;

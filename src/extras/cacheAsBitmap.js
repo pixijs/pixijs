@@ -6,7 +6,8 @@ var math = require('../core/math'),
     _tempMatrix = new math.Matrix();
 
 DisplayObject.prototype._cacheAsBitmap = false;
-DisplayObject.prototype._originalRenderWebGL = false;
+DisplayObject.prototype._originalRenderWebGL = null;
+DisplayObject.prototype._originalRenderCanvas = null;
 
 DisplayObject.prototype._originalUpdateTransform = null;
 DisplayObject.prototype._originalHitTest = null;
@@ -33,10 +34,14 @@ Object.defineProperties(DisplayObject.prototype, {
             if(value)
             {
                 this._originalRenderWebGL = this.renderWebGL;
+                this._originalRenderCanvas = this.renderCanvas;
+
                 this._originalUpdateTransform = this.updateTransform;
                 this._originalHitTest = this.hitTest;
 
                 this.renderWebGL = this._renderCachedWebGL;
+                this.renderCanvas = this._renderCachedCanvas;
+
                 this.updateTransform = this.displayObjectUpdateTransform;
 
             }
@@ -48,6 +53,8 @@ Object.defineProperties(DisplayObject.prototype, {
                 }
 
                 this.renderWebGL = this._originalRenderWebGL;
+                this.renderCanvas = this._originalRenderCanvas;
+
                 this.updateTransform = this._originalUpdateTransform;
                 this.hitTest = this._originalHitTest;
             }
@@ -105,18 +112,64 @@ DisplayObject.prototype._initCachedDisplayObject = function( renderer )
     this.hitTest = this._cachedSprite.hitTest.bind(this._cachedSprite);
 };
 
+
+DisplayObject.prototype._renderCachedCanvas = function(renderer)
+{
+ //   console.log("!!!!")
+    this._initCachedDisplayObjectCanvas( renderer );
+   // console.log("<>")
+    this._cachedSprite.worldAlpha = this.worldAlpha;
+
+    this._cachedSprite.renderCanvas(renderer);
+};
+
+DisplayObject.prototype._initCachedDisplayObjectCanvas = function( renderer )
+{
+    if(this._cachedSprite)
+    {
+        return;
+    }
+
+    //get bounds actually transforms the object for us already!
+    var bounds = this.getLocalBounds();
+
+    var cachedRenderTarget = renderer.context;
+
+    var renderTexture = new RenderTexture(renderer, bounds.width | 0, bounds.height | 0);
+
+    // need to set //
+    var m = _tempMatrix;
+
+    m.tx = -bounds.x;
+    m.ty = -bounds.y;
+
+    // set all properties to there original so we can render to a texture
+    this._cacheAsBitmap = false;
+    this.renderCanvas = this._originalRenderCanvas;
+
+    renderTexture.render(this, m, true);
+
+    // now restore the state be setting the new properties
+    renderer.context = cachedRenderTarget;
+
+    this.renderCanvas = this._renderCachedCanvas;
+    this._cacheAsBitmap = true;
+
+    // create our cached sprite
+    this._cachedSprite = new Sprite(renderTexture);
+    this._cachedSprite.worldTransform = this.worldTransform;
+    this._cachedSprite.anchor.x = -( bounds.x / bounds.width );
+    this._cachedSprite.anchor.y = -( bounds.y / bounds.height );
+    this.hitTest = this._cachedSprite.hitTest.bind(this._cachedSprite);
+};
+
+
 DisplayObject.prototype._destroyCachedDisplayObject = function()
 {
     this._cachedSprite._texture.destroy();
     this._cachedSprite = null;
 };
 
-DisplayObject.prototype._renderCachedCanvas = function( renderer )
-{
-    this._initCachedDisplayObject( renderer );
-
-    //TODO add some codes init!
-};
 
 
 module.exports = {};

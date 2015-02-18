@@ -316,7 +316,7 @@ Sprite.prototype.getBounds = function (matrix)
 */
 Sprite.prototype.renderCanvas = function (renderer)
 {
-    if (!this.visible || this.alpha <= 0 || this.texture.crop.width <= 0 || this.texture.crop.height <= 0)
+    if (!this.visible || this.alpha <= 0 || this.texture.crop.width <= 0 || this.texture.crop.height <= 0 || !this.renderable)
     {
         return;
     }
