@@ -37,6 +37,9 @@ Object.defineProperties(DisplayObject.prototype, {
                 this._originalRenderCanvas = this.renderCanvas;
 
                 this._originalUpdateTransform = this.updateTransform;
+                this._originalGetBounds = this.getBounds;
+
+
                 this._originalHitTest = this.hitTest;
 
                 this.renderWebGL = this._renderCachedWebGL;
@@ -54,6 +57,7 @@ Object.defineProperties(DisplayObject.prototype, {
 
                 this.renderWebGL = this._originalRenderWebGL;
                 this.renderCanvas = this._originalRenderCanvas;
+                this.getBounds = this._originalGetBounds
 
                 this.updateTransform = this._originalUpdateTransform;
                 this.hitTest = this._originalHitTest;
@@ -102,6 +106,9 @@ DisplayObject.prototype._initCachedDisplayObject = function( renderer )
     renderer.setRenderTarget(cachedRenderTarget);
 
     this.renderWebGL = this._renderCachedWebGL;
+    this.getBounds  = this._getCahcedBounds;
+
+
     this._cacheAsBitmap = true;
 
     // create our cached sprite
@@ -153,6 +160,9 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function( renderer )
     renderer.context = cachedRenderTarget;
 
     this.renderCanvas = this._renderCachedCanvas;
+    this.getBounds  = this._getCahcedBounds;
+
+
     this._cacheAsBitmap = true;
 
     // create our cached sprite
@@ -163,6 +173,10 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function( renderer )
     this.hitTest = this._cachedSprite.hitTest.bind(this._cachedSprite);
 };
 
+DisplayObject.prototype._getCahcedBounds = function()
+{
+    return this._cachedSprite.getBounds();
+}
 
 DisplayObject.prototype._destroyCachedDisplayObject = function()
 {
