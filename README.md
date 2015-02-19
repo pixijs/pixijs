@@ -45,7 +45,7 @@ any breakthroughs will be posted up there too!
 
 - [Run pixie run](<http://www.goodboydigital.com/runpixierun/>)
 
-- [Fight for Everyone](<http://www.theleisuresociety.co.uk/fightforeveryone>)
+- [Fight for Everyone](<http://www.goodboydigital.com/casestudies/fightforeveryone/>)
 
 - [Flash vs HTML](<http://flashvhtml.com>)
 
