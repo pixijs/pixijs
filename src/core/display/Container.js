@@ -152,7 +152,7 @@ Container.prototype.swapChildren = function (child, child2)
 
     if (index1 < 0 || index2 < 0)
     {
-        throw new Error('swapChildren: Both the supplied DisplayObjects must be a child of the caller.');
+        throw new Error('swapChildren: Both the supplied DisplayObjects must be children of the caller.');
     }
 
     this.children[index1] = child2;
@@ -199,14 +199,14 @@ Container.prototype.setChildIndex = function (child, index)
 /**
  * Returns the child at the specified index
  *
- * @param index {Number} The index to get the child from
+ * @param index {Number} The index to get the child at
  * @return {DisplayObject} The child at the given index, if any.
  */
 Container.prototype.getChildAt = function (index)
 {
     if (index < 0 || index >= this.children.length)
     {
-        throw new Error('getChildAt: Supplied index ' + index + ' does not exist in the child list, or the supplied DisplayObject must be a child of the caller');
+        throw new Error('getChildAt: Supplied index ' + index + ' does not exist in the child list, or the supplied DisplayObject is not a child of the caller');
     }
 
     return this.children[index];
@@ -280,13 +280,13 @@ Container.prototype.removeChildren = function (beginIndex, endIndex)
 };
 
 /**
- * Useful function that returns a texture of the displayObject object that can then be used to create sprites
+ * Useful function that returns a texture of the display object that can then be used to create sprites
  * This can be quite useful if your displayObject is static / complicated and needs to be reused multiple times.
  *
+ * @param renderer {CanvasRenderer|WebGLRenderer} The renderer used to generate the texture.
  * @param resolution {Number} The resolution of the texture being generated
  * @param scaleMode {Number} See {@link SCALE_MODES} for possible values
- * @param renderer {CanvasRenderer|WebGLRenderer} The renderer used to generate the texture.
- * @return {Texture} a texture of the graphics object
+ * @return {Texture} a texture of the display object
  */
 Container.prototype.generateTexture = function (renderer, resolution, scaleMode)
 {
@@ -488,9 +488,9 @@ Container.prototype.renderWebGL = function (renderer)
     }
 };
 
-Container.prototype._renderWebGL = function (/* renderer */)
+Container.prototype._renderWebGL = function (renderer)
 {
-    // this is where content itself gets renderd..
+    // this is where content itself gets rendered...
 };
 
 

@@ -11,6 +11,7 @@ var utils = require('../../utils'),
  * @class
  * @private
  * @namespace PIXI
+ * @extends ObjectRenderer
  * @param renderer {WebGLRenderer} The renderer this object renderer works for.
  */
 function GraphicsRenderer(renderer)
@@ -120,7 +121,6 @@ GraphicsRenderer.prototype.render = function(graphics)
  *
  * @private
  * @param graphicsData {Graphics} The graphics object to update
- * @param gl {WebGLContext} the current WebGL drawing context
  */
 GraphicsRenderer.prototype.updateGraphics = function(graphics)
 {
@@ -251,8 +251,8 @@ GraphicsRenderer.prototype.updateGraphics = function(graphics)
  *
  *
  * @private
- * @param webGL {WebGLContext}
- * @param type {number}
+ * @param webGL {WebGLRenderingContext} the current WebGL drawing context
+ * @param type {number} TODO @Alvin
  */
 GraphicsRenderer.prototype.switchMode = function (webGL, type)
 {
@@ -286,7 +286,7 @@ GraphicsRenderer.prototype.switchMode = function (webGL, type)
  *
  * @private
  * @param graphicsData {Graphics} The graphics object containing all the necessary properties
- * @param webGLData {object}
+ * @param webGLData {object} an object containing all the webGL-specific information to create this shape
  */
 GraphicsRenderer.prototype.buildRectangle = function (graphicsData, webGLData)
 {
@@ -352,7 +352,7 @@ GraphicsRenderer.prototype.buildRectangle = function (graphicsData, webGLData)
  *
  * @private
  * @param graphicsData {Graphics} The graphics object containing all the necessary properties
- * @param webGLData {object}
+ * @param webGLData {object} an object containing all the webGL-specific information to create this shape
  */
 GraphicsRenderer.prototype.buildRoundedRectangle = function (graphicsData, webGLData)
 {
@@ -429,7 +429,7 @@ GraphicsRenderer.prototype.buildRoundedRectangle = function (graphicsData, webGL
  * @param cpY {number} Control point y
  * @param toX {number} Destination point x
  * @param toY {number} Destination point y
- * @return {number[]}
+ * @return {number[]} an array of points
  */
 GraphicsRenderer.prototype.quadraticBezierCurve = function (fromX, fromY, cpX, cpY, toX, toY)
 {
@@ -473,7 +473,7 @@ GraphicsRenderer.prototype.quadraticBezierCurve = function (fromX, fromY, cpX, c
  *
  * @private
  * @param graphicsData {Graphics} The graphics object to draw
- * @param webGLData {object}
+ * @param webGLData {object} an object containing all the webGL-specific information to create this shape
  */
 GraphicsRenderer.prototype.buildCircle = function (graphicsData, webGLData)
 {
@@ -554,7 +554,7 @@ GraphicsRenderer.prototype.buildCircle = function (graphicsData, webGLData)
  *
  * @private
  * @param graphicsData {Graphics} The graphics object containing all the necessary properties
- * @param webGLData {object}
+ * @param webGLData {object} an object containing all the webGL-specific information to create this shape
  */
 GraphicsRenderer.prototype.buildLine = function (graphicsData, webGLData)
 {
@@ -769,7 +769,7 @@ GraphicsRenderer.prototype.buildLine = function (graphicsData, webGLData)
  *
  * @private
  * @param graphicsData {Graphics} The graphics object containing all the necessary properties
- * @param webGLData {object}
+ * @param webGLData {object} an object containing all the webGL-specific information to create this shape
  */
 GraphicsRenderer.prototype.buildComplexPoly = function (graphicsData, webGLData)
 {
@@ -831,7 +831,7 @@ GraphicsRenderer.prototype.buildComplexPoly = function (graphicsData, webGLData)
  *
  * @private
  * @param graphicsData {Graphics} The graphics object containing all the necessary properties
- * @param webGLData {object}
+ * @param webGLData {object} an object containing all the webGL-specific information to create this shape
  */
 GraphicsRenderer.prototype.buildPoly = function (graphicsData, webGLData)
 {

@@ -26,8 +26,8 @@ function Sprite(texture)
     /**
      * The anchor sets the origin point of the texture.
      * The default is 0,0 this means the texture's origin is the top left
-     * Setting than anchor to 0.5,0.5 means the textures origin is centered
-     * Setting the anchor to 1,1 would mean the textures origin points will be the bottom right corner
+     * Setting the anchor to 0.5,0.5 means the texture's origin is centered
+     * Setting the anchor to 1,1 would mean the texture's origin point will be the bottom right corner
      *
      * @member {Point}
      */
@@ -86,6 +86,12 @@ function Sprite(texture)
     this.texture = texture || Texture.EMPTY;
 }
 
+/**
+ * Destroys this sprite and optionally its texture
+ *
+ * @param destroyTexture {boolean} Should it destroy the current texture of the sprite as well
+ * @param destroyBaseTexture {boolean} Should it destroy the base texture of the sprite as well
+ */
 Sprite.prototype.destroy = function (destroyTexture, destroyBaseTexture)
 {
     Container.prototype.destroy.call(this);
@@ -199,6 +205,12 @@ Sprite.prototype._onTextureUpdate = function ()
     }
 };
 
+/**
+
+* Renders the object using the WebGL renderer
+*
+* @param renderer {WebGLRenderer}
+*/
 Sprite.prototype._renderWebGL = function (renderer)
 {
     renderer.setObjectRenderer(renderer.plugins.sprite);

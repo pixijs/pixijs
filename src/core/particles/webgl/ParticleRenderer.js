@@ -78,7 +78,7 @@ WebGLRenderer.registerPlugin('particle', ParticleRenderer);
  * Sets up the renderer context and necessary buffers.
  *
  * @private
- * @param gl {WebGLContext} the current WebGL drawing context
+ * @param gl {WebGLRenderingContext} the current WebGL drawing context
  */
 ParticleRenderer.prototype.onContextChange = function ()
 {

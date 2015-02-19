@@ -280,7 +280,7 @@ DisplayObject.prototype.updateTransform = function ()
     // temporary matrix variables
     var a, b, c, d, tx, ty;
 
-    // so if rotation is between 0 then we can simplify the multiplication process..
+    // so if rotation is between 0 then we can simplify the multiplication process...
     if (this.rotation % math.PI_2)
     {
         // check to see if the rotation is the same as the previous render. This means we only need to use sin and cos when rotation actually changes
@@ -344,13 +344,12 @@ DisplayObject.prototype.displayObjectUpdateTransform = DisplayObject.prototype.u
 /**
  *
  *
- *
  * Retrieves the bounds of the displayObject as a rectangle object
  *
  * @param matrix {Matrix}
  * @return {Rectangle} the rectangular bounding area
  */
-DisplayObject.prototype.getBounds = function (/* matrix */)
+DisplayObject.prototype.getBounds = function (matrix)
 {
     return math.Rectangle.EMPTY;
 };
@@ -373,7 +372,7 @@ DisplayObject.prototype.getLocalBounds = function ()
  */
 DisplayObject.prototype.toGlobal = function (position)
 {
-    // don't need to u[date the lot
+    // don't need to update the lot
     this.displayObjectUpdateTransform();
     return this.worldTransform.apply(position);
 };
@@ -403,7 +402,7 @@ DisplayObject.prototype.toLocal = function (position, from)
  * @param renderer {WebGLRenderer} The renderer
  * @private
  */
-DisplayObject.prototype.renderWebGL = function (/* renderer */)
+DisplayObject.prototype.renderWebGL = function (renderer)
 {
     // OVERWRITE;
 };
@@ -414,11 +413,19 @@ DisplayObject.prototype.renderWebGL = function (/* renderer */)
  * @param renderer {CanvasRenderer} The renderer
  * @private
  */
-DisplayObject.prototype.renderCanvas = function (/* renderer */)
+DisplayObject.prototype.renderCanvas = function (renderer)
 {
     // OVERWRITE;
 };
-
+/**
+ * Useful function that returns a texture of the display object that can then be used to create sprites
+ * This can be quite useful if your displayObject is static / complicated and needs to be reused multiple times.
+ *
+ * @param renderer {CanvasRenderer|WebGLRenderer} The renderer used to generate the texture.
+ * @param resolution {Number} The resolution of the texture being generated
+ * @param scaleMode {Number} See {@link SCALE_MODES} for possible values
+ * @return {Texture} a texture of the display object
+ */
 DisplayObject.prototype.generateTexture = function (renderer, resolution, scaleMode)
 {
     var bounds = this.getLocalBounds();

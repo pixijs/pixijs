@@ -164,7 +164,7 @@ WebGLRenderer.registerPlugin('sprite', SpriteRenderer);
  * Sets up the renderer context and necessary buffers.
  *
  * @private
- * @param gl {WebGLContext} the current WebGL drawing context
+ * @param gl {WebGLRenderingContext} the current WebGL drawing context
  */
 SpriteRenderer.prototype.onContextChange = function ()
 {
