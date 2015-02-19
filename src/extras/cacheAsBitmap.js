@@ -85,10 +85,11 @@ DisplayObject.prototype._initCachedDisplayObject = function( renderer )
 
     // first we flush anything left in the renderer (otherwise it would get rendered to the cached texture)
     renderer.currentRenderer.flush();
-
+    //this.filters= [];
     // next we find the dimensions of the untransformed object
     // this function also calls updatetransform on all its children as part of the measuring. This means we don't need to update the transform again in this function
-    var bounds = this.getLocalBounds();
+    // TODO pass an object to clone too? saves having to create a new one each time!
+    var bounds = this.getLocalBounds().clone();
 
     // for now we cache the current renderTarget that the webGL renderer is currently using.
     // this could be more elegent..

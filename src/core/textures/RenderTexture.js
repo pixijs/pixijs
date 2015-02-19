@@ -243,13 +243,14 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, up
         return;
     }
 
+    //TODO this should be true by default
     updateTransform = !!updateTransform;
 
     this.textureBuffer.transform = matrix;
 
 
     // setWorld Alpha to ensure that the object is renderer at full opacity
-    displayObject.worldAlpha = 1;
+    displayObject.worldAlpha = displayObject.alpha;
 
     if (updateTransform)
     {
