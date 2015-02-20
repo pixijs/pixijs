@@ -1,18 +1,55 @@
 /**
- * @class
+ * An object containing WebGL specific properties to be used by the WebGL renderer
+ * 
+ * @class 
+ * @param gl {WebGLRenderingContext} the current WebGL drawing context
  * @private
  */
 function WebGLGraphicsData(gl) {
+
+    /* 
+     * @member {WebGLRenderingContext} the current WebGL drawing context
+     */
     this.gl = gl;
 
     //TODO does this need to be split before uploding??
+    /* 
+     * @member {Array} an array of color components (r,g,b)
+     */
     this.color = [0,0,0]; // color split!
+
+    /* 
+     * @member {Array} an array of points to draw 
+     */
     this.points = [];
+
+    /* 
+     * @member {Array} the indices of the vertices
+     */
     this.indices = [];
+    /* 
+     * @member {WebGLBuffer} the main buffer
+     */
     this.buffer = gl.createBuffer();
+
+    /* 
+     * @member {WebGLBuffer} the index buffer
+     */
     this.indexBuffer = gl.createBuffer();
+
+    /* 
+     * @member {number} todo @alvin
+     */
     this.mode = 1;
+
+    /* 
+     * @member {number} The alpha of the graphics
+     */
     this.alpha = 1;
+
+    /* 
+     * @member {boolean} Whether this graphics is dirty or not
+     */
     this.dirty = true;
 }
 
@@ -20,7 +57,7 @@ WebGLGraphicsData.prototype.constructor = WebGLGraphicsData;
 module.exports = WebGLGraphicsData;
 
 /**
- *
+ * Resets the vertices and the indices
  */
 WebGLGraphicsData.prototype.reset = function () {
     this.points = [];
@@ -28,7 +65,7 @@ WebGLGraphicsData.prototype.reset = function () {
 };
 
 /**
- *
+ * Binds the buffers and uploads the data
  */
 WebGLGraphicsData.prototype.upload = function () {
     var gl = this.gl;

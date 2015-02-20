@@ -248,7 +248,7 @@ Texture.prototype._updateUvs = function ()
  * @param imageUrl {string} The image url of the texture
  * @param crossorigin {boolean} Whether requests should be treated as crossorigin
  * @param scaleMode {number} See {{#crossLink "PIXI/scaleModes:property"}}scaleModes{{/crossLink}} for possible values
- * @return Texture
+ * @return {Texture} The newly created texture
  */
 Texture.fromImage = function (imageUrl, crossorigin, scaleMode)
 {
@@ -263,7 +263,14 @@ Texture.fromImage = function (imageUrl, crossorigin, scaleMode)
     return texture;
 };
 
-
+/**
+ * Helper function that creates a sprite that will contain a texture from the TextureCache based on the frameId
+ * The frame ids are created when a Texture packer file has been loaded
+ *
+ * @static
+ * @param frameId {String} The frame Id of the texture in the cache
+ * @return {Texture} The newly created texture
+ */
 Texture.fromFrame = function (frameId)
 {
     var texture = utils.TextureCache[frameId];

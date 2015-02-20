@@ -19,6 +19,9 @@
  */
 function ParticleBuffer(gl, properties, size)
 {
+    /**
+     * @member {WebGLRenderingContext} the current WebGL drawing context
+     */
     this.gl = gl;
 
     /**
@@ -42,7 +45,18 @@ function ParticleBuffer(gl, properties, size)
      */
     this.size = size;
 
+    /**
+     * 
+     *
+     * @member {Array}
+     */
     this.dynamicProperties = [];
+
+    /**
+     * 
+     *
+     * @member {Array}
+     */
     this.staticProperties = [];
 
     for (var i = 0; i < properties.length; i++)

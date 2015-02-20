@@ -21,17 +21,31 @@ function Strip(texture)
      */
     this.texture = texture;
 
-    // set up the main bits..
+    /**
+     * The Uvs of the strip
+     *
+     * @member {Float32Array}
+     */
     this.uvs = new Float32Array([0, 1,
                                  1, 1,
                                  1, 0,
                                  0, 1]);
 
+    /**
+     * An array of vertices
+     *
+     * @member {Float32Array}
+     */
     this.vertices = new Float32Array([0, 0,
                                       100, 0,
                                       100, 100,
                                       0, 100]);
 
+    /**
+     * The color components
+     *
+     * @member {Float32Array}
+     */
     this.colors = new Float32Array([1, 1, 1, 1]);
 
     this.indices = new Uint16Array([0, 1, 2, 3]);

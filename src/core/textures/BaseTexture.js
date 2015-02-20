@@ -9,6 +9,7 @@ var utils = require('../utils'),
  * @namespace PIXI
  * @param source {Image|Canvas} the source object of the texture.
  * @param [scaleMode=scaleModes.DEFAULT] {number} See {@link SCALE_MODES} for possible values
+ * @param resolution {number} the resolution of the texture for devices with different pixel ratios
  */
 function BaseTexture(source, scaleMode, resolution)
 {
@@ -39,7 +40,19 @@ function BaseTexture(source, scaleMode, resolution)
 
     // TODO docs
     // used to store the actual dimensions of the source
+    /**
+     * Used to store the actual width of the source of this texture
+     *
+     * @member {number}
+     * @readOnly
+     */
     this.realWidth = 100;
+    /**
+     * Used to store the actual height of the source of this texture
+     *
+     * @member {number}
+     * @readOnly
+     */
     this.realHeight = 100;
 
     /**
@@ -96,6 +109,7 @@ function BaseTexture(source, scaleMode, resolution)
     this.imageUrl = null;
 
     /**
+     * Wether or not the texture is a power of two, try to use power of two textures as much as you can
      * @member {boolean}
      * @private
      */

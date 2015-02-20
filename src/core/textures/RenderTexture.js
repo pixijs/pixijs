@@ -343,6 +343,11 @@ RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear, u
 
 };
 
+/**
+ * Destroys this texture
+ *
+ * @param destroyBase {boolean} Whether to destroy the base texture as well
+ */
 RenderTexture.prototype.destroy = function ()
 {
     Texture.prototype.destroy.call(this, true);

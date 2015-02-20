@@ -75,10 +75,10 @@ module.exports = ParticleRenderer;
 WebGLRenderer.registerPlugin('particle', ParticleRenderer);
 
 /**
- * Sets up the renderer context and necessary buffers.
+ * When there is a WebGL context change
  *
  * @private
- * @param gl {WebGLRenderingContext} the current WebGL drawing context
+ * 
  */
 ParticleRenderer.prototype.onContextChange = function ()
 {
@@ -164,7 +164,7 @@ ParticleRenderer.prototype.start = function ()
 /**
  * Renders the sprite object.
  *
- * @param sprite {Sprite} the sprite to render when using this Particle
+ * @param container {Container || Sprite} the sprite to render using this ParticleRenderer
  */
 ParticleRenderer.prototype.render = function ( container )
 {
@@ -247,6 +247,11 @@ ParticleRenderer.prototype.render = function ( container )
     container._updateStatic = false;
 };
 
+/**
+ * Creates one particle buffer for each child in the container we want to render and updates internal properties
+ *
+ * @param container {Container || Sprite} the sprite to render using this ParticleRenderer
+ */
 ParticleRenderer.prototype.generateBuffers = function ( container )
 {
     var gl = this.renderer.gl,
@@ -269,7 +274,15 @@ ParticleRenderer.prototype.generateBuffers = function ( container )
 };
 
 
-
+/**
+ *
+ * @param children {Array} the array of display objects to render
+ * @param startIndex {number} the index to start from in the children array
+ * @param amount {number} the amount of children that will have their vertices uploaded
+ * @param array {Array}
+ * @param stride {number}
+ * @param offset {number}
+ */
 ParticleRenderer.prototype.uploadVerticies = function (children, startIndex, amount, array, stride, offset)
 {
     var sprite,
@@ -323,7 +336,15 @@ ParticleRenderer.prototype.uploadVerticies = function (children, startIndex, amo
 
 };
 
-
+/**
+ * 
+ * @param children {Array} the array of display objects to render
+ * @param startIndex {number} the index to start from in the children array
+ * @param amount {number} the amount of children that will have their positions uploaded
+ * @param array {Array}
+ * @param stride {number}
+ * @param offset {number}
+ */
 ParticleRenderer.prototype.uploadPosition = function (children,startIndex, amount, array, stride, offset)
 {
     for (var i = 0; i < amount; i++)
@@ -347,6 +368,15 @@ ParticleRenderer.prototype.uploadPosition = function (children,startIndex, amoun
 
 };
 
+/**
+ * 
+ * @param children {Array} the array of display objects to render
+ * @param startIndex {number} the index to start from in the children array
+ * @param amount {number} the amount of children that will have their rotation uploaded
+ * @param array {Array}
+ * @param stride {number}
+ * @param offset {number}
+ */
 ParticleRenderer.prototype.uploadRotation = function (children,startIndex, amount, array, stride, offset)
 {
     for (var i = 0; i < amount; i++)
@@ -363,6 +393,15 @@ ParticleRenderer.prototype.uploadRotation = function (children,startIndex, amoun
     }
 };
 
+/**
+ * 
+ * @param children {Array} the array of display objects to render
+ * @param startIndex {number} the index to start from in the children array
+ * @param amount {number} the amount of children that will have their Uvs uploaded
+ * @param array {Array}
+ * @param stride {number}
+ * @param offset {number}
+ */
 ParticleRenderer.prototype.uploadUvs = function (children,startIndex, amount, array, stride, offset)
 {
     for (var i = 0; i < amount; i++)
@@ -405,6 +444,15 @@ ParticleRenderer.prototype.uploadUvs = function (children,startIndex, amount, ar
     }
 };
 
+/**
+ * 
+ * @param children {Array} the array of display objects to render
+ * @param startIndex {number} the index to start from in the children array
+ * @param amount {number} the amount of children that will have their alpha uploaded
+ * @param array {Array}
+ * @param stride {number}
+ * @param offset {number}
+ */
 ParticleRenderer.prototype.uploadAlpha = function (children,startIndex, amount, array, stride, offset)
 {
      for (var i = 0; i < amount; i++)
@@ -432,5 +480,3 @@ ParticleRenderer.prototype.destroy = function ()
 
     //TODO implement this!
 };
-
-

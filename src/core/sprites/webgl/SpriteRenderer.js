@@ -19,6 +19,7 @@ var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
  * @class
  * @private
  * @namespace PIXI
+ * @extends ObjectRenderer
  * @param renderer {WebGLRenderer} The renderer this sprite batch works for.
  */
 function SpriteRenderer(renderer)
@@ -66,7 +67,7 @@ function SpriteRenderer(renderer)
     this.positions = new Float32Array(this.vertices);
 
     /**
-     * View on the vertices as a Uint32Array
+     * Holds the color components 
      *
      * @member {Uint32Array}
      */

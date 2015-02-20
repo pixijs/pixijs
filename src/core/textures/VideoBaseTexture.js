@@ -97,6 +97,10 @@ VideoBaseTexture.prototype._onCanPlay = function ()
     }
 };
 
+/**
+ * Destroys this texture
+ *
+ */
 VideoBaseTexture.prototype.destroy = function ()
 {
     if (this.source && this.source._pixiId)

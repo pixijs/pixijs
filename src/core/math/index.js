@@ -3,7 +3,7 @@
  */
 module.exports = {
     /**
-     * @property {number} PI_2 - Math.PI x 2
+     * @property {number} PI_2 - Two Pi
      * @constant
      * @static
      */
