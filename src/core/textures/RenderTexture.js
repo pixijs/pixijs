@@ -268,7 +268,7 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, up
         // reset the matrix of the displatyObject..
         displayObject.worldTransform.identity();
 
-        displayObject._currentBounds = null;
+        displayObject.currentBounds = null;
 
         // Time to update all the children of the displayObject with the new matrix..
         var children = displayObject.children;
