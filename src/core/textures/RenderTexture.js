@@ -1,6 +1,7 @@
 var BaseTexture = require('./BaseTexture'),
     Texture = require('./Texture'),
     RenderTarget = require('../renderers/webgl/utils/RenderTarget'),
+    FilterManager = require('../renderers/webgl/managers/FilterManager'),
     CanvasBuffer = require('../renderers/canvas/utils/CanvasBuffer'),
     math = require('../math'),
     CONST = require('../const'),
@@ -146,6 +147,10 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
         this.textureBuffer = new RenderTarget(gl, this.width, this.height, null, this.resolution);//, this.baseTexture.scaleMode);
         this.baseTexture._glTextures[gl.id] =  this.textureBuffer.texture;
 
+        //TODO refactor filter manager.. as really its no longer a manager if we use it here..
+        this.filterManager = new FilterManager(this.renderer);
+        this.filterManager.onContextChange();
+        this.filterManager.resize(width, height);
         this.render = this.renderWebGL;
     }
     else
@@ -205,6 +210,11 @@ RenderTexture.prototype.resize = function (width, height, updateBase)
     }
 
     this.textureBuffer.resize(this.width * this.resolution, this.height * this.resolution);
+
+    if(this.filterManager)
+    {
+        this.filterManager.resize(this.width, this.height);
+    }
 };
 
 /**
@@ -254,8 +264,11 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, up
 
     if (updateTransform)
     {
+
         // reset the matrix of the displatyObject..
         displayObject.worldTransform.identity();
+
+        displayObject._currentBounds = null;
 
         // Time to update all the children of the displayObject with the new matrix..
         var children = displayObject.children;
@@ -274,9 +287,12 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, up
     }
 
     //TODO rename textureBuffer to renderTarget..
+    var temp =  this.renderer.filterManager;
 
+    this.renderer.filterManager = this.filterManager;
     this.renderer.renderDisplayObject(displayObject, this.textureBuffer);
 
+    this.renderer.filterManager = temp;
 };
 
 
@@ -349,6 +365,12 @@ RenderTexture.prototype.destroy = function ()
     Texture.prototype.destroy.call(this, true);
 
     this.textureBuffer.destroy();
+
+    // destroy the filtermanager..
+    if(this.filterManager)
+    {
+        this.filterManager.destroy();
+    }
 
     this.renderer = null;
 };
