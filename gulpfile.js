@@ -30,3 +30,5 @@ requireDir('./gulp/tasks', { recurse: true });
 
 // default task
 gulp.task('default', ['jshint', 'build']);
+
+gulp.task('docs',['jsdocs']);
