@@ -31,4 +31,5 @@ requireDir('./gulp/tasks', { recurse: true });
 // default task
 gulp.task('default', ['jshint', 'build']);
 
-gulp.task('docs',['jsdocs']);
+// you can directly use 'gulp jsdocs' to generate the docs
+gulp.task('docs','jsdocs');
