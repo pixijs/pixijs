@@ -13,11 +13,21 @@ function pluginTarget(obj)
 {
     obj.__plugins = {};
 
+    /**
+     * Adds a plugin to an object
+     *
+     * @param pluginName {string} The events that should be listed.
+     * @param ctor {Object} ?? @alvin
+     */
     obj.registerPlugin = function (pluginName, ctor)
     {
         obj.__plugins[pluginName] = ctor;
     };
 
+    /**
+     * Instantiates all the plugins of this object
+     *
+     */
     obj.prototype.initPlugins = function ()
     {
         this.plugins = this.plugins || {};
@@ -28,6 +38,10 @@ function pluginTarget(obj)
         }
     };
 
+    /**
+     * Removes all the plugins of this object
+     *
+     */
     obj.prototype.destroyPlugins = function ()
     {
         for (var o in this.plugins)

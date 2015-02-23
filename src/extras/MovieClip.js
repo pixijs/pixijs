@@ -148,7 +148,7 @@ MovieClip.prototype.gotoAndStop = function (frameNumber)
 
     this.currentFrame = frameNumber;
 
-    var round = Math.round(this.currentFrame);
+    var round = Math.floor(this.currentFrame);
     this.texture = this._textures[round % this._textures.length];
 };
 
@@ -165,7 +165,6 @@ MovieClip.prototype.gotoAndPlay = function (frameNumber)
 
 /*
  * Updates the object transform for rendering
- *
  * @private
  */
 MovieClip.prototype.update = function ( event )
