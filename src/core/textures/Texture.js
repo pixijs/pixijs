@@ -87,7 +87,7 @@ function Texture(baseTexture, frame, crop, trim, rotate)
     /**
      * The WebGL UV data cache.
      *
-     * @member {object}
+     * @member {TextureUvs}
      * @private
      */
     this._uvs = null;

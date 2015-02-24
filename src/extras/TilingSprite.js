@@ -19,8 +19,6 @@ function TilingSprite(texture, width, height)
 {
     core.Sprite.call(this, texture);
 
-
-
     /**
      * The scaling of the image that is being tiled
      *
@@ -36,14 +34,13 @@ function TilingSprite(texture, width, height)
      */
     this.tilePosition = new core.math.Point(0,0);
 
-
-
     ///// private
 
     /**
      * The with of the tiling sprite
      *
      * @member {number}
+     * @private
      */
     this._width = width || 100;
 
@@ -51,6 +48,7 @@ function TilingSprite(texture, width, height)
      * The height of the tiling sprite
      *
      * @member {number}
+     * @private
      */
     this._height = height || 100;
 
@@ -58,13 +56,33 @@ function TilingSprite(texture, width, height)
      * A point that represents the scale of the texture object
      *
      * @member {Point}
+     * @private
      */
     this._tileScaleOffset = new core.math.Point(1,1);
 
 
+    /**
+     * 
+     *
+     * @member {boolean}
+     * @private
+     */
     this._tilingTexture = null;
+
+    /**
+     * 
+     *
+     * @member {boolean}
+     * @private
+     */
     this._refreshTexture = false;
 
+    /**
+     * An internal WebGL UV cache.
+     *
+     * @member {TextureUvs}
+     * @private
+     */
     this._uvs = new TextureUvs();
 }
 
@@ -187,7 +205,7 @@ TilingSprite.prototype._renderWebGL = function (renderer)
 /**
  * Renders the object using the Canvas renderer
  *
- * @param renderer {CanvasRenderer}
+ * @param renderer {CanvasRenderer} a reference to the canvas renderer
  */
 TilingSprite.prototype.renderCanvas = function (renderer)
 {
@@ -359,7 +377,9 @@ TilingSprite.prototype.onTextureUpdate = function ()
 };
 
 /**
- *
+ * Creates the tiling texture
+ * @param renderer {CanvasRenderer|WebGLRenderer} a reference to the current renderer
+ * @param texture {Texture} The texture to use to generate the tiling texture
  * @param forcePowerOfTwo {boolean} Whether we want to force the texture to be a power of two
  */
 TilingSprite.prototype.generateTilingTexture = function (renderer, texture, forcePowerOfTwo)
@@ -421,6 +441,10 @@ TilingSprite.prototype.generateTilingTexture = function (renderer, texture, forc
 
 };
 
+/**
+ * Checks if a point is inside this tiling sprite
+ * @param point {Point} the point to check
+ */
 TilingSprite.prototype.hitTest = function( point )
 {
     this.worldTransform.applyInverse(point,  tempPoint);
@@ -443,7 +467,10 @@ TilingSprite.prototype.hitTest = function( point )
     return false;
 };
 
-
+/**
+ * Destroys this tiling sprite
+ * 
+ */
 TilingSprite.prototype.destroy = function () {
     core.Sprite.prototype.destroy.call(this);
 

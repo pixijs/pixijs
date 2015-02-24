@@ -3,7 +3,8 @@ var core = require('../core');
 /**
  * @class
  * @namespace PIXI
- * @param shaderManager {ShaderManager} The webgl shader manager this shader works for.
+ * @param shaderManager {ShaderManager} The WebGL shader manager this shader works for.
+ * @extends Shader
  */
 function StripShader(shaderManager)
 {

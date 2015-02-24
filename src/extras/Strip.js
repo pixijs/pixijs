@@ -48,6 +48,9 @@ function Strip(texture)
      */
     this.colors = new Float32Array([1, 1, 1, 1]);
 
+    /* 
+     * @member {Uint16Array} An array containing the indices of the vertices
+     */
     this.indices = new Uint16Array([0, 1, 2, 3]);
 
     /**
@@ -72,6 +75,11 @@ function Strip(texture)
      */
     this.canvasPadding = 0;
 
+    /**
+     * The way the strip should be drawn, can be any of the Strip.DrawModes consts
+     *
+     * @member {number}
+     */
     this.drawMode = Strip.DrawModes.TRIANGLE_STRIP;
 }
 
@@ -83,7 +91,7 @@ module.exports = Strip;
 /**
  * Renders the object using the WebGL renderer
  *
- * @param renderer {WebGLRenderer}
+ * @param renderer {WebGLRenderer} a reference to the WebGL renderer
  */
 Strip.prototype.renderWebGL = function (renderer)
 {
@@ -114,6 +122,12 @@ Strip.prototype.renderWebGL = function (renderer)
     //TODO check culling
 };
 
+/**
+ * Creates the buffers and (in the darkness) binds them
+ *
+ * @param renderer {WebGLRenderer} a reference to the WebGL renderer
+ * @private
+ */
 Strip.prototype._initWebGL = function (renderer)
 {
     // build the strip!
@@ -137,6 +151,12 @@ Strip.prototype._initWebGL = function (renderer)
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW);
 };
 
+/**
+ * Renders the strip !
+ *
+ * @param renderer {WebGLRenderer} a reference to the WebGL renderer
+ * @private
+ */
 Strip.prototype._renderStrip = function (renderer)
 {
     var gl = renderer.gl;
@@ -260,6 +280,12 @@ Strip.prototype.renderCanvas = function (renderer)
     }
 };
 
+/**
+ * Draws the object in TRIANGLE_STRIP mode using canvas
+ *
+ * @param context {CanvasRenderingContext2D} the current drawing context 
+ * @private
+ */
 Strip.prototype._renderCanvasTriangleStrip = function (context)
 {
     // draw triangles!!
@@ -277,6 +303,12 @@ Strip.prototype._renderCanvasTriangleStrip = function (context)
     }
 };
 
+/**
+ * Draws the object in triangle mode using canvas
+ *
+ * @param context {CanvasRenderingContext2D} the current drawing context
+ * @private
+ */
 Strip.prototype._renderCanvasTriangles = function (context)
 {
     // draw triangles!!
@@ -295,6 +327,17 @@ Strip.prototype._renderCanvasTriangles = function (context)
     }
 };
 
+/**
+ * Draws one of the triangles that form this strip
+ *
+ * @param context {CanvasRenderingContext2D} the current drawing context
+ * @param vertices {Float32Array} a reference to the the vertices of the strip
+ * @param uvs {Float32Array} a reference to the the vertices of the strip
+ * @param index0 {number} the index of the first vertex 
+ * @param index1 {number} the index of the second vertex 
+ * @param index2 {number} the index of the third vertex 
+ * @private
+ */
 Strip.prototype._renderCanvasDrawTriangle = function (context, vertices, uvs, index0, index1, index2)
 {
     var textureSource = this.texture.baseTexture.source;

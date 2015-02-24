@@ -92,6 +92,13 @@ Object.defineProperties(MovieClip.prototype, {
         }
     },
 
+    /**
+     * The array of textures used for this MovieClip
+     *
+     * @member
+     * @memberof MovieClip#
+     * 
+     */
     textures: {
         get: function ()
         {

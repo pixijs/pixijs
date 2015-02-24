@@ -14,26 +14,26 @@ function WebGLGraphicsData(gl) {
 
     //TODO does this need to be split before uploding??
     /* 
-     * @member {Array} an array of color components (r,g,b)
+     * @member {Array} An array of color components (r,g,b)
      */
     this.color = [0,0,0]; // color split!
 
     /* 
-     * @member {Array} an array of points to draw 
+     * @member {Array} An array of points to draw 
      */
     this.points = [];
 
     /* 
-     * @member {Array} the indices of the vertices
+     * @member {Array} The indices of the vertices
      */
     this.indices = [];
     /* 
-     * @member {WebGLBuffer} the main buffer
+     * @member {WebGLBuffer} The main buffer
      */
     this.buffer = gl.createBuffer();
 
     /* 
-     * @member {WebGLBuffer} the index buffer
+     * @member {WebGLBuffer} The index buffer
      */
     this.indexBuffer = gl.createBuffer();
 
