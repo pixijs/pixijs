@@ -4,8 +4,7 @@
     },
     "source": {
         "include": [
-            "./src/index.js",
-            "./src/display/DisplayObject.js"
+            "./src/"
         ],
         "exclude": [
         ],
