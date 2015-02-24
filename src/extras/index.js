@@ -6,7 +6,7 @@
  */
 
 /**
- * @namespace PIXI
+ * @namespace PIXI.extras
  */
 module.exports = {
     MovieClip:      require('./MovieClip'),

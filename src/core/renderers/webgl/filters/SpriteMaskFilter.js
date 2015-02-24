@@ -8,7 +8,7 @@ var AbstractFilter = require('./AbstractFilter'),
  *
  * @class
  * @extends AbstractFilter
- * @namespace PIXI
+ * @memberof PIXI
  * @param texture {Texture} The texture used for the displacement map * must be power of 2 texture at the moment
  */
 function SpriteMaskFilter(sprite)

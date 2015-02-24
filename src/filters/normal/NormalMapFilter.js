@@ -6,7 +6,7 @@ var core = require('../../core');
  *
  * @class
  * @extends AbstractFilter
- * @namespace PIXI.filters
+ * @memberof PIXI.filters
  * @param texture {Texture} The texture used for the normal map, must be power of 2 texture at the moment
  */
 function NormalMapFilter(texture)

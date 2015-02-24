@@ -1,11 +1,10 @@
-
 var WebGLManager = require('../managers/WebGLManager');
 
 /**
+ * Base for a common object renderer that can be used as a system renderer plugin.
  *
  * @class
- * @private
- * @namespace PIXI
+ * @memberof PIXI
  * @param renderer {WebGLRenderer} The renderer this object renderer works for.
  */
 function ObjectRenderer(renderer)

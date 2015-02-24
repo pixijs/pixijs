@@ -18,7 +18,7 @@ var SystemRenderer = require('../SystemRenderer'),
  * Don't forget to add the view to your DOM or you will not see anything :)
  *
  * @class
- * @namespace PIXI
+ * @memberof PIXI
  * @param [width=0] {number} the width of the canvas view
  * @param [height=0] {number} the height of the canvas view
  * @param [options] {object} The optional renderer parameters

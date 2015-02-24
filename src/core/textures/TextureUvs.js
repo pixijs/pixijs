@@ -3,6 +3,7 @@
  * A standard object to store the Uvs of a texture
  *
  * @class
+ * @private
  */
 function TextureUvs()
 {
@@ -23,8 +24,8 @@ module.exports = TextureUvs;
 
 /**
  * Sets the texture Uvs based on the given frame information
- * @param frame {Rectangle} 
- * @param baseFrame {Rectangle} 
+ * @param frame {Rectangle}
+ * @param baseFrame {Rectangle}
  * @param rotate {boolean} Whether or not the frame is rotated
  * @private
  */

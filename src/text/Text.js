@@ -6,7 +6,7 @@ var core = require('../core');
  *
  * @class
  * @extends Sprite
- * @namespace PIXI
+ * @memberof PIXI.text
  * @param text {string} The copy that you would like the text to display
  * @param [style] {object} The style parameters
  * @param [style.font] {string} default 'bold 20px Arial' The style and size of the font

@@ -1,7 +1,7 @@
 /**
  * Constant values used in pixi
  *
- * @namespace PIXI
+ * @memberof PIXI
  */
 module.exports = {
     /**

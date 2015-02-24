@@ -8,7 +8,7 @@ var math = require('../math'),
  * This is an abstract class and should not be used on its own rather it should be extended.
  *
  * @class
- * @namespace PIXI
+ * @memberof PIXI
  */
 function DisplayObject()
 {

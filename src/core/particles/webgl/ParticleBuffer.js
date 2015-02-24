@@ -14,7 +14,7 @@
  *
  * @class
  * @private
- * @namespace PIXI
+ * @memberof PIXI
  * @param renderer {WebGLRenderer} The renderer this sprite batch works for.
  */
 function ParticleBuffer(gl, properties, size)

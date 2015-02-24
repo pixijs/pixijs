@@ -19,7 +19,7 @@ var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
  *
  * @class
  * @private
- * @namespace PIXI
+ * @memberof PIXI
  * @param renderer {WebGLRenderer} The renderer this sprite batch works for.
  */
 function ParticleRenderer(renderer)

@@ -1,4 +1,3 @@
-
 var eventTarget = require('./eventTarget'),
     EventData   = require('./EventData');
 
@@ -6,7 +5,7 @@ var eventTarget = require('./eventTarget'),
  * A Ticker class that runs the main update loop that other objects listen to
  *
  * @class
- * 
+ * @memberof PIXI.utils
  */
 var Ticker = function()
 {

@@ -16,7 +16,7 @@ var math = require('../math'),
  *
  * @class Sprite
  * @extends Container
- * @namespace PIXI
+ * @memberof PIXI
  * @param texture {Texture} The texture for this sprite
  */
 function Sprite(texture)

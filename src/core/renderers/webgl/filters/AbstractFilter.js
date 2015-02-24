@@ -5,7 +5,7 @@ var DefaultShader = require('../shaders/TextureShader');
  * If you want to make a custom filter this should be your base class.
  *
  * @class
- * @namespace PIXI
+ * @memberof PIXI
  * @param fragmentSrc {string|string[]} The fragment source in an array of strings.
  * @param uniforms {object} An object containing the uniforms for this filter.
  */

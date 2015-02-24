@@ -6,7 +6,7 @@
  */
 
 /**
- * @namespace PIXI
+ * @namespace PIXI.filters
  */
 module.exports = {
     AsciiFilter:        require('./ascii/AsciiFilter'),

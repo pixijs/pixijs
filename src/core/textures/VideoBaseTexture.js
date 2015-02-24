@@ -25,7 +25,7 @@ var BaseTexture = require('./BaseTexture'),
  *
  * @class
  * @extends BaseTexture
- * @namespace PIXI
+ * @memberof PIXI
  * @param source {HTMLVideoElement}
  * @param [scaleMode] {number} See {@link SCALE_MODES} for possible values
  */

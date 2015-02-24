@@ -5,7 +5,7 @@ var Rectangle = require('./Rectangle'),
  * The Ellipse object can be used to specify a hit area for displayObjects
  *
  * @class
- * @namespace PIXI
+ * @memberof PIXI
  * @param x {number} The X coordinate of the center of the ellipse
  * @param y {number} The Y coordinate of the center of the ellipse
  * @param width {number} The half width of this ellipse

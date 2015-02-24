@@ -6,7 +6,7 @@ var utils = require('../utils'),
  *
  * @class
  * @mixes eventTarget
- * @namespace PIXI
+ * @memberof PIXI
  * @param source {Image|Canvas} the source object of the texture.
  * @param [scaleMode=scaleModes.DEFAULT] {number} See {@link SCALE_MODES} for possible values
  * @param resolution {number} the resolution of the texture for devices with different pixel ratios

@@ -7,7 +7,7 @@ var utils = require('../utils'),
  * Don't forget to add the CanvasRenderer.view to your DOM or you will not see anything :)
  *
  * @class
- * @namespace PIXI
+ * @memberof PIXI
  * @param system {string} The name of the system this renderer is for.
  * @param [width=800] {number} the width of the canvas view
  * @param [height=600] {number} the height of the canvas view

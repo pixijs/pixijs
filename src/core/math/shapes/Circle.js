@@ -5,7 +5,7 @@ var Rectangle = require('./Rectangle'),
  * The Circle object can be used to specify a hit area for displayObjects
  *
  * @class
- * @namespace PIXI
+ * @memberof PIXI
  * @param x {number} The X coordinate of the center of this circle
  * @param y {number} The Y coordinate of the center of this circle
  * @param radius {number} The radius of the circle

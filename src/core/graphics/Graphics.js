@@ -13,7 +13,7 @@ var Container = require('../display/Container'),
  *
  * @class
  * @extends Container
- * @namespace PIXI
+ * @memberof PIXI
  */
 function Graphics()
 {

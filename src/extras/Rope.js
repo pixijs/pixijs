@@ -3,8 +3,8 @@ var Strip = require('./Strip');
 /**
  *
  * @class
- * @namespace PIXI
  * @extends Strip
+ * @memberof PIXI.extras
  * @param {Texture} texture - The texture to use on the rope.
  * @param {Array} points - An array of {Point} objects.
  *
@@ -13,27 +13,27 @@ function Rope(texture, points)
 {
     Strip.call(this, texture);
 
-    /* 
+    /*
      * @member {Array} An array of points that determine the rope
      */
     this.points = points;
 
-    /* 
+    /*
      * @member {Float32Array} An array of vertices used to construct this rope.
      */
     this.vertices = new Float32Array(points.length * 4);
 
-    /* 
+    /*
      * @member {Float32Array} The WebGL Uvs of the rope.
      */
     this.uvs = new Float32Array(points.length * 4);
 
-    /* 
+    /*
      * @member {Float32Array} An array containing the color components
      */
     this.colors = new Float32Array(points.length * 2);
 
-    /* 
+    /*
      * @member {Uint16Array} An array containing the indices of the vertices
      */
     this.indices = new Uint16Array(points.length * 2);

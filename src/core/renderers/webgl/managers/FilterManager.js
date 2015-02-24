@@ -5,7 +5,7 @@ var WebGLManager = require('./WebGLManager'),
 
 /**
  * @class
- * @namespace PIXI
+ * @memberof PIXI
  * @param renderer {WebGLRenderer} The renderer this manager works for.
  */
 function FilterManager(renderer)

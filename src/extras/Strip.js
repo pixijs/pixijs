@@ -4,7 +4,7 @@ var core = require('../core');
  *
  * @class
  * @extends Container
- * @namespace PIXI
+ * @memberof PIXI.extras
  * @param texture {Texture} The texture to use
  * @param width {number} the width
  * @param height {number} the height
@@ -48,7 +48,7 @@ function Strip(texture)
      */
     this.colors = new Float32Array([1, 1, 1, 1]);
 
-    /* 
+    /*
      * @member {Uint16Array} An array containing the indices of the vertices
      */
     this.indices = new Uint16Array([0, 1, 2, 3]);
@@ -283,7 +283,7 @@ Strip.prototype.renderCanvas = function (renderer)
 /**
  * Draws the object in TRIANGLE_STRIP mode using canvas
  *
- * @param context {CanvasRenderingContext2D} the current drawing context 
+ * @param context {CanvasRenderingContext2D} the current drawing context
  * @private
  */
 Strip.prototype._renderCanvasTriangleStrip = function (context)
@@ -333,9 +333,9 @@ Strip.prototype._renderCanvasTriangles = function (context)
  * @param context {CanvasRenderingContext2D} the current drawing context
  * @param vertices {Float32Array} a reference to the the vertices of the strip
  * @param uvs {Float32Array} a reference to the the vertices of the strip
- * @param index0 {number} the index of the first vertex 
- * @param index1 {number} the index of the second vertex 
- * @param index2 {number} the index of the third vertex 
+ * @param index0 {number} the index of the first vertex
+ * @param index1 {number} the index of the second vertex
+ * @param index2 {number} the index of the third vertex
  * @private
  */
 Strip.prototype._renderCanvasDrawTriangle = function (context, vertices, uvs, index0, index1, index2)

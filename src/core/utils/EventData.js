@@ -2,7 +2,7 @@
  * Creates an homogenous object for tracking events so users can know what to expect.
  *
  * @class
- * @namespace PIXI
+ * @memberof PIXI.utils
  * @param target {object} The target object that the event is called on
  * @param name {string} The string name of the event that was triggered
  * @param data {object} Arbitrary event data to pass along

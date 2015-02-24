@@ -10,7 +10,7 @@ var core = require('../core'),
  *
  * @class
  * @extends Sprite
- * @namespace PIXI
+ * @memberof PIXI.extras
  * @param texture {Texture} the texture of the tiling sprite
  * @param width {number}  the width of the tiling sprite
  * @param height {number} the height of the tiling sprite
@@ -62,7 +62,7 @@ function TilingSprite(texture, width, height)
 
 
     /**
-     * 
+     *
      *
      * @member {boolean}
      * @private
@@ -70,7 +70,7 @@ function TilingSprite(texture, width, height)
     this._tilingTexture = null;
 
     /**
-     * 
+     *
      *
      * @member {boolean}
      * @private
@@ -469,7 +469,7 @@ TilingSprite.prototype.hitTest = function( point )
 
 /**
  * Destroys this tiling sprite
- * 
+ *
  */
 TilingSprite.prototype.destroy = function () {
     core.Sprite.prototype.destroy.call(this);

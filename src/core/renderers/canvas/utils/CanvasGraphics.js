@@ -3,7 +3,7 @@ var CONST = require('../../../const');
 /**
  * A set of functions used by the canvas renderer to draw the primitive graphics data.
  * @static
- * @namespace PIXI
+ * @memberof PIXI
  */
 var CanvasGraphics = module.exports = {};
 

@@ -1,7 +1,7 @@
 var CONST = require('../const');
 
 /**
- * @namespace PIXI
+ * @namespace PIXI.utils
  */
 var utils = module.exports = {
     _uid: 0,

@@ -4,7 +4,7 @@ var CanvasGraphics = require('./CanvasGraphics');
  * A set of functions used to handle masking.
  *
  * @class
- * @namespace PIXI
+ * @memberof PIXI
  */
 function CanvasMaskManager()
 {}

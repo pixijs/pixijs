@@ -1,53 +1,53 @@
 /**
  * An object containing WebGL specific properties to be used by the WebGL renderer
- * 
- * @class 
+ *
+ * @class
  * @param gl {WebGLRenderingContext} the current WebGL drawing context
  * @private
  */
 function WebGLGraphicsData(gl) {
 
-    /* 
+    /*
      * @member {WebGLRenderingContext} the current WebGL drawing context
      */
     this.gl = gl;
 
     //TODO does this need to be split before uploding??
-    /* 
+    /*
      * @member {Array} An array of color components (r,g,b)
      */
     this.color = [0,0,0]; // color split!
 
-    /* 
-     * @member {Array} An array of points to draw 
+    /*
+     * @member {Array} An array of points to draw
      */
     this.points = [];
 
-    /* 
+    /*
      * @member {Array} The indices of the vertices
      */
     this.indices = [];
-    /* 
+    /*
      * @member {WebGLBuffer} The main buffer
      */
     this.buffer = gl.createBuffer();
 
-    /* 
+    /*
      * @member {WebGLBuffer} The index buffer
      */
     this.indexBuffer = gl.createBuffer();
 
-    /* 
+    /*
      * @member {number} todo @alvin
      */
     this.mode = 1;
 
-    /* 
+    /*
      * @member {number} The alpha of the graphics
      */
     this.alpha = 1;
 
-    /* 
+    /*
      * @member {boolean} Whether this graphics is dirty or not
      */
     this.dirty = true;

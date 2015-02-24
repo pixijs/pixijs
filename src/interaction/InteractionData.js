@@ -4,7 +4,7 @@ var core = require('../core');
  * Holds all information related to an Interaction event
  *
  * @class
- * @namespace PIXI
+ * @memberof PIXI.interaction
  */
 function InteractionData()
 {

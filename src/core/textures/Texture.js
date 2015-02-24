@@ -19,7 +19,7 @@ var BaseTexture = require('./BaseTexture'),
  *
  * @class
  * @mixes eventTarget
- * @namespace PIXI
+ * @memberof PIXI
  * @param baseTexture {BaseTexture} The base texture source to create the texture from
  * @param [frame] {Rectangle} The rectangle frame of the texture to show
  * @param [crop] {Rectangle} The area of original texture

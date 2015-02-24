@@ -2,7 +2,7 @@
  * Creates a Canvas element of the given size.
  *
  * @class
- * @namespace PIXI
+ * @memberof PIXI
  * @param width {number} the width for the newly created canvas
  * @param height {number} the height for the newly created canvas
  */

@@ -6,7 +6,7 @@
  */
 
 /**
- * @namespace PIXI
+ * @namespace PIXI.spine
  */
 module.exports = {
     Spine:      require('./Spine'),

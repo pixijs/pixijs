@@ -6,7 +6,7 @@
  */
 
 /**
- * @namespace PIXI
+ * @namespace PIXI.text
  */
 module.exports = {
     Text:       require('./Text'),

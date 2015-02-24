@@ -2,7 +2,7 @@
  * Mixins functionality to make an object have "plugins".
  *
  * @mixin
- * @namespace PIXI
+ * @memberof PIXI.utils
  * @param obj {object} The object to mix into.
  * @example
  *      function MyObject() {}

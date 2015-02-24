@@ -12,7 +12,7 @@ var AUTO_PREVENT_DEFAULT = true;
  * This manager also supports multitouch.
  *
  * @class
- * @namespace PIXI
+ * @memberof PIXI.interaction
  * @param renderer {CanvasRenderer|WebGLRenderer} A reference to the current renderer
  */
 function InteractionManager( renderer )

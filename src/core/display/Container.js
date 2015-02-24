@@ -9,7 +9,7 @@ var math = require('../math'),
  *
  * @class
  * @extends DisplayObject
- * @namespace PIXI
+ * @memberof PIXI
  */
 function Container()
 {

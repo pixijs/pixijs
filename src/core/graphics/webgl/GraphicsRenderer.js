@@ -10,7 +10,7 @@ var utils = require('../../utils'),
  *
  * @class
  * @private
- * @namespace PIXI
+ * @memberof PIXI
  * @extends ObjectRenderer
  * @param renderer {WebGLRenderer} The renderer this object renderer works for.
  */

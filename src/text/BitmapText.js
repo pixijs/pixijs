@@ -9,7 +9,7 @@ var core = require('../core');
  *
  * @class
  * @extends Container
- * @namespace PIXI
+ * @memberof PIXI.text
  * @param text {string} The copy that you would like the text to display
  * @param style {object} The style parameters
  * @param style.font {string|object} The font descriptor for the object, can be passed as a string of form

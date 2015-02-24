@@ -1,10 +1,12 @@
 var EventData = require('./EventData');
 
+var tempEventObject = new EventData(null, null, {});
+
 /**
  * Mixins event emitter functionality to an object.
  *
  * @mixin
- * @namespace PIXI
+ * @memberof PIXI.utils
  * @example
  *      function MyEmitter() {}
  *
@@ -13,14 +15,12 @@ var EventData = require('./EventData');
  *      var em = new MyEmitter();
  *      em.emit('eventName', 'some data', 'some more data', {}, null, ...);
  */
-
-var tempEventObject = new EventData(null, null, {});
-
 function eventTarget(obj)
 {
     /**
      * Return a list of assigned event listeners.
      *
+     * @memberof eventTarget
      * @param eventName {string} The events that should be listed.
      * @return {Array} An array of listener functions
      */
@@ -34,6 +34,7 @@ function eventTarget(obj)
     /**
      * Emit an event to all registered event listeners.
      *
+     * @memberof eventTarget
      * @alias dispatchEvent
      * @param eventName {string} The name of the event.
      * @return {boolean} Indication if we've emitted an event.
@@ -100,6 +101,7 @@ function eventTarget(obj)
     /**
      * Register a new EventListener for the given event.
      *
+     * @memberof eventTarget
      * @alias addEventListener
      * @param eventName {string} Name of the event.
      * @param callback {Functon} fn Callback function.
@@ -117,6 +119,7 @@ function eventTarget(obj)
     /**
      * Add an EventListener that's only called once.
      *
+     * @memberof eventTarget
      * @param eventName {string} Name of the event.
      * @param callback {Function} Callback function.
      */
@@ -137,6 +140,7 @@ function eventTarget(obj)
     /**
      * Remove event listeners.
      *
+     * @memberof eventTarget
      * @alias removeEventListener
      * @param eventName {string} The event we want to remove.
      * @param callback {Function} The listener that we need to find.
@@ -174,6 +178,7 @@ function eventTarget(obj)
     /**
      * Remove all listeners or only the listeners for the specified event.
      *
+     * @memberof eventTarget
      * @param eventName {string} The event you want to remove all listeners for.
      */
     obj.removeAllListeners = function removeAllListeners(eventName)

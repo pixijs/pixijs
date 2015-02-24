@@ -8,7 +8,7 @@ var Point = require('./Point');
  * | 0 | 0 | 1 |
  *
  * @class
- * @namespace PIXI
+ * @memberof PIXI.math
  */
 function Matrix()
 {

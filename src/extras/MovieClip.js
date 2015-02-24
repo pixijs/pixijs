@@ -8,7 +8,7 @@ var core = require('../core'),
  *
  * @class
  * @extends Sprite
- * @namespace PIXI
+ * @memberof PIXI.extras
  * @param textures {Texture[]} an array of {Texture} objects that make up the animation
  */
 function MovieClip(textures)

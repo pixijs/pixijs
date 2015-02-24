@@ -12,7 +12,7 @@ spine.Bone.yDown = true;
  *
  * @class
  * @extends Container
- * @namespace PIXI
+ * @memberof PIXI.spine
  * @param spineData {object} The spine data loaded from a spine atlas.
  */
 function Spine(spineData)

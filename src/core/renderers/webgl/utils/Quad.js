@@ -1,6 +1,6 @@
 /**
  * @class
- * @namespace PIXI
+ * @memberof PIXI
  * @param gl {WebGLRenderingContext} The gl context for this quad to use.
  */
 function Quad(gl)

@@ -22,9 +22,9 @@ var Container = require('../display/Container');
  *
  * @class
  * @extends Container
- * @namespace PIXI
- * 
- * @param size {number} The number of images in the SpriteBatch before it flushes. 
+ * @memberof PIXI
+ *
+ * @param size {number} The number of images in the SpriteBatch before it flushes.
  */
 function ParticleContainer(size, properties)
 {
