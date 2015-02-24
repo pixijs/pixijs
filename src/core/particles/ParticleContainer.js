@@ -21,7 +21,10 @@ var Container = require('../display/Container');
  * And here you have a hundred sprites that will be renderer at the speed of light.
  *
  * @class
+ * @extends Container
  * @namespace PIXI
+ * 
+ * @param size {number} The number of images in the SpriteBatch before it flushes. 
  */
 function ParticleContainer(size, properties)
 {
@@ -55,7 +58,7 @@ ParticleContainer.prototype.updateTransform = function ()
 };
 
 /**
- * Renders the object using the WebGL renderer
+ * Renders the container using the WebGL renderer
  *
  * @param renderer {WebGLRenderer} The webgl renderer
  * @private
@@ -71,6 +74,13 @@ ParticleContainer.prototype.renderWebGL = function (renderer)
     renderer.plugins.particle.render( this );
 };
 
+/**
+ * Adds a child to this particle container at a specified index. If the index is out of bounds an error will be thrown
+ *
+ * @param child {DisplayObject} The child to add
+ * @param index {Number} The index to place the child in
+ * @return {DisplayObject} The child that was added.
+ */
 ParticleContainer.prototype.addChildAt = function (child, index)
 {
     // prevent adding self as child

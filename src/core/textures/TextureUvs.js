@@ -1,4 +1,9 @@
 
+/**
+ * A standard object to store the Uvs of a texture
+ *
+ * @class
+ */
 function TextureUvs()
 {
     this.x0 = 0;
@@ -16,6 +21,13 @@ function TextureUvs()
 
 module.exports = TextureUvs;
 
+/**
+ * Sets the texture Uvs based on the given frame information
+ * @param frame {Rectangle} 
+ * @param baseFrame {Rectangle} 
+ * @param rotate {boolean} Whether or not the frame is rotated
+ * @private
+ */
 TextureUvs.prototype.set = function (frame, baseFrame, rotate)
 {
     var tw = baseFrame.width;

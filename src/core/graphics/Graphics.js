@@ -3,14 +3,13 @@ var Container = require('../display/Container'),
     Texture = require('../textures/Texture'),
     CanvasBuffer = require('../renderers/canvas/utils/CanvasBuffer'),
     CanvasGraphics = require('../renderers/canvas/utils/CanvasGraphics'),
-   // WebGLGraphics = require('../renderers/webgl/utils/WebGLGraphics'),
     GraphicsData = require('./GraphicsData'),
     math = require('../math'),
     CONST = require('../const');
 
 /**
  * The Graphics class contains methods used to draw primitive shapes such as lines, circles and
- * rectangles to the display, and color and fill them.
+ * rectangles to the display, and to color and fill them.
  *
  * @class
  * @extends Container
@@ -160,7 +159,7 @@ Object.defineProperties(Graphics.prototype, {
  *
  * @return {Graphics}
  */
-GraphicsData.prototype.clone = function ()
+Graphics.prototype.clone = function ()
 {
     var clone = new Graphics();
 
@@ -1069,7 +1068,7 @@ Graphics.prototype.destroyCachedSprite = function ()
 /**
  * Draws the given shape to this Graphics object. Can be any of Circle, Rectangle, Ellipse, Line or Polygon.
  *
- * @param {Circle|Rectangle|Ellipse|Line|Polygon} shape The Shape object to draw.
+ * @param shape {Circle|Rectangle|Ellipse|Line|Polygon} The shape object to draw.
  * @return {GraphicsData} The generated GraphicsData object.
  */
 Graphics.prototype.drawShape = function (shape)

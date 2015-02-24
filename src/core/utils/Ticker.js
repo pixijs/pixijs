@@ -2,14 +2,36 @@
 var eventTarget = require('./eventTarget'),
     EventData   = require('./EventData');
 
+/**
+ * A Ticker class that runs the main update loop that other objects listen to
+ *
+ * @class
+ * 
+ */
 var Ticker = function()
 {
     this.updateBind = this.update.bind(this);
 
+    /**
+     * Whether or not this ticker runs
+     *
+     * @member {boolean}
+     */
     this.active = false;
     this.eventData = new EventData( this, 'tick', { deltaTime:1 } );
 
+    /**
+     * The deltaTime
+     *
+     * @member {number}
+     */
     this.deltaTime = 1;
+
+    /**
+     * The time between two frames
+     *
+     * @member {number}
+     */
     this.timeElapsed = 0;
     this.lastTime = 0;
 
@@ -19,9 +41,8 @@ var Ticker = function()
     this.start();
 };
 
-
-
 eventTarget.mixin(Ticker.prototype);
+
 
 Ticker.prototype.start = function()
 {

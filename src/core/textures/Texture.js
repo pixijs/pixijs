@@ -9,6 +9,14 @@ var BaseTexture = require('./BaseTexture'),
  * A texture stores the information that represents an image or part of an image. It cannot be added
  * to the display list directly. Instead use it as the texture for a Sprite. If no frame is provided then the whole image is used.
  *
+ * You can directly create a texture from an image and then reuse it multiple times like this :
+ *
+ * ```js
+ * var texture = PIXI.Texture.fromImage('assets/image.png');
+ * var sprite1 = new PIXI.Sprite(texture);
+ * var sprite2 = new PIXI.Sprite(texture);
+ * ```
+ *
  * @class
  * @mixes eventTarget
  * @namespace PIXI
@@ -16,7 +24,7 @@ var BaseTexture = require('./BaseTexture'),
  * @param [frame] {Rectangle} The rectangle frame of the texture to show
  * @param [crop] {Rectangle} The area of original texture
  * @param [trim] {Rectangle} Trimmed texture rectangle
- * @param [rotate] {Rectangle} indicates if the texture should be rotated 90 degrees ( used by texture packer )
+ * @param [rotate] {boolean} indicates whether the texture should be rotated by 90 degrees ( used by texture packer )
  */
 function Texture(baseTexture, frame, crop, trim, rotate)
 {
@@ -79,7 +87,7 @@ function Texture(baseTexture, frame, crop, trim, rotate)
     /**
      * The WebGL UV data cache.
      *
-     * @member {object}
+     * @member {TextureUvs}
      * @private
      */
     this._uvs = null;
@@ -107,10 +115,10 @@ function Texture(baseTexture, frame, crop, trim, rotate)
     this.crop = crop || frame;//new math.Rectangle(0, 0, 1, 1);
 
     /**
-     * The rotation value of the texture.
+     * Indicates whether the texture should be rotated by 90 degrees
      *
      * @private
-     * @member {number}
+     * @member {boolean}
      */
     this.rotate = !!rotate;
 
@@ -248,7 +256,7 @@ Texture.prototype._updateUvs = function ()
  * @param imageUrl {string} The image url of the texture
  * @param crossorigin {boolean} Whether requests should be treated as crossorigin
  * @param scaleMode {number} See {{#crossLink "PIXI/scaleModes:property"}}scaleModes{{/crossLink}} for possible values
- * @return Texture
+ * @return {Texture} The newly created texture
  */
 Texture.fromImage = function (imageUrl, crossorigin, scaleMode)
 {
@@ -263,7 +271,14 @@ Texture.fromImage = function (imageUrl, crossorigin, scaleMode)
     return texture;
 };
 
-
+/**
+ * Helper function that creates a sprite that will contain a texture from the TextureCache based on the frameId
+ * The frame ids are created when a Texture packer file has been loaded
+ *
+ * @static
+ * @param frameId {String} The frame Id of the texture in the cache
+ * @return {Texture} The newly created texture
+ */
 Texture.fromFrame = function (frameId)
 {
     var texture = utils.TextureCache[frameId];

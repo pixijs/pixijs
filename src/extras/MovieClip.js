@@ -92,6 +92,13 @@ Object.defineProperties(MovieClip.prototype, {
         }
     },
 
+    /**
+     * The array of textures used for this MovieClip
+     *
+     * @member
+     * @memberof MovieClip#
+     * 
+     */
     textures: {
         get: function ()
         {
@@ -148,7 +155,7 @@ MovieClip.prototype.gotoAndStop = function (frameNumber)
 
     this.currentFrame = frameNumber;
 
-    var round = Math.round(this.currentFrame);
+    var round = Math.floor(this.currentFrame);
     this.texture = this._textures[round % this._textures.length];
 };
 
@@ -165,7 +172,6 @@ MovieClip.prototype.gotoAndPlay = function (frameNumber)
 
 /*
  * Updates the object transform for rendering
- *
  * @private
  */
 MovieClip.prototype.update = function ( event )

@@ -65,7 +65,7 @@ var core = module.exports = {
      * @param [options.preserveDrawingBuffer=false] {boolean} enables drawing buffer preservation, enable this if you
      *      need to call toDataUrl on the webgl context
      * @param [options.resolution=1] {number} the resolution of the renderer retina would be 2
-     * @param [noWebGL=false] {Boolean} prevents selection of WebGL renderer, even if such is present
+     * @param [noWebGL=false] {boolean} prevents selection of WebGL renderer, even if such is present
      *
      * @return {WebGLRenderer|CanvasRenderer} Returns WebGL renderer if available, otherwise CanvasRenderer
      */

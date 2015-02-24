@@ -138,8 +138,7 @@ var utils = module.exports = {
      * used by spritesheets and image urls
      * TODO make this smarter!
      *
-     * @param width {number}
-     * @param height {number}
+     * @param url {string} the image path
      * @return {boolean}
      */
     getResolutionOfUrl: function (url)

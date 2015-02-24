@@ -2,7 +2,7 @@ var utils = require('../../../utils');
 
 /**
  * Utility methods for Sprite/Texture tinting.
- *
+ * @static
  * @namespace PIXI
  */
 var CanvasTinter = module.exports = {};

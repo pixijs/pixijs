@@ -114,9 +114,16 @@ function WebGLRenderer(width, height, options)
      */
     this.blendModeManager = new BlendModeManager(this);
 
+    /**
+     * Holds the current render target
+     * @member {Object}
+     */
     this.currentRenderTarget = this.renderTarget;
 
-
+    /**
+     * 
+     * @member {ObjectRenderer} @alvin
+     */
     this.currentRenderer = new ObjectRenderer(this);
 
     this.initPlugins();
@@ -127,6 +134,10 @@ function WebGLRenderer(width, height, options)
     // map some webGL blend modes..
     this._mapBlendModes();
 
+    /**
+     * An array of render targets
+     * @member {Array} TODO @alvin
+     */
     this._renderTargetStack = [];
 }
 
@@ -253,6 +264,12 @@ WebGLRenderer.prototype.renderDisplayObject = function (displayObject, renderTar
     this.currentRenderer.flush();
 };
 
+/**
+ * Changes the current renderer to the one given in parameter
+ *
+ * @param objectRenderer {Object} TODO @alvin
+ * 
+ */
 WebGLRenderer.prototype.setObjectRenderer = function (objectRenderer)
 {
     if (this.currentRenderer === objectRenderer)
@@ -265,6 +282,12 @@ WebGLRenderer.prototype.setObjectRenderer = function (objectRenderer)
     this.currentRenderer.start();
 };
 
+/**
+ * Changes the current render target to the one given in parameter
+ *
+ * @param renderTarget {Object} the new render target
+ * 
+ */
 WebGLRenderer.prototype.setRenderTarget = function (renderTarget)
 {
     // TODO - maybe down the line this should be a push pos thing? Leaving for now though.
@@ -345,6 +368,11 @@ WebGLRenderer.prototype.updateTexture = function (texture)
     return  texture._glTextures[gl.id];
 };
 
+/**
+ * Deletes the texture from WebGL
+ *
+ * @param texture {BaseTexture|Texture} the texture to destroy
+ */
 WebGLRenderer.prototype.destroyTexture = function (texture)
 {
     texture = texture.baseTexture || texture;

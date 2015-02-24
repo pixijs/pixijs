@@ -24,7 +24,7 @@ function Shader(shaderManager, vertexSrc, fragmentSrc, uniforms, attributes)
     this.uuid = utils.uuid();
 
     /**
-     * @member {WebGLContext}
+     * @member {WebGLRenderingContext}
      * @readonly
      */
     this.gl = shaderManager.renderer.gl;
