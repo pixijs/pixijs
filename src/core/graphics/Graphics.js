@@ -5,7 +5,8 @@ var Container = require('../display/Container'),
     CanvasGraphics = require('../renderers/canvas/utils/CanvasGraphics'),
     GraphicsData = require('./GraphicsData'),
     math = require('../math'),
-    CONST = require('../const');
+    CONST = require('../const'),
+    tempPoint = new math.Point();
 
 /**
  * The Graphics class contains methods used to draw primitive shapes such as lines, circles and
@@ -886,6 +887,40 @@ Graphics.prototype.getBounds = function (matrix)
     }
 
     return this._currentBounds;
+};
+
+/**
+* Tests if a point is inside this graphics object
+*
+* @param point {Point} the point to test
+* @return {boolean} the result of the test
+*/
+Graphics.prototype.containsPoint = function( point )
+{
+    this.worldTransform.applyInverse(point,  tempPoint);
+
+    var graphicsData = this.graphicsData;
+
+    for (var i = 0; i < graphicsData.length; i++)
+    {
+        var data = graphicsData[i];
+
+        if (!data.fill)
+        {
+            continue;
+        }
+
+        // only deal with fills..
+        if (data.shape)
+        {
+            if ( data.shape.contains( tempPoint.x, tempPoint.y ) )
+            {
+                return true;
+            }
+        }
+    }
+
+    return false;
 };
 
 /**

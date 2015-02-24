@@ -3,7 +3,8 @@ var math = require('../math'),
     Container = require('../display/Container'),
     CanvasTinter = require('../renderers/canvas/utils/CanvasTinter'),
     utils = require('../utils'),
-    CONST = require('../const');
+    CONST = require('../const'),
+    tempPoint = new math.Point();
 
 /**
  * The Sprite object is the base for all textured objects that are rendered to the screen
@@ -11,7 +12,7 @@ var math = require('../math'),
  * A sprite can be created directly from an image like this:
  *
  * ```js
- * var sprite = new Sprite.fromImage('assets/image.png');
+ * var sprite = new PIXI.Sprite.fromImage('assets/image.png');
  * ```
  *
  * @class Sprite
@@ -80,6 +81,11 @@ function Sprite(texture)
      */
     this.shader = null;
 
+    /**
+     * An internal cached value of the tint.
+     *
+     * @member {number}
+     */
     this.cachedTint = 0xFFFFFF;
 
     // call texture setter
@@ -319,6 +325,34 @@ Sprite.prototype.getBounds = function (matrix)
     }
 
     return this._currentBounds;
+};
+
+/**
+* Tests if a point is inside this sprite
+*
+* @param point {Point} the point to test
+* @return {boolean} the result of the test
+*/
+Sprite.prototype.containsPoint = function( point )
+{
+    this.worldTransform.applyInverse(point,  tempPoint);
+
+    var width = this._texture._frame.width;
+    var height = this._texture._frame.height;
+    var x1 = -width * this.anchor.x;
+    var y1;
+
+    if ( tempPoint.x > x1 && tempPoint.x < x1 + width )
+    {
+        y1 = -height * this.anchor.y;
+
+        if ( tempPoint.y > y1 && tempPoint.y < y1 + height )
+        {
+            return true;
+        }
+    }
+
+    return false;
 };
 
 /**

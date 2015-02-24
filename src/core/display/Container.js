@@ -488,6 +488,12 @@ Container.prototype.renderWebGL = function (renderer)
     }
 };
 
+/**
+ * To be overridden by the subclass
+ * 
+ * @param renderer {WebGLRenderer} The renderer
+ * @private
+ */
 Container.prototype._renderWebGL = function (renderer)
 {
     // this is where content itself gets rendered...

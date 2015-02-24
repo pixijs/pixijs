@@ -8,7 +8,6 @@ var SystemRenderer = require('../SystemRenderer'),
     ObjectRenderer = require('./utils/ObjectRenderer'),
     FXAAFilter = require('./filters/FXAAFilter'),
     utils = require('../../utils'),
-
     CONST = require('../../const');
 
 /**
@@ -19,6 +18,7 @@ var SystemRenderer = require('../SystemRenderer'),
  *
  * @class
  * @memberof PIXI
+ * @extends SystemRenderer
  * @param [width=0] {number} the width of the canvas view
  * @param [height=0] {number} the height of the canvas view
  * @param [options] {object} The optional renderer parameters
@@ -38,6 +38,12 @@ function WebGLRenderer(width, height, options)
 
     SystemRenderer.call(this, 'WebGL', width, height, options);
 
+    /**
+     * The type of this renderer as a standardised const
+     *
+     * @member {number}
+     * 
+     */
     this.type = CONST.RENDERER_TYPE.WEBGL;
 
     this.handleContextLost = this.handleContextLost.bind(this);
@@ -55,7 +61,20 @@ function WebGLRenderer(width, height, options)
     this.view.addEventListener('webglcontextrestored', this.handleContextRestored, false);
 
     //TODO possibility to force FXAA as it may offer better performance?
+    /**
+     * Does it use FXAA ?
+     *
+     * @member {boolean}
+     * @private
+     */
     this._useFXAA = false;
+
+    /**
+     * The fxaa filter
+     *
+     * @member {FXAAFilter}
+     * @private
+     */
     this._FXAAFilter = null;
 
     /**
@@ -137,6 +156,7 @@ function WebGLRenderer(width, height, options)
     /**
      * An array of render targets
      * @member {Array} TODO @alvin
+     * @private
      */
     this._renderTargetStack = [];
 }
@@ -150,7 +170,7 @@ utils.pluginTarget.mixin(WebGLRenderer);
 WebGLRenderer.glContextId = 0;
 
 /**
- *
+ * Creates the WebGL context
  * @private
  */
 WebGLRenderer.prototype._initContext = function ()
@@ -245,8 +265,8 @@ WebGLRenderer.prototype.render = function (object)
  * Renders a Display Object.
  *
  * @param displayObject {DisplayObject} The DisplayObject to render
- * @param projection {Point} The projection
- * @param buffer {Array} a standard WebGL buffer
+ * @param renderTarget {Point} TODO @alvin
+ * 
  */
 WebGLRenderer.prototype.renderDisplayObject = function (displayObject, renderTarget)//projection, buffer)
 {

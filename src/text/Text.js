@@ -4,6 +4,12 @@ var core = require('../core');
  * A Text Object will create a line or multiple lines of text. To split a line you can use '\n' in your text string,
  * or add a wordWrap property set to true and and wordWrapWidth property with a value in the style object.
  *
+ * A Text can be created directly from a string and a style object
+ *
+ * ```js
+ * var text = new PIXI.Text('This is a pixi text',{font : '24px Arial', fill : 0xff1010, align : 'center'});
+ * ```
+ *
  * @class
  * @extends Sprite
  * @memberof PIXI.text
@@ -16,6 +22,7 @@ var core = require('../core');
  * @param [style.strokeThickness=0] {number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
  * @param [style.wordWrap=false] {boolean} Indicates if word wrap should be used
  * @param [style.wordWrapWidth=100] {number} The width at which text will wrap, it needs wordWrap to be set to true
+ * @param [style.lineHeight] {number} The line height, a number that represents the vertical space that a letter uses
  * @param [style.dropShadow=false] {boolean} Set a drop shadow for the text
  * @param [style.dropShadowColor='#000000'] {string} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
  * @param [style.dropShadowAngle=Math.PI/4] {number} Set a angle of the drop shadow
@@ -131,6 +138,7 @@ Object.defineProperties(Text.prototype, {
      * @param [style.strokeThickness=0] {number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
      * @param [style.wordWrap=false] {boolean} Indicates if word wrap should be used
      * @param [style.wordWrapWidth=100] {number} The width at which text will wrap
+     * @param [style.lineHeight] {number} The line height, a number that represents the vertical space that a letter uses
      * @param [style.dropShadow=false] {boolean} Set a drop shadow for the text
      * @param [style.dropShadowColor='#000000'] {string} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
      * @param [style.dropShadowAngle=Math.PI/6] {number} Set a angle of the drop shadow
@@ -199,10 +207,10 @@ Text.prototype.updateText = function ()
     // preserve original text
     var outputText = style.wordWrap ? this.wordWrap(this._text) : this._text;
 
-    //split text into lines
+    // split text into lines
     var lines = outputText.split(/(?:\r\n|\r|\n)/);
 
-    //calculate text width
+    // calculate text width
     var lineWidths = new Array(lines.length);
     var maxLineWidth = 0;
     var fontProperties = this.determineFontProperties(style.font);
@@ -221,8 +229,8 @@ Text.prototype.updateText = function ()
 
     this.canvas.width = ( width + this.context.lineWidth ) * this.resolution;
 
-    //calculate text height
-    var lineHeight = fontProperties.fontSize + style.strokeThickness;
+    // calculate text height
+    var lineHeight = this.style.lineHeight || fontProperties.fontSize* + style.strokeThickness;
 
     var height = lineHeight * lines.length;
     if (style.dropShadow)
@@ -384,7 +392,7 @@ Text.prototype.determineFontProperties = function (fontStyle)
 
         context.font = fontStyle;
 
-        var width = Math.ceil(context.measureText('|MÉq').width);
+        var width = Math.ceil(context.measureText('|MÃ‰q').width);
         var baseline = Math.ceil(context.measureText('M').width);
         var height = 2 * baseline;
 
@@ -400,7 +408,7 @@ Text.prototype.determineFontProperties = function (fontStyle)
 
         context.textBaseline = 'alphabetic';
         context.fillStyle = '#000';
-        context.fillText('|MÉq', 0, baseline);
+        context.fillText('|MÃ‰q', 0, baseline);
 
         var imagedata = context.getImageData(0, 0, width, height).data;
         var pixels = imagedata.length;

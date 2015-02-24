@@ -129,7 +129,7 @@ RenderTarget.prototype.clear = function()
     gl.clear(gl.COLOR_BUFFER_BIT);
 };
 
-RenderTarget.prototype.attachStenilBuffer = function()
+RenderTarget.prototype.attachStencilBuffer = function()
 {
 
     if ( this.stencilBuffer )

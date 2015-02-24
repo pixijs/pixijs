@@ -24,14 +24,40 @@ function Spine(spineData)
         throw new Error('The spineData param is required.');
     }
 
+    /**
+     * The spineData object
+     *
+     * @member {object}
+     */
     this.spineData = spineData;
 
+    /**
+     * A spine Skeleton object
+     *
+     * @member {object}
+     */
     this.skeleton = new spine.Skeleton(spineData);
     this.skeleton.updateWorldTransform();
 
+    /**
+     * A spine AnimationStateData object created from the spine data passed in the constructor
+     *
+     * @member {object}
+     */
     this.stateData = new spine.AnimationStateData(spineData);
+
+    /**
+     * A spine AnimationState object created from the spine AnimationStateData object
+     *
+     * @member {object}
+     */
     this.state = new spine.AnimationState(this.stateData);
 
+    /**
+     * An array of containers
+     *
+     * @member {Container[]}
+     */
     this.slotContainers = [];
 
     for (var i = 0, n = this.skeleton.drawOrder.length; i < n; i++)
@@ -64,6 +90,11 @@ function Spine(spineData)
 
     }
 
+    /**
+     * Should the Spine object update its transforms
+     *
+     * @member {boolean}
+     */
     this.autoUpdate = true;
 }
 
@@ -243,7 +274,7 @@ Spine.prototype.createSprite = function (slot, attachment)
 };
 
 /**
- *
+ * Creates a Strip from the spine data
  * @param slot {spine.Slot} The slot to which the attachment is parented
  * @param attachment {spine.RegionAttachment} The attachment that the sprite will represent
  * @private

@@ -4,6 +4,14 @@ var core = require('../core');
  * A BitmapText object will create a line or multiple lines of text using bitmap font. To
  * split a line you can use '\n', '\r' or '\r\n' in your string. You can generate the fnt files using:
  *
+ * A BitmapText can only be created when the font is loaded
+ *
+ * ```js
+ * // in this case the font is in a file called 'desyrel.fnt'
+ * var bitmapText = new PIXI.BitmapText("text using a fancy font!", {font: "35px Desyrel", align: "right"});
+ * ```
+ * 
+ *
  * http://www.angelcode.com/products/bmfont/ for windows or
  * http://www.bmglyph.com/ for mac.
  *
@@ -60,6 +68,13 @@ function BitmapText(text, style)
         fontName: null,
         fontSize: 0
     };
+
+    /**
+     * Private tracker for the current font.
+     *
+     * @member {object}
+     * @private
+     */
     this.font = style.font; // run font setter
 
     /**
@@ -114,7 +129,7 @@ Object.defineProperties(BitmapText.prototype, {
     },
 
     /**
-     * The tint of the BitmapText object
+     * The alignment of the BitmapText object
      *
      * @member {string}
      * @default 'left'
@@ -134,7 +149,7 @@ Object.defineProperties(BitmapText.prototype, {
     },
 
     /**
-     * The tint of the BitmapText object
+     * The font descriptor of the BitmapText object
      *
      * @member {Font}
      * @memberof BitmapText#
@@ -196,7 +211,7 @@ BitmapText.prototype.updateText = function ()
     var maxLineWidth = 0;
     var lineWidths = [];
     var line = 0;
-    var scale = this.fontSize / data.size;
+    var scale = this._style.fontSize / data.size;
     var lastSpace = -1;
 
     for (var i = 0; i < this.text.length; i++)
