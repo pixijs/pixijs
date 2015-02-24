@@ -120,7 +120,6 @@ module.exports = RenderTarget;
 /**
 * Clears the filter texture.
 *
-* @method clear
 */
 RenderTarget.prototype.clear = function()
 {
@@ -201,7 +200,6 @@ RenderTarget.prototype.calculateProjection = function( projectionFrame )
 /**
  * Resizes the texture to the specified width and height
  *
- * @method resize
  * @param width {Number} the new width of the texture
  * @param height {Number} the new height of the texture
  */
@@ -239,10 +237,9 @@ RenderTarget.prototype.resize = function(width, height)
 };
 
 /**
-* Destroys the filter texture.
-*
-* @method destroy
-*/
+ * Destroys the filter texture.
+ *
+ */
 RenderTarget.prototype.destroy = function()
 {
     var gl = this.gl;

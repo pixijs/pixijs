@@ -44,7 +44,6 @@ module.exports = Circle;
 /**
  * Creates a clone of this Circle instance
  *
- * @method clone
  * @return {Circle} a copy of the Circle
  */
 Circle.prototype.clone = function ()
@@ -55,7 +54,6 @@ Circle.prototype.clone = function ()
 /**
  * Checks whether the x and y coordinates given are contained within this circle
  *
- * @method contains
  * @param x {number} The X coordinate of the point to test
  * @param y {number} The Y coordinate of the point to test
  * @return {boolean} Whether the x/y coordinates are within this Circle
@@ -80,7 +78,6 @@ Circle.prototype.contains = function (x, y)
 /**
 * Returns the framing rectangle of the circle as a Rectangle object
 *
-* @method getBounds
 * @return {Rectangle} the framing rectangle
 */
 Circle.prototype.getBounds = function ()
