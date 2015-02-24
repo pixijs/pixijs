@@ -255,7 +255,7 @@ InteractionManager.prototype.update = function ()
  * Dispatches an event on the display object that was interacted with
  * @param displayObject {Container|Sprite|TilingSprite} the display object in question
  * @param eventString {string} the name of the event (e.g, mousedown)
- * @param eventData {EventData} the event data object 
+ * @param eventData {EventData} the event data object
  * @private
  */
 InteractionManager.prototype.dispatchEvent = function ( displayObject, eventString, eventData )
@@ -297,7 +297,7 @@ InteractionManager.prototype.throttleUpdate = function ()
 /**
  * Maps x and y coords from a DOM object and maps them correctly to the pixi view. The resulting value is stored in the point.
  * This takes into account the fact that the DOM element could be scaled and positioned anywhere on the screen.
- * 
+ *
  * @param  {Point} point the point that the result will be stored in
  * @param  {number} x     the x coord of the position to map
  * @param  {number} y     the y coord of the position to map
@@ -312,7 +312,7 @@ InteractionManager.prototype.mapPositionToPoint = function ( point, x, y )
 /**
  * This function is provides a neat way of crawling through the scene graph and running a specified function on all interactive objects it finds.
  * It will also take care of hit testing the interactive objects and passes the hit across in the function.
- * 
+ *
  * @param  {Point} point the point that is tested for collision
  * @param  {Container|Sprite|TilingSprite} displayObject the displayObject that will be hit test (recurcsivly crawls its children)
  * @param  {function} func the function that will be called on each interactive object. The displayObject and hit will be passed to the function
@@ -618,8 +618,8 @@ InteractionManager.prototype.processTouchStart = function ( displayObject, hit )
 
 /**
  * [onTouchEnd description]
- * @param  {[type]} event [description]
- * 
+ * @param event {type} [description]
+ *
  */
 InteractionManager.prototype.onTouchEnd = function (event)
 {
@@ -727,7 +727,7 @@ InteractionManager.prototype.processTouchMove = function ( displayObject, hit )
  * Grabs an interaction data object from the internal pool
  *
  * @param touchEvent {} The touch event we need to pair with a touchData object
- * 
+ *
  * @private
  */
 InteractionManager.prototype.getTouchData = function (touchEvent)
@@ -749,7 +749,7 @@ InteractionManager.prototype.getTouchData = function (touchEvent)
  * Returns an interaction data object to the internal pool
  *
  * @param touchEvent {InteractionData} The touch data object we want to return to the pool
- * 
+ *
  * @private
  */
 InteractionManager.prototype.returnTouchData = function ( touchData )

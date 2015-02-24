@@ -8,7 +8,7 @@ var utils = require('../../../utils'),
  * @param [vertexSrc] {string} The source of the vertex shader.
  * @param [fragmentSrc] {string} The source of the fragment shader.
  * @param [uniforms] {object} Uniforms for this shader.
- * @param [attributes] {obje=ct} Attributes for this shader.
+ * @param [attributes] {object} Attributes for this shader.
  */
 function Shader(shaderManager, vertexSrc, fragmentSrc, uniforms, attributes)
 {
@@ -18,20 +18,21 @@ function Shader(shaderManager, vertexSrc, fragmentSrc, uniforms, attributes)
     }
 
     /**
-     * @member {number}
+     * @member number
      * @readonly
      */
     this.uuid = utils.uuid();
 
     /**
-     * @member {WebGLRenderingContext}
+     * @member WebGLRenderingContext
      * @readonly
      */
     this.gl = shaderManager.renderer.gl;
 
     /**
      * The WebGL program.
-     * @member {WebGLProgram}
+     *
+     * @member WebGLProgram
      * @readonly
      */
     this.program = null;
@@ -44,12 +45,15 @@ function Shader(shaderManager, vertexSrc, fragmentSrc, uniforms, attributes)
 
     /**
      * The vertex shader.
-     * @member {Array}
+     *
+     * @member Array
      */
     this.vertexSrc = vertexSrc;
+
     /**
      * The fragment shader.
-     * @member {Array}
+     *
+     * @member Array
      */
     this.fragmentSrc = fragmentSrc;
 

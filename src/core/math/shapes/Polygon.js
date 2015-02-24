@@ -4,7 +4,7 @@ var Point = require('../Point'),
 /**
  * @class
  * @namespace PIXI
- * @param points* {Point[]|number[]|Point...|number...} This can be an array of Points that form the polygon,
+ * @param points* {Point[]|number[]|...Point|...number} This can be an array of Points that form the polygon,
  *      a flat array of numbers that will be interpreted as [x,y, x,y, ...], or the arguments passed can be
  *      all the points of the polygon e.g. `new Polygon(new Point(), new Point(), ...)`, or the
  *      arguments passed can be flat x,y values e.g. `new Polygon(x,y, x,y, x,y, ...)` where `x` and `y` are

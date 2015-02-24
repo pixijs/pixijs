@@ -65,7 +65,8 @@ function MovieClip(textures)
 
     /**
      * private cache of the bound function
-     * @type {[type]}
+     *
+     * @member function
      */
     this._updateBound = this.update.bind(this);
 }
@@ -97,7 +98,7 @@ Object.defineProperties(MovieClip.prototype, {
      *
      * @member
      * @memberof MovieClip#
-     * 
+     *
      */
     textures: {
         get: function ()

@@ -78,7 +78,7 @@ WebGLRenderer.registerPlugin('particle', ParticleRenderer);
  * When there is a WebGL context change
  *
  * @private
- * 
+ *
  */
 ParticleRenderer.prototype.onContextChange = function ()
 {
@@ -164,7 +164,7 @@ ParticleRenderer.prototype.start = function ()
 /**
  * Renders the sprite object.
  *
- * @param container {Container || Sprite} the sprite to render using this ParticleRenderer
+ * @param container {Container|Sprite} the sprite to render using this ParticleRenderer
  */
 ParticleRenderer.prototype.render = function ( container )
 {
@@ -250,7 +250,7 @@ ParticleRenderer.prototype.render = function ( container )
 /**
  * Creates one particle buffer for each child in the container we want to render and updates internal properties
  *
- * @param container {Container || Sprite} the sprite to render using this ParticleRenderer
+ * @param container {Container|Sprite} the sprite to render using this ParticleRenderer
  */
 ParticleRenderer.prototype.generateBuffers = function ( container )
 {
@@ -337,7 +337,7 @@ ParticleRenderer.prototype.uploadVerticies = function (children, startIndex, amo
 };
 
 /**
- * 
+ *
  * @param children {Array} the array of display objects to render
  * @param startIndex {number} the index to start from in the children array
  * @param amount {number} the amount of children that will have their positions uploaded
@@ -369,7 +369,7 @@ ParticleRenderer.prototype.uploadPosition = function (children,startIndex, amoun
 };
 
 /**
- * 
+ *
  * @param children {Array} the array of display objects to render
  * @param startIndex {number} the index to start from in the children array
  * @param amount {number} the amount of children that will have their rotation uploaded
@@ -394,7 +394,7 @@ ParticleRenderer.prototype.uploadRotation = function (children,startIndex, amoun
 };
 
 /**
- * 
+ *
  * @param children {Array} the array of display objects to render
  * @param startIndex {number} the index to start from in the children array
  * @param amount {number} the amount of children that will have their Uvs uploaded
@@ -445,7 +445,7 @@ ParticleRenderer.prototype.uploadUvs = function (children,startIndex, amount, ar
 };
 
 /**
- * 
+ *
  * @param children {Array} the array of display objects to render
  * @param startIndex {number} the index to start from in the children array
  * @param amount {number} the amount of children that will have their alpha uploaded

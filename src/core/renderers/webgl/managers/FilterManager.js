@@ -24,7 +24,7 @@ function FilterManager(renderer)
     });
 
     /**
-     * @member {any[]]}
+     * @member {any[]}
      */
     this.texturePool = [];
 
