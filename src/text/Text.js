@@ -230,7 +230,7 @@ Text.prototype.updateText = function ()
     this.canvas.width = ( width + this.context.lineWidth ) * this.resolution;
 
     // calculate text height
-    var lineHeight = this.style.lineHeight || fontProperties.fontSize* + style.strokeThickness;
+    var lineHeight = this.style.lineHeight || fontProperties.fontSize + style.strokeThickness;
 
     var height = lineHeight * lines.length;
     if (style.dropShadow)
