@@ -5,7 +5,7 @@
     "source": {
         "include": [
             "./src/index.js",
-            "./src/display/DisplayObject.js"
+            "./src/core/display/DisplayObject.js"
         ],
         "exclude": [
         ],
