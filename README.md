@@ -37,6 +37,7 @@ If you’re interested in pixi.js then feel free to follow me on twitter
 of course check back on [our site](<http://www.goodboydigital.com/blog/>) as
 any breakthroughs will be posted up there too!
 
+[![Inline docs](http://inch-ci.org/github/GoodBoyDigital/pixi.js.svg?branch=master)](http://inch-ci.org/github/GoodBoyDigital/pixi.js)
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/GoodBoyDigital/pixi.js/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
 ### Demos ###
@@ -45,7 +46,7 @@ any breakthroughs will be posted up there too!
 
 - [Run pixie run](<http://www.goodboydigital.com/runpixierun/>)
 
-- [Fight for Everyone](<http://www.theleisuresociety.co.uk/fightforeveryone>)
+- [Fight for Everyone](<http://www.goodboydigital.com/casestudies/fightforeveryone/>)
 
 - [Flash vs HTML](<http://flashvhtml.com>)
 
