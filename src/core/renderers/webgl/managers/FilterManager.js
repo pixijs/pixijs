@@ -74,7 +74,29 @@ FilterManager.prototype.pushFilter = function (target, filters)
     bounds.width = bounds.width | 0;
     bounds.height = bounds.height | 0;
 
-    this.capFilterArea( bounds );
+
+
+
+
+    if(this.renderer.currentRenderTarget.transform)
+    {
+        //TODO this will break if the renderTexture transform is anything other than a translation.
+        //Will need to take the full matrix transform into acount..
+        var transform = this.renderer.currentRenderTarget.transform;
+
+        bounds.x += transform.tx;
+        bounds.y += transform.ty;
+
+        this.capFilterArea( bounds );
+
+        bounds.x -= transform.tx;
+        bounds.y -= transform.ty;
+    }
+    else
+    {
+         this.capFilterArea( bounds );
+    }
+
 
     this.currentFrame = bounds;
 

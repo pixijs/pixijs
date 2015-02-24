@@ -347,31 +347,65 @@ Sprite.prototype.renderCanvas = function (renderer)
     //  Ignore null sources
     if (this.texture.valid)
     {
-        var resolution = this.texture.baseTexture.resolution / renderer.resolution;
+        var texture = this._texture,
+            wt = this.worldTransform,
+            dx,
+            dy,
+            width,
+            height;
+
+        var resolution = texture.baseTexture.resolution / renderer.resolution;
 
         renderer.context.globalAlpha = this.worldAlpha;
 
         // If smoothingEnabled is supported and we need to change the smoothing property for this texture
-        if (renderer.smoothProperty && renderer.currentScaleMode !== this.texture.baseTexture.scaleMode)
+        if (renderer.smoothProperty && renderer.currentScaleMode !== texture.baseTexture.scaleMode)
         {
-            renderer.currentScaleMode = this.texture.baseTexture.scaleMode;
+            renderer.currentScaleMode = texture.baseTexture.scaleMode;
             renderer.context[renderer.smoothProperty] = (renderer.currentScaleMode === CONST.SCALE_MODES.LINEAR);
         }
 
         // If the texture is trimmed we offset by the trim x/y, otherwise we use the frame dimensions
-        var dx = (this.texture.trim) ? this.texture.trim.x - this.anchor.x * this.texture.trim.width : this.anchor.x * -this.texture._frame.width;
-        var dy = (this.texture.trim) ? this.texture.trim.y - this.anchor.y * this.texture.trim.height : this.anchor.y * -this.texture._frame.height;
+
+        if(texture.rotate)
+        {
+
+            // cheeky rotation!
+            var a = wt.a;
+            var b = wt.b;
+
+            wt.a  = -wt.c;
+            wt.b  = -wt.d;
+            wt.c  =  a;
+            wt.d  =  b;
+
+            width = texture.crop.height;
+            height = texture.crop.width;
+
+            dx = (texture.trim) ? texture.trim.y - this.anchor.y * texture.trim.height : this.anchor.y * -texture._frame.height;
+            dy = (texture.trim) ? texture.trim.x - this.anchor.x * texture.trim.width : this.anchor.x * -texture._frame.width;
+        }
+        else
+        {
+            width = texture.crop.width;
+            height = texture.crop.height;
+
+            dx = (texture.trim) ? texture.trim.x - this.anchor.x * texture.trim.width : this.anchor.x * -texture._frame.width;
+            dy = (texture.trim) ? texture.trim.y - this.anchor.y * texture.trim.height : this.anchor.y * -texture._frame.height;
+        }
+
+
 
         // Allow for pixel rounding
         if (renderer.roundPixels)
         {
             renderer.context.setTransform(
-                this.worldTransform.a,
-                this.worldTransform.b,
-                this.worldTransform.c,
-                this.worldTransform.d,
-                (this.worldTransform.tx * renderer.resolution) | 0,
-                (this.worldTransform.ty * renderer.resolution) | 0
+                wt.a,
+                wt.b,
+                wt.c,
+                wt.d,
+                (wt.tx * renderer.resolution) | 0,
+                (wt.ty * renderer.resolution) | 0
             );
 
             dx = dx | 0;
@@ -379,14 +413,17 @@ Sprite.prototype.renderCanvas = function (renderer)
         }
         else
         {
+
             renderer.context.setTransform(
-                this.worldTransform.a,
-                this.worldTransform.b,
-                this.worldTransform.c,
-                this.worldTransform.d,
-                this.worldTransform.tx * renderer.resolution,
-                this.worldTransform.ty * renderer.resolution
+                wt.a,
+                wt.b,
+                wt.c,
+                wt.d,
+                wt.tx * renderer.resolution,
+                wt.ty * renderer.resolution
             );
+
+
         }
 
         if (this.tint !== 0xFFFFFF)
@@ -403,26 +440,26 @@ Sprite.prototype.renderCanvas = function (renderer)
                 this.tintedTexture,
                 0,
                 0,
-                this.texture.crop.width,
-                this.texture.crop.height,
+                width,
+                height,
                 dx / resolution,
                 dy / resolution,
-                this.texture.crop.width / resolution,
-                this.texture.crop.height / resolution
+                width / resolution,
+                width / resolution
             );
         }
         else
         {
             renderer.context.drawImage(
-                this.texture.baseTexture.source,
-                this.texture.crop.x,
-                this.texture.crop.y,
-                this.texture.crop.width,
-                this.texture.crop.height,
+                texture.baseTexture.source,
+                texture.crop.x,
+                texture.crop.y,
+                width,
+                height,
                 dx / resolution,
                 dy / resolution,
-                this.texture.crop.width / resolution,
-                this.texture.crop.height / resolution
+                width / resolution,
+                height / resolution
             );
         }
     }
