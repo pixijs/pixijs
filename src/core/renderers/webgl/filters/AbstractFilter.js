@@ -21,6 +21,7 @@ function AbstractFilter(vertexSrc, fragmentSrc, uniforms)
     this.passes = [this];
 
     /**
+     * An array of shaders
      * @member {Shader[]}
      * @private
      */
@@ -32,15 +33,22 @@ function AbstractFilter(vertexSrc, fragmentSrc, uniforms)
     this.padding = 0;
 
     /**
+     * The uniforms as an object
      * @member {object}
      * @private
      */
     this.uniforms = uniforms || {};
 
 
+    /**
+     * The code of the vertex shader
+     * @member {string[]}
+     * @private
+     */
     this.vertexSrc = vertexSrc;
 
     /**
+     * The code of the frament shader
      * @member {string[]}
      * @private
      */
