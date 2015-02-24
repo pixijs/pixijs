@@ -337,12 +337,13 @@ Sprite.prototype.renderCanvas = function (renderer)
     {
         var texture = this._texture,
             wt = this.worldTransform,
+            resolution = texture.baseTexture.resolution / renderer.resolution,
             dx,
             dy,
             width,
             height;
 
-        var resolution = texture.baseTexture.resolution / renderer.resolution;
+        console.log(resolution);
 
         renderer.context.globalAlpha = this.worldAlpha;
 
@@ -359,8 +360,8 @@ Sprite.prototype.renderCanvas = function (renderer)
         {
 
             // cheeky rotation!
-            var a = wt.a;
-            var b = wt.b;
+            var a = wt.a,
+                b = wt.b;
 
             wt.a  = -wt.c;
             wt.b  = -wt.d;
@@ -433,7 +434,7 @@ Sprite.prototype.renderCanvas = function (renderer)
                 dx / resolution,
                 dy / resolution,
                 width / resolution,
-                width / resolution
+                height / resolution
             );
         }
         else

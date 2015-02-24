@@ -48,7 +48,9 @@
   },
   "dependencies": {
     "async": "^0.9.0",
-    "resource-loader": "^1.1.4"
+    "resource-loader": "^1.1.4",
+    "gl-mat4": "^1.1.2",
+    "gl-matrix": "^2.1.0"
   },
   "browserify": {
     "transform": [

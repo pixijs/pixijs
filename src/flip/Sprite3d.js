@@ -1,0 +1,134 @@
+var core = require('../core'),
+    glMat = require('gl-matrix'),
+    math3d = require('./math'),
+    temp3dTransform = glMat.mat4.create(),
+    tempVec3 = glMat.vec3.create(),
+    tempQuat = glMat.quat.create();
+
+
+/**
+ * The Sprite object is the base for all textured objects that are rendered to the screen
+ *
+ * A sprite can be created directly from an image like this:
+ *
+ * ```js
+ * var sprite = new Sprite.fromImage('assets/image.png');
+ * ```
+ *
+ * @class Sprite
+ * @extends Container
+ * @namespace PIXI
+ * @param texture {Texture} The texture for this sprite
+ */
+function Sprite3d(texture)
+{
+    core.Sprite.call(this, texture);
+
+    // pixin some new 3d magic!
+    this.position = new math3d.Point3d(0, 0, 0);
+    this.scale = new math3d.Point3d(1, 1, 1);
+    this.rotation = new math3d.Point3d(0, 0, 0);
+
+    this.worldTransform3d = glMat.mat4.create();
+}
+
+
+// constructor
+Sprite3d.prototype = Object.create(core.Sprite.prototype);
+Sprite3d.prototype.constructor = Sprite3d;
+
+Sprite3d.prototype.updateTransform = function(texture)
+{
+    var quat = tempQuat;
+
+    var rx = this.rotation.x;
+    var ry = this.rotation.y;
+    var rz = this.rotation.z;
+
+    //TODO cach sin cos?
+    var c1 = Math.cos( rx / 2 );
+    var c2 = Math.cos( ry / 2 );
+    var c3 = Math.cos( rz / 2 );
+
+    var s1 = Math.sin( rx / 2 );
+    var s2 = Math.sin( ry / 2 );
+    var s3 = Math.sin( rz / 2 );
+
+    quat[0] = s1 * c2 * c3 + c1 * s2 * s3;
+    quat[1] = c1 * s2 * c3 - s1 * c2 * s3;
+    quat[2] = c1 * c2 * s3 + s1 * s2 * c3;
+    quat[3] = c1 * c2 * c3 - s1 * s2 * s3;
+
+    temp3dTransform[0] = this.position.x;
+    temp3dTransform[1] = this.position.y;
+    temp3dTransform[2] = this.position.z;
+
+    glMat.mat4.fromRotationTranslation(this.worldTransform3d, quat, temp3dTransform);
+
+    temp3dTransform[0] = this.scale.x;
+    temp3dTransform[1] = this.scale.y;
+    temp3dTransform[2] = this.scale.z;
+
+    glMat.mat4.scale( this.worldTransform3d, this.worldTransform3d, temp3dTransform)
+
+    if(this.parent.worldTransform3d)
+    {
+        glMat.mat4.multiply(this.worldTransform3d, this.parent.worldTransform3d, this.worldTransform3d);
+    }
+    else
+    {
+
+        //temp
+        var temp = glMat.mat4.identity( temp3dTransform );
+        var wtp = this.parent.worldTransform;
+
+        tempVec3[0] = wtp.tx;
+        tempVec3[1] = wtp.ty;
+        tempVec3[2] = 0;
+
+        glMat.mat4.translate(temp, temp, tempVec3);
+        glMat.mat4.multiply(this.worldTransform3d, temp, this.worldTransform3d);
+    }
+}
+
+Sprite3d.prototype._renderWebGL = function(texture)
+{
+    renderer.setObjectRenderer(renderer.plugins.sprite3d);
+    renderer.plugins.sprite3d.render(this);
+}
+
+/**
+ * Helper function that creates a sprite that will contain a texture from the TextureCache based on the frameId
+ * The frame ids are created when a Texture packer file has been loaded
+ *
+ * @static
+ * @param frameId {String} The frame Id of the texture in the cache
+ * @return {Sprite} A new Sprite using a texture from the texture cache matching the frameId
+ */
+Sprite3d.fromFrame = function (frameId)
+{
+    var texture = core.utils.TextureCache[frameId];
+
+    if (!texture)
+    {
+        throw new Error('The frameId "' + frameId + '" does not exist in the texture cache' + this);
+    }
+
+    return new Sprite3d(texture);
+};
+
+/**
+ * Helper function that creates a Sprite3d that will contain a texture based on an image url
+ * If the image is not in the texture cache it will be loaded
+ *
+ * @static
+ * @param imageId {String} The image url of the texture
+ * @return {Sprite3d} A new Sprite3d using a texture from the texture cache matching the image id
+ */
+Sprite3d.fromImage = function (imageId, crossorigin, scaleMode)
+{
+    return new Sprite3d(core.Texture.fromImage(imageId, crossorigin, scaleMode));
+};
+
+
+module.exports = Sprite3d;
