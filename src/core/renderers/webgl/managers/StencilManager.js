@@ -40,7 +40,7 @@ WebGLMaskManager.prototype.setMaskStack = function ( stencilMaskStack )
  */
 WebGLMaskManager.prototype.pushStencil = function (graphics, webGLData)
 {
-    this.renderer.currentRenderTarget.attachStenilBuffer();
+    this.renderer.currentRenderTarget.attachStencilBuffer();
 
     var gl = this.renderer.gl,
         sms = this.stencilMaskStack;
