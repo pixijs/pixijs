@@ -43,7 +43,6 @@ Object.defineProperties(Container.prototype, {
         },
         set: function (value)
         {
-
             var width = this.getLocalBounds().width;
 
             if (width !== 0)

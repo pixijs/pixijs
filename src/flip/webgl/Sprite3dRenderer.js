@@ -155,25 +155,35 @@ function Sprite3dRenderer(renderer)
     this.shader = null;
 
 
-    //glMat.mat4.perspective(this.perspectiveMatrix, 9, 400 / 300, 0, 100 );
+    // TODO will need to set up this proper fov. but this works great for now!
+    this.perspectiveMatrix = [
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 1,
+        0, 0, 0, 1
+    ];
 
-  //  glMat.mat4.perspective(this.perspectiveMatrix, 45, 400 / 300 , 0.0, 100.0);
-
-    this.perspectiveMatrix = makeZToWMatrix(1);
+    //this.perspectiveMatrix = makePerspective(45 * (Math.PI / 180), 1, 1, 2000)
     this.projection3d = glMat.mat4.create();
-
+   // console.log(this.perspectiveMatrix)
  //   glMat.mat4.identity(mvMatrix);
   //  glMat.mat4.translate(mvMatrix, [0, 0, -2.0]);
 }
 
-function makeZToWMatrix(fudgeFactor) {
+// test function...
+function makePerspective(fieldOfViewInRadians, aspect, near, far) {
+  var f = Math.tan(Math.PI * 0.5 - 0.5 * fieldOfViewInRadians);
+  var rangeInv = 1.0 / (near - far);
+
   return [
-    1, 0, 0, 0,
-    0, 1, 0, 0,
-    0, 0, 1, fudgeFactor,
-    0, 0, 0, 1,
+    f / aspect, 0, 0, 0,
+    0, f, 0, 0,
+    0, 0, (near + far) * rangeInv, -1,
+    0, 0, near * far * rangeInv * 2, 0
   ];
-}
+};
+
+
 
 Sprite3dRenderer.prototype = Object.create(ObjectRenderer.prototype);
 Sprite3dRenderer.prototype.constructor = Sprite3dRenderer;
@@ -453,13 +463,13 @@ Sprite3dRenderer.prototype.flush = function ()
                 projection3d[10] = 2 / 1700;
 
                 // tx // ty
-                projection3d[12] = -1;
-                projection3d[13] = 1;
+                projection3d[12] = projection2d.tx;
+                projection3d[13] = projection2d.ty;
 
                 // time to make a 3d one!
-                this.combinedMatrix = glMat.mat4.multiply(glMat.mat4.create(), this.perspectiveMatrix, projection3d)
+                var combinedMatrix = glMat.mat4.multiply(glMat.mat4.create(), this.perspectiveMatrix, projection3d)
 
-                gl.uniformMatrix4fv(shader.uniforms.projectionMatrix3d._location, false, this.combinedMatrix);
+                gl.uniformMatrix4fv(shader.uniforms.projectionMatrix3d._location, false, combinedMatrix);
             }
         }
 

@@ -30,6 +30,8 @@ function Container3d()
     this.rotation = new math3d.Point3d(0, 0, 0);
 
     this.worldTransform3d = glMat.mat4.create();
+
+    this.is3d = true;
 }
 
 
@@ -37,61 +39,25 @@ function Container3d()
 Container3d.prototype = Object.create(core.Container.prototype);
 Container3d.prototype.constructor = Container3d;
 
-Container3d.prototype.updateTransform = function(texture)
+
+Container3d.prototype.updateTransform = function()
 {
-    var quat = tempQuat;
+    this.updateTransform3d();
+}
 
-    var rx = this.rotation.x;
-    var ry = this.rotation.y;
-    var rz = this.rotation.z;
-
-    var c1 = Math.cos( rx / 2 );
-    var c2 = Math.cos( ry / 2 );
-    var c3 = Math.cos( rz / 2 );
-    var s1 = Math.sin( rx / 2 );
-    var s2 = Math.sin( ry / 2 );
-    var s3 = Math.sin( rz / 2 );
-
-    quat[0] = s1 * c2 * c3 + c1 * s2 * s3;
-    quat[1] = c1 * s2 * c3 - s1 * c2 * s3;
-    quat[2] = c1 * c2 * s3 + s1 * s2 * c3;
-    quat[3] = c1 * c2 * c3 - s1 * s2 * s3;
-
-    temp3dTransform[0] = this.position.x;
-    temp3dTransform[1] = this.position.y;
-    temp3dTransform[2] = this.position.z;
-
-    glMat.mat4.fromRotationTranslation(this.worldTransform3d, quat, temp3dTransform);
-
-    temp3dTransform[0] = this.scale.x;
-    temp3dTransform[1] = this.scale.y;
-    temp3dTransform[2] = this.scale.z;
-
-    glMat.mat4.scale( this.worldTransform3d, this.worldTransform3d, temp3dTransform)
-
-    if(this.parent.worldTransform3d)
-    {
-        glMat.mat4.multiply(this.worldTransform3d, this.parent.worldTransform3d, this.worldTransform3d);
-    }
-    else
-    {
-
-        //temp
-        var temp = glMat.mat4.identity( temp3dTransform );
-        var wtp = this.parent.worldTransform;
-
-        tempVec3[0] = wtp.tx;
-        tempVec3[1] = wtp.ty;
-        tempVec3[2] = 0;
-
-        glMat.mat4.translate(temp, temp, tempVec3);
-        glMat.mat4.multiply(this.worldTransform3d, temp, this.worldTransform3d);
-    }
+Container3d.prototype.updateTransform3d = function()
+{
+    this.displayObjectUpdateTransform3d();
 
     for (var i = 0, j = this.children.length; i < j; ++i)
     {
-        this.children[i].updateTransform();
+        this.children[i].updateTransform3d();
     }
+}
+
+Container3d.prototype.renderWebGL = function(renderer)
+{
+    this.renderWebGL3d( renderer );
 }
 
 module.exports = Container3d;
