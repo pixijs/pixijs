@@ -5,6 +5,7 @@ var core = require('../core'),
 // TODO: Obviously rewrite this...
 var INTERACTION_FREQUENCY = 10;
 var AUTO_PREVENT_DEFAULT = true;
+var CLICK_DELAY = 700;
 
 /**
  * The interaction manager deals with mouse and touch events. Any DisplayObject can be interactive
@@ -75,6 +76,11 @@ function InteractionManager( renderer )
     /**
      * @member {Function}
      */
+    this.onDblClick = this.onDblClick.bind(this);
+
+    /**
+     * @member {Function}
+     */
     this.onMouseMove = this.onMouseMove.bind( this );
     this.processMouseMove = this.processMouseMove.bind( this );
 
@@ -120,6 +126,22 @@ function InteractionManager( renderer )
      * @private
      */
     this._tempPoint = new core.math.Point();
+
+    /**
+     * A click counter, used to check for double clicks.
+     * @member {Number}
+     * @private
+     */
+    this._clickCount = 0;
+
+    /**
+     * The timer ID for the double click timer.
+     * This timer is used to measure how long between each click
+     * to determine if the user double clicked.
+     * @member {Number}
+     * @private
+     */
+    this._doubleClickTimer = null;
 
     /**
      * The current resolution
@@ -174,6 +196,7 @@ InteractionManager.prototype.addEvents = function ()
 
     this.interactionDOMElement.addEventListener('mousemove',    this.onMouseMove, true);
     this.interactionDOMElement.addEventListener('mousedown',    this.onMouseDown, true);
+    this.interactionDOMElement.addEventListener('dblclick',     this.onDblClick, true);
     this.interactionDOMElement.addEventListener('mouseout',     this.onMouseOut, true);
 
     this.interactionDOMElement.addEventListener('touchstart',   this.onTouchStart, true);
@@ -414,12 +437,45 @@ InteractionManager.prototype.processMouseDown = function ( displayObject, hit )
 
     if(hit)
     {
-        displayObject[ isRightButton ? '_isRightDown' : '_isLeftDown' ] = true;
-        this.dispatchEvent( displayObject, isRightButton ? 'rightdown' : 'mousedown', this.eventData );
+        // only when the double click callback is defined we should perform
+        // the logic for checking double clicks
+        if(displayObject.dblclick)
+        {
+            this._clickCount++;
+
+            if(this._clickCount === 1)
+            {
+                this._doubleClickTimer = setTimeout(function() {
+                    displayObject[ isRightButton ? '_isRightDown' : '_isLeftDown' ] = true;
+                    this.dispatchEvent( displayObject, isRightButton ? 'rightdown' : 'mousedown', this.eventData );
+                    this._clickCount = 0;
+                }.bind(this), CLICK_DELAY);
+            }
+            else
+            {
+                clearTimeout(this._doubleClickTimer);
+                this.dispatchEvent( displayObject, 'dblclick', this.eventData );
+                this._clickCount = 0;
+            }
+        }
+        else
+        {
+            displayObject[ isRightButton ? '_isRightDown' : '_isLeftDown' ] = true;
+            this.dispatchEvent( displayObject, isRightButton ? 'rightdown' : 'mousedown', this.eventData );
+        }
     }
 };
 
-
+/**
+ * Is called when the mouse button is double pressed down on the renderer element
+ *
+ * @param event {Event} The DOM event of a mouse button being double pressed down
+ * @private
+ */
+InteractionManager.prototype.onDblClick = function (event) {
+    this.mouse.originalEvent = event;
+    this.mouse.originalEvent.preventDefault();
+};
 
 /**
  * Is called when the mouse button is released on the renderer element
