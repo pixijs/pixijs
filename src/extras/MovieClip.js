@@ -18,14 +18,14 @@ function MovieClip(textures)
     /**
      * The array of textures that make up the animation
      *
-     * @member Texture[]
+     * @member {Texture[]}
      */
     this._textures = textures;
 
     /**
      * The speed that the MovieClip will play at. Higher is faster, lower is slower
      *
-     * @member number
+     * @member {number}
      * @default 1
      */
     this.animationSpeed = 1;
@@ -33,7 +33,7 @@ function MovieClip(textures)
     /**
      * Whether or not the movie clip repeats after playing.
      *
-     * @member boolean
+     * @member {boolean}
      * @default true
      */
     this.loop = true;
@@ -49,7 +49,7 @@ function MovieClip(textures)
     /**
      * The MovieClips current frame index (this may not have to be a whole number)
      *
-     * @member number
+     * @member {number}
      * @default 0
      * @readonly
      */
@@ -58,7 +58,7 @@ function MovieClip(textures)
     /**
      * Indicates if the MovieClip is currently playing
      *
-     * @member boolean
+     * @member {boolean}
      * @readonly
      */
     this.playing = false;
@@ -66,7 +66,7 @@ function MovieClip(textures)
     /**
      * private cache of the bound function
      *
-     * @member function
+     * @member {function}
      */
     this._updateBound = this.update.bind(this);
 }

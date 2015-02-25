@@ -24,7 +24,7 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
 
     /**
      * The current WebGL drawing context
-     * member {WebGLRenderingContext}
+     * @member {WebGLRenderingContext}
      */
     this.gl = gl;
 

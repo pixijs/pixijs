@@ -7,7 +7,9 @@
 function Quad(gl)
 {
     /*
-     * @member {WebGLRenderingContext} the current WebGL drawing context
+     * the current WebGL drawing context
+     *
+     * @member {WebGLRenderingContext}
      */
     this.gl = gl;
 

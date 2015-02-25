@@ -18,13 +18,13 @@ function Shader(shaderManager, vertexSrc, fragmentSrc, uniforms, attributes)
     }
 
     /**
-     * @member number
+     * @member {number}
      * @readonly
      */
     this.uuid = utils.uuid();
 
     /**
-     * @member WebGLRenderingContext
+     * @member {WebGLRenderingContext}
      * @readonly
      */
     this.gl = shaderManager.renderer.gl;
@@ -32,7 +32,7 @@ function Shader(shaderManager, vertexSrc, fragmentSrc, uniforms, attributes)
     /**
      * The WebGL program.
      *
-     * @member WebGLProgram
+     * @member {WebGLProgram}
      * @readonly
      */
     this.program = null;
@@ -61,14 +61,14 @@ function Shader(shaderManager, vertexSrc, fragmentSrc, uniforms, attributes)
     /**
      * The vertex shader.
      *
-     * @member Array
+     * @member {Array}
      */
     this.vertexSrc = vertexSrc;
 
     /**
      * The fragment shader.
      *
-     * @member Array
+     * @member {Array}
      */
     this.fragmentSrc = fragmentSrc;
 

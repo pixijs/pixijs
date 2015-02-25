@@ -105,7 +105,7 @@ function CanvasRenderer(width, height, options)
     /**
      * This temporary display object used as the parent of the currently being rendered item
      *
-     * @member DisplayObject
+     * @member {DisplayObject}
      * @private
      */
     this._tempDisplayObjectParent = {

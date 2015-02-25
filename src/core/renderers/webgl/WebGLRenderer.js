@@ -140,8 +140,8 @@ function WebGLRenderer(width, height, options)
     this.currentRenderTarget = this.renderTarget;
 
     /**
-     * 
-     * @member {ObjectRenderer} @alvin
+     * object renderer @alvin
+     * @member {ObjectRenderer} 
      */
     this.currentRenderer = new ObjectRenderer(this);
 
@@ -155,7 +155,7 @@ function WebGLRenderer(width, height, options)
 
     /**
      * An array of render targets
-     * @member {Array} TODO @alvin
+     * @member {Array}
      * @private
      */
     this._renderTargetStack = [];
