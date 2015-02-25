@@ -61,6 +61,15 @@ function Graphics()
     this.tint = 0xFFFFFF;
 
     /**
+     * The previous tint applied to the graphic shape. Used to compare to the current tint and check if theres change.
+     *
+     * @member {number}
+     * @private
+     * @default 0xFFFFFF
+     */
+    this._prevTint = 0xFFFFFF;
+
+    /**
      * The blend mode to be applied to the graphic shape. Apply a value of blendModes.NORMAL to reset the blend mode.
      *
      * @member {number}
@@ -740,6 +749,12 @@ Graphics.prototype.renderCanvas = function (renderer)
     if (!this.visible || this.alpha <= 0 || this.isMask === true  || !this.renderable)
     {
         return;
+    }
+
+    // if the tint has changed, set the graphics object to dirty.
+    if (this._prevTint !== this.tint) {
+        this.dirty = true;
+        this._prevTint = this.tint;
     }
 
     if (this._cacheAsBitmap)
