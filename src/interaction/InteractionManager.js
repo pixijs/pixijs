@@ -5,7 +5,6 @@ var core = require('../core'),
 // TODO: Obviously rewrite this...
 var INTERACTION_FREQUENCY = 10;
 var AUTO_PREVENT_DEFAULT = true;
-var CLICK_DELAY = 700;
 
 /**
  * The interaction manager deals with mouse and touch events. Any DisplayObject can be interactive
@@ -141,7 +140,7 @@ function InteractionManager( renderer )
      * @member {Number}
      * @private
      */
-    this._doubleClickTimer = null;
+    this._dblClickTimer = null;
 
     /**
      * The current resolution
@@ -445,15 +444,15 @@ InteractionManager.prototype.processMouseDown = function ( displayObject, hit )
 
             if(this._clickCount === 1)
             {
-                this._doubleClickTimer = setTimeout(function() {
+                this._dblClickTimer = setTimeout(function() {
                     displayObject[ isRightButton ? '_isRightDown' : '_isLeftDown' ] = true;
                     this.dispatchEvent( displayObject, isRightButton ? 'rightdown' : 'mousedown', this.eventData );
                     this._clickCount = 0;
-                }.bind(this), CLICK_DELAY);
+                }.bind(this), displayObject.dblClickDelay);
             }
             else
             {
-                clearTimeout(this._doubleClickTimer);
+                clearTimeout(this._dblClickTimer);
                 this.dispatchEvent( displayObject, 'dblclick', this.eventData );
                 this._clickCount = 0;
             }

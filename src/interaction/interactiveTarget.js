@@ -2,6 +2,7 @@ var core = require('../core');
 
 
 core.DisplayObject.prototype.interactive = false;
+core.DisplayObject.prototype.dblClickDelay = 700;
 core.DisplayObject.prototype.buttonMode = false;
 core.DisplayObject.prototype.interactiveChildren = true;
 core.DisplayObject.prototype.defaultCursor = 'pointer';
