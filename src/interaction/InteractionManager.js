@@ -444,11 +444,13 @@ InteractionManager.prototype.processMouseDown = function ( displayObject, hit )
 
             if(this._clickCount === 1)
             {
+                var self = this;
+
                 this._dblClickTimer = setTimeout(function() {
                     displayObject[ isRightButton ? '_isRightDown' : '_isLeftDown' ] = true;
-                    this.dispatchEvent( displayObject, isRightButton ? 'rightdown' : 'mousedown', this.eventData );
-                    this._clickCount = 0;
-                }.bind(this), displayObject.dblClickDelay);
+                    self.dispatchEvent( displayObject, isRightButton ? 'rightdown' : 'mousedown', self.eventData );
+                    self._clickCount = 0;
+                }, displayObject.dblClickDelay);
             }
             else
             {
