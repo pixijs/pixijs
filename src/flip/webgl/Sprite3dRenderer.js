@@ -181,7 +181,7 @@ function makePerspective(fieldOfViewInRadians, aspect, near, far) {
     0, 0, (near + far) * rangeInv, -1,
     0, 0, near * far * rangeInv * 2, 0
   ];
-};
+}
 
 
 
@@ -275,15 +275,6 @@ Sprite3dRenderer.prototype.render = function (sprite)
 
     var index = this.currentBatchSize * this.vertByteSize;
 
-    var worldTransform = sprite.worldTransform;
-
-    var a = worldTransform.a;
-    var b = worldTransform.b;
-    var c = worldTransform.c;
-    var d = worldTransform.d;
-    var tx = worldTransform.tx;
-    var ty = worldTransform.ty;
-
     var wt = sprite.worldTransform3d;
 
     var m0 = wt[0],
@@ -323,8 +314,6 @@ Sprite3dRenderer.prototype.render = function (sprite)
     }
     else
     {
-        var out = [0,0,0];
-
         // xyz
         positions[index]   = m0 * w1 + m4 * h1 + m12;
         positions[index+1] = m1 * w1 + m5 * h1 + m13;
@@ -467,7 +456,7 @@ Sprite3dRenderer.prototype.flush = function ()
                 projection3d[13] = projection2d.ty;
 
                 // time to make a 3d one!
-                var combinedMatrix = glMat.mat4.multiply(glMat.mat4.create(), this.perspectiveMatrix, projection3d)
+                var combinedMatrix = glMat.mat4.multiply(glMat.mat4.create(), this.perspectiveMatrix, projection3d);
 
                 gl.uniformMatrix4fv(shader.uniforms.projectionMatrix3d._location, false, combinedMatrix);
             }
@@ -524,7 +513,7 @@ Sprite3dRenderer.prototype.start = function ()
 {
     var gl = this.renderer.gl;
 
-    gl.enable(gl.DEPTH_TEST);
+  //  gl.enable(gl.DEPTH_TEST);
 
     // bind the main texture
     gl.activeTexture(gl.TEXTURE0);
@@ -548,7 +537,7 @@ Sprite3dRenderer.prototype.stop = function ()
     this.flush();
 
     gl.disable(gl.DEPTH_TEST);
-}
+};
 
 /**
  * Destroys the SpriteBatch.

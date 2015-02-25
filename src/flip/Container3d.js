@@ -1,9 +1,6 @@
 var core = require('../core'),
     glMat = require('gl-matrix'),
-    math3d = require('./math'),
-    temp3dTransform = glMat.mat4.create(),
-    tempVec3 = glMat.vec3.create(),
-    tempQuat = glMat.quat.create();
+    math3d = require('./math');
 
 
 /**
@@ -42,18 +39,22 @@ Container3d.prototype.constructor = Container3d;
 
 Container3d.prototype.updateTransform = function()
 {
+    this.convertFrom2dTo3d(this.parent);
+
     this.updateTransform3d();
-}
+};
 
 Container3d.prototype.updateTransform3d = function()
 {
     this.displayObjectUpdateTransform3d();
 
-    for (var i = 0, j = this.children.length; i < j; ++i)
+    var i,j;
+
+    for (i = 0, j = this.children.length; i < j; ++i)
     {
         this.children[i].updateTransform3d();
     }
-}
+};
 
 Container3d.prototype.renderWebGL = function(renderer)
 {

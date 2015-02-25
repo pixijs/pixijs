@@ -17,7 +17,6 @@ module.exports = {
 var core            = require('../core'),
     glMat           = require('gl-matrix'),
     temp3dTransform = glMat.mat4.create(),
-    tempVec3        = glMat.vec3.create(),
     tempQuat        = glMat.quat.create();
 
 core.Container.prototype.worldTransform3d = null;
@@ -54,44 +53,23 @@ core.Container.prototype.displayObjectUpdateTransform3d = function()
     temp3dTransform[1] = this.scale.y;
     temp3dTransform[2] = this.scale.z;
 
-    glMat.mat4.scale( this.worldTransform3d, this.worldTransform3d, temp3dTransform)
+    glMat.mat4.scale( this.worldTransform3d, this.worldTransform3d, temp3dTransform);
 
-    if(this.parent.is3d)
-    {
-        glMat.mat4.multiply(this.worldTransform3d, this.parent.worldTransform3d, this.worldTransform3d);
-    }
-    else
-    {
-        //temp
-        var temp = glMat.mat4.identity( temp3dTransform );
-        var wtp = this.parent.worldTransform;
+    glMat.mat4.multiply(this.worldTransform3d, this.parent.worldTransform3d, this.worldTransform3d);
+};
 
-        temp[0] = wtp.a;
-        temp[1] = wtp.b;
-
-        temp[4] = wtp.c;
-        temp[5] = wtp.d;
-
-        temp[12] = wtp.tx;
-        temp[13] = wtp.ty;
-
-        glMat.mat4.multiply(this.worldTransform3d, temp, this.worldTransform3d);
-    }
-}
-
-core.Container.prototype.updateTransform3d = function()
+core.Container.prototype.convertFrom2dTo3d = function(item)
 {
-    if(!this.worldTransform3d)
+    if(!item.worldTransform3d)
     {
-        this.worldTransform3d = glMat.mat4.create();
+        item.worldTransform3d = glMat.mat4.create();
     }
 
     // sooo //
-    this.displayObjectUpdateTransform();
+    item.displayObjectUpdateTransform();
 
-    var temp = glMat.mat4.identity( temp3dTransform );
-    var wt = this.worldTransform;
-    var wt3d = glMat.mat4.identity( this.worldTransform3d );
+    var wt = item.worldTransform;
+    var wt3d = glMat.mat4.identity( item.worldTransform3d );
 
     wt3d[0] = wt.a;
     wt3d[1] = wt.b;
@@ -100,15 +78,22 @@ core.Container.prototype.updateTransform3d = function()
     wt3d[5] = wt.d;
 
     wt3d[12] = wt.tx;
-    //wt3d[13] = w;
+    wt3d[13] = wt.ty;
+};
 
-    glMat.mat4.multiply(wt3d, this.parent.worldTransform3d, wt3d);
+core.Container.prototype.updateTransform3d = function()
+{
+    this.convertFrom2dTo3d(this);
+
+    glMat.mat4.multiply(this.worldTransform3d, this.parent.worldTransform3d, this.worldTransform3d);
+
+    var i,j;
 
     for (i = 0, j = this.children.length; i < j; ++i)
     {
-        this.children[i].updateTransform3d(renderer, i);
+        this.children[i].updateTransform3d();
     }
-}
+};
 
 
 core.Container.prototype.renderWebGL3d = function (renderer)
@@ -120,10 +105,10 @@ core.Container.prototype.renderWebGL3d = function (renderer)
     }
 
     // no support for filters...
-    var i, j;
 
     this._renderWebGL3d(renderer);
 
+    var i, j;
     // simple render children!
     for (i = 0, j = this.children.length; i < j; ++i)
     {
@@ -131,13 +116,15 @@ core.Container.prototype.renderWebGL3d = function (renderer)
     }
 };
 
-core.Container.prototype._renderWebGL3d = function(renderer)
+core.Container.prototype._renderWebGL3d = function(/*renderer*/)
 {
-}
+
+};
 
 core.Sprite.prototype._renderWebGL3d = function(renderer)
 {
+  //  console.log(this)
     renderer.setObjectRenderer(renderer.plugins.sprite3d);
     renderer.plugins.sprite3d.render(this);
-}
+};
 

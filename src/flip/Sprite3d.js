@@ -1,10 +1,6 @@
 var core = require('../core'),
     glMat = require('gl-matrix'),
-    math3d = require('./math'),
-    temp3dTransform = glMat.mat4.create(),
-    tempVec3 = glMat.vec3.create(),
-    tempQuat = glMat.quat.create();
-
+    math3d = require('./math');
 
 /**
  * The Sprite object is the base for all textured objects that are rendered to the screen
@@ -41,19 +37,27 @@ Sprite3d.prototype.constructor = Sprite3d;
 
 Sprite3d.prototype.updateTransform = function()
 {
+    this.convertFrom2dTo3d(this.parent);
+
     this.updateTransform3d();
-}
+};
 
 Sprite3d.prototype.updateTransform3d = function()
 {
     this.displayObjectUpdateTransform3d();
-}
 
+    var i,j;
+
+    for (i = 0, j = this.children.length; i < j; ++i)
+    {
+        this.children[i].updateTransform3d();
+    }
+};
 
 Sprite3d.prototype.renderWebGL = function(renderer)
 {
     this.renderWebGL3d( renderer );
-}
+};
 
 
 /**
