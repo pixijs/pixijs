@@ -62,12 +62,12 @@ function Sprite(texture)
      * The tint applied to the sprite. This is a hex value. A value of 0xFFFFFF will remove any tint effect.
      *
      * @member {number}
-     * @default 0xFFFFFF
+     * @default [0xFFFFFF]
      */
     this.tint = 0xFFFFFF;
 
     /**
-     * The blend mode to be applied to the sprite. Set to CONST.BLEND_MODES.NORMAL to remove any blend mode.
+     * The blend mode to be applied to the sprite. Apply a value of blendModes.NORMAL to reset the blend mode.
      *
      * @member {number}
      * @default CONST.BLEND_MODES.NORMAL;
@@ -85,6 +85,7 @@ function Sprite(texture)
      * An internal cached value of the tint.
      *
      * @member {number}
+     * @default [0xFFFFFF]
      */
     this.cachedTint = 0xFFFFFF;
 
@@ -507,6 +508,11 @@ Sprite.prototype.renderCanvas = function (renderer)
     {
         renderer.maskManager.popMask(renderer);
     }
+};
+
+Sprite.prototype.setTexture = function () 
+{
+    window.console.warn('setTexture is now deprecated, please use the texture property, e.g : sprite.texture = texture; ');
 };
 
 // some helper functions..

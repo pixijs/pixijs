@@ -64,7 +64,7 @@ var core = module.exports = {
      * @param [options.antialias=false] {boolean} sets antialias (only applicable in chrome at the moment)
      * @param [options.preserveDrawingBuffer=false] {boolean} enables drawing buffer preservation, enable this if you
      *      need to call toDataUrl on the webgl context
-     * @param [options.resolution=1] {number} the resolution of the renderer retina would be 2
+     * @param [options.resolution=1] {number} the resolution of the renderer, retina would be 2
      * @param [noWebGL=false] {boolean} prevents selection of WebGL renderer, even if such is present
      *
      * @return {WebGLRenderer|CanvasRenderer} Returns WebGL renderer if available, otherwise CanvasRenderer
@@ -80,6 +80,12 @@ var core = module.exports = {
         }
 
         return new core.CanvasRenderer(width, height, options);
+    },
+
+    Stage: function () 
+    {
+        window.console.warn("You don't need to use a PIXI Stage any more, you can simply render any container");
+        return new core.Container();
     }
 };
 

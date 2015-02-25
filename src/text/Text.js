@@ -175,6 +175,7 @@ Object.defineProperties(Text.prototype, {
      * Set the copy for the text object. To split a line you can use '\n'.
      *
      * @param text {string} The copy that you would like the text to display
+     * @memberof Text#
      */
     text: {
         get: function()
@@ -551,4 +552,9 @@ Text.prototype.destroy = function (destroyBaseTexture)
     this.canvas = null;
 
     this._texture.destroy(destroyBaseTexture === undefined ? true : destroyBaseTexture);
+};
+
+Text.prototype.setText = function () 
+{
+    window.console.warn(" setText is now deprecated, please use the text property, e.g : myText.text = 'my text'; ");
 };
