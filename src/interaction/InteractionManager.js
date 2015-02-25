@@ -617,8 +617,8 @@ InteractionManager.prototype.processTouchStart = function ( displayObject, hit )
 
 
 /**
- * [onTouchEnd description]
- * @param event {type} [description]
+ * Is called when a touch ends on the renderer element
+ * @param event {Event} The DOM event of a touch ending on the renderer view
  *
  */
 InteractionManager.prototype.onTouchEnd = function (event)
@@ -726,7 +726,7 @@ InteractionManager.prototype.processTouchMove = function ( displayObject, hit )
 /**
  * Grabs an interaction data object from the internal pool
  * 
- * @param touchEvent {Event @alvin} The touch event we need to pair with a touchData object
+ * @param touchEvent {EventData} The touch event we need to pair with an interactionData object
  *
  * @private
  */

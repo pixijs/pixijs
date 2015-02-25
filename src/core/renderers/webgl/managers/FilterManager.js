@@ -263,7 +263,7 @@ FilterManager.prototype.applyFilter = function (shader, inputTarget, outputTarge
 };
 
 /* 
- * Constrains the filter area to the texture size
+ * Calculates the mapped matrix 
  * @param filterArea {Rectangle} The filter area 
  * @param sprite {Sprite} the target sprite
  * @param outputMatrix {Matrix} @alvin
