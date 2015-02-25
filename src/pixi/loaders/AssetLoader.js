@@ -149,7 +149,14 @@ PIXI.AssetLoader.prototype.load = function()
 PIXI.AssetLoader.prototype.onAssetLoaded = function(loader)
 {
     this.loadCount--;
-    this.emit('onProgress', { content: this, loader: loader });
+
+    this.emit('onProgress', {
+        content: this,
+        loader: loader,
+        loaded: this.assetURLs.length - this.loadCount,
+        total: this.assetURLs.length
+    });
+
     if (this.onProgress) this.onProgress(loader);
 
     if (!this.loadCount)
