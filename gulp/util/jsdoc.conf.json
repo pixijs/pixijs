@@ -26,7 +26,7 @@
             "outputSourceFiles" : true
         },
         "systemName"    : "PIXI",
-        "footer"        : "",
+        "footer"        : "Made with ♥ by <a href='http://goodboydigital.com'>Goodboy Digital</a>",
         "copyright"     : "PIXI Copyright © 2013-2015 Mat Groves.",
         "navType"       : "vertical",
         "theme"         : "cerulean",
