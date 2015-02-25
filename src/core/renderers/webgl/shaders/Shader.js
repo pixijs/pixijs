@@ -37,10 +37,25 @@ function Shader(shaderManager, vertexSrc, fragmentSrc, uniforms, attributes)
      */
     this.program = null;
 
+    /**
+     * The uniforms as an object
+     * @member {object}
+     * @private
+     */
     this.uniforms = uniforms || {};
 
+    /**
+     * The attributes as an object
+     * @member {object}
+     * @private
+     */
     this.attributes = attributes || {};
 
+    /**
+     * Internal texture counter
+     * @member {number}
+     * @private
+     */
     this.textureCount = 1;
 
     /**
@@ -63,6 +78,10 @@ function Shader(shaderManager, vertexSrc, fragmentSrc, uniforms, attributes)
 Shader.prototype.constructor = Shader;
 module.exports = Shader;
 
+/*
+ * Creates the shader and uses it
+ * 
+ */
 Shader.prototype.init = function ()
 {
     this.compile();
@@ -73,6 +92,10 @@ Shader.prototype.init = function ()
     this.cacheAttributeLocations(Object.keys(this.attributes));
 };
 
+/*
+ * Caches the locations of the uniform for reuse
+ * @param key {string} the uniform to cache
+ */
 Shader.prototype.cacheUniformLocations = function (keys)
 {
     for (var i = 0; i < keys.length; ++i)
@@ -81,6 +104,10 @@ Shader.prototype.cacheUniformLocations = function (keys)
     }
 };
 
+/*
+ * Caches the locations of the attribute for reuse
+ * @param key {string} the attribute to cache
+ */
 Shader.prototype.cacheAttributeLocations = function (keys)
 {
     for (var i = 0; i < keys.length; ++i)
@@ -103,6 +130,9 @@ Shader.prototype.cacheAttributeLocations = function (keys)
     // End worst hack eva //
 };
 
+/*
+ * Attaches the shaders and creates the program
+ */
 Shader.prototype.compile = function ()
 {
     var gl = this.gl;
@@ -119,14 +149,14 @@ Shader.prototype.compile = function ()
     // if linking fails, then log and cleanup
     if (!gl.getProgramParameter(program, gl.LINK_STATUS))
     {
-        window.console.error('Pixi.js Error: Could not initialize shader.');
-        window.console.error('gl.VALIDATE_STATUS', gl.getProgramParameter(program, gl.VALIDATE_STATUS));
-        window.console.error('gl.getError()', gl.getError());
+        console.error('Pixi.js Error: Could not initialize shader.');
+        console.error('gl.VALIDATE_STATUS', gl.getProgramParameter(program, gl.VALIDATE_STATUS));
+        console.error('gl.getError()', gl.getError());
 
         // if there is a program info log, log it
         if (gl.getProgramInfoLog(program) !== '')
         {
-            window.console.warn('Pixi.js Warning: gl.getProgramInfoLog()', gl.getProgramInfoLog(program));
+            console.warn('Pixi.js Warning: gl.getProgramInfoLog()', gl.getProgramInfoLog(program));
         }
 
         gl.deleteProgram(program);
@@ -176,6 +206,11 @@ Shader.prototype.buildSync = function ()
 
 }*/
 
+/**
+* Adds a new uniform
+*
+* @param uniform {Object} the new uniform to attach
+*/
 Shader.prototype.syncUniform = function (uniform)
 {
     var location = uniform._location,
@@ -407,6 +442,9 @@ Shader.prototype.syncUniform = function (uniform)
     }
 };
 
+/*
+ * Updates the shader uniform values.
+ */
 Shader.prototype.syncUniforms = function ()
 {
     this.textureCount = 1;

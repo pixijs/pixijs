@@ -1,4 +1,5 @@
 /**
+ * Generic Mask Stack data structure
  * @class
  * @memberof PIXI
  * @param renderer {WebGLRenderer} The renderer this manager works for.

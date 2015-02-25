@@ -7,6 +7,7 @@ var WebGLManager = require('./WebGLManager'),
 /**
  * @class
  * @memberof PIXI
+ * @extends WebGLManager
  * @param renderer {WebGLRenderer} The renderer this manager works for.
  */
 function ShaderManager(renderer)
@@ -59,6 +60,10 @@ utils.pluginTarget.mixin(ShaderManager);
 
 module.exports = ShaderManager;
 
+/**
+ * Called when there is a WebGL context change.
+ *
+ */
 ShaderManager.prototype.onContextChange = function ()
 {
     this.initPlugins();

@@ -265,7 +265,7 @@ WebGLRenderer.prototype.render = function (object)
  * Renders a Display Object.
  *
  * @param displayObject {DisplayObject} The DisplayObject to render
- * @param renderTarget {Point} TODO @alvin
+ * @param renderTarget {RenderTarget} The render target to use to render this display object
  * 
  */
 WebGLRenderer.prototype.renderDisplayObject = function (displayObject, renderTarget)//projection, buffer)
@@ -305,7 +305,7 @@ WebGLRenderer.prototype.setObjectRenderer = function (objectRenderer)
 /**
  * Changes the current render target to the one given in parameter
  *
- * @param renderTarget {Object} the new render target
+ * @param renderTarget {RenderTarget} the new render target
  * 
  */
 WebGLRenderer.prototype.setRenderTarget = function (renderTarget)

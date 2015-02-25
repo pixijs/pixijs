@@ -12,49 +12,81 @@ var math = require('../../../math'),
  * @class
  * @memberof PIXI
  * @param gl {WebGLRenderingContext} the current WebGL drawing context
- * @param width {Number} the horizontal range of the filter
- * @param height {Number} the vertical range of the filter
- * @param scaleMode {Number} See {{#crossLink "PIXI/scaleModes:property"}}PIXI.scaleModes{{/crossLink}} for possible values
+ * @param width {number} the horizontal range of the filter
+ * @param height {number} the vertical range of the filter
+ * @param scaleMode {number} See {{#crossLink "PIXI/scaleModes:property"}}PIXI.scaleModes{{/crossLink}} for possible values
+ * @param resolution {number} the current resolution
+ * @param root {boolean} Whether this object is the root element or not
  */
 var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
 {
     //TODO Resolution could go here ( eg low res blurs )
 
     /**
-     * @property gl
-     * @type WebGLRenderingContext
+     * The current WebGL drawing context
+     * member {WebGLRenderingContext}
      */
     this.gl = gl;
 
     // next time to create a frame buffer and texture
 
     /**
-     * @property frameBuffer
-     * @type Any
+     * A frame buffer
+     * @member {WebGLFrameBuffer}
      */
     this.frameBuffer = null;
 
     /**
-     * @property texture
-     * @type Any
+     * @member {Texture}
      */
     this.texture = null;
 
+    /**
+     * The size of the object as a rectangle
+     * @member {Rectangle} 
+     */
     this.size = new math.Rectangle(0, 0, 1, 1);
 
+    /**
+     * The current resolution
+     * @member {number}
+     */
     this.resolution = resolution || CONST.RESOLUTION;
 
+    /**
+     * The projection matrix 
+     * @member {Matrix}
+     */
     this.projectionMatrix = new math.Matrix();
 
+    /**
+     * The object's transform
+     * @member {Matrix}
+     */
     this.transform = null;
 
+    /**
+     * 
+     * @member {Rectangle}
+     */
     this.frame = null;
 
-    // stores masking data for the render target
+    /**
+     * The stencil buffer stores masking data for the render target
+     * @member {WebGLRenderBuffer}
+     */
     this.stencilBuffer = null;
+
+    /**
+     * The data structure for the stencil masks
+     * @member {StencilMaskStack}
+     */
     this.stencilMaskStack = new StencilMaskStack();
 
-    // stores filter data for the render target
+    /**
+     * Stores filter data for the render target
+     * @member {Array}
+     */
     this.filterStack = [
         {
             renderTarget:this,
@@ -65,11 +97,16 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
 
 
     /**
-     * @property scaleMode
-     * @type Number
+     * The scale mode
+     * @member {number}
+     * @default CONST.SCALE_MODES.DEFAULT
      */
     this.scaleMode = scaleMode || CONST.SCALE_MODES.DEFAULT;
 
+    /**
+     * Whether this object is the root element or not
+     * @member {boolean}
+     */
     this.root = root;
 
     if (!this.root)
@@ -129,6 +166,10 @@ RenderTarget.prototype.clear = function()
     gl.clear(gl.COLOR_BUFFER_BIT);
 };
 
+/**
+* Binds the stencil buffer.
+*
+*/
 RenderTarget.prototype.attachStencilBuffer = function()
 {
 
@@ -152,6 +193,10 @@ RenderTarget.prototype.attachStencilBuffer = function()
     }
 };
 
+/**
+* Binds the buffers and initialises the viewport.
+*
+*/
 RenderTarget.prototype.activate = function()
 {
     //TOOD refactor usage of frame..
@@ -172,6 +217,10 @@ RenderTarget.prototype.activate = function()
     gl.viewport(0,0, projectionFrame.width * this.resolution, projectionFrame.height * this.resolution);
 };
 
+/**
+* Updates the projection matrix based on a projection frame (which is a rectangle)
+*
+*/
 RenderTarget.prototype.calculateProjection = function( projectionFrame )
 {
     var pm = this.projectionMatrix;
@@ -237,7 +286,7 @@ RenderTarget.prototype.resize = function(width, height)
 };
 
 /**
- * Destroys the filter texture.
+ * Destroys the render target.
  *
  */
 RenderTarget.prototype.destroy = function()

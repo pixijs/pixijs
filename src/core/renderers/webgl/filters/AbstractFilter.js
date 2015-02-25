@@ -84,6 +84,13 @@ AbstractFilter.prototype.getShader = function (renderer)
     return shader;
 };
 
+/* 
+ * Applies the filter
+ * @param renderer {Shader} 
+ * @param input {Any}
+ * @param output {Any} 
+ * @param clear {boolean} Whether or not we want to clear the outputTarget
+ */
 AbstractFilter.prototype.applyFilter = function (renderer, input, output, clear)
 {
     var shader = this.getShader(renderer);
