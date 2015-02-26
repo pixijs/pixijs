@@ -116,6 +116,7 @@ module.exports = {
      * @property {HTMLCanvasElement} DEFAULT_RENDER_OPTIONS.view=null
      * @property {boolean} DEFAULT_RENDER_OPTIONS.transparent=false
      * @property {boolean} DEFAULT_RENDER_OPTIONS.antialias=false
+     * @property {boolean} DEFAULT_RENDER_OPTIONS.forceFXAA=false
      * @property {boolean} DEFAULT_RENDER_OPTIONS.preserveDrawingBuffer=false
      * @property {number} DEFAULT_RENDER_OPTIONS.resolution=1
      * @property {number} DEFAULT_RENDER_OPTIONS.backgroundColor=0x000000
@@ -126,6 +127,7 @@ module.exports = {
         view: null,
         resolution: 1,
         antialias: false,
+        forceFXAA: false,
         autoResize: false,
         transparent: false,
         backgroundColor: 0x000000,

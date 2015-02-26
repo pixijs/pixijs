@@ -25,7 +25,8 @@ var SystemRenderer = require('../SystemRenderer'),
  * @param [options.view] {HTMLCanvasElement} the canvas to use as a view, optional
  * @param [options.transparent=false] {boolean} If the render view is transparent, default false
  * @param [options.autoResize=false] {boolean} If the render view is automatically resized, default false
- * @param [options.antialias=false] {boolean} sets antialias (only applicable in chrome at the moment)
+ * @param [options.antialias=false] {boolean} sets antialias. If not available natively then FXAA antialiasing is used
+ * @param [options.forceFXAA=false] {boolean} forces FXAA antialiasing to be used over native. FXAA is faster, but may not always lok as great
  * @param [options.resolution=1] {number} the resolution of the renderer retina would be 2
  * @param [options.clearBeforeRender=true] {boolean} This sets if the CanvasRenderer will clear the canvas or
  *      not before the new render pass.
@@ -67,7 +68,7 @@ function WebGLRenderer(width, height, options)
      * @member {boolean}
      * @private
      */
-    this._useFXAA = false;
+    this._useFXAA = !!options.forceFXAA && options.antialias;
 
     /**
      * The fxaa filter
@@ -200,10 +201,15 @@ WebGLRenderer.prototype._initContext = function ()
     // setup the width/height properties and gl viewport
     this.resize(this.width, this.height);
 
-    this._useFXAA = this._contextOptions.antialias && ! gl.getContextAttributes().antialias;
+    if(!this._useFXAA)
+    {
+        this._useFXAA = ( this._contextOptions.antialias && ! gl.getContextAttributes().antialias );
+    }
+
 
     if(this._useFXAA)
     {
+        window.console.warn("FXAA antialiasing being used instead of native antialiasing")
         this._FXAAFilter = [new FXAAFilter()];
     }
 };
