@@ -63,14 +63,14 @@ function Shader(shaderManager, vertexSrc, fragmentSrc, uniforms, attributes)
     /**
      * The vertex shader as an array of strings
      *
-     * @member {Array}
+     * @member {string}
      */
     this.vertexSrc = vertexSrc;
 
     /**
      * The fragment shader as an array of strings
      *
-     * @member {Array}
+     * @member {string}
      */
     this.fragmentSrc = fragmentSrc;
 
@@ -82,7 +82,7 @@ module.exports = Shader;
 
 /*
  * Creates the shader and uses it
- * 
+ *
  */
 Shader.prototype.init = function ()
 {
