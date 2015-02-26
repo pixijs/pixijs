@@ -14,7 +14,6 @@ core.DisplayObject.prototype._touchDown = false;
 
 core.Sprite.prototype.hitTest = core.Sprite.prototype.containsPoint;
 
-
 core.Graphics.prototype.hitTest = core.Graphics.prototype.containsPoint;
 
 extras.TilingSprite.prototype.hitTest = extras.TilingSprite.prototype.containsPoint;
