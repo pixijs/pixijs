@@ -524,6 +524,8 @@ Sprite.prototype.setTexture = function ()
  * @static
  * @param frameId {String} The frame Id of the texture in the cache
  * @return {Sprite} A new Sprite using a texture from the texture cache matching the frameId
+ * @param [crossorigin=(auto)] {boolean} if you want to specify the cross-origin parameter
+ * @param [scaleMode=scaleModes.DEFAULT] {number} if you want to specify the scale mode, see {@link SCALE_MODES} for possible values
  */
 Sprite.fromFrame = function (frameId)
 {
@@ -531,7 +533,7 @@ Sprite.fromFrame = function (frameId)
 
     if (!texture)
     {
-        throw new Error('The frameId "' + frameId + '" does not exist in the texture cache' + this);
+        throw new Error('The frameId "' + frameId + '" does not exist in the texture cache ' + this);
     }
 
     return new Sprite(texture);

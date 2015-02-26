@@ -363,7 +363,7 @@ BaseTexture.prototype.updateSourceImage = function (newSrc)
  *
  * @static
  * @param imageUrl {string} The image url of the texture
- * @param [crossorigin=(auto)] {boolean} Should use anonymouse CORS? Defaults to true if the URL is not a data-URI.
+ * @param [crossorigin=(auto)] {boolean} Should use anonymous CORS? Defaults to true if the URL is not a data-URI.
  * @param [scaleMode=scaleModes.DEFAULT] {number} See {@link SCALE_MODES} for possible values
  * @return BaseTexture
  */
