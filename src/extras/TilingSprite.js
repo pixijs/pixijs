@@ -161,14 +161,14 @@ TilingSprite.prototype._renderWebGL = function (renderer)
 
     var uvs = this._uvs;
 
-    this.tilePosition.x %= texture.baseTexture.width * this._tileScaleOffset.x;
-    this.tilePosition.y %= texture.baseTexture.height * this._tileScaleOffset.y;
+    this.tilePosition.x %= texture.baseTexture.width / this._tileScaleOffset.x;
+    this.tilePosition.y %= texture.baseTexture.height / this._tileScaleOffset.y;
 
-    var offsetX =  this.tilePosition.x/(texture.baseTexture.width*this._tileScaleOffset.x);
-    var offsetY =  this.tilePosition.y/(texture.baseTexture.height*this._tileScaleOffset.y);
+    var offsetX =  this.tilePosition.x/(texture.baseTexture.width / this._tileScaleOffset.x);
+    var offsetY =  this.tilePosition.y/(texture.baseTexture.height / this._tileScaleOffset.y);
 
-    var scaleX =  (this._width / texture.baseTexture.width);
-    var scaleY =  (this._height / texture.baseTexture.height);
+    var scaleX =  (this._width / texture.baseTexture.width) * this._tileScaleOffset.x;
+    var scaleY =  (this._height / texture.baseTexture.height) * this._tileScaleOffset.y;
 
     scaleX /= this.tileScale.x;
     scaleY /= this.tileScale.y;
@@ -415,6 +415,10 @@ TilingSprite.prototype.generateTilingTexture = function (renderer, texture, forc
         renderTexture.render( tempSprite, null, true, false );
 
         renderer.setRenderTarget(cachedRenderTarget);
+
+
+        this._tileScaleOffset.x = tempSprite.worldTransform.a;
+        this._tileScaleOffset.y = tempSprite.worldTransform.d;
 
         this._tilingTexture = renderTexture;
     }
