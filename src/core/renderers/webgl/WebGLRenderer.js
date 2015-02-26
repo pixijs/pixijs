@@ -42,7 +42,7 @@ function WebGLRenderer(width, height, options)
      * The type of this renderer as a standardised const
      *
      * @member {number}
-     * 
+     *
      */
     this.type = CONST.RENDERER_TYPE.WEBGL;
 
@@ -141,7 +141,7 @@ function WebGLRenderer(width, height, options)
 
     /**
      * object renderer @alvin
-     * @member {ObjectRenderer} 
+     * @member {ObjectRenderer}
      */
     this.currentRenderer = new ObjectRenderer(this);
 
@@ -242,7 +242,6 @@ WebGLRenderer.prototype.render = function (object)
     var gl = this.gl;
 
     // make sure we are bound to the main frame buffer
-    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
     if (this.clearBeforeRender)
     {
@@ -266,7 +265,7 @@ WebGLRenderer.prototype.render = function (object)
  *
  * @param displayObject {DisplayObject} The DisplayObject to render
  * @param renderTarget {RenderTarget} The render target to use to render this display object
- * 
+ *
  */
 WebGLRenderer.prototype.renderDisplayObject = function (displayObject, renderTarget)//projection, buffer)
 {
@@ -288,7 +287,7 @@ WebGLRenderer.prototype.renderDisplayObject = function (displayObject, renderTar
  * Changes the current renderer to the one given in parameter
  *
  * @param objectRenderer {Object} TODO @alvin
- * 
+ *
  */
 WebGLRenderer.prototype.setObjectRenderer = function (objectRenderer)
 {
@@ -306,10 +305,14 @@ WebGLRenderer.prototype.setObjectRenderer = function (objectRenderer)
  * Changes the current render target to the one given in parameter
  *
  * @param renderTarget {RenderTarget} the new render target
- * 
+ *
  */
 WebGLRenderer.prototype.setRenderTarget = function (renderTarget)
 {
+    if( this.currentRenderTarget === renderTarget)
+    {
+        return;
+    }
     // TODO - maybe down the line this should be a push pos thing? Leaving for now though.
     this.currentRenderTarget = renderTarget;
     this.currentRenderTarget.activate();

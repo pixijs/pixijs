@@ -152,6 +152,9 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
         this.filterManager.onContextChange();
         this.filterManager.resize(width, height);
         this.render = this.renderWebGL;
+
+        // the creation of a filter manager unbinds the buffers..
+        this.renderer.currentRenderer.start();
     }
     else
     {
@@ -293,6 +296,8 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, up
     this.renderer.renderDisplayObject(displayObject, this.textureBuffer);
 
     this.renderer.filterManager = temp;
+
+
 };
 
 

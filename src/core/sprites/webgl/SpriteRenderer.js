@@ -386,25 +386,29 @@ SpriteRenderer.prototype.flush = function ()
             {
                 currentShader = nextShader;
 
+
+
                 shader = currentShader.shaders ? currentShader.shaders[gl.id] : currentShader;
 
                 if (!shader)
                 {
-                    shader = new Shader(this.renderer.shaderManager, currentShader.vertexSrc, currentShader.fragmentSrc, currentShader.uniforms);
+                    shader = currentShader.getShader(this.renderer);
 
-                    if (currentShader.shaders) {
-                        currentShader.shaders[gl.id] = shader;
-                    }
                 }
 
                 // set shader function???
                 this.renderer.shaderManager.setShader(shader);
 
-                ///console.log(shader.uniforms.projectionMatrix);
+                //TODO - i KNOW this can be optimised! Once v3 is stable il look at this next...
+                shader.uniforms.projectionMatrix.value = this.renderer.currentRenderTarget.projectionMatrix.toArray(true);
+                //Make this a little more dynamic / intelligent!
+                shader.syncUniforms();
 
                 // both thease only need to be set if they are changing..
                 // set the projection
-                gl.uniformMatrix3fv(shader.uniforms.projectionMatrix._location, false, this.renderer.currentRenderTarget.projectionMatrix.toArray(true));
+                //gl.uniformMatrix3fv(shader.uniforms.projectionMatrix._location, false, this.renderer.currentRenderTarget.projectionMatrix.toArray(true));
+
+
             }
         }
 

@@ -129,6 +129,7 @@ Quad.prototype.upload = function()
 {
     var gl = this.gl;
 
+    // TODO could probably be pushed into one upload!
     gl.bindBuffer( gl.ARRAY_BUFFER, this.vertexBuffer );
 
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vertices);

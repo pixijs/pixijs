@@ -216,7 +216,7 @@ FilterManager.prototype.getRenderTarget = function ( clear )
     return renderTarget;
 };
 
-/* 
+/*
  * Returns a RenderTarget to the internal pool
  * @param renderTarget {RenderTarget} The RenderTarget we want to return to the pool
  */
@@ -225,11 +225,11 @@ FilterManager.prototype.returnRenderTarget = function (renderTarget)
     this.texturePool.push( renderTarget );
 };
 
-/* 
+/*
  * Applies the filter
  * @param shader {Shader} The shader to upload
  * @param inputTarget {RenderTarget}
- * @param outputTarget {RenderTarget} 
+ * @param outputTarget {RenderTarget}
  * @param clear {boolean} Whether or not we want to clear the outputTarget
  */
 FilterManager.prototype.applyFilter = function (shader, inputTarget, outputTarget, clear)
@@ -262,9 +262,9 @@ FilterManager.prototype.applyFilter = function (shader, inputTarget, outputTarge
     gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0 );
 };
 
-/* 
- * Calculates the mapped matrix 
- * @param filterArea {Rectangle} The filter area 
+/*
+ * Calculates the mapped matrix
+ * @param filterArea {Rectangle} The filter area
  * @param sprite {Sprite} the target sprite
  * @param outputMatrix {Matrix} @alvin
  */
@@ -335,7 +335,7 @@ FilterManager.prototype.calculateMappedMatrix = function (filterArea, sprite, ou
     // return transform;
 };
 
-/* 
+/*
  * Constrains the filter area to the texture size
  * @param filterArea {Rectangle} The filter area we want to cap
  */
@@ -364,7 +364,7 @@ FilterManager.prototype.capFilterArea = function (filterArea)
     }
 };
 
-/* 
+/*
  * Resizes all the render targets in the pool
  * @param width {number} the new width
  * @param height {number} the new height

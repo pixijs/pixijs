@@ -43,7 +43,7 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
 
     /**
      * The size of the object as a rectangle
-     * @member {Rectangle} 
+     * @member {Rectangle}
      */
     this.size = new math.Rectangle(0, 0, 1, 1);
 
@@ -54,7 +54,7 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
     this.resolution = resolution || CONST.RESOLUTION;
 
     /**
-     * The projection matrix 
+     * The projection matrix
      * @member {Matrix}
      */
     this.projectionMatrix = new math.Matrix();
@@ -66,7 +66,7 @@ var RenderTarget = function(gl, width, height, scaleMode, resolution, root)
     this.transform = null;
 
     /**
-     * 
+     *
      * @member {Rectangle}
      */
     this.frame = null;
@@ -158,10 +158,14 @@ module.exports = RenderTarget;
 * Clears the filter texture.
 *
 */
-RenderTarget.prototype.clear = function()
+RenderTarget.prototype.clear = function(bind)
 {
     var gl = this.gl;
-    gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer);
+    if(bind)
+    {
+        gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer);
+    }
+
     gl.clearColor(0,0,0,0);
     gl.clear(gl.COLOR_BUFFER_BIT);
 };
