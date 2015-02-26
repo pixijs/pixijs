@@ -445,7 +445,7 @@ TilingSprite.prototype.generateTilingTexture = function (renderer, texture, forc
  * Checks if a point is inside this tiling sprite
  * @param point {Point} the point to check
  */
-TilingSprite.prototype.hitTest = function( point )
+TilingSprite.prototype.containsPoint = function( point )
 {
     this.worldTransform.applyInverse(point,  tempPoint);
 

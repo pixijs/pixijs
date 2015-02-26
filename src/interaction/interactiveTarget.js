@@ -10,10 +10,4 @@ core.DisplayObject.prototype.defaultCursor = 'pointer';
 core.DisplayObject.prototype._over = false;
 core.DisplayObject.prototype._touchDown = false;
 
-
-core.Sprite.prototype.hitTest = core.Sprite.prototype.containsPoint;
-
-
-core.Graphics.prototype.hitTest = core.Graphics.prototype.containsPoint;
-
 module.exports = {};

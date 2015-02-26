@@ -361,9 +361,9 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
                 displayObject.worldTransform.applyInverse(point,  this._tempPoint);
                 hit = displayObject.hitArea.contains( this._tempPoint.x, this._tempPoint.y );
             }
-            else if(displayObject.hitTest)
+            else if(displayObject.containsPoint)
             {
-                hit = displayObject.hitTest(point);
+                hit = displayObject.containsPoint(point);
             }
         }
 
@@ -725,7 +725,7 @@ InteractionManager.prototype.processTouchMove = function ( displayObject, hit )
 
 /**
  * Grabs an interaction data object from the internal pool
- * 
+ *
  * @param touchEvent {EventData} The touch event we need to pair with an interactionData object
  *
  * @private
