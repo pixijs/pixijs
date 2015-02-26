@@ -520,5 +520,5 @@ TilingSprite.fromFrame = function (frameId,width,height)
  */
 TilingSprite.fromImage = function (imageId, width, height, crossorigin, scaleMode)
 {
-    return new Sprite(Texture.fromImage(imageId, crossorigin, scaleMode));
+    return new TilingSprite(Texture.fromImage(imageId, crossorigin, scaleMode),width,height);
 };

@@ -10,5 +10,5 @@
  */
 module.exports = {
     Spine:      require('./Spine'),
-    runtime:    require('./SpineRuntime')
+    SpineRuntime:    require('./SpineRuntime')
 };

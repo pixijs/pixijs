@@ -25,6 +25,7 @@ var Container = require('../display/Container');
  * @memberof PIXI
  *
  * @param size {number} The number of images in the SpriteBatch before it flushes.
+ * @param properties {object} The properties to be uploaded
  */
 function ParticleContainer(size, properties)
 {
@@ -32,11 +33,41 @@ function ParticleContainer(size, properties)
 
     // set properties to be dynamic (true) / static (false)
     // TODO this could be easier to understand!
+    /* this._properties = {
+        scale : false,
+        position : true,
+        rotation : false,
+        uvs : false,
+        alpha : false
+     * }
+     */
+    /**
+     * @member {object}
+     * @private
+     */
     this._properties = properties || [false, true, false, false, false];
+    /**
+     * @member {number}
+     * @private
+     */
     this._size = size || 15000;
+
+    /**
+     * @member {WebGLBuffer}
+     * @private
+     */
     this._buffers = null;
+
+    /**
+     * @member {boolean}
+     * @private
+     */
     this._updateStatic = false;
 
+    /**
+     * @member {boolean}
+     * 
+     */
     this.interactiveChildren = false;
 
 }

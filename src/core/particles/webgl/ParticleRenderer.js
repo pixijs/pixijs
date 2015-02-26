@@ -97,7 +97,7 @@ ParticleRenderer.prototype.onContextChange = function ()
 
 
     this.properties = [
-    //verticiesData
+    //verticesData
     {
         attribute:this.shader.attributes.aVertexPosition,
         dynamic:false,
