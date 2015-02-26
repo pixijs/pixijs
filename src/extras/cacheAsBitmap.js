@@ -40,7 +40,7 @@ Object.defineProperties(DisplayObject.prototype, {
                 this._originalGetBounds = this.getBounds;
 
 
-                this._originalHitTest = this.hitTest;
+                this._originalContainesPoint = this.containsPoint;
 
                 this.renderWebGL = this._renderCachedWebGL;
                 this.renderCanvas = this._renderCachedCanvas;
@@ -60,7 +60,7 @@ Object.defineProperties(DisplayObject.prototype, {
                 this.getBounds = this._originalGetBounds;
 
                 this.updateTransform = this._originalUpdateTransform;
-                this.hitTest = this._originalHitTest;
+                this.containsPoint = this._originalContainesPoint;
             }
         }
     }
@@ -127,7 +127,7 @@ DisplayObject.prototype._initCachedDisplayObject = function( renderer )
     this._cachedSprite.anchor.y = -( bounds.y / bounds.height );
 
     // map the hit test..
-    this.hitTest = this._cachedSprite.hitTest.bind(this._cachedSprite);
+    this.containsPoint = this._cachedSprite.containsPoint.bind(this._cachedSprite);
 };
 
 
