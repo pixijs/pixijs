@@ -67,7 +67,7 @@ function SpriteRenderer(renderer)
     this.positions = new Float32Array(this.vertices);
 
     /**
-     * Holds the color components 
+     * Holds the color components
      *
      * @member {Uint32Array}
      */
@@ -390,8 +390,11 @@ SpriteRenderer.prototype.flush = function ()
 
                 if (!shader)
                 {
-                    shader = new Shader(this.renderer.shaderManager, null, currentShader.fragmentSrc, currentShader.uniforms);
-                    currentShader.shaders[gl.id] = shader;
+                    shader = new Shader(this.renderer.shaderManager, currentShader.vertexSrc, currentShader.fragmentSrc, currentShader.uniforms);
+
+                    if (currentShader.shaders) {
+                        currentShader.shaders[gl.id] = shader;
+                    }
                 }
 
                 // set shader function???

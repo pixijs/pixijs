@@ -47,14 +47,14 @@ function AbstractFilter(vertexSrc, fragmentSrc, uniforms)
      * @member {string[]}
      * @private
      */
-    this.vertexSrc = vertexSrc;
+    this.vertexSrc = vertexSrc || DefaultShader.defaultVertexSrc;
 
     /**
      * The code of the frament shader
      * @member {string[]}
      * @private
      */
-    this.fragmentSrc = fragmentSrc;
+    this.fragmentSrc = fragmentSrc || DefaultShader.defaultFragmentSrc;
 
     //TODO a reminder - would be cool to have lower res filters as this would give better performance.
 
@@ -65,10 +65,10 @@ function AbstractFilter(vertexSrc, fragmentSrc, uniforms)
 AbstractFilter.prototype.constructor = AbstractFilter;
 module.exports = AbstractFilter;
 
-/* 
+/*
  * Grabs a shader from the current renderer
  * @param renderer {WebGLRenderer} The renderer to retrieve the shader from
- * 
+ *
  */
 AbstractFilter.prototype.getShader = function (renderer)
 {
@@ -91,11 +91,11 @@ AbstractFilter.prototype.getShader = function (renderer)
     return shader;
 };
 
-/* 
+/*
  * Applies the filter
  * @param renderer {WebGLRenderer} The renderer to retrieve the filter from
- * @param input {RenderTarget} 
- * @param output {RenderTarget} 
+ * @param input {RenderTarget}
+ * @param output {RenderTarget}
  * @param clear {boolean} Whether or not we want to clear the outputTarget
  */
 AbstractFilter.prototype.applyFilter = function (renderer, input, output, clear)
