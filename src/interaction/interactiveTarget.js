@@ -1,4 +1,5 @@
-var core = require('../core');
+var core = require('../core'),
+	extras = require('../extras');
 
 
 core.DisplayObject.prototype.interactive = false;
@@ -15,5 +16,7 @@ core.Sprite.prototype.hitTest = core.Sprite.prototype.containsPoint;
 
 
 core.Graphics.prototype.hitTest = core.Graphics.prototype.containsPoint;
+
+extras.TilingSprite.prototype.hitTest = extras.TilingSprite.prototype.containsPoint;
 
 module.exports = {};
