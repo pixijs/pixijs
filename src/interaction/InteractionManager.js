@@ -617,8 +617,8 @@ InteractionManager.prototype.processTouchStart = function ( displayObject, hit )
 
 
 /**
- * [onTouchEnd description]
- * @param event {type} [description]
+ * Is called when a touch ends on the renderer element
+ * @param event {Event} The DOM event of a touch ending on the renderer view
  *
  */
 InteractionManager.prototype.onTouchEnd = function (event)
@@ -725,8 +725,8 @@ InteractionManager.prototype.processTouchMove = function ( displayObject, hit )
 
 /**
  * Grabs an interaction data object from the internal pool
- *
- * @param touchEvent {} The touch event we need to pair with a touchData object
+ * 
+ * @param touchEvent {EventData} The touch event we need to pair with an interactionData object
  *
  * @private
  */
@@ -748,7 +748,7 @@ InteractionManager.prototype.getTouchData = function (touchEvent)
 /**
  * Returns an interaction data object to the internal pool
  *
- * @param touchEvent {InteractionData} The touch data object we want to return to the pool
+ * @param touchData {InteractionData} The touch data object we want to return to the pool
  *
  * @private
  */
@@ -756,8 +756,6 @@ InteractionManager.prototype.returnTouchData = function ( touchData )
 {
     this.interactiveDataPool.push( touchData );
 };
-
-
 
 core.WebGLRenderer.registerPlugin('interaction', InteractionManager);
 core.CanvasRenderer.registerPlugin('interaction', InteractionManager);

@@ -2,53 +2,64 @@
  * An object containing WebGL specific properties to be used by the WebGL renderer
  *
  * @class
+ * @memberof PIXI
  * @param gl {WebGLRenderingContext} the current WebGL drawing context
  * @private
  */
 function WebGLGraphicsData(gl) {
 
-    /*
-     * @member {WebGLRenderingContext} the current WebGL drawing context
+    /**
+     * The current WebGL drawing context
+     * 
+     * @member {WebGLRenderingContext}
      */
     this.gl = gl;
 
     //TODO does this need to be split before uploding??
-    /*
-     * @member {Array} An array of color components (r,g,b)
+    /**
+     * An array of color components (r,g,b)
+     * @member {Array} 
      */
     this.color = [0,0,0]; // color split!
 
-    /*
-     * @member {Array} An array of points to draw
+    /**
+     * An array of points to draw
+     * @member {Array} 
      */
     this.points = [];
 
-    /*
-     * @member {Array} The indices of the vertices
+    /**
+     * The indices of the vertices
+     * @member {Array} 
      */
     this.indices = [];
-    /*
-     * @member {WebGLBuffer} The main buffer
+    /**
+     * The main buffer
+     * @member {WebGLBuffer} 
      */
     this.buffer = gl.createBuffer();
 
-    /*
-     * @member {WebGLBuffer} The index buffer
+    /**
+     * The index buffer
+     * @member {WebGLBuffer}
      */
     this.indexBuffer = gl.createBuffer();
 
-    /*
-     * @member {number} todo @alvin
+    /**
+     * todo @alvin
+     * @member {number} 
      */
     this.mode = 1;
 
-    /*
-     * @member {number} The alpha of the graphics
+    /**
+     * The alpha of the graphics
+     * @member {number}
      */
     this.alpha = 1;
 
-    /*
-     * @member {boolean} Whether this graphics is dirty or not
+    /**
+     * Whether this graphics is dirty or not
+     * @member {boolean} 
      */
     this.dirty = true;
 }

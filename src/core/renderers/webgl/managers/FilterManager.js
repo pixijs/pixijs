@@ -6,6 +6,7 @@ var WebGLManager = require('./WebGLManager'),
 /**
  * @class
  * @memberof PIXI
+ * @extends WebGLManager
  * @param renderer {WebGLRenderer} The renderer this manager works for.
  */
 function FilterManager(renderer)
@@ -41,6 +42,10 @@ FilterManager.prototype.constructor = FilterManager;
 module.exports = FilterManager;
 
 
+/**
+ * Called when there is a WebGL context change.
+ *
+ */
 FilterManager.prototype.onContextChange = function ()
 {
     this.texturePool.length = 0;
@@ -117,7 +122,7 @@ FilterManager.prototype.pushFilter = function (target, filters)
 
 
 /**
- * Removes the last filter from the filter stack and doesn't return it.
+ * Removes the last filter from the filter stack and returns it.
  *
  */
 FilterManager.prototype.popFilter = function ()
@@ -192,6 +197,12 @@ FilterManager.prototype.popFilter = function ()
     return filterData.filter;
 };
 
+/**
+ * Grabs an render target from the internal pool
+ *
+ * @param clear {boolean} Whether or not we need to clear the RenderTarget
+ * @return {RenderTarget}
+ */
 FilterManager.prototype.getRenderTarget = function ( clear )
 {
     var renderTarget = this.texturePool.pop() || new RenderTarget(this.renderer.gl, this.textureSize.width, this.textureSize.height, null, this.renderer.resolution);
@@ -205,11 +216,22 @@ FilterManager.prototype.getRenderTarget = function ( clear )
     return renderTarget;
 };
 
+/* 
+ * Returns a RenderTarget to the internal pool
+ * @param renderTarget {RenderTarget} The RenderTarget we want to return to the pool
+ */
 FilterManager.prototype.returnRenderTarget = function (renderTarget)
 {
     this.texturePool.push( renderTarget );
 };
 
+/* 
+ * Applies the filter
+ * @param shader {Shader} The shader to upload
+ * @param inputTarget {RenderTarget}
+ * @param outputTarget {RenderTarget} 
+ * @param clear {boolean} Whether or not we want to clear the outputTarget
+ */
 FilterManager.prototype.applyFilter = function (shader, inputTarget, outputTarget, clear)
 {
     var gl = this.renderer.gl;
@@ -240,7 +262,12 @@ FilterManager.prototype.applyFilter = function (shader, inputTarget, outputTarge
     gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0 );
 };
 
-
+/* 
+ * Calculates the mapped matrix 
+ * @param filterArea {Rectangle} The filter area 
+ * @param sprite {Sprite} the target sprite
+ * @param outputMatrix {Matrix} @alvin
+ */
 // TODO playing around here.. this is temporary - (will end up in the shader)
 FilterManager.prototype.calculateMappedMatrix = function (filterArea, sprite, outputMatrix)
 {
@@ -308,6 +335,10 @@ FilterManager.prototype.calculateMappedMatrix = function (filterArea, sprite, ou
     // return transform;
 };
 
+/* 
+ * Constrains the filter area to the texture size
+ * @param filterArea {Rectangle} The filter area we want to cap
+ */
 FilterManager.prototype.capFilterArea = function (filterArea)
 {
     if (filterArea.x < 0)
@@ -333,6 +364,11 @@ FilterManager.prototype.capFilterArea = function (filterArea)
     }
 };
 
+/* 
+ * Resizes all the render targets in the pool
+ * @param width {number} the new width
+ * @param height {number} the new height
+ */
 FilterManager.prototype.resize = function ( width, height )
 {
     this.textureSize.width = width;

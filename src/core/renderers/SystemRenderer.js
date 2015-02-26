@@ -151,11 +151,9 @@ function SystemRenderer(system, width, height, options)
 
     this.backgroundColor = options.backgroundColor || this._backgroundColor; // run bg color setter
 
-
-
     /**
      * This temporary display object used as the parent of the currently being rendered item
-     * @member DisplayObject
+     * @member {DisplayObject}
      * @private
      */
     this._tempDisplayObjectParent = {worldTransform:new math.Matrix(), worldAlpha:1, children:[]};

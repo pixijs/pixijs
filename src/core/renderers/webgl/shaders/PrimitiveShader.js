@@ -3,6 +3,7 @@ var Shader = require('./Shader');
 /**
  * @class
  * @memberof PIXI
+ * @extends Shader
  * @param shaderManager {ShaderManager} The webgl shader manager this shader works for.
  */
 function PrimitiveShader(shaderManager)

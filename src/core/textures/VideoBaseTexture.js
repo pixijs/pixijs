@@ -184,7 +184,6 @@ VideoBaseTexture.fromVideo = function (video, scaleMode)
  * Helper function that creates a new BaseTexture based on the given video element.
  * This BaseTexture can then be used to create a texture
  *
- * @alias fromUrls
  * @static
  * @param videoSrc {string|object|string[]|object[]} The URL(s) for the video.
  * @param [videoSrc.src] {string} One of the source urls for the video

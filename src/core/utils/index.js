@@ -185,11 +185,11 @@ var utils = module.exports = {
                 'color: #ff2424; background: #fff'
             ];
 
-            console.log.apply(console, args); //jshint ignore:line
+            window.console.log.apply(console, args); //jshint ignore:line
         }
         else if (window.console)
         {
-            console.log('Pixi.js ' + CONST.VERSION + ' - ' + type + ' - http://www.pixijs.com/'); //jshint ignore:line
+            window.console.log('Pixi.js ' + CONST.VERSION + ' - ' + type + ' - http://www.pixijs.com/'); //jshint ignore:line
         }
 
         utils._saidHello = true;

@@ -2,14 +2,12 @@ var AbstractFilter = require('./AbstractFilter'),
     math =  require('../../../math');
 
 /**
- * The SpriteMaskFilter class uses the pixel values from the specified texture (called the displacement map) to perform a displacement of an object.
- * You can use this filter to apply all manor of crazy warping effects
- * Currently the r property of the texture is used to offset the x and the g property of the texture is used to offset the y.
+ * The SpriteMaskFilter class 
  *
  * @class
  * @extends AbstractFilter
  * @memberof PIXI
- * @param texture {Texture} The texture used for the displacement map * must be power of 2 texture at the moment
+ * @param sprite {Sprite} the target sprite
  */
 function SpriteMaskFilter(sprite)
 {
@@ -72,6 +70,13 @@ SpriteMaskFilter.prototype = Object.create(AbstractFilter.prototype);
 SpriteMaskFilter.prototype.constructor = SpriteMaskFilter;
 module.exports = SpriteMaskFilter;
 
+/**
+ * Applies the filter ? @alvin
+ *
+ * @param renderer {WebGLRenderer} A reference to the WebGL renderer
+ * @param input {RenderTarget} 
+ * @param output {RenderTarget} 
+ */
 SpriteMaskFilter.prototype.applyFilter = function (renderer, input, output)
 {
     var filterManager = renderer.filterManager;

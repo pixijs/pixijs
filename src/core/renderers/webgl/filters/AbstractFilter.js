@@ -6,7 +6,8 @@ var DefaultShader = require('../shaders/TextureShader');
  *
  * @class
  * @memberof PIXI
- * @param fragmentSrc {string|string[]} The fragment source in an array of strings.
+ * @param vertexSrc {string|string[]} The vertex shader source as an array of strings.
+ * @param fragmentSrc {string|string[]} The fragment shader source as an array of strings.
  * @param uniforms {object} An object containing the uniforms for this filter.
  */
 function AbstractFilter(vertexSrc, fragmentSrc, uniforms)
@@ -28,6 +29,7 @@ function AbstractFilter(vertexSrc, fragmentSrc, uniforms)
     this.shaders = [];
 
     /**
+     * The extra padding that the filter might need
      * @member {number}
      */
     this.padding = 0;
@@ -63,6 +65,11 @@ function AbstractFilter(vertexSrc, fragmentSrc, uniforms)
 AbstractFilter.prototype.constructor = AbstractFilter;
 module.exports = AbstractFilter;
 
+/* 
+ * Grabs a shader from the current renderer
+ * @param renderer {WebGLRenderer} The renderer to retrieve the shader from
+ * 
+ */
 AbstractFilter.prototype.getShader = function (renderer)
 {
     var gl = renderer.gl;
@@ -84,6 +91,13 @@ AbstractFilter.prototype.getShader = function (renderer)
     return shader;
 };
 
+/* 
+ * Applies the filter
+ * @param renderer {WebGLRenderer} The renderer to retrieve the filter from
+ * @param input {RenderTarget} 
+ * @param output {RenderTarget} 
+ * @param clear {boolean} Whether or not we want to clear the outputTarget
+ */
 AbstractFilter.prototype.applyFilter = function (renderer, input, output, clear)
 {
     var shader = this.getShader(renderer);

@@ -3,6 +3,7 @@ var Shader = require('./Shader');
 /**
  * @class
  * @memberof PIXI
+ * @extends Shader
  * @param shaderManager {ShaderManager} The webgl shader manager this shader works for.
  * @param [vertexSrc] {string} The source of the vertex shader.
  * @param [fragmentSrc] {string} The source of the fragment shader.
