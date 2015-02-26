@@ -227,9 +227,9 @@ FilterManager.prototype.returnRenderTarget = function (renderTarget)
 
 /* 
  * Applies the filter
- * @param shader {Shader} 
- * @param inputTarget {Any}
- * @param outputTarget {Any} 
+ * @param shader {Shader} The shader to upload
+ * @param inputTarget {RenderTarget}
+ * @param outputTarget {RenderTarget} 
  * @param clear {boolean} Whether or not we want to clear the outputTarget
  */
 FilterManager.prototype.applyFilter = function (shader, inputTarget, outputTarget, clear)

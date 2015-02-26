@@ -18,12 +18,14 @@ function Shader(shaderManager, vertexSrc, fragmentSrc, uniforms, attributes)
     }
 
     /**
+     * A unique id
      * @member {number}
      * @readonly
      */
     this.uuid = utils.uuid();
 
     /**
+     * The current WebGL drawing context
      * @member {WebGLRenderingContext}
      * @readonly
      */
@@ -59,14 +61,14 @@ function Shader(shaderManager, vertexSrc, fragmentSrc, uniforms, attributes)
     this.textureCount = 1;
 
     /**
-     * The vertex shader.
+     * The vertex shader as an array of strings
      *
      * @member {Array}
      */
     this.vertexSrc = vertexSrc;
 
     /**
-     * The fragment shader.
+     * The fragment shader as an array of strings
      *
      * @member {Array}
      */
@@ -94,7 +96,7 @@ Shader.prototype.init = function ()
 
 /*
  * Caches the locations of the uniform for reuse
- * @param key {string} the uniform to cache
+ * @param keys {string} the uniforms to cache
  */
 Shader.prototype.cacheUniformLocations = function (keys)
 {
@@ -106,7 +108,7 @@ Shader.prototype.cacheUniformLocations = function (keys)
 
 /*
  * Caches the locations of the attribute for reuse
- * @param key {string} the attribute to cache
+ * @param keys {string} the attributes to cache
  */
 Shader.prototype.cacheAttributeLocations = function (keys)
 {
@@ -132,6 +134,7 @@ Shader.prototype.cacheAttributeLocations = function (keys)
 
 /*
  * Attaches the shaders and creates the program
+ * @return {WebGLProgram}
  */
 Shader.prototype.compile = function ()
 {

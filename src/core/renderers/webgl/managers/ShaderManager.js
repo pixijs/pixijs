@@ -75,7 +75,7 @@ ShaderManager.prototype.onContextChange = function ()
 };
 
 /**
- * Takes the attributes given in parameters.
+ * Takes the attributes given in parameters and uploads them.
  *
  * @param attribs {Array} attribs
  */
@@ -118,7 +118,7 @@ ShaderManager.prototype.setAttribs = function (attribs)
 /**
  * Sets the current shader.
  *
- * @param shader {Any}
+ * @param shader {Shader} the shader to upload
  */
 ShaderManager.prototype.setShader = function (shader)
 {

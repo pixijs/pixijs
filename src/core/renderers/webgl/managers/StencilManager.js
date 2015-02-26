@@ -16,6 +16,11 @@ WebGLMaskManager.prototype = Object.create(WebGLManager.prototype);
 WebGLMaskManager.prototype.constructor = WebGLMaskManager;
 module.exports = WebGLMaskManager;
 
+/**
+ * Changes the mask stack that is used by this manager
+ * @param stencilMaskStack {StencilMaskStack} The mask stack 
+ *
+ */
 WebGLMaskManager.prototype.setMaskStack = function ( stencilMaskStack )
 {
     this.stencilMaskStack = stencilMaskStack;
@@ -33,8 +38,8 @@ WebGLMaskManager.prototype.setMaskStack = function ( stencilMaskStack )
 };
 
 /**
- * Applies the Mask and adds it to the current filter stack.
- *
+ * Applies the Mask and adds it to the current filter stack. @alvin
+ * 
  * @param graphics {Graphics}
  * @param webGLData {any[]}
  */
@@ -193,6 +198,7 @@ WebGLMaskManager.prototype.bindGraphics = function (graphics, webGLData)
 };
 
 /**
+ * TODO @alvin
  * @param graphics {Graphics}
  * @param webGLData {Array}
  */
@@ -301,7 +307,7 @@ WebGLMaskManager.prototype.destroy = function ()
 /**
  * Applies the Mask and adds it to the current filter stack.
  *
- * @param maskData {any[]}
+ * @param maskData {any[]} The mask data structure to use
  */
 WebGLMaskManager.prototype.pushMask = function (maskData)
 {

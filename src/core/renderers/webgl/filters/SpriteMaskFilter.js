@@ -74,8 +74,8 @@ module.exports = SpriteMaskFilter;
  * Applies the filter ? @alvin
  *
  * @param renderer {WebGLRenderer} A reference to the WebGL renderer
- * @param input {}
- * @param output {}
+ * @param input {RenderTarget} 
+ * @param output {RenderTarget} 
  */
 SpriteMaskFilter.prototype.applyFilter = function (renderer, input, output)
 {

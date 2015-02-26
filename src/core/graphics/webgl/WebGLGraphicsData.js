@@ -9,7 +9,7 @@
 function WebGLGraphicsData(gl) {
 
     /**
-     * the current WebGL drawing context
+     * The current WebGL drawing context
      * 
      * @member {WebGLRenderingContext}
      */
