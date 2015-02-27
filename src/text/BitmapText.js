@@ -341,9 +341,4 @@ BitmapText.prototype.updateTransform = function ()
     this.containerUpdateTransform();
 };
 
-BitmapText.prototype.setText = function ()
-{
-    window.console.warn(" setText is now deprecated, please use the text property, e.g : myBitmapText.text = 'my text'; ");
-};
-
 BitmapText.fonts = {};
