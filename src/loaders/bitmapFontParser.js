@@ -1,5 +1,6 @@
 var Resource = require('resource-loader').Resource,
-    core = require('../core');
+    core = require('../core'),
+    text = require('../text');
 
 module.exports = function ()
 {
@@ -83,6 +84,8 @@ module.exports = function ()
             }
 
             resource.bitmapFont = data;
+
+            text.BitmapText.fonts[data.font] = data;
 
             next();
         });

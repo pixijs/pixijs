@@ -17,6 +17,14 @@ DisplayObject.prototype._cachedSprite = null;
 
 Object.defineProperties(DisplayObject.prototype, {
 
+
+    /**
+     * Set this to true if you want this display object to be cached as a bitmap.
+     * This basically takes a snap shot of the display object as it is at that moment. It can provide a performance benefit for complex static displayObjects.
+     * To remove simply set this property to 'null'
+     * @member
+     * @memberof DisplayObject#
+     */
     cacheAsBitmap: {
         get: function ()
         {
@@ -60,12 +68,16 @@ Object.defineProperties(DisplayObject.prototype, {
                 this.getBounds = this._originalGetBounds;
 
                 this.updateTransform = this._originalUpdateTransform;
-                this.containsPoint = this._originalContainesPoint;
+                this.containsPoint = this._originalContainsPoint;
             }
         }
     }
 });
-
+/**
+* Renders a cached version of the sprite with WebGL
+* @param renderer {WebGLRenderer} the WebGL renderer
+* @private
+*/
 DisplayObject.prototype._renderCachedWebGL = function(renderer)
 {
     this._initCachedDisplayObject( renderer );
@@ -76,12 +88,18 @@ DisplayObject.prototype._renderCachedWebGL = function(renderer)
     renderer.plugins.sprite.render( this._cachedSprite );
 };
 
+/**
+* Prepares the WebGL renderer to cache the sprite
+* @param renderer {WebGLRenderer} the WebGL renderer
+* @private
+*/
 DisplayObject.prototype._initCachedDisplayObject = function( renderer )
 {
     if(this._cachedSprite)
     {
         return;
     }
+
 
     // first we flush anything left in the renderer (otherwise it would get rendered to the cached texture)
     renderer.currentRenderer.flush();
@@ -117,7 +135,7 @@ DisplayObject.prototype._initCachedDisplayObject = function( renderer )
 
     this.renderWebGL     = this._renderCachedWebGL;
     this.updateTransform = this.displayObjectUpdateTransform;
-    this.getBounds       = this._getCahcedBounds;
+    this.getBounds       = this._getCachedBounds;
 
 
     // create our cached sprite
@@ -130,7 +148,11 @@ DisplayObject.prototype._initCachedDisplayObject = function( renderer )
     this.containsPoint = this._cachedSprite.containsPoint.bind(this._cachedSprite);
 };
 
-
+/**
+* Renders a cached version of the sprite with canvas
+* @param renderer {CanvasRenderer} the Canvas renderer
+* @private
+*/
 DisplayObject.prototype._renderCachedCanvas = function(renderer)
 {
     this._initCachedDisplayObjectCanvas( renderer );
@@ -141,6 +163,11 @@ DisplayObject.prototype._renderCachedCanvas = function(renderer)
 };
 
 //TODO this can be the same as the webGL verison.. will need to do a little tweaking first though..
+/**
+* Prepares the Canvas renderer to cache the sprite
+* @param renderer {CanvasRenderer} the Canvas renderer
+* @private
+*/
 DisplayObject.prototype._initCachedDisplayObjectCanvas = function( renderer )
 {
     if(this._cachedSprite)
@@ -171,7 +198,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function( renderer )
 
     this.renderCanvas = this._renderCachedCanvas;
     this.updateTransform = this.displayObjectUpdateTransform;
-    this.getBounds  = this._getCahcedBounds;
+    this.getBounds  = this._getCachedBounds;
 
 
     // create our cached sprite
@@ -182,13 +209,23 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function( renderer )
     this.hitTest = this._cachedSprite.hitTest.bind(this._cachedSprite);
 };
 
-DisplayObject.prototype._getCahcedBounds = function()
+/**
+* Calculates the bounds of the cached sprite
+*
+* @private
+*/
+DisplayObject.prototype._getCachedBounds = function()
 {
     this._cachedSprite._currentBounds = null;
 
     return this._cachedSprite.getBounds();
 };
 
+/**
+* Destroys the cached sprite.
+*
+* @private
+*/
 DisplayObject.prototype._destroyCachedDisplayObject = function()
 {
     this._cachedSprite._texture.destroy();
