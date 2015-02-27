@@ -129,6 +129,8 @@ function Texture(baseTexture, frame, crop, trim, rotate)
             frame = new math.Rectangle(0, 0, baseTexture.width, baseTexture.height);
         }
         this.frame = frame;
+
+
     }
     else
     {
@@ -215,7 +217,7 @@ Texture.prototype.onBaseTextureLoaded = function ()
         this.frame = this._frame;
     }
 
-    this.dispatchEvent( { type: 'update', content: this } );
+    this.emit( 'update', this );
 };
 
 /**
@@ -315,6 +317,11 @@ Texture.fromCanvas = function (canvas, scaleMode)
 Texture.fromVideo = function (video, scaleMode)
 {
     return new Texture(VideoBaseTexture.baseTextureFromVideo(video, scaleMode));
+};
+
+Texture.fromVideoUrl = function (videoUrl, scaleMode)
+{
+    return new Texture(VideoBaseTexture.fromUrl(videoUrl, scaleMode));
 };
 
 /**

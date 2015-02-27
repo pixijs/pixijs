@@ -213,7 +213,7 @@ VideoBaseTexture.fromUrl = function (videoSrc, scaleMode)
     video.load();
     video.play();
 
-    return VideoBaseTexture.textureFromVideo(video, scaleMode);
+    return VideoBaseTexture.fromVideo(video, scaleMode);
 };
 
 VideoBaseTexture.fromUrls = VideoBaseTexture.fromUrl;
