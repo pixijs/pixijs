@@ -404,6 +404,10 @@ SpriteRenderer.prototype.flush = function ()
                 //Make this a little more dynamic / intelligent!
                 shader.syncUniforms();
 
+                //TODO investigate some kind of texture state managment??
+                // need to make sure this texture is the active one for all the batch swaps..
+                gl.activeTexture(gl.TEXTURE0);
+
                 // both thease only need to be set if they are changing..
                 // set the projection
                 //gl.uniformMatrix3fv(shader.uniforms.projectionMatrix._location, false, this.renderer.currentRenderTarget.projectionMatrix.toArray(true));
@@ -464,7 +468,7 @@ SpriteRenderer.prototype.start = function ()
     var gl = this.renderer.gl;
 
     // bind the main texture
-    gl.activeTexture(gl.TEXTURE0);
+
 
     // bind the buffers
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);

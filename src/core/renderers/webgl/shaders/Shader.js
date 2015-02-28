@@ -430,7 +430,7 @@ Shader.prototype.syncUniform = function (uniform)
             }
 
             // bind the texture
-            gl.bindTexture(gl.TEXTURE_2D, uniform.value.baseTexture._glTextures[gl.id]);
+            gl.bindTexture(gl.TEXTURE_2D, texture);
 
             // set uniform to texture index
             gl.uniform1i(uniform._location, this.textureCount);
