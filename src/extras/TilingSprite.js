@@ -214,19 +214,9 @@ TilingSprite.prototype._renderWebGL = function (renderer)
  *
  * @param renderer {CanvasRenderer} a reference to the canvas renderer
  */
-TilingSprite.prototype.renderCanvas = function (renderer)
+TilingSprite.prototype._renderCanvas = function (renderer)
 {
-    if (!this.visible || this.alpha <= 0)
-    {
-        return;
-    }
-
     var context = renderer.context;
-
-    if (this._mask)
-    {
-        renderer.maskManager.pushMask(this._mask, renderer);
-    }
 
     context.globalAlpha = this.worldAlpha;
 
@@ -283,16 +273,6 @@ TilingSprite.prototype.renderCanvas = function (renderer)
 
     context.translate(-tilePosition.x + (this.anchor.x * this._width), -tilePosition.y + (this.anchor.y * this._height));
     context.scale(1 / tileScale.x, 1 / tileScale.y);
-
-    if (this._mask)
-    {
-        renderer.maskManager.popMask(renderer);
-    }
-
-    for (i = 0, j = this.children.length; i < j; ++i)
-    {
-        this.children[i].renderCanvas(renderer);
-    }
 };
 
 

@@ -361,9 +361,9 @@ Sprite.prototype.containsPoint = function( point )
 *
 * @param renderer {CanvasRenderer} The renderer
 */
-Sprite.prototype.renderCanvas = function (renderer)
+Sprite.prototype._renderCanvas = function (renderer)
 {
-    if (!this.visible || this.alpha <= 0 || this.texture.crop.width <= 0 || this.texture.crop.height <= 0 || !this.renderable)
+    if (this.texture.crop.width <= 0 || this.texture.crop.height <= 0)
     {
         return;
     }
@@ -372,11 +372,6 @@ Sprite.prototype.renderCanvas = function (renderer)
     {
         renderer.currentBlendMode = this.blendMode;
         renderer.context.globalCompositeOperation = renderer.blendModes[renderer.currentBlendMode];
-    }
-
-    if (this._mask)
-    {
-        renderer.maskManager.pushMask(this._mask, renderer);
     }
 
     //  Ignore null sources
@@ -497,16 +492,6 @@ Sprite.prototype.renderCanvas = function (renderer)
                 height / resolution
             );
         }
-    }
-
-    for (var i = 0, j = this.children.length; i < j; i++)
-    {
-        this.children[i].renderCanvas(renderer);
-    }
-
-    if (this._mask)
-    {
-        renderer.maskManager.popMask(renderer);
     }
 };
 
