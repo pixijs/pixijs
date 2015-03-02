@@ -136,7 +136,6 @@ var utils = module.exports = {
     /**
      * get the resolution of an asset by looking for the prefix
      * used by spritesheets and image urls
-     * TODO make this smarter!
      *
      * @param url {string} the image path
      * @return {boolean}

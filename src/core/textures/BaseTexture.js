@@ -394,7 +394,7 @@ BaseTexture.fromImage = function (imageUrl, crossorigin, scaleMode)
         utils.BaseTextureCache[imageUrl] = baseTexture;
 
         // if there is an @2x at the end of the url we are going to assume its a highres image
-        this.resolution = utils.getResolutionOfUrl(imageUrl);
+        baseTexture.resolution = utils.getResolutionOfUrl(imageUrl);
     }
 
     return baseTexture;
