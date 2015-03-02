@@ -362,7 +362,7 @@ Text.prototype.renderWebGL = function (renderer)
  *
  * @param renderer {CanvasRenderer}
  */
-Text.prototype.renderCanvas = function (renderer)
+Text.prototype._renderCanvas = function (renderer)
 {
     if (this.dirty)
     {
@@ -371,7 +371,7 @@ Text.prototype.renderCanvas = function (renderer)
         this.updateText();
     }
 
-    core.Sprite.prototype.renderCanvas.call(this, renderer);
+    core.Sprite.prototype._renderCanvas.call(this, renderer);
 };
 
 /**

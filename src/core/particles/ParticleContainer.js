@@ -66,7 +66,7 @@ function ParticleContainer(size, properties)
 
     /**
      * @member {boolean}
-     * 
+     *
      */
     this.interactiveChildren = false;
 
