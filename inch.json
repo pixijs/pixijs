@@ -1,8 +1,10 @@
 {
   "files": {
-	// Config file for the docs badge, http://inch-ci.org/github/GoodBoyDigital/pixi.js
+    "included": [
+      "src/**/*.js"
+    ],
     "excluded": [
-      "src/spine/Spine.js"
+      "src/spine/SpineRuntime.js"
     ]
   }
 }

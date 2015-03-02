@@ -10,7 +10,7 @@ var core = require('../core');
  * // in this case the font is in a file called 'desyrel.fnt'
  * var bitmapText = new PIXI.BitmapText("text using a fancy font!", {font: "35px Desyrel", align: "right"});
  * ```
- * 
+ *
  *
  * http://www.angelcode.com/products/bmfont/ for windows or
  * http://www.bmglyph.com/ for mac.
@@ -203,7 +203,7 @@ Object.defineProperties(BitmapText.prototype, {
  */
 BitmapText.prototype.updateText = function ()
 {
-    var data = BitmapText.fonts[this.fontName];
+    var data = BitmapText.fonts[this._style.fontName];
     var pos = new core.math.Point();
     var prevCharCode = null;
     var chars = [];
@@ -275,11 +275,11 @@ BitmapText.prototype.updateText = function ()
     {
         var alignOffset = 0;
 
-        if (this.style.align === 'right')
+        if (this._style.align === 'right')
         {
             alignOffset = maxLineWidth - lineWidths[i];
         }
-        else if (this.style.align === 'center')
+        else if (this._style.align === 'center')
         {
             alignOffset = (maxLineWidth - lineWidths[i]) / 2;
         }
@@ -339,11 +339,6 @@ BitmapText.prototype.updateTransform = function ()
     }
 
     this.containerUpdateTransform();
-};
-
-BitmapText.prototype.setText = function () 
-{
-    window.console.warn(" setText is now deprecated, please use the text property, e.g : myBitmapText.text = 'my text'; ");
 };
 
 BitmapText.fonts = {};

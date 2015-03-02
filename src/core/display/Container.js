@@ -490,7 +490,7 @@ Container.prototype.renderWebGL = function (renderer)
 
 /**
  * To be overridden by the subclass
- * 
+ *
  * @param renderer {WebGLRenderer} The renderer
  * @private
  */
@@ -499,6 +499,16 @@ Container.prototype._renderWebGL = function (renderer)
     // this is where content itself gets rendered...
 };
 
+/**
+ * To be overridden by the subclass
+ *
+ * @param renderer {CanvasRenderer} The renderer
+ * @private
+ */
+Container.prototype._renderCanvas = function (renderer)
+{
+    // this is where content itself gets rendered...
+};
 
 
 /**
@@ -508,6 +518,7 @@ Container.prototype._renderWebGL = function (renderer)
  */
 Container.prototype.renderCanvas = function (renderer)
 {
+    // if not visible or the alpha is 0 then no need to render this
     if (!this.visible || this.alpha <= 0 || !this.renderable)
     {
         return;
@@ -518,6 +529,7 @@ Container.prototype.renderCanvas = function (renderer)
         renderer.maskManager.pushMask(this._mask, renderer);
     }
 
+    this._renderCanvas(renderer);
     for (var i = 0, j = this.children.length; i < j; ++i)
     {
         this.children[i].renderCanvas(renderer);

@@ -80,16 +80,6 @@ var core = module.exports = {
         }
 
         return new core.CanvasRenderer(width, height, options);
-    },
-
-    Stage: function () 
-    {
-        window.console.warn("You don't need to use a PIXI Stage any more, you can simply render any container");
-        return new core.Container();
-    },
-
-    SpriteBatch: function () {
-        window.console.warn("SpriteBatch doesn't exist any more, please use the new ParticleContainer instead");
     }
 };
 
