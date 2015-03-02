@@ -139,6 +139,12 @@ TilingSprite.prototype._onTextureUpdate = function ()
     this._refreshTexture = true;
 };
 
+TilingSprite.prototype._onTextureUpdate = function ()
+{
+    return;
+};
+
+
 /**
  * Renders the object using the WebGL renderer
  *
