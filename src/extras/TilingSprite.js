@@ -396,7 +396,7 @@ TilingSprite.prototype.generateTilingTexture = function (renderer, texture, forc
         return;
     }
 
-    texture = this.originalTexture || this.texture;
+    texture = this.originalTexture || this._texture;
     var frame = texture.frame;
     var targetWidth, targetHeight;
 
@@ -411,7 +411,7 @@ TilingSprite.prototype.generateTilingTexture = function (renderer, texture, forc
         tempSprite.texture = texture;
 
         //TODO not create a new one each time you refresh
-        var renderTexture = new RenderTexture(renderer, targetWidth, targetHeight);
+        var renderTexture = new RenderTexture(renderer, targetWidth, targetHeight, texture.baseTexture.scaleMode, texture.baseTexture.resolution);
 
         tempSprite.worldTransform.a = targetWidth / frame.width;
         tempSprite.worldTransform.d = targetHeight / frame.height;
