@@ -510,11 +510,6 @@ Sprite.prototype.renderCanvas = function (renderer)
     }
 };
 
-Sprite.prototype.setTexture = function ()
-{
-    window.console.warn('setTexture is now deprecated, please use the texture property, e.g : sprite.texture = texture; ');
-};
-
 // some helper functions..
 
 /**

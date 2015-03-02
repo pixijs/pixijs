@@ -553,8 +553,3 @@ Text.prototype.destroy = function (destroyBaseTexture)
 
     this._texture.destroy(destroyBaseTexture === undefined ? true : destroyBaseTexture);
 };
-
-Text.prototype.setText = function () 
-{
-    window.console.warn(" setText is now deprecated, please use the text property, e.g : myText.text = 'my text'; ");
-};

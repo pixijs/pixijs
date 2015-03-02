@@ -1,5 +1,6 @@
 var Resource = require('resource-loader').Resource,
-    core = require('../core');
+    core = require('../core'),
+    text = require('../text');
 
 module.exports = function ()
 {
@@ -83,6 +84,10 @@ module.exports = function ()
             }
 
             resource.bitmapFont = data;
+
+            // I'm leaving this as a temporary fix so we can test the bitmap fonts in v3
+            // but it's very likely to change
+            text.BitmapText.fonts[data.font] = data;
 
             next();
         });
