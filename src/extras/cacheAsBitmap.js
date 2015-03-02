@@ -22,7 +22,8 @@ Object.defineProperties(DisplayObject.prototype, {
      * Set this to true if you want this display object to be cached as a bitmap.
      * This basically takes a snap shot of the display object as it is at that moment. It can provide a performance benefit for complex static displayObjects.
      * To remove simply set this property to 'null'
-     * @member
+     *
+     * @member {boolean}
      * @memberof DisplayObject#
      */
     cacheAsBitmap: {
@@ -75,6 +76,7 @@ Object.defineProperties(DisplayObject.prototype, {
 });
 /**
 * Renders a cached version of the sprite with WebGL
+*
 * @param renderer {WebGLRenderer} the WebGL renderer
 * @private
 */
@@ -90,6 +92,7 @@ DisplayObject.prototype._renderCachedWebGL = function(renderer)
 
 /**
 * Prepares the WebGL renderer to cache the sprite
+*
 * @param renderer {WebGLRenderer} the WebGL renderer
 * @private
 */
@@ -150,6 +153,7 @@ DisplayObject.prototype._initCachedDisplayObject = function( renderer )
 
 /**
 * Renders a cached version of the sprite with canvas
+*
 * @param renderer {CanvasRenderer} the Canvas renderer
 * @private
 */
@@ -165,6 +169,7 @@ DisplayObject.prototype._renderCachedCanvas = function(renderer)
 //TODO this can be the same as the webGL verison.. will need to do a little tweaking first though..
 /**
 * Prepares the Canvas renderer to cache the sprite
+*
 * @param renderer {CanvasRenderer} the Canvas renderer
 * @private
 */
