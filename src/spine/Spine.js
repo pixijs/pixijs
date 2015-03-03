@@ -7,8 +7,12 @@ spine.Bone.yDown = true;
 
 /**
  * A class that enables the you to import and run your spine animations in pixi.
- * Spine animation data needs to be loaded using the AssetLoader or SpineLoader before it can be used by this class
+ * The Spine animation data needs to be loaded using either the Loader or a SpineLoader before it can be used by this class
  * See example 12 (http://www.goodboydigital.com/pixijs/examples/12/) to see a working example and check out the source
+ *
+ * ```js
+ * var spineAnimation = new PIXI.Spine(spineData);
+ * ```
  *
  * @class
  * @extends Container
