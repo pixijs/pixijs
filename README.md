@@ -101,7 +101,7 @@ $> npm run docs
 
 There is also a gulp task to generate them if you want to:
 ```
-$> gulp docs
+$> gulp jsdoc
 ```
 
 The documentation uses [DocStrap](https://github.com/terryweiss/docstrap) and the jsdoc format, the configuration
