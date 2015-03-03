@@ -224,13 +224,14 @@ InteractionManager.prototype.removeEvents = function ()
         this.interactionDOMElement.style['-ms-touch-action'] = '';
     }
 
-    this.interactionDOMElement.removeEventListener('mousemove', this.onMouseMove, true);
-    this.interactionDOMElement.removeEventListener('mousedown', this.onMouseDown, true);
-    this.interactionDOMElement.removeEventListener('mouseout',  this.onMouseOut, true);
+    this.interactionDOMElement.removeEventListener('mousemove',  this.onMouseMove, true);
+    this.interactionDOMElement.removeEventListener('mousedown',  this.onMouseDown, true);
+    this.interactionDOMElement.removeEventListener('mouseout',   this.onMouseOut, true);
+    this.interactionDOMElement.removeEventListener('dblclick',   this.onDblClick, true);
 
     this.interactionDOMElement.removeEventListener('touchstart', this.onTouchStart, true);
-    this.interactionDOMElement.removeEventListener('touchend',  this.onTouchEnd, true);
-    this.interactionDOMElement.removeEventListener('touchmove', this.onTouchMove, true);
+    this.interactionDOMElement.removeEventListener('touchend',   this.onTouchEnd, true);
+    this.interactionDOMElement.removeEventListener('touchmove',  this.onTouchMove, true);
 
     this.interactionDOMElement = null;
 
@@ -438,7 +439,7 @@ InteractionManager.prototype.processMouseDown = function ( displayObject, hit )
     {
         // only when the double click callback is defined we should perform
         // the logic for checking double clicks
-        if(displayObject.dblclick)
+        if(displayObject.dblclick || displayObject._listeners.dblclick)
         {
             this._clickCount++;
 
@@ -473,9 +474,14 @@ InteractionManager.prototype.processMouseDown = function ( displayObject, hit )
  * @param event {Event} The DOM event of a mouse button being double pressed down
  * @private
  */
-InteractionManager.prototype.onDblClick = function (event) {
+InteractionManager.prototype.onDblClick = function (event)
+{
     this.mouse.originalEvent = event;
-    this.mouse.originalEvent.preventDefault();
+
+    if (AUTO_PREVENT_DEFAULT)
+    {
+        this.mouse.originalEvent.preventDefault();
+    }
 };
 
 /**
