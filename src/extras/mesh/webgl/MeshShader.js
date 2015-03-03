@@ -1,4 +1,4 @@
-var core = require('../core');
+var core = require('../../../core');
 
 /**
  * @class
@@ -12,40 +12,42 @@ function StripShader(shaderManager)
         shaderManager,
         // vertex shader
         [
+            'precision lowp float;',
             'attribute vec2 aVertexPosition;',
             'attribute vec2 aTextureCoord;',
-            // 'attribute vec4 aColor;',
 
             'uniform mat3 translationMatrix;',
-            'uniform vec2 projectionVector;',
-            'uniform vec2 offsetVector;',
+            'uniform mat3 projectionMatrix;',
 
             'varying vec2 vTextureCoord;',
 
             'void main(void){',
-            '   vec3 v = translationMatrix * vec3(aVertexPosition , 1.0);',
-            '   v -= offsetVector.xyx;',
-            '   gl_Position = vec4( v.x / projectionVector.x -1.0, v.y / -projectionVector.y + 1.0 , 0.0, 1.0);',
+            '   gl_Position = vec4((projectionMatrix * translationMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);',
             '   vTextureCoord = aTextureCoord;',
             '}'
         ].join('\n'),
-        // fragment shader
         [
-            'precision mediump float;',
-
-            'uniform float alpha;',
-            'uniform sampler2D uSampler;',
+            'precision lowp float;',
 
             'varying vec2 vTextureCoord;',
+            'uniform float alpha;',
+
+            'uniform sampler2D uSampler;',
 
             'void main(void){',
-            '   gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y)) * alpha;',
+            '   gl_FragColor = texture2D(uSampler, vTextureCoord) * alpha ;',
             '}'
         ].join('\n'),
         // custom uniforms
         {
             alpha:  { type: '1f', value: 0 },
-            translationMatrix: { type: 'mat3', value: new Float32Array(9) }
+            translationMatrix: { type: 'mat3', value: new Float32Array(9) },
+            projectionMatrix: { type: 'mat3', value: new Float32Array(9) }
+        },
+        // custom attributes
+        {
+            aVertexPosition:0,
+            aTextureCoord:0
         }
     );
 }
@@ -54,4 +56,4 @@ StripShader.prototype = Object.create(core.Shader.prototype);
 StripShader.prototype.constructor = StripShader;
 module.exports = StripShader;
 
-//core.ShaderManager.registerPlugin('stripShader', StripShader);
+core.ShaderManager.registerPlugin('meshShader', StripShader);

@@ -9,8 +9,8 @@
  * @namespace PIXI.extras
  */
 module.exports = {
-    MovieClip:      require('./MovieClip'),
-    TilingSprite:   require('./TilingSprite'),
-    mesh:           require('./mesh/index'),
-    cacheAsBitmap:  require('./cacheAsBitmap')
+    Strip:          require('./Strip'),
+    Rope:           require('./Rope'),
+    MeshRenderer:   require('./webgl/MeshRenderer'),
+    MeshShader:    require('./webgl/MeshShader')
 };

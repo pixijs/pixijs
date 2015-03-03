@@ -1,4 +1,4 @@
-var core = require('../core');
+var core = require('../../core');
 
 /**
  *
@@ -71,7 +71,7 @@ function Strip(texture)
     /**
      * Triangles in canvas mode are automatically antialiased, use this value to force triangles to overlap a bit with each other.
      *
-     * @member {number}
+     * @member {number}=
      */
     this.canvasPadding = 0;
 
@@ -93,33 +93,10 @@ module.exports = Strip;
  *
  * @param renderer {WebGLRenderer} a reference to the WebGL renderer
  */
-Strip.prototype.renderWebGL = function (renderer)
+Strip.prototype._renderWebGL = function (renderer)
 {
-    // if the sprite is not visible or the alpha is 0 then no need to render this element
-    if (!this.visible || this.alpha <= 0 || !this.renderable)
-    {
-        return;
-    }
-
-    // render triangle strip..
-
-    renderer.spriteBatch.stop();
-
-    // init! init!
-    if (!this._vertexBuffer)
-    {
-        this._initWebGL(renderer);
-    }
-
-    renderer.shaderManager.setShader(renderer.shaderManager.plugins.stripShader);
-
-    this._renderStrip(renderer);
-
-    ///renderer.shaderManager.activateDefaultShader();
-
-    renderer.spriteBatch.start();
-
-    //TODO check culling
+    renderer.setObjectRenderer(renderer.plugins.mesh);
+    renderer.plugins.mesh.render(this);
 };
 
 /**
@@ -128,121 +105,6 @@ Strip.prototype.renderWebGL = function (renderer)
  * @param renderer {WebGLRenderer} a reference to the WebGL renderer
  * @private
  */
-Strip.prototype._initWebGL = function (renderer)
-{
-    // build the strip!
-    var gl = renderer.gl;
-
-    this._vertexBuffer = gl.createBuffer();
-    this._indexBuffer = gl.createBuffer();
-    this._uvBuffer = gl.createBuffer();
-    this._colorBuffer = gl.createBuffer();
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, this.vertices, gl.DYNAMIC_DRAW);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, this._uvBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER,  this.uvs, gl.STATIC_DRAW);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, this._colorBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, this.colors, gl.STATIC_DRAW);
-
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW);
-};
-
-/**
- * Renders the strip !
- *
- * @param renderer {WebGLRenderer} a reference to the WebGL renderer
- * @private
- */
-Strip.prototype._renderStrip = function (renderer)
-{
-    var gl = renderer.gl;
-    var projection = renderer.projection,
-        offset = renderer.offset,
-        shader = renderer.shaderManager.plugins.stripShader;
-
-    var drawMode = this.drawMode === Strip.DrawModes.TRIANGLE_STRIP ? gl.TRIANGLE_STRIP : gl.TRIANGLES;
-
-    // gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mat4Real);
-
-    renderer.blendModeManager.setBlendMode(this.blendMode);
-
-
-    // set uniforms
-    gl.uniformMatrix3fv(shader.translationMatrix, false, this.worldTransform.toArray(true));
-    gl.uniform2f(shader.projectionVector, projection.x, -projection.y);
-    gl.uniform2f(shader.offsetVector, -offset.x, -offset.y);
-    gl.uniform1f(shader.alpha, this.worldAlpha);
-
-    if (!this.dirty)
-    {
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
-        gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vertices);
-        gl.vertexAttribPointer(shader.aVertexPosition, 2, gl.FLOAT, false, 0, 0);
-
-        // update the uvs
-        gl.bindBuffer(gl.ARRAY_BUFFER, this._uvBuffer);
-        gl.vertexAttribPointer(shader.aTextureCoord, 2, gl.FLOAT, false, 0, 0);
-
-        gl.activeTexture(gl.TEXTURE0);
-
-        // check if a texture is dirty..
-        if (this.texture.baseTexture._dirty[gl.id])
-        {
-            renderer.updateTexture(this.texture.baseTexture);
-        }
-        else
-        {
-            // bind the current texture
-            gl.bindTexture(gl.TEXTURE_2D, this.texture.baseTexture._glTextures[gl.id]);
-        }
-
-        // dont need to upload!
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
-
-
-    }
-    else
-    {
-
-        this.dirty = false;
-        gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, this.vertices, gl.STATIC_DRAW);
-        gl.vertexAttribPointer(shader.aVertexPosition, 2, gl.FLOAT, false, 0, 0);
-
-        // update the uvs
-        gl.bindBuffer(gl.ARRAY_BUFFER, this._uvBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, this.uvs, gl.STATIC_DRAW);
-        gl.vertexAttribPointer(shader.aTextureCoord, 2, gl.FLOAT, false, 0, 0);
-
-        gl.activeTexture(gl.TEXTURE0);
-
-        // check if a texture is dirty..
-        if (this.texture.baseTexture._dirty[gl.id])
-        {
-            renderer.updateTexture(this.texture.baseTexture);
-        }
-        else
-        {
-            gl.bindTexture(gl.TEXTURE_2D, this.texture.baseTexture._glTextures[gl.id]);
-        }
-
-        // dont need to upload!
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW);
-
-    }
-    //console.log(gl.TRIANGLE_STRIP)
-    //
-    //
-    gl.drawElements(drawMode, this.indices.length, gl.UNSIGNED_SHORT, 0);
-
-
-};
 
 /**
  * Renders the object using the Canvas renderer
