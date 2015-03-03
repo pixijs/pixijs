@@ -123,10 +123,12 @@ before submitting changes.
 
 ### How to build ###
 
-PixiJS is built with Grunt. If you don't already have this, go install Node and NPM then install the Grunt Command Line.
+PixiJS is built with Gulp.
+If you don't already have Node.js and NPM, go install them.
+Once you do, then install Gulp.
 
 ```
-$> npm install -g grunt-cli
+$> npm install -g gulp
 ```
 
 Then, in the folder where you have downloaded the source, install the build dependencies using npm:
@@ -135,15 +137,25 @@ Then, in the folder where you have downloaded the source, install the build depe
 $> npm install
 ```
 
-Then build:
+Then, to build the source, run:
 
 ```
-$> grunt
+$> gulp build
 ```
 
-This will create a minified version at bin/pixi.js and a non-minified version at bin/pixi.dev.js.
+This will create a minified version at bin/pixi.min.js and a non-minified version at bin/pixi.js.
 
-It also copies the non-minified version to the examples.
+### How to generate the documentation ###
+
+The docs can be generated using npm:
+```
+$> npm run docs
+```
+There is also a gulp task to generate them if you want to:
+```
+$> gulp docs
+```
+The documentation uses [DocStrap](https://github.com/terryweiss/docstrap) and the jsdoc format, the configuration file can be found at [gulp/utils/jsdoc.conf.json](https://github.com/GoodBoyDigital/pixi.js/blob/dev/gulp/util/jsdoc.conf.json)
 
 ### Current features ###
 
@@ -173,7 +185,7 @@ It also copies the non-minified version to the examples.
 
 	document.body.appendChild(renderer.view);
 
-	var stage = new PIXI.Stage;
+	var stage = new PIXI.Stage();
 
 	var bunnyTexture = PIXI.Texture.fromImage("bunny.png");
 	var bunny = new PIXI.Sprite(bunnyTexture);
