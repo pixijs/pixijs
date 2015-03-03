@@ -1,10 +1,21 @@
 var core = require('../core'),
     utils = require('../core/utils');
 
-
-
 /**
  * A MovieClip is a simple way to display an animation depicted by a list of textures.
+ *
+ * ```js
+ * var alienImages = ["image_sequence_01.png","image_sequence_02.png","image_sequence_03.png","image_sequence_04.png"];
+ * var textureArray = [];
+ *
+ * for (var i=0; i < 4; i++)
+ * {
+ *      var texture = PIXI.Texture.fromImage(alienImages[i]);
+ *      textureArray.push(texture);
+ * };
+ *
+ * var mc = new PIXI.MovieClip(textureArray);
+ * ```
  *
  * @class
  * @extends Sprite
@@ -214,7 +225,10 @@ MovieClip.prototype.update = function ( event )
     }
 };
 
-
+/*
+ * Stops the MovieClip and destroys it
+ *
+ */
 MovieClip.prototype.destroy = function ( )
 {
     this.stop();

@@ -3,8 +3,25 @@ var ResourceLoader = require('resource-loader'),
     spritesheetParser = require('./spritesheetParser'),
     spineAtlasParser = require('./spineAtlasParser'),
     bitmapFontParser = require('./bitmapFontParser');
- //   loader = new Loader();
 
+/**
+ *
+ * The new loader, extends Resource Loader by Chad Engler : https://github.com/englercj/resource-loader
+ *
+ * ```js
+ * var loader = new PIXI.loader();
+ *
+ * loader.add('spineboy',"data/spineboy.json");
+ *
+ * loader.once('complete',onAssetsLoaded);
+ *
+ * loader.load();
+ * ```
+ *
+ * @class
+ * @extends ResourceLoader
+ * @memberof PIXI.loaders
+ */
 var Loader = function()
 {
     ResourceLoader.call(this);
