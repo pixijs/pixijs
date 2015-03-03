@@ -15,7 +15,7 @@ var math = require('../math'),
  * var sprite = new PIXI.Sprite.fromImage('assets/image.png');
  * ```
  *
- * @class Sprite
+ * @class
  * @extends Container
  * @memberof PIXI
  * @param texture {Texture} The texture for this sprite
