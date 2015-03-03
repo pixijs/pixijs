@@ -127,18 +127,6 @@ Object.defineProperties(TilingSprite.prototype, {
     }
 });
 
-/**
- * When the texture is updated, this event will fire,
- *
- * @private
- */
-TilingSprite.prototype._onTextureUpdate = function ()
-{
-    core.Sprite.prototype._onTextureUpdate.call(this);
-
-    this._refreshTexture = true;
-};
-
 TilingSprite.prototype._onTextureUpdate = function ()
 {
     return;
@@ -393,19 +381,21 @@ TilingSprite.prototype.generateTilingTexture = function (renderer, texture, forc
         //TODO not create a new one each time you refresh
         var renderTexture = new RenderTexture(renderer, targetWidth, targetHeight, texture.baseTexture.scaleMode, texture.baseTexture.resolution);
 
-        tempSprite.worldTransform.a = targetWidth / frame.width;
-        tempSprite.worldTransform.d = targetHeight / frame.height;
-
+        tempSprite.worldTransform.a = (targetWidth + 1) / (frame.width);
+        tempSprite.worldTransform.d = (targetHeight + 1) / (frame.height);
+        // fixes the odd fuzzy alpha line that happens..
+        tempSprite.worldTransform.tx -= 0.5;
+        tempSprite.worldTransform.ty -= 0.5;
 
         var cachedRenderTarget = renderer.currentRenderTarget;
 
-        renderTexture.render( tempSprite, null, true, false );
+        renderTexture.render( tempSprite, tempSprite.worldTransform, true, false );
 
         renderer.setRenderTarget(cachedRenderTarget);
 
 
-        this._tileScaleOffset.x = tempSprite.worldTransform.a;
-        this._tileScaleOffset.y = tempSprite.worldTransform.d;
+        this._tileScaleOffset.x = targetWidth / frame.width;
+        this._tileScaleOffset.y = targetHeight / frame.height;
 
         this._tilingTexture = renderTexture;
     }
