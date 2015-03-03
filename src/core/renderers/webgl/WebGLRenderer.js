@@ -248,6 +248,7 @@ WebGLRenderer.prototype.render = function (object)
     var gl = this.gl;
 
     // make sure we are bound to the main frame buffer
+    this.setRenderTarget(this.renderTarget);
 
     if (this.clearBeforeRender)
     {
