@@ -18,12 +18,12 @@ core.AssetsLoader = function () {
 };
 
 core.DisplayObjectContainer = function () {
-    window.console.warn("The Strip class has been renamed to Mesh, please use Container from now");
+    window.console.warn("DisplayObjectContainer has been shortened to Container, please use Container from now on");
     return new core.Container();
 };
 
 core.Strip = function (texture) {
-    window.console.warn("The Strip class has been renamed to Mesh, please use Mesh from now");
+    window.console.warn("The Strip class has been renamed to Mesh, please use Mesh from now on");
     return new extras.mesh.Mesh(texture);
 };
 
