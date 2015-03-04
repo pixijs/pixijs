@@ -9,7 +9,7 @@ var core = require('../../core');
  * @param [vertices] {Float32Arrif you want to specify the vertices
  * @param [uvs] {Float32Array} if you want to specify the uvs
  * @param [indices] {Uint16Array} if you want to specify the indices
- * @param [drawMode] {number} the drawMode, can be any of the Mesh.DrawModes consts
+ * @param [drawMode] {number} the drawMode, can be any of the Mesh.DRAW_MODES consts
  */
 function Mesh(texture, vertices, uvs, indices, drawMode)
 {
@@ -71,11 +71,11 @@ function Mesh(texture, vertices, uvs, indices, drawMode)
     this.canvasPadding = 0;
 
     /**
-     * The way the Mesh should be drawn, can be any of the Mesh.DrawModes consts
+     * The way the Mesh should be drawn, can be any of the Mesh.DRAW_MODES consts
      *
      * @member {number}
      */
-    this.drawMode = drawMode || Mesh.DrawModes.TRIANGLE_MESH;
+    this.drawMode = drawMode || Mesh.DRAW_MODES.TRIANGLE_MESH;
 }
 
 // constructor
@@ -114,7 +114,7 @@ Mesh.prototype._renderCanvas = function (renderer)
         context.setTransform(transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
     }
 
-    if (this.drawMode === Mesh.DrawModes.TRIANGLE_MESH)
+    if (this.drawMode === Mesh.DRAW_MODES.TRIANGLE_MESH)
     {
         this._renderCanvasTriangleMesh(context);
     }
@@ -377,11 +377,11 @@ Mesh.prototype.getBounds = function (matrix)
  *
  * @static
  * @constant
- * @property {object} DrawModes
- * @property {number} DrawModes.TRIANGLE_MESH
- * @property {number} DrawModes.TRIANGLES
+ * @property {object} DRAW_MODES
+ * @property {number} DRAW_MODES.TRIANGLE_MESH
+ * @property {number} DRAW_MODES.TRIANGLES
  */
-Mesh.DrawModes = {
+Mesh.DRAW_MODES = {
     TRIANGLE_MESH: 0,
     TRIANGLES: 1
 };

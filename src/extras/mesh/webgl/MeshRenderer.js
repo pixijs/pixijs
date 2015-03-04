@@ -79,7 +79,7 @@ MeshRenderer.prototype.render = function (mesh)
         texture = mesh.texture.baseTexture,
         shader = renderer.shaderManager.plugins.meshShader;
 
-//    var drawMode = mesh.drawMode === Strip.DrawModes.TRIANGLE_STRIP ? gl.TRIANGLE_STRIP : gl.TRIANGLES;
+//    var drawMode = mesh.drawMode === Strip.DRAW_MODES.TRIANGLE_STRIP ? gl.TRIANGLE_STRIP : gl.TRIANGLES;
     var drawMode =  gl.TRIANGLE_STRIP;
 
     renderer.blendModeManager.setBlendMode(mesh.blendMode);

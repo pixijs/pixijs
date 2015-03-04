@@ -290,7 +290,7 @@ Spine.prototype.createMesh = function (slot, attachment)
     var texture = new core.Texture(baseTexture);
 
     var strip = new core.Strip(texture);
-    strip.drawMode = core.Strip.DrawModes.TRIANGLES;
+    strip.drawMode = core.Strip.DRAW_MODES.TRIANGLES;
     strip.canvasPadding = 1.5;
 
     strip.vertices = new Float32Array(attachment.uvs.length);
