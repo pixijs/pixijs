@@ -32,7 +32,7 @@ function Shader(shaderManager, vertexSrc, fragmentSrc, uniforms, attributes)
     this.gl = shaderManager.renderer.gl;
 
     //TODO maybe we should pass renderer rather than shader manger?? food for thought..
-    this.shaderMaanager = shaderManager;
+    this.shaderManager = shaderManager;
 
     /**
      * The WebGL program.
@@ -481,6 +481,8 @@ Shader.prototype.initSampler2D = function (uniform)
 
     if (uniform.textureData)
     {
+
+        //TODO move this...
         var data = uniform.textureData;
 
         texture._glTextures[gl.id] = gl.createTexture();
@@ -508,7 +510,7 @@ Shader.prototype.initSampler2D = function (uniform)
     }
     else
     {
-        this.shaderMaanager.renderer.updateTexture(texture);
+        this.shaderManager.renderer.updateTexture(texture);
     }
 };
 
