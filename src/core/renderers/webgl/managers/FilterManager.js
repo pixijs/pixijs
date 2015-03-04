@@ -210,7 +210,7 @@ FilterManager.prototype.getRenderTarget = function ( clear )
 
     if (clear)
     {
-        renderTarget.clear();
+        renderTarget.clear(true);
     }
 
     return renderTarget;
