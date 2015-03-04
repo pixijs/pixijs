@@ -1,4 +1,4 @@
-var Strip = require('./Strip');
+var Strip = require('./Mesh');
 
 /**
  *

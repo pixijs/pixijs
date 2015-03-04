@@ -10,23 +10,23 @@ var core = require('../../core');
  * @param height {number} the height
  *
  */
-function Strip(texture)
+function Mesh(texture, vertices, uvs, indecies, drawMode)
 {
     core.Container.call(this);
 
     /**
-     * The texture of the strip
+     * The texture of the Mesh
      *
      * @member {Texture}
      */
     this.texture = texture;
 
     /**
-     * The Uvs of the strip
+     * The Uvs of the Mesh
      *
      * @member {Float32Array}
      */
-    this.uvs = new Float32Array([0, 1,
+    this.uvs = uvs || new Float32Array([0, 1,
                                  1, 1,
                                  1, 0,
                                  0, 1]);
@@ -36,25 +36,19 @@ function Strip(texture)
      *
      * @member {Float32Array}
      */
-    this.vertices = new Float32Array([0, 0,
+    this.vertices = vertices || new Float32Array([0, 0,
                                       100, 0,
                                       100, 100,
                                       0, 100]);
 
-    /**
-     * The color components
-     *
-     * @member {Float32Array}
-     */
-    this.colors = new Float32Array([1, 1, 1, 1]);
-
     /*
      * @member {Uint16Array} An array containing the indices of the vertices
      */
-    this.indices = new Uint16Array([0, 1, 2, 3]);
+    //  TODO auto generate this based on draw mode!
+    this.indices = indecies || new Uint16Array([0, 1, 2, 3]);
 
     /**
-     * Whether the strip is dirty or not
+     * Whether the Mesh is dirty or not
      *
      * @member {boolean}
      */
@@ -76,24 +70,24 @@ function Strip(texture)
     this.canvasPadding = 0;
 
     /**
-     * The way the strip should be drawn, can be any of the Strip.DrawModes consts
+     * The way the Mesh should be drawn, can be any of the Mesh.DrawModes consts
      *
      * @member {number}
      */
-    this.drawMode = Strip.DrawModes.TRIANGLE_STRIP;
+    this.drawMode = drawMode || Mesh.DrawModes.TRIANGLE_Mesh;
 }
 
 // constructor
-Strip.prototype = Object.create(core.Container.prototype);
-Strip.prototype.constructor = Strip;
-module.exports = Strip;
+Mesh.prototype = Object.create(core.Container.prototype);
+Mesh.prototype.constructor = Mesh;
+module.exports = Mesh;
 
 /**
  * Renders the object using the WebGL renderer
  *
  * @param renderer {WebGLRenderer} a reference to the WebGL renderer
  */
-Strip.prototype._renderWebGL = function (renderer)
+Mesh.prototype._renderWebGL = function (renderer)
 {
     renderer.setObjectRenderer(renderer.plugins.mesh);
     renderer.plugins.mesh.render(this);
@@ -111,7 +105,7 @@ Strip.prototype._renderWebGL = function (renderer)
  *
  * @param renderer {CanvasRenderer}
  */
-Strip.prototype._renderCanvas = function (renderer)
+Mesh.prototype._renderCanvas = function (renderer)
 {
     var context = renderer.context;
 
@@ -126,9 +120,9 @@ Strip.prototype._renderCanvas = function (renderer)
         context.setTransform(transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
     }
 
-    if (this.drawMode === Strip.DrawModes.TRIANGLE_STRIP)
+    if (this.drawMode === Mesh.DrawModes.TRIANGLE_Mesh)
     {
-        this._renderCanvasTriangleStrip(context);
+        this._renderCanvasTriangleMesh(context);
     }
     else
     {
@@ -137,12 +131,12 @@ Strip.prototype._renderCanvas = function (renderer)
 };
 
 /**
- * Draws the object in TRIANGLE_STRIP mode using canvas
+ * Draws the object in TRIANGLE_Mesh mode using canvas
  *
  * @param context {CanvasRenderingContext2D} the current drawing context
  * @private
  */
-Strip.prototype._renderCanvasTriangleStrip = function (context)
+Mesh.prototype._renderCanvasTriangleMesh = function (context)
 {
     // draw triangles!!
     var vertices = this.vertices;
@@ -165,7 +159,7 @@ Strip.prototype._renderCanvasTriangleStrip = function (context)
  * @param context {CanvasRenderingContext2D} the current drawing context
  * @private
  */
-Strip.prototype._renderCanvasTriangles = function (context)
+Mesh.prototype._renderCanvasTriangles = function (context)
 {
     // draw triangles!!
     var vertices = this.vertices;
@@ -184,17 +178,17 @@ Strip.prototype._renderCanvasTriangles = function (context)
 };
 
 /**
- * Draws one of the triangles that form this strip
+ * Draws one of the triangles that form this Mesh
  *
  * @param context {CanvasRenderingContext2D} the current drawing context
- * @param vertices {Float32Array} a reference to the the vertices of the strip
- * @param uvs {Float32Array} a reference to the the vertices of the strip
+ * @param vertices {Float32Array} a reference to the the vertices of the Mesh
+ * @param uvs {Float32Array} a reference to the the vertices of the Mesh
  * @param index0 {number} the index of the first vertex
  * @param index1 {number} the index of the second vertex
  * @param index2 {number} the index of the third vertex
  * @private
  */
-Strip.prototype._renderCanvasDrawTriangle = function (context, vertices, uvs, index0, index1, index2)
+Mesh.prototype._renderCanvasDrawTriangle = function (context, vertices, uvs, index0, index1, index2)
 {
     var textureSource = this.texture.baseTexture.source;
     var textureWidth = this.texture.width;
@@ -269,15 +263,15 @@ Strip.prototype._renderCanvasDrawTriangle = function (context, vertices, uvs, in
 
 
 /**
- * Renders a flat strip
+ * Renders a flat Mesh
  *
- * @param strip {Strip} The Strip to render
+ * @param Mesh {Mesh} The Mesh to render
  * @private
  */
-Strip.prototype.renderStripFlat = function (strip)
+Mesh.prototype.renderMeshFlat = function (Mesh)
 {
     var context = this.context;
-    var vertices = strip.vertices;
+    var vertices = Mesh.vertices;
 
     var length = vertices.length/2;
     // this.count++;
@@ -302,7 +296,7 @@ Strip.prototype.renderStripFlat = function (strip)
 };
 
 /*
-Strip.prototype.setTexture = function (texture)
+Mesh.prototype.setTexture = function (texture)
 {
     //TODO SET THE TEXTURES
     //TODO VISIBILITY
@@ -323,7 +317,7 @@ Strip.prototype.setTexture = function (texture)
  * @private
  */
 
-Strip.prototype.onTextureUpdate = function ()
+Mesh.prototype.onTextureUpdate = function ()
 {
     this.updateFrame = true;
 };
@@ -334,7 +328,7 @@ Strip.prototype.onTextureUpdate = function ()
  * @param matrix {Matrix} the transformation matrix of the sprite
  * @return {Rectangle} the framing rectangle
  */
-Strip.prototype.getBounds = function (matrix)
+Mesh.prototype.getBounds = function (matrix)
 {
     var worldTransform = matrix || this.worldTransform;
 
@@ -390,10 +384,10 @@ Strip.prototype.getBounds = function (matrix)
  * @static
  * @constant
  * @property {object} DrawModes
- * @property {number} DrawModes.TRIANGLE_STRIP
+ * @property {number} DrawModes.TRIANGLE_Mesh
  * @property {number} DrawModes.TRIANGLES
  */
-Strip.DrawModes = {
-    TRIANGLE_STRIP: 0,
+Mesh.DrawModes = {
+    TRIANGLE_Mesh: 0,
     TRIANGLES: 1
 };

@@ -51,7 +51,7 @@ function ShaderManager(renderer)
      */
     this.currentShader = null;
 
-    this.initPlugins();
+//    this.initPlugins();
 }
 
 ShaderManager.prototype = Object.create(WebGLManager.prototype);

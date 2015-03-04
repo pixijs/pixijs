@@ -196,7 +196,7 @@ MeshRenderer.prototype.start = function ()
     this.renderer.shaderManager.setShader(shader);
 
     // dont need to upload!
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indicies);
+    //gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indicies);
 
 
  //   this.s
