@@ -31,6 +31,9 @@ function Shader(shaderManager, vertexSrc, fragmentSrc, uniforms, attributes)
      */
     this.gl = shaderManager.renderer.gl;
 
+    //TODO maybe we should pass renderer rather than shader manger?? food for thought..
+    this.shaderMaanager = shaderManager;
+
     /**
      * The WebGL program.
      *
@@ -474,16 +477,17 @@ Shader.prototype.initSampler2D = function (uniform)
         return;
     }
 
-    texture._glTextures[gl.id] = gl.createTexture();
 
-    gl.bindTexture(gl.TEXTURE_2D, texture._glTextures[gl.id]);
-
-    gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, texture.premultipliedAlpha);
 
     if (uniform.textureData)
     {
         var data = uniform.textureData;
 
+        texture._glTextures[gl.id] = gl.createTexture();
+
+        gl.bindTexture(gl.TEXTURE_2D, texture._glTextures[gl.id]);
+
+        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, texture.premultipliedAlpha);
         // GLTexture = mag linear, min linear_mipmap_linear, wrap repeat + gl.generateMipmap(gl.TEXTURE_2D);
         // GLTextureLinear = mag/min linear, wrap clamp
         // GLTextureNearestRepeat = mag/min NEAREST, wrap repeat
@@ -504,23 +508,8 @@ Shader.prototype.initSampler2D = function (uniform)
     }
     else
     {
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.source);
-
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, texture.scaleMode === CONST.SCALE_MODES.LINEAR ? gl.LINEAR : gl.NEAREST);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, texture.scaleMode === CONST.SCALE_MODES.LINEAR ? gl.LINEAR : gl.NEAREST);
-
-        if (!texture.isPowerOfTwo)
-        {
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        }
-        else
-        {
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-        }
+        this.shaderMaanager.renderer.updateTexture(texture);
     }
-
 };
 
 /**
