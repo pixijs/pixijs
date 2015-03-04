@@ -1,5 +1,6 @@
-var core = require('./core'),
-    text = require('./text');
+var core   = require('./core'),
+    extras = require('./extras'),
+    text   = require('./text');
 
 core.Stage = function ()
 {
@@ -14,6 +15,16 @@ core.SpriteBatch = function ()
 
 core.AssetsLoader = function () {
     window.console.warn("The loader system was overhauled in pixi v3, please see the new PIXI.Loader class.");
+};
+
+core.DisplayObjectContainer = function () {
+    window.console.warn("The Strip class has been renamed to Mesh, please use Container from now");
+    return new core.Container();
+};
+
+core.Strip = function (texture) {
+    window.console.warn("The Strip class has been renamed to Mesh, please use Mesh from now");
+    return new extras.mesh.Mesh(texture);
 };
 
 core.Sprite.prototype.setTexture = function (texture)
