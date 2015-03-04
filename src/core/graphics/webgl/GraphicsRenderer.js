@@ -30,6 +30,12 @@ module.exports = GraphicsRenderer;
 
 WebGLRenderer.registerPlugin('graphics', GraphicsRenderer);
 
+/**
+ * Called when there is a WebGL context change
+ *
+ * @private
+ *
+ */
 GraphicsRenderer.prototype.onContextChange = function()
 {
 

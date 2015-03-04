@@ -102,7 +102,7 @@ ParticleRenderer.prototype.onContextChange = function ()
         attribute:this.shader.attributes.aVertexPosition,
         dynamic:false,
         size:2,
-        uploadFunction:this.uploadVerticies,
+        uploadFunction:this.uploadVertices,
         offset:0
     },
     // positionData
@@ -283,7 +283,7 @@ ParticleRenderer.prototype.generateBuffers = function ( container )
  * @param stride {number}
  * @param offset {number}
  */
-ParticleRenderer.prototype.uploadVerticies = function (children, startIndex, amount, array, stride, offset)
+ParticleRenderer.prototype.uploadVertices = function (children, startIndex, amount, array, stride, offset)
 {
     var sprite,
         texture,

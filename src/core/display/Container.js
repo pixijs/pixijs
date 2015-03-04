@@ -7,6 +7,10 @@ var math = require('../math'),
  * A Container represents a collection of display objects.
  * It is the base class of all display objects that act as a container for other objects.
  *
+ *```js
+ * var container = new PIXI.Container();
+ * container.addChild(sprite);
+ * ```
  * @class
  * @extends DisplayObject
  * @memberof PIXI
