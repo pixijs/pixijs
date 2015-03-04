@@ -27,6 +27,7 @@ var core = require('../core');
  * @param [style.dropShadowColor='#000000'] {string} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
  * @param [style.dropShadowAngle=Math.PI/4] {number} Set a angle of the drop shadow
  * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
+ * @param [style.padding=0] {number} Occasionally some fonts are cropped. Adding some padding will prevent this from happening
  */
 function Text(text, style, resolution)
 {
@@ -65,7 +66,10 @@ function Text(text, style, resolution)
      */
     this._style = null;
 
-    core.Sprite.call(this, core.Texture.fromCanvas(this.canvas));
+    var texture = core.Texture.fromCanvas(this.canvas);
+    texture.trim = new core.math.Rectangle();
+    core.Sprite.call(this, texture);
+
 
     this.text = text;
     this.style = style;
@@ -143,6 +147,7 @@ Object.defineProperties(Text.prototype, {
      * @param [style.dropShadowColor='#000000'] {string} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
      * @param [style.dropShadowAngle=Math.PI/6] {number} Set a angle of the drop shadow
      * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
+     * @param [style.padding=0] {number} Occasionally some fonts are cropped. Adding some padding will prevent this from happening
      * @memberof Text#
      */
     style: {
@@ -165,6 +170,8 @@ Object.defineProperties(Text.prototype, {
             style.dropShadowColor = style.dropShadowColor || '#000000';
             style.dropShadowAngle = style.dropShadowAngle || Math.PI / 6;
             style.dropShadowDistance = style.dropShadowDistance || 5;
+
+            style.padding = style.padding || 0;
 
             this._style = style;
             this.dirty = true;
@@ -239,14 +246,18 @@ Text.prototype.updateText = function ()
         height += style.dropShadowDistance;
     }
 
-    this.canvas.height = height * this.resolution;
+    this.canvas.height = ( height + this._style.padding * 2 ) * this.resolution;
 
     this.context.scale( this.resolution, this.resolution);
 
     if (navigator.isCocoonJS)
     {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
     }
+
+    //this.context.fillStyle="#FF0000";
+    //this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
     this.context.font = style.font;
     this.context.strokeStyle = style.stroke;
@@ -280,7 +291,7 @@ Text.prototype.updateText = function ()
 
             if (style.fill)
             {
-                this.context.fillText(lines[i], linePositionX + xShadowOffset, linePositionY + yShadowOffset);
+                this.context.fillText(lines[i], linePositionX + xShadowOffset, linePositionY + yShadowOffset + this._style.padding);
             }
         }
     }
@@ -305,12 +316,12 @@ Text.prototype.updateText = function ()
 
         if (style.stroke && style.strokeThickness)
         {
-            this.context.strokeText(lines[i], linePositionX, linePositionY);
+            this.context.strokeText(lines[i], linePositionX, linePositionY + this._style.padding);
         }
 
         if (style.fill)
         {
-            this.context.fillText(lines[i], linePositionX, linePositionY);
+            this.context.fillText(lines[i], linePositionX, linePositionY + this._style.padding);
         }
     }
 
@@ -324,18 +335,26 @@ Text.prototype.updateText = function ()
  */
 Text.prototype.updateTexture = function ()
 {
-    this._texture.baseTexture.hasLoaded = true;
-    this._texture.baseTexture.resolution = this.resolution;
+    var texture = this._texture;
 
-    this._texture.baseTexture.width = this.canvas.width / this.resolution;
-    this._texture.baseTexture.height = this.canvas.height / this.resolution;
-    this._texture.crop.width = this._texture._frame.width = this.canvas.width / this.resolution;
-    this._texture.crop.height = this._texture._frame.height = this.canvas.height / this.resolution;
+    texture.baseTexture.hasLoaded = true;
+    texture.baseTexture.resolution = this.resolution;
+
+    texture.baseTexture.width = this.canvas.width / this.resolution;
+    texture.baseTexture.height = this.canvas.height / this.resolution;
+    texture.crop.width = texture._frame.width = this.canvas.width / this.resolution;
+    texture.crop.height = texture._frame.height = this.canvas.height / this.resolution;
+
+    texture.trim.x = 0;
+    texture.trim.y = -this._style.padding;
+
+    texture.trim.width = texture._frame.width;
+    texture.trim.height = texture._frame.height - this._style.padding*2;
 
     this._width = this.canvas.width / this.resolution;
     this._height = this.canvas.height / this.resolution;
 
-    this._texture.update();
+    texture.update();
 
     this.dirty = false;
 };
