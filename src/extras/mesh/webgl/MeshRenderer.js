@@ -64,7 +64,7 @@ MeshRenderer.prototype.onContextChange = function ()
 /**
  * Renders the sprite object.
  *
- * @param sprite {Sprite} the sprite to render when using this spritebatch
+ * @param mesh {Mesh} the mesh to render
  */
 MeshRenderer.prototype.render = function (mesh)
 {
@@ -151,6 +151,10 @@ MeshRenderer.prototype.render = function (mesh)
 
 };
 
+/**
+ * Prepares all the buffers to render this mesh
+ * @param mesh {Mesh} the mesh to render
+ */
 MeshRenderer.prototype._initWebGL = function (mesh)
 {
     // build the strip!
@@ -176,7 +180,7 @@ MeshRenderer.prototype._initWebGL = function (mesh)
 
 
 /**
- * Renders the content and empties the current batch.
+ * Empties the current batch.
  *
  */
 MeshRenderer.prototype.flush = function ()
@@ -185,7 +189,7 @@ MeshRenderer.prototype.flush = function ()
 };
 
 /**
- * Starts a new sprite batch.
+ * Starts a new mesh renderer.
  *
  */
 MeshRenderer.prototype.start = function ()
@@ -196,14 +200,14 @@ MeshRenderer.prototype.start = function ()
     this.renderer.shaderManager.setShader(shader);
 
     // dont need to upload!
-    //gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indicies);
+    //gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indices);
 
 
  //   this.s
 };
 
 /**
- * Destroys the SpriteBatch.
+ * Destroys the Mesh renderer
  *
  */
 MeshRenderer.prototype.destroy = function ()

@@ -9,7 +9,7 @@
  * @namespace PIXI.extras
  */
 module.exports = {
-    Strip:          require('./Strip'),
+    Mesh:          require('./Mesh'),
     Rope:           require('./Rope'),
     MeshRenderer:   require('./webgl/MeshRenderer'),
     MeshShader:    require('./webgl/MeshShader')

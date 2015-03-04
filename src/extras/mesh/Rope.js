@@ -1,17 +1,25 @@
-var Strip = require('./Mesh');
+var Mesh = require('./Mesh');
 
 /**
+ * The rope allows you to draw a texture across several points and them manipulate these points
+ *
+ *```js
+ * for (var i = 0; i < 20; i++) {
+ *     points.push(new PIXI.Point(i * 50, 0));
+ * };
+ * var rope = new PIXI.Rope(PIXI.Texture.fromImage("snake.png"), points);
+ *  ```
  *
  * @class
- * @extends Strip
+ * @extends Mesh
  * @memberof PIXI.extras
  * @param {Texture} texture - The texture to use on the rope.
- * @param {Array} points - An array of {Point} objects.
+ * @param {Array} points - An array of {Point} objects to construct this rope.
  *
  */
 function Rope(texture, points)
 {
-    Strip.call(this, texture);
+    Mesh.call(this, texture);
 
     /*
      * @member {Array} An array of points that determine the rope
@@ -43,7 +51,7 @@ function Rope(texture, points)
 
 
 // constructor
-Rope.prototype = Object.create(Strip.prototype);
+Rope.prototype = Object.create(Mesh.prototype);
 Rope.prototype.constructor = Rope;
 module.exports = Rope;
 

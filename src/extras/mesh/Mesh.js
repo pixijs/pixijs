@@ -1,14 +1,15 @@
 var core = require('../../core');
 
 /**
- *
+ * Base mesh class
  * @class
  * @extends Container
  * @memberof PIXI.extras
  * @param texture {Texture} The texture to use
- * @param width {number} the width
- * @param height {number} the height
- *
+ * @param [vertices] {Float32Arrif you want to specify the vertices
+ * @param [uvs] {Float32Array} if you want to specify the uvs
+ * @param [indices] {Uint16Array} if you want to specify the indices
+ * @param [drawMode] {number} the drawMode, can be any of the Mesh.DrawModes consts
  */
 function Mesh(texture, vertices, uvs, indices, drawMode)
 {
@@ -74,7 +75,7 @@ function Mesh(texture, vertices, uvs, indices, drawMode)
      *
      * @member {number}
      */
-    this.drawMode = drawMode || Mesh.DrawModes.TRIANGLE_Mesh;
+    this.drawMode = drawMode || Mesh.DrawModes.TRIANGLE_MESH;
 }
 
 // constructor
@@ -92,13 +93,6 @@ Mesh.prototype._renderWebGL = function (renderer)
     renderer.setObjectRenderer(renderer.plugins.mesh);
     renderer.plugins.mesh.render(this);
 };
-
-/**
- * Creates the buffers and (in the darkness) binds them
- *
- * @param renderer {WebGLRenderer} a reference to the WebGL renderer
- * @private
- */
 
 /**
  * Renders the object using the Canvas renderer
@@ -120,7 +114,7 @@ Mesh.prototype._renderCanvas = function (renderer)
         context.setTransform(transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
     }
 
-    if (this.drawMode === Mesh.DrawModes.TRIANGLE_Mesh)
+    if (this.drawMode === Mesh.DrawModes.TRIANGLE_MESH)
     {
         this._renderCanvasTriangleMesh(context);
     }
@@ -131,7 +125,7 @@ Mesh.prototype._renderCanvas = function (renderer)
 };
 
 /**
- * Draws the object in TRIANGLE_Mesh mode using canvas
+ * Draws the object in Triangle Mesh mode using canvas
  *
  * @param context {CanvasRenderingContext2D} the current drawing context
  * @private
@@ -181,8 +175,8 @@ Mesh.prototype._renderCanvasTriangles = function (context)
  * Draws one of the triangles that form this Mesh
  *
  * @param context {CanvasRenderingContext2D} the current drawing context
- * @param vertices {Float32Array} a reference to the the vertices of the Mesh
- * @param uvs {Float32Array} a reference to the the vertices of the Mesh
+ * @param vertices {Float32Array} a reference to the vertices of the Mesh
+ * @param uvs {Float32Array} a reference to the uvs of the Mesh
  * @param index0 {number} the index of the first vertex
  * @param index1 {number} the index of the second vertex
  * @param index2 {number} the index of the third vertex
@@ -384,10 +378,10 @@ Mesh.prototype.getBounds = function (matrix)
  * @static
  * @constant
  * @property {object} DrawModes
- * @property {number} DrawModes.TRIANGLE_Mesh
+ * @property {number} DrawModes.TRIANGLE_MESH
  * @property {number} DrawModes.TRIANGLES
  */
 Mesh.DrawModes = {
-    TRIANGLE_Mesh: 0,
+    TRIANGLE_MESH: 0,
     TRIANGLES: 1
 };
