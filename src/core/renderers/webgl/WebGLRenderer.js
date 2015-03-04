@@ -340,6 +340,10 @@ WebGLRenderer.prototype.resize = function (width, height)
    // console.log(width)
     this.filterManager.resize(width, height);
     this.renderTarget.resize(width, height);
+    if(this.currentRenderTarget == this.renderTarget)
+    {
+        this.renderTarget.activate();
+    }
 };
 
 /**
