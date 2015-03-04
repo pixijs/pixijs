@@ -10,7 +10,7 @@ function WebGLGraphicsData(gl) {
 
     /**
      * The current WebGL drawing context
-     * 
+     *
      * @member {WebGLRenderingContext}
      */
     this.gl = gl;
@@ -18,24 +18,24 @@ function WebGLGraphicsData(gl) {
     //TODO does this need to be split before uploding??
     /**
      * An array of color components (r,g,b)
-     * @member {Array} 
+     * @member {Array}
      */
     this.color = [0,0,0]; // color split!
 
     /**
      * An array of points to draw
-     * @member {Array} 
+     * @member {Array}
      */
     this.points = [];
 
     /**
      * The indices of the vertices
-     * @member {Array} 
+     * @member {Array}
      */
     this.indices = [];
     /**
      * The main buffer
-     * @member {WebGLBuffer} 
+     * @member {WebGLBuffer}
      */
     this.buffer = gl.createBuffer();
 
@@ -47,7 +47,7 @@ function WebGLGraphicsData(gl) {
 
     /**
      * todo @alvin
-     * @member {number} 
+     * @member {number}
      */
     this.mode = 1;
 
@@ -59,7 +59,7 @@ function WebGLGraphicsData(gl) {
 
     /**
      * Whether this graphics is dirty or not
-     * @member {boolean} 
+     * @member {boolean}
      */
     this.dirty = true;
 }
@@ -87,10 +87,10 @@ WebGLGraphicsData.prototype.upload = function () {
     gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
     gl.bufferData(gl.ARRAY_BUFFER, this.glPoints, gl.STATIC_DRAW);
 
-    this.glIndicies = new Uint16Array(this.indices);
+    this.glIndices = new Uint16Array(this.indices);
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.glIndicies, gl.STATIC_DRAW);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.glIndices, gl.STATIC_DRAW);
 
     this.dirty = false;
 };

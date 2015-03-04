@@ -10,7 +10,7 @@ var core = require('../../core');
  * @param height {number} the height
  *
  */
-function Mesh(texture, vertices, uvs, indecies, drawMode)
+function Mesh(texture, vertices, uvs, indices, drawMode)
 {
     core.Container.call(this);
 
@@ -45,7 +45,7 @@ function Mesh(texture, vertices, uvs, indecies, drawMode)
      * @member {Uint16Array} An array containing the indices of the vertices
      */
     //  TODO auto generate this based on draw mode!
-    this.indices = indecies || new Uint16Array([0, 1, 2, 3]);
+    this.indices = indices || new Uint16Array([0, 1, 2, 3]);
 
     /**
      * Whether the Mesh is dirty or not
