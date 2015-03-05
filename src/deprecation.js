@@ -4,7 +4,7 @@ var core   = require('./core'),
 
 core.Stage = function ()
 {
-    window.console.warn('You don not need to use a PIXI Stage any more, you can simply render any container.');
+    window.console.warn('You do not need to use a PIXI Stage any more, you can simply render any container.');
     return new core.Container();
 };
 
