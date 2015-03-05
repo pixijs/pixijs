@@ -210,8 +210,6 @@ TilingSprite.prototype._renderCanvas = function (renderer)
 
     var transform = this.worldTransform;
 
-    var i,j;
-
     var resolution = renderer.resolution;
 
     context.setTransform(transform.a * resolution,
@@ -477,7 +475,7 @@ TilingSprite.prototype.destroy = function () {
  */
 TilingSprite.fromFrame = function (frameId,width,height)
 {
-    var texture = utils.TextureCache[frameId];
+    var texture = core.utils.TextureCache[frameId];
 
     if (!texture)
     {
@@ -501,5 +499,5 @@ TilingSprite.fromFrame = function (frameId,width,height)
  */
 TilingSprite.fromImage = function (imageId, width, height, crossorigin, scaleMode)
 {
-    return new TilingSprite(Texture.fromImage(imageId, crossorigin, scaleMode),width,height);
+    return new TilingSprite(core.Texture.fromImage(imageId, crossorigin, scaleMode),width,height);
 };

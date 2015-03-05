@@ -209,7 +209,7 @@ WebGLRenderer.prototype._initContext = function ()
 
     if(this._useFXAA)
     {
-        window.console.warn("FXAA antialiasing being used instead of native antialiasing")
+        window.console.warn('FXAA antialiasing being used instead of native antialiasing');
         this._FXAAFilter = [new FXAAFilter()];
     }
 };
@@ -340,7 +340,7 @@ WebGLRenderer.prototype.resize = function (width, height)
    // console.log(width)
     this.filterManager.resize(width, height);
     this.renderTarget.resize(width, height);
-    if(this.currentRenderTarget == this.renderTarget)
+    if(this.currentRenderTarget === this.renderTarget)
     {
         this.renderTarget.activate();
     }
