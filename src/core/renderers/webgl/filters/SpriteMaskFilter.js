@@ -1,5 +1,6 @@
 var AbstractFilter = require('./AbstractFilter'),
-    math =  require('../../../math');
+    math =  require('../../../math'),
+    fs = require('fs');
 
 /**
  * The SpriteMaskFilter class
@@ -12,7 +13,6 @@ var AbstractFilter = require('./AbstractFilter'),
 function SpriteMaskFilter(sprite)
 {
     var maskMatrix = new math.Matrix();
-    var fs = require('fs');
 
     AbstractFilter.call(this,
         fs.readFileSync(__dirname + '/spriteMaskFilter.vert', 'utf8'),
