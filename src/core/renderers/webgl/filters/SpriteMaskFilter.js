@@ -14,8 +14,8 @@ function SpriteMaskFilter(sprite)
     var maskMatrix = new math.Matrix();
 
     AbstractFilter.call(this,
-        fs.readFileSync(__dirname + '/SpriteMaskFilter.vert', 'utf8'),
-        fs.readFileSync(__dirname + '/SpriteMaskFilter.frag', 'utf8'),
+        fs.readFileSync(__dirname + '/spriteMaskFilter.vert', 'utf8'),
+        fs.readFileSync(__dirname + '/spriteMaskFilter.frag', 'utf8'),
         {
             mask:           { type: 'sampler2D', value: sprite.texture },
             otherMatrix:    { type: 'mat3', value: maskMatrix.toArray(true) }
