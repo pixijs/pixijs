@@ -1,5 +1,6 @@
 var AbstractFilter = require('./AbstractFilter'),
-    math =  require('../../../math');
+    math =  require('../../../math'),
+    fs = require('fs');
 
 /**
  * The SpriteMaskFilter class
