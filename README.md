@@ -1,5 +1,12 @@
 Pixi Renderer 
 =============
+![pixi.js logo](http://www.goodboydigital.com/pixijs/logo_small.png) 
+
+### Like what we do? ###
+
+[Support us via Gratipay](<https://gratipay.com/GoodBoyDigital/>)
+
+
 
 #### *** IMPORTANT - V2 API CHANGES *** ####
 
@@ -23,7 +30,7 @@ var renderer = new PIXI.WebGLRenderer(800, 600, options)
 Check out the docs for more info!
 
 
-![pixi.js logo](http://www.goodboydigital.com/pixijs/logo_small.png) 
+
 
 [<img src="http://www.pixijs.com/wp-content/uploads/2013/05/headerPanel_projects-898x342.jpg">](http://www.pixijs.com/projects)
 #### JavaScript 2D Renderer ####
