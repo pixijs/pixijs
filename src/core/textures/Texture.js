@@ -129,8 +129,6 @@ function Texture(baseTexture, frame, crop, trim, rotate)
             frame = new math.Rectangle(0, 0, baseTexture.width, baseTexture.height);
         }
         this.frame = frame;
-
-
     }
     else
     {
@@ -165,7 +163,8 @@ Object.defineProperties(Texture.prototype, {
                 throw new Error('Texture Error: frame does not fit inside the base Texture dimensions ' + this);
             }
 
-            this.valid = frame && frame.width && frame.height && this.baseTexture.source && this.baseTexture.hasLoaded;
+            //this.valid = frame && frame.width && frame.height && this.baseTexture.source && this.baseTexture.hasLoaded;
+            this.valid = frame && frame.width && frame.height && this.baseTexture.hasLoaded;
 
             if (this.trim)
             {
@@ -180,7 +179,7 @@ Object.defineProperties(Texture.prototype, {
                 this.crop = frame;
             }
 
-            if (this.valid)
+             if (this.valid)
             {
                 this._updateUvs();
             }
@@ -235,6 +234,11 @@ Texture.prototype.destroy = function (destroyBase)
     this.valid = false;
 };
 
+Texture.prototype.clone = function ()
+{
+    return new Texture(this.baseTexture, this.frame, this.crop, this.trim, this.rotate);
+}
+
 /**
  * Updates the internal WebGL UV cache.
  *
@@ -287,7 +291,7 @@ Texture.fromFrame = function (frameId)
 
     if (!texture)
     {
-        throw new Error('The frameId "' + frameId + '" does not exist in the texture cache' + this);
+        throw new Error('The frameId "' + frameId + '" does not exist in the texture cache');
     }
 
     return texture;
