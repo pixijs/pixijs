@@ -10,7 +10,7 @@ var core = require('../../core');
  *  container.filters = [colorMatrix];
  *  colorMatrix.contrast(2);
  * ```
- *
+ * @author Clément Chenebault <clement@goodboydigital.com>
  * @class
  * @extends AbstractFilter
  * @memberof PIXI.filters
