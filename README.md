@@ -1,13 +1,11 @@
 Pixi Renderer 
 =============
 
-[![Join the chat at https://gitter.im/GoodBoyDigital/pixi.js](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/GoodBoyDigital/pixi.js?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 ![pixi.js logo](http://www.goodboydigital.com/pixijs/logo_small.png) 
 
 ### Like what we do? ###
 
 [Support us via Gratipay](<https://gratipay.com/GoodBoyDigital/>)
-
 
 
 #### *** IMPORTANT - V2 API CHANGES *** ####
@@ -48,6 +46,7 @@ any breakthroughs will be posted up there too!
 
 [![Inline docs](http://inch-ci.org/github/GoodBoyDigital/pixi.js.svg?branch=master)](http://inch-ci.org/github/GoodBoyDigital/pixi.js)
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/GoodBoyDigital/pixi.js/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+[![Join the chat at https://gitter.im/GoodBoyDigital/pixi.js](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/GoodBoyDigital/pixi.js?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ### Demos ###
 
