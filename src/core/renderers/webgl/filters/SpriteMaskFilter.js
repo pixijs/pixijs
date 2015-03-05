@@ -2,7 +2,7 @@ var AbstractFilter = require('./AbstractFilter'),
     math =  require('../../../math');
 
 /**
- * The SpriteMaskFilter class 
+ * The SpriteMaskFilter class
  *
  * @class
  * @extends AbstractFilter
@@ -49,9 +49,15 @@ function SpriteMaskFilter(sprite)
 
             'void main(void)',
             '{',
+
+            // cheeck clip! this will stop the mask bleeding out from the edges
+            '   vec2 text = abs( vMaskCoord - 0.5 );   ',
+            '   text = step(0.5, text);',
+            '   float clip = 1.0 - max(text.y, text.x);',
+
             '   vec4 original =  texture2D(uSampler, vTextureCoord);',
             '   vec4 masky =  texture2D(mask, vMaskCoord);',
-            '   original *= (masky.r * masky.a);',
+            '   original *= (masky.r * masky.a * clip);',
             '   gl_FragColor =  original;',
             '}'
         ].join('\n'),
@@ -74,8 +80,8 @@ module.exports = SpriteMaskFilter;
  * Applies the filter ? @alvin
  *
  * @param renderer {WebGLRenderer} A reference to the WebGL renderer
- * @param input {RenderTarget} 
- * @param output {RenderTarget} 
+ * @param input {RenderTarget}
+ * @param output {RenderTarget}
  */
 SpriteMaskFilter.prototype.applyFilter = function (renderer, input, output)
 {
