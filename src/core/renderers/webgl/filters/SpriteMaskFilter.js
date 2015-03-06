@@ -1,6 +1,5 @@
 var AbstractFilter = require('./AbstractFilter'),
-    math =  require('../../../math'),
-    fs = require('fs');
+    math =  require('../../../math');
 
 /**
  * The SpriteMaskFilter class
@@ -14,11 +13,57 @@ function SpriteMaskFilter(sprite)
 {
     var maskMatrix = new math.Matrix();
 
+    //TODO move this code out to a frag and vert file.
     AbstractFilter.call(this,
-        fs.readFileSync(__dirname + '/spriteMaskFilter.vert', 'utf8'),
-        fs.readFileSync(__dirname + '/spriteMaskFilter.frag', 'utf8'),
+        // vertex shader
+        [
+            'attribute vec2 aVertexPosition;',
+            'attribute vec2 aTextureCoord;',
+            'attribute vec4 aColor;',
+
+            'uniform mat3 projectionMatrix;',
+            'uniform mat3 otherMatrix;',
+
+            'varying vec2 vMaskCoord;',
+            'varying vec2 vTextureCoord;',
+            'varying vec4 vColor;',
+
+            'void main(void)',
+            '{',
+            '   gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);',
+            '   vTextureCoord = aTextureCoord;',
+            '   vMaskCoord = ( otherMatrix * vec3( aTextureCoord, 1.0)  ).xy;',
+            '   vColor = vec4(aColor.rgb * aColor.a, aColor.a);',
+            '}'
+        ].join('\n'),
+        // fragment shader
+        [
+            'precision lowp float;',
+
+            'varying vec2 vMaskCoord;',
+            'varying vec2 vTextureCoord;',
+            'varying vec4 vColor;',
+
+            'uniform sampler2D uSampler;',
+            'uniform sampler2D mask;',
+
+            'void main(void)',
+            '{',
+
+            // cheeck clip! this will stop the mask bleeding out from the edges
+            '   vec2 text = abs( vMaskCoord - 0.5 );   ',
+            '   text = step(0.5, text);',
+            '   float clip = 1.0 - max(text.y, text.x);',
+
+            '   vec4 original =  texture2D(uSampler, vTextureCoord);',
+            '   vec4 masky =  texture2D(mask, vMaskCoord);',
+            '   original *= (masky.r * masky.a * clip);',
+            '   gl_FragColor =  original;',
+            '}'
+        ].join('\n'),
+        // uniforms
         {
-            mask:           { type: 'sampler2D', value: sprite.texture },
+            mask:           { type: 'sampler2D', value: sprite._texture },
             otherMatrix:    { type: 'mat3', value: maskMatrix.toArray(true) }
         }
     );
@@ -41,6 +86,8 @@ module.exports = SpriteMaskFilter;
 SpriteMaskFilter.prototype.applyFilter = function (renderer, input, output)
 {
     var filterManager = renderer.filterManager;
+
+    this.uniforms.mask.value = this.maskSprite._texture;
 
     filterManager.calculateMappedMatrix(input.frame, this.maskSprite, this.maskMatrix);
 
