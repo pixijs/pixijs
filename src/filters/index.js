@@ -26,6 +26,7 @@ module.exports = {
     DisplacementFilter: require('./displacement/DisplacementFilter'),
     DotScreenFilter:    require('./dot/DotScreenFilter'),
     GrayFilter:         require('./gray/GrayFilter'),
+    DropShadowFilter:   require('./dropshadow/DropShadowFilter'),
     InvertFilter:       require('./invert/InvertFilter'),
     NoiseFilter:        require('./noise/NoiseFilter'),
     NormalMapFilter:    require('./normal/NormalMapFilter'),

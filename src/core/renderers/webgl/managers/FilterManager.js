@@ -80,7 +80,12 @@ FilterManager.prototype.pushFilter = function (target, filters)
     bounds.height = bounds.height | 0;
 
 
-
+    // padding!
+    var padding = filters[0].padding;
+    bounds.x -= padding;
+    bounds.y -= padding;
+    bounds.width += padding * 2;
+    bounds.height += padding * 2
 
 
     if(this.renderer.currentRenderTarget.transform)
