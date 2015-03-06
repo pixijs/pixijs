@@ -14,10 +14,12 @@ DisplayObject.prototype.name = null;
 * @param name {string} the instance name
 * @return {DisplayObject}
 */
-Container.prototype.getChildByName = function(val)
+Container.prototype.getChildByName = function (val)
 {
-    for (i = 0; i < this.children.length; i++) {
-        if (this.children[i].name == val) {
+    for (i = 0; i < this.children.length; i++) 
+    {
+        if (this.children[i].name === val) 
+        {
             return this.children[i];
         }
     }
