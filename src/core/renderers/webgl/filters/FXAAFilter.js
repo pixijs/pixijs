@@ -1,5 +1,7 @@
 var AbstractFilter = require('./AbstractFilter');
 
+var fs = require('fs');
+
 /**
  *
  * Basic FXAA implementation based on the code on geeks3d.com with the
@@ -17,8 +19,6 @@ var AbstractFilter = require('./AbstractFilter');
  */
 function FXAAFilter()
 {
-    var fs = require('fs');
-
     AbstractFilter.call(this,
         // vertex shader
         fs.readFileSync(__dirname + '/FXAA.vert', 'utf8'),

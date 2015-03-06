@@ -1,6 +1,8 @@
 var AbstractFilter = require('./AbstractFilter'),
-    math =  require('../../../math'),
-    fs = require('fs');
+    math =  require('../../../math');
+
+// fs needs to be decalred alone for brfs to pick it up properly.
+var fs = require('fs');
 
 /**
  * The SpriteMaskFilter class
