@@ -9,16 +9,16 @@ var DisplayObject = require('../core/display/DisplayObject'),
 DisplayObject.prototype.name = null;
 
 /**
-* Get
+* Returns the display object in the container
 *
-* @param name {string} the instance name
+* @param name {string} instance name
 * @return {DisplayObject}
 */
-Container.prototype.getChildByName = function (val)
+Container.prototype.getChildByName = function (name)
 {
     for (i = 0; i < this.children.length; i++) 
     {
-        if (this.children[i].name === val) 
+        if (this.children[i].name === name) 
         {
             return this.children[i];
         }
