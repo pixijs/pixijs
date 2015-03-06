@@ -20,7 +20,7 @@ function SpriteMaskFilter(sprite)
         fs.readFileSync(__dirname + '/spriteMaskFilter.vert', 'utf8'),
         fs.readFileSync(__dirname + '/spriteMaskFilter.frag', 'utf8'),
         {
-            mask:           { type: 'sampler2D', value: sprite.texture },
+            mask:           { type: 'sampler2D', value: sprite._texture },
             otherMatrix:    { type: 'mat3', value: maskMatrix.toArray(true) }
         }
     );
