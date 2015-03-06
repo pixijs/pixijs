@@ -13,7 +13,7 @@ core.SpriteBatch = function ()
     window.console.warn('SpriteBatch does not exist any more, please use the new ParticleContainer instead.');
 };
 
-core.AssetsLoader = function () {
+core.AssetLoader = function () {
     window.console.warn('The loader system was overhauled in pixi v3, please see the new PIXI.Loader class.');
 };
 
