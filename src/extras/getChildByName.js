@@ -1,5 +1,5 @@
 var DisplayObject = require('../core/display/DisplayObject'),
-    Container = require('../core/display/Container')
+    Container = require('../core/display/Container');
 
 /**
  * The instance name of the object.
@@ -16,7 +16,7 @@ DisplayObject.prototype.name = null;
 */
 Container.prototype.getChildByName = function (name)
 {
-    for (i = 0; i < this.children.length; i++) 
+    for (var i = 0; i < this.children.length; i++) 
     {
         if (this.children[i].name === name) 
         {
