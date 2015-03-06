@@ -44,6 +44,8 @@ SpriteMaskFilter.prototype.applyFilter = function (renderer, input, output)
 {
     var filterManager = renderer.filterManager;
 
+    this.uniforms.mask.value = this.maskSprite._texture;
+
     filterManager.calculateMappedMatrix(input.frame, this.maskSprite, this.maskMatrix);
 
     this.uniforms.otherMatrix.value = this.maskMatrix.toArray(true);
