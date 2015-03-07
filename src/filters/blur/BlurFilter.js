@@ -68,7 +68,7 @@ Object.defineProperties(BlurFilter.prototype, {
         },
         set: function (value)
         {
-            this.blurXFilter.passes = this.blurYFilter.passes = value
+            this.blurXFilter.passes = this.blurYFilter.passes = value;
         }
     },
 
@@ -107,6 +107,4 @@ Object.defineProperties(BlurFilter.prototype, {
             this.blurYFilter.blur = value;
         }
     }
-
-
 });

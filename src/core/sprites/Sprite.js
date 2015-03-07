@@ -335,7 +335,7 @@ Sprite.prototype.getLocalBounds = function ()
     this._bounds.width = this._texture._frame.width;
     this._bounds.height = this._texture._frame.height;
     return this._bounds;
-}
+};
 
 /**
 * Tests if a point is inside this sprite
