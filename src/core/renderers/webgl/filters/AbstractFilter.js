@@ -12,14 +12,6 @@ var DefaultShader = require('../shaders/TextureShader');
  */
 function AbstractFilter(vertexSrc, fragmentSrc, uniforms)
 {
-    /**
-     * An array of passes - some filters contain a few steps this array simply stores the steps in a liniear fashion.
-     * For example the blur filter has two passes blurX and blurY.
-     *
-     * @member {AbstractFilter[]}
-     * @private
-     */
-    this.passes = [this];
 
     /**
      * An array of shaders

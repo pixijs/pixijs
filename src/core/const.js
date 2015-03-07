@@ -106,6 +106,8 @@ module.exports = {
 
     RESOLUTION:1,
 
+    FILTER_RESOLUTION:1,
+
     /**
      * The default render options if none are supplied to {@link PIXI.WebGLRenderer}
      * or {@link PIXI.CanvasRenderer}.

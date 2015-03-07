@@ -1,5 +1,6 @@
 var WebGLManager = require('./WebGLManager'),
     RenderTarget = require('../utils/RenderTarget'),
+    CONST = require('../../../const'),
     Quad = require('../utils/Quad'),
     math =  require('../../../math');
 
@@ -210,7 +211,7 @@ FilterManager.prototype.popFilter = function ()
  */
 FilterManager.prototype.getRenderTarget = function ( clear )
 {
-    var renderTarget = this.texturePool.pop() || new RenderTarget(this.renderer.gl, this.textureSize.width, this.textureSize.height, null, this.renderer.resolution);
+    var renderTarget = this.texturePool.pop() || new RenderTarget(this.renderer.gl, this.textureSize.width, this.textureSize.height, CONST.SCALE_MODES.LINEAR, this.renderer.resolution * CONST.FILTER_RESOLUTION);
     renderTarget.frame = this.currentFrame;
 
     if (clear)
