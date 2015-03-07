@@ -144,7 +144,7 @@ Object.defineProperties(DropShadowFilter.prototype, {
     distance: {
         get: function ()
         {
-            return  this._distance
+            return  this._distance;
         },
         set: function (value)
         {
@@ -156,7 +156,7 @@ Object.defineProperties(DropShadowFilter.prototype, {
     angle: {
         get: function ()
         {
-            return  this._angle
+            return  this._angle;
         },
         set: function (value)
         {

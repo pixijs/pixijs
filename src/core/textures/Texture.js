@@ -237,7 +237,7 @@ Texture.prototype.destroy = function (destroyBase)
 Texture.prototype.clone = function ()
 {
     return new Texture(this.baseTexture, this.frame, this.crop, this.trim, this.rotate);
-}
+};
 
 /**
  * Updates the internal WebGL UV cache.

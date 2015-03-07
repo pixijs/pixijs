@@ -85,7 +85,7 @@ FilterManager.prototype.pushFilter = function (target, filters)
     bounds.x -= padding;
     bounds.y -= padding;
     bounds.width += padding * 2;
-    bounds.height += padding * 2
+    bounds.height += padding * 2;
 
 
     if(this.renderer.currentRenderTarget.transform)
