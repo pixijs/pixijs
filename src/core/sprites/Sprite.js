@@ -328,6 +328,15 @@ Sprite.prototype.getBounds = function (matrix)
     return this._currentBounds;
 };
 
+Sprite.prototype.getLocalBounds = function ()
+{
+    this._bounds.x = -this._texture._frame.width * this.anchor.x;
+    this._bounds.y = -this._texture._frame.height * this.anchor.y;
+    this._bounds.width = this._texture._frame.width;
+    this._bounds.height = this._texture._frame.height;
+    return this._bounds;
+}
+
 /**
 * Tests if a point is inside this sprite
 *
