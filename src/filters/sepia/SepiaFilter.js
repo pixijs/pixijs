@@ -1,4 +1,5 @@
 var core = require('../../core');
+var fs = require('fs');
 
 /**
  * This applies a sepia effect to your Display Objects.
@@ -13,7 +14,7 @@ function SepiaFilter()
         // vertex shader
         null,
         // fragment shader
-        require('fs').readFileSync(__dirname + '/sepia.frag', 'utf8'),
+        fs.readFileSync(__dirname + '/sepia.frag', 'utf8'),
         // custom uniforms
         {
             sepia: { type: '1f', value: 1 }

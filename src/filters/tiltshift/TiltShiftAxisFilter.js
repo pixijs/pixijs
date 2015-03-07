@@ -1,4 +1,5 @@
 var core = require('../../core');
+var fs = require('fs');
 
 /**
  * @author Vico @vicocotea
@@ -18,7 +19,7 @@ function TiltShiftAxisFilter()
         // vertex shader
         null,
         // fragment shader
-        require('fs').readFileSync(__dirname + '/tiltShift.frag', 'utf8'),
+        fs.readFileSync(__dirname + '/tiltShift.frag', 'utf8'),
         // custom uniforms
         {
             blur:           { type: '1f', value: 100 },

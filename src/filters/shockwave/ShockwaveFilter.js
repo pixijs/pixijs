@@ -1,4 +1,5 @@
 var core = require('../../core');
+var fs = require('fs');
 
 /**
  * The ColorMatrixFilter class lets you apply a 4x4 matrix transformation on the RGBA
@@ -15,7 +16,7 @@ function ShockwaveFilter()
         // vertex shader
         null,
         // fragment shader
-        require('fs').readFileSync(__dirname + '/shockwave.frag', 'utf8'),
+        fs.readFileSync(__dirname + '/shockwave.frag', 'utf8'),
         // custom uniforms
         {
             center: { type: 'v2', value: { x: 0.5, y: 0.5 } },

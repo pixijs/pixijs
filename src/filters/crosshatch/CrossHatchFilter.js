@@ -1,4 +1,5 @@
 var core = require('../../core');
+var fs = require('fs');
 
 /**
  * A Cross Hatch effect filter.
@@ -13,7 +14,7 @@ function CrossHatchFilter()
         // vertex shader
         null,
         // fragment shader
-        require('fs').readFileSync(__dirname + '/crosshatch.frag', 'utf8')
+        fs.readFileSync(__dirname + '/crosshatch.frag', 'utf8')
     );
 }
 

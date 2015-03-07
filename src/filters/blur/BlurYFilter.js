@@ -1,4 +1,5 @@
 var core = require('../../core');
+var fs = require('fs');
 
 /**
  * The BlurYFilter applies a horizontal Gaussian blur to an object.
@@ -11,9 +12,9 @@ function BlurYFilter()
 {
     core.AbstractFilter.call(this,
         // vertex shader
-        require('fs').readFileSync(__dirname + '/blurY.vert', 'utf8'),
+        fs.readFileSync(__dirname + '/blurY.vert', 'utf8'),
         // fragment shader
-        require('fs').readFileSync(__dirname + '/blur.frag', 'utf8'),
+        fs.readFileSync(__dirname + '/blur.frag', 'utf8'),
         // set the uniforms
         {
             strength: { type: '1f', value: 1 }

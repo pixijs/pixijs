@@ -1,4 +1,5 @@
 var core = require('../../core');
+var fs = require('fs');
 
 /**
  * The NormalMapFilter class uses the pixel values from the specified texture (called the normal map)
@@ -15,7 +16,7 @@ function NormalMapFilter(texture)
         // vertex shader
         null,
         // fragment shader
-        require('fs').readFileSync(__dirname + '/normalMap.frag', 'utf8'),
+        fs.readFileSync(__dirname + '/normalMap.frag', 'utf8'),
         // custom uniforms
         {
             displacementMap:  { type: 'sampler2D', value: texture },

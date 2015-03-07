@@ -1,4 +1,5 @@
 var core = require('../../core');
+var fs = require('fs');
 
 /**
  * The ConvolutionFilter class applies a matrix convolution filter effect.
@@ -20,7 +21,7 @@ function ConvolutionFilter(matrix, width, height)
         // vertex shader
         null,
         // fragment shader
-        require('fs').readFileSync(__dirname + '/convolution.frag', 'utf8'),
+        fs.readFileSync(__dirname + '/convolution.frag', 'utf8'),
         // custom uniforms
         {
             matrix:     { type: '1fv', value: new Float32Array(matrix) },

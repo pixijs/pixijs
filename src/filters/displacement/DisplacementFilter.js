@@ -1,4 +1,5 @@
 var core = require('../../core');
+var fs = require('fs');
 
 /**
  * The DisplacementFilter class uses the pixel values from the specified texture (called the displacement map) to perform a displacement of an object.
@@ -15,12 +16,11 @@ function DisplacementFilter(sprite)
     var maskMatrix = new core.math.Matrix();
     sprite.renderable = false;
 
-    //TODO move this code out to a frag and vert file.
     core.AbstractFilter.call(this,
         // vertex shader
-        require('fs').readFileSync(__dirname + '/displacement.vert', 'utf8'),
+        fs.readFileSync(__dirname + '/displacement.vert', 'utf8'),
         // fragment shader
-        require('fs').readFileSync(__dirname + '/displacement.frag', 'utf8'),
+        fs.readFileSync(__dirname + '/displacement.frag', 'utf8'),
         // uniforms
         {
             mapSampler:     { type: 'sampler2D', value: sprite.texture },
