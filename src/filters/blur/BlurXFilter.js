@@ -30,7 +30,7 @@ function BlurXFilter()
      */
     this.passes = 1;
 
-    this.stength = 8;
+    this.strength = 8;
 }
 
 BlurXFilter.prototype = Object.create(core.AbstractFilter.prototype);

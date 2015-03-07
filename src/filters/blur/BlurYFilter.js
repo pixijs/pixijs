@@ -22,7 +22,7 @@ function BlurYFilter()
     );
 
     this.passes = 1;
-    this.stength = 8;
+    this.strength = 8;
 }
 
 BlurYFilter.prototype = Object.create(core.AbstractFilter.prototype);
