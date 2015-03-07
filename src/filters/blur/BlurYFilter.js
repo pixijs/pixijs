@@ -1,5 +1,6 @@
 var core = require('../../core'),
     blurFactor = 1 / 7000;
+var fs = require('fs');
 
 /**
  * The BlurYFilter applies a vertical Gaussian blur to an object.
@@ -14,7 +15,7 @@ function BlurYFilter()
         // vertex shader
         null,
         // fragment shader
-        require('fs').readFileSync(__dirname + '/blurY.frag', 'utf8'),
+        fs.readFileSync(__dirname + '/blurY.frag', 'utf8'),
         // set the uniforms
         {
             blur: { type: '1f', value: 1 / 512 }

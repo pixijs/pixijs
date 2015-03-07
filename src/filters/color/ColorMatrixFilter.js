@@ -1,4 +1,5 @@
 var core = require('../../core');
+var fs = require('fs');
 
 /**
  * The ColorMatrixFilter class lets you apply a 5x5 matrix transformation on the RGBA
@@ -21,7 +22,7 @@ function ColorMatrixFilter()
         // vertex shader
         null,
         // fragment shader
-        require('fs').readFileSync(__dirname + '/colorMatrix.frag', 'utf8'),
+        fs.readFileSync(__dirname + '/colorMatrix.frag', 'utf8'),
         // custom uniforms
         {
             m: { type: '1fv', value: [1, 0, 0, 0, 0,

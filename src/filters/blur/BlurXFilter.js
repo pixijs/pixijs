@@ -1,5 +1,6 @@
 var core = require('../../core'),
     blurFactor = 1 / 7000;
+var fs = require('fs');
 
 /**
  * The BlurXFilter applies a horizontal Gaussian blur to an object.
@@ -14,7 +15,7 @@ function BlurXFilter()
         // vertex shader
         null,
         // fragment shader
-        require('fs').readFileSync(__dirname + '/blurX.frag', 'utf8'),
+        fs.readFileSync(__dirname + '/blurX.frag', 'utf8'),
         // set the uniforms
         {
             blur: { type: '1f', value: 1 / 512 }

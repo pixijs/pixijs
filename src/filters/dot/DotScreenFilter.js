@@ -1,4 +1,5 @@
 var core = require('../../core');
+var fs = require('fs');
 
 /**
  * @author Mat Groves http://matgroves.com/ @Doormat23
@@ -19,7 +20,7 @@ function DotScreenFilter()
         // vertex shader
         null,
         // fragment shader
-        require('fs').readFileSync(__dirname + '/dotScreen.frag', 'utf8'),
+        fs.readFileSync(__dirname + '/dotScreen.frag', 'utf8'),
         // custom uniforms
         {
             scale:      { type: '1f', value: 1 },

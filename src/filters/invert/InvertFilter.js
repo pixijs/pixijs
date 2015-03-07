@@ -1,4 +1,5 @@
 var core = require('../../core');
+var fs = require('fs');
 
 /**
  * This inverts your Display Objects colors.
@@ -13,7 +14,7 @@ function InvertFilter()
         // vertex shader
         null,
         // fragment shader
-        require('fs').readFileSync(__dirname + '/invert.frag', 'utf8'),
+        fs.readFileSync(__dirname + '/invert.frag', 'utf8'),
         // custom uniforms
         {
             invert: { type: '1f', value: 1 }

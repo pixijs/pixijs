@@ -1,4 +1,5 @@
 var core = require('../../core');
+var fs = require('fs');
 
 /**
  * This filter applies a pixelate effect making display objects appear 'blocky'.
@@ -13,7 +14,7 @@ function PixelateFilter()
         // vertex shader
         null,
         // fragment shader
-        require('fs').readFileSync(__dirname + '/pixelate.frag', 'utf8'),
+        fs.readFileSync(__dirname + '/pixelate.frag', 'utf8'),
         // custom uniforms
         {
             dimensions: { type: '4fv',  value: new Float32Array([0, 0, 0, 0]) },

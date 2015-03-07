@@ -1,4 +1,5 @@
 var core = require('../../core');
+var fs = require('fs');
 
 /**
  * A Smart Blur Filter.
@@ -13,7 +14,7 @@ function SmartBlurFilter()
         // vertex shader
         null,
         // fragment shader
-        require('fs').readFileSync(__dirname + '/smartBlur.frag', 'utf8')
+        fs.readFileSync(__dirname + '/smartBlur.frag', 'utf8')
     );
 }
 
