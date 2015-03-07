@@ -20,7 +20,15 @@ function BlurXFilter()
         }
     );
 
-    this._passes = 1;
+    /**
+     * Sets the number of passes for blur. More passes means higher quaility bluring.
+     *
+     * @member {number}
+     * @memberof BlurXFilter#
+     * @default 1
+     */
+    this.passes = 1;
+
     this.stength = 8;
 }
 
@@ -32,7 +40,9 @@ BlurXFilter.prototype.applyFilter = function (renderer, input, output, clear)
 {
     var shader = this.getShader(renderer);
 
-    if(this._passes === 1)
+    this.uniforms.strength.value = this.strength / 8 / this.passes * (input.frame.width / input.size.width);
+
+    if(this.passes === 1)
     {
         renderer.filterManager.applyFilter(shader, input, output, clear);
     }
@@ -42,7 +52,7 @@ BlurXFilter.prototype.applyFilter = function (renderer, input, output, clear)
         var flip = input;
         var flop = renderTarget;
 
-        for(var i = 0; i < this._passes-1; i++)
+        for(var i = 0; i < this.passes-1; i++)
         {
             renderer.filterManager.applyFilter(shader, flip, flop, clear);
 
@@ -75,26 +85,6 @@ Object.defineProperties(BlurXFilter.prototype, {
         {
             this.padding = value;
             this.strength = value;
-            this.uniforms.strength.value = value / 8 / this._passes;
         }
     },
-
-    /**
-     * Sets the number of passes for blur. More passes means higher quaility bluring.
-     *
-     * @member {number}
-     * @memberof BlurXFilter#
-     * @default 1
-     */
-    passes: {
-        get: function ()
-        {
-            return  this._passes;
-        },
-        set: function (value)
-        {
-            this._passes = value;
-            this.uniforms.strength.value = this.strength / 8 / this._passes;
-        }
-    }
 });

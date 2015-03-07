@@ -112,6 +112,17 @@ DisplayObject.prototype._initCachedDisplayObject = function( renderer )
     // TODO pass an object to clone too? saves having to create a new one each time!
     var bounds = this.getLocalBounds().clone();
 
+    // add some padding!
+    if(this._filters)
+    {
+        var padding = this._filters[0].padding;
+        bounds.x -= padding;
+        bounds.y -= padding;
+
+        bounds.width += padding * 2;
+        bounds.height += padding * 2;
+    }
+
     // for now we cache the current renderTarget that the webGL renderer is currently using.
     // this could be more elegent..
     var cachedRenderTarget = renderer.currentRenderTarget;
@@ -126,6 +137,8 @@ DisplayObject.prototype._initCachedDisplayObject = function( renderer )
 
     m.tx = -bounds.x;
     m.ty = -bounds.y;
+
+
 
     // set all properties to there original so we can render to a texture
     this.renderWebGL = this._originalRenderWebGL;
