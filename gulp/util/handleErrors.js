@@ -1,15 +1,19 @@
 var gutil = require('gulp-util'),
-    plumber = require('gulp-plumber');
+    plumber = require('gulp-plumber'),
+    ERROR = gutil.colors.red('[ERROR]');
 
 function errorHandler(err) {
-    gutil.log(err.stack || err);
-    // var args = [].slice.apply(arguments);
+    var msg = err.toString();
 
-    // // Send error to notification center with gulp-notify
-    // notify.onError({
-    //   title: 'Error',
-    //   message: '<' + '%= error.message %' + '>'
-    // }).apply(this, args);
+    if (msg === '[object Object]') {
+        msg = err;
+    }
+
+    gutil.log(ERROR, err);
+
+    if (err.stack) {
+        gutil.log(ERROR, err.stack);
+    }
 
     // Keep gulp from hanging on this task
     this.emit('end');

@@ -7,6 +7,7 @@ var path        = require('path'),
     buffer      = require('vinyl-buffer'),
     browserify  = require('browserify'),
     watchify    = require('watchify'),
+    exorcist    = require('exorcist'),
     handleErrors = require('../util/handleErrors');
 
 // TODO - Concat license header to dev/prod build files.
@@ -14,6 +15,7 @@ function rebundle() {
     return this.bundle()
         .on('error', handleErrors.handler)
         .pipe(handleErrors())
+        .pipe(exorcist(paths.out + '/pixi.js.map'))
         .pipe(source('pixi.js'))
         .pipe(gulp.dest(paths.out))
         .pipe(buffer())

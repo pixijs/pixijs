@@ -24,6 +24,7 @@
     "browserify": "^8.0.2",
     "chai": "^1.10.0",
     "del": "^1.1.0",
+    "exorcist": "^0.1.6",
     "gulp": "^3.8.10",
     "gulp-cached": "^1.0.1",
     "gulp-concat": "^2.5.2",
