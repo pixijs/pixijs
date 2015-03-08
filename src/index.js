@@ -8,8 +8,10 @@ extendCore(require('./spine'));
 extendCore(require('./text'));
 extendCore(require('./deprecation'));
 
-function extendCore(obj){
-    for(var key in obj){
+function extendCore(obj)
+{
+    for(var key in obj)
+    {
         core[key] = obj[key];
     }
 }
