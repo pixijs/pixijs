@@ -30,7 +30,7 @@ function BlurXFilter()
      */
     this.passes = 1;
 
-    this.strength = 8;
+    this.strength = 4;
 }
 
 BlurXFilter.prototype = Object.create(core.AbstractFilter.prototype);
@@ -41,7 +41,7 @@ BlurXFilter.prototype.applyFilter = function (renderer, input, output, clear)
 {
     var shader = this.getShader(renderer);
 
-    this.uniforms.strength.value = this.strength / 8 / this.passes * (input.frame.width / input.size.width);
+    this.uniforms.strength.value = this.strength / 4 / this.passes * (input.frame.width / input.size.width);
 
     if(this.passes === 1)
     {

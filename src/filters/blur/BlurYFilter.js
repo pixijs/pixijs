@@ -22,7 +22,7 @@ function BlurYFilter()
     );
 
     this.passes = 1;
-    this.strength = 8;
+    this.strength = 4;
 }
 
 BlurYFilter.prototype = Object.create(core.AbstractFilter.prototype);
@@ -33,7 +33,7 @@ BlurYFilter.prototype.applyFilter = function (renderer, input, output, clear)
 {
     var shader = this.getShader(renderer);
 
-    this.uniforms.strength.value = this.strength / 8 / this.passes * (input.frame.height / input.size.height);
+    this.uniforms.strength.value = this.strength / 4 / this.passes * (input.frame.height / input.size.height);
 
     if(this.passes === 1)
     {
