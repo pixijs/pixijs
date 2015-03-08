@@ -368,7 +368,7 @@ Text.prototype.renderWebGL = function (renderer)
 {
     if (this.dirty)
     {
-        this.resolution = renderer.resolution;
+        //this.resolution = 1//renderer.resolution;
 
         this.updateText();
     }
@@ -385,7 +385,7 @@ Text.prototype._renderCanvas = function (renderer)
 {
     if (this.dirty)
     {
-        this.resolution = renderer.resolution;
+     //   this.resolution = 1//renderer.resolution;
 
         this.updateText();
     }
