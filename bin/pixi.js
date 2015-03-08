@@ -3091,7 +3091,6 @@ module.exports={
     "docs": "./node_modules/.bin/jsdoc -c ./gulp/util/jsdoc.conf.json"
   },
   "devDependencies": {
-    "brfs": "^1.2.0",
     "browserify": "^8.0.2",
     "chai": "^1.10.0",
     "del": "^1.1.0",
@@ -3123,7 +3122,8 @@ module.exports={
   },
   "dependencies": {
     "async": "^0.9.0",
-    "resource-loader": "^1.2.0"
+    "resource-loader": "^1.2.1",
+    "brfs": "^1.2.0"
   },
   "browserify": {
     "transform": [
@@ -10726,6 +10726,7 @@ FilterManager.prototype.pushFilter = function (target, filters)
 {
     // get the bounds of the object..
     var bounds = target.filterArea || target.getBounds();
+    //bounds = bounds.clone();
 
     // round off the rectangle to get a nice smoooooooth filter :)
     bounds.x = bounds.x | 0;
@@ -10735,7 +10736,7 @@ FilterManager.prototype.pushFilter = function (target, filters)
 
 
     // padding!
-    var padding = filters[0].padding;
+    var padding = filters[0].padding | 0;
     bounds.x -= padding;
     bounds.y -= padding;
     bounds.width += padding * 2;
@@ -10801,11 +10802,17 @@ FilterManager.prototype.popFilter = function ()
 
     this.quad.map(this.textureSize, input.frame);
 
+
     // TODO.. this probably only needs to be done once!
     gl.bindBuffer(gl.ARRAY_BUFFER, this.quad.vertexBuffer);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.quad.indexBuffer);
 
     var filters = filterData.filter;
+
+    // assuming all filters follow the correct format??
+    gl.vertexAttribPointer(this.renderer.shaderManager.defaultShader.attributes.aVertexPosition, 2, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(this.renderer.shaderManager.defaultShader.attributes.aTextureCoord, 2, gl.FLOAT, false, 0, 2 * 4 * 4);
+    gl.vertexAttribPointer(this.renderer.shaderManager.defaultShader.attributes.aColor, 4, gl.FLOAT, false, 0, 4 * 4 * 4);
 
     if (filters.length === 1)
     {
@@ -10910,10 +10917,11 @@ FilterManager.prototype.applyFilter = function (shader, inputTarget, outputTarge
 
     //TODO can this be optimised?
     shader.syncUniforms();
-
+/*
     gl.vertexAttribPointer(shader.attributes.aVertexPosition, 2, gl.FLOAT, false, 0, 0);
     gl.vertexAttribPointer(shader.attributes.aTextureCoord, 2, gl.FLOAT, false, 0, 2 * 4 * 4);
     gl.vertexAttribPointer(shader.attributes.aColor, 4, gl.FLOAT, false, 0, 4 * 4 * 4);
+*/
 
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, inputTarget.texture);
@@ -18731,7 +18739,7 @@ Object.defineProperties(BlurFilter.prototype, {
         },
         set: function (value)
         {
-            this.padding = value * 1.5;
+            this.padding = value * 0.5;
             this.blurXFilter.blur = this.blurYFilter.blur = value;
         }
     },
@@ -18878,7 +18886,7 @@ Object.defineProperties(BlurXFilter.prototype, {
         },
         set: function (value)
         {
-            this.padding = value;
+            this.padding = value * 0.5;
             this.strength = value;
         }
     },
@@ -18963,7 +18971,7 @@ Object.defineProperties(BlurYFilter.prototype, {
         },
         set: function (value)
         {
-            this.padding = value;
+            this.padding = value * 0.5;
             this.strength = value;
         }
     },
@@ -19882,41 +19890,78 @@ function BlurYTintFilter()
 {
     core.AbstractFilter.call(this,
         // vertex shader
-        "attribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\nattribute vec4 aColor;\n\nuniform float strength;\nuniform vec2 offset;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\nvarying vec2 vBlurTexCoords[14];\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3((aVertexPosition+offset), 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n\n    vBlurTexCoords[ 0] = aTextureCoord + vec2(0.0, -0.028 * strength);\n    vBlurTexCoords[ 1] = aTextureCoord + vec2(0.0, -0.024 * strength);\n    vBlurTexCoords[ 2] = aTextureCoord + vec2(0.0, -0.020 * strength);\n    vBlurTexCoords[ 3] = aTextureCoord + vec2(0.0, -0.016 * strength);\n    vBlurTexCoords[ 4] = aTextureCoord + vec2(0.0, -0.012 * strength);\n    vBlurTexCoords[ 5] = aTextureCoord + vec2(0.0, -0.008 * strength);\n    vBlurTexCoords[ 6] = aTextureCoord + vec2(0.0, -0.004 * strength);\n    vBlurTexCoords[ 7] = aTextureCoord + vec2(0.0,  0.004 * strength);\n    vBlurTexCoords[ 8] = aTextureCoord + vec2(0.0,  0.008 * strength);\n    vBlurTexCoords[ 9] = aTextureCoord + vec2(0.0,  0.012 * strength);\n    vBlurTexCoords[10] = aTextureCoord + vec2(0.0,  0.016 * strength);\n    vBlurTexCoords[11] = aTextureCoord + vec2(0.0,  0.020 * strength);\n    vBlurTexCoords[12] = aTextureCoord + vec2(0.0,  0.024 * strength);\n    vBlurTexCoords[13] = aTextureCoord + vec2(0.0,  0.028 * strength);\n\n   vColor = vec4(aColor.rgb * aColor.a, aColor.a);\n}\n",
+        "attribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\nattribute vec4 aColor;\n\nuniform float strength;\nuniform vec2 offset;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\nvarying vec2 vBlurTexCoords[6];\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3((aVertexPosition+offset), 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n\n    vBlurTexCoords[ 0] = aTextureCoord + vec2(0.0, -0.012 * strength);\n    vBlurTexCoords[ 1] = aTextureCoord + vec2(0.0, -0.008 * strength);\n    vBlurTexCoords[ 2] = aTextureCoord + vec2(0.0, -0.004 * strength);\n    vBlurTexCoords[ 3] = aTextureCoord + vec2(0.0,  0.004 * strength);\n    vBlurTexCoords[ 4] = aTextureCoord + vec2(0.0,  0.008 * strength);\n    vBlurTexCoords[ 5] = aTextureCoord + vec2(0.0,  0.012 * strength);\n\n   vColor = vec4(aColor.rgb * aColor.a, aColor.a);\n}\n",
         // fragment shader
-        "precision lowp float;\n\nvarying vec2 vTextureCoord;\nvarying vec2 vBlurTexCoords[14];\nvarying vec4 vColor;\n\nuniform float blur;\nuniform vec3 color;\nuniform float alpha;\n\nuniform sampler2D uSampler;\n\nvoid main(void)\n{\n    vec4 sum = vec4(0.0);\n\n    sum += texture2D(uSampler, vBlurTexCoords[ 0])*0.0044299121055113265;\n    sum += texture2D(uSampler, vBlurTexCoords[ 1])*0.00895781211794;\n    sum += texture2D(uSampler, vBlurTexCoords[ 2])*0.0215963866053;\n    sum += texture2D(uSampler, vBlurTexCoords[ 3])*0.0443683338718;\n    sum += texture2D(uSampler, vBlurTexCoords[ 4])*0.0776744219933;\n    sum += texture2D(uSampler, vBlurTexCoords[ 5])*0.115876621105;\n    sum += texture2D(uSampler, vBlurTexCoords[ 6])*0.147308056121;\n    sum += texture2D(uSampler, vTextureCoord         )*0.159576912161;\n    sum += texture2D(uSampler, vBlurTexCoords[ 7])*0.147308056121;\n    sum += texture2D(uSampler, vBlurTexCoords[ 8])*0.115876621105;\n    sum += texture2D(uSampler, vBlurTexCoords[ 9])*0.0776744219933;\n    sum += texture2D(uSampler, vBlurTexCoords[10])*0.0443683338718;\n    sum += texture2D(uSampler, vBlurTexCoords[11])*0.0215963866053;\n    sum += texture2D(uSampler, vBlurTexCoords[12])*0.00895781211794;\n    sum += texture2D(uSampler, vBlurTexCoords[13])*0.0044299121055113265;\n\n    gl_FragColor = vec4( color.rgb * sum.a * alpha, sum.a * alpha );\n}\n",
+        "precision lowp float;\n\nvarying vec2 vTextureCoord;\nvarying vec2 vBlurTexCoords[6];\nvarying vec4 vColor;\n\nuniform vec3 color;\nuniform float alpha;\n\nuniform sampler2D uSampler;\n\nvoid main(void)\n{\n    vec4 sum = vec4(0.0);\n\n    sum += texture2D(uSampler, vBlurTexCoords[ 0])*0.004431848411938341;\n    sum += texture2D(uSampler, vBlurTexCoords[ 1])*0.05399096651318985;\n    sum += texture2D(uSampler, vBlurTexCoords[ 2])*0.2419707245191454;\n    sum += texture2D(uSampler, vTextureCoord     )*0.3989422804014327;\n    sum += texture2D(uSampler, vBlurTexCoords[ 3])*0.2419707245191454;\n    sum += texture2D(uSampler, vBlurTexCoords[ 4])*0.05399096651318985;\n    sum += texture2D(uSampler, vBlurTexCoords[ 5])*0.004431848411938341;\n\n    gl_FragColor = vec4( color.rgb * sum.a * alpha, sum.a * alpha );\n}\n",
         // set the uniforms
         {
             blur: { type: '1f', value: 1 / 512 },
             color: { type: 'c', value: [0,0,0]},
             alpha: { type: '1f', value: 0.7 },
-            offset: { type: '2f', value:[5, 5]}
+            offset: { type: '2f', value:[5, 5]},
+            strength: { type: '1f', value:1}
         }
     );
+
+    this.passes = 1;
+    this.strength = 4;
 }
 
 BlurYTintFilter.prototype = Object.create(core.AbstractFilter.prototype);
 BlurYTintFilter.prototype.constructor = BlurYTintFilter;
 module.exports = BlurYTintFilter;
 
+BlurYTintFilter.prototype.applyFilter = function (renderer, input, output, clear)
+{
+    var shader = this.getShader(renderer);
+
+    this.uniforms.strength.value = this.strength / 4 / this.passes * (input.frame.height / input.size.height);
+
+    if(this.passes === 1)
+    {
+        renderer.filterManager.applyFilter(shader, input, output, clear);
+    }
+    else
+    {
+        var renderTarget = renderer.filterManager.getRenderTarget(true);
+        var flip = input;
+        var flop = renderTarget;
+
+        for(var i = 0; i < this.passes-1; i++)
+        {
+            renderer.filterManager.applyFilter(shader, flip, flop, clear);
+
+           var temp = flop;
+           flop = flip;
+           flip = temp;
+        }
+
+        renderer.filterManager.applyFilter(shader, flip, output, clear);
+
+        renderer.filterManager.returnRenderTarget(renderTarget);
+    }
+};
+
+
 Object.defineProperties(BlurYTintFilter.prototype, {
     /**
      * Sets the strength of both the blur.
      *
      * @member {number}
-     * @memberof BlurYTintFilter#
+     * @memberof BlurYFilter#
      * @default 2
      */
     blur: {
         get: function ()
         {
-            return this.uniforms.blur.value / blurFactor;
+            return  this.strength;
         },
         set: function (value)
         {
-            this.uniforms.blur.value = blurFactor * value;
+            this.padding = value * 0.5;
+            this.strength = value;
         }
-    }
+    },
 });
 
 },{"../../core":19}],94:[function(require,module,exports){
@@ -22026,8 +22071,7 @@ module.exports = function ()
  * @namespace PIXI.loaders
  */
 module.exports = {
-    //  Loader:     require('resource-loader'),
-    Loader:     require('./loader'),
+    Loader:             require('./loader'),
 
     // parsers
     bitmapFontParser:   require('./bitmapFontParser'),
@@ -22035,6 +22079,9 @@ module.exports = {
     spritesheetParser:  require('./spritesheetParser'),
     textureParser:      require('./textureParser')
 };
+
+
+module.exports.loader = new module.exports.Loader();
 
 },{"./bitmapFontParser":113,"./loader":115,"./spineAtlasParser":116,"./spritesheetParser":117,"./textureParser":118}],115:[function(require,module,exports){
 var ResourceLoader = require('resource-loader'),
@@ -26256,7 +26303,7 @@ Text.prototype.renderWebGL = function (renderer)
 {
     if (this.dirty)
     {
-        this.resolution = renderer.resolution;
+        //this.resolution = 1//renderer.resolution;
 
         this.updateText();
     }
@@ -26273,7 +26320,7 @@ Text.prototype._renderCanvas = function (renderer)
 {
     if (this.dirty)
     {
-        this.resolution = renderer.resolution;
+     //   this.resolution = 1//renderer.resolution;
 
         this.updateText();
     }
