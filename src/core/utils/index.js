@@ -7,11 +7,13 @@ var utils = module.exports = {
     _uid: 0,
     _saidHello: false,
 
+    RAFramePolyfill:require('./requestAnimationFramePolyfill'),
     Ticker:         require('./Ticker'),
     EventData:      require('./EventData'),
     eventTarget:    require('./eventTarget'),
     pluginTarget:   require('./pluginTarget'),
     PolyK:          require('./PolyK'),
+
 
     /**
      * Gets the next uuid
