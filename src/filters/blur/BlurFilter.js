@@ -49,7 +49,7 @@ Object.defineProperties(BlurFilter.prototype, {
         },
         set: function (value)
         {
-            this.padding = value * 1.5;
+            this.padding = value * 0.5;
             this.blurXFilter.blur = this.blurYFilter.blur = value;
         }
     },

@@ -73,6 +73,7 @@ FilterManager.prototype.pushFilter = function (target, filters)
 {
     // get the bounds of the object..
     var bounds = target.filterArea || target.getBounds();
+    //bounds = bounds.clone();
 
     // round off the rectangle to get a nice smoooooooth filter :)
     bounds.x = bounds.x | 0;
@@ -82,7 +83,7 @@ FilterManager.prototype.pushFilter = function (target, filters)
 
 
     // padding!
-    var padding = filters[0].padding;
+    var padding = filters[0].padding | 0;
     bounds.x -= padding;
     bounds.y -= padding;
     bounds.width += padding * 2;
@@ -148,11 +149,17 @@ FilterManager.prototype.popFilter = function ()
 
     this.quad.map(this.textureSize, input.frame);
 
+
     // TODO.. this probably only needs to be done once!
     gl.bindBuffer(gl.ARRAY_BUFFER, this.quad.vertexBuffer);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.quad.indexBuffer);
 
     var filters = filterData.filter;
+
+    // assuming all filters follow the correct format??
+    gl.vertexAttribPointer(this.renderer.shaderManager.defaultShader.attributes.aVertexPosition, 2, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(this.renderer.shaderManager.defaultShader.attributes.aTextureCoord, 2, gl.FLOAT, false, 0, 2 * 4 * 4);
+    gl.vertexAttribPointer(this.renderer.shaderManager.defaultShader.attributes.aColor, 4, gl.FLOAT, false, 0, 4 * 4 * 4);
 
     if (filters.length === 1)
     {
@@ -257,10 +264,11 @@ FilterManager.prototype.applyFilter = function (shader, inputTarget, outputTarge
 
     //TODO can this be optimised?
     shader.syncUniforms();
-
+/*
     gl.vertexAttribPointer(shader.attributes.aVertexPosition, 2, gl.FLOAT, false, 0, 0);
     gl.vertexAttribPointer(shader.attributes.aTextureCoord, 2, gl.FLOAT, false, 0, 2 * 4 * 4);
     gl.vertexAttribPointer(shader.attributes.aColor, 4, gl.FLOAT, false, 0, 4 * 4 * 4);
+*/
 
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, inputTarget.texture);

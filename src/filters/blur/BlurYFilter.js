@@ -76,7 +76,7 @@ Object.defineProperties(BlurYFilter.prototype, {
         },
         set: function (value)
         {
-            this.padding = value;
+            this.padding = value * 0.5;
             this.strength = value;
         }
     },
