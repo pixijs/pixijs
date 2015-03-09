@@ -165,7 +165,7 @@ Object.defineProperties(BitmapText.prototype, {
                 value = value.split(' ');
 
                 this._style.fontName = value.length === 1 ? value[0] : value.slice(1).join(' ');
-                this._style.fontSize = value.length >= 2 ? parseInt(value[0], 10) : BitmapText.fonts[this.fontName].size;
+                this._style.fontSize = value.length >= 2 ? parseInt(value[0], 10) : BitmapText.fonts[this._style.fontName].size;
             }
             else {
                 this._style.fontName = value.name;
