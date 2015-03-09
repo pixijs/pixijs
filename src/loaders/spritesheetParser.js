@@ -19,7 +19,7 @@ module.exports = function ()
             var resolution = core.utils.getResolutionOfUrl( resource.url );
 
             // load the image for this sheet
-            this.add(resource.name + '_image', this.baseUrl + route + '/' + resource.data.meta.image, loadOptions, function (res)
+            this.add(resource.name + '_image', route + '/' + resource.data.meta.image, loadOptions, function (res)
             {
                 resource.textures = {};
 
