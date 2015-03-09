@@ -11,7 +11,6 @@
 module.exports = {
     MovieClip:      require('./MovieClip'),
     TilingSprite:   require('./TilingSprite'),
-    mesh:           require('./mesh/index'),
     cacheAsBitmap:  require('./cacheAsBitmap'),
     getChildByName: require('./getChildByName')
 };

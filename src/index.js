@@ -1,6 +1,7 @@
 var core = require('./core');
 
 extendCore(require('./extras'));
+extendCore(require('./mesh'));
 extendCore(require('./filters'));
 extendCore(require('./interaction'));
 extendCore(require('./loaders'));
