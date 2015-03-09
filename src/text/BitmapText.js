@@ -62,11 +62,11 @@ function BitmapText(text, style)
      * @member {object}
      * @private
      */
-    this._style = {
+    this._font = {
         tint: style.tint,
         align: style.align,
-        fontName: null,
-        fontSize: 0
+        name: null,
+        size: 0
     };
 
     /**
@@ -118,11 +118,11 @@ Object.defineProperties(BitmapText.prototype, {
     tint: {
         get: function ()
         {
-            return this._style.tint;
+            return this._font.tint;
         },
         set: function (value)
         {
-            this._style.tint = (typeof value === 'number' && value >= 0) ? value : 0xFFFFFF;
+            this._font.tint = (typeof value === 'number' && value >= 0) ? value : 0xFFFFFF;
 
             this.dirty = true;
         }
@@ -138,11 +138,11 @@ Object.defineProperties(BitmapText.prototype, {
     align: {
         get: function ()
         {
-            return this._style.align;
+            return this._font.align;
         },
         set: function (value)
         {
-            this._style.align = value;
+            this._font.align = value;
 
             this.dirty = true;
         }
@@ -157,19 +157,19 @@ Object.defineProperties(BitmapText.prototype, {
     font: {
         get: function ()
         {
-            return this._style.font;
+            return this._font;
         },
         set: function (value)
         {
             if (typeof value === 'string') {
                 value = value.split(' ');
 
-                this._style.fontName = value.slice(1).join(' ');
-                this._style.fontSize = value.length >= 2 ? parseInt(value[0], 10) : BitmapText.fonts[this.fontName].size;
+                this._font.name = value.length === 1 ? value[0] : value.slice(1).join(' ');
+                this._font.size = value.length >= 2 ? parseInt(value[0], 10) : BitmapText.fonts[this._font.name].size;
             }
             else {
-                this._style.fontName = value.name;
-                this._style.fontSize = typeof value.size === 'number' ? value.size : parseInt(value.size, 10);
+                this._font.name = value.name;
+                this._font.size = typeof value.size === 'number' ? value.size : parseInt(value.size, 10);
             }
 
             this.dirty = true;
@@ -203,7 +203,7 @@ Object.defineProperties(BitmapText.prototype, {
  */
 BitmapText.prototype.updateText = function ()
 {
-    var data = BitmapText.fonts[this._style.fontName];
+    var data = BitmapText.fonts[this._font.name];
     var pos = new core.math.Point();
     var prevCharCode = null;
     var chars = [];
@@ -211,7 +211,7 @@ BitmapText.prototype.updateText = function ()
     var maxLineWidth = 0;
     var lineWidths = [];
     var line = 0;
-    var scale = this._style.fontSize / data.size;
+    var scale = this._font.size / data.size;
     var lastSpace = -1;
 
     for (var i = 0; i < this.text.length; i++)
@@ -275,11 +275,11 @@ BitmapText.prototype.updateText = function ()
     {
         var alignOffset = 0;
 
-        if (this._style.align === 'right')
+        if (this._font.align === 'right')
         {
             alignOffset = maxLineWidth - lineWidths[i];
         }
-        else if (this._style.align === 'center')
+        else if (this._font.align === 'center')
         {
             alignOffset = (maxLineWidth - lineWidths[i]) / 2;
         }

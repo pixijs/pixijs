@@ -29,7 +29,7 @@ module.exports = function ()
             return next();
         }
 
-        var textureUrl = this.baseUrl + resource.data.getElementsByTagName('page')[0].getAttribute('file');
+        var textureUrl = resource.data.getElementsByTagName('page')[0].getAttribute('file');
         var loadOptions = {
             crossOrigin: resource.crossOrigin,
             loadType: Resource.LOAD_TYPE.IMAGE
