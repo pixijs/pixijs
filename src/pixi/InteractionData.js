@@ -43,10 +43,10 @@ PIXI.InteractionData = function()
  * @param [point] {Point} A Point object in which to store the value, optional (otherwise will create a new point)
  * @return {Point} A point containing the coordinates of the InteractionData position relative to the DisplayObject
  */
-PIXI.InteractionData.prototype.getLocalPosition = function(displayObject, point)
+PIXI.InteractionData.prototype.getLocalPosition = function(displayObject, point, global)
 {
     var worldTransform = displayObject.worldTransform;
-    var global = this.global;
+    var global = global ? global : this.global;
 
     // do a cheeky transform to get the mouse coords;
     var a00 = worldTransform.a, a01 = worldTransform.c, a02 = worldTransform.tx,
