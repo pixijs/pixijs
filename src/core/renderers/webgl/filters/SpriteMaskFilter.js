@@ -21,6 +21,7 @@ function SpriteMaskFilter(sprite)
         fs.readFileSync(__dirname + '/spriteMaskFilter.frag', 'utf8'),
         {
             mask:           { type: 'sampler2D', value: sprite._texture },
+            alpha:          { type: 'f', value: 1},
             otherMatrix:    { type: 'mat3', value: maskMatrix.toArray(true) }
         }
     );
@@ -49,6 +50,7 @@ SpriteMaskFilter.prototype.applyFilter = function (renderer, input, output)
     filterManager.calculateMappedMatrix(input.frame, this.maskSprite, this.maskMatrix);
 
     this.uniforms.otherMatrix.value = this.maskMatrix.toArray(true);
+    this.uniforms.alpha.value = this.maskSprite.worldAlpha;
 
     var shader = this.getShader(renderer);
      // draw the filter...
