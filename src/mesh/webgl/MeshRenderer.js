@@ -1,5 +1,5 @@
-var ObjectRenderer = require('../../../core/renderers/webgl/utils/ObjectRenderer'),
-    WebGLRenderer = require('../../../core/renderers/webgl/WebGLRenderer');
+var ObjectRenderer = require('../../core/renderers/webgl/utils/ObjectRenderer'),
+    WebGLRenderer = require('../../core/renderers/webgl/WebGLRenderer');
 
 /**
  * @author Mat Groves
