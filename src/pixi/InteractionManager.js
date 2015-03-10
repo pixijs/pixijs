@@ -704,10 +704,11 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
     var wCalc = (this.target.width / rect.width);
     var hCalc = (this.target.height / rect.height);
     var isSupportCocoonJS = navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height;
+    var touchEvent;
 
     for (var c = 0; c < cLength; c++)
     {
-        var touchEvent = changedTouches[c];
+        touchEvent = changedTouches[c];
         if(!isSupportCocoonJS)
         {
             touchEvent.globalX = ( (touchEvent.clientX - rect.left) * wCalc ) / this.resolution;
@@ -722,7 +723,7 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
 
     for (var i = 0; i < cLength; i++)
     {
-        var touchEvent = changedTouches[i];
+        touchEvent = changedTouches[i];
         touchData = this.touches[touchEvent.identifier];
         touchData.originalEvent = event;
 
@@ -777,10 +778,11 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
     var wCalc = (this.target.width / rect.width);
     var hCalc = (this.target.height / rect.height);
     var isSupportCocoonJS = navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height;
+    var touchEvent;
 
     for (var c = 0; c < cLength; c++)
     {
-        var touchEvent = changedTouches[c];
+        touchEvent = changedTouches[c];
         if(!isSupportCocoonJS)
         {
             touchEvent.globalX = ( (touchEvent.clientX - rect.left) * wCalc ) / this.resolution;
@@ -795,7 +797,7 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
 
     for (var i=0; i < cLength; i++)
     {
-        var touchEvent = changedTouches[i];
+        touchEvent = changedTouches[i];
 
         var touchData = this.pool.pop();
         if (!touchData)
@@ -864,10 +866,11 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
     var wCalc = (this.target.width / rect.width);
     var hCalc = (this.target.height / rect.height);
     var isSupportCocoonJS = navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height;
+    var touchEvent;
 
     for (var c = 0; c < cLength; c++)
     {
-        var touchEvent = changedTouches[c];
+        touchEvent = changedTouches[c];
         if(!isSupportCocoonJS)
         {
             touchEvent.globalX = ( (touchEvent.clientX - rect.left) * wCalc ) / this.resolution;
@@ -882,7 +885,7 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 
     for (var i=0; i < cLength; i++)
     {
-        var touchEvent = changedTouches[i];
+        touchEvent = changedTouches[i];
         var touchData = this.touches[touchEvent.identifier];
         var up = false;
         if (!isSupportCocoonJS)
@@ -969,10 +972,11 @@ PIXI.InteractionManager.prototype.onTouchCancel = function(event)
     var wCalc = (this.target.width / rect.width);
     var hCalc = (this.target.height / rect.height);
     var isSupportCocoonJS = navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height;
+    var touchEvent;
 
     for (var c = 0; c < cLength; c++)
     {
-        var touchEvent = changedTouches[c];
+        touchEvent = changedTouches[c];
         if(!isSupportCocoonJS)
         {
             touchEvent.globalX = ( (touchEvent.clientX - rect.left) * wCalc ) / this.resolution;
@@ -987,7 +991,7 @@ PIXI.InteractionManager.prototype.onTouchCancel = function(event)
 
     for (var i=0; i < cLength; i++)
     {
-        var touchEvent = changedTouches[i];
+        touchEvent = changedTouches[i];
         var touchData = this.touches[touchEvent.identifier];
         var up = false;
         if (!isSupportCocoonJS)
