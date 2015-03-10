@@ -544,3 +544,12 @@ Container.prototype.renderCanvas = function (renderer)
         renderer.maskManager.popMask(renderer);
     }
 };
+
+/**
+ * Destroys the container
+ *
+ */
+Container.prototype.destroy = function ()
+{
+    this.children = null;
+};
