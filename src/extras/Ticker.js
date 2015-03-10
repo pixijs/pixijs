@@ -1,5 +1,5 @@
-var eventTarget = require('./eventTarget'),
-    EventData   = require('./EventData');
+var eventTarget = require('../core/utils/eventTarget'),
+    EventData   = require('../core/utils/EventData');
 
 /**
  * A Ticker class that runs an update loop that other objects listen to

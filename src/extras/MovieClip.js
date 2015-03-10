@@ -1,5 +1,5 @@
-var core = require('../core'),
-    utils = require('../core/utils');
+var core    = require('../core'),
+    Ticker  = require('./Ticker');
 
 /**
  * A MovieClip is a simple way to display an animation depicted by a list of textures.
@@ -138,7 +138,7 @@ MovieClip.prototype.stop = function ()
     }
 
     this.playing = false;
-    utils.Ticker.off('tick', this._updateBound);
+    Ticker.off('tick', this._updateBound);
 };
 
 /**
@@ -153,7 +153,7 @@ MovieClip.prototype.play = function ()
     }
 
     this.playing = true;
-    utils.Ticker.on('tick', this._updateBound);
+    Ticker.on('tick', this._updateBound);
 };
 
 /**
