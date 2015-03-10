@@ -703,12 +703,21 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
     var cLength = changedTouches.length;
     var wCalc = (this.target.width / rect.width);
     var hCalc = (this.target.height / rect.height);
+    var isSupportCocoonJS = navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height;
 
     for (var c = 0; c < cLength; c++)
     {
         var touchEvent = changedTouches[c];
-        touchEvent.globalX = ( (touchEvent.clientX - rect.left) * wCalc ) / this.resolution;
-        touchEvent.globalY = ( (touchEvent.clientY - rect.top)  * hCalc )  / this.resolution;
+        if(!isSupportCocoonJS)
+        {
+            touchEvent.globalX = ( (touchEvent.clientX - rect.left) * wCalc ) / this.resolution;
+            touchEvent.globalY = ( (touchEvent.clientY - rect.top)  * hCalc )  / this.resolution;
+        }
+        else
+        {
+            touchEvent.globalX = touchEvent.clientX;
+            touchEvent.globalY = touchEvent.clientY;
+        }
     }
 
     for (var i = 0; i < cLength; i++)
@@ -718,9 +727,12 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
         touchData.originalEvent = event;
 
         // update the touch position
-        touchData.global.x = ( (touchEvent.clientX - rect.left) * wCalc ) / this.resolution;
-        touchData.global.y = ( (touchEvent.clientY - rect.top)  * hCalc )  / this.resolution;
-        if (navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height)
+        if (!isSupportCocoonJS)
+        {
+            touchData.global.x = ( (touchEvent.clientX - rect.left) * wCalc ) / this.resolution;
+            touchData.global.y = ( (touchEvent.clientY - rect.top)  * hCalc ) / this.resolution;
+        }
+        else
         {
             //Support for CocoonJS fullscreen scale modes
             touchData.global.x = touchEvent.clientX;
@@ -764,12 +776,21 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
     var cLength = changedTouches.length;
     var wCalc = (this.target.width / rect.width);
     var hCalc = (this.target.height / rect.height);
+    var isSupportCocoonJS = navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height;
 
     for (var c = 0; c < cLength; c++)
     {
         var touchEvent = changedTouches[c];
-        touchEvent.globalX = ( (touchEvent.clientX - rect.left) * wCalc ) / this.resolution;
-        touchEvent.globalY = ( (touchEvent.clientY - rect.top)  * hCalc )  / this.resolution;
+        if(!isSupportCocoonJS)
+        {
+            touchEvent.globalX = ( (touchEvent.clientX - rect.left) * wCalc ) / this.resolution;
+            touchEvent.globalY = ( (touchEvent.clientY - rect.top)  * hCalc )  / this.resolution;
+        }
+        else
+        {
+            touchEvent.globalX = touchEvent.clientX;
+            touchEvent.globalY = touchEvent.clientY;
+        }
     }
 
     for (var i=0; i < cLength; i++)
@@ -785,9 +806,12 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
         touchData.originalEvent = event;
 
         this.touches[touchEvent.identifier] = touchData;
-        touchData.global.x = ( (touchEvent.clientX - rect.left) * wCalc ) / this.resolution;
-        touchData.global.y = ( (touchEvent.clientY - rect.top)  * hCalc ) / this.resolution;
-        if (navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height)
+        if (!isSupportCocoonJS)
+        {
+            touchData.global.x = ( (touchEvent.clientX - rect.left) * wCalc ) / this.resolution;
+            touchData.global.y = ( (touchEvent.clientY - rect.top)  * hCalc ) / this.resolution;
+        }
+        else
         {
             //Support for CocoonJS fullscreen scale modes
             touchData.global.x = touchEvent.clientX;
@@ -839,12 +863,21 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
     var cLength = changedTouches.length;
     var wCalc = (this.target.width / rect.width);
     var hCalc = (this.target.height / rect.height);
+    var isSupportCocoonJS = navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height;
 
     for (var c = 0; c < cLength; c++)
     {
         var touchEvent = changedTouches[c];
-        touchEvent.globalX = ( (touchEvent.clientX - rect.left) * wCalc ) / this.resolution;
-        touchEvent.globalY = ( (touchEvent.clientY - rect.top)  * hCalc )  / this.resolution;
+        if(!isSupportCocoonJS)
+        {
+            touchEvent.globalX = ( (touchEvent.clientX - rect.left) * wCalc ) / this.resolution;
+            touchEvent.globalY = ( (touchEvent.clientY - rect.top)  * hCalc )  / this.resolution;
+        }
+        else
+        {
+            touchEvent.globalX = touchEvent.clientX;
+            touchEvent.globalY = touchEvent.clientY;
+        }
     }
 
     for (var i=0; i < cLength; i++)
@@ -852,9 +885,12 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
         var touchEvent = changedTouches[i];
         var touchData = this.touches[touchEvent.identifier];
         var up = false;
-        touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.target.width / rect.width) ) / this.resolution;
-        touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.target.height / rect.height) ) / this.resolution;
-        if (navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height)
+        if (!isSupportCocoonJS)
+        {
+            touchData.global.x = ( (touchEvent.clientX - rect.left) * wCalc ) / this.resolution;
+            touchData.global.y = ( (touchEvent.clientY - rect.top)  * hCalc ) / this.resolution;
+        }
+        else
         {
             //Support for CocoonJS fullscreen scale modes
             touchData.global.x = touchEvent.clientX;
@@ -932,12 +968,21 @@ PIXI.InteractionManager.prototype.onTouchCancel = function(event)
     var cLength = changedTouches.length;
     var wCalc = (this.target.width / rect.width);
     var hCalc = (this.target.height / rect.height);
+    var isSupportCocoonJS = navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height;
 
     for (var c = 0; c < cLength; c++)
     {
         var touchEvent = changedTouches[c];
-        touchEvent.globalX = ( (touchEvent.clientX - rect.left) * wCalc ) / this.resolution;
-        touchEvent.globalY = ( (touchEvent.clientY - rect.top)  * hCalc )  / this.resolution;
+        if(!isSupportCocoonJS)
+        {
+            touchEvent.globalX = ( (touchEvent.clientX - rect.left) * wCalc ) / this.resolution;
+            touchEvent.globalY = ( (touchEvent.clientY - rect.top)  * hCalc )  / this.resolution;
+        }
+        else
+        {
+            touchEvent.globalX = touchEvent.clientX;
+            touchEvent.globalY = touchEvent.clientY;
+        }
     }
 
     for (var i=0; i < cLength; i++)
@@ -945,9 +990,12 @@ PIXI.InteractionManager.prototype.onTouchCancel = function(event)
         var touchEvent = changedTouches[i];
         var touchData = this.touches[touchEvent.identifier];
         var up = false;
-        touchData.global.x = ( (touchEvent.clientX - rect.left) * wCalc ) / this.resolution;
-        touchData.global.y = ( (touchEvent.clientY - rect.top)  * hCalc ) / this.resolution;
-        if (navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height)
+        if (!isSupportCocoonJS)
+        {
+            touchData.global.x = ( (touchEvent.clientX - rect.left) * wCalc ) / this.resolution;
+            touchData.global.y = ( (touchEvent.clientY - rect.top)  * hCalc ) / this.resolution;
+        }
+        else
         {
             //Support for CocoonJS fullscreen scale modes
             touchData.global.x = touchEvent.clientX;
