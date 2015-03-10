@@ -701,6 +701,13 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
     var touchData;
     var i = 0;
 
+    for (var c = 0; c < changedTouches.length; c++)
+    {
+        var touchEvent = changedTouches[c];
+        touchEvent.globalX = ( (touchEvent.clientX - rect.left) * (this.target.width / rect.width) ) / this.resolution;
+        touchEvent.globalY = ( (touchEvent.clientY - rect.top)  * (this.target.height / rect.height) )  / this.resolution;
+    }
+
     for (i = 0; i < changedTouches.length; i++)
     {
         var touchEvent = changedTouches[i];
@@ -708,8 +715,8 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
         touchData.originalEvent = event;
 
         // update the touch position
-        touchEvent.globalX = touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.target.width / rect.width) ) / this.resolution;
-        touchEvent.globalY = touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.target.height / rect.height) )  / this.resolution;
+        touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.target.width / rect.width) ) / this.resolution;
+        touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.target.height / rect.height) )  / this.resolution;
         if (navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height)
         {
             //Support for CocoonJS fullscreen scale modes
@@ -750,6 +757,14 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
     }
 
     var changedTouches = event.changedTouches;
+
+    for (var c = 0; c < changedTouches.length; c++)
+    {
+        var touchEvent = changedTouches[c];
+        touchEvent.globalX = ( (touchEvent.clientX - rect.left) * (this.target.width / rect.width) ) / this.resolution;
+        touchEvent.globalY = ( (touchEvent.clientY - rect.top)  * (this.target.height / rect.height) )  / this.resolution;
+    }
+
     for (var i=0; i < changedTouches.length; i++)
     {
         var touchEvent = changedTouches[i];
@@ -813,6 +828,13 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
 
     var rect = this.interactionDOMElement.getBoundingClientRect();
     var changedTouches = event.changedTouches;
+
+    for (var c = 0; c < changedTouches.length; c++)
+    {
+        var touchEvent = changedTouches[c];
+        touchEvent.globalX = ( (touchEvent.clientX - rect.left) * (this.target.width / rect.width) ) / this.resolution;
+        touchEvent.globalY = ( (touchEvent.clientY - rect.top)  * (this.target.height / rect.height) )  / this.resolution;
+    }
 
     for (var i=0; i < changedTouches.length; i++)
     {
@@ -895,6 +917,13 @@ PIXI.InteractionManager.prototype.onTouchCancel = function(event)
 
     var rect = this.interactionDOMElement.getBoundingClientRect();
     var changedTouches = event.changedTouches;
+
+    for (var c = 0; c < changedTouches.length; c++)
+    {
+        var touchEvent = changedTouches[c];
+        touchEvent.globalX = ( (touchEvent.clientX - rect.left) * (this.target.width / rect.width) ) / this.resolution;
+        touchEvent.globalY = ( (touchEvent.clientY - rect.top)  * (this.target.height / rect.height) )  / this.resolution;
+    }
 
     for (var i=0; i < changedTouches.length; i++)
     {
