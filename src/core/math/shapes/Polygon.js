@@ -35,7 +35,7 @@ function Polygon(points)
     /**
      * An array of the points of this polygon
      *
-     * @member {Array}
+     * @member {number[]}
      */
     this.points = points;
 
