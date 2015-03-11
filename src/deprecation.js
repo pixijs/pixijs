@@ -19,7 +19,7 @@ Object.defineProperties(core, {
         get: function ()
         {
             window.console.warn('You do not need to use a PIXI Stage any more, you can simply render any container.');
-            return new core.Container();
+            return core.Container;
         }
     },
 
@@ -27,7 +27,7 @@ Object.defineProperties(core, {
         get: function ()
         {
             window.console.warn('DisplayObjectContainer has been shortened to Container, please use Container from now on');
-            return new core.Container();
+            return core.Container;
         }
     },
 
@@ -35,7 +35,7 @@ Object.defineProperties(core, {
         get: function ()
         {
             window.console.warn('The Strip class has been renamed to Mesh, please use Mesh from now on');
-            return new mesh.Mesh(texture);
+            return mesh.Mesh;
         }
     }
 

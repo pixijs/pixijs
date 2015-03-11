@@ -547,9 +547,21 @@ Container.prototype.renderCanvas = function (renderer)
 
 /**
  * Destroys the container
- *
+ * @param destroyChildren {boolean} if set to true, all the children will have their destroy method called as well
  */
-Container.prototype.destroy = function ()
+Container.prototype.destroy = function (destroyChildren)
 {
+    DisplayObject.prototype.destroy.call(this);
+
+    if(destroyChildren)
+    {
+        for (var i = 0, j = this.children.length; i < j; ++i)
+        {
+            this.children[i].destroy();
+        }
+    }
+
+    this.removeChildren();
+
     this.children = null;
 };

@@ -4,9 +4,9 @@ var Point = require('../Point'),
 /**
  * @class
  * @memberof PIXI
- * @param points* {Point[]|number[]|...Point|...number} This can be an array of Points that form the polygon,
+ * @param points {Point[]|number[]|...Point|...number} This can be an array of Points that form the polygon,
  *      a flat array of numbers that will be interpreted as [x,y, x,y, ...], or the arguments passed can be
- *      all the points of the polygon e.g. `new Polygon(new Point(), new Point(), ...)`, or the
+ *      all the points of the polygon e.g. `new PIXI.Polygon(new PIXI.Point(), new PIXI.Point(), ...)`, or the
  *      arguments passed can be flat x,y values e.g. `new Polygon(x,y, x,y, x,y, ...)` where `x` and `y` are
  *      Numbers.
  */
@@ -18,7 +18,7 @@ function Polygon(points)
         points = Array.prototype.slice.call(arguments);
     }
 
-    //if this is a flat array of numbers, convert it to points
+    //if this is an array of points, convert it to a flat array of numbers
     if (points[0] instanceof Point)
     {
         var p = [];
@@ -35,7 +35,7 @@ function Polygon(points)
     /**
      * An array of the points of this polygon
      *
-     * @member {Point[]}
+     * @member {number[]}
      */
     this.points = points;
 
