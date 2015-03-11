@@ -1,11 +1,11 @@
-var eventTarget = require('./eventTarget'),
-    EventData   = require('./EventData');
+var eventTarget = require('../core/utils/eventTarget'),
+    EventData   = require('../core/utils/EventData');
 
 /**
- * A Ticker class that runs the main update loop that other objects listen to
+ * A Ticker class that runs an update loop that other objects listen to
  *
  * @class
- * @memberof PIXI.utils
+ * @memberof PIXI.extras
  */
 var Ticker = function()
 {
@@ -17,6 +17,12 @@ var Ticker = function()
      * @member {boolean}
      */
     this.active = false;
+
+    /**
+     * the event data for this ticker to dispatch the tick event
+     *
+     * @member {EventData}
+     */
     this.eventData = new EventData( this, 'tick', { deltaTime:1 } );
 
     /**
@@ -32,8 +38,19 @@ var Ticker = function()
      * @member {number}
      */
     this.timeElapsed = 0;
+
+    /**
+     * The time at the last frame
+     *
+     * @member {number}
+     */
     this.lastTime = 0;
 
+    /**
+     * The speed
+     *
+     * @member {number}
+     */
     this.speed = 1;
 
     // auto start ticking!
@@ -42,7 +59,10 @@ var Ticker = function()
 
 eventTarget.mixin(Ticker.prototype);
 
-
+/**
+ * Starts the ticker, automatically called by the constructor
+ *
+ */
 Ticker.prototype.start = function()
 {
     if(this.active)
@@ -54,7 +74,10 @@ Ticker.prototype.start = function()
     requestAnimationFrame(this.updateBind);
 };
 
-
+/**
+ * Stops the ticker
+ *
+ */
 Ticker.prototype.stop = function()
 {
     if(!this.active)
@@ -65,13 +88,17 @@ Ticker.prototype.stop = function()
     this.active = false;
 };
 
+/**
+ * The update loop, fires the 'tick' event
+ *
+ */
 Ticker.prototype.update = function()
 {
     if(this.active)
     {
         requestAnimationFrame(this.updateBind);
 
-        var currentTime =  new Date().getTime();
+        var currentTime = new Date().getTime();
         var timeElapsed = currentTime - this.lastTime;
 
         // cap the time!
@@ -83,9 +110,6 @@ Ticker.prototype.update = function()
         this.deltaTime = (timeElapsed * 0.06);
 
         this.deltaTime *= this.speed;
-
-        // 60 ---> 1
-        // 30 ---> 2
 
         this.eventData.data.deltaTime = this.deltaTime;
 

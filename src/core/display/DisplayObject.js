@@ -439,3 +439,24 @@ DisplayObject.prototype.generateTexture = function (renderer, resolution, scaleM
 
     return renderTexture;
 };
+
+/**
+ * Base destroy method for generic display objects
+ *
+ */
+DisplayObject.prototype.destroy = function ()
+{
+
+    this.position = null;
+    this.scale = null;
+    this.pivot = null;
+
+    this._bounds = null;
+    this._currentBounds = null;
+    this._mask = null;
+
+    this.worldTransform = null;
+    this.filterArea = null;
+
+    this.listeners = null;
+};

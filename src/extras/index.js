@@ -9,6 +9,7 @@
  * @namespace PIXI.extras
  */
 module.exports = {
+    Ticker:         require('./Ticker'),
     MovieClip:      require('./MovieClip'),
     TilingSprite:   require('./TilingSprite'),
     cacheAsBitmap:  require('./cacheAsBitmap'),
