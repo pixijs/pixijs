@@ -128,7 +128,10 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
     if(this.json.frames && this.json.meta && this.json.meta.image)
     {
         // sprite sheet
-        var textureUrl = this.baseUrl + this.json.meta.image;
+        var textureUrl = this.json.meta.image;
+        if (textureUrl.indexOf('data:') === -1) {
+            textureUrl = this.baseUrl + textureUrl;
+        }
         var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
         var frameData = this.json.frames;
 
