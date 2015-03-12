@@ -7,7 +7,6 @@ var utils = module.exports = {
     _uid: 0,
     _saidHello: false,
 
-    RAFramePolyfill:require('./requestAnimationFramePolyfill'),
     EventData:      require('./EventData'),
     eventTarget:    require('./eventTarget'),
     pluginTarget:   require('./pluginTarget'),
