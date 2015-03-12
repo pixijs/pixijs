@@ -40,12 +40,28 @@ module.exports = function ()
             return next();
         }
 
-        var xmlUrl = path.dirname(resource.url).replace(this.baseUrl, '');
+        var xmlUrl = path.dirname(resource.url);
+
         if (xmlUrl === '.') {
             xmlUrl = '';
         }
 
-        var textureUrl = xmlUrl + '/' + resource.data.getElementsByTagName('page')[0].getAttribute('file');
+        if (this.baseUrl && xmlUrl) {
+            // if baseurl has a trailing slash then add one to xmlUrl so the replace works below
+            if (this.baseUrl.charAt(this.baseUrl.length - 1) === '/') {
+                xmlUrl += '/';
+            }
+
+            // remove baseUrl from xmlUrl
+            xmlUrl = xmlUrl.replace(this.baseUrl, '');
+
+            // if there is an xmlUrl now, it needs a trailing slash. Ensure that it does if the string isn't empty.
+            if (xmlUrl && xmlUrl.charAt(xmlUrl.length - 1) !== '/') {
+                xmlUrl += '/';
+            }
+        }
+
+        var textureUrl = xmlUrl + resource.data.getElementsByTagName('page')[0].getAttribute('file');
         var loadOptions = {
             crossOrigin: resource.crossOrigin,
             loadType: Resource.LOAD_TYPE.IMAGE
