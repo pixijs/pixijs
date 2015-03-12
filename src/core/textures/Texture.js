@@ -320,9 +320,17 @@ Texture.fromCanvas = function (canvas, scaleMode)
  */
 Texture.fromVideo = function (video, scaleMode)
 {
-    return new Texture(VideoBaseTexture.baseTextureFromVideo(video, scaleMode));
+    return new Texture(VideoBaseTexture.fromVideo(video, scaleMode));
 };
 
+/**
+ * Helper function that creates a new Texture based on the video url.
+ *
+ * @static
+ * @param videoUrl {string}
+ * @param scaleMode {number} See {{#crossLink "PIXI/scaleModes:property"}}scaleModes{{/crossLink}} for possible values
+ * @return {Texture} A Texture
+ */
 Texture.fromVideoUrl = function (videoUrl, scaleMode)
 {
     return new Texture(VideoBaseTexture.fromUrl(videoUrl, scaleMode));
