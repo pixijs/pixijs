@@ -1,9 +1,9 @@
 // References:
-// https://github.com/Financial-Times/polyfill-service/tree/master/polyfills/requestAnimationFrame
-// https://gist.github.com/timhall/4078614
 // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
 // https://gist.github.com/1579671
 // http://updates.html5rocks.com/2012/05/requestAnimationFrame-API-now-with-sub-millisecond-precision
+// https://gist.github.com/timhall/4078614
+// https://github.com/Financial-Times/polyfill-service/tree/master/polyfills/requestAnimationFrame
 
 // Expected to be used with Browserfiy
 // Browserify automatically detects the use of `global` and passes the
