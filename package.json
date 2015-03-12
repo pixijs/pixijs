@@ -52,7 +52,7 @@
   },
   "dependencies": {
     "async": "^0.9.0",
-    "resource-loader": "^1.2.2",
+    "resource-loader": "^1.3.0",
     "brfs": "^1.2.0"
   },
   "browserify": {

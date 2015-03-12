@@ -1,6 +1,7 @@
 var Resource = require('resource-loader').Resource,
     core = require('../core'),
-    text = require('../text');
+    text = require('../text'),
+    path = require('path');
 
 module.exports = function ()
 {
@@ -23,13 +24,44 @@ module.exports = function ()
 
         var name = resource.data.nodeName;
 
-        // skip if no data
+        // skip if not xml data
         if (!resource.data || !name || (name.toLowerCase() !== '#document' && name.toLowerCase() !== 'div'))
         {
             return next();
         }
 
-        var textureUrl = resource.data.getElementsByTagName('page')[0].getAttribute('file');
+        // skip if not bitmap font data, using some silly duck-typing
+        if (
+            resource.data.getElementsByTagName('page').length === 0 ||
+            resource.data.getElementsByTagName('info').length === 0 ||
+            resource.data.getElementsByTagName('info')[0].getAttribute('face') === null
+            )
+        {
+            return next();
+        }
+
+        var xmlUrl = path.dirname(resource.url);
+
+        if (xmlUrl === '.') {
+            xmlUrl = '';
+        }
+
+        if (this.baseUrl && xmlUrl) {
+            // if baseurl has a trailing slash then add one to xmlUrl so the replace works below
+            if (this.baseUrl.charAt(this.baseUrl.length - 1) === '/') {
+                xmlUrl += '/';
+            }
+
+            // remove baseUrl from xmlUrl
+            xmlUrl = xmlUrl.replace(this.baseUrl, '');
+
+            // if there is an xmlUrl now, it needs a trailing slash. Ensure that it does if the string isn't empty.
+            if (xmlUrl && xmlUrl.charAt(xmlUrl.length - 1) !== '/') {
+                xmlUrl += '/';
+            }
+        }
+
+        var textureUrl = xmlUrl + resource.data.getElementsByTagName('page')[0].getAttribute('file');
         var loadOptions = {
             crossOrigin: resource.crossOrigin,
             loadType: Resource.LOAD_TYPE.IMAGE
