@@ -36,6 +36,25 @@ Point.prototype.clone = function ()
 };
 
 /**
+ * Copies x and y from the given point
+ *
+ * @param p {Point}
+ */
+Point.prototype.copy = function (p) {
+    this.set(p.x, p.y);
+};
+
+/**
+ * Returns true if the given point is equal to this point
+ *
+ * @param p {Point}
+ * @returns {boolean}
+ */
+Point.prototype.equals = function (p) {
+    return (p.x === this.x) && (p.y === this.y);
+};
+
+/**
  * Sets the point to a new x and y position.
  * If y is omitted, both x and y will be set to x.
  *
