@@ -1,3 +1,5 @@
+require('./polyfill/requestAnimationFrame')
+
 var core = require('./core');
 
 extendCore(require('./core/math'));
