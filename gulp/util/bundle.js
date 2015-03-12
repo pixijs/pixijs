@@ -49,6 +49,8 @@ function createBundler(args) {
         bundle.ignore('./' + exclude[i]);
     }
 
+    bundle.add('./src/polyfill/requestAnimationFrame.js');
+
     bundle.require(paths.jsEntry, { expose: 'pixi.js' });
 
     return bundle;
