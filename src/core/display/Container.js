@@ -557,7 +557,7 @@ Container.prototype.destroy = function (destroyChildren)
     {
         for (var i = 0, j = this.children.length; i < j; ++i)
         {
-            this.children[i].destroy();
+            this.children[i].destroy(destroyChildren);
         }
     }
 
