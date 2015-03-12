@@ -28,6 +28,7 @@ var core = require('../core');
  * @param [style.dropShadowAngle=Math.PI/4] {number} Set a angle of the drop shadow
  * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
  * @param [style.padding=0] {number} Occasionally some fonts are cropped. Adding some padding will prevent this from happening
+ * @param [style.lineJoin='miter'] {String} The lineJoin property sets the type of corner created, it can resolve spiked text issue. Default is 'miter' (creates a sharp corner).
  */
 function Text(text, style, resolution)
 {
@@ -148,6 +149,7 @@ Object.defineProperties(Text.prototype, {
      * @param [style.dropShadowAngle=Math.PI/6] {number} Set a angle of the drop shadow
      * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
      * @param [style.padding=0] {number} Occasionally some fonts are cropped. Adding some padding will prevent this from happening
+     * @param [style.lineJoin='miter'] {String} The lineJoin property sets the type of corner created, it can resolve spiked text issue. Default is 'miter' (creates a sharp corner).
      * @memberof Text#
      */
     style: {
@@ -172,6 +174,7 @@ Object.defineProperties(Text.prototype, {
             style.dropShadowDistance = style.dropShadowDistance || 5;
 
             style.padding = style.padding || 0;
+            style.lineJoin = style.lineJoin || 'miter';
 
             this._style = style;
             this.dirty = true;
@@ -263,7 +266,7 @@ Text.prototype.updateText = function ()
     this.context.strokeStyle = style.stroke;
     this.context.lineWidth = style.strokeThickness;
     this.context.textBaseline = 'alphabetic';
-    //this.context.lineJoin = 'round';
+    this.context.lineJoin = style.lineJoin;
 
     var linePositionX;
     var linePositionY;
