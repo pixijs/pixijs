@@ -257,7 +257,7 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, up
     }
 
 
-    updateTransform = (updateTransform !== undefined) updateTransform ? true;//!updateTransform;
+    updateTransform = (updateTransform !== undefined) ? updateTransform : true;//!updateTransform;
 
     this.textureBuffer.transform = matrix;
 
