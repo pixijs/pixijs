@@ -1,7 +1,7 @@
 var AbstractFilter = require('./AbstractFilter'),
     math =  require('../../../math');
 
-// fs needs to be decalred alone for brfs to pick it up properly.
+// @see https://github.com/substack/brfs/issues/25
 var fs = require('fs');
 
 /**
