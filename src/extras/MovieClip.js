@@ -73,13 +73,6 @@ function MovieClip(textures)
      * @readonly
      */
     this.playing = false;
-
-    /**
-     * private cache of the bound function
-     *
-     * @member {function}
-     */
-    this._updateBound = this.update.bind(this);
 }
 
 // constructor
@@ -138,7 +131,7 @@ MovieClip.prototype.stop = function ()
     }
 
     this.playing = false;
-    Ticker.off('tick', this._updateBound);
+    Ticker.off('tick', this.update);
 };
 
 /**
@@ -153,7 +146,7 @@ MovieClip.prototype.play = function ()
     }
 
     this.playing = true;
-    Ticker.on('tick', this._updateBound);
+    Ticker.on('tick', this.update, this);
 };
 
 /**
