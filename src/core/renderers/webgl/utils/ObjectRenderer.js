@@ -49,7 +49,7 @@ ObjectRenderer.prototype.flush = function ()
  * Renders an object
  *
  */
-ObjectRenderer.prototype.render = function (object)
+ObjectRenderer.prototype.render = function (object) // jshint unused:false
 {
     // render the object
 };

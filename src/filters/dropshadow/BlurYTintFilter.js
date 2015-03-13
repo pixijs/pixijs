@@ -1,5 +1,4 @@
-var core = require('../../core'),
-    blurFactor = 1 / 7000;
+var core = require('../../core');
 var fs = require('fs');
 
 /**

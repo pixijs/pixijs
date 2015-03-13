@@ -498,7 +498,7 @@ Container.prototype.renderWebGL = function (renderer)
  * @param renderer {WebGLRenderer} The renderer
  * @private
  */
-Container.prototype._renderWebGL = function (renderer)
+Container.prototype._renderWebGL = function (renderer) // jshint unused:false
 {
     // this is where content itself gets rendered...
 };
@@ -509,7 +509,7 @@ Container.prototype._renderWebGL = function (renderer)
  * @param renderer {CanvasRenderer} The renderer
  * @private
  */
-Container.prototype._renderCanvas = function (renderer)
+Container.prototype._renderCanvas = function (renderer) // jshint unused:false
 {
     // this is where content itself gets rendered...
 };
