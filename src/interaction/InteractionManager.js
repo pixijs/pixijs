@@ -52,8 +52,12 @@ function InteractionManager(renderer, options)
      *
      * @member {EventData}
      */
-    this.eventData = new core.utils.EventData();
-    this.eventData.data = this.mouse;
+    this.eventData = {
+        stopped: false,
+        target: null,
+        type: null,
+        data: this.mouse
+    };
 
     /**
      * Tiny little interactiveData pool !

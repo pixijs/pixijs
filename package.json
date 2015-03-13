@@ -19,6 +19,12 @@
     "test": "gulp test",
     "docs": "./node_modules/.bin/jsdoc -c ./gulp/util/jsdoc.conf.json"
   },
+  "dependencies": {
+    "async": "^0.9.0",
+    "resource-loader": "^1.3.0",
+    "brfs": "^1.2.0",
+    "eventemitter3": "^0.1.6"
+  },
   "devDependencies": {
     "browserify": "^8.0.2",
     "chai": "^1.10.0",
@@ -49,11 +55,6 @@
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.0.0",
     "watchify": "^2.2.1"
-  },
-  "dependencies": {
-    "async": "^0.9.0",
-    "resource-loader": "^1.3.0",
-    "brfs": "^1.2.0"
   },
   "browserify": {
     "transform": [

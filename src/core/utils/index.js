@@ -7,8 +7,6 @@ var utils = module.exports = {
     _uid: 0,
     _saidHello: false,
 
-    EventData:      require('./EventData'),
-    eventTarget:    require('./eventTarget'),
     pluginTarget:   require('./pluginTarget'),
     PolyK:          require('./PolyK'),
 

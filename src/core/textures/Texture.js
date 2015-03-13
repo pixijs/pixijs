@@ -1,7 +1,7 @@
 var BaseTexture = require('./BaseTexture'),
     VideoBaseTexture = require('./VideoBaseTexture'),
     TextureUvs = require('./TextureUvs'),
-    eventTarget = require('../utils/eventTarget'),
+    EventEmitter = require('eventemitter3').EventEmitter,
     math = require('../math'),
     utils = require('../utils');
 
@@ -18,7 +18,6 @@ var BaseTexture = require('./BaseTexture'),
  * ```
  *
  * @class
- * @mixes eventTarget
  * @memberof PIXI
  * @param baseTexture {BaseTexture} The base texture source to create the texture from
  * @param [frame] {Rectangle} The rectangle frame of the texture to show
@@ -28,6 +27,8 @@ var BaseTexture = require('./BaseTexture'),
  */
 function Texture(baseTexture, frame, crop, trim, rotate)
 {
+    EventEmitter.call(this);
+
     /**
      * Does this Texture have any frame data assigned to it?
      *
@@ -136,10 +137,9 @@ function Texture(baseTexture, frame, crop, trim, rotate)
     }
 }
 
+Texture.prototype = Object.create(EventEmitter.prototype);
 Texture.prototype.constructor = Texture;
 module.exports = Texture;
-
-eventTarget.mixin(Texture.prototype);
 
 Object.defineProperties(Texture.prototype, {
     frame: {
