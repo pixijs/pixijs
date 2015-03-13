@@ -1,6 +1,6 @@
 var math = require('../math'),
-    utils = require('../utils'),
     RenderTexture = require('../textures/RenderTexture'),
+    EventEmitter = require('eventemitter3').EventEmitter,
     _tempMatrix = new math.Matrix();
 
 /**
@@ -12,6 +12,8 @@ var math = require('../math'),
  */
 function DisplayObject()
 {
+    EventEmitter.call(this);
+
     /**
      * The coordinate of the object relative to the local coordinates of the parent.
      *
@@ -149,8 +151,8 @@ function DisplayObject()
 }
 
 // constructor
+DisplayObject.prototype = Object.create(EventEmitter.prototype);
 DisplayObject.prototype.constructor = DisplayObject;
-utils.eventTarget.mixin(DisplayObject.prototype);
 module.exports = DisplayObject;
 
 Object.defineProperties(DisplayObject.prototype, {

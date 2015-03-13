@@ -13,7 +13,7 @@ function WebGLManager(renderer)
     this.renderer = renderer;
 
     var self = this;
-    this.renderer.on('context', this._onContextChangeFn = function(){
+    this.renderer.on('context', this._onContextChangeFn = function () {
 
     	self.onContextChange();
 

@@ -1,11 +1,11 @@
 var utils = require('../utils'),
-    CONST = require('../const');
+    CONST = require('../const'),
+    EventEmitter = require('eventemitter3').EventEmitter;
 
 /**
  * A texture stores the information that represents an image. All textures have a base texture.
  *
  * @class
- * @mixes eventTarget
  * @memberof PIXI
  * @param source {Image|Canvas} the source object of the texture.
  * @param [scaleMode=scaleModes.DEFAULT] {number} See {@link SCALE_MODES} for possible values
@@ -13,6 +13,8 @@ var utils = require('../utils'),
  */
 function BaseTexture(source, scaleMode, resolution)
 {
+    EventEmitter.call(this);
+
     this.uuid = utils.uuid();
 
     /**
@@ -155,17 +157,17 @@ function BaseTexture(source, scaleMode, resolution)
      */
 }
 
+BaseTexture.prototype = Object.create(EventEmitter.prototype);
 BaseTexture.prototype.constructor = BaseTexture;
 module.exports = BaseTexture;
-
-utils.eventTarget.mixin(BaseTexture.prototype);
 
 /**
  * Updates the texture on all the webgl renderers.
  *
  * @fires update
  */
-BaseTexture.prototype.update = function () {
+BaseTexture.prototype.update = function ()
+{
     this.emit('update', this);
 };
 

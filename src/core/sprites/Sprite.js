@@ -189,6 +189,9 @@ Sprite.prototype._onTextureUpdate = function ()
     {
         this.scale.y = this._height / this.texture.frame.height;
     }
+
+    // reset bounds
+    this._currentBounds = null;
 };
 
 /**
@@ -213,7 +216,6 @@ Sprite.prototype.getBounds = function (matrix)
 {
     if(!this._currentBounds)
     {
-
         var width = this._texture._frame.width;
         var height = this._texture._frame.height;
 

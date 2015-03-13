@@ -186,10 +186,10 @@ MovieClip.prototype.gotoAndPlay = function (frameNumber)
  * Updates the object transform for rendering
  * @private
  */
-MovieClip.prototype.update = function ( event )
+MovieClip.prototype.update = function (deltaTime)
 {
 
-    this.currentFrame += this.animationSpeed * event.data.deltaTime;
+    this.currentFrame += this.animationSpeed * deltaTime;
 
     var floor = Math.floor(this.currentFrame);
 
