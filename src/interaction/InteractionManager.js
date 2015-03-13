@@ -1,11 +1,6 @@
 var core = require('../core'),
     InteractionData = require('./InteractionData');
 
-
-// TODO: Obviously rewrite this...
-var INTERACTION_FREQUENCY = 10;
-var AUTO_PREVENT_DEFAULT = true;
-
 /**
  * The interaction manager deals with mouse and touch events. Any DisplayObject can be interactive
  * if its interactive parameter is set to true
@@ -14,10 +9,36 @@ var AUTO_PREVENT_DEFAULT = true;
  * @class
  * @memberof PIXI.interaction
  * @param renderer {CanvasRenderer|WebGLRenderer} A reference to the current renderer
+ * @param [options] {object}
+ * @param [options.autoPreventDefault=true] {boolean} Should the manager automatically prevent default browser actions.
+ * @param [options.interactionFrequency=10] {number} Frequency increases the interaction events will be checked.
  */
-function InteractionManager( renderer )
+function InteractionManager(renderer, options)
 {
+    options = options || {};
+
+    /**
+     * The renderer this interaction manager works for.
+     *
+     * @member {SystemRenderer}
+     */
     this.renderer = renderer;
+
+    /**
+     * Should default browser actions automatically be prevented.
+     *
+     * @member {boolean}
+     * @default true
+     */
+    this.autoPreventDefault = options.autoPreventDefault !== undefined ? options.autoPreventDefault : true;
+
+    /**
+     * As this frequency increases the interaction events will be checked more often.
+     *
+     * @member {number}
+     * @default 10
+     */
+    this.interactionFrequency = options.interactionFrequency || 10;
 
     /**
      * The mouse data
@@ -276,6 +297,7 @@ InteractionManager.prototype.dispatchEvent = function ( displayObject, eventStri
 
 /**
  * Ensures the interaction checks don't happen too often by delaying the update loop
+ *
  * @private
  */
 InteractionManager.prototype.throttleUpdate = function ()
@@ -283,7 +305,9 @@ InteractionManager.prototype.throttleUpdate = function ()
     // frequency of 30fps??
     var now = Date.now();
     var diff = now - this.last;
-    diff = (diff * INTERACTION_FREQUENCY ) / 1000;
+
+    diff = (diff * this.interactionFrequency ) / 1000;
+
     if (diff < 1)
     {
         return true;
@@ -391,7 +415,7 @@ InteractionManager.prototype.onMouseDown = function (event)
     this.eventData.data = this.mouse;
     this.eventData.stopped = false;
 
-    if (AUTO_PREVENT_DEFAULT)
+    if (this.autoPreventDefault)
     {
         this.mouse.originalEvent.preventDefault();
     }
@@ -574,7 +598,7 @@ InteractionManager.prototype.processMouseOverOut = function ( displayObject, hit
  */
 InteractionManager.prototype.onTouchStart = function (event)
 {
-    if (AUTO_PREVENT_DEFAULT)
+    if (this.autoPreventDefault)
     {
         event.preventDefault();
     }
@@ -623,7 +647,7 @@ InteractionManager.prototype.processTouchStart = function ( displayObject, hit )
  */
 InteractionManager.prototype.onTouchEnd = function (event)
 {
-    if (AUTO_PREVENT_DEFAULT)
+    if (this.autoPreventDefault)
     {
         event.preventDefault();
     }
@@ -686,7 +710,7 @@ InteractionManager.prototype.processTouchEnd = function ( displayObject, hit )
  */
 InteractionManager.prototype.onTouchMove = function (event)
 {
-    if (AUTO_PREVENT_DEFAULT)
+    if (this.autoPreventDefault)
     {
         event.preventDefault();
     }
