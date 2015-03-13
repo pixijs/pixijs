@@ -194,16 +194,9 @@ MeshRenderer.prototype.flush = function ()
  */
 MeshRenderer.prototype.start = function ()
 {
-    var gl = this.renderer.gl,
-    shader = this.renderer.shaderManager.plugins.meshShader;
+    var shader = this.renderer.shaderManager.plugins.meshShader;
 
     this.renderer.shaderManager.setShader(shader);
-
-    // dont need to upload!
-    //gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indices);
-
-
- //   this.s
 };
 
 /**

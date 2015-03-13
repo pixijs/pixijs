@@ -1,5 +1,4 @@
 var core   = require('./core'),
-    extras = require('./extras'),
     mesh   = require('./mesh'),
     text   = require('./text');
 

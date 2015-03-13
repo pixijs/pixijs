@@ -1,5 +1,4 @@
 var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
-    Shader = require('../../renderers/webgl/shaders/Shader'),
     WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
     CONST = require('../../const');
 

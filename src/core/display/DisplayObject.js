@@ -349,7 +349,7 @@ DisplayObject.prototype.displayObjectUpdateTransform = DisplayObject.prototype.u
  * @param matrix {Matrix}
  * @return {Rectangle} the rectangular bounding area
  */
-DisplayObject.prototype.getBounds = function (matrix)
+DisplayObject.prototype.getBounds = function (matrix) // jshint unused:false
 {
     return math.Rectangle.EMPTY;
 };
@@ -402,7 +402,7 @@ DisplayObject.prototype.toLocal = function (position, from)
  * @param renderer {WebGLRenderer} The renderer
  * @private
  */
-DisplayObject.prototype.renderWebGL = function (renderer)
+DisplayObject.prototype.renderWebGL = function (renderer) // jshint unused:false
 {
     // OVERWRITE;
 };
@@ -413,7 +413,7 @@ DisplayObject.prototype.renderWebGL = function (renderer)
  * @param renderer {CanvasRenderer} The renderer
  * @private
  */
-DisplayObject.prototype.renderCanvas = function (renderer)
+DisplayObject.prototype.renderCanvas = function (renderer) // jshint unused:false
 {
     // OVERWRITE;
 };

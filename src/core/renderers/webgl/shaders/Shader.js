@@ -1,5 +1,5 @@
-var utils = require('../../../utils'),
-    CONST = require('../../../const');
+/*global console */
+var utils = require('../../../utils');
 
 /**
  * @class
@@ -444,7 +444,7 @@ Shader.prototype.syncUniform = function (uniform)
             break;
 
         default:
-            window.console.warn('Pixi.js Shader Warning: Unknown uniform type: ' + uniform.type);
+            console.warn('Pixi.js Shader Warning: Unknown uniform type: ' + uniform.type);
     }
 };
 
@@ -539,7 +539,7 @@ Shader.prototype._glCompile = function (type, src)
 
     if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS))
     {
-        window.console.log(this.gl.getShaderInfoLog(shader));
+        console.log(this.gl.getShaderInfoLog(shader));
         return null;
     }
 

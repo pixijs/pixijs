@@ -270,7 +270,7 @@ ColorMatrixFilter.prototype.saturation = function(amount, multiply)
  *
  * @param multiply {boolean} refer to ._loadMatrix() method
  */
-ColorMatrixFilter.prototype.desaturate = function(multiply)
+ColorMatrixFilter.prototype.desaturate = function(multiply) // jshint unused:false
 {
     this.saturation(-1);
 };

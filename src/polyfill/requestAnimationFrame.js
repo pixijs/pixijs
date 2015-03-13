@@ -54,7 +54,7 @@ if (!global.requestAnimationFrame) {
 
         return setTimeout(function () {
             lastTime = Date.now();
-            callback(performance.now());
+            callback(global.performance.now());
         }, delay);
     };
 }

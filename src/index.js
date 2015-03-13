@@ -1,4 +1,4 @@
-require('./polyfill/requestAnimationFrame')
+require('./polyfill/requestAnimationFrame');
 
 var core = require('./core');
 
