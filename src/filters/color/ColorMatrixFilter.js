@@ -547,11 +547,11 @@ Object.defineProperties(ColorMatrixFilter.prototype, {
     matrix: {
         get: function ()
         {
-            return this.uniforms.matrix.value;
+            return this.uniforms.m.value;
         },
         set: function (value)
         {
-            this.uniforms.matrix.value = value;
+            this.uniforms.m.value = value;
         }
     }
 });
