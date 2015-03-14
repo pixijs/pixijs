@@ -54,11 +54,11 @@ module.exports = function ()
 
             // remove baseUrl from xmlUrl
             xmlUrl = xmlUrl.replace(this.baseUrl, '');
+        }
 
-            // if there is an xmlUrl now, it needs a trailing slash. Ensure that it does if the string isn't empty.
-            if (xmlUrl && xmlUrl.charAt(xmlUrl.length - 1) !== '/') {
-                xmlUrl += '/';
-            }
+        // if there is an xmlUrl now, it needs a trailing slash. Ensure that it does if the string isn't empty.
+        if (xmlUrl && xmlUrl.charAt(xmlUrl.length - 1) !== '/') {
+            xmlUrl += '/';
         }
 
         var textureUrl = xmlUrl + resource.data.getElementsByTagName('page')[0].getAttribute('file');
