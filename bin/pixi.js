@@ -1392,6 +1392,7 @@ process.browser = true;
 process.env = {};
 process.argv = [];
 process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
 
 function noop() {}
 
@@ -1415,584 +1416,1370 @@ process.chdir = function (dir) {
 process.umask = function() { return 0; };
 
 },{}],4:[function(require,module,exports){
-/*!
- * EventEmitter2
- * https://github.com/hij1nx/EventEmitter2
+'use strict';
+
+/**
+ * Representation of a single EventEmitter function.
  *
- * Copyright (c) 2013 hij1nx
- * Licensed under the MIT license.
+ * @param {Function} fn Event handler to be called.
+ * @param {Mixed} context Context for function execution.
+ * @param {Boolean} once Only emit once
+ * @api private
  */
-;!function(undefined) {
+function EE(fn, context, once) {
+  this.fn = fn;
+  this.context = context;
+  this.once = once || false;
+}
 
-  var isArray = Array.isArray ? Array.isArray : function _isArray(obj) {
-    return Object.prototype.toString.call(obj) === "[object Array]";
-  };
-  var defaultMaxListeners = 10;
+/**
+ * Minimal EventEmitter interface that is molded against the Node.js
+ * EventEmitter interface.
+ *
+ * @constructor
+ * @api public
+ */
+function EventEmitter() { /* Nothing to set */ }
 
-  function init() {
-    this._events = {};
-    if (this._conf) {
-      configure.call(this, this._conf);
+/**
+ * Holds the assigned EventEmitters by name.
+ *
+ * @type {Object}
+ * @private
+ */
+EventEmitter.prototype._events = undefined;
+
+/**
+ * Return a list of assigned event listeners.
+ *
+ * @param {String} event The events that should be listed.
+ * @returns {Array}
+ * @api public
+ */
+EventEmitter.prototype.listeners = function listeners(event) {
+  if (!this._events || !this._events[event]) return [];
+  if (this._events[event].fn) return [this._events[event].fn];
+
+  for (var i = 0, l = this._events[event].length, ee = new Array(l); i < l; i++) {
+    ee[i] = this._events[event][i].fn;
+  }
+
+  return ee;
+};
+
+/**
+ * Emit an event to all registered event listeners.
+ *
+ * @param {String} event The name of the event.
+ * @returns {Boolean} Indication if we've emitted an event.
+ * @api public
+ */
+EventEmitter.prototype.emit = function emit(event, a1, a2, a3, a4, a5) {
+  if (!this._events || !this._events[event]) return false;
+
+  var listeners = this._events[event]
+    , len = arguments.length
+    , args
+    , i;
+
+  if ('function' === typeof listeners.fn) {
+    if (listeners.once) this.removeListener(event, listeners.fn, true);
+
+    switch (len) {
+      case 1: return listeners.fn.call(listeners.context), true;
+      case 2: return listeners.fn.call(listeners.context, a1), true;
+      case 3: return listeners.fn.call(listeners.context, a1, a2), true;
+      case 4: return listeners.fn.call(listeners.context, a1, a2, a3), true;
+      case 5: return listeners.fn.call(listeners.context, a1, a2, a3, a4), true;
+      case 6: return listeners.fn.call(listeners.context, a1, a2, a3, a4, a5), true;
+    }
+
+    for (i = 1, args = new Array(len -1); i < len; i++) {
+      args[i - 1] = arguments[i];
+    }
+
+    listeners.fn.apply(listeners.context, args);
+  } else {
+    var length = listeners.length
+      , j;
+
+    for (i = 0; i < length; i++) {
+      if (listeners[i].once) this.removeListener(event, listeners[i].fn, true);
+
+      switch (len) {
+        case 1: listeners[i].fn.call(listeners[i].context); break;
+        case 2: listeners[i].fn.call(listeners[i].context, a1); break;
+        case 3: listeners[i].fn.call(listeners[i].context, a1, a2); break;
+        default:
+          if (!args) for (j = 1, args = new Array(len -1); j < len; j++) {
+            args[j - 1] = arguments[j];
+          }
+
+          listeners[i].fn.apply(listeners[i].context, args);
+      }
     }
   }
 
-  function configure(conf) {
-    if (conf) {
-
-      this._conf = conf;
-
-      conf.delimiter && (this.delimiter = conf.delimiter);
-      conf.maxListeners && (this._events.maxListeners = conf.maxListeners);
-      conf.wildcard && (this.wildcard = conf.wildcard);
-      conf.newListener && (this.newListener = conf.newListener);
-
-      if (this.wildcard) {
-        this.listenerTree = {};
-      }
-    }
-  }
-
-  function EventEmitter(conf) {
-    this._events = {};
-    this.newListener = false;
-    configure.call(this, conf);
-  }
-
-  //
-  // Attention, function return type now is array, always !
-  // It has zero elements if no any matches found and one or more
-  // elements (leafs) if there are matches
-  //
-  function searchListenerTree(handlers, type, tree, i) {
-    if (!tree) {
-      return [];
-    }
-    var listeners=[], leaf, len, branch, xTree, xxTree, isolatedBranch, endReached,
-        typeLength = type.length, currentType = type[i], nextType = type[i+1];
-    if (i === typeLength && tree._listeners) {
-      //
-      // If at the end of the event(s) list and the tree has listeners
-      // invoke those listeners.
-      //
-      if (typeof tree._listeners === 'function') {
-        handlers && handlers.push(tree._listeners);
-        return [tree];
-      } else {
-        for (leaf = 0, len = tree._listeners.length; leaf < len; leaf++) {
-          handlers && handlers.push(tree._listeners[leaf]);
-        }
-        return [tree];
-      }
-    }
-
-    if ((currentType === '*' || currentType === '**') || tree[currentType]) {
-      //
-      // If the event emitted is '*' at this part
-      // or there is a concrete match at this patch
-      //
-      if (currentType === '*') {
-        for (branch in tree) {
-          if (branch !== '_listeners' && tree.hasOwnProperty(branch)) {
-            listeners = listeners.concat(searchListenerTree(handlers, type, tree[branch], i+1));
-          }
-        }
-        return listeners;
-      } else if(currentType === '**') {
-        endReached = (i+1 === typeLength || (i+2 === typeLength && nextType === '*'));
-        if(endReached && tree._listeners) {
-          // The next element has a _listeners, add it to the handlers.
-          listeners = listeners.concat(searchListenerTree(handlers, type, tree, typeLength));
-        }
-
-        for (branch in tree) {
-          if (branch !== '_listeners' && tree.hasOwnProperty(branch)) {
-            if(branch === '*' || branch === '**') {
-              if(tree[branch]._listeners && !endReached) {
-                listeners = listeners.concat(searchListenerTree(handlers, type, tree[branch], typeLength));
-              }
-              listeners = listeners.concat(searchListenerTree(handlers, type, tree[branch], i));
-            } else if(branch === nextType) {
-              listeners = listeners.concat(searchListenerTree(handlers, type, tree[branch], i+2));
-            } else {
-              // No match on this one, shift into the tree but not in the type array.
-              listeners = listeners.concat(searchListenerTree(handlers, type, tree[branch], i));
-            }
-          }
-        }
-        return listeners;
-      }
-
-      listeners = listeners.concat(searchListenerTree(handlers, type, tree[currentType], i+1));
-    }
-
-    xTree = tree['*'];
-    if (xTree) {
-      //
-      // If the listener tree will allow any match for this part,
-      // then recursively explore all branches of the tree
-      //
-      searchListenerTree(handlers, type, xTree, i+1);
-    }
-
-    xxTree = tree['**'];
-    if(xxTree) {
-      if(i < typeLength) {
-        if(xxTree._listeners) {
-          // If we have a listener on a '**', it will catch all, so add its handler.
-          searchListenerTree(handlers, type, xxTree, typeLength);
-        }
-
-        // Build arrays of matching next branches and others.
-        for(branch in xxTree) {
-          if(branch !== '_listeners' && xxTree.hasOwnProperty(branch)) {
-            if(branch === nextType) {
-              // We know the next element will match, so jump twice.
-              searchListenerTree(handlers, type, xxTree[branch], i+2);
-            } else if(branch === currentType) {
-              // Current node matches, move into the tree.
-              searchListenerTree(handlers, type, xxTree[branch], i+1);
-            } else {
-              isolatedBranch = {};
-              isolatedBranch[branch] = xxTree[branch];
-              searchListenerTree(handlers, type, { '**': isolatedBranch }, i+1);
-            }
-          }
-        }
-      } else if(xxTree._listeners) {
-        // We have reached the end and still on a '**'
-        searchListenerTree(handlers, type, xxTree, typeLength);
-      } else if(xxTree['*'] && xxTree['*']._listeners) {
-        searchListenerTree(handlers, type, xxTree['*'], typeLength);
-      }
-    }
-
-    return listeners;
-  }
-
-  function growListenerTree(type, listener) {
-
-    type = typeof type === 'string' ? type.split(this.delimiter) : type.slice();
-
-    //
-    // Looks for two consecutive '**', if so, don't add the event at all.
-    //
-    for(var i = 0, len = type.length; i+1 < len; i++) {
-      if(type[i] === '**' && type[i+1] === '**') {
-        return;
-      }
-    }
-
-    var tree = this.listenerTree;
-    var name = type.shift();
-
-    while (name) {
-
-      if (!tree[name]) {
-        tree[name] = {};
-      }
-
-      tree = tree[name];
-
-      if (type.length === 0) {
-
-        if (!tree._listeners) {
-          tree._listeners = listener;
-        }
-        else if(typeof tree._listeners === 'function') {
-          tree._listeners = [tree._listeners, listener];
-        }
-        else if (isArray(tree._listeners)) {
-
-          tree._listeners.push(listener);
-
-          if (!tree._listeners.warned) {
-
-            var m = defaultMaxListeners;
-
-            if (typeof this._events.maxListeners !== 'undefined') {
-              m = this._events.maxListeners;
-            }
-
-            if (m > 0 && tree._listeners.length > m) {
-
-              tree._listeners.warned = true;
-              console.error('(node) warning: possible EventEmitter memory ' +
-                            'leak detected. %d listeners added. ' +
-                            'Use emitter.setMaxListeners() to increase limit.',
-                            tree._listeners.length);
-              console.trace();
-            }
-          }
-        }
-        return true;
-      }
-      name = type.shift();
-    }
-    return true;
-  }
-
-  // By default EventEmitters will print a warning if more than
-  // 10 listeners are added to it. This is a useful default which
-  // helps finding memory leaks.
-  //
-  // Obviously not all Emitters should be limited to 10. This function allows
-  // that to be increased. Set to zero for unlimited.
-
-  EventEmitter.prototype.delimiter = '.';
-
-  EventEmitter.prototype.setMaxListeners = function(n) {
-    this._events || init.call(this);
-    this._events.maxListeners = n;
-    if (!this._conf) this._conf = {};
-    this._conf.maxListeners = n;
-  };
-
-  EventEmitter.prototype.event = '';
-
-  EventEmitter.prototype.once = function(event, fn) {
-    this.many(event, 1, fn);
-    return this;
-  };
-
-  EventEmitter.prototype.many = function(event, ttl, fn) {
-    var self = this;
-
-    if (typeof fn !== 'function') {
-      throw new Error('many only accepts instances of Function');
-    }
-
-    function listener() {
-      if (--ttl === 0) {
-        self.off(event, listener);
-      }
-      fn.apply(this, arguments);
-    }
-
-    listener._origin = fn;
-
-    this.on(event, listener);
-
-    return self;
-  };
-
-  EventEmitter.prototype.emit = function() {
-
-    this._events || init.call(this);
-
-    var type = arguments[0];
-
-    if (type === 'newListener' && !this.newListener) {
-      if (!this._events.newListener) { return false; }
-    }
-
-    // Loop through the *_all* functions and invoke them.
-    if (this._all) {
-      var l = arguments.length;
-      var args = new Array(l - 1);
-      for (var i = 1; i < l; i++) args[i - 1] = arguments[i];
-      for (i = 0, l = this._all.length; i < l; i++) {
-        this.event = type;
-        this._all[i].apply(this, args);
-      }
-    }
-
-    // If there is no 'error' event listener then throw.
-    if (type === 'error') {
-
-      if (!this._all &&
-        !this._events.error &&
-        !(this.wildcard && this.listenerTree.error)) {
-
-        if (arguments[1] instanceof Error) {
-          throw arguments[1]; // Unhandled 'error' event
-        } else {
-          throw new Error("Uncaught, unspecified 'error' event.");
-        }
-        return false;
-      }
-    }
-
-    var handler;
-
-    if(this.wildcard) {
-      handler = [];
-      var ns = typeof type === 'string' ? type.split(this.delimiter) : type.slice();
-      searchListenerTree.call(this, handler, ns, this.listenerTree, 0);
-    }
-    else {
-      handler = this._events[type];
-    }
-
-    if (typeof handler === 'function') {
-      this.event = type;
-      if (arguments.length === 1) {
-        handler.call(this);
-      }
-      else if (arguments.length > 1)
-        switch (arguments.length) {
-          case 2:
-            handler.call(this, arguments[1]);
-            break;
-          case 3:
-            handler.call(this, arguments[1], arguments[2]);
-            break;
-          // slower
-          default:
-            var l = arguments.length;
-            var args = new Array(l - 1);
-            for (var i = 1; i < l; i++) args[i - 1] = arguments[i];
-            handler.apply(this, args);
-        }
-      return true;
-    }
-    else if (handler) {
-      var l = arguments.length;
-      var args = new Array(l - 1);
-      for (var i = 1; i < l; i++) args[i - 1] = arguments[i];
-
-      var listeners = handler.slice();
-      for (var i = 0, l = listeners.length; i < l; i++) {
-        this.event = type;
-        listeners[i].apply(this, args);
-      }
-      return (listeners.length > 0) || !!this._all;
-    }
-    else {
-      return !!this._all;
-    }
-
-  };
-
-  EventEmitter.prototype.on = function(type, listener) {
-
-    if (typeof type === 'function') {
-      this.onAny(type);
-      return this;
-    }
-
-    if (typeof listener !== 'function') {
-      throw new Error('on only accepts instances of Function');
-    }
-    this._events || init.call(this);
-
-    // To avoid recursion in the case that type == "newListeners"! Before
-    // adding it to the listeners, first emit "newListeners".
-    this.emit('newListener', type, listener);
-
-    if(this.wildcard) {
-      growListenerTree.call(this, type, listener);
-      return this;
-    }
-
-    if (!this._events[type]) {
-      // Optimize the case of one listener. Don't need the extra array object.
-      this._events[type] = listener;
-    }
-    else if(typeof this._events[type] === 'function') {
-      // Adding the second element, need to change to array.
-      this._events[type] = [this._events[type], listener];
-    }
-    else if (isArray(this._events[type])) {
-      // If we've already got an array, just append.
-      this._events[type].push(listener);
-
-      // Check for listener leak
-      if (!this._events[type].warned) {
-
-        var m = defaultMaxListeners;
-
-        if (typeof this._events.maxListeners !== 'undefined') {
-          m = this._events.maxListeners;
-        }
-
-        if (m > 0 && this._events[type].length > m) {
-
-          this._events[type].warned = true;
-          console.error('(node) warning: possible EventEmitter memory ' +
-                        'leak detected. %d listeners added. ' +
-                        'Use emitter.setMaxListeners() to increase limit.',
-                        this._events[type].length);
-          console.trace();
-        }
-      }
-    }
-    return this;
-  };
-
-  EventEmitter.prototype.onAny = function(fn) {
-
-    if (typeof fn !== 'function') {
-      throw new Error('onAny only accepts instances of Function');
-    }
-
-    if(!this._all) {
-      this._all = [];
-    }
-
-    // Add the function to the event listener collection.
-    this._all.push(fn);
-    return this;
-  };
-
-  EventEmitter.prototype.addListener = EventEmitter.prototype.on;
-
-  EventEmitter.prototype.off = function(type, listener) {
-    if (typeof listener !== 'function') {
-      throw new Error('removeListener only takes instances of Function');
-    }
-
-    var handlers,leafs=[];
-
-    if(this.wildcard) {
-      var ns = typeof type === 'string' ? type.split(this.delimiter) : type.slice();
-      leafs = searchListenerTree.call(this, null, ns, this.listenerTree, 0);
-    }
-    else {
-      // does not use listeners(), so no side effect of creating _events[type]
-      if (!this._events[type]) return this;
-      handlers = this._events[type];
-      leafs.push({_listeners:handlers});
-    }
-
-    for (var iLeaf=0; iLeaf<leafs.length; iLeaf++) {
-      var leaf = leafs[iLeaf];
-      handlers = leaf._listeners;
-      if (isArray(handlers)) {
-
-        var position = -1;
-
-        for (var i = 0, length = handlers.length; i < length; i++) {
-          if (handlers[i] === listener ||
-            (handlers[i].listener && handlers[i].listener === listener) ||
-            (handlers[i]._origin && handlers[i]._origin === listener)) {
-            position = i;
-            break;
-          }
-        }
-
-        if (position < 0) {
-          continue;
-        }
-
-        if(this.wildcard) {
-          leaf._listeners.splice(position, 1);
-        }
-        else {
-          this._events[type].splice(position, 1);
-        }
-
-        if (handlers.length === 0) {
-          if(this.wildcard) {
-            delete leaf._listeners;
-          }
-          else {
-            delete this._events[type];
-          }
-        }
-        return this;
-      }
-      else if (handlers === listener ||
-        (handlers.listener && handlers.listener === listener) ||
-        (handlers._origin && handlers._origin === listener)) {
-        if(this.wildcard) {
-          delete leaf._listeners;
-        }
-        else {
-          delete this._events[type];
-        }
-      }
-    }
-
-    return this;
-  };
-
-  EventEmitter.prototype.offAny = function(fn) {
-    var i = 0, l = 0, fns;
-    if (fn && this._all && this._all.length > 0) {
-      fns = this._all;
-      for(i = 0, l = fns.length; i < l; i++) {
-        if(fn === fns[i]) {
-          fns.splice(i, 1);
-          return this;
-        }
-      }
-    } else {
-      this._all = [];
-    }
-    return this;
-  };
-
-  EventEmitter.prototype.removeListener = EventEmitter.prototype.off;
-
-  EventEmitter.prototype.removeAllListeners = function(type) {
-    if (arguments.length === 0) {
-      !this._events || init.call(this);
-      return this;
-    }
-
-    if(this.wildcard) {
-      var ns = typeof type === 'string' ? type.split(this.delimiter) : type.slice();
-      var leafs = searchListenerTree.call(this, null, ns, this.listenerTree, 0);
-
-      for (var iLeaf=0; iLeaf<leafs.length; iLeaf++) {
-        var leaf = leafs[iLeaf];
-        leaf._listeners = null;
-      }
-    }
-    else {
-      if (!this._events[type]) return this;
-      this._events[type] = null;
-    }
-    return this;
-  };
-
-  EventEmitter.prototype.listeners = function(type) {
-    if(this.wildcard) {
-      var handlers = [];
-      var ns = typeof type === 'string' ? type.split(this.delimiter) : type.slice();
-      searchListenerTree.call(this, handlers, ns, this.listenerTree, 0);
-      return handlers;
-    }
-
-    this._events || init.call(this);
-
-    if (!this._events[type]) this._events[type] = [];
-    if (!isArray(this._events[type])) {
-      this._events[type] = [this._events[type]];
-    }
-    return this._events[type];
-  };
-
-  EventEmitter.prototype.listenersAny = function() {
-
-    if(this._all) {
-      return this._all;
-    }
-    else {
-      return [];
-    }
-
-  };
-
-  if (typeof define === 'function' && define.amd) {
-     // AMD. Register as an anonymous module.
-    define(function() {
-      return EventEmitter;
-    });
-  } else if (typeof exports === 'object') {
-    // CommonJS
-    exports.EventEmitter2 = EventEmitter;
-  }
+  return true;
+};
+
+/**
+ * Register a new EventListener for the given event.
+ *
+ * @param {String} event Name of the event.
+ * @param {Functon} fn Callback function.
+ * @param {Mixed} context The context of the function.
+ * @api public
+ */
+EventEmitter.prototype.on = function on(event, fn, context) {
+  var listener = new EE(fn, context || this);
+
+  if (!this._events) this._events = {};
+  if (!this._events[event]) this._events[event] = listener;
   else {
-    // Browser global.
-    window.EventEmitter2 = EventEmitter;
+    if (!this._events[event].fn) this._events[event].push(listener);
+    else this._events[event] = [
+      this._events[event], listener
+    ];
   }
-}();
+
+  return this;
+};
+
+/**
+ * Add an EventListener that's only called once.
+ *
+ * @param {String} event Name of the event.
+ * @param {Function} fn Callback function.
+ * @param {Mixed} context The context of the function.
+ * @api public
+ */
+EventEmitter.prototype.once = function once(event, fn, context) {
+  var listener = new EE(fn, context || this, true);
+
+  if (!this._events) this._events = {};
+  if (!this._events[event]) this._events[event] = listener;
+  else {
+    if (!this._events[event].fn) this._events[event].push(listener);
+    else this._events[event] = [
+      this._events[event], listener
+    ];
+  }
+
+  return this;
+};
+
+/**
+ * Remove event listeners.
+ *
+ * @param {String} event The event we want to remove.
+ * @param {Function} fn The listener that we need to find.
+ * @param {Boolean} once Only remove once listeners.
+ * @api public
+ */
+EventEmitter.prototype.removeListener = function removeListener(event, fn, once) {
+  if (!this._events || !this._events[event]) return this;
+
+  var listeners = this._events[event]
+    , events = [];
+
+  if (fn) {
+    if (listeners.fn && (listeners.fn !== fn || (once && !listeners.once))) {
+      events.push(listeners);
+    }
+    if (!listeners.fn) for (var i = 0, length = listeners.length; i < length; i++) {
+      if (listeners[i].fn !== fn || (once && !listeners[i].once)) {
+        events.push(listeners[i]);
+      }
+    }
+  }
+
+  //
+  // Reset the array, or remove it completely if we have no more listeners.
+  //
+  if (events.length) {
+    this._events[event] = events.length === 1 ? events[0] : events;
+  } else {
+    delete this._events[event];
+  }
+
+  return this;
+};
+
+/**
+ * Remove all listeners or only the listeners for the specified event.
+ *
+ * @param {String} event The event want to remove all listeners for.
+ * @api public
+ */
+EventEmitter.prototype.removeAllListeners = function removeAllListeners(event) {
+  if (!this._events) return this;
+
+  if (event) delete this._events[event];
+  else this._events = {};
+
+  return this;
+};
+
+//
+// Alias methods names because people roll like that.
+//
+EventEmitter.prototype.off = EventEmitter.prototype.removeListener;
+EventEmitter.prototype.addListener = EventEmitter.prototype.on;
+
+//
+// This function doesn't apply anymore.
+//
+EventEmitter.prototype.setMaxListeners = function setMaxListeners() {
+  return this;
+};
+
+//
+// Expose the module.
+//
+EventEmitter.EventEmitter = EventEmitter;
+EventEmitter.EventEmitter2 = EventEmitter;
+EventEmitter.EventEmitter3 = EventEmitter;
+
+//
+// Expose the module.
+//
+module.exports = EventEmitter;
 
 },{}],5:[function(require,module,exports){
+(function (process){
+/*!
+ * async
+ * https://github.com/caolan/async
+ *
+ * Copyright 2010-2014 Caolan McMahon
+ * Released under the MIT license
+ */
+/*jshint onevar: false, indent:4 */
+/*global setImmediate: false, setTimeout: false, console: false */
+(function () {
+
+    var async = {};
+
+    // global on the server, window in the browser
+    var root, previous_async;
+
+    root = this;
+    if (root != null) {
+      previous_async = root.async;
+    }
+
+    async.noConflict = function () {
+        root.async = previous_async;
+        return async;
+    };
+
+    function only_once(fn) {
+        var called = false;
+        return function() {
+            if (called) throw new Error("Callback was already called.");
+            called = true;
+            fn.apply(root, arguments);
+        }
+    }
+
+    //// cross-browser compatiblity functions ////
+
+    var _toString = Object.prototype.toString;
+
+    var _isArray = Array.isArray || function (obj) {
+        return _toString.call(obj) === '[object Array]';
+    };
+
+    var _each = function (arr, iterator) {
+        if (arr.forEach) {
+            return arr.forEach(iterator);
+        }
+        for (var i = 0; i < arr.length; i += 1) {
+            iterator(arr[i], i, arr);
+        }
+    };
+
+    var _map = function (arr, iterator) {
+        if (arr.map) {
+            return arr.map(iterator);
+        }
+        var results = [];
+        _each(arr, function (x, i, a) {
+            results.push(iterator(x, i, a));
+        });
+        return results;
+    };
+
+    var _reduce = function (arr, iterator, memo) {
+        if (arr.reduce) {
+            return arr.reduce(iterator, memo);
+        }
+        _each(arr, function (x, i, a) {
+            memo = iterator(memo, x, i, a);
+        });
+        return memo;
+    };
+
+    var _keys = function (obj) {
+        if (Object.keys) {
+            return Object.keys(obj);
+        }
+        var keys = [];
+        for (var k in obj) {
+            if (obj.hasOwnProperty(k)) {
+                keys.push(k);
+            }
+        }
+        return keys;
+    };
+
+    //// exported async module functions ////
+
+    //// nextTick implementation with browser-compatible fallback ////
+    if (typeof process === 'undefined' || !(process.nextTick)) {
+        if (typeof setImmediate === 'function') {
+            async.nextTick = function (fn) {
+                // not a direct alias for IE10 compatibility
+                setImmediate(fn);
+            };
+            async.setImmediate = async.nextTick;
+        }
+        else {
+            async.nextTick = function (fn) {
+                setTimeout(fn, 0);
+            };
+            async.setImmediate = async.nextTick;
+        }
+    }
+    else {
+        async.nextTick = process.nextTick;
+        if (typeof setImmediate !== 'undefined') {
+            async.setImmediate = function (fn) {
+              // not a direct alias for IE10 compatibility
+              setImmediate(fn);
+            };
+        }
+        else {
+            async.setImmediate = async.nextTick;
+        }
+    }
+
+    async.each = function (arr, iterator, callback) {
+        callback = callback || function () {};
+        if (!arr.length) {
+            return callback();
+        }
+        var completed = 0;
+        _each(arr, function (x) {
+            iterator(x, only_once(done) );
+        });
+        function done(err) {
+          if (err) {
+              callback(err);
+              callback = function () {};
+          }
+          else {
+              completed += 1;
+              if (completed >= arr.length) {
+                  callback();
+              }
+          }
+        }
+    };
+    async.forEach = async.each;
+
+    async.eachSeries = function (arr, iterator, callback) {
+        callback = callback || function () {};
+        if (!arr.length) {
+            return callback();
+        }
+        var completed = 0;
+        var iterate = function () {
+            iterator(arr[completed], function (err) {
+                if (err) {
+                    callback(err);
+                    callback = function () {};
+                }
+                else {
+                    completed += 1;
+                    if (completed >= arr.length) {
+                        callback();
+                    }
+                    else {
+                        iterate();
+                    }
+                }
+            });
+        };
+        iterate();
+    };
+    async.forEachSeries = async.eachSeries;
+
+    async.eachLimit = function (arr, limit, iterator, callback) {
+        var fn = _eachLimit(limit);
+        fn.apply(null, [arr, iterator, callback]);
+    };
+    async.forEachLimit = async.eachLimit;
+
+    var _eachLimit = function (limit) {
+
+        return function (arr, iterator, callback) {
+            callback = callback || function () {};
+            if (!arr.length || limit <= 0) {
+                return callback();
+            }
+            var completed = 0;
+            var started = 0;
+            var running = 0;
+
+            (function replenish () {
+                if (completed >= arr.length) {
+                    return callback();
+                }
+
+                while (running < limit && started < arr.length) {
+                    started += 1;
+                    running += 1;
+                    iterator(arr[started - 1], function (err) {
+                        if (err) {
+                            callback(err);
+                            callback = function () {};
+                        }
+                        else {
+                            completed += 1;
+                            running -= 1;
+                            if (completed >= arr.length) {
+                                callback();
+                            }
+                            else {
+                                replenish();
+                            }
+                        }
+                    });
+                }
+            })();
+        };
+    };
+
+
+    var doParallel = function (fn) {
+        return function () {
+            var args = Array.prototype.slice.call(arguments);
+            return fn.apply(null, [async.each].concat(args));
+        };
+    };
+    var doParallelLimit = function(limit, fn) {
+        return function () {
+            var args = Array.prototype.slice.call(arguments);
+            return fn.apply(null, [_eachLimit(limit)].concat(args));
+        };
+    };
+    var doSeries = function (fn) {
+        return function () {
+            var args = Array.prototype.slice.call(arguments);
+            return fn.apply(null, [async.eachSeries].concat(args));
+        };
+    };
+
+
+    var _asyncMap = function (eachfn, arr, iterator, callback) {
+        arr = _map(arr, function (x, i) {
+            return {index: i, value: x};
+        });
+        if (!callback) {
+            eachfn(arr, function (x, callback) {
+                iterator(x.value, function (err) {
+                    callback(err);
+                });
+            });
+        } else {
+            var results = [];
+            eachfn(arr, function (x, callback) {
+                iterator(x.value, function (err, v) {
+                    results[x.index] = v;
+                    callback(err);
+                });
+            }, function (err) {
+                callback(err, results);
+            });
+        }
+    };
+    async.map = doParallel(_asyncMap);
+    async.mapSeries = doSeries(_asyncMap);
+    async.mapLimit = function (arr, limit, iterator, callback) {
+        return _mapLimit(limit)(arr, iterator, callback);
+    };
+
+    var _mapLimit = function(limit) {
+        return doParallelLimit(limit, _asyncMap);
+    };
+
+    // reduce only has a series version, as doing reduce in parallel won't
+    // work in many situations.
+    async.reduce = function (arr, memo, iterator, callback) {
+        async.eachSeries(arr, function (x, callback) {
+            iterator(memo, x, function (err, v) {
+                memo = v;
+                callback(err);
+            });
+        }, function (err) {
+            callback(err, memo);
+        });
+    };
+    // inject alias
+    async.inject = async.reduce;
+    // foldl alias
+    async.foldl = async.reduce;
+
+    async.reduceRight = function (arr, memo, iterator, callback) {
+        var reversed = _map(arr, function (x) {
+            return x;
+        }).reverse();
+        async.reduce(reversed, memo, iterator, callback);
+    };
+    // foldr alias
+    async.foldr = async.reduceRight;
+
+    var _filter = function (eachfn, arr, iterator, callback) {
+        var results = [];
+        arr = _map(arr, function (x, i) {
+            return {index: i, value: x};
+        });
+        eachfn(arr, function (x, callback) {
+            iterator(x.value, function (v) {
+                if (v) {
+                    results.push(x);
+                }
+                callback();
+            });
+        }, function (err) {
+            callback(_map(results.sort(function (a, b) {
+                return a.index - b.index;
+            }), function (x) {
+                return x.value;
+            }));
+        });
+    };
+    async.filter = doParallel(_filter);
+    async.filterSeries = doSeries(_filter);
+    // select alias
+    async.select = async.filter;
+    async.selectSeries = async.filterSeries;
+
+    var _reject = function (eachfn, arr, iterator, callback) {
+        var results = [];
+        arr = _map(arr, function (x, i) {
+            return {index: i, value: x};
+        });
+        eachfn(arr, function (x, callback) {
+            iterator(x.value, function (v) {
+                if (!v) {
+                    results.push(x);
+                }
+                callback();
+            });
+        }, function (err) {
+            callback(_map(results.sort(function (a, b) {
+                return a.index - b.index;
+            }), function (x) {
+                return x.value;
+            }));
+        });
+    };
+    async.reject = doParallel(_reject);
+    async.rejectSeries = doSeries(_reject);
+
+    var _detect = function (eachfn, arr, iterator, main_callback) {
+        eachfn(arr, function (x, callback) {
+            iterator(x, function (result) {
+                if (result) {
+                    main_callback(x);
+                    main_callback = function () {};
+                }
+                else {
+                    callback();
+                }
+            });
+        }, function (err) {
+            main_callback();
+        });
+    };
+    async.detect = doParallel(_detect);
+    async.detectSeries = doSeries(_detect);
+
+    async.some = function (arr, iterator, main_callback) {
+        async.each(arr, function (x, callback) {
+            iterator(x, function (v) {
+                if (v) {
+                    main_callback(true);
+                    main_callback = function () {};
+                }
+                callback();
+            });
+        }, function (err) {
+            main_callback(false);
+        });
+    };
+    // any alias
+    async.any = async.some;
+
+    async.every = function (arr, iterator, main_callback) {
+        async.each(arr, function (x, callback) {
+            iterator(x, function (v) {
+                if (!v) {
+                    main_callback(false);
+                    main_callback = function () {};
+                }
+                callback();
+            });
+        }, function (err) {
+            main_callback(true);
+        });
+    };
+    // all alias
+    async.all = async.every;
+
+    async.sortBy = function (arr, iterator, callback) {
+        async.map(arr, function (x, callback) {
+            iterator(x, function (err, criteria) {
+                if (err) {
+                    callback(err);
+                }
+                else {
+                    callback(null, {value: x, criteria: criteria});
+                }
+            });
+        }, function (err, results) {
+            if (err) {
+                return callback(err);
+            }
+            else {
+                var fn = function (left, right) {
+                    var a = left.criteria, b = right.criteria;
+                    return a < b ? -1 : a > b ? 1 : 0;
+                };
+                callback(null, _map(results.sort(fn), function (x) {
+                    return x.value;
+                }));
+            }
+        });
+    };
+
+    async.auto = function (tasks, callback) {
+        callback = callback || function () {};
+        var keys = _keys(tasks);
+        var remainingTasks = keys.length
+        if (!remainingTasks) {
+            return callback();
+        }
+
+        var results = {};
+
+        var listeners = [];
+        var addListener = function (fn) {
+            listeners.unshift(fn);
+        };
+        var removeListener = function (fn) {
+            for (var i = 0; i < listeners.length; i += 1) {
+                if (listeners[i] === fn) {
+                    listeners.splice(i, 1);
+                    return;
+                }
+            }
+        };
+        var taskComplete = function () {
+            remainingTasks--
+            _each(listeners.slice(0), function (fn) {
+                fn();
+            });
+        };
+
+        addListener(function () {
+            if (!remainingTasks) {
+                var theCallback = callback;
+                // prevent final callback from calling itself if it errors
+                callback = function () {};
+
+                theCallback(null, results);
+            }
+        });
+
+        _each(keys, function (k) {
+            var task = _isArray(tasks[k]) ? tasks[k]: [tasks[k]];
+            var taskCallback = function (err) {
+                var args = Array.prototype.slice.call(arguments, 1);
+                if (args.length <= 1) {
+                    args = args[0];
+                }
+                if (err) {
+                    var safeResults = {};
+                    _each(_keys(results), function(rkey) {
+                        safeResults[rkey] = results[rkey];
+                    });
+                    safeResults[k] = args;
+                    callback(err, safeResults);
+                    // stop subsequent errors hitting callback multiple times
+                    callback = function () {};
+                }
+                else {
+                    results[k] = args;
+                    async.setImmediate(taskComplete);
+                }
+            };
+            var requires = task.slice(0, Math.abs(task.length - 1)) || [];
+            var ready = function () {
+                return _reduce(requires, function (a, x) {
+                    return (a && results.hasOwnProperty(x));
+                }, true) && !results.hasOwnProperty(k);
+            };
+            if (ready()) {
+                task[task.length - 1](taskCallback, results);
+            }
+            else {
+                var listener = function () {
+                    if (ready()) {
+                        removeListener(listener);
+                        task[task.length - 1](taskCallback, results);
+                    }
+                };
+                addListener(listener);
+            }
+        });
+    };
+
+    async.retry = function(times, task, callback) {
+        var DEFAULT_TIMES = 5;
+        var attempts = [];
+        // Use defaults if times not passed
+        if (typeof times === 'function') {
+            callback = task;
+            task = times;
+            times = DEFAULT_TIMES;
+        }
+        // Make sure times is a number
+        times = parseInt(times, 10) || DEFAULT_TIMES;
+        var wrappedTask = function(wrappedCallback, wrappedResults) {
+            var retryAttempt = function(task, finalAttempt) {
+                return function(seriesCallback) {
+                    task(function(err, result){
+                        seriesCallback(!err || finalAttempt, {err: err, result: result});
+                    }, wrappedResults);
+                };
+            };
+            while (times) {
+                attempts.push(retryAttempt(task, !(times-=1)));
+            }
+            async.series(attempts, function(done, data){
+                data = data[data.length - 1];
+                (wrappedCallback || callback)(data.err, data.result);
+            });
+        }
+        // If a callback is passed, run this as a controll flow
+        return callback ? wrappedTask() : wrappedTask
+    };
+
+    async.waterfall = function (tasks, callback) {
+        callback = callback || function () {};
+        if (!_isArray(tasks)) {
+          var err = new Error('First argument to waterfall must be an array of functions');
+          return callback(err);
+        }
+        if (!tasks.length) {
+            return callback();
+        }
+        var wrapIterator = function (iterator) {
+            return function (err) {
+                if (err) {
+                    callback.apply(null, arguments);
+                    callback = function () {};
+                }
+                else {
+                    var args = Array.prototype.slice.call(arguments, 1);
+                    var next = iterator.next();
+                    if (next) {
+                        args.push(wrapIterator(next));
+                    }
+                    else {
+                        args.push(callback);
+                    }
+                    async.setImmediate(function () {
+                        iterator.apply(null, args);
+                    });
+                }
+            };
+        };
+        wrapIterator(async.iterator(tasks))();
+    };
+
+    var _parallel = function(eachfn, tasks, callback) {
+        callback = callback || function () {};
+        if (_isArray(tasks)) {
+            eachfn.map(tasks, function (fn, callback) {
+                if (fn) {
+                    fn(function (err) {
+                        var args = Array.prototype.slice.call(arguments, 1);
+                        if (args.length <= 1) {
+                            args = args[0];
+                        }
+                        callback.call(null, err, args);
+                    });
+                }
+            }, callback);
+        }
+        else {
+            var results = {};
+            eachfn.each(_keys(tasks), function (k, callback) {
+                tasks[k](function (err) {
+                    var args = Array.prototype.slice.call(arguments, 1);
+                    if (args.length <= 1) {
+                        args = args[0];
+                    }
+                    results[k] = args;
+                    callback(err);
+                });
+            }, function (err) {
+                callback(err, results);
+            });
+        }
+    };
+
+    async.parallel = function (tasks, callback) {
+        _parallel({ map: async.map, each: async.each }, tasks, callback);
+    };
+
+    async.parallelLimit = function(tasks, limit, callback) {
+        _parallel({ map: _mapLimit(limit), each: _eachLimit(limit) }, tasks, callback);
+    };
+
+    async.series = function (tasks, callback) {
+        callback = callback || function () {};
+        if (_isArray(tasks)) {
+            async.mapSeries(tasks, function (fn, callback) {
+                if (fn) {
+                    fn(function (err) {
+                        var args = Array.prototype.slice.call(arguments, 1);
+                        if (args.length <= 1) {
+                            args = args[0];
+                        }
+                        callback.call(null, err, args);
+                    });
+                }
+            }, callback);
+        }
+        else {
+            var results = {};
+            async.eachSeries(_keys(tasks), function (k, callback) {
+                tasks[k](function (err) {
+                    var args = Array.prototype.slice.call(arguments, 1);
+                    if (args.length <= 1) {
+                        args = args[0];
+                    }
+                    results[k] = args;
+                    callback(err);
+                });
+            }, function (err) {
+                callback(err, results);
+            });
+        }
+    };
+
+    async.iterator = function (tasks) {
+        var makeCallback = function (index) {
+            var fn = function () {
+                if (tasks.length) {
+                    tasks[index].apply(null, arguments);
+                }
+                return fn.next();
+            };
+            fn.next = function () {
+                return (index < tasks.length - 1) ? makeCallback(index + 1): null;
+            };
+            return fn;
+        };
+        return makeCallback(0);
+    };
+
+    async.apply = function (fn) {
+        var args = Array.prototype.slice.call(arguments, 1);
+        return function () {
+            return fn.apply(
+                null, args.concat(Array.prototype.slice.call(arguments))
+            );
+        };
+    };
+
+    var _concat = function (eachfn, arr, fn, callback) {
+        var r = [];
+        eachfn(arr, function (x, cb) {
+            fn(x, function (err, y) {
+                r = r.concat(y || []);
+                cb(err);
+            });
+        }, function (err) {
+            callback(err, r);
+        });
+    };
+    async.concat = doParallel(_concat);
+    async.concatSeries = doSeries(_concat);
+
+    async.whilst = function (test, iterator, callback) {
+        if (test()) {
+            iterator(function (err) {
+                if (err) {
+                    return callback(err);
+                }
+                async.whilst(test, iterator, callback);
+            });
+        }
+        else {
+            callback();
+        }
+    };
+
+    async.doWhilst = function (iterator, test, callback) {
+        iterator(function (err) {
+            if (err) {
+                return callback(err);
+            }
+            var args = Array.prototype.slice.call(arguments, 1);
+            if (test.apply(null, args)) {
+                async.doWhilst(iterator, test, callback);
+            }
+            else {
+                callback();
+            }
+        });
+    };
+
+    async.until = function (test, iterator, callback) {
+        if (!test()) {
+            iterator(function (err) {
+                if (err) {
+                    return callback(err);
+                }
+                async.until(test, iterator, callback);
+            });
+        }
+        else {
+            callback();
+        }
+    };
+
+    async.doUntil = function (iterator, test, callback) {
+        iterator(function (err) {
+            if (err) {
+                return callback(err);
+            }
+            var args = Array.prototype.slice.call(arguments, 1);
+            if (!test.apply(null, args)) {
+                async.doUntil(iterator, test, callback);
+            }
+            else {
+                callback();
+            }
+        });
+    };
+
+    async.queue = function (worker, concurrency) {
+        if (concurrency === undefined) {
+            concurrency = 1;
+        }
+        function _insert(q, data, pos, callback) {
+          if (!q.started){
+            q.started = true;
+          }
+          if (!_isArray(data)) {
+              data = [data];
+          }
+          if(data.length == 0) {
+             // call drain immediately if there are no tasks
+             return async.setImmediate(function() {
+                 if (q.drain) {
+                     q.drain();
+                 }
+             });
+          }
+          _each(data, function(task) {
+              var item = {
+                  data: task,
+                  callback: typeof callback === 'function' ? callback : null
+              };
+
+              if (pos) {
+                q.tasks.unshift(item);
+              } else {
+                q.tasks.push(item);
+              }
+
+              if (q.saturated && q.tasks.length === q.concurrency) {
+                  q.saturated();
+              }
+              async.setImmediate(q.process);
+          });
+        }
+
+        var workers = 0;
+        var q = {
+            tasks: [],
+            concurrency: concurrency,
+            saturated: null,
+            empty: null,
+            drain: null,
+            started: false,
+            paused: false,
+            push: function (data, callback) {
+              _insert(q, data, false, callback);
+            },
+            kill: function () {
+              q.drain = null;
+              q.tasks = [];
+            },
+            unshift: function (data, callback) {
+              _insert(q, data, true, callback);
+            },
+            process: function () {
+                if (!q.paused && workers < q.concurrency && q.tasks.length) {
+                    var task = q.tasks.shift();
+                    if (q.empty && q.tasks.length === 0) {
+                        q.empty();
+                    }
+                    workers += 1;
+                    var next = function () {
+                        workers -= 1;
+                        if (task.callback) {
+                            task.callback.apply(task, arguments);
+                        }
+                        if (q.drain && q.tasks.length + workers === 0) {
+                            q.drain();
+                        }
+                        q.process();
+                    };
+                    var cb = only_once(next);
+                    worker(task.data, cb);
+                }
+            },
+            length: function () {
+                return q.tasks.length;
+            },
+            running: function () {
+                return workers;
+            },
+            idle: function() {
+                return q.tasks.length + workers === 0;
+            },
+            pause: function () {
+                if (q.paused === true) { return; }
+                q.paused = true;
+                q.process();
+            },
+            resume: function () {
+                if (q.paused === false) { return; }
+                q.paused = false;
+                q.process();
+            }
+        };
+        return q;
+    };
+    
+    async.priorityQueue = function (worker, concurrency) {
+        
+        function _compareTasks(a, b){
+          return a.priority - b.priority;
+        };
+        
+        function _binarySearch(sequence, item, compare) {
+          var beg = -1,
+              end = sequence.length - 1;
+          while (beg < end) {
+            var mid = beg + ((end - beg + 1) >>> 1);
+            if (compare(item, sequence[mid]) >= 0) {
+              beg = mid;
+            } else {
+              end = mid - 1;
+            }
+          }
+          return beg;
+        }
+        
+        function _insert(q, data, priority, callback) {
+          if (!q.started){
+            q.started = true;
+          }
+          if (!_isArray(data)) {
+              data = [data];
+          }
+          if(data.length == 0) {
+             // call drain immediately if there are no tasks
+             return async.setImmediate(function() {
+                 if (q.drain) {
+                     q.drain();
+                 }
+             });
+          }
+          _each(data, function(task) {
+              var item = {
+                  data: task,
+                  priority: priority,
+                  callback: typeof callback === 'function' ? callback : null
+              };
+              
+              q.tasks.splice(_binarySearch(q.tasks, item, _compareTasks) + 1, 0, item);
+
+              if (q.saturated && q.tasks.length === q.concurrency) {
+                  q.saturated();
+              }
+              async.setImmediate(q.process);
+          });
+        }
+        
+        // Start with a normal queue
+        var q = async.queue(worker, concurrency);
+        
+        // Override push to accept second parameter representing priority
+        q.push = function (data, priority, callback) {
+          _insert(q, data, priority, callback);
+        };
+        
+        // Remove unshift function
+        delete q.unshift;
+
+        return q;
+    };
+
+    async.cargo = function (worker, payload) {
+        var working     = false,
+            tasks       = [];
+
+        var cargo = {
+            tasks: tasks,
+            payload: payload,
+            saturated: null,
+            empty: null,
+            drain: null,
+            drained: true,
+            push: function (data, callback) {
+                if (!_isArray(data)) {
+                    data = [data];
+                }
+                _each(data, function(task) {
+                    tasks.push({
+                        data: task,
+                        callback: typeof callback === 'function' ? callback : null
+                    });
+                    cargo.drained = false;
+                    if (cargo.saturated && tasks.length === payload) {
+                        cargo.saturated();
+                    }
+                });
+                async.setImmediate(cargo.process);
+            },
+            process: function process() {
+                if (working) return;
+                if (tasks.length === 0) {
+                    if(cargo.drain && !cargo.drained) cargo.drain();
+                    cargo.drained = true;
+                    return;
+                }
+
+                var ts = typeof payload === 'number'
+                            ? tasks.splice(0, payload)
+                            : tasks.splice(0, tasks.length);
+
+                var ds = _map(ts, function (task) {
+                    return task.data;
+                });
+
+                if(cargo.empty) cargo.empty();
+                working = true;
+                worker(ds, function () {
+                    working = false;
+
+                    var args = arguments;
+                    _each(ts, function (data) {
+                        if (data.callback) {
+                            data.callback.apply(null, args);
+                        }
+                    });
+
+                    process();
+                });
+            },
+            length: function () {
+                return tasks.length;
+            },
+            running: function () {
+                return working;
+            }
+        };
+        return cargo;
+    };
+
+    var _console_fn = function (name) {
+        return function (fn) {
+            var args = Array.prototype.slice.call(arguments, 1);
+            fn.apply(null, args.concat([function (err) {
+                var args = Array.prototype.slice.call(arguments, 1);
+                if (typeof console !== 'undefined') {
+                    if (err) {
+                        if (console.error) {
+                            console.error(err);
+                        }
+                    }
+                    else if (console[name]) {
+                        _each(args, function (x) {
+                            console[name](x);
+                        });
+                    }
+                }
+            }]));
+        };
+    };
+    async.log = _console_fn('log');
+    async.dir = _console_fn('dir');
+    /*async.info = _console_fn('info');
+    async.warn = _console_fn('warn');
+    async.error = _console_fn('error');*/
+
+    async.memoize = function (fn, hasher) {
+        var memo = {};
+        var queues = {};
+        hasher = hasher || function (x) {
+            return x;
+        };
+        var memoized = function () {
+            var args = Array.prototype.slice.call(arguments);
+            var callback = args.pop();
+            var key = hasher.apply(null, args);
+            if (key in memo) {
+                async.nextTick(function () {
+                    callback.apply(null, memo[key]);
+                });
+            }
+            else if (key in queues) {
+                queues[key].push(callback);
+            }
+            else {
+                queues[key] = [callback];
+                fn.apply(null, args.concat([function () {
+                    memo[key] = arguments;
+                    var q = queues[key];
+                    delete queues[key];
+                    for (var i = 0, l = q.length; i < l; i++) {
+                      q[i].apply(null, arguments);
+                    }
+                }]));
+            }
+        };
+        memoized.memo = memo;
+        memoized.unmemoized = fn;
+        return memoized;
+    };
+
+    async.unmemoize = function (fn) {
+      return function () {
+        return (fn.unmemoized || fn).apply(null, arguments);
+      };
+    };
+
+    async.times = function (count, iterator, callback) {
+        var counter = [];
+        for (var i = 0; i < count; i++) {
+            counter.push(i);
+        }
+        return async.map(counter, iterator, callback);
+    };
+
+    async.timesSeries = function (count, iterator, callback) {
+        var counter = [];
+        for (var i = 0; i < count; i++) {
+            counter.push(i);
+        }
+        return async.mapSeries(counter, iterator, callback);
+    };
+
+    async.seq = function (/* functions... */) {
+        var fns = arguments;
+        return function () {
+            var that = this;
+            var args = Array.prototype.slice.call(arguments);
+            var callback = args.pop();
+            async.reduce(fns, args, function (newargs, fn, cb) {
+                fn.apply(that, newargs.concat([function () {
+                    var err = arguments[0];
+                    var nextargs = Array.prototype.slice.call(arguments, 1);
+                    cb(err, nextargs);
+                }]))
+            },
+            function (err, results) {
+                callback.apply(that, [err].concat(results));
+            });
+        };
+    };
+
+    async.compose = function (/* functions... */) {
+      return async.seq.apply(null, Array.prototype.reverse.call(arguments));
+    };
+
+    var _applyEach = function (eachfn, fns /*args...*/) {
+        var go = function () {
+            var that = this;
+            var args = Array.prototype.slice.call(arguments);
+            var callback = args.pop();
+            return eachfn(fns, function (fn, cb) {
+                fn.apply(that, args.concat([cb]));
+            },
+            callback);
+        };
+        if (arguments.length > 2) {
+            var args = Array.prototype.slice.call(arguments, 2);
+            return go.apply(this, args);
+        }
+        else {
+            return go;
+        }
+    };
+    async.applyEach = doParallel(_applyEach);
+    async.applyEachSeries = doSeries(_applyEach);
+
+    async.forever = function (fn, callback) {
+        function next(err) {
+            if (err) {
+                if (callback) {
+                    return callback(err);
+                }
+                throw err;
+            }
+            fn(next);
+        }
+        next();
+    };
+
+    // Node.js
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = async;
+    }
+    // AMD / RequireJS
+    else if (typeof define !== 'undefined' && define.amd) {
+        define([], function () {
+            return async;
+        });
+    }
+    // included directly via <script> tag
+    else {
+        root.async = async;
+    }
+
+}());
+
+}).call(this,require('_process'))
+
+},{"_process":3}],6:[function(require,module,exports){
+arguments[4][4][0].apply(exports,arguments)
+},{"dup":4}],7:[function(require,module,exports){
 var async = require('async'),
     Resource = require('./Resource'),
-    EventEmitter2 = require('eventemitter2').EventEmitter2;
+    EventEmitter = require('eventemitter3').EventEmitter;
 
 /**
  * Manages the state and loading of multiple resources to load.
@@ -2002,7 +2789,7 @@ var async = require('async'),
  * @param [concurrency=10] {number} The number of resources to load concurrently.
  */
 function Loader(baseUrl, concurrency) {
-    EventEmitter2.call(this);
+    EventEmitter.call(this);
 
     concurrency = concurrency || 10;
 
@@ -2117,7 +2904,7 @@ function Loader(baseUrl, concurrency) {
      */
 }
 
-Loader.prototype = Object.create(EventEmitter2.prototype);
+Loader.prototype = Object.create(EventEmitter.prototype);
 Loader.prototype.constructor = Loader;
 module.exports = Loader;
 
@@ -2213,8 +3000,13 @@ Loader.prototype.add = Loader.prototype.enqueue = function (name, url, options, 
         throw new Error('Resource with name "' + name + '" already exists.');
     }
 
+    // add base url if this isn't a data url
+    if (url.indexOf('data:') !== 0) {
+        url = this.baseUrl + url;
+    }
+
     // create the store the resource
-    this.resources[name] = new Resource(name, this.baseUrl + url, options);
+    this.resources[name] = new Resource(name, url, options);
 
     if (typeof cb === 'function') {
         this.resources[name].once('afterMiddleware', cb);
@@ -2386,8 +3178,8 @@ Loader.LOAD_TYPE = Resource.LOAD_TYPE;
 Loader.XHR_READY_STATE = Resource.XHR_READY_STATE;
 Loader.XHR_RESPONSE_TYPE = Resource.XHR_RESPONSE_TYPE;
 
-},{"./Resource":6,"async":1,"eventemitter2":4}],6:[function(require,module,exports){
-var EventEmitter2 = require('eventemitter2').EventEmitter2,
+},{"./Resource":8,"async":5,"eventemitter3":6}],8:[function(require,module,exports){
+var EventEmitter = require('eventemitter3').EventEmitter,
     // tests is CORS is supported in XHR, if not we need to use XDR
     useXdr = !!(window.XDomainRequest && !('withCredentials' in (new XMLHttpRequest())));
 
@@ -2405,7 +3197,7 @@ var EventEmitter2 = require('eventemitter2').EventEmitter2,
  *      loaded be interpreted when using XHR?
  */
 function Resource(name, url, options) {
-    EventEmitter2.call(this);
+    EventEmitter.call(this);
 
     options = options || {};
 
@@ -2527,7 +3319,7 @@ function Resource(name, url, options) {
      */
 }
 
-Resource.prototype = Object.create(EventEmitter2.prototype);
+Resource.prototype = Object.create(EventEmitter.prototype);
 Resource.prototype.constructor = Resource;
 module.exports = Resource;
 
@@ -2976,7 +3768,7 @@ Resource.XHR_RESPONSE_TYPE = {
     TEXT:       'text'
 };
 
-},{"eventemitter2":4}],7:[function(require,module,exports){
+},{"eventemitter3":6}],9:[function(require,module,exports){
 module.exports = require('./Loader');
 
 module.exports.Resource = require('./Resource');
@@ -2991,7 +3783,7 @@ module.exports.middleware = {
     }
 };
 
-},{"./Loader":5,"./Resource":6,"./middlewares/caching/memory":8,"./middlewares/parsing/blob":9,"./middlewares/parsing/json":10}],8:[function(require,module,exports){
+},{"./Loader":7,"./Resource":8,"./middlewares/caching/memory":10,"./middlewares/parsing/blob":11,"./middlewares/parsing/json":12}],10:[function(require,module,exports){
 // a simple in-memory cache for resources
 var cache = {};
 
@@ -3013,7 +3805,7 @@ module.exports = function () {
     };
 };
 
-},{}],9:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 var Resource = require('../../Resource');
 
 window.URL = window.URL || window.webkitURL;
@@ -3046,7 +3838,7 @@ module.exports = function () {
     };
 };
 
-},{"../../Resource":6}],10:[function(require,module,exports){
+},{"../../Resource":8}],12:[function(require,module,exports){
 // a simple json-parsing middleware for resources
 
 module.exports = function () {
@@ -3067,7 +3859,7 @@ module.exports = function () {
     };
 };
 
-},{}],11:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 module.exports={
   "name": "pixi.js",
   "version": "3.0.0-rc2",
@@ -3089,19 +3881,26 @@ module.exports={
     "test": "gulp test",
     "docs": "./node_modules/.bin/jsdoc -c ./gulp/util/jsdoc.conf.json"
   },
+  "dependencies": {
+    "async": "^0.9.0",
+    "resource-loader": "^1.3.0",
+    "brfs": "^1.2.0",
+    "eventemitter3": "^0.1.6"
+  },
   "devDependencies": {
     "browserify": "^8.0.2",
     "chai": "^1.10.0",
     "del": "^1.1.0",
-    "exorcist": "^0.1.6",
     "gulp": "^3.8.10",
     "gulp-cached": "^1.0.1",
     "gulp-concat": "^2.5.2",
     "gulp-debug": "^2.0.0",
     "gulp-jsdoc": "^0.1.4",
     "gulp-jshint": "^1.9.0",
+    "gulp-mirror": "^0.4.0",
     "gulp-plumber": "^0.6.6",
     "gulp-rename": "^1.2.0",
+    "gulp-sourcemaps": "^1.5.0",
     "gulp-uglify": "^1.0.2",
     "gulp-util": "^3.0.1",
     "ink-docstrap": "^0.5.2",
@@ -3119,11 +3918,6 @@ module.exports={
     "vinyl-source-stream": "^1.0.0",
     "watchify": "^2.2.1"
   },
-  "dependencies": {
-    "async": "^0.9.0",
-    "resource-loader": "^1.2.2",
-    "brfs": "^1.2.0"
-  },
   "browserify": {
     "transform": [
       "brfs"
@@ -3131,7 +3925,7 @@ module.exports={
   }
 }
 
-},{}],12:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /**
  * Constant values used in pixi
  *
@@ -3294,7 +4088,7 @@ module.exports = {
     SPRITE_BATCH_SIZE: 2000 //nice balance between mobile and desktop machines
 };
 
-},{"../../package.json":11}],13:[function(require,module,exports){
+},{"../../package.json":13}],15:[function(require,module,exports){
 var math = require('../math'),
     DisplayObject = require('./DisplayObject'),
     RenderTexture = require('../textures/RenderTexture'),
@@ -3795,7 +4589,7 @@ Container.prototype.renderWebGL = function (renderer)
  * @param renderer {WebGLRenderer} The renderer
  * @private
  */
-Container.prototype._renderWebGL = function (renderer)
+Container.prototype._renderWebGL = function (renderer) // jshint unused:false
 {
     // this is where content itself gets rendered...
 };
@@ -3806,7 +4600,7 @@ Container.prototype._renderWebGL = function (renderer)
  * @param renderer {CanvasRenderer} The renderer
  * @private
  */
-Container.prototype._renderCanvas = function (renderer)
+Container.prototype._renderCanvas = function (renderer) // jshint unused:false
 {
     // this is where content itself gets rendered...
 };
@@ -3844,17 +4638,29 @@ Container.prototype.renderCanvas = function (renderer)
 
 /**
  * Destroys the container
- *
+ * @param destroyChildren {boolean} if set to true, all the children will have their destroy method called as well
  */
-Container.prototype.destroy = function ()
+Container.prototype.destroy = function (destroyChildren)
 {
+    DisplayObject.prototype.destroy.call(this);
+
+    if(destroyChildren)
+    {
+        for (var i = 0, j = this.children.length; i < j; ++i)
+        {
+            this.children[i].destroy(destroyChildren);
+        }
+    }
+
+    this.removeChildren();
+
     this.children = null;
 };
 
-},{"../math":22,"../textures/RenderTexture":59,"./DisplayObject":14}],14:[function(require,module,exports){
+},{"../math":24,"../textures/RenderTexture":61,"./DisplayObject":16}],16:[function(require,module,exports){
 var math = require('../math'),
-    utils = require('../utils'),
     RenderTexture = require('../textures/RenderTexture'),
+    EventEmitter = require('eventemitter3').EventEmitter,
     _tempMatrix = new math.Matrix();
 
 /**
@@ -3866,6 +4672,8 @@ var math = require('../math'),
  */
 function DisplayObject()
 {
+    EventEmitter.call(this);
+
     /**
      * The coordinate of the object relative to the local coordinates of the parent.
      *
@@ -4003,8 +4811,8 @@ function DisplayObject()
 }
 
 // constructor
+DisplayObject.prototype = Object.create(EventEmitter.prototype);
 DisplayObject.prototype.constructor = DisplayObject;
-utils.eventTarget.mixin(DisplayObject.prototype);
 module.exports = DisplayObject;
 
 Object.defineProperties(DisplayObject.prototype, {
@@ -4203,7 +5011,7 @@ DisplayObject.prototype.displayObjectUpdateTransform = DisplayObject.prototype.u
  * @param matrix {Matrix}
  * @return {Rectangle} the rectangular bounding area
  */
-DisplayObject.prototype.getBounds = function (matrix)
+DisplayObject.prototype.getBounds = function (matrix) // jshint unused:false
 {
     return math.Rectangle.EMPTY;
 };
@@ -4256,7 +5064,7 @@ DisplayObject.prototype.toLocal = function (position, from)
  * @param renderer {WebGLRenderer} The renderer
  * @private
  */
-DisplayObject.prototype.renderWebGL = function (renderer)
+DisplayObject.prototype.renderWebGL = function (renderer) // jshint unused:false
 {
     // OVERWRITE;
 };
@@ -4267,7 +5075,7 @@ DisplayObject.prototype.renderWebGL = function (renderer)
  * @param renderer {CanvasRenderer} The renderer
  * @private
  */
-DisplayObject.prototype.renderCanvas = function (renderer)
+DisplayObject.prototype.renderCanvas = function (renderer) // jshint unused:false
 {
     // OVERWRITE;
 };
@@ -4315,7 +5123,7 @@ DisplayObject.prototype.destroy = function ()
     this.listeners = null;
 };
 
-},{"../math":22,"../textures/RenderTexture":59,"../utils":66}],15:[function(require,module,exports){
+},{"../math":24,"../textures/RenderTexture":61,"eventemitter3":4}],17:[function(require,module,exports){
 var Container = require('../display/Container'),
     Sprite = require('../sprites/Sprite'),
     Texture = require('../textures/Texture'),
@@ -5451,7 +6259,7 @@ Graphics.prototype.drawShape = function (shape)
     return data;
 };
 
-},{"../const":12,"../display/Container":13,"../math":22,"../renderers/canvas/utils/CanvasBuffer":34,"../renderers/canvas/utils/CanvasGraphics":35,"../sprites/Sprite":56,"../textures/Texture":60,"./GraphicsData":16}],16:[function(require,module,exports){
+},{"../const":14,"../display/Container":15,"../math":24,"../renderers/canvas/utils/CanvasBuffer":36,"../renderers/canvas/utils/CanvasGraphics":37,"../sprites/Sprite":58,"../textures/Texture":62,"./GraphicsData":18}],18:[function(require,module,exports){
 /**
  * A GraphicsData object.
  *
@@ -5537,7 +6345,7 @@ GraphicsData.prototype.clone = function ()
     );
 };
 
-},{}],17:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 var utils = require('../../utils'),
     math = require('../../math'),
     CONST = require('../../const'),
@@ -6429,7 +7237,7 @@ GraphicsRenderer.prototype.buildPoly = function (graphicsData, webGLData)
     return true;
 };
 
-},{"../../const":12,"../../math":22,"../../renderers/webgl/WebGLRenderer":38,"../../renderers/webgl/utils/ObjectRenderer":52,"../../utils":66,"./WebGLGraphicsData":18}],18:[function(require,module,exports){
+},{"../../const":14,"../../math":24,"../../renderers/webgl/WebGLRenderer":40,"../../renderers/webgl/utils/ObjectRenderer":54,"../../utils":66,"./WebGLGraphicsData":20}],20:[function(require,module,exports){
 /**
  * An object containing WebGL specific properties to be used by the WebGL renderer
  *
@@ -6527,7 +7335,7 @@ WebGLGraphicsData.prototype.upload = function () {
     this.dirty = false;
 };
 
-},{}],19:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI core library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -6643,7 +7451,7 @@ function checkWebGL()
     }
 }
 
-},{"./const":12,"./display/Container":13,"./display/DisplayObject":14,"./graphics/Graphics":15,"./graphics/GraphicsData":16,"./graphics/webgl/GraphicsRenderer":17,"./math":22,"./particles/ParticleContainer":28,"./particles/webgl/ParticleRenderer":30,"./renderers/canvas/CanvasRenderer":33,"./renderers/canvas/utils/CanvasBuffer":34,"./renderers/canvas/utils/CanvasGraphics":35,"./renderers/webgl/WebGLRenderer":38,"./renderers/webgl/filters/AbstractFilter":39,"./renderers/webgl/managers/ShaderManager":45,"./renderers/webgl/shaders/Shader":50,"./sprites/Sprite":56,"./sprites/webgl/SpriteRenderer":57,"./textures/BaseTexture":58,"./textures/RenderTexture":59,"./textures/Texture":60,"./textures/VideoBaseTexture":62,"./utils":66}],20:[function(require,module,exports){
+},{"./const":14,"./display/Container":15,"./display/DisplayObject":16,"./graphics/Graphics":17,"./graphics/GraphicsData":18,"./graphics/webgl/GraphicsRenderer":19,"./math":24,"./particles/ParticleContainer":30,"./particles/webgl/ParticleRenderer":32,"./renderers/canvas/CanvasRenderer":35,"./renderers/canvas/utils/CanvasBuffer":36,"./renderers/canvas/utils/CanvasGraphics":37,"./renderers/webgl/WebGLRenderer":40,"./renderers/webgl/filters/AbstractFilter":41,"./renderers/webgl/managers/ShaderManager":47,"./renderers/webgl/shaders/Shader":52,"./sprites/Sprite":58,"./sprites/webgl/SpriteRenderer":59,"./textures/BaseTexture":60,"./textures/RenderTexture":61,"./textures/Texture":62,"./textures/VideoBaseTexture":64,"./utils":66}],22:[function(require,module,exports){
 var Point = require('./Point');
 
 /**
@@ -7003,7 +7811,7 @@ Matrix.IDENTITY = new Matrix();
  */
 Matrix.TEMP_MATRIX = new Matrix();
 
-},{"./Point":21}],21:[function(require,module,exports){
+},{"./Point":23}],23:[function(require,module,exports){
 /**
  * The Point object represents a location in a two-dimensional coordinate system, where x represents
  * the horizontal axis and y represents the vertical axis.
@@ -7042,6 +7850,25 @@ Point.prototype.clone = function ()
 };
 
 /**
+ * Copies x and y from the given point
+ *
+ * @param p {Point}
+ */
+Point.prototype.copy = function (p) {
+    this.set(p.x, p.y);
+};
+
+/**
+ * Returns true if the given point is equal to this point
+ *
+ * @param p {Point}
+ * @returns {boolean}
+ */
+Point.prototype.equals = function (p) {
+    return (p.x === this.x) && (p.y === this.y);
+};
+
+/**
  * Sets the point to a new x and y position.
  * If y is omitted, both x and y will be set to x.
  *
@@ -7054,7 +7881,7 @@ Point.prototype.set = function (x, y)
     this.y = y || ( (y !== 0) ? this.x : 0 ) ;
 };
 
-},{}],22:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 /**
  * @namespace PIXI.math
  */
@@ -7090,7 +7917,7 @@ module.exports = {
     RoundedRectangle: require('./shapes/RoundedRectangle')
 };
 
-},{"./Matrix":20,"./Point":21,"./shapes/Circle":23,"./shapes/Ellipse":24,"./shapes/Polygon":25,"./shapes/Rectangle":26,"./shapes/RoundedRectangle":27}],23:[function(require,module,exports){
+},{"./Matrix":22,"./Point":23,"./shapes/Circle":25,"./shapes/Ellipse":26,"./shapes/Polygon":27,"./shapes/Rectangle":28,"./shapes/RoundedRectangle":29}],25:[function(require,module,exports){
 var Rectangle = require('./Rectangle'),
     CONST = require('../../const');
 
@@ -7178,7 +8005,7 @@ Circle.prototype.getBounds = function ()
     return new Rectangle(this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2);
 };
 
-},{"../../const":12,"./Rectangle":26}],24:[function(require,module,exports){
+},{"../../const":14,"./Rectangle":28}],26:[function(require,module,exports){
 var Rectangle = require('./Rectangle'),
     CONST = require('../../const');
 
@@ -7273,16 +8100,16 @@ Ellipse.prototype.getBounds = function ()
     return new Rectangle(this.x - this.width, this.y - this.height, this.width, this.height);
 };
 
-},{"../../const":12,"./Rectangle":26}],25:[function(require,module,exports){
+},{"../../const":14,"./Rectangle":28}],27:[function(require,module,exports){
 var Point = require('../Point'),
     CONST = require('../../const');
 
 /**
  * @class
  * @memberof PIXI
- * @param points* {Point[]|number[]|...Point|...number} This can be an array of Points that form the polygon,
+ * @param points {Point[]|number[]|...Point|...number} This can be an array of Points that form the polygon,
  *      a flat array of numbers that will be interpreted as [x,y, x,y, ...], or the arguments passed can be
- *      all the points of the polygon e.g. `new Polygon(new Point(), new Point(), ...)`, or the
+ *      all the points of the polygon e.g. `new PIXI.Polygon(new PIXI.Point(), new PIXI.Point(), ...)`, or the
  *      arguments passed can be flat x,y values e.g. `new Polygon(x,y, x,y, x,y, ...)` where `x` and `y` are
  *      Numbers.
  */
@@ -7294,7 +8121,7 @@ function Polygon(points)
         points = Array.prototype.slice.call(arguments);
     }
 
-    //if this is a flat array of numbers, convert it to points
+    //if this is an array of points, convert it to a flat array of numbers
     if (points[0] instanceof Point)
     {
         var p = [];
@@ -7311,7 +8138,7 @@ function Polygon(points)
     /**
      * An array of the points of this polygon
      *
-     * @member {Point[]}
+     * @member {number[]}
      */
     this.points = points;
 
@@ -7366,7 +8193,7 @@ Polygon.prototype.contains = function (x, y)
     return inside;
 };
 
-},{"../../const":12,"../Point":21}],26:[function(require,module,exports){
+},{"../../const":14,"../Point":23}],28:[function(require,module,exports){
 var CONST = require('../../const');
 
 /**
@@ -7460,7 +8287,7 @@ Rectangle.prototype.contains = function (x, y)
     return false;
 };
 
-},{"../../const":12}],27:[function(require,module,exports){
+},{"../../const":14}],29:[function(require,module,exports){
 var CONST = require('../../const');
 
 /**
@@ -7552,7 +8379,7 @@ RoundedRectangle.prototype.contains = function (x, y)
     return false;
 };
 
-},{"../../const":12}],28:[function(require,module,exports){
+},{"../../const":14}],30:[function(require,module,exports){
 var Container = require('../display/Container');
 
 /**
@@ -7825,7 +8652,7 @@ ParticleContainer.prototype.renderCanvas = function (renderer)
     }
 };
 
-},{"../display/Container":13}],29:[function(require,module,exports){
+},{"../display/Container":15}],31:[function(require,module,exports){
 
 /**
  * @author Mat Groves
@@ -8032,7 +8859,7 @@ ParticleBuffer.prototype.destroy = function ()
     //TODO implement this :) to busy making the fun bits..
 };
 
-},{}],30:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
     WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
     ParticleShader = require('./ParticleShader'),
@@ -8516,7 +9343,7 @@ ParticleRenderer.prototype.destroy = function ()
     //TODO implement this!
 };
 
-},{"../../math":22,"../../renderers/webgl/WebGLRenderer":38,"../../renderers/webgl/utils/ObjectRenderer":52,"./ParticleBuffer":29,"./ParticleShader":31}],31:[function(require,module,exports){
+},{"../../math":24,"../../renderers/webgl/WebGLRenderer":40,"../../renderers/webgl/utils/ObjectRenderer":54,"./ParticleBuffer":31,"./ParticleShader":33}],33:[function(require,module,exports){
 var TextureShader = require('../../renderers/webgl/shaders/TextureShader');
 
 /**
@@ -8589,10 +9416,11 @@ ParticleShader.prototype.constructor = ParticleShader;
 
 module.exports = ParticleShader;
 
-},{"../../renderers/webgl/shaders/TextureShader":51}],32:[function(require,module,exports){
+},{"../../renderers/webgl/shaders/TextureShader":53}],34:[function(require,module,exports){
 var utils = require('../utils'),
     math = require('../math'),
-    CONST = require('../const');
+    CONST = require('../const'),
+    EventEmitter = require('eventemitter3').EventEmitter;
 
 /**
  * The CanvasRenderer draws the scene and all its content onto a 2d canvas. This renderer should be used for browsers that do not support webGL.
@@ -8614,6 +9442,8 @@ var utils = require('../utils'),
  */
 function SystemRenderer(system, width, height, options)
 {
+    EventEmitter.call(this);
+
     utils.sayHello(system);
 
     // prepare options
@@ -8755,10 +9585,9 @@ function SystemRenderer(system, width, height, options)
 }
 
 // constructor
+SystemRenderer.prototype = Object.create(EventEmitter.prototype);
 SystemRenderer.prototype.constructor = SystemRenderer;
 module.exports = SystemRenderer;
-
-utils.eventTarget.mixin(SystemRenderer.prototype);
 
 Object.defineProperties(SystemRenderer.prototype, {
     /**
@@ -8836,7 +9665,7 @@ SystemRenderer.prototype.destroy = function (removeView) {
     this._backgroundColorString = null;
 };
 
-},{"../const":12,"../math":22,"../utils":66}],33:[function(require,module,exports){
+},{"../const":14,"../math":24,"../utils":66,"eventemitter3":4}],35:[function(require,module,exports){
 var SystemRenderer = require('../SystemRenderer'),
     CanvasMaskManager = require('./utils/CanvasMaskManager'),
     utils = require('../../utils'),
@@ -9106,7 +9935,7 @@ CanvasRenderer.prototype._mapBlendModes = function ()
     }
 };
 
-},{"../../const":12,"../../math":22,"../../utils":66,"../SystemRenderer":32,"./utils/CanvasMaskManager":36}],34:[function(require,module,exports){
+},{"../../const":14,"../../math":24,"../../utils":66,"../SystemRenderer":34,"./utils/CanvasMaskManager":38}],36:[function(require,module,exports){
 /**
  * Creates a Canvas element of the given size.
  *
@@ -9206,7 +10035,7 @@ CanvasBuffer.prototype.destroy = function ()
     this.canvas = null;
 };
 
-},{}],35:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 var CONST = require('../../../const');
 
 /**
@@ -9557,7 +10386,7 @@ CanvasGraphics.updateGraphicsTint = function (graphics)
 };
 
 
-},{"../../../const":12}],36:[function(require,module,exports){
+},{"../../../const":14}],38:[function(require,module,exports){
 var CanvasGraphics = require('./CanvasGraphics');
 
 /**
@@ -9617,7 +10446,7 @@ CanvasMaskManager.prototype.popMask = function (renderer)
     renderer.context.restore();
 };
 
-},{"./CanvasGraphics":35}],37:[function(require,module,exports){
+},{"./CanvasGraphics":37}],39:[function(require,module,exports){
 var utils = require('../../../utils');
 
 /**
@@ -9849,7 +10678,7 @@ CanvasTinter.canUseMultiply = utils.canUseNewCanvasBlendModes();
  */
 CanvasTinter.tintMethod = CanvasTinter.canUseMultiply ? CanvasTinter.tintWithMultiply :  CanvasTinter.tintWithPerPixel;
 
-},{"../../../utils":66}],38:[function(require,module,exports){
+},{"../../../utils":66}],40:[function(require,module,exports){
 var SystemRenderer = require('../SystemRenderer'),
     ShaderManager = require('./managers/ShaderManager'),
     MaskManager = require('./managers/MaskManager'),
@@ -9901,14 +10730,6 @@ function WebGLRenderer(width, height, options)
 
     this.handleContextLost = this.handleContextLost.bind(this);
     this.handleContextRestored = this.handleContextRestored.bind(this);
-
-    this._updateTextureBound = function(e){
-        this.updateTexture(e.target);
-    }.bind(this);
-
-    this._destroyTextureBound = function(e){
-        this.destroyTexture(e.target);
-    }.bind(this);
 
     this.view.addEventListener('webglcontextlost', this.handleContextLost, false);
     this.view.addEventListener('webglcontextrestored', this.handleContextRestored, false);
@@ -10217,8 +11038,8 @@ WebGLRenderer.prototype.updateTexture = function (texture)
     if (!texture._glTextures[gl.id])
     {
         texture._glTextures[gl.id] = gl.createTexture();
-        texture.on('update', this._updateTextureBound);
-        texture.on('dispose', this._destroyTextureBound);
+        texture.on('update', this.updateTexture, this);
+        texture.on('dispose', this.destroyTexture, this);
     }
 
 
@@ -10374,7 +11195,7 @@ WebGLRenderer.prototype._mapBlendModes = function ()
     }
 };
 
-},{"../../const":12,"../../utils":66,"../SystemRenderer":32,"./filters/FXAAFilter":40,"./managers/BlendModeManager":42,"./managers/FilterManager":43,"./managers/MaskManager":44,"./managers/ShaderManager":45,"./managers/StencilManager":46,"./utils/ObjectRenderer":52,"./utils/RenderTarget":54}],39:[function(require,module,exports){
+},{"../../const":14,"../../utils":66,"../SystemRenderer":34,"./filters/FXAAFilter":42,"./managers/BlendModeManager":44,"./managers/FilterManager":45,"./managers/MaskManager":46,"./managers/ShaderManager":47,"./managers/StencilManager":48,"./utils/ObjectRenderer":54,"./utils/RenderTarget":56}],41:[function(require,module,exports){
 var DefaultShader = require('../shaders/TextureShader');
 
 /**
@@ -10493,9 +11314,9 @@ AbstractFilter.prototype.apply = function (frameBuffer)
 };
 */
 
-},{"../shaders/TextureShader":51}],40:[function(require,module,exports){
+},{"../shaders/TextureShader":53}],42:[function(require,module,exports){
 var AbstractFilter = require('./AbstractFilter');
-
+// @see https://github.com/substack/brfs/issues/25
 
 
 /**
@@ -10541,11 +11362,11 @@ FXAAFilter.prototype.applyFilter = function (renderer, input, output)
     filterManager.applyFilter(shader, input, output);
 };
 
-},{"./AbstractFilter":39}],41:[function(require,module,exports){
+},{"./AbstractFilter":41}],43:[function(require,module,exports){
 var AbstractFilter = require('./AbstractFilter'),
     math =  require('../../../math');
 
-// fs needs to be decalred alone for brfs to pick it up properly.
+// @see https://github.com/substack/brfs/issues/25
 
 
 /**
@@ -10638,7 +11459,7 @@ Object.defineProperties(SpriteMaskFilter.prototype, {
     }
 });
 
-},{"../../../math":22,"./AbstractFilter":39}],42:[function(require,module,exports){
+},{"../../../math":24,"./AbstractFilter":41}],44:[function(require,module,exports){
 var WebGLManager = require('./WebGLManager');
 
 /**
@@ -10681,7 +11502,7 @@ BlendModeManager.prototype.setBlendMode = function (blendMode)
     return true;
 };
 
-},{"./WebGLManager":47}],43:[function(require,module,exports){
+},{"./WebGLManager":49}],45:[function(require,module,exports){
 var WebGLManager = require('./WebGLManager'),
     RenderTarget = require('../utils/RenderTarget'),
     CONST = require('../../../const'),
@@ -11096,7 +11917,7 @@ FilterManager.prototype.destroy = function ()
     this.texturePool = null;
 };
 
-},{"../../../const":12,"../../../math":22,"../utils/Quad":53,"../utils/RenderTarget":54,"./WebGLManager":47}],44:[function(require,module,exports){
+},{"../../../const":14,"../../../math":24,"../utils/Quad":55,"../utils/RenderTarget":56,"./WebGLManager":49}],46:[function(require,module,exports){
 var WebGLManager = require('./WebGLManager'),
     AlphaMaskFilter = require('../filters/SpriteMaskFilter');
 
@@ -11209,7 +12030,7 @@ MaskManager.prototype.popStencilMask = function (target, maskData)
 };
 
 
-},{"../filters/SpriteMaskFilter":41,"./WebGLManager":47}],45:[function(require,module,exports){
+},{"../filters/SpriteMaskFilter":43,"./WebGLManager":49}],47:[function(require,module,exports){
 var WebGLManager = require('./WebGLManager'),
     TextureShader = require('../shaders/TextureShader'),
     ComplexPrimitiveShader = require('../shaders/ComplexPrimitiveShader'),
@@ -11364,7 +12185,7 @@ ShaderManager.prototype.destroy = function ()
     this.tempAttribState = null;
 };
 
-},{"../../../utils":66,"../shaders/ComplexPrimitiveShader":48,"../shaders/PrimitiveShader":49,"../shaders/TextureShader":51,"./WebGLManager":47}],46:[function(require,module,exports){
+},{"../../../utils":66,"../shaders/ComplexPrimitiveShader":50,"../shaders/PrimitiveShader":51,"../shaders/TextureShader":53,"./WebGLManager":49}],48:[function(require,module,exports){
 var WebGLManager = require('./WebGLManager'),
     utils = require('../../../utils');
 
@@ -11708,7 +12529,7 @@ WebGLMaskManager.prototype.popMask = function (maskData)
 };
 
 
-},{"../../../utils":66,"./WebGLManager":47}],47:[function(require,module,exports){
+},{"../../../utils":66,"./WebGLManager":49}],49:[function(require,module,exports){
 /**
  * @class
  * @memberof PIXI
@@ -11723,12 +12544,7 @@ function WebGLManager(renderer)
      */
     this.renderer = renderer;
 
-    var self = this;
-    this.renderer.on('context', this._onContextChangeFn = function(){
-
-    	self.onContextChange();
-
-    });
+    this.renderer.on('context', this.onContextChange, this);
 }
 
 WebGLManager.prototype.constructor = WebGLManager;
@@ -11749,12 +12565,12 @@ WebGLManager.prototype.onContextChange = function ()
  */
 WebGLManager.prototype.destroy = function ()
 {
-    this.renderer.off('context', this._onContextChangeFn);
+    this.renderer.off('context', this.onContextChange);
 
     this.renderer = null;
 };
 
-},{}],48:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 var Shader = require('./Shader');
 
 /**
@@ -11814,7 +12630,7 @@ ComplexPrimitiveShader.prototype = Object.create(Shader.prototype);
 ComplexPrimitiveShader.prototype.constructor = ComplexPrimitiveShader;
 module.exports = ComplexPrimitiveShader;
 
-},{"./Shader":50}],49:[function(require,module,exports){
+},{"./Shader":52}],51:[function(require,module,exports){
 var Shader = require('./Shader');
 
 /**
@@ -11875,9 +12691,9 @@ PrimitiveShader.prototype = Object.create(Shader.prototype);
 PrimitiveShader.prototype.constructor = PrimitiveShader;
 module.exports = PrimitiveShader;
 
-},{"./Shader":50}],50:[function(require,module,exports){
-var utils = require('../../../utils'),
-    CONST = require('../../../const');
+},{"./Shader":52}],52:[function(require,module,exports){
+/*global console */
+var utils = require('../../../utils');
 
 /**
  * @class
@@ -12322,7 +13138,7 @@ Shader.prototype.syncUniform = function (uniform)
             break;
 
         default:
-            window.console.warn('Pixi.js Shader Warning: Unknown uniform type: ' + uniform.type);
+            console.warn('Pixi.js Shader Warning: Unknown uniform type: ' + uniform.type);
     }
 };
 
@@ -12417,14 +13233,14 @@ Shader.prototype._glCompile = function (type, src)
 
     if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS))
     {
-        window.console.log(this.gl.getShaderInfoLog(shader));
+        console.log(this.gl.getShaderInfoLog(shader));
         return null;
     }
 
     return shader;
 };
 
-},{"../../../const":12,"../../../utils":66}],51:[function(require,module,exports){
+},{"../../../utils":66}],53:[function(require,module,exports){
 var Shader = require('./Shader');
 
 /**
@@ -12521,7 +13337,7 @@ TextureShader.defaultFragmentSrc = [
     '}'
 ].join('\n');
 
-},{"./Shader":50}],52:[function(require,module,exports){
+},{"./Shader":52}],54:[function(require,module,exports){
 var WebGLManager = require('../managers/WebGLManager');
 
 /**
@@ -12573,12 +13389,12 @@ ObjectRenderer.prototype.flush = function ()
  * Renders an object
  *
  */
-ObjectRenderer.prototype.render = function (object)
+ObjectRenderer.prototype.render = function (object) // jshint unused:false
 {
     // render the object
 };
 
-},{"../managers/WebGLManager":47}],53:[function(require,module,exports){
+},{"../managers/WebGLManager":49}],55:[function(require,module,exports){
 /**
  * Helper class to create a quad
  * @class
@@ -12724,7 +13540,7 @@ module.exports = Quad;
 
 
 
-},{}],54:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 var math = require('../../../math'),
     utils = require('../../../utils'),
     CONST = require('../../../const'),
@@ -13030,7 +13846,7 @@ RenderTarget.prototype.destroy = function()
     this.texture = null;
 };
 
-},{"../../../const":12,"../../../math":22,"../../../utils":66,"./StencilMaskStack":55}],55:[function(require,module,exports){
+},{"../../../const":14,"../../../math":24,"../../../utils":66,"./StencilMaskStack":57}],57:[function(require,module,exports){
 /**
  * Generic Mask Stack data structure
  * @class
@@ -13064,7 +13880,7 @@ function StencilMaskStack()
 StencilMaskStack.prototype.constructor = StencilMaskStack;
 module.exports = StencilMaskStack;
 
-},{}],56:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 var math = require('../math'),
     Texture = require('../textures/Texture'),
     Container = require('../display/Container'),
@@ -13232,7 +14048,7 @@ Object.defineProperties(Sprite.prototype, {
                 }
                 else
                 {
-                    value.once('update', this._onTextureUpdate.bind(this));
+                    value.once('update', this._onTextureUpdate, this);
                 }
             }
         }
@@ -13608,9 +14424,8 @@ Sprite.fromImage = function (imageId, crossorigin, scaleMode)
     return new Sprite(Texture.fromImage(imageId, crossorigin, scaleMode));
 };
 
-},{"../const":12,"../display/Container":13,"../math":22,"../renderers/canvas/utils/CanvasTinter":37,"../textures/Texture":60,"../utils":66}],57:[function(require,module,exports){
+},{"../const":14,"../display/Container":15,"../math":24,"../renderers/canvas/utils/CanvasTinter":39,"../textures/Texture":62,"../utils":66}],59:[function(require,module,exports){
 var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
-    Shader = require('../../renderers/webgl/shaders/Shader'),
     WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
     CONST = require('../../const');
 
@@ -14126,15 +14941,15 @@ SpriteRenderer.prototype.destroy = function ()
     this.shader = null;
 };
 
-},{"../../const":12,"../../renderers/webgl/WebGLRenderer":38,"../../renderers/webgl/shaders/Shader":50,"../../renderers/webgl/utils/ObjectRenderer":52}],58:[function(require,module,exports){
+},{"../../const":14,"../../renderers/webgl/WebGLRenderer":40,"../../renderers/webgl/utils/ObjectRenderer":54}],60:[function(require,module,exports){
 var utils = require('../utils'),
-    CONST = require('../const');
+    CONST = require('../const'),
+    EventEmitter = require('eventemitter3').EventEmitter;
 
 /**
  * A texture stores the information that represents an image. All textures have a base texture.
  *
  * @class
- * @mixes eventTarget
  * @memberof PIXI
  * @param source {Image|Canvas} the source object of the texture.
  * @param [scaleMode=scaleModes.DEFAULT] {number} See {@link SCALE_MODES} for possible values
@@ -14142,6 +14957,8 @@ var utils = require('../utils'),
  */
 function BaseTexture(source, scaleMode, resolution)
 {
+    EventEmitter.call(this);
+
     this.uuid = utils.uuid();
 
     /**
@@ -14284,17 +15101,17 @@ function BaseTexture(source, scaleMode, resolution)
      */
 }
 
+BaseTexture.prototype = Object.create(EventEmitter.prototype);
 BaseTexture.prototype.constructor = BaseTexture;
 module.exports = BaseTexture;
-
-utils.eventTarget.mixin(BaseTexture.prototype);
 
 /**
  * Updates the texture on all the webgl renderers.
  *
  * @fires update
  */
-BaseTexture.prototype.update = function () {
+BaseTexture.prototype.update = function ()
+{
     this.emit('update', this);
 };
 
@@ -14555,7 +15372,7 @@ BaseTexture.fromCanvas = function (canvas, scaleMode)
     return baseTexture;
 };
 
-},{"../const":12,"../utils":66}],59:[function(require,module,exports){
+},{"../const":14,"../utils":66,"eventemitter3":4}],61:[function(require,module,exports){
 var BaseTexture = require('./BaseTexture'),
     Texture = require('./Texture'),
     RenderTarget = require('../renderers/webgl/utils/RenderTarget'),
@@ -14759,12 +15576,6 @@ RenderTexture.prototype.resize = function (width, height, updateBase)
         this.baseTexture.height = this.height;
     }
 
-    if (this.renderer.type === CONST.RENDERER_TYPE.WEBGL)
-    {
-        this.projection.x = this.width / 2;
-        this.projection.y = -this.height / 2;
-    }
-
     if (!this.valid)
     {
         return;
@@ -14814,8 +15625,8 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, up
         return;
     }
 
-    //TODO this should be true by default
-    updateTransform = !!updateTransform;
+
+    updateTransform = (updateTransform !== undefined) ? updateTransform : true;//!updateTransform;
 
     this.textureBuffer.transform = matrix;
 
@@ -14842,7 +15653,7 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, up
     }
 
 
-   if (clear)
+    if (clear)
     {
         this.textureBuffer.clear();
     }
@@ -14854,8 +15665,6 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, up
     this.renderer.renderDisplayObject(displayObject, this.textureBuffer);
 
     this.renderer.filterManager = temp;
-
-
 };
 
 
@@ -14998,11 +15807,11 @@ RenderTexture.prototype.getCanvas = function ()
     }
 };
 
-},{"../const":12,"../math":22,"../renderers/canvas/utils/CanvasBuffer":34,"../renderers/webgl/managers/FilterManager":43,"../renderers/webgl/utils/RenderTarget":54,"./BaseTexture":58,"./Texture":60}],60:[function(require,module,exports){
+},{"../const":14,"../math":24,"../renderers/canvas/utils/CanvasBuffer":36,"../renderers/webgl/managers/FilterManager":45,"../renderers/webgl/utils/RenderTarget":56,"./BaseTexture":60,"./Texture":62}],62:[function(require,module,exports){
 var BaseTexture = require('./BaseTexture'),
     VideoBaseTexture = require('./VideoBaseTexture'),
     TextureUvs = require('./TextureUvs'),
-    eventTarget = require('../utils/eventTarget'),
+    EventEmitter = require('eventemitter3').EventEmitter,
     math = require('../math'),
     utils = require('../utils');
 
@@ -15019,7 +15828,6 @@ var BaseTexture = require('./BaseTexture'),
  * ```
  *
  * @class
- * @mixes eventTarget
  * @memberof PIXI
  * @param baseTexture {BaseTexture} The base texture source to create the texture from
  * @param [frame] {Rectangle} The rectangle frame of the texture to show
@@ -15029,6 +15837,8 @@ var BaseTexture = require('./BaseTexture'),
  */
 function Texture(baseTexture, frame, crop, trim, rotate)
 {
+    EventEmitter.call(this);
+
     /**
      * Does this Texture have any frame data assigned to it?
      *
@@ -15133,14 +15943,13 @@ function Texture(baseTexture, frame, crop, trim, rotate)
     }
     else
     {
-        baseTexture.addEventListener('loaded', this.onBaseTextureLoaded.bind(this));
+        baseTexture.once('loaded', this.onBaseTextureLoaded, this);
     }
 }
 
+Texture.prototype = Object.create(EventEmitter.prototype);
 Texture.prototype.constructor = Texture;
 module.exports = Texture;
-
-eventTarget.mixin(Texture.prototype);
 
 Object.defineProperties(Texture.prototype, {
     frame: {
@@ -15202,11 +16011,8 @@ Texture.prototype.update = function ()
  *
  * @private
  */
-Texture.prototype.onBaseTextureLoaded = function ()
+Texture.prototype.onBaseTextureLoaded = function (baseTexture)
 {
-    var baseTexture = this.baseTexture;
-    baseTexture.removeEventListener('loaded', this.onLoaded);
-
     // TODO this code looks confusing.. boo to abusing getters and setterss!
     if (this.noFrame)
     {
@@ -15321,9 +16127,17 @@ Texture.fromCanvas = function (canvas, scaleMode)
  */
 Texture.fromVideo = function (video, scaleMode)
 {
-    return new Texture(VideoBaseTexture.baseTextureFromVideo(video, scaleMode));
+    return new Texture(VideoBaseTexture.fromVideo(video, scaleMode));
 };
 
+/**
+ * Helper function that creates a new Texture based on the video url.
+ *
+ * @static
+ * @param videoUrl {string}
+ * @param scaleMode {number} See {{#crossLink "PIXI/scaleModes:property"}}scaleModes{{/crossLink}} for possible values
+ * @return {Texture} A Texture
+ */
 Texture.fromVideoUrl = function (videoUrl, scaleMode)
 {
     return new Texture(VideoBaseTexture.fromUrl(videoUrl, scaleMode));
@@ -15360,7 +16174,7 @@ Texture.removeTextureFromCache = function (id)
 
 Texture.emptyTexture = new Texture(new BaseTexture());
 
-},{"../math":22,"../utils":66,"../utils/eventTarget":65,"./BaseTexture":58,"./TextureUvs":61,"./VideoBaseTexture":62}],61:[function(require,module,exports){
+},{"../math":24,"../utils":66,"./BaseTexture":60,"./TextureUvs":63,"./VideoBaseTexture":64,"eventemitter3":4}],63:[function(require,module,exports){
 
 /**
  * A standard object to store the Uvs of a texture
@@ -15428,7 +16242,7 @@ TextureUvs.prototype.set = function (frame, baseFrame, rotate)
     }
 };
 
-},{}],62:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 var BaseTexture = require('./BaseTexture'),
     utils = require('../utils');
 
@@ -15664,96 +16478,7 @@ function createSource(path, type)
     return source;
 }
 
-},{"../utils":66,"./BaseTexture":58}],63:[function(require,module,exports){
-/**
- * Creates an homogenous object for tracking events so users can know what to expect.
- *
- * @class
- * @memberof PIXI.utils
- * @param target {object} The target object that the event is called on
- * @param name {string} The string name of the event that was triggered
- * @param data {object} Arbitrary event data to pass along
- */
-function EventData(target, name, data)
-{
-    // for duck typing in the ".on()" function
-    this.__isEventObject = true;
-
-    /**
-     * Tracks the state of bubbling propagation. Do not
-     * set this directly, instead use `event.stopPropagation()`
-     *
-     * @member {boolean}
-     * @private
-     * @readonly
-     */
-    this.stopped = false;
-
-    /**
-     * Tracks the state of sibling listener propagation. Do not
-     * set this directly, instead use `event.stopImmediatePropagation()`
-     *
-     * @member {boolean}
-     * @private
-     * @readonly
-     */
-    this.stoppedImmediate = false;
-
-    /**
-     * The original target the event triggered on.
-     *
-     * @member {object}
-     * @readonly
-     */
-    this.target = target;
-
-    /**
-     * The string name of the event that this represents.
-     *
-     * @member {string}
-     * @readonly
-     */
-    this.type = name;
-
-    /**
-     * The data that was passed in with this event.
-     *
-     * @member {object}
-     * @readonly
-     */
-    this.data = data;
-
-    /**
-     * The timestamp when the event occurred.
-     *
-     * @member {number}
-     * @readonly
-     */
-    this.timeStamp = Date.now();
-}
-
-EventData.prototype.constructor = EventData;
-module.exports = EventData;
-
-/**
- * Stops the propagation of events up the scene graph (prevents bubbling).
- *
- */
-EventData.prototype.stopPropagation = function stopPropagation()
-{
-    this.stopped = true;
-};
-
-/**
- * Stops the propagation of events to sibling listeners (no longer calls any listeners).
- *
- */
-EventData.prototype.stopImmediatePropagation = function stopImmediatePropagation()
-{
-    this.stoppedImmediate = true;
-};
-
-},{}],64:[function(require,module,exports){
+},{"../utils":66,"./BaseTexture":60}],65:[function(require,module,exports){
 //TODO: Have Graphics use https://github.com/mattdesl/shape2d
 // and https://github.com/mattdesl/shape2d-triangulate instead of custom code.
 
@@ -15925,220 +16650,7 @@ PolyK._convex = function (ax, ay, bx, by, cx, cy, sign)
     return ((ay-by)*(cx-bx) + (bx-ax)*(cy-by) >= 0) === sign;
 };
 
-},{}],65:[function(require,module,exports){
-var EventData = require('./EventData');
-
-var tempEventObject = new EventData(null, null, {});
-
-/**
- * Mixins event emitter functionality to an object.
- *
- * @mixin
- * @memberof PIXI.utils
- * @example
- *      function MyEmitter() {}
- *
- *      eventTarget.mixin(MyEmitter.prototype);
- *
- *      var em = new MyEmitter();
- *      em.emit('eventName', 'some data', 'some more data', {}, null, ...);
- */
-function eventTarget(obj)
-{
-    /**
-     * Return a list of assigned event listeners.
-     *
-     * @memberof eventTarget
-     * @param eventName {string} The events that should be listed.
-     * @return {Array} An array of listener functions
-     */
-    obj.listeners = function listeners(eventName)
-    {
-        this._listeners = this._listeners || {};
-
-        return this._listeners[eventName] ? this._listeners[eventName].slice() : [];
-    };
-
-    /**
-     * Emit an event to all registered event listeners.
-     *
-     * @memberof eventTarget
-     * @alias dispatchEvent
-     * @param eventName {string} The name of the event.
-     * @return {boolean} Indication if we've emitted an event.
-     */
-    obj.emit = obj.dispatchEvent = function emit(eventName, data)
-    {
-        this._listeners = this._listeners || {};
-
-        // fast return when there are no listeners
-        if (!this._listeners[eventName])
-        {
-            return;
-        }
-
-        //backwards compat with old method ".emit({ type: 'something' })"
-        //lets not worry about old ways of using stuff for v3
-        /*
-        if (typeof eventName === 'object')
-        {
-            data = eventName;
-            eventName = eventName.type;
-        }
-        */
-
-        //ensure we are using a real pixi event
-        //instead of creating a new object lets use an the temp one ( save new creation for each event )
-        if ( !data || !data.__isEventObject )
-        {
-            tempEventObject.target=  this;
-            tempEventObject.type = eventName;
-            tempEventObject.data = data;
-
-            data = tempEventObject;
-        }
-
-        //iterate the listeners
-        var listeners = this._listeners[eventName].slice(0),
-            length = listeners.length,
-            fn = listeners[0],
-            i;
-
-        for (i = 0; i < length; fn = listeners[++i])
-        {
-            //call the event listener scope is currently determined by binding the listener
-            //way faster than 'call'
-            fn(data);
-
-            //if "stopImmediatePropagation" is called, stop calling sibling events
-            if (data.stoppedImmediate)
-            {
-                return this;
-            }
-        }
-
-        //if "stopPropagation" is called then don't bubble the event
-        if (data.stopped)
-        {
-            return this;
-        }
-
-        return this;
-    };
-
-    /**
-     * Register a new EventListener for the given event.
-     *
-     * @memberof eventTarget
-     * @alias addEventListener
-     * @param eventName {string} Name of the event.
-     * @param callback {Functon} fn Callback function.
-     */
-    obj.on = obj.addEventListener = function on(eventName, fn)
-    {
-        this._listeners = this._listeners || {};
-
-        (this._listeners[eventName] = this._listeners[eventName] || [])
-            .push(fn);
-
-        return this;
-    };
-
-    /**
-     * Add an EventListener that's only called once.
-     *
-     * @memberof eventTarget
-     * @param eventName {string} Name of the event.
-     * @param callback {Function} Callback function.
-     */
-    obj.once = function once(eventName, fn)
-    {
-        this._listeners = this._listeners || {};
-
-        var self = this;
-        function onceHandlerWrapper()
-        {
-            fn.apply(self.off(eventName, onceHandlerWrapper), arguments);
-        }
-        onceHandlerWrapper._originalHandler = fn;
-
-        return this.on(eventName, onceHandlerWrapper);
-    };
-
-    /**
-     * Remove event listeners.
-     *
-     * @memberof eventTarget
-     * @alias removeEventListener
-     * @param eventName {string} The event we want to remove.
-     * @param callback {Function} The listener that we need to find.
-     */
-    obj.off = obj.removeEventListener = function off(eventName, fn)
-    {
-        this._listeners = this._listeners || {};
-
-        if (!this._listeners[eventName])
-        {
-            return this;
-        }
-
-        var list = this._listeners[eventName],
-            i = fn ? list.length : 0;
-
-        while (i-- > 0)
-        {
-            if (list[i] === fn || list[i]._originalHandler === fn)
-            {
-                list.splice(i, 1);
-            }
-        }
-
-        if (list.length === 0)
-        {
-            // delete causes deoptimization
-            // lets set it to null
-            this._listeners[eventName] = null;
-        }
-
-        return this;
-    };
-
-    /**
-     * Remove all listeners or only the listeners for the specified event.
-     *
-     * @memberof eventTarget
-     * @param eventName {string} The event you want to remove all listeners for.
-     */
-    obj.removeAllListeners = function removeAllListeners(eventName)
-    {
-        this._listeners = this._listeners || {};
-
-        if (!this._listeners[eventName])
-        {
-            return this;
-        }
-
-        // delete causes deoptimization
-        // lets set it to null
-        this._listeners[eventName] = null;
-
-        return this;
-    };
-}
-
-module.exports = {
-    /**
-     * Mixes in the properties of the eventTarget into another object
-     *
-     * @param object {object} The obj to mix into
-     */
-    mixin: function mixin(obj)
-    {
-        eventTarget(obj);
-    }
-};
-
-},{"./EventData":63}],66:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 var CONST = require('../const');
 
 /**
@@ -16148,9 +16660,6 @@ var utils = module.exports = {
     _uid: 0,
     _saidHello: false,
 
-    RAFramePolyfill:require('./requestAnimationFramePolyfill'),
-    EventData:      require('./EventData'),
-    eventTarget:    require('./eventTarget'),
     pluginTarget:   require('./pluginTarget'),
     PolyK:          require('./PolyK'),
 
@@ -16346,7 +16855,7 @@ var utils = module.exports = {
     BaseTextureCache: {}
 };
 
-},{"../const":12,"./EventData":63,"./PolyK":64,"./eventTarget":65,"./pluginTarget":67,"./requestAnimationFramePolyfill":68}],67:[function(require,module,exports){
+},{"../const":14,"./PolyK":65,"./pluginTarget":67}],67:[function(require,module,exports){
 /**
  * Mixins functionality to make an object have "plugins".
  *
@@ -16417,37 +16926,7 @@ module.exports = {
 };
 
 },{}],68:[function(require,module,exports){
-(function(window) {
-    var lastTime = 0;
-    var vendors = ['ms', 'moz', 'webkit', 'o'];
-    for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
-        window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
-        window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] ||
-            window[vendors[x] + 'CancelRequestAnimationFrame'];
-    }
-
-    if (!window.requestAnimationFrame) {
-        window.requestAnimationFrame = function(callback) {
-            var currTime = new Date().getTime();
-            var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-            var id = window.setTimeout(function() { callback(currTime + timeToCall); },
-              timeToCall);
-            lastTime = currTime + timeToCall;
-            return id;
-        };
-    }
-
-    if (!window.cancelAnimationFrame) {
-        window.cancelAnimationFrame = function(id) {
-            clearTimeout(id);
-        };
-    }
-
-    })(window);
-
-},{}],69:[function(require,module,exports){
 var core   = require('./core'),
-    extras = require('./extras'),
     mesh   = require('./mesh'),
     text   = require('./text');
 
@@ -16467,7 +16946,7 @@ Object.defineProperties(core, {
         get: function ()
         {
             window.console.warn('You do not need to use a PIXI Stage any more, you can simply render any container.');
-            return new core.Container();
+            return core.Container;
         }
     },
 
@@ -16475,7 +16954,7 @@ Object.defineProperties(core, {
         get: function ()
         {
             window.console.warn('DisplayObjectContainer has been shortened to Container, please use Container from now on');
-            return new core.Container();
+            return core.Container;
         }
     },
 
@@ -16483,7 +16962,7 @@ Object.defineProperties(core, {
         get: function ()
         {
             window.console.warn('The Strip class has been renamed to Mesh, please use Mesh from now on');
-            return new mesh.Mesh(texture);
+            return mesh.Mesh;
         }
     }
 
@@ -16509,7 +16988,7 @@ text.Text.prototype.setText = function (text)
 
 module.exports = {};
 
-},{"./core":19,"./extras":75,"./mesh":116,"./text":124}],70:[function(require,module,exports){
+},{"./core":21,"./mesh":115,"./text":124}],69:[function(require,module,exports){
 var core    = require('../core'),
     Ticker  = require('./Ticker');
 
@@ -16585,13 +17064,6 @@ function MovieClip(textures)
      * @readonly
      */
     this.playing = false;
-
-    /**
-     * private cache of the bound function
-     *
-     * @member {function}
-     */
-    this._updateBound = this.update.bind(this);
 }
 
 // constructor
@@ -16650,7 +17122,7 @@ MovieClip.prototype.stop = function ()
     }
 
     this.playing = false;
-    Ticker.off('tick', this._updateBound);
+    Ticker.off('tick', this.update);
 };
 
 /**
@@ -16665,7 +17137,7 @@ MovieClip.prototype.play = function ()
     }
 
     this.playing = true;
-    Ticker.on('tick', this._updateBound);
+    Ticker.on('tick', this.update, this);
 };
 
 /**
@@ -16698,10 +17170,10 @@ MovieClip.prototype.gotoAndPlay = function (frameNumber)
  * Updates the object transform for rendering
  * @private
  */
-MovieClip.prototype.update = function ( event )
+MovieClip.prototype.update = function (deltaTime)
 {
 
-    this.currentFrame += this.animationSpeed * event.data.deltaTime;
+    this.currentFrame += this.animationSpeed * deltaTime;
 
     var floor = Math.floor(this.currentFrame);
 
@@ -16783,9 +17255,8 @@ MovieClip.fromImages = function (images)
     return new MovieClip(textures);
 };
 
-},{"../core":19,"./Ticker":71}],71:[function(require,module,exports){
-var eventTarget = require('../core/utils/eventTarget'),
-    EventData   = require('../core/utils/EventData');
+},{"../core":21,"./Ticker":70}],70:[function(require,module,exports){
+var EventEmitter = require('eventemitter3').EventEmitter;
 
 /**
  * A Ticker class that runs an update loop that other objects listen to
@@ -16795,6 +17266,8 @@ var eventTarget = require('../core/utils/eventTarget'),
  */
 var Ticker = function()
 {
+    EventEmitter.call(this);
+
     this.updateBind = this.update.bind(this);
 
     /**
@@ -16803,13 +17276,6 @@ var Ticker = function()
      * @member {boolean}
      */
     this.active = false;
-
-    /**
-     * the event data for this ticker to dispatch the tick event
-     *
-     * @member {EventData}
-     */
-    this.eventData = new EventData( this, 'tick', { deltaTime:1 } );
 
     /**
      * The deltaTime
@@ -16843,7 +17309,8 @@ var Ticker = function()
     this.start();
 };
 
-eventTarget.mixin(Ticker.prototype);
+Ticker.prototype = Object.create(EventEmitter.prototype);
+Ticker.prototype.constructor = Ticker;
 
 /**
  * Starts the ticker, automatically called by the constructor
@@ -16897,9 +17364,7 @@ Ticker.prototype.update = function()
 
         this.deltaTime *= this.speed;
 
-        this.eventData.data.deltaTime = this.deltaTime;
-
-        this.emit( 'tick', this.eventData );
+        this.emit('tick', this.deltaTime);
 
         this.lastTime = currentTime;
     }
@@ -16908,7 +17373,7 @@ Ticker.prototype.update = function()
 
 module.exports = new Ticker();
 
-},{"../core/utils/EventData":63,"../core/utils/eventTarget":65}],72:[function(require,module,exports){
+},{"eventemitter3":4}],71:[function(require,module,exports){
 var core = require('../core'),
     TextureUvs = require('../core/textures/TextureUvs'),
     RenderTexture = require('../core/textures/RenderTexture'),
@@ -17413,7 +17878,7 @@ TilingSprite.fromImage = function (imageId, width, height, crossorigin, scaleMod
     return new TilingSprite(core.Texture.fromImage(imageId, crossorigin, scaleMode),width,height);
 };
 
-},{"../core":19,"../core/textures/RenderTexture":59,"../core/textures/TextureUvs":61}],73:[function(require,module,exports){
+},{"../core":21,"../core/textures/RenderTexture":61,"../core/textures/TextureUvs":63}],72:[function(require,module,exports){
 var math = require('../core/math'),
     RenderTexture = require('../core/textures/RenderTexture'),
     DisplayObject = require('../core/display/DisplayObject'),
@@ -17670,7 +18135,7 @@ DisplayObject.prototype._destroyCachedDisplayObject = function()
 
 module.exports = {};
 
-},{"../core/display/DisplayObject":14,"../core/math":22,"../core/sprites/Sprite":56,"../core/textures/RenderTexture":59}],74:[function(require,module,exports){
+},{"../core/display/DisplayObject":16,"../core/math":24,"../core/sprites/Sprite":58,"../core/textures/RenderTexture":61}],73:[function(require,module,exports){
 var DisplayObject = require('../core/display/DisplayObject'),
     Container = require('../core/display/Container');
 
@@ -17700,7 +18165,7 @@ Container.prototype.getChildByName = function (name)
 };
 
 module.exports = {};
-},{"../core/display/Container":13,"../core/display/DisplayObject":14}],75:[function(require,module,exports){
+},{"../core/display/Container":15,"../core/display/DisplayObject":16}],74:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI extras library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -17719,8 +18184,9 @@ module.exports = {
     getChildByName: require('./getChildByName')
 };
 
-},{"./MovieClip":70,"./Ticker":71,"./TilingSprite":72,"./cacheAsBitmap":73,"./getChildByName":74}],76:[function(require,module,exports){
+},{"./MovieClip":69,"./Ticker":70,"./TilingSprite":71,"./cacheAsBitmap":72,"./getChildByName":73}],75:[function(require,module,exports){
 var core = require('../../core');
+// @see https://github.com/substack/brfs/issues/25
 
 
 // TODO (cengler) - The Y is flipped in this shader for some reason.
@@ -17775,7 +18241,7 @@ Object.defineProperties(AsciiFilter.prototype, {
     }
 });
 
-},{"../../core":19}],77:[function(require,module,exports){
+},{"../../core":21}],76:[function(require,module,exports){
 var core = require('../../core'),
     BlurXFilter = require('../blur/BlurXFilter'),
     BlurYFilter = require('../blur/BlurYFilter');
@@ -17876,7 +18342,7 @@ Object.defineProperties(BloomFilter.prototype, {
     }
 });
 
-},{"../../core":19,"../blur/BlurXFilter":79,"../blur/BlurYFilter":80}],78:[function(require,module,exports){
+},{"../../core":21,"../blur/BlurXFilter":78,"../blur/BlurYFilter":79}],77:[function(require,module,exports){
 var core = require('../../core'),
     BlurXFilter = require('./BlurXFilter'),
     BlurYFilter = require('./BlurYFilter');
@@ -17988,8 +18454,9 @@ Object.defineProperties(BlurFilter.prototype, {
     }
 });
 
-},{"../../core":19,"./BlurXFilter":79,"./BlurYFilter":80}],79:[function(require,module,exports){
+},{"../../core":21,"./BlurXFilter":78,"./BlurYFilter":79}],78:[function(require,module,exports){
 var core = require('../../core');
+// @see https://github.com/substack/brfs/issues/25
 
 
 /**
@@ -18081,8 +18548,9 @@ Object.defineProperties(BlurXFilter.prototype, {
     },
 });
 
-},{"../../core":19}],80:[function(require,module,exports){
+},{"../../core":21}],79:[function(require,module,exports){
 var core = require('../../core');
+// @see https://github.com/substack/brfs/issues/25
 
 
 /**
@@ -18166,8 +18634,9 @@ Object.defineProperties(BlurYFilter.prototype, {
     },
 });
 
-},{"../../core":19}],81:[function(require,module,exports){
+},{"../../core":21}],80:[function(require,module,exports){
 var core = require('../../core');
+// @see https://github.com/substack/brfs/issues/25
 
 
 /**
@@ -18191,8 +18660,9 @@ SmartBlurFilter.prototype = Object.create(core.AbstractFilter.prototype);
 SmartBlurFilter.prototype.constructor = SmartBlurFilter;
 module.exports = SmartBlurFilter;
 
-},{"../../core":19}],82:[function(require,module,exports){
+},{"../../core":21}],81:[function(require,module,exports){
 var core = require('../../core');
+// @see https://github.com/substack/brfs/issues/25
 
 
 /**
@@ -18464,7 +18934,7 @@ ColorMatrixFilter.prototype.saturation = function(amount, multiply)
  *
  * @param multiply {boolean} refer to ._loadMatrix() method
  */
-ColorMatrixFilter.prototype.desaturate = function(multiply)
+ColorMatrixFilter.prototype.desaturate = function(multiply) // jshint unused:false
 {
     this.saturation(-1);
 };
@@ -18749,8 +19219,9 @@ Object.defineProperties(ColorMatrixFilter.prototype, {
     }
 });
 
-},{"../../core":19}],83:[function(require,module,exports){
+},{"../../core":21}],82:[function(require,module,exports){
 var core = require('../../core');
+// @see https://github.com/substack/brfs/issues/25
 
 
 /**
@@ -18797,8 +19268,9 @@ Object.defineProperties(ColorStepFilter.prototype, {
     }
 });
 
-},{"../../core":19}],84:[function(require,module,exports){
+},{"../../core":21}],83:[function(require,module,exports){
 var core = require('../../core');
+// @see https://github.com/substack/brfs/issues/25
 
 
 /**
@@ -18887,8 +19359,9 @@ Object.defineProperties(ConvolutionFilter.prototype, {
     }
 });
 
-},{"../../core":19}],85:[function(require,module,exports){
+},{"../../core":21}],84:[function(require,module,exports){
 var core = require('../../core');
+// @see https://github.com/substack/brfs/issues/25
 
 
 /**
@@ -18912,8 +19385,9 @@ CrossHatchFilter.prototype = Object.create(core.AbstractFilter.prototype);
 CrossHatchFilter.prototype.constructor = CrossHatchFilter;
 module.exports = CrossHatchFilter;
 
-},{"../../core":19}],86:[function(require,module,exports){
+},{"../../core":21}],85:[function(require,module,exports){
 var core = require('../../core');
+// @see https://github.com/substack/brfs/issues/25
 
 
 /**
@@ -18992,8 +19466,9 @@ Object.defineProperties(DisplacementFilter.prototype, {
     }
 });
 
-},{"../../core":19}],87:[function(require,module,exports){
+},{"../../core":21}],86:[function(require,module,exports){
 var core = require('../../core');
+// @see https://github.com/substack/brfs/issues/25
 
 
 /**
@@ -19063,9 +19538,10 @@ Object.defineProperties(DotScreenFilter.prototype, {
     }
 });
 
-},{"../../core":19}],88:[function(require,module,exports){
-var core = require('../../core'),
-    blurFactor = 1 / 7000;
+},{"../../core":21}],87:[function(require,module,exports){
+var core = require('../../core');
+
+// @see https://github.com/substack/brfs/issues/25
 
 
 /**
@@ -19153,7 +19629,7 @@ Object.defineProperties(BlurYTintFilter.prototype, {
     },
 });
 
-},{"../../core":19}],89:[function(require,module,exports){
+},{"../../core":21}],88:[function(require,module,exports){
 var core = require('../../core'),
     BlurXFilter = require('../blur/BlurXFilter'),
     BlurYTintFilter = require('./BlurYTintFilter');
@@ -19322,8 +19798,9 @@ Object.defineProperties(DropShadowFilter.prototype, {
     }
 });
 
-},{"../../core":19,"../blur/BlurXFilter":79,"./BlurYTintFilter":88}],90:[function(require,module,exports){
+},{"../../core":21,"../blur/BlurXFilter":78,"./BlurYTintFilter":87}],89:[function(require,module,exports){
 var core = require('../../core');
+// @see https://github.com/substack/brfs/issues/25
 
 
 /**
@@ -19370,7 +19847,7 @@ Object.defineProperties(GrayFilter.prototype, {
     }
 });
 
-},{"../../core":19}],91:[function(require,module,exports){
+},{"../../core":21}],90:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI filters library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -19414,8 +19891,9 @@ module.exports = {
     TwistFilter:        require('./twist/TwistFilter')
 };
 
-},{"../core/renderers/webgl/filters/AbstractFilter":39,"../core/renderers/webgl/filters/FXAAFilter":40,"../core/renderers/webgl/filters/SpriteMaskFilter":41,"./ascii/AsciiFilter":76,"./bloom/BloomFilter":77,"./blur/BlurFilter":78,"./blur/BlurXFilter":79,"./blur/BlurYFilter":80,"./blur/SmartBlurFilter":81,"./color/ColorMatrixFilter":82,"./color/ColorStepFilter":83,"./convolution/ConvolutionFilter":84,"./crosshatch/CrossHatchFilter":85,"./displacement/DisplacementFilter":86,"./dot/DotScreenFilter":87,"./dropshadow/DropShadowFilter":89,"./gray/GrayFilter":90,"./invert/InvertFilter":92,"./noise/NoiseFilter":93,"./normal/NormalMapFilter":94,"./pixelate/PixelateFilter":95,"./rgb/RGBSplitFilter":96,"./sepia/SepiaFilter":97,"./shockwave/ShockwaveFilter":98,"./tiltshift/TiltShiftFilter":100,"./tiltshift/TiltShiftXFilter":101,"./tiltshift/TiltShiftYFilter":102,"./twist/TwistFilter":103}],92:[function(require,module,exports){
+},{"../core/renderers/webgl/filters/AbstractFilter":41,"../core/renderers/webgl/filters/FXAAFilter":42,"../core/renderers/webgl/filters/SpriteMaskFilter":43,"./ascii/AsciiFilter":75,"./bloom/BloomFilter":76,"./blur/BlurFilter":77,"./blur/BlurXFilter":78,"./blur/BlurYFilter":79,"./blur/SmartBlurFilter":80,"./color/ColorMatrixFilter":81,"./color/ColorStepFilter":82,"./convolution/ConvolutionFilter":83,"./crosshatch/CrossHatchFilter":84,"./displacement/DisplacementFilter":85,"./dot/DotScreenFilter":86,"./dropshadow/DropShadowFilter":88,"./gray/GrayFilter":89,"./invert/InvertFilter":91,"./noise/NoiseFilter":92,"./normal/NormalMapFilter":93,"./pixelate/PixelateFilter":94,"./rgb/RGBSplitFilter":95,"./sepia/SepiaFilter":96,"./shockwave/ShockwaveFilter":97,"./tiltshift/TiltShiftFilter":99,"./tiltshift/TiltShiftXFilter":100,"./tiltshift/TiltShiftYFilter":101,"./twist/TwistFilter":102}],91:[function(require,module,exports){
 var core = require('../../core');
+// @see https://github.com/substack/brfs/issues/25
 
 
 /**
@@ -19463,8 +19941,9 @@ Object.defineProperties(InvertFilter.prototype, {
     }
 });
 
-},{"../../core":19}],93:[function(require,module,exports){
+},{"../../core":21}],92:[function(require,module,exports){
 var core = require('../../core');
+// @see https://github.com/substack/brfs/issues/25
 
 
 /**
@@ -19517,8 +19996,9 @@ Object.defineProperties(NoiseFilter.prototype, {
     }
 });
 
-},{"../../core":19}],94:[function(require,module,exports){
+},{"../../core":21}],93:[function(require,module,exports){
 var core = require('../../core');
+// @see https://github.com/substack/brfs/issues/25
 
 
 /**
@@ -19557,7 +20037,7 @@ function NormalMapFilter(texture)
     }
     else
     {
-        texture.baseTexture.once('loaded', this.onTextureLoaded.bind(this));
+        texture.baseTexture.once('loaded', this.onTextureLoaded, this);
     }
 }
 
@@ -19629,8 +20109,9 @@ Object.defineProperties(NormalMapFilter.prototype, {
     }
 });
 
-},{"../../core":19}],95:[function(require,module,exports){
+},{"../../core":21}],94:[function(require,module,exports){
 var core = require('../../core');
+// @see https://github.com/substack/brfs/issues/25
 
 
 /**
@@ -19679,8 +20160,9 @@ Object.defineProperties(PixelateFilter.prototype, {
     }
 });
 
-},{"../../core":19}],96:[function(require,module,exports){
+},{"../../core":21}],95:[function(require,module,exports){
 var core = require('../../core');
+// @see https://github.com/substack/brfs/issues/25
 
 
 /**
@@ -19764,8 +20246,9 @@ Object.defineProperties(RGBSplitFilter.prototype, {
     }
 });
 
-},{"../../core":19}],97:[function(require,module,exports){
+},{"../../core":21}],96:[function(require,module,exports){
 var core = require('../../core');
+// @see https://github.com/substack/brfs/issues/25
 
 
 /**
@@ -19813,8 +20296,9 @@ Object.defineProperties(SepiaFilter.prototype, {
     }
 });
 
-},{"../../core":19}],98:[function(require,module,exports){
+},{"../../core":21}],97:[function(require,module,exports){
 var core = require('../../core');
+// @see https://github.com/substack/brfs/issues/25
 
 
 /**
@@ -19900,8 +20384,9 @@ Object.defineProperties(ShockwaveFilter.prototype, {
     }
 });
 
-},{"../../core":19}],99:[function(require,module,exports){
+},{"../../core":21}],98:[function(require,module,exports){
 var core = require('../../core');
+// @see https://github.com/substack/brfs/issues/25
 
 
 /**
@@ -20024,7 +20509,7 @@ Object.defineProperties(TiltShiftAxisFilter.prototype, {
     }
 });
 
-},{"../../core":19}],100:[function(require,module,exports){
+},{"../../core":21}],99:[function(require,module,exports){
 var core = require('../../core'),
     TiltShiftXFilter = require('./TiltShiftXFilter'),
     TiltShiftYFilter = require('./TiltShiftYFilter');
@@ -20134,7 +20619,7 @@ Object.defineProperties(TiltShiftFilter.prototype, {
     }
 });
 
-},{"../../core":19,"./TiltShiftXFilter":101,"./TiltShiftYFilter":102}],101:[function(require,module,exports){
+},{"../../core":21,"./TiltShiftXFilter":100,"./TiltShiftYFilter":101}],100:[function(require,module,exports){
 var TiltShiftAxisFilter = require('./TiltShiftAxisFilter');
 
 /**
@@ -20172,7 +20657,7 @@ TiltShiftXFilter.prototype.updateDelta = function ()
     this.uniforms.delta.value.y = dy / d;
 };
 
-},{"./TiltShiftAxisFilter":99}],102:[function(require,module,exports){
+},{"./TiltShiftAxisFilter":98}],101:[function(require,module,exports){
 var TiltShiftAxisFilter = require('./TiltShiftAxisFilter');
 
 /**
@@ -20210,8 +20695,9 @@ TiltShiftYFilter.prototype.updateDelta = function ()
     this.uniforms.delta.value.y = dx / d;
 };
 
-},{"./TiltShiftAxisFilter":99}],103:[function(require,module,exports){
+},{"./TiltShiftAxisFilter":98}],102:[function(require,module,exports){
 var core = require('../../core');
+// @see https://github.com/substack/brfs/issues/25
 
 
 /**
@@ -20294,7 +20780,7 @@ Object.defineProperties(TwistFilter.prototype, {
     }
 });
 
-},{"../../core":19}],104:[function(require,module,exports){
+},{"../../core":21}],103:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -20356,14 +20842,9 @@ InteractionData.prototype.getLocalPosition = function (displayObject, point)
     return point;
 };
 
-},{"../core":19}],105:[function(require,module,exports){
+},{"../core":21}],104:[function(require,module,exports){
 var core = require('../core'),
     InteractionData = require('./InteractionData');
-
-
-// TODO: Obviously rewrite this...
-var INTERACTION_FREQUENCY = 10;
-var AUTO_PREVENT_DEFAULT = true;
 
 /**
  * The interaction manager deals with mouse and touch events. Any DisplayObject can be interactive
@@ -20373,10 +20854,36 @@ var AUTO_PREVENT_DEFAULT = true;
  * @class
  * @memberof PIXI.interaction
  * @param renderer {CanvasRenderer|WebGLRenderer} A reference to the current renderer
+ * @param [options] {object}
+ * @param [options.autoPreventDefault=true] {boolean} Should the manager automatically prevent default browser actions.
+ * @param [options.interactionFrequency=10] {number} Frequency increases the interaction events will be checked.
  */
-function InteractionManager( renderer )
+function InteractionManager(renderer, options)
 {
+    options = options || {};
+
+    /**
+     * The renderer this interaction manager works for.
+     *
+     * @member {SystemRenderer}
+     */
     this.renderer = renderer;
+
+    /**
+     * Should default browser actions automatically be prevented.
+     *
+     * @member {boolean}
+     * @default true
+     */
+    this.autoPreventDefault = options.autoPreventDefault !== undefined ? options.autoPreventDefault : true;
+
+    /**
+     * As this frequency increases the interaction events will be checked more often.
+     *
+     * @member {number}
+     * @default 10
+     */
+    this.interactionFrequency = options.interactionFrequency || 10;
 
     /**
      * The mouse data
@@ -20390,8 +20897,12 @@ function InteractionManager( renderer )
      *
      * @member {EventData}
      */
-    this.eventData = new core.utils.EventData();
-    this.eventData.data = this.mouse;
+    this.eventData = {
+        stopped: false,
+        target: null,
+        type: null,
+        data: this.mouse
+    };
 
     /**
      * Tiny little interactiveData pool !
@@ -20485,6 +20996,14 @@ function InteractionManager( renderer )
      * @member {number}
      */
     this.resolution = 1;
+
+    /**
+     * The update method bound to our context.
+     *
+     * @member {function}
+     * @private
+     */
+    this.updateBound = this.update.bind(this);
 
     this.setTargetElement(this.renderer.view, this.renderer.resolution);
 
@@ -20583,7 +21102,7 @@ InteractionManager.prototype.removeEvents = function ()
  */
 InteractionManager.prototype.update = function ()
 {
-    requestAnimationFrame(this.update.bind(this));
+    requestAnimationFrame(this.updateBound);
 
     if( this.throttleUpdate() || !this.interactionDOMElement)
     {
@@ -20635,6 +21154,7 @@ InteractionManager.prototype.dispatchEvent = function ( displayObject, eventStri
 
 /**
  * Ensures the interaction checks don't happen too often by delaying the update loop
+ *
  * @private
  */
 InteractionManager.prototype.throttleUpdate = function ()
@@ -20642,7 +21162,9 @@ InteractionManager.prototype.throttleUpdate = function ()
     // frequency of 30fps??
     var now = Date.now();
     var diff = now - this.last;
-    diff = (diff * INTERACTION_FREQUENCY ) / 1000;
+
+    diff = (diff * this.interactionFrequency ) / 1000;
+
     if (diff < 1)
     {
         return true;
@@ -20750,7 +21272,7 @@ InteractionManager.prototype.onMouseDown = function (event)
     this.eventData.data = this.mouse;
     this.eventData.stopped = false;
 
-    if (AUTO_PREVENT_DEFAULT)
+    if (this.autoPreventDefault)
     {
         this.mouse.originalEvent.preventDefault();
     }
@@ -20933,7 +21455,7 @@ InteractionManager.prototype.processMouseOverOut = function ( displayObject, hit
  */
 InteractionManager.prototype.onTouchStart = function (event)
 {
-    if (AUTO_PREVENT_DEFAULT)
+    if (this.autoPreventDefault)
     {
         event.preventDefault();
     }
@@ -20982,7 +21504,7 @@ InteractionManager.prototype.processTouchStart = function ( displayObject, hit )
  */
 InteractionManager.prototype.onTouchEnd = function (event)
 {
-    if (AUTO_PREVENT_DEFAULT)
+    if (this.autoPreventDefault)
     {
         event.preventDefault();
     }
@@ -21045,7 +21567,7 @@ InteractionManager.prototype.processTouchEnd = function ( displayObject, hit )
  */
 InteractionManager.prototype.onTouchMove = function (event)
 {
-    if (AUTO_PREVENT_DEFAULT)
+    if (this.autoPreventDefault)
     {
         event.preventDefault();
     }
@@ -21119,7 +21641,7 @@ InteractionManager.prototype.returnTouchData = function ( touchData )
 core.WebGLRenderer.registerPlugin('interaction', InteractionManager);
 core.CanvasRenderer.registerPlugin('interaction', InteractionManager);
 
-},{"../core":19,"./InteractionData":104}],106:[function(require,module,exports){
+},{"../core":21,"./InteractionData":103}],105:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI interactions library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -21136,7 +21658,7 @@ module.exports = {
     interactiveTarget: require('./interactiveTarget')
 };
 
-},{"./InteractionData":104,"./InteractionManager":105,"./interactiveTarget":107}],107:[function(require,module,exports){
+},{"./InteractionData":103,"./InteractionManager":104,"./interactiveTarget":106}],106:[function(require,module,exports){
 var core = require('../core');
 
 
@@ -21151,10 +21673,11 @@ core.DisplayObject.prototype._touchDown = false;
 
 module.exports = {};
 
-},{"../core":19}],108:[function(require,module,exports){
+},{"../core":21}],107:[function(require,module,exports){
 var Resource = require('resource-loader').Resource,
     core = require('../core'),
-    text = require('../text');
+    text = require('../text'),
+    path = require('path');
 
 module.exports = function ()
 {
@@ -21177,13 +21700,44 @@ module.exports = function ()
 
         var name = resource.data.nodeName;
 
-        // skip if no data
+        // skip if not xml data
         if (!resource.data || !name || (name.toLowerCase() !== '#document' && name.toLowerCase() !== 'div'))
         {
             return next();
         }
 
-        var textureUrl = resource.data.getElementsByTagName('page')[0].getAttribute('file');
+        // skip if not bitmap font data, using some silly duck-typing
+        if (
+            resource.data.getElementsByTagName('page').length === 0 ||
+            resource.data.getElementsByTagName('info').length === 0 ||
+            resource.data.getElementsByTagName('info')[0].getAttribute('face') === null
+            )
+        {
+            return next();
+        }
+
+        var xmlUrl = path.dirname(resource.url);
+
+        if (xmlUrl === '.') {
+            xmlUrl = '';
+        }
+
+        if (this.baseUrl && xmlUrl) {
+            // if baseurl has a trailing slash then add one to xmlUrl so the replace works below
+            if (this.baseUrl.charAt(this.baseUrl.length - 1) === '/') {
+                xmlUrl += '/';
+            }
+
+            // remove baseUrl from xmlUrl
+            xmlUrl = xmlUrl.replace(this.baseUrl, '');
+
+            // if there is an xmlUrl now, it needs a trailing slash. Ensure that it does if the string isn't empty.
+            if (xmlUrl && xmlUrl.charAt(xmlUrl.length - 1) !== '/') {
+                xmlUrl += '/';
+            }
+        }
+
+        var textureUrl = xmlUrl + resource.data.getElementsByTagName('page')[0].getAttribute('file');
         var loadOptions = {
             crossOrigin: resource.crossOrigin,
             loadType: Resource.LOAD_TYPE.IMAGE
@@ -21248,7 +21802,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":19,"../text":124,"resource-loader":7}],109:[function(require,module,exports){
+},{"../core":21,"../text":124,"path":2,"resource-loader":9}],108:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI loaders library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -21272,7 +21826,7 @@ module.exports = {
 
 module.exports.loader = new module.exports.Loader();
 
-},{"./bitmapFontParser":108,"./loader":110,"./spineAtlasParser":111,"./spritesheetParser":112,"./textureParser":113}],110:[function(require,module,exports){
+},{"./bitmapFontParser":107,"./loader":109,"./spineAtlasParser":110,"./spritesheetParser":111,"./textureParser":112}],109:[function(require,module,exports){
 var ResourceLoader = require('resource-loader'),
     textureParser = require('./textureParser'),
     spritesheetParser = require('./spritesheetParser'),
@@ -21325,7 +21879,7 @@ Loader.prototype.constructor = Loader;
 
 module.exports = Loader;
 
-},{"./bitmapFontParser":108,"./spineAtlasParser":111,"./spritesheetParser":112,"./textureParser":113,"resource-loader":7}],111:[function(require,module,exports){
+},{"./bitmapFontParser":107,"./spineAtlasParser":110,"./spritesheetParser":111,"./textureParser":112,"resource-loader":9}],110:[function(require,module,exports){
 var Resource = require('resource-loader').Resource,
     async = require('async'),
     spine = require('../spine');
@@ -21383,7 +21937,7 @@ module.exports = function ()
     };
 };
 
-},{"../spine":121,"async":1,"resource-loader":7}],112:[function(require,module,exports){
+},{"../spine":121,"async":1,"resource-loader":9}],111:[function(require,module,exports){
 var Resource = require('resource-loader').Resource,
     path = require('path'),
     core = require('../core');
@@ -21467,7 +22021,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":19,"path":2,"resource-loader":7}],113:[function(require,module,exports){
+},{"../core":21,"path":2,"resource-loader":9}],112:[function(require,module,exports){
 var core = require('../core');
 
 module.exports = function ()
@@ -21486,7 +22040,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":19}],114:[function(require,module,exports){
+},{"../core":21}],113:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -21875,7 +22429,7 @@ Mesh.DRAW_MODES = {
     TRIANGLES: 1
 };
 
-},{"../core":19}],115:[function(require,module,exports){
+},{"../core":21}],114:[function(require,module,exports){
 var Mesh = require('./Mesh');
 
 /**
@@ -22069,7 +22623,7 @@ Rope.prototype.updateTransform = function ()
     this.containerUpdateTransform();
 };
 
-},{"./Mesh":114}],116:[function(require,module,exports){
+},{"./Mesh":113}],115:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI extras library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -22087,7 +22641,7 @@ module.exports = {
     MeshShader:    require('./webgl/MeshShader')
 };
 
-},{"./Mesh":114,"./Rope":115,"./webgl/MeshRenderer":117,"./webgl/MeshShader":118}],117:[function(require,module,exports){
+},{"./Mesh":113,"./Rope":114,"./webgl/MeshRenderer":116,"./webgl/MeshShader":117}],116:[function(require,module,exports){
 var ObjectRenderer = require('../../core/renderers/webgl/utils/ObjectRenderer'),
     WebGLRenderer = require('../../core/renderers/webgl/WebGLRenderer');
 
@@ -22284,16 +22838,9 @@ MeshRenderer.prototype.flush = function ()
  */
 MeshRenderer.prototype.start = function ()
 {
-    var gl = this.renderer.gl,
-    shader = this.renderer.shaderManager.plugins.meshShader;
+    var shader = this.renderer.shaderManager.plugins.meshShader;
 
     this.renderer.shaderManager.setShader(shader);
-
-    // dont need to upload!
-    //gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indices);
-
-
- //   this.s
 };
 
 /**
@@ -22304,7 +22851,7 @@ MeshRenderer.prototype.destroy = function ()
 {
 };
 
-},{"../../core/renderers/webgl/WebGLRenderer":38,"../../core/renderers/webgl/utils/ObjectRenderer":52}],118:[function(require,module,exports){
+},{"../../core/renderers/webgl/WebGLRenderer":40,"../../core/renderers/webgl/utils/ObjectRenderer":54}],117:[function(require,module,exports){
 var core = require('../../core');
 
 /**
@@ -22365,7 +22912,78 @@ module.exports = StripShader;
 
 core.ShaderManager.registerPlugin('meshShader', StripShader);
 
-},{"../../core":19}],119:[function(require,module,exports){
+},{"../../core":21}],118:[function(require,module,exports){
+(function (global){
+// References:
+// http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+// https://gist.github.com/1579671
+// http://updates.html5rocks.com/2012/05/requestAnimationFrame-API-now-with-sub-millisecond-precision
+// https://gist.github.com/timhall/4078614
+// https://github.com/Financial-Times/polyfill-service/tree/master/polyfills/requestAnimationFrame
+
+// Expected to be used with Browserfiy
+// Browserify automatically detects the use of `global` and passes the
+// correct reference of `global`, `self`, and finally `window`
+
+// Date.now
+if (!(Date.now && Date.prototype.getTime)) {
+    Date.now = function now() {
+        return new Date().getTime();
+    };
+}
+
+// performance.now
+if (!(global.performance && global.performance.now)) {
+    var startTime = Date.now();
+    if (!global.performance) {
+        global.performance = {};
+    }
+    global.performance.now = function () {
+        return Date.now() - startTime;
+    };
+}
+
+// requestAnimationFrame
+var lastTime = Date.now();
+var vendors = ['ms', 'moz', 'webkit', 'o'];
+
+for(var x = 0; x < vendors.length && !global.requestAnimationFrame; ++x) {
+    global.requestAnimationFrame = global[vendors[x] + 'RequestAnimationFrame'];
+    global.cancelAnimationFrame = global[vendors[x] + 'CancelAnimationFrame'] ||
+        global[vendors[x] + 'CancelRequestAnimationFrame'];
+}
+
+if (!global.requestAnimationFrame) {
+    global.requestAnimationFrame = function (callback) {
+        if (typeof callback !== 'function') {
+            throw new TypeError(callback + 'is not a function');
+        }
+
+        var currentTime = Date.now(),
+            delay = 16 + lastTime - currentTime;
+
+        if (delay < 0) {
+            delay = 0;
+        }
+
+        lastTime = currentTime;
+
+        return setTimeout(function () {
+            lastTime = Date.now();
+            callback(global.performance.now());
+        }, delay);
+    };
+}
+
+if (!global.cancelAnimationFrame) {
+    global.cancelAnimationFrame = function(id) {
+        clearTimeout(id);
+    };
+}
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+
+},{}],119:[function(require,module,exports){
 var core = require('../core'),
     spine = require('./SpineRuntime');
 
@@ -22671,7 +23289,7 @@ Spine.prototype.createMesh = function (slot, attachment)
     return strip;
 };
 
-},{"../core":19,"./SpineRuntime":120}],120:[function(require,module,exports){
+},{"../core":21,"./SpineRuntime":120}],120:[function(require,module,exports){
 /******************************************************************************
  * Spine Runtimes Software License
  * Version 2.1
@@ -25638,7 +26256,7 @@ spine.SkeletonBounds.prototype = {
 	}
 };
 
-},{"../core":19}],121:[function(require,module,exports){
+},{"../core":21}],121:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI spine library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -25679,9 +26297,11 @@ var core = require('../core');
  * @param style {object} The style parameters
  * @param style.font {string|object} The font descriptor for the object, can be passed as a string of form
  *      "24px FontName" or "FontName" or as an object with explicit name/size properties.
- * @param [style.font.size] {number} The size of the font in pixels, e.g. 24
  * @param [style.font.name] {string} The bitmap font id
- * @param [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
+ * @param [style.font.size] {number} The size of the font in pixels, e.g. 24
+ * @param [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect
+ *      single line text
+ * @param [style.tint=0xFFFFFF] {number} The tint color
  */
 function BitmapText(text, style)
 {
@@ -25720,8 +26340,8 @@ function BitmapText(text, style)
      * @private
      */
     this._font = {
-        tint: style.tint,
-        align: style.align,
+        tint: style.tint !== undefined ? style.tint : 0xFFFFFF,
+        align: style.align || 'left',
         name: null,
         size: 0
     };
@@ -26000,7 +26620,7 @@ BitmapText.prototype.updateTransform = function ()
 
 BitmapText.fonts = {};
 
-},{"../core":19}],123:[function(require,module,exports){
+},{"../core":21}],123:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -26031,6 +26651,11 @@ var core = require('../core');
  * @param [style.dropShadowAngle=Math.PI/4] {number} Set a angle of the drop shadow
  * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
  * @param [style.padding=0] {number} Occasionally some fonts are cropped. Adding some padding will prevent this from happening
+ * @param [style.textBaseline='alphabetic'] {string} The baseline of the text that is rendered.
+ * @param [style.lineJoin='miter'] {string} The lineJoin property sets the type of corner created, it can resolve
+ *      spiked text issues. Default is 'miter' (creates a sharp corner).
+ * @param [style.miterLimit=10] {number} The miter limit to use when using the 'miter' lineJoin mode. This can reduce
+ *      or increase the spikiness of rendered text.
  */
 function Text(text, style, resolution)
 {
@@ -26151,6 +26776,11 @@ Object.defineProperties(Text.prototype, {
      * @param [style.dropShadowAngle=Math.PI/6] {number} Set a angle of the drop shadow
      * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
      * @param [style.padding=0] {number} Occasionally some fonts are cropped. Adding some padding will prevent this from happening
+     * @param [style.textBaseline='alphabetic'] {string} The baseline of the text that is rendered.
+     * @param [style.lineJoin='miter'] {string} The lineJoin property sets the type of corner created, it can resolve
+     *      spiked text issues. Default is 'miter' (creates a sharp corner).
+     * @param [style.miterLimit=10] {number} The miter limit to use when using the 'miter' lineJoin mode. This can reduce
+     *      or increase the spikiness of rendered text.
      * @memberof Text#
      */
     style: {
@@ -26175,6 +26805,11 @@ Object.defineProperties(Text.prototype, {
             style.dropShadowDistance = style.dropShadowDistance || 5;
 
             style.padding = style.padding || 0;
+
+            style.textBaseline = style.textBaseline || 'alphabetic';
+
+            style.lineJoin = style.lineJoin || 'miter';
+            style.miterLimit = style.miterLimit || 10;
 
             this._style = style;
             this.dirty = true;
@@ -26265,8 +26900,9 @@ Text.prototype.updateText = function ()
     this.context.font = style.font;
     this.context.strokeStyle = style.stroke;
     this.context.lineWidth = style.strokeThickness;
-    this.context.textBaseline = 'alphabetic';
-    //this.context.lineJoin = 'round';
+    this.context.textBaseline = style.textBaseline;
+    this.context.lineJoin = style.lineJoin;
+    this.context.miterLimit = style.miterLimit;
 
     var linePositionX;
     var linePositionY;
@@ -26576,7 +27212,7 @@ Text.prototype.destroy = function (destroyBaseTexture)
     this._texture.destroy(destroyBaseTexture === undefined ? true : destroyBaseTexture);
 };
 
-},{"../core":19}],124:[function(require,module,exports){
+},{"../core":21}],124:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI text library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -26593,8 +27229,11 @@ module.exports = {
 };
 
 },{"./BitmapText":122,"./Text":123}],"pixi.js":[function(require,module,exports){
+require('./polyfill/requestAnimationFrame');
+
 var core = require('./core');
 
+extendCore(require('./core/math'));
 extendCore(require('./extras'));
 extendCore(require('./mesh'));
 extendCore(require('./filters'));
@@ -26614,7 +27253,7 @@ function extendCore(obj)
 
 module.exports = core;
 
-},{"./core":19,"./deprecation":69,"./extras":75,"./filters":91,"./interaction":106,"./loaders":109,"./mesh":116,"./spine":121,"./text":124}]},{},["pixi.js"])("pixi.js")
+},{"./core":21,"./core/math":24,"./deprecation":68,"./extras":74,"./filters":90,"./interaction":105,"./loaders":108,"./mesh":115,"./polyfill/requestAnimationFrame":118,"./spine":121,"./text":124}]},{},["pixi.js"])("pixi.js")
 });
 
 
