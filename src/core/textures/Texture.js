@@ -317,7 +317,14 @@ Texture.fromCanvas = function (canvas, scaleMode)
  */
 Texture.fromVideo = function (video, scaleMode)
 {
-    return new Texture(VideoBaseTexture.fromVideo(video, scaleMode));
+    if (typeof video === 'string')
+    {
+        return Texture.fromVideoUrl(video, scaleMode);
+    }
+    else
+    {
+        return new Texture(VideoBaseTexture.fromVideo(video, scaleMode));
+    }
 };
 
 /**
@@ -325,7 +332,7 @@ Texture.fromVideo = function (video, scaleMode)
  *
  * @static
  * @param videoUrl {string}
- * @param scaleMode {number} See {{#crossLink "PIXI/scaleModes:property"}}scaleModes{{/crossLink}} for possible values
+ * @param scaleMode {number} See {{@link SCALE_MODES}} for possible values
  * @return {Texture} A Texture
  */
 Texture.fromVideoUrl = function (videoUrl, scaleMode)
