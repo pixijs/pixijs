@@ -133,7 +133,7 @@ function Texture(baseTexture, frame, crop, trim, rotate)
     }
     else
     {
-        baseTexture.addEventListener('loaded', this.onBaseTextureLoaded.bind(this));
+        baseTexture.once('loaded', this.onBaseTextureLoaded, this);
     }
 }
 
@@ -201,11 +201,8 @@ Texture.prototype.update = function ()
  *
  * @private
  */
-Texture.prototype.onBaseTextureLoaded = function ()
+Texture.prototype.onBaseTextureLoaded = function (baseTexture)
 {
-    var baseTexture = this.baseTexture;
-    baseTexture.removeEventListener('loaded', this.onLoaded);
-
     // TODO this code looks confusing.. boo to abusing getters and setterss!
     if (this.noFrame)
     {
