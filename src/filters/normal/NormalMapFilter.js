@@ -38,7 +38,7 @@ function NormalMapFilter(texture)
     }
     else
     {
-        texture.baseTexture.once('loaded', this.onTextureLoaded.bind(this));
+        texture.baseTexture.once('loaded', this.onTextureLoaded, this);
     }
 }
 

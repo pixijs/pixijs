@@ -152,6 +152,14 @@ function InteractionManager(renderer, options)
      */
     this.resolution = 1;
 
+    /**
+     * The update method bound to our context.
+     *
+     * @member {function}
+     * @private
+     */
+    this.updateBound = this.update.bind(this);
+
     this.setTargetElement(this.renderer.view, this.renderer.resolution);
 
     this.update();
@@ -249,7 +257,7 @@ InteractionManager.prototype.removeEvents = function ()
  */
 InteractionManager.prototype.update = function ()
 {
-    requestAnimationFrame(this.update.bind(this));
+    requestAnimationFrame(this.updateBound);
 
     if( this.throttleUpdate() || !this.interactionDOMElement)
     {
