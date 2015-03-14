@@ -86,8 +86,8 @@ PIXI.Spine = function (url) {
 
     this.slotContainers = [];
 
-    for (var i = 0, n = this.skeleton.drawOrder.length; i < n; i++) {
-        var slot = this.skeleton.drawOrder[i];
+    for (var i = 0, n = this.skeleton.slots.length; i < n; i++) {
+        var slot = this.skeleton.slots[i];
         var attachment = slot.attachment;
         var slotContainer = new PIXI.DisplayObjectContainer();
         this.slotContainers.push(slotContainer);
@@ -157,8 +157,11 @@ PIXI.Spine.prototype.update = function(dt)
     this.skeleton.updateWorldTransform();
 
     var drawOrder = this.skeleton.drawOrder;
-    for (var i = 0, n = drawOrder.length; i < n; i++) {
-        var slot = drawOrder[i];
+    var slots = this.skeleton.slots;
+    for (var i = 0, n = drawOrder.length; i < n; i++)
+        this.children[i] = this.slotContainers[drawOrder[i]];
+    for (i = 0, n = slots.length; i < n; i++) {
+        var slot = slots[i];
         var attachment = slot.attachment;
         var slotContainer = this.slotContainers[i];
 

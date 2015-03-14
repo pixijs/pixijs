@@ -743,12 +743,9 @@ spine.DrawOrderTimeline.prototype = {
 		var drawOrder = skeleton.drawOrder;
 		var slots = skeleton.slots;
 		var drawOrderToSetupIndex = this.drawOrders[frameIndex];
-		if (!drawOrderToSetupIndex) {
-			for (var i = 0, n = slots.length; i < n; i++)
-				drawOrder[i] = slots[i];
-		} else {
+		if (drawOrderToSetupIndex) {
 			for (var i = 0, n = drawOrderToSetupIndex.length; i < n; i++)
-				drawOrder[i] = skeleton.slots[drawOrderToSetupIndex[i]];
+				drawOrder[i] = drawOrderToSetupIndex[i];
 		}
 
 	}
@@ -1006,7 +1003,7 @@ spine.Skeleton = function (skeletonData) {
 		var bone = this.bones[skeletonData.bones.indexOf(slotData.boneData)];
 		var slot = new spine.Slot(slotData, bone);
 		this.slots.push(slot);
-		this.drawOrder.push(slot);
+		this.drawOrder.push(i);
 	}
 
 	this.ikConstraints = [];
@@ -1098,11 +1095,10 @@ spine.Skeleton.prototype = {
 	},
 	setSlotsToSetupPose: function () {
 		var slots = this.slots;
-		var drawOrder = this.drawOrder;
 		for (var i = 0, n = slots.length; i < n; i++) {
-			drawOrder[i] = slots[i];
 			slots[i].setToSetupPose(i);
 		}
+		this.resetDrawOrder();
 	},
 	/** @return May return null. */
 	getRootBone: function () {
@@ -1202,6 +1198,10 @@ spine.Skeleton.prototype = {
 	},
 	update: function (delta) {
 		this.time += delta;
+	},
+	resetDrawOrder: function() {
+		for (var i = 0, n = this.drawOrder.length; i < n; i++)
+			this.drawOrder[i] = i;
 	}
 };
 
@@ -1539,6 +1539,7 @@ spine.AnimationState.prototype = {
 		}
 	},
 	apply: function (skeleton) {
+		skeleton.resetDrawOrder();
 		for (var i = 0; i < this.tracks.length; i++) {
 			var current = this.tracks[i];
 			if (!current) continue;
