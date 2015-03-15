@@ -1,10 +1,10 @@
 /**
  * @license
- * pixi.js - v2.2.7
+ * pixi.js - v2.2.8
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2015-02-25
+ * Compiled: 2015-03-15
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -55,7 +55,7 @@ PIXI.CANVAS_RENDERER = 1;
  * @property {String} VERSION
  * @static
  */
-PIXI.VERSION = "v2.2.7";
+PIXI.VERSION = "v2.2.8";
 
 /**
  * Various blend modes supported by pixi. IMPORTANT - The WebGL renderer only supports the NORMAL, ADD, MULTIPLY and SCREEN blend modes.
@@ -3234,6 +3234,7 @@ PIXI.FilterBlock.prototype.constructor = PIXI.FilterBlock;
  * @param [style.dropShadowColor='#000000'] {String} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
  * @param [style.dropShadowAngle=Math.PI/4] {Number} Set a angle of the drop shadow
  * @param [style.dropShadowDistance=5] {Number} Set a distance of the drop shadow
+ * @param [style.lineJoin='miter'] {String} The lineJoin property sets the type of corner created, it can resolve spiked text issue. Default is 'miter' (creates a sharp corner).
  */
 PIXI.Text = function(text, style)
 {
@@ -3334,6 +3335,7 @@ Object.defineProperty(PIXI.Text.prototype, 'height', {
  * @param [style.dropShadowColor='#000000'] {String} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
  * @param [style.dropShadowAngle=Math.PI/4] {Number} Set a angle of the drop shadow
  * @param [style.dropShadowDistance=5] {Number} Set a distance of the drop shadow
+ * @param [style.lineJoin='miter'] {String} The lineJoin property sets the type of corner created, it can resolve spiked text issue. Default is 'miter' (creates a sharp corner).
  */
 PIXI.Text.prototype.setStyle = function(style)
 {
@@ -3350,6 +3352,7 @@ PIXI.Text.prototype.setStyle = function(style)
     style.dropShadowAngle = style.dropShadowAngle || Math.PI / 6;
     style.dropShadowDistance = style.dropShadowDistance || 4;
     style.dropShadowColor = style.dropShadowColor || 'black';
+    style.lineJoin = style.lineJoin || 'miter';
 
     this.style = style;
     this.dirty = true;
@@ -3424,7 +3427,7 @@ PIXI.Text.prototype.updateText = function()
     this.context.strokeStyle = this.style.stroke;
     this.context.lineWidth = this.style.strokeThickness;
     this.context.textBaseline = 'alphabetic';
-    //this.context.lineJoin = 'round';
+    this.context.lineJoin = this.style.lineJoin;
 
     var linePositionX;
     var linePositionY;
@@ -4002,12 +4005,13 @@ PIXI.InteractionData = function()
  * @method getLocalPosition
  * @param displayObject {DisplayObject} The DisplayObject that you would like the local coords off
  * @param [point] {Point} A Point object in which to store the value, optional (otherwise will create a new point)
+ * param [globalPos] {Point} A Point object containing your custom global coords, optional (otherwise will use the current global coords)
  * @return {Point} A point containing the coordinates of the InteractionData position relative to the DisplayObject
  */
-PIXI.InteractionData.prototype.getLocalPosition = function(displayObject, point)
+PIXI.InteractionData.prototype.getLocalPosition = function(displayObject, point, globalPos)
 {
     var worldTransform = displayObject.worldTransform;
-    var global = this.global;
+    var global = globalPos ? globalPos : this.global;
 
     // do a cheeky transform to get the mouse coords;
     var a00 = worldTransform.a, a01 = worldTransform.c, a02 = worldTransform.tx,
@@ -4727,18 +4731,41 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
     var rect = this.interactionDOMElement.getBoundingClientRect();
     var changedTouches = event.changedTouches;
     var touchData;
-    var i = 0;
 
-    for (i = 0; i < changedTouches.length; i++)
+    var cLength = changedTouches.length;
+    var wCalc = (this.target.width / rect.width);
+    var hCalc = (this.target.height / rect.height);
+    var isSupportCocoonJS = navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height;
+    var touchEvent;
+
+    for (var c = 0; c < cLength; c++)
     {
-        var touchEvent = changedTouches[i];
+        touchEvent = changedTouches[c];
+        if(!isSupportCocoonJS)
+        {
+            touchEvent.globalX = ( (touchEvent.clientX - rect.left) * wCalc ) / this.resolution;
+            touchEvent.globalY = ( (touchEvent.clientY - rect.top)  * hCalc )  / this.resolution;
+        }
+        else
+        {
+            touchEvent.globalX = touchEvent.clientX;
+            touchEvent.globalY = touchEvent.clientY;
+        }
+    }
+
+    for (var i = 0; i < cLength; i++)
+    {
+        touchEvent = changedTouches[i];
         touchData = this.touches[touchEvent.identifier];
         touchData.originalEvent = event;
 
         // update the touch position
-        touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.target.width / rect.width) ) / this.resolution;
-        touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.target.height / rect.height) )  / this.resolution;
-        if (navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height)
+        if (!isSupportCocoonJS)
+        {
+            touchEvent.globalX = touchData.global.x = ( (touchEvent.clientX - rect.left) * wCalc ) / this.resolution;
+            touchEvent.globalY = touchData.global.y = ( (touchEvent.clientY - rect.top)  * hCalc ) / this.resolution;
+        }
+        else
         {
             //Support for CocoonJS fullscreen scale modes
             touchData.global.x = touchEvent.clientX;
@@ -4778,9 +4805,31 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
     }
 
     var changedTouches = event.changedTouches;
-    for (var i=0; i < changedTouches.length; i++)
+
+    var cLength = changedTouches.length;
+    var wCalc = (this.target.width / rect.width);
+    var hCalc = (this.target.height / rect.height);
+    var isSupportCocoonJS = navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height;
+    var touchEvent;
+
+    for (var c = 0; c < cLength; c++)
     {
-        var touchEvent = changedTouches[i];
+        touchEvent = changedTouches[c];
+        if(!isSupportCocoonJS)
+        {
+            touchEvent.globalX = ( (touchEvent.clientX - rect.left) * wCalc ) / this.resolution;
+            touchEvent.globalY = ( (touchEvent.clientY - rect.top)  * hCalc )  / this.resolution;
+        }
+        else
+        {
+            touchEvent.globalX = touchEvent.clientX;
+            touchEvent.globalY = touchEvent.clientY;
+        }
+    }
+
+    for (var i=0; i < cLength; i++)
+    {
+        touchEvent = changedTouches[i];
 
         var touchData = this.pool.pop();
         if (!touchData)
@@ -4791,9 +4840,12 @@ PIXI.InteractionManager.prototype.onTouchStart = function(event)
         touchData.originalEvent = event;
 
         this.touches[touchEvent.identifier] = touchData;
-        touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.target.width / rect.width) ) / this.resolution;
-        touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.target.height / rect.height) ) / this.resolution;
-        if (navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height)
+        if (!isSupportCocoonJS)
+        {
+            touchData.global.x = ( (touchEvent.clientX - rect.left) * wCalc ) / this.resolution;
+            touchData.global.y = ( (touchEvent.clientY - rect.top)  * hCalc ) / this.resolution;
+        }
+        else
         {
             //Support for CocoonJS fullscreen scale modes
             touchData.global.x = touchEvent.clientX;
@@ -4842,14 +4894,38 @@ PIXI.InteractionManager.prototype.onTouchEnd = function(event)
     var rect = this.interactionDOMElement.getBoundingClientRect();
     var changedTouches = event.changedTouches;
 
-    for (var i=0; i < changedTouches.length; i++)
+    var cLength = changedTouches.length;
+    var wCalc = (this.target.width / rect.width);
+    var hCalc = (this.target.height / rect.height);
+    var isSupportCocoonJS = navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height;
+    var touchEvent;
+
+    for (var c = 0; c < cLength; c++)
     {
-        var touchEvent = changedTouches[i];
+        touchEvent = changedTouches[c];
+        if(!isSupportCocoonJS)
+        {
+            touchEvent.globalX = ( (touchEvent.clientX - rect.left) * wCalc ) / this.resolution;
+            touchEvent.globalY = ( (touchEvent.clientY - rect.top)  * hCalc )  / this.resolution;
+        }
+        else
+        {
+            touchEvent.globalX = touchEvent.clientX;
+            touchEvent.globalY = touchEvent.clientY;
+        }
+    }
+
+    for (var i=0; i < cLength; i++)
+    {
+        touchEvent = changedTouches[i];
         var touchData = this.touches[touchEvent.identifier];
         var up = false;
-        touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.target.width / rect.width) ) / this.resolution;
-        touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.target.height / rect.height) ) / this.resolution;
-        if (navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height)
+        if (!isSupportCocoonJS)
+        {
+            touchData.global.x = ( (touchEvent.clientX - rect.left) * wCalc ) / this.resolution;
+            touchData.global.y = ( (touchEvent.clientY - rect.top)  * hCalc ) / this.resolution;
+        }
+        else
         {
             //Support for CocoonJS fullscreen scale modes
             touchData.global.x = touchEvent.clientX;
@@ -4924,14 +5000,38 @@ PIXI.InteractionManager.prototype.onTouchCancel = function(event)
     var rect = this.interactionDOMElement.getBoundingClientRect();
     var changedTouches = event.changedTouches;
 
-    for (var i=0; i < changedTouches.length; i++)
+    var cLength = changedTouches.length;
+    var wCalc = (this.target.width / rect.width);
+    var hCalc = (this.target.height / rect.height);
+    var isSupportCocoonJS = navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height;
+    var touchEvent;
+
+    for (var c = 0; c < cLength; c++)
     {
-        var touchEvent = changedTouches[i];
+        touchEvent = changedTouches[c];
+        if(!isSupportCocoonJS)
+        {
+            touchEvent.globalX = ( (touchEvent.clientX - rect.left) * wCalc ) / this.resolution;
+            touchEvent.globalY = ( (touchEvent.clientY - rect.top)  * hCalc )  / this.resolution;
+        }
+        else
+        {
+            touchEvent.globalX = touchEvent.clientX;
+            touchEvent.globalY = touchEvent.clientY;
+        }
+    }
+
+    for (var i=0; i < cLength; i++)
+    {
+        touchEvent = changedTouches[i];
         var touchData = this.touches[touchEvent.identifier];
         var up = false;
-        touchData.global.x = ( (touchEvent.clientX - rect.left) * (this.target.width / rect.width) ) / this.resolution;
-        touchData.global.y = ( (touchEvent.clientY - rect.top)  * (this.target.height / rect.height) ) / this.resolution;
-        if (navigator.isCocoonJS && !rect.left && !rect.top && !event.target.style.width && !event.target.style.height)
+        if (!isSupportCocoonJS)
+        {
+            touchData.global.x = ( (touchEvent.clientX - rect.left) * wCalc ) / this.resolution;
+            touchData.global.y = ( (touchEvent.clientY - rect.top)  * hCalc ) / this.resolution;
+        }
+        else
         {
             //Support for CocoonJS fullscreen scale modes
             touchData.global.x = touchEvent.clientX;
@@ -13885,8 +13985,10 @@ PIXI.TilingSprite.prototype.destroy = function () {
     this.tileScaleOffset = null;
     this.tilePosition = null;
 
-    this.tilingTexture.destroy(true);
-    this.tilingTexture = null;
+    if (this.tilingTexture) {
+        this.tilingTexture.destroy(true);
+        this.tilingTexture = null;
+    }
 };
 
 /******************************************************************************
@@ -14634,12 +14736,9 @@ spine.DrawOrderTimeline.prototype = {
 		var drawOrder = skeleton.drawOrder;
 		var slots = skeleton.slots;
 		var drawOrderToSetupIndex = this.drawOrders[frameIndex];
-		if (!drawOrderToSetupIndex) {
-			for (var i = 0, n = slots.length; i < n; i++)
-				drawOrder[i] = slots[i];
-		} else {
+		if (drawOrderToSetupIndex) {
 			for (var i = 0, n = drawOrderToSetupIndex.length; i < n; i++)
-				drawOrder[i] = skeleton.slots[drawOrderToSetupIndex[i]];
+				drawOrder[i] = drawOrderToSetupIndex[i];
 		}
 
 	}
@@ -14897,7 +14996,7 @@ spine.Skeleton = function (skeletonData) {
 		var bone = this.bones[skeletonData.bones.indexOf(slotData.boneData)];
 		var slot = new spine.Slot(slotData, bone);
 		this.slots.push(slot);
-		this.drawOrder.push(slot);
+		this.drawOrder.push(i);
 	}
 
 	this.ikConstraints = [];
@@ -14989,11 +15088,10 @@ spine.Skeleton.prototype = {
 	},
 	setSlotsToSetupPose: function () {
 		var slots = this.slots;
-		var drawOrder = this.drawOrder;
 		for (var i = 0, n = slots.length; i < n; i++) {
-			drawOrder[i] = slots[i];
 			slots[i].setToSetupPose(i);
 		}
+		this.resetDrawOrder();
 	},
 	/** @return May return null. */
 	getRootBone: function () {
@@ -15093,6 +15191,10 @@ spine.Skeleton.prototype = {
 	},
 	update: function (delta) {
 		this.time += delta;
+	},
+	resetDrawOrder: function() {
+		for (var i = 0, n = this.drawOrder.length; i < n; i++)
+			this.drawOrder[i] = i;
 	}
 };
 
@@ -15430,6 +15532,7 @@ spine.AnimationState.prototype = {
 		}
 	},
 	apply: function (skeleton) {
+		skeleton.resetDrawOrder();
 		for (var i = 0; i < this.tracks.length; i++) {
 			var current = this.tracks[i];
 			if (!current) continue;
@@ -16604,8 +16707,8 @@ PIXI.Spine = function (url) {
 
     this.slotContainers = [];
 
-    for (var i = 0, n = this.skeleton.drawOrder.length; i < n; i++) {
-        var slot = this.skeleton.drawOrder[i];
+    for (var i = 0, n = this.skeleton.slots.length; i < n; i++) {
+        var slot = this.skeleton.slots[i];
         var attachment = slot.attachment;
         var slotContainer = new PIXI.DisplayObjectContainer();
         this.slotContainers.push(slotContainer);
@@ -16675,8 +16778,11 @@ PIXI.Spine.prototype.update = function(dt)
     this.skeleton.updateWorldTransform();
 
     var drawOrder = this.skeleton.drawOrder;
-    for (var i = 0, n = drawOrder.length; i < n; i++) {
-        var slot = drawOrder[i];
+    var slots = this.skeleton.slots;
+    for (var i = 0, n = drawOrder.length; i < n; i++)
+        this.children[i] = this.slotContainers[drawOrder[i]];
+    for (i = 0, n = slots.length; i < n; i++) {
+        var slot = slots[i];
         var attachment = slot.attachment;
         var slotContainer = this.slotContainers[i];
 
@@ -18270,7 +18376,10 @@ PIXI.JsonLoader.prototype.onJSONLoaded = function () {
     if(this.json.frames && this.json.meta && this.json.meta.image)
     {
         // sprite sheet
-        var textureUrl = this.baseUrl + this.json.meta.image;
+        var textureUrl = this.json.meta.image;
+        if (textureUrl.indexOf('data:') === -1) {
+            textureUrl = this.baseUrl + textureUrl;
+        }
         var image = new PIXI.ImageLoader(textureUrl, this.crossorigin);
         var frameData = this.json.frames;
 
