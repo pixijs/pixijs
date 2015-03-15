@@ -237,6 +237,7 @@ Sprite.prototype.getBounds = function (matrix)
             minY,
             maxY;
 
+
         if (b === 0 && c === 0)
         {
             // scale may be negative!
@@ -290,6 +291,23 @@ Sprite.prototype.getBounds = function (matrix)
             maxY = y2 > maxY ? y2 : maxY;
             maxY = y3 > maxY ? y3 : maxY;
             maxY = y4 > maxY ? y4 : maxY;
+        }
+
+        // check for children
+        if(this.children.length)
+        {
+            var childBounds = this.containerGetBounds();
+
+            w0 = childBounds.x;
+            w1 = childBounds.x + childBounds.width;
+            h0 = childBounds.y;
+            h1 = childBounds.y + childBounds.height;
+
+            minX = (minX < w0) ? minX : w0;
+            minY = (minY < h0) ? minY : h0;
+
+            maxX = (maxX > w1) ? maxX : w1;
+            maxY = (maxY > h1) ? maxY : h1;
         }
 
         var bounds = this._bounds;
