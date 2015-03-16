@@ -1,4 +1,5 @@
 var core = require('../../core');
+// @see https://github.com/substack/brfs/issues/25
 var fs = require('fs');
 
 /**
@@ -270,7 +271,7 @@ ColorMatrixFilter.prototype.saturation = function(amount, multiply)
  *
  * @param multiply {boolean} refer to ._loadMatrix() method
  */
-ColorMatrixFilter.prototype.desaturate = function(multiply)
+ColorMatrixFilter.prototype.desaturate = function(multiply) // jshint unused:false
 {
     this.saturation(-1);
 };
@@ -546,11 +547,11 @@ Object.defineProperties(ColorMatrixFilter.prototype, {
     matrix: {
         get: function ()
         {
-            return this.uniforms.matrix.value;
+            return this.uniforms.m.value;
         },
         set: function (value)
         {
-            this.uniforms.matrix.value = value;
+            this.uniforms.m.value = value;
         }
     }
 });

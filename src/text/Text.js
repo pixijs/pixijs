@@ -28,6 +28,11 @@ var core = require('../core');
  * @param [style.dropShadowAngle=Math.PI/4] {number} Set a angle of the drop shadow
  * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
  * @param [style.padding=0] {number} Occasionally some fonts are cropped. Adding some padding will prevent this from happening
+ * @param [style.textBaseline='alphabetic'] {string} The baseline of the text that is rendered.
+ * @param [style.lineJoin='miter'] {string} The lineJoin property sets the type of corner created, it can resolve
+ *      spiked text issues. Default is 'miter' (creates a sharp corner).
+ * @param [style.miterLimit=10] {number} The miter limit to use when using the 'miter' lineJoin mode. This can reduce
+ *      or increase the spikiness of rendered text.
  */
 function Text(text, style, resolution)
 {
@@ -148,6 +153,11 @@ Object.defineProperties(Text.prototype, {
      * @param [style.dropShadowAngle=Math.PI/6] {number} Set a angle of the drop shadow
      * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
      * @param [style.padding=0] {number} Occasionally some fonts are cropped. Adding some padding will prevent this from happening
+     * @param [style.textBaseline='alphabetic'] {string} The baseline of the text that is rendered.
+     * @param [style.lineJoin='miter'] {string} The lineJoin property sets the type of corner created, it can resolve
+     *      spiked text issues. Default is 'miter' (creates a sharp corner).
+     * @param [style.miterLimit=10] {number} The miter limit to use when using the 'miter' lineJoin mode. This can reduce
+     *      or increase the spikiness of rendered text.
      * @memberof Text#
      */
     style: {
@@ -172,6 +182,11 @@ Object.defineProperties(Text.prototype, {
             style.dropShadowDistance = style.dropShadowDistance || 5;
 
             style.padding = style.padding || 0;
+
+            style.textBaseline = style.textBaseline || 'alphabetic';
+
+            style.lineJoin = style.lineJoin || 'miter';
+            style.miterLimit = style.miterLimit || 10;
 
             this._style = style;
             this.dirty = true;
@@ -262,8 +277,9 @@ Text.prototype.updateText = function ()
     this.context.font = style.font;
     this.context.strokeStyle = style.stroke;
     this.context.lineWidth = style.strokeThickness;
-    this.context.textBaseline = 'alphabetic';
-    //this.context.lineJoin = 'round';
+    this.context.textBaseline = style.textBaseline;
+    this.context.lineJoin = style.lineJoin;
+    this.context.miterLimit = style.miterLimit;
 
     var linePositionX;
     var linePositionY;

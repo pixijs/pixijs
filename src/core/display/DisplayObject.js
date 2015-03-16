@@ -1,6 +1,6 @@
 var math = require('../math'),
-    utils = require('../utils'),
     RenderTexture = require('../textures/RenderTexture'),
+    EventEmitter = require('eventemitter3').EventEmitter,
     _tempMatrix = new math.Matrix();
 
 /**
@@ -12,6 +12,8 @@ var math = require('../math'),
  */
 function DisplayObject()
 {
+    EventEmitter.call(this);
+
     /**
      * The coordinate of the object relative to the local coordinates of the parent.
      *
@@ -149,8 +151,8 @@ function DisplayObject()
 }
 
 // constructor
+DisplayObject.prototype = Object.create(EventEmitter.prototype);
 DisplayObject.prototype.constructor = DisplayObject;
-utils.eventTarget.mixin(DisplayObject.prototype);
 module.exports = DisplayObject;
 
 Object.defineProperties(DisplayObject.prototype, {
@@ -349,7 +351,7 @@ DisplayObject.prototype.displayObjectUpdateTransform = DisplayObject.prototype.u
  * @param matrix {Matrix}
  * @return {Rectangle} the rectangular bounding area
  */
-DisplayObject.prototype.getBounds = function (matrix)
+DisplayObject.prototype.getBounds = function (matrix) // jshint unused:false
 {
     return math.Rectangle.EMPTY;
 };
@@ -402,7 +404,7 @@ DisplayObject.prototype.toLocal = function (position, from)
  * @param renderer {WebGLRenderer} The renderer
  * @private
  */
-DisplayObject.prototype.renderWebGL = function (renderer)
+DisplayObject.prototype.renderWebGL = function (renderer) // jshint unused:false
 {
     // OVERWRITE;
 };
@@ -413,7 +415,7 @@ DisplayObject.prototype.renderWebGL = function (renderer)
  * @param renderer {CanvasRenderer} The renderer
  * @private
  */
-DisplayObject.prototype.renderCanvas = function (renderer)
+DisplayObject.prototype.renderCanvas = function (renderer) // jshint unused:false
 {
     // OVERWRITE;
 };
@@ -438,4 +440,25 @@ DisplayObject.prototype.generateTexture = function (renderer, resolution, scaleM
     renderTexture.render(this, _tempMatrix);
 
     return renderTexture;
+};
+
+/**
+ * Base destroy method for generic display objects
+ *
+ */
+DisplayObject.prototype.destroy = function ()
+{
+
+    this.position = null;
+    this.scale = null;
+    this.pivot = null;
+
+    this._bounds = null;
+    this._currentBounds = null;
+    this._mask = null;
+
+    this.worldTransform = null;
+    this.filterArea = null;
+
+    this.listeners = null;
 };

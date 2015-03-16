@@ -93,27 +93,6 @@ function Sprite(texture)
     this.texture = texture || Texture.EMPTY;
 }
 
-/**
- * Destroys this sprite and optionally its texture
- *
- * @param destroyTexture {boolean} Should it destroy the current texture of the sprite as well
- * @param destroyBaseTexture {boolean} Should it destroy the base texture of the sprite as well
- */
-Sprite.prototype.destroy = function (destroyTexture, destroyBaseTexture)
-{
-    Container.prototype.destroy.call(this);
-
-    this.anchor = null;
-
-    if (destroyTexture)
-    {
-        this._texture.destroy(destroyBaseTexture);
-    }
-
-    this._texture = null;
-    this.shader = null;
-};
-
 // constructor
 Sprite.prototype = Object.create(Container.prototype);
 Sprite.prototype.constructor = Sprite;
@@ -186,7 +165,7 @@ Object.defineProperties(Sprite.prototype, {
                 }
                 else
                 {
-                    value.once('update', this._onTextureUpdate.bind(this));
+                    value.once('update', this._onTextureUpdate, this);
                 }
             }
         }
@@ -258,6 +237,7 @@ Sprite.prototype.getBounds = function (matrix)
             minY,
             maxY;
 
+
         if (b === 0 && c === 0)
         {
             // scale may be negative!
@@ -311,6 +291,23 @@ Sprite.prototype.getBounds = function (matrix)
             maxY = y2 > maxY ? y2 : maxY;
             maxY = y3 > maxY ? y3 : maxY;
             maxY = y4 > maxY ? y4 : maxY;
+        }
+
+        // check for children
+        if(this.children.length)
+        {
+            var childBounds = this.containerGetBounds();
+
+            w0 = childBounds.x;
+            w1 = childBounds.x + childBounds.width;
+            h0 = childBounds.y;
+            h1 = childBounds.y + childBounds.height;
+
+            minX = (minX < w0) ? minX : w0;
+            minY = (minY < h0) ? minY : h0;
+
+            maxX = (maxX > w1) ? maxX : w1;
+            maxY = (maxY > h1) ? maxY : h1;
         }
 
         var bounds = this._bounds;
@@ -502,6 +499,27 @@ Sprite.prototype._renderCanvas = function (renderer)
             );
         }
     }
+};
+
+/**
+ * Destroys this sprite and optionally its texture
+ *
+ * @param destroyTexture {boolean} Should it destroy the current texture of the sprite as well
+ * @param destroyBaseTexture {boolean} Should it destroy the base texture of the sprite as well
+ */
+Sprite.prototype.destroy = function (destroyTexture, destroyBaseTexture)
+{
+    Container.prototype.destroy.call(this);
+
+    this.anchor = null;
+
+    if (destroyTexture)
+    {
+        this._texture.destroy(destroyBaseTexture);
+    }
+
+    this._texture = null;
+    this.shader = null;
 };
 
 // some helper functions..

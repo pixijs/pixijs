@@ -201,12 +201,6 @@ RenderTexture.prototype.resize = function (width, height, updateBase)
         this.baseTexture.height = this.height;
     }
 
-    if (this.renderer.type === CONST.RENDERER_TYPE.WEBGL)
-    {
-        this.projection.x = this.width / 2;
-        this.projection.y = -this.height / 2;
-    }
-
     if (!this.valid)
     {
         return;
@@ -256,8 +250,8 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, up
         return;
     }
 
-    //TODO this should be true by default
-    updateTransform = !!updateTransform;
+
+    updateTransform = (updateTransform !== undefined) ? updateTransform : true;//!updateTransform;
 
     this.textureBuffer.transform = matrix;
 
@@ -284,7 +278,7 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, up
     }
 
 
-   if (clear)
+    if (clear)
     {
         this.textureBuffer.clear();
     }
@@ -296,8 +290,6 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, up
     this.renderer.renderDisplayObject(displayObject, this.textureBuffer);
 
     this.renderer.filterManager = temp;
-
-
 };
 
 

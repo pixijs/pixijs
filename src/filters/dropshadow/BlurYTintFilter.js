@@ -1,5 +1,6 @@
-var core = require('../../core'),
-    blurFactor = 1 / 7000;
+var core = require('../../core');
+
+// @see https://github.com/substack/brfs/issues/25
 var fs = require('fs');
 
 /**

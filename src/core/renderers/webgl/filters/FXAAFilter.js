@@ -1,5 +1,5 @@
 var AbstractFilter = require('./AbstractFilter');
-
+// @see https://github.com/substack/brfs/issues/25
 var fs = require('fs');
 
 /**

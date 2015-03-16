@@ -399,6 +399,8 @@ Container.prototype.getBounds = function ()
     return this._currentBounds;
 };
 
+Container.prototype.containerGetBounds = Container.prototype.getBounds;
+
 /**
  * Retrieves the non-global local bounds of the Container as a rectangle.
  * The calculation takes all visible children into consideration.
@@ -498,7 +500,7 @@ Container.prototype.renderWebGL = function (renderer)
  * @param renderer {WebGLRenderer} The renderer
  * @private
  */
-Container.prototype._renderWebGL = function (renderer)
+Container.prototype._renderWebGL = function (renderer) // jshint unused:false
 {
     // this is where content itself gets rendered...
 };
@@ -509,7 +511,7 @@ Container.prototype._renderWebGL = function (renderer)
  * @param renderer {CanvasRenderer} The renderer
  * @private
  */
-Container.prototype._renderCanvas = function (renderer)
+Container.prototype._renderCanvas = function (renderer) // jshint unused:false
 {
     // this is where content itself gets rendered...
 };
@@ -543,4 +545,25 @@ Container.prototype.renderCanvas = function (renderer)
     {
         renderer.maskManager.popMask(renderer);
     }
+};
+
+/**
+ * Destroys the container
+ * @param destroyChildren {boolean} if set to true, all the children will have their destroy method called as well
+ */
+Container.prototype.destroy = function (destroyChildren)
+{
+    DisplayObject.prototype.destroy.call(this);
+
+    if(destroyChildren)
+    {
+        for (var i = 0, j = this.children.length; i < j; ++i)
+        {
+            this.children[i].destroy(destroyChildren);
+        }
+    }
+
+    this.removeChildren();
+
+    this.children = null;
 };

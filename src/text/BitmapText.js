@@ -22,9 +22,11 @@ var core = require('../core');
  * @param style {object} The style parameters
  * @param style.font {string|object} The font descriptor for the object, can be passed as a string of form
  *      "24px FontName" or "FontName" or as an object with explicit name/size properties.
- * @param [style.font.size] {number} The size of the font in pixels, e.g. 24
  * @param [style.font.name] {string} The bitmap font id
- * @param [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
+ * @param [style.font.size] {number} The size of the font in pixels, e.g. 24
+ * @param [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect
+ *      single line text
+ * @param [style.tint=0xFFFFFF] {number} The tint color
  */
 function BitmapText(text, style)
 {
@@ -63,8 +65,8 @@ function BitmapText(text, style)
      * @private
      */
     this._font = {
-        tint: style.tint,
-        align: style.align,
+        tint: style.tint !== undefined ? style.tint : 0xFFFFFF,
+        align: style.align || 'left',
         name: null,
         size: 0
     };

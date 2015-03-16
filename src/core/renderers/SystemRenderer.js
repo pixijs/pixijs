@@ -1,6 +1,7 @@
 var utils = require('../utils'),
     math = require('../math'),
-    CONST = require('../const');
+    CONST = require('../const'),
+    EventEmitter = require('eventemitter3').EventEmitter;
 
 /**
  * The CanvasRenderer draws the scene and all its content onto a 2d canvas. This renderer should be used for browsers that do not support webGL.
@@ -22,6 +23,8 @@ var utils = require('../utils'),
  */
 function SystemRenderer(system, width, height, options)
 {
+    EventEmitter.call(this);
+
     utils.sayHello(system);
 
     // prepare options
@@ -163,10 +166,9 @@ function SystemRenderer(system, width, height, options)
 }
 
 // constructor
+SystemRenderer.prototype = Object.create(EventEmitter.prototype);
 SystemRenderer.prototype.constructor = SystemRenderer;
 module.exports = SystemRenderer;
-
-utils.eventTarget.mixin(SystemRenderer.prototype);
 
 Object.defineProperties(SystemRenderer.prototype, {
     /**

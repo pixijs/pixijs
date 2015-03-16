@@ -1,27 +1,39 @@
 var path        = require('path'),
     gulp        = require('gulp'),
     gutil       = require('gulp-util'),
+    mirror      = require('gulp-mirror'),
     uglify      = require('gulp-uglify'),
     rename      = require('gulp-rename'),
     source      = require('vinyl-source-stream'),
+    sourcemaps  = require('gulp-sourcemaps'),
     buffer      = require('vinyl-buffer'),
     browserify  = require('browserify'),
     watchify    = require('watchify'),
-    exorcist    = require('exorcist'),
     handleErrors = require('../util/handleErrors');
 
 // TODO - Concat license header to dev/prod build files.
 function rebundle() {
+    var debug, min;
+
+    debug = sourcemaps.init({loadMaps: true});
+    debug.pipe(sourcemaps.write('./', {sourceRoot: './'}))
+        .pipe(gulp.dest(paths.out));
+
+    min = rename({ suffix: '.min' });
+    min.pipe(sourcemaps.init({loadMaps: true}))
+        .pipe(uglify())
+        .pipe(sourcemaps.write('./', {sourceRoot: './', addComment: false}))
+        .pipe(gulp.dest(paths.out));
+
     return this.bundle()
         .on('error', handleErrors.handler)
         .pipe(handleErrors())
-        .pipe(exorcist(paths.out + '/pixi.js.map'))
         .pipe(source('pixi.js'))
-        .pipe(gulp.dest(paths.out))
         .pipe(buffer())
-        .pipe(uglify())
-        .pipe(rename({ suffix: '.min' }))
-        .pipe(gulp.dest(paths.out));
+        .pipe(mirror(
+            debug,
+            min
+        ));
 }
 
 function createBundler(args) {

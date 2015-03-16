@@ -1,7 +1,7 @@
 var BaseTexture = require('./BaseTexture'),
     VideoBaseTexture = require('./VideoBaseTexture'),
     TextureUvs = require('./TextureUvs'),
-    eventTarget = require('../utils/eventTarget'),
+    EventEmitter = require('eventemitter3').EventEmitter,
     math = require('../math'),
     utils = require('../utils');
 
@@ -18,7 +18,6 @@ var BaseTexture = require('./BaseTexture'),
  * ```
  *
  * @class
- * @mixes eventTarget
  * @memberof PIXI
  * @param baseTexture {BaseTexture} The base texture source to create the texture from
  * @param [frame] {Rectangle} The rectangle frame of the texture to show
@@ -28,6 +27,8 @@ var BaseTexture = require('./BaseTexture'),
  */
 function Texture(baseTexture, frame, crop, trim, rotate)
 {
+    EventEmitter.call(this);
+
     /**
      * Does this Texture have any frame data assigned to it?
      *
@@ -132,14 +133,13 @@ function Texture(baseTexture, frame, crop, trim, rotate)
     }
     else
     {
-        baseTexture.addEventListener('loaded', this.onBaseTextureLoaded.bind(this));
+        baseTexture.once('loaded', this.onBaseTextureLoaded, this);
     }
 }
 
+Texture.prototype = Object.create(EventEmitter.prototype);
 Texture.prototype.constructor = Texture;
 module.exports = Texture;
-
-eventTarget.mixin(Texture.prototype);
 
 Object.defineProperties(Texture.prototype, {
     frame: {
@@ -201,11 +201,8 @@ Texture.prototype.update = function ()
  *
  * @private
  */
-Texture.prototype.onBaseTextureLoaded = function ()
+Texture.prototype.onBaseTextureLoaded = function (baseTexture)
 {
-    var baseTexture = this.baseTexture;
-    baseTexture.removeEventListener('loaded', this.onLoaded);
-
     // TODO this code looks confusing.. boo to abusing getters and setterss!
     if (this.noFrame)
     {
@@ -320,9 +317,24 @@ Texture.fromCanvas = function (canvas, scaleMode)
  */
 Texture.fromVideo = function (video, scaleMode)
 {
-    return new Texture(VideoBaseTexture.baseTextureFromVideo(video, scaleMode));
+    if (typeof video === 'string')
+    {
+        return Texture.fromVideoUrl(video, scaleMode);
+    }
+    else
+    {
+        return new Texture(VideoBaseTexture.fromVideo(video, scaleMode));
+    }
 };
 
+/**
+ * Helper function that creates a new Texture based on the video url.
+ *
+ * @static
+ * @param videoUrl {string}
+ * @param scaleMode {number} See {{@link SCALE_MODES}} for possible values
+ * @return {Texture} A Texture
+ */
 Texture.fromVideoUrl = function (videoUrl, scaleMode)
 {
     return new Texture(VideoBaseTexture.fromUrl(videoUrl, scaleMode));

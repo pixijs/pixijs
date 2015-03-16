@@ -1,4 +1,5 @@
 var core = require('../../core');
+// @see https://github.com/substack/brfs/issues/25
 var fs = require('fs');
 
 /**
@@ -37,7 +38,7 @@ function NormalMapFilter(texture)
     }
     else
     {
-        texture.baseTexture.once('loaded', this.onTextureLoaded.bind(this));
+        texture.baseTexture.once('loaded', this.onTextureLoaded, this);
     }
 }
 
