@@ -616,10 +616,19 @@ InteractionManager.prototype.onTouchStart = function (event)
     }
 
     var changedTouches = event.changedTouches;
+    var cLength = changedTouches.length;
+    var touchEvent;
 
-    for (var i=0; i < changedTouches.length; i++)
+    for (var c=0; c < cLength; c++)
     {
-        var touchEvent = changedTouches[i];
+        touchEvent = changedTouches[c];
+        touchEvent.global = new core.math.Point();
+        this.mapPositionToPoint( touchEvent.global, touchEvent.clientX, touchEvent.clientY );
+    }
+
+    for (var i=0; i < cLength; i++)
+    {
+        touchEvent = changedTouches[i];
         //TODO POOL
         var touchData = this.getTouchData( touchEvent );
 
@@ -665,10 +674,19 @@ InteractionManager.prototype.onTouchEnd = function (event)
     }
 
     var changedTouches = event.changedTouches;
+    var cLength = changedTouches.length;
+    var touchEvent;
 
-    for (var i=0; i < changedTouches.length; i++)
+    for (var c=0; c < cLength; c++)
     {
-        var touchEvent = changedTouches[i];
+        touchEvent = changedTouches[c];
+        touchEvent.global = new core.math.Point();
+        this.mapPositionToPoint( touchEvent.global, touchEvent.clientX, touchEvent.clientY );
+    }
+
+    for (var i=0; i < cLength; i++)
+    {
+        touchEvent = changedTouches[i];
 
         var touchData = this.getTouchData( touchEvent );
 
@@ -728,10 +746,19 @@ InteractionManager.prototype.onTouchMove = function (event)
     }
 
     var changedTouches = event.changedTouches;
+    var cLength = changedTouches.length;
+    var touchEvent;
 
-    for (var i=0; i < changedTouches.length; i++)
+    for (var c=0; c < cLength; c++)
     {
-        var touchEvent = changedTouches[i];
+        touchEvent = changedTouches[c];
+        touchEvent.global = new core.math.Point();
+        this.mapPositionToPoint( touchEvent.global, touchEvent.clientX, touchEvent.clientY );
+    }
+
+    for (var i=0; i < cLength; i++)
+    {
+        touchEvent = changedTouches[i];
 
         var touchData = this.getTouchData( touchEvent );
 
