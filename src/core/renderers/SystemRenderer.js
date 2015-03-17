@@ -46,7 +46,7 @@ function SystemRenderer(system, width, height, options)
 
     if (options.retinaPrefix !== null)
     {
-        CONST.RETINA_PREFIX = options.retinaPrefix;
+        utils.retinaPrefix = options.retinaPrefix;
     }
 
     /**

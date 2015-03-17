@@ -10,6 +10,15 @@ var utils = module.exports = {
     pluginTarget:   require('./pluginTarget'),
     PolyK:          require('./PolyK'),
 
+    /**
+     * The prefix that denotes a URL is for a retina asset
+     *
+     * @static
+     * @property {string} retinaPrefix
+     */
+    //example: '@2x',
+    retinaPrefix: /@(.+)x/,
+
 
     /**
      * Gets the next uuid
@@ -146,7 +155,7 @@ var utils = module.exports = {
      */
     getResolutionOfUrl: function (url)
     {
-        var resolution = CONST.RETINA_PREFIX.exec(url);
+        var resolution = utils.retinaPrefix.exec(url);
 
         if (resolution)
         {

@@ -94,15 +94,6 @@ module.exports = {
         NEAREST:    1
     },
 
-    /**
-     * The prefix that denotes a URL is for a retina asset
-     *
-     * @static
-     * @property {string} RETINA_PREFIX
-     */
-    //example: '@2x',
-    RETINA_PREFIX: /@(.+)x/,
-
     RESOLUTION:1,
 
     FILTER_RESOLUTION:1,
