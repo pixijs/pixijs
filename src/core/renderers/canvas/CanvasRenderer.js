@@ -19,6 +19,7 @@ var SystemRenderer = require('../SystemRenderer'),
  * @param [options.autoResize=false] {boolean} If the render view is automatically resized, default false
  * @param [options.antialias=false] {boolean} sets antialias (only applicable in chrome at the moment)
  * @param [options.resolution=1] {number} the resolution of the renderer retina would be 2
+ * @param [options.retinaPrefix=/@(.+)x/] {string} the prefix that denotes a URL is for a retina asset
  * @param [options.clearBeforeRender=true] {boolean} This sets if the CanvasRenderer will clear the canvas or
  *      not before the new render pass.
  */
