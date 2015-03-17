@@ -277,17 +277,11 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, up
         }
     }
 
-
-    if (clear)
-    {
-        this.textureBuffer.clear();
-    }
-
     //TODO rename textureBuffer to renderTarget..
     var temp =  this.renderer.filterManager;
 
     this.renderer.filterManager = this.filterManager;
-    this.renderer.renderDisplayObject(displayObject, this.textureBuffer);
+    this.renderer.renderDisplayObject(displayObject, this.textureBuffer, clear);
 
     this.renderer.filterManager = temp;
 };
