@@ -128,6 +128,7 @@ module.exports = {
     DEFAULT_RENDER_OPTIONS: {
         view: null,
         resolution: 1,
+        retinaPrefix: /@(.+)x/,
         antialias: false,
         forceFXAA: false,
         autoResize: false,
