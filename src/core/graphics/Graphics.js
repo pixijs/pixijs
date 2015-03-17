@@ -672,11 +672,12 @@ Graphics.prototype.clear = function ()
  * @param scaleMode {number} Should be one of the scaleMode consts
  * @return {Texture} a texture of the graphics object
  */
-Graphics.prototype.generateTexture = function (resolution, scaleMode)
+Graphics.prototype.generateTexture = function (renderer, resolution, scaleMode)
 {
+
     resolution = resolution || 1;
 
-    var bounds = this.getBounds();
+    var bounds = this.getLocalBounds();
 
     var canvasBuffer = new CanvasBuffer(bounds.width * resolution, bounds.height * resolution);
 
