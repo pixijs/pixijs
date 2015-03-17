@@ -94,16 +94,6 @@ module.exports = {
         NEAREST:    1
     },
 
-    /**
-     * The prefix that denotes a URL is for a retina asset
-     *
-     * @static
-     * @constant
-     * @property {string} RETINA_PREFIX
-     */
-    //example: '@2x',
-    RETINA_PREFIX: /@(.+)x/,
-
     RESOLUTION:1,
 
     FILTER_RESOLUTION:1,
@@ -121,6 +111,7 @@ module.exports = {
      * @property {boolean} DEFAULT_RENDER_OPTIONS.forceFXAA=false
      * @property {boolean} DEFAULT_RENDER_OPTIONS.preserveDrawingBuffer=false
      * @property {number} DEFAULT_RENDER_OPTIONS.resolution=1
+     * @property {number} DEFAULT_RENDER_OPTIONS.retinaPrefix=/@(.+)x/
      * @property {number} DEFAULT_RENDER_OPTIONS.backgroundColor=0x000000
      * @property {boolean} DEFAULT_RENDER_OPTIONS.clearBeforeRender=true
      * @property {boolean} DEFAULT_RENDER_OPTIONS.autoResize=false
@@ -128,6 +119,7 @@ module.exports = {
     DEFAULT_RENDER_OPTIONS: {
         view: null,
         resolution: 1,
+        retinaPrefix: /@(.+)x/,
         antialias: false,
         forceFXAA: false,
         autoResize: false,
