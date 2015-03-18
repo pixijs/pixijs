@@ -616,8 +616,9 @@ InteractionManager.prototype.onTouchStart = function (event)
     }
 
     var changedTouches = event.changedTouches;
+    var cLength = changedTouches.length;
 
-    for (var i=0; i < changedTouches.length; i++)
+    for (var i=0; i < cLength; i++)
     {
         var touchEvent = changedTouches[i];
         //TODO POOL
@@ -665,10 +666,11 @@ InteractionManager.prototype.onTouchEnd = function (event)
     }
 
     var changedTouches = event.changedTouches;
+    var cLength = changedTouches.length;
 
-    for (var i=0; i < changedTouches.length; i++)
+    for (var i=0; i < cLength; i++)
     {
-        var touchEvent = changedTouches[i];
+        touchEvent = changedTouches[i];
 
         var touchData = this.getTouchData( touchEvent );
 
@@ -728,10 +730,11 @@ InteractionManager.prototype.onTouchMove = function (event)
     }
 
     var changedTouches = event.changedTouches;
+    var cLength = changedTouches.length;
 
-    for (var i=0; i < changedTouches.length; i++)
+    for (var i=0; i < cLength; i++)
     {
-        var touchEvent = changedTouches[i];
+        touchEvent = changedTouches[i];
 
         var touchData = this.getTouchData( touchEvent );
 
@@ -777,6 +780,9 @@ InteractionManager.prototype.getTouchData = function (touchEvent)
 
     touchData.identifier = touchEvent.identifier;
     this.mapPositionToPoint( touchData.global, touchEvent.clientX, touchEvent.clientY );
+
+    touchEvent.globalX = touchData.global.x;
+    touchEvent.globalY = touchData.global.y;
 
     return touchData;
 };

@@ -38,12 +38,13 @@ module.exports = InteractionData;
  *
  * @param displayObject {DisplayObject} The DisplayObject that you would like the local coords off
  * @param [point] {Point} A Point object in which to store the value, optional (otherwise will create a new point)
+ * param [globalPos] {Point} A Point object containing your custom global coords, optional (otherwise will use the current global coords)
  * @return {Point} A point containing the coordinates of the InteractionData position relative to the DisplayObject
  */
-InteractionData.prototype.getLocalPosition = function (displayObject, point)
+InteractionData.prototype.getLocalPosition = function (displayObject, point, globalPos)
 {
     var worldTransform = displayObject.worldTransform;
-    var global = this.global;
+    var global = globalPos ? globalPos : this.global;
 
     // do a cheeky transform to get the mouse coords;
     var a00 = worldTransform.a, a01 = worldTransform.c, a02 = worldTransform.tx,
