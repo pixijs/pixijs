@@ -196,6 +196,7 @@ Sprite.prototype._onTextureUpdate = function ()
 * Renders the object using the WebGL renderer
 *
 * @param renderer {WebGLRenderer}
+* @private
 */
 Sprite.prototype._renderWebGL = function (renderer)
 {
@@ -366,6 +367,7 @@ Sprite.prototype.containsPoint = function( point )
 * Renders the object using the Canvas renderer
 *
 * @param renderer {CanvasRenderer} The renderer
+* @private
 */
 Sprite.prototype._renderCanvas = function (renderer)
 {

@@ -87,6 +87,7 @@ module.exports = Mesh;
  * Renders the object using the WebGL renderer
  *
  * @param renderer {WebGLRenderer} a reference to the WebGL renderer
+ * @private
  */
 Mesh.prototype._renderWebGL = function (renderer)
 {
@@ -98,6 +99,7 @@ Mesh.prototype._renderWebGL = function (renderer)
  * Renders the object using the Canvas renderer
  *
  * @param renderer {CanvasRenderer}
+ * @private
  */
 Mesh.prototype._renderCanvas = function (renderer)
 {

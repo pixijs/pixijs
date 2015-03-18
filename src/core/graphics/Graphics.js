@@ -707,6 +707,7 @@ Graphics.prototype.generateTexture = function (renderer, resolution, scaleMode)
  * Renders the object using the WebGL renderer
  *
  * @param renderer {WebGLRenderer}
+ * @private
  */
 Graphics.prototype._renderWebGL = function (renderer)
 {

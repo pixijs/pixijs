@@ -396,6 +396,7 @@ Text.prototype.renderWebGL = function (renderer)
  * Renders the object using the Canvas renderer
  *
  * @param renderer {CanvasRenderer}
+ * @private
  */
 Text.prototype._renderCanvas = function (renderer)
 {

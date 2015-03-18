@@ -137,6 +137,7 @@ TilingSprite.prototype._onTextureUpdate = function ()
  * Renders the object using the WebGL renderer
  *
  * @param renderer {WebGLRenderer}
+ * @private
  */
 TilingSprite.prototype._renderWebGL = function (renderer)
 {
@@ -201,6 +202,7 @@ TilingSprite.prototype._renderWebGL = function (renderer)
  * Renders the object using the Canvas renderer
  *
  * @param renderer {CanvasRenderer} a reference to the canvas renderer
+ * @private
  */
 TilingSprite.prototype._renderCanvas = function (renderer)
 {
