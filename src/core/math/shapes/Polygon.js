@@ -10,15 +10,25 @@ var Point = require('../Point'),
  *      arguments passed can be flat x,y values e.g. `new Polygon(x,y, x,y, x,y, ...)` where `x` and `y` are
  *      Numbers.
  */
-function Polygon(points)
+function Polygon(points_)
 {
+    // prevents an argument assignment deopt
+    // see section 3.1: https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#3-managing-arguments
+    var points = points_;
+
     //if points isn't an array, use arguments as the array
-    if (!(points instanceof Array))
+    if (!Array.isArray(points))
     {
-        points = Array.prototype.slice.call(arguments);
+        // prevents an argument leak deopt
+        // see section 3.2: https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#3-managing-arguments
+        points = new Array(arguments.length);
+
+        for (var i = 0; i < points.length; ++i) {
+            points[i] = arguments[i];
+        }
     }
 
-    //if this is an array of points, convert it to a flat array of numbers
+    // if this is an array of points, convert it to a flat array of numbers
     if (points[0] instanceof Point)
     {
         var p = [];

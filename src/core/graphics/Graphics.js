@@ -637,12 +637,22 @@ Graphics.prototype.drawEllipse = function (x, y, width, height)
  */
 Graphics.prototype.drawPolygon = function (path)
 {
-    if (!(path instanceof Array))
+    // prevents an argument assignment deopt
+    // see section 3.1: https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#3-managing-arguments
+    var points = path;
+
+    if (!Array.isArray(points))
     {
-        path = Array.prototype.slice.call(arguments);
+        // prevents an argument leak deopt
+        // see section 3.2: https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#3-managing-arguments
+        points = new Array(arguments.length);
+
+        for (var i = 0; i < points.length; ++i) {
+            points[i] = arguments[i];
+        }
     }
 
-    this.drawShape(new math.Polygon(path));
+    this.drawShape(new math.Polygon(points));
 
     return this;
 };
