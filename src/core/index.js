@@ -5,12 +5,15 @@
  * @license     {@link https://github.com/GoodBoyDigital/pixi.js/blob/master/LICENSE|MIT License}
  */
 
+var extend = require('extend'),
+    utils = require('./utils');
+
 /**
  * @namespace PIXI
  */
-var core = module.exports = {
+var core = {
     // utils
-    utils: require('./utils'),
+    utils: utils,
     math: require('./math'),
     CONST: require('./const'),
 
@@ -74,7 +77,7 @@ var core = module.exports = {
         width = width || 800;
         height = height || 600;
 
-        if (!noWebGL && checkWebGL())
+        if (!noWebGL && utils.isWebGLSupported())
         {
             return new core.WebGLRenderer(width, height, options);
         }
@@ -83,32 +86,5 @@ var core = module.exports = {
     }
 };
 
-// add constants to export
-var CONST = require('./const');
-
-for (var c in CONST) {
-    core[c] = CONST[c];
-}
-
-
-var contextOptions = { stencil: true };
-
-function checkWebGL()
-{
-    try
-    {
-        if (!window.WebGLRenderingContext)
-        {
-            return false;
-        }
-
-        var canvas = document.createElement('canvas'),
-            gl = canvas.getContext('webgl', contextOptions) || canvas.getContext('experimental-webgl', contextOptions);
-
-        return !!(gl && gl.getContextAttributes().stencil);
-    }
-    catch (e)
-    {
-        return false;
-    }
-}
+// export core and const. We extend into const so that the non-reference types in const remain in-tact
+module.exports = extend(require('./const'), core);

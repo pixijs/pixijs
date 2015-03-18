@@ -198,6 +198,32 @@ var utils = module.exports = {
         utils._saidHello = true;
     },
 
+    /**
+     * Helper for checking for webgl support
+     *
+     * @return {boolean}
+     */
+    isWebGLSupported: function ()
+    {
+        var contextOptions = { stencil: true };
+        try
+        {
+            if (!window.WebGLRenderingContext)
+            {
+                return false;
+            }
+
+            var canvas = document.createElement('canvas'),
+                gl = canvas.getContext('webgl', contextOptions) || canvas.getContext('experimental-webgl', contextOptions);
+
+            return !!(gl && gl.getContextAttributes().stencil);
+        }
+        catch (e)
+        {
+            return false;
+        }
+    }
+
     TextureCache: {},
     BaseTextureCache: {}
 };

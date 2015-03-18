@@ -1,23 +1,17 @@
-require('./polyfill/requestAnimationFrame');
+// run the polyfills
+require('./polyfill');
 
-var core = require('./core');
+var extend = require('extend'),
+    core = require('./core');
 
-extendCore(require('./core/math'));
-extendCore(require('./extras'));
-extendCore(require('./mesh'));
-extendCore(require('./filters'));
-extendCore(require('./interaction'));
-extendCore(require('./loaders'));
-extendCore(require('./spine'));
-extendCore(require('./text'));
-extendCore(require('./deprecation'));
-
-function extendCore(obj)
-{
-    for(var key in obj)
-    {
-        core[key] = obj[key];
-    }
-}
+extend(core, require('./core/math'));
+extend(core, require('./extras'));
+extend(core, require('./mesh'));
+extend(core, require('./filters'));
+extend(core, require('./interaction'));
+extend(core, require('./loaders'));
+extend(core, require('./spine'));
+extend(core, require('./text'));
+extend(core, require('./deprecation'));
 
 module.exports = core;
