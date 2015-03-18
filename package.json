@@ -17,7 +17,7 @@
   },
   "scripts": {
     "test": "gulp test",
-    "docs": "./node_modules/.bin/jsdoc -c ./gulp/util/jsdoc.conf.json"
+    "docs": "./node_modules/.bin/jsdoc -c ./gulp/util/jsdoc.conf.json -R README.md"
   },
   "dependencies": {
     "async": "^0.9.0",
@@ -42,7 +42,7 @@
     "gulp-sourcemaps": "^1.5.0",
     "gulp-uglify": "^1.0.2",
     "gulp-util": "^3.0.1",
-    "ink-docstrap": "^0.5.2",
+    "ink-docstrap": "git+ssh://git@github.com:Pilatch/docstrap.git",
     "jsdoc": "^3.3.0-alpha13",
     "jshint-summary": "^0.4.0",
     "karma": "^0.12.28",
