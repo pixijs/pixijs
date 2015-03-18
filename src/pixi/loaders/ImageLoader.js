@@ -78,25 +78,63 @@ PIXI.ImageLoader.prototype.onLoaded = function()
 PIXI.ImageLoader.prototype.loadFramedSpriteSheet = function(frameWidth, frameHeight, textureName)
 {
     this.frames = [];
-    var cols = Math.floor(this.texture.width / frameWidth);
-    var rows = Math.floor(this.texture.height / frameHeight);
-
-    var i=0;
-    for (var y=0; y<rows; y++)
+    if(!this.texture.baseTexture.hasLoaded)
     {
-        for (var x=0; x<cols; x++,i++)
-        {
-            var texture = new PIXI.Texture(this.texture.baseTexture, {
-                x: x*frameWidth,
-                y: y*frameHeight,
-                width: frameWidth,
-                height: frameHeight
-            });
+        var scope = this;
+        textureName = textureName || scope.texture.baseTexture.imageUrl;
+        this.texture.baseTexture.addEventListener('loaded', function (e) {
+            var cols = Math.floor(scope.texture.width / frameWidth);
+            var rows = Math.floor(scope.texture.height / frameHeight);
 
-            this.frames.push(texture);
-            if (textureName) PIXI.TextureCache[textureName + '-' + i] = texture;
-        }
+            var i = 0;
+            for (var y = 0; y < rows; y++) {
+                for (var x = 0; x < cols; x++, i++) {
+                    if (!PIXI.TextureCache[textureName + '-' + i]) {
+                        var texture = new PIXI.Texture(scope.texture, {
+                            x: x * frameWidth,
+                            y: y * frameHeight,
+                            width: frameWidth,
+                            height: frameHeight
+                        });
+                        PIXI.TextureCache[textureName + '-' + i] = texture;
+                    }
+                    else {
+                        var texture = PIXI.TextureCache[textureName + '-' + i];
+                    }
+                    scope.frames.push(texture);
+                }
+            }
+
+            scope.onLoaded();
+        });
     }
+    else
+    {
 
-	this.load();
+        textureName = textureName || this.texture.baseTexture.imageUrl;
+
+        var cols = Math.floor(this.texture.width / frameWidth);
+        var rows = Math.floor(this.texture.height / frameHeight);
+
+        var i = 0;
+        for (var y = 0; y < rows; y++) {
+            for (var x = 0; x < cols; x++, i++) {
+                if (!PIXI.TextureCache[textureName + '-' + i]) {
+                    var texture = new PIXI.Texture(this.texture, {
+                        x: x * frameWidth,
+                        y: y * frameHeight,
+                        width: frameWidth,
+                        height: frameHeight
+                    });
+                    PIXI.TextureCache[textureName + '-' + i] = texture;
+                }
+                else {
+                    var texture = PIXI.TextureCache[textureName + '-' + i];
+                }
+
+                this.frames.push(texture);
+            }
+        }
+        this.onLoaded();
+    }
 };
