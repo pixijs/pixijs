@@ -266,11 +266,16 @@ WebGLRenderer.prototype.render = function (object)
  * @param renderTarget {RenderTarget} The render target to use to render this display object
  *
  */
-WebGLRenderer.prototype.renderDisplayObject = function (displayObject, renderTarget)//projection, buffer)
+WebGLRenderer.prototype.renderDisplayObject = function (displayObject, renderTarget, clear)//projection, buffer)
 {
     // TODO is this needed...
     //this.blendModeManager.setBlendMode(CONST.BLEND_MODES.NORMAL);
     this.setRenderTarget(renderTarget);
+
+    if(clear)
+    {
+        renderTarget.clear();
+    }
 
     // start the filter manager
     this.filterManager.setFilterStack( renderTarget.filterStack );
