@@ -617,18 +617,10 @@ InteractionManager.prototype.onTouchStart = function (event)
 
     var changedTouches = event.changedTouches;
     var cLength = changedTouches.length;
-    var touchEvent;
-
-    for (var c=0; c < cLength; c++)
-    {
-        touchEvent = changedTouches[c];
-        touchEvent.global = new core.math.Point();
-        this.mapPositionToPoint( touchEvent.global, touchEvent.clientX, touchEvent.clientY );
-    }
 
     for (var i=0; i < cLength; i++)
     {
-        touchEvent = changedTouches[i];
+        var touchEvent = changedTouches[i];
         //TODO POOL
         var touchData = this.getTouchData( touchEvent );
 
@@ -675,16 +667,8 @@ InteractionManager.prototype.onTouchEnd = function (event)
 
     var changedTouches = event.changedTouches;
     var cLength = changedTouches.length;
-    var touchEvent;
 
-    for (var c=0; c < cLength; c++)
-    {
-        touchEvent = changedTouches[c];
-        touchEvent.global = new core.math.Point();
-        this.mapPositionToPoint( touchEvent.global, touchEvent.clientX, touchEvent.clientY );
-    }
-
-    for (var i=0; i < cLength; i++)
+    for (var i=0; i < cLength; var i++)
     {
         touchEvent = changedTouches[i];
 
@@ -747,16 +731,8 @@ InteractionManager.prototype.onTouchMove = function (event)
 
     var changedTouches = event.changedTouches;
     var cLength = changedTouches.length;
-    var touchEvent;
 
-    for (var c=0; c < cLength; c++)
-    {
-        touchEvent = changedTouches[c];
-        touchEvent.global = new core.math.Point();
-        this.mapPositionToPoint( touchEvent.global, touchEvent.clientX, touchEvent.clientY );
-    }
-
-    for (var i=0; i < cLength; i++)
+    for (var i=0; i < cLength; var i++)
     {
         touchEvent = changedTouches[i];
 
@@ -804,6 +780,9 @@ InteractionManager.prototype.getTouchData = function (touchEvent)
 
     touchData.identifier = touchEvent.identifier;
     this.mapPositionToPoint( touchData.global, touchEvent.clientX, touchEvent.clientY );
+
+    touchEvent.globalX = touchData.global.x;
+    touchEvent.globalY = touchData.global.y;
 
     return touchData;
 };
