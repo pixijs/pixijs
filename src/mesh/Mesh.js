@@ -66,7 +66,7 @@ function Mesh(texture, vertices, uvs, indices, drawMode)
     /**
      * Triangles in canvas mode are automatically antialiased, use this value to force triangles to overlap a bit with each other.
      *
-     * @member {number}=
+     * @member {number}
      */
     this.canvasPadding = 0;
 
