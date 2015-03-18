@@ -7,6 +7,8 @@
             "./src/"
         ],
         "exclude": [
+            "./src/core/utils/PolyK.js",
+            "./src/spine/SpineRuntime.js"
         ],
         "includePattern": ".+\\.js(doc)?$",
         "excludePattern": "(^|\\/|\\\\)_"
