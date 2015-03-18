@@ -71,8 +71,8 @@ module.exports = WebGLGraphicsData;
  * Resets the vertices and the indices
  */
 WebGLGraphicsData.prototype.reset = function () {
-    this.points = [];
-    this.indices = [];
+    this.points.length = 0;
+    this.indices.length = 0;
 };
 
 /**
