@@ -42,7 +42,7 @@
     "gulp-sourcemaps": "^1.5.0",
     "gulp-uglify": "^1.0.2",
     "gulp-util": "^3.0.1",
-    "ink-docstrap": "git+https://github.com/GoodBoyDigital/pixi.js.git",
+    "ink-docstrap": "git+https://github.com/Pilatch/docstrap.git",
     "jsdoc": "^3.3.0-alpha13",
     "jshint-summary": "^0.4.0",
     "karma": "^0.12.28",
