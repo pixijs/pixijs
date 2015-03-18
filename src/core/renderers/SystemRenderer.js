@@ -103,10 +103,6 @@ function SystemRenderer(system, width, height, options)
      */
     this.blendModes = null;
 
-
-    ///////////////////////////
-    // TODO: Combine these!
-
     /**
      * The value of the preserveDrawingBuffer flag affects whether or not the contents of the stencil buffer is retained after rendering.
      *
@@ -124,9 +120,6 @@ function SystemRenderer(system, width, height, options)
      * @default
      */
     this.clearBeforeRender = options.clearBeforeRender;
-
-
-    ////////////////////////
 
     /**
      * The background color as a number.
