@@ -90,7 +90,19 @@ Then, to build the source, run:
 $> gulp build
 ```
 
-This will create a minified version at bin/pixi.min.js and a non-minified version at bin/pixi.js.
+This will create a minified version at bin/pixi.min.js and a non-minified version at bin/pixi.js with all the plugins.
+
+If there are specific plugins you don't want, say "spine" or "interaction", you can exclude those:
+
+```
+$> gulp build --exclude spine --exclude interaction
+```
+
+You can also use the short-form `-e`:
+
+```
+$> gulp build -e extras -e spine -e interaction -e filters
+```
 
 ### How to generate the documentation ###
 
