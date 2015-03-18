@@ -670,7 +670,7 @@ InteractionManager.prototype.onTouchEnd = function (event)
 
     for (var i=0; i < cLength; i++)
     {
-        touchEvent = changedTouches[i];
+        var touchEvent = changedTouches[i];
 
         var touchData = this.getTouchData( touchEvent );
 
@@ -734,7 +734,7 @@ InteractionManager.prototype.onTouchMove = function (event)
 
     for (var i=0; i < cLength; i++)
     {
-        touchEvent = changedTouches[i];
+        var touchEvent = changedTouches[i];
 
         var touchData = this.getTouchData( touchEvent );
 

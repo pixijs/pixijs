@@ -222,7 +222,7 @@ var utils = module.exports = {
         {
             return false;
         }
-    }
+    },
 
     TextureCache: {},
     BaseTextureCache: {}

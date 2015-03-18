@@ -23,8 +23,8 @@ function Polygon(points_)
         // see section 3.2: https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#3-managing-arguments
         points = new Array(arguments.length);
 
-        for (var i = 0; i < points.length; ++i) {
-            points[i] = arguments[i];
+        for (var a = 0; a < points.length; ++a) {
+            points[a] = arguments[a];
         }
     }
 
