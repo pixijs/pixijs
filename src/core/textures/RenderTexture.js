@@ -402,9 +402,9 @@ RenderTexture.prototype.getCanvas = function ()
 {
     if (this.renderer.type === CONST.RENDERER_TYPE.WEBGL)
     {
-        var gl =  this.renderer.gl;
-        var width = this.textureBuffer.width;
-        var height = this.textureBuffer.height;
+        var gl = this.renderer.gl;
+        var width = this.textureBuffer.size.width;
+        var height = this.textureBuffer.size.height;
 
         var webGLPixels = new Uint8Array(4 * width * height);
 
