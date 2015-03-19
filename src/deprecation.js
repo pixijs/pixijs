@@ -24,51 +24,56 @@ core.AssetLoader = function () {
     throw new ReferenceError('The loader system was overhauled in pixi v3, please see the new PIXI.Loader class.');
 };
 
-Object.defineProperties(core, {
+/**
+ * @class
+ * @name PIXI.Stage
+ * @see {@link PIXI.Container}
+ * @deprecated since version 3.0
+ */
+core.Stage = function (){
 
-    /**
-     * @class
-     * @name PIXI.Stage
-     * @see {@link PIXI.Container}
-     * @deprecated since version 3.0
-     */
-    Stage: {
-        get: function ()
-        {
-            console.warn('You do not need to use a PIXI Stage any more, you can simply render any container.');
-            return core.Container;
-        }
-    },
+    window.console.warn('You do not need to use a PIXI Stage any more, you can simply render any container.');
 
-    /**
-     * @class
-     * @name PIXI.DisplayObjectContainer
-     * @see {@link PIXI.Container}
-     * @deprecated since version 3.0
-     */
-    DisplayObjectContainer: {
-        get: function ()
-        {
-            console.warn('DisplayObjectContainer has been shortened to Container, please use Container from now on.');
-            return core.Container;
-        }
-    },
+    core.Container.call(this);
 
-    /**
-     * @class
-     * @name PIXI.Strip
-     * @see {@link PIXI.Mesh}
-     * @deprecated since version 3.0
-     */
-    Strip: {
-        get: function ()
-        {
-            console.warn('The Strip class has been renamed to Mesh, please use Mesh from now on.');
-            return mesh.Mesh;
-        }
-    }
+    return this;
+};
+core.Stage.prototype = Object.create(core.Container.prototype);
+core.Stage.prototype.constructor = core.Stage;
 
-});
+/**
+ * @class
+ * @name PIXI.DisplayObjectContainer
+ * @see {@link PIXI.Container}
+ * @deprecated since version 3.0
+ */
+core.DisplayObjectContainer = function (){
+    window.console.warn('DisplayObjectContainer has been shortened to Container, please use Container from now on');
+
+    core.Container.call(this);
+
+    return this;
+};
+core.DisplayObjectContainer.prototype = Object.create(core.Container.prototype);
+core.DisplayObjectContainer.prototype.constructor = core.DisplayObjectContainer;
+
+
+/**
+ * @class
+ * @name PIXI.Strip
+ * @see {@link PIXI.Mesh}
+ * @deprecated since version 3.0
+ */
+core.Strip = function (){
+    window.console.warn('The Strip class has been renamed to Mesh, please use Mesh from now on');
+
+    mesh.Mesh.call(this);
+
+    return this;
+};
+core.Strip.prototype = Object.create(mesh.Mesh.prototype);
+core.Strip.prototype.constructor = core.Strip;
+
 
 /**
  * @method
