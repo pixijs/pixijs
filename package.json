@@ -17,7 +17,7 @@
   },
   "scripts": {
     "test": "gulp test",
-    "docs": "./node_modules/.bin/jsdoc -c ./gulp/util/jsdoc.conf.json -R README.md"
+    "docs": "jsdoc -c ./gulp/util/jsdoc.conf.json -R README.md"
   },
   "dependencies": {
     "async": "^0.9.0",
@@ -34,7 +34,6 @@
     "gulp-cached": "^1.0.1",
     "gulp-concat": "^2.5.2",
     "gulp-debug": "^2.0.0",
-    "gulp-jsdoc": "^0.1.4",
     "gulp-jshint": "^1.9.0",
     "gulp-mirror": "^0.4.0",
     "gulp-plumber": "^0.6.6",
