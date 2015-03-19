@@ -5,15 +5,12 @@
  * @license     {@link https://github.com/GoodBoyDigital/pixi.js/blob/master/LICENSE|MIT License}
  */
 
-var extend = require('extend'),
-    utils = require('./utils');
-
 /**
  * @namespace PIXI
  */
 var core = {
     // utils
-    utils: utils,
+    utils: require('./utils'),
     math: require('./math'),
     CONST: require('./const'),
 
@@ -77,7 +74,7 @@ var core = {
         width = width || 800;
         height = height || 600;
 
-        if (!noWebGL && utils.isWebGLSupported())
+        if (!noWebGL && core.utils.isWebGLSupported())
         {
             return new core.WebGLRenderer(width, height, options);
         }
@@ -86,5 +83,5 @@ var core = {
     }
 };
 
-// export core and const. We extend into const so that the non-reference types in const remain in-tact
-module.exports = extend(require('./const'), core);
+// export core and const. We assign core to const so that the non-reference types in const remain in-tact
+module.exports = Object.assign(require('./const'), core);

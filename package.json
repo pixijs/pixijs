@@ -23,7 +23,7 @@
     "async": "^0.9.0",
     "brfs": "^1.2.0",
     "eventemitter3": "^0.1.6",
-    "extend": "^2.0.0",
+    "object-assign": "^2.0.0",
     "resource-loader": "^1.3.0"
   },
   "devDependencies": {
