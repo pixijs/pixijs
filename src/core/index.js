@@ -5,14 +5,12 @@
  * @license     {@link https://github.com/GoodBoyDigital/pixi.js/blob/master/LICENSE|MIT License}
  */
 
-var utils = require('./utils');
-
 /**
  * @namespace PIXI
  */
 var core = {
     // utils
-    utils: utils,
+    utils: require('./utils'),
     math: require('./math'),
     CONST: require('./const'),
 
@@ -76,7 +74,7 @@ var core = {
         width = width || 800;
         height = height || 600;
 
-        if (!noWebGL && utils.isWebGLSupported())
+        if (!noWebGL && core.utils.isWebGLSupported())
         {
             return new core.WebGLRenderer(width, height, options);
         }
