@@ -2,7 +2,7 @@
 require('./polyfill');
 
 var core = require('./core'),
-	assign = Object.assign;
+    assign = Object.assign;
 
 assign(core, require('./core/math'));
 assign(core, require('./extras'));
