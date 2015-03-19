@@ -5,8 +5,7 @@
  * @license     {@link https://github.com/GoodBoyDigital/pixi.js/blob/master/LICENSE|MIT License}
  */
 
-var extend = require('extend'),
-    utils = require('./utils');
+var utils = require('./utils');
 
 /**
  * @namespace PIXI
@@ -86,5 +85,5 @@ var core = {
     }
 };
 
-// export core and const. We extend into const so that the non-reference types in const remain in-tact
-module.exports = extend(require('./const'), core);
+// export core and const. We assign core to const so that the non-reference types in const remain in-tact
+module.exports = Object.assign(require('./const'), core);
