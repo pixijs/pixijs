@@ -176,18 +176,18 @@ var utils = module.exports = {
         if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1)
         {
             var args = [
-                '%c %c %c Pixi.js ' + CONST.VERSION + ' - ' + type + '  %c ' + ' %c ' + ' http://www.pixijs.com/  %c %c ♥%c♥%c♥ ',
-                'background: #ff66a5',
-                'background: #ff66a5',
-                'color: #ff66a5; background: #030307;',
-                'background: #ff66a5',
-                'background: #ffc3dc',
-                'background: #ff66a5',
-                'color: #ff2424; background: #fff',
-                'color: #ff2424; background: #fff',
-                'color: #ff2424; background: #fff'
+                '\n %c %c %c Pixi.js ' + CONST.VERSION + ' - ✰ ' + type + ' ✰  %c ' + ' %c ' + ' http://www.pixijs.com/  %c %c ♥%c♥%c♥ \n\n',
+                'background: #ff66a5; padding:5px 0;',
+                'background: #ff66a5; padding:5px 0;',
+                'color: #ff66a5; background: #030307; padding:5px 0;',
+                'background: #ff66a5; padding:5px 0;',
+                'background: #ffc3dc; padding:5px 0;',
+                'background: #ff66a5; padding:5px 0;',
+                'color: #ff2424; background: #fff; padding:5px 0;',
+                'color: #ff2424; background: #fff; padding:5px 0;',
+                'color: #ff2424; background: #fff; padding:5px 0;',
             ];
-
+            
             window.console.log.apply(console, args); //jshint ignore:line
         }
         else if (window.console)
