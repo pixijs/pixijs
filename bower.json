@@ -1,8 +1,8 @@
 {
     "name": "pixi.js",
-    "version": "3.0.0-rc2",
+    "version": "3.0.0-rc3",
 
-    "main": "bin/pixi.dev.js",
+    "main": "bin/pixi.js",
 
     "ignore": [
         "**/.*",
