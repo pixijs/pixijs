@@ -155,6 +155,7 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
 
         // the creation of a filter manager unbinds the buffers..
         this.renderer.currentRenderer.start();
+        this.renderer.currentRenderTarget.activate();
     }
     else
     {
