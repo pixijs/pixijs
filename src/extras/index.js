@@ -14,5 +14,6 @@ module.exports = {
     TilingSprite:   require('./TilingSprite'),
     BitmapText:     require('./BitmapText'),
     cacheAsBitmap:  require('./cacheAsBitmap'),
-    getChildByName: require('./getChildByName')
+    getChildByName: require('./getChildByName'),
+    getGlobalPosition: require('./getGlobalPosition')
 };
