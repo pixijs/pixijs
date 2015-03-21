@@ -144,7 +144,7 @@ function InteractionManager(renderer, options)
      * @member {Point}
      * @private
      */
-    this._tempPoint = new core.math.Point();
+    this._tempPoint = new core.Point();
 
     /**
      * The current resolution

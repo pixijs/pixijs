@@ -13,7 +13,7 @@ function InteractionData()
      *
      * @member {Point}
      */
-    this.global = new core.math.Point();
+    this.global = new core.Point();
 
     /**
      * The target Sprite that was interacted with

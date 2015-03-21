@@ -3,8 +3,8 @@ var core = require('../core'),
     RenderTexture = require('../core/textures/RenderTexture'),
     // a sprite use dfor rendering textures..
     tempSprite = new core.Sprite(),
-    tempPoint = new core.math.Point(),
-    tempMatrix = new core.math.Matrix();
+    tempPoint = new core.Point(),
+    tempMatrix = new core.Matrix();
 
 /**
  * A tiling sprite is a fast way of rendering a tiling image
