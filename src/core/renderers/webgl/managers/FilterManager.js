@@ -109,22 +109,32 @@ FilterManager.prototype.pushFilter = function (target, filters)
          this.capFilterArea( bounds );
     }
 
+    if(bounds.width > 0 && bounds.height > 0)
+    {
+        this.currentFrame = bounds;
 
-    this.currentFrame = bounds;
+        var texture = this.getRenderTarget();
 
-    var texture = this.getRenderTarget();
+        this.renderer.setRenderTarget(texture);
 
-    this.renderer.setRenderTarget(texture);
+        // clear the texture..
+        texture.clear();
 
-    // clear the texture..
-    texture.clear();
+        // TODO get rid of object creation!
+        this.filterStack.push({
+            renderTarget: texture,
+            filter: filters
+        });
 
-    // TODO get rid of object creation!
-    this.filterStack.push({
-        renderTarget: texture,
-        filter: filters
-    });
-
+    }
+    else
+    {
+        // push somthing on to the stack that is empty
+        this.filterStack.push({
+            renderTarget: null,
+            filter: filters
+        });
+    }
 };
 
 
@@ -138,6 +148,12 @@ FilterManager.prototype.popFilter = function ()
     var previousFilterData = this.filterStack[this.filterStack.length-1];
 
     var input = filterData.renderTarget;
+
+    // if the renderTarget is null then we don't apply the filter as its offscreen
+    if(!filterData.renderTarget)
+    {
+        return;
+    }
 
     var output = previousFilterData.renderTarget;
 
