@@ -3,7 +3,8 @@ var core = require('../core'),
     RenderTexture = require('../core/textures/RenderTexture'),
     // a sprite use dfor rendering textures..
     tempSprite = new core.Sprite(),
-    tempPoint = new core.math.Point();
+    tempPoint = new core.math.Point(),
+    tempMatrix = new core.math.Matrix();
 
 /**
  * A tiling sprite is a fast way of rendering a tiling image
@@ -381,15 +382,16 @@ TilingSprite.prototype.generateTilingTexture = function (renderer, texture, forc
         //TODO not create a new one each time you refresh
         var renderTexture = new RenderTexture(renderer, targetWidth, targetHeight, texture.baseTexture.scaleMode, texture.baseTexture.resolution);
 
-        tempSprite.worldTransform.a = (targetWidth + 1) / (frame.width);
-        tempSprite.worldTransform.d = (targetHeight + 1) / (frame.height);
-        // fixes the odd fuzzy alpha line that happens..
+        var cachedRenderTarget = renderer.currentRenderTarget;
+
+        m = tempMatrix;
+        m.a =  (targetWidth + 1) / (frame.width);
+        m.d =   (targetHeight + 1) / (frame.height);
+
         tempSprite.worldTransform.tx -= 0.5;
         tempSprite.worldTransform.ty -= 0.5;
 
-        var cachedRenderTarget = renderer.currentRenderTarget;
-
-        renderTexture.render( tempSprite, tempSprite.worldTransform, true, false );
+        renderTexture.render( tempSprite, m, true, false );
 
         renderer.setRenderTarget(cachedRenderTarget);
 
