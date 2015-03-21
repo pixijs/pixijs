@@ -1,17 +1,17 @@
 // run the polyfills
 require('./polyfill');
 
-var extend = require('extend'),
-    core = require('./core');
+var core = require('./core'),
+    assign = Object.assign;
 
-extend(core, require('./core/math'));
-extend(core, require('./extras'));
-extend(core, require('./mesh'));
-extend(core, require('./filters'));
-extend(core, require('./interaction'));
-extend(core, require('./loaders'));
-extend(core, require('./spine'));
-extend(core, require('./text'));
-extend(core, require('./deprecation'));
+assign(core, require('./core/math'));
+assign(core, require('./extras'));
+assign(core, require('./mesh'));
+assign(core, require('./filters'));
+assign(core, require('./interaction'));
+assign(core, require('./loaders'));
+assign(core, require('./spine'));
+assign(core, require('./text'));
+assign(core, require('./deprecation'));
 
 module.exports = core;
