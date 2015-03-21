@@ -10943,7 +10943,7 @@ function WebGLRenderer(width, height, options)
      * Holds the current render target
      * @member {Object}
      */
-    this.currentRenderTarget = this.renderTarget;
+    this.currentRenderTarget = null;
 
     /**
      * object renderer @alvin
@@ -11000,6 +11000,8 @@ WebGLRenderer.prototype._initContext = function ()
     gl.enable(gl.BLEND);
 
     this.renderTarget = new RenderTarget(this.gl, this.width, this.height, null, this.resolution, true);
+
+    this.currentRenderTarget = this.renderTarget;
 
     this.emit('context', gl);
 
