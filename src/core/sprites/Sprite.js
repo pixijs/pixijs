@@ -478,26 +478,26 @@ Sprite.prototype._renderCanvas = function (renderer)
                 this.tintedTexture,
                 0,
                 0,
-                width,
-                height,
+                width * resolution,
+                height * resolution,
                 dx / resolution,
                 dy / resolution,
-                width / resolution,
-                width / resolution
+                width,
+                height
             );
         }
         else
         {
             renderer.context.drawImage(
                 texture.baseTexture.source,
-                texture.crop.x,
-                texture.crop.y,
-                width,
-                height,
+                texture.crop.x * resolution,
+                texture.crop.y * resolution,
+                width * resolution,
+                height * resolution,
                 dx / resolution,
                 dy / resolution,
-                width / resolution,
-                height / resolution
+                width,
+                height
             );
         }
     }
