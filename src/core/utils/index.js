@@ -187,7 +187,7 @@ var utils = module.exports = {
                 'color: #ff2424; background: #fff; padding:5px 0;',
                 'color: #ff2424; background: #fff; padding:5px 0;',
             ];
-            
+
             window.console.log.apply(console, args); //jshint ignore:line
         }
         else if (window.console)

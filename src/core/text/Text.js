@@ -1,4 +1,7 @@
-var core = require('../core');
+var Sprite = require('../sprites/Sprite'),
+    Texture = require('../textures/Texture'),
+    math = require('../math'),
+    CONST = require('../const');
 
 /**
  * A Text Object will create a line or multiple lines of text. To split a line you can use '\n' in your text string,
@@ -12,7 +15,7 @@ var core = require('../core');
  *
  * @class
  * @extends Sprite
- * @memberof PIXI.text
+ * @memberof PIXI
  * @param text {string} The copy that you would like the text to display
  * @param [style] {object} The style parameters
  * @param [style.font] {string} default 'bold 20px Arial' The style and size of the font
@@ -53,7 +56,7 @@ function Text(text, style, resolution)
      * The resolution of the canvas.
      * @member {number}
      */
-    this.resolution = resolution || core.RESOLUTION;
+    this.resolution = resolution || CONST.RESOLUTION;
 
     /**
      * Private tracker for the current text.
@@ -71,9 +74,9 @@ function Text(text, style, resolution)
      */
     this._style = null;
 
-    var texture = core.Texture.fromCanvas(this.canvas);
-    texture.trim = new core.math.Rectangle();
-    core.Sprite.call(this, texture);
+    var texture = Texture.fromCanvas(this.canvas);
+    texture.trim = new math.Rectangle();
+    Sprite.call(this, texture);
 
 
     this.text = text;
@@ -81,7 +84,7 @@ function Text(text, style, resolution)
 }
 
 // constructor
-Text.prototype = Object.create(core.Sprite.prototype);
+Text.prototype = Object.create(Sprite.prototype);
 Text.prototype.constructor = Text;
 module.exports = Text;
 
@@ -389,7 +392,7 @@ Text.prototype.renderWebGL = function (renderer)
         this.updateText();
     }
 
-    core.Sprite.prototype.renderWebGL.call(this, renderer);
+    Sprite.prototype.renderWebGL.call(this, renderer);
 };
 
 /**
@@ -407,7 +410,7 @@ Text.prototype._renderCanvas = function (renderer)
         this.updateText();
     }
 
-    core.Sprite.prototype._renderCanvas.call(this, renderer);
+    Sprite.prototype._renderCanvas.call(this, renderer);
 };
 
 /**
@@ -573,7 +576,7 @@ Text.prototype.getBounds = function (matrix)
         this.updateText();
     }
 
-    return core.Sprite.prototype.getBounds.call(this, matrix);
+    return Sprite.prototype.getBounds.call(this, matrix);
 };
 
 /**

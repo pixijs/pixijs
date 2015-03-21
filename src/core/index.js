@@ -8,24 +8,23 @@
 /**
  * @namespace PIXI
  */
-var core = {
+// export core and const. We assign core to const so that the non-reference types in const remain in-tact
+var core = module.exports = Object.assign(require('./const'), require('./math'), {
     // utils
     utils: require('./utils'),
-    math: require('./math'),
-    CONST: require('./const'),
 
     // display
     DisplayObject:          require('./display/DisplayObject'),
     Container:              require('./display/Container'),
 
-    // legacy..
-    Stage:                  require('./display/Container'),
-    DisplayObjectContainer: require('./display/Container'),
-
+    // sprites
     Sprite:                 require('./sprites/Sprite'),
     ParticleContainer:      require('./particles/ParticleContainer'),
     SpriteRenderer:         require('./sprites/webgl/SpriteRenderer'),
     ParticleRenderer:       require('./particles/webgl/ParticleRenderer'),
+
+    // text
+    Text:                   require('./text/Text'),
 
     // primitives
     Graphics:               require('./graphics/Graphics'),
@@ -81,7 +80,4 @@ var core = {
 
         return new core.CanvasRenderer(width, height, options);
     }
-};
-
-// export core and const. We assign core to const so that the non-reference types in const remain in-tact
-module.exports = Object.assign(require('./const'), core);
+});

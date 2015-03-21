@@ -4,7 +4,7 @@ var core = require('../core');
  * Base mesh class
  * @class
  * @extends Container
- * @memberof PIXI.extras
+ * @memberof PIXI.mesh
  * @param texture {Texture} The texture to use
  * @param [vertices] {Float32Arrif you want to specify the vertices
  * @param [uvs] {Float32Array} if you want to specify the uvs

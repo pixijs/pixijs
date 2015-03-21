@@ -6,11 +6,11 @@
  */
 
 /**
- * @namespace PIXI.extras
+ * @namespace PIXI.mesh
  */
 module.exports = {
-    Mesh:          require('./Mesh'),
+    Mesh:           require('./Mesh'),
     Rope:           require('./Rope'),
     MeshRenderer:   require('./webgl/MeshRenderer'),
-    MeshShader:    require('./webgl/MeshShader')
+    MeshShader:     require('./webgl/MeshShader')
 };
