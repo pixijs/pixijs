@@ -376,7 +376,6 @@ TilingSprite.prototype.generateTilingTexture = function (renderer, texture, forc
     {
         targetWidth = core.utils.getNextPowerOfTwo(frame.width);
         targetHeight = core.utils.getNextPowerOfTwo(frame.height);
-
         tempSprite.texture = texture;
 
         //TODO not create a new one each time you refresh
@@ -384,12 +383,14 @@ TilingSprite.prototype.generateTilingTexture = function (renderer, texture, forc
 
         var cachedRenderTarget = renderer.currentRenderTarget;
 
-        m = tempMatrix;
+        var m = tempMatrix;
         m.a =  (targetWidth + 1) / (frame.width);
         m.d =   (targetHeight + 1) / (frame.height);
 
         tempSprite.worldTransform.tx -= 0.5;
         tempSprite.worldTransform.ty -= 0.5;
+
+        renderer.currentRenderer.flush();
 
         renderTexture.render( tempSprite, m, true, false );
 
