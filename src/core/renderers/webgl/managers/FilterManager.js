@@ -177,6 +177,9 @@ FilterManager.prototype.popFilter = function ()
     gl.vertexAttribPointer(this.renderer.shaderManager.defaultShader.attributes.aTextureCoord, 2, gl.FLOAT, false, 0, 2 * 4 * 4);
     gl.vertexAttribPointer(this.renderer.shaderManager.defaultShader.attributes.aColor, 4, gl.FLOAT, false, 0, 4 * 4 * 4);
 
+    // restore the normal blendmode!
+    this.renderer.blendModeManager.setBlendMode(CONST.BLEND_MODES.NORMAL);
+
     if (filters.length === 1)
     {
         // TODO (cengler) - There has to be a better way then setting this each time?
