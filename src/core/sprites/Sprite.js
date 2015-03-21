@@ -478,12 +478,12 @@ Sprite.prototype._renderCanvas = function (renderer)
                 this.tintedTexture,
                 0,
                 0,
-                width * resolution,
-                height * resolution,
+                width * resolution * renderer.resolution,
+                height * resolution * renderer.resolution,
                 dx / resolution,
                 dy / resolution,
-                width,
-                height
+                width * renderer.resolution,
+                height * renderer.resolution
             );
         }
         else
@@ -492,12 +492,12 @@ Sprite.prototype._renderCanvas = function (renderer)
                 texture.baseTexture.source,
                 texture.crop.x * resolution,
                 texture.crop.y * resolution,
-                width * resolution,
-                height * resolution,
+                width * resolution * renderer.resolution,
+                height * resolution * renderer.resolution,
                 dx / resolution,
                 dy / resolution,
-                width,
-                height
+                width * renderer.resolution,
+                height * renderer.resolution
             );
         }
     }
