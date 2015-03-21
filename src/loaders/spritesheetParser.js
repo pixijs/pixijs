@@ -6,77 +6,76 @@ module.exports = function ()
 {
     return function (resource, next)
     {
-        // if this is a spritesheet object
-        if (resource.data && resource.data.frames)
+        // skip if no data
+        if (!resource.data || !resource.data.frames)
         {
-            var loadOptions = {
-                crossOrigin: resource.crossOrigin,
-                loadType: Resource.LOAD_TYPE.IMAGE
-            };
+            return next();
+        }
 
-            var route = path.dirname(resource.url.replace(this.baseUrl, ''));
+        var loadOptions = {
+            crossOrigin: resource.crossOrigin,
+            loadType: Resource.LOAD_TYPE.IMAGE
+        };
 
-            var resolution = core.utils.getResolutionOfUrl( resource.url );
+        var route = path.dirname(resource.url.replace(this.baseUrl, ''));
 
-            // load the image for this sheet
-            this.add(resource.name + '_image', route + '/' + resource.data.meta.image, loadOptions, function (res)
+        var resolution = core.utils.getResolutionOfUrl( resource.url );
+
+        // load the image for this sheet
+        this.add(resource.name + '_image', route + '/' + resource.data.meta.image, loadOptions, function (res)
+        {
+            resource.textures = {};
+
+            var frames = resource.data.frames;
+
+            for (var i in frames)
             {
-                resource.textures = {};
+                var rect = frames[i].frame;
 
-                var frames = resource.data.frames;
-
-                for (var i in frames)
+                if (rect)
                 {
-                    var rect = frames[i].frame;
+                    var size = null;
+                    var trim = null;
 
-                    if (rect)
-                    {
-                        var size = null;
-                        var trim = null;
-
-                        if (frames[i].rotated) {
-                            size = new core.math.Rectangle(rect.x, rect.y, rect.h, rect.w);
-                        }
-                        else {
-                            size = new core.math.Rectangle(rect.x, rect.y, rect.w, rect.h);
-                        }
-
-                        //  Check to see if the sprite is trimmed
-                        if (frames[i].trimmed)
-                        {
-                            trim = new core.math.Rectangle(
-                                frames[i].spriteSourceSize.x / resolution,
-                                frames[i].spriteSourceSize.y / resolution,
-                                frames[i].sourceSize.w / resolution,
-                                frames[i].sourceSize.h / resolution
-                             );
-                        }
-
-                        // flip the width and height!
-                        if (frames[i].rotated)
-                        {
-                            var temp = size.width;
-                            size.width = size.height;
-                            size.height = temp;
-                        }
-
-                        size.x /= resolution;
-                        size.y /= resolution;
-                        size.width /= resolution;
-                        size.height /= resolution;
-
-                        resource.textures[i] = new core.Texture(res.texture.baseTexture, size, size.clone(), trim, frames[i].rotated);
-
-                        // lets also add the frame to pixi's global cache for fromFrame and fromImage fucntions
-                        core.utils.TextureCache[i] = resource.textures[i];
+                    if (frames[i].rotated) {
+                        size = new core.math.Rectangle(rect.x, rect.y, rect.h, rect.w);
                     }
-                }
+                    else {
+                        size = new core.math.Rectangle(rect.x, rect.y, rect.w, rect.h);
+                    }
 
-                next();
-            });
-        }
-        else {
+                    //  Check to see if the sprite is trimmed
+                    if (frames[i].trimmed)
+                    {
+                        trim = new core.math.Rectangle(
+                            frames[i].spriteSourceSize.x / resolution,
+                            frames[i].spriteSourceSize.y / resolution,
+                            frames[i].sourceSize.w / resolution,
+                            frames[i].sourceSize.h / resolution
+                         );
+                    }
+
+                    // flip the width and height!
+                    if (frames[i].rotated)
+                    {
+                        var temp = size.width;
+                        size.width = size.height;
+                        size.height = temp;
+                    }
+
+                    size.x /= resolution;
+                    size.y /= resolution;
+                    size.width /= resolution;
+                    size.height /= resolution;
+
+                    resource.textures[i] = new core.Texture(res.texture.baseTexture, size, size.clone(), trim, frames[i].rotated);
+
+                    // lets also add the frame to pixi's global cache for fromFrame and fromImage fucntions
+                    core.utils.TextureCache[i] = resource.textures[i];
+                }
+            }
+
             next();
-        }
+        });
     };
 };

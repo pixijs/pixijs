@@ -7,25 +7,16 @@ module.exports = function ()
 {
     return function (resource, next)
     {
-        if (!resource.data || navigator.isCocoonJS)
+        // skip if no data
+        if (!resource.data)
         {
-            if (window.DOMParser)
-            {
-                var domparser = new DOMParser();
-                resource.data = domparser.parseFromString(this.xhr.responseText, 'text/xml');
-            }
-            else
-            {
-                var div = document.createElement('div');
-                div.innerHTML = this.xhr.responseText;
-                resource.data = div;
-            }
+            return next();
         }
 
-        var name = resource.data.nodeName;
+        var name = resource.data.nodeName && resource.data.nodeName.toLowerCase();
 
         // skip if not xml data
-        if (!resource.data || !name || (name.toLowerCase() !== '#document' && name.toLowerCase() !== 'div'))
+        if (!name || (name !== '#document' && name !== 'div'))
         {
             return next();
         }

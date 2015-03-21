@@ -21,29 +21,28 @@ var ResourceLoader = require('resource-loader'),
  * @class
  * @extends ResourceLoader
  * @memberof PIXI.loaders
+ * @param [baseUrl=''] {string} The base url for all resources loaded by this loader.
+ * @param [concurrency=10] {number} The number of resources to load concurrently.
  */
-var Loader = function()
+function Loader(baseUrl, concurrency)
 {
-    ResourceLoader.call(this);
-
-     // parse any json strings into objects
-    this.use(ResourceLoader.middleware.parsing.json())
+    ResourceLoader.call(this, baseUrl, concurrency);
 
     // parse any blob into more usable objects (e.g. Image)
-    .use(ResourceLoader.middleware.parsing.blob())
+    this.use(ResourceLoader.middleware.parsing.blob());
 
     // parse any Image objects into textures
-    .use(textureParser())
+    this.use(textureParser());
 
     // parse any spritesheet data into multiple textures
-    .use(spritesheetParser())
+    this.use(spritesheetParser());
 
     // parse any spine data into a spine object
-    .use(spineAtlasParser())
+    this.use(spineAtlasParser());
 
     // parse any spritesheet data into multiple textures
-    .use(bitmapFontParser());
-};
+    this.use(bitmapFontParser());
+}
 
 Loader.prototype = Object.create(ResourceLoader.prototype);
 Loader.prototype.constructor = Loader;
