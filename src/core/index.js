@@ -12,6 +12,7 @@
 var core = module.exports = Object.assign(require('./const'), require('./math'), {
     // utils
     utils: require('./utils'),
+    math: require('./math'),
 
     // display
     DisplayObject:          require('./display/DisplayObject'),
