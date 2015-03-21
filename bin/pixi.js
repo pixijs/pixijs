@@ -11001,7 +11001,7 @@ WebGLRenderer.prototype._initContext = function ()
 
     this.renderTarget = new RenderTarget(this.gl, this.width, this.height, null, this.resolution, true);
 
-    this.currentRenderTarget = this.renderTarget;
+    this.setRenderTarget(this.renderTarget);
 
     this.emit('context', gl);
 
@@ -19518,11 +19518,11 @@ BloomFilter.prototype.applyFilter = function (renderer, input, output)
 
     this.blurXFilter.applyFilter(renderer, input, renderTarget);
 
-    renderer.blendModeManager.setBlendMode(core.CONST.BLEND_MODES.SCREEN);
+    renderer.blendModeManager.setBlendMode(core.BLEND_MODES.SCREEN);
 
     this.blurYFilter.applyFilter(renderer, renderTarget, output);
 
-    renderer.blendModeManager.setBlendMode(core.CONST.BLEND_MODES.NORMAL);
+    renderer.blendModeManager.setBlendMode(core.BLEND_MODES.NORMAL);
 
     renderer.filterManager.returnRenderTarget(renderTarget);
 };
@@ -20899,7 +20899,7 @@ function DropShadowFilter()
     this._distance = 10;
     this.alpha = 0.75;
     this.hideObject = false;
-    this.blendMode = core.CONST.BLEND_MODES.MULTIPLY;
+    this.blendMode = core.BLEND_MODES.MULTIPLY;
 }
 
 DropShadowFilter.prototype = Object.create(core.AbstractFilter.prototype);
@@ -20925,7 +20925,7 @@ DropShadowFilter.prototype.applyFilter = function (renderer, input, output)
 
     this.blurYTintFilter.applyFilter(renderer, renderTarget, output);
 
-    renderer.blendModeManager.setBlendMode(core.CONST.BLEND_MODES.NORMAL);
+    renderer.blendModeManager.setBlendMode(core.BLEND_MODES.NORMAL);
 
     if(!this.hideObject)
     {
@@ -23104,9 +23104,6 @@ module.exports = {
     textureParser:      require('./textureParser')
 };
 
-
-module.exports.loader = new module.exports.Loader();
-
 },{"./bitmapFontParser":111,"./loader":113,"./spineAtlasParser":114,"./spritesheetParser":115,"./textureParser":116}],113:[function(require,module,exports){
 var ResourceLoader = require('resource-loader'),
     textureParser = require('./textureParser'),
@@ -23382,7 +23379,7 @@ function Mesh(texture, vertices, uvs, indices, drawMode)
      * @member {number}
      * @default CONST.BLEND_MODES.NORMAL;
      */
-    this.blendMode = core.CONST.BLEND_MODES.NORMAL;
+    this.blendMode = core.BLEND_MODES.NORMAL;
 
     /**
      * Triangles in canvas mode are automatically antialiased, use this value to force triangles to overlap a bit with each other.
@@ -27579,6 +27576,9 @@ core.interaction    = require('./interaction');
 core.loaders        = require('./loaders');
 core.mesh           = require('./mesh');
 core.spine          = require('./spine');
+
+// export a premade loader instance
+core.loader = new core.loaders.Loader();
 
 // mixin the deprecation features.
 Object.assign(core, require('./deprecation'));
