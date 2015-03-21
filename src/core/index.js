@@ -55,6 +55,7 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
      * WebGL is the preferred renderer as it is a lot faster. If webGL is not supported by
      * the browser then this function will return a canvas renderer
      *
+     * @memberof PIXI
      * @param width=800 {number} the width of the renderers view
      * @param height=600 {number} the height of the renderers view
      * @param [options] {object} The optional renderer parameters
