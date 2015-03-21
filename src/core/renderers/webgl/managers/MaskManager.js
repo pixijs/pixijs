@@ -42,7 +42,7 @@ MaskManager.prototype.pushMask = function (target, maskData)
 
 /**
  * Removes the last mask from the mask stack and doesn't return it.
- * 
+ *
  * @param target {RenderTarget}
  * @param maskData {any[]}
  */
@@ -73,6 +73,7 @@ MaskManager.prototype.pushSpriteMask = function (target, maskData)
         alphaMaskFilter = [new AlphaMaskFilter(maskData)];
     }
 
+    alphaMaskFilter[0].maskSprite = maskData;
     this.renderer.filterManager.pushFilter(target, alphaMaskFilter);
 };
 
