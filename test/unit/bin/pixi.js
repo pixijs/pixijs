@@ -8,13 +8,15 @@ describe('bin/pixi.js', function () {
             to.be.an('object');
     });
 
-    // TODO: This does not actually work with
-    // Browserify standalone option is use.
-    // This options wraps bundle in a closure
-    // and prevents the require function and
-    // hence the pixi.js module from being exposed.
-    // it('Module exists', function () {
-    //     expect(require('pixi.js')).
-    //         to.be.an('object');
-    // });
+    /**
+     * @todo This does not actually work with Browserify
+     *       option in use. The standalone option wraps
+     *       the bundle in a UMD closure and prevents
+     *       the `require` function, and consequently
+     *       the "pixi.js" module, from being exposed.
+     */
+    //it('Module exists', function () {
+    //    expect(require('pixi.js')).
+    //        to.be.an('object');
+    //});
 });
