@@ -17,6 +17,3 @@ module.exports = {
     spritesheetParser:  require('./spritesheetParser'),
     textureParser:      require('./textureParser')
 };
-
-
-module.exports.loader = new module.exports.Loader();
