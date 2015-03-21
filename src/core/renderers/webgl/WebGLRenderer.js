@@ -188,7 +188,7 @@ WebGLRenderer.prototype._initContext = function ()
 
     this.renderTarget = new RenderTarget(this.gl, this.width, this.height, null, this.resolution, true);
 
-    this.currentRenderTarget = this.renderTarget;
+    this.setRenderTarget(this.renderTarget);
 
     this.emit('context', gl);
 
