@@ -3,7 +3,7 @@
  * the horizontal axis and y represents the vertical axis.
  *
  * @class
- * @memberof PIXI.math
+ * @memberof PIXI
  * @param [x=0] {number} position of the point on the x axis
  * @param [y=0] {number} position of the point on the y axis
  */

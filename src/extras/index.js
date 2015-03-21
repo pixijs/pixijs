@@ -12,6 +12,7 @@ module.exports = {
     Ticker:         require('./Ticker'),
     MovieClip:      require('./MovieClip'),
     TilingSprite:   require('./TilingSprite'),
+    BitmapText:     require('./BitmapText'),
     cacheAsBitmap:  require('./cacheAsBitmap'),
     getChildByName: require('./getChildByName')
 };

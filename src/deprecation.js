@@ -1,7 +1,7 @@
 /*global console */
 var core   = require('./core'),
     mesh   = require('./mesh'),
-    text   = require('./text');
+    extras = require('./extras');
 
 /**
  * @class
@@ -17,7 +17,7 @@ core.SpriteBatch = function ()
 /**
  * @class
  * @name PIXI.AssetLoader
- * @see {@link PIXI.Loader}
+ * @see {@link PIXI.loaders.Loader}
  * @throws {ReferenceError} The loader system was overhauled in pixi v3, please see the new PIXI.Loader class.
  */
 core.AssetLoader = function () {
@@ -57,7 +57,7 @@ Object.defineProperties(core, {
     /**
      * @class
      * @name PIXI.Strip
-     * @see {@link PIXI.Mesh}
+     * @see {@link PIXI.mesh.Mesh}
      * @deprecated since version 3.0
      */
     Strip: {
@@ -84,11 +84,11 @@ core.Sprite.prototype.setTexture = function (texture)
 
 /**
  * @method
- * @name PIXI.BitmapText#setText
+ * @name PIXI.extras.BitmapText#setText
  * @see {@link PIXI.BitmapText#text}
  * @deprecated since version 3.0
  */
-text.BitmapText.prototype.setText = function (text)
+extras.BitmapText.prototype.setText = function (text)
 {
     this.text = text;
     console.warn('setText is now deprecated, please use the text property, e.g : myBitmapText.text = \'my text\';');
@@ -100,7 +100,7 @@ text.BitmapText.prototype.setText = function (text)
  * @see {@link PIXI.Text#text}
  * @deprecated since version 3.0
  */
-text.Text.prototype.setText = function (text)
+core.Text.prototype.setText = function (text)
 {
     this.text = text;
     console.warn('setText is now deprecated, please use the text property, e.g : myText.text = \'my text\';');

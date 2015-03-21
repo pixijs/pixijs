@@ -12,7 +12,7 @@ var Mesh = require('./Mesh');
  *
  * @class
  * @extends Mesh
- * @memberof PIXI.extras
+ * @memberof PIXI.mesh
  * @param {Texture} texture - The texture to use on the rope.
  * @param {Array} points - An array of {Point} objects to construct this rope.
  *

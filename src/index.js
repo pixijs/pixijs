@@ -1,17 +1,15 @@
 // run the polyfills
 require('./polyfill');
 
-var core = require('./core'),
-    assign = Object.assign;
+var core = module.exports = require('./core');
 
-assign(core, require('./core/math'));
-assign(core, require('./extras'));
-assign(core, require('./mesh'));
-assign(core, require('./filters'));
-assign(core, require('./interaction'));
-assign(core, require('./loaders'));
-assign(core, require('./spine'));
-assign(core, require('./text'));
-assign(core, require('./deprecation'));
+// add core plugins.
+core.extras         = require('./extras');
+core.filters        = require('./filters');
+core.interaction    = require('./interaction');
+core.loaders        = require('./loaders');
+core.mesh           = require('./mesh');
+core.spine          = require('./spine');
 
-module.exports = core;
+// mixin the deprecation features.
+Object.assign(core, require('./deprecation'));

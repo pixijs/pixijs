@@ -14,6 +14,27 @@ module.exports = {
     VERSION: require('../../package.json').version,
 
     /**
+     * @property {number} PI_2 - Two Pi
+     * @constant
+     * @static
+     */
+    PI_2: Math.PI * 2,
+
+    /**
+     * @property {number} RAD_TO_DEG - Constant conversion factor for converting radians to degrees
+     * @constant
+     * @static
+     */
+    RAD_TO_DEG: 180 / Math.PI,
+
+    /**
+     * @property {Number} DEG_TO_RAD - Constant conversion factor for converting degrees to radians
+     * @constant
+     * @static
+     */
+    DEG_TO_RAD: Math.PI / 180,
+
+    /**
      * Constant to identify the Renderer Type.
      *
      * @static
