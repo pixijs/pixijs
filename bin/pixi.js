@@ -2836,6 +2836,27 @@ module.exports = {
     VERSION: require('../../package.json').version,
 
     /**
+     * @property {number} PI_2 - Two Pi
+     * @constant
+     * @static
+     */
+    PI_2: Math.PI * 2,
+
+    /**
+     * @property {number} RAD_TO_DEG - Constant conversion factor for converting radians to degrees
+     * @constant
+     * @static
+     */
+    RAD_TO_DEG: 180 / Math.PI,
+
+    /**
+     * @property {Number} DEG_TO_RAD - Constant conversion factor for converting degrees to radians
+     * @constant
+     * @static
+     */
+    DEG_TO_RAD: Math.PI / 180,
+
+    /**
      * Constant to identify the Renderer Type.
      *
      * @static
@@ -3553,10 +3574,11 @@ Container.prototype.destroy = function (destroyChildren)
     this.children = null;
 };
 
-},{"../math":24,"../textures/RenderTexture":61,"./DisplayObject":16}],16:[function(require,module,exports){
+},{"../math":24,"../textures/RenderTexture":62,"./DisplayObject":16}],16:[function(require,module,exports){
 var math = require('../math'),
     RenderTexture = require('../textures/RenderTexture'),
     EventEmitter = require('eventemitter3').EventEmitter,
+    CONST = require('../const'),
     _tempMatrix = new math.Matrix();
 
 /**
@@ -3839,7 +3861,7 @@ DisplayObject.prototype.updateTransform = function ()
     var a, b, c, d, tx, ty;
 
     // so if rotation is between 0 then we can simplify the multiplication process...
-    if (this.rotation % math.PI_2)
+    if (this.rotation % CONST.PI_2)
     {
         // check to see if the rotation is the same as the previous render. This means we only need to use sin and cos when rotation actually changes
         if (this.rotation !== this.rotationCache)
@@ -4019,7 +4041,7 @@ DisplayObject.prototype.destroy = function ()
     this.listeners = null;
 };
 
-},{"../math":24,"../textures/RenderTexture":61,"eventemitter3":4}],17:[function(require,module,exports){
+},{"../const":14,"../math":24,"../textures/RenderTexture":62,"eventemitter3":4}],17:[function(require,module,exports){
 var Container = require('../display/Container'),
     Sprite = require('../sprites/Sprite'),
     Texture = require('../textures/Texture'),
@@ -5167,7 +5189,7 @@ Graphics.prototype.drawShape = function (shape)
     return data;
 };
 
-},{"../const":14,"../display/Container":15,"../math":24,"../renderers/canvas/utils/CanvasBuffer":36,"../renderers/canvas/utils/CanvasGraphics":37,"../sprites/Sprite":58,"../textures/Texture":62,"./GraphicsData":18}],18:[function(require,module,exports){
+},{"../const":14,"../display/Container":15,"../math":24,"../renderers/canvas/utils/CanvasBuffer":36,"../renderers/canvas/utils/CanvasGraphics":37,"../sprites/Sprite":58,"../textures/Texture":63,"./GraphicsData":18}],18:[function(require,module,exports){
 /**
  * A GraphicsData object.
  *
@@ -5183,51 +5205,51 @@ Graphics.prototype.drawShape = function (shape)
  */
 function GraphicsData(lineWidth, lineColor, lineAlpha, fillColor, fillAlpha, fill, shape)
 {
-    /* 
+    /*
      * @member {number} the width of the line to draw
      */
     this.lineWidth = lineWidth;
 
-    /* 
+    /*
      * @member {number} the color of the line to draw
      */
     this.lineColor = lineColor;
-    /* 
+    /*
      * @member {number} the alpha of the line to draw
      */
     this.lineAlpha = lineAlpha;
-    /* 
+    /*
      * @member {number} cached tint of the line to draw
      */
     this._lineTint = lineColor;
 
-    /* 
+    /*
      * @member {number} the color of the fill
      */
     this.fillColor = fillColor;
 
-    /* 
+    /*
      * @member {number} the alpha of the fill
      */
     this.fillAlpha = fillAlpha;
 
-    /* 
+    /*
      * @member {number} cached tint of the fill
      */
     this._fillTint = fillColor;
 
-    /* 
+    /*
      * @member {boolean} whether or not the shape is filled with a colour
      */
     this.fill = fill;
 
-    /* 
+    /*
      * @member {Circle|Rectangle|Ellipse|Line|Polygon} The shape object to draw.
      */
     this.shape = shape;
 
-    /* 
-     * @member {number} The type of the shape, see the Const.Shapes file for all the existing types, 
+    /*
+     * @member {number} The type of the shape, see the Const.Shapes file for all the existing types,
      */
     this.type = shape.type;
 }
@@ -5631,7 +5653,9 @@ GraphicsRenderer.prototype.buildRoundedRectangle = function (graphicsData, webGL
     this.quadraticBezierCurve(x, y + height - radius, x, y + height, x + radius, y + height, recPoints);
     this.quadraticBezierCurve(x + width - radius, y + height, x + width, y + height, x + width, y + height - radius, recPoints);
     this.quadraticBezierCurve(x + width, y + radius, x + width, y, x + width - radius, y, recPoints);
-    this.quadraticBezierCurve(x + radius, y, x, y, x, y + radius, recPoints);
+    this.quadraticBezierCurve(x + radius, y, x, y, x, y + radius + 0.0000000001, recPoints);
+    // this tiny number deals with the issue that occurs when points overlap and polyK fails to triangulate the item.
+    // TODO - fix this properly, this is not very elegant.. but it works for now.
 
     if (graphicsData.fill)
     {
@@ -5649,7 +5673,6 @@ GraphicsRenderer.prototype.buildRoundedRectangle = function (graphicsData, webGL
 
         //TODO use this https://github.com/mapbox/earcut
         var triangles = utils.PolyK.Triangulate(recPoints);
-
         //
 
         var i = 0;
@@ -6146,7 +6169,7 @@ GraphicsRenderer.prototype.buildPoly = function (graphicsData, webGLData)
     return true;
 };
 
-},{"../../const":14,"../../math":24,"../../renderers/webgl/WebGLRenderer":40,"../../renderers/webgl/utils/ObjectRenderer":54,"../../utils":66,"./WebGLGraphicsData":20}],20:[function(require,module,exports){
+},{"../../const":14,"../../math":24,"../../renderers/webgl/WebGLRenderer":40,"../../renderers/webgl/utils/ObjectRenderer":54,"../../utils":67,"./WebGLGraphicsData":20}],20:[function(require,module,exports){
 /**
  * An object containing WebGL specific properties to be used by the WebGL renderer
  *
@@ -6255,24 +6278,23 @@ WebGLGraphicsData.prototype.upload = function () {
 /**
  * @namespace PIXI
  */
-var core = {
+// export core and const. We assign core to const so that the non-reference types in const remain in-tact
+var core = module.exports = Object.assign(require('./const'), require('./math'), {
     // utils
     utils: require('./utils'),
-    math: require('./math'),
-    CONST: require('./const'),
 
     // display
     DisplayObject:          require('./display/DisplayObject'),
     Container:              require('./display/Container'),
 
-    // legacy..
-    Stage:                  require('./display/Container'),
-    DisplayObjectContainer: require('./display/Container'),
-
+    // sprites
     Sprite:                 require('./sprites/Sprite'),
     ParticleContainer:      require('./particles/ParticleContainer'),
     SpriteRenderer:         require('./sprites/webgl/SpriteRenderer'),
     ParticleRenderer:       require('./particles/webgl/ParticleRenderer'),
+
+    // text
+    Text:                   require('./text/Text'),
 
     // primitives
     Graphics:               require('./graphics/Graphics'),
@@ -6328,12 +6350,9 @@ var core = {
 
         return new core.CanvasRenderer(width, height, options);
     }
-};
+});
 
-// export core and const. We assign core to const so that the non-reference types in const remain in-tact
-module.exports = Object.assign(require('./const'), core);
-
-},{"./const":14,"./display/Container":15,"./display/DisplayObject":16,"./graphics/Graphics":17,"./graphics/GraphicsData":18,"./graphics/webgl/GraphicsRenderer":19,"./math":24,"./particles/ParticleContainer":30,"./particles/webgl/ParticleRenderer":32,"./renderers/canvas/CanvasRenderer":35,"./renderers/canvas/utils/CanvasBuffer":36,"./renderers/canvas/utils/CanvasGraphics":37,"./renderers/webgl/WebGLRenderer":40,"./renderers/webgl/filters/AbstractFilter":41,"./renderers/webgl/managers/ShaderManager":47,"./renderers/webgl/shaders/Shader":52,"./sprites/Sprite":58,"./sprites/webgl/SpriteRenderer":59,"./textures/BaseTexture":60,"./textures/RenderTexture":61,"./textures/Texture":62,"./textures/VideoBaseTexture":64,"./utils":66}],22:[function(require,module,exports){
+},{"./const":14,"./display/Container":15,"./display/DisplayObject":16,"./graphics/Graphics":17,"./graphics/GraphicsData":18,"./graphics/webgl/GraphicsRenderer":19,"./math":24,"./particles/ParticleContainer":30,"./particles/webgl/ParticleRenderer":32,"./renderers/canvas/CanvasRenderer":35,"./renderers/canvas/utils/CanvasBuffer":36,"./renderers/canvas/utils/CanvasGraphics":37,"./renderers/webgl/WebGLRenderer":40,"./renderers/webgl/filters/AbstractFilter":41,"./renderers/webgl/managers/ShaderManager":47,"./renderers/webgl/shaders/Shader":52,"./sprites/Sprite":58,"./sprites/webgl/SpriteRenderer":59,"./text/Text":60,"./textures/BaseTexture":61,"./textures/RenderTexture":62,"./textures/Texture":63,"./textures/VideoBaseTexture":65,"./utils":67}],22:[function(require,module,exports){
 var Point = require('./Point');
 
 /**
@@ -6344,7 +6363,7 @@ var Point = require('./Point');
  * | 0 | 0 | 1 |
  *
  * @class
- * @memberof PIXI.math
+ * @memberof PIXI
  */
 function Matrix()
 {
@@ -6699,7 +6718,7 @@ Matrix.TEMP_MATRIX = new Matrix();
  * the horizontal axis and y represents the vertical axis.
  *
  * @class
- * @memberof PIXI.math
+ * @memberof PIXI
  * @param [x=0] {number} position of the point on the x axis
  * @param [y=0] {number} position of the point on the y axis
  */
@@ -6764,31 +6783,7 @@ Point.prototype.set = function (x, y)
 };
 
 },{}],24:[function(require,module,exports){
-/**
- * @namespace PIXI.math
- */
 module.exports = {
-    /**
-     * @property {number} PI_2 - Two Pi
-     * @constant
-     * @static
-     */
-    PI_2: Math.PI * 2,
-
-    /**
-     * @property {number} RAD_TO_DEG - Constant conversion factor for converting radians to degrees
-     * @constant
-     * @static
-     */
-    RAD_TO_DEG: 180 / Math.PI,
-
-    /**
-     * @property {Number} DEG_TO_RAD - Constant conversion factor for converting degrees to radians
-     * @constant
-     * @static
-     */
-    DEG_TO_RAD: Math.PI / 180,
-
     Point:      require('./Point'),
     Matrix:     require('./Matrix'),
 
@@ -8550,7 +8545,7 @@ SystemRenderer.prototype.destroy = function (removeView) {
     this._backgroundColorString = null;
 };
 
-},{"../const":14,"../math":24,"../utils":66,"eventemitter3":4}],35:[function(require,module,exports){
+},{"../const":14,"../math":24,"../utils":67,"eventemitter3":4}],35:[function(require,module,exports){
 var SystemRenderer = require('../SystemRenderer'),
     CanvasMaskManager = require('./utils/CanvasMaskManager'),
     utils = require('../../utils'),
@@ -8820,7 +8815,7 @@ CanvasRenderer.prototype._mapBlendModes = function ()
     }
 };
 
-},{"../../const":14,"../../math":24,"../../utils":66,"../SystemRenderer":34,"./utils/CanvasMaskManager":38}],36:[function(require,module,exports){
+},{"../../const":14,"../../math":24,"../../utils":67,"../SystemRenderer":34,"./utils/CanvasMaskManager":38}],36:[function(require,module,exports){
 /**
  * Creates a Canvas element of the given size.
  *
@@ -9563,7 +9558,7 @@ CanvasTinter.canUseMultiply = utils.canUseNewCanvasBlendModes();
  */
 CanvasTinter.tintMethod = CanvasTinter.canUseMultiply ? CanvasTinter.tintWithMultiply :  CanvasTinter.tintWithPerPixel;
 
-},{"../../../utils":66}],40:[function(require,module,exports){
+},{"../../../utils":67}],40:[function(require,module,exports){
 var SystemRenderer = require('../SystemRenderer'),
     ShaderManager = require('./managers/ShaderManager'),
     MaskManager = require('./managers/MaskManager'),
@@ -10085,7 +10080,7 @@ WebGLRenderer.prototype._mapBlendModes = function ()
     }
 };
 
-},{"../../const":14,"../../utils":66,"../SystemRenderer":34,"./filters/FXAAFilter":42,"./managers/BlendModeManager":44,"./managers/FilterManager":45,"./managers/MaskManager":46,"./managers/ShaderManager":47,"./managers/StencilManager":48,"./utils/ObjectRenderer":54,"./utils/RenderTarget":56}],41:[function(require,module,exports){
+},{"../../const":14,"../../utils":67,"../SystemRenderer":34,"./filters/FXAAFilter":42,"./managers/BlendModeManager":44,"./managers/FilterManager":45,"./managers/MaskManager":46,"./managers/ShaderManager":47,"./managers/StencilManager":48,"./utils/ObjectRenderer":54,"./utils/RenderTarget":56}],41:[function(require,module,exports){
 var DefaultShader = require('../shaders/TextureShader');
 
 /**
@@ -11095,7 +11090,7 @@ ShaderManager.prototype.destroy = function ()
     this.tempAttribState = null;
 };
 
-},{"../../../utils":66,"../shaders/ComplexPrimitiveShader":50,"../shaders/PrimitiveShader":51,"../shaders/TextureShader":53,"./WebGLManager":49}],48:[function(require,module,exports){
+},{"../../../utils":67,"../shaders/ComplexPrimitiveShader":50,"../shaders/PrimitiveShader":51,"../shaders/TextureShader":53,"./WebGLManager":49}],48:[function(require,module,exports){
 var WebGLManager = require('./WebGLManager'),
     utils = require('../../../utils');
 
@@ -11439,7 +11434,7 @@ WebGLMaskManager.prototype.popMask = function (maskData)
 };
 
 
-},{"../../../utils":66,"./WebGLManager":49}],49:[function(require,module,exports){
+},{"../../../utils":67,"./WebGLManager":49}],49:[function(require,module,exports){
 /**
  * @class
  * @memberof PIXI
@@ -12150,7 +12145,7 @@ Shader.prototype._glCompile = function (type, src)
     return shader;
 };
 
-},{"../../../utils":66}],53:[function(require,module,exports){
+},{"../../../utils":67}],53:[function(require,module,exports){
 var Shader = require('./Shader');
 
 /**
@@ -12756,7 +12751,7 @@ RenderTarget.prototype.destroy = function()
     this.texture = null;
 };
 
-},{"../../../const":14,"../../../math":24,"../../../utils":66,"./StencilMaskStack":57}],57:[function(require,module,exports){
+},{"../../../const":14,"../../../math":24,"../../../utils":67,"./StencilMaskStack":57}],57:[function(require,module,exports){
 /**
  * Generic Mask Stack data structure
  * @class
@@ -13271,26 +13266,26 @@ Sprite.prototype._renderCanvas = function (renderer)
                 this.tintedTexture,
                 0,
                 0,
-                width,
-                height,
+                width * resolution,
+                height * resolution,
                 dx / resolution,
                 dy / resolution,
-                width / resolution,
-                width / resolution
+                width,
+                height
             );
         }
         else
         {
             renderer.context.drawImage(
                 texture.baseTexture.source,
-                texture.crop.x,
-                texture.crop.y,
-                width,
-                height,
+                texture.crop.x * resolution,
+                texture.crop.y * resolution,
+                width * resolution,
+                height * resolution,
                 dx / resolution,
                 dy / resolution,
-                width / resolution,
-                height / resolution
+                width,
+                height
             );
         }
     }
@@ -13354,7 +13349,7 @@ Sprite.fromImage = function (imageId, crossorigin, scaleMode)
     return new Sprite(Texture.fromImage(imageId, crossorigin, scaleMode));
 };
 
-},{"../const":14,"../display/Container":15,"../math":24,"../renderers/canvas/utils/CanvasTinter":39,"../textures/Texture":62,"../utils":66}],59:[function(require,module,exports){
+},{"../const":14,"../display/Container":15,"../math":24,"../renderers/canvas/utils/CanvasTinter":39,"../textures/Texture":63,"../utils":67}],59:[function(require,module,exports){
 var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
     WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
     CONST = require('../../const');
@@ -13872,6 +13867,602 @@ SpriteRenderer.prototype.destroy = function ()
 };
 
 },{"../../const":14,"../../renderers/webgl/WebGLRenderer":40,"../../renderers/webgl/utils/ObjectRenderer":54}],60:[function(require,module,exports){
+var Sprite = require('../sprites/Sprite'),
+    Texture = require('../textures/Texture'),
+    math = require('../math'),
+    CONST = require('../const');
+
+/**
+ * A Text Object will create a line or multiple lines of text. To split a line you can use '\n' in your text string,
+ * or add a wordWrap property set to true and and wordWrapWidth property with a value in the style object.
+ *
+ * A Text can be created directly from a string and a style object
+ *
+ * ```js
+ * var text = new PIXI.Text('This is a pixi text',{font : '24px Arial', fill : 0xff1010, align : 'center'});
+ * ```
+ *
+ * @class
+ * @extends Sprite
+ * @memberof PIXI
+ * @param text {string} The copy that you would like the text to display
+ * @param [style] {object} The style parameters
+ * @param [style.font] {string} default 'bold 20px Arial' The style and size of the font
+ * @param [style.fill='black'] {String|Number} A canvas fillstyle that will be used on the text e.g 'red', '#00FF00'
+ * @param [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
+ * @param [style.stroke] {String|Number} A canvas fillstyle that will be used on the text stroke e.g 'blue', '#FCFF00'
+ * @param [style.strokeThickness=0] {number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
+ * @param [style.wordWrap=false] {boolean} Indicates if word wrap should be used
+ * @param [style.wordWrapWidth=100] {number} The width at which text will wrap, it needs wordWrap to be set to true
+ * @param [style.lineHeight] {number} The line height, a number that represents the vertical space that a letter uses
+ * @param [style.dropShadow=false] {boolean} Set a drop shadow for the text
+ * @param [style.dropShadowColor='#000000'] {string} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
+ * @param [style.dropShadowAngle=Math.PI/4] {number} Set a angle of the drop shadow
+ * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
+ * @param [style.padding=0] {number} Occasionally some fonts are cropped. Adding some padding will prevent this from happening
+ * @param [style.textBaseline='alphabetic'] {string} The baseline of the text that is rendered.
+ * @param [style.lineJoin='miter'] {string} The lineJoin property sets the type of corner created, it can resolve
+ *      spiked text issues. Default is 'miter' (creates a sharp corner).
+ * @param [style.miterLimit=10] {number} The miter limit to use when using the 'miter' lineJoin mode. This can reduce
+ *      or increase the spikiness of rendered text.
+ */
+function Text(text, style, resolution)
+{
+    /**
+     * The canvas element that everything is drawn to
+     *
+     * @member {HTMLCanvasElement}
+     */
+    this.canvas = document.createElement('canvas');
+
+    /**
+     * The canvas 2d context that everything is drawn with
+     * @member {HTMLCanvasElement}
+     */
+    this.context = this.canvas.getContext('2d');
+
+    /**
+     * The resolution of the canvas.
+     * @member {number}
+     */
+    this.resolution = resolution || CONST.RESOLUTION;
+
+    /**
+     * Private tracker for the current text.
+     *
+     * @member {string}
+     * @private
+     */
+    this._text = null;
+
+    /**
+     * Private tracker for the current style.
+     *
+     * @member {object}
+     * @private
+     */
+    this._style = null;
+
+    var texture = Texture.fromCanvas(this.canvas);
+    texture.trim = new math.Rectangle();
+    Sprite.call(this, texture);
+
+
+    this.text = text;
+    this.style = style;
+}
+
+// constructor
+Text.prototype = Object.create(Sprite.prototype);
+Text.prototype.constructor = Text;
+module.exports = Text;
+
+Text.fontPropertiesCache = {};
+Text.fontPropertiesCanvas = document.createElement('canvas');
+Text.fontPropertiesContext = Text.fontPropertiesCanvas.getContext('2d');
+
+Object.defineProperties(Text.prototype, {
+    /**
+     * The width of the Text, setting this will actually modify the scale to achieve the value set
+     *
+     * @member {number}
+     * @memberof Text#
+     */
+    width: {
+        get: function ()
+        {
+            if (this.dirty)
+            {
+                this.updateText();
+            }
+
+            return this.scale.x * this._texture._frame.width;
+        },
+        set: function (value)
+        {
+            this.scale.x = value / this._texture._frame.width;
+            this._width = value;
+        }
+    },
+
+    /**
+     * The height of the Text, setting this will actually modify the scale to achieve the value set
+     *
+     * @member {number}
+     * @memberof Text#
+     */
+    height: {
+        get: function ()
+        {
+            if (this.dirty)
+            {
+                this.updateText();
+            }
+
+            return  this.scale.y * this._texture._frame.height;
+        },
+        set: function (value)
+        {
+            this.scale.y = value / this._texture._frame.height;
+            this._height = value;
+        }
+    },
+
+    /**
+     * Set the style of the text
+     *
+     * @param [style] {object} The style parameters
+     * @param [style.font='bold 20pt Arial'] {string} The style and size of the font
+     * @param [style.fill='black'] {object} A canvas fillstyle that will be used on the text eg 'red', '#00FF00'
+     * @param [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
+     * @param [style.stroke='black'] {string} A canvas fillstyle that will be used on the text stroke eg 'blue', '#FCFF00'
+     * @param [style.strokeThickness=0] {number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
+     * @param [style.wordWrap=false] {boolean} Indicates if word wrap should be used
+     * @param [style.wordWrapWidth=100] {number} The width at which text will wrap
+     * @param [style.lineHeight] {number} The line height, a number that represents the vertical space that a letter uses
+     * @param [style.dropShadow=false] {boolean} Set a drop shadow for the text
+     * @param [style.dropShadowColor='#000000'] {string} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
+     * @param [style.dropShadowAngle=Math.PI/6] {number} Set a angle of the drop shadow
+     * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
+     * @param [style.padding=0] {number} Occasionally some fonts are cropped. Adding some padding will prevent this from happening
+     * @param [style.textBaseline='alphabetic'] {string} The baseline of the text that is rendered.
+     * @param [style.lineJoin='miter'] {string} The lineJoin property sets the type of corner created, it can resolve
+     *      spiked text issues. Default is 'miter' (creates a sharp corner).
+     * @param [style.miterLimit=10] {number} The miter limit to use when using the 'miter' lineJoin mode. This can reduce
+     *      or increase the spikiness of rendered text.
+     * @memberof Text#
+     */
+    style: {
+        get: function ()
+        {
+            return this._style;
+        },
+        set: function (style)
+        {
+            style = style || {};
+            style.font = style.font || 'bold 20pt Arial';
+            style.fill = style.fill || 'black';
+            style.align = style.align || 'left';
+            style.stroke = style.stroke || 'black'; //provide a default, see: https://github.com/GoodBoyDigital/pixi.js/issues/136
+            style.strokeThickness = style.strokeThickness || 0;
+            style.wordWrap = style.wordWrap || false;
+            style.wordWrapWidth = style.wordWrapWidth || 100;
+
+            style.dropShadow = style.dropShadow || false;
+            style.dropShadowColor = style.dropShadowColor || '#000000';
+            style.dropShadowAngle = style.dropShadowAngle || Math.PI / 6;
+            style.dropShadowDistance = style.dropShadowDistance || 5;
+
+            style.padding = style.padding || 0;
+
+            style.textBaseline = style.textBaseline || 'alphabetic';
+
+            style.lineJoin = style.lineJoin || 'miter';
+            style.miterLimit = style.miterLimit || 10;
+
+            this._style = style;
+            this.dirty = true;
+        }
+    },
+
+    /**
+     * Set the copy for the text object. To split a line you can use '\n'.
+     *
+     * @param text {string} The copy that you would like the text to display
+     * @memberof Text#
+     */
+    text: {
+        get: function()
+        {
+            return this._text;
+        },
+        set: function (text){
+            text = text.toString() || ' ';
+            if (this._text === text)
+            {
+                return;
+            }
+            this._text = text;
+            this.dirty = true;
+        }
+    }
+});
+
+/**
+ * Renders text and updates it when needed
+ *
+ * @private
+ */
+Text.prototype.updateText = function ()
+{
+    var style = this._style;
+    this.context.font = style.font;
+
+    // word wrap
+    // preserve original text
+    var outputText = style.wordWrap ? this.wordWrap(this._text) : this._text;
+
+    // split text into lines
+    var lines = outputText.split(/(?:\r\n|\r|\n)/);
+
+    // calculate text width
+    var lineWidths = new Array(lines.length);
+    var maxLineWidth = 0;
+    var fontProperties = this.determineFontProperties(style.font);
+    for (var i = 0; i < lines.length; i++)
+    {
+        var lineWidth = this.context.measureText(lines[i]).width;
+        lineWidths[i] = lineWidth;
+        maxLineWidth = Math.max(maxLineWidth, lineWidth);
+    }
+
+    var width = maxLineWidth + style.strokeThickness;
+    if (style.dropShadow)
+    {
+        width += style.dropShadowDistance;
+    }
+
+    this.canvas.width = ( width + this.context.lineWidth ) * this.resolution;
+
+    // calculate text height
+    var lineHeight = this.style.lineHeight || fontProperties.fontSize + style.strokeThickness;
+
+    var height = lineHeight * lines.length;
+    if (style.dropShadow)
+    {
+        height += style.dropShadowDistance;
+    }
+
+    this.canvas.height = ( height + this._style.padding * 2 ) * this.resolution;
+
+    this.context.scale( this.resolution, this.resolution);
+
+    if (navigator.isCocoonJS)
+    {
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+    }
+
+    //this.context.fillStyle="#FF0000";
+    //this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+    this.context.font = style.font;
+    this.context.strokeStyle = style.stroke;
+    this.context.lineWidth = style.strokeThickness;
+    this.context.textBaseline = style.textBaseline;
+    this.context.lineJoin = style.lineJoin;
+    this.context.miterLimit = style.miterLimit;
+
+    var linePositionX;
+    var linePositionY;
+
+    if (style.dropShadow)
+    {
+        this.context.fillStyle = style.dropShadowColor;
+
+        var xShadowOffset = Math.cos(style.dropShadowAngle) * style.dropShadowDistance;
+        var yShadowOffset = Math.sin(style.dropShadowAngle) * style.dropShadowDistance;
+
+        for (i = 0; i < lines.length; i++)
+        {
+            linePositionX = style.strokeThickness / 2;
+            linePositionY = (style.strokeThickness / 2 + i * lineHeight) + fontProperties.ascent;
+
+            if (style.align === 'right')
+            {
+                linePositionX += maxLineWidth - lineWidths[i];
+            }
+            else if (style.align === 'center')
+            {
+                linePositionX += (maxLineWidth - lineWidths[i]) / 2;
+            }
+
+            if (style.fill)
+            {
+                this.context.fillText(lines[i], linePositionX + xShadowOffset, linePositionY + yShadowOffset + this._style.padding);
+            }
+        }
+    }
+
+    //set canvas text styles
+    this.context.fillStyle = style.fill;
+
+    //draw lines line by line
+    for (i = 0; i < lines.length; i++)
+    {
+        linePositionX = style.strokeThickness / 2;
+        linePositionY = (style.strokeThickness / 2 + i * lineHeight) + fontProperties.ascent;
+
+        if (style.align === 'right')
+        {
+            linePositionX += maxLineWidth - lineWidths[i];
+        }
+        else if (style.align === 'center')
+        {
+            linePositionX += (maxLineWidth - lineWidths[i]) / 2;
+        }
+
+        if (style.stroke && style.strokeThickness)
+        {
+            this.context.strokeText(lines[i], linePositionX, linePositionY + this._style.padding);
+        }
+
+        if (style.fill)
+        {
+            this.context.fillText(lines[i], linePositionX, linePositionY + this._style.padding);
+        }
+    }
+
+    this.updateTexture();
+};
+
+/**
+ * Updates texture size based on canvas size
+ *
+ * @private
+ */
+Text.prototype.updateTexture = function ()
+{
+    var texture = this._texture;
+
+    texture.baseTexture.hasLoaded = true;
+    texture.baseTexture.resolution = this.resolution;
+
+    texture.baseTexture.width = this.canvas.width / this.resolution;
+    texture.baseTexture.height = this.canvas.height / this.resolution;
+    texture.crop.width = texture._frame.width = this.canvas.width / this.resolution;
+    texture.crop.height = texture._frame.height = this.canvas.height / this.resolution;
+
+    texture.trim.x = 0;
+    texture.trim.y = -this._style.padding;
+
+    texture.trim.width = texture._frame.width;
+    texture.trim.height = texture._frame.height - this._style.padding*2;
+
+    this._width = this.canvas.width / this.resolution;
+    this._height = this.canvas.height / this.resolution;
+
+    texture.update();
+
+    this.dirty = false;
+};
+
+/**
+ * Renders the object using the WebGL renderer
+ *
+ * @param renderer {WebGLRenderer}
+ */
+Text.prototype.renderWebGL = function (renderer)
+{
+    if (this.dirty)
+    {
+        //this.resolution = 1//renderer.resolution;
+
+        this.updateText();
+    }
+
+    Sprite.prototype.renderWebGL.call(this, renderer);
+};
+
+/**
+ * Renders the object using the Canvas renderer
+ *
+ * @param renderer {CanvasRenderer}
+ * @private
+ */
+Text.prototype._renderCanvas = function (renderer)
+{
+    if (this.dirty)
+    {
+     //   this.resolution = 1//renderer.resolution;
+
+        this.updateText();
+    }
+
+    Sprite.prototype._renderCanvas.call(this, renderer);
+};
+
+/**
+ * Calculates the ascent, descent and fontSize of a given fontStyle
+ *
+ * @param fontStyle {object}
+ * @private
+ */
+Text.prototype.determineFontProperties = function (fontStyle)
+{
+    var properties = Text.fontPropertiesCache[fontStyle];
+
+    if (!properties)
+    {
+        properties = {};
+
+        var canvas = Text.fontPropertiesCanvas;
+        var context = Text.fontPropertiesContext;
+
+        context.font = fontStyle;
+
+        var width = Math.ceil(context.measureText('|MÉq').width);
+        var baseline = Math.ceil(context.measureText('M').width);
+        var height = 2 * baseline;
+
+        baseline = baseline * 1.4 | 0;
+
+        canvas.width = width;
+        canvas.height = height;
+
+        context.fillStyle = '#f00';
+        context.fillRect(0, 0, width, height);
+
+        context.font = fontStyle;
+
+        context.textBaseline = 'alphabetic';
+        context.fillStyle = '#000';
+        context.fillText('|MÉq', 0, baseline);
+
+        var imagedata = context.getImageData(0, 0, width, height).data;
+        var pixels = imagedata.length;
+        var line = width * 4;
+
+        var i, j;
+
+        var idx = 0;
+        var stop = false;
+
+        // ascent. scan from top to bottom until we find a non red pixel
+        for (i = 0; i < baseline; i++)
+        {
+            for (j = 0; j < line; j += 4)
+            {
+                if (imagedata[idx + j] !== 255)
+                {
+                    stop = true;
+                    break;
+                }
+            }
+            if (!stop)
+            {
+                idx += line;
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        properties.ascent = baseline - i;
+
+        idx = pixels - line;
+        stop = false;
+
+        // descent. scan from bottom to top until we find a non red pixel
+        for (i = height; i > baseline; i--)
+        {
+            for (j = 0; j < line; j += 4)
+            {
+                if (imagedata[idx + j] !== 255)
+                {
+                    stop = true;
+                    break;
+                }
+            }
+            if (!stop)
+            {
+                idx -= line;
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        properties.descent = i - baseline;
+        properties.fontSize = properties.ascent + properties.descent;
+
+        Text.fontPropertiesCache[fontStyle] = properties;
+    }
+
+    return properties;
+};
+
+/**
+ * Applies newlines to a string to have it optimally fit into the horizontal
+ * bounds set by the Text object's wordWrapWidth property.
+ *
+ * @param text {string}
+ * @private
+ */
+Text.prototype.wordWrap = function (text)
+{
+    // Greedy wrapping algorithm that will wrap words as the line grows longer
+    // than its horizontal bounds.
+    var result = '';
+    var lines = text.split('\n');
+    var wordWrapWidth = this._style.wordWrapWidth;
+    for (var i = 0; i < lines.length; i++)
+    {
+        var spaceLeft = wordWrapWidth;
+        var words = lines[i].split(' ');
+        for (var j = 0; j < words.length; j++)
+        {
+            var wordWidth = this.context.measureText(words[j]).width;
+            var wordWidthWithSpace = wordWidth + this.context.measureText(' ').width;
+            if (j === 0 || wordWidthWithSpace > spaceLeft)
+            {
+                // Skip printing the newline if it's the first word of the line that is
+                // greater than the word wrap width.
+                if (j > 0)
+                {
+                    result += '\n';
+                }
+                result += words[j];
+                spaceLeft = wordWrapWidth - wordWidth;
+            }
+            else
+            {
+                spaceLeft -= wordWidthWithSpace;
+                result += ' ' + words[j];
+            }
+        }
+
+        if (i < lines.length-1)
+        {
+            result += '\n';
+        }
+    }
+    return result;
+};
+
+/**
+ * Returns the bounds of the Text as a rectangle. The bounds calculation takes the worldTransform into account.
+ *
+ * @param matrix {Matrix} the transformation matrix of the Text
+ * @return {Rectangle} the framing rectangle
+ */
+Text.prototype.getBounds = function (matrix)
+{
+    if (this.dirty)
+    {
+        this.updateText();
+    }
+
+    return Sprite.prototype.getBounds.call(this, matrix);
+};
+
+/**
+ * Destroys this text object.
+ *
+ * @param destroyBaseTexture {boolean} whether to destroy the base texture as well
+ */
+Text.prototype.destroy = function (destroyBaseTexture)
+{
+    // make sure to reset the the context and canvas.. dont want this hanging around in memory!
+    this.context = null;
+    this.canvas = null;
+
+    this._texture.destroy(destroyBaseTexture === undefined ? true : destroyBaseTexture);
+};
+
+},{"../const":14,"../math":24,"../sprites/Sprite":58,"../textures/Texture":63}],61:[function(require,module,exports){
 var utils = require('../utils'),
     CONST = require('../const'),
     EventEmitter = require('eventemitter3').EventEmitter;
@@ -14304,7 +14895,7 @@ BaseTexture.fromCanvas = function (canvas, scaleMode)
     return baseTexture;
 };
 
-},{"../const":14,"../utils":66,"eventemitter3":4}],61:[function(require,module,exports){
+},{"../const":14,"../utils":67,"eventemitter3":4}],62:[function(require,module,exports){
 var BaseTexture = require('./BaseTexture'),
     Texture = require('./Texture'),
     RenderTarget = require('../renderers/webgl/utils/RenderTarget'),
@@ -14734,7 +15325,7 @@ RenderTexture.prototype.getCanvas = function ()
     }
 };
 
-},{"../const":14,"../math":24,"../renderers/canvas/utils/CanvasBuffer":36,"../renderers/webgl/managers/FilterManager":45,"../renderers/webgl/utils/RenderTarget":56,"./BaseTexture":60,"./Texture":62}],62:[function(require,module,exports){
+},{"../const":14,"../math":24,"../renderers/canvas/utils/CanvasBuffer":36,"../renderers/webgl/managers/FilterManager":45,"../renderers/webgl/utils/RenderTarget":56,"./BaseTexture":61,"./Texture":63}],63:[function(require,module,exports){
 var BaseTexture = require('./BaseTexture'),
     VideoBaseTexture = require('./VideoBaseTexture'),
     TextureUvs = require('./TextureUvs'),
@@ -15108,7 +15699,7 @@ Texture.removeTextureFromCache = function (id)
 
 Texture.emptyTexture = new Texture(new BaseTexture());
 
-},{"../math":24,"../utils":66,"./BaseTexture":60,"./TextureUvs":63,"./VideoBaseTexture":64,"eventemitter3":4}],63:[function(require,module,exports){
+},{"../math":24,"../utils":67,"./BaseTexture":61,"./TextureUvs":64,"./VideoBaseTexture":65,"eventemitter3":4}],64:[function(require,module,exports){
 
 /**
  * A standard object to store the Uvs of a texture
@@ -15176,7 +15767,7 @@ TextureUvs.prototype.set = function (frame, baseFrame, rotate)
     }
 };
 
-},{}],64:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 var BaseTexture = require('./BaseTexture'),
     utils = require('../utils');
 
@@ -15412,7 +16003,7 @@ function createSource(path, type)
     return source;
 }
 
-},{"../utils":66,"./BaseTexture":60}],65:[function(require,module,exports){
+},{"../utils":67,"./BaseTexture":61}],66:[function(require,module,exports){
 //TODO: Have Graphics use https://github.com/mattdesl/shape2d
 // and https://github.com/mattdesl/shape2d-triangulate instead of custom code.
 
@@ -15584,7 +16175,7 @@ PolyK._convex = function (ax, ay, bx, by, cx, cy, sign)
     return ((ay-by)*(cx-bx) + (bx-ax)*(cy-by) >= 0) === sign;
 };
 
-},{}],66:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 var CONST = require('../const');
 
 /**
@@ -15774,7 +16365,7 @@ var utils = module.exports = {
                 'color: #ff2424; background: #fff; padding:5px 0;',
                 'color: #ff2424; background: #fff; padding:5px 0;',
             ];
-            
+
             window.console.log.apply(console, args); //jshint ignore:line
         }
         else if (window.console)
@@ -15815,7 +16406,7 @@ var utils = module.exports = {
     BaseTextureCache: {}
 };
 
-},{"../const":14,"./PolyK":65,"./pluginTarget":67}],67:[function(require,module,exports){
+},{"../const":14,"./PolyK":66,"./pluginTarget":68}],68:[function(require,module,exports){
 /**
  * Mixins functionality to make an object have "plugins".
  *
@@ -15885,11 +16476,11 @@ module.exports = {
     }
 };
 
-},{}],68:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 /*global console */
 var core   = require('./core'),
     mesh   = require('./mesh'),
-    text   = require('./text');
+    extras = require('./extras');
 
 /**
  * @class
@@ -15905,7 +16496,7 @@ core.SpriteBatch = function ()
 /**
  * @class
  * @name PIXI.AssetLoader
- * @see {@link PIXI.Loader}
+ * @see {@link PIXI.loaders.Loader}
  * @throws {ReferenceError} The loader system was overhauled in pixi v3, please see the new PIXI.Loader class.
  */
 core.AssetLoader = function () {
@@ -15945,7 +16536,7 @@ Object.defineProperties(core, {
     /**
      * @class
      * @name PIXI.Strip
-     * @see {@link PIXI.Mesh}
+     * @see {@link PIXI.mesh.Mesh}
      * @deprecated since version 3.0
      */
     Strip: {
@@ -15972,11 +16563,11 @@ core.Sprite.prototype.setTexture = function (texture)
 
 /**
  * @method
- * @name PIXI.BitmapText#setText
+ * @name PIXI.extras.BitmapText#setText
  * @see {@link PIXI.BitmapText#text}
  * @deprecated since version 3.0
  */
-text.BitmapText.prototype.setText = function (text)
+extras.BitmapText.prototype.setText = function (text)
 {
     this.text = text;
     console.warn('setText is now deprecated, please use the text property, e.g : myBitmapText.text = \'my text\';');
@@ -15988,7 +16579,7 @@ text.BitmapText.prototype.setText = function (text)
  * @see {@link PIXI.Text#text}
  * @deprecated since version 3.0
  */
-text.Text.prototype.setText = function (text)
+core.Text.prototype.setText = function (text)
 {
     this.text = text;
     console.warn('setText is now deprecated, please use the text property, e.g : myText.text = \'my text\';');
@@ -15996,7 +16587,355 @@ text.Text.prototype.setText = function (text)
 
 module.exports = {};
 
-},{"./core":21,"./mesh":115,"./text":126}],69:[function(require,module,exports){
+},{"./core":21,"./extras":77,"./mesh":118}],70:[function(require,module,exports){
+var core = require('../core');
+
+/**
+ * A BitmapText object will create a line or multiple lines of text using bitmap font. To
+ * split a line you can use '\n', '\r' or '\r\n' in your string. You can generate the fnt files using:
+ *
+ * A BitmapText can only be created when the font is loaded
+ *
+ * ```js
+ * // in this case the font is in a file called 'desyrel.fnt'
+ * var bitmapText = new PIXI.BitmapText("text using a fancy font!", {font: "35px Desyrel", align: "right"});
+ * ```
+ *
+ *
+ * http://www.angelcode.com/products/bmfont/ for windows or
+ * http://www.bmglyph.com/ for mac.
+ *
+ * @class
+ * @extends Container
+ * @memberof PIXI.extras
+ * @param text {string} The copy that you would like the text to display
+ * @param style {object} The style parameters
+ * @param style.font {string|object} The font descriptor for the object, can be passed as a string of form
+ *      "24px FontName" or "FontName" or as an object with explicit name/size properties.
+ * @param [style.font.name] {string} The bitmap font id
+ * @param [style.font.size] {number} The size of the font in pixels, e.g. 24
+ * @param [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect
+ *      single line text
+ * @param [style.tint=0xFFFFFF] {number} The tint color
+ */
+function BitmapText(text, style)
+{
+    core.Container.call(this);
+
+    /**
+     * The width of the overall text, different from fontSize,
+     * which is defined in the style object
+     *
+     * @member {number}
+     * @readOnly
+     */
+    this.textWidth = 0;
+
+    /**
+     * The height of the overall text, different from fontSize,
+     * which is defined in the style object
+     *
+     * @member {number}
+     * @readOnly
+     */
+    this.textHeight = 0;
+
+    /**
+     * Private tracker for the letter sprite pool.
+     *
+     * @member {Sprite[]}
+     * @private
+     */
+    this._glyphs = [];
+
+    /**
+     * Private tracker for the current style.
+     *
+     * @member {object}
+     * @private
+     */
+    this._font = {
+        tint: style.tint !== undefined ? style.tint : 0xFFFFFF,
+        align: style.align || 'left',
+        name: null,
+        size: 0
+    };
+
+    /**
+     * Private tracker for the current font.
+     *
+     * @member {object}
+     * @private
+     */
+    this.font = style.font; // run font setter
+
+    /**
+     * Private tracker for the current text.
+     *
+     * @member {string}
+     * @private
+     */
+    this._text = text;
+
+    /**
+     * The max width of this bitmap text in pixels. If the text provided is longer than the value provided, line breaks will be automatically inserted in the last whitespace.
+     * Disable by setting value to 0
+     *
+     * @member {number}
+     */
+    this.maxWidth = 0;
+
+    /**
+     * The dirty state of this object.
+     *
+     * @member {boolean}
+     */
+    this.dirty = false;
+
+    this.updateText();
+}
+
+// constructor
+BitmapText.prototype = Object.create(core.Container.prototype);
+BitmapText.prototype.constructor = BitmapText;
+module.exports = BitmapText;
+
+Object.defineProperties(BitmapText.prototype, {
+    /**
+     * The tint of the BitmapText object
+     *
+     * @member {number}
+     * @memberof BitmapText#
+     */
+    tint: {
+        get: function ()
+        {
+            return this._font.tint;
+        },
+        set: function (value)
+        {
+            this._font.tint = (typeof value === 'number' && value >= 0) ? value : 0xFFFFFF;
+
+            this.dirty = true;
+        }
+    },
+
+    /**
+     * The alignment of the BitmapText object
+     *
+     * @member {string}
+     * @default 'left'
+     * @memberof BitmapText#
+     */
+    align: {
+        get: function ()
+        {
+            return this._font.align;
+        },
+        set: function (value)
+        {
+            this._font.align = value;
+
+            this.dirty = true;
+        }
+    },
+
+    /**
+     * The font descriptor of the BitmapText object
+     *
+     * @member {Font}
+     * @memberof BitmapText#
+     */
+    font: {
+        get: function ()
+        {
+            return this._font;
+        },
+        set: function (value)
+        {
+            if (typeof value === 'string') {
+                value = value.split(' ');
+
+                this._font.name = value.length === 1 ? value[0] : value.slice(1).join(' ');
+                this._font.size = value.length >= 2 ? parseInt(value[0], 10) : BitmapText.fonts[this._font.name].size;
+            }
+            else {
+                this._font.name = value.name;
+                this._font.size = typeof value.size === 'number' ? value.size : parseInt(value.size, 10);
+            }
+
+            this.dirty = true;
+        }
+    },
+
+    /**
+     * The text of the BitmapText object
+     *
+     * @member {string}
+     * @memberof BitmapText#
+     */
+    text: {
+        get: function ()
+        {
+            return this._text;
+        },
+        set: function (value)
+        {
+            this._text = value;
+
+            this.dirty = true;
+        }
+    }
+});
+
+/**
+ * Renders text and updates it when needed
+ *
+ * @private
+ */
+BitmapText.prototype.updateText = function ()
+{
+    var data = BitmapText.fonts[this._font.name];
+    var pos = new core.math.Point();
+    var prevCharCode = null;
+    var chars = [];
+    var lastLineWidth = 0;
+    var maxLineWidth = 0;
+    var lineWidths = [];
+    var line = 0;
+    var scale = this._font.size / data.size;
+    var lastSpace = -1;
+
+    for (var i = 0; i < this.text.length; i++)
+    {
+        var charCode = this.text.charCodeAt(i);
+        lastSpace = /(\s)/.test(this.text.charAt(i)) ? i : lastSpace;
+
+        if (/(?:\r\n|\r|\n)/.test(this.text.charAt(i)))
+        {
+            lineWidths.push(lastLineWidth);
+            maxLineWidth = Math.max(maxLineWidth, lastLineWidth);
+            line++;
+
+            pos.x = 0;
+            pos.y += data.lineHeight;
+            prevCharCode = null;
+            continue;
+        }
+
+        if (lastSpace !== -1 && this.maxWidth > 0 && pos.x * scale > this.maxWidth)
+        {
+            chars.splice(lastSpace, i - lastSpace);
+            i = lastSpace;
+            lastSpace = -1;
+
+            lineWidths.push(lastLineWidth);
+            maxLineWidth = Math.max(maxLineWidth, lastLineWidth);
+            line++;
+
+            pos.x = 0;
+            pos.y += data.lineHeight;
+            prevCharCode = null;
+            continue;
+        }
+
+        var charData = data.chars[charCode];
+
+        if (!charData)
+        {
+            continue;
+        }
+
+        if (prevCharCode && charData.kerning[prevCharCode])
+        {
+            pos.x += charData.kerning[prevCharCode];
+        }
+
+        chars.push({texture:charData.texture, line: line, charCode: charCode, position: new core.math.Point(pos.x + charData.xOffset, pos.y + charData.yOffset)});
+        lastLineWidth = pos.x + (charData.texture.width + charData.xOffset);
+        pos.x += charData.xAdvance;
+
+        prevCharCode = charCode;
+    }
+
+    lineWidths.push(lastLineWidth);
+    maxLineWidth = Math.max(maxLineWidth, lastLineWidth);
+
+    var lineAlignOffsets = [];
+
+    for (i = 0; i <= line; i++)
+    {
+        var alignOffset = 0;
+
+        if (this._font.align === 'right')
+        {
+            alignOffset = maxLineWidth - lineWidths[i];
+        }
+        else if (this._font.align === 'center')
+        {
+            alignOffset = (maxLineWidth - lineWidths[i]) / 2;
+        }
+
+        lineAlignOffsets.push(alignOffset);
+    }
+
+    var lenChars = chars.length;
+    var tint = this.tint;
+
+    for (i = 0; i < lenChars; i++)
+    {
+        var c = this._glyphs[i]; // get the next glyph sprite
+
+        if (c)
+        {
+            c.texture = chars[i].texture;
+        }
+        else
+        {
+            c = new core.Sprite(chars[i].texture);
+            this._glyphs.push(c);
+        }
+
+        c.position.x = (chars[i].position.x + lineAlignOffsets[chars[i].line]) * scale;
+        c.position.y = chars[i].position.y * scale;
+        c.scale.x = c.scale.y = scale;
+        c.tint = tint;
+
+        if (!c.parent)
+        {
+            this.addChild(c);
+        }
+    }
+
+    // remove unnecessary children.
+    for (i = lenChars; i < this._glyphs.length; ++i)
+    {
+        this.removeChild(this._glyphs[i]);
+    }
+
+    this.textWidth = maxLineWidth * scale;
+    this.textHeight = (pos.y + data.lineHeight) * scale;
+};
+
+/**
+ * Updates the transform of this object
+ *
+ * @private
+ */
+BitmapText.prototype.updateTransform = function ()
+{
+    if (this.dirty)
+    {
+        this.updateText();
+        this.dirty = false;
+    }
+
+    this.containerUpdateTransform();
+};
+
+BitmapText.fonts = {};
+
+},{"../core":21}],71:[function(require,module,exports){
 var core    = require('../core'),
     Ticker  = require('./Ticker');
 
@@ -16263,7 +17202,7 @@ MovieClip.fromImages = function (images)
     return new MovieClip(textures);
 };
 
-},{"../core":21,"./Ticker":70}],70:[function(require,module,exports){
+},{"../core":21,"./Ticker":72}],72:[function(require,module,exports){
 var EventEmitter = require('eventemitter3').EventEmitter;
 
 /**
@@ -16381,14 +17320,14 @@ Ticker.prototype.update = function()
 
 module.exports = new Ticker();
 
-},{"eventemitter3":4}],71:[function(require,module,exports){
+},{"eventemitter3":4}],73:[function(require,module,exports){
 var core = require('../core'),
     TextureUvs = require('../core/textures/TextureUvs'),
     RenderTexture = require('../core/textures/RenderTexture'),
     // a sprite use dfor rendering textures..
     tempSprite = new core.Sprite(),
-    tempPoint = new core.math.Point(),
-    tempMatrix = new core.math.Matrix();
+    tempPoint = new core.Point(),
+    tempMatrix = new core.Matrix();
 
 /**
  * A tiling sprite is a fast way of rendering a tiling image
@@ -16891,7 +17830,7 @@ TilingSprite.fromImage = function (imageId, width, height, crossorigin, scaleMod
     return new TilingSprite(core.Texture.fromImage(imageId, crossorigin, scaleMode),width,height);
 };
 
-},{"../core":21,"../core/textures/RenderTexture":61,"../core/textures/TextureUvs":63}],72:[function(require,module,exports){
+},{"../core":21,"../core/textures/RenderTexture":62,"../core/textures/TextureUvs":64}],74:[function(require,module,exports){
 var math = require('../core/math'),
     RenderTexture = require('../core/textures/RenderTexture'),
     DisplayObject = require('../core/display/DisplayObject'),
@@ -17148,7 +18087,7 @@ DisplayObject.prototype._destroyCachedDisplayObject = function()
 
 module.exports = {};
 
-},{"../core/display/DisplayObject":16,"../core/math":24,"../core/sprites/Sprite":58,"../core/textures/RenderTexture":61}],73:[function(require,module,exports){
+},{"../core/display/DisplayObject":16,"../core/math":24,"../core/sprites/Sprite":58,"../core/textures/RenderTexture":62}],75:[function(require,module,exports){
 var DisplayObject = require('../core/display/DisplayObject'),
     Container = require('../core/display/Container');
 
@@ -17178,7 +18117,40 @@ Container.prototype.getChildByName = function (name)
 };
 
 module.exports = {};
-},{"../core/display/Container":15,"../core/display/DisplayObject":16}],74:[function(require,module,exports){
+},{"../core/display/Container":15,"../core/display/DisplayObject":16}],76:[function(require,module,exports){
+var DisplayObject = require('../core/display/DisplayObject'),
+    Point = require('../core/math/Point');
+
+
+/**
+* Returns the global position of the displayObject
+*
+* @param point {Point} the point to write the global value to. If null a new point will be returned
+* @return {Point}
+*/
+DisplayObject.prototype.getGlobalPosition = function (point)
+{
+    point = point || new Point();
+
+    if(this.parent)
+    {
+        this.displayObjectUpdateTransform();
+
+        point.x = this.worldTransform.tx;
+        point.y = this.worldTransform.ty;
+    }
+    else
+    {
+        point.x = this.position.x;
+        point.y = this.position.y;
+    }
+
+    return point;
+};
+
+module.exports = {};
+
+},{"../core/display/DisplayObject":16,"../core/math/Point":23}],77:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI extras library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -17193,11 +18165,13 @@ module.exports = {
     Ticker:         require('./Ticker'),
     MovieClip:      require('./MovieClip'),
     TilingSprite:   require('./TilingSprite'),
+    BitmapText:     require('./BitmapText'),
     cacheAsBitmap:  require('./cacheAsBitmap'),
-    getChildByName: require('./getChildByName')
+    getChildByName: require('./getChildByName'),
+    getGlobalPosition: require('./getGlobalPosition')
 };
 
-},{"./MovieClip":69,"./Ticker":70,"./TilingSprite":71,"./cacheAsBitmap":72,"./getChildByName":73}],75:[function(require,module,exports){
+},{"./BitmapText":70,"./MovieClip":71,"./Ticker":72,"./TilingSprite":73,"./cacheAsBitmap":74,"./getChildByName":75,"./getGlobalPosition":76}],78:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -17254,7 +18228,7 @@ Object.defineProperties(AsciiFilter.prototype, {
     }
 });
 
-},{"../../core":21}],76:[function(require,module,exports){
+},{"../../core":21}],79:[function(require,module,exports){
 var core = require('../../core'),
     BlurXFilter = require('../blur/BlurXFilter'),
     BlurYFilter = require('../blur/BlurYFilter');
@@ -17355,7 +18329,7 @@ Object.defineProperties(BloomFilter.prototype, {
     }
 });
 
-},{"../../core":21,"../blur/BlurXFilter":78,"../blur/BlurYFilter":79}],77:[function(require,module,exports){
+},{"../../core":21,"../blur/BlurXFilter":81,"../blur/BlurYFilter":82}],80:[function(require,module,exports){
 var core = require('../../core'),
     BlurXFilter = require('./BlurXFilter'),
     BlurYFilter = require('./BlurYFilter');
@@ -17467,7 +18441,7 @@ Object.defineProperties(BlurFilter.prototype, {
     }
 });
 
-},{"../../core":21,"./BlurXFilter":78,"./BlurYFilter":79}],78:[function(require,module,exports){
+},{"../../core":21,"./BlurXFilter":81,"./BlurYFilter":82}],81:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -17561,7 +18535,7 @@ Object.defineProperties(BlurXFilter.prototype, {
     },
 });
 
-},{"../../core":21}],79:[function(require,module,exports){
+},{"../../core":21}],82:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -17647,7 +18621,7 @@ Object.defineProperties(BlurYFilter.prototype, {
     },
 });
 
-},{"../../core":21}],80:[function(require,module,exports){
+},{"../../core":21}],83:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -17673,7 +18647,7 @@ SmartBlurFilter.prototype = Object.create(core.AbstractFilter.prototype);
 SmartBlurFilter.prototype.constructor = SmartBlurFilter;
 module.exports = SmartBlurFilter;
 
-},{"../../core":21}],81:[function(require,module,exports){
+},{"../../core":21}],84:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -18232,7 +19206,7 @@ Object.defineProperties(ColorMatrixFilter.prototype, {
     }
 });
 
-},{"../../core":21}],82:[function(require,module,exports){
+},{"../../core":21}],85:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -18281,7 +19255,7 @@ Object.defineProperties(ColorStepFilter.prototype, {
     }
 });
 
-},{"../../core":21}],83:[function(require,module,exports){
+},{"../../core":21}],86:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -18372,7 +19346,7 @@ Object.defineProperties(ConvolutionFilter.prototype, {
     }
 });
 
-},{"../../core":21}],84:[function(require,module,exports){
+},{"../../core":21}],87:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -18398,7 +19372,7 @@ CrossHatchFilter.prototype = Object.create(core.AbstractFilter.prototype);
 CrossHatchFilter.prototype.constructor = CrossHatchFilter;
 module.exports = CrossHatchFilter;
 
-},{"../../core":21}],85:[function(require,module,exports){
+},{"../../core":21}],88:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -18479,7 +19453,7 @@ Object.defineProperties(DisplacementFilter.prototype, {
     }
 });
 
-},{"../../core":21}],86:[function(require,module,exports){
+},{"../../core":21}],89:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -18551,7 +19525,7 @@ Object.defineProperties(DotScreenFilter.prototype, {
     }
 });
 
-},{"../../core":21}],87:[function(require,module,exports){
+},{"../../core":21}],90:[function(require,module,exports){
 var core = require('../../core');
 
 // @see https://github.com/substack/brfs/issues/25
@@ -18642,7 +19616,7 @@ Object.defineProperties(BlurYTintFilter.prototype, {
     },
 });
 
-},{"../../core":21}],88:[function(require,module,exports){
+},{"../../core":21}],91:[function(require,module,exports){
 var core = require('../../core'),
     BlurXFilter = require('../blur/BlurXFilter'),
     BlurYTintFilter = require('./BlurYTintFilter');
@@ -18811,7 +19785,7 @@ Object.defineProperties(DropShadowFilter.prototype, {
     }
 });
 
-},{"../../core":21,"../blur/BlurXFilter":78,"./BlurYTintFilter":87}],89:[function(require,module,exports){
+},{"../../core":21,"../blur/BlurXFilter":81,"./BlurYTintFilter":90}],92:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -18860,7 +19834,7 @@ Object.defineProperties(GrayFilter.prototype, {
     }
 });
 
-},{"../../core":21}],90:[function(require,module,exports){
+},{"../../core":21}],93:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI filters library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -18904,7 +19878,7 @@ module.exports = {
     TwistFilter:        require('./twist/TwistFilter')
 };
 
-},{"../core/renderers/webgl/filters/AbstractFilter":41,"../core/renderers/webgl/filters/FXAAFilter":42,"../core/renderers/webgl/filters/SpriteMaskFilter":43,"./ascii/AsciiFilter":75,"./bloom/BloomFilter":76,"./blur/BlurFilter":77,"./blur/BlurXFilter":78,"./blur/BlurYFilter":79,"./blur/SmartBlurFilter":80,"./color/ColorMatrixFilter":81,"./color/ColorStepFilter":82,"./convolution/ConvolutionFilter":83,"./crosshatch/CrossHatchFilter":84,"./displacement/DisplacementFilter":85,"./dot/DotScreenFilter":86,"./dropshadow/DropShadowFilter":88,"./gray/GrayFilter":89,"./invert/InvertFilter":91,"./noise/NoiseFilter":92,"./normal/NormalMapFilter":93,"./pixelate/PixelateFilter":94,"./rgb/RGBSplitFilter":95,"./sepia/SepiaFilter":96,"./shockwave/ShockwaveFilter":97,"./tiltshift/TiltShiftFilter":99,"./tiltshift/TiltShiftXFilter":100,"./tiltshift/TiltShiftYFilter":101,"./twist/TwistFilter":102}],91:[function(require,module,exports){
+},{"../core/renderers/webgl/filters/AbstractFilter":41,"../core/renderers/webgl/filters/FXAAFilter":42,"../core/renderers/webgl/filters/SpriteMaskFilter":43,"./ascii/AsciiFilter":78,"./bloom/BloomFilter":79,"./blur/BlurFilter":80,"./blur/BlurXFilter":81,"./blur/BlurYFilter":82,"./blur/SmartBlurFilter":83,"./color/ColorMatrixFilter":84,"./color/ColorStepFilter":85,"./convolution/ConvolutionFilter":86,"./crosshatch/CrossHatchFilter":87,"./displacement/DisplacementFilter":88,"./dot/DotScreenFilter":89,"./dropshadow/DropShadowFilter":91,"./gray/GrayFilter":92,"./invert/InvertFilter":94,"./noise/NoiseFilter":95,"./normal/NormalMapFilter":96,"./pixelate/PixelateFilter":97,"./rgb/RGBSplitFilter":98,"./sepia/SepiaFilter":99,"./shockwave/ShockwaveFilter":100,"./tiltshift/TiltShiftFilter":102,"./tiltshift/TiltShiftXFilter":103,"./tiltshift/TiltShiftYFilter":104,"./twist/TwistFilter":105}],94:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -18954,7 +19928,7 @@ Object.defineProperties(InvertFilter.prototype, {
     }
 });
 
-},{"../../core":21}],92:[function(require,module,exports){
+},{"../../core":21}],95:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -19009,7 +19983,7 @@ Object.defineProperties(NoiseFilter.prototype, {
     }
 });
 
-},{"../../core":21}],93:[function(require,module,exports){
+},{"../../core":21}],96:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -19122,7 +20096,7 @@ Object.defineProperties(NormalMapFilter.prototype, {
     }
 });
 
-},{"../../core":21}],94:[function(require,module,exports){
+},{"../../core":21}],97:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -19173,7 +20147,7 @@ Object.defineProperties(PixelateFilter.prototype, {
     }
 });
 
-},{"../../core":21}],95:[function(require,module,exports){
+},{"../../core":21}],98:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -19259,7 +20233,7 @@ Object.defineProperties(RGBSplitFilter.prototype, {
     }
 });
 
-},{"../../core":21}],96:[function(require,module,exports){
+},{"../../core":21}],99:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -19309,7 +20283,7 @@ Object.defineProperties(SepiaFilter.prototype, {
     }
 });
 
-},{"../../core":21}],97:[function(require,module,exports){
+},{"../../core":21}],100:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -19397,7 +20371,7 @@ Object.defineProperties(ShockwaveFilter.prototype, {
     }
 });
 
-},{"../../core":21}],98:[function(require,module,exports){
+},{"../../core":21}],101:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -19522,7 +20496,7 @@ Object.defineProperties(TiltShiftAxisFilter.prototype, {
     }
 });
 
-},{"../../core":21}],99:[function(require,module,exports){
+},{"../../core":21}],102:[function(require,module,exports){
 var core = require('../../core'),
     TiltShiftXFilter = require('./TiltShiftXFilter'),
     TiltShiftYFilter = require('./TiltShiftYFilter');
@@ -19632,7 +20606,7 @@ Object.defineProperties(TiltShiftFilter.prototype, {
     }
 });
 
-},{"../../core":21,"./TiltShiftXFilter":100,"./TiltShiftYFilter":101}],100:[function(require,module,exports){
+},{"../../core":21,"./TiltShiftXFilter":103,"./TiltShiftYFilter":104}],103:[function(require,module,exports){
 var TiltShiftAxisFilter = require('./TiltShiftAxisFilter');
 
 /**
@@ -19670,7 +20644,7 @@ TiltShiftXFilter.prototype.updateDelta = function ()
     this.uniforms.delta.value.y = dy / d;
 };
 
-},{"./TiltShiftAxisFilter":98}],101:[function(require,module,exports){
+},{"./TiltShiftAxisFilter":101}],104:[function(require,module,exports){
 var TiltShiftAxisFilter = require('./TiltShiftAxisFilter');
 
 /**
@@ -19708,7 +20682,7 @@ TiltShiftYFilter.prototype.updateDelta = function ()
     this.uniforms.delta.value.y = dx / d;
 };
 
-},{"./TiltShiftAxisFilter":98}],102:[function(require,module,exports){
+},{"./TiltShiftAxisFilter":101}],105:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -19793,7 +20767,7 @@ Object.defineProperties(TwistFilter.prototype, {
     }
 });
 
-},{"../../core":21}],103:[function(require,module,exports){
+},{"../../core":21}],106:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -19809,7 +20783,7 @@ function InteractionData()
      *
      * @member {Point}
      */
-    this.global = new core.math.Point();
+    this.global = new core.Point();
 
     /**
      * The target Sprite that was interacted with
@@ -19856,7 +20830,7 @@ InteractionData.prototype.getLocalPosition = function (displayObject, point, glo
     return point;
 };
 
-},{"../core":21}],104:[function(require,module,exports){
+},{"../core":21}],107:[function(require,module,exports){
 var core = require('../core'),
     InteractionData = require('./InteractionData');
 
@@ -20003,7 +20977,7 @@ function InteractionManager(renderer, options)
      * @member {Point}
      * @private
      */
-    this._tempPoint = new core.math.Point();
+    this._tempPoint = new core.Point();
 
     /**
      * The current resolution
@@ -20703,7 +21677,7 @@ InteractionManager.prototype.destroy = function () {
 core.WebGLRenderer.registerPlugin('interaction', InteractionManager);
 core.CanvasRenderer.registerPlugin('interaction', InteractionManager);
 
-},{"../core":21,"./InteractionData":103}],105:[function(require,module,exports){
+},{"../core":21,"./InteractionData":106}],108:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI interactions library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -20720,7 +21694,7 @@ module.exports = {
     interactiveTarget: require('./interactiveTarget')
 };
 
-},{"./InteractionData":103,"./InteractionManager":104,"./interactiveTarget":106}],106:[function(require,module,exports){
+},{"./InteractionData":106,"./InteractionManager":107,"./interactiveTarget":109}],109:[function(require,module,exports){
 var core = require('../core');
 
 
@@ -20735,10 +21709,10 @@ core.DisplayObject.prototype._touchDown = false;
 
 module.exports = {};
 
-},{"../core":21}],107:[function(require,module,exports){
+},{"../core":21}],110:[function(require,module,exports){
 var Resource = require('resource-loader').Resource,
     core = require('../core'),
-    text = require('../text'),
+    extras = require('../extras'),
     path = require('path');
 
 module.exports = function ()
@@ -20857,14 +21831,14 @@ module.exports = function ()
 
             // I'm leaving this as a temporary fix so we can test the bitmap fonts in v3
             // but it's very likely to change
-            text.BitmapText.fonts[data.font] = data;
+            extras.BitmapText.fonts[data.font] = data;
 
             next();
         });
     };
 };
 
-},{"../core":21,"../text":126,"path":2,"resource-loader":9}],108:[function(require,module,exports){
+},{"../core":21,"../extras":77,"path":2,"resource-loader":9}],111:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI loaders library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -20888,7 +21862,7 @@ module.exports = {
 
 module.exports.loader = new module.exports.Loader();
 
-},{"./bitmapFontParser":107,"./loader":109,"./spineAtlasParser":110,"./spritesheetParser":111,"./textureParser":112}],109:[function(require,module,exports){
+},{"./bitmapFontParser":110,"./loader":112,"./spineAtlasParser":113,"./spritesheetParser":114,"./textureParser":115}],112:[function(require,module,exports){
 var ResourceLoader = require('resource-loader'),
     textureParser = require('./textureParser'),
     spritesheetParser = require('./spritesheetParser'),
@@ -20941,7 +21915,7 @@ Loader.prototype.constructor = Loader;
 
 module.exports = Loader;
 
-},{"./bitmapFontParser":107,"./spritesheetParser":111,"./textureParser":112,"resource-loader":9}],110:[function(require,module,exports){
+},{"./bitmapFontParser":110,"./spritesheetParser":114,"./textureParser":115,"resource-loader":9}],113:[function(require,module,exports){
 var Resource = require('resource-loader').Resource,
     async = require('async'),
     spine = require('../spine');
@@ -20999,7 +21973,7 @@ module.exports = function ()
     };
 };
 
-},{"../spine":123,"async":1,"resource-loader":9}],111:[function(require,module,exports){
+},{"../spine":126,"async":1,"resource-loader":9}],114:[function(require,module,exports){
 var Resource = require('resource-loader').Resource,
     path = require('path'),
     core = require('../core');
@@ -21083,7 +22057,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":21,"path":2,"resource-loader":9}],112:[function(require,module,exports){
+},{"../core":21,"path":2,"resource-loader":9}],115:[function(require,module,exports){
 var core = require('../core');
 
 module.exports = function ()
@@ -21102,14 +22076,14 @@ module.exports = function ()
     };
 };
 
-},{"../core":21}],113:[function(require,module,exports){
+},{"../core":21}],116:[function(require,module,exports){
 var core = require('../core');
 
 /**
  * Base mesh class
  * @class
  * @extends Container
- * @memberof PIXI.extras
+ * @memberof PIXI.mesh
  * @param texture {Texture} The texture to use
  * @param [vertices] {Float32Arrif you want to specify the vertices
  * @param [uvs] {Float32Array} if you want to specify the uvs
@@ -21493,7 +22467,7 @@ Mesh.DRAW_MODES = {
     TRIANGLES: 1
 };
 
-},{"../core":21}],114:[function(require,module,exports){
+},{"../core":21}],117:[function(require,module,exports){
 var Mesh = require('./Mesh');
 
 /**
@@ -21508,7 +22482,7 @@ var Mesh = require('./Mesh');
  *
  * @class
  * @extends Mesh
- * @memberof PIXI.extras
+ * @memberof PIXI.mesh
  * @param {Texture} texture - The texture to use on the rope.
  * @param {Array} points - An array of {Point} objects to construct this rope.
  *
@@ -21687,7 +22661,7 @@ Rope.prototype.updateTransform = function ()
     this.containerUpdateTransform();
 };
 
-},{"./Mesh":113}],115:[function(require,module,exports){
+},{"./Mesh":116}],118:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI extras library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -21696,16 +22670,16 @@ Rope.prototype.updateTransform = function ()
  */
 
 /**
- * @namespace PIXI.extras
+ * @namespace PIXI.mesh
  */
 module.exports = {
-    Mesh:          require('./Mesh'),
+    Mesh:           require('./Mesh'),
     Rope:           require('./Rope'),
     MeshRenderer:   require('./webgl/MeshRenderer'),
-    MeshShader:    require('./webgl/MeshShader')
+    MeshShader:     require('./webgl/MeshShader')
 };
 
-},{"./Mesh":113,"./Rope":114,"./webgl/MeshRenderer":116,"./webgl/MeshShader":117}],116:[function(require,module,exports){
+},{"./Mesh":116,"./Rope":117,"./webgl/MeshRenderer":119,"./webgl/MeshShader":120}],119:[function(require,module,exports){
 var ObjectRenderer = require('../../core/renderers/webgl/utils/ObjectRenderer'),
     WebGLRenderer = require('../../core/renderers/webgl/WebGLRenderer');
 
@@ -21724,7 +22698,7 @@ var ObjectRenderer = require('../../core/renderers/webgl/utils/ObjectRenderer'),
  *
  * @class
  * @private
- * @memberof PIXI
+ * @memberof PIXI.mesh
  * @extends ObjectRenderer
  * @param renderer {WebGLRenderer} The renderer this sprite batch works for.
  */
@@ -21915,13 +22889,13 @@ MeshRenderer.prototype.destroy = function ()
 {
 };
 
-},{"../../core/renderers/webgl/WebGLRenderer":40,"../../core/renderers/webgl/utils/ObjectRenderer":54}],117:[function(require,module,exports){
+},{"../../core/renderers/webgl/WebGLRenderer":40,"../../core/renderers/webgl/utils/ObjectRenderer":54}],120:[function(require,module,exports){
 var core = require('../../core');
 
 /**
  * @class
  * @extends Shader
- * @memberof PIXI.extras
+ * @memberof PIXI.mesh
  * @param shaderManager {ShaderManager} The WebGL shader manager this shader works for.
  */
 function StripShader(shaderManager)
@@ -21976,7 +22950,7 @@ module.exports = StripShader;
 
 core.ShaderManager.registerPlugin('meshShader', StripShader);
 
-},{"../../core":21}],118:[function(require,module,exports){
+},{"../../core":21}],121:[function(require,module,exports){
 // References:
 // https://github.com/sindresorhus/object-assign
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
@@ -21986,11 +22960,11 @@ if (!Object.assign)
     Object.assign = require('object-assign');
 }
 
-},{"object-assign":5}],119:[function(require,module,exports){
+},{"object-assign":5}],122:[function(require,module,exports){
 require('./Object.assign');
 require('./requestAnimationFrame');
 
-},{"./Object.assign":118,"./requestAnimationFrame":120}],120:[function(require,module,exports){
+},{"./Object.assign":121,"./requestAnimationFrame":123}],123:[function(require,module,exports){
 (function (global){
 // References:
 // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
@@ -22061,7 +23035,7 @@ if (!global.cancelAnimationFrame) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],121:[function(require,module,exports){
+},{}],124:[function(require,module,exports){
 var core = require('../core'),
     spine = require('./SpineRuntime');
 
@@ -22367,7 +23341,7 @@ Spine.prototype.createMesh = function (slot, attachment)
     return strip;
 };
 
-},{"../core":21,"./SpineRuntime":122}],122:[function(require,module,exports){
+},{"../core":21,"./SpineRuntime":125}],125:[function(require,module,exports){
 /******************************************************************************
  * Spine Runtimes Software License
  * Version 2.1
@@ -25334,7 +26308,7 @@ spine.SkeletonBounds.prototype = {
 	}
 };
 
-},{"../core":21}],123:[function(require,module,exports){
+},{"../core":21}],126:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI spine library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -25350,983 +26324,24 @@ module.exports = {
     SpineRuntime:    require('./SpineRuntime')
 };
 
-},{"./Spine":121,"./SpineRuntime":122}],124:[function(require,module,exports){
-var core = require('../core');
-
-/**
- * A BitmapText object will create a line or multiple lines of text using bitmap font. To
- * split a line you can use '\n', '\r' or '\r\n' in your string. You can generate the fnt files using:
- *
- * A BitmapText can only be created when the font is loaded
- *
- * ```js
- * // in this case the font is in a file called 'desyrel.fnt'
- * var bitmapText = new PIXI.BitmapText("text using a fancy font!", {font: "35px Desyrel", align: "right"});
- * ```
- *
- *
- * http://www.angelcode.com/products/bmfont/ for windows or
- * http://www.bmglyph.com/ for mac.
- *
- * @class
- * @extends Container
- * @memberof PIXI.text
- * @param text {string} The copy that you would like the text to display
- * @param style {object} The style parameters
- * @param style.font {string|object} The font descriptor for the object, can be passed as a string of form
- *      "24px FontName" or "FontName" or as an object with explicit name/size properties.
- * @param [style.font.name] {string} The bitmap font id
- * @param [style.font.size] {number} The size of the font in pixels, e.g. 24
- * @param [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect
- *      single line text
- * @param [style.tint=0xFFFFFF] {number} The tint color
- */
-function BitmapText(text, style)
-{
-    core.Container.call(this);
-
-    /**
-     * The width of the overall text, different from fontSize,
-     * which is defined in the style object
-     *
-     * @member {number}
-     * @readOnly
-     */
-    this.textWidth = 0;
-
-    /**
-     * The height of the overall text, different from fontSize,
-     * which is defined in the style object
-     *
-     * @member {number}
-     * @readOnly
-     */
-    this.textHeight = 0;
-
-    /**
-     * Private tracker for the letter sprite pool.
-     *
-     * @member {Sprite[]}
-     * @private
-     */
-    this._glyphs = [];
-
-    /**
-     * Private tracker for the current style.
-     *
-     * @member {object}
-     * @private
-     */
-    this._font = {
-        tint: style.tint !== undefined ? style.tint : 0xFFFFFF,
-        align: style.align || 'left',
-        name: null,
-        size: 0
-    };
-
-    /**
-     * Private tracker for the current font.
-     *
-     * @member {object}
-     * @private
-     */
-    this.font = style.font; // run font setter
-
-    /**
-     * Private tracker for the current text.
-     *
-     * @member {string}
-     * @private
-     */
-    this._text = text;
-
-    /**
-     * The max width of this bitmap text in pixels. If the text provided is longer than the value provided, line breaks will be automatically inserted in the last whitespace.
-     * Disable by setting value to 0
-     *
-     * @member {number}
-     */
-    this.maxWidth = 0;
-
-    /**
-     * The dirty state of this object.
-     *
-     * @member {boolean}
-     */
-    this.dirty = false;
-
-    this.updateText();
-}
-
-// constructor
-BitmapText.prototype = Object.create(core.Container.prototype);
-BitmapText.prototype.constructor = BitmapText;
-module.exports = BitmapText;
-
-Object.defineProperties(BitmapText.prototype, {
-    /**
-     * The tint of the BitmapText object
-     *
-     * @member {number}
-     * @memberof BitmapText#
-     */
-    tint: {
-        get: function ()
-        {
-            return this._font.tint;
-        },
-        set: function (value)
-        {
-            this._font.tint = (typeof value === 'number' && value >= 0) ? value : 0xFFFFFF;
-
-            this.dirty = true;
-        }
-    },
-
-    /**
-     * The alignment of the BitmapText object
-     *
-     * @member {string}
-     * @default 'left'
-     * @memberof BitmapText#
-     */
-    align: {
-        get: function ()
-        {
-            return this._font.align;
-        },
-        set: function (value)
-        {
-            this._font.align = value;
-
-            this.dirty = true;
-        }
-    },
-
-    /**
-     * The font descriptor of the BitmapText object
-     *
-     * @member {Font}
-     * @memberof BitmapText#
-     */
-    font: {
-        get: function ()
-        {
-            return this._font;
-        },
-        set: function (value)
-        {
-            if (typeof value === 'string') {
-                value = value.split(' ');
-
-                this._font.name = value.length === 1 ? value[0] : value.slice(1).join(' ');
-                this._font.size = value.length >= 2 ? parseInt(value[0], 10) : BitmapText.fonts[this._font.name].size;
-            }
-            else {
-                this._font.name = value.name;
-                this._font.size = typeof value.size === 'number' ? value.size : parseInt(value.size, 10);
-            }
-
-            this.dirty = true;
-        }
-    },
-
-    /**
-     * The text of the BitmapText object
-     *
-     * @member {string}
-     * @memberof BitmapText#
-     */
-    text: {
-        get: function ()
-        {
-            return this._text;
-        },
-        set: function (value)
-        {
-            this._text = value;
-
-            this.dirty = true;
-        }
-    }
-});
-
-/**
- * Renders text and updates it when needed
- *
- * @private
- */
-BitmapText.prototype.updateText = function ()
-{
-    var data = BitmapText.fonts[this._font.name];
-    var pos = new core.math.Point();
-    var prevCharCode = null;
-    var chars = [];
-    var lastLineWidth = 0;
-    var maxLineWidth = 0;
-    var lineWidths = [];
-    var line = 0;
-    var scale = this._font.size / data.size;
-    var lastSpace = -1;
-
-    for (var i = 0; i < this.text.length; i++)
-    {
-        var charCode = this.text.charCodeAt(i);
-        lastSpace = /(\s)/.test(this.text.charAt(i)) ? i : lastSpace;
-
-        if (/(?:\r\n|\r|\n)/.test(this.text.charAt(i)))
-        {
-            lineWidths.push(lastLineWidth);
-            maxLineWidth = Math.max(maxLineWidth, lastLineWidth);
-            line++;
-
-            pos.x = 0;
-            pos.y += data.lineHeight;
-            prevCharCode = null;
-            continue;
-        }
-
-        if (lastSpace !== -1 && this.maxWidth > 0 && pos.x * scale > this.maxWidth)
-        {
-            chars.splice(lastSpace, i - lastSpace);
-            i = lastSpace;
-            lastSpace = -1;
-
-            lineWidths.push(lastLineWidth);
-            maxLineWidth = Math.max(maxLineWidth, lastLineWidth);
-            line++;
-
-            pos.x = 0;
-            pos.y += data.lineHeight;
-            prevCharCode = null;
-            continue;
-        }
-
-        var charData = data.chars[charCode];
-
-        if (!charData)
-        {
-            continue;
-        }
-
-        if (prevCharCode && charData.kerning[prevCharCode])
-        {
-            pos.x += charData.kerning[prevCharCode];
-        }
-
-        chars.push({texture:charData.texture, line: line, charCode: charCode, position: new core.math.Point(pos.x + charData.xOffset, pos.y + charData.yOffset)});
-        lastLineWidth = pos.x + (charData.texture.width + charData.xOffset);
-        pos.x += charData.xAdvance;
-
-        prevCharCode = charCode;
-    }
-
-    lineWidths.push(lastLineWidth);
-    maxLineWidth = Math.max(maxLineWidth, lastLineWidth);
-
-    var lineAlignOffsets = [];
-
-    for (i = 0; i <= line; i++)
-    {
-        var alignOffset = 0;
-
-        if (this._font.align === 'right')
-        {
-            alignOffset = maxLineWidth - lineWidths[i];
-        }
-        else if (this._font.align === 'center')
-        {
-            alignOffset = (maxLineWidth - lineWidths[i]) / 2;
-        }
-
-        lineAlignOffsets.push(alignOffset);
-    }
-
-    var lenChars = chars.length;
-    var tint = this.tint;
-
-    for (i = 0; i < lenChars; i++)
-    {
-        var c = this._glyphs[i]; // get the next glyph sprite
-
-        if (c)
-        {
-            c.texture = chars[i].texture;
-        }
-        else
-        {
-            c = new core.Sprite(chars[i].texture);
-            this._glyphs.push(c);
-        }
-
-        c.position.x = (chars[i].position.x + lineAlignOffsets[chars[i].line]) * scale;
-        c.position.y = chars[i].position.y * scale;
-        c.scale.x = c.scale.y = scale;
-        c.tint = tint;
-
-        if (!c.parent)
-        {
-            this.addChild(c);
-        }
-    }
-
-    // remove unnecessary children.
-    for (i = lenChars; i < this._glyphs.length; ++i)
-    {
-        this.removeChild(this._glyphs[i]);
-    }
-
-    this.textWidth = maxLineWidth * scale;
-    this.textHeight = (pos.y + data.lineHeight) * scale;
-};
-
-/**
- * Updates the transform of this object
- *
- * @private
- */
-BitmapText.prototype.updateTransform = function ()
-{
-    if (this.dirty)
-    {
-        this.updateText();
-        this.dirty = false;
-    }
-
-    this.containerUpdateTransform();
-};
-
-BitmapText.fonts = {};
-
-},{"../core":21}],125:[function(require,module,exports){
-var core = require('../core');
-
-/**
- * A Text Object will create a line or multiple lines of text. To split a line you can use '\n' in your text string,
- * or add a wordWrap property set to true and and wordWrapWidth property with a value in the style object.
- *
- * A Text can be created directly from a string and a style object
- *
- * ```js
- * var text = new PIXI.Text('This is a pixi text',{font : '24px Arial', fill : 0xff1010, align : 'center'});
- * ```
- *
- * @class
- * @extends Sprite
- * @memberof PIXI.text
- * @param text {string} The copy that you would like the text to display
- * @param [style] {object} The style parameters
- * @param [style.font] {string} default 'bold 20px Arial' The style and size of the font
- * @param [style.fill='black'] {String|Number} A canvas fillstyle that will be used on the text e.g 'red', '#00FF00'
- * @param [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
- * @param [style.stroke] {String|Number} A canvas fillstyle that will be used on the text stroke e.g 'blue', '#FCFF00'
- * @param [style.strokeThickness=0] {number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
- * @param [style.wordWrap=false] {boolean} Indicates if word wrap should be used
- * @param [style.wordWrapWidth=100] {number} The width at which text will wrap, it needs wordWrap to be set to true
- * @param [style.lineHeight] {number} The line height, a number that represents the vertical space that a letter uses
- * @param [style.dropShadow=false] {boolean} Set a drop shadow for the text
- * @param [style.dropShadowColor='#000000'] {string} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
- * @param [style.dropShadowAngle=Math.PI/4] {number} Set a angle of the drop shadow
- * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
- * @param [style.padding=0] {number} Occasionally some fonts are cropped. Adding some padding will prevent this from happening
- * @param [style.textBaseline='alphabetic'] {string} The baseline of the text that is rendered.
- * @param [style.lineJoin='miter'] {string} The lineJoin property sets the type of corner created, it can resolve
- *      spiked text issues. Default is 'miter' (creates a sharp corner).
- * @param [style.miterLimit=10] {number} The miter limit to use when using the 'miter' lineJoin mode. This can reduce
- *      or increase the spikiness of rendered text.
- */
-function Text(text, style, resolution)
-{
-    /**
-     * The canvas element that everything is drawn to
-     *
-     * @member {HTMLCanvasElement}
-     */
-    this.canvas = document.createElement('canvas');
-
-    /**
-     * The canvas 2d context that everything is drawn with
-     * @member {HTMLCanvasElement}
-     */
-    this.context = this.canvas.getContext('2d');
-
-    /**
-     * The resolution of the canvas.
-     * @member {number}
-     */
-    this.resolution = resolution || core.RESOLUTION;
-
-    /**
-     * Private tracker for the current text.
-     *
-     * @member {string}
-     * @private
-     */
-    this._text = null;
-
-    /**
-     * Private tracker for the current style.
-     *
-     * @member {object}
-     * @private
-     */
-    this._style = null;
-
-    var texture = core.Texture.fromCanvas(this.canvas);
-    texture.trim = new core.math.Rectangle();
-    core.Sprite.call(this, texture);
-
-
-    this.text = text;
-    this.style = style;
-}
-
-// constructor
-Text.prototype = Object.create(core.Sprite.prototype);
-Text.prototype.constructor = Text;
-module.exports = Text;
-
-Text.fontPropertiesCache = {};
-Text.fontPropertiesCanvas = document.createElement('canvas');
-Text.fontPropertiesContext = Text.fontPropertiesCanvas.getContext('2d');
-
-Object.defineProperties(Text.prototype, {
-    /**
-     * The width of the Text, setting this will actually modify the scale to achieve the value set
-     *
-     * @member {number}
-     * @memberof Text#
-     */
-    width: {
-        get: function ()
-        {
-            if (this.dirty)
-            {
-                this.updateText();
-            }
-
-            return this.scale.x * this._texture._frame.width;
-        },
-        set: function (value)
-        {
-            this.scale.x = value / this._texture._frame.width;
-            this._width = value;
-        }
-    },
-
-    /**
-     * The height of the Text, setting this will actually modify the scale to achieve the value set
-     *
-     * @member {number}
-     * @memberof Text#
-     */
-    height: {
-        get: function ()
-        {
-            if (this.dirty)
-            {
-                this.updateText();
-            }
-
-            return  this.scale.y * this._texture._frame.height;
-        },
-        set: function (value)
-        {
-            this.scale.y = value / this._texture._frame.height;
-            this._height = value;
-        }
-    },
-
-    /**
-     * Set the style of the text
-     *
-     * @param [style] {object} The style parameters
-     * @param [style.font='bold 20pt Arial'] {string} The style and size of the font
-     * @param [style.fill='black'] {object} A canvas fillstyle that will be used on the text eg 'red', '#00FF00'
-     * @param [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
-     * @param [style.stroke='black'] {string} A canvas fillstyle that will be used on the text stroke eg 'blue', '#FCFF00'
-     * @param [style.strokeThickness=0] {number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
-     * @param [style.wordWrap=false] {boolean} Indicates if word wrap should be used
-     * @param [style.wordWrapWidth=100] {number} The width at which text will wrap
-     * @param [style.lineHeight] {number} The line height, a number that represents the vertical space that a letter uses
-     * @param [style.dropShadow=false] {boolean} Set a drop shadow for the text
-     * @param [style.dropShadowColor='#000000'] {string} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
-     * @param [style.dropShadowAngle=Math.PI/6] {number} Set a angle of the drop shadow
-     * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
-     * @param [style.padding=0] {number} Occasionally some fonts are cropped. Adding some padding will prevent this from happening
-     * @param [style.textBaseline='alphabetic'] {string} The baseline of the text that is rendered.
-     * @param [style.lineJoin='miter'] {string} The lineJoin property sets the type of corner created, it can resolve
-     *      spiked text issues. Default is 'miter' (creates a sharp corner).
-     * @param [style.miterLimit=10] {number} The miter limit to use when using the 'miter' lineJoin mode. This can reduce
-     *      or increase the spikiness of rendered text.
-     * @memberof Text#
-     */
-    style: {
-        get: function ()
-        {
-            return this._style;
-        },
-        set: function (style)
-        {
-            style = style || {};
-            style.font = style.font || 'bold 20pt Arial';
-            style.fill = style.fill || 'black';
-            style.align = style.align || 'left';
-            style.stroke = style.stroke || 'black'; //provide a default, see: https://github.com/GoodBoyDigital/pixi.js/issues/136
-            style.strokeThickness = style.strokeThickness || 0;
-            style.wordWrap = style.wordWrap || false;
-            style.wordWrapWidth = style.wordWrapWidth || 100;
-
-            style.dropShadow = style.dropShadow || false;
-            style.dropShadowColor = style.dropShadowColor || '#000000';
-            style.dropShadowAngle = style.dropShadowAngle || Math.PI / 6;
-            style.dropShadowDistance = style.dropShadowDistance || 5;
-
-            style.padding = style.padding || 0;
-
-            style.textBaseline = style.textBaseline || 'alphabetic';
-
-            style.lineJoin = style.lineJoin || 'miter';
-            style.miterLimit = style.miterLimit || 10;
-
-            this._style = style;
-            this.dirty = true;
-        }
-    },
-
-    /**
-     * Set the copy for the text object. To split a line you can use '\n'.
-     *
-     * @param text {string} The copy that you would like the text to display
-     * @memberof Text#
-     */
-    text: {
-        get: function()
-        {
-            return this._text;
-        },
-        set: function (text){
-            text = text.toString() || ' ';
-            if (this._text === text)
-            {
-                return;
-            }
-            this._text = text;
-            this.dirty = true;
-        }
-    }
-});
-
-/**
- * Renders text and updates it when needed
- *
- * @private
- */
-Text.prototype.updateText = function ()
-{
-    var style = this._style;
-    this.context.font = style.font;
-
-    // word wrap
-    // preserve original text
-    var outputText = style.wordWrap ? this.wordWrap(this._text) : this._text;
-
-    // split text into lines
-    var lines = outputText.split(/(?:\r\n|\r|\n)/);
-
-    // calculate text width
-    var lineWidths = new Array(lines.length);
-    var maxLineWidth = 0;
-    var fontProperties = this.determineFontProperties(style.font);
-    for (var i = 0; i < lines.length; i++)
-    {
-        var lineWidth = this.context.measureText(lines[i]).width;
-        lineWidths[i] = lineWidth;
-        maxLineWidth = Math.max(maxLineWidth, lineWidth);
-    }
-
-    var width = maxLineWidth + style.strokeThickness;
-    if (style.dropShadow)
-    {
-        width += style.dropShadowDistance;
-    }
-
-    this.canvas.width = ( width + this.context.lineWidth ) * this.resolution;
-
-    // calculate text height
-    var lineHeight = this.style.lineHeight || fontProperties.fontSize + style.strokeThickness;
-
-    var height = lineHeight * lines.length;
-    if (style.dropShadow)
-    {
-        height += style.dropShadowDistance;
-    }
-
-    this.canvas.height = ( height + this._style.padding * 2 ) * this.resolution;
-
-    this.context.scale( this.resolution, this.resolution);
-
-    if (navigator.isCocoonJS)
-    {
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-    }
-
-    //this.context.fillStyle="#FF0000";
-    //this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-
-    this.context.font = style.font;
-    this.context.strokeStyle = style.stroke;
-    this.context.lineWidth = style.strokeThickness;
-    this.context.textBaseline = style.textBaseline;
-    this.context.lineJoin = style.lineJoin;
-    this.context.miterLimit = style.miterLimit;
-
-    var linePositionX;
-    var linePositionY;
-
-    if (style.dropShadow)
-    {
-        this.context.fillStyle = style.dropShadowColor;
-
-        var xShadowOffset = Math.cos(style.dropShadowAngle) * style.dropShadowDistance;
-        var yShadowOffset = Math.sin(style.dropShadowAngle) * style.dropShadowDistance;
-
-        for (i = 0; i < lines.length; i++)
-        {
-            linePositionX = style.strokeThickness / 2;
-            linePositionY = (style.strokeThickness / 2 + i * lineHeight) + fontProperties.ascent;
-
-            if (style.align === 'right')
-            {
-                linePositionX += maxLineWidth - lineWidths[i];
-            }
-            else if (style.align === 'center')
-            {
-                linePositionX += (maxLineWidth - lineWidths[i]) / 2;
-            }
-
-            if (style.fill)
-            {
-                this.context.fillText(lines[i], linePositionX + xShadowOffset, linePositionY + yShadowOffset + this._style.padding);
-            }
-        }
-    }
-
-    //set canvas text styles
-    this.context.fillStyle = style.fill;
-
-    //draw lines line by line
-    for (i = 0; i < lines.length; i++)
-    {
-        linePositionX = style.strokeThickness / 2;
-        linePositionY = (style.strokeThickness / 2 + i * lineHeight) + fontProperties.ascent;
-
-        if (style.align === 'right')
-        {
-            linePositionX += maxLineWidth - lineWidths[i];
-        }
-        else if (style.align === 'center')
-        {
-            linePositionX += (maxLineWidth - lineWidths[i]) / 2;
-        }
-
-        if (style.stroke && style.strokeThickness)
-        {
-            this.context.strokeText(lines[i], linePositionX, linePositionY + this._style.padding);
-        }
-
-        if (style.fill)
-        {
-            this.context.fillText(lines[i], linePositionX, linePositionY + this._style.padding);
-        }
-    }
-
-    this.updateTexture();
-};
-
-/**
- * Updates texture size based on canvas size
- *
- * @private
- */
-Text.prototype.updateTexture = function ()
-{
-    var texture = this._texture;
-
-    texture.baseTexture.hasLoaded = true;
-    texture.baseTexture.resolution = this.resolution;
-
-    texture.baseTexture.width = this.canvas.width / this.resolution;
-    texture.baseTexture.height = this.canvas.height / this.resolution;
-    texture.crop.width = texture._frame.width = this.canvas.width / this.resolution;
-    texture.crop.height = texture._frame.height = this.canvas.height / this.resolution;
-
-    texture.trim.x = 0;
-    texture.trim.y = -this._style.padding;
-
-    texture.trim.width = texture._frame.width;
-    texture.trim.height = texture._frame.height - this._style.padding*2;
-
-    this._width = this.canvas.width / this.resolution;
-    this._height = this.canvas.height / this.resolution;
-
-    texture.update();
-
-    this.dirty = false;
-};
-
-/**
- * Renders the object using the WebGL renderer
- *
- * @param renderer {WebGLRenderer}
- */
-Text.prototype.renderWebGL = function (renderer)
-{
-    if (this.dirty)
-    {
-        //this.resolution = 1//renderer.resolution;
-
-        this.updateText();
-    }
-
-    core.Sprite.prototype.renderWebGL.call(this, renderer);
-};
-
-/**
- * Renders the object using the Canvas renderer
- *
- * @param renderer {CanvasRenderer}
- * @private
- */
-Text.prototype._renderCanvas = function (renderer)
-{
-    if (this.dirty)
-    {
-     //   this.resolution = 1//renderer.resolution;
-
-        this.updateText();
-    }
-
-    core.Sprite.prototype._renderCanvas.call(this, renderer);
-};
-
-/**
- * Calculates the ascent, descent and fontSize of a given fontStyle
- *
- * @param fontStyle {object}
- * @private
- */
-Text.prototype.determineFontProperties = function (fontStyle)
-{
-    var properties = Text.fontPropertiesCache[fontStyle];
-
-    if (!properties)
-    {
-        properties = {};
-
-        var canvas = Text.fontPropertiesCanvas;
-        var context = Text.fontPropertiesContext;
-
-        context.font = fontStyle;
-
-        var width = Math.ceil(context.measureText('|MÉq').width);
-        var baseline = Math.ceil(context.measureText('M').width);
-        var height = 2 * baseline;
-
-        baseline = baseline * 1.4 | 0;
-
-        canvas.width = width;
-        canvas.height = height;
-
-        context.fillStyle = '#f00';
-        context.fillRect(0, 0, width, height);
-
-        context.font = fontStyle;
-
-        context.textBaseline = 'alphabetic';
-        context.fillStyle = '#000';
-        context.fillText('|MÉq', 0, baseline);
-
-        var imagedata = context.getImageData(0, 0, width, height).data;
-        var pixels = imagedata.length;
-        var line = width * 4;
-
-        var i, j;
-
-        var idx = 0;
-        var stop = false;
-
-        // ascent. scan from top to bottom until we find a non red pixel
-        for (i = 0; i < baseline; i++)
-        {
-            for (j = 0; j < line; j += 4)
-            {
-                if (imagedata[idx + j] !== 255)
-                {
-                    stop = true;
-                    break;
-                }
-            }
-            if (!stop)
-            {
-                idx += line;
-            }
-            else
-            {
-                break;
-            }
-        }
-
-        properties.ascent = baseline - i;
-
-        idx = pixels - line;
-        stop = false;
-
-        // descent. scan from bottom to top until we find a non red pixel
-        for (i = height; i > baseline; i--)
-        {
-            for (j = 0; j < line; j += 4)
-            {
-                if (imagedata[idx + j] !== 255)
-                {
-                    stop = true;
-                    break;
-                }
-            }
-            if (!stop)
-            {
-                idx -= line;
-            }
-            else
-            {
-                break;
-            }
-        }
-
-        properties.descent = i - baseline;
-        properties.fontSize = properties.ascent + properties.descent;
-
-        Text.fontPropertiesCache[fontStyle] = properties;
-    }
-
-    return properties;
-};
-
-/**
- * Applies newlines to a string to have it optimally fit into the horizontal
- * bounds set by the Text object's wordWrapWidth property.
- *
- * @param text {string}
- * @private
- */
-Text.prototype.wordWrap = function (text)
-{
-    // Greedy wrapping algorithm that will wrap words as the line grows longer
-    // than its horizontal bounds.
-    var result = '';
-    var lines = text.split('\n');
-    var wordWrapWidth = this._style.wordWrapWidth;
-    for (var i = 0; i < lines.length; i++)
-    {
-        var spaceLeft = wordWrapWidth;
-        var words = lines[i].split(' ');
-        for (var j = 0; j < words.length; j++)
-        {
-            var wordWidth = this.context.measureText(words[j]).width;
-            var wordWidthWithSpace = wordWidth + this.context.measureText(' ').width;
-            if (j === 0 || wordWidthWithSpace > spaceLeft)
-            {
-                // Skip printing the newline if it's the first word of the line that is
-                // greater than the word wrap width.
-                if (j > 0)
-                {
-                    result += '\n';
-                }
-                result += words[j];
-                spaceLeft = wordWrapWidth - wordWidth;
-            }
-            else
-            {
-                spaceLeft -= wordWidthWithSpace;
-                result += ' ' + words[j];
-            }
-        }
-
-        if (i < lines.length-1)
-        {
-            result += '\n';
-        }
-    }
-    return result;
-};
-
-/**
- * Returns the bounds of the Text as a rectangle. The bounds calculation takes the worldTransform into account.
- *
- * @param matrix {Matrix} the transformation matrix of the Text
- * @return {Rectangle} the framing rectangle
- */
-Text.prototype.getBounds = function (matrix)
-{
-    if (this.dirty)
-    {
-        this.updateText();
-    }
-
-    return core.Sprite.prototype.getBounds.call(this, matrix);
-};
-
-/**
- * Destroys this text object.
- *
- * @param destroyBaseTexture {boolean} whether to destroy the base texture as well
- */
-Text.prototype.destroy = function (destroyBaseTexture)
-{
-    // make sure to reset the the context and canvas.. dont want this hanging around in memory!
-    this.context = null;
-    this.canvas = null;
-
-    this._texture.destroy(destroyBaseTexture === undefined ? true : destroyBaseTexture);
-};
-
-},{"../core":21}],126:[function(require,module,exports){
-/**
- * @file        Main export of the PIXI text library
- * @author      Mat Groves <mat@goodboydigital.com>
- * @copyright   2013-2015 GoodBoyDigital
- * @license     {@link https://github.com/GoodBoyDigital/pixi.js/blob/master/LICENSE|MIT License}
- */
-
-/**
- * @namespace PIXI.text
- */
-module.exports = {
-    Text:       require('./Text'),
-    BitmapText: require('./BitmapText')
-};
-
-},{"./BitmapText":124,"./Text":125}],"pixi.js":[function(require,module,exports){
+},{"./Spine":124,"./SpineRuntime":125}],"pixi.js":[function(require,module,exports){
 // run the polyfills
 require('./polyfill');
 
-var core = require('./core'),
-    assign = Object.assign;
+var core = module.exports = require('./core');
 
-assign(core, require('./core/math'));
-assign(core, require('./extras'));
-assign(core, require('./mesh'));
-assign(core, require('./filters'));
-assign(core, require('./interaction'));
-assign(core, require('./loaders'));
-assign(core, require('./spine'));
-assign(core, require('./text'));
-assign(core, require('./deprecation'));
+// add core plugins.
+core.extras         = require('./extras');
+core.filters        = require('./filters');
+core.interaction    = require('./interaction');
+core.loaders        = require('./loaders');
+core.mesh           = require('./mesh');
+core.spine          = require('./spine');
 
-module.exports = core;
+// mixin the deprecation features.
+Object.assign(core, require('./deprecation'));
 
-},{"./core":21,"./core/math":24,"./deprecation":68,"./extras":74,"./filters":90,"./interaction":105,"./loaders":108,"./mesh":115,"./polyfill":119,"./spine":123,"./text":126}]},{},["pixi.js"])("pixi.js")
+},{"./core":21,"./deprecation":69,"./extras":77,"./filters":93,"./interaction":108,"./loaders":111,"./mesh":118,"./polyfill":122,"./spine":126}]},{},["pixi.js"])("pixi.js")
 });
 
 
