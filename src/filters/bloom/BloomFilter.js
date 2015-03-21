@@ -33,11 +33,11 @@ BloomFilter.prototype.applyFilter = function (renderer, input, output)
 
     this.blurXFilter.applyFilter(renderer, input, renderTarget);
 
-    renderer.blendModeManager.setBlendMode(core.CONST.BLEND_MODES.SCREEN);
+    renderer.blendModeManager.setBlendMode(core.BLEND_MODES.SCREEN);
 
     this.blurYFilter.applyFilter(renderer, renderTarget, output);
 
-    renderer.blendModeManager.setBlendMode(core.CONST.BLEND_MODES.NORMAL);
+    renderer.blendModeManager.setBlendMode(core.BLEND_MODES.NORMAL);
 
     renderer.filterManager.returnRenderTarget(renderTarget);
 };

@@ -26,7 +26,7 @@ function DropShadowFilter()
     this._distance = 10;
     this.alpha = 0.75;
     this.hideObject = false;
-    this.blendMode = core.CONST.BLEND_MODES.MULTIPLY;
+    this.blendMode = core.BLEND_MODES.MULTIPLY;
 }
 
 DropShadowFilter.prototype = Object.create(core.AbstractFilter.prototype);
@@ -52,7 +52,7 @@ DropShadowFilter.prototype.applyFilter = function (renderer, input, output)
 
     this.blurYTintFilter.applyFilter(renderer, renderTarget, output);
 
-    renderer.blendModeManager.setBlendMode(core.CONST.BLEND_MODES.NORMAL);
+    renderer.blendModeManager.setBlendMode(core.BLEND_MODES.NORMAL);
 
     if(!this.hideObject)
     {

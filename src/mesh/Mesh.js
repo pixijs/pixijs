@@ -61,7 +61,7 @@ function Mesh(texture, vertices, uvs, indices, drawMode)
      * @member {number}
      * @default CONST.BLEND_MODES.NORMAL;
      */
-    this.blendMode = core.CONST.BLEND_MODES.NORMAL;
+    this.blendMode = core.BLEND_MODES.NORMAL;
 
     /**
      * Triangles in canvas mode are automatically antialiased, use this value to force triangles to overlap a bit with each other.
