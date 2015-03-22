@@ -79,13 +79,6 @@ function Texture(baseTexture, frame, crop, trim, rotate)
     this.valid = false;
 
     /**
-     * This will let a renderer know that a texture has been updated (used mainly for webGL uv updates)
-     *
-     * @member {boolean}
-     */
-    this.requiresUpdate = false;
-
-    /**
      * The WebGL UV data cache.
      *
      * @member {TextureUvs}
