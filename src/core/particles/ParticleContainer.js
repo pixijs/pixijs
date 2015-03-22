@@ -24,7 +24,7 @@ var Container = require('../display/Container');
  * @extends Container
  * @memberof PIXI
  *
- * @param size {number} The number of images in the SpriteBatch before it flushes.
+ * @param [size=15000] {number} The number of images in the SpriteBatch before it flushes.
  * @param [properties] {object} The properties of children that should be uploaded to the gpu and applied.
  * @param [properties.scale=false] {boolean} When true, scale be uploaded and applied.
  * @param [properties.position=true] {boolean} When true, position be uploaded and applied.
