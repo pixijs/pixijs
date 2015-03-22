@@ -7557,6 +7557,7 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
     BaseTexture:            require('./textures/BaseTexture'),
     RenderTexture:          require('./textures/RenderTexture'),
     VideoBaseTexture:       require('./textures/VideoBaseTexture'),
+    TextureUvs:             require('./textures/TextureUvs'),
 
     // renderers - canvas
     CanvasRenderer:         require('./renderers/canvas/CanvasRenderer'),
@@ -7604,7 +7605,7 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
     }
 });
 
-},{"./const":15,"./display/Container":16,"./display/DisplayObject":17,"./graphics/Graphics":18,"./graphics/GraphicsData":19,"./graphics/webgl/GraphicsRenderer":20,"./math":25,"./particles/ParticleContainer":31,"./particles/webgl/ParticleRenderer":33,"./renderers/canvas/CanvasRenderer":36,"./renderers/canvas/utils/CanvasBuffer":37,"./renderers/canvas/utils/CanvasGraphics":38,"./renderers/webgl/WebGLRenderer":41,"./renderers/webgl/filters/AbstractFilter":42,"./renderers/webgl/managers/ShaderManager":48,"./renderers/webgl/shaders/Shader":53,"./sprites/Sprite":59,"./sprites/webgl/SpriteRenderer":60,"./text/Text":61,"./textures/BaseTexture":62,"./textures/RenderTexture":63,"./textures/Texture":64,"./textures/VideoBaseTexture":66,"./utils":68}],23:[function(require,module,exports){
+},{"./const":15,"./display/Container":16,"./display/DisplayObject":17,"./graphics/Graphics":18,"./graphics/GraphicsData":19,"./graphics/webgl/GraphicsRenderer":20,"./math":25,"./particles/ParticleContainer":31,"./particles/webgl/ParticleRenderer":33,"./renderers/canvas/CanvasRenderer":36,"./renderers/canvas/utils/CanvasBuffer":37,"./renderers/canvas/utils/CanvasGraphics":38,"./renderers/webgl/WebGLRenderer":41,"./renderers/webgl/filters/AbstractFilter":42,"./renderers/webgl/managers/ShaderManager":48,"./renderers/webgl/shaders/Shader":53,"./sprites/Sprite":59,"./sprites/webgl/SpriteRenderer":60,"./text/Text":61,"./textures/BaseTexture":62,"./textures/RenderTexture":63,"./textures/Texture":64,"./textures/TextureUvs":65,"./textures/VideoBaseTexture":66,"./utils":68}],23:[function(require,module,exports){
 var Point = require('./Point');
 
 /**
@@ -16661,13 +16662,6 @@ function Texture(baseTexture, frame, crop, trim, rotate)
     this.valid = false;
 
     /**
-     * This will let a renderer know that a texture has been updated (used mainly for webGL uv updates)
-     *
-     * @member {boolean}
-     */
-    this.requiresUpdate = false;
-
-    /**
      * The WebGL UV data cache.
      *
      * @member {TextureUvs}
@@ -16717,6 +16711,9 @@ function Texture(baseTexture, frame, crop, trim, rotate)
     {
         baseTexture.once('loaded', this.onBaseTextureLoaded, this);
     }
+
+    // the base texture is updated we may need to update our frame
+    baseTexture.on('update', this.onBaseTextureLoaded, this);
 }
 
 Texture.prototype = Object.create(EventEmitter.prototype);
@@ -16737,8 +16734,6 @@ Object.defineProperties(Texture.prototype, {
 
             this.width = frame.width;
             this.height = frame.height;
-
-
 
             if (!this.trim && !this.rotate && (frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height))
             {
@@ -16761,16 +16756,18 @@ Object.defineProperties(Texture.prototype, {
                 this.crop = frame;
             }
 
-             if (this.valid)
+            if (this.valid)
             {
                 this._updateUvs();
             }
+
+            this.emit('update', this);
         }
     }
 });
 
 /**
- * Updates this texture on the gpu.
+ * Updates this texture for drawing.
  *
  */
 Texture.prototype.update = function ()
@@ -16785,17 +16782,18 @@ Texture.prototype.update = function ()
  */
 Texture.prototype.onBaseTextureLoaded = function (baseTexture)
 {
-    // TODO this code looks confusing.. boo to abusing getters and setterss!
+    baseTexture = baseTexture || this.baseTexture;
+
+    // if no frame then create one and run the frame setter
     if (this.noFrame)
     {
         this.frame = new math.Rectangle(0, 0, baseTexture.width, baseTexture.height);
     }
+    // otherwise rerun the frame setter with the current frame to check for baseTexture validity
     else
     {
         this.frame = this._frame;
     }
-
-    this.emit( 'update', this );
 };
 
 /**
@@ -17839,8 +17837,6 @@ core.Text.prototype.setText = function (text)
     console.warn('setText is now deprecated, please use the text property, e.g : myText.text = \'my text\';');
 };
 
-module.exports = {};
-
 },{"./core":22,"./extras":78,"./mesh":119}],71:[function(require,module,exports){
 var core = require('../core');
 
@@ -18576,8 +18572,6 @@ module.exports = new Ticker();
 
 },{"eventemitter3":4}],74:[function(require,module,exports){
 var core = require('../core'),
-    TextureUvs = require('../core/textures/TextureUvs'),
-    RenderTexture = require('../core/textures/RenderTexture'),
     // a sprite use dfor rendering textures..
     tempSprite = new core.Sprite(),
     tempPoint = new core.Point(),
@@ -18661,7 +18655,7 @@ function TilingSprite(texture, width, height)
      * @member {TextureUvs}
      * @private
      */
-    this._uvs = new TextureUvs();
+    this._uvs = new core.TextureUvs();
 }
 
 TilingSprite.prototype = Object.create(core.Sprite.prototype);
@@ -18956,7 +18950,7 @@ TilingSprite.prototype.generateTilingTexture = function (renderer, texture, forc
         tempSprite.texture = texture;
 
         //TODO not create a new one each time you refresh
-        var renderTexture = new RenderTexture(renderer, targetWidth, targetHeight, texture.baseTexture.scaleMode, texture.baseTexture.resolution);
+        var renderTexture = new core.RenderTexture(renderer, targetWidth, targetHeight, texture.baseTexture.scaleMode, texture.baseTexture.resolution);
 
         var cachedRenderTarget = renderer.currentRenderTarget;
 
@@ -19084,13 +19078,10 @@ TilingSprite.fromImage = function (imageId, width, height, crossorigin, scaleMod
     return new TilingSprite(core.Texture.fromImage(imageId, crossorigin, scaleMode),width,height);
 };
 
-},{"../core":22,"../core/textures/RenderTexture":63,"../core/textures/TextureUvs":65}],75:[function(require,module,exports){
-var math = require('../core/math'),
-    RenderTexture = require('../core/textures/RenderTexture'),
-    DisplayObject = require('../core/display/DisplayObject'),
-    Sprite = require('../core/sprites/Sprite'),
-
-    _tempMatrix = new math.Matrix();
+},{"../core":22}],75:[function(require,module,exports){
+var core = require('../core'),
+    DisplayObject = core.DisplayObject,
+    _tempMatrix = new core.Matrix();
 
 DisplayObject.prototype._cacheAsBitmap = false;
 DisplayObject.prototype._originalRenderWebGL = null;
@@ -19100,10 +19091,7 @@ DisplayObject.prototype._originalUpdateTransform = null;
 DisplayObject.prototype._originalHitTest = null;
 DisplayObject.prototype._cachedSprite = null;
 
-
-
 Object.defineProperties(DisplayObject.prototype, {
-
 
     /**
      * Set this to true if you want this display object to be cached as a bitmap.
@@ -19217,7 +19205,7 @@ DisplayObject.prototype._initCachedDisplayObject = function( renderer )
     var stack = renderer.filterManager.filterStack;
 
     // this renderTexture will be used to store the cached DisplayObject
-    var renderTexture = new RenderTexture(renderer, bounds.width | 0, bounds.height | 0);
+    var renderTexture = new core.RenderTexture(renderer, bounds.width | 0, bounds.height | 0);
 
     // need to set //
     var m = _tempMatrix;
@@ -19242,7 +19230,7 @@ DisplayObject.prototype._initCachedDisplayObject = function( renderer )
 
 
     // create our cached sprite
-    this._cachedSprite = new Sprite(renderTexture);
+    this._cachedSprite = new core.Sprite(renderTexture);
     this._cachedSprite.worldTransform = this.worldTransform;
     this._cachedSprite.anchor.x = -( bounds.x / bounds.width );
     this._cachedSprite.anchor.y = -( bounds.y / bounds.height );
@@ -19285,7 +19273,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function( renderer )
 
     var cachedRenderTarget = renderer.context;
 
-    var renderTexture = new RenderTexture(renderer, bounds.width | 0, bounds.height | 0);
+    var renderTexture = new core.RenderTexture(renderer, bounds.width | 0, bounds.height | 0);
 
     // need to set //
     var m = _tempMatrix;
@@ -19307,7 +19295,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function( renderer )
 
 
     // create our cached sprite
-    this._cachedSprite = new Sprite(renderTexture);
+    this._cachedSprite = new core.Sprite(renderTexture);
     this._cachedSprite.worldTransform = this.worldTransform;
     this._cachedSprite.anchor.x = -( bounds.x / bounds.width );
     this._cachedSprite.anchor.y = -( bounds.y / bounds.height );
@@ -19337,20 +19325,15 @@ DisplayObject.prototype._destroyCachedDisplayObject = function()
     this._cachedSprite = null;
 };
 
-
-
-module.exports = {};
-
-},{"../core/display/DisplayObject":17,"../core/math":25,"../core/sprites/Sprite":59,"../core/textures/RenderTexture":63}],76:[function(require,module,exports){
-var DisplayObject = require('../core/display/DisplayObject'),
-    Container = require('../core/display/Container');
+},{"../core":22}],76:[function(require,module,exports){
+var core = require('../core');
 
 /**
  * The instance name of the object.
  *
  * @member {string}
  */
-DisplayObject.prototype.name = null;
+core.DisplayObject.prototype.name = null;
 
 /**
 * Returns the display object in the container
@@ -19358,7 +19341,7 @@ DisplayObject.prototype.name = null;
 * @param name {string} instance name
 * @return {DisplayObject}
 */
-Container.prototype.getChildByName = function (name)
+core.Container.prototype.getChildByName = function (name)
 {
     for (var i = 0; i < this.children.length; i++) 
     {
@@ -19370,11 +19353,8 @@ Container.prototype.getChildByName = function (name)
     return null;
 };
 
-module.exports = {};
-},{"../core/display/Container":16,"../core/display/DisplayObject":17}],77:[function(require,module,exports){
-var DisplayObject = require('../core/display/DisplayObject'),
-    Point = require('../core/math/Point');
-
+},{"../core":22}],77:[function(require,module,exports){
+var core = require('../core');
 
 /**
 * Returns the global position of the displayObject
@@ -19382,9 +19362,9 @@ var DisplayObject = require('../core/display/DisplayObject'),
 * @param point {Point} the point to write the global value to. If null a new point will be returned
 * @return {Point}
 */
-DisplayObject.prototype.getGlobalPosition = function (point)
+core.DisplayObject.prototype.getGlobalPosition = function (point)
 {
-    point = point || new Point();
+    point = point || new core.Point();
 
     if(this.parent)
     {
@@ -19402,15 +19382,17 @@ DisplayObject.prototype.getGlobalPosition = function (point)
     return point;
 };
 
-module.exports = {};
-
-},{"../core/display/DisplayObject":17,"../core/math/Point":24}],78:[function(require,module,exports){
+},{"../core":22}],78:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI extras library
  * @author      Mat Groves <mat@goodboydigital.com>
  * @copyright   2013-2015 GoodBoyDigital
  * @license     {@link https://github.com/GoodBoyDigital/pixi.js/blob/master/LICENSE|MIT License}
  */
+
+require('./cacheAsBitmap');
+require('./getChildByName');
+require('./getGlobalPosition');
 
 /**
  * @namespace PIXI.extras
@@ -19420,9 +19402,6 @@ module.exports = {
     MovieClip:      require('./MovieClip'),
     TilingSprite:   require('./TilingSprite'),
     BitmapText:     require('./BitmapText'),
-    cacheAsBitmap:  require('./cacheAsBitmap'),
-    getChildByName: require('./getChildByName'),
-    getGlobalPosition: require('./getGlobalPosition')
 };
 
 },{"./BitmapText":71,"./MovieClip":72,"./Ticker":73,"./TilingSprite":74,"./cacheAsBitmap":75,"./getChildByName":76,"./getGlobalPosition":77}],79:[function(require,module,exports){
@@ -22088,6 +22067,12 @@ InteractionData.prototype.getLocalPosition = function (displayObject, point, glo
 var core = require('../core'),
     InteractionData = require('./InteractionData');
 
+// Mix interactiveTarget into core.DisplayObject.prototype
+Object.assign(
+    core.DisplayObject.prototype,
+    require('./interactiveTarget')
+);
+
 /**
  * The interaction manager deals with mouse and touch events. Any DisplayObject can be interactive
  * if its interactive parameter is set to true
@@ -22931,7 +22916,7 @@ InteractionManager.prototype.destroy = function () {
 core.WebGLRenderer.registerPlugin('interaction', InteractionManager);
 core.CanvasRenderer.registerPlugin('interaction', InteractionManager);
 
-},{"../core":22,"./InteractionData":107}],109:[function(require,module,exports){
+},{"../core":22,"./InteractionData":107,"./interactiveTarget":110}],109:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI interactions library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -22949,21 +22934,54 @@ module.exports = {
 };
 
 },{"./InteractionData":107,"./InteractionManager":108,"./interactiveTarget":110}],110:[function(require,module,exports){
-var core = require('../core');
+/**
+ * Default property values of interactive objects
+ * used by {@link PIXI.interaction.InteractionManager}.
+ *
+ * @mixin
+ * @memberof PIXI.interaction
+ * @example
+ *      function MyObject() {}
+ *
+ *      Object.assign(
+ *          MyObject.prototype,
+ *          PIXI.interaction.interactiveTarget)
+ *      );
+ */
 
+module.exports = {
+    /**
+     * @todo
+     */
+    interactive: false,
+    /**
+     * @todo
+     */
+    buttonMode: false,
+    /**
+     * @todo
+     */
+    interactiveChildren: true,
+    /**
+     * @todo
+     */
+    defaultCursor: 'pointer',
 
-core.DisplayObject.prototype.interactive = false;
-core.DisplayObject.prototype.buttonMode = false;
-core.DisplayObject.prototype.interactiveChildren = true;
-core.DisplayObject.prototype.defaultCursor = 'pointer';
+    // some internal checks..
 
-// some internal checks..
-core.DisplayObject.prototype._over = false;
-core.DisplayObject.prototype._touchDown = false;
+    /**
+     * @todo
+     * @private
+     */
+    _over: false,
+    /**
+     * @todo
+     * @private
+     */
+    _touchDown: false
+};
 
-module.exports = {};
-
-},{"../core":22}],111:[function(require,module,exports){
+},{}],111:[function(require,module,exports){
 var Resource = require('resource-loader').Resource,
     core = require('../core'),
     extras = require('../extras'),
