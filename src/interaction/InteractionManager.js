@@ -1,6 +1,12 @@
 var core = require('../core'),
     InteractionData = require('./InteractionData');
 
+// Mix interactiveTarget into core.DisplayObject.prototype
+Object.assign(
+    core.DisplayObject.prototype,
+    require('./interactiveTarget')
+);
+
 /**
  * The interaction manager deals with mouse and touch events. Any DisplayObject can be interactive
  * if its interactive parameter is set to true
