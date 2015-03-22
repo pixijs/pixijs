@@ -105,5 +105,3 @@ core.Text.prototype.setText = function (text)
     this.text = text;
     console.warn('setText is now deprecated, please use the text property, e.g : myText.text = \'my text\';');
 };
-
-module.exports = {};

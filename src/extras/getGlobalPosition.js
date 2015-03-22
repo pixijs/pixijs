@@ -1,6 +1,4 @@
-var DisplayObject = require('../core/display/DisplayObject'),
-    Point = require('../core/math/Point');
-
+var core = require('../core');
 
 /**
 * Returns the global position of the displayObject
@@ -8,9 +6,9 @@ var DisplayObject = require('../core/display/DisplayObject'),
 * @param point {Point} the point to write the global value to. If null a new point will be returned
 * @return {Point}
 */
-DisplayObject.prototype.getGlobalPosition = function (point)
+core.DisplayObject.prototype.getGlobalPosition = function (point)
 {
-    point = point || new Point();
+    point = point || new core.Point();
 
     if(this.parent)
     {
@@ -27,5 +25,3 @@ DisplayObject.prototype.getGlobalPosition = function (point)
 
     return point;
 };
-
-module.exports = {};

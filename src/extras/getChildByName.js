@@ -1,12 +1,11 @@
-var DisplayObject = require('../core/display/DisplayObject'),
-    Container = require('../core/display/Container');
+var core = require('../core');
 
 /**
  * The instance name of the object.
  *
  * @member {string}
  */
-DisplayObject.prototype.name = null;
+core.DisplayObject.prototype.name = null;
 
 /**
 * Returns the display object in the container
@@ -14,7 +13,7 @@ DisplayObject.prototype.name = null;
 * @param name {string} instance name
 * @return {DisplayObject}
 */
-Container.prototype.getChildByName = function (name)
+core.Container.prototype.getChildByName = function (name)
 {
     for (var i = 0; i < this.children.length; i++) 
     {
@@ -25,5 +24,3 @@ Container.prototype.getChildByName = function (name)
     }
     return null;
 };
-
-module.exports = {};
