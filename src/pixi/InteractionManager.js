@@ -736,8 +736,8 @@ PIXI.InteractionManager.prototype.onTouchMove = function(event)
         else
         {
             //Support for CocoonJS fullscreen scale modes
-            touchData.global.x = touchEvent.clientX / this.resolution;
-            touchData.global.y = touchEvent.clientY / this.resolution;
+            touchData.global.x = touchEvent.clientX;
+            touchData.global.y = touchEvent.clientY;
         }
 
         for (var j = 0; j < this.interactiveItems.length; j++)
