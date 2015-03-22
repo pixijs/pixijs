@@ -25,7 +25,12 @@ var Container = require('../display/Container');
  * @memberof PIXI
  *
  * @param size {number} The number of images in the SpriteBatch before it flushes.
- * @param properties {object} The properties to be uploaded
+ * @param [properties] {object} The properties of children that should be uploaded to the gpu and applied.
+ * @param [properties.scale=false] {boolean} When true, scale be uploaded and applied.
+ * @param [properties.position=true] {boolean} When true, position be uploaded and applied.
+ * @param [properties.rotation=false] {boolean} When true, rotation be uploaded and applied.
+ * @param [properties.uvs=false] {boolean} When true, uvs be uploaded and applied.
+ * @param [properties.alpha=false] {boolean} When true, alpha be uploaded and applied.
  */
 function ParticleContainer(size, properties)
 {
