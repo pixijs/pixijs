@@ -78,11 +78,11 @@ module.exports = ParticleContainer;
 ParticleContainer.prototype.setProperties = function(properties)
 {
     if ( properties ) {
-        this._properties[0] = 'scale' in properties ? properties.scale : this._properties[0];
-        this._properties[1] = 'position' in properties ? properties.position : this._properties[1];
-        this._properties[2] = 'rotation' in properties ? properties.rotation : this._properties[2];
-        this._properties[3] = 'uvs' in properties ? properties.uvs : this._properties[3];
-        this._properties[4] = 'alpha' in properties ? properties.alpha : this._properties[4];
+        this._properties[0] = 'scale' in properties ? !!properties.scale : this._properties[0];
+        this._properties[1] = 'position' in properties ? !!properties.position : this._properties[1];
+        this._properties[2] = 'rotation' in properties ? !!properties.rotation : this._properties[2];
+        this._properties[3] = 'uvs' in properties ? !!properties.uvs : this._properties[3];
+        this._properties[4] = 'alpha' in properties ? !!properties.alpha : this._properties[4];
     }
 };
 
