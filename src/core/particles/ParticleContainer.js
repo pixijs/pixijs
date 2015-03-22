@@ -31,21 +31,14 @@ function ParticleContainer(size, properties)
 {
     Container.call(this);
 
-    // set properties to be dynamic (true) / static (false)
-    // TODO this could be easier to understand!
-    /* this._properties = {
-        scale : false,
-        position : true,
-        rotation : false,
-        uvs : false,
-        alpha : false
-     * }
-     */
     /**
-     * @member {object}
+     * Set properties to be dynamic (true) / static (false)
+     *
+     * @member {array}
      * @private
      */
-    this._properties = properties || [false, true, false, false, false];
+    this._properties = [false, true, false, false, false];
+
     /**
      * @member {number}
      * @private
@@ -70,11 +63,28 @@ function ParticleContainer(size, properties)
      */
     this.interactiveChildren = false;
 
+    this.setProperties(properties);
 }
 
 ParticleContainer.prototype = Object.create(Container.prototype);
 ParticleContainer.prototype.constructor = ParticleContainer;
 module.exports = ParticleContainer;
+
+/**
+ * Sets the private properties array to dynamic / static based on the passed properties object
+ *
+ * @param properties {object} The properties to be uploaded
+ */
+ParticleContainer.prototype.setProperties = function(properties)
+{
+    if ( properties ) {
+        this._properties[0] = 'scale' in properties ? !!properties.scale : this._properties[0];
+        this._properties[1] = 'position' in properties ? !!properties.position : this._properties[1];
+        this._properties[2] = 'rotation' in properties ? !!properties.rotation : this._properties[2];
+        this._properties[3] = 'uvs' in properties ? !!properties.uvs : this._properties[3];
+        this._properties[4] = 'alpha' in properties ? !!properties.alpha : this._properties[4];
+    }
+};
 
 /**
  * Updates the object transform for rendering
