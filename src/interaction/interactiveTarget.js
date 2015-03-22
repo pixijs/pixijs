@@ -17,19 +17,19 @@ module.exports = {
     /**
      * @todo
      */
-    interactive: false;
+    interactive: false,
     /**
      * @todo
      */
-    buttonMode: false;
+    buttonMode: false,
     /**
      * @todo
      */
-    interactiveChildren: true;
+    interactiveChildren: true,
     /**
      * @todo
      */
-    defaultCursor: 'pointer';
+    defaultCursor: 'pointer',
 
     // some internal checks..
 
@@ -37,10 +37,10 @@ module.exports = {
      * @todo
      * @private
      */
-    _over: false;
+    _over: false,
     /**
      * @todo
      * @private
      */
-    _touchDown: false;
+    _touchDown: false
 };

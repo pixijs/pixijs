@@ -5,7 +5,7 @@
  * @license     {@link https://github.com/GoodBoyDigital/pixi.js/blob/master/LICENSE|MIT License}
  */
 
-require('./cacheAsBitmap'),
+require('./cacheAsBitmap');
 require('./getChildByName');
 require('./getGlobalPosition');
 
