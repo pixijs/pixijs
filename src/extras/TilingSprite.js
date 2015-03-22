@@ -1,5 +1,4 @@
 var core = require('../core'),
-    TextureUvs = require('../core/textures/TextureUvs'),
     // a sprite use dfor rendering textures..
     tempSprite = new core.Sprite(),
     tempPoint = new core.Point(),
@@ -83,7 +82,7 @@ function TilingSprite(texture, width, height)
      * @member {TextureUvs}
      * @private
      */
-    this._uvs = new TextureUvs();
+    this._uvs = new core.TextureUvs();
 }
 
 TilingSprite.prototype = Object.create(core.Sprite.prototype);
