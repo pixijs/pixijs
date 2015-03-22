@@ -1,9 +1,6 @@
-var math = require('../core/math'),
-    RenderTexture = require('../core/textures/RenderTexture'),
-    DisplayObject = require('../core/display/DisplayObject'),
-    Sprite = require('../core/sprites/Sprite'),
-
-    _tempMatrix = new math.Matrix();
+var core = require('../core'),
+    DisplayObject = core.DisplayObject,
+    _tempMatrix = new core.Matrix();
 
 DisplayObject.prototype._cacheAsBitmap = false;
 DisplayObject.prototype._originalRenderWebGL = null;
@@ -13,10 +10,7 @@ DisplayObject.prototype._originalUpdateTransform = null;
 DisplayObject.prototype._originalHitTest = null;
 DisplayObject.prototype._cachedSprite = null;
 
-
-
 Object.defineProperties(DisplayObject.prototype, {
-
 
     /**
      * Set this to true if you want this display object to be cached as a bitmap.
@@ -130,7 +124,7 @@ DisplayObject.prototype._initCachedDisplayObject = function( renderer )
     var stack = renderer.filterManager.filterStack;
 
     // this renderTexture will be used to store the cached DisplayObject
-    var renderTexture = new RenderTexture(renderer, bounds.width | 0, bounds.height | 0);
+    var renderTexture = new core.RenderTexture(renderer, bounds.width | 0, bounds.height | 0);
 
     // need to set //
     var m = _tempMatrix;
@@ -155,7 +149,7 @@ DisplayObject.prototype._initCachedDisplayObject = function( renderer )
 
 
     // create our cached sprite
-    this._cachedSprite = new Sprite(renderTexture);
+    this._cachedSprite = new core.Sprite(renderTexture);
     this._cachedSprite.worldTransform = this.worldTransform;
     this._cachedSprite.anchor.x = -( bounds.x / bounds.width );
     this._cachedSprite.anchor.y = -( bounds.y / bounds.height );
@@ -198,7 +192,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function( renderer )
 
     var cachedRenderTarget = renderer.context;
 
-    var renderTexture = new RenderTexture(renderer, bounds.width | 0, bounds.height | 0);
+    var renderTexture = new core.RenderTexture(renderer, bounds.width | 0, bounds.height | 0);
 
     // need to set //
     var m = _tempMatrix;
@@ -220,7 +214,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function( renderer )
 
 
     // create our cached sprite
-    this._cachedSprite = new Sprite(renderTexture);
+    this._cachedSprite = new core.Sprite(renderTexture);
     this._cachedSprite.worldTransform = this.worldTransform;
     this._cachedSprite.anchor.x = -( bounds.x / bounds.width );
     this._cachedSprite.anchor.y = -( bounds.y / bounds.height );
@@ -249,7 +243,3 @@ DisplayObject.prototype._destroyCachedDisplayObject = function()
     this._cachedSprite._texture.destroy();
     this._cachedSprite = null;
 };
-
-
-
-module.exports = {};

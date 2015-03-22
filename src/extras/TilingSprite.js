@@ -1,6 +1,5 @@
 var core = require('../core'),
     TextureUvs = require('../core/textures/TextureUvs'),
-    RenderTexture = require('../core/textures/RenderTexture'),
     // a sprite use dfor rendering textures..
     tempSprite = new core.Sprite(),
     tempPoint = new core.Point(),
@@ -379,7 +378,7 @@ TilingSprite.prototype.generateTilingTexture = function (renderer, texture, forc
         tempSprite.texture = texture;
 
         //TODO not create a new one each time you refresh
-        var renderTexture = new RenderTexture(renderer, targetWidth, targetHeight, texture.baseTexture.scaleMode, texture.baseTexture.resolution);
+        var renderTexture = new core.RenderTexture(renderer, targetWidth, targetHeight, texture.baseTexture.scaleMode, texture.baseTexture.resolution);
 
         var cachedRenderTarget = renderer.currentRenderTarget;
 
