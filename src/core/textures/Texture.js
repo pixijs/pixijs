@@ -128,6 +128,9 @@ function Texture(baseTexture, frame, crop, trim, rotate)
     {
         baseTexture.once('loaded', this.onBaseTextureLoaded, this);
     }
+
+    // the base texture is updated we may need to update our frame
+    baseTexture.on('update', this.onBaseTextureLoaded, this);
 }
 
 Texture.prototype = Object.create(EventEmitter.prototype);
@@ -148,8 +151,6 @@ Object.defineProperties(Texture.prototype, {
 
             this.width = frame.width;
             this.height = frame.height;
-
-
 
             if (!this.trim && !this.rotate && (frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height))
             {
@@ -172,16 +173,18 @@ Object.defineProperties(Texture.prototype, {
                 this.crop = frame;
             }
 
-             if (this.valid)
+            if (this.valid)
             {
                 this._updateUvs();
             }
+
+            this.emit('update', this);
         }
     }
 });
 
 /**
- * Updates this texture on the gpu.
+ * Updates this texture for drawing.
  *
  */
 Texture.prototype.update = function ()
@@ -196,17 +199,18 @@ Texture.prototype.update = function ()
  */
 Texture.prototype.onBaseTextureLoaded = function (baseTexture)
 {
-    // TODO this code looks confusing.. boo to abusing getters and setterss!
+    baseTexture = baseTexture || this.baseTexture;
+
+    // if no frame then create one and run the frame setter
     if (this.noFrame)
     {
         this.frame = new math.Rectangle(0, 0, baseTexture.width, baseTexture.height);
     }
+    // otherwise rerun the frame setter with the current frame to check for baseTexture validity
     else
     {
         this.frame = this._frame;
     }
-
-    this.emit( 'update', this );
 };
 
 /**
