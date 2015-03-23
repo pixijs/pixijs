@@ -79,6 +79,13 @@ function Texture(baseTexture, frame, crop, trim, rotate)
     this.valid = false;
 
     /**
+     * This will let a renderer know that a texture has been updated (used mainly for webGL uv updates)
+     *
+     * @member {boolean}
+     */
+    this.requiresUpdate = false;
+
+    /**
      * The WebGL UV data cache.
      *
      * @member {TextureUvs}
@@ -128,9 +135,6 @@ function Texture(baseTexture, frame, crop, trim, rotate)
     {
         baseTexture.once('loaded', this.onBaseTextureLoaded, this);
     }
-
-    // the base texture is updated we may need to update our frame
-    baseTexture.on('update', this.onBaseTextureLoaded, this);
 }
 
 Texture.prototype = Object.create(EventEmitter.prototype);
@@ -151,6 +155,8 @@ Object.defineProperties(Texture.prototype, {
 
             this.width = frame.width;
             this.height = frame.height;
+
+
 
             if (!this.trim && !this.rotate && (frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height))
             {
@@ -173,23 +179,23 @@ Object.defineProperties(Texture.prototype, {
                 this.crop = frame;
             }
 
-            if (this.valid)
+             if (this.valid)
             {
                 this._updateUvs();
             }
-
-            this.emit('update', this);
         }
     }
 });
 
 /**
- * Updates this texture for drawing.
+ * Updates this texture on the gpu.
  *
  */
 Texture.prototype.update = function ()
 {
     this.baseTexture.update();
+
+
 };
 
 /**
@@ -199,18 +205,17 @@ Texture.prototype.update = function ()
  */
 Texture.prototype.onBaseTextureLoaded = function (baseTexture)
 {
-    baseTexture = baseTexture || this.baseTexture;
-
-    // if no frame then create one and run the frame setter
+    // TODO this code looks confusing.. boo to abusing getters and setterss!
     if (this.noFrame)
     {
         this.frame = new math.Rectangle(0, 0, baseTexture.width, baseTexture.height);
     }
-    // otherwise rerun the frame setter with the current frame to check for baseTexture validity
     else
     {
         this.frame = this._frame;
     }
+
+    this.emit( 'update', this );
 };
 
 /**
