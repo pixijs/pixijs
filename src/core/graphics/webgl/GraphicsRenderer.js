@@ -307,8 +307,8 @@ GraphicsRenderer.prototype.buildRectangle = function (graphicsData, webGLData)
 
     if (graphicsData.fill)
     {
-        var color = utils.hex2rgb(graphicsData.fillColor);
-        var alpha = graphicsData.fillAlpha;
+        var color = utils.hex2rgb(graphicsData.fillStyle.color);
+        var alpha = graphicsData.fillStyle.color;
 
         var r = color[0] * alpha;
         var g = color[1] * alpha;
@@ -381,8 +381,8 @@ GraphicsRenderer.prototype.buildRoundedRectangle = function (graphicsData, webGL
 
     if (graphicsData.fill)
     {
-        var color = utils.hex2rgb(graphicsData.fillColor);
-        var alpha = graphicsData.fillAlpha;
+        var color = utils.hex2rgb(graphicsData.fillStyle.color);
+        var alpha = graphicsData.fillStyle.alpha;
 
         var r = color[0] * alpha;
         var g = color[1] * alpha;
@@ -511,8 +511,8 @@ GraphicsRenderer.prototype.buildCircle = function (graphicsData, webGLData)
 
     if (graphicsData.fill)
     {
-        var color = utils.hex2rgb(graphicsData.fillColor);
-        var alpha = graphicsData.fillAlpha;
+        var color = utils.hex2rgb(graphicsData.fillStyle.color);
+        var alpha = graphicsData.fillStyle.alpha;
 
         var r = color[0] * alpha;
         var g = color[1] * alpha;
@@ -616,8 +616,8 @@ GraphicsRenderer.prototype.buildLine = function (graphicsData, webGLData)
     var width = graphicsData.lineWidth / 2;
 
     // sort color
-    var color = utils.hex2rgb(graphicsData.lineColor);
-    var alpha = graphicsData.lineAlpha;
+    var color = utils.hex2rgb(graphicsData.strokeStyle.color);
+    var alpha = graphicsData.strokeStyle.alpha;
     var r = color[0] * alpha;
     var g = color[1] * alpha;
     var b = color[2] * alpha;
@@ -792,8 +792,8 @@ GraphicsRenderer.prototype.buildComplexPoly = function (graphicsData, webGLData)
     // get first and last point.. figure out the middle!
     var indices = webGLData.indices;
     webGLData.points = points;
-    webGLData.alpha = graphicsData.fillAlpha;
-    webGLData.color = utils.hex2rgb(graphicsData.fillColor);
+    webGLData.alpha = graphicsData.fillStyle.alpha;
+    webGLData.color = utils.hex2rgb(graphicsData.fillStyle.color);
 
     // calclate the bounds..
     var minX = Infinity;
@@ -857,8 +857,8 @@ GraphicsRenderer.prototype.buildPoly = function (graphicsData, webGLData)
     var length = points.length / 2;
 
     // sort color
-    var color = utils.hex2rgb(graphicsData.fillColor);
-    var alpha = graphicsData.fillAlpha;
+    var color = utils.hex2rgb(graphicsData.fillStyle.color);
+    var alpha = graphicsData.fillStyle.alpha;
     var r = color[0] * alpha;
     var g = color[1] * alpha;
     var b = color[2] * alpha;
