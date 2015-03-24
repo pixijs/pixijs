@@ -5,7 +5,8 @@ var Container = require('../display/Container'),
     GraphicsData = require('./GraphicsData'),
     math = require('../math'),
     CONST = require('../const'),
-    tempPoint = new math.Point();
+    tempPoint = new math.Point(),
+    SolidBrush = require('./brushes/SolidBrush');
 
 /**
  * The Graphics class contains methods used to draw primitive shapes such as lines, circles and
@@ -20,12 +21,11 @@ function Graphics()
     Container.call(this);
 
     /**
-     * The alpha value used when filling the Graphics object.
+     * The fill style of the Graphics object.
      *
-     * @member {number}
-     * @default 1
+     * @member {Brush}
      */
-    this.fillAlpha = 1;
+    this.fillStyle = new SolidBrush(0, 1);
 
     /**
      * The width (thickness) of any lines drawn.
@@ -36,12 +36,11 @@ function Graphics()
     this.lineWidth = 0;
 
     /**
-     * The color of any lines drawn.
+     * The stroke style of the Graphics object.
      *
-     * @member {string}
-     * @default 0
+     * @member {Brush}
      */
-    this.lineColor = 0;
+    this.strokeStyle = new SolidBrush(0, 1);;
 
     /**
      * Graphics data
@@ -174,9 +173,9 @@ Graphics.prototype.clone = function ()
     var clone = new Graphics();
 
     clone.renderable    = this.renderable;
-    clone.fillAlpha     = this.fillAlpha;
+    clone.fillStyle     = this.fillStyle;
     clone.lineWidth     = this.lineWidth;
-    clone.lineColor     = this.lineColor;
+    clone.strokeStyle   = this.strokeStyle;
     clone.tint          = this.tint;
     clone.blendMode     = this.blendMode;
     clone.isMask        = this.isMask;
@@ -209,8 +208,7 @@ Graphics.prototype.clone = function ()
 Graphics.prototype.lineStyle = function (lineWidth, color, alpha)
 {
     this.lineWidth = lineWidth || 0;
-    this.lineColor = color || 0;
-    this.lineAlpha = (alpha === undefined) ? 1 : alpha;
+    this.strokeStyle = new SolidBrush(color || 0, alpha);
 
     if (this.currentPath)
     {
@@ -223,8 +221,7 @@ Graphics.prototype.lineStyle = function (lineWidth, color, alpha)
         {
             // otherwise its empty so lets just set the line properties
             this.currentPath.lineWidth = this.lineWidth;
-            this.currentPath.lineColor = this.lineColor;
-            this.currentPath.lineAlpha = this.lineAlpha;
+            this.currentPath.strokeStyle = this.strokeStyle;
         }
     }
 
@@ -547,16 +544,14 @@ Graphics.prototype.arc = function(cx, cy, radius, startAngle, endAngle, anticloc
 Graphics.prototype.beginFill = function (color, alpha)
 {
     this.filling = true;
-    this.fillColor = color || 0;
-    this.fillAlpha = (alpha === undefined) ? 1 : alpha;
+    this.fillStyle = new SolidBrush(color, alpha);
 
     if (this.currentPath)
     {
         if (this.currentPath.shape.points.length <= 2)
         {
             this.currentPath.fill = this.filling;
-            this.currentPath.fillColor = this.fillColor;
-            this.currentPath.fillAlpha = this.fillAlpha;
+            this.currentPath.fillStyle = this.fillStyle;
         }
     }
     return this;
@@ -570,8 +565,7 @@ Graphics.prototype.beginFill = function (color, alpha)
 Graphics.prototype.endFill = function ()
 {
     this.filling = false;
-    this.fillColor = null;
-    this.fillAlpha = 1;
+    this.fillStyle = null;
 
     return this;
 };
@@ -1143,7 +1137,7 @@ Graphics.prototype.drawShape = function (shape)
 
     this.currentPath = null;
 
-    var data = new GraphicsData(this.lineWidth, this.lineColor, this.lineAlpha, this.fillColor, this.fillAlpha, this.filling, shape);
+    var data = new GraphicsData(this.lineWidth, this.strokeStyle, this.fillStyle, this.filling, shape);
 
     this.graphicsData.push(data);
 

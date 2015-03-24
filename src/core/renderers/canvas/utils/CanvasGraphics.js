@@ -30,9 +30,6 @@ CanvasGraphics.renderGraphics = function (graphics, context)
         var data = graphics.graphicsData[i];
         var shape = data.shape;
 
-        var fillColor = data._fillTint;
-        var lineColor = data._lineTint;
-
         context.lineWidth = data.lineWidth;
 
         if (data.type === CONST.SHAPES.POLY)
@@ -61,32 +58,26 @@ CanvasGraphics.renderGraphics = function (graphics, context)
 
             if (data.fill)
             {
-                context.globalAlpha = data.fillAlpha * worldAlpha;
-                context.fillStyle = '#' + ('00000' + ( fillColor | 0).toString(16)).substr(-6);
-                context.fill();
+                data.fillStyle.fillCanvas(context, worldAlpha);
             }
             if (data.lineWidth)
             {
-                context.globalAlpha = data.lineAlpha * worldAlpha;
-                context.strokeStyle = '#' + ('00000' + ( lineColor | 0).toString(16)).substr(-6);
-                context.stroke();
+                data.strokeStyle.strokeCanvas(context, worldAlpha);
             }
         }
         else if (data.type === CONST.SHAPES.RECT)
         {
+            context.beginPath();
+            context.rect(shape.x, shape.y, shape.width, shape.height);
+            context.closePath();
 
-            if (data.fillColor || data.fillColor === 0)
+            if (data.fill)
             {
-                context.globalAlpha = data.fillAlpha * worldAlpha;
-                context.fillStyle = '#' + ('00000' + ( fillColor | 0).toString(16)).substr(-6);
-                context.fillRect(shape.x, shape.y, shape.width, shape.height);
-
+                data.fillStyle.fillCanvas(context, worldAlpha);
             }
             if (data.lineWidth)
             {
-                context.globalAlpha = data.lineAlpha * worldAlpha;
-                context.strokeStyle = '#' + ('00000' + ( lineColor | 0).toString(16)).substr(-6);
-                context.strokeRect(shape.x, shape.y, shape.width, shape.height);
+                data.strokeStyle.strokeCanvas(context, worldAlpha);
             }
         }
         else if (data.type === CONST.SHAPES.CIRC)
@@ -98,15 +89,11 @@ CanvasGraphics.renderGraphics = function (graphics, context)
 
             if (data.fill)
             {
-                context.globalAlpha = data.fillAlpha * worldAlpha;
-                context.fillStyle = '#' + ('00000' + ( fillColor | 0).toString(16)).substr(-6);
-                context.fill();
+                data.fillStyle.fillCanvas(context, worldAlpha);
             }
             if (data.lineWidth)
             {
-                context.globalAlpha = data.lineAlpha * worldAlpha;
-                context.strokeStyle = '#' + ('00000' + ( lineColor | 0).toString(16)).substr(-6);
-                context.stroke();
+                data.strokeStyle.strokeCanvas(context, worldAlpha);
             }
         }
         else if (data.type === CONST.SHAPES.ELIP)
@@ -139,15 +126,11 @@ CanvasGraphics.renderGraphics = function (graphics, context)
 
             if (data.fill)
             {
-                context.globalAlpha = data.fillAlpha * worldAlpha;
-                context.fillStyle = '#' + ('00000' + ( fillColor | 0).toString(16)).substr(-6);
-                context.fill();
+                data.fillStyle.fillCanvas(context, worldAlpha);
             }
             if (data.lineWidth)
             {
-                context.globalAlpha = data.lineAlpha * worldAlpha;
-                context.strokeStyle = '#' + ('00000' + ( lineColor | 0).toString(16)).substr(-6);
-                context.stroke();
+                data.strokeStyle.strokeCanvas(context, worldAlpha);
             }
         }
         else if (data.type === CONST.SHAPES.RREC)
@@ -173,18 +156,13 @@ CanvasGraphics.renderGraphics = function (graphics, context)
             context.quadraticCurveTo(rx, ry, rx, ry + radius);
             context.closePath();
 
-            if (data.fillColor || data.fillColor === 0)
+            if (data.fill)
             {
-                context.globalAlpha = data.fillAlpha * worldAlpha;
-                context.fillStyle = '#' + ('00000' + ( fillColor | 0).toString(16)).substr(-6);
-                context.fill();
-
+                data.fillStyle.fillCanvas(context, worldAlpha);
             }
             if (data.lineWidth)
             {
-                context.globalAlpha = data.lineAlpha * worldAlpha;
-                context.strokeStyle = '#' + ('00000' + ( lineColor | 0).toString(16)).substr(-6);
-                context.stroke();
+                data.strokeStyle.strokeCanvas(context, worldAlpha);
             }
         }
     }
@@ -317,8 +295,17 @@ CanvasGraphics.updateGraphicsTint = function (graphics)
     {
         var data = graphics.graphicsData[i];
 
-        var fillColor = data.fillColor | 0;
-        var lineColor = data.lineColor | 0;
+        if (data.fillStyle instanceof SolidBrush)
+        {
+            var fillColor = data.fillStyle.color | 0;
+            data.fillStyle.tint = (((fillColor >> 16 & 0xFF) / 255 * tintR*255 << 16) + ((fillColor >> 8 & 0xFF) / 255 * tintG*255 << 8) +  (fillColor & 0xFF) / 255 * tintB*255);
+        }
+
+        if (data.strokeStyle instanceof SolidBrush)
+        {
+            var lineColor = data.strokeStyle.color | 0;
+            data.strokeStyle.tint = (((lineColor >> 16 & 0xFF) / 255 * tintR*255 << 16) + ((lineColor >> 8 & 0xFF) / 255 * tintG*255 << 8) +  (lineColor & 0xFF) / 255 * tintB*255);
+        }
 
         /*
         var colorR = (fillColor >> 16 & 0xFF) / 255;
@@ -343,8 +330,8 @@ CanvasGraphics.updateGraphicsTint = function (graphics)
         */
 
         // super inline cos im an optimization NAZI :)
-        data._fillTint = (((fillColor >> 16 & 0xFF) / 255 * tintR*255 << 16) + ((fillColor >> 8 & 0xFF) / 255 * tintG*255 << 8) +  (fillColor & 0xFF) / 255 * tintB*255);
-        data._lineTint = (((lineColor >> 16 & 0xFF) / 255 * tintR*255 << 16) + ((lineColor >> 8 & 0xFF) / 255 * tintG*255 << 8) +  (lineColor & 0xFF) / 255 * tintB*255);
+
+
 
     }
 };
