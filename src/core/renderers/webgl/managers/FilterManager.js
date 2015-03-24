@@ -395,6 +395,9 @@ FilterManager.prototype.capFilterArea = function (filterArea)
     {
         filterArea.height = this.textureSize.height - filterArea.y;
     }
+
+    filterArea.width = Math.max(0, filterArea.width);
+    filterArea.height = Math.max(0, filterArea.height);
 };
 
 /*
