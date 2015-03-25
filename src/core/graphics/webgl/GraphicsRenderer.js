@@ -308,7 +308,7 @@ GraphicsRenderer.prototype.buildRectangle = function (graphicsData, webGLData)
     if (graphicsData.fill)
     {
         var color = utils.hex2rgb(graphicsData.fillStyle.color);
-        var alpha = graphicsData.fillStyle.color;
+        var alpha = graphicsData.fillStyle.alpha;
 
         var r = color[0] * alpha;
         var g = color[1] * alpha;
