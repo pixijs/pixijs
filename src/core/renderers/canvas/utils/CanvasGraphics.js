@@ -283,55 +283,43 @@ CanvasGraphics.updateGraphicsTint = function (graphics)
 {
     if (graphics.tint === 0xFFFFFF)
     {
-        return;
+        for (var i = 0; i < graphics.graphicsData.length; i++)
+        {
+            var data = graphics.graphicsData[i];
+
+            if (data.fillStyle instanceof SolidBrush)
+            {
+                data.fillStyle.tint = data.fillStyle.color;
+            }
+
+            if (data.strokeStyle instanceof SolidBrush)
+            {
+                data.strokeStyle.tint = data.strokeStyle.color;
+            }
+        }
     }
-
-    var tintR = (graphics.tint >> 16 & 0xFF) / 255;
-    var tintG = (graphics.tint >> 8 & 0xFF) / 255;
-    var tintB = (graphics.tint & 0xFF)/ 255;
-
-    for (var i = 0; i < graphics.graphicsData.length; i++)
+    else
     {
-        var data = graphics.graphicsData[i];
+        var tintR = (graphics.tint >> 16 & 0xFF) / 255;
+        var tintG = (graphics.tint >> 8 & 0xFF) / 255;
+        var tintB = (graphics.tint & 0xFF)/ 255;
 
-        if (data.fillStyle instanceof SolidBrush)
+        for (var i = 0; i < graphics.graphicsData.length; i++)
         {
-            var fillColor = data.fillStyle.color | 0;
-            data.fillStyle.tint = (((fillColor >> 16 & 0xFF) / 255 * tintR*255 << 16) + ((fillColor >> 8 & 0xFF) / 255 * tintG*255 << 8) +  (fillColor & 0xFF) / 255 * tintB*255);
+            var data = graphics.graphicsData[i];
+
+            if (data.fillStyle instanceof SolidBrush)
+            {
+                var fillColor = data.fillStyle.color | 0;
+                data.fillStyle.tint = (((fillColor >> 16 & 0xFF) / 255 * tintR*255 << 16) + ((fillColor >> 8 & 0xFF) / 255 * tintG*255 << 8) +  (fillColor & 0xFF) / 255 * tintB*255);
+            }
+
+            if (data.strokeStyle instanceof SolidBrush)
+            {
+                var lineColor = data.strokeStyle.color | 0;
+                data.strokeStyle.tint = (((lineColor >> 16 & 0xFF) / 255 * tintR*255 << 16) + ((lineColor >> 8 & 0xFF) / 255 * tintG*255 << 8) +  (lineColor & 0xFF) / 255 * tintB*255);
+            }
         }
-
-        if (data.strokeStyle instanceof SolidBrush)
-        {
-            var lineColor = data.strokeStyle.color | 0;
-            data.strokeStyle.tint = (((lineColor >> 16 & 0xFF) / 255 * tintR*255 << 16) + ((lineColor >> 8 & 0xFF) / 255 * tintG*255 << 8) +  (lineColor & 0xFF) / 255 * tintB*255);
-        }
-
-        /*
-        var colorR = (fillColor >> 16 & 0xFF) / 255;
-        var colorG = (fillColor >> 8 & 0xFF) / 255;
-        var colorB = (fillColor & 0xFF) / 255;
-
-        colorR *= tintR;
-        colorG *= tintG;
-        colorB *= tintB;
-
-        fillColor = ((colorR*255 << 16) + (colorG*255 << 8) + colorB*255);
-
-        colorR = (lineColor >> 16 & 0xFF) / 255;
-        colorG = (lineColor >> 8 & 0xFF) / 255;
-        colorB = (lineColor & 0xFF) / 255;
-
-        colorR *= tintR;
-        colorG *= tintG;
-        colorB *= tintB;
-
-        lineColor = ((colorR*255 << 16) + (colorG*255 << 8) + colorB*255);
-        */
-
-        // super inline cos im an optimization NAZI :)
-
-
-
     }
 };
 
