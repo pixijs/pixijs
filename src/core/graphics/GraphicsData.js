@@ -1,5 +1,3 @@
-var SolidBrush = require('./brushes/SolidBrush');
-
 /**
  * A GraphicsData object.
  *

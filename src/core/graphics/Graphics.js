@@ -41,7 +41,7 @@ function Graphics()
      *
      * @member {Brush}
      */
-    this.strokeStyle = new SolidBrush(0, 1);;
+    this.strokeStyle = new SolidBrush(0, 1);
 
     /**
      * Graphics data
