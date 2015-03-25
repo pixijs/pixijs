@@ -1,4 +1,5 @@
-var CONST = require('../../../const');
+var CONST = require('../../../const'),
+    SolidBrush = require('../../../graphics/brushes/SolidBrush');
 
 /**
  * A set of functions used by the canvas renderer to draw the primitive graphics data.
