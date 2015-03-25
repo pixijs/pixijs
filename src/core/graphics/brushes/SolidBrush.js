@@ -18,9 +18,6 @@ function SolidBrush(color, alpha)
      * @private
      */
     this._canvasBrush = null;
-
-    //we assign it here to initialize _canvasBrush
-    this.tint = color;
 }
 
 SolidBrush.prototype = Object.create(Brush.prototype);
