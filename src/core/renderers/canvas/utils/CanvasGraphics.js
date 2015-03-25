@@ -283,11 +283,12 @@ CanvasGraphics.renderGraphicsMask = function (graphics, context)
  */
 CanvasGraphics.updateGraphicsTint = function (graphics)
 {
+    var i, data;
     if (graphics.tint === 0xFFFFFF)
     {
-        for (var i = 0; i < graphics.graphicsData.length; i++)
+        for (i = 0; i < graphics.graphicsData.length; i++)
         {
-            var data = graphics.graphicsData[i];
+            data = graphics.graphicsData[i];
 
             if (data.fillStyle instanceof SolidBrush)
             {
@@ -306,9 +307,9 @@ CanvasGraphics.updateGraphicsTint = function (graphics)
         var tintG = (graphics.tint >> 8 & 0xFF) / 255;
         var tintB = (graphics.tint & 0xFF)/ 255;
 
-        for (var i = 0; i < graphics.graphicsData.length; i++)
+        for (i = 0; i < graphics.graphicsData.length; i++)
         {
-            var data = graphics.graphicsData[i];
+            data = graphics.graphicsData[i];
 
             if (data.fillStyle instanceof SolidBrush)
             {
