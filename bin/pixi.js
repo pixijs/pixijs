@@ -4013,7 +4013,12 @@ module.exports = function () {
                     resource.data = new Image();
                     resource.data.src = 'data:' + type + ';base64,' + b64.encodeBinary(resource.xhr.responseText);
 
-                    next();
+                    // wait until the image loads and then callback
+                    resource.data.onload = function () {
+                        resource.data.onload = null;
+
+                        next();
+                    };
                 }
             }
             // if content type says this is an image, then we should transform the blob into an Image object
@@ -4042,7 +4047,7 @@ module.exports = function () {
 },{"../../Resource":9,"../../b64":10}],14:[function(require,module,exports){
 module.exports={
   "name": "pixi.js",
-  "version": "3.0.0-rc3",
+  "version": "3.0.0-rc4",
   "description": "Pixi.js is a fast lightweight 2D library that works across all devices.",
   "author": "Mat Groves",
   "contributors": [
@@ -16713,6 +16718,13 @@ function Texture(baseTexture, frame, crop, trim, rotate)
     this.valid = false;
 
     /**
+     * This will let a renderer know that a texture has been updated (used mainly for webGL uv updates)
+     *
+     * @member {boolean}
+     */
+    this.requiresUpdate = false;
+
+    /**
      * The WebGL UV data cache.
      *
      * @member {TextureUvs}
@@ -16762,9 +16774,6 @@ function Texture(baseTexture, frame, crop, trim, rotate)
     {
         baseTexture.once('loaded', this.onBaseTextureLoaded, this);
     }
-
-    // the base texture is updated we may need to update our frame
-    baseTexture.on('update', this.onBaseTextureLoaded, this);
 }
 
 Texture.prototype = Object.create(EventEmitter.prototype);
@@ -16785,6 +16794,8 @@ Object.defineProperties(Texture.prototype, {
 
             this.width = frame.width;
             this.height = frame.height;
+
+
 
             if (!this.trim && !this.rotate && (frame.x + frame.width > this.baseTexture.width || frame.y + frame.height > this.baseTexture.height))
             {
@@ -16807,23 +16818,23 @@ Object.defineProperties(Texture.prototype, {
                 this.crop = frame;
             }
 
-            if (this.valid)
+             if (this.valid)
             {
                 this._updateUvs();
             }
-
-            this.emit('update', this);
         }
     }
 });
 
 /**
- * Updates this texture for drawing.
+ * Updates this texture on the gpu.
  *
  */
 Texture.prototype.update = function ()
 {
     this.baseTexture.update();
+
+
 };
 
 /**
@@ -16833,18 +16844,17 @@ Texture.prototype.update = function ()
  */
 Texture.prototype.onBaseTextureLoaded = function (baseTexture)
 {
-    baseTexture = baseTexture || this.baseTexture;
-
-    // if no frame then create one and run the frame setter
+    // TODO this code looks confusing.. boo to abusing getters and setterss!
     if (this.noFrame)
     {
         this.frame = new math.Rectangle(0, 0, baseTexture.width, baseTexture.height);
     }
-    // otherwise rerun the frame setter with the current frame to check for baseTexture validity
     else
     {
         this.frame = this._frame;
     }
+
+    this.emit( 'update', this );
 };
 
 /**

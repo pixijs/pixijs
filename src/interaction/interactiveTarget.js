@@ -15,31 +15,31 @@
 
 module.exports = {
     /**
-     * @todo
+     * @todo Needs docs.
      */
     interactive: false,
     /**
-     * @todo
+     * @todo Needs docs.
      */
     buttonMode: false,
     /**
-     * @todo
+     * @todo Needs docs.
      */
     interactiveChildren: true,
     /**
-     * @todo
+     * @todo Needs docs.
      */
     defaultCursor: 'pointer',
 
     // some internal checks..
 
     /**
-     * @todo
+     * @todo Needs docs.
      * @private
      */
     _over: false,
     /**
-     * @todo
+     * @todo Needs docs.
      * @private
      */
     _touchDown: false

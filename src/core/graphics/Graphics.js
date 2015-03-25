@@ -451,28 +451,7 @@ Graphics.prototype.arcTo = function (x1, y1, x2, y2, radius)
  */
 Graphics.prototype.arc = function(cx, cy, radius, startAngle, endAngle, anticlockwise)
 {
-    var startX = cx + Math.cos(startAngle) * radius;
-    var startY = cy + Math.sin(startAngle) * radius;
-    var points;
-
-    if( this.currentPath )
-    {
-        points = this.currentPath.shape.points;
-
-        if(points.length === 0)
-        {
-            points.push(startX, startY);
-        }
-        else if( points[points.length-2] !== startX || points[points.length-1] !== startY)
-        {
-            points.push(startX, startY);
-        }
-    }
-    else
-    {
-        this.moveTo(startX, startY);
-        points = this.currentPath.shape.points;
-    }
+    anticlockwise = anticlockwise || false;
 
     if (startAngle === endAngle)
     {
@@ -488,13 +467,27 @@ Graphics.prototype.arc = function(cx, cy, radius, startAngle, endAngle, anticloc
         startAngle += Math.PI * 2;
     }
 
-    var sweep = anticlockwise ? (startAngle - endAngle) *-1 : (endAngle - startAngle);
-    var segs =  Math.ceil( Math.abs(sweep)/ (Math.PI * 2) ) * 40;
+    var sweep = anticlockwise ? (startAngle - endAngle) * -1 : (endAngle - startAngle);
+    var segs =  Math.ceil(Math.abs(sweep) / (Math.PI * 2)) * 40;
 
-    if( sweep === 0 )
+    if(sweep === 0)
     {
         return this;
     }
+
+    var startX = cx + Math.cos(startAngle) * radius;
+    var startY = cy + Math.sin(startAngle) * radius;
+
+    if (anticlockwise && this.filling)
+    {
+        this.moveTo(cx, cy);
+    }
+    else
+    {
+        this.moveTo(startX, startY);
+    }
+
+    var points = this.currentPath.shape.points;
 
     var theta = sweep/(segs*2);
     var theta2 = theta*2;
@@ -641,7 +634,8 @@ Graphics.prototype.drawPolygon = function (path)
         // see section 3.2: https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#3-managing-arguments
         points = new Array(arguments.length);
 
-        for (var i = 0; i < points.length; ++i) {
+        for (var i = 0; i < points.length; ++i)
+        {
             points[i] = arguments[i];
         }
     }
