@@ -1,5 +1,4 @@
-var CONST = require('../../../const'),
-    SolidBrush = require('../../../graphics/brushes/SolidBrush');
+var CONST = require('../../../const');
 
 /**
  * A set of functions used by the canvas renderer to draw the primitive graphics data.
@@ -290,12 +289,12 @@ CanvasGraphics.updateGraphicsTint = function (graphics)
         {
             data = graphics.graphicsData[i];
 
-            if (data.fillStyle instanceof SolidBrush)
+            if (data.fillStyle)
             {
                 data.fillStyle.tint = data.fillStyle.color;
             }
 
-            if (data.strokeStyle instanceof SolidBrush)
+            if (data.strokeStyle)
             {
                 data.strokeStyle.tint = data.strokeStyle.color;
             }
@@ -311,13 +310,13 @@ CanvasGraphics.updateGraphicsTint = function (graphics)
         {
             data = graphics.graphicsData[i];
 
-            if (data.fillStyle instanceof SolidBrush)
+            if (data.fillStyle)
             {
                 var fillColor = data.fillStyle.color | 0;
                 data.fillStyle.tint = (((fillColor >> 16 & 0xFF) / 255 * tintR*255 << 16) + ((fillColor >> 8 & 0xFF) / 255 * tintG*255 << 8) +  (fillColor & 0xFF) / 255 * tintB*255);
             }
 
-            if (data.strokeStyle instanceof SolidBrush)
+            if (data.strokeStyle)
             {
                 var lineColor = data.strokeStyle.color | 0;
                 data.strokeStyle.tint = (((lineColor >> 16 & 0xFF) / 255 * tintR*255 << 16) + ((lineColor >> 8 & 0xFF) / 255 * tintG*255 << 8) +  (lineColor & 0xFF) / 255 * tintB*255);
