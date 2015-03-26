@@ -270,7 +270,7 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, up
 
         // Time to update all the children of the displayObject with the new matrix..
         var children = displayObject.children;
-        if (children)
+        if (children && children.length > 0)
         {
             var i, j;
 
@@ -329,7 +329,7 @@ RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear, u
 
     // Time to update all the children of the displayObject with the new matrix..
     var children = displayObject.children;
-    if (children)
+    if (children && children.length > 0)
     {
         var i, j;
 
