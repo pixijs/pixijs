@@ -287,6 +287,7 @@ PIXI.Spine.prototype.createSprite = function (slot, attachment) {
     sprite.scale.set(descriptor.width / descriptor.originalWidth, descriptor.height / descriptor.originalHeight);
     sprite.rotation = baseRotation - (attachment.rotation * spine.degRad);
     sprite.anchor.x = sprite.anchor.y = 0.5;
+    sprite.alpha = attachment.a;
 
     slot.sprites = slot.sprites || {};
     slot.sprites[descriptor.name] = sprite;
@@ -305,6 +306,7 @@ PIXI.Spine.prototype.createMesh = function (slot, attachment) {
     strip.vertices = new PIXI.Float32Array(attachment.uvs.length);
     strip.uvs = attachment.uvs;
     strip.indices = attachment.triangles;
+    strip.alpha = attachment.a;
 
     slot.meshes = slot.meshes || {};
     slot.meshes[attachment.name] = strip;
