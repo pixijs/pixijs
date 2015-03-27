@@ -144,7 +144,7 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
     {
         var gl = this.renderer.gl;
 
-        this.textureBuffer = new RenderTarget(gl, this.width, this.height, null, this.resolution);//, this.baseTexture.scaleMode);
+        this.textureBuffer = new RenderTarget(gl, this.width, this.height, baseTexture.scaleMode, this.resolution);//, this.baseTexture.scaleMode);
         this.baseTexture._glTextures[gl.id] =  this.textureBuffer.texture;
 
         //TODO refactor filter manager.. as really its no longer a manager if we use it here..
