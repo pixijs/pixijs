@@ -50,6 +50,14 @@ function WebGLRenderer(width, height, options)
     this.handleContextLost = this.handleContextLost.bind(this);
     this.handleContextRestored = this.handleContextRestored.bind(this);
 
+    this._updateTextureBound = function(e){
+        this.updateTexture(e.target);
+    }.bind(this);
+
+    this._destroyTextureBound = function(e){
+        this.destroyTexture(e.target);
+    }.bind(this);
+
     this.view.addEventListener('webglcontextlost', this.handleContextLost, false);
     this.view.addEventListener('webglcontextrestored', this.handleContextRestored, false);
 
@@ -130,7 +138,7 @@ function WebGLRenderer(width, height, options)
      * Holds the current render target
      * @member {Object}
      */
-    this.currentRenderTarget = null;
+    this.currentRenderTarget = this.renderTarget;
 
     /**
      * object renderer @alvin
@@ -188,8 +196,6 @@ WebGLRenderer.prototype._initContext = function ()
 
     this.renderTarget = new RenderTarget(this.gl, this.width, this.height, null, this.resolution, true);
 
-    this.setRenderTarget(this.renderTarget);
-
     this.emit('context', gl);
 
     // setup the width/height properties and gl viewport
@@ -242,7 +248,6 @@ WebGLRenderer.prototype.render = function (object)
     var gl = this.gl;
 
     // make sure we are bound to the main frame buffer
-    this.setRenderTarget(this.renderTarget);
 
     if (this.clearBeforeRender)
     {
@@ -268,16 +273,11 @@ WebGLRenderer.prototype.render = function (object)
  * @param renderTarget {RenderTarget} The render target to use to render this display object
  *
  */
-WebGLRenderer.prototype.renderDisplayObject = function (displayObject, renderTarget, clear)//projection, buffer)
+WebGLRenderer.prototype.renderDisplayObject = function (displayObject, renderTarget)//projection, buffer)
 {
     // TODO is this needed...
     //this.blendModeManager.setBlendMode(CONST.BLEND_MODES.NORMAL);
     this.setRenderTarget(renderTarget);
-
-    if(clear)
-    {
-        renderTarget.clear();
-    }
 
     // start the filter manager
     this.filterManager.setFilterStack( renderTarget.filterStack );
@@ -339,10 +339,6 @@ WebGLRenderer.prototype.resize = function (width, height)
    // console.log(width)
     this.filterManager.resize(width, height);
     this.renderTarget.resize(width, height);
-    if(this.currentRenderTarget === this.renderTarget)
-    {
-        this.renderTarget.activate();
-    }
 };
 
 /**
@@ -364,8 +360,8 @@ WebGLRenderer.prototype.updateTexture = function (texture)
     if (!texture._glTextures[gl.id])
     {
         texture._glTextures[gl.id] = gl.createTexture();
-        texture.on('update', this.updateTexture, this);
-        texture.on('dispose', this.destroyTexture, this);
+        texture.on('update', this._updateTextureBound);
+        texture.on('dispose', this._destroyTextureBound);
     }
 
 
