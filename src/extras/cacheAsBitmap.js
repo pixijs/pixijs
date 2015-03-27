@@ -221,7 +221,10 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function( renderer )
     this._cachedSprite.worldTransform = this.worldTransform;
     this._cachedSprite.anchor.x = -( bounds.x / bounds.width );
     this._cachedSprite.anchor.y = -( bounds.y / bounds.height );
-    this.hitTest = this._cachedSprite.hitTest.bind(this._cachedSprite);
+
+    this.updateTransform();
+
+    this.containsPoint = this._cachedSprite.containsPoint.bind(this._cachedSprite);
 };
 
 /**
