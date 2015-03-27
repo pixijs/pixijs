@@ -154,6 +154,9 @@ DisplayObject.prototype._initCachedDisplayObject = function( renderer )
     this._cachedSprite.anchor.x = -( bounds.x / bounds.width );
     this._cachedSprite.anchor.y = -( bounds.y / bounds.height );
 
+    // restore the transform of the cached sprite to avoid the nasty flicker..
+    this.updateTransform();
+
     // map the hit test..
     this.containsPoint = this._cachedSprite.containsPoint.bind(this._cachedSprite);
 };
