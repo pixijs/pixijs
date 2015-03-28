@@ -23,14 +23,24 @@ function SolidBrush(color, alpha)
 SolidBrush.prototype = Object.create(Brush.prototype);
 SolidBrush.prototype.constructor = SolidBrush;
 
-Object.defineProperties(SolidBrush.prototype, {
-    tint: {
-        set: function (value)
-        {
-            this._canvasBrush = '#' + ('00000' + (value | 0).toString(16)).substr(-6);
-        }
-    }
-});
+
+/*
+ * Generates _canvasBrush based on the tint color
+ *
+ * @param tint {Number} the tint color
+ * @param tintR {Number} the R component of the tint color
+ * @param tintG {Number} the G component of the tint color
+ * @param tintB {Number} the B component of the tint color
+ *
+ */
+SolidBrush.prototype.setTint = function (tint, tintR, tintG, tintB)
+{
+    var r = ((this.color >> 16 & 0xFF) * tintR + 0.5) | 0,
+        g = ((this.color >> 8 & 0xFF) * tintG + 0.5) | 0,
+        b = ((this.color & 0xFF) * tintB + 0.5) | 0;
+
+    this._canvasBrush = 'rgba(' + r + ', ' + g + ', ' + b + ', ' + this.alpha.toFixed(3) + ')';
+};
 
 /**
  * Sets the brush as a fill style for the given canvas context
@@ -38,8 +48,8 @@ Object.defineProperties(SolidBrush.prototype, {
  * @param context {CanvasRenderingContext2D}
  * @param worldAlpha {number}
  */
-SolidBrush.prototype.fillCanvas = function (context, worldAlpha) {
-    context.globalAlpha = this.alpha * worldAlpha;
+SolidBrush.prototype.fillCanvas = function (context)
+{
     context.fillStyle = this._canvasBrush;
     context.fill();
 };
@@ -51,8 +61,8 @@ SolidBrush.prototype.fillCanvas = function (context, worldAlpha) {
  * @param context {CanvasRenderingContext2D}
  * @param worldAlpha {number}
  */
-SolidBrush.prototype.strokeCanvas = function (context, worldAlpha) {
-    context.globalAlpha = this.alpha * worldAlpha;
+SolidBrush.prototype.strokeCanvas = function (context)
+{
     context.strokeStyle = this._canvasBrush;
     context.stroke();
 };

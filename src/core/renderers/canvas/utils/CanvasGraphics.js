@@ -15,13 +15,13 @@ var CanvasGraphics = module.exports = {};
  */
 CanvasGraphics.renderGraphics = function (graphics, context)
 {
-    var worldAlpha = graphics.worldAlpha;
-
     if (graphics.dirty)
     {
         this.updateGraphicsTint(graphics);
         graphics.dirty = false;
     }
+
+    context.globalAlpha = graphics.worldAlpha;
 
     for (var i = 0; i < graphics.graphicsData.length; i++)
     {
@@ -56,11 +56,11 @@ CanvasGraphics.renderGraphics = function (graphics, context)
 
             if (data.fill)
             {
-                data.fillStyle.fillCanvas(context, worldAlpha);
+                data.fillStyle.fillCanvas(context);
             }
             if (data.lineWidth)
             {
-                data.strokeStyle.strokeCanvas(context, worldAlpha);
+                data.strokeStyle.strokeCanvas(context);
             }
         }
         else if (data.type === CONST.SHAPES.RECT)
@@ -71,11 +71,11 @@ CanvasGraphics.renderGraphics = function (graphics, context)
 
             if (data.fill)
             {
-                data.fillStyle.fillCanvas(context, worldAlpha);
+                data.fillStyle.fillCanvas(context);
             }
             if (data.lineWidth)
             {
-                data.strokeStyle.strokeCanvas(context, worldAlpha);
+                data.strokeStyle.strokeCanvas(context);
             }
         }
         else if (data.type === CONST.SHAPES.CIRC)
@@ -87,11 +87,11 @@ CanvasGraphics.renderGraphics = function (graphics, context)
 
             if (data.fill)
             {
-                data.fillStyle.fillCanvas(context, worldAlpha);
+                data.fillStyle.fillCanvas(context);
             }
             if (data.lineWidth)
             {
-                data.strokeStyle.strokeCanvas(context, worldAlpha);
+                data.strokeStyle.strokeCanvas(context);
             }
         }
         else if (data.type === CONST.SHAPES.ELIP)
@@ -124,11 +124,11 @@ CanvasGraphics.renderGraphics = function (graphics, context)
 
             if (data.fill)
             {
-                data.fillStyle.fillCanvas(context, worldAlpha);
+                data.fillStyle.fillCanvas(context);
             }
             if (data.lineWidth)
             {
-                data.strokeStyle.strokeCanvas(context, worldAlpha);
+                data.strokeStyle.strokeCanvas(context);
             }
         }
         else if (data.type === CONST.SHAPES.RREC)
@@ -156,11 +156,11 @@ CanvasGraphics.renderGraphics = function (graphics, context)
 
             if (data.fill)
             {
-                data.fillStyle.fillCanvas(context, worldAlpha);
+                data.fillStyle.fillCanvas(context);
             }
             if (data.lineWidth)
             {
-                data.strokeStyle.strokeCanvas(context, worldAlpha);
+                data.strokeStyle.strokeCanvas(context);
             }
         }
     }
@@ -280,46 +280,25 @@ CanvasGraphics.renderGraphicsMask = function (graphics, context)
  */
 CanvasGraphics.updateGraphicsTint = function (graphics)
 {
-    var i, data;
-    if (graphics.tint === 0xFFFFFF)
+    var i,
+        data,
+        tint = graphics.tint,
+        tintR = (tint >> 16 & 0xFF) / 255,
+        tintG = (tint >> 8 & 0xFF) / 255,
+        tintB = (tint & 0xFF) / 255;
+
+    for (i = 0; i < graphics.graphicsData.length; i++)
     {
-        for (i = 0; i < graphics.graphicsData.length; i++)
+        data = graphics.graphicsData[i];
+
+        if (data.fillStyle)
         {
-            data = graphics.graphicsData[i];
-
-            if (data.fillStyle)
-            {
-                data.fillStyle.tint = data.fillStyle.color;
-            }
-
-            if (data.strokeStyle)
-            {
-                data.strokeStyle.tint = data.strokeStyle.color;
-            }
+            data.fillStyle.setTint(tint, tintR, tintG, tintB);
         }
-    }
-    else
-    {
-        var tintR = (graphics.tint >> 16 & 0xFF) / 255;
-        var tintG = (graphics.tint >> 8 & 0xFF) / 255;
-        var tintB = (graphics.tint & 0xFF)/ 255;
 
-        for (i = 0; i < graphics.graphicsData.length; i++)
+        if (data.strokeStyle)
         {
-            data = graphics.graphicsData[i];
-
-            if (data.fillStyle)
-            {
-                var fillColor = data.fillStyle.color | 0;
-                data.fillStyle.tint = (((fillColor >> 16 & 0xFF) / 255 * tintR*255 << 16) + ((fillColor >> 8 & 0xFF) / 255 * tintG*255 << 8) +  (fillColor & 0xFF) / 255 * tintB*255);
-            }
-
-            if (data.strokeStyle)
-            {
-                var lineColor = data.strokeStyle.color | 0;
-                data.strokeStyle.tint = (((lineColor >> 16 & 0xFF) / 255 * tintR*255 << 16) + ((lineColor >> 8 & 0xFF) / 255 * tintG*255 << 8) +  (lineColor & 0xFF) / 255 * tintB*255);
-            }
+            data.strokeStyle.setTint(tint, tintR, tintG, tintB);
         }
     }
 };
-
