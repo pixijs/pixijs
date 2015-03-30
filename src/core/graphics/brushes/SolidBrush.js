@@ -1,4 +1,5 @@
-var Brush = require('./Brush');
+var Brush = require('./Brush'),
+    utils = require('../../utils');
 
 /**
  * A Simple single-color brush.
@@ -28,16 +29,13 @@ SolidBrush.prototype.constructor = SolidBrush;
  * Generates _canvasBrush based on the tint color
  *
  * @param tint {Number} the tint color
- * @param tintR {Number} the R component of the tint color
- * @param tintG {Number} the G component of the tint color
- * @param tintB {Number} the B component of the tint color
- *
  */
-SolidBrush.prototype.setTint = function (tint, tintR, tintG, tintB)
+SolidBrush.prototype.setTint = function (tint)
 {
-    var r = ((this.color >> 16 & 0xFF) * tintR + 0.5) | 0,
-        g = ((this.color >> 8 & 0xFF) * tintG + 0.5) | 0,
-        b = ((this.color & 0xFF) * tintB + 0.5) | 0;
+    var tintRGB = utils.hex2rgb(tint),
+        r = ((this.color >> 16 & 0xFF) * tintRGB[0] + 0.5) | 0,
+        g = ((this.color >> 8 & 0xFF)  * tintRGB[1] + 0.5) | 0,
+        b = ((this.color & 0xFF)       * tintRGB[2] + 0.5) | 0;
 
     this._canvasBrush = 'rgba(' + r + ', ' + g + ', ' + b + ', ' + this.alpha.toFixed(3) + ')';
 };
