@@ -48,7 +48,7 @@ PIXI.ImageLoader.prototype.load = function()
 {
     if(!this.texture.baseTexture.hasLoaded)
     {
-        this.texture.baseTexture.on('loaded', this.onLoaded.bind(this));
+        this.texture.baseTexture.once('loaded', this.onLoaded.bind(this));
     }
     else
     {
