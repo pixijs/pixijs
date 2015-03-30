@@ -282,10 +282,7 @@ CanvasGraphics.updateGraphicsTint = function (graphics)
 {
     var i,
         data,
-        tint = graphics.tint,
-        tintR = (tint >> 16 & 0xFF) / 255,
-        tintG = (tint >> 8 & 0xFF) / 255,
-        tintB = (tint & 0xFF) / 255;
+        tint = graphics.tint;
 
     for (i = 0; i < graphics.graphicsData.length; i++)
     {
@@ -293,12 +290,12 @@ CanvasGraphics.updateGraphicsTint = function (graphics)
 
         if (data.fillStyle)
         {
-            data.fillStyle.setTint(tint, tintR, tintG, tintB);
+            data.fillStyle.setTint(tint);
         }
 
         if (data.strokeStyle)
         {
-            data.strokeStyle.setTint(tint, tintR, tintG, tintB);
+            data.strokeStyle.setTint(tint);
         }
     }
 };
