@@ -263,7 +263,7 @@ InteractionManager.prototype.removeEvents = function ()
  */
 InteractionManager.prototype.update = function ()
 {
-    requestAnimationFrame(this.updateBound);
+    this.requestId = requestAnimationFrame(this.updateBound);
 
     if( this.throttleUpdate() || !this.interactionDOMElement)
     {
@@ -809,6 +809,8 @@ InteractionManager.prototype.returnTouchData = function ( touchData )
  * Destroys the interaction manager
  */
 InteractionManager.prototype.destroy = function () {
+    this.removeEvents();
+    
     this.renderer = null;
 
     this.mouse = null;
@@ -843,6 +845,8 @@ InteractionManager.prototype.destroy = function () {
     this.processTouchMove = null;
 
     this._tempPoint = null;
+    
+    cancelAnimationFrame(this.requestId);
 
     this.updateBound = null;
 };
