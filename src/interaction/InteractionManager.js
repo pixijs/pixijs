@@ -88,6 +88,14 @@ function InteractionManager(renderer, options)
      */
     this.eventsAdded = false;
 
+    /**
+     * The ID of the requestAnimationFrame call, so we can clear it in destroy.
+     *
+     * @member {number}
+     * @private
+     */
+    this.requestId = 0;
+
     //this will make it so that you don't have to call bind all the time
 
     /**
@@ -810,7 +818,7 @@ InteractionManager.prototype.returnTouchData = function ( touchData )
  */
 InteractionManager.prototype.destroy = function () {
     this.removeEvents();
-    
+
     this.renderer = null;
 
     this.mouse = null;
@@ -845,7 +853,7 @@ InteractionManager.prototype.destroy = function () {
     this.processTouchMove = null;
 
     this._tempPoint = null;
-    
+
     cancelAnimationFrame(this.requestId);
 
     this.updateBound = null;
