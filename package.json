@@ -25,7 +25,6 @@
     "eventemitter3": "^0.1.6",
     "object-assign": "^2.0.0",
     "pixi-spine": "^1.0.1",
-    "pixi.js": "^3.0.0-rc4",
     "resource-loader": "^1.3.2"
   },
   "devDependencies": {
