@@ -48,6 +48,8 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
     WebGLRenderer:          require('./renderers/webgl/WebGLRenderer'),
     ShaderManager:          require('./renderers/webgl/managers/ShaderManager'),
     Shader:                 require('./renderers/webgl/shaders/Shader'),
+    ObjectRenderer:         require('./renderers/webgl/utils/ObjectRenderer'),
+    RenderTarget:           require('./renderers/webgl/utils/RenderTarget'),
 
     // filters - webgl
     AbstractFilter:         require('./renderers/webgl/filters/AbstractFilter'),
