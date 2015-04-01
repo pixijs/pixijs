@@ -1,6 +1,6 @@
 var Resource = require('resource-loader').Resource,
     async = require('async'),
-    spine = require('../spine');
+    spine = require('pixi-spine');
 
 module.exports = function ()
 {
