@@ -186,10 +186,9 @@ ParticleRenderer.prototype.render = function ( container )
         container._buffers = this.generateBuffers( container );
     }
 
-
-
-    // if the uvs have not updated then no point rendering just yet!
-    //this.renderer.blendModeManager.setBlendMode(sprite.blendMode);
+    // Set the blend mode
+    this.renderer.blendModeManager.setBlendMode(children[0].blendMode);
+    
     var gl = this.renderer.gl;
 
     var m =  container.worldTransform.copy( this.tempMatrix );
