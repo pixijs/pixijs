@@ -125,6 +125,7 @@ Object.defineProperty(PIXI.Text.prototype, 'height', {
  * @param [style.dropShadowAngle=Math.PI/4] {Number} Set a angle of the drop shadow
  * @param [style.dropShadowDistance=5] {Number} Set a distance of the drop shadow
  * @param [style.lineJoin='miter'] {String} The lineJoin property sets the type of corner created, it can resolve spiked text issue. Default is 'miter' (creates a sharp corner).
+ * @param [style.lineHeight] {number} Line height of the text
  */
 PIXI.Text.prototype.setStyle = function(style)
 {
@@ -197,7 +198,7 @@ PIXI.Text.prototype.updateText = function()
     this.canvas.width = ( width + this.context.lineWidth ) * this.resolution;
     
     //calculate text height
-    var lineHeight = fontProperties.fontSize + this.style.strokeThickness;
+    var lineHeight = this.style.lineHeight || fontProperties.fontSize + this.style.strokeThickness;
  
     var height = lineHeight * lines.length;
     if(this.style.dropShadow)height += this.style.dropShadowDistance;
