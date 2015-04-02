@@ -143,6 +143,7 @@ PIXI.Text.prototype.setStyle = function(style)
     style.dropShadowDistance = style.dropShadowDistance || 4;
     style.dropShadowColor = style.dropShadowColor || 'black';
     style.lineJoin = style.lineJoin || 'miter';
+    style.lineHeight = style.lineHeight || false;
 
     this.style = style;
     this.dirty = true;
