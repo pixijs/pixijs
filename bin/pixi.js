@@ -4974,1136 +4974,6 @@ module.exports = {
 };
 
 },{"./Spine":6,"./SpineRuntime":7}],9:[function(require,module,exports){
-(function (process){
-/*!
- * async
- * https://github.com/caolan/async
- *
- * Copyright 2010-2014 Caolan McMahon
- * Released under the MIT license
- */
-/*jshint onevar: false, indent:4 */
-/*global setImmediate: false, setTimeout: false, console: false */
-(function () {
-
-    var async = {};
-
-    // global on the server, window in the browser
-    var root, previous_async;
-
-    root = this;
-    if (root != null) {
-      previous_async = root.async;
-    }
-
-    async.noConflict = function () {
-        root.async = previous_async;
-        return async;
-    };
-
-    function only_once(fn) {
-        var called = false;
-        return function() {
-            if (called) throw new Error("Callback was already called.");
-            called = true;
-            fn.apply(root, arguments);
-        }
-    }
-
-    //// cross-browser compatiblity functions ////
-
-    var _toString = Object.prototype.toString;
-
-    var _isArray = Array.isArray || function (obj) {
-        return _toString.call(obj) === '[object Array]';
-    };
-
-    var _each = function (arr, iterator) {
-        if (arr.forEach) {
-            return arr.forEach(iterator);
-        }
-        for (var i = 0; i < arr.length; i += 1) {
-            iterator(arr[i], i, arr);
-        }
-    };
-
-    var _map = function (arr, iterator) {
-        if (arr.map) {
-            return arr.map(iterator);
-        }
-        var results = [];
-        _each(arr, function (x, i, a) {
-            results.push(iterator(x, i, a));
-        });
-        return results;
-    };
-
-    var _reduce = function (arr, iterator, memo) {
-        if (arr.reduce) {
-            return arr.reduce(iterator, memo);
-        }
-        _each(arr, function (x, i, a) {
-            memo = iterator(memo, x, i, a);
-        });
-        return memo;
-    };
-
-    var _keys = function (obj) {
-        if (Object.keys) {
-            return Object.keys(obj);
-        }
-        var keys = [];
-        for (var k in obj) {
-            if (obj.hasOwnProperty(k)) {
-                keys.push(k);
-            }
-        }
-        return keys;
-    };
-
-    //// exported async module functions ////
-
-    //// nextTick implementation with browser-compatible fallback ////
-    if (typeof process === 'undefined' || !(process.nextTick)) {
-        if (typeof setImmediate === 'function') {
-            async.nextTick = function (fn) {
-                // not a direct alias for IE10 compatibility
-                setImmediate(fn);
-            };
-            async.setImmediate = async.nextTick;
-        }
-        else {
-            async.nextTick = function (fn) {
-                setTimeout(fn, 0);
-            };
-            async.setImmediate = async.nextTick;
-        }
-    }
-    else {
-        async.nextTick = process.nextTick;
-        if (typeof setImmediate !== 'undefined') {
-            async.setImmediate = function (fn) {
-              // not a direct alias for IE10 compatibility
-              setImmediate(fn);
-            };
-        }
-        else {
-            async.setImmediate = async.nextTick;
-        }
-    }
-
-    async.each = function (arr, iterator, callback) {
-        callback = callback || function () {};
-        if (!arr.length) {
-            return callback();
-        }
-        var completed = 0;
-        _each(arr, function (x) {
-            iterator(x, only_once(done) );
-        });
-        function done(err) {
-          if (err) {
-              callback(err);
-              callback = function () {};
-          }
-          else {
-              completed += 1;
-              if (completed >= arr.length) {
-                  callback();
-              }
-          }
-        }
-    };
-    async.forEach = async.each;
-
-    async.eachSeries = function (arr, iterator, callback) {
-        callback = callback || function () {};
-        if (!arr.length) {
-            return callback();
-        }
-        var completed = 0;
-        var iterate = function () {
-            iterator(arr[completed], function (err) {
-                if (err) {
-                    callback(err);
-                    callback = function () {};
-                }
-                else {
-                    completed += 1;
-                    if (completed >= arr.length) {
-                        callback();
-                    }
-                    else {
-                        iterate();
-                    }
-                }
-            });
-        };
-        iterate();
-    };
-    async.forEachSeries = async.eachSeries;
-
-    async.eachLimit = function (arr, limit, iterator, callback) {
-        var fn = _eachLimit(limit);
-        fn.apply(null, [arr, iterator, callback]);
-    };
-    async.forEachLimit = async.eachLimit;
-
-    var _eachLimit = function (limit) {
-
-        return function (arr, iterator, callback) {
-            callback = callback || function () {};
-            if (!arr.length || limit <= 0) {
-                return callback();
-            }
-            var completed = 0;
-            var started = 0;
-            var running = 0;
-
-            (function replenish () {
-                if (completed >= arr.length) {
-                    return callback();
-                }
-
-                while (running < limit && started < arr.length) {
-                    started += 1;
-                    running += 1;
-                    iterator(arr[started - 1], function (err) {
-                        if (err) {
-                            callback(err);
-                            callback = function () {};
-                        }
-                        else {
-                            completed += 1;
-                            running -= 1;
-                            if (completed >= arr.length) {
-                                callback();
-                            }
-                            else {
-                                replenish();
-                            }
-                        }
-                    });
-                }
-            })();
-        };
-    };
-
-
-    var doParallel = function (fn) {
-        return function () {
-            var args = Array.prototype.slice.call(arguments);
-            return fn.apply(null, [async.each].concat(args));
-        };
-    };
-    var doParallelLimit = function(limit, fn) {
-        return function () {
-            var args = Array.prototype.slice.call(arguments);
-            return fn.apply(null, [_eachLimit(limit)].concat(args));
-        };
-    };
-    var doSeries = function (fn) {
-        return function () {
-            var args = Array.prototype.slice.call(arguments);
-            return fn.apply(null, [async.eachSeries].concat(args));
-        };
-    };
-
-
-    var _asyncMap = function (eachfn, arr, iterator, callback) {
-        arr = _map(arr, function (x, i) {
-            return {index: i, value: x};
-        });
-        if (!callback) {
-            eachfn(arr, function (x, callback) {
-                iterator(x.value, function (err) {
-                    callback(err);
-                });
-            });
-        } else {
-            var results = [];
-            eachfn(arr, function (x, callback) {
-                iterator(x.value, function (err, v) {
-                    results[x.index] = v;
-                    callback(err);
-                });
-            }, function (err) {
-                callback(err, results);
-            });
-        }
-    };
-    async.map = doParallel(_asyncMap);
-    async.mapSeries = doSeries(_asyncMap);
-    async.mapLimit = function (arr, limit, iterator, callback) {
-        return _mapLimit(limit)(arr, iterator, callback);
-    };
-
-    var _mapLimit = function(limit) {
-        return doParallelLimit(limit, _asyncMap);
-    };
-
-    // reduce only has a series version, as doing reduce in parallel won't
-    // work in many situations.
-    async.reduce = function (arr, memo, iterator, callback) {
-        async.eachSeries(arr, function (x, callback) {
-            iterator(memo, x, function (err, v) {
-                memo = v;
-                callback(err);
-            });
-        }, function (err) {
-            callback(err, memo);
-        });
-    };
-    // inject alias
-    async.inject = async.reduce;
-    // foldl alias
-    async.foldl = async.reduce;
-
-    async.reduceRight = function (arr, memo, iterator, callback) {
-        var reversed = _map(arr, function (x) {
-            return x;
-        }).reverse();
-        async.reduce(reversed, memo, iterator, callback);
-    };
-    // foldr alias
-    async.foldr = async.reduceRight;
-
-    var _filter = function (eachfn, arr, iterator, callback) {
-        var results = [];
-        arr = _map(arr, function (x, i) {
-            return {index: i, value: x};
-        });
-        eachfn(arr, function (x, callback) {
-            iterator(x.value, function (v) {
-                if (v) {
-                    results.push(x);
-                }
-                callback();
-            });
-        }, function (err) {
-            callback(_map(results.sort(function (a, b) {
-                return a.index - b.index;
-            }), function (x) {
-                return x.value;
-            }));
-        });
-    };
-    async.filter = doParallel(_filter);
-    async.filterSeries = doSeries(_filter);
-    // select alias
-    async.select = async.filter;
-    async.selectSeries = async.filterSeries;
-
-    var _reject = function (eachfn, arr, iterator, callback) {
-        var results = [];
-        arr = _map(arr, function (x, i) {
-            return {index: i, value: x};
-        });
-        eachfn(arr, function (x, callback) {
-            iterator(x.value, function (v) {
-                if (!v) {
-                    results.push(x);
-                }
-                callback();
-            });
-        }, function (err) {
-            callback(_map(results.sort(function (a, b) {
-                return a.index - b.index;
-            }), function (x) {
-                return x.value;
-            }));
-        });
-    };
-    async.reject = doParallel(_reject);
-    async.rejectSeries = doSeries(_reject);
-
-    var _detect = function (eachfn, arr, iterator, main_callback) {
-        eachfn(arr, function (x, callback) {
-            iterator(x, function (result) {
-                if (result) {
-                    main_callback(x);
-                    main_callback = function () {};
-                }
-                else {
-                    callback();
-                }
-            });
-        }, function (err) {
-            main_callback();
-        });
-    };
-    async.detect = doParallel(_detect);
-    async.detectSeries = doSeries(_detect);
-
-    async.some = function (arr, iterator, main_callback) {
-        async.each(arr, function (x, callback) {
-            iterator(x, function (v) {
-                if (v) {
-                    main_callback(true);
-                    main_callback = function () {};
-                }
-                callback();
-            });
-        }, function (err) {
-            main_callback(false);
-        });
-    };
-    // any alias
-    async.any = async.some;
-
-    async.every = function (arr, iterator, main_callback) {
-        async.each(arr, function (x, callback) {
-            iterator(x, function (v) {
-                if (!v) {
-                    main_callback(false);
-                    main_callback = function () {};
-                }
-                callback();
-            });
-        }, function (err) {
-            main_callback(true);
-        });
-    };
-    // all alias
-    async.all = async.every;
-
-    async.sortBy = function (arr, iterator, callback) {
-        async.map(arr, function (x, callback) {
-            iterator(x, function (err, criteria) {
-                if (err) {
-                    callback(err);
-                }
-                else {
-                    callback(null, {value: x, criteria: criteria});
-                }
-            });
-        }, function (err, results) {
-            if (err) {
-                return callback(err);
-            }
-            else {
-                var fn = function (left, right) {
-                    var a = left.criteria, b = right.criteria;
-                    return a < b ? -1 : a > b ? 1 : 0;
-                };
-                callback(null, _map(results.sort(fn), function (x) {
-                    return x.value;
-                }));
-            }
-        });
-    };
-
-    async.auto = function (tasks, callback) {
-        callback = callback || function () {};
-        var keys = _keys(tasks);
-        var remainingTasks = keys.length
-        if (!remainingTasks) {
-            return callback();
-        }
-
-        var results = {};
-
-        var listeners = [];
-        var addListener = function (fn) {
-            listeners.unshift(fn);
-        };
-        var removeListener = function (fn) {
-            for (var i = 0; i < listeners.length; i += 1) {
-                if (listeners[i] === fn) {
-                    listeners.splice(i, 1);
-                    return;
-                }
-            }
-        };
-        var taskComplete = function () {
-            remainingTasks--
-            _each(listeners.slice(0), function (fn) {
-                fn();
-            });
-        };
-
-        addListener(function () {
-            if (!remainingTasks) {
-                var theCallback = callback;
-                // prevent final callback from calling itself if it errors
-                callback = function () {};
-
-                theCallback(null, results);
-            }
-        });
-
-        _each(keys, function (k) {
-            var task = _isArray(tasks[k]) ? tasks[k]: [tasks[k]];
-            var taskCallback = function (err) {
-                var args = Array.prototype.slice.call(arguments, 1);
-                if (args.length <= 1) {
-                    args = args[0];
-                }
-                if (err) {
-                    var safeResults = {};
-                    _each(_keys(results), function(rkey) {
-                        safeResults[rkey] = results[rkey];
-                    });
-                    safeResults[k] = args;
-                    callback(err, safeResults);
-                    // stop subsequent errors hitting callback multiple times
-                    callback = function () {};
-                }
-                else {
-                    results[k] = args;
-                    async.setImmediate(taskComplete);
-                }
-            };
-            var requires = task.slice(0, Math.abs(task.length - 1)) || [];
-            var ready = function () {
-                return _reduce(requires, function (a, x) {
-                    return (a && results.hasOwnProperty(x));
-                }, true) && !results.hasOwnProperty(k);
-            };
-            if (ready()) {
-                task[task.length - 1](taskCallback, results);
-            }
-            else {
-                var listener = function () {
-                    if (ready()) {
-                        removeListener(listener);
-                        task[task.length - 1](taskCallback, results);
-                    }
-                };
-                addListener(listener);
-            }
-        });
-    };
-
-    async.retry = function(times, task, callback) {
-        var DEFAULT_TIMES = 5;
-        var attempts = [];
-        // Use defaults if times not passed
-        if (typeof times === 'function') {
-            callback = task;
-            task = times;
-            times = DEFAULT_TIMES;
-        }
-        // Make sure times is a number
-        times = parseInt(times, 10) || DEFAULT_TIMES;
-        var wrappedTask = function(wrappedCallback, wrappedResults) {
-            var retryAttempt = function(task, finalAttempt) {
-                return function(seriesCallback) {
-                    task(function(err, result){
-                        seriesCallback(!err || finalAttempt, {err: err, result: result});
-                    }, wrappedResults);
-                };
-            };
-            while (times) {
-                attempts.push(retryAttempt(task, !(times-=1)));
-            }
-            async.series(attempts, function(done, data){
-                data = data[data.length - 1];
-                (wrappedCallback || callback)(data.err, data.result);
-            });
-        }
-        // If a callback is passed, run this as a controll flow
-        return callback ? wrappedTask() : wrappedTask
-    };
-
-    async.waterfall = function (tasks, callback) {
-        callback = callback || function () {};
-        if (!_isArray(tasks)) {
-          var err = new Error('First argument to waterfall must be an array of functions');
-          return callback(err);
-        }
-        if (!tasks.length) {
-            return callback();
-        }
-        var wrapIterator = function (iterator) {
-            return function (err) {
-                if (err) {
-                    callback.apply(null, arguments);
-                    callback = function () {};
-                }
-                else {
-                    var args = Array.prototype.slice.call(arguments, 1);
-                    var next = iterator.next();
-                    if (next) {
-                        args.push(wrapIterator(next));
-                    }
-                    else {
-                        args.push(callback);
-                    }
-                    async.setImmediate(function () {
-                        iterator.apply(null, args);
-                    });
-                }
-            };
-        };
-        wrapIterator(async.iterator(tasks))();
-    };
-
-    var _parallel = function(eachfn, tasks, callback) {
-        callback = callback || function () {};
-        if (_isArray(tasks)) {
-            eachfn.map(tasks, function (fn, callback) {
-                if (fn) {
-                    fn(function (err) {
-                        var args = Array.prototype.slice.call(arguments, 1);
-                        if (args.length <= 1) {
-                            args = args[0];
-                        }
-                        callback.call(null, err, args);
-                    });
-                }
-            }, callback);
-        }
-        else {
-            var results = {};
-            eachfn.each(_keys(tasks), function (k, callback) {
-                tasks[k](function (err) {
-                    var args = Array.prototype.slice.call(arguments, 1);
-                    if (args.length <= 1) {
-                        args = args[0];
-                    }
-                    results[k] = args;
-                    callback(err);
-                });
-            }, function (err) {
-                callback(err, results);
-            });
-        }
-    };
-
-    async.parallel = function (tasks, callback) {
-        _parallel({ map: async.map, each: async.each }, tasks, callback);
-    };
-
-    async.parallelLimit = function(tasks, limit, callback) {
-        _parallel({ map: _mapLimit(limit), each: _eachLimit(limit) }, tasks, callback);
-    };
-
-    async.series = function (tasks, callback) {
-        callback = callback || function () {};
-        if (_isArray(tasks)) {
-            async.mapSeries(tasks, function (fn, callback) {
-                if (fn) {
-                    fn(function (err) {
-                        var args = Array.prototype.slice.call(arguments, 1);
-                        if (args.length <= 1) {
-                            args = args[0];
-                        }
-                        callback.call(null, err, args);
-                    });
-                }
-            }, callback);
-        }
-        else {
-            var results = {};
-            async.eachSeries(_keys(tasks), function (k, callback) {
-                tasks[k](function (err) {
-                    var args = Array.prototype.slice.call(arguments, 1);
-                    if (args.length <= 1) {
-                        args = args[0];
-                    }
-                    results[k] = args;
-                    callback(err);
-                });
-            }, function (err) {
-                callback(err, results);
-            });
-        }
-    };
-
-    async.iterator = function (tasks) {
-        var makeCallback = function (index) {
-            var fn = function () {
-                if (tasks.length) {
-                    tasks[index].apply(null, arguments);
-                }
-                return fn.next();
-            };
-            fn.next = function () {
-                return (index < tasks.length - 1) ? makeCallback(index + 1): null;
-            };
-            return fn;
-        };
-        return makeCallback(0);
-    };
-
-    async.apply = function (fn) {
-        var args = Array.prototype.slice.call(arguments, 1);
-        return function () {
-            return fn.apply(
-                null, args.concat(Array.prototype.slice.call(arguments))
-            );
-        };
-    };
-
-    var _concat = function (eachfn, arr, fn, callback) {
-        var r = [];
-        eachfn(arr, function (x, cb) {
-            fn(x, function (err, y) {
-                r = r.concat(y || []);
-                cb(err);
-            });
-        }, function (err) {
-            callback(err, r);
-        });
-    };
-    async.concat = doParallel(_concat);
-    async.concatSeries = doSeries(_concat);
-
-    async.whilst = function (test, iterator, callback) {
-        if (test()) {
-            iterator(function (err) {
-                if (err) {
-                    return callback(err);
-                }
-                async.whilst(test, iterator, callback);
-            });
-        }
-        else {
-            callback();
-        }
-    };
-
-    async.doWhilst = function (iterator, test, callback) {
-        iterator(function (err) {
-            if (err) {
-                return callback(err);
-            }
-            var args = Array.prototype.slice.call(arguments, 1);
-            if (test.apply(null, args)) {
-                async.doWhilst(iterator, test, callback);
-            }
-            else {
-                callback();
-            }
-        });
-    };
-
-    async.until = function (test, iterator, callback) {
-        if (!test()) {
-            iterator(function (err) {
-                if (err) {
-                    return callback(err);
-                }
-                async.until(test, iterator, callback);
-            });
-        }
-        else {
-            callback();
-        }
-    };
-
-    async.doUntil = function (iterator, test, callback) {
-        iterator(function (err) {
-            if (err) {
-                return callback(err);
-            }
-            var args = Array.prototype.slice.call(arguments, 1);
-            if (!test.apply(null, args)) {
-                async.doUntil(iterator, test, callback);
-            }
-            else {
-                callback();
-            }
-        });
-    };
-
-    async.queue = function (worker, concurrency) {
-        if (concurrency === undefined) {
-            concurrency = 1;
-        }
-        function _insert(q, data, pos, callback) {
-          if (!q.started){
-            q.started = true;
-          }
-          if (!_isArray(data)) {
-              data = [data];
-          }
-          if(data.length == 0) {
-             // call drain immediately if there are no tasks
-             return async.setImmediate(function() {
-                 if (q.drain) {
-                     q.drain();
-                 }
-             });
-          }
-          _each(data, function(task) {
-              var item = {
-                  data: task,
-                  callback: typeof callback === 'function' ? callback : null
-              };
-
-              if (pos) {
-                q.tasks.unshift(item);
-              } else {
-                q.tasks.push(item);
-              }
-
-              if (q.saturated && q.tasks.length === q.concurrency) {
-                  q.saturated();
-              }
-              async.setImmediate(q.process);
-          });
-        }
-
-        var workers = 0;
-        var q = {
-            tasks: [],
-            concurrency: concurrency,
-            saturated: null,
-            empty: null,
-            drain: null,
-            started: false,
-            paused: false,
-            push: function (data, callback) {
-              _insert(q, data, false, callback);
-            },
-            kill: function () {
-              q.drain = null;
-              q.tasks = [];
-            },
-            unshift: function (data, callback) {
-              _insert(q, data, true, callback);
-            },
-            process: function () {
-                if (!q.paused && workers < q.concurrency && q.tasks.length) {
-                    var task = q.tasks.shift();
-                    if (q.empty && q.tasks.length === 0) {
-                        q.empty();
-                    }
-                    workers += 1;
-                    var next = function () {
-                        workers -= 1;
-                        if (task.callback) {
-                            task.callback.apply(task, arguments);
-                        }
-                        if (q.drain && q.tasks.length + workers === 0) {
-                            q.drain();
-                        }
-                        q.process();
-                    };
-                    var cb = only_once(next);
-                    worker(task.data, cb);
-                }
-            },
-            length: function () {
-                return q.tasks.length;
-            },
-            running: function () {
-                return workers;
-            },
-            idle: function() {
-                return q.tasks.length + workers === 0;
-            },
-            pause: function () {
-                if (q.paused === true) { return; }
-                q.paused = true;
-                q.process();
-            },
-            resume: function () {
-                if (q.paused === false) { return; }
-                q.paused = false;
-                q.process();
-            }
-        };
-        return q;
-    };
-    
-    async.priorityQueue = function (worker, concurrency) {
-        
-        function _compareTasks(a, b){
-          return a.priority - b.priority;
-        };
-        
-        function _binarySearch(sequence, item, compare) {
-          var beg = -1,
-              end = sequence.length - 1;
-          while (beg < end) {
-            var mid = beg + ((end - beg + 1) >>> 1);
-            if (compare(item, sequence[mid]) >= 0) {
-              beg = mid;
-            } else {
-              end = mid - 1;
-            }
-          }
-          return beg;
-        }
-        
-        function _insert(q, data, priority, callback) {
-          if (!q.started){
-            q.started = true;
-          }
-          if (!_isArray(data)) {
-              data = [data];
-          }
-          if(data.length == 0) {
-             // call drain immediately if there are no tasks
-             return async.setImmediate(function() {
-                 if (q.drain) {
-                     q.drain();
-                 }
-             });
-          }
-          _each(data, function(task) {
-              var item = {
-                  data: task,
-                  priority: priority,
-                  callback: typeof callback === 'function' ? callback : null
-              };
-              
-              q.tasks.splice(_binarySearch(q.tasks, item, _compareTasks) + 1, 0, item);
-
-              if (q.saturated && q.tasks.length === q.concurrency) {
-                  q.saturated();
-              }
-              async.setImmediate(q.process);
-          });
-        }
-        
-        // Start with a normal queue
-        var q = async.queue(worker, concurrency);
-        
-        // Override push to accept second parameter representing priority
-        q.push = function (data, priority, callback) {
-          _insert(q, data, priority, callback);
-        };
-        
-        // Remove unshift function
-        delete q.unshift;
-
-        return q;
-    };
-
-    async.cargo = function (worker, payload) {
-        var working     = false,
-            tasks       = [];
-
-        var cargo = {
-            tasks: tasks,
-            payload: payload,
-            saturated: null,
-            empty: null,
-            drain: null,
-            drained: true,
-            push: function (data, callback) {
-                if (!_isArray(data)) {
-                    data = [data];
-                }
-                _each(data, function(task) {
-                    tasks.push({
-                        data: task,
-                        callback: typeof callback === 'function' ? callback : null
-                    });
-                    cargo.drained = false;
-                    if (cargo.saturated && tasks.length === payload) {
-                        cargo.saturated();
-                    }
-                });
-                async.setImmediate(cargo.process);
-            },
-            process: function process() {
-                if (working) return;
-                if (tasks.length === 0) {
-                    if(cargo.drain && !cargo.drained) cargo.drain();
-                    cargo.drained = true;
-                    return;
-                }
-
-                var ts = typeof payload === 'number'
-                            ? tasks.splice(0, payload)
-                            : tasks.splice(0, tasks.length);
-
-                var ds = _map(ts, function (task) {
-                    return task.data;
-                });
-
-                if(cargo.empty) cargo.empty();
-                working = true;
-                worker(ds, function () {
-                    working = false;
-
-                    var args = arguments;
-                    _each(ts, function (data) {
-                        if (data.callback) {
-                            data.callback.apply(null, args);
-                        }
-                    });
-
-                    process();
-                });
-            },
-            length: function () {
-                return tasks.length;
-            },
-            running: function () {
-                return working;
-            }
-        };
-        return cargo;
-    };
-
-    var _console_fn = function (name) {
-        return function (fn) {
-            var args = Array.prototype.slice.call(arguments, 1);
-            fn.apply(null, args.concat([function (err) {
-                var args = Array.prototype.slice.call(arguments, 1);
-                if (typeof console !== 'undefined') {
-                    if (err) {
-                        if (console.error) {
-                            console.error(err);
-                        }
-                    }
-                    else if (console[name]) {
-                        _each(args, function (x) {
-                            console[name](x);
-                        });
-                    }
-                }
-            }]));
-        };
-    };
-    async.log = _console_fn('log');
-    async.dir = _console_fn('dir');
-    /*async.info = _console_fn('info');
-    async.warn = _console_fn('warn');
-    async.error = _console_fn('error');*/
-
-    async.memoize = function (fn, hasher) {
-        var memo = {};
-        var queues = {};
-        hasher = hasher || function (x) {
-            return x;
-        };
-        var memoized = function () {
-            var args = Array.prototype.slice.call(arguments);
-            var callback = args.pop();
-            var key = hasher.apply(null, args);
-            if (key in memo) {
-                async.nextTick(function () {
-                    callback.apply(null, memo[key]);
-                });
-            }
-            else if (key in queues) {
-                queues[key].push(callback);
-            }
-            else {
-                queues[key] = [callback];
-                fn.apply(null, args.concat([function () {
-                    memo[key] = arguments;
-                    var q = queues[key];
-                    delete queues[key];
-                    for (var i = 0, l = q.length; i < l; i++) {
-                      q[i].apply(null, arguments);
-                    }
-                }]));
-            }
-        };
-        memoized.memo = memo;
-        memoized.unmemoized = fn;
-        return memoized;
-    };
-
-    async.unmemoize = function (fn) {
-      return function () {
-        return (fn.unmemoized || fn).apply(null, arguments);
-      };
-    };
-
-    async.times = function (count, iterator, callback) {
-        var counter = [];
-        for (var i = 0; i < count; i++) {
-            counter.push(i);
-        }
-        return async.map(counter, iterator, callback);
-    };
-
-    async.timesSeries = function (count, iterator, callback) {
-        var counter = [];
-        for (var i = 0; i < count; i++) {
-            counter.push(i);
-        }
-        return async.mapSeries(counter, iterator, callback);
-    };
-
-    async.seq = function (/* functions... */) {
-        var fns = arguments;
-        return function () {
-            var that = this;
-            var args = Array.prototype.slice.call(arguments);
-            var callback = args.pop();
-            async.reduce(fns, args, function (newargs, fn, cb) {
-                fn.apply(that, newargs.concat([function () {
-                    var err = arguments[0];
-                    var nextargs = Array.prototype.slice.call(arguments, 1);
-                    cb(err, nextargs);
-                }]))
-            },
-            function (err, results) {
-                callback.apply(that, [err].concat(results));
-            });
-        };
-    };
-
-    async.compose = function (/* functions... */) {
-      return async.seq.apply(null, Array.prototype.reverse.call(arguments));
-    };
-
-    var _applyEach = function (eachfn, fns /*args...*/) {
-        var go = function () {
-            var that = this;
-            var args = Array.prototype.slice.call(arguments);
-            var callback = args.pop();
-            return eachfn(fns, function (fn, cb) {
-                fn.apply(that, args.concat([cb]));
-            },
-            callback);
-        };
-        if (arguments.length > 2) {
-            var args = Array.prototype.slice.call(arguments, 2);
-            return go.apply(this, args);
-        }
-        else {
-            return go;
-        }
-    };
-    async.applyEach = doParallel(_applyEach);
-    async.applyEachSeries = doSeries(_applyEach);
-
-    async.forever = function (fn, callback) {
-        function next(err) {
-            if (err) {
-                if (callback) {
-                    return callback(err);
-                }
-                throw err;
-            }
-            fn(next);
-        }
-        next();
-    };
-
-    // Node.js
-    if (typeof module !== 'undefined' && module.exports) {
-        module.exports = async;
-    }
-    // AMD / RequireJS
-    else if (typeof define !== 'undefined' && define.amd) {
-        define([], function () {
-            return async;
-        });
-    }
-    // included directly via <script> tag
-    else {
-        root.async = async;
-    }
-
-}());
-
-}).call(this,require('_process'))
-
-},{"_process":3}],10:[function(require,module,exports){
-arguments[4][4][0].apply(exports,arguments)
-},{"dup":4}],11:[function(require,module,exports){
 var async = require('async'),
     Resource = require('./Resource'),
     EventEmitter = require('eventemitter3').EventEmitter;
@@ -6527,7 +5397,7 @@ Loader.LOAD_TYPE = Resource.LOAD_TYPE;
 Loader.XHR_READY_STATE = Resource.XHR_READY_STATE;
 Loader.XHR_RESPONSE_TYPE = Resource.XHR_RESPONSE_TYPE;
 
-},{"./Resource":12,"async":9,"eventemitter3":10}],12:[function(require,module,exports){
+},{"./Resource":10,"async":1,"eventemitter3":4}],10:[function(require,module,exports){
 var EventEmitter = require('eventemitter3').EventEmitter,
     // tests is CORS is supported in XHR, if not we need to use XDR
     useXdr = !!(window.XDomainRequest && !('withCredentials' in (new XMLHttpRequest())));
@@ -7185,7 +6055,7 @@ Resource.XHR_RESPONSE_TYPE = {
     TEXT:       'text'
 };
 
-},{"eventemitter3":10}],13:[function(require,module,exports){
+},{"eventemitter3":4}],11:[function(require,module,exports){
 module.exports = {
 
     // private property
@@ -7251,7 +6121,7 @@ module.exports = {
     }
 };
 
-},{}],14:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 module.exports = require('./Loader');
 
 module.exports.Resource = require('./Resource');
@@ -7265,7 +6135,7 @@ module.exports.middleware = {
     }
 };
 
-},{"./Loader":11,"./Resource":12,"./middlewares/caching/memory":15,"./middlewares/parsing/blob":16}],15:[function(require,module,exports){
+},{"./Loader":9,"./Resource":10,"./middlewares/caching/memory":13,"./middlewares/parsing/blob":14}],13:[function(require,module,exports){
 // a simple in-memory cache for resources
 var cache = {};
 
@@ -7287,7 +6157,7 @@ module.exports = function () {
     };
 };
 
-},{}],16:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 var Resource = require('../../Resource'),
     b64 = require('../../b64');
 
@@ -7312,12 +6182,7 @@ module.exports = function () {
                     resource.data = new Image();
                     resource.data.src = 'data:' + type + ';base64,' + b64.encodeBinary(resource.xhr.responseText);
 
-                    // wait until the image loads and then callback
-                    resource.data.onload = function () {
-                        resource.data.onload = null;
-
-                        next();
-                    };
+                    next();
                 }
             }
             // if content type says this is an image, then we should transform the blob into an Image object
@@ -7343,7 +6208,7 @@ module.exports = function () {
     };
 };
 
-},{"../../Resource":12,"../../b64":13}],17:[function(require,module,exports){
+},{"../../Resource":10,"../../b64":11}],15:[function(require,module,exports){
 module.exports={
   "name": "pixi.js",
   "version": "3.0.0-rc4",
@@ -7410,7 +6275,7 @@ module.exports={
   }
 }
 
-},{}],18:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 /**
  * Constant values used in pixi
  *
@@ -7594,7 +6459,7 @@ module.exports = {
     SPRITE_BATCH_SIZE: 2000 //nice balance between mobile and desktop machines
 };
 
-},{"../../package.json":17}],19:[function(require,module,exports){
+},{"../../package.json":15}],17:[function(require,module,exports){
 var math = require('../math'),
     DisplayObject = require('./DisplayObject'),
     RenderTexture = require('../textures/RenderTexture'),
@@ -8165,7 +7030,7 @@ Container.prototype.destroy = function (destroyChildren)
     this.children = null;
 };
 
-},{"../math":28,"../textures/RenderTexture":66,"./DisplayObject":20}],20:[function(require,module,exports){
+},{"../math":26,"../textures/RenderTexture":64,"./DisplayObject":18}],18:[function(require,module,exports){
 var math = require('../math'),
     RenderTexture = require('../textures/RenderTexture'),
     EventEmitter = require('eventemitter3').EventEmitter,
@@ -8632,7 +7497,7 @@ DisplayObject.prototype.destroy = function ()
     this.listeners = null;
 };
 
-},{"../const":18,"../math":28,"../textures/RenderTexture":66,"eventemitter3":4}],21:[function(require,module,exports){
+},{"../const":16,"../math":26,"../textures/RenderTexture":64,"eventemitter3":4}],19:[function(require,module,exports){
 var Container = require('../display/Container'),
     Sprite = require('../sprites/Sprite'),
     Texture = require('../textures/Texture'),
@@ -9774,7 +8639,7 @@ Graphics.prototype.drawShape = function (shape)
     return data;
 };
 
-},{"../const":18,"../display/Container":19,"../math":28,"../renderers/canvas/utils/CanvasBuffer":40,"../renderers/canvas/utils/CanvasGraphics":41,"../sprites/Sprite":62,"../textures/Texture":67,"./GraphicsData":22}],22:[function(require,module,exports){
+},{"../const":16,"../display/Container":17,"../math":26,"../renderers/canvas/utils/CanvasBuffer":38,"../renderers/canvas/utils/CanvasGraphics":39,"../sprites/Sprite":60,"../textures/Texture":65,"./GraphicsData":20}],20:[function(require,module,exports){
 /**
  * A GraphicsData object.
  *
@@ -9860,7 +8725,7 @@ GraphicsData.prototype.clone = function ()
     );
 };
 
-},{}],23:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 var utils = require('../../utils'),
     math = require('../../math'),
     CONST = require('../../const'),
@@ -10754,7 +9619,7 @@ GraphicsRenderer.prototype.buildPoly = function (graphicsData, webGLData)
     return true;
 };
 
-},{"../../const":18,"../../math":28,"../../renderers/webgl/WebGLRenderer":44,"../../renderers/webgl/utils/ObjectRenderer":58,"../../utils":71,"./WebGLGraphicsData":24}],24:[function(require,module,exports){
+},{"../../const":16,"../../math":26,"../../renderers/webgl/WebGLRenderer":42,"../../renderers/webgl/utils/ObjectRenderer":56,"../../utils":69,"./WebGLGraphicsData":22}],22:[function(require,module,exports){
 /**
  * An object containing WebGL specific properties to be used by the WebGL renderer
  *
@@ -10852,7 +9717,7 @@ WebGLGraphicsData.prototype.upload = function () {
     this.dirty = false;
 };
 
-},{}],25:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI core library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -10942,7 +9807,7 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
     }
 });
 
-},{"./const":18,"./display/Container":19,"./display/DisplayObject":20,"./graphics/Graphics":21,"./graphics/GraphicsData":22,"./graphics/webgl/GraphicsRenderer":23,"./math":28,"./particles/ParticleContainer":34,"./particles/webgl/ParticleRenderer":36,"./renderers/canvas/CanvasRenderer":39,"./renderers/canvas/utils/CanvasBuffer":40,"./renderers/canvas/utils/CanvasGraphics":41,"./renderers/webgl/WebGLRenderer":44,"./renderers/webgl/filters/AbstractFilter":45,"./renderers/webgl/managers/ShaderManager":51,"./renderers/webgl/shaders/Shader":56,"./renderers/webgl/utils/ObjectRenderer":58,"./renderers/webgl/utils/RenderTarget":60,"./sprites/Sprite":62,"./sprites/webgl/SpriteRenderer":63,"./text/Text":64,"./textures/BaseTexture":65,"./textures/RenderTexture":66,"./textures/Texture":67,"./textures/TextureUvs":68,"./textures/VideoBaseTexture":69,"./utils":71}],26:[function(require,module,exports){
+},{"./const":16,"./display/Container":17,"./display/DisplayObject":18,"./graphics/Graphics":19,"./graphics/GraphicsData":20,"./graphics/webgl/GraphicsRenderer":21,"./math":26,"./particles/ParticleContainer":32,"./particles/webgl/ParticleRenderer":34,"./renderers/canvas/CanvasRenderer":37,"./renderers/canvas/utils/CanvasBuffer":38,"./renderers/canvas/utils/CanvasGraphics":39,"./renderers/webgl/WebGLRenderer":42,"./renderers/webgl/filters/AbstractFilter":43,"./renderers/webgl/managers/ShaderManager":49,"./renderers/webgl/shaders/Shader":54,"./renderers/webgl/utils/ObjectRenderer":56,"./renderers/webgl/utils/RenderTarget":58,"./sprites/Sprite":60,"./sprites/webgl/SpriteRenderer":61,"./text/Text":62,"./textures/BaseTexture":63,"./textures/RenderTexture":64,"./textures/Texture":65,"./textures/TextureUvs":66,"./textures/VideoBaseTexture":67,"./utils":69}],24:[function(require,module,exports){
 var Point = require('./Point');
 
 /**
@@ -11302,7 +10167,7 @@ Matrix.IDENTITY = new Matrix();
  */
 Matrix.TEMP_MATRIX = new Matrix();
 
-},{"./Point":27}],27:[function(require,module,exports){
+},{"./Point":25}],25:[function(require,module,exports){
 /**
  * The Point object represents a location in a two-dimensional coordinate system, where x represents
  * the horizontal axis and y represents the vertical axis.
@@ -11372,7 +10237,7 @@ Point.prototype.set = function (x, y)
     this.y = y || ( (y !== 0) ? this.x : 0 ) ;
 };
 
-},{}],28:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 module.exports = {
     Point:      require('./Point'),
     Matrix:     require('./Matrix'),
@@ -11384,7 +10249,7 @@ module.exports = {
     RoundedRectangle: require('./shapes/RoundedRectangle')
 };
 
-},{"./Matrix":26,"./Point":27,"./shapes/Circle":29,"./shapes/Ellipse":30,"./shapes/Polygon":31,"./shapes/Rectangle":32,"./shapes/RoundedRectangle":33}],29:[function(require,module,exports){
+},{"./Matrix":24,"./Point":25,"./shapes/Circle":27,"./shapes/Ellipse":28,"./shapes/Polygon":29,"./shapes/Rectangle":30,"./shapes/RoundedRectangle":31}],27:[function(require,module,exports){
 var Rectangle = require('./Rectangle'),
     CONST = require('../../const');
 
@@ -11472,7 +10337,7 @@ Circle.prototype.getBounds = function ()
     return new Rectangle(this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2);
 };
 
-},{"../../const":18,"./Rectangle":32}],30:[function(require,module,exports){
+},{"../../const":16,"./Rectangle":30}],28:[function(require,module,exports){
 var Rectangle = require('./Rectangle'),
     CONST = require('../../const');
 
@@ -11567,7 +10432,7 @@ Ellipse.prototype.getBounds = function ()
     return new Rectangle(this.x - this.width, this.y - this.height, this.width, this.height);
 };
 
-},{"../../const":18,"./Rectangle":32}],31:[function(require,module,exports){
+},{"../../const":16,"./Rectangle":30}],29:[function(require,module,exports){
 var Point = require('../Point'),
     CONST = require('../../const');
 
@@ -11670,7 +10535,7 @@ Polygon.prototype.contains = function (x, y)
     return inside;
 };
 
-},{"../../const":18,"../Point":27}],32:[function(require,module,exports){
+},{"../../const":16,"../Point":25}],30:[function(require,module,exports){
 var CONST = require('../../const');
 
 /**
@@ -11764,7 +10629,7 @@ Rectangle.prototype.contains = function (x, y)
     return false;
 };
 
-},{"../../const":18}],33:[function(require,module,exports){
+},{"../../const":16}],31:[function(require,module,exports){
 var CONST = require('../../const');
 
 /**
@@ -11856,7 +10721,7 @@ RoundedRectangle.prototype.contains = function (x, y)
     return false;
 };
 
-},{"../../const":18}],34:[function(require,module,exports){
+},{"../../const":16}],32:[function(require,module,exports){
 var Container = require('../display/Container');
 
 /**
@@ -12144,7 +11009,7 @@ ParticleContainer.prototype.renderCanvas = function (renderer)
     }
 };
 
-},{"../display/Container":19}],35:[function(require,module,exports){
+},{"../display/Container":17}],33:[function(require,module,exports){
 
 /**
  * @author Mat Groves
@@ -12351,7 +11216,7 @@ ParticleBuffer.prototype.destroy = function ()
     //TODO implement this :) to busy making the fun bits..
 };
 
-},{}],36:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
     WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
     ParticleShader = require('./ParticleShader'),
@@ -12835,7 +11700,7 @@ ParticleRenderer.prototype.destroy = function ()
     //TODO implement this!
 };
 
-},{"../../math":28,"../../renderers/webgl/WebGLRenderer":44,"../../renderers/webgl/utils/ObjectRenderer":58,"./ParticleBuffer":35,"./ParticleShader":37}],37:[function(require,module,exports){
+},{"../../math":26,"../../renderers/webgl/WebGLRenderer":42,"../../renderers/webgl/utils/ObjectRenderer":56,"./ParticleBuffer":33,"./ParticleShader":35}],35:[function(require,module,exports){
 var TextureShader = require('../../renderers/webgl/shaders/TextureShader');
 
 /**
@@ -12908,7 +11773,7 @@ ParticleShader.prototype.constructor = ParticleShader;
 
 module.exports = ParticleShader;
 
-},{"../../renderers/webgl/shaders/TextureShader":57}],38:[function(require,module,exports){
+},{"../../renderers/webgl/shaders/TextureShader":55}],36:[function(require,module,exports){
 var utils = require('../utils'),
     math = require('../math'),
     CONST = require('../const'),
@@ -13150,7 +12015,7 @@ SystemRenderer.prototype.destroy = function (removeView) {
     this._backgroundColorString = null;
 };
 
-},{"../const":18,"../math":28,"../utils":71,"eventemitter3":4}],39:[function(require,module,exports){
+},{"../const":16,"../math":26,"../utils":69,"eventemitter3":4}],37:[function(require,module,exports){
 var SystemRenderer = require('../SystemRenderer'),
     CanvasMaskManager = require('./utils/CanvasMaskManager'),
     utils = require('../../utils'),
@@ -13420,7 +12285,7 @@ CanvasRenderer.prototype._mapBlendModes = function ()
     }
 };
 
-},{"../../const":18,"../../math":28,"../../utils":71,"../SystemRenderer":38,"./utils/CanvasMaskManager":42}],40:[function(require,module,exports){
+},{"../../const":16,"../../math":26,"../../utils":69,"../SystemRenderer":36,"./utils/CanvasMaskManager":40}],38:[function(require,module,exports){
 /**
  * Creates a Canvas element of the given size.
  *
@@ -13520,7 +12385,7 @@ CanvasBuffer.prototype.destroy = function ()
     this.canvas = null;
 };
 
-},{}],41:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 var CONST = require('../../../const');
 
 /**
@@ -13871,7 +12736,7 @@ CanvasGraphics.updateGraphicsTint = function (graphics)
 };
 
 
-},{"../../../const":18}],42:[function(require,module,exports){
+},{"../../../const":16}],40:[function(require,module,exports){
 var CanvasGraphics = require('./CanvasGraphics');
 
 /**
@@ -13931,7 +12796,7 @@ CanvasMaskManager.prototype.popMask = function (renderer)
     renderer.context.restore();
 };
 
-},{"./CanvasGraphics":41}],43:[function(require,module,exports){
+},{"./CanvasGraphics":39}],41:[function(require,module,exports){
 var utils = require('../../../utils');
 
 /**
@@ -14163,7 +13028,7 @@ CanvasTinter.canUseMultiply = utils.canUseNewCanvasBlendModes();
  */
 CanvasTinter.tintMethod = CanvasTinter.canUseMultiply ? CanvasTinter.tintWithMultiply :  CanvasTinter.tintWithPerPixel;
 
-},{"../../../utils":71}],44:[function(require,module,exports){
+},{"../../../utils":69}],42:[function(require,module,exports){
 var SystemRenderer = require('../SystemRenderer'),
     ShaderManager = require('./managers/ShaderManager'),
     MaskManager = require('./managers/MaskManager'),
@@ -14215,14 +13080,6 @@ function WebGLRenderer(width, height, options)
 
     this.handleContextLost = this.handleContextLost.bind(this);
     this.handleContextRestored = this.handleContextRestored.bind(this);
-
-    this._updateTextureBound = function(e){
-        this.updateTexture(e.target);
-    }.bind(this);
-
-    this._destroyTextureBound = function(e){
-        this.destroyTexture(e.target);
-    }.bind(this);
 
     this.view.addEventListener('webglcontextlost', this.handleContextLost, false);
     this.view.addEventListener('webglcontextrestored', this.handleContextRestored, false);
@@ -14304,7 +13161,7 @@ function WebGLRenderer(width, height, options)
      * Holds the current render target
      * @member {Object}
      */
-    this.currentRenderTarget = this.renderTarget;
+    this.currentRenderTarget = null;
 
     /**
      * object renderer @alvin
@@ -14362,6 +13219,8 @@ WebGLRenderer.prototype._initContext = function ()
 
     this.renderTarget = new RenderTarget(this.gl, this.width, this.height, null, this.resolution, true);
 
+    this.setRenderTarget(this.renderTarget);
+
     this.emit('context', gl);
 
     // setup the width/height properties and gl viewport
@@ -14414,6 +13273,7 @@ WebGLRenderer.prototype.render = function (object)
     var gl = this.gl;
 
     // make sure we are bound to the main frame buffer
+    this.setRenderTarget(this.renderTarget);
 
     if (this.clearBeforeRender)
     {
@@ -14439,11 +13299,16 @@ WebGLRenderer.prototype.render = function (object)
  * @param renderTarget {RenderTarget} The render target to use to render this display object
  *
  */
-WebGLRenderer.prototype.renderDisplayObject = function (displayObject, renderTarget)//projection, buffer)
+WebGLRenderer.prototype.renderDisplayObject = function (displayObject, renderTarget, clear)//projection, buffer)
 {
     // TODO is this needed...
     //this.blendModeManager.setBlendMode(CONST.BLEND_MODES.NORMAL);
     this.setRenderTarget(renderTarget);
+
+    if(clear)
+    {
+        renderTarget.clear();
+    }
 
     // start the filter manager
     this.filterManager.setFilterStack( renderTarget.filterStack );
@@ -14502,9 +13367,16 @@ WebGLRenderer.prototype.resize = function (width, height)
 {
     SystemRenderer.prototype.resize.call(this, width, height);
 
+    if(this.currentRenderTarget === this.renderTarget)
+    {
+        this.renderTarget.activate();
+    }
+
    // console.log(width)
     this.filterManager.resize(width, height);
     this.renderTarget.resize(width, height);
+
+
 };
 
 /**
@@ -14526,8 +13398,8 @@ WebGLRenderer.prototype.updateTexture = function (texture)
     if (!texture._glTextures[gl.id])
     {
         texture._glTextures[gl.id] = gl.createTexture();
-        texture.on('update', this._updateTextureBound);
-        texture.on('dispose', this._destroyTextureBound);
+        texture.on('update', this.updateTexture, this);
+        texture.on('dispose', this.destroyTexture, this);
     }
 
 
@@ -14683,7 +13555,7 @@ WebGLRenderer.prototype._mapBlendModes = function ()
     }
 };
 
-},{"../../const":18,"../../utils":71,"../SystemRenderer":38,"./filters/FXAAFilter":46,"./managers/BlendModeManager":48,"./managers/FilterManager":49,"./managers/MaskManager":50,"./managers/ShaderManager":51,"./managers/StencilManager":52,"./utils/ObjectRenderer":58,"./utils/RenderTarget":60}],45:[function(require,module,exports){
+},{"../../const":16,"../../utils":69,"../SystemRenderer":36,"./filters/FXAAFilter":44,"./managers/BlendModeManager":46,"./managers/FilterManager":47,"./managers/MaskManager":48,"./managers/ShaderManager":49,"./managers/StencilManager":50,"./utils/ObjectRenderer":56,"./utils/RenderTarget":58}],43:[function(require,module,exports){
 var DefaultShader = require('../shaders/TextureShader');
 
 /**
@@ -14802,7 +13674,7 @@ AbstractFilter.prototype.apply = function (frameBuffer)
 };
 */
 
-},{"../shaders/TextureShader":57}],46:[function(require,module,exports){
+},{"../shaders/TextureShader":55}],44:[function(require,module,exports){
 var AbstractFilter = require('./AbstractFilter');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -14850,7 +13722,7 @@ FXAAFilter.prototype.applyFilter = function (renderer, input, output)
     filterManager.applyFilter(shader, input, output);
 };
 
-},{"./AbstractFilter":45}],47:[function(require,module,exports){
+},{"./AbstractFilter":43}],45:[function(require,module,exports){
 var AbstractFilter = require('./AbstractFilter'),
     math =  require('../../../math');
 
@@ -14947,7 +13819,7 @@ Object.defineProperties(SpriteMaskFilter.prototype, {
     }
 });
 
-},{"../../../math":28,"./AbstractFilter":45}],48:[function(require,module,exports){
+},{"../../../math":26,"./AbstractFilter":43}],46:[function(require,module,exports){
 var WebGLManager = require('./WebGLManager');
 
 /**
@@ -14990,7 +13862,7 @@ BlendModeManager.prototype.setBlendMode = function (blendMode)
     return true;
 };
 
-},{"./WebGLManager":53}],49:[function(require,module,exports){
+},{"./WebGLManager":51}],47:[function(require,module,exports){
 var WebGLManager = require('./WebGLManager'),
     RenderTarget = require('../utils/RenderTarget'),
     CONST = require('../../../const'),
@@ -15424,7 +14296,7 @@ FilterManager.prototype.destroy = function ()
     this.texturePool = null;
 };
 
-},{"../../../const":18,"../../../math":28,"../utils/Quad":59,"../utils/RenderTarget":60,"./WebGLManager":53}],50:[function(require,module,exports){
+},{"../../../const":16,"../../../math":26,"../utils/Quad":57,"../utils/RenderTarget":58,"./WebGLManager":51}],48:[function(require,module,exports){
 var WebGLManager = require('./WebGLManager'),
     AlphaMaskFilter = require('../filters/SpriteMaskFilter');
 
@@ -15538,7 +14410,7 @@ MaskManager.prototype.popStencilMask = function (target, maskData)
 };
 
 
-},{"../filters/SpriteMaskFilter":47,"./WebGLManager":53}],51:[function(require,module,exports){
+},{"../filters/SpriteMaskFilter":45,"./WebGLManager":51}],49:[function(require,module,exports){
 var WebGLManager = require('./WebGLManager'),
     TextureShader = require('../shaders/TextureShader'),
     ComplexPrimitiveShader = require('../shaders/ComplexPrimitiveShader'),
@@ -15693,7 +14565,7 @@ ShaderManager.prototype.destroy = function ()
     this.tempAttribState = null;
 };
 
-},{"../../../utils":71,"../shaders/ComplexPrimitiveShader":54,"../shaders/PrimitiveShader":55,"../shaders/TextureShader":57,"./WebGLManager":53}],52:[function(require,module,exports){
+},{"../../../utils":69,"../shaders/ComplexPrimitiveShader":52,"../shaders/PrimitiveShader":53,"../shaders/TextureShader":55,"./WebGLManager":51}],50:[function(require,module,exports){
 var WebGLManager = require('./WebGLManager'),
     utils = require('../../../utils');
 
@@ -16037,7 +14909,7 @@ WebGLMaskManager.prototype.popMask = function (maskData)
 };
 
 
-},{"../../../utils":71,"./WebGLManager":53}],53:[function(require,module,exports){
+},{"../../../utils":69,"./WebGLManager":51}],51:[function(require,module,exports){
 /**
  * @class
  * @memberof PIXI
@@ -16078,7 +14950,7 @@ WebGLManager.prototype.destroy = function ()
     this.renderer = null;
 };
 
-},{}],54:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 var Shader = require('./Shader');
 
 /**
@@ -16138,7 +15010,7 @@ ComplexPrimitiveShader.prototype = Object.create(Shader.prototype);
 ComplexPrimitiveShader.prototype.constructor = ComplexPrimitiveShader;
 module.exports = ComplexPrimitiveShader;
 
-},{"./Shader":56}],55:[function(require,module,exports){
+},{"./Shader":54}],53:[function(require,module,exports){
 var Shader = require('./Shader');
 
 /**
@@ -16199,7 +15071,7 @@ PrimitiveShader.prototype = Object.create(Shader.prototype);
 PrimitiveShader.prototype.constructor = PrimitiveShader;
 module.exports = PrimitiveShader;
 
-},{"./Shader":56}],56:[function(require,module,exports){
+},{"./Shader":54}],54:[function(require,module,exports){
 /*global console */
 var utils = require('../../../utils');
 
@@ -16748,7 +15620,7 @@ Shader.prototype._glCompile = function (type, src)
     return shader;
 };
 
-},{"../../../utils":71}],57:[function(require,module,exports){
+},{"../../../utils":69}],55:[function(require,module,exports){
 var Shader = require('./Shader');
 
 /**
@@ -16845,7 +15717,7 @@ TextureShader.defaultFragmentSrc = [
     '}'
 ].join('\n');
 
-},{"./Shader":56}],58:[function(require,module,exports){
+},{"./Shader":54}],56:[function(require,module,exports){
 var WebGLManager = require('../managers/WebGLManager');
 
 /**
@@ -16902,7 +15774,7 @@ ObjectRenderer.prototype.render = function (object) // jshint unused:false
     // render the object
 };
 
-},{"../managers/WebGLManager":53}],59:[function(require,module,exports){
+},{"../managers/WebGLManager":51}],57:[function(require,module,exports){
 /**
  * Helper class to create a quad
  * @class
@@ -17048,7 +15920,7 @@ module.exports = Quad;
 
 
 
-},{}],60:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 var math = require('../../../math'),
     utils = require('../../../utils'),
     CONST = require('../../../const'),
@@ -17354,7 +16226,7 @@ RenderTarget.prototype.destroy = function()
     this.texture = null;
 };
 
-},{"../../../const":18,"../../../math":28,"../../../utils":71,"./StencilMaskStack":61}],61:[function(require,module,exports){
+},{"../../../const":16,"../../../math":26,"../../../utils":69,"./StencilMaskStack":59}],59:[function(require,module,exports){
 /**
  * Generic Mask Stack data structure
  * @class
@@ -17388,7 +16260,7 @@ function StencilMaskStack()
 StencilMaskStack.prototype.constructor = StencilMaskStack;
 module.exports = StencilMaskStack;
 
-},{}],62:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 var math = require('../math'),
     Texture = require('../textures/Texture'),
     Container = require('../display/Container'),
@@ -17952,7 +16824,7 @@ Sprite.fromImage = function (imageId, crossorigin, scaleMode)
     return new Sprite(Texture.fromImage(imageId, crossorigin, scaleMode));
 };
 
-},{"../const":18,"../display/Container":19,"../math":28,"../renderers/canvas/utils/CanvasTinter":43,"../textures/Texture":67,"../utils":71}],63:[function(require,module,exports){
+},{"../const":16,"../display/Container":17,"../math":26,"../renderers/canvas/utils/CanvasTinter":41,"../textures/Texture":65,"../utils":69}],61:[function(require,module,exports){
 var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
     WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
     CONST = require('../../const');
@@ -18469,7 +17341,7 @@ SpriteRenderer.prototype.destroy = function ()
     this.shader = null;
 };
 
-},{"../../const":18,"../../renderers/webgl/WebGLRenderer":44,"../../renderers/webgl/utils/ObjectRenderer":58}],64:[function(require,module,exports){
+},{"../../const":16,"../../renderers/webgl/WebGLRenderer":42,"../../renderers/webgl/utils/ObjectRenderer":56}],62:[function(require,module,exports){
 var Sprite = require('../sprites/Sprite'),
     Texture = require('../textures/Texture'),
     math = require('../math'),
@@ -19065,7 +17937,7 @@ Text.prototype.destroy = function (destroyBaseTexture)
     this._texture.destroy(destroyBaseTexture === undefined ? true : destroyBaseTexture);
 };
 
-},{"../const":18,"../math":28,"../sprites/Sprite":62,"../textures/Texture":67}],65:[function(require,module,exports){
+},{"../const":16,"../math":26,"../sprites/Sprite":60,"../textures/Texture":65}],63:[function(require,module,exports){
 var utils = require('../utils'),
     CONST = require('../const'),
     EventEmitter = require('eventemitter3').EventEmitter;
@@ -19498,7 +18370,7 @@ BaseTexture.fromCanvas = function (canvas, scaleMode)
     return baseTexture;
 };
 
-},{"../const":18,"../utils":71,"eventemitter3":4}],66:[function(require,module,exports){
+},{"../const":16,"../utils":69,"eventemitter3":4}],64:[function(require,module,exports){
 var BaseTexture = require('./BaseTexture'),
     Texture = require('./Texture'),
     RenderTarget = require('../renderers/webgl/utils/RenderTarget'),
@@ -19928,7 +18800,7 @@ RenderTexture.prototype.getCanvas = function ()
     }
 };
 
-},{"../const":18,"../math":28,"../renderers/canvas/utils/CanvasBuffer":40,"../renderers/webgl/managers/FilterManager":49,"../renderers/webgl/utils/RenderTarget":60,"./BaseTexture":65,"./Texture":67}],67:[function(require,module,exports){
+},{"../const":16,"../math":26,"../renderers/canvas/utils/CanvasBuffer":38,"../renderers/webgl/managers/FilterManager":47,"../renderers/webgl/utils/RenderTarget":58,"./BaseTexture":63,"./Texture":65}],65:[function(require,module,exports){
 var BaseTexture = require('./BaseTexture'),
     VideoBaseTexture = require('./VideoBaseTexture'),
     TextureUvs = require('./TextureUvs'),
@@ -20304,7 +19176,7 @@ Texture.removeTextureFromCache = function (id)
 
 Texture.emptyTexture = new Texture(new BaseTexture());
 
-},{"../math":28,"../utils":71,"./BaseTexture":65,"./TextureUvs":68,"./VideoBaseTexture":69,"eventemitter3":4}],68:[function(require,module,exports){
+},{"../math":26,"../utils":69,"./BaseTexture":63,"./TextureUvs":66,"./VideoBaseTexture":67,"eventemitter3":4}],66:[function(require,module,exports){
 
 /**
  * A standard object to store the Uvs of a texture
@@ -20372,7 +19244,7 @@ TextureUvs.prototype.set = function (frame, baseFrame, rotate)
     }
 };
 
-},{}],69:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 var BaseTexture = require('./BaseTexture'),
     utils = require('../utils');
 
@@ -20608,7 +19480,7 @@ function createSource(path, type)
     return source;
 }
 
-},{"../utils":71,"./BaseTexture":65}],70:[function(require,module,exports){
+},{"../utils":69,"./BaseTexture":63}],68:[function(require,module,exports){
 //TODO: Have Graphics use https://github.com/mattdesl/shape2d
 // and https://github.com/mattdesl/shape2d-triangulate instead of custom code.
 
@@ -20780,7 +19652,7 @@ PolyK._convex = function (ax, ay, bx, by, cx, cy, sign)
     return ((ay-by)*(cx-bx) + (bx-ax)*(cy-by) >= 0) === sign;
 };
 
-},{}],71:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 var CONST = require('../const');
 
 /**
@@ -21011,7 +19883,7 @@ var utils = module.exports = {
     BaseTextureCache: {}
 };
 
-},{"../const":18,"./PolyK":70,"./pluginTarget":72}],72:[function(require,module,exports){
+},{"../const":16,"./PolyK":68,"./pluginTarget":70}],70:[function(require,module,exports){
 /**
  * Mixins functionality to make an object have "plugins".
  *
@@ -21081,7 +19953,7 @@ module.exports = {
     }
 };
 
-},{}],73:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
 /*global console */
 var core   = require('./core'),
     mesh   = require('./mesh'),
@@ -21190,7 +20062,7 @@ core.Text.prototype.setText = function (text)
     console.warn('setText is now deprecated, please use the text property, e.g : myText.text = \'my text\';');
 };
 
-},{"./core":25,"./extras":81,"./mesh":122}],74:[function(require,module,exports){
+},{"./core":23,"./extras":79,"./mesh":120}],72:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -21538,7 +20410,7 @@ BitmapText.prototype.updateTransform = function ()
 
 BitmapText.fonts = {};
 
-},{"../core":25}],75:[function(require,module,exports){
+},{"../core":23}],73:[function(require,module,exports){
 var core    = require('../core'),
     Ticker  = require('./Ticker');
 
@@ -21805,7 +20677,7 @@ MovieClip.fromImages = function (images)
     return new MovieClip(textures);
 };
 
-},{"../core":25,"./Ticker":76}],76:[function(require,module,exports){
+},{"../core":23,"./Ticker":74}],74:[function(require,module,exports){
 var EventEmitter = require('eventemitter3').EventEmitter;
 
 /**
@@ -21923,7 +20795,7 @@ Ticker.prototype.update = function()
 
 module.exports = new Ticker();
 
-},{"eventemitter3":4}],77:[function(require,module,exports){
+},{"eventemitter3":4}],75:[function(require,module,exports){
 var core = require('../core'),
     // a sprite use dfor rendering textures..
     tempSprite = new core.Sprite(),
@@ -22431,7 +21303,7 @@ TilingSprite.fromImage = function (imageId, width, height, crossorigin, scaleMod
     return new TilingSprite(core.Texture.fromImage(imageId, crossorigin, scaleMode),width,height);
 };
 
-},{"../core":25}],78:[function(require,module,exports){
+},{"../core":23}],76:[function(require,module,exports){
 var core = require('../core'),
     DisplayObject = core.DisplayObject,
     _tempMatrix = new core.Matrix();
@@ -22684,7 +21556,7 @@ DisplayObject.prototype._destroyCachedDisplayObject = function()
     this._cachedSprite = null;
 };
 
-},{"../core":25}],79:[function(require,module,exports){
+},{"../core":23}],77:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -22712,7 +21584,7 @@ core.Container.prototype.getChildByName = function (name)
     return null;
 };
 
-},{"../core":25}],80:[function(require,module,exports){
+},{"../core":23}],78:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -22741,7 +21613,7 @@ core.DisplayObject.prototype.getGlobalPosition = function (point)
     return point;
 };
 
-},{"../core":25}],81:[function(require,module,exports){
+},{"../core":23}],79:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI extras library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -22763,7 +21635,7 @@ module.exports = {
     BitmapText:     require('./BitmapText'),
 };
 
-},{"./BitmapText":74,"./MovieClip":75,"./Ticker":76,"./TilingSprite":77,"./cacheAsBitmap":78,"./getChildByName":79,"./getGlobalPosition":80}],82:[function(require,module,exports){
+},{"./BitmapText":72,"./MovieClip":73,"./Ticker":74,"./TilingSprite":75,"./cacheAsBitmap":76,"./getChildByName":77,"./getGlobalPosition":78}],80:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -22820,7 +21692,7 @@ Object.defineProperties(AsciiFilter.prototype, {
     }
 });
 
-},{"../../core":25}],83:[function(require,module,exports){
+},{"../../core":23}],81:[function(require,module,exports){
 var core = require('../../core'),
     BlurXFilter = require('../blur/BlurXFilter'),
     BlurYFilter = require('../blur/BlurYFilter');
@@ -22921,7 +21793,7 @@ Object.defineProperties(BloomFilter.prototype, {
     }
 });
 
-},{"../../core":25,"../blur/BlurXFilter":85,"../blur/BlurYFilter":86}],84:[function(require,module,exports){
+},{"../../core":23,"../blur/BlurXFilter":83,"../blur/BlurYFilter":84}],82:[function(require,module,exports){
 var core = require('../../core'),
     BlurXFilter = require('./BlurXFilter'),
     BlurYFilter = require('./BlurYFilter');
@@ -23033,7 +21905,7 @@ Object.defineProperties(BlurFilter.prototype, {
     }
 });
 
-},{"../../core":25,"./BlurXFilter":85,"./BlurYFilter":86}],85:[function(require,module,exports){
+},{"../../core":23,"./BlurXFilter":83,"./BlurYFilter":84}],83:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23127,7 +21999,7 @@ Object.defineProperties(BlurXFilter.prototype, {
     },
 });
 
-},{"../../core":25}],86:[function(require,module,exports){
+},{"../../core":23}],84:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23213,7 +22085,7 @@ Object.defineProperties(BlurYFilter.prototype, {
     },
 });
 
-},{"../../core":25}],87:[function(require,module,exports){
+},{"../../core":23}],85:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23239,7 +22111,7 @@ SmartBlurFilter.prototype = Object.create(core.AbstractFilter.prototype);
 SmartBlurFilter.prototype.constructor = SmartBlurFilter;
 module.exports = SmartBlurFilter;
 
-},{"../../core":25}],88:[function(require,module,exports){
+},{"../../core":23}],86:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23798,7 +22670,7 @@ Object.defineProperties(ColorMatrixFilter.prototype, {
     }
 });
 
-},{"../../core":25}],89:[function(require,module,exports){
+},{"../../core":23}],87:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23847,7 +22719,7 @@ Object.defineProperties(ColorStepFilter.prototype, {
     }
 });
 
-},{"../../core":25}],90:[function(require,module,exports){
+},{"../../core":23}],88:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23938,7 +22810,7 @@ Object.defineProperties(ConvolutionFilter.prototype, {
     }
 });
 
-},{"../../core":25}],91:[function(require,module,exports){
+},{"../../core":23}],89:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23964,7 +22836,7 @@ CrossHatchFilter.prototype = Object.create(core.AbstractFilter.prototype);
 CrossHatchFilter.prototype.constructor = CrossHatchFilter;
 module.exports = CrossHatchFilter;
 
-},{"../../core":25}],92:[function(require,module,exports){
+},{"../../core":23}],90:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -24045,7 +22917,7 @@ Object.defineProperties(DisplacementFilter.prototype, {
     }
 });
 
-},{"../../core":25}],93:[function(require,module,exports){
+},{"../../core":23}],91:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -24117,7 +22989,7 @@ Object.defineProperties(DotScreenFilter.prototype, {
     }
 });
 
-},{"../../core":25}],94:[function(require,module,exports){
+},{"../../core":23}],92:[function(require,module,exports){
 var core = require('../../core');
 
 // @see https://github.com/substack/brfs/issues/25
@@ -24208,7 +23080,7 @@ Object.defineProperties(BlurYTintFilter.prototype, {
     },
 });
 
-},{"../../core":25}],95:[function(require,module,exports){
+},{"../../core":23}],93:[function(require,module,exports){
 var core = require('../../core'),
     BlurXFilter = require('../blur/BlurXFilter'),
     BlurYTintFilter = require('./BlurYTintFilter');
@@ -24377,7 +23249,7 @@ Object.defineProperties(DropShadowFilter.prototype, {
     }
 });
 
-},{"../../core":25,"../blur/BlurXFilter":85,"./BlurYTintFilter":94}],96:[function(require,module,exports){
+},{"../../core":23,"../blur/BlurXFilter":83,"./BlurYTintFilter":92}],94:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -24426,7 +23298,7 @@ Object.defineProperties(GrayFilter.prototype, {
     }
 });
 
-},{"../../core":25}],97:[function(require,module,exports){
+},{"../../core":23}],95:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI filters library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -24470,7 +23342,7 @@ module.exports = {
     TwistFilter:        require('./twist/TwistFilter')
 };
 
-},{"../core/renderers/webgl/filters/AbstractFilter":45,"../core/renderers/webgl/filters/FXAAFilter":46,"../core/renderers/webgl/filters/SpriteMaskFilter":47,"./ascii/AsciiFilter":82,"./bloom/BloomFilter":83,"./blur/BlurFilter":84,"./blur/BlurXFilter":85,"./blur/BlurYFilter":86,"./blur/SmartBlurFilter":87,"./color/ColorMatrixFilter":88,"./color/ColorStepFilter":89,"./convolution/ConvolutionFilter":90,"./crosshatch/CrossHatchFilter":91,"./displacement/DisplacementFilter":92,"./dot/DotScreenFilter":93,"./dropshadow/DropShadowFilter":95,"./gray/GrayFilter":96,"./invert/InvertFilter":98,"./noise/NoiseFilter":99,"./normal/NormalMapFilter":100,"./pixelate/PixelateFilter":101,"./rgb/RGBSplitFilter":102,"./sepia/SepiaFilter":103,"./shockwave/ShockwaveFilter":104,"./tiltshift/TiltShiftFilter":106,"./tiltshift/TiltShiftXFilter":107,"./tiltshift/TiltShiftYFilter":108,"./twist/TwistFilter":109}],98:[function(require,module,exports){
+},{"../core/renderers/webgl/filters/AbstractFilter":43,"../core/renderers/webgl/filters/FXAAFilter":44,"../core/renderers/webgl/filters/SpriteMaskFilter":45,"./ascii/AsciiFilter":80,"./bloom/BloomFilter":81,"./blur/BlurFilter":82,"./blur/BlurXFilter":83,"./blur/BlurYFilter":84,"./blur/SmartBlurFilter":85,"./color/ColorMatrixFilter":86,"./color/ColorStepFilter":87,"./convolution/ConvolutionFilter":88,"./crosshatch/CrossHatchFilter":89,"./displacement/DisplacementFilter":90,"./dot/DotScreenFilter":91,"./dropshadow/DropShadowFilter":93,"./gray/GrayFilter":94,"./invert/InvertFilter":96,"./noise/NoiseFilter":97,"./normal/NormalMapFilter":98,"./pixelate/PixelateFilter":99,"./rgb/RGBSplitFilter":100,"./sepia/SepiaFilter":101,"./shockwave/ShockwaveFilter":102,"./tiltshift/TiltShiftFilter":104,"./tiltshift/TiltShiftXFilter":105,"./tiltshift/TiltShiftYFilter":106,"./twist/TwistFilter":107}],96:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -24520,7 +23392,7 @@ Object.defineProperties(InvertFilter.prototype, {
     }
 });
 
-},{"../../core":25}],99:[function(require,module,exports){
+},{"../../core":23}],97:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -24575,7 +23447,7 @@ Object.defineProperties(NoiseFilter.prototype, {
     }
 });
 
-},{"../../core":25}],100:[function(require,module,exports){
+},{"../../core":23}],98:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -24688,7 +23560,7 @@ Object.defineProperties(NormalMapFilter.prototype, {
     }
 });
 
-},{"../../core":25}],101:[function(require,module,exports){
+},{"../../core":23}],99:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -24739,7 +23611,7 @@ Object.defineProperties(PixelateFilter.prototype, {
     }
 });
 
-},{"../../core":25}],102:[function(require,module,exports){
+},{"../../core":23}],100:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -24825,7 +23697,7 @@ Object.defineProperties(RGBSplitFilter.prototype, {
     }
 });
 
-},{"../../core":25}],103:[function(require,module,exports){
+},{"../../core":23}],101:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -24875,7 +23747,7 @@ Object.defineProperties(SepiaFilter.prototype, {
     }
 });
 
-},{"../../core":25}],104:[function(require,module,exports){
+},{"../../core":23}],102:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -24963,7 +23835,7 @@ Object.defineProperties(ShockwaveFilter.prototype, {
     }
 });
 
-},{"../../core":25}],105:[function(require,module,exports){
+},{"../../core":23}],103:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -25088,7 +23960,7 @@ Object.defineProperties(TiltShiftAxisFilter.prototype, {
     }
 });
 
-},{"../../core":25}],106:[function(require,module,exports){
+},{"../../core":23}],104:[function(require,module,exports){
 var core = require('../../core'),
     TiltShiftXFilter = require('./TiltShiftXFilter'),
     TiltShiftYFilter = require('./TiltShiftYFilter');
@@ -25198,7 +24070,7 @@ Object.defineProperties(TiltShiftFilter.prototype, {
     }
 });
 
-},{"../../core":25,"./TiltShiftXFilter":107,"./TiltShiftYFilter":108}],107:[function(require,module,exports){
+},{"../../core":23,"./TiltShiftXFilter":105,"./TiltShiftYFilter":106}],105:[function(require,module,exports){
 var TiltShiftAxisFilter = require('./TiltShiftAxisFilter');
 
 /**
@@ -25236,7 +24108,7 @@ TiltShiftXFilter.prototype.updateDelta = function ()
     this.uniforms.delta.value.y = dy / d;
 };
 
-},{"./TiltShiftAxisFilter":105}],108:[function(require,module,exports){
+},{"./TiltShiftAxisFilter":103}],106:[function(require,module,exports){
 var TiltShiftAxisFilter = require('./TiltShiftAxisFilter');
 
 /**
@@ -25274,7 +24146,7 @@ TiltShiftYFilter.prototype.updateDelta = function ()
     this.uniforms.delta.value.y = dx / d;
 };
 
-},{"./TiltShiftAxisFilter":105}],109:[function(require,module,exports){
+},{"./TiltShiftAxisFilter":103}],107:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -25359,7 +24231,7 @@ Object.defineProperties(TwistFilter.prototype, {
     }
 });
 
-},{"../../core":25}],110:[function(require,module,exports){
+},{"../../core":23}],108:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -25422,7 +24294,7 @@ InteractionData.prototype.getLocalPosition = function (displayObject, point, glo
     return point;
 };
 
-},{"../core":25}],111:[function(require,module,exports){
+},{"../core":23}],109:[function(require,module,exports){
 var core = require('../core'),
     InteractionData = require('./InteractionData');
 
@@ -26287,7 +25159,7 @@ InteractionManager.prototype.destroy = function () {
 core.WebGLRenderer.registerPlugin('interaction', InteractionManager);
 core.CanvasRenderer.registerPlugin('interaction', InteractionManager);
 
-},{"../core":25,"./InteractionData":110,"./interactiveTarget":113}],112:[function(require,module,exports){
+},{"../core":23,"./InteractionData":108,"./interactiveTarget":111}],110:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI interactions library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -26304,7 +25176,7 @@ module.exports = {
     interactiveTarget: require('./interactiveTarget')
 };
 
-},{"./InteractionData":110,"./InteractionManager":111,"./interactiveTarget":113}],113:[function(require,module,exports){
+},{"./InteractionData":108,"./InteractionManager":109,"./interactiveTarget":111}],111:[function(require,module,exports){
 /**
  * Default property values of interactive objects
  * used by {@link PIXI.interaction.InteractionManager}.
@@ -26352,7 +25224,7 @@ module.exports = {
     _touchDown: false
 };
 
-},{}],114:[function(require,module,exports){
+},{}],112:[function(require,module,exports){
 var Resource = require('resource-loader').Resource,
     core = require('../core'),
     extras = require('../extras'),
@@ -26472,7 +25344,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":25,"../extras":81,"path":2,"resource-loader":14}],115:[function(require,module,exports){
+},{"../core":23,"../extras":79,"path":2,"resource-loader":12}],113:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI loaders library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -26493,7 +25365,7 @@ module.exports = {
     textureParser:      require('./textureParser')
 };
 
-},{"./bitmapFontParser":114,"./loader":116,"./spineAtlasParser":117,"./spritesheetParser":118,"./textureParser":119}],116:[function(require,module,exports){
+},{"./bitmapFontParser":112,"./loader":114,"./spineAtlasParser":115,"./spritesheetParser":116,"./textureParser":117}],114:[function(require,module,exports){
 var ResourceLoader = require('resource-loader'),
     textureParser = require('./textureParser'),
     spritesheetParser = require('./spritesheetParser'),
@@ -26545,7 +25417,7 @@ Loader.prototype.constructor = Loader;
 
 module.exports = Loader;
 
-},{"./bitmapFontParser":114,"./spineAtlasParser":117,"./spritesheetParser":118,"./textureParser":119,"resource-loader":14}],117:[function(require,module,exports){
+},{"./bitmapFontParser":112,"./spineAtlasParser":115,"./spritesheetParser":116,"./textureParser":117,"resource-loader":12}],115:[function(require,module,exports){
 var Resource = require('resource-loader').Resource,
     async = require('async'),
     spine = require('pixi-spine');
@@ -26602,7 +25474,7 @@ module.exports = function ()
     };
 };
 
-},{"async":1,"pixi-spine":8,"resource-loader":14}],118:[function(require,module,exports){
+},{"async":1,"pixi-spine":8,"resource-loader":12}],116:[function(require,module,exports){
 var Resource = require('resource-loader').Resource,
     path = require('path'),
     core = require('../core');
@@ -26685,7 +25557,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":25,"path":2,"resource-loader":14}],119:[function(require,module,exports){
+},{"../core":23,"path":2,"resource-loader":12}],117:[function(require,module,exports){
 var core = require('../core');
 
 module.exports = function ()
@@ -26704,7 +25576,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":25}],120:[function(require,module,exports){
+},{"../core":23}],118:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -27095,7 +25967,7 @@ Mesh.DRAW_MODES = {
     TRIANGLES: 1
 };
 
-},{"../core":25}],121:[function(require,module,exports){
+},{"../core":23}],119:[function(require,module,exports){
 var Mesh = require('./Mesh');
 
 /**
@@ -27289,7 +26161,7 @@ Rope.prototype.updateTransform = function ()
     this.containerUpdateTransform();
 };
 
-},{"./Mesh":120}],122:[function(require,module,exports){
+},{"./Mesh":118}],120:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI extras library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -27307,7 +26179,7 @@ module.exports = {
     MeshShader:     require('./webgl/MeshShader')
 };
 
-},{"./Mesh":120,"./Rope":121,"./webgl/MeshRenderer":123,"./webgl/MeshShader":124}],123:[function(require,module,exports){
+},{"./Mesh":118,"./Rope":119,"./webgl/MeshRenderer":121,"./webgl/MeshShader":122}],121:[function(require,module,exports){
 var ObjectRenderer = require('../../core/renderers/webgl/utils/ObjectRenderer'),
     WebGLRenderer = require('../../core/renderers/webgl/WebGLRenderer');
 
@@ -27517,7 +26389,7 @@ MeshRenderer.prototype.destroy = function ()
 {
 };
 
-},{"../../core/renderers/webgl/WebGLRenderer":44,"../../core/renderers/webgl/utils/ObjectRenderer":58}],124:[function(require,module,exports){
+},{"../../core/renderers/webgl/WebGLRenderer":42,"../../core/renderers/webgl/utils/ObjectRenderer":56}],122:[function(require,module,exports){
 var core = require('../../core');
 
 /**
@@ -27578,7 +26450,7 @@ module.exports = StripShader;
 
 core.ShaderManager.registerPlugin('meshShader', StripShader);
 
-},{"../../core":25}],125:[function(require,module,exports){
+},{"../../core":23}],123:[function(require,module,exports){
 // References:
 // https://github.com/sindresorhus/object-assign
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
@@ -27588,11 +26460,11 @@ if (!Object.assign)
     Object.assign = require('object-assign');
 }
 
-},{"object-assign":5}],126:[function(require,module,exports){
+},{"object-assign":5}],124:[function(require,module,exports){
 require('./Object.assign');
 require('./requestAnimationFrame');
 
-},{"./Object.assign":125,"./requestAnimationFrame":127}],127:[function(require,module,exports){
+},{"./Object.assign":123,"./requestAnimationFrame":125}],125:[function(require,module,exports){
 (function (global){
 // References:
 // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
@@ -27683,7 +26555,7 @@ core.loader = new core.loaders.Loader();
 // mixin the deprecation features.
 Object.assign(core, require('./deprecation'));
 
-},{"./core":25,"./deprecation":73,"./extras":81,"./filters":97,"./interaction":112,"./loaders":115,"./mesh":122,"./polyfill":126,"pixi-spine":8}]},{},["pixi.js"])("pixi.js")
+},{"./core":23,"./deprecation":71,"./extras":79,"./filters":95,"./interaction":110,"./loaders":113,"./mesh":120,"./polyfill":124,"pixi-spine":8}]},{},["pixi.js"])("pixi.js")
 });
 
 
