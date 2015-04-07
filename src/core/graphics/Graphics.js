@@ -396,6 +396,7 @@ Graphics.prototype.arcTo = function (x1, y1, x2, y2, radius)
     }
     else
     {
+        consol.log("currentPAt?")
         this.moveTo(x1, y1);
     }
 
@@ -481,13 +482,28 @@ Graphics.prototype.arc = function(cx, cy, radius, startAngle, endAngle, anticloc
     var startX = cx + Math.cos(startAngle) * radius;
     var startY = cy + Math.sin(startAngle) * radius;
 
-    if (anticlockwise && this.filling)
-    {
-        this.moveTo(cx, cy);
+    if (this.currentPath)
+-   {
+        if (anticlockwise && this.filling)
+        {
+            this.currentPath.shape.points.push(cx, cy);
+        }
+        else
+        {
+            this.currentPath.shape.points.push(startX, startY);
+        }
     }
     else
     {
-        this.moveTo(startX, startY);
+        if (anticlockwise && this.filling)
+        {
+
+            this.moveTo(cx, cy);
+        }
+        else
+        {
+            this.moveTo(startX, startY);
+        }
     }
 
     var points = this.currentPath.shape.points;
