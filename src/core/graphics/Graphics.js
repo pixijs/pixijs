@@ -483,7 +483,7 @@ Graphics.prototype.arc = function(cx, cy, radius, startAngle, endAngle, anticloc
     var startY = cy + Math.sin(startAngle) * radius;
 
     if (this.currentPath)
--   {
+    {
         if (anticlockwise && this.filling)
         {
             this.currentPath.shape.points.push(cx, cy);
