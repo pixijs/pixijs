@@ -882,7 +882,7 @@ spine.FlipXTimeline.prototype = {
 			lastTime = -1;
 		var frameIndex = (time >= frames[frames.length - 2] ? frames.length : spine.Animation.binarySearch(frames, time, 2)) - 2;
 		if (frames[frameIndex] < lastTime) return;
-		skeleton.bones[boneIndex].flipX = frames[frameIndex + 1] != 0;
+		skeleton.bones[this.boneIndex].flipX = frames[frameIndex + 1] != 0;
 	}
 };
 
@@ -910,7 +910,7 @@ spine.FlipYTimeline.prototype = {
 			lastTime = -1;
 		var frameIndex = (time >= frames[frames.length - 2] ? frames.length : spine.Animation.binarySearch(frames, time, 2)) - 2;
 		if (frames[frameIndex] < lastTime) return;
-		skeleton.bones[boneIndex].flipY = frames[frameIndex + 1] != 0;
+		skeleton.bones[this.boneIndex].flipY = frames[frameIndex + 1] != 0;
 	}
 };
 
@@ -2042,7 +2042,7 @@ spine.SkeletonJson.prototype = {
 				frameIndex++;
 			}
 			timelines.push(timeline);
-			duration = Math.max(duration, timeline.frames[timeline.frameCount * 3 - 3]);
+			duration = Math.max(duration, timeline.frames[timeline.getFrameCount() * 3 - 3]);
 		}
 
 		var ffd = map["ffd"];
@@ -2103,7 +2103,7 @@ spine.SkeletonJson.prototype = {
 						frameIndex++;
 					}
 					timelines[timelines.length] = timeline;
-					duration = Math.max(duration, timeline.frames[timeline.frameCount - 1]);
+					duration = Math.max(duration, timeline.frames[timeline.getFrameCount() - 1]);
 				}
 			}
 		}
