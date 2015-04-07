@@ -422,7 +422,7 @@ Container.prototype.getLocalBounds = function ()
 
     this._currentBounds = null;
 
-    return this.getBounds();
+    return this.getBounds( math.Matrix.IDENTITY );
 };
 
 /**

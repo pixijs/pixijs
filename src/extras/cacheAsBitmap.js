@@ -97,7 +97,6 @@ DisplayObject.prototype._initCachedDisplayObject = function( renderer )
         return;
     }
 
-
     // first we flush anything left in the renderer (otherwise it would get rendered to the cached texture)
     renderer.currentRenderer.flush();
     //this.filters= [];
@@ -137,7 +136,7 @@ DisplayObject.prototype._initCachedDisplayObject = function( renderer )
     // set all properties to there original so we can render to a texture
     this.renderWebGL = this._originalRenderWebGL;
 
-    renderTexture.render(this, m, true);
+    renderTexture.render(this, m, true, true);
 
     // now restore the state be setting the new properties
     renderer.setRenderTarget(cachedRenderTarget);
