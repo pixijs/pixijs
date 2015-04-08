@@ -188,7 +188,7 @@ Graphics.prototype.clone = function ()
     // copy graphics data
     for (var i = 0; i < this.graphicsData.length; ++i)
     {
-        clone.graphicsData.push(this.graphicsData.clone());
+        clone.graphicsData.push(this.graphicsData[i].clone());
     }
 
     clone.currentPath = clone.graphicsData[clone.graphicsData.length - 1];
