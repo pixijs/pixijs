@@ -166,6 +166,7 @@ Object.defineProperties(Graphics.prototype, {
 
 /**
  * Creates a new Graphics object with the same values as this one.
+ * Note that the only the properties of the object are cloned, not its transform (position,scale,etc)
  *
  * @return {Graphics}
  */
