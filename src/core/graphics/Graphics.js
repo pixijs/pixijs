@@ -166,6 +166,7 @@ Object.defineProperties(Graphics.prototype, {
 
 /**
  * Creates a new Graphics object with the same values as this one.
+ * Note that the only the properties of the object are cloned, not its transform (position,scale,etc)
  *
  * @return {Graphics}
  */
@@ -188,7 +189,7 @@ Graphics.prototype.clone = function ()
     // copy graphics data
     for (var i = 0; i < this.graphicsData.length; ++i)
     {
-        clone.graphicsData.push(this.graphicsData.clone());
+        clone.graphicsData.push(this.graphicsData[i].clone());
     }
 
     clone.currentPath = clone.graphicsData[clone.graphicsData.length - 1];
