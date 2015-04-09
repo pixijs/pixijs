@@ -37,7 +37,7 @@ Sprite3d.prototype.constructor = Sprite3d;
 
 Sprite3d.prototype.updateTransform = function()
 {
-    this.convertFrom2dTo3d(this.parent);
+    this.parent.convertFrom2dTo3d(true)//this.parent);
 
     this.updateTransform3d();
 };
@@ -45,7 +45,6 @@ Sprite3d.prototype.updateTransform = function()
 Sprite3d.prototype.updateTransform3d = function()
 {
     this.displayObjectUpdateTransform3d();
-
     var i,j;
 
     for (i = 0, j = this.children.length; i < j; ++i)

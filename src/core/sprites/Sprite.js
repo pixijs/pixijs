@@ -393,8 +393,6 @@ Sprite.prototype._renderCanvas = function (renderer)
             width,
             height;
 
-        console.log(resolution);
-
         renderer.context.globalAlpha = this.worldAlpha;
 
         // If smoothingEnabled is supported and we need to change the smoothing property for this texture
@@ -483,13 +481,8 @@ Sprite.prototype._renderCanvas = function (renderer)
                 height * resolution * renderer.resolution,
                 dx / resolution,
                 dy / resolution,
-<<<<<<< HEAD
-                width / resolution,
-                height / resolution
-=======
                 width * renderer.resolution,
                 height * renderer.resolution
->>>>>>> dev
             );
         }
         else

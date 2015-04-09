@@ -39,7 +39,7 @@ Container3d.prototype.constructor = Container3d;
 
 Container3d.prototype.updateTransform = function()
 {
-    this.convertFrom2dTo3d(this.parent);
+    this.parent.convertFrom2dTo3d(true);
 
     this.updateTransform3d();
 };

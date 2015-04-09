@@ -25,7 +25,11 @@
     "eventemitter3": "^0.1.6",
     "object-assign": "^2.0.0",
     "pixi-spine": "^1.0.1",
-    "resource-loader": "^1.3.2"
+    "resource-loader": "^1.3.2",
+    "async": "^0.9.0",
+    "resource-loader": "^1.1.4",
+    "gl-mat4": "^1.1.2",
+    "gl-matrix": "^2.1.0"
   },
   "devDependencies": {
     "browserify": "^8.0.2",
@@ -57,15 +61,6 @@
     "vinyl-source-stream": "^1.0.0",
     "watchify": "^2.2.1"
   },
-<<<<<<< HEAD
-  "dependencies": {
-    "async": "^0.9.0",
-    "resource-loader": "^1.1.4",
-    "gl-mat4": "^1.1.2",
-    "gl-matrix": "^2.1.0"
-  },
-=======
->>>>>>> dev
   "browserify": {
     "transform": [
       "brfs"

@@ -1,7 +1,7 @@
 var ResourceLoader = require('resource-loader'),
     textureParser = require('./textureParser'),
     spritesheetParser = require('./spritesheetParser'),
-    spineAtlasParser = require('./spineAtlasParser'),
+   // spineAtlasParser = require('./spineAtlasParser'),
     bitmapFontParser = require('./bitmapFontParser');
 
 /**
@@ -38,7 +38,7 @@ function Loader(baseUrl, concurrency)
     this.use(spritesheetParser());
 
     // parse any spine data into a spine object
-    this.use(spineAtlasParser());
+    //this.use(spineAtlasParser());
 
     // parse any spritesheet data into multiple textures
     this.use(bitmapFontParser());

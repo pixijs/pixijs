@@ -20,6 +20,7 @@ var core            = require('../core'),
     tempQuat        = glMat.quat.create();
 
 core.Container.prototype.worldTransform3d = null;
+core.Container.prototype.depthBias = 0;
 
 core.Container.prototype.displayObjectUpdateTransform3d = function()
 {
@@ -58,32 +59,115 @@ core.Container.prototype.displayObjectUpdateTransform3d = function()
     glMat.mat4.multiply(this.worldTransform3d, this.parent.worldTransform3d, this.worldTransform3d);
 };
 
-core.Container.prototype.convertFrom2dTo3d = function(item)
+core.Container.prototype.convertFrom2dTo3d = function(parentTransform)
 {
-    if(!item.worldTransform3d)
+    if(!this.worldTransform3d)
     {
-        item.worldTransform3d = glMat.mat4.create();
+        this.worldTransform3d = glMat.mat4.create();
     }
 
-    // sooo //
-    item.displayObjectUpdateTransform();
+    var wt = this.worldTransform;
 
-    var wt = item.worldTransform;
-    var wt3d = glMat.mat4.identity( item.worldTransform3d );
+    if(parentTransform)
+    {
+        this.displayObjectUpdateTransform()
+        
+        var wt3d = glMat.mat4.identity( this.worldTransform3d );
 
-    wt3d[0] = wt.a;
-    wt3d[1] = wt.b;
+        wt3d[0] = wt.a;
+        wt3d[1] = wt.b;
 
-    wt3d[4] = wt.c;
-    wt3d[5] = wt.d;
+        wt3d[4] = wt.c;
+        wt3d[5] = wt.d;
 
-    wt3d[12] = wt.tx;
-    wt3d[13] = wt.ty;
+        wt3d[12] = wt.tx;
+        wt3d[13] = wt.ty;
+
+        return
+    }
+
+    // create some matrix refs for easy access
+    var pt = this.parent.worldTransform;
+    
+
+    // temporary matrix variables
+    var a, b, c, d, tx, ty;
+
+
+    // so if rotation is between 0 then we can simplify the multiplication process...
+    if (this.rotation % Math.PI * 2)
+    {
+        // check to see if the rotation is the same as the previous render. This means we only need to use sin and cos when rotation actually changes
+        if (this.rotation !== this.rotationCache)
+        {
+            this.rotationCache = this.rotation;
+            this._sr = Math.sin(this.rotation);
+            this._cr = Math.cos(this.rotation);
+        }
+
+        // get the matrix values of the displayobject based on its transform properties..
+        a  =  this._cr * this.scale.x;
+        b  =  this._sr * this.scale.x;
+        c  = -this._sr * this.scale.y;
+        d  =  this._cr * this.scale.y;
+        tx =  this.position.x;
+        ty =  this.position.y;
+
+        // check for pivot.. not often used so geared towards that fact!
+        if (this.pivot.x || this.pivot.y)
+        {
+            tx -= this.pivot.x * a + this.pivot.y * c;
+            ty -= this.pivot.x * b + this.pivot.y * d;
+        }
+
+        // concat the parent matrix with the objects transform.
+        wt.a  = a  * pt.a + b  * pt.c;
+        wt.b  = a  * pt.b + b  * pt.d;
+        wt.c  = c  * pt.a + d  * pt.c;
+        wt.d  = c  * pt.b + d  * pt.d;
+        wt.tx = tx * pt.a + ty * pt.c + pt.tx;
+        wt.ty = tx * pt.b + ty * pt.d + pt.ty;
+    }
+    else
+    {
+        // lets do the fast version as we know there is no rotation..
+        a  = this.scale.x;
+        b  = 0
+        d  = this.scale.y;
+        c  = 0;
+        tx = this.position.x - this.pivot.x * a;
+        ty = this.position.y - this.pivot.y * d; 
+
+        wt.a  = a  * pt.a;
+        wt.b  = a  * pt.b;
+        wt.c  = d  * pt.c;
+        wt.d  = d  * pt.d;
+        wt.tx = tx * pt.a + ty * pt.c + pt.tx;
+        wt.ty = tx * pt.b + ty * pt.d + pt.ty;    
+    }
+
+    // multiply the alphas..
+    this.worldAlpha = this.alpha * this.parent.worldAlpha;
+
+    // reset the bounds each time this is called!
+    this._currentBounds = null;
+
+    //this.displayObjectUpdateTransform();
+    var wt3d = glMat.mat4.identity( this.worldTransform3d );
+
+    wt3d[0] = a;
+    wt3d[1] = b;
+
+    wt3d[4] = c;
+    wt3d[5] = d;
+
+    wt3d[12] = tx;
+    wt3d[13] = ty;
 };
 
 core.Container.prototype.updateTransform3d = function()
 {
-    this.convertFrom2dTo3d(this);
+    this.convertFrom2dTo3d();
 
     glMat.mat4.multiply(this.worldTransform3d, this.parent.worldTransform3d, this.worldTransform3d);
 
@@ -123,6 +207,19 @@ core.Container.prototype._renderWebGL3d = function(/*renderer*/)
 
 core.Sprite.prototype._renderWebGL3d = function(renderer)
 {
+  //  console.log(this)
+    renderer.setObjectRenderer(renderer.plugins.sprite3d);
+    renderer.plugins.sprite3d.render(this);
+};
+
+core.Text.prototype._renderWebGL3d = function(renderer)
+{
+    if (this.dirty)
+    {
+     //   this.resolution = 1//renderer.resolution;
+
+        this.updateText();
+    }
   //  console.log(this)
     renderer.setObjectRenderer(renderer.plugins.sprite3d);
     renderer.plugins.sprite3d.render(this);
