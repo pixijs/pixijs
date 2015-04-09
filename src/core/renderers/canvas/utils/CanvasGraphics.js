@@ -2,8 +2,8 @@ var CONST = require('../../../const');
 
 /**
  * A set of functions used by the canvas renderer to draw the primitive graphics data.
- *
- * @namespace PIXI
+ * @static
+ * @memberof PIXI
  */
 var CanvasGraphics = module.exports = {};
 
@@ -293,6 +293,13 @@ CanvasGraphics.renderGraphicsMask = function (graphics, context)
     }
 };
 
+/*
+ * Updates the tint of a graphics object
+ *
+ * @private
+ * @param graphics {Graphics} the graphics that will have its tint updated
+ * 
+ */
 CanvasGraphics.updateGraphicsTint = function (graphics)
 {
     if (graphics.tint === 0xFFFFFF)

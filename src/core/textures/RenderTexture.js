@@ -41,7 +41,7 @@ var BaseTexture = require('./BaseTexture'),
  *
  * @class
  * @extends Texture
- * @namespace PIXI
+ * @memberof PIXI
  * @param renderer {CanvasRenderer|WebGLRenderer} The renderer used for this RenderTexture
  * @param [width=100] {number} The width of the render texture
  * @param [height=100] {number} The height of the render texture
@@ -144,7 +144,7 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
     {
         var gl = this.renderer.gl;
 
-        this.textureBuffer = new RenderTarget(gl, this.width, this.height, null, this.resolution);//, this.baseTexture.scaleMode);
+        this.textureBuffer = new RenderTarget(gl, this.width, this.height, baseTexture.scaleMode, this.resolution);//, this.baseTexture.scaleMode);
         this.baseTexture._glTextures[gl.id] =  this.textureBuffer.texture;
 
         //TODO refactor filter manager.. as really its no longer a manager if we use it here..
@@ -152,6 +152,10 @@ function RenderTexture(renderer, width, height, scaleMode, resolution)
         this.filterManager.onContextChange();
         this.filterManager.resize(width, height);
         this.render = this.renderWebGL;
+
+        // the creation of a filter manager unbinds the buffers..
+        this.renderer.currentRenderer.start();
+        this.renderer.currentRenderTarget.activate();
     }
     else
     {
@@ -196,12 +200,6 @@ RenderTexture.prototype.resize = function (width, height, updateBase)
     {
         this.baseTexture.width = this.width;
         this.baseTexture.height = this.height;
-    }
-
-    if (this.renderer.type === CONST.RENDERER_TYPE.WEBGL)
-    {
-        this.projection.x = this.width / 2;
-        this.projection.y = -this.height / 2;
     }
 
     if (!this.valid)
@@ -253,8 +251,8 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, up
         return;
     }
 
-    //TODO this should be true by default
-    updateTransform = !!updateTransform;
+
+    updateTransform = (updateTransform !== undefined) ? updateTransform : true;//!updateTransform;
 
     this.textureBuffer.transform = matrix;
 
@@ -280,17 +278,11 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, up
         }
     }
 
-
-   if (clear)
-    {
-        this.textureBuffer.clear();
-    }
-
     //TODO rename textureBuffer to renderTarget..
     var temp =  this.renderer.filterManager;
 
     this.renderer.filterManager = this.filterManager;
-    this.renderer.renderDisplayObject(displayObject, this.textureBuffer);
+    this.renderer.renderDisplayObject(displayObject, this.textureBuffer, clear);
 
     this.renderer.filterManager = temp;
 };
@@ -360,6 +352,11 @@ RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear, u
 
 };
 
+/**
+ * Destroys this texture
+ *
+ * @param destroyBase {boolean} Whether to destroy the base texture as well
+ */
 RenderTexture.prototype.destroy = function ()
 {
     Texture.prototype.destroy.call(this, true);
@@ -406,9 +403,9 @@ RenderTexture.prototype.getCanvas = function ()
 {
     if (this.renderer.type === CONST.RENDERER_TYPE.WEBGL)
     {
-        var gl =  this.renderer.gl;
-        var width = this.textureBuffer.width;
-        var height = this.textureBuffer.height;
+        var gl = this.renderer.gl;
+        var width = this.textureBuffer.size.width;
+        var height = this.textureBuffer.size.height;
 
         var webGLPixels = new Uint8Array(4 * width * height);
 

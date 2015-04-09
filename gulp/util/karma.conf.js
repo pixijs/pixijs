@@ -10,7 +10,7 @@ module.exports = function(config) {
         // list of files / patterns to load in the browser
         files: [
             'node_modules/chai/chai.js',
-            'dist/pixi.dev.js',
+            'bin/pixi.js',
             'test/lib/**/*.js',
             'test/unit/**/*.js',
             // 'test/functional/**/*.js',

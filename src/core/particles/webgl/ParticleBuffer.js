@@ -14,11 +14,15 @@
  *
  * @class
  * @private
- * @namespace PIXI
+ * @memberof PIXI
  * @param renderer {WebGLRenderer} The renderer this sprite batch works for.
  */
 function ParticleBuffer(gl, properties, size)
 {
+    /**
+     * the current WebGL drawing context
+     * @member {WebGLRenderingContext}
+     */
     this.gl = gl;
 
     /**
@@ -42,7 +46,18 @@ function ParticleBuffer(gl, properties, size)
      */
     this.size = size;
 
+    /**
+     * 
+     *
+     * @member {Array}
+     */
     this.dynamicProperties = [];
+
+    /**
+     * 
+     *
+     * @member {Array}
+     */
     this.staticProperties = [];
 
     for (var i = 0; i < properties.length; i++)
@@ -78,7 +93,7 @@ module.exports = ParticleBuffer;
  * Sets up the renderer context and necessary buffers.
  *
  * @private
- * @param gl {WebGLContext} the current WebGL drawing context
+ * @param gl {WebGLRenderingContext} the current WebGL drawing context
  */
 ParticleBuffer.prototype.initBuffers = function ()
 {

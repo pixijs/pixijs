@@ -39,7 +39,7 @@
  * This is an amazing lib!
  * Slightly modified by Mat Groves (matgroves.com);
  *
- * @namespace PIXI
+ * @memberof PIXI.utils
  */
 var PolyK = module.exports = {};
 

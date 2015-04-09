@@ -3,18 +3,18 @@ var Container = require('../display/Container'),
     Texture = require('../textures/Texture'),
     CanvasBuffer = require('../renderers/canvas/utils/CanvasBuffer'),
     CanvasGraphics = require('../renderers/canvas/utils/CanvasGraphics'),
-   // WebGLGraphics = require('../renderers/webgl/utils/WebGLGraphics'),
     GraphicsData = require('./GraphicsData'),
     math = require('../math'),
-    CONST = require('../const');
+    CONST = require('../const'),
+    tempPoint = new math.Point();
 
 /**
  * The Graphics class contains methods used to draw primitive shapes such as lines, circles and
- * rectangles to the display, and color and fill them.
+ * rectangles to the display, and to color and fill them.
  *
  * @class
  * @extends Container
- * @namespace PIXI
+ * @memberof PIXI
  */
 function Graphics()
 {
@@ -59,6 +59,15 @@ function Graphics()
      * @default 0xFFFFFF
      */
     this.tint = 0xFFFFFF;
+
+    /**
+     * The previous tint applied to the graphic shape. Used to compare to the current tint and check if theres change.
+     *
+     * @member {number}
+     * @private
+     * @default 0xFFFFFF
+     */
+    this._prevTint = 0xFFFFFF;
 
     /**
      * The blend mode to be applied to the graphic shape. Apply a value of blendModes.NORMAL to reset the blend mode.
@@ -157,10 +166,11 @@ Object.defineProperties(Graphics.prototype, {
 
 /**
  * Creates a new Graphics object with the same values as this one.
+ * Note that the only the properties of the object are cloned, not its transform (position,scale,etc)
  *
  * @return {Graphics}
  */
-GraphicsData.prototype.clone = function ()
+Graphics.prototype.clone = function ()
 {
     var clone = new Graphics();
 
@@ -179,7 +189,7 @@ GraphicsData.prototype.clone = function ()
     // copy graphics data
     for (var i = 0; i < this.graphicsData.length; ++i)
     {
-        clone.graphicsData.push(this.graphicsData.clone());
+        clone.graphicsData.push(this.graphicsData[i].clone());
     }
 
     clone.currentPath = clone.graphicsData[clone.graphicsData.length - 1];
@@ -201,7 +211,7 @@ Graphics.prototype.lineStyle = function (lineWidth, color, alpha)
 {
     this.lineWidth = lineWidth || 0;
     this.lineColor = color || 0;
-    this.lineAlpha = (arguments.length < 3) ? 1 : alpha;
+    this.lineAlpha = (alpha === undefined) ? 1 : alpha;
 
     if (this.currentPath)
     {
@@ -387,6 +397,7 @@ Graphics.prototype.arcTo = function (x1, y1, x2, y2, radius)
     }
     else
     {
+        consol.log("currentPAt?")
         this.moveTo(x1, y1);
     }
 
@@ -445,28 +456,7 @@ Graphics.prototype.arcTo = function (x1, y1, x2, y2, radius)
  */
 Graphics.prototype.arc = function(cx, cy, radius, startAngle, endAngle, anticlockwise)
 {
-    var startX = cx + Math.cos(startAngle) * radius;
-    var startY = cy + Math.sin(startAngle) * radius;
-    var points;
-
-    if( this.currentPath )
-    {
-        points = this.currentPath.shape.points;
-
-        if(points.length === 0)
-        {
-            points.push(startX, startY);
-        }
-        else if( points[points.length-2] !== startX || points[points.length-1] !== startY)
-        {
-            points.push(startX, startY);
-        }
-    }
-    else
-    {
-        this.moveTo(startX, startY);
-        points = this.currentPath.shape.points;
-    }
+    anticlockwise = anticlockwise || false;
 
     if (startAngle === endAngle)
     {
@@ -482,13 +472,42 @@ Graphics.prototype.arc = function(cx, cy, radius, startAngle, endAngle, anticloc
         startAngle += Math.PI * 2;
     }
 
-    var sweep = anticlockwise ? (startAngle - endAngle) *-1 : (endAngle - startAngle);
-    var segs =  Math.ceil( Math.abs(sweep)/ (Math.PI * 2) ) * 40;
+    var sweep = anticlockwise ? (startAngle - endAngle) * -1 : (endAngle - startAngle);
+    var segs =  Math.ceil(Math.abs(sweep) / (Math.PI * 2)) * 40;
 
-    if( sweep === 0 )
+    if(sweep === 0)
     {
         return this;
     }
+
+    var startX = cx + Math.cos(startAngle) * radius;
+    var startY = cy + Math.sin(startAngle) * radius;
+
+    if (this.currentPath)
+    {
+        if (anticlockwise && this.filling)
+        {
+            this.currentPath.shape.points.push(cx, cy);
+        }
+        else
+        {
+            this.currentPath.shape.points.push(startX, startY);
+        }
+    }
+    else
+    {
+        if (anticlockwise && this.filling)
+        {
+
+            this.moveTo(cx, cy);
+        }
+        else
+        {
+            this.moveTo(startX, startY);
+        }
+    }
+
+    var points = this.currentPath.shape.points;
 
     var theta = sweep/(segs*2);
     var theta2 = theta*2;
@@ -628,12 +647,23 @@ Graphics.prototype.drawEllipse = function (x, y, width, height)
  */
 Graphics.prototype.drawPolygon = function (path)
 {
-    if (!(path instanceof Array))
+    // prevents an argument assignment deopt
+    // see section 3.1: https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#3-managing-arguments
+    var points = path;
+
+    if (!Array.isArray(points))
     {
-        path = Array.prototype.slice.call(arguments);
+        // prevents an argument leak deopt
+        // see section 3.2: https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#3-managing-arguments
+        points = new Array(arguments.length);
+
+        for (var i = 0; i < points.length; ++i)
+        {
+            points[i] = arguments[i];
+        }
     }
 
-    this.drawShape(new math.Polygon(path));
+    this.drawShape(new math.Polygon(points));
 
     return this;
 };
@@ -663,11 +693,12 @@ Graphics.prototype.clear = function ()
  * @param scaleMode {number} Should be one of the scaleMode consts
  * @return {Texture} a texture of the graphics object
  */
-Graphics.prototype.generateTexture = function (resolution, scaleMode)
+Graphics.prototype.generateTexture = function (renderer, resolution, scaleMode)
 {
+
     resolution = resolution || 1;
 
-    var bounds = this.getBounds();
+    var bounds = this.getLocalBounds();
 
     var canvasBuffer = new CanvasBuffer(bounds.width * resolution, bounds.height * resolution);
 
@@ -687,6 +718,7 @@ Graphics.prototype.generateTexture = function (resolution, scaleMode)
  * Renders the object using the WebGL renderer
  *
  * @param renderer {WebGLRenderer}
+ * @private
  */
 Graphics.prototype._renderWebGL = function (renderer)
 {
@@ -734,12 +766,17 @@ Graphics.prototype._renderWebGL = function (renderer)
  * @param renderer {CanvasRenderer}
  * @private
  */
-Graphics.prototype.renderCanvas = function (renderer)
+Graphics.prototype._renderCanvas = function (renderer)
 {
-    // if the sprite is not visible or the alpha is 0 then no need to render this element
-    if (!this.visible || this.alpha <= 0 || this.isMask === true  || !this.renderable)
+    if (this.isMask === true)
     {
         return;
+    }
+
+    // if the tint has changed, set the graphics object to dirty.
+    if (this._prevTint !== this.tint) {
+        this.dirty = true;
+        this._prevTint = this.tint;
     }
 
     if (this._cacheAsBitmap)
@@ -757,7 +794,7 @@ Graphics.prototype.renderCanvas = function (renderer)
 
         this._cachedSprite.alpha = this.alpha;
 
-        Sprite.prototype.renderCanvas.call(this._cachedSprite, renderer);
+        Sprite.prototype._renderCanvas.call(this._cachedSprite, renderer);
 
         return;
     }
@@ -772,11 +809,6 @@ Graphics.prototype.renderCanvas = function (renderer)
             context.globalCompositeOperation = renderer.blendModes[renderer.currentBlendMode];
         }
 
-        if (this._mask)
-        {
-            renderer.maskManager.pushMask(this._mask, renderer);
-        }
-
         var resolution = renderer.resolution;
         context.setTransform(
             transform.a * resolution,
@@ -788,16 +820,6 @@ Graphics.prototype.renderCanvas = function (renderer)
         );
 
         CanvasGraphics.renderGraphics(this, context);
-
-        for (var i = 0, j = this.children.length; i < j; ++i)
-        {
-            this.children[i].renderCanvas(renderer);
-        }
-
-        if (this._mask)
-        {
-            renderer.maskManager.popMask(renderer);
-        }
     }
 };
 
@@ -887,6 +909,40 @@ Graphics.prototype.getBounds = function (matrix)
     }
 
     return this._currentBounds;
+};
+
+/**
+* Tests if a point is inside this graphics object
+*
+* @param point {Point} the point to test
+* @return {boolean} the result of the test
+*/
+Graphics.prototype.containsPoint = function( point )
+{
+    this.worldTransform.applyInverse(point,  tempPoint);
+
+    var graphicsData = this.graphicsData;
+
+    for (var i = 0; i < graphicsData.length; i++)
+    {
+        var data = graphicsData[i];
+
+        if (!data.fill)
+        {
+            continue;
+        }
+
+        // only deal with fills..
+        if (data.shape)
+        {
+            if ( data.shape.contains( tempPoint.x, tempPoint.y ) )
+            {
+                return true;
+            }
+        }
+    }
+
+    return false;
 };
 
 /**
@@ -1069,7 +1125,7 @@ Graphics.prototype.destroyCachedSprite = function ()
 /**
  * Draws the given shape to this Graphics object. Can be any of Circle, Rectangle, Ellipse, Line or Polygon.
  *
- * @param {Circle|Rectangle|Ellipse|Line|Polygon} shape The Shape object to draw.
+ * @param shape {Circle|Rectangle|Ellipse|Line|Polygon} The shape object to draw.
  * @return {GraphicsData} The generated GraphicsData object.
  */
 Graphics.prototype.drawShape = function (shape)

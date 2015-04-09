@@ -6,7 +6,7 @@
  */
 
 /**
- * @namespace PIXI
+ * @namespace PIXI.interaction
  */
 module.exports = {
     InteractionData:    require('./InteractionData'),

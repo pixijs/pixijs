@@ -1,11 +1,13 @@
 var core = require('../../core');
+// @see https://github.com/substack/brfs/issues/25
+var fs = require('fs');
 
 /**
  * This lowers the color depth of your image by the given amount, producing an image with a smaller palette.
  *
  * @class
  * @extends AbstractFilter
- * @namespace PIXI.filters
+ * @memberof PIXI.filters
  */
 function ColorStepFilter()
 {
@@ -13,7 +15,7 @@ function ColorStepFilter()
         // vertex shader
         null,
         // fragment shader
-        require('fs').readFileSync(__dirname + '/colorStep.frag', 'utf8'),
+        fs.readFileSync(__dirname + '/colorStep.frag', 'utf8'),
         // custom uniforms
         {
             step: { type: '1f', value: 5 }

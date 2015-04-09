@@ -1,17 +1,15 @@
 var CONST = require('../const');
 
 /**
- * @namespace PIXI
+ * @namespace PIXI.utils
  */
 var utils = module.exports = {
     _uid: 0,
     _saidHello: false,
 
-    Ticker:         require('./Ticker'),
-    EventData:      require('./EventData'),
-    eventTarget:    require('./eventTarget'),
     pluginTarget:   require('./pluginTarget'),
     PolyK:          require('./PolyK'),
+
 
     /**
      * Gets the next uuid
@@ -77,21 +75,27 @@ var utils = module.exports = {
             return false;
         }
 
-        var canvas = document.createElement('canvas'),
-            context = canvas.getContext('2d');
+        var pngHead = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAABAQMAAADD8p2OAAAAA1BMVEX/';
+        var pngEnd = 'AAAACklEQVQI12NgAAAAAgAB4iG8MwAAAABJRU5ErkJggg==';
 
-        canvas.width = 1;
+        var magenta = new Image();
+        magenta.src = pngHead + 'AP804Oa6' + pngEnd;
+
+        var yellow = new Image();
+        yellow.src = pngHead + '/wCKxvRF' + pngEnd;
+
+        var canvas = document.createElement('canvas');
+        canvas.width = 6;
         canvas.height = 1;
 
-        context.fillStyle = '#000';
-        context.fillRect(0, 0, 1, 1);
-
+        var context = canvas.getContext('2d');
         context.globalCompositeOperation = 'multiply';
+        context.drawImage(magenta, 0, 0);
+        context.drawImage(yellow, 2, 0);
 
-        context.fillStyle = '#fff';
-        context.fillRect(0, 0, 1, 1);
+        var data = context.getImageData(2,0,1,1).data;
 
-        return context.getImageData(0,0,1,1).data[0] === 0;
+        return (data[0] === 255 && data[1] === 0 && data[2] === 0);
     },
 
     /**
@@ -136,10 +140,8 @@ var utils = module.exports = {
     /**
      * get the resolution of an asset by looking for the prefix
      * used by spritesheets and image urls
-     * TODO make this smarter!
      *
-     * @param width {number}
-     * @param height {number}
+     * @param url {string} the image path
      * @return {boolean}
      */
     getResolutionOfUrl: function (url)
@@ -174,26 +176,52 @@ var utils = module.exports = {
         if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1)
         {
             var args = [
-                '%c %c %c Pixi.js ' + CONST.VERSION + ' - ' + type + '  %c ' + ' %c ' + ' http://www.pixijs.com/  %c %c ♥%c♥%c♥ ',
-                'background: #ff66a5',
-                'background: #ff66a5',
-                'color: #ff66a5; background: #030307;',
-                'background: #ff66a5',
-                'background: #ffc3dc',
-                'background: #ff66a5',
-                'color: #ff2424; background: #fff',
-                'color: #ff2424; background: #fff',
-                'color: #ff2424; background: #fff'
+                '\n %c %c %c Pixi.js ' + CONST.VERSION + ' - ✰ ' + type + ' ✰  %c ' + ' %c ' + ' http://www.pixijs.com/  %c %c ♥%c♥%c♥ \n\n',
+                'background: #ff66a5; padding:5px 0;',
+                'background: #ff66a5; padding:5px 0;',
+                'color: #ff66a5; background: #030307; padding:5px 0;',
+                'background: #ff66a5; padding:5px 0;',
+                'background: #ffc3dc; padding:5px 0;',
+                'background: #ff66a5; padding:5px 0;',
+                'color: #ff2424; background: #fff; padding:5px 0;',
+                'color: #ff2424; background: #fff; padding:5px 0;',
+                'color: #ff2424; background: #fff; padding:5px 0;',
             ];
 
-            console.log.apply(console, args); //jshint ignore:line
+            window.console.log.apply(console, args); //jshint ignore:line
         }
         else if (window.console)
         {
-            console.log('Pixi.js ' + CONST.VERSION + ' - ' + type + ' - http://www.pixijs.com/'); //jshint ignore:line
+            window.console.log('Pixi.js ' + CONST.VERSION + ' - ' + type + ' - http://www.pixijs.com/'); //jshint ignore:line
         }
 
         utils._saidHello = true;
+    },
+
+    /**
+     * Helper for checking for webgl support
+     *
+     * @return {boolean}
+     */
+    isWebGLSupported: function ()
+    {
+        var contextOptions = { stencil: true };
+        try
+        {
+            if (!window.WebGLRenderingContext)
+            {
+                return false;
+            }
+
+            var canvas = document.createElement('canvas'),
+                gl = canvas.getContext('webgl', contextOptions) || canvas.getContext('experimental-webgl', contextOptions);
+
+            return !!(gl && gl.getContextAttributes().stencil);
+        }
+        catch (e)
+        {
+            return false;
+        }
     },
 
     TextureCache: {},

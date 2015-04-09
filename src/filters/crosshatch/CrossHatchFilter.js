@@ -1,11 +1,13 @@
 var core = require('../../core');
+// @see https://github.com/substack/brfs/issues/25
+var fs = require('fs');
 
 /**
  * A Cross Hatch effect filter.
  *
  * @class
  * @extends AbstractFilter
- * @namespace PIXI.filters
+ * @memberof PIXI.filters
  */
 function CrossHatchFilter()
 {
@@ -13,7 +15,7 @@ function CrossHatchFilter()
         // vertex shader
         null,
         // fragment shader
-        require('fs').readFileSync(__dirname + '/crosshatch.frag', 'utf8')
+        fs.readFileSync(__dirname + '/crosshatch.frag', 'utf8')
     );
 }
 

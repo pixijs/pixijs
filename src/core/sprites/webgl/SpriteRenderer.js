@@ -1,5 +1,4 @@
 var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
-    Shader = require('../../renderers/webgl/shaders/Shader'),
     WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
     CONST = require('../../const');
 
@@ -18,7 +17,8 @@ var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
  *
  * @class
  * @private
- * @namespace PIXI
+ * @memberof PIXI
+ * @extends ObjectRenderer
  * @param renderer {WebGLRenderer} The renderer this sprite batch works for.
  */
 function SpriteRenderer(renderer)
@@ -66,7 +66,7 @@ function SpriteRenderer(renderer)
     this.positions = new Float32Array(this.vertices);
 
     /**
-     * View on the vertices as a Uint32Array
+     * Holds the color components
      *
      * @member {Uint32Array}
      */
@@ -164,7 +164,7 @@ WebGLRenderer.registerPlugin('sprite', SpriteRenderer);
  * Sets up the renderer context and necessary buffers.
  *
  * @private
- * @param gl {WebGLContext} the current WebGL drawing context
+ * @param gl {WebGLRenderingContext} the current WebGL drawing context
  */
 SpriteRenderer.prototype.onContextChange = function ()
 {
@@ -385,22 +385,33 @@ SpriteRenderer.prototype.flush = function ()
             {
                 currentShader = nextShader;
 
+
+
                 shader = currentShader.shaders ? currentShader.shaders[gl.id] : currentShader;
 
                 if (!shader)
                 {
-                    shader = new Shader(this.renderer.shaderManager, null, currentShader.fragmentSrc, currentShader.uniforms);
-                    currentShader.shaders[gl.id] = shader;
+                    shader = currentShader.getShader(this.renderer);
+
                 }
 
                 // set shader function???
                 this.renderer.shaderManager.setShader(shader);
 
-                ///console.log(shader.uniforms.projectionMatrix);
+                //TODO - i KNOW this can be optimised! Once v3 is stable il look at this next...
+                shader.uniforms.projectionMatrix.value = this.renderer.currentRenderTarget.projectionMatrix.toArray(true);
+                //Make this a little more dynamic / intelligent!
+                shader.syncUniforms();
+
+                //TODO investigate some kind of texture state managment??
+                // need to make sure this texture is the active one for all the batch swaps..
+                gl.activeTexture(gl.TEXTURE0);
 
                 // both thease only need to be set if they are changing..
                 // set the projection
-                gl.uniformMatrix3fv(shader.uniforms.projectionMatrix._location, false, this.renderer.currentRenderTarget.projectionMatrix.toArray(true));
+                //gl.uniformMatrix3fv(shader.uniforms.projectionMatrix._location, false, this.renderer.currentRenderTarget.projectionMatrix.toArray(true));
+
+
             }
         }
 
@@ -456,7 +467,7 @@ SpriteRenderer.prototype.start = function ()
     var gl = this.renderer.gl;
 
     // bind the main texture
-    gl.activeTexture(gl.TEXTURE0);
+
 
     // bind the buffers
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);

@@ -5,14 +5,16 @@
  * @license     {@link https://github.com/GoodBoyDigital/pixi.js/blob/master/LICENSE|MIT License}
  */
 
+require('./cacheAsBitmap');
+require('./getChildByName');
+require('./getGlobalPosition');
+
 /**
- * @namespace PIXI
+ * @namespace PIXI.extras
  */
 module.exports = {
+    Ticker:         require('./Ticker'),
     MovieClip:      require('./MovieClip'),
-    Rope:           require('./Rope'),
-    Strip:          require('./Strip'),
-    StripShader:    require('./StripShader'),
     TilingSprite:   require('./TilingSprite'),
-    cacheAsBitmap:  require('./cacheAsBitmap')
+    BitmapText:     require('./BitmapText'),
 };

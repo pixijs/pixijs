@@ -1,14 +1,14 @@
-var utils = require('../../../utils'),
-    CONST = require('../../../const');
+/*global console */
+var utils = require('../../../utils');
 
 /**
  * @class
- * @namespace PIXI
+ * @memberof PIXI
  * @param shaderManager {ShaderManager} The webgl shader manager this shader works for.
  * @param [vertexSrc] {string} The source of the vertex shader.
  * @param [fragmentSrc] {string} The source of the fragment shader.
  * @param [uniforms] {object} Uniforms for this shader.
- * @param [attributes] {obje=ct} Attributes for this shader.
+ * @param [attributes] {object} Attributes for this shader.
  */
 function Shader(shaderManager, vertexSrc, fragmentSrc, uniforms, attributes)
 {
@@ -18,38 +18,62 @@ function Shader(shaderManager, vertexSrc, fragmentSrc, uniforms, attributes)
     }
 
     /**
+     * A unique id
      * @member {number}
      * @readonly
      */
     this.uuid = utils.uuid();
 
     /**
-     * @member {WebGLContext}
+     * The current WebGL drawing context
+     * @member {WebGLRenderingContext}
      * @readonly
      */
     this.gl = shaderManager.renderer.gl;
 
+    //TODO maybe we should pass renderer rather than shader manger?? food for thought..
+    this.shaderManager = shaderManager;
+
     /**
      * The WebGL program.
+     *
      * @member {WebGLProgram}
      * @readonly
      */
     this.program = null;
 
+    /**
+     * The uniforms as an object
+     * @member {object}
+     * @private
+     */
     this.uniforms = uniforms || {};
 
+    /**
+     * The attributes as an object
+     * @member {object}
+     * @private
+     */
     this.attributes = attributes || {};
 
+    /**
+     * Internal texture counter
+     * @member {number}
+     * @private
+     */
     this.textureCount = 1;
 
     /**
-     * The vertex shader.
-     * @member {Array}
+     * The vertex shader as an array of strings
+     *
+     * @member {string}
      */
     this.vertexSrc = vertexSrc;
+
     /**
-     * The fragment shader.
-     * @member {Array}
+     * The fragment shader as an array of strings
+     *
+     * @member {string}
      */
     this.fragmentSrc = fragmentSrc;
 
@@ -59,6 +83,10 @@ function Shader(shaderManager, vertexSrc, fragmentSrc, uniforms, attributes)
 Shader.prototype.constructor = Shader;
 module.exports = Shader;
 
+/*
+ * Creates the shader and uses it
+ *
+ */
 Shader.prototype.init = function ()
 {
     this.compile();
@@ -69,6 +97,10 @@ Shader.prototype.init = function ()
     this.cacheAttributeLocations(Object.keys(this.attributes));
 };
 
+/*
+ * Caches the locations of the uniform for reuse
+ * @param keys {string} the uniforms to cache
+ */
 Shader.prototype.cacheUniformLocations = function (keys)
 {
     for (var i = 0; i < keys.length; ++i)
@@ -77,6 +109,10 @@ Shader.prototype.cacheUniformLocations = function (keys)
     }
 };
 
+/*
+ * Caches the locations of the attribute for reuse
+ * @param keys {string} the attributes to cache
+ */
 Shader.prototype.cacheAttributeLocations = function (keys)
 {
     for (var i = 0; i < keys.length; ++i)
@@ -99,6 +135,10 @@ Shader.prototype.cacheAttributeLocations = function (keys)
     // End worst hack eva //
 };
 
+/*
+ * Attaches the shaders and creates the program
+ * @return {WebGLProgram}
+ */
 Shader.prototype.compile = function ()
 {
     var gl = this.gl;
@@ -115,14 +155,14 @@ Shader.prototype.compile = function ()
     // if linking fails, then log and cleanup
     if (!gl.getProgramParameter(program, gl.LINK_STATUS))
     {
-        window.console.error('Pixi.js Error: Could not initialize shader.');
-        window.console.error('gl.VALIDATE_STATUS', gl.getProgramParameter(program, gl.VALIDATE_STATUS));
-        window.console.error('gl.getError()', gl.getError());
+        console.error('Pixi.js Error: Could not initialize shader.');
+        console.error('gl.VALIDATE_STATUS', gl.getProgramParameter(program, gl.VALIDATE_STATUS));
+        console.error('gl.getError()', gl.getError());
 
         // if there is a program info log, log it
         if (gl.getProgramInfoLog(program) !== '')
         {
-            window.console.warn('Pixi.js Warning: gl.getProgramInfoLog()', gl.getProgramInfoLog(program));
+            console.warn('Pixi.js Warning: gl.getProgramInfoLog()', gl.getProgramInfoLog(program));
         }
 
         gl.deleteProgram(program);
@@ -172,6 +212,11 @@ Shader.prototype.buildSync = function ()
 
 }*/
 
+/**
+* Adds a new uniform
+*
+* @param uniform {Object} the new uniform to attach
+*/
 Shader.prototype.syncUniform = function (uniform)
 {
     var location = uniform._location,
@@ -388,7 +433,7 @@ Shader.prototype.syncUniform = function (uniform)
             }
 
             // bind the texture
-            gl.bindTexture(gl.TEXTURE_2D, uniform.value.baseTexture._glTextures[gl.id]);
+            gl.bindTexture(gl.TEXTURE_2D, texture);
 
             // set uniform to texture index
             gl.uniform1i(uniform._location, this.textureCount);
@@ -399,10 +444,13 @@ Shader.prototype.syncUniform = function (uniform)
             break;
 
         default:
-            window.console.warn('Pixi.js Shader Warning: Unknown uniform type: ' + uniform.type);
+            console.warn('Pixi.js Shader Warning: Unknown uniform type: ' + uniform.type);
     }
 };
 
+/*
+ * Updates the shader uniform values.
+ */
 Shader.prototype.syncUniforms = function ()
 {
     this.textureCount = 1;
@@ -429,16 +477,19 @@ Shader.prototype.initSampler2D = function (uniform)
         return;
     }
 
-    texture._glTextures[gl.id] = gl.createTexture();
 
-    gl.bindTexture(gl.TEXTURE_2D, texture._glTextures[gl.id]);
-
-    gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, texture.premultipliedAlpha);
 
     if (uniform.textureData)
     {
+
+        //TODO move this...
         var data = uniform.textureData;
 
+        texture._glTextures[gl.id] = gl.createTexture();
+
+        gl.bindTexture(gl.TEXTURE_2D, texture._glTextures[gl.id]);
+
+        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, texture.premultipliedAlpha);
         // GLTexture = mag linear, min linear_mipmap_linear, wrap repeat + gl.generateMipmap(gl.TEXTURE_2D);
         // GLTextureLinear = mag/min linear, wrap clamp
         // GLTextureNearestRepeat = mag/min NEAREST, wrap repeat
@@ -459,23 +510,8 @@ Shader.prototype.initSampler2D = function (uniform)
     }
     else
     {
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.source);
-
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, texture.scaleMode === CONST.SCALE_MODES.LINEAR ? gl.LINEAR : gl.NEAREST);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, texture.scaleMode === CONST.SCALE_MODES.LINEAR ? gl.LINEAR : gl.NEAREST);
-
-        if (!texture.isPowerOfTwo)
-        {
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        }
-        else
-        {
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-        }
+        this.shaderManager.renderer.updateTexture(texture);
     }
-
 };
 
 /**
@@ -503,7 +539,7 @@ Shader.prototype._glCompile = function (type, src)
 
     if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS))
     {
-        window.console.log(this.gl.getShaderInfoLog(shader));
+        console.log(this.gl.getShaderInfoLog(shader));
         return null;
     }
 

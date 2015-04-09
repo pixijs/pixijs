@@ -1,13 +1,14 @@
 var utils = require('../utils'),
     math = require('../math'),
-    CONST = require('../const');
+    CONST = require('../const'),
+    EventEmitter = require('eventemitter3').EventEmitter;
 
 /**
  * The CanvasRenderer draws the scene and all its content onto a 2d canvas. This renderer should be used for browsers that do not support webGL.
  * Don't forget to add the CanvasRenderer.view to your DOM or you will not see anything :)
  *
  * @class
- * @namespace PIXI
+ * @memberof PIXI
  * @param system {string} The name of the system this renderer is for.
  * @param [width=800] {number} the width of the canvas view
  * @param [height=600] {number} the height of the canvas view
@@ -22,6 +23,8 @@ var utils = require('../utils'),
  */
 function SystemRenderer(system, width, height, options)
 {
+    EventEmitter.call(this);
+
     utils.sayHello(system);
 
     // prepare options
@@ -100,10 +103,6 @@ function SystemRenderer(system, width, height, options)
      */
     this.blendModes = null;
 
-
-    ///////////////////////////
-    // TODO: Combine these!
-
     /**
      * The value of the preserveDrawingBuffer flag affects whether or not the contents of the stencil buffer is retained after rendering.
      *
@@ -122,16 +121,13 @@ function SystemRenderer(system, width, height, options)
      */
     this.clearBeforeRender = options.clearBeforeRender;
 
-
-    ////////////////////////
-
     /**
      * The background color as a number.
      *
      * @member {number}
      * @private
      */
-    this._backgroundColor = 0xFFFFFF;
+    this._backgroundColor = 0x000000;
 
     /**
      * The background color as an [R, G, B] array.
@@ -139,7 +135,7 @@ function SystemRenderer(system, width, height, options)
      * @member {number[]}
      * @private
      */
-    this._backgroundColorRgb = [1, 1, 1];
+    this._backgroundColorRgb = [0, 0, 0];
 
     /**
      * The background color as a string.
@@ -151,11 +147,9 @@ function SystemRenderer(system, width, height, options)
 
     this.backgroundColor = options.backgroundColor || this._backgroundColor; // run bg color setter
 
-
-
     /**
      * This temporary display object used as the parent of the currently being rendered item
-     * @member DisplayObject
+     * @member {DisplayObject}
      * @private
      */
     this._tempDisplayObjectParent = {worldTransform:new math.Matrix(), worldAlpha:1, children:[]};
@@ -165,10 +159,9 @@ function SystemRenderer(system, width, height, options)
 }
 
 // constructor
+SystemRenderer.prototype = Object.create(EventEmitter.prototype);
 SystemRenderer.prototype.constructor = SystemRenderer;
 module.exports = SystemRenderer;
-
-utils.eventTarget.mixin(SystemRenderer.prototype);
 
 Object.defineProperties(SystemRenderer.prototype, {
     /**

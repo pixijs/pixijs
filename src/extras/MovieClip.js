@@ -1,14 +1,25 @@
-var core = require('../core'),
-    utils = require('../core/utils');
-
-
+var core    = require('../core'),
+    Ticker  = require('./Ticker');
 
 /**
  * A MovieClip is a simple way to display an animation depicted by a list of textures.
  *
+ * ```js
+ * var alienImages = ["image_sequence_01.png","image_sequence_02.png","image_sequence_03.png","image_sequence_04.png"];
+ * var textureArray = [];
+ *
+ * for (var i=0; i < 4; i++)
+ * {
+ *      var texture = PIXI.Texture.fromImage(alienImages[i]);
+ *      textureArray.push(texture);
+ * };
+ *
+ * var mc = new PIXI.MovieClip(textureArray);
+ * ```
+ *
  * @class
  * @extends Sprite
- * @namespace PIXI
+ * @memberof PIXI.extras
  * @param textures {Texture[]} an array of {Texture} objects that make up the animation
  */
 function MovieClip(textures)
@@ -18,14 +29,14 @@ function MovieClip(textures)
     /**
      * The array of textures that make up the animation
      *
-     * @member Texture[]
+     * @member {Texture[]}
      */
     this._textures = textures;
 
     /**
      * The speed that the MovieClip will play at. Higher is faster, lower is slower
      *
-     * @member number
+     * @member {number}
      * @default 1
      */
     this.animationSpeed = 1;
@@ -33,7 +44,7 @@ function MovieClip(textures)
     /**
      * Whether or not the movie clip repeats after playing.
      *
-     * @member boolean
+     * @member {boolean}
      * @default true
      */
     this.loop = true;
@@ -49,7 +60,7 @@ function MovieClip(textures)
     /**
      * The MovieClips current frame index (this may not have to be a whole number)
      *
-     * @member number
+     * @member {number}
      * @default 0
      * @readonly
      */
@@ -58,16 +69,10 @@ function MovieClip(textures)
     /**
      * Indicates if the MovieClip is currently playing
      *
-     * @member boolean
+     * @member {boolean}
      * @readonly
      */
     this.playing = false;
-
-    /**
-     * private cache of the bound function
-     * @type {[type]}
-     */
-    this._updateBound = this.update.bind(this);
 }
 
 // constructor
@@ -92,6 +97,13 @@ Object.defineProperties(MovieClip.prototype, {
         }
     },
 
+    /**
+     * The array of textures used for this MovieClip
+     *
+     * @member
+     * @memberof MovieClip#
+     *
+     */
     textures: {
         get: function ()
         {
@@ -119,7 +131,7 @@ MovieClip.prototype.stop = function ()
     }
 
     this.playing = false;
-    utils.Ticker.off('tick', this._updateBound);
+    Ticker.off('tick', this.update);
 };
 
 /**
@@ -134,7 +146,7 @@ MovieClip.prototype.play = function ()
     }
 
     this.playing = true;
-    utils.Ticker.on('tick', this._updateBound);
+    Ticker.on('tick', this.update, this);
 };
 
 /**
@@ -148,7 +160,7 @@ MovieClip.prototype.gotoAndStop = function (frameNumber)
 
     this.currentFrame = frameNumber;
 
-    var round = Math.round(this.currentFrame);
+    var round = Math.floor(this.currentFrame);
     this.texture = this._textures[round % this._textures.length];
 };
 
@@ -165,13 +177,12 @@ MovieClip.prototype.gotoAndPlay = function (frameNumber)
 
 /*
  * Updates the object transform for rendering
- *
  * @private
  */
-MovieClip.prototype.update = function ( event )
+MovieClip.prototype.update = function (deltaTime)
 {
 
-    this.currentFrame += this.animationSpeed * event.data.deltaTime;
+    this.currentFrame += this.animationSpeed * deltaTime;
 
     var floor = Math.floor(this.currentFrame);
 
@@ -207,7 +218,10 @@ MovieClip.prototype.update = function ( event )
     }
 };
 
-
+/*
+ * Stops the MovieClip and destroys it
+ *
+ */
 MovieClip.prototype.destroy = function ( )
 {
     this.stop();

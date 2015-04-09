@@ -1,11 +1,13 @@
 var WebGLManager = require('./WebGLManager'),
     RenderTarget = require('../utils/RenderTarget'),
+    CONST = require('../../../const'),
     Quad = require('../utils/Quad'),
     math =  require('../../../math');
 
 /**
  * @class
- * @namespace PIXI
+ * @memberof PIXI
+ * @extends WebGLManager
  * @param renderer {WebGLRenderer} The renderer this manager works for.
  */
 function FilterManager(renderer)
@@ -24,7 +26,7 @@ function FilterManager(renderer)
     });
 
     /**
-     * @member {any[]]}
+     * @member {any[]}
      */
     this.texturePool = [];
 
@@ -41,6 +43,10 @@ FilterManager.prototype.constructor = FilterManager;
 module.exports = FilterManager;
 
 
+/**
+ * Called when there is a WebGL context change.
+ *
+ */
 FilterManager.prototype.onContextChange = function ()
 {
     this.texturePool.length = 0;
@@ -67,6 +73,7 @@ FilterManager.prototype.pushFilter = function (target, filters)
 {
     // get the bounds of the object..
     var bounds = target.filterArea || target.getBounds();
+    //bounds = bounds.clone();
 
     // round off the rectangle to get a nice smoooooooth filter :)
     bounds.x = bounds.x | 0;
@@ -75,7 +82,12 @@ FilterManager.prototype.pushFilter = function (target, filters)
     bounds.height = bounds.height | 0;
 
 
-
+    // padding!
+    var padding = filters[0].padding | 0;
+    bounds.x -= padding;
+    bounds.y -= padding;
+    bounds.width += padding * 2;
+    bounds.height += padding * 2;
 
 
     if(this.renderer.currentRenderTarget.transform)
@@ -97,27 +109,37 @@ FilterManager.prototype.pushFilter = function (target, filters)
          this.capFilterArea( bounds );
     }
 
+    if(bounds.width > 0 && bounds.height > 0)
+    {
+        this.currentFrame = bounds;
 
-    this.currentFrame = bounds;
+        var texture = this.getRenderTarget();
 
-    var texture = this.getRenderTarget();
+        this.renderer.setRenderTarget(texture);
 
-    this.renderer.setRenderTarget(texture);
+        // clear the texture..
+        texture.clear();
 
-    // clear the texture..
-    texture.clear();
+        // TODO get rid of object creation!
+        this.filterStack.push({
+            renderTarget: texture,
+            filter: filters
+        });
 
-    // TODO get rid of object creation!
-    this.filterStack.push({
-        renderTarget: texture,
-        filter: filters
-    });
-
+    }
+    else
+    {
+        // push somthing on to the stack that is empty
+        this.filterStack.push({
+            renderTarget: null,
+            filter: filters
+        });
+    }
 };
 
 
 /**
- * Removes the last filter from the filter stack and doesn't return it.
+ * Removes the last filter from the filter stack and returns it.
  *
  */
 FilterManager.prototype.popFilter = function ()
@@ -126,6 +148,12 @@ FilterManager.prototype.popFilter = function ()
     var previousFilterData = this.filterStack[this.filterStack.length-1];
 
     var input = filterData.renderTarget;
+
+    // if the renderTarget is null then we don't apply the filter as its offscreen
+    if(!filterData.renderTarget)
+    {
+        return;
+    }
 
     var output = previousFilterData.renderTarget;
 
@@ -137,11 +165,20 @@ FilterManager.prototype.popFilter = function ()
 
     this.quad.map(this.textureSize, input.frame);
 
+
     // TODO.. this probably only needs to be done once!
     gl.bindBuffer(gl.ARRAY_BUFFER, this.quad.vertexBuffer);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.quad.indexBuffer);
 
     var filters = filterData.filter;
+
+    // assuming all filters follow the correct format??
+    gl.vertexAttribPointer(this.renderer.shaderManager.defaultShader.attributes.aVertexPosition, 2, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(this.renderer.shaderManager.defaultShader.attributes.aTextureCoord, 2, gl.FLOAT, false, 0, 2 * 4 * 4);
+    gl.vertexAttribPointer(this.renderer.shaderManager.defaultShader.attributes.aColor, 4, gl.FLOAT, false, 0, 4 * 4 * 4);
+
+    // restore the normal blendmode!
+    this.renderer.blendModeManager.setBlendMode(CONST.BLEND_MODES.NORMAL);
 
     if (filters.length === 1)
     {
@@ -192,24 +229,41 @@ FilterManager.prototype.popFilter = function ()
     return filterData.filter;
 };
 
+/**
+ * Grabs an render target from the internal pool
+ *
+ * @param clear {boolean} Whether or not we need to clear the RenderTarget
+ * @return {RenderTarget}
+ */
 FilterManager.prototype.getRenderTarget = function ( clear )
 {
-    var renderTarget = this.texturePool.pop() || new RenderTarget(this.renderer.gl, this.textureSize.width, this.textureSize.height, null, this.renderer.resolution);
+    var renderTarget = this.texturePool.pop() || new RenderTarget(this.renderer.gl, this.textureSize.width, this.textureSize.height, CONST.SCALE_MODES.LINEAR, this.renderer.resolution * CONST.FILTER_RESOLUTION);
     renderTarget.frame = this.currentFrame;
 
     if (clear)
     {
-        renderTarget.clear();
+        renderTarget.clear(true);
     }
 
     return renderTarget;
 };
 
+/*
+ * Returns a RenderTarget to the internal pool
+ * @param renderTarget {RenderTarget} The RenderTarget we want to return to the pool
+ */
 FilterManager.prototype.returnRenderTarget = function (renderTarget)
 {
     this.texturePool.push( renderTarget );
 };
 
+/*
+ * Applies the filter
+ * @param shader {Shader} The shader to upload
+ * @param inputTarget {RenderTarget}
+ * @param outputTarget {RenderTarget}
+ * @param clear {boolean} Whether or not we want to clear the outputTarget
+ */
 FilterManager.prototype.applyFilter = function (shader, inputTarget, outputTarget, clear)
 {
     var gl = this.renderer.gl;
@@ -229,10 +283,11 @@ FilterManager.prototype.applyFilter = function (shader, inputTarget, outputTarge
 
     //TODO can this be optimised?
     shader.syncUniforms();
-
+/*
     gl.vertexAttribPointer(shader.attributes.aVertexPosition, 2, gl.FLOAT, false, 0, 0);
     gl.vertexAttribPointer(shader.attributes.aTextureCoord, 2, gl.FLOAT, false, 0, 2 * 4 * 4);
     gl.vertexAttribPointer(shader.attributes.aColor, 4, gl.FLOAT, false, 0, 4 * 4 * 4);
+*/
 
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, inputTarget.texture);
@@ -240,7 +295,12 @@ FilterManager.prototype.applyFilter = function (shader, inputTarget, outputTarge
     gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0 );
 };
 
-
+/*
+ * Calculates the mapped matrix
+ * @param filterArea {Rectangle} The filter area
+ * @param sprite {Sprite} the target sprite
+ * @param outputMatrix {Matrix} @alvin
+ */
 // TODO playing around here.. this is temporary - (will end up in the shader)
 FilterManager.prototype.calculateMappedMatrix = function (filterArea, sprite, outputMatrix)
 {
@@ -308,6 +368,10 @@ FilterManager.prototype.calculateMappedMatrix = function (filterArea, sprite, ou
     // return transform;
 };
 
+/*
+ * Constrains the filter area to the texture size
+ * @param filterArea {Rectangle} The filter area we want to cap
+ */
 FilterManager.prototype.capFilterArea = function (filterArea)
 {
     if (filterArea.x < 0)
@@ -333,6 +397,11 @@ FilterManager.prototype.capFilterArea = function (filterArea)
     }
 };
 
+/*
+ * Resizes all the render targets in the pool
+ * @param width {number} the new width
+ * @param height {number} the new height
+ */
 FilterManager.prototype.resize = function ( width, height )
 {
     this.textureSize.width = width;

@@ -12,7 +12,7 @@ var core = require('../../core'),
  *
  * @class
  * @extends AbstractFilter
- * @namespace PIXI.filters
+ * @memberof PIXI.filters
  */
 function TiltShiftFilter()
 {

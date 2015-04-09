@@ -1,7 +1,7 @@
 var BaseTexture = require('./BaseTexture'),
     VideoBaseTexture = require('./VideoBaseTexture'),
     TextureUvs = require('./TextureUvs'),
-    eventTarget = require('../utils/eventTarget'),
+    EventEmitter = require('eventemitter3').EventEmitter,
     math = require('../math'),
     utils = require('../utils');
 
@@ -9,17 +9,26 @@ var BaseTexture = require('./BaseTexture'),
  * A texture stores the information that represents an image or part of an image. It cannot be added
  * to the display list directly. Instead use it as the texture for a Sprite. If no frame is provided then the whole image is used.
  *
+ * You can directly create a texture from an image and then reuse it multiple times like this :
+ *
+ * ```js
+ * var texture = PIXI.Texture.fromImage('assets/image.png');
+ * var sprite1 = new PIXI.Sprite(texture);
+ * var sprite2 = new PIXI.Sprite(texture);
+ * ```
+ *
  * @class
- * @mixes eventTarget
- * @namespace PIXI
+ * @memberof PIXI
  * @param baseTexture {BaseTexture} The base texture source to create the texture from
  * @param [frame] {Rectangle} The rectangle frame of the texture to show
  * @param [crop] {Rectangle} The area of original texture
  * @param [trim] {Rectangle} Trimmed texture rectangle
- * @param [rotate] {Rectangle} indicates if the texture should be rotated 90 degrees ( used by texture packer )
+ * @param [rotate] {boolean} indicates whether the texture should be rotated by 90 degrees ( used by texture packer )
  */
 function Texture(baseTexture, frame, crop, trim, rotate)
 {
+    EventEmitter.call(this);
+
     /**
      * Does this Texture have any frame data assigned to it?
      *
@@ -79,7 +88,7 @@ function Texture(baseTexture, frame, crop, trim, rotate)
     /**
      * The WebGL UV data cache.
      *
-     * @member {object}
+     * @member {TextureUvs}
      * @private
      */
     this._uvs = null;
@@ -107,10 +116,10 @@ function Texture(baseTexture, frame, crop, trim, rotate)
     this.crop = crop || frame;//new math.Rectangle(0, 0, 1, 1);
 
     /**
-     * The rotation value of the texture.
+     * Indicates whether the texture should be rotated by 90 degrees
      *
      * @private
-     * @member {number}
+     * @member {boolean}
      */
     this.rotate = !!rotate;
 
@@ -124,14 +133,13 @@ function Texture(baseTexture, frame, crop, trim, rotate)
     }
     else
     {
-        baseTexture.addEventListener('loaded', this.onBaseTextureLoaded.bind(this));
+        baseTexture.once('loaded', this.onBaseTextureLoaded, this);
     }
 }
 
+Texture.prototype = Object.create(EventEmitter.prototype);
 Texture.prototype.constructor = Texture;
 module.exports = Texture;
-
-eventTarget.mixin(Texture.prototype);
 
 Object.defineProperties(Texture.prototype, {
     frame: {
@@ -155,7 +163,8 @@ Object.defineProperties(Texture.prototype, {
                 throw new Error('Texture Error: frame does not fit inside the base Texture dimensions ' + this);
             }
 
-            this.valid = frame && frame.width && frame.height && this.baseTexture.source && this.baseTexture.hasLoaded;
+            //this.valid = frame && frame.width && frame.height && this.baseTexture.source && this.baseTexture.hasLoaded;
+            this.valid = frame && frame.width && frame.height && this.baseTexture.hasLoaded;
 
             if (this.trim)
             {
@@ -170,7 +179,7 @@ Object.defineProperties(Texture.prototype, {
                 this.crop = frame;
             }
 
-            if (this.valid)
+             if (this.valid)
             {
                 this._updateUvs();
             }
@@ -185,6 +194,8 @@ Object.defineProperties(Texture.prototype, {
 Texture.prototype.update = function ()
 {
     this.baseTexture.update();
+
+
 };
 
 /**
@@ -192,11 +203,8 @@ Texture.prototype.update = function ()
  *
  * @private
  */
-Texture.prototype.onBaseTextureLoaded = function ()
+Texture.prototype.onBaseTextureLoaded = function (baseTexture)
 {
-    var baseTexture = this.baseTexture;
-    baseTexture.removeEventListener('loaded', this.onLoaded);
-
     // TODO this code looks confusing.. boo to abusing getters and setterss!
     if (this.noFrame)
     {
@@ -207,7 +215,7 @@ Texture.prototype.onBaseTextureLoaded = function ()
         this.frame = this._frame;
     }
 
-    this.dispatchEvent( { type: 'update', content: this } );
+    this.emit( 'update', this );
 };
 
 /**
@@ -223,6 +231,11 @@ Texture.prototype.destroy = function (destroyBase)
     }
 
     this.valid = false;
+};
+
+Texture.prototype.clone = function ()
+{
+    return new Texture(this.baseTexture, this.frame, this.crop, this.trim, this.rotate);
 };
 
 /**
@@ -248,7 +261,7 @@ Texture.prototype._updateUvs = function ()
  * @param imageUrl {string} The image url of the texture
  * @param crossorigin {boolean} Whether requests should be treated as crossorigin
  * @param scaleMode {number} See {{#crossLink "PIXI/scaleModes:property"}}scaleModes{{/crossLink}} for possible values
- * @return Texture
+ * @return {Texture} The newly created texture
  */
 Texture.fromImage = function (imageUrl, crossorigin, scaleMode)
 {
@@ -263,14 +276,21 @@ Texture.fromImage = function (imageUrl, crossorigin, scaleMode)
     return texture;
 };
 
-
+/**
+ * Helper function that creates a sprite that will contain a texture from the TextureCache based on the frameId
+ * The frame ids are created when a Texture packer file has been loaded
+ *
+ * @static
+ * @param frameId {String} The frame Id of the texture in the cache
+ * @return {Texture} The newly created texture
+ */
 Texture.fromFrame = function (frameId)
 {
     var texture = utils.TextureCache[frameId];
 
     if (!texture)
     {
-        throw new Error('The frameId "' + frameId + '" does not exist in the texture cache' + this);
+        throw new Error('The frameId "' + frameId + '" does not exist in the texture cache');
     }
 
     return texture;
@@ -299,7 +319,27 @@ Texture.fromCanvas = function (canvas, scaleMode)
  */
 Texture.fromVideo = function (video, scaleMode)
 {
-    return new Texture(VideoBaseTexture.baseTextureFromVideo(video, scaleMode));
+    if (typeof video === 'string')
+    {
+        return Texture.fromVideoUrl(video, scaleMode);
+    }
+    else
+    {
+        return new Texture(VideoBaseTexture.fromVideo(video, scaleMode));
+    }
+};
+
+/**
+ * Helper function that creates a new Texture based on the video url.
+ *
+ * @static
+ * @param videoUrl {string}
+ * @param scaleMode {number} See {{@link SCALE_MODES}} for possible values
+ * @return {Texture} A Texture
+ */
+Texture.fromVideoUrl = function (videoUrl, scaleMode)
+{
+    return new Texture(VideoBaseTexture.fromUrl(videoUrl, scaleMode));
 };
 
 /**

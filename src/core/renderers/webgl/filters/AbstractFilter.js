@@ -5,46 +5,48 @@ var DefaultShader = require('../shaders/TextureShader');
  * If you want to make a custom filter this should be your base class.
  *
  * @class
- * @namespace PIXI
- * @param fragmentSrc {string|string[]} The fragment source in an array of strings.
+ * @memberof PIXI
+ * @param vertexSrc {string|string[]} The vertex shader source as an array of strings.
+ * @param fragmentSrc {string|string[]} The fragment shader source as an array of strings.
  * @param uniforms {object} An object containing the uniforms for this filter.
  */
 function AbstractFilter(vertexSrc, fragmentSrc, uniforms)
 {
-    /**
-     * An array of passes - some filters contain a few steps this array simply stores the steps in a liniear fashion.
-     * For example the blur filter has two passes blurX and blurY.
-     *
-     * @member {AbstractFilter[]}
-     * @private
-     */
-    this.passes = [this];
 
     /**
+     * An array of shaders
      * @member {Shader[]}
      * @private
      */
     this.shaders = [];
 
     /**
+     * The extra padding that the filter might need
      * @member {number}
      */
     this.padding = 0;
 
     /**
+     * The uniforms as an object
      * @member {object}
      * @private
      */
     this.uniforms = uniforms || {};
 
 
-    this.vertexSrc = vertexSrc;
-
     /**
+     * The code of the vertex shader
      * @member {string[]}
      * @private
      */
-    this.fragmentSrc = fragmentSrc;
+    this.vertexSrc = vertexSrc || DefaultShader.defaultVertexSrc;
+
+    /**
+     * The code of the frament shader
+     * @member {string[]}
+     * @private
+     */
+    this.fragmentSrc = fragmentSrc || DefaultShader.defaultFragmentSrc;
 
     //TODO a reminder - would be cool to have lower res filters as this would give better performance.
 
@@ -55,6 +57,11 @@ function AbstractFilter(vertexSrc, fragmentSrc, uniforms)
 AbstractFilter.prototype.constructor = AbstractFilter;
 module.exports = AbstractFilter;
 
+/*
+ * Grabs a shader from the current renderer
+ * @param renderer {WebGLRenderer} The renderer to retrieve the shader from
+ *
+ */
 AbstractFilter.prototype.getShader = function (renderer)
 {
     var gl = renderer.gl;
@@ -76,6 +83,13 @@ AbstractFilter.prototype.getShader = function (renderer)
     return shader;
 };
 
+/*
+ * Applies the filter
+ * @param renderer {WebGLRenderer} The renderer to retrieve the filter from
+ * @param input {RenderTarget}
+ * @param output {RenderTarget}
+ * @param clear {boolean} Whether or not we want to clear the outputTarget
+ */
 AbstractFilter.prototype.applyFilter = function (renderer, input, output, clear)
 {
     var shader = this.getShader(renderer);

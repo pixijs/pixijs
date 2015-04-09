@@ -8,7 +8,6 @@ var SystemRenderer = require('../SystemRenderer'),
     ObjectRenderer = require('./utils/ObjectRenderer'),
     FXAAFilter = require('./filters/FXAAFilter'),
     utils = require('../../utils'),
-
     CONST = require('../../const');
 
 /**
@@ -18,14 +17,16 @@ var SystemRenderer = require('../SystemRenderer'),
  * Don't forget to add the view to your DOM or you will not see anything :)
  *
  * @class
- * @namespace PIXI
+ * @memberof PIXI
+ * @extends SystemRenderer
  * @param [width=0] {number} the width of the canvas view
  * @param [height=0] {number} the height of the canvas view
  * @param [options] {object} The optional renderer parameters
  * @param [options.view] {HTMLCanvasElement} the canvas to use as a view, optional
  * @param [options.transparent=false] {boolean} If the render view is transparent, default false
  * @param [options.autoResize=false] {boolean} If the render view is automatically resized, default false
- * @param [options.antialias=false] {boolean} sets antialias (only applicable in chrome at the moment)
+ * @param [options.antialias=false] {boolean} sets antialias. If not available natively then FXAA antialiasing is used
+ * @param [options.forceFXAA=false] {boolean} forces FXAA antialiasing to be used over native. FXAA is faster, but may not always lok as great
  * @param [options.resolution=1] {number} the resolution of the renderer retina would be 2
  * @param [options.clearBeforeRender=true] {boolean} This sets if the CanvasRenderer will clear the canvas or
  *      not before the new render pass.
@@ -38,24 +39,35 @@ function WebGLRenderer(width, height, options)
 
     SystemRenderer.call(this, 'WebGL', width, height, options);
 
+    /**
+     * The type of this renderer as a standardised const
+     *
+     * @member {number}
+     *
+     */
     this.type = CONST.RENDERER_TYPE.WEBGL;
 
     this.handleContextLost = this.handleContextLost.bind(this);
     this.handleContextRestored = this.handleContextRestored.bind(this);
 
-    this._updateTextureBound = function(e){
-        this.updateTexture(e.target);
-    }.bind(this);
-
-    this._destroyTextureBound = function(e){
-        this.destroyTexture(e.target);
-    }.bind(this);
-
     this.view.addEventListener('webglcontextlost', this.handleContextLost, false);
     this.view.addEventListener('webglcontextrestored', this.handleContextRestored, false);
 
     //TODO possibility to force FXAA as it may offer better performance?
-    this._useFXAA = false;
+    /**
+     * Does it use FXAA ?
+     *
+     * @member {boolean}
+     * @private
+     */
+    this._useFXAA = !!options.forceFXAA && options.antialias;
+
+    /**
+     * The fxaa filter
+     *
+     * @member {FXAAFilter}
+     * @private
+     */
     this._FXAAFilter = null;
 
     /**
@@ -114,9 +126,16 @@ function WebGLRenderer(width, height, options)
      */
     this.blendModeManager = new BlendModeManager(this);
 
-    this.currentRenderTarget = this.renderTarget;
+    /**
+     * Holds the current render target
+     * @member {Object}
+     */
+    this.currentRenderTarget = null;
 
-
+    /**
+     * object renderer @alvin
+     * @member {ObjectRenderer}
+     */
     this.currentRenderer = new ObjectRenderer(this);
 
     this.initPlugins();
@@ -127,6 +146,11 @@ function WebGLRenderer(width, height, options)
     // map some webGL blend modes..
     this._mapBlendModes();
 
+    /**
+     * An array of render targets
+     * @member {Array}
+     * @private
+     */
     this._renderTargetStack = [];
 }
 
@@ -139,7 +163,7 @@ utils.pluginTarget.mixin(WebGLRenderer);
 WebGLRenderer.glContextId = 0;
 
 /**
- *
+ * Creates the WebGL context
  * @private
  */
 WebGLRenderer.prototype._initContext = function ()
@@ -164,15 +188,22 @@ WebGLRenderer.prototype._initContext = function ()
 
     this.renderTarget = new RenderTarget(this.gl, this.width, this.height, null, this.resolution, true);
 
+    this.setRenderTarget(this.renderTarget);
+
     this.emit('context', gl);
 
     // setup the width/height properties and gl viewport
     this.resize(this.width, this.height);
 
-    this._useFXAA = this._contextOptions.antialias && ! gl.getContextAttributes().antialias;
+    if(!this._useFXAA)
+    {
+        this._useFXAA = ( this._contextOptions.antialias && ! gl.getContextAttributes().antialias );
+    }
+
 
     if(this._useFXAA)
     {
+        window.console.warn('FXAA antialiasing being used instead of native antialiasing');
         this._FXAAFilter = [new FXAAFilter()];
     }
 };
@@ -211,7 +242,7 @@ WebGLRenderer.prototype.render = function (object)
     var gl = this.gl;
 
     // make sure we are bound to the main frame buffer
-    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    this.setRenderTarget(this.renderTarget);
 
     if (this.clearBeforeRender)
     {
@@ -234,14 +265,19 @@ WebGLRenderer.prototype.render = function (object)
  * Renders a Display Object.
  *
  * @param displayObject {DisplayObject} The DisplayObject to render
- * @param projection {Point} The projection
- * @param buffer {Array} a standard WebGL buffer
+ * @param renderTarget {RenderTarget} The render target to use to render this display object
+ *
  */
-WebGLRenderer.prototype.renderDisplayObject = function (displayObject, renderTarget)//projection, buffer)
+WebGLRenderer.prototype.renderDisplayObject = function (displayObject, renderTarget, clear)//projection, buffer)
 {
     // TODO is this needed...
     //this.blendModeManager.setBlendMode(CONST.BLEND_MODES.NORMAL);
     this.setRenderTarget(renderTarget);
+
+    if(clear)
+    {
+        renderTarget.clear();
+    }
 
     // start the filter manager
     this.filterManager.setFilterStack( renderTarget.filterStack );
@@ -253,6 +289,12 @@ WebGLRenderer.prototype.renderDisplayObject = function (displayObject, renderTar
     this.currentRenderer.flush();
 };
 
+/**
+ * Changes the current renderer to the one given in parameter
+ *
+ * @param objectRenderer {Object} TODO @alvin
+ *
+ */
 WebGLRenderer.prototype.setObjectRenderer = function (objectRenderer)
 {
     if (this.currentRenderer === objectRenderer)
@@ -265,8 +307,18 @@ WebGLRenderer.prototype.setObjectRenderer = function (objectRenderer)
     this.currentRenderer.start();
 };
 
+/**
+ * Changes the current render target to the one given in parameter
+ *
+ * @param renderTarget {RenderTarget} the new render target
+ *
+ */
 WebGLRenderer.prototype.setRenderTarget = function (renderTarget)
 {
+    if( this.currentRenderTarget === renderTarget)
+    {
+        return;
+    }
     // TODO - maybe down the line this should be a push pos thing? Leaving for now though.
     this.currentRenderTarget = renderTarget;
     this.currentRenderTarget.activate();
@@ -284,9 +336,13 @@ WebGLRenderer.prototype.resize = function (width, height)
 {
     SystemRenderer.prototype.resize.call(this, width, height);
 
-   // console.log(width)
     this.filterManager.resize(width, height);
     this.renderTarget.resize(width, height);
+
+    if(this.currentRenderTarget === this.renderTarget)
+    {
+        this.renderTarget.activate();
+    }
 };
 
 /**
@@ -308,8 +364,8 @@ WebGLRenderer.prototype.updateTexture = function (texture)
     if (!texture._glTextures[gl.id])
     {
         texture._glTextures[gl.id] = gl.createTexture();
-        texture.on('update', this._updateTextureBound);
-        texture.on('dispose', this._destroyTextureBound);
+        texture.on('update', this.updateTexture, this);
+        texture.on('dispose', this.destroyTexture, this);
     }
 
 
@@ -345,6 +401,11 @@ WebGLRenderer.prototype.updateTexture = function (texture)
     return  texture._glTextures[gl.id];
 };
 
+/**
+ * Deletes the texture from WebGL
+ *
+ * @param texture {BaseTexture|Texture} the texture to destroy
+ */
 WebGLRenderer.prototype.destroyTexture = function (texture)
 {
     texture = texture.baseTexture || texture;

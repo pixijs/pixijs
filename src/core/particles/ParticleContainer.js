@@ -21,26 +21,75 @@ var Container = require('../display/Container');
  * And here you have a hundred sprites that will be renderer at the speed of light.
  *
  * @class
- * @namespace PIXI
+ * @extends Container
+ * @memberof PIXI
+ *
+ * @param [size=15000] {number} The number of images in the SpriteBatch before it flushes.
+ * @param [properties] {object} The properties of children that should be uploaded to the gpu and applied.
+ * @param [properties.scale=false] {boolean} When true, scale be uploaded and applied.
+ * @param [properties.position=true] {boolean} When true, position be uploaded and applied.
+ * @param [properties.rotation=false] {boolean} When true, rotation be uploaded and applied.
+ * @param [properties.uvs=false] {boolean} When true, uvs be uploaded and applied.
+ * @param [properties.alpha=false] {boolean} When true, alpha be uploaded and applied.
  */
 function ParticleContainer(size, properties)
 {
     Container.call(this);
 
-    // set properties to be dynamic (true) / static (false)
-    // TODO this could be easier to understand!
-    this._properties = properties || [false, true, false, false, false];
+    /**
+     * Set properties to be dynamic (true) / static (false)
+     *
+     * @member {array}
+     * @private
+     */
+    this._properties = [false, true, false, false, false];
+
+    /**
+     * @member {number}
+     * @private
+     */
     this._size = size || 15000;
+
+    /**
+     * @member {WebGLBuffer}
+     * @private
+     */
     this._buffers = null;
+
+    /**
+     * @member {boolean}
+     * @private
+     */
     this._updateStatic = false;
 
+    /**
+     * @member {boolean}
+     *
+     */
     this.interactiveChildren = false;
 
+    this.setProperties(properties);
 }
 
 ParticleContainer.prototype = Object.create(Container.prototype);
 ParticleContainer.prototype.constructor = ParticleContainer;
 module.exports = ParticleContainer;
+
+/**
+ * Sets the private properties array to dynamic / static based on the passed properties object
+ *
+ * @param properties {object} The properties to be uploaded
+ */
+ParticleContainer.prototype.setProperties = function(properties)
+{
+    if ( properties ) {
+        this._properties[0] = 'scale' in properties ? !!properties.scale : this._properties[0];
+        this._properties[1] = 'position' in properties ? !!properties.position : this._properties[1];
+        this._properties[2] = 'rotation' in properties ? !!properties.rotation : this._properties[2];
+        this._properties[3] = 'uvs' in properties ? !!properties.uvs : this._properties[3];
+        this._properties[4] = 'alpha' in properties ? !!properties.alpha : this._properties[4];
+    }
+};
 
 /**
  * Updates the object transform for rendering
@@ -55,7 +104,7 @@ ParticleContainer.prototype.updateTransform = function ()
 };
 
 /**
- * Renders the object using the WebGL renderer
+ * Renders the container using the WebGL renderer
  *
  * @param renderer {WebGLRenderer} The webgl renderer
  * @private
@@ -71,6 +120,13 @@ ParticleContainer.prototype.renderWebGL = function (renderer)
     renderer.plugins.particle.render( this );
 };
 
+/**
+ * Adds a child to this particle container at a specified index. If the index is out of bounds an error will be thrown
+ *
+ * @param child {DisplayObject} The child to add
+ * @param index {Number} The index to place the child in
+ * @return {DisplayObject} The child that was added.
+ */
 ParticleContainer.prototype.addChildAt = function (child, index)
 {
     // prevent adding self as child

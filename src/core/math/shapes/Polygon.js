@@ -3,22 +3,32 @@ var Point = require('../Point'),
 
 /**
  * @class
- * @namespace PIXI
- * @param points* {Point[]|number[]|Point...|number...} This can be an array of Points that form the polygon,
+ * @memberof PIXI
+ * @param points {Point[]|number[]|...Point|...number} This can be an array of Points that form the polygon,
  *      a flat array of numbers that will be interpreted as [x,y, x,y, ...], or the arguments passed can be
- *      all the points of the polygon e.g. `new Polygon(new Point(), new Point(), ...)`, or the
+ *      all the points of the polygon e.g. `new PIXI.Polygon(new PIXI.Point(), new PIXI.Point(), ...)`, or the
  *      arguments passed can be flat x,y values e.g. `new Polygon(x,y, x,y, x,y, ...)` where `x` and `y` are
  *      Numbers.
  */
-function Polygon(points)
+function Polygon(points_)
 {
+    // prevents an argument assignment deopt
+    // see section 3.1: https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#3-managing-arguments
+    var points = points_;
+
     //if points isn't an array, use arguments as the array
-    if (!(points instanceof Array))
+    if (!Array.isArray(points))
     {
-        points = Array.prototype.slice.call(arguments);
+        // prevents an argument leak deopt
+        // see section 3.2: https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#3-managing-arguments
+        points = new Array(arguments.length);
+
+        for (var a = 0; a < points.length; ++a) {
+            points[a] = arguments[a];
+        }
     }
 
-    //if this is a flat array of numbers, convert it to points
+    // if this is an array of points, convert it to a flat array of numbers
     if (points[0] instanceof Point)
     {
         var p = [];
@@ -35,7 +45,7 @@ function Polygon(points)
     /**
      * An array of the points of this polygon
      *
-     * @member {Point[]}
+     * @member {number[]}
      */
     this.points = points;
 

@@ -1,4 +1,6 @@
 var core = require('../../core');
+// @see https://github.com/substack/brfs/issues/25
+var fs = require('fs');
 
 /**
  * An RGB Split Filter.
@@ -13,7 +15,7 @@ function RGBSplitFilter()
         // vertex shader
         null,
         // fragment shader
-        require('fs').readFileSync(__dirname + '/rgbSplit.frag', 'utf8'),
+        fs.readFileSync(__dirname + '/rgbSplit.frag', 'utf8'),
         // custom uniforms
         {
             red:        { type: 'v2', value: { x: 20, y: 20 } },

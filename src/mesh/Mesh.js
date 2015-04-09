@@ -1,43 +1,55 @@
 var core = require('../core');
 
 /**
- *
+ * Base mesh class
  * @class
  * @extends Container
- * @namespace PIXI
+ * @memberof PIXI.mesh
  * @param texture {Texture} The texture to use
- * @param width {number} the width
- * @param height {number} the height
- *
+ * @param [vertices] {Float32Arrif you want to specify the vertices
+ * @param [uvs] {Float32Array} if you want to specify the uvs
+ * @param [indices] {Uint16Array} if you want to specify the indices
+ * @param [drawMode] {number} the drawMode, can be any of the Mesh.DRAW_MODES consts
  */
-function Strip(texture)
+function Mesh(texture, vertices, uvs, indices, drawMode)
 {
     core.Container.call(this);
 
     /**
-     * The texture of the strip
+     * The texture of the Mesh
      *
      * @member {Texture}
      */
     this.texture = texture;
 
-    // set up the main bits..
-    this.uvs = new Float32Array([0, 1,
+    /**
+     * The Uvs of the Mesh
+     *
+     * @member {Float32Array}
+     */
+    this.uvs = uvs || new Float32Array([0, 1,
                                  1, 1,
                                  1, 0,
                                  0, 1]);
 
-    this.vertices = new Float32Array([0, 0,
+    /**
+     * An array of vertices
+     *
+     * @member {Float32Array}
+     */
+    this.vertices = vertices || new Float32Array([0, 0,
                                       100, 0,
                                       100, 100,
                                       0, 100]);
 
-    this.colors = new Float32Array([1, 1, 1, 1]);
-
-    this.indices = new Uint16Array([0, 1, 2, 3]);
+    /*
+     * @member {Uint16Array} An array containing the indices of the vertices
+     */
+    //  TODO auto generate this based on draw mode!
+    this.indices = indices || new Uint16Array([0, 1, 2, 3]);
 
     /**
-     * Whether the strip is dirty or not
+     * Whether the Mesh is dirty or not
      *
      * @member {boolean}
      */
@@ -49,7 +61,7 @@ function Strip(texture)
      * @member {number}
      * @default CONST.BLEND_MODES.NORMAL;
      */
-    this.blendMode = core.CONST.BLEND_MODES.NORMAL;
+    this.blendMode = core.BLEND_MODES.NORMAL;
 
     /**
      * Triangles in canvas mode are automatically antialiased, use this value to force triangles to overlap a bit with each other.
@@ -58,171 +70,39 @@ function Strip(texture)
      */
     this.canvasPadding = 0;
 
-    this.drawMode = Strip.DrawModes.TRIANGLE_STRIP;
+    /**
+     * The way the Mesh should be drawn, can be any of the Mesh.DRAW_MODES consts
+     *
+     * @member {number}
+     */
+    this.drawMode = drawMode || Mesh.DRAW_MODES.TRIANGLE_MESH;
 }
 
 // constructor
-Strip.prototype = Object.create(core.Container.prototype);
-Strip.prototype.constructor = Strip;
-module.exports = Strip;
+Mesh.prototype = Object.create(core.Container.prototype);
+Mesh.prototype.constructor = Mesh;
+module.exports = Mesh;
 
 /**
  * Renders the object using the WebGL renderer
  *
- * @param renderer {WebGLRenderer}
+ * @param renderer {WebGLRenderer} a reference to the WebGL renderer
+ * @private
  */
-Strip.prototype.renderWebGL = function (renderer)
+Mesh.prototype._renderWebGL = function (renderer)
 {
-    // if the sprite is not visible or the alpha is 0 then no need to render this element
-    if (!this.visible || this.alpha <= 0 || !this.renderable)
-    {
-        return;
-    }
-
-    // render triangle strip..
-
-    renderer.spriteBatch.stop();
-
-    // init! init!
-    if (!this._vertexBuffer)
-    {
-        this._initWebGL(renderer);
-    }
-
-    renderer.shaderManager.setShader(renderer.shaderManager.plugins.stripShader);
-
-    this._renderStrip(renderer);
-
-    ///renderer.shaderManager.activateDefaultShader();
-
-    renderer.spriteBatch.start();
-
-    //TODO check culling
-};
-
-Strip.prototype._initWebGL = function (renderer)
-{
-    // build the strip!
-    var gl = renderer.gl;
-
-    this._vertexBuffer = gl.createBuffer();
-    this._indexBuffer = gl.createBuffer();
-    this._uvBuffer = gl.createBuffer();
-    this._colorBuffer = gl.createBuffer();
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, this.vertices, gl.DYNAMIC_DRAW);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, this._uvBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER,  this.uvs, gl.STATIC_DRAW);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, this._colorBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, this.colors, gl.STATIC_DRAW);
-
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW);
-};
-
-Strip.prototype._renderStrip = function (renderer)
-{
-    var gl = renderer.gl;
-    var projection = renderer.projection,
-        offset = renderer.offset,
-        shader = renderer.shaderManager.plugins.stripShader;
-
-    var drawMode = this.drawMode === Strip.DrawModes.TRIANGLE_STRIP ? gl.TRIANGLE_STRIP : gl.TRIANGLES;
-
-    // gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mat4Real);
-
-    renderer.blendModeManager.setBlendMode(this.blendMode);
-
-
-    // set uniforms
-    gl.uniformMatrix3fv(shader.translationMatrix, false, this.worldTransform.toArray(true));
-    gl.uniform2f(shader.projectionVector, projection.x, -projection.y);
-    gl.uniform2f(shader.offsetVector, -offset.x, -offset.y);
-    gl.uniform1f(shader.alpha, this.worldAlpha);
-
-    if (!this.dirty)
-    {
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
-        gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.vertices);
-        gl.vertexAttribPointer(shader.aVertexPosition, 2, gl.FLOAT, false, 0, 0);
-
-        // update the uvs
-        gl.bindBuffer(gl.ARRAY_BUFFER, this._uvBuffer);
-        gl.vertexAttribPointer(shader.aTextureCoord, 2, gl.FLOAT, false, 0, 0);
-
-        gl.activeTexture(gl.TEXTURE0);
-
-        // check if a texture is dirty..
-        if (this.texture.baseTexture._dirty[gl.id])
-        {
-            renderer.updateTexture(this.texture.baseTexture);
-        }
-        else
-        {
-            // bind the current texture
-            gl.bindTexture(gl.TEXTURE_2D, this.texture.baseTexture._glTextures[gl.id]);
-        }
-
-        // dont need to upload!
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
-
-
-    }
-    else
-    {
-
-        this.dirty = false;
-        gl.bindBuffer(gl.ARRAY_BUFFER, this._vertexBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, this.vertices, gl.STATIC_DRAW);
-        gl.vertexAttribPointer(shader.aVertexPosition, 2, gl.FLOAT, false, 0, 0);
-
-        // update the uvs
-        gl.bindBuffer(gl.ARRAY_BUFFER, this._uvBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, this.uvs, gl.STATIC_DRAW);
-        gl.vertexAttribPointer(shader.aTextureCoord, 2, gl.FLOAT, false, 0, 0);
-
-        gl.activeTexture(gl.TEXTURE0);
-
-        // check if a texture is dirty..
-        if (this.texture.baseTexture._dirty[gl.id])
-        {
-            renderer.updateTexture(this.texture.baseTexture);
-        }
-        else
-        {
-            gl.bindTexture(gl.TEXTURE_2D, this.texture.baseTexture._glTextures[gl.id]);
-        }
-
-        // dont need to upload!
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW);
-
-    }
-    //console.log(gl.TRIANGLE_STRIP)
-    //
-    //
-    gl.drawElements(drawMode, this.indices.length, gl.UNSIGNED_SHORT, 0);
-
-
+    renderer.setObjectRenderer(renderer.plugins.mesh);
+    renderer.plugins.mesh.render(this);
 };
 
 /**
  * Renders the object using the Canvas renderer
  *
  * @param renderer {CanvasRenderer}
+ * @private
  */
-Strip.prototype.renderCanvas = function (renderer)
+Mesh.prototype._renderCanvas = function (renderer)
 {
-    // if the sprite is not visible or the alpha is 0 then no need to render this element
-    if (!this.visible || this.alpha <= 0 || !this.renderable)
-    {
-        return;
-    }
-
     var context = renderer.context;
 
     var transform = this.worldTransform;
@@ -236,9 +116,9 @@ Strip.prototype.renderCanvas = function (renderer)
         context.setTransform(transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
     }
 
-    if (this.drawMode === Strip.DrawModes.TRIANGLE_STRIP)
+    if (this.drawMode === Mesh.DRAW_MODES.TRIANGLE_MESH)
     {
-        this._renderCanvasTriangleStrip(context);
+        this._renderCanvasTriangleMesh(context);
     }
     else
     {
@@ -246,7 +126,13 @@ Strip.prototype.renderCanvas = function (renderer)
     }
 };
 
-Strip.prototype._renderCanvasTriangleStrip = function (context)
+/**
+ * Draws the object in Triangle Mesh mode using canvas
+ *
+ * @param context {CanvasRenderingContext2D} the current drawing context
+ * @private
+ */
+Mesh.prototype._renderCanvasTriangleMesh = function (context)
 {
     // draw triangles!!
     var vertices = this.vertices;
@@ -263,7 +149,13 @@ Strip.prototype._renderCanvasTriangleStrip = function (context)
     }
 };
 
-Strip.prototype._renderCanvasTriangles = function (context)
+/**
+ * Draws the object in triangle mode using canvas
+ *
+ * @param context {CanvasRenderingContext2D} the current drawing context
+ * @private
+ */
+Mesh.prototype._renderCanvasTriangles = function (context)
 {
     // draw triangles!!
     var vertices = this.vertices;
@@ -281,7 +173,18 @@ Strip.prototype._renderCanvasTriangles = function (context)
     }
 };
 
-Strip.prototype._renderCanvasDrawTriangle = function (context, vertices, uvs, index0, index1, index2)
+/**
+ * Draws one of the triangles that form this Mesh
+ *
+ * @param context {CanvasRenderingContext2D} the current drawing context
+ * @param vertices {Float32Array} a reference to the vertices of the Mesh
+ * @param uvs {Float32Array} a reference to the uvs of the Mesh
+ * @param index0 {number} the index of the first vertex
+ * @param index1 {number} the index of the second vertex
+ * @param index2 {number} the index of the third vertex
+ * @private
+ */
+Mesh.prototype._renderCanvasDrawTriangle = function (context, vertices, uvs, index0, index1, index2)
 {
     var textureSource = this.texture.baseTexture.source;
     var textureWidth = this.texture.width;
@@ -356,15 +259,15 @@ Strip.prototype._renderCanvasDrawTriangle = function (context, vertices, uvs, in
 
 
 /**
- * Renders a flat strip
+ * Renders a flat Mesh
  *
- * @param strip {Strip} The Strip to render
+ * @param Mesh {Mesh} The Mesh to render
  * @private
  */
-Strip.prototype.renderStripFlat = function (strip)
+Mesh.prototype.renderMeshFlat = function (Mesh)
 {
     var context = this.context;
-    var vertices = strip.vertices;
+    var vertices = Mesh.vertices;
 
     var length = vertices.length/2;
     // this.count++;
@@ -389,7 +292,7 @@ Strip.prototype.renderStripFlat = function (strip)
 };
 
 /*
-Strip.prototype.setTexture = function (texture)
+Mesh.prototype.setTexture = function (texture)
 {
     //TODO SET THE TEXTURES
     //TODO VISIBILITY
@@ -410,7 +313,7 @@ Strip.prototype.setTexture = function (texture)
  * @private
  */
 
-Strip.prototype.onTextureUpdate = function ()
+Mesh.prototype.onTextureUpdate = function ()
 {
     this.updateFrame = true;
 };
@@ -421,7 +324,7 @@ Strip.prototype.onTextureUpdate = function ()
  * @param matrix {Matrix} the transformation matrix of the sprite
  * @return {Rectangle} the framing rectangle
  */
-Strip.prototype.getBounds = function (matrix)
+Mesh.prototype.getBounds = function (matrix)
 {
     var worldTransform = matrix || this.worldTransform;
 
@@ -476,11 +379,11 @@ Strip.prototype.getBounds = function (matrix)
  *
  * @static
  * @constant
- * @property {object} DrawModes
- * @property {number} DrawModes.TRIANGLE_STRIP
- * @property {number} DrawModes.TRIANGLES
+ * @property {object} DRAW_MODES
+ * @property {number} DRAW_MODES.TRIANGLE_MESH
+ * @property {number} DRAW_MODES.TRIANGLES
  */
-Strip.DrawModes = {
-    TRIANGLE_STRIP: 0,
+Mesh.DRAW_MODES = {
+    TRIANGLE_MESH: 0,
     TRIANGLES: 1
 };

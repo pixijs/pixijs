@@ -1,17 +1,20 @@
 var utils = require('../utils'),
-    CONST = require('../const');
+    CONST = require('../const'),
+    EventEmitter = require('eventemitter3').EventEmitter;
 
 /**
  * A texture stores the information that represents an image. All textures have a base texture.
  *
  * @class
- * @mixes eventTarget
- * @namespace PIXI
+ * @memberof PIXI
  * @param source {Image|Canvas} the source object of the texture.
  * @param [scaleMode=scaleModes.DEFAULT] {number} See {@link SCALE_MODES} for possible values
+ * @param resolution {number} the resolution of the texture for devices with different pixel ratios
  */
 function BaseTexture(source, scaleMode, resolution)
 {
+    EventEmitter.call(this);
+
     this.uuid = utils.uuid();
 
     /**
@@ -39,7 +42,19 @@ function BaseTexture(source, scaleMode, resolution)
 
     // TODO docs
     // used to store the actual dimensions of the source
+    /**
+     * Used to store the actual width of the source of this texture
+     *
+     * @member {number}
+     * @readOnly
+     */
     this.realWidth = 100;
+    /**
+     * Used to store the actual height of the source of this texture
+     *
+     * @member {number}
+     * @readOnly
+     */
     this.realHeight = 100;
 
     /**
@@ -96,6 +111,7 @@ function BaseTexture(source, scaleMode, resolution)
     this.imageUrl = null;
 
     /**
+     * Wether or not the texture is a power of two, try to use power of two textures as much as you can
      * @member {boolean}
      * @private
      */
@@ -130,6 +146,7 @@ function BaseTexture(source, scaleMode, resolution)
      * Fired when a not-immediately-available source finishes loading.
      *
      * @event loaded
+     * @memberof BaseTexture#
      * @protected
      */
 
@@ -137,21 +154,22 @@ function BaseTexture(source, scaleMode, resolution)
      * Fired when a not-immediately-available source fails to load.
      *
      * @event error
+     * @memberof BaseTexture#
      * @protected
      */
 }
 
+BaseTexture.prototype = Object.create(EventEmitter.prototype);
 BaseTexture.prototype.constructor = BaseTexture;
 module.exports = BaseTexture;
-
-utils.eventTarget.mixin(BaseTexture.prototype);
 
 /**
  * Updates the texture on all the webgl renderers.
  *
  * @fires update
  */
-BaseTexture.prototype.update = function () {
+BaseTexture.prototype.update = function ()
+{
     this.emit('update', this);
 };
 
@@ -349,7 +367,7 @@ BaseTexture.prototype.updateSourceImage = function (newSrc)
  *
  * @static
  * @param imageUrl {string} The image url of the texture
- * @param [crossorigin=(auto)] {boolean} Should use anonymouse CORS? Defaults to true if the URL is not a data-URI.
+ * @param [crossorigin=(auto)] {boolean} Should use anonymous CORS? Defaults to true if the URL is not a data-URI.
  * @param [scaleMode=scaleModes.DEFAULT] {number} See {@link SCALE_MODES} for possible values
  * @return BaseTexture
  */
@@ -380,7 +398,7 @@ BaseTexture.fromImage = function (imageUrl, crossorigin, scaleMode)
         utils.BaseTextureCache[imageUrl] = baseTexture;
 
         // if there is an @2x at the end of the url we are going to assume its a highres image
-        this.resolution = utils.getResolutionOfUrl(imageUrl);
+        baseTexture.resolution = utils.getResolutionOfUrl(imageUrl);
     }
 
     return baseTexture;

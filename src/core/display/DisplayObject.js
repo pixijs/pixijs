@@ -1,6 +1,7 @@
 var math = require('../math'),
-    utils = require('../utils'),
     RenderTexture = require('../textures/RenderTexture'),
+    EventEmitter = require('eventemitter3').EventEmitter,
+    CONST = require('../const'),
     _tempMatrix = new math.Matrix();
 
 /**
@@ -8,10 +9,12 @@ var math = require('../math'),
  * This is an abstract class and should not be used on its own rather it should be extended.
  *
  * @class
- * @namespace PIXI
+ * @memberof PIXI
  */
 function DisplayObject()
 {
+    EventEmitter.call(this);
+
     /**
      * The coordinate of the object relative to the local coordinates of the parent.
      *
@@ -149,8 +152,8 @@ function DisplayObject()
 }
 
 // constructor
+DisplayObject.prototype = Object.create(EventEmitter.prototype);
 DisplayObject.prototype.constructor = DisplayObject;
-utils.eventTarget.mixin(DisplayObject.prototype);
 module.exports = DisplayObject;
 
 Object.defineProperties(DisplayObject.prototype, {
@@ -280,8 +283,8 @@ DisplayObject.prototype.updateTransform = function ()
     // temporary matrix variables
     var a, b, c, d, tx, ty;
 
-    // so if rotation is between 0 then we can simplify the multiplication process..
-    if (this.rotation % math.PI_2)
+    // so if rotation is between 0 then we can simplify the multiplication process...
+    if (this.rotation % CONST.PI_2)
     {
         // check to see if the rotation is the same as the previous render. This means we only need to use sin and cos when rotation actually changes
         if (this.rotation !== this.rotationCache)
@@ -344,13 +347,12 @@ DisplayObject.prototype.displayObjectUpdateTransform = DisplayObject.prototype.u
 /**
  *
  *
- *
  * Retrieves the bounds of the displayObject as a rectangle object
  *
  * @param matrix {Matrix}
  * @return {Rectangle} the rectangular bounding area
  */
-DisplayObject.prototype.getBounds = function (/* matrix */)
+DisplayObject.prototype.getBounds = function (matrix) // jshint unused:false
 {
     return math.Rectangle.EMPTY;
 };
@@ -373,7 +375,7 @@ DisplayObject.prototype.getLocalBounds = function ()
  */
 DisplayObject.prototype.toGlobal = function (position)
 {
-    // don't need to u[date the lot
+    // don't need to update the lot
     this.displayObjectUpdateTransform();
     return this.worldTransform.apply(position);
 };
@@ -403,7 +405,7 @@ DisplayObject.prototype.toLocal = function (position, from)
  * @param renderer {WebGLRenderer} The renderer
  * @private
  */
-DisplayObject.prototype.renderWebGL = function (/* renderer */)
+DisplayObject.prototype.renderWebGL = function (renderer) // jshint unused:false
 {
     // OVERWRITE;
 };
@@ -414,11 +416,19 @@ DisplayObject.prototype.renderWebGL = function (/* renderer */)
  * @param renderer {CanvasRenderer} The renderer
  * @private
  */
-DisplayObject.prototype.renderCanvas = function (/* renderer */)
+DisplayObject.prototype.renderCanvas = function (renderer) // jshint unused:false
 {
     // OVERWRITE;
 };
-
+/**
+ * Useful function that returns a texture of the display object that can then be used to create sprites
+ * This can be quite useful if your displayObject is static / complicated and needs to be reused multiple times.
+ *
+ * @param renderer {CanvasRenderer|WebGLRenderer} The renderer used to generate the texture.
+ * @param resolution {Number} The resolution of the texture being generated
+ * @param scaleMode {Number} See {@link SCALE_MODES} for possible values
+ * @return {Texture} a texture of the display object
+ */
 DisplayObject.prototype.generateTexture = function (renderer, resolution, scaleMode)
 {
     var bounds = this.getLocalBounds();
@@ -431,4 +441,25 @@ DisplayObject.prototype.generateTexture = function (renderer, resolution, scaleM
     renderTexture.render(this, _tempMatrix);
 
     return renderTexture;
+};
+
+/**
+ * Base destroy method for generic display objects
+ *
+ */
+DisplayObject.prototype.destroy = function ()
+{
+
+    this.position = null;
+    this.scale = null;
+    this.pivot = null;
+
+    this._bounds = null;
+    this._currentBounds = null;
+    this._mask = null;
+
+    this.worldTransform = null;
+    this.filterArea = null;
+
+    this.listeners = null;
 };

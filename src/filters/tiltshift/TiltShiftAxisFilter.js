@@ -1,4 +1,6 @@
 var core = require('../../core');
+// @see https://github.com/substack/brfs/issues/25
+var fs = require('fs');
 
 /**
  * @author Vico @vicocotea
@@ -10,7 +12,7 @@ var core = require('../../core');
  *
  * @class
  * @extends AbstractFilter
- * @namespace PIXI.filters
+ * @memberof PIXI.filters
  */
 function TiltShiftAxisFilter()
 {
@@ -18,7 +20,7 @@ function TiltShiftAxisFilter()
         // vertex shader
         null,
         // fragment shader
-        require('fs').readFileSync(__dirname + '/tiltShift.frag', 'utf8'),
+        fs.readFileSync(__dirname + '/tiltShift.frag', 'utf8'),
         // custom uniforms
         {
             blur:           { type: '1f', value: 100 },

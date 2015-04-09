@@ -1,4 +1,6 @@
 var core = require('../../core');
+// @see https://github.com/substack/brfs/issues/25
+var fs = require('fs');
 
 // TODO (cengler) - The Y is flipped in this shader for some reason.
 
@@ -12,7 +14,7 @@ var core = require('../../core');
  *
  * @class
  * @extends AbstractFilter
- * @namespace PIXI.filters
+ * @memberof PIXI.filters
  */
 function AsciiFilter()
 {
@@ -20,7 +22,7 @@ function AsciiFilter()
         // vertex shader
         null,
         // fragment shader
-        require('fs').readFileSync(__dirname + '/ascii.frag', 'utf8'),
+        fs.readFileSync(__dirname + '/ascii.frag', 'utf8'),
         // custom uniforms
         {
             dimensions: { type: '4fv', value: new Float32Array([0, 0, 0, 0]) },

@@ -1,4 +1,6 @@
 var core = require('../../core');
+// @see https://github.com/substack/brfs/issues/25
+var fs = require('fs');
 
 /**
  * The NormalMapFilter class uses the pixel values from the specified texture (called the normal map)
@@ -6,7 +8,7 @@ var core = require('../../core');
  *
  * @class
  * @extends AbstractFilter
- * @namespace PIXI.filters
+ * @memberof PIXI.filters
  * @param texture {Texture} The texture used for the normal map, must be power of 2 texture at the moment
  */
 function NormalMapFilter(texture)
@@ -15,7 +17,7 @@ function NormalMapFilter(texture)
         // vertex shader
         null,
         // fragment shader
-        require('fs').readFileSync(__dirname + '/normalMap.frag', 'utf8'),
+        fs.readFileSync(__dirname + '/normalMap.frag', 'utf8'),
         // custom uniforms
         {
             displacementMap:  { type: 'sampler2D', value: texture },
@@ -36,7 +38,7 @@ function NormalMapFilter(texture)
     }
     else
     {
-        texture.baseTexture.once('loaded', this.onTextureLoaded.bind(this));
+        texture.baseTexture.once('loaded', this.onTextureLoaded, this);
     }
 }
 

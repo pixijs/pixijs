@@ -1,4 +1,6 @@
 var core = require('../../core');
+// @see https://github.com/substack/brfs/issues/25
+var fs = require('fs');
 
 /**
  * The ConvolutionFilter class applies a matrix convolution filter effect.
@@ -9,7 +11,7 @@ var core = require('../../core');
  *
  * @class
  * @extends AbstractFilter
- * @namespace PIXI.filters
+ * @memberof PIXI.filters
  * @param matrix {number[]} An array of values used for matrix transformation. Specified as a 9 point Array.
  * @param width {number} Width of the object you are transforming
  * @param height {number} Height of the object you are transforming
@@ -20,7 +22,7 @@ function ConvolutionFilter(matrix, width, height)
         // vertex shader
         null,
         // fragment shader
-        require('fs').readFileSync(__dirname + '/convolution.frag', 'utf8'),
+        fs.readFileSync(__dirname + '/convolution.frag', 'utf8'),
         // custom uniforms
         {
             matrix:     { type: '1fv', value: new Float32Array(matrix) },

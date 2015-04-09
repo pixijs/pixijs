@@ -1,52 +1,10 @@
 Pixi Renderer
 =============
 
-## Rewrite TODO
-
-See: https://github.com/GoodBoyDigital/pixi.js/issues/1296
-
-
-### Phase 1 Folder Browserify Status
-
-- [x] `index`
-- [x] `display/`
-- [x] `extras/`
-- [x] `filters/`
-- [x] `geom/` (move to `math/`)
-- [x] `loaders/`
-- [x] `primitives/`
-- [x] `renderers/`
-- [x] `text/`
-- [x] `textures/`
-- [x] `utils/`
-- [x] `interactions/` (move Interaction* to here)
-
-
-#### *** IMPORTANT - V2 API CHANGES *** ####
-
-A heads up for anyone updating their version of pixi.js to version 2, as we have changed a couple of bits that you need to be aware of. Fortunately, there are only two changes, and both are small.
-
-1: Creating a renderer now accepts an options parameter that you can add specific settings to:
-```
-// an optional object that contains the settings for the renderer
-var options = {
-    view:myCanvas,
-    resolution:1
-};
-
-var renderer = new PIXI.WebGLRenderer(800, 600, options)
-```
-
-2: A ```PIXI.RenderTexture``` now accepts a ```PIXI.Matrix``` as its second parameter instead of a point. This gives you much more flexibility:
-
-``` myRenderTexture.render(myDisplayObject, myMatrix) ```
-
-Check out the docs for more info!
-
-
 ![pixi.js logo](http://www.goodboydigital.com/pixijs/logo_small.png)
 
 [<img src="http://www.pixijs.com/wp-content/uploads/2013/05/headerPanel_projects-898x342.jpg">](http://www.pixijs.com/projects)
+
 #### JavaScript 2D Renderer ####
 
 The aim of this project is to provide a fast lightweight 2D library that works
@@ -58,6 +16,7 @@ If you’re interested in pixi.js then feel free to follow me on twitter
 of course check back on [our site](<http://www.goodboydigital.com/blog/>) as
 any breakthroughs will be posted up there too!
 
+[![Inline docs](http://inch-ci.org/github/GoodBoyDigital/pixi.js.svg?branch=dev)](http://inch-ci.org/github/GoodBoyDigital/pixi.js)
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/GoodBoyDigital/pixi.js/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
 ### Demos ###
@@ -101,17 +60,6 @@ last 2 examples and allowing us to share the source code :)
 
 [Pixi.js forum](<http://www.html5gamedevs.com/forum/15-pixijs/>)
 
-
-### Road Map ###
-
-* Create a Typescript definition file for Pixi.js
-* Implement Flash animation to pixi
-* Update Loader so that it support XHR2 if it is available
-* Improve the Documentation of the Project
-* Create an Asset Loader Tutorial
-* Create a MovieClip Tutorial
-* Create a small game Tutorial
-
 ### Contribute ###
 
 Want to be part of the pixi.js project? Great! All are welcome! We will get there quicker together :)
@@ -122,10 +70,12 @@ before submitting changes.
 
 ### How to build ###
 
-PixiJS is built with Grunt. If you don't already have this, go install Node and NPM then install the Grunt Command Line.
+PixiJS is built with Gulp.
+If you don't already have Node.js and NPM, go install them.
+Once you do, then install Gulp.
 
 ```
-$> npm install -g grunt-cli
+$> npm install -g gulp
 ```
 
 Then, in the folder where you have downloaded the source, install the build dependencies using npm:
@@ -134,15 +84,40 @@ Then, in the folder where you have downloaded the source, install the build depe
 $> npm install
 ```
 
-Then build:
+Then, to build the source, run:
 
 ```
-$> grunt
+$> gulp build
 ```
 
-This will create a minified version at bin/pixi.js and a non-minified version at bin/pixi.dev.js.
+This will create a minified version at bin/pixi.min.js and a non-minified version at bin/pixi.js with all the plugins.
 
-It also copies the non-minified version to the examples.
+If there are specific plugins you don't want, say "spine" or "interaction", you can exclude those:
+
+```
+$> gulp build --exclude spine --exclude interaction
+```
+
+You can also use the short-form `-e`:
+
+```
+$> gulp build -e extras -e spine -e interaction -e filters
+```
+
+### How to generate the documentation ###
+
+The docs can be generated using npm:
+```
+$> npm run docs
+```
+
+There is also a gulp task to generate them if you want to:
+```
+$> gulp jsdoc
+```
+
+The documentation uses [DocStrap](https://github.com/terryweiss/docstrap) and the jsdoc format, the configuration
+file can be found at [gulp/utils/jsdoc.conf.json](https://github.com/GoodBoyDigital/pixi.js/blob/dev/gulp/util/jsdoc.conf.json)
 
 ### Current features ###
 
@@ -172,7 +147,7 @@ It also copies the non-minified version to the examples.
 
 	document.body.appendChild(renderer.view);
 
-	var stage = new PIXI.Stage;
+	var stage = new PIXI.Container();
 
 	var bunnyTexture = PIXI.Texture.fromImage("bunny.png");
 	var bunny = new PIXI.Sprite(bunnyTexture);

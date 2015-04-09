@@ -3,7 +3,7 @@
  * the horizontal axis and y represents the vertical axis.
  *
  * @class
- * @namespace PIXI
+ * @memberof PIXI
  * @param [x=0] {number} position of the point on the x axis
  * @param [y=0] {number} position of the point on the y axis
  */
@@ -33,6 +33,25 @@ module.exports = Point;
 Point.prototype.clone = function ()
 {
     return new Point(this.x, this.y);
+};
+
+/**
+ * Copies x and y from the given point
+ *
+ * @param p {Point}
+ */
+Point.prototype.copy = function (p) {
+    this.set(p.x, p.y);
+};
+
+/**
+ * Returns true if the given point is equal to this point
+ *
+ * @param p {Point}
+ * @returns {boolean}
+ */
+Point.prototype.equals = function (p) {
+    return (p.x === this.x) && (p.y === this.y);
 };
 
 /**

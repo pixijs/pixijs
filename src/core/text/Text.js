@@ -1,12 +1,21 @@
-var core = require('../core');
+var Sprite = require('../sprites/Sprite'),
+    Texture = require('../textures/Texture'),
+    math = require('../math'),
+    CONST = require('../const');
 
 /**
  * A Text Object will create a line or multiple lines of text. To split a line you can use '\n' in your text string,
  * or add a wordWrap property set to true and and wordWrapWidth property with a value in the style object.
  *
+ * A Text can be created directly from a string and a style object
+ *
+ * ```js
+ * var text = new PIXI.Text('This is a pixi text',{font : '24px Arial', fill : 0xff1010, align : 'center'});
+ * ```
+ *
  * @class
  * @extends Sprite
- * @namespace PIXI
+ * @memberof PIXI
  * @param text {string} The copy that you would like the text to display
  * @param [style] {object} The style parameters
  * @param [style.font] {string} default 'bold 20px Arial' The style and size of the font
@@ -16,10 +25,17 @@ var core = require('../core');
  * @param [style.strokeThickness=0] {number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
  * @param [style.wordWrap=false] {boolean} Indicates if word wrap should be used
  * @param [style.wordWrapWidth=100] {number} The width at which text will wrap, it needs wordWrap to be set to true
+ * @param [style.lineHeight] {number} The line height, a number that represents the vertical space that a letter uses
  * @param [style.dropShadow=false] {boolean} Set a drop shadow for the text
  * @param [style.dropShadowColor='#000000'] {string} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
  * @param [style.dropShadowAngle=Math.PI/4] {number} Set a angle of the drop shadow
  * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
+ * @param [style.padding=0] {number} Occasionally some fonts are cropped. Adding some padding will prevent this from happening
+ * @param [style.textBaseline='alphabetic'] {string} The baseline of the text that is rendered.
+ * @param [style.lineJoin='miter'] {string} The lineJoin property sets the type of corner created, it can resolve
+ *      spiked text issues. Default is 'miter' (creates a sharp corner).
+ * @param [style.miterLimit=10] {number} The miter limit to use when using the 'miter' lineJoin mode. This can reduce
+ *      or increase the spikiness of rendered text.
  */
 function Text(text, style, resolution)
 {
@@ -40,7 +56,7 @@ function Text(text, style, resolution)
      * The resolution of the canvas.
      * @member {number}
      */
-    this.resolution = resolution || core.RESOLUTION;
+    this.resolution = resolution || CONST.RESOLUTION;
 
     /**
      * Private tracker for the current text.
@@ -58,14 +74,17 @@ function Text(text, style, resolution)
      */
     this._style = null;
 
-    core.Sprite.call(this, core.Texture.fromCanvas(this.canvas));
+    var texture = Texture.fromCanvas(this.canvas);
+    texture.trim = new math.Rectangle();
+    Sprite.call(this, texture);
+
 
     this.text = text;
     this.style = style;
 }
 
 // constructor
-Text.prototype = Object.create(core.Sprite.prototype);
+Text.prototype = Object.create(Sprite.prototype);
 Text.prototype.constructor = Text;
 module.exports = Text;
 
@@ -131,10 +150,17 @@ Object.defineProperties(Text.prototype, {
      * @param [style.strokeThickness=0] {number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
      * @param [style.wordWrap=false] {boolean} Indicates if word wrap should be used
      * @param [style.wordWrapWidth=100] {number} The width at which text will wrap
+     * @param [style.lineHeight] {number} The line height, a number that represents the vertical space that a letter uses
      * @param [style.dropShadow=false] {boolean} Set a drop shadow for the text
      * @param [style.dropShadowColor='#000000'] {string} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
      * @param [style.dropShadowAngle=Math.PI/6] {number} Set a angle of the drop shadow
      * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
+     * @param [style.padding=0] {number} Occasionally some fonts are cropped. Adding some padding will prevent this from happening
+     * @param [style.textBaseline='alphabetic'] {string} The baseline of the text that is rendered.
+     * @param [style.lineJoin='miter'] {string} The lineJoin property sets the type of corner created, it can resolve
+     *      spiked text issues. Default is 'miter' (creates a sharp corner).
+     * @param [style.miterLimit=10] {number} The miter limit to use when using the 'miter' lineJoin mode. This can reduce
+     *      or increase the spikiness of rendered text.
      * @memberof Text#
      */
     style: {
@@ -158,6 +184,13 @@ Object.defineProperties(Text.prototype, {
             style.dropShadowAngle = style.dropShadowAngle || Math.PI / 6;
             style.dropShadowDistance = style.dropShadowDistance || 5;
 
+            style.padding = style.padding || 0;
+
+            style.textBaseline = style.textBaseline || 'alphabetic';
+
+            style.lineJoin = style.lineJoin || 'miter';
+            style.miterLimit = style.miterLimit || 10;
+
             this._style = style;
             this.dirty = true;
         }
@@ -167,6 +200,7 @@ Object.defineProperties(Text.prototype, {
      * Set the copy for the text object. To split a line you can use '\n'.
      *
      * @param text {string} The copy that you would like the text to display
+     * @memberof Text#
      */
     text: {
         get: function()
@@ -199,10 +233,10 @@ Text.prototype.updateText = function ()
     // preserve original text
     var outputText = style.wordWrap ? this.wordWrap(this._text) : this._text;
 
-    //split text into lines
+    // split text into lines
     var lines = outputText.split(/(?:\r\n|\r|\n)/);
 
-    //calculate text width
+    // calculate text width
     var lineWidths = new Array(lines.length);
     var maxLineWidth = 0;
     var fontProperties = this.determineFontProperties(style.font);
@@ -221,8 +255,8 @@ Text.prototype.updateText = function ()
 
     this.canvas.width = ( width + this.context.lineWidth ) * this.resolution;
 
-    //calculate text height
-    var lineHeight = fontProperties.fontSize + style.strokeThickness;
+    // calculate text height
+    var lineHeight = this.style.lineHeight || fontProperties.fontSize + style.strokeThickness;
 
     var height = lineHeight * lines.length;
     if (style.dropShadow)
@@ -230,20 +264,25 @@ Text.prototype.updateText = function ()
         height += style.dropShadowDistance;
     }
 
-    this.canvas.height = height * this.resolution;
+    this.canvas.height = ( height + this._style.padding * 2 ) * this.resolution;
 
     this.context.scale( this.resolution, this.resolution);
 
     if (navigator.isCocoonJS)
     {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
     }
+
+    //this.context.fillStyle="#FF0000";
+    //this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
     this.context.font = style.font;
     this.context.strokeStyle = style.stroke;
     this.context.lineWidth = style.strokeThickness;
-    this.context.textBaseline = 'alphabetic';
-    //this.context.lineJoin = 'round';
+    this.context.textBaseline = style.textBaseline;
+    this.context.lineJoin = style.lineJoin;
+    this.context.miterLimit = style.miterLimit;
 
     var linePositionX;
     var linePositionY;
@@ -271,7 +310,7 @@ Text.prototype.updateText = function ()
 
             if (style.fill)
             {
-                this.context.fillText(lines[i], linePositionX + xShadowOffset, linePositionY + yShadowOffset);
+                this.context.fillText(lines[i], linePositionX + xShadowOffset, linePositionY + yShadowOffset + this._style.padding);
             }
         }
     }
@@ -296,12 +335,12 @@ Text.prototype.updateText = function ()
 
         if (style.stroke && style.strokeThickness)
         {
-            this.context.strokeText(lines[i], linePositionX, linePositionY);
+            this.context.strokeText(lines[i], linePositionX, linePositionY + this._style.padding);
         }
 
         if (style.fill)
         {
-            this.context.fillText(lines[i], linePositionX, linePositionY);
+            this.context.fillText(lines[i], linePositionX, linePositionY + this._style.padding);
         }
     }
 
@@ -315,18 +354,26 @@ Text.prototype.updateText = function ()
  */
 Text.prototype.updateTexture = function ()
 {
-    this._texture.baseTexture.hasLoaded = true;
-    this._texture.baseTexture.resolution = this.resolution;
+    var texture = this._texture;
 
-    this._texture.baseTexture.width = this.canvas.width / this.resolution;
-    this._texture.baseTexture.height = this.canvas.height / this.resolution;
-    this._texture.crop.width = this._texture._frame.width = this.canvas.width / this.resolution;
-    this._texture.crop.height = this._texture._frame.height = this.canvas.height / this.resolution;
+    texture.baseTexture.hasLoaded = true;
+    texture.baseTexture.resolution = this.resolution;
+
+    texture.baseTexture.width = this.canvas.width / this.resolution;
+    texture.baseTexture.height = this.canvas.height / this.resolution;
+    texture.crop.width = texture._frame.width = this.canvas.width / this.resolution;
+    texture.crop.height = texture._frame.height = this.canvas.height / this.resolution;
+
+    texture.trim.x = 0;
+    texture.trim.y = -this._style.padding;
+
+    texture.trim.width = texture._frame.width;
+    texture.trim.height = texture._frame.height - this._style.padding*2;
 
     this._width = this.canvas.width / this.resolution;
     this._height = this.canvas.height / this.resolution;
 
-    this._texture.update();
+    texture.update();
 
     this.dirty = false;
 };
@@ -340,29 +387,30 @@ Text.prototype.renderWebGL = function (renderer)
 {
     if (this.dirty)
     {
-        this.resolution = renderer.resolution;
+        //this.resolution = 1//renderer.resolution;
 
         this.updateText();
     }
 
-    core.Sprite.prototype.renderWebGL.call(this, renderer);
+    Sprite.prototype.renderWebGL.call(this, renderer);
 };
 
 /**
  * Renders the object using the Canvas renderer
  *
  * @param renderer {CanvasRenderer}
+ * @private
  */
-Text.prototype.renderCanvas = function (renderer)
+Text.prototype._renderCanvas = function (renderer)
 {
     if (this.dirty)
     {
-        this.resolution = renderer.resolution;
+     //   this.resolution = 1//renderer.resolution;
 
         this.updateText();
     }
 
-    core.Sprite.prototype.renderCanvas.call(this, renderer);
+    Sprite.prototype._renderCanvas.call(this, renderer);
 };
 
 /**
@@ -384,7 +432,7 @@ Text.prototype.determineFontProperties = function (fontStyle)
 
         context.font = fontStyle;
 
-        var width = Math.ceil(context.measureText('|MÉq').width);
+        var width = Math.ceil(context.measureText('|MÃ‰q').width);
         var baseline = Math.ceil(context.measureText('M').width);
         var height = 2 * baseline;
 
@@ -400,7 +448,7 @@ Text.prototype.determineFontProperties = function (fontStyle)
 
         context.textBaseline = 'alphabetic';
         context.fillStyle = '#000';
-        context.fillText('|MÉq', 0, baseline);
+        context.fillText('|MÃ‰q', 0, baseline);
 
         var imagedata = context.getImageData(0, 0, width, height).data;
         var pixels = imagedata.length;
@@ -528,7 +576,7 @@ Text.prototype.getBounds = function (matrix)
         this.updateText();
     }
 
-    return core.Sprite.prototype.getBounds.call(this, matrix);
+    return Sprite.prototype.getBounds.call(this, matrix);
 };
 
 /**

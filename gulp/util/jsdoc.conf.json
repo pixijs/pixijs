@@ -4,10 +4,12 @@
     },
     "source": {
         "include": [
-            "./src/index.js",
-            "./src/display/DisplayObject.js"
+            "./src/"
         ],
         "exclude": [
+            "./src/polyfill/",
+            "./src/core/utils/PolyK.js",
+            "./src/spine/SpineRuntime.js"
         ],
         "includePattern": ".+\\.js(doc)?$",
         "excludePattern": "(^|\\/|\\\\)_"
@@ -27,7 +29,7 @@
             "outputSourceFiles" : true
         },
         "systemName"    : "PIXI",
-        "footer"        : "",
+        "footer"        : "Made with ♥ by <a href='http://goodboydigital.com'>Goodboy Digital</a>",
         "copyright"     : "PIXI Copyright © 2013-2015 Mat Groves.",
         "navType"       : "vertical",
         "theme"         : "cerulean",

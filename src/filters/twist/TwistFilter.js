@@ -1,11 +1,13 @@
 var core = require('../../core');
+// @see https://github.com/substack/brfs/issues/25
+var fs = require('fs');
 
 /**
  * This filter applies a twist effect making display objects appear twisted in the given direction.
  *
  * @class
  * @extends AbstractFilter
- * @namespace PIXI.filters
+ * @memberof PIXI.filters
  */
 function TwistFilter()
 {
@@ -13,7 +15,7 @@ function TwistFilter()
         // vertex shader
         null,
         // fragment shader
-        require('fs').readFileSync(__dirname + '/twist.frag', 'utf8'),
+        fs.readFileSync(__dirname + '/twist.frag', 'utf8'),
         // custom uniforms
         {
             radius:     { type: '1f', value: 0.5 },

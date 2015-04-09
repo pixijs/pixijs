@@ -1,11 +1,13 @@
 var core = require('../../core');
+// @see https://github.com/substack/brfs/issues/25
+var fs = require('fs');
 
 /**
  * This inverts your Display Objects colors.
  *
  * @class
  * @extends AbstractFilter
- * @namespace PIXI.filters
+ * @memberof PIXI.filters
  */
 function InvertFilter()
 {
@@ -13,7 +15,7 @@ function InvertFilter()
         // vertex shader
         null,
         // fragment shader
-        require('fs').readFileSync(__dirname + '/invert.frag', 'utf8'),
+        fs.readFileSync(__dirname + '/invert.frag', 'utf8'),
         // custom uniforms
         {
             invert: { type: '1f', value: 1 }

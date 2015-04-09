@@ -1,14 +1,14 @@
 var Point = require('./Point');
 
 /**
- * The Matrix class is now an object, which makes it a lot faster,
+ * The pixi Matrix class as an object, which makes it a lot faster,
  * here is a representation of it :
  * | a | b | tx|
  * | c | d | ty|
  * | 0 | 0 | 1 |
  *
  * @class
- * @namespace PIXI
+ * @memberof PIXI
  */
 function Matrix()
 {
@@ -271,7 +271,11 @@ Matrix.prototype.prepend = function(matrix)
     return this;
 };
 
-
+/**
+ * Inverts this matrix
+ *
+ * @return {Matrix} This matrix. Good for chaining method calls.
+ */
 Matrix.prototype.invert = function()
 {
     var a1 = this.a;
@@ -309,7 +313,11 @@ Matrix.prototype.identity = function ()
     return this;
 };
 
-
+/**
+ * Creates a new Matrix object with the same values as this one.
+ *
+ * @return {Matrix} A copy of this matrix. Good for chaining method calls.
+ */
 Matrix.prototype.clone = function ()
 {
     var matrix = new Matrix();
@@ -323,6 +331,11 @@ Matrix.prototype.clone = function ()
     return matrix;
 };
 
+/**
+ * Changes the values of the given matrix to be the same as the ones in this matrix
+ *
+ * @return {Matrix} The matrix given in parameter with its values updated.
+ */
 Matrix.prototype.copy = function (matrix)
 {
     matrix.a = this.a;
@@ -335,6 +348,11 @@ Matrix.prototype.copy = function (matrix)
     return matrix;
 };
 
-
+/**
+ * A default (identity) matrix
+ */
 Matrix.IDENTITY = new Matrix();
+/**
+ * A temp matrix
+ */
 Matrix.TEMP_MATRIX = new Matrix();

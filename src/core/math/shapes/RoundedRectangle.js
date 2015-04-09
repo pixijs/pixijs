@@ -1,10 +1,10 @@
 var CONST = require('../../const');
 
 /**
- * The Rounded Rectangle object is an area defined by its position and has nice rounded corners, as indicated by its top-left corner point (x, y) and by its width and its height.
+ * The Rounded Rectangle object is an area that has nice rounded corners, as indicated by its top-left corner point (x, y) and by its width and its height and its radius.
  *
  * @class
- * @namespace PIXI
+ * @memberof PIXI
  * @param x {number} The X coordinate of the upper-left corner of the rounded rectangle
  * @param y {number} The Y coordinate of the upper-left corner of the rounded rectangle
  * @param width {number} The overall width of this rounded rectangle

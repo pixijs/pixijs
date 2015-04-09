@@ -2,7 +2,7 @@
  * Creates a Canvas element of the given size.
  *
  * @class
- * @namespace PIXI
+ * @memberof PIXI
  * @param width {number} the width for the newly created canvas
  * @param height {number} the height for the newly created canvas
  */
@@ -87,6 +87,10 @@ CanvasBuffer.prototype.resize = function (width, height)
     this.canvas.height = height;
 };
 
+/**
+ * Destroys this canvas.
+ *
+ */
 CanvasBuffer.prototype.destroy = function ()
 {
     this.context = null;

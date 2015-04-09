@@ -8,7 +8,7 @@ var core = require('../../core'),
  *
  * @class
  * @extends AbstractFilter
- * @namespace PIXI.filters
+ * @memberof PIXI.filters
  */
 function BlurFilter()
 {
@@ -27,10 +27,11 @@ BlurFilter.prototype.applyFilter = function (renderer, input, output)
     var renderTarget = renderer.filterManager.getRenderTarget(true);
 
     this.blurXFilter.applyFilter(renderer, input, renderTarget);
-
     this.blurYFilter.applyFilter(renderer, renderTarget, output);
 
     renderer.filterManager.returnRenderTarget(renderTarget);
+
+
 };
 
 Object.defineProperties(BlurFilter.prototype, {
@@ -48,7 +49,26 @@ Object.defineProperties(BlurFilter.prototype, {
         },
         set: function (value)
         {
+            this.padding = value * 0.5;
             this.blurXFilter.blur = this.blurYFilter.blur = value;
+        }
+    },
+
+    /**
+     * Sets the number of passes for blur. More passes means higher quaility bluring.
+     *
+     * @member {number}
+     * @memberof BlurYFilter#
+     * @default 1
+     */
+    passes: {
+        get: function ()
+        {
+            return  this.blurXFilter.passes;
+        },
+        set: function (value)
+        {
+            this.blurXFilter.passes = this.blurYFilter.passes = value;
         }
     },
 

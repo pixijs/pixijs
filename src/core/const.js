@@ -1,7 +1,7 @@
 /**
  * Constant values used in pixi
  *
- * @namespace PIXI
+ * @memberof PIXI
  */
 module.exports = {
     /**
@@ -12,6 +12,27 @@ module.exports = {
      * @property {string} VERSION
      */
     VERSION: require('../../package.json').version,
+
+    /**
+     * @property {number} PI_2 - Two Pi
+     * @constant
+     * @static
+     */
+    PI_2: Math.PI * 2,
+
+    /**
+     * @property {number} RAD_TO_DEG - Constant conversion factor for converting radians to degrees
+     * @constant
+     * @static
+     */
+    RAD_TO_DEG: 180 / Math.PI,
+
+    /**
+     * @property {Number} DEG_TO_RAD - Constant conversion factor for converting degrees to radians
+     * @constant
+     * @static
+     */
+    DEG_TO_RAD: Math.PI / 180,
 
     /**
      * Constant to identify the Renderer Type.
@@ -106,6 +127,8 @@ module.exports = {
 
     RESOLUTION:1,
 
+    FILTER_RESOLUTION:1,
+
     /**
      * The default render options if none are supplied to {@link PIXI.WebGLRenderer}
      * or {@link PIXI.CanvasRenderer}.
@@ -116,6 +139,7 @@ module.exports = {
      * @property {HTMLCanvasElement} DEFAULT_RENDER_OPTIONS.view=null
      * @property {boolean} DEFAULT_RENDER_OPTIONS.transparent=false
      * @property {boolean} DEFAULT_RENDER_OPTIONS.antialias=false
+     * @property {boolean} DEFAULT_RENDER_OPTIONS.forceFXAA=false
      * @property {boolean} DEFAULT_RENDER_OPTIONS.preserveDrawingBuffer=false
      * @property {number} DEFAULT_RENDER_OPTIONS.resolution=1
      * @property {number} DEFAULT_RENDER_OPTIONS.backgroundColor=0x000000
@@ -126,6 +150,7 @@ module.exports = {
         view: null,
         resolution: 1,
         antialias: false,
+        forceFXAA: false,
         autoResize: false,
         transparent: false,
         backgroundColor: 0x000000,

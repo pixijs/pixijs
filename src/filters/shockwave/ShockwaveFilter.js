@@ -1,4 +1,6 @@
 var core = require('../../core');
+// @see https://github.com/substack/brfs/issues/25
+var fs = require('fs');
 
 /**
  * The ColorMatrixFilter class lets you apply a 4x4 matrix transformation on the RGBA
@@ -7,7 +9,7 @@ var core = require('../../core');
  *
  * @class
  * @extends AbstractFilter
- * @namespace PIXI.filters
+ * @memberof PIXI.filters
  */
 function ShockwaveFilter()
 {
@@ -15,7 +17,7 @@ function ShockwaveFilter()
         // vertex shader
         null,
         // fragment shader
-        require('fs').readFileSync(__dirname + '/shockwave.frag', 'utf8'),
+        fs.readFileSync(__dirname + '/shockwave.frag', 'utf8'),
         // custom uniforms
         {
             center: { type: 'v2', value: { x: 0.5, y: 0.5 } },

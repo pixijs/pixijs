@@ -1,22 +1,49 @@
-var Strip = require('./Strip');
+var Mesh = require('./Mesh');
 
 /**
+ * The rope allows you to draw a texture across several points and them manipulate these points
+ *
+ *```js
+ * for (var i = 0; i < 20; i++) {
+ *     points.push(new PIXI.Point(i * 50, 0));
+ * };
+ * var rope = new PIXI.Rope(PIXI.Texture.fromImage("snake.png"), points);
+ *  ```
  *
  * @class
- * @namespace PIXI
- * @extends Strip
+ * @extends Mesh
+ * @memberof PIXI.mesh
  * @param {Texture} texture - The texture to use on the rope.
- * @param {Array} points - An array of {Point}.
+ * @param {Array} points - An array of {Point} objects to construct this rope.
  *
  */
 function Rope(texture, points)
 {
-    Strip.call(this, texture);
+    Mesh.call(this, texture);
+
+    /*
+     * @member {Array} An array of points that determine the rope
+     */
     this.points = points;
 
+    /*
+     * @member {Float32Array} An array of vertices used to construct this rope.
+     */
     this.vertices = new Float32Array(points.length * 4);
+
+    /*
+     * @member {Float32Array} The WebGL Uvs of the rope.
+     */
     this.uvs = new Float32Array(points.length * 4);
+
+    /*
+     * @member {Float32Array} An array containing the color components
+     */
     this.colors = new Float32Array(points.length * 2);
+
+    /*
+     * @member {Uint16Array} An array containing the indices of the vertices
+     */
     this.indices = new Uint16Array(points.length * 2);
 
     this.refresh();
@@ -24,7 +51,7 @@ function Rope(texture, points)
 
 
 // constructor
-Rope.prototype = Object.create(Strip.prototype);
+Rope.prototype = Object.create(Mesh.prototype);
 Rope.prototype.constructor = Rope;
 module.exports = Rope;
 

@@ -4,19 +4,29 @@ var core = require('../core');
  * A BitmapText object will create a line or multiple lines of text using bitmap font. To
  * split a line you can use '\n', '\r' or '\r\n' in your string. You can generate the fnt files using:
  *
+ * A BitmapText can only be created when the font is loaded
+ *
+ * ```js
+ * // in this case the font is in a file called 'desyrel.fnt'
+ * var bitmapText = new PIXI.BitmapText("text using a fancy font!", {font: "35px Desyrel", align: "right"});
+ * ```
+ *
+ *
  * http://www.angelcode.com/products/bmfont/ for windows or
  * http://www.bmglyph.com/ for mac.
  *
  * @class
  * @extends Container
- * @namespace PIXI
+ * @memberof PIXI.extras
  * @param text {string} The copy that you would like the text to display
  * @param style {object} The style parameters
  * @param style.font {string|object} The font descriptor for the object, can be passed as a string of form
  *      "24px FontName" or "FontName" or as an object with explicit name/size properties.
- * @param [style.font.size] {number} The size of the font in pixels, e.g. 24
  * @param [style.font.name] {string} The bitmap font id
- * @param [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
+ * @param [style.font.size] {number} The size of the font in pixels, e.g. 24
+ * @param [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect
+ *      single line text
+ * @param [style.tint=0xFFFFFF] {number} The tint color
  */
 function BitmapText(text, style)
 {
@@ -54,12 +64,19 @@ function BitmapText(text, style)
      * @member {object}
      * @private
      */
-    this._style = {
-        tint: style.tint,
-        align: style.align,
-        fontName: null,
-        fontSize: 0
+    this._font = {
+        tint: style.tint !== undefined ? style.tint : 0xFFFFFF,
+        align: style.align || 'left',
+        name: null,
+        size: 0
     };
+
+    /**
+     * Private tracker for the current font.
+     *
+     * @member {object}
+     * @private
+     */
     this.font = style.font; // run font setter
 
     /**
@@ -103,18 +120,18 @@ Object.defineProperties(BitmapText.prototype, {
     tint: {
         get: function ()
         {
-            return this._style.tint;
+            return this._font.tint;
         },
         set: function (value)
         {
-            this._style.tint = (typeof value === 'number' && value >= 0) ? value : 0xFFFFFF;
+            this._font.tint = (typeof value === 'number' && value >= 0) ? value : 0xFFFFFF;
 
             this.dirty = true;
         }
     },
 
     /**
-     * The tint of the BitmapText object
+     * The alignment of the BitmapText object
      *
      * @member {string}
      * @default 'left'
@@ -123,18 +140,18 @@ Object.defineProperties(BitmapText.prototype, {
     align: {
         get: function ()
         {
-            return this._style.align;
+            return this._font.align;
         },
         set: function (value)
         {
-            this._style.align = value;
+            this._font.align = value;
 
             this.dirty = true;
         }
     },
 
     /**
-     * The tint of the BitmapText object
+     * The font descriptor of the BitmapText object
      *
      * @member {Font}
      * @memberof BitmapText#
@@ -142,19 +159,19 @@ Object.defineProperties(BitmapText.prototype, {
     font: {
         get: function ()
         {
-            return this._style.font;
+            return this._font;
         },
         set: function (value)
         {
             if (typeof value === 'string') {
                 value = value.split(' ');
 
-                this._style.fontName = value.slice(1).join(' ');
-                this._style.fontSize = value.length >= 2 ? parseInt(value[0], 10) : BitmapText.fonts[this.fontName].size;
+                this._font.name = value.length === 1 ? value[0] : value.slice(1).join(' ');
+                this._font.size = value.length >= 2 ? parseInt(value[0], 10) : BitmapText.fonts[this._font.name].size;
             }
             else {
-                this._style.fontName = value.name;
-                this._style.fontSize = typeof value.size === 'number' ? value.size : parseInt(value.size, 10);
+                this._font.name = value.name;
+                this._font.size = typeof value.size === 'number' ? value.size : parseInt(value.size, 10);
             }
 
             this.dirty = true;
@@ -188,7 +205,7 @@ Object.defineProperties(BitmapText.prototype, {
  */
 BitmapText.prototype.updateText = function ()
 {
-    var data = BitmapText.fonts[this.fontName];
+    var data = BitmapText.fonts[this._font.name];
     var pos = new core.math.Point();
     var prevCharCode = null;
     var chars = [];
@@ -196,7 +213,7 @@ BitmapText.prototype.updateText = function ()
     var maxLineWidth = 0;
     var lineWidths = [];
     var line = 0;
-    var scale = this.fontSize / data.size;
+    var scale = this._font.size / data.size;
     var lastSpace = -1;
 
     for (var i = 0; i < this.text.length; i++)
@@ -260,11 +277,11 @@ BitmapText.prototype.updateText = function ()
     {
         var alignOffset = 0;
 
-        if (this.style.align === 'right')
+        if (this._font.align === 'right')
         {
             alignOffset = maxLineWidth - lineWidths[i];
         }
-        else if (this.style.align === 'center')
+        else if (this._font.align === 'center')
         {
             alignOffset = (maxLineWidth - lineWidths[i]) / 2;
         }

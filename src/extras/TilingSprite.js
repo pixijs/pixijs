@@ -1,16 +1,15 @@
 var core = require('../core'),
-    TextureUvs = require('../core/textures/TextureUvs'),
-    RenderTexture = require('../core/textures/RenderTexture'),
     // a sprite use dfor rendering textures..
     tempSprite = new core.Sprite(),
-    tempPoint = new core.math.Point();
+    tempPoint = new core.Point(),
+    tempMatrix = new core.Matrix();
 
 /**
  * A tiling sprite is a fast way of rendering a tiling image
  *
  * @class
  * @extends Sprite
- * @namespace PIXI
+ * @memberof PIXI.extras
  * @param texture {Texture} the texture of the tiling sprite
  * @param width {number}  the width of the tiling sprite
  * @param height {number} the height of the tiling sprite
@@ -18,8 +17,6 @@ var core = require('../core'),
 function TilingSprite(texture, width, height)
 {
     core.Sprite.call(this, texture);
-
-
 
     /**
      * The scaling of the image that is being tiled
@@ -36,14 +33,13 @@ function TilingSprite(texture, width, height)
      */
     this.tilePosition = new core.math.Point(0,0);
 
-
-
     ///// private
 
     /**
      * The with of the tiling sprite
      *
      * @member {number}
+     * @private
      */
     this._width = width || 100;
 
@@ -51,6 +47,7 @@ function TilingSprite(texture, width, height)
      * The height of the tiling sprite
      *
      * @member {number}
+     * @private
      */
     this._height = height || 100;
 
@@ -58,14 +55,34 @@ function TilingSprite(texture, width, height)
      * A point that represents the scale of the texture object
      *
      * @member {Point}
+     * @private
      */
     this._tileScaleOffset = new core.math.Point(1,1);
 
 
+    /**
+     *
+     *
+     * @member {boolean}
+     * @private
+     */
     this._tilingTexture = null;
+
+    /**
+     *
+     *
+     * @member {boolean}
+     * @private
+     */
     this._refreshTexture = false;
 
-    this._uvs = new TextureUvs();
+    /**
+     * An internal WebGL UV cache.
+     *
+     * @member {TextureUvs}
+     * @private
+     */
+    this._uvs = new core.TextureUvs();
 }
 
 TilingSprite.prototype = Object.create(core.Sprite.prototype);
@@ -109,22 +126,17 @@ Object.defineProperties(TilingSprite.prototype, {
     }
 });
 
-/**
- * When the texture is updated, this event will fire,
- *
- * @private
- */
 TilingSprite.prototype._onTextureUpdate = function ()
 {
-    core.Sprite.prototype._onTextureUpdate.call(this);
-
-    this._refreshTexture = true;
+    return;
 };
+
 
 /**
  * Renders the object using the WebGL renderer
  *
  * @param renderer {WebGLRenderer}
+ * @private
  */
 TilingSprite.prototype._renderWebGL = function (renderer)
 {
@@ -141,16 +153,17 @@ TilingSprite.prototype._renderWebGL = function (renderer)
         return;
     }
 
+
     var uvs = this._uvs;
 
-    this.tilePosition.x %= texture.baseTexture.width * this._tileScaleOffset.x;
-    this.tilePosition.y %= texture.baseTexture.height * this._tileScaleOffset.y;
+    this.tilePosition.x %= texture.baseTexture.width / this._tileScaleOffset.x;
+    this.tilePosition.y %= texture.baseTexture.height / this._tileScaleOffset.y;
 
-    var offsetX =  this.tilePosition.x/(texture.baseTexture.width*this._tileScaleOffset.x);
-    var offsetY =  this.tilePosition.y/(texture.baseTexture.height*this._tileScaleOffset.y);
+    var offsetX =  this.tilePosition.x/(texture.baseTexture.width / this._tileScaleOffset.x);
+    var offsetY =  this.tilePosition.y/(texture.baseTexture.height / this._tileScaleOffset.y);
 
-    var scaleX =  (this._width / texture.baseTexture.width);
-    var scaleY =  (this._height / texture.baseTexture.height);
+    var scaleX =  (this._width / texture.baseTexture.width) * this._tileScaleOffset.x;
+    var scaleY =  (this._height / texture.baseTexture.height) * this._tileScaleOffset.y;
 
     scaleX /= this.tileScale.x;
     scaleY /= this.tileScale.y;
@@ -187,27 +200,16 @@ TilingSprite.prototype._renderWebGL = function (renderer)
 /**
  * Renders the object using the Canvas renderer
  *
- * @param renderer {CanvasRenderer}
+ * @param renderer {CanvasRenderer} a reference to the canvas renderer
+ * @private
  */
-TilingSprite.prototype.renderCanvas = function (renderer)
+TilingSprite.prototype._renderCanvas = function (renderer)
 {
-    if (!this.visible || this.alpha <= 0)
-    {
-        return;
-    }
-
     var context = renderer.context;
-
-    if (this._mask)
-    {
-        renderer.maskManager.pushMask(this._mask, renderer);
-    }
 
     context.globalAlpha = this.worldAlpha;
 
     var transform = this.worldTransform;
-
-    var i,j;
 
     var resolution = renderer.resolution;
 
@@ -258,16 +260,6 @@ TilingSprite.prototype.renderCanvas = function (renderer)
 
     context.translate(-tilePosition.x + (this.anchor.x * this._width), -tilePosition.y + (this.anchor.y * this._height));
     context.scale(1 / tileScale.x, 1 / tileScale.y);
-
-    if (this._mask)
-    {
-        renderer.maskManager.popMask(renderer);
-    }
-
-    for (i = 0, j = this.children.length; i < j; ++i)
-    {
-        this.children[i].renderCanvas(renderer);
-    }
 };
 
 
@@ -359,7 +351,9 @@ TilingSprite.prototype.onTextureUpdate = function ()
 };
 
 /**
- *
+ * Creates the tiling texture
+ * @param renderer {CanvasRenderer|WebGLRenderer} a reference to the current renderer
+ * @param texture {Texture} The texture to use to generate the tiling texture
  * @param forcePowerOfTwo {boolean} Whether we want to force the texture to be a power of two
  */
 TilingSprite.prototype.generateTilingTexture = function (renderer, texture, forcePowerOfTwo)
@@ -369,8 +363,8 @@ TilingSprite.prototype.generateTilingTexture = function (renderer, texture, forc
         return;
     }
 
-    texture = this.originalTexture || this.texture;
-    var frame = texture.frame;
+    texture = this.originalTexture || this._texture;
+    var frame = texture._frame;
     var targetWidth, targetHeight;
 
     //  Check that the frame is the same size as the base texture.
@@ -380,21 +374,29 @@ TilingSprite.prototype.generateTilingTexture = function (renderer, texture, forc
     {
         targetWidth = core.utils.getNextPowerOfTwo(frame.width);
         targetHeight = core.utils.getNextPowerOfTwo(frame.height);
-
         tempSprite.texture = texture;
 
         //TODO not create a new one each time you refresh
-        var renderTexture = new RenderTexture(renderer, targetWidth, targetHeight);
-
-        tempSprite.worldTransform.a = targetWidth / frame.width;
-        tempSprite.worldTransform.d = targetHeight / frame.height;
-
+        var renderTexture = new core.RenderTexture(renderer, targetWidth, targetHeight, texture.baseTexture.scaleMode, texture.baseTexture.resolution);
 
         var cachedRenderTarget = renderer.currentRenderTarget;
 
-        renderTexture.render( tempSprite, null, true, false );
+        var m = tempMatrix;
+        m.a =  (targetWidth + 1) / (frame.width);
+        m.d =   (targetHeight + 1) / (frame.height);
+
+        tempSprite.worldTransform.tx = 0.5;
+        tempSprite.worldTransform.ty = 0.5;
+
+        renderer.currentRenderer.flush();
+
+        renderTexture.render( tempSprite, m, true, false );
 
         renderer.setRenderTarget(cachedRenderTarget);
+
+
+        this._tileScaleOffset.x = targetWidth / frame.width;
+        this._tileScaleOffset.y = targetHeight / frame.height;
 
         this._tilingTexture = renderTexture;
     }
@@ -421,7 +423,11 @@ TilingSprite.prototype.generateTilingTexture = function (renderer, texture, forc
 
 };
 
-TilingSprite.prototype.hitTest = function( point )
+/**
+ * Checks if a point is inside this tiling sprite
+ * @param point {Point} the point to check
+ */
+TilingSprite.prototype.containsPoint = function( point )
 {
     this.worldTransform.applyInverse(point,  tempPoint);
 
@@ -443,7 +449,10 @@ TilingSprite.prototype.hitTest = function( point )
     return false;
 };
 
-
+/**
+ * Destroys this tiling sprite
+ *
+ */
 TilingSprite.prototype.destroy = function () {
     core.Sprite.prototype.destroy.call(this);
 
@@ -455,4 +464,43 @@ TilingSprite.prototype.destroy = function () {
     this._tilingTexture = null;
 
     this._uvs = null;
+};
+
+/**
+ * Helper function that creates a tiling sprite that will use a texture from the TextureCache based on the frameId
+ * The frame ids are created when a Texture packer file has been loaded
+ *
+ * @static
+ * @param frameId {String} The frame Id of the texture in the cache
+ * @return {TilingSprite} A new TilingSprite using a texture from the texture cache matching the frameId
+ * @param width {number}  the width of the tiling sprite
+ * @param height {number} the height of the tiling sprite
+ */
+TilingSprite.fromFrame = function (frameId,width,height)
+{
+    var texture = core.utils.TextureCache[frameId];
+
+    if (!texture)
+    {
+        throw new Error('The frameId "' + frameId + '" does not exist in the texture cache ' + this);
+    }
+
+    return new TilingSprite(texture,width,height);
+};
+
+/**
+ * Helper function that creates a sprite that will contain a texture based on an image url
+ * If the image is not in the texture cache it will be loaded
+ *
+ * @static
+ * @param imageId {String} The image url of the texture
+ * @param width {number}  the width of the tiling sprite
+ * @param height {number} the height of the tiling sprite
+ * @param [crossorigin=(auto)] {boolean} if you want to specify the cross-origin parameter
+ * @param [scaleMode=scaleModes.DEFAULT] {number} if you want to specify the scale mode, see {@link SCALE_MODES} for possible values
+ * @return {TilingSprite} A new TilingSprite using a texture from the texture cache matching the image id
+ */
+TilingSprite.fromImage = function (imageId, width, height, crossorigin, scaleMode)
+{
+    return new TilingSprite(core.Texture.fromImage(imageId, crossorigin, scaleMode),width,height);
 };

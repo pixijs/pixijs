@@ -1,11 +1,13 @@
 var core = require('../../core');
+// @see https://github.com/substack/brfs/issues/25
+var fs = require('fs');
 
 /**
  * A Smart Blur Filter.
  *
  * @class
  * @extends AbstractFilter
- * @namespace PIXI.filters
+ * @memberof PIXI.filters
  */
 function SmartBlurFilter()
 {
@@ -13,7 +15,7 @@ function SmartBlurFilter()
         // vertex shader
         null,
         // fragment shader
-        require('fs').readFileSync(__dirname + '/smartBlur.frag', 'utf8')
+        fs.readFileSync(__dirname + '/smartBlur.frag', 'utf8')
     );
 }
 

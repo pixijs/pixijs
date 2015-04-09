@@ -4,7 +4,7 @@ var CONST = require('../../const');
  * the Rectangle object is an area defined by its position, as indicated by its top-left corner point (x, y) and by its width and its height.
  *
  * @class
- * @namespace PIXI
+ * @memberof PIXI
  * @param x {number} The X coordinate of the upper-left corner of the rectangle
  * @param y {number} The Y coordinate of the upper-left corner of the rectangle
  * @param width {number} The overall width of this rectangle

@@ -7,9 +7,13 @@ var math = require('../math'),
  * A Container represents a collection of display objects.
  * It is the base class of all display objects that act as a container for other objects.
  *
+ *```js
+ * var container = new PIXI.Container();
+ * container.addChild(sprite);
+ * ```
  * @class
  * @extends DisplayObject
- * @namespace PIXI
+ * @memberof PIXI
  */
 function Container()
 {
@@ -151,7 +155,7 @@ Container.prototype.swapChildren = function (child, child2)
 
     if (index1 < 0 || index2 < 0)
     {
-        throw new Error('swapChildren: Both the supplied DisplayObjects must be a child of the caller.');
+        throw new Error('swapChildren: Both the supplied DisplayObjects must be children of the caller.');
     }
 
     this.children[index1] = child2;
@@ -198,14 +202,14 @@ Container.prototype.setChildIndex = function (child, index)
 /**
  * Returns the child at the specified index
  *
- * @param index {Number} The index to get the child from
+ * @param index {Number} The index to get the child at
  * @return {DisplayObject} The child at the given index, if any.
  */
 Container.prototype.getChildAt = function (index)
 {
     if (index < 0 || index >= this.children.length)
     {
-        throw new Error('getChildAt: Supplied index ' + index + ' does not exist in the child list, or the supplied DisplayObject must be a child of the caller');
+        throw new Error('getChildAt: Supplied index ' + index + ' does not exist in the child list, or the supplied DisplayObject is not a child of the caller');
     }
 
     return this.children[index];
@@ -279,13 +283,13 @@ Container.prototype.removeChildren = function (beginIndex, endIndex)
 };
 
 /**
- * Useful function that returns a texture of the displayObject object that can then be used to create sprites
+ * Useful function that returns a texture of the display object that can then be used to create sprites
  * This can be quite useful if your displayObject is static / complicated and needs to be reused multiple times.
  *
+ * @param renderer {CanvasRenderer|WebGLRenderer} The renderer used to generate the texture.
  * @param resolution {Number} The resolution of the texture being generated
  * @param scaleMode {Number} See {@link SCALE_MODES} for possible values
- * @param renderer {CanvasRenderer|WebGLRenderer} The renderer used to generate the texture.
- * @return {Texture} a texture of the graphics object
+ * @return {Texture} a texture of the display object
  */
 Container.prototype.generateTexture = function (renderer, resolution, scaleMode)
 {
@@ -394,6 +398,8 @@ Container.prototype.getBounds = function ()
     return this._currentBounds;
 };
 
+Container.prototype.containerGetBounds = Container.prototype.getBounds;
+
 /**
  * Retrieves the non-global local bounds of the Container as a rectangle.
  * The calculation takes all visible children into consideration.
@@ -415,7 +421,7 @@ Container.prototype.getLocalBounds = function ()
 
     this._currentBounds = null;
 
-    return this.getBounds();
+    return this.getBounds( math.Matrix.IDENTITY );
 };
 
 /**
@@ -487,11 +493,27 @@ Container.prototype.renderWebGL = function (renderer)
     }
 };
 
-Container.prototype._renderWebGL = function (/* renderer */)
+/**
+ * To be overridden by the subclass
+ *
+ * @param renderer {WebGLRenderer} The renderer
+ * @private
+ */
+Container.prototype._renderWebGL = function (renderer) // jshint unused:false
 {
-    // this is where content itself gets renderd..
+    // this is where content itself gets rendered...
 };
 
+/**
+ * To be overridden by the subclass
+ *
+ * @param renderer {CanvasRenderer} The renderer
+ * @private
+ */
+Container.prototype._renderCanvas = function (renderer) // jshint unused:false
+{
+    // this is where content itself gets rendered...
+};
 
 
 /**
@@ -501,6 +523,7 @@ Container.prototype._renderWebGL = function (/* renderer */)
  */
 Container.prototype.renderCanvas = function (renderer)
 {
+    // if not visible or the alpha is 0 then no need to render this
     if (!this.visible || this.alpha <= 0 || !this.renderable)
     {
         return;
@@ -511,6 +534,7 @@ Container.prototype.renderCanvas = function (renderer)
         renderer.maskManager.pushMask(this._mask, renderer);
     }
 
+    this._renderCanvas(renderer);
     for (var i = 0, j = this.children.length; i < j; ++i)
     {
         this.children[i].renderCanvas(renderer);
@@ -520,4 +544,25 @@ Container.prototype.renderCanvas = function (renderer)
     {
         renderer.maskManager.popMask(renderer);
     }
+};
+
+/**
+ * Destroys the container
+ * @param destroyChildren {boolean} if set to true, all the children will have their destroy method called as well
+ */
+Container.prototype.destroy = function (destroyChildren)
+{
+    DisplayObject.prototype.destroy.call(this);
+
+    if(destroyChildren)
+    {
+        for (var i = 0, j = this.children.length; i < j; ++i)
+        {
+            this.children[i].destroy(destroyChildren);
+        }
+    }
+
+    this.removeChildren();
+
+    this.children = null;
 };

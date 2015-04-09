@@ -9,7 +9,8 @@ var SystemRenderer = require('../SystemRenderer'),
  * Don't forget to add the CanvasRenderer.view to your DOM or you will not see anything :)
  *
  * @class
- * @namespace PIXI
+ * @memberof PIXI
+ * @extends SystemRenderer
  * @param [width=800] {number} the width of the canvas view
  * @param [height=600] {number} the height of the canvas view
  * @param [options] {object} The optional renderer parameters
@@ -104,7 +105,7 @@ function CanvasRenderer(width, height, options)
     /**
      * This temporary display object used as the parent of the currently being rendered item
      *
-     * @member DisplayObject
+     * @member {DisplayObject}
      * @private
      */
     this._tempDisplayObjectParent = {

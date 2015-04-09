@@ -1,11 +1,11 @@
-
 var WebGLManager = require('../managers/WebGLManager');
 
 /**
+ * Base for a common object renderer that can be used as a system renderer plugin.
  *
  * @class
- * @private
- * @namespace PIXI
+ * @extends WebGLManager
+ * @memberof PIXI
  * @param renderer {WebGLRenderer} The renderer this object renderer works for.
  */
 function ObjectRenderer(renderer)
@@ -18,22 +18,38 @@ ObjectRenderer.prototype = Object.create(WebGLManager.prototype);
 ObjectRenderer.prototype.constructor = ObjectRenderer;
 module.exports = ObjectRenderer;
 
+/**
+ * Starts the renderer and sets the shader
+ *
+ */
 ObjectRenderer.prototype.start = function ()
 {
     // set the shader..
 };
 
+/**
+ * Stops the renderer
+ *
+ */
 ObjectRenderer.prototype.stop = function ()
 {
     this.flush();
 };
 
+/**
+ * flushes
+ *
+ */
 ObjectRenderer.prototype.flush = function ()
 {
     // flush!
 };
 
-ObjectRenderer.prototype.render = function (/* object */)
+/**
+ * Renders an object
+ *
+ */
+ObjectRenderer.prototype.render = function (object) // jshint unused:false
 {
     // render the object
 };

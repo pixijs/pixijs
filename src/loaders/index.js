@@ -6,11 +6,10 @@
  */
 
 /**
- * @namespace PIXI
+ * @namespace PIXI.loaders
  */
 module.exports = {
-    //  Loader:     require('resource-loader'),
-    Loader:     require('./loader'),
+    Loader:             require('./loader'),
 
     // parsers
     bitmapFontParser:   require('./bitmapFontParser'),

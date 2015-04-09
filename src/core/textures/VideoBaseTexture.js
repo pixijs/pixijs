@@ -4,11 +4,28 @@ var BaseTexture = require('./BaseTexture'),
 /**
  * A texture of a [playing] Video.
  *
+ * Video base textures mimic Pixi BaseTexture.from.... method in their creation process.
+ *
+ * This can be used in several ways, such as:
+ *
+ * ```js
+ * var texture = PIXI.VideoBaseTexture.fromUrl('http://mydomain.com/video.mp4');
+ *
+ * var texture = PIXI.VideoBaseTexture.fromUrl({ src: 'http://mydomain.com/video.mp4', mime: 'video/mp4' });
+ *
+ * var texture = PIXI.VideoBaseTexture.fromUrls(['/video.webm', '/video.mp4']);
+ *
+ * var texture = PIXI.VideoBaseTexture.fromUrls([
+ *     { src: '/video.webm', mime: 'video/webm' },
+ *     { src: '/video.mp4', mime: 'video/mp4' }
+ * ]);
+ * ```
+ *
  * See the ["deus" demo](http://www.goodboydigital.com/pixijs/examples/deus/).
  *
  * @class
  * @extends BaseTexture
- * @namespace PIXI
+ * @memberof PIXI
  * @param source {HTMLVideoElement}
  * @param [scaleMode] {number} See {@link SCALE_MODES} for possible values
  */
@@ -29,6 +46,12 @@ function VideoBaseTexture(source, scaleMode)
 
     BaseTexture.call(this, source, scaleMode);
 
+    /**
+     * Should the base texture automatically update itself, set to true by default
+     *
+     * @member {boolean}
+     * @default true
+     */
     this.autoUpdate = false;
 
     this._onUpdate = this._onUpdate.bind(this);
@@ -51,6 +74,10 @@ VideoBaseTexture.prototype = Object.create(BaseTexture.prototype);
 VideoBaseTexture.prototype.constructor = VideoBaseTexture;
 module.exports = VideoBaseTexture;
 
+/**
+ * The internal update loop of the video base texture, only runs when autoUpdate is set to true
+ * @private
+ */
 VideoBaseTexture.prototype._onUpdate = function ()
 {
     if (this.autoUpdate)
@@ -60,6 +87,10 @@ VideoBaseTexture.prototype._onUpdate = function ()
     }
 };
 
+/**
+ * Runs the update loop when the video is ready to play
+ * @private
+ */
 VideoBaseTexture.prototype._onPlayStart = function ()
 {
     if (!this.autoUpdate)
@@ -69,11 +100,19 @@ VideoBaseTexture.prototype._onPlayStart = function ()
     }
 };
 
+/**
+ * Fired when a pause event is triggered, stops the update loop
+ * @private
+ */
 VideoBaseTexture.prototype._onPlayStop = function ()
 {
     this.autoUpdate = false;
 };
 
+/**
+ * Fired when the video is loaded and ready to play
+ * @private
+ */
 VideoBaseTexture.prototype._onCanPlay = function ()
 {
     this.hasLoaded = true;
@@ -97,6 +136,10 @@ VideoBaseTexture.prototype._onCanPlay = function ()
     }
 };
 
+/**
+ * Destroys this texture
+ *
+ */
 VideoBaseTexture.prototype.destroy = function ()
 {
     if (this.source && this.source._pixiId)
@@ -138,24 +181,9 @@ VideoBaseTexture.fromVideo = function (video, scaleMode)
 };
 
 /**
- * Mimic Pixi BaseTexture.from.... method.
+ * Helper function that creates a new BaseTexture based on the given video element.
+ * This BaseTexture can then be used to create a texture
  *
- * This can be used in a couple ways, such as:
- *
- * ```js
- * var texture = PIXI.VideoBaseTexture.fromUrl('http://mydomain.com/video.mp4');
- *
- * var texture = PIXI.VideoBaseTexture.fromUrl({ src: 'http://mydomain.com/video.mp4', mime: 'video/mp4' });
- *
- * var texture = PIXI.VideoBaseTexture.fromUrls(['/video.webm', '/video.mp4']);
- *
- * var texture = PIXI.VideoBaseTexture.fromUrls([
- *     { src: '/video.webm', mime: 'video/webm' },
- *     { src: '/video.mp4', mime: 'video/mp4' }
- * ]);
- * ```
- *
- * @alias fromUrls
  * @static
  * @param videoSrc {string|object|string[]|object[]} The URL(s) for the video.
  * @param [videoSrc.src] {string} One of the source urls for the video
@@ -185,7 +213,7 @@ VideoBaseTexture.fromUrl = function (videoSrc, scaleMode)
     video.load();
     video.play();
 
-    return VideoBaseTexture.textureFromVideo(video, scaleMode);
+    return VideoBaseTexture.fromVideo(video, scaleMode);
 };
 
 VideoBaseTexture.fromUrls = VideoBaseTexture.fromUrl;
