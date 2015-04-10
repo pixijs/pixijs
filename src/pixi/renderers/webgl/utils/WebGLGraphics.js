@@ -644,10 +644,10 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
 
         denom = a1*b2 - a2*b1;
 
-        if(Math.abs(denom) < 0.1 )
+        if(Math.abs(denom) < 0.00001 )
         {
 
-            denom+=10.1;
+            denom+=10.00001;
             verts.push(p2x - perpx , p2y - perpy,
                 r, g, b, alpha);
 
