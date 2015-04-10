@@ -457,6 +457,8 @@ Sprite3dRenderer.prototype.flush = function ()
 
                 // time to make a 3d one!
                 var combinedMatrix = glMat.mat4.multiply(glMat.mat4.create(), this.perspectiveMatrix, projection3d);
+          
+                window.combinedMatrix = combinedMatrix;
 
                 gl.uniformMatrix4fv(shader.uniforms.projectionMatrix3d._location, false, combinedMatrix);
             }
