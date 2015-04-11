@@ -204,7 +204,12 @@ ParticleRenderer.prototype.render = function ( container )
 
     if (!baseTexture._glTextures[gl.id])
     {
-        this.renderer.updateTexture(baseTexture);
+        // if the texture has not updated then lets not upload any static properties
+        if(!this.renderer.updateTexture(baseTexture))
+        {
+            return;
+        }
+
         if(!this.properties[0].dynamic || !this.properties[3].dynamic)
         {
             uploadStatic = true;
