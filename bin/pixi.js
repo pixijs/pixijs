@@ -21379,6 +21379,11 @@ Object.defineProperties(DisplayObject.prototype, {
 */
 DisplayObject.prototype._renderCachedWebGL = function(renderer)
 {
+    if (!this.visible || this.worldAlpha <= 0)
+    {
+        return;
+    }
+    
     this._initCachedDisplayObject( renderer );
 
     this._cachedSprite.worldAlpha = this.worldAlpha;
@@ -21472,6 +21477,11 @@ DisplayObject.prototype._initCachedDisplayObject = function( renderer )
 */
 DisplayObject.prototype._renderCachedCanvas = function(renderer)
 {
+    if (!this.visible || this.worldAlpha <= 0)
+    {
+        return;
+    }
+    
     this._initCachedDisplayObjectCanvas( renderer );
 
     this._cachedSprite.worldAlpha = this.worldAlpha;
