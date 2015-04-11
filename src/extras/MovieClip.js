@@ -131,7 +131,7 @@ MovieClip.prototype.stop = function ()
     }
 
     this.playing = false;
-    Ticker.off('tick', this.update);
+    Ticker.off('tick', this.update, this);
 };
 
 /**
