@@ -397,7 +397,6 @@ Graphics.prototype.arcTo = function (x1, y1, x2, y2, radius)
     }
     else
     {
-        consol.log("currentPAt?")
         this.moveTo(x1, y1);
     }
 
