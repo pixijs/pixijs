@@ -1,4 +1,5 @@
-var Container = require('../display/Container');
+var Container = require('../display/Container'),
+    CONST = require('../const');
 
 /**
  * The ParticleContainer class is a really fast version of the Container built solely for speed,
@@ -67,6 +68,14 @@ function ParticleContainer(size, properties)
      *
      */
     this.interactiveChildren = false;
+
+    /**
+     * The blend mode to be applied to the sprite. Apply a value of blendModes.NORMAL to reset the blend mode.
+     *
+     * @member {number}
+     * @default CONST.BLEND_MODES.NORMAL;
+     */
+    this.blendMode = CONST.BLEND_MODES.NORMAL;
 
     this.setProperties(properties);
 }
