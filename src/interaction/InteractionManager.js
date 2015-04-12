@@ -222,7 +222,7 @@ InteractionManager.prototype.addEvents = function ()
         this.interactionDOMElement.style['-ms-touch-action'] = 'none';
     }
 
-    this.interactionDOMElement.addEventListener('mousemove',    this.onMouseMove, true);
+    window.document.addEventListener('mousemove',    this.onMouseMove, true);
     this.interactionDOMElement.addEventListener('mousedown',    this.onMouseDown, true);
     this.interactionDOMElement.addEventListener('mouseout',     this.onMouseOut, true);
 
@@ -252,7 +252,7 @@ InteractionManager.prototype.removeEvents = function ()
         this.interactionDOMElement.style['-ms-touch-action'] = '';
     }
 
-    this.interactionDOMElement.removeEventListener('mousemove', this.onMouseMove, true);
+    window.document.removeEventListener('mousemove', this.onMouseMove, true);
     this.interactionDOMElement.removeEventListener('mousedown', this.onMouseDown, true);
     this.interactionDOMElement.removeEventListener('mouseout',  this.onMouseOut, true);
 
