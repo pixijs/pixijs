@@ -371,4 +371,4 @@ Texture.removeTextureFromCache = function (id)
     return texture;
 };
 
-Texture.emptyTexture = new Texture(new BaseTexture());
+Texture.EMPTY = new Texture(new BaseTexture());
