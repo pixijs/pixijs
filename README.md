@@ -52,7 +52,7 @@ last 2 examples and allowing us to share the source code :)
 
 ### Docs ###
 
-[Documentation can be found here](<http://www.goodboydigital.com/pixijs/docs/>)
+[Documentation can be found here](<http://pixijs.github.io/docs/>)
 
 ### Resources ###
 
