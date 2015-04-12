@@ -161,7 +161,7 @@ MovieClip.prototype.gotoAndStop = function (frameNumber)
     this.currentFrame = frameNumber;
 
     var round = Math.floor(this.currentFrame);
-    this.texture = this._textures[round % this._textures.length];
+    this._texture = this._textures[round % this._textures.length];
 };
 
 /**
@@ -191,7 +191,7 @@ MovieClip.prototype.update = function (deltaTime)
         if (this.loop)
         {
             this.currentFrame += this._textures.length;
-            this.texture = this._textures[this.currentFrame];
+            this._texture = this._textures[this.currentFrame];
         }
         else
         {
@@ -205,7 +205,7 @@ MovieClip.prototype.update = function (deltaTime)
     }
     else if (this.loop || floor < this._textures.length)
     {
-        this.texture = this._textures[floor % this._textures.length];
+        this._texture = this._textures[floor % this._textures.length];
     }
     else if (floor >= this._textures.length)
     {
