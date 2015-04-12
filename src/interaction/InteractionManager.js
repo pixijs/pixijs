@@ -62,7 +62,10 @@ function InteractionManager(renderer, options)
         stopped: false,
         target: null,
         type: null,
-        data: this.mouse
+        data: this.mouse,
+        stopPropagation:function(){
+            this.stopped = true;
+        }
     };
 
     /**
