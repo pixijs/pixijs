@@ -5,7 +5,7 @@ var Resource = require('resource-loader').Resource,
     path = require('path');
 
 
-var parse = function(resource, texture) {
+function parse(resource, texture) {
     var data = {};
     var info = resource.data.getElementsByTagName('info')[0];
     var common = resource.data.getElementsByTagName('common')[0];
@@ -34,7 +34,7 @@ var parse = function(resource, texture) {
             yOffset: parseInt(letters[i].getAttribute('yoffset'), 10),
             xAdvance: parseInt(letters[i].getAttribute('xadvance'), 10),
             kerning: {},
-            texture: core.utils.TextureCache[charCode] = new core.Texture(texture.baseTexture, textureRect)
+            texture: new core.Texture(texture.baseTexture, textureRect)
 
         };
     }
@@ -48,7 +48,6 @@ var parse = function(resource, texture) {
         var amount = parseInt(kernings[i].getAttribute('amount'), 10);
 
         data.chars[second].kerning[first] = amount;
-
     }
 
     resource.bitmapFont = data;
@@ -56,7 +55,7 @@ var parse = function(resource, texture) {
     // I'm leaving this as a temporary fix so we can test the bitmap fonts in v3
     // but it's very likely to change
     extras.BitmapText.fonts[data.font] = data;
-};
+}
 
 
 module.exports = function ()
