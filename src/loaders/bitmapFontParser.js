@@ -106,14 +106,13 @@ module.exports = function ()
         if (xmlUrl && xmlUrl.charAt(xmlUrl.length - 1) !== '/') {
             xmlUrl += '/';
         }
-        var file = resource.data.getElementsByTagName('page')[0].getAttribute('file');
-        if (utils.TextureCache[file]) {
+        var textureUrl = xmlUrl + resource.data.getElementsByTagName('page')[0].getAttribute('file');
+        if (utils.TextureCache[textureUrl]) {
             //reuse existing texture
-            parse(resource, utils.TextureCache[file]);
+            parse(resource, utils.TextureCache[textureUrl]);
             next();
         }
         else {
-            var textureUrl = xmlUrl + file;
             var loadOptions = {
                 crossOrigin: resource.crossOrigin,
                 loadType: Resource.LOAD_TYPE.IMAGE
