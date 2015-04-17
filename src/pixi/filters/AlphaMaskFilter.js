@@ -28,8 +28,8 @@ PIXI.AlphaMaskFilter = function(texture)
 
     if(texture.baseTexture.hasLoaded)
     {
-        this.uniforms.mask.value.x = texture.width;
-        this.uniforms.mask.value.y = texture.height;
+        this.uniforms.mapDimensions.value.x = texture.width;
+        this.uniforms.mapDimensions.value.y = texture.height;
     }
     else
     {
