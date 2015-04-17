@@ -205,3 +205,37 @@ PIXI.MovieClip.fromImages = function(images)
 
     return new PIXI.MovieClip(textures);
 };
+
+/**
+ * A short hand way of creating a movieclip from frames number, frame base name, frame number padding and image extension
+ *
+ * @static
+ * @method fromSettings
+ * @param framesNum {Number} Number of movieclip frames
+ * @param baseName {String} Base name of each frame.
+ * @param padding {String} Frames number padding (when each frame is something like 0000, 0001, 0002, 0003, etc. - padding 0000)
+ * @param firstFrame {Number} Which is first frame. Default is 0.
+ * @param frameExtension {String} Extension added to each frame's name.
+ * @return {MovieClip}
+ */
+PIXI.MovieClip.fromSettings = function( framesNum, baseName, padding, firstFrame, frameExtension )
+{
+    var textures = [];
+
+    var generateFrameName = function( frame ) {
+        var name = baseName;
+        if (padding) {
+            name += padding.substring(0, padding.length - frame.length) + frame;
+        }
+        if (frameExtension) {
+            name += frameExtension;
+        }
+        return name;
+    };
+
+    for (var i = firstFrame || 0; i < framesNum; i++) {
+        textures.push(PIXI.Texture.fromFrame( generateFrameName( i.toString() ) ));
+    }
+
+    return new PIXI.MovieClip(textures);
+};
