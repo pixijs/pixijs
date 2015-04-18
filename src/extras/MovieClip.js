@@ -131,7 +131,7 @@ MovieClip.prototype.stop = function ()
     }
 
     this.playing = false;
-    Ticker.off('tick', this.update, this);
+    Ticker.sharedTicker.remove(this.update);
 };
 
 /**
@@ -146,7 +146,7 @@ MovieClip.prototype.play = function ()
     }
 
     this.playing = true;
-    Ticker.on('tick', this.update, this);
+    Ticker.sharedTicker.add(this.update, this);
 };
 
 /**
