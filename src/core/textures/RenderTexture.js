@@ -434,11 +434,13 @@ RenderTexture.prototype.getCanvas = function ()
  */
 RenderTexture.prototype.getPixels = function ()
 {
+    var width, height;
+
     if (this.renderer.type === CONST.RENDERER_TYPE.WEBGL)
     {
         var gl = this.renderer.gl;
-        var width = this.textureBuffer.size.width;
-        var height = this.textureBuffer.size.height;
+        width = this.textureBuffer.size.width;
+        height = this.textureBuffer.size.height;
 
         var webGLPixels = new Uint8Array(4 * width * height);
 
@@ -450,8 +452,8 @@ RenderTexture.prototype.getPixels = function ()
     }
     else
     {
-        var width = this.textureBuffer.canvas.width;
-        var height = this.textureBuffer.canvas.height;
+        width = this.textureBuffer.canvas.width;
+        height = this.textureBuffer.canvas.height;
 
         return this.textureBuffer.canvas.getContext('2d').getImageData(0, 0, width, height).data;
     }
