@@ -256,7 +256,9 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, up
 
     this.textureBuffer.transform = matrix;
 
-
+    //TODO not a fan that this is here... it will move!
+    this.textureBuffer.activate();
+    
     // setWorld Alpha to ensure that the object is renderer at full opacity
     displayObject.worldAlpha = displayObject.alpha;
 
