@@ -27,9 +27,7 @@ function MovieClip(textures)
     core.Sprite.call(this, textures[0]);
 
     /**
-     * The array of textures that make up the animation
-     *
-     * @member {Texture[]}
+     * @private
      */
     this._textures = textures;
 
@@ -100,7 +98,7 @@ Object.defineProperties(MovieClip.prototype, {
     /**
      * The array of textures used for this MovieClip
      *
-     * @member
+     * @member {Texture[]}
      * @memberof MovieClip#
      *
      */
@@ -131,7 +129,7 @@ MovieClip.prototype.stop = function ()
     }
 
     this.playing = false;
-    Ticker.off('tick', this.update, this);
+    Ticker.sharedTicker.remove(this.update);
 };
 
 /**
@@ -146,7 +144,7 @@ MovieClip.prototype.play = function ()
     }
 
     this.playing = true;
-    Ticker.on('tick', this.update, this);
+    Ticker.sharedTicker.add(this.update, this);
 };
 
 /**
