@@ -542,7 +542,7 @@ Sprite.fromFrame = function (frameId)
 
     if (!texture)
     {
-        throw new Error('The frameId "' + frameId + '" does not exist in the texture cache ' + this);
+        throw new Error('The frameId "' + frameId + '" does not exist in the texture cache');
     }
 
     return new Sprite(texture);

@@ -27,9 +27,7 @@ function MovieClip(textures)
     core.Sprite.call(this, textures[0]);
 
     /**
-     * The array of textures that make up the animation
-     *
-     * @member {Texture[]}
+     * @private
      */
     this._textures = textures;
 
@@ -100,7 +98,7 @@ Object.defineProperties(MovieClip.prototype, {
     /**
      * The array of textures used for this MovieClip
      *
-     * @member
+     * @member {Texture[]}
      * @memberof MovieClip#
      *
      */
@@ -131,7 +129,7 @@ MovieClip.prototype.stop = function ()
     }
 
     this.playing = false;
-    Ticker.off('tick', this.update);
+    Ticker.sharedTicker.remove(this.update);
 };
 
 /**
@@ -146,7 +144,7 @@ MovieClip.prototype.play = function ()
     }
 
     this.playing = true;
-    Ticker.on('tick', this.update, this);
+    Ticker.sharedTicker.add(this.update, this);
 };
 
 /**
@@ -161,7 +159,7 @@ MovieClip.prototype.gotoAndStop = function (frameNumber)
     this.currentFrame = frameNumber;
 
     var round = Math.floor(this.currentFrame);
-    this.texture = this._textures[round % this._textures.length];
+    this._texture = this._textures[round % this._textures.length];
 };
 
 /**
@@ -191,7 +189,7 @@ MovieClip.prototype.update = function (deltaTime)
         if (this.loop)
         {
             this.currentFrame += this._textures.length;
-            this.texture = this._textures[this.currentFrame];
+            this._texture = this._textures[this.currentFrame];
         }
         else
         {
@@ -205,7 +203,7 @@ MovieClip.prototype.update = function (deltaTime)
     }
     else if (this.loop || floor < this._textures.length)
     {
-        this.texture = this._textures[floor % this._textures.length];
+        this._texture = this._textures[floor % this._textures.length];
     }
     else if (floor >= this._textures.length)
     {

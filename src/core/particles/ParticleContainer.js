@@ -1,4 +1,5 @@
-var Container = require('../display/Container');
+var Container = require('../display/Container'),
+    CONST = require('../const');
 
 /**
  * The ParticleContainer class is a really fast version of the Container built solely for speed,
@@ -67,6 +68,22 @@ function ParticleContainer(size, properties)
      *
      */
     this.interactiveChildren = false;
+
+    /**
+     * The blend mode to be applied to the sprite. Apply a value of blendModes.NORMAL to reset the blend mode.
+     *
+     * @member {number}
+     * @default CONST.BLEND_MODES.NORMAL;
+     */
+    this.blendMode = CONST.BLEND_MODES.NORMAL;
+
+    /**
+     * Used for canvas renderering. If true then the elements will be positioned at the nearest pixel. This provides a nice speed boost.
+     * 
+     * @member {boolean}
+     * @default true;
+     */
+    this.roundPixels = true;
 
     this.setProperties(properties);
 }
@@ -189,6 +206,12 @@ ParticleContainer.prototype.renderCanvas = function (renderer)
     var context = renderer.context;
     var transform = this.worldTransform;
     var isRotated = true;
+    
+    var positionX = 0;
+    var positionY = 0;
+
+    var finalWidth = 0;
+    var finalHeight = 0;
 
     context.globalAlpha = this.worldAlpha;
 
@@ -224,17 +247,12 @@ ParticleContainer.prototype.renderCanvas = function (renderer)
                 isRotated = false;
             }
 
-            context.drawImage(
-                child.texture.baseTexture.source,
-                frame.x,
-                frame.y,
-                frame.width,
-                frame.height,
-                ((child.anchor.x) * (-frame.width * child.scale.x) + child.position.x  + 0.5) | 0,
-                ((child.anchor.y) * (-frame.height * child.scale.y) + child.position.y  + 0.5) | 0,
-                frame.width * child.scale.x,
-                frame.height * child.scale.y
-            );
+            positionX = ((child.anchor.x) * (-frame.width * child.scale.x) + child.position.x  + 0.5);
+            positionY = ((child.anchor.y) * (-frame.height * child.scale.y) + child.position.y  + 0.5);
+
+            finalWidth = frame.width * child.scale.x;
+            finalHeight = frame.height * child.scale.y;
+            
         }
         else
         {
@@ -270,17 +288,23 @@ ParticleContainer.prototype.renderCanvas = function (renderer)
                 );
             }
 
-            context.drawImage(
-                child.texture.baseTexture.source,
-                frame.x,
-                frame.y,
-                frame.width,
-                frame.height,
-                ((child.anchor.x) * (-frame.width) + 0.5) | 0,
-                ((child.anchor.y) * (-frame.height) + 0.5) | 0,
-                frame.width,
-                frame.height
-            );
+            positionX = ((child.anchor.x) * (-frame.width) + 0.5);
+            positionY = ((child.anchor.y) * (-frame.height) + 0.5);
+
+            finalWidth = frame.width;
+            finalHeight = frame.height;
         }
+
+        context.drawImage(
+            child.texture.baseTexture.source,
+            frame.x,
+            frame.y,
+            frame.width,
+            frame.height,
+            positionX,
+            positionY,
+            finalWidth,
+            finalHeight
+        );
     }
 };

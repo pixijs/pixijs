@@ -426,3 +426,62 @@ RenderTexture.prototype.getCanvas = function ()
         return this.textureBuffer.canvas;
     }
 };
+
+/**
+ * Will return a one-dimensional array containing the pixel data of the entire texture in RGBA order, with integer values between 0 and 255 (included).
+ *
+ * @return {Uint8ClampedArray}
+ */
+RenderTexture.prototype.getPixels = function ()
+{
+    var width, height;
+
+    if (this.renderer.type === CONST.RENDERER_TYPE.WEBGL)
+    {
+        var gl = this.renderer.gl;
+        width = this.textureBuffer.size.width;
+        height = this.textureBuffer.size.height;
+
+        var webGLPixels = new Uint8Array(4 * width * height);
+
+        gl.bindFramebuffer(gl.FRAMEBUFFER, this.textureBuffer.frameBuffer);
+        gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, webGLPixels);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+
+        return webGLPixels;
+    }
+    else
+    {
+        width = this.textureBuffer.canvas.width;
+        height = this.textureBuffer.canvas.height;
+
+        return this.textureBuffer.canvas.getContext('2d').getImageData(0, 0, width, height).data;
+    }
+};
+
+/**
+ * Will return a one-dimensional array containing the pixel data of a pixel within the texture in RGBA order, with integer values between 0 and 255 (included).
+ *
+ * @param x {number} The x coordinate of the pixel to retrieve.
+ * @param y {number} The y coordinate of the pixel to retrieve.
+ * @return {Uint8ClampedArray}
+ */
+RenderTexture.prototype.getPixel = function (x, y)
+{
+    if (this.renderer.type === CONST.RENDERER_TYPE.WEBGL)
+    {
+        var gl = this.renderer.gl;
+
+        var webGLPixels = new Uint8Array(4);
+
+        gl.bindFramebuffer(gl.FRAMEBUFFER, this.textureBuffer.frameBuffer);
+        gl.readPixels(x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, webGLPixels);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+
+        return webGLPixels;
+    }
+    else
+    {
+        return this.textureBuffer.canvas.getContext('2d').getImageData(x, y, 1, 1).data;
+    }
+};

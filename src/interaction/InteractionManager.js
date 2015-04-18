@@ -62,7 +62,10 @@ function InteractionManager(renderer, options)
         stopped: false,
         target: null,
         type: null,
-        data: this.mouse
+        data: this.mouse,
+        stopPropagation:function(){
+            this.stopped = true;
+        }
     };
 
     /**
@@ -219,7 +222,7 @@ InteractionManager.prototype.addEvents = function ()
         this.interactionDOMElement.style['-ms-touch-action'] = 'none';
     }
 
-    this.interactionDOMElement.addEventListener('mousemove',    this.onMouseMove, true);
+    window.document.addEventListener('mousemove',    this.onMouseMove, true);
     this.interactionDOMElement.addEventListener('mousedown',    this.onMouseDown, true);
     this.interactionDOMElement.addEventListener('mouseout',     this.onMouseOut, true);
 
@@ -249,7 +252,7 @@ InteractionManager.prototype.removeEvents = function ()
         this.interactionDOMElement.style['-ms-touch-action'] = '';
     }
 
-    this.interactionDOMElement.removeEventListener('mousemove', this.onMouseMove, true);
+    window.document.removeEventListener('mousemove', this.onMouseMove, true);
     this.interactionDOMElement.removeEventListener('mousedown', this.onMouseDown, true);
     this.interactionDOMElement.removeEventListener('mouseout',  this.onMouseOut, true);
 
@@ -441,6 +444,9 @@ InteractionManager.prototype.onMouseDown = function (event)
     this.eventData.data = this.mouse;
     this.eventData.stopped = false;
 
+    // Update internal mouse reference
+    this.mapPositionToPoint( this.mouse.global, event.clientX, event.clientY);
+
     if (this.autoPreventDefault)
     {
         this.mouse.originalEvent.preventDefault();
@@ -482,6 +488,9 @@ InteractionManager.prototype.onMouseUp = function (event)
     this.mouse.originalEvent = event;
     this.eventData.data = this.mouse;
     this.eventData.stopped = false;
+    
+    // Update internal mouse reference
+    this.mapPositionToPoint( this.mouse.global, event.clientX, event.clientY);
 
     this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered, this.processMouseUp, true );
 };
@@ -574,6 +583,9 @@ InteractionManager.prototype.onMouseOut = function (event)
 {
     this.mouse.originalEvent = event;
     this.eventData.stopped = false;
+
+    // Update internal mouse reference
+    this.mapPositionToPoint( this.mouse.global, event.clientX, event.clientY);
 
     this.interactionDOMElement.style.cursor = 'inherit';
 

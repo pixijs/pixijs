@@ -373,7 +373,7 @@ Text.prototype.updateTexture = function ()
     this._width = this.canvas.width / this.resolution;
     this._height = this.canvas.height / this.resolution;
 
-    texture.update();
+    texture.baseTexture.emit('update',  texture.baseTexture);
 
     this.dirty = false;
 };

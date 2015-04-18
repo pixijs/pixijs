@@ -189,7 +189,8 @@ ParticleRenderer.prototype.render = function ( container )
 
 
     // if the uvs have not updated then no point rendering just yet!
-    //this.renderer.blendModeManager.setBlendMode(sprite.blendMode);
+    this.renderer.blendModeManager.setBlendMode(container.blendMode);
+    
     var gl = this.renderer.gl;
 
     var m =  container.worldTransform.copy( this.tempMatrix );
@@ -204,7 +205,12 @@ ParticleRenderer.prototype.render = function ( container )
 
     if (!baseTexture._glTextures[gl.id])
     {
-        this.renderer.updateTexture(baseTexture);
+        // if the texture has not updated then lets not upload any static properties
+        if(!this.renderer.updateTexture(baseTexture))
+        {
+            return;
+        }
+
         if(!this.properties[0].dynamic || !this.properties[3].dynamic)
         {
             uploadStatic = true;
