@@ -115,6 +115,7 @@ ParticleContainer.prototype.setProperties = function(properties)
  */
 ParticleContainer.prototype.updateTransform = function ()
 {
+    
     // TODO don't need to!
     this.displayObjectUpdateTransform();
     //  PIXI.Container.prototype.updateTransform.call( this );

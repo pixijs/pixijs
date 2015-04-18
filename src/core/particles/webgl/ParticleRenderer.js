@@ -196,6 +196,8 @@ ParticleRenderer.prototype.render = function ( container )
     var m =  container.worldTransform.copy( this.tempMatrix );
     m.prepend( this.renderer.currentRenderTarget.projectionMatrix );
     gl.uniformMatrix3fv(this.shader.uniforms.projectionMatrix._location, false, m.toArray(true));
+    gl.uniform1f(this.shader.uniforms.uAlpha._location, container.worldAlpha);
+
 
     // if this variable is true then we will upload the static contents as well as the dynamic contens
     var uploadStatic = container._updateStatic;
