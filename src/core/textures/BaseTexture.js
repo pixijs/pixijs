@@ -176,7 +176,7 @@ BaseTexture.prototype.update = function ()
     this.width = this.realWidth / this.resolution;
     this.height = this.realHeight / this.resolution;
 
-    this.isPowerOfTwo = utils.isPowerOfTwo(this.width, this.height);
+    this.isPowerOfTwo = utils.isPowerOfTwo(this.realWidth, this.realHeight);
 
     this.emit('update', this);
 };
