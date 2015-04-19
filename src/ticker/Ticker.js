@@ -25,7 +25,7 @@ function hasListeners(emitter)
  * e.g. When the ticker is started and the emitter has listeners.
  *
  * @class
- * @memberof PIXI.extras
+ * @memberof PIXI.ticker
  */
 function Ticker()
 {
@@ -90,7 +90,7 @@ function Ticker()
     this.deltaTime = 1;
 
     /**
-     * The last time {@link PIXI.extras.Ticker#update}
+     * The last time {@link PIXI.ticker.Ticker#update}
      * was invoked by animation frame callback or manually.
      *
      * @member {number}
@@ -108,8 +108,8 @@ function Ticker()
 
     /**
      * Whether or not this ticker has been started.
-     * `true` if {@link PIXI.extras.Ticker.start} has been called.
-     * `false` if {@link PIXI.extras.Ticker.stop} has been called.
+     * `true` if {@link PIXI.ticker.Ticker.start} has been called.
+     * `false` if {@link PIXI.ticker.Ticker.stop} has been called.
      *
      * @member {boolean}
      */
@@ -122,10 +122,10 @@ Object.defineProperties(Ticker.prototype, {
      * ticker is running. The default is appoximately
      * 60 FPS in modern browsers, but may vary.
      * This also factors in the property value of
-     * {@link PIXI.extras.Ticker#speed}.
+     * {@link PIXI.ticker.Ticker#speed}.
      *
      * @member
-     * @memberof PIXI.extras.Ticker#
+     * @memberof PIXI.ticker.Ticker#
      * @readonly
      */
     FPS: {
@@ -138,10 +138,10 @@ Object.defineProperties(Ticker.prototype, {
     /**
      * This property manages the maximum amount
      * of time allowed to elapse between ticks,
-     * or calls to {@link PIXI.extras.Ticker#update}.
+     * or calls to {@link PIXI.ticker.Ticker#update}.
      *
      * @member
-     * @memberof PIXI.extras.Ticker#
+     * @memberof PIXI.ticker.Ticker#
      * @default 10
      */
     minFPS: {
@@ -216,7 +216,7 @@ Ticker.prototype._startIfPossible = function _startIfPossible()
  * internal 'tick' event. It checks if the emitter has listeners,
  * and if so it requests a new animation frame at this point.
  *
- * @returns {PIXI.extras.Ticker} this
+ * @returns {PIXI.ticker.Ticker} this
  */
 Ticker.prototype.add = function add(fn, context)
 {
@@ -232,7 +232,7 @@ Ticker.prototype.add = function add(fn, context)
  * internal 'tick' event. It checks if the emitter has listeners,
  * and if so it requests a new animation frame at this point.
  *
- * @returns {PIXI.extras.Ticker} this
+ * @returns {PIXI.ticker.Ticker} this
  */
 Ticker.prototype.addOnce = function addOnce(fn, context)
 {
@@ -248,7 +248,7 @@ Ticker.prototype.addOnce = function addOnce(fn, context)
  * It checks if the emitter has listeners for 'tick' event.
  * If it does, then it cancels the animation frame.
  *
- * @returns {PIXI.extras.Ticker} this
+ * @returns {PIXI.ticker.Ticker} this
  */
 Ticker.prototype.remove = function remove(fn, once)
 {
@@ -317,16 +317,5 @@ Ticker.prototype.update = function update(currentTime)
 
     this.lastTime = currentTime;
 };
-
-/**
- * The shared ticker instance used by {@link PIXI.extras.MovieClip}.
- * The property {@link PIXI.extras.Ticker#autoStart} is set to true
- * for this instance.
- *
- * @type {PIXI.extras.Ticker}
- * @memberof PIXI.extras.Ticker
- */
-Ticker.sharedTicker = new Ticker();
-Ticker.sharedTicker.autoStart = true;
 
 module.exports = Ticker;
