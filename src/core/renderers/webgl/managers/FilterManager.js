@@ -321,7 +321,7 @@ FilterManager.prototype.calculateMappedMatrix = function (filterArea, sprite, ou
     var translateScaleY = (this.textureSize.height / texture.height);
 
     worldTransform.tx /= texture.width * translateScaleX;
-    worldTransform.ty /= texture.width * translateScaleX;
+    worldTransform.ty /= texture.height * translateScaleY;
 
     worldTransform.invert();
 
