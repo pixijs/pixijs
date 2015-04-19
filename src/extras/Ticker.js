@@ -1,5 +1,6 @@
-var EventEmitter = require('eventemitter3').EventEmitter,
-    performance = global.performance,
+var core = require('../core'),
+    EventEmitter = require('eventemitter3').EventEmitter,
+    // Internal event used by composed emitter
     TICK = 'tick';
 
 /**
@@ -33,31 +34,44 @@ function Ticker()
      * Internal tick method bound to ticker instance.
      * This is because in early 2015, Function.bind
      * is still 60% slower in high performance scenarios.
+     * Also separating frame requests from update method
+     * so listeners may be called at any time and with
+     * any animation API, just invoke ticker.update(time).
      *
      * @private
      */
     this._tick = function _tick(time) {
-        _this.update(time);
+
+        _this._requestId = null;
+
+        if (_this.started)
+        {
+            _this.update(time);
+        }
+        // Check here because listeners could have side effects
+        // and may have modified state during frame execution.
+        // A new frame may have been requested or listeners removed.
+        if (_this.started && _this._requestId === null && hasListeners(_this._emitter))
+        {
+            _this._requestId = requestAnimationFrame(_this._tick);
+        }
     };
     /**
-     * Internal emitter
+     * Internal emitter used to fire 'tick' event
      * @private
      */
     this._emitter = new EventEmitter();
     /**
-     * Internal frame request reference
+     * Internal current frame request ID
      * @private
      */
-    this._rafId = null;
-
+    this._requestId = null;
     /**
-     * Whether or not this ticker has been started.
-     * `true` if {@link PIXI.extras.Ticker.start} has been called.
-     * `false` if {@link PIXI.extras.Ticker.stop} has been called.
-     *
-     * @member {boolean}
+     * Internal value managed by minFPS property setter and getter.
+     * This is the maximum allowed millseconds between updates.
+     * @private
      */
-    this.started = false;
+    this._maxElapsedMS = 100;
 
     /**
      * Whether or not this ticker should
@@ -68,37 +82,111 @@ function Ticker()
     this.autoStart = false;
 
     /**
-     * The deltaTime
-     * @todo better description
+     * The current percentage of the
+     * target FPS with speed factored in.
      *
      * @member {number}
      */
     this.deltaTime = 1;
 
     /**
-     * The time at the last frame
-     * @todo better description
+     * The last time {@link PIXI.extras.Ticker#update}
+     * was invoked by animation frame callback or manually.
      *
      * @member {number}
      */
     this.lastTime = 0;
 
     /**
-     * The speed
-     * @todo better description
+     * Factor of current FPS.
+     * @example
+     *     ticker.speed = 2; // Approximately 120 FPS, or 0.12 FPMS.
      *
      * @member {number}
      */
     this.speed = 1;
 
     /**
-     * The maximum time between 2 frames
-     * @todo better description
+     * Whether or not this ticker has been started.
+     * `true` if {@link PIXI.extras.Ticker.start} has been called.
+     * `false` if {@link PIXI.extras.Ticker.stop} has been called.
      *
-     * @member {number}
+     * @member {boolean}
      */
-    this.maxTimeElapsed = 100;
+    this.started = false;
 }
+
+Object.defineProperties(Ticker.prototype, {
+    /**
+     * Gets the frames per second for which this
+     * ticker is running. The default is appoximately
+     * 60 FPS in modern browsers, but may vary.
+     * This also factors in the property value of
+     * {@link PIXI.extras.Ticker#speed}.
+     *
+     * @member
+     * @memberof PIXI.extras.Ticker#
+     * @readonly
+     */
+    FPS: {
+        get: function()
+        {
+            return core.TARGET_FPMS * 1000 * this.deltaTime;
+        }
+    },
+
+    /**
+     * This property manages the maximum amount
+     * of time allowed to elapse between ticks,
+     * or calls to {@link PIXI.extras.Ticker#update}.
+     *
+     * @member
+     * @memberof PIXI.extras.Ticker#
+     * @default 10
+     */
+    minFPS: {
+        get: function()
+        {
+            return 1000 / this._maxElapsedMS;
+        },
+        set: function(fps)
+        {
+            var minFPMS = Math.min(fps / 1000, core.TARGET_FPMS);
+            this._maxElapsedMS = 1 / minFPMS;
+        }
+    }
+});
+
+/**
+ * Conditionally requests a new animation frame.
+ * If a frame has not already been requested, and if the internal
+ * emitter has listeners, a new frame is requested.
+ *
+ * @private
+ */
+Ticker.prototype._requestIfNeeded = function _requestIfNeeded()
+{
+    if (this._requestId === null && hasListeners(this._emitter))
+    {
+        // ensure callbacks get correct delta
+        this.lastTime = performance.now();
+        this._requestId = requestAnimationFrame(this._tick);
+    }
+};
+
+/**
+ * Conditionally cancels a pending animation frame.
+ *
+ * @private
+ */
+Ticker.prototype._cancelIfNeeded = function _cancelIfNeeded()
+{
+    if (this._requestId !== null)
+    {
+        cancelAnimationFrame(this._requestId);
+        this._requestId = null;
+    }
+};
 
 /**
  * Conditionally requests a new animation frame.
@@ -114,30 +202,11 @@ Ticker.prototype._startIfPossible = function _startIfPossible()
 {
     if (this.started)
     {
-        if (this._rafId === null && hasListeners(this._emitter))
-        {
-            // ensure callbacks get correct delta
-            this.lastTime = performance.now();
-            this._rafId = requestAnimationFrame(this._tick);
-        }
+        this._requestIfNeeded();
     }
     else if (this.autoStart)
     {
         this.start();
-    }
-};
-
-/**
- * Conditionally cancels a pending animation frame.
- *
- * @private
- */
-Ticker.prototype._cancelIfNeeded = function _cancelIfNeeded()
-{
-    if (this._rafId !== null)
-    {
-        cancelAnimationFrame(this._rafId);
-        this._rafId = null;
     }
 };
 
@@ -182,10 +251,8 @@ Ticker.prototype.addOnce = function addOnce(fn, context)
  */
 Ticker.prototype.remove = function remove(fn, once)
 {
-    // remove listener(s) from internal emitter
     this._emitter.off(TICK, fn, once);
 
-    // If there are no listeners, cancel the request.
     if (!hasListeners(this._emitter))
     {
         this._cancelIfNeeded();
@@ -197,24 +264,19 @@ Ticker.prototype.remove = function remove(fn, once)
 /**
  * Starts the ticker. If the ticker has listeners
  * a new animation frame is requested at this point.
- *
- * @returns {PIXI.extras.Ticker} this
  */
 Ticker.prototype.start = function start()
 {
     if (!this.started)
     {
         this.started = true;
-        this._startIfPossible();
+        this._requestIfNeeded();
     }
-
-    return this;
 };
 
 /**
- * Stops the ticker.
- *
- * @returns {PIXI.extras.Ticker} this
+ * Stops the ticker. If the ticker has requested
+ * an animation frame it is canceled at this point.
  */
 Ticker.prototype.stop = function stop()
 {
@@ -223,52 +285,36 @@ Ticker.prototype.stop = function stop()
         this.started = false;
         this._cancelIfNeeded();
     }
-
-    return this;
 };
 
 /**
  * Triggers an update, setting deltaTime, lastTime, and
- * firing the internal 'tick' event. After this, if the
- * ticker is still started and has listeners,
- * another frame is requested.
+ * firing the internal 'tick' event invoking all listeners.
+ *
+ * @param [currentTime=performance.now()] {number} the current time of execution
  */
 Ticker.prototype.update = function update(currentTime)
 {
-    var timeElapsed;
+    var elapsedMS;
 
-    this._rafId = null;
+    // Allow calling update directly with default currentTime.
+    currentTime = currentTime || performance.now();
+    elapsedMS = currentTime - this.lastTime;
 
-    if (this.started)
+    // cap the milliseconds elapsed
+    if (elapsedMS > this._maxElapsedMS)
     {
-        // Allow calling tick directly getting correct currentTime
-        currentTime = currentTime || performance.now();
-        timeElapsed = currentTime - this.lastTime;
-
-        // cap the time!
-        // TODO: Is this there a better way to do this?
-        if (timeElapsed > this.maxTimeElapsed)
-        {
-            timeElapsed = this.maxTimeElapsed;
-        }
-
-        // TODO: Would love to know what to name this magic number 0.6
-        this.deltaTime = (timeElapsed * 0.06);
-        this.deltaTime *= this.speed;
-
-        // Invoke listeners added to internal emitter
-        this._emitter.emit(TICK, this.deltaTime);
-
-        this.lastTime = currentTime;
+        elapsedMS = this._maxElapsedMS;
     }
 
-    // Check again here because listeners could have side effects
-    // and may have modified state during frame execution.
-    // A new frame may have been requested or listeners removed.
-    if (this.started && this._rafId === null && hasListeners(this._emitter))
-    {
-        this._rafId = requestAnimationFrame(this._tick);
-    }
+    this.deltaTime = (elapsedMS * core.TARGET_FPMS);
+    // Factor in speed
+    this.deltaTime *= this.speed;
+
+    // Invoke listeners added to internal emitter
+    this._emitter.emit(TICK, this.deltaTime);
+
+    this.lastTime = currentTime;
 };
 
 /**
