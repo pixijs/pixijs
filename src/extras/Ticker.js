@@ -151,7 +151,8 @@ Object.defineProperties(Ticker.prototype, {
         },
         set: function(fps)
         {
-            var minFPMS = Math.min(fps / 1000, core.TARGET_FPMS);
+            // Clamp: 0 to TARGET_FPMS
+            var minFPMS = Math.min(Math.max(0, fps) / 1000, core.TARGET_FPMS);
             this._maxElapsedMS = 1 / minFPMS;
         }
     }
