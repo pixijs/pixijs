@@ -385,8 +385,8 @@ TilingSprite.prototype.generateTilingTexture = function (renderer, texture, forc
         m.a =  (targetWidth + 1) / (frame.width);
         m.d =   (targetHeight + 1) / (frame.height);
 
-        tempSprite.worldTransform.tx = 0.5;
-        tempSprite.worldTransform.ty = 0.5;
+       // tempSprite.worldTransform.tx = 0.5;
+       // tempSprite.worldTransform.ty = 0.5;
 
         renderer.currentRenderer.flush();
 
