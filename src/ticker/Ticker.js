@@ -90,6 +90,14 @@ function Ticker()
     this.deltaTime = 1;
 
     /**
+     * The time elapsed in milliseconds
+     * from current frame since the last frame.
+     *
+     * @member {number}
+     */
+    this.elapsedMS = 0;
+
+    /**
      * The last time {@link PIXI.ticker.Ticker#update}
      * was invoked by animation frame callback or manually.
      *
@@ -296,19 +304,17 @@ Ticker.prototype.stop = function stop()
  */
 Ticker.prototype.update = function update(currentTime)
 {
-    var elapsedMS;
-
     // Allow calling update directly with default currentTime.
     currentTime = currentTime || performance.now();
-    elapsedMS = currentTime - this.lastTime;
+    this.elapsedMS = currentTime - this.lastTime;
 
     // cap the milliseconds elapsed
-    if (elapsedMS > this._maxElapsedMS)
+    if (this.elapsedMS > this._maxElapsedMS)
     {
-        elapsedMS = this._maxElapsedMS;
+        this.elapsedMS = this._maxElapsedMS;
     }
 
-    this.deltaTime = (elapsedMS * core.TARGET_FPMS);
+    this.deltaTime = (this.elapsedMS * core.TARGET_FPMS);
     // Factor in speed
     this.deltaTime *= this.speed;
 
