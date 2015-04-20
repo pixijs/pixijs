@@ -73,7 +73,8 @@ FilterManager.prototype.pushFilter = function (target, filters)
 {
     // get the bounds of the object..
     // TODO replace clone with a copy to save object creation
-    var bounds = target.filterArea.clone() || target.getBounds();
+    var bounds = target.filterArea ? target.filterArea.clone() : target.getBounds();
+    
     //bounds = bounds.clone();
 
     // round off the rectangle to get a nice smoooooooth filter :)
