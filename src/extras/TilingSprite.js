@@ -1,8 +1,6 @@
 var core = require('../core'),
     // a sprite use dfor rendering textures..
-    tempSprite = new core.Sprite(),
-    tempPoint = new core.Point(),
-    tempMatrix = new core.Matrix();
+    tempPoint = new core.Point();
 
 /**
  * A tiling sprite is a fast way of rendering a tiling image
@@ -61,6 +59,7 @@ function TilingSprite(texture, width, height)
 
     this._canvasPattern = null;
 
+    //TODO move..
     this.shader = new core.AbstractFilter(
 
       [
@@ -236,7 +235,7 @@ TilingSprite.prototype._renderCanvas = function (renderer)
     if(!this._canvasPattern)
     {
         // cut an object from a spritesheet..
-        var tempCanvas = new PIXI.CanvasBuffer(texture._frame.width, texture._frame.height);
+        var tempCanvas = new core.CanvasBuffer(texture._frame.width, texture._frame.height);
         tempCanvas.context.drawImage(baseTexture.source, -texture._frame.x,-texture._frame.y);
         this._canvasPattern = tempCanvas.context.createPattern( tempCanvas.canvas, 'repeat' );
     }
