@@ -124,8 +124,19 @@ Object.defineProperties(core, {
             console.warn('The blendModes has been moved to BLEND_MODES, please use BLEND_MODES from now on.');
             return core.BLEND_MODES;
         }
+    },
+    /**
+     * @class
+     * @name PIXI.scaleModes
+     * @see {@link PIXI.SCALE_MODES}
+     * @deprecated since version 3.0
+     */
+    scaleModes: {
+        get: function() {
+            console.warn('The scaleModes has been moved to SCALE_MODES, please use SCALE_MODES from now on.');
+            return core.SCALE_MODES;
+        }
     }
-
 });
 
 /**
