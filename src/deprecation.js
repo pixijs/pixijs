@@ -112,6 +112,18 @@ Object.defineProperties(core, {
             console.warn('The BitmapText class has been moved to extras.BitmapText, please use extras.BitmapText from now on.');
             return extras.BitmapText;
         }
+    },
+    /**
+     * @class
+     * @name PIXI.blendModes
+     * @see {@link PIXI.BLEND_MODES}
+     * @deprecated since version 3.0
+     */
+    blendModes: {
+        get: function() {
+            //console.warn('The blendModes has been moved to BLEND_MODES, please use BLEND_MODES from now on.');
+            return core.BLEND_MODES;
+        }
     }
 
 });
