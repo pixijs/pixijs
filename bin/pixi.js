@@ -6323,6 +6323,15 @@ module.exports = {
     DEG_TO_RAD: Math.PI / 180,
 
     /**
+     * Target frames per millisecond.
+     *
+     * @static
+     * @constant
+     * @property {number} TARGET_FPMS=0.06
+     */
+    TARGET_FPMS: 0.06,
+
+    /**
      * Constant to identify the Renderer Type.
      *
      * @static
@@ -6466,6 +6475,8 @@ module.exports = {
         RREC: 4
     },
 
+    // TODO: maybe change to SPRITE.BATCH_SIZE: 2000
+    // TODO: maybe add PARTICLE.BATCH_SIZE: 15000
     SPRITE_BATCH_SIZE: 2000 //nice balance between mobile and desktop machines
 };
 
@@ -7644,6 +7655,8 @@ function Graphics()
      */
     this.glDirty = false;
 
+    this.boundsDirty = true;
+
     /**
      * Used to detect if the cached sprite object needs to be updated.
      *
@@ -7821,7 +7834,7 @@ Graphics.prototype.quadraticCurveTo = function (cpX, cpY, toX, toY)
                      ya + ( ((cpY + ( (toY - cpY) * j )) - ya) * j ) );
     }
 
-    this.dirty = true;
+    this.dirty = this.boundsDirty = true;
 
     return this;
 };
@@ -7879,7 +7892,7 @@ Graphics.prototype.bezierCurveTo = function (cpX, cpY, cpX2, cpY2, toX, toY)
                      dt3 * fromY + 3 * dt2 * j * cpY + 3 * dt * t2 * cpY2 + t3 * toY);
     }
 
-    this.dirty = true;
+    this.dirty = this.boundsDirty = true;
 
     return this;
 };
@@ -7947,7 +7960,7 @@ Graphics.prototype.arcTo = function (x1, y1, x2, y2, radius)
         this.arc(cx + x1, cy + y1, radius, startAngle, endAngle, b1 * a2 > b2 * a1);
     }
 
-    this.dirty = true;
+    this.dirty = this.boundsDirty = true;
 
     return this;
 };
@@ -8042,7 +8055,7 @@ Graphics.prototype.arc = function(cx, cy, radius, startAngle, endAngle, anticloc
                     ( (cTheta * -s) + (sTheta * c) ) * radius + cy);
     }
 
-    this.dirty = true;
+    this.dirty = this.boundsDirty = true;
 
     return this;
 };
@@ -8348,13 +8361,13 @@ Graphics.prototype.getBounds = function (matrix)
             return math.Rectangle.EMPTY;
         }
 
-        if (this.dirty)
+        if (this.boundsDirty)
         {
             this.updateLocalBounds();
 
             this.glDirty = true;
             this.cachedSpriteDirty = true;
-            this.dirty = false;
+            this.boundsDirty = false;
         }
 
         var bounds = this._localBounds;
@@ -8660,7 +8673,7 @@ Graphics.prototype.drawShape = function (shape)
         this.currentPath = data;
     }
 
-    this.dirty = true;
+    this.dirty = this.boundsDirty = true;
 
     return data;
 };
@@ -10865,6 +10878,7 @@ ParticleContainer.prototype.setProperties = function(properties)
  */
 ParticleContainer.prototype.updateTransform = function ()
 {
+    
     // TODO don't need to!
     this.displayObjectUpdateTransform();
     //  PIXI.Container.prototype.updateTransform.call( this );
@@ -11465,6 +11479,8 @@ ParticleRenderer.prototype.render = function ( container )
     var m =  container.worldTransform.copy( this.tempMatrix );
     m.prepend( this.renderer.currentRenderTarget.projectionMatrix );
     gl.uniformMatrix3fv(this.shader.uniforms.projectionMatrix._location, false, m.toArray(true));
+    gl.uniform1f(this.shader.uniforms.uAlpha._location, container.worldAlpha);
+
 
     // if this variable is true then we will upload the static contents as well as the dynamic contens
     var uploadStatic = container._updateStatic;
@@ -11805,13 +11821,16 @@ function ParticleShader(shaderManager)
             'varying float vColor;',
 
             'uniform sampler2D uSampler;',
+            'uniform float uAlpha;',
 
             'void main(void){',
-            '   gl_FragColor = texture2D(uSampler, vTextureCoord) * vColor ;',
+            '   gl_FragColor = texture2D(uSampler, vTextureCoord) * vColor * uAlpha ;',
             '}'
         ].join('\n'),
         // custom uniforms
-        null,
+        {
+            uAlpha:  { type: '1f', value: 1 }
+        },
         // custom attributes
         {
             aPositionCoord: 0,
@@ -13990,7 +14009,9 @@ FilterManager.prototype.setFilterStack = function ( filterStack )
 FilterManager.prototype.pushFilter = function (target, filters)
 {
     // get the bounds of the object..
-    var bounds = target.filterArea || target.getBounds();
+    // TODO replace clone with a copy to save object creation
+    var bounds = target.filterArea ? target.filterArea.clone() : target.getBounds();
+    
     //bounds = bounds.clone();
 
     // round off the rectangle to get a nice smoooooooth filter :)
@@ -14238,7 +14259,7 @@ FilterManager.prototype.calculateMappedMatrix = function (filterArea, sprite, ou
     var translateScaleY = (this.textureSize.height / texture.height);
 
     worldTransform.tx /= texture.width * translateScaleX;
-    worldTransform.ty /= texture.width * translateScaleX;
+    worldTransform.ty /= texture.height * translateScaleY;
 
     worldTransform.invert();
 
@@ -19325,14 +19346,14 @@ function TextureUvs()
     this.x0 = 0;
     this.y0 = 0;
 
-    this.x1 = 0;
+    this.x1 = 1;
     this.y1 = 0;
 
-    this.x2 = 0;
-    this.y2 = 0;
+    this.x2 = 1;
+    this.y2 = 1;
 
     this.x3 = 0;
-    this.y3 = 0;
+    this.y3 = 1;
 }
 
 module.exports = TextureUvs;
@@ -20198,7 +20219,7 @@ core.Text.prototype.setText = function (text)
     console.warn('setText is now deprecated, please use the text property, e.g : myText.text = \'my text\';');
 };
 
-},{"./core":23,"./extras":79,"./mesh":120}],72:[function(require,module,exports){
+},{"./core":23,"./extras":78,"./mesh":119}],72:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -20548,7 +20569,7 @@ BitmapText.fonts = {};
 
 },{"../core":23}],73:[function(require,module,exports){
 var core    = require('../core'),
-    Ticker  = require('./Ticker');
+    ticker  = require('../ticker');
 
 /**
  * A MovieClip is a simple way to display an animation depicted by a list of textures.
@@ -20678,7 +20699,7 @@ MovieClip.prototype.stop = function ()
     }
 
     this.playing = false;
-    Ticker.sharedTicker.remove(this.update);
+    ticker.shared.remove(this.update);
 };
 
 /**
@@ -20693,7 +20714,7 @@ MovieClip.prototype.play = function ()
     }
 
     this.playing = true;
-    Ticker.sharedTicker.add(this.update, this);
+    ticker.shared.add(this.update, this);
 };
 
 /**
@@ -20811,302 +20832,10 @@ MovieClip.fromImages = function (images)
     return new MovieClip(textures);
 };
 
-},{"../core":23,"./Ticker":74}],74:[function(require,module,exports){
-(function (global){
-var EventEmitter = require('eventemitter3').EventEmitter,
-    performance = global.performance,
-    TICK = 'tick';
-
-/**
- * Yes, this is accessing an internal module:eventemitter3 api.
- * Ugly, but calling module:eventemitter3.EventEmitter#listeners
- * does a bit too much for what this is for.
- * This is simple enough to keep track of and contribute
- * back to the eventemitter3 project in the near future.
- *
- * @private
- */
-function hasListeners(emitter)
-{
-    return !!(emitter._events && emitter._events[TICK]);
-}
-
-/**
- * A Ticker class that runs an update loop that other objects listen to.
- * This class is composed around an EventEmitter object to add listeners
- * meant for execution on the next requested animation frame.
- * Animation frames are requested only when necessary,
- * e.g. When the ticker is started and the emitter has listeners.
- *
- * @class
- * @memberof PIXI.extras
- */
-function Ticker()
-{
-    var _this = this;
-    /**
-     * Internal tick method bound to ticker instance.
-     * This is because in early 2015, Function.bind
-     * is still 60% slower in high performance scenarios.
-     *
-     * @private
-     */
-    this._tick = function _tick(time) {
-        _this.update(time);
-    };
-    /**
-     * Internal emitter
-     * @private
-     */
-    this._emitter = new EventEmitter();
-    /**
-     * Internal frame request reference
-     * @private
-     */
-    this._rafId = null;
-
-    /**
-     * Whether or not this ticker has been started.
-     * `true` if {@link PIXI.extras.Ticker.start} has been called.
-     * `false` if {@link PIXI.extras.Ticker.stop} has been called.
-     *
-     * @member {boolean}
-     */
-    this.started = false;
-
-    /**
-     * Whether or not this ticker should
-     * start automatically when a listener is added.
-     *
-     * @member {boolean}
-     */
-    this.autoStart = false;
-
-    /**
-     * The deltaTime
-     * @todo better description
-     *
-     * @member {number}
-     */
-    this.deltaTime = 1;
-
-    /**
-     * The time at the last frame
-     * @todo better description
-     *
-     * @member {number}
-     */
-    this.lastTime = 0;
-
-    /**
-     * The speed
-     * @todo better description
-     *
-     * @member {number}
-     */
-    this.speed = 1;
-
-    /**
-     * The maximum time between 2 frames
-     * @todo better description
-     *
-     * @member {number}
-     */
-    this.maxTimeElapsed = 100;
-}
-
-/**
- * Conditionally requests a new animation frame.
- * If the ticker has been started it checks if a frame has not already
- * been requested, and if the internal emitter has listeners. If these
- * conditions are met, a new frame is requested. If the ticker has not
- * been started, but autoStart is `true`, then the ticker starts now,
- * and continues with the previous conditions to request a new frame.
- *
- * @private
- */
-Ticker.prototype._startIfPossible = function _startIfPossible()
-{
-    if (this.started)
-    {
-        if (this._rafId === null && hasListeners(this._emitter))
-        {
-            // ensure callbacks get correct delta
-            this.lastTime = performance.now();
-            this._rafId = requestAnimationFrame(this._tick);
-        }
-    }
-    else if (this.autoStart)
-    {
-        this.start();
-    }
-};
-
-/**
- * Conditionally cancels a pending animation frame.
- *
- * @private
- */
-Ticker.prototype._cancelIfNeeded = function _cancelIfNeeded()
-{
-    if (this._rafId !== null)
-    {
-        cancelAnimationFrame(this._rafId);
-        this._rafId = null;
-    }
-};
-
-/**
- * Calls {@link module:eventemitter3.EventEmitter#on} internally for the
- * internal 'tick' event. It checks if the emitter has listeners,
- * and if so it requests a new animation frame at this point.
- *
- * @returns {PIXI.extras.Ticker} this
- */
-Ticker.prototype.add = function add(fn, context)
-{
-    this._emitter.on(TICK, fn, context);
-
-    this._startIfPossible();
-
-    return this;
-};
-
-/**
- * Calls {@link module:eventemitter3.EventEmitter#once} internally for the
- * internal 'tick' event. It checks if the emitter has listeners,
- * and if so it requests a new animation frame at this point.
- *
- * @returns {PIXI.extras.Ticker} this
- */
-Ticker.prototype.addOnce = function addOnce(fn, context)
-{
-    this._emitter.once(TICK, fn, context);
-
-    this._startIfPossible();
-
-    return this;
-};
-
-/**
- * Calls {@link module:eventemitter3.EventEmitter#off} internally for 'tick' event.
- * It checks if the emitter has listeners for 'tick' event.
- * If it does, then it cancels the animation frame.
- *
- * @returns {PIXI.extras.Ticker} this
- */
-Ticker.prototype.remove = function remove(fn, once)
-{
-    // remove listener(s) from internal emitter
-    this._emitter.off(TICK, fn, once);
-
-    // If there are no listeners, cancel the request.
-    if (!hasListeners(this._emitter))
-    {
-        this._cancelIfNeeded();
-    }
-
-    return this;
-};
-
-/**
- * Starts the ticker. If the ticker has listeners
- * a new animation frame is requested at this point.
- *
- * @returns {PIXI.extras.Ticker} this
- */
-Ticker.prototype.start = function start()
-{
-    if (!this.started)
-    {
-        this.started = true;
-        this._startIfPossible();
-    }
-
-    return this;
-};
-
-/**
- * Stops the ticker.
- *
- * @returns {PIXI.extras.Ticker} this
- */
-Ticker.prototype.stop = function stop()
-{
-    if (this.started)
-    {
-        this.started = false;
-        this._cancelIfNeeded();
-    }
-
-    return this;
-};
-
-/**
- * Triggers an update, setting deltaTime, lastTime, and
- * firing the internal 'tick' event. After this, if the
- * ticker is still started and has listeners,
- * another frame is requested.
- */
-Ticker.prototype.update = function update(currentTime)
-{
-    var timeElapsed;
-
-    this._rafId = null;
-
-    if (this.started)
-    {
-        // Allow calling tick directly getting correct currentTime
-        currentTime = currentTime || performance.now();
-        timeElapsed = currentTime - this.lastTime;
-
-        // cap the time!
-        // TODO: Is this there a better way to do this?
-        if (timeElapsed > this.maxTimeElapsed)
-        {
-            timeElapsed = this.maxTimeElapsed;
-        }
-
-        // TODO: Would love to know what to name this magic number 0.6
-        this.deltaTime = (timeElapsed * 0.06);
-        this.deltaTime *= this.speed;
-
-        // Invoke listeners added to internal emitter
-        this._emitter.emit(TICK, this.deltaTime);
-
-        this.lastTime = currentTime;
-    }
-
-    // Check again here because listeners could have side effects
-    // and may have modified state during frame execution.
-    // A new frame may have been requested or listeners removed.
-    if (this.started && this._rafId === null && hasListeners(this._emitter))
-    {
-        this._rafId = requestAnimationFrame(this._tick);
-    }
-};
-
-/**
- * The shared ticker instance used by {@link PIXI.extras.MovieClip}.
- * The property {@link PIXI.extras.Ticker#autoStart} is set to true
- * for this instance.
- *
- * @type {PIXI.extras.Ticker}
- * @memberof PIXI.extras.Ticker
- */
-Ticker.sharedTicker = new Ticker();
-Ticker.sharedTicker.autoStart = true;
-
-module.exports = Ticker;
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
-},{"eventemitter3":4}],75:[function(require,module,exports){
+},{"../core":23,"../ticker":126}],74:[function(require,module,exports){
 var core = require('../core'),
     // a sprite use dfor rendering textures..
-    tempSprite = new core.Sprite(),
-    tempPoint = new core.Point(),
-    tempMatrix = new core.Matrix();
+    tempPoint = new core.Point();
 
 /**
  * A tiling sprite is a fast way of rendering a tiling image
@@ -21155,31 +20884,6 @@ function TilingSprite(texture, width, height)
      */
     this._height = height || 100;
 
-     /**
-     * A point that represents the scale of the texture object
-     *
-     * @member {Point}
-     * @private
-     */
-    this._tileScaleOffset = new core.math.Point(1,1);
-
-
-    /**
-     *
-     *
-     * @member {boolean}
-     * @private
-     */
-    this._tilingTexture = null;
-
-    /**
-     *
-     *
-     * @member {boolean}
-     * @private
-     */
-    this._refreshTexture = false;
-
     /**
      * An internal WebGL UV cache.
      *
@@ -21187,6 +20891,64 @@ function TilingSprite(texture, width, height)
      * @private
      */
     this._uvs = new core.TextureUvs();
+
+    this._canvasPattern = null;
+
+    //TODO move..
+    this.shader = new core.AbstractFilter(
+
+      [
+        'precision lowp float;',
+        'attribute vec2 aVertexPosition;',
+        'attribute vec2 aTextureCoord;',
+        'attribute vec4 aColor;',
+
+        'uniform mat3 projectionMatrix;',
+        
+        'uniform vec4 uFrame;',
+        'uniform vec4 uTransform;',
+
+        'varying vec2 vTextureCoord;',
+        'varying vec4 vColor;',
+
+        'void main(void){',
+        '   gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);',
+
+        '   vec2 coord = aTextureCoord;',
+        '   coord -= uTransform.xy;',
+        '   coord /= uTransform.zw;',
+        '   coord /= uFrame.zw;',
+        '   vTextureCoord = coord;',
+
+        '   vColor = vec4(aColor.rgb * aColor.a, aColor.a);',
+        '}'
+      ].join('\n'),
+      [
+        'precision lowp float;',
+
+        'varying vec2 vTextureCoord;',
+        'varying vec4 vColor;',
+
+        'uniform sampler2D uSampler;',
+        'uniform vec4 uFrame;',
+                
+        'void main(void){',
+
+        '   vec2 coord = fract(vTextureCoord);',
+        '   coord *= uFrame.zw;',
+        '   coord += uFrame.xy;',
+
+        '   gl_FragColor =  texture2D(uSampler, coord) * vColor ;',
+        '}'
+      ].join('\n'),
+
+            // set the uniforms
+            {
+                uFrame: { type: '4fv', value: [0,0,1,1] },
+
+                uTransform: { type: '4fv', value: [0,0,1,1] }
+            }
+      );
 }
 
 TilingSprite.prototype = Object.create(core.Sprite.prototype);
@@ -21244,53 +21006,36 @@ TilingSprite.prototype._onTextureUpdate = function ()
  */
 TilingSprite.prototype._renderWebGL = function (renderer)
 {
-    if (!this._tilingTexture || this._refreshTexture)
-    {
-        this.generateTilingTexture(renderer, this.texture, true);
-    }
-
     // tweak our texture temporarily..
-    var texture = this._tilingTexture;
+    var texture = this._texture;
 
-    if(!texture)
+    if(!texture || !texture._uvs)
     {
         return;
     }
 
+    var tempUvs = texture._uvs,
+        tempWidth = texture._frame.width,
+        tempHeight = texture._frame.height,
+        tw = texture.baseTexture.width,
+        th = texture.baseTexture.height;
 
-    var uvs = this._uvs;
-
-    this.tilePosition.x %= texture.baseTexture.width / this._tileScaleOffset.x;
-    this.tilePosition.y %= texture.baseTexture.height / this._tileScaleOffset.y;
-
-    var offsetX =  this.tilePosition.x/(texture.baseTexture.width / this._tileScaleOffset.x);
-    var offsetY =  this.tilePosition.y/(texture.baseTexture.height / this._tileScaleOffset.y);
-
-    var scaleX =  (this._width / texture.baseTexture.width) * this._tileScaleOffset.x;
-    var scaleY =  (this._height / texture.baseTexture.height) * this._tileScaleOffset.y;
-
-    scaleX /= this.tileScale.x;
-    scaleY /= this.tileScale.y;
-
-    uvs.x0 = 0 - offsetX;
-    uvs.y0 = 0 - offsetY;
-
-    uvs.x1 = (1 * scaleX) - offsetX;
-    uvs.y1 = 0 - offsetY;
-
-    uvs.x2 = (1 * scaleX) - offsetX;
-    uvs.y2 = (1 * scaleY) - offsetY;
-
-    uvs.x3 = 0 - offsetX;
-    uvs.y3 = (1 * scaleY) - offsetY;
-
-    var tempUvs = texture._uvs;
-    var tempWidth = texture._frame.width;
-    var tempHeight = texture._frame.height;
-
-    texture._uvs = uvs;
+    texture._uvs = this._uvs;
     texture._frame.width = this.width;
     texture._frame.height = this.height;
+
+    //PADDING
+    
+    // apply padding to stop gaps in the tile when numbers are not rounded
+    this.shader.uniforms.uFrame.value[0] = tempUvs.x0 + (0.5 / tw); // the 0.5 is padding
+    this.shader.uniforms.uFrame.value[1] = tempUvs.y0 + (0.5 / th); // the 0.5 is padding
+    this.shader.uniforms.uFrame.value[2] = tempUvs.x1 - tempUvs.x0 + (-1 / tw); // the -1 is padding offset
+    this.shader.uniforms.uFrame.value[3] = tempUvs.y2 - tempUvs.y0 + (-1 / th); // the -1 is padding offset
+
+    this.shader.uniforms.uTransform.value[0] = (this.tilePosition.x % tw) / this._width;
+    this.shader.uniforms.uTransform.value[1] = (this.tilePosition.y % th) / this._height;
+    this.shader.uniforms.uTransform.value[2] = ( tw / this._width ) * this.tileScale.x;
+    this.shader.uniforms.uTransform.value[3] = ( th / this._height ) * this.tileScale.y;
 
     renderer.setObjectRenderer(renderer.plugins.sprite);
     renderer.plugins.sprite.render(this);
@@ -21298,7 +21043,6 @@ TilingSprite.prototype._renderWebGL = function (renderer)
     texture._uvs = tempUvs;
     texture._frame.width = tempWidth;
     texture._frame.height = tempHeight;
-
 };
 
 /**
@@ -21309,34 +21053,41 @@ TilingSprite.prototype._renderWebGL = function (renderer)
  */
 TilingSprite.prototype._renderCanvas = function (renderer)
 {
-    var context = renderer.context;
+    var texture = this._texture;
 
-    context.globalAlpha = this.worldAlpha;
-
-    var transform = this.worldTransform;
-
-    var resolution = renderer.resolution;
-
-    context.setTransform(transform.a * resolution,
-                         transform.b * resolution,
-                         transform.c * resolution,
-                         transform.d * resolution,
-                         transform.tx * resolution,
-                         transform.ty * resolution);
-
-    if (!this.__tilePattern ||  this._refreshTexture)
+    if (!texture.baseTexture.hasLoaded)
     {
-        this.generateTilingTexture(false);
-
-        if (this._tilingTexture)
-        {
-            this.__tilePattern = context.createPattern(this._tilingTexture.baseTexture.source, 'repeat');
-        }
-        else
-        {
-            return;
-        }
+      return;
     }
+
+    var context = renderer.context,
+        transform = this.worldTransform,
+        resolution = renderer.resolution,
+        baseTexture = texture.baseTexture;
+
+    // create a nice shiny pattern!
+    // TODO this needs to be refreshed if texture changes..
+    if(!this._canvasPattern)
+    {
+        // cut an object from a spritesheet..
+        var tempCanvas = new core.CanvasBuffer(texture._frame.width, texture._frame.height);
+        tempCanvas.context.drawImage(baseTexture.source, -texture._frame.x,-texture._frame.y);
+        this._canvasPattern = tempCanvas.context.createPattern( tempCanvas.canvas, 'repeat' );
+    }
+
+    // set context state..
+    context.globalAlpha = this.worldAlpha;
+    context.setTransform(transform.a * resolution,
+                       transform.b * resolution,
+                       transform.c * resolution,
+                       transform.d * resolution,
+                       transform.tx * resolution,
+                       transform.ty * resolution);
+
+    // TODO - this should be rolled into the setTransform above..
+    context.scale(this.tileScale.x,this.tileScale.y);
+    context.translate((this.tilePosition.x % baseTexture.width ) + (this.anchor.x * -this._width ), 
+                      (this.tilePosition.y % baseTexture.height) + (this.anchor.y * -this._height));
 
     // check blend mode
     if (this.blendMode !== renderer.currentBlendMode)
@@ -21345,25 +21096,16 @@ TilingSprite.prototype._renderCanvas = function (renderer)
         context.globalCompositeOperation = renderer.blendModes[renderer.currentBlendMode];
     }
 
-    var tilePosition = this.tilePosition;
-    var tileScale = this.tileScale;
+    // fill the pattern!
+    context.fillStyle = this._canvasPattern;
+    context.fillRect(-this.tilePosition.x,
+                     -this.tilePosition.y,
+                     this._width / this.tileScale.x,
+                     this._height / this.tileScale.y);
 
-    tilePosition.x %= this._tilingTexture.baseTexture.width;
-    tilePosition.y %= this._tilingTexture.baseTexture.height;
-
-    // offset - make sure to account for the anchor point..
-    context.scale(tileScale.x,tileScale.y);
-    context.translate(tilePosition.x + (this.anchor.x * -this._width), tilePosition.y + (this.anchor.y * -this._height));
-
-    context.fillStyle = this.__tilePattern;
-
-    context.fillRect(-tilePosition.x,
-                    -tilePosition.y,
-                    this._width / tileScale.x,
-                    this._height / tileScale.y);
-
-    context.translate(-tilePosition.x + (this.anchor.x * this._width), -tilePosition.y + (this.anchor.y * this._height));
-    context.scale(1 / tileScale.x, 1 / tileScale.y);
+    //TODO - pretty sure this can be deleted...
+    //context.translate(-tilePosition.x + (this.anchor.x * this._width), -tilePosition.y + (this.anchor.y * this._height));
+    //context.scale(1 / tileScale.x, 1 / tileScale.y);
 };
 
 
@@ -21444,90 +21186,6 @@ TilingSprite.prototype.getBounds = function ()
 };
 
 /**
- * When the texture is updated, this event will fire to update the scale and frame
- *
- * @param event
- * @private
- */
-TilingSprite.prototype.onTextureUpdate = function ()
-{
-   // overriding the sprite version of this!
-};
-
-/**
- * Creates the tiling texture
- * @param renderer {CanvasRenderer|WebGLRenderer} a reference to the current renderer
- * @param texture {Texture} The texture to use to generate the tiling texture
- * @param forcePowerOfTwo {boolean} Whether we want to force the texture to be a power of two
- */
-TilingSprite.prototype.generateTilingTexture = function (renderer, texture, forcePowerOfTwo)
-{
-    if (!this.texture.baseTexture.hasLoaded)
-    {
-        return;
-    }
-
-    texture = this.originalTexture || this._texture;
-    var frame = texture._frame;
-    var targetWidth, targetHeight;
-
-    //  Check that the frame is the same size as the base texture.
-    var isFrame = frame.width !== texture.baseTexture.width || frame.height !== texture.baseTexture.height;
-
-    if ((forcePowerOfTwo && !texture.baseTexture.isPowerOfTwo) || isFrame)
-    {
-        targetWidth = core.utils.getNextPowerOfTwo(frame.width);
-        targetHeight = core.utils.getNextPowerOfTwo(frame.height);
-        tempSprite.texture = texture;
-
-        //TODO not create a new one each time you refresh
-        var renderTexture = new core.RenderTexture(renderer, targetWidth, targetHeight, texture.baseTexture.scaleMode, texture.baseTexture.resolution);
-
-        var cachedRenderTarget = renderer.currentRenderTarget;
-
-        var m = tempMatrix;
-        m.a =  (targetWidth + 1) / (frame.width);
-        m.d =   (targetHeight + 1) / (frame.height);
-
-        tempSprite.worldTransform.tx = 0.5;
-        tempSprite.worldTransform.ty = 0.5;
-
-        renderer.currentRenderer.flush();
-
-        renderTexture.render( tempSprite, m, true, false );
-
-        renderer.setRenderTarget(cachedRenderTarget);
-
-
-        this._tileScaleOffset.x = targetWidth / frame.width;
-        this._tileScaleOffset.y = targetHeight / frame.height;
-
-        this._tilingTexture = renderTexture;
-    }
-    else
-    {
-        if (this._tilingTexture && this._tilingTexture.isTiling)
-        {
-            // destroy the tiling texture!
-            // TODO could store this somewhere?
-            this._tilingTexture.destroy(true);
-        }
-
-        this._tileScaleOffset.x = 1;
-        this._tileScaleOffset.y = 1;
-        this._tilingTexture = texture;
-
-    }
-
-
-    this._refreshTexture = false;
-
-    this.originalTexture = this.texture;
-    this._texture = this._tilingTexture;
-
-};
-
-/**
  * Checks if a point is inside this tiling sprite
  * @param point {Point} the point to check
  */
@@ -21563,9 +21221,6 @@ TilingSprite.prototype.destroy = function () {
     this.tileScale = null;
     this._tileScaleOffset = null;
     this.tilePosition = null;
-
-    this._tilingTexture.destroy(true);
-    this._tilingTexture = null;
 
     this._uvs = null;
 };
@@ -21609,7 +21264,7 @@ TilingSprite.fromImage = function (imageId, width, height, crossorigin, scaleMod
     return new TilingSprite(core.Texture.fromImage(imageId, crossorigin, scaleMode),width,height);
 };
 
-},{"../core":23}],76:[function(require,module,exports){
+},{"../core":23}],75:[function(require,module,exports){
 var core = require('../core'),
     DisplayObject = core.DisplayObject,
     _tempMatrix = new core.Matrix();
@@ -21861,7 +21516,7 @@ DisplayObject.prototype._destroyCachedDisplayObject = function()
     this._cachedSprite = null;
 };
 
-},{"../core":23}],77:[function(require,module,exports){
+},{"../core":23}],76:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -21889,7 +21544,7 @@ core.Container.prototype.getChildByName = function (name)
     return null;
 };
 
-},{"../core":23}],78:[function(require,module,exports){
+},{"../core":23}],77:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -21918,7 +21573,7 @@ core.DisplayObject.prototype.getGlobalPosition = function (point)
     return point;
 };
 
-},{"../core":23}],79:[function(require,module,exports){
+},{"../core":23}],78:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI extras library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -21934,13 +21589,12 @@ require('./getGlobalPosition');
  * @namespace PIXI.extras
  */
 module.exports = {
-    Ticker:         require('./Ticker'),
     MovieClip:      require('./MovieClip'),
     TilingSprite:   require('./TilingSprite'),
     BitmapText:     require('./BitmapText'),
 };
 
-},{"./BitmapText":72,"./MovieClip":73,"./Ticker":74,"./TilingSprite":75,"./cacheAsBitmap":76,"./getChildByName":77,"./getGlobalPosition":78}],80:[function(require,module,exports){
+},{"./BitmapText":72,"./MovieClip":73,"./TilingSprite":74,"./cacheAsBitmap":75,"./getChildByName":76,"./getGlobalPosition":77}],79:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -21997,7 +21651,7 @@ Object.defineProperties(AsciiFilter.prototype, {
     }
 });
 
-},{"../../core":23}],81:[function(require,module,exports){
+},{"../../core":23}],80:[function(require,module,exports){
 var core = require('../../core'),
     BlurXFilter = require('../blur/BlurXFilter'),
     BlurYFilter = require('../blur/BlurYFilter');
@@ -22098,7 +21752,7 @@ Object.defineProperties(BloomFilter.prototype, {
     }
 });
 
-},{"../../core":23,"../blur/BlurXFilter":83,"../blur/BlurYFilter":84}],82:[function(require,module,exports){
+},{"../../core":23,"../blur/BlurXFilter":82,"../blur/BlurYFilter":83}],81:[function(require,module,exports){
 var core = require('../../core'),
     BlurXFilter = require('./BlurXFilter'),
     BlurYFilter = require('./BlurYFilter');
@@ -22210,7 +21864,7 @@ Object.defineProperties(BlurFilter.prototype, {
     }
 });
 
-},{"../../core":23,"./BlurXFilter":83,"./BlurYFilter":84}],83:[function(require,module,exports){
+},{"../../core":23,"./BlurXFilter":82,"./BlurYFilter":83}],82:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -22304,7 +21958,7 @@ Object.defineProperties(BlurXFilter.prototype, {
     },
 });
 
-},{"../../core":23}],84:[function(require,module,exports){
+},{"../../core":23}],83:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -22390,7 +22044,7 @@ Object.defineProperties(BlurYFilter.prototype, {
     },
 });
 
-},{"../../core":23}],85:[function(require,module,exports){
+},{"../../core":23}],84:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -22416,7 +22070,7 @@ SmartBlurFilter.prototype = Object.create(core.AbstractFilter.prototype);
 SmartBlurFilter.prototype.constructor = SmartBlurFilter;
 module.exports = SmartBlurFilter;
 
-},{"../../core":23}],86:[function(require,module,exports){
+},{"../../core":23}],85:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -22975,7 +22629,7 @@ Object.defineProperties(ColorMatrixFilter.prototype, {
     }
 });
 
-},{"../../core":23}],87:[function(require,module,exports){
+},{"../../core":23}],86:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23024,7 +22678,7 @@ Object.defineProperties(ColorStepFilter.prototype, {
     }
 });
 
-},{"../../core":23}],88:[function(require,module,exports){
+},{"../../core":23}],87:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23115,7 +22769,7 @@ Object.defineProperties(ConvolutionFilter.prototype, {
     }
 });
 
-},{"../../core":23}],89:[function(require,module,exports){
+},{"../../core":23}],88:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23141,7 +22795,7 @@ CrossHatchFilter.prototype = Object.create(core.AbstractFilter.prototype);
 CrossHatchFilter.prototype.constructor = CrossHatchFilter;
 module.exports = CrossHatchFilter;
 
-},{"../../core":23}],90:[function(require,module,exports){
+},{"../../core":23}],89:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23222,7 +22876,7 @@ Object.defineProperties(DisplacementFilter.prototype, {
     }
 });
 
-},{"../../core":23}],91:[function(require,module,exports){
+},{"../../core":23}],90:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23294,7 +22948,7 @@ Object.defineProperties(DotScreenFilter.prototype, {
     }
 });
 
-},{"../../core":23}],92:[function(require,module,exports){
+},{"../../core":23}],91:[function(require,module,exports){
 var core = require('../../core');
 
 // @see https://github.com/substack/brfs/issues/25
@@ -23385,7 +23039,7 @@ Object.defineProperties(BlurYTintFilter.prototype, {
     },
 });
 
-},{"../../core":23}],93:[function(require,module,exports){
+},{"../../core":23}],92:[function(require,module,exports){
 var core = require('../../core'),
     BlurXFilter = require('../blur/BlurXFilter'),
     BlurYTintFilter = require('./BlurYTintFilter');
@@ -23554,7 +23208,7 @@ Object.defineProperties(DropShadowFilter.prototype, {
     }
 });
 
-},{"../../core":23,"../blur/BlurXFilter":83,"./BlurYTintFilter":92}],94:[function(require,module,exports){
+},{"../../core":23,"../blur/BlurXFilter":82,"./BlurYTintFilter":91}],93:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23603,7 +23257,7 @@ Object.defineProperties(GrayFilter.prototype, {
     }
 });
 
-},{"../../core":23}],95:[function(require,module,exports){
+},{"../../core":23}],94:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI filters library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -23647,7 +23301,7 @@ module.exports = {
     TwistFilter:        require('./twist/TwistFilter')
 };
 
-},{"../core/renderers/webgl/filters/AbstractFilter":43,"../core/renderers/webgl/filters/FXAAFilter":44,"../core/renderers/webgl/filters/SpriteMaskFilter":45,"./ascii/AsciiFilter":80,"./bloom/BloomFilter":81,"./blur/BlurFilter":82,"./blur/BlurXFilter":83,"./blur/BlurYFilter":84,"./blur/SmartBlurFilter":85,"./color/ColorMatrixFilter":86,"./color/ColorStepFilter":87,"./convolution/ConvolutionFilter":88,"./crosshatch/CrossHatchFilter":89,"./displacement/DisplacementFilter":90,"./dot/DotScreenFilter":91,"./dropshadow/DropShadowFilter":93,"./gray/GrayFilter":94,"./invert/InvertFilter":96,"./noise/NoiseFilter":97,"./normal/NormalMapFilter":98,"./pixelate/PixelateFilter":99,"./rgb/RGBSplitFilter":100,"./sepia/SepiaFilter":101,"./shockwave/ShockwaveFilter":102,"./tiltshift/TiltShiftFilter":104,"./tiltshift/TiltShiftXFilter":105,"./tiltshift/TiltShiftYFilter":106,"./twist/TwistFilter":107}],96:[function(require,module,exports){
+},{"../core/renderers/webgl/filters/AbstractFilter":43,"../core/renderers/webgl/filters/FXAAFilter":44,"../core/renderers/webgl/filters/SpriteMaskFilter":45,"./ascii/AsciiFilter":79,"./bloom/BloomFilter":80,"./blur/BlurFilter":81,"./blur/BlurXFilter":82,"./blur/BlurYFilter":83,"./blur/SmartBlurFilter":84,"./color/ColorMatrixFilter":85,"./color/ColorStepFilter":86,"./convolution/ConvolutionFilter":87,"./crosshatch/CrossHatchFilter":88,"./displacement/DisplacementFilter":89,"./dot/DotScreenFilter":90,"./dropshadow/DropShadowFilter":92,"./gray/GrayFilter":93,"./invert/InvertFilter":95,"./noise/NoiseFilter":96,"./normal/NormalMapFilter":97,"./pixelate/PixelateFilter":98,"./rgb/RGBSplitFilter":99,"./sepia/SepiaFilter":100,"./shockwave/ShockwaveFilter":101,"./tiltshift/TiltShiftFilter":103,"./tiltshift/TiltShiftXFilter":104,"./tiltshift/TiltShiftYFilter":105,"./twist/TwistFilter":106}],95:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23697,7 +23351,7 @@ Object.defineProperties(InvertFilter.prototype, {
     }
 });
 
-},{"../../core":23}],97:[function(require,module,exports){
+},{"../../core":23}],96:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23752,7 +23406,7 @@ Object.defineProperties(NoiseFilter.prototype, {
     }
 });
 
-},{"../../core":23}],98:[function(require,module,exports){
+},{"../../core":23}],97:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23865,7 +23519,7 @@ Object.defineProperties(NormalMapFilter.prototype, {
     }
 });
 
-},{"../../core":23}],99:[function(require,module,exports){
+},{"../../core":23}],98:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23916,7 +23570,7 @@ Object.defineProperties(PixelateFilter.prototype, {
     }
 });
 
-},{"../../core":23}],100:[function(require,module,exports){
+},{"../../core":23}],99:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -24002,7 +23656,7 @@ Object.defineProperties(RGBSplitFilter.prototype, {
     }
 });
 
-},{"../../core":23}],101:[function(require,module,exports){
+},{"../../core":23}],100:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -24052,7 +23706,7 @@ Object.defineProperties(SepiaFilter.prototype, {
     }
 });
 
-},{"../../core":23}],102:[function(require,module,exports){
+},{"../../core":23}],101:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -24140,7 +23794,7 @@ Object.defineProperties(ShockwaveFilter.prototype, {
     }
 });
 
-},{"../../core":23}],103:[function(require,module,exports){
+},{"../../core":23}],102:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -24265,7 +23919,7 @@ Object.defineProperties(TiltShiftAxisFilter.prototype, {
     }
 });
 
-},{"../../core":23}],104:[function(require,module,exports){
+},{"../../core":23}],103:[function(require,module,exports){
 var core = require('../../core'),
     TiltShiftXFilter = require('./TiltShiftXFilter'),
     TiltShiftYFilter = require('./TiltShiftYFilter');
@@ -24375,7 +24029,7 @@ Object.defineProperties(TiltShiftFilter.prototype, {
     }
 });
 
-},{"../../core":23,"./TiltShiftXFilter":105,"./TiltShiftYFilter":106}],105:[function(require,module,exports){
+},{"../../core":23,"./TiltShiftXFilter":104,"./TiltShiftYFilter":105}],104:[function(require,module,exports){
 var TiltShiftAxisFilter = require('./TiltShiftAxisFilter');
 
 /**
@@ -24413,7 +24067,7 @@ TiltShiftXFilter.prototype.updateDelta = function ()
     this.uniforms.delta.value.y = dy / d;
 };
 
-},{"./TiltShiftAxisFilter":103}],106:[function(require,module,exports){
+},{"./TiltShiftAxisFilter":102}],105:[function(require,module,exports){
 var TiltShiftAxisFilter = require('./TiltShiftAxisFilter');
 
 /**
@@ -24451,7 +24105,7 @@ TiltShiftYFilter.prototype.updateDelta = function ()
     this.uniforms.delta.value.y = dx / d;
 };
 
-},{"./TiltShiftAxisFilter":103}],107:[function(require,module,exports){
+},{"./TiltShiftAxisFilter":102}],106:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -24536,7 +24190,7 @@ Object.defineProperties(TwistFilter.prototype, {
     }
 });
 
-},{"../../core":23}],108:[function(require,module,exports){
+},{"../../core":23}],107:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -24599,7 +24253,7 @@ InteractionData.prototype.getLocalPosition = function (displayObject, point, glo
     return point;
 };
 
-},{"../core":23}],109:[function(require,module,exports){
+},{"../core":23}],108:[function(require,module,exports){
 var core = require('../core'),
     InteractionData = require('./InteractionData');
 
@@ -24693,14 +24347,6 @@ function InteractionManager(renderer, options)
      */
     this.eventsAdded = false;
 
-    /**
-     * The ID of the requestAnimationFrame call, so we can clear it in destroy.
-     *
-     * @member {number}
-     * @private
-     */
-    this.requestId = 0;
-
     //this will make it so that you don't have to call bind all the time
 
     /**
@@ -24771,17 +24417,7 @@ function InteractionManager(renderer, options)
      */
     this.resolution = 1;
 
-    /**
-     * The update method bound to our context.
-     *
-     * @member {function}
-     * @private
-     */
-    this.updateBound = this.update.bind(this);
-
     this.setTargetElement(this.renderer.view, this.renderer.resolution);
-
-    this.update();
 }
 
 InteractionManager.prototype.constructor = InteractionManager;
@@ -24818,6 +24454,8 @@ InteractionManager.prototype.addEvents = function ()
         return;
     }
 
+    core.ticker.shared.add(this.update, this);
+
     if (window.navigator.msPointerEnabled)
     {
         this.interactionDOMElement.style['-ms-content-zooming'] = 'none';
@@ -24848,6 +24486,8 @@ InteractionManager.prototype.removeEvents = function ()
         return;
     }
 
+    core.ticker.shared.remove(this.update);
+
     if (window.navigator.msPointerEnabled)
     {
         this.interactionDOMElement.style['-ms-content-zooming'] = '';
@@ -24870,15 +24510,24 @@ InteractionManager.prototype.removeEvents = function ()
 };
 
 /**
- * updates the state of interactive objects
+ * Updates the state of interactive objects.
+ * Invoked by a throttled ticker update from
+ * {@link PIXI.ticker.shared}.
  *
- * @private
+ * @param deltaTime {number}
  */
-InteractionManager.prototype.update = function ()
+InteractionManager.prototype.update = function (deltaTime)
 {
-    this.requestId = requestAnimationFrame(this.updateBound);
+    this._deltaTime += deltaTime;
 
-    if( this.throttleUpdate() || !this.interactionDOMElement)
+    if (this._deltaTime < this.interactionFrequency)
+    {
+        return;
+    }
+
+    this._deltaTime = 0;
+
+    if (!this.interactionDOMElement)
     {
         return;
     }
@@ -24892,7 +24541,7 @@ InteractionManager.prototype.update = function ()
 
     this.cursor = 'inherit';
 
-    this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered , this.processMouseOverOut.bind(this) , true );
+    this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered, this.processMouseOverOut, true );
 
     if (this.currentCursorStyle !== this.cursor)
     {
@@ -24924,29 +24573,6 @@ InteractionManager.prototype.dispatchEvent = function ( displayObject, eventStri
             displayObject[eventString]( eventData );
         }
     }
-};
-
-/**
- * Ensures the interaction checks don't happen too often by delaying the update loop
- *
- * @private
- */
-InteractionManager.prototype.throttleUpdate = function ()
-{
-    // frequency of 30fps??
-    var now = Date.now();
-    var diff = now - this.last;
-
-    diff = (diff * this.interactionFrequency ) / 1000;
-
-    if (diff < 1)
-    {
-        return true;
-    }
-
-    this.last = now;
-
-    return false;
 };
 
 /**
@@ -25090,7 +24716,7 @@ InteractionManager.prototype.onMouseUp = function (event)
     this.mouse.originalEvent = event;
     this.eventData.data = this.mouse;
     this.eventData.stopped = false;
-    
+
     // Update internal mouse reference
     this.mapPositionToPoint( this.mouse.global, event.clientX, event.clientY);
 
@@ -25467,16 +25093,12 @@ InteractionManager.prototype.destroy = function () {
     this.processTouchMove = null;
 
     this._tempPoint = null;
-
-    cancelAnimationFrame(this.requestId);
-
-    this.updateBound = null;
 };
 
 core.WebGLRenderer.registerPlugin('interaction', InteractionManager);
 core.CanvasRenderer.registerPlugin('interaction', InteractionManager);
 
-},{"../core":23,"./InteractionData":108,"./interactiveTarget":111}],110:[function(require,module,exports){
+},{"../core":23,"./InteractionData":107,"./interactiveTarget":110}],109:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI interactions library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -25493,7 +25115,7 @@ module.exports = {
     interactiveTarget: require('./interactiveTarget')
 };
 
-},{"./InteractionData":108,"./InteractionManager":109,"./interactiveTarget":111}],111:[function(require,module,exports){
+},{"./InteractionData":107,"./InteractionManager":108,"./interactiveTarget":110}],110:[function(require,module,exports){
 /**
  * Default property values of interactive objects
  * used by {@link PIXI.interaction.InteractionManager}.
@@ -25541,7 +25163,7 @@ module.exports = {
     _touchDown: false
 };
 
-},{}],112:[function(require,module,exports){
+},{}],111:[function(require,module,exports){
 var Resource = require('resource-loader').Resource,
     core = require('../core'),
     utils = require('../core/utils'),
@@ -25670,7 +25292,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":23,"../core/utils":69,"../extras":79,"path":2,"resource-loader":12}],113:[function(require,module,exports){
+},{"../core":23,"../core/utils":69,"../extras":78,"path":2,"resource-loader":12}],112:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI loaders library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -25691,7 +25313,7 @@ module.exports = {
     textureParser:      require('./textureParser')
 };
 
-},{"./bitmapFontParser":112,"./loader":114,"./spineAtlasParser":115,"./spritesheetParser":116,"./textureParser":117}],114:[function(require,module,exports){
+},{"./bitmapFontParser":111,"./loader":113,"./spineAtlasParser":114,"./spritesheetParser":115,"./textureParser":116}],113:[function(require,module,exports){
 var ResourceLoader = require('resource-loader'),
     textureParser = require('./textureParser'),
     spritesheetParser = require('./spritesheetParser'),
@@ -25743,7 +25365,7 @@ Loader.prototype.constructor = Loader;
 
 module.exports = Loader;
 
-},{"./bitmapFontParser":112,"./spineAtlasParser":115,"./spritesheetParser":116,"./textureParser":117,"resource-loader":12}],115:[function(require,module,exports){
+},{"./bitmapFontParser":111,"./spineAtlasParser":114,"./spritesheetParser":115,"./textureParser":116,"resource-loader":12}],114:[function(require,module,exports){
 var Resource = require('resource-loader').Resource,
     async = require('async'),
     spine = require('pixi-spine');
@@ -25800,7 +25422,7 @@ module.exports = function ()
     };
 };
 
-},{"async":1,"pixi-spine":8,"resource-loader":12}],116:[function(require,module,exports){
+},{"async":1,"pixi-spine":8,"resource-loader":12}],115:[function(require,module,exports){
 var Resource = require('resource-loader').Resource,
     path = require('path'),
     core = require('../core');
@@ -25883,7 +25505,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":23,"path":2,"resource-loader":12}],117:[function(require,module,exports){
+},{"../core":23,"path":2,"resource-loader":12}],116:[function(require,module,exports){
 var core = require('../core');
 
 module.exports = function ()
@@ -25902,7 +25524,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":23}],118:[function(require,module,exports){
+},{"../core":23}],117:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -26293,7 +25915,7 @@ Mesh.DRAW_MODES = {
     TRIANGLES: 1
 };
 
-},{"../core":23}],119:[function(require,module,exports){
+},{"../core":23}],118:[function(require,module,exports){
 var Mesh = require('./Mesh');
 
 /**
@@ -26487,7 +26109,7 @@ Rope.prototype.updateTransform = function ()
     this.containerUpdateTransform();
 };
 
-},{"./Mesh":118}],120:[function(require,module,exports){
+},{"./Mesh":117}],119:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI extras library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -26505,7 +26127,7 @@ module.exports = {
     MeshShader:     require('./webgl/MeshShader')
 };
 
-},{"./Mesh":118,"./Rope":119,"./webgl/MeshRenderer":121,"./webgl/MeshShader":122}],121:[function(require,module,exports){
+},{"./Mesh":117,"./Rope":118,"./webgl/MeshRenderer":120,"./webgl/MeshShader":121}],120:[function(require,module,exports){
 var ObjectRenderer = require('../../core/renderers/webgl/utils/ObjectRenderer'),
     WebGLRenderer = require('../../core/renderers/webgl/WebGLRenderer');
 
@@ -26715,7 +26337,7 @@ MeshRenderer.prototype.destroy = function ()
 {
 };
 
-},{"../../core/renderers/webgl/WebGLRenderer":42,"../../core/renderers/webgl/utils/ObjectRenderer":56}],122:[function(require,module,exports){
+},{"../../core/renderers/webgl/WebGLRenderer":42,"../../core/renderers/webgl/utils/ObjectRenderer":56}],121:[function(require,module,exports){
 var core = require('../../core');
 
 /**
@@ -26776,7 +26398,7 @@ module.exports = StripShader;
 
 core.ShaderManager.registerPlugin('meshShader', StripShader);
 
-},{"../../core":23}],123:[function(require,module,exports){
+},{"../../core":23}],122:[function(require,module,exports){
 // References:
 // https://github.com/sindresorhus/object-assign
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
@@ -26786,11 +26408,11 @@ if (!Object.assign)
     Object.assign = require('object-assign');
 }
 
-},{"object-assign":5}],124:[function(require,module,exports){
+},{"object-assign":5}],123:[function(require,module,exports){
 require('./Object.assign');
 require('./requestAnimationFrame');
 
-},{"./Object.assign":123,"./requestAnimationFrame":125}],125:[function(require,module,exports){
+},{"./Object.assign":122,"./requestAnimationFrame":124}],124:[function(require,module,exports){
 (function (global){
 // References:
 // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
@@ -26848,7 +26470,7 @@ if (!global.requestAnimationFrame) {
 
         return setTimeout(function () {
             lastTime = Date.now();
-            callback(global.performance.now());
+            callback(performance.now());
         }, delay);
     };
 }
@@ -26861,7 +26483,362 @@ if (!global.cancelAnimationFrame) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],"pixi.js":[function(require,module,exports){
+},{}],125:[function(require,module,exports){
+var core = require('../core'),
+    EventEmitter = require('eventemitter3').EventEmitter,
+    // Internal event used by composed emitter
+    TICK = 'tick';
+
+/**
+ * Yes, this is accessing an internal module:eventemitter3 api.
+ * Ugly, but calling module:eventemitter3.EventEmitter#listeners
+ * does a bit too much for what this is for.
+ * This is simple enough to keep track of and contribute
+ * back to the eventemitter3 project in the near future.
+ *
+ * @private
+ */
+function hasListeners(emitter)
+{
+    return !!(emitter._events && emitter._events[TICK]);
+}
+
+/**
+ * A Ticker class that runs an update loop that other objects listen to.
+ * This class is composed around an EventEmitter object to add listeners
+ * meant for execution on the next requested animation frame.
+ * Animation frames are requested only when necessary,
+ * e.g. When the ticker is started and the emitter has listeners.
+ *
+ * @class
+ * @memberof PIXI.ticker
+ */
+function Ticker()
+{
+    var _this = this;
+    /**
+     * Internal tick method bound to ticker instance.
+     * This is because in early 2015, Function.bind
+     * is still 60% slower in high performance scenarios.
+     * Also separating frame requests from update method
+     * so listeners may be called at any time and with
+     * any animation API, just invoke ticker.update(time).
+     *
+     * @private
+     */
+    this._tick = function _tick(time) {
+
+        _this._requestId = null;
+
+        if (_this.started)
+        {
+            _this.update(time);
+        }
+        // Check here because listeners could have side effects
+        // and may have modified state during frame execution.
+        // A new frame may have been requested or listeners removed.
+        if (_this.started && _this._requestId === null && hasListeners(_this._emitter))
+        {
+            _this._requestId = requestAnimationFrame(_this._tick);
+        }
+    };
+    /**
+     * Internal emitter used to fire 'tick' event
+     * @private
+     */
+    this._emitter = new EventEmitter();
+    /**
+     * Internal current frame request ID
+     * @private
+     */
+    this._requestId = null;
+    /**
+     * Internal value managed by minFPS property setter and getter.
+     * This is the maximum allowed millseconds between updates.
+     * @private
+     */
+    this._maxElapsedMS = 100;
+
+    /**
+     * Whether or not this ticker should
+     * start automatically when a listener is added.
+     *
+     * @member {boolean}
+     */
+    this.autoStart = false;
+
+    /**
+     * The current percentage of the
+     * target FPS with speed factored in.
+     *
+     * @member {number}
+     */
+    this.deltaTime = 1;
+
+    /**
+     * The time elapsed in milliseconds
+     * from current frame since the last frame.
+     *
+     * @member {number}
+     */
+    this.elapsedMS = 0;
+
+    /**
+     * The last time {@link PIXI.ticker.Ticker#update}
+     * was invoked by animation frame callback or manually.
+     *
+     * @member {number}
+     */
+    this.lastTime = 0;
+
+    /**
+     * Factor of current FPS.
+     * @example
+     *     ticker.speed = 2; // Approximately 120 FPS, or 0.12 FPMS.
+     *
+     * @member {number}
+     */
+    this.speed = 1;
+
+    /**
+     * Whether or not this ticker has been started.
+     * `true` if {@link PIXI.ticker.Ticker.start} has been called.
+     * `false` if {@link PIXI.ticker.Ticker.stop} has been called.
+     *
+     * @member {boolean}
+     */
+    this.started = false;
+}
+
+Object.defineProperties(Ticker.prototype, {
+    /**
+     * Gets the frames per second for which this
+     * ticker is running. The default is appoximately
+     * 60 FPS in modern browsers, but may vary.
+     * This also factors in the property value of
+     * {@link PIXI.ticker.Ticker#speed}.
+     *
+     * @member
+     * @memberof PIXI.ticker.Ticker#
+     * @readonly
+     */
+    FPS: {
+        get: function()
+        {
+            return core.TARGET_FPMS * 1000 * this.deltaTime;
+        }
+    },
+
+    /**
+     * This property manages the maximum amount
+     * of time allowed to elapse between ticks,
+     * or calls to {@link PIXI.ticker.Ticker#update}.
+     *
+     * @member
+     * @memberof PIXI.ticker.Ticker#
+     * @default 10
+     */
+    minFPS: {
+        get: function()
+        {
+            return 1000 / this._maxElapsedMS;
+        },
+        set: function(fps)
+        {
+            // Clamp: 0 to TARGET_FPMS
+            var minFPMS = Math.min(Math.max(0, fps) / 1000, core.TARGET_FPMS);
+            this._maxElapsedMS = 1 / minFPMS;
+        }
+    }
+});
+
+/**
+ * Conditionally requests a new animation frame.
+ * If a frame has not already been requested, and if the internal
+ * emitter has listeners, a new frame is requested.
+ *
+ * @private
+ */
+Ticker.prototype._requestIfNeeded = function _requestIfNeeded()
+{
+    if (this._requestId === null && hasListeners(this._emitter))
+    {
+        // ensure callbacks get correct delta
+        this.lastTime = performance.now();
+        this._requestId = requestAnimationFrame(this._tick);
+    }
+};
+
+/**
+ * Conditionally cancels a pending animation frame.
+ *
+ * @private
+ */
+Ticker.prototype._cancelIfNeeded = function _cancelIfNeeded()
+{
+    if (this._requestId !== null)
+    {
+        cancelAnimationFrame(this._requestId);
+        this._requestId = null;
+    }
+};
+
+/**
+ * Conditionally requests a new animation frame.
+ * If the ticker has been started it checks if a frame has not already
+ * been requested, and if the internal emitter has listeners. If these
+ * conditions are met, a new frame is requested. If the ticker has not
+ * been started, but autoStart is `true`, then the ticker starts now,
+ * and continues with the previous conditions to request a new frame.
+ *
+ * @private
+ */
+Ticker.prototype._startIfPossible = function _startIfPossible()
+{
+    if (this.started)
+    {
+        this._requestIfNeeded();
+    }
+    else if (this.autoStart)
+    {
+        this.start();
+    }
+};
+
+/**
+ * Calls {@link module:eventemitter3.EventEmitter#on} internally for the
+ * internal 'tick' event. It checks if the emitter has listeners,
+ * and if so it requests a new animation frame at this point.
+ *
+ * @returns {PIXI.ticker.Ticker} this
+ */
+Ticker.prototype.add = function add(fn, context)
+{
+    this._emitter.on(TICK, fn, context);
+
+    this._startIfPossible();
+
+    return this;
+};
+
+/**
+ * Calls {@link module:eventemitter3.EventEmitter#once} internally for the
+ * internal 'tick' event. It checks if the emitter has listeners,
+ * and if so it requests a new animation frame at this point.
+ *
+ * @returns {PIXI.ticker.Ticker} this
+ */
+Ticker.prototype.addOnce = function addOnce(fn, context)
+{
+    this._emitter.once(TICK, fn, context);
+
+    this._startIfPossible();
+
+    return this;
+};
+
+/**
+ * Calls {@link module:eventemitter3.EventEmitter#off} internally for 'tick' event.
+ * It checks if the emitter has listeners for 'tick' event.
+ * If it does, then it cancels the animation frame.
+ *
+ * @returns {PIXI.ticker.Ticker} this
+ */
+Ticker.prototype.remove = function remove(fn, once)
+{
+    this._emitter.off(TICK, fn, once);
+
+    if (!hasListeners(this._emitter))
+    {
+        this._cancelIfNeeded();
+    }
+
+    return this;
+};
+
+/**
+ * Starts the ticker. If the ticker has listeners
+ * a new animation frame is requested at this point.
+ */
+Ticker.prototype.start = function start()
+{
+    if (!this.started)
+    {
+        this.started = true;
+        this._requestIfNeeded();
+    }
+};
+
+/**
+ * Stops the ticker. If the ticker has requested
+ * an animation frame it is canceled at this point.
+ */
+Ticker.prototype.stop = function stop()
+{
+    if (this.started)
+    {
+        this.started = false;
+        this._cancelIfNeeded();
+    }
+};
+
+/**
+ * Triggers an update, setting deltaTime, lastTime, and
+ * firing the internal 'tick' event invoking all listeners.
+ *
+ * @param [currentTime=performance.now()] {number} the current time of execution
+ */
+Ticker.prototype.update = function update(currentTime)
+{
+    // Allow calling update directly with default currentTime.
+    currentTime = currentTime || performance.now();
+    this.elapsedMS = currentTime - this.lastTime;
+
+    // cap the milliseconds elapsed
+    if (this.elapsedMS > this._maxElapsedMS)
+    {
+        this.elapsedMS = this._maxElapsedMS;
+    }
+
+    this.deltaTime = (this.elapsedMS * core.TARGET_FPMS);
+    // Factor in speed
+    this.deltaTime *= this.speed;
+
+    // Invoke listeners added to internal emitter
+    this._emitter.emit(TICK, this.deltaTime);
+
+    this.lastTime = currentTime;
+};
+
+module.exports = Ticker;
+
+},{"../core":23,"eventemitter3":4}],126:[function(require,module,exports){
+/**
+ * @file        Main export of the PIXI extras library
+ * @author      Mat Groves <mat@goodboydigital.com>
+ * @copyright   2013-2015 GoodBoyDigital
+ * @license     {@link https://github.com/GoodBoyDigital/pixi.js/blob/master/LICENSE|MIT License}
+ */
+var Ticker = require('./Ticker');
+
+/**
+ * The shared ticker instance used by {@link PIXI.extras.MovieClip}.
+ * and by {@link PIXI.interaction.InteractionManager}.
+ * The property {@link PIXI.ticker.Ticker#autoStart} is set to true
+ * for this instance.
+ *
+ * @type {PIXI.ticker.Ticker}
+ * @memberof PIXI.ticker
+ */
+var shared = new Ticker();
+shared.autoStart = true;
+
+module.exports = {
+    shared: shared,
+    Ticker: Ticker
+};
+
+},{"./Ticker":125}],"pixi.js":[function(require,module,exports){
 // run the polyfills
 require('./polyfill');
 
@@ -26874,6 +26851,7 @@ core.interaction    = require('./interaction');
 core.loaders        = require('./loaders');
 core.mesh           = require('./mesh');
 core.spine          = require('pixi-spine');
+core.ticker         = require('./ticker');
 
 // export a premade loader instance
 core.loader = new core.loaders.Loader();
@@ -26881,7 +26859,7 @@ core.loader = new core.loaders.Loader();
 // mixin the deprecation features.
 Object.assign(core, require('./deprecation'));
 
-},{"./core":23,"./deprecation":71,"./extras":79,"./filters":95,"./interaction":110,"./loaders":113,"./mesh":120,"./polyfill":124,"pixi-spine":8}]},{},["pixi.js"])("pixi.js")
+},{"./core":23,"./deprecation":71,"./extras":78,"./filters":94,"./interaction":109,"./loaders":112,"./mesh":119,"./polyfill":123,"./ticker":126,"pixi-spine":8}]},{},["pixi.js"])("pixi.js")
 });
 
 
