@@ -16,5 +16,6 @@ module.exports = {
     Ticker:         require('./Ticker'),
     MovieClip:      require('./MovieClip'),
     TilingSprite:   require('./TilingSprite'),
+    TilingSprite2:   require('./TilingSprite2'),
     BitmapText:     require('./BitmapText'),
 };
