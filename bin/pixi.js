@@ -20112,9 +20112,10 @@ module.exports = {
 
 },{}],71:[function(require,module,exports){
 /*global console */
-var core   = require('./core'),
-    mesh   = require('./mesh'),
-    extras = require('./extras');
+var core = require('./core'),
+    mesh = require('./mesh'),
+    extras = require('./extras'),
+    utils = require('./core/utils');
 
 /**
  * @class
@@ -20122,8 +20123,7 @@ var core   = require('./core'),
  * @see {@link PIXI.ParticleContainer}
  * @throws {ReferenceError} SpriteBatch does not exist any more, please use the new ParticleContainer instead.
  */
-core.SpriteBatch = function ()
-{
+core.SpriteBatch = function() {
     throw new ReferenceError('SpriteBatch does not exist any more, please use the new ParticleContainer instead.');
 };
 
@@ -20131,10 +20131,10 @@ core.SpriteBatch = function ()
  * @class
  * @name PIXI.AssetLoader
  * @see {@link PIXI.loaders.Loader}
- * @throws {ReferenceError} The loader system was overhauled in pixi v3, please see the new PIXI.Loader class.
+ * @throws {ReferenceError} The loader system was overhauled in pixi v3, please see the new PIXI.loaders.Loader class.
  */
-core.AssetLoader = function () {
-    throw new ReferenceError('The loader system was overhauled in pixi v3, please see the new PIXI.Loader class.');
+core.AssetLoader = function() {
+    throw new ReferenceError('The loader system was overhauled in pixi v3, please see the new PIXI.loaders.Loader class.');
 };
 
 Object.defineProperties(core, {
@@ -20146,8 +20146,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0
      */
     Stage: {
-        get: function ()
-        {
+        get: function() {
             console.warn('You do not need to use a PIXI Stage any more, you can simply render any container.');
             return core.Container;
         }
@@ -20160,8 +20159,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0
      */
     DisplayObjectContainer: {
-        get: function ()
-        {
+        get: function() {
             console.warn('DisplayObjectContainer has been shortened to Container, please use Container from now on.');
             return core.Container;
         }
@@ -20174,10 +20172,58 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0
      */
     Strip: {
-        get: function ()
-        {
+        get: function() {
             console.warn('The Strip class has been renamed to Mesh, please use Mesh from now on.');
             return mesh.Mesh;
+        }
+    },
+
+    /**
+     * @class
+     * @name PIXI.MovieClip
+     * @see {@link PIXI.MovieClip}
+     * @deprecated since version 3.0
+     */
+    MovieClip: {
+        get: function() {
+            console.warn('The MovieClip class has been moved to extras.MovieClip, please use extras.MovieClip from now on.');
+            return extras.MovieClip;
+        }
+    },
+    /**
+     * @class
+     * @name PIXI.TilingSprite
+     * @see {@link PIXI.TilingSprite}
+     * @deprecated since version 3.0
+     */
+    TilingSprite: {
+        get: function() {
+            console.warn('The TilingSprite class has been moved to extras.TilingSprite, please use extras.TilingSprite from now on.');
+            return extras.TilingSprite;
+        }
+    },
+    /**
+     * @class
+     * @name PIXI.TextureCache
+     * @see {@link PIXI.utils.TextureCache}
+     * @deprecated since version 3.0
+     */
+    TextureCache: {
+        get: function() {
+            console.warn('The TextureCache class has been moved to utils.TextureCache, please use utils.TextureCache from now on.');
+            return utils.TextureCache;
+        }
+    },
+    /**
+     * @class
+     * @name PIXI.BitmapText
+     * @see {@link PIXI.extras.BitmapText}
+     * @deprecated since version 3.0
+     */
+    BitmapText: {
+        get: function() {
+            console.warn('The BitmapText class has been moved to extras.BitmapText, please use extras.BitmapText from now on.');
+            return extras.BitmapText;
         }
     }
 
@@ -20189,8 +20235,7 @@ Object.defineProperties(core, {
  * @see {@link PIXI.Sprite#texture}
  * @deprecated since version 3.0
  */
-core.Sprite.prototype.setTexture = function (texture)
-{
+core.Sprite.prototype.setTexture = function(texture) {
     this.texture = texture;
     console.warn('setTexture is now deprecated, please use the texture property, e.g : sprite.texture = texture;');
 };
@@ -20201,8 +20246,7 @@ core.Sprite.prototype.setTexture = function (texture)
  * @see {@link PIXI.BitmapText#text}
  * @deprecated since version 3.0
  */
-extras.BitmapText.prototype.setText = function (text)
-{
+extras.BitmapText.prototype.setText = function(text) {
     this.text = text;
     console.warn('setText is now deprecated, please use the text property, e.g : myBitmapText.text = \'my text\';');
 };
@@ -20213,13 +20257,23 @@ extras.BitmapText.prototype.setText = function (text)
  * @see {@link PIXI.Text#text}
  * @deprecated since version 3.0
  */
-core.Text.prototype.setText = function (text)
-{
+core.Text.prototype.setText = function(text) {
     this.text = text;
     console.warn('setText is now deprecated, please use the text property, e.g : myText.text = \'my text\';');
 };
 
-},{"./core":23,"./extras":78,"./mesh":119}],72:[function(require,module,exports){
+/**
+ * @method
+ * @name PIXI.Texture#setFrame
+ * @see {@link PIXI.Texture#setFrame}
+ * @deprecated since version 3.0
+ */
+core.Texture.prototype.setFrame = function(frame) {
+    this.frame = frame;
+    console.warn('setFrame is now deprecated, please use the frame property, e.g : myTexture.frame = frame;');
+};
+
+},{"./core":23,"./core/utils":69,"./extras":78,"./mesh":119}],72:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -21063,7 +21117,9 @@ TilingSprite.prototype._renderCanvas = function (renderer)
     var context = renderer.context,
         transform = this.worldTransform,
         resolution = renderer.resolution,
-        baseTexture = texture.baseTexture;
+        baseTexture = texture.baseTexture,
+        modX = this.tilePosition.x % baseTexture.width,
+        modY = this.tilePosition.y % baseTexture.height;
 
     // create a nice shiny pattern!
     // TODO this needs to be refreshed if texture changes..
@@ -21086,8 +21142,10 @@ TilingSprite.prototype._renderCanvas = function (renderer)
 
     // TODO - this should be rolled into the setTransform above..
     context.scale(this.tileScale.x,this.tileScale.y);
-    context.translate((this.tilePosition.x % baseTexture.width ) + (this.anchor.x * -this._width ), 
-                      (this.tilePosition.y % baseTexture.height) + (this.anchor.y * -this._height));
+
+    
+    context.translate(modX + (this.anchor.x * -this._width ), 
+                      modY + (this.anchor.y * -this._height));
 
     // check blend mode
     if (this.blendMode !== renderer.currentBlendMode)
@@ -21098,14 +21156,15 @@ TilingSprite.prototype._renderCanvas = function (renderer)
 
     // fill the pattern!
     context.fillStyle = this._canvasPattern;
-    context.fillRect(-this.tilePosition.x,
-                     -this.tilePosition.y,
+    context.fillRect(-modX,
+                     -modY,
                      this._width / this.tileScale.x,
                      this._height / this.tileScale.y);
 
+
     //TODO - pretty sure this can be deleted...
-    //context.translate(-tilePosition.x + (this.anchor.x * this._width), -tilePosition.y + (this.anchor.y * this._height));
-    //context.scale(1 / tileScale.x, 1 / tileScale.y);
+    //context.translate(-this.tilePosition.x + (this.anchor.x * this._width), -this.tilePosition.y + (this.anchor.y * this._height));
+    //context.scale(1 / this.tileScale.x, 1 / this.tileScale.y);
 };
 
 
