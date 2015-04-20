@@ -228,7 +228,9 @@ TilingSprite.prototype._renderCanvas = function (renderer)
     var context = renderer.context,
         transform = this.worldTransform,
         resolution = renderer.resolution,
-        baseTexture = texture.baseTexture;
+        baseTexture = texture.baseTexture,
+        modX = this.tilePosition.x % baseTexture.width,
+        modY = this.tilePosition.y % baseTexture.height;
 
     // create a nice shiny pattern!
     // TODO this needs to be refreshed if texture changes..
@@ -251,8 +253,10 @@ TilingSprite.prototype._renderCanvas = function (renderer)
 
     // TODO - this should be rolled into the setTransform above..
     context.scale(this.tileScale.x,this.tileScale.y);
-    context.translate((this.tilePosition.x % baseTexture.width ) + (this.anchor.x * -this._width ), 
-                      (this.tilePosition.y % baseTexture.height) + (this.anchor.y * -this._height));
+
+    
+    context.translate(modX + (this.anchor.x * -this._width ), 
+                      modY + (this.anchor.y * -this._height));
 
     // check blend mode
     if (this.blendMode !== renderer.currentBlendMode)
@@ -263,14 +267,15 @@ TilingSprite.prototype._renderCanvas = function (renderer)
 
     // fill the pattern!
     context.fillStyle = this._canvasPattern;
-    context.fillRect(-this.tilePosition.x,
-                     -this.tilePosition.y,
+    context.fillRect(-modX,
+                     -modY,
                      this._width / this.tileScale.x,
                      this._height / this.tileScale.y);
 
+
     //TODO - pretty sure this can be deleted...
-    //context.translate(-tilePosition.x + (this.anchor.x * this._width), -tilePosition.y + (this.anchor.y * this._height));
-    //context.scale(1 / tileScale.x, 1 / tileScale.y);
+    //context.translate(-this.tilePosition.x + (this.anchor.x * this._width), -this.tilePosition.y + (this.anchor.y * this._height));
+    //context.scale(1 / this.tileScale.x, 1 / this.tileScale.y);
 };
 
 
