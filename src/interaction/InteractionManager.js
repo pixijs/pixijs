@@ -168,23 +168,6 @@ InteractionManager.prototype.constructor = InteractionManager;
 module.exports = InteractionManager;
 
 /**
- * Ensures the interaction checks don't happen too often by delaying the update loop
- *
- * @private
- */
-InteractionManager.prototype._tick = function (deltaTime)
-{
-    this._deltaTime += deltaTime;
-
-    if (this._deltaTime < this.interactionFrequency)
-    {
-        return;
-    }
-
-    this.update();
-};
-
-/**
  * Sets the DOM element which will receive mouse/touch events. This is useful for when you have
  * other DOM elements on top of the renderers Canvas element. With this you'll be bale to deletegate
  * another DOM element to receive those events.
@@ -215,7 +198,7 @@ InteractionManager.prototype.addEvents = function ()
         return;
     }
 
-    core.ticker.shared.add(this._tick, this);
+    core.ticker.shared.add(this.update, this);
 
     if (window.navigator.msPointerEnabled)
     {
@@ -247,7 +230,7 @@ InteractionManager.prototype.removeEvents = function ()
         return;
     }
 
-    core.ticker.shared.remove(this._tick);
+    core.ticker.shared.remove(this.update);
 
     if (window.navigator.msPointerEnabled)
     {
@@ -274,9 +257,18 @@ InteractionManager.prototype.removeEvents = function ()
  * Updates the state of interactive objects.
  * Invoked by a throttled ticker update from
  * {@link PIXI.ticker.shared}.
+ *
+ * @param deltaTime {number}
  */
-InteractionManager.prototype.update = function ()
+InteractionManager.prototype.update = function (deltaTime)
 {
+    this._deltaTime += deltaTime;
+
+    if (this._deltaTime < this.interactionFrequency)
+    {
+        return;
+    }
+
     this._deltaTime = 0;
 
     if (!this.interactionDOMElement)
