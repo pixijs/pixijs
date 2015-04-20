@@ -121,7 +121,7 @@ Object.defineProperties(core, {
      */
     blendModes: {
         get: function() {
-            //console.warn('The blendModes has been moved to BLEND_MODES, please use BLEND_MODES from now on.');
+            console.warn('The blendModes has been moved to BLEND_MODES, please use BLEND_MODES from now on.');
             return core.BLEND_MODES;
         }
     }
