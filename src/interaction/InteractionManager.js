@@ -91,14 +91,6 @@ function InteractionManager(renderer, options)
      */
     this.eventsAdded = false;
 
-    /**
-     * The ID of the requestAnimationFrame call, so we can clear it in destroy.
-     *
-     * @member {number}
-     * @private
-     */
-    this.requestId = 0;
-
     //this will make it so that you don't have to call bind all the time
 
     /**
@@ -169,17 +161,7 @@ function InteractionManager(renderer, options)
      */
     this.resolution = 1;
 
-    /**
-     * The update method bound to our context.
-     *
-     * @member {function}
-     * @private
-     */
-    this.updateBound = this.update.bind(this);
-
     this.setTargetElement(this.renderer.view, this.renderer.resolution);
-
-    this.update();
 }
 
 InteractionManager.prototype.constructor = InteractionManager;
@@ -216,6 +198,8 @@ InteractionManager.prototype.addEvents = function ()
         return;
     }
 
+    core.ticker.shared.add(this.update, this);
+
     if (window.navigator.msPointerEnabled)
     {
         this.interactionDOMElement.style['-ms-content-zooming'] = 'none';
@@ -246,6 +230,8 @@ InteractionManager.prototype.removeEvents = function ()
         return;
     }
 
+    core.ticker.shared.remove(this.update);
+
     if (window.navigator.msPointerEnabled)
     {
         this.interactionDOMElement.style['-ms-content-zooming'] = '';
@@ -268,15 +254,24 @@ InteractionManager.prototype.removeEvents = function ()
 };
 
 /**
- * updates the state of interactive objects
+ * Updates the state of interactive objects.
+ * Invoked by a throttled ticker update from
+ * {@link PIXI.ticker.shared}.
  *
- * @private
+ * @param deltaTime {number}
  */
-InteractionManager.prototype.update = function ()
+InteractionManager.prototype.update = function (deltaTime)
 {
-    this.requestId = requestAnimationFrame(this.updateBound);
+    this._deltaTime += deltaTime;
 
-    if( this.throttleUpdate() || !this.interactionDOMElement)
+    if (this._deltaTime < this.interactionFrequency)
+    {
+        return;
+    }
+
+    this._deltaTime = 0;
+
+    if (!this.interactionDOMElement)
     {
         return;
     }
@@ -290,7 +285,7 @@ InteractionManager.prototype.update = function ()
 
     this.cursor = 'inherit';
 
-    this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered , this.processMouseOverOut.bind(this) , true );
+    this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered, this.processMouseOverOut, true );
 
     if (this.currentCursorStyle !== this.cursor)
     {
@@ -322,29 +317,6 @@ InteractionManager.prototype.dispatchEvent = function ( displayObject, eventStri
             displayObject[eventString]( eventData );
         }
     }
-};
-
-/**
- * Ensures the interaction checks don't happen too often by delaying the update loop
- *
- * @private
- */
-InteractionManager.prototype.throttleUpdate = function ()
-{
-    // frequency of 30fps??
-    var now = Date.now();
-    var diff = now - this.last;
-
-    diff = (diff * this.interactionFrequency ) / 1000;
-
-    if (diff < 1)
-    {
-        return true;
-    }
-
-    this.last = now;
-
-    return false;
 };
 
 /**
@@ -488,7 +460,7 @@ InteractionManager.prototype.onMouseUp = function (event)
     this.mouse.originalEvent = event;
     this.eventData.data = this.mouse;
     this.eventData.stopped = false;
-    
+
     // Update internal mouse reference
     this.mapPositionToPoint( this.mouse.global, event.clientX, event.clientY);
 
@@ -865,10 +837,6 @@ InteractionManager.prototype.destroy = function () {
     this.processTouchMove = null;
 
     this._tempPoint = null;
-
-    cancelAnimationFrame(this.requestId);
-
-    this.updateBound = null;
 };
 
 core.WebGLRenderer.registerPlugin('interaction', InteractionManager);
