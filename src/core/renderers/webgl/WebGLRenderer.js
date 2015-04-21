@@ -221,6 +221,8 @@ WebGLRenderer.prototype.render = function (object)
         return;
     }
 
+    this.drawCount = 0;
+
     this._lastObjectRendered = object;
 
     if(this._useFXAA)
