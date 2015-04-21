@@ -112,8 +112,31 @@ Object.defineProperties(core, {
             console.warn('The BitmapText class has been moved to extras.BitmapText, please use extras.BitmapText from now on.');
             return extras.BitmapText;
         }
+    },
+    /**
+     * @class
+     * @name PIXI.blendModes
+     * @see {@link PIXI.BLEND_MODES}
+     * @deprecated since version 3.0
+     */
+    blendModes: {
+        get: function() {
+            console.warn('The blendModes has been moved to BLEND_MODES, please use BLEND_MODES from now on.');
+            return core.BLEND_MODES;
+        }
+    },
+    /**
+     * @class
+     * @name PIXI.scaleModes
+     * @see {@link PIXI.SCALE_MODES}
+     * @deprecated since version 3.0
+     */
+    scaleModes: {
+        get: function() {
+            console.warn('The scaleModes has been moved to SCALE_MODES, please use SCALE_MODES from now on.');
+            return core.SCALE_MODES;
+        }
     }
-
 });
 
 /**
@@ -147,6 +170,17 @@ extras.BitmapText.prototype.setText = function(text) {
 core.Text.prototype.setText = function(text) {
     this.text = text;
     console.warn('setText is now deprecated, please use the text property, e.g : myText.text = \'my text\';');
+};
+
+/**
+ * @method
+ * @name PIXI.Text#setStyle
+ * @see {@link PIXI.Text#style}
+ * @deprecated since version 3.0
+ */
+core.Text.prototype.setStyle = function(style) {
+    this.style = style;
+    console.warn('setStyle is now deprecated, please use the style property, e.g : myText.style = style;');
 };
 
 /**
