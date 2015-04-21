@@ -71,6 +71,8 @@ function MovieClip(textures)
      * @readonly
      */
     this.playing = false;
+
+    this.update = this.update.bind(this);
 }
 
 // constructor
