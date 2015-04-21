@@ -62,6 +62,9 @@ function WebGLGraphicsData(gl) {
      * @member {boolean}
      */
     this.dirty = true;
+
+    this.glPoints = null;
+    this.glIndices = null;
 }
 
 WebGLGraphicsData.prototype.constructor = WebGLGraphicsData;
@@ -93,4 +96,20 @@ WebGLGraphicsData.prototype.upload = function () {
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.glIndices, gl.STATIC_DRAW);
 
     this.dirty = false;
+};
+
+WebGLGraphicsData.prototype.destroy = function () {
+    this.gl = null;
+    this.color = null;
+    this.points = null;
+    this.indices = null;
+
+    this.gl.deleteBuffer(this.buffer);
+    this.gl.deleteBuffer(this.indexBuffer);
+
+    this.buffer = null;
+    this.indexBuffer = null;
+
+    this.glPoints = null;
+    this.glIndices = null;
 };

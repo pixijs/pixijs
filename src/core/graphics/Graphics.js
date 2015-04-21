@@ -1160,8 +1160,16 @@ Graphics.prototype.drawShape = function (shape)
 Graphics.prototype.destroy = function () {
     Container.prototype.destroy.apply(this, arguments);
 
+    // destroy each of the GraphicsData objects
     for (var i = 0; i < this.graphicsData.length; ++i) {
         this.graphicsData[i].destroy();
+    }
+
+    // for each webgl data entry, destroy the WebGLGraphicsData
+    for (var id in this._webgl) {
+        for (var j = 0; j < this._webgl[id].data.length; ++j) {
+            this._webgl[id].data[j].destroy();
+        }
     }
 
     this.graphicsData = null;
