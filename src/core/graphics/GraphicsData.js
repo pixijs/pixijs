@@ -84,5 +84,5 @@ GraphicsData.prototype.clone = function ()
 };
 
 GraphicsData.prototype.destroy = function () {
-    ths.shape = null;
+    this.shape = null;
 };
