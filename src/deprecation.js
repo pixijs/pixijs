@@ -174,6 +174,17 @@ core.Text.prototype.setText = function(text) {
 
 /**
  * @method
+ * @name PIXI.Text#setStyle
+ * @see {@link PIXI.Text#style}
+ * @deprecated since version 3.0
+ */
+core.Text.prototype.setStyle = function(style) {
+    this.style = style;
+    console.warn('setStyle is now deprecated, please use the style property, e.g : myText.style = style;');
+};
+
+/**
+ * @method
  * @name PIXI.Texture#setFrame
  * @see {@link PIXI.Texture#setFrame}
  * @deprecated since version 3.0
