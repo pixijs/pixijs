@@ -6,8 +6,8 @@ module.exports = function ()
 {
     return function (resource, next)
     {
-        // skip if no data
-        if (!resource.data || !resource.data.bones)
+        // skip if no data, its not json, or it isn't atlas data
+        if (!resource.data || !resource.isJson || !resource.data.bones)
         {
             return next();
         }

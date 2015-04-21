@@ -6,8 +6,8 @@ module.exports = function ()
 {
     return function (resource, next)
     {
-        // skip if no data
-        if (!resource.data || !resource.data.frames)
+        // skip if no data, its not json, or it isn't spritesheet data
+        if (!resource.data || !resource.isJson || !resource.data.frames)
         {
             return next();
         }

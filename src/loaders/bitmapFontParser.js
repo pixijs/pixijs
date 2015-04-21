@@ -62,16 +62,8 @@ module.exports = function ()
 {
     return function (resource, next)
     {
-        // skip if no data
-        if (!resource.data)
-        {
-            return next();
-        }
-
-        var name = resource.data.nodeName && resource.data.nodeName.toLowerCase();
-
-        // skip if not xml data
-        if (!name || (name !== '#document' && name !== 'div'))
+        // skip if no data or not xml data
+        if (!resource.data || !resource.isXml)
         {
             return next();
         }
