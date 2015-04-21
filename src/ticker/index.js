@@ -10,8 +10,9 @@ var Ticker = require('./Ticker');
  * The shared ticker instance used by {@link PIXI.extras.MovieClip}.
  * and by {@link PIXI.interaction.InteractionManager}.
  * The property {@link PIXI.ticker.Ticker#autoStart} is set to `true`
- * for this instance. Please follow the example for how to opt-out
- * of auto-starting the shared ticker.
+ * for this instance. Please follow the examples for usage, including
+ * how to opt-out of auto-starting the shared ticker.
+ *
  * @example
  *     var ticker = PIXI.ticker.shared;
  *     // Set this to prevent starting this ticker when listeners are added.
@@ -24,7 +25,7 @@ var Ticker = require('./Ticker');
  *     ticker.start();
  *
  * @example
- *     // You may also use the shared ticker to render.
+ *     // You may use the shared ticker to render...
  *     var renderer = PIXI.autoDetectRenderer(800, 600);
  *     var stage = new PIXI.Container();
  *     var interactionManager = PIXI.interaction.InteractionManager(renderer);
@@ -32,6 +33,17 @@ var Ticker = require('./Ticker');
  *     ticker.add(function () {
  *         renderer.render(stage);
  *     });
+ *
+ * @example
+ *     // Or you can just update it manually.
+ *     ticker.autoStart = false;
+ *     ticker.stop();
+ *     function animate() {
+ *         ticker.update(time);
+ *         renderer.render(stage);
+ *         requestAnimationFrame(animate);
+ *     }
+ *     animate();
  *
  * @type {PIXI.ticker.Ticker}
  * @memberof PIXI.ticker
