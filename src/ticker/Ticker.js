@@ -68,69 +68,89 @@ function Ticker()
     this._requestId = null;
     /**
      * Internal value managed by minFPS property setter and getter.
-     * This is the maximum allowed millseconds between updates.
+     * This is the maximum allowed milliseconds between updates.
      * @private
      */
     this._maxElapsedMS = 100;
 
     /**
-     * Whether or not this ticker should
-     * start automatically when a listener is added.
+     * Whether or not this ticker should invoke the method
+     * {@link PIXI.ticker.Ticker#start} automatically
+     * when a listener is added.
      *
      * @member {boolean}
+     * @default false
      */
     this.autoStart = false;
 
     /**
-     * The current percentage of the
-     * target FPS with speed factored in.
+     * Scalar time value from last frame to this frame.
+     * This value is capped by setting {@link PIXI.ticker.Ticker#minFPS}
+     * and is scaled with {@link PIXI.ticker.Ticker#speed}.
+     * **Note:** The cap may be exceeded by scaling.
      *
      * @member {number}
+     * @default 1
      */
     this.deltaTime = 1;
 
     /**
-     * The time elapsed in milliseconds
-     * from current frame since the last frame.
+     * Time elapsed in milliseconds from last frame to this frame.
+     * Opposed to what the scalar {@link PIXI.ticker.Ticker#deltaTime}
+     * is based, this value is neither capped nor scaled.
+     * If the platform supports DOMHighResTimeStamp,
+     * this value will have a precision of 1 µs.
      *
-     * @member {number}
+     * @member {DOMHighResTimeStamp|number}
+     * @default 1 / TARGET_FPMS
      */
-    this.elapsedMS = 0;
+    this.elapsedMS = 1 / core.TARGET_FPMS; // default to target frame time
 
     /**
-     * The last time {@link PIXI.ticker.Ticker#update}
-     * was invoked by animation frame callback or manually.
+     * The last time {@link PIXI.ticker.Ticker#update} was invoked.
+     * This value is also reset internally outside of invoking
+     * update, but only when a new animation frame is requested.
+     * If the platform supports DOMHighResTimeStamp,
+     * this value will have a precision of 1 µs.
      *
-     * @member {number}
+     * @member {DOMHighResTimeStamp|number}
+     * @default 0
      */
     this.lastTime = 0;
 
     /**
-     * Factor of current FPS.
+     * Factor of current {@link PIXI.ticker.Ticker#deltaTime}.
      * @example
-     *     ticker.speed = 2; // Approximately 120 FPS, or 0.12 FPMS.
+     *     // Scales ticker.deltaTime to what would be
+     *     // the equivalent of approximately 120 FPS
+     *     ticker.speed = 2;
      *
      * @member {number}
+     * @default 1
      */
     this.speed = 1;
 
     /**
      * Whether or not this ticker has been started.
-     * `true` if {@link PIXI.ticker.Ticker.start} has been called.
-     * `false` if {@link PIXI.ticker.Ticker.stop} has been called.
+     * `true` if {@link PIXI.ticker.Ticker#start} has been called.
+     * `false` if {@link PIXI.ticker.Ticker#stop} has been called.
+     * While `false`, this value may change to `true` in the
+     * event of {@link PIXI.ticker.Ticker#autoStart} being `true`
+     * and a listener is added.
      *
      * @member {boolean}
+     * @default false
      */
     this.started = false;
 }
 
 Object.defineProperties(Ticker.prototype, {
     /**
-     * Gets the frames per second for which this
-     * ticker is running. The default is appoximately
-     * 60 FPS in modern browsers, but may vary.
-     * This also factors in the property value of
-     * {@link PIXI.ticker.Ticker#speed}.
+     * The frames per second at which this ticker is running.
+     * The default is approximately 60 in most modern browsers.
+     * **Note:** This does not factor in the value of
+     * {@link PIXI.ticker.Ticker#speed}, which is specific
+     * to scaling {@link PIXI.ticker.Ticker#deltaTime}.
      *
      * @member
      * @memberof PIXI.ticker.Ticker#
@@ -139,14 +159,17 @@ Object.defineProperties(Ticker.prototype, {
     FPS: {
         get: function()
         {
-            return core.TARGET_FPMS * 1000 * this.deltaTime;
+            return 1000 / this.elapsedMS;
         }
     },
 
     /**
-     * This property manages the maximum amount
-     * of time allowed to elapse between ticks,
-     * or calls to {@link PIXI.ticker.Ticker#update}.
+     * Manages the maximum amount of milliseconds allowed to
+     * elapse between invoking {@link PIXI.ticker.Ticker#update}.
+     * This value is used to cap {@link PIXI.ticker.Ticker#deltaTime},
+     * but does not effect the measured value of {@link PIXI.ticker.Ticker#FPS}.
+     * When setting this property it is clamped to a value between
+     * `0` and `PIXI.TARGET_FPMS * 1000`.
      *
      * @member
      * @memberof PIXI.ticker.Ticker#
@@ -297,26 +320,34 @@ Ticker.prototype.stop = function stop()
 };
 
 /**
- * Triggers an update, setting deltaTime, lastTime, and
- * firing the internal 'tick' event invoking all listeners.
+ * Triggers an update. An update entails setting the
+ * current {@link PIXI.ticker.Ticker#elapsedMS},
+ * the current {@link PIXI.ticker.Ticker#deltaTime},
+ * invoking all listeners with current deltaTime,
+ * and then finally setting {@link PIXI.ticker.Ticker#lastTime}
+ * with the value of currentTime that was provided.
+ * This method will be called automatically by animation
+ * frame callbacks if the ticker instance has been started
+ * and listeners are added.
  *
- * @param [currentTime=performance.now()] {number} the current time of execution
+ * @param [currentTime=performance.now()] {DOMHighResTimeStamp|number} the current time of execution
  */
 Ticker.prototype.update = function update(currentTime)
 {
+    var elapsedMS;
+
     // Allow calling update directly with default currentTime.
     currentTime = currentTime || performance.now();
-    this.elapsedMS = currentTime - this.lastTime;
+    // Save uncapped elapsedMS for measurement
+    elapsedMS = this.elapsedMS = currentTime - this.lastTime;
 
-    // cap the milliseconds elapsed
-    if (this.elapsedMS > this._maxElapsedMS)
+    // cap the milliseconds elapsed used for deltaTime
+    if (elapsedMS > this._maxElapsedMS)
     {
-        this.elapsedMS = this._maxElapsedMS;
+        elapsedMS = this._maxElapsedMS;
     }
 
-    this.deltaTime = (this.elapsedMS * core.TARGET_FPMS);
-    // Factor in speed
-    this.deltaTime *= this.speed;
+    this.deltaTime = elapsedMS * core.TARGET_FPMS * this.speed;
 
     // Invoke listeners added to internal emitter
     this._emitter.emit(TICK, this.deltaTime);
