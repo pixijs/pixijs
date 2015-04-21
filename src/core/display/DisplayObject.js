@@ -454,12 +454,12 @@ DisplayObject.prototype.destroy = function ()
     this.scale = null;
     this.pivot = null;
 
+    this.parent = null;
+
     this._bounds = null;
     this._currentBounds = null;
     this._mask = null;
 
     this.worldTransform = null;
     this.filterArea = null;
-
-    this.listeners = null;
 };

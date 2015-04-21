@@ -1156,3 +1156,17 @@ Graphics.prototype.drawShape = function (shape)
 
     return data;
 };
+
+Graphics.prototype.destroy = function () {
+    Container.prototype.destroy.apply(this, arguments);
+
+    for (var i = 0; i < this.graphicsData.length; ++i) {
+        this.graphicsData[i].destroy();
+    }
+
+    this.graphicsData = null;
+
+    this.currentPath = null;
+    this._webgl = null;
+    this._localBounds = null;
+};

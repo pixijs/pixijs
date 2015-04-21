@@ -506,8 +506,8 @@ Sprite.prototype._renderCanvas = function (renderer)
 /**
  * Destroys this sprite and optionally its texture
  *
- * @param destroyTexture {boolean} Should it destroy the current texture of the sprite as well
- * @param destroyBaseTexture {boolean} Should it destroy the base texture of the sprite as well
+ * @param [destroyTexture=false] {boolean} Should it destroy the current texture of the sprite as well
+ * @param [destroyBaseTexture=false] {boolean} Should it destroy the base texture of the sprite as well
  */
 Sprite.prototype.destroy = function (destroyTexture, destroyBaseTexture)
 {
