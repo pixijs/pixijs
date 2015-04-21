@@ -79,7 +79,7 @@ function ParticleContainer(size, properties)
 
     /**
      * Used for canvas renderering. If true then the elements will be positioned at the nearest pixel. This provides a nice speed boost.
-     * 
+     *
      * @member {boolean}
      * @default true;
      */
@@ -115,7 +115,7 @@ ParticleContainer.prototype.setProperties = function(properties)
  */
 ParticleContainer.prototype.updateTransform = function ()
 {
-    
+
     // TODO don't need to!
     this.displayObjectUpdateTransform();
     //  PIXI.Container.prototype.updateTransform.call( this );
@@ -207,7 +207,7 @@ ParticleContainer.prototype.renderCanvas = function (renderer)
     var context = renderer.context;
     var transform = this.worldTransform;
     var isRotated = true;
-    
+
     var positionX = 0;
     var positionY = 0;
 
@@ -253,7 +253,7 @@ ParticleContainer.prototype.renderCanvas = function (renderer)
 
             finalWidth = frame.width * child.scale.x;
             finalHeight = frame.height * child.scale.y;
-            
+
         }
         else
         {
@@ -308,4 +308,22 @@ ParticleContainer.prototype.renderCanvas = function (renderer)
             finalHeight
         );
     }
+};
+
+/**
+ * Destroys the container
+ *
+ * @param [destroyChildren=false] {boolean} if set to true, all the children will have their destroy method called as well
+ */
+ParticleContainer.prototype.destroy = function () {
+    Container.prototype.destroy.apply(this, arguments);
+
+    if (this._buffers) {
+        for (var i = 0; i < this._buffers.length; ++i) {
+            this._buffers.destroy();
+        }
+    }
+
+    this._properties = null;
+    this._buffers = null;
 };

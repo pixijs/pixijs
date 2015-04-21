@@ -47,14 +47,14 @@ function ParticleBuffer(gl, properties, size)
     this.size = size;
 
     /**
-     * 
+     *
      *
      * @member {Array}
      */
     this.dynamicProperties = [];
 
     /**
-     * 
+     *
      *
      * @member {Array}
      */
@@ -201,5 +201,11 @@ ParticleBuffer.prototype.bind = function ()
  */
 ParticleBuffer.prototype.destroy = function ()
 {
-    //TODO implement this :) to busy making the fun bits..
+    this.dynamicProperties = null;
+    this.dynamicData = null;
+    this.gl.deleteBuffer(this.dynamicBuffer);
+
+    this.staticProperties = null;
+    this.staticData = null;
+    this.gl.deleteBuffer(this.staticBuffer);
 };
