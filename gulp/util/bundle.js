@@ -39,7 +39,6 @@ function rebundle() {
 function createBundler(args) {
     args = args || {};
     args.debug = true;
-    args.standalone = 'PIXI';
 
     var bundle = browserify(paths.jsEntry, args),
         argv = require('minimist')(process.argv.slice(2)),

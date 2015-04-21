@@ -17,3 +17,14 @@ core.loader = new core.loaders.Loader();
 
 // mixin the deprecation features.
 Object.assign(core, require('./deprecation'));
+
+// export to global
+global.PIXI = core;
+
+// export for AMD if necessary
+if (typeof define === 'function' && define.amd) {
+    // AMD. Register as an anonymous module.
+    define(function () {
+        return core;
+    });
+}
