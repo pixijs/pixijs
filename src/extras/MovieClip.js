@@ -62,7 +62,7 @@ function MovieClip(textures)
      * @default 0
      * @readonly
      */
-    this.totalTime = 0;
+    this.currentTime = 0;
 
     /**
      * Indicates if the MovieClip is currently playing
@@ -111,7 +111,7 @@ Object.defineProperties(MovieClip.prototype, {
         {
             this._textures = value;
 
-            this.texture = this._textures[Math.floor(this.totalTime) % this._textures.length];
+            this.texture = this._textures[Math.floor(this.currentTime) % this._textures.length];
         }
     },
 
@@ -124,7 +124,7 @@ Object.defineProperties(MovieClip.prototype, {
     currentFrame: {
         get: function ()
         {
-            return Math.floor(this.totalTime) % this._texture.length;
+            return Math.floor(this.currentTime) % this._texture.length;
         }
     }
 
@@ -169,9 +169,9 @@ MovieClip.prototype.gotoAndStop = function (frameNumber)
 {
     this.stop();
 
-    this.totalTime = frameNumber;
+    this.currentTime = frameNumber;
 
-    var round = Math.floor(this.totalTime);
+    var round = Math.floor(this.currentTime);
     this._texture = this._textures[round % this._textures.length];
 };
 
@@ -182,7 +182,7 @@ MovieClip.prototype.gotoAndStop = function (frameNumber)
  */
 MovieClip.prototype.gotoAndPlay = function (frameNumber)
 {
-    this.totalTime = frameNumber;
+    this.currentTime = frameNumber;
     this.play();
 };
 
@@ -193,16 +193,16 @@ MovieClip.prototype.gotoAndPlay = function (frameNumber)
 MovieClip.prototype.update = function (deltaTime)
 {
 
-    this.totalTime += this.animationSpeed * deltaTime;
+    this.currentTime += this.animationSpeed * deltaTime;
 
-    var floor = Math.floor(this.totalTime);
+    var floor = Math.floor(this.currentTime);
 
     if (floor < 0)
     {
         if (this.loop)
         {
-            this.totalTime += this._textures.length;
-            this._texture = this._textures[this.totalTime];
+            this.currentTime += this._textures.length;
+            this._texture = this._textures[this.currentTime];
         }
         else
         {
