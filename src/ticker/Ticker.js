@@ -9,12 +9,14 @@ var core = require('../core'),
  * does a bit too much for what this is for.
  * This is simple enough to keep track of and contribute
  * back to the eventemitter3 project in the near future.
+ * Note: No need to check for specific event because the
+ * composed emitter only uses a single event.
  *
  * @private
  */
 function hasListeners(emitter)
 {
-    return !!(emitter._events && emitter._events[TICK]);
+    return !!emitter._events;
 }
 
 /**
@@ -46,14 +48,13 @@ function Ticker()
 
         if (_this.started)
         {
+            // Invoke listeners now
             _this.update(time);
-        }
-        // Check here because listeners could have side effects
-        // and may have modified state during frame execution.
-        // A new frame may have been requested or listeners removed.
-        if (_this.started && _this._requestId === null && hasListeners(_this._emitter))
-        {
-            _this._requestId = requestAnimationFrame(_this._tick);
+            // Listener side effects may have modified ticker state.
+            if (_this.started && _this._requestId === null && hasListeners(_this._emitter))
+            {
+                _this._requestId = requestAnimationFrame(_this._tick);
+            }
         }
     };
     /**
