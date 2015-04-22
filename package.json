@@ -22,7 +22,7 @@
   "dependencies": {
     "async": "^0.9.0",
     "brfs": "^1.4.0",
-    "eventemitter3": "^0.1.6",
+    "eventemitter3": "^1.0.0",
     "object-assign": "^2.0.0",
     "pixi-spine": "^1.0.1",
     "resource-loader": "^1.4.0"
