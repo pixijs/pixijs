@@ -129,7 +129,7 @@ MovieClip.prototype.stop = function ()
     }
 
     this.playing = false;
-    ticker.shared.remove(this.update);
+    ticker.shared.remove(this.update, this);
 };
 
 /**
