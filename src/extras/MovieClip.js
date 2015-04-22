@@ -58,11 +58,9 @@ function MovieClip(textures)
     /**
      * Elapsed time since animation has been started, used internally to display current texture
      *
-     * @member {number}
-     * @default 0
-     * @readonly
+     * @private
      */
-    this.currentTime = 0;
+    this._currentTime = 0;
 
     /**
      * Indicates if the MovieClip is currently playing
@@ -111,7 +109,7 @@ Object.defineProperties(MovieClip.prototype, {
         {
             this._textures = value;
 
-            this.texture = this._textures[Math.floor(this.currentTime) % this._textures.length];
+            this.texture = this._textures[Math.floor(this._currentTime) % this._textures.length];
         }
     },
 
@@ -124,7 +122,7 @@ Object.defineProperties(MovieClip.prototype, {
     currentFrame: {
         get: function ()
         {
-            return Math.floor(this.currentTime) % this._texture.length;
+            return Math.floor(this._currentTime) % this._texture.length;
         }
     }
 
@@ -169,9 +167,9 @@ MovieClip.prototype.gotoAndStop = function (frameNumber)
 {
     this.stop();
 
-    this.currentTime = frameNumber;
+    this._currentTime = frameNumber;
 
-    var round = Math.floor(this.currentTime);
+    var round = Math.floor(this._currentTime);
     this._texture = this._textures[round % this._textures.length];
 };
 
@@ -182,7 +180,7 @@ MovieClip.prototype.gotoAndStop = function (frameNumber)
  */
 MovieClip.prototype.gotoAndPlay = function (frameNumber)
 {
-    this.currentTime = frameNumber;
+    this._currentTime = frameNumber;
     this.play();
 };
 
@@ -193,16 +191,16 @@ MovieClip.prototype.gotoAndPlay = function (frameNumber)
 MovieClip.prototype.update = function (deltaTime)
 {
 
-    this.currentTime += this.animationSpeed * deltaTime;
+    this._currentTime += this.animationSpeed * deltaTime;
 
-    var floor = Math.floor(this.currentTime);
+    var floor = Math.floor(this._currentTime);
 
     if (floor < 0)
     {
         if (this.loop)
         {
-            this.currentTime += this._textures.length;
-            this._texture = this._textures[this.currentTime];
+            this._currentTime += this._textures.length;
+            this._texture = this._textures[this._currentTime];
         }
         else
         {
