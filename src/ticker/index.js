@@ -30,7 +30,7 @@ var Ticker = require('./Ticker');
  *     var stage = new PIXI.Container();
  *     var interactionManager = PIXI.interaction.InteractionManager(renderer);
  *     document.body.appendChild(renderer.view);
- *     ticker.add(function () {
+ *     ticker.add(function (time) {
  *         renderer.render(stage);
  *     });
  *
@@ -38,12 +38,12 @@ var Ticker = require('./Ticker');
  *     // Or you can just update it manually.
  *     ticker.autoStart = false;
  *     ticker.stop();
- *     function animate() {
+ *     function animate(time) {
  *         ticker.update(time);
  *         renderer.render(stage);
  *         requestAnimationFrame(animate);
  *     }
- *     animate();
+ *     animate(performance.now());
  *
  * @type {PIXI.ticker.Ticker}
  * @memberof PIXI.ticker

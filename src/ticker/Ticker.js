@@ -4,20 +4,6 @@ var core = require('../core'),
     TICK = 'tick';
 
 /**
- * Yes, this is accessing an internal module:eventemitter3 api.
- * Ugly, but calling module:eventemitter3.EventEmitter#listeners
- * does a bit too much for what this is for.
- * This is simple enough to keep track of and contribute
- * back to the eventemitter3 project in the near future.
- *
- * @private
- */
-function hasListeners(emitter)
-{
-    return !!(emitter._events && emitter._events[TICK]);
-}
-
-/**
  * A Ticker class that runs an update loop that other objects listen to.
  * This class is composed around an EventEmitter object to add listeners
  * meant for execution on the next requested animation frame.
@@ -46,14 +32,13 @@ function Ticker()
 
         if (_this.started)
         {
+            // Invoke listeners now
             _this.update(time);
-        }
-        // Check here because listeners could have side effects
-        // and may have modified state during frame execution.
-        // A new frame may have been requested or listeners removed.
-        if (_this.started && _this._requestId === null && hasListeners(_this._emitter))
-        {
-            _this._requestId = requestAnimationFrame(_this._tick);
+            // Listener side effects may have modified ticker state.
+            if (_this.started && _this._requestId === null && _this._emitter.listeners(TICK, true))
+            {
+                _this._requestId = requestAnimationFrame(_this._tick);
+            }
         }
     };
     /**
@@ -198,7 +183,7 @@ Object.defineProperties(Ticker.prototype, {
  */
 Ticker.prototype._requestIfNeeded = function _requestIfNeeded()
 {
-    if (this._requestId === null && hasListeners(this._emitter))
+    if (this._requestId === null && this._emitter.listeners(TICK, true))
     {
         // ensure callbacks get correct delta
         this.lastTime = performance.now();
@@ -247,6 +232,8 @@ Ticker.prototype._startIfPossible = function _startIfPossible()
  * internal 'tick' event. It checks if the emitter has listeners,
  * and if so it requests a new animation frame at this point.
  *
+ * @param fn {Function} The listener function to be added for updates
+ * @param [context] {Function} The listener context
  * @returns {PIXI.ticker.Ticker} this
  */
 Ticker.prototype.add = function add(fn, context)
@@ -263,6 +250,8 @@ Ticker.prototype.add = function add(fn, context)
  * internal 'tick' event. It checks if the emitter has listeners,
  * and if so it requests a new animation frame at this point.
  *
+ * @param fn {Function} The listener function to be added for one update
+ * @param [context] {Function} The listener context
  * @returns {PIXI.ticker.Ticker} this
  */
 Ticker.prototype.addOnce = function addOnce(fn, context)
@@ -279,13 +268,15 @@ Ticker.prototype.addOnce = function addOnce(fn, context)
  * It checks if the emitter has listeners for 'tick' event.
  * If it does, then it cancels the animation frame.
  *
+ * @param [fn] {Function} The listener function to be removed
+ * @param [context] {Function} The listener context to be removed
  * @returns {PIXI.ticker.Ticker} this
  */
-Ticker.prototype.remove = function remove(fn, once)
+Ticker.prototype.remove = function remove(fn, context)
 {
-    this._emitter.off(TICK, fn, once);
+    this._emitter.off(TICK, fn, context);
 
-    if (!hasListeners(this._emitter))
+    if (!this._emitter.listeners(TICK, true))
     {
         this._cancelIfNeeded();
     }
