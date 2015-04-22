@@ -13,7 +13,6 @@ module.exports = {
 
     // parsers
     bitmapFontParser:   require('./bitmapFontParser'),
-    spineAtlasParser:   require('./spineAtlasParser'),
     spritesheetParser:  require('./spritesheetParser'),
     textureParser:      require('./textureParser')
 };
