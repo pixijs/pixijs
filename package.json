@@ -25,7 +25,7 @@
     "eventemitter3": "^1.0.1",
     "object-assign": "^2.0.0",
     "pixi-spine": "^1.0.1",
-    "resource-loader": "^1.4.1"
+    "resource-loader": "^1.4.2"
   },
   "devDependencies": {
     "browserify": "^9.0.8",

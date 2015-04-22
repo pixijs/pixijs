@@ -1,6 +1,6 @@
 var utils = require('../utils'),
     CONST = require('../const'),
-    EventEmitter = require('eventemitter3').EventEmitter;
+    EventEmitter = require('eventemitter3');
 
 /**
  * A texture stores the information that represents an image. All textures have a base texture.

@@ -1,5 +1,5 @@
 var core = require('../core'),
-    EventEmitter = require('eventemitter3').EventEmitter,
+    EventEmitter = require('eventemitter3'),
     // Internal event used by composed emitter
     TICK = 'tick';
 
