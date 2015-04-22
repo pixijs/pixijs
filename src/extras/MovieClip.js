@@ -58,6 +58,7 @@ function MovieClip(textures)
     /**
      * Elapsed time since animation has been started, used internally to display current texture
      *
+     * @member {number}
      * @private
      */
     this._currentTime = 0;
