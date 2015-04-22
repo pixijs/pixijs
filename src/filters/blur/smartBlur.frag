@@ -3,7 +3,7 @@ precision mediump float;
 varying vec2 vTextureCoord;
 
 uniform sampler2D uSampler;
-const vec2 delta = vec2(1.0/10.0, 0.0);
+uniform vec2 delta;
 
 float random(vec3 scale, float seed)
 {

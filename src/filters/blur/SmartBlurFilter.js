@@ -15,7 +15,11 @@ function SmartBlurFilter()
         // vertex shader
         null,
         // fragment shader
-        fs.readFileSync(__dirname + '/smartBlur.frag', 'utf8')
+        fs.readFileSync(__dirname + '/smartBlur.frag', 'utf8'),
+        // uniforms
+        {
+          delta: { type: 'v2', value: { x: 0.1, y: 0.1 } }
+        }
     );
 }
 
