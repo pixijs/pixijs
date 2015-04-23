@@ -1,7 +1,7 @@
 Pixi Renderer
 =============
 
-![pixi.js logo](http://www.goodboydigital.com/pixijs/pixi_v3_github-1.png)
+![pixi.js logo](http://www.goodboydigital.com/pixijs/pixi_v3_github-pad.png)
 
 
 
