@@ -1,7 +1,26 @@
-node_modules
-.DS_Store
-.project
-*.sublime-*
-*.log
+# sublime text files
+*.sublime*
+*.*~*.TMP
 
-bin/pixi.dev.js.map
+# temp files
+.DS_Store
+Thumbs.db
+Desktop.ini
+npm-debug.log
+
+# project files
+.project
+
+# vim swap files
+*.sw*
+
+# emacs temp files
+*~
+\#*#
+
+# project ignores
+!.gitkeep
+*__temp
+node_modules
+docs/
+examples_old/

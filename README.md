@@ -1,38 +1,10 @@
-Pixi Renderer 
+Pixi Renderer
 =============
 
-![pixi.js logo](http://www.goodboydigital.com/pixijs/logo_small.png) 
-
-### Like what we do? ###
-
-[Support us via Gratipay](<https://gratipay.com/GoodBoyDigital/>)
-
-
-#### *** IMPORTANT - V2 API CHANGES *** ####
-
-A heads up for anyone updating their version of pixi.js to version 2, as we have changed a couple of bits that you need to be aware of. Fortunately, there are only two changes, and both are small.
-
-1: Creating a renderer now accepts an options parameter that you can add specific settings to:
-```javascript
-// an optional object that contains the settings for the renderer
-var options = {
-    view:myCanvas,
-    resolution:1
-};
-
-var renderer = new PIXI.WebGLRenderer(800, 600, options) 
-```
-
-2: A ```PIXI.RenderTexture``` now accepts a ```PIXI.Matrix``` as its second parameter instead of a point. This gives you much more flexibility: 
-
-``` myRenderTexture.render(myDisplayObject, myMatrix) ```
-
-Check out the docs for more info!
-
-
-
+![pixi.js logo](http://www.goodboydigital.com/wp-content/uploads/2015/04/BlogPost_pixiv3.jpg)
 
 [<img src="http://www.pixijs.com/wp-content/uploads/2013/05/headerPanel_projects-898x342.jpg">](http://www.pixijs.com/projects)
+
 #### JavaScript 2D Renderer ####
 
 The aim of this project is to provide a fast lightweight 2D library that works
@@ -44,10 +16,7 @@ If you’re interested in pixi.js then feel free to follow me on twitter
 of course check back on [our site](<http://www.goodboydigital.com/blog/>) as
 any breakthroughs will be posted up there too!
 
-[![Inline docs](http://inch-ci.org/github/GoodBoyDigital/pixi.js.svg?branch=master)](http://inch-ci.org/github/GoodBoyDigital/pixi.js)
-[![Join the chat at https://gitter.im/GoodBoyDigital/pixi.js](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/GoodBoyDigital/pixi.js?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Analytics](https://ga-beacon.appspot.com/UA-39213431-2/pixi.js/index)](https://github.com/igrigorik/ga-beacon)
-[![Support us](https://img.shields.io/gratipay/GoodBoyDigital.svg)](https://gratipay.com/GoodBoyDigital/)
+[![Inline docs](http://inch-ci.org/github/GoodBoyDigital/pixi.js.svg?branch=dev)](http://inch-ci.org/github/GoodBoyDigital/pixi.js)
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/GoodBoyDigital/pixi.js/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 ### Demos ###
 
@@ -60,7 +29,7 @@ any breakthroughs will be posted up there too!
 - [Flash vs HTML](<http://flashvhtml.com>)
 
 - [Bunny Demo](<http://www.goodboydigital.com/pixijs/bunnymark>)
- 
+
 - [Storm Brewing](<http://www.goodboydigital.com/pixijs/storm/>)
 
 - [Filters Demo](<http://www.goodboydigital.com/pixijs/examples/15/indexAll.html>)
@@ -82,24 +51,13 @@ last 2 examples and allowing us to share the source code :)
 
 ### Docs ###
 
-[Documentation can be found here](<http://www.goodboydigital.com/pixijs/docs/>)
+[Documentation can be found here](<http://pixijs.github.io/docs/>)
 
 ### Resources ###
 
 [Tutorials and other helpful bits](<https://github.com/GoodBoyDigital/pixi.js/wiki/Resources>)
 
 [Pixi.js forum](<http://www.html5gamedevs.com/forum/15-pixijs/>)
-
-
-### Road Map ###
-
-* Create a Typescript definition file for Pixi.js
-* Implement Flash animation to pixi
-* Update Loader so that it support XHR2 if it is available
-* Improve the Documentation of the Project
-* Create an Asset Loader Tutorial
-* Create a MovieClip Tutorial
-* Create a small game Tutorial
 
 ### Contribute ###
 
@@ -111,10 +69,12 @@ before submitting changes.
 
 ### How to build ###
 
-PixiJS is built with Grunt. If you don't already have this, go install Node and NPM then install the Grunt Command Line.
+PixiJS is built with Gulp.
+If you don't already have Node.js and NPM, go install them.
+Once you do, then install Gulp.
 
 ```
-$> npm install -g grunt-cli
+$> npm install -g gulp
 ```
 
 Then, in the folder where you have downloaded the source, install the build dependencies using npm:
@@ -123,15 +83,40 @@ Then, in the folder where you have downloaded the source, install the build depe
 $> npm install
 ```
 
-Then build:
+Then, to build the source, run:
 
 ```
-$> grunt
+$> gulp build
 ```
 
-This will create a minified version at bin/pixi.js and a non-minified version at bin/pixi.dev.js.
+This will create a minified version at bin/pixi.min.js and a non-minified version at bin/pixi.js with all the plugins.
 
-It also copies the non-minified version to the examples.
+If there are specific plugins you don't want, say "spine" or "interaction", you can exclude those:
+
+```
+$> gulp build --exclude spine --exclude interaction
+```
+
+You can also use the short-form `-e`:
+
+```
+$> gulp build -e extras -e spine -e interaction -e filters
+```
+
+### How to generate the documentation ###
+
+The docs can be generated using npm:
+```
+$> npm run docs
+```
+
+There is also a gulp task to generate them if you want to:
+```
+$> gulp jsdoc
+```
+
+The documentation uses [DocStrap](https://github.com/terryweiss/docstrap) and the jsdoc format, the configuration
+file can be found at [gulp/utils/jsdoc.conf.json](https://github.com/GoodBoyDigital/pixi.js/blob/dev/gulp/util/jsdoc.conf.json)
 
 ### Current features ###
 
@@ -161,7 +146,7 @@ It also copies the non-minified version to the examples.
 
 	document.body.appendChild(renderer.view);
 
-	var stage = new PIXI.Stage;
+	var stage = new PIXI.Container();
 
 	var bunnyTexture = PIXI.Texture.fromImage("bunny.png");
 	var bunny = new PIXI.Sprite(bunnyTexture);

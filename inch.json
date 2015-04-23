@@ -1,0 +1,11 @@
+{
+  "files": {
+    "included": [
+      "src/**/*.js"
+    ],
+    "excluded": [
+      "src/spine/Spine.js",
+      "src/spine/SpineRuntime.js"
+    ]
+  }
+}

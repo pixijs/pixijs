@@ -8,7 +8,6 @@ branches:
         - dev
 
 install:
-    - npm install grunt-cli
     - npm install
 
 cache:
@@ -20,4 +19,4 @@ before_script:
     - sh -e /etc/init.d/xvfb start
 
 script:
-    - ./node_modules/.bin/grunt travis
+    - npm test
