@@ -123,7 +123,7 @@ Object.defineProperties(MovieClip.prototype, {
     currentFrame: {
         get: function ()
         {
-            return Math.floor(this._currentTime) % this._texture.length;
+            return Math.floor(this._currentTime) % this._textures.length;
         }
     }
 
