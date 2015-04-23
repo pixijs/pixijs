@@ -11,7 +11,6 @@ var utils = module.exports = {
     PolyK:          require('./PolyK'),
     async:          require('async'),
 
-
     /**
      * Gets the next uuid
      *
