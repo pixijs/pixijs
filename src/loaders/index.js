@@ -14,5 +14,6 @@ module.exports = {
     // parsers
     bitmapFontParser:   require('./bitmapFontParser'),
     spritesheetParser:  require('./spritesheetParser'),
-    textureParser:      require('./textureParser')
+    textureParser:      require('./textureParser'),
+    Resource:     require('resource-loader').Resource
 };
