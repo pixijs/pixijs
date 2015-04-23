@@ -1,7 +1,6 @@
 var ResourceLoader = require('resource-loader'),
     textureParser = require('./textureParser'),
     spritesheetParser = require('./spritesheetParser'),
-    spineAtlasParser = require('./spineAtlasParser'),
     bitmapFontParser = require('./bitmapFontParser');
 
 /**
@@ -11,7 +10,7 @@ var ResourceLoader = require('resource-loader'),
  * ```js
  * var loader = new PIXI.loader();
  *
- * loader.add('spineboy',"data/spineboy.json");
+ * loader.add('bunny',"data/bunny.png");
  *
  * loader.once('complete',onAssetsLoaded);
  *
@@ -36,9 +35,6 @@ function Loader(baseUrl, concurrency)
 
     // parse any spritesheet data into multiple textures
     this.use(spritesheetParser());
-
-    // parse any spine data into a spine object
-    this.use(spineAtlasParser());
 
     // parse any spritesheet data into multiple textures
     this.use(bitmapFontParser());
