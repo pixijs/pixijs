@@ -480,8 +480,8 @@ Sprite.prototype._renderCanvas = function (renderer)
                 0,
                 width * resolution * renderer.resolution,
                 height * resolution * renderer.resolution,
-                dx / resolution,
-                dy / resolution,
+                dx,
+                dy,
                 width * renderer.resolution,
                 height * renderer.resolution
             );
@@ -494,8 +494,8 @@ Sprite.prototype._renderCanvas = function (renderer)
                 texture.crop.y * resolution,
                 width * resolution * renderer.resolution,
                 height * resolution * renderer.resolution,
-                dx / resolution,
-                dy / resolution,
+                dx,
+                dy,
                 width * renderer.resolution,
                 height * renderer.resolution
             );
