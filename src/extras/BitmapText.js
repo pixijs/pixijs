@@ -191,8 +191,12 @@ Object.defineProperties(BitmapText.prototype, {
         },
         set: function (value)
         {
+            value = value.toString() || ' ';
+            if (this._text === value)
+            {
+                return;
+            }
             this._text = value;
-
             this.dirty = true;
         }
     }
