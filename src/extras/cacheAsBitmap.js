@@ -257,4 +257,4 @@ DisplayObject.prototype._cacheAsBitmapDestroy = function ()
 {
     this.cacheAsBitmap = false;
     this._originalDestroy();
-}
+};

@@ -80,5 +80,5 @@ Object.defineProperties(BlurYFilter.prototype, {
             this.padding = value * 0.5;
             this.strength = value;
         }
-    },
+    }
 });
