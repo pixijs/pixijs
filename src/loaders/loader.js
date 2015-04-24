@@ -8,8 +8,10 @@ var ResourceLoader = require('resource-loader'),
  * The new loader, extends Resource Loader by Chad Engler : https://github.com/englercj/resource-loader
  *
  * ```js
- * var loader = new PIXI.loader();
- *
+ * var loader = PIXI.loader;
+ * //or
+ * var loader = new PIXI.loaders.Loader();
+ * 
  * loader.add('bunny',"data/bunny.png");
  *
  * loader.once('complete',onAssetsLoaded);
