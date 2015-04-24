@@ -338,6 +338,8 @@ WebGLRenderer.prototype.resize = function (width, height)
 {
     SystemRenderer.prototype.resize.call(this, width, height);
 
+    this.gl.viewport(0, 0, this.width, this.height);
+
     this.filterManager.resize(width, height);
     this.renderTarget.resize(width, height);
 
