@@ -164,7 +164,7 @@ BaseTexture.prototype.constructor = BaseTexture;
 module.exports = BaseTexture;
 
 /**
- * Updates the texture on all the webgl renderers this also assumes the src has changed.
+ * Updates the texture on all the webgl renderers, this also assumes the src has changed.
  *
  * @fires update
  */

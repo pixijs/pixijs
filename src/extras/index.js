@@ -15,5 +15,5 @@ require('./getGlobalPosition');
 module.exports = {
     MovieClip:      require('./MovieClip'),
     TilingSprite:   require('./TilingSprite'),
-    BitmapText:     require('./BitmapText'),
+    BitmapText:     require('./BitmapText')
 };
