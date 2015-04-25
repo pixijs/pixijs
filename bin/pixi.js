@@ -5603,7 +5603,7 @@ module.exports = function () {
 },{"../../Resource":15,"../../b64":16}],20:[function(require,module,exports){
 module.exports={
   "name": "pixi.js",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "Pixi.js is a fast lightweight 2D library that works across all devices.",
   "author": "Mat Groves",
   "contributors": [
