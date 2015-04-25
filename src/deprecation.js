@@ -60,8 +60,21 @@ Object.defineProperties(core, {
      */
     Strip: {
         get: function() {
-            console.warn('The Strip class has been renamed to Mesh, please use Mesh from now on.');
+            console.warn('The Strip class has been renamed to Mesh and moved to mesh.Mesh, please use mesh.Mesh from now on.');
             return mesh.Mesh;
+        }
+    },
+
+    /**
+     * @class
+     * @name PIXI.Rope
+     * @see {@link PIXI.mesh.Rope}
+     * @deprecated since version 3.0
+     */
+    Rope: {
+        get: function() {
+            console.warn('The Rope class has been moved to mesh.Rope, please use mesh.Rope from now on.');
+            return mesh.Rope;
         }
     },
 
@@ -87,18 +100,6 @@ Object.defineProperties(core, {
         get: function() {
             console.warn('The TilingSprite class has been moved to extras.TilingSprite, please use extras.TilingSprite from now on.');
             return extras.TilingSprite;
-        }
-    },
-    /**
-     * @class
-     * @name PIXI.TextureCache
-     * @see {@link PIXI.utils.TextureCache}
-     * @deprecated since version 3.0
-     */
-    TextureCache: {
-        get: function() {
-            console.warn('The TextureCache class has been moved to utils.TextureCache, please use utils.TextureCache from now on.');
-            return utils.TextureCache;
         }
     },
     /**
@@ -135,6 +136,30 @@ Object.defineProperties(core, {
         get: function() {
             console.warn('The scaleModes has been moved to SCALE_MODES, please use SCALE_MODES from now on.');
             return core.SCALE_MODES;
+        }
+    },
+    /**
+     * @class
+     * @name PIXI.BaseTextureCache
+     * @see {@link PIXI.utils.BaseTextureCache}
+     * @deprecated since version 3.0
+     */
+    BaseTextureCache: {
+        get: function () {
+            console.warn('The BaseTextureCache class has been moved to utils.BaseTextureCache, please use utils.BaseTextureCache from now on.');
+            return utils.BaseTextureCache;
+        }
+    },
+    /**
+     * @class
+     * @name PIXI.TextureCache
+     * @see {@link PIXI.utils.TextureCache}
+     * @deprecated since version 3.0
+     */
+    TextureCache: {
+        get: function () {
+            console.warn('The TextureCache class has been moved to utils.TextureCache, please use utils.TextureCache from now on.');
+            return utils.TextureCache;
         }
     }
 });
