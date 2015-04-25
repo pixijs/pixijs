@@ -5178,9 +5178,10 @@ Resource.prototype._xdrOnTimeout = function () {
  * @private
  */
 Resource.prototype._xhrOnLoad = function () {
-    var xhr = this.xhr;
+    var xhr = this.xhr,
+        status = xhr.status !== undefined ? xhr.status : 200; //XDR has no `.status`, assume 200.
 
-    if (xhr.status === 200) {
+    if (status === 200 || status === 204) {
         // if text, just return it
         if (this.xhrType === Resource.XHR_RESPONSE_TYPE.TEXT) {
             this.data = xhr.responseText;
@@ -5626,7 +5627,7 @@ module.exports={
     "brfs": "^1.4.0",
     "eventemitter3": "^1.0.1",
     "object-assign": "^2.0.0",
-    "resource-loader": "^1.5.1"
+    "resource-loader": "^1.5.2"
   },
   "devDependencies": {
     "browserify": "^9.0.8",
