@@ -272,11 +272,18 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, up
 
         // Time to update all the children of the displayObject with the new matrix..
         var children = displayObject.children;
-        var i, j;
-
-        for (i = 0, j = children.length; i < j; ++i)
+        if (children && children.length > 0)
         {
-            children[i].updateTransform();
+            var i, j;
+
+            for (i = 0, j = children.length; i < j; ++i)
+            {
+                children[i].updateTransform();
+            }
+        }
+        else
+        {
+            displayObject.updateTransform();
         }
     }
 
@@ -324,11 +331,18 @@ RenderTexture.prototype.renderCanvas = function (displayObject, matrix, clear, u
 
     // Time to update all the children of the displayObject with the new matrix..
     var children = displayObject.children;
-    var i, j;
-
-    for (i = 0, j = children.length; i < j; ++i)
+    if (children && children.length > 0)
     {
-        children[i].updateTransform();
+        var i, j;
+
+        for (i = 0, j = children.length; i < j; ++i)
+        {
+            children[i].updateTransform();
+        }
+    }
+    else
+    {
+        displayObject.updateTransform();
     }
 
     if (clear)
