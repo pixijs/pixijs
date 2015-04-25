@@ -344,6 +344,8 @@ BaseTexture.prototype.destroy = function ()
 BaseTexture.prototype.dispose = function ()
 {
     this.emit('dispose', this);
+
+    this._glTextures.length = 0;
 };
 
 /**

@@ -234,13 +234,23 @@ Texture.prototype.onBaseTextureUpdated = function (baseTexture)
  */
 Texture.prototype.destroy = function (destroyBase)
 {
-    if (destroyBase)
+    if (this.baseTexture)
     {
-        this.baseTexture.destroy();
+        if (destroyBase)
+        {
+            this.baseTexture.destroy();
+        }
+
+        this.baseTexture.off('update', this.onBaseTextureUpdated);
+        this.baseTexture.off('loaded', this.onBaseTextureLoaded);
+
+        this.baseTexture = null;
     }
 
-    this.baseTexture.off('update', this.onBaseTextureUpdated);
-    this.baseTexture.off('loaded', this.onBaseTextureLoaded);
+    this._frame = null;
+    this._uvs = null;
+    this.trim = null;
+    this.crop = null;
 
     this.valid = false;
 };
