@@ -29,17 +29,9 @@ function Loader(baseUrl, concurrency)
 {
     ResourceLoader.call(this, baseUrl, concurrency);
 
-    // parse any blob into more usable objects (e.g. Image)
-    this.use(ResourceLoader.middleware.parsing.blob());
-
-    // parse any Image objects into textures
-    this.use(textureParser());
-
-    // parse any spritesheet data into multiple textures
-    this.use(spritesheetParser());
-
-    // parse any spritesheet data into multiple textures
-    this.use(bitmapFontParser());
+    for (var i = 0; i < Loader._pixiMiddleware.length; ++i) {
+        this.use(Loader._pixiMiddleware[i]());
+    }
 }
 
 Loader.prototype = Object.create(ResourceLoader.prototype);
@@ -47,6 +39,22 @@ Loader.prototype.constructor = Loader;
 
 module.exports = Loader;
 
+Loader._pixiMiddleware = [
+    // parse any blob into more usable objects (e.g. Image)
+    ResourceLoader.middleware.parsing.blob,
+    // parse any Image objects into textures
+    textureParser,
+    // parse any spritesheet data into multiple textures
+    spritesheetParser,
+    // parse any spritesheet data into multiple textures
+    bitmapFontParser
+];
+
+Loader.addPixiMiddleware = function (fn) {
+    Loader._pixiMiddleware.push(fn);
+};
+
+// Add custom extentions
 var Resource = ResourceLoader.Resource;
 
 Resource.setExtensionXhrType('fnt', Resource.XHR_RESPONSE_TYPE.DOCUMENT);
