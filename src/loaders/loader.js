@@ -8,10 +8,10 @@ var ResourceLoader = require('resource-loader'),
  * The new loader, extends Resource Loader by Chad Engler : https://github.com/englercj/resource-loader
  *
  * ```js
- * var loader = PIXI.loader;
+ * var loader = PIXI.loader; // pixi exposes a premade instance for you to use.
  * //or
- * var loader = new PIXI.loaders.Loader();
- * 
+ * var loader = new PIXI.loaders.Loader(); // you can also create your own if you want
+ *
  * loader.add('bunny',"data/bunny.png");
  *
  * loader.once('complete',onAssetsLoaded);
@@ -46,3 +46,7 @@ Loader.prototype = Object.create(ResourceLoader.prototype);
 Loader.prototype.constructor = Loader;
 
 module.exports = Loader;
+
+var Resource = ResourceLoader.Resource;
+
+Resource.setExtensionXhrType('fnt', Resource.XHR_RESPONSE_TYPE.DOCUMENT);
