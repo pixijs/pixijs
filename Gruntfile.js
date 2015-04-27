@@ -213,7 +213,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask('default', ['build', 'test']);
 
-    grunt.registerTask('build', ['jshint:source', 'concat', 'uglify']);
+    grunt.registerTask('build', [ 'concat', 'uglify']);
     grunt.registerTask('build-debug', ['concat_sourcemap', 'uglify']);
 
     grunt.registerTask('test', ['concat', 'jshint:test', 'karma']);

@@ -4,7 +4,7 @@
  * Copyright (c) 2012-2014, Mat Groves
  * http://goodboydigital.com/
  *
- * Compiled: 2015-04-08
+ * Compiled: 2015-04-27
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license.php
@@ -2730,16 +2730,29 @@ PIXI.Sprite.prototype._renderCanvas = function(renderSession)
         }
         else
         {
-            renderSession.context.drawImage(
-                                this.texture.baseTexture.source,
-                                this.texture.crop.x,
-                                this.texture.crop.y,
-                                this.texture.crop.width,
-                                this.texture.crop.height,
-                                dx / resolution,
-                                dy / resolution,
-                                this.texture.crop.width / resolution,
-                                this.texture.crop.height / resolution);
+	        //IE fix for issue #1331
+	        var normalizedCrop = {};
+	        normalizedCrop.width = this.texture.crop.width;
+	        normalizedCrop.height = this.texture.crop.height;
+	        //check if crop width is greater than source width and if so set the width to source width
+	        if(this.texture.baseTexture.source.width < this.texture.crop.width){
+		        normalizedCrop.width = this.texture.baseTexture.source.width;
+	        }
+	        //check if crop height is greater than source height and if so set the height to source height
+	        if(this.texture.baseTexture.source.height < this.texture.crop.height){
+		        normalizedCrop.height = this.texture.baseTexture.source.height;
+	        }
+
+	        renderSession.context.drawImage(
+		        this.texture.baseTexture.source,
+		        this.texture.crop.x,
+		        this.texture.crop.y,
+		        normalizedCrop.width,
+		        normalizedCrop.height,
+		        dx / resolution,
+		        dy / resolution,
+		        normalizedCrop.width / resolution,
+		        normalizedCrop.height / resolution);
         }
     }
 
@@ -3173,6 +3186,40 @@ PIXI.MovieClip.fromImages = function(images)
     for (var i = 0; i < images.length; i++)
     {
         textures.push(new PIXI.Texture.fromImage(images[i]));
+    }
+
+    return new PIXI.MovieClip(textures);
+};
+
+/**
+ * A short hand way of creating a movieclip from frames number, frame base name, frame number padding and image extension
+ *
+ * @static
+ * @method fromSettings
+ * @param framesNum {Number} Number of movieclip frames
+ * @param baseName {String} Base name of each frame.
+ * @param padding {String} Frames number padding (when each frame is something like 0000, 0001, 0002, 0003, etc. - padding 0000)
+ * @param firstFrame {Number} Which is first frame. Default is 0.
+ * @param frameExtension {String} Extension added to each frame's name.
+ * @return {MovieClip}
+ */
+PIXI.MovieClip.fromSettings = function( framesNum, baseName, padding, firstFrame, frameExtension )
+{
+    var textures = [];
+
+    var generateFrameName = function( frame ) {
+        var name = baseName;
+        if (padding) {
+            name += padding.substring(0, padding.length - frame.length) + frame;
+        }
+        if (frameExtension) {
+            name += frameExtension;
+        }
+        return name;
+    };
+
+    for (var i = firstFrame || 0; i < framesNum; i++) {
+        textures.push(PIXI.Texture.fromFrame( generateFrameName( i.toString() ) ));
     }
 
     return new PIXI.MovieClip(textures);
@@ -7618,10 +7665,10 @@ PIXI.WebGLGraphics.buildLine = function(graphicsData, webGLData)
 
         denom = a1*b2 - a2*b1;
 
-        if(Math.abs(denom) < 0.1 )
+        if(Math.abs(denom) < 0.00001 )
         {
 
-            denom+=10.1;
+            denom+=10.00001;
             verts.push(p2x - perpx , p2y - perpy,
                 r, g, b, alpha);
 
@@ -18872,27 +18919,65 @@ PIXI.ImageLoader.prototype.onLoaded = function()
 PIXI.ImageLoader.prototype.loadFramedSpriteSheet = function(frameWidth, frameHeight, textureName)
 {
     this.frames = [];
-    var cols = Math.floor(this.texture.width / frameWidth);
-    var rows = Math.floor(this.texture.height / frameHeight);
-
-    var i=0;
-    for (var y=0; y<rows; y++)
+    if(!this.texture.baseTexture.hasLoaded)
     {
-        for (var x=0; x<cols; x++,i++)
-        {
-            var texture = new PIXI.Texture(this.texture.baseTexture, {
-                x: x*frameWidth,
-                y: y*frameHeight,
-                width: frameWidth,
-                height: frameHeight
-            });
+        var scope = this;
+        textureName = textureName || scope.texture.baseTexture.imageUrl;
+        this.texture.baseTexture.addEventListener('loaded', function (e) {
+            var cols = Math.floor(scope.texture.width / frameWidth);
+            var rows = Math.floor(scope.texture.height / frameHeight);
 
-            this.frames.push(texture);
-            if (textureName) PIXI.TextureCache[textureName + '-' + i] = texture;
-        }
+            var i = 0;
+            for (var y = 0; y < rows; y++) {
+                for (var x = 0; x < cols; x++, i++) {
+                    if (!PIXI.TextureCache[textureName + '-' + i]) {
+                        var texture = new PIXI.Texture(scope.texture, {
+                            x: x * frameWidth,
+                            y: y * frameHeight,
+                            width: frameWidth,
+                            height: frameHeight
+                        });
+                        PIXI.TextureCache[textureName + '-' + i] = texture;
+                    }
+                    else {
+                        var texture = PIXI.TextureCache[textureName + '-' + i];
+                    }
+                    scope.frames.push(texture);
+                }
+            }
+
+            scope.onLoaded();
+        });
     }
+    else
+    {
 
-	this.load();
+        textureName = textureName || this.texture.baseTexture.imageUrl;
+
+        var cols = Math.floor(this.texture.width / frameWidth);
+        var rows = Math.floor(this.texture.height / frameHeight);
+
+        var i = 0;
+        for (var y = 0; y < rows; y++) {
+            for (var x = 0; x < cols; x++, i++) {
+                if (!PIXI.TextureCache[textureName + '-' + i]) {
+                    var texture = new PIXI.Texture(this.texture, {
+                        x: x * frameWidth,
+                        y: y * frameHeight,
+                        width: frameWidth,
+                        height: frameHeight
+                    });
+                    PIXI.TextureCache[textureName + '-' + i] = texture;
+                }
+                else {
+                    var texture = PIXI.TextureCache[textureName + '-' + i];
+                }
+
+                this.frames.push(texture);
+            }
+        }
+        this.onLoaded();
+    }
 };
 
 /**
@@ -19247,8 +19332,8 @@ PIXI.AlphaMaskFilter = function(texture)
 
     if(texture.baseTexture.hasLoaded)
     {
-        this.uniforms.mask.value.x = texture.width;
-        this.uniforms.mask.value.y = texture.height;
+        this.uniforms.mapDimensions.value.x = texture.width;
+        this.uniforms.mapDimensions.value.y = texture.height;
     }
     else
     {
