@@ -3,8 +3,13 @@
  */
 
 /**
+ * A cumulative cache stores all items put into it indefinitely, unless the
+ * underlying cache object is manually cleared. If the set of items that will
+ * be cached is large or unbounded, consider using PIXI.LRUCacheManager instead.
+ *
  * @class CumulativeCacheManager
  * @constructor
+ * @param cache {Object} The backing object that will store references to cached items.
  */
 PIXI.CumulativeCacheManager = function (cache) {
     this.cache = cache;
@@ -22,6 +27,17 @@ PIXI.CumulativeCacheManager.prototype.get = function (key) {
 
 PIXI.CumulativeCacheManager.prototype.touch = function () {};
 
+/**
+ * A least recently used (LRU) cache stores all items put into it until it has
+ * reached capacity, at which point newly inserted items will remove least
+ * recently used items from the cache. This manager is only aware of uses which
+ * call its touch method.
+ *
+ * @class LRUCacheManager
+ * @constructor
+ * @param cache {Object} The backing object that will store references to cached items.
+ * @param capacity {Number} The maximum number of items that should be cached.
+ */
 PIXI.LRUCacheManager = function (cache, capacity) {
     this.cache = cache;
     this.capacity = capacity;
