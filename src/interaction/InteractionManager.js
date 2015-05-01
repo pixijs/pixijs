@@ -779,6 +779,12 @@ InteractionManager.prototype.getTouchData = function (touchEvent)
     touchData.identifier = touchEvent.identifier;
     this.mapPositionToPoint( touchData.global, touchEvent.clientX, touchEvent.clientY );
 
+    if(navigator.isCocoonJS)
+    {
+        touchData.global.x = touchData.global.x / this.resolution;
+        touchData.global.y = touchData.global.y / this.resolution;
+    }
+
     touchEvent.globalX = touchData.global.x;
     touchEvent.globalY = touchData.global.y;
 
