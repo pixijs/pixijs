@@ -352,6 +352,11 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
     }
 
     var children = displayObject.children;
+    
+    // the object could be destroyed before this is called, so check if children exist 
+    if (!children) {
+        return false;
+    }
 
     var hit = false;
 
