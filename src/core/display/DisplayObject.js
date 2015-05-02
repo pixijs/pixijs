@@ -270,8 +270,6 @@ Object.defineProperties(DisplayObject.prototype, {
  * Updates the object transform for rendering
  *
  * TODO - Optimization pass!
- *
- * @private
  */
 DisplayObject.prototype.updateTransform = function ()
 {
