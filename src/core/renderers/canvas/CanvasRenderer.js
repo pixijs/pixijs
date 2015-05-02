@@ -239,7 +239,7 @@ CanvasRenderer.prototype._mapBlendModes = function ()
             this.blendModes[CONST.BLEND_MODES.DIFFERENCE]    = 'difference';
             this.blendModes[CONST.BLEND_MODES.EXCLUSION]     = 'exclusion';
             this.blendModes[CONST.BLEND_MODES.HUE]           = 'hue';
-            this.blendModes[CONST.BLEND_MODES.SATURATION]    = 'saturation';
+            this.blendModes[CONST.BLEND_MODES.SATURATION]    = 'saturate';
             this.blendModes[CONST.BLEND_MODES.COLOR]         = 'color';
             this.blendModes[CONST.BLEND_MODES.LUMINOSITY]    = 'luminosity';
         }
