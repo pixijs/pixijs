@@ -35,8 +35,7 @@
     "maxdepth"      : 8,        // Prohibit nested blocks from going more than X levels deep.
     "maxlen"        : 220,      // Require that all lines are 100 characters or less.
     "globals"       : {         // Register globals that are used in the code.
-        "performance": false,   // Depends on polyfill, simplifies usage
-        "PIXI": false
+        "performance": false   // Depends on polyfill, simplifies usage
     },
 
     // == Relaxing Options ================================================
