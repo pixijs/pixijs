@@ -46,7 +46,7 @@ module.exports = ColorMatrixFilter;
 /**
  * Transforms current matrix and set the new one
  *
- * @param matrix {Array.<number>} (mat 5x4)
+ * @param matrix {number[]} (mat 5x4)
  * @param multiply {boolean} if true, current matrix and matrix are multiplied. If false, just set the current matrix with @param matrix
  */
 ColorMatrixFilter.prototype._loadMatrix = function (matrix, multiply)
@@ -109,8 +109,8 @@ ColorMatrixFilter.prototype._multiply = function (out, a, b)
 /**
  * Create a Float32 Array and normalize the offset component to 0-1
  *
- * @param matrix {Array.<number>} (mat 5x4)
- * @return m {Array.<number>} (mat 5x4) with all values between 0-1
+ * @param matrix {number[]} (mat 5x4)
+ * @return m {number[]} (mat 5x4) with all values between 0-1
  */
 ColorMatrixFilter.prototype._colorMatrix = function (matrix)
 {
@@ -521,7 +521,7 @@ Object.defineProperties(ColorMatrixFilter.prototype, {
     /**
      * Sets the matrix of the color matrix filter
      *
-     * @member {Array.<number>}
+     * @member {number[]}
      * @memberof ColorMatrixFilter#
      * @default [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0]
      */
