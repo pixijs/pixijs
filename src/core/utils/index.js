@@ -9,7 +9,7 @@ var utils = module.exports = {
 
     pluginTarget:   require('./pluginTarget'),
     PolyK:          require('./PolyK'),
-
+    async:          require('async'),
 
     /**
      * Gets the next uuid

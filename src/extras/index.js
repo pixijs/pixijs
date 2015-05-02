@@ -13,8 +13,7 @@ require('./getGlobalPosition');
  * @namespace PIXI.extras
  */
 module.exports = {
-    Ticker:         require('./Ticker'),
     MovieClip:      require('./MovieClip'),
     TilingSprite:   require('./TilingSprite'),
-    BitmapText:     require('./BitmapText'),
+    BitmapText:     require('./BitmapText')
 };

@@ -1,4 +1,30 @@
-!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.PIXI=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.PIXI = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function (global){
+// run the polyfills
+require('./polyfill');
+
+var core = module.exports = require('./core');
+
+// add core plugins.
+core.extras         = require('./extras');
+core.filters        = require('./filters');
+core.interaction    = require('./interaction');
+core.loaders        = require('./loaders');
+core.mesh           = require('./mesh');
+core.ticker         = require('./ticker');
+
+// export a premade loader instance
+core.loader = new core.loaders.Loader();
+
+// mixin the deprecation features.
+Object.assign(core, require('./deprecation'));
+
+// Always export pixi globally.
+global.PIXI = core;
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+
+},{"./core":28,"./deprecation":76,"./extras":83,"./filters":100,"./interaction":115,"./loaders":118,"./mesh":124,"./polyfill":128,"./ticker":131}],2:[function(require,module,exports){
 (function (process){
 /*!
  * async
@@ -1126,7 +1152,7 @@
 
 }).call(this,require('_process'))
 
-},{"_process":3}],2:[function(require,module,exports){
+},{"_process":4}],3:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -1355,7 +1381,7 @@ var substr = 'ab'.substr(-1) === 'b'
 
 }).call(this,require('_process'))
 
-},{"_process":3}],3:[function(require,module,exports){
+},{"_process":4}],4:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -1415,7 +1441,1407 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
+(function (global){
+/*! http://mths.be/punycode v1.2.4 by @mathias */
+;(function(root) {
+
+	/** Detect free variables */
+	var freeExports = typeof exports == 'object' && exports;
+	var freeModule = typeof module == 'object' && module &&
+		module.exports == freeExports && module;
+	var freeGlobal = typeof global == 'object' && global;
+	if (freeGlobal.global === freeGlobal || freeGlobal.window === freeGlobal) {
+		root = freeGlobal;
+	}
+
+	/**
+	 * The `punycode` object.
+	 * @name punycode
+	 * @type Object
+	 */
+	var punycode,
+
+	/** Highest positive signed 32-bit float value */
+	maxInt = 2147483647, // aka. 0x7FFFFFFF or 2^31-1
+
+	/** Bootstring parameters */
+	base = 36,
+	tMin = 1,
+	tMax = 26,
+	skew = 38,
+	damp = 700,
+	initialBias = 72,
+	initialN = 128, // 0x80
+	delimiter = '-', // '\x2D'
+
+	/** Regular expressions */
+	regexPunycode = /^xn--/,
+	regexNonASCII = /[^ -~]/, // unprintable ASCII chars + non-ASCII chars
+	regexSeparators = /\x2E|\u3002|\uFF0E|\uFF61/g, // RFC 3490 separators
+
+	/** Error messages */
+	errors = {
+		'overflow': 'Overflow: input needs wider integers to process',
+		'not-basic': 'Illegal input >= 0x80 (not a basic code point)',
+		'invalid-input': 'Invalid input'
+	},
+
+	/** Convenience shortcuts */
+	baseMinusTMin = base - tMin,
+	floor = Math.floor,
+	stringFromCharCode = String.fromCharCode,
+
+	/** Temporary variable */
+	key;
+
+	/*--------------------------------------------------------------------------*/
+
+	/**
+	 * A generic error utility function.
+	 * @private
+	 * @param {String} type The error type.
+	 * @returns {Error} Throws a `RangeError` with the applicable error message.
+	 */
+	function error(type) {
+		throw RangeError(errors[type]);
+	}
+
+	/**
+	 * A generic `Array#map` utility function.
+	 * @private
+	 * @param {Array} array The array to iterate over.
+	 * @param {Function} callback The function that gets called for every array
+	 * item.
+	 * @returns {Array} A new array of values returned by the callback function.
+	 */
+	function map(array, fn) {
+		var length = array.length;
+		while (length--) {
+			array[length] = fn(array[length]);
+		}
+		return array;
+	}
+
+	/**
+	 * A simple `Array#map`-like wrapper to work with domain name strings.
+	 * @private
+	 * @param {String} domain The domain name.
+	 * @param {Function} callback The function that gets called for every
+	 * character.
+	 * @returns {Array} A new string of characters returned by the callback
+	 * function.
+	 */
+	function mapDomain(string, fn) {
+		return map(string.split(regexSeparators), fn).join('.');
+	}
+
+	/**
+	 * Creates an array containing the numeric code points of each Unicode
+	 * character in the string. While JavaScript uses UCS-2 internally,
+	 * this function will convert a pair of surrogate halves (each of which
+	 * UCS-2 exposes as separate characters) into a single code point,
+	 * matching UTF-16.
+	 * @see `punycode.ucs2.encode`
+	 * @see <http://mathiasbynens.be/notes/javascript-encoding>
+	 * @memberOf punycode.ucs2
+	 * @name decode
+	 * @param {String} string The Unicode input string (UCS-2).
+	 * @returns {Array} The new array of code points.
+	 */
+	function ucs2decode(string) {
+		var output = [],
+		    counter = 0,
+		    length = string.length,
+		    value,
+		    extra;
+		while (counter < length) {
+			value = string.charCodeAt(counter++);
+			if (value >= 0xD800 && value <= 0xDBFF && counter < length) {
+				// high surrogate, and there is a next character
+				extra = string.charCodeAt(counter++);
+				if ((extra & 0xFC00) == 0xDC00) { // low surrogate
+					output.push(((value & 0x3FF) << 10) + (extra & 0x3FF) + 0x10000);
+				} else {
+					// unmatched surrogate; only append this code unit, in case the next
+					// code unit is the high surrogate of a surrogate pair
+					output.push(value);
+					counter--;
+				}
+			} else {
+				output.push(value);
+			}
+		}
+		return output;
+	}
+
+	/**
+	 * Creates a string based on an array of numeric code points.
+	 * @see `punycode.ucs2.decode`
+	 * @memberOf punycode.ucs2
+	 * @name encode
+	 * @param {Array} codePoints The array of numeric code points.
+	 * @returns {String} The new Unicode string (UCS-2).
+	 */
+	function ucs2encode(array) {
+		return map(array, function(value) {
+			var output = '';
+			if (value > 0xFFFF) {
+				value -= 0x10000;
+				output += stringFromCharCode(value >>> 10 & 0x3FF | 0xD800);
+				value = 0xDC00 | value & 0x3FF;
+			}
+			output += stringFromCharCode(value);
+			return output;
+		}).join('');
+	}
+
+	/**
+	 * Converts a basic code point into a digit/integer.
+	 * @see `digitToBasic()`
+	 * @private
+	 * @param {Number} codePoint The basic numeric code point value.
+	 * @returns {Number} The numeric value of a basic code point (for use in
+	 * representing integers) in the range `0` to `base - 1`, or `base` if
+	 * the code point does not represent a value.
+	 */
+	function basicToDigit(codePoint) {
+		if (codePoint - 48 < 10) {
+			return codePoint - 22;
+		}
+		if (codePoint - 65 < 26) {
+			return codePoint - 65;
+		}
+		if (codePoint - 97 < 26) {
+			return codePoint - 97;
+		}
+		return base;
+	}
+
+	/**
+	 * Converts a digit/integer into a basic code point.
+	 * @see `basicToDigit()`
+	 * @private
+	 * @param {Number} digit The numeric value of a basic code point.
+	 * @returns {Number} The basic code point whose value (when used for
+	 * representing integers) is `digit`, which needs to be in the range
+	 * `0` to `base - 1`. If `flag` is non-zero, the uppercase form is
+	 * used; else, the lowercase form is used. The behavior is undefined
+	 * if `flag` is non-zero and `digit` has no uppercase form.
+	 */
+	function digitToBasic(digit, flag) {
+		//  0..25 map to ASCII a..z or A..Z
+		// 26..35 map to ASCII 0..9
+		return digit + 22 + 75 * (digit < 26) - ((flag != 0) << 5);
+	}
+
+	/**
+	 * Bias adaptation function as per section 3.4 of RFC 3492.
+	 * http://tools.ietf.org/html/rfc3492#section-3.4
+	 * @private
+	 */
+	function adapt(delta, numPoints, firstTime) {
+		var k = 0;
+		delta = firstTime ? floor(delta / damp) : delta >> 1;
+		delta += floor(delta / numPoints);
+		for (/* no initialization */; delta > baseMinusTMin * tMax >> 1; k += base) {
+			delta = floor(delta / baseMinusTMin);
+		}
+		return floor(k + (baseMinusTMin + 1) * delta / (delta + skew));
+	}
+
+	/**
+	 * Converts a Punycode string of ASCII-only symbols to a string of Unicode
+	 * symbols.
+	 * @memberOf punycode
+	 * @param {String} input The Punycode string of ASCII-only symbols.
+	 * @returns {String} The resulting string of Unicode symbols.
+	 */
+	function decode(input) {
+		// Don't use UCS-2
+		var output = [],
+		    inputLength = input.length,
+		    out,
+		    i = 0,
+		    n = initialN,
+		    bias = initialBias,
+		    basic,
+		    j,
+		    index,
+		    oldi,
+		    w,
+		    k,
+		    digit,
+		    t,
+		    /** Cached calculation results */
+		    baseMinusT;
+
+		// Handle the basic code points: let `basic` be the number of input code
+		// points before the last delimiter, or `0` if there is none, then copy
+		// the first basic code points to the output.
+
+		basic = input.lastIndexOf(delimiter);
+		if (basic < 0) {
+			basic = 0;
+		}
+
+		for (j = 0; j < basic; ++j) {
+			// if it's not a basic code point
+			if (input.charCodeAt(j) >= 0x80) {
+				error('not-basic');
+			}
+			output.push(input.charCodeAt(j));
+		}
+
+		// Main decoding loop: start just after the last delimiter if any basic code
+		// points were copied; start at the beginning otherwise.
+
+		for (index = basic > 0 ? basic + 1 : 0; index < inputLength; /* no final expression */) {
+
+			// `index` is the index of the next character to be consumed.
+			// Decode a generalized variable-length integer into `delta`,
+			// which gets added to `i`. The overflow checking is easier
+			// if we increase `i` as we go, then subtract off its starting
+			// value at the end to obtain `delta`.
+			for (oldi = i, w = 1, k = base; /* no condition */; k += base) {
+
+				if (index >= inputLength) {
+					error('invalid-input');
+				}
+
+				digit = basicToDigit(input.charCodeAt(index++));
+
+				if (digit >= base || digit > floor((maxInt - i) / w)) {
+					error('overflow');
+				}
+
+				i += digit * w;
+				t = k <= bias ? tMin : (k >= bias + tMax ? tMax : k - bias);
+
+				if (digit < t) {
+					break;
+				}
+
+				baseMinusT = base - t;
+				if (w > floor(maxInt / baseMinusT)) {
+					error('overflow');
+				}
+
+				w *= baseMinusT;
+
+			}
+
+			out = output.length + 1;
+			bias = adapt(i - oldi, out, oldi == 0);
+
+			// `i` was supposed to wrap around from `out` to `0`,
+			// incrementing `n` each time, so we'll fix that now:
+			if (floor(i / out) > maxInt - n) {
+				error('overflow');
+			}
+
+			n += floor(i / out);
+			i %= out;
+
+			// Insert `n` at position `i` of the output
+			output.splice(i++, 0, n);
+
+		}
+
+		return ucs2encode(output);
+	}
+
+	/**
+	 * Converts a string of Unicode symbols to a Punycode string of ASCII-only
+	 * symbols.
+	 * @memberOf punycode
+	 * @param {String} input The string of Unicode symbols.
+	 * @returns {String} The resulting Punycode string of ASCII-only symbols.
+	 */
+	function encode(input) {
+		var n,
+		    delta,
+		    handledCPCount,
+		    basicLength,
+		    bias,
+		    j,
+		    m,
+		    q,
+		    k,
+		    t,
+		    currentValue,
+		    output = [],
+		    /** `inputLength` will hold the number of code points in `input`. */
+		    inputLength,
+		    /** Cached calculation results */
+		    handledCPCountPlusOne,
+		    baseMinusT,
+		    qMinusT;
+
+		// Convert the input in UCS-2 to Unicode
+		input = ucs2decode(input);
+
+		// Cache the length
+		inputLength = input.length;
+
+		// Initialize the state
+		n = initialN;
+		delta = 0;
+		bias = initialBias;
+
+		// Handle the basic code points
+		for (j = 0; j < inputLength; ++j) {
+			currentValue = input[j];
+			if (currentValue < 0x80) {
+				output.push(stringFromCharCode(currentValue));
+			}
+		}
+
+		handledCPCount = basicLength = output.length;
+
+		// `handledCPCount` is the number of code points that have been handled;
+		// `basicLength` is the number of basic code points.
+
+		// Finish the basic string - if it is not empty - with a delimiter
+		if (basicLength) {
+			output.push(delimiter);
+		}
+
+		// Main encoding loop:
+		while (handledCPCount < inputLength) {
+
+			// All non-basic code points < n have been handled already. Find the next
+			// larger one:
+			for (m = maxInt, j = 0; j < inputLength; ++j) {
+				currentValue = input[j];
+				if (currentValue >= n && currentValue < m) {
+					m = currentValue;
+				}
+			}
+
+			// Increase `delta` enough to advance the decoder's <n,i> state to <m,0>,
+			// but guard against overflow
+			handledCPCountPlusOne = handledCPCount + 1;
+			if (m - n > floor((maxInt - delta) / handledCPCountPlusOne)) {
+				error('overflow');
+			}
+
+			delta += (m - n) * handledCPCountPlusOne;
+			n = m;
+
+			for (j = 0; j < inputLength; ++j) {
+				currentValue = input[j];
+
+				if (currentValue < n && ++delta > maxInt) {
+					error('overflow');
+				}
+
+				if (currentValue == n) {
+					// Represent delta as a generalized variable-length integer
+					for (q = delta, k = base; /* no condition */; k += base) {
+						t = k <= bias ? tMin : (k >= bias + tMax ? tMax : k - bias);
+						if (q < t) {
+							break;
+						}
+						qMinusT = q - t;
+						baseMinusT = base - t;
+						output.push(
+							stringFromCharCode(digitToBasic(t + qMinusT % baseMinusT, 0))
+						);
+						q = floor(qMinusT / baseMinusT);
+					}
+
+					output.push(stringFromCharCode(digitToBasic(q, 0)));
+					bias = adapt(delta, handledCPCountPlusOne, handledCPCount == basicLength);
+					delta = 0;
+					++handledCPCount;
+				}
+			}
+
+			++delta;
+			++n;
+
+		}
+		return output.join('');
+	}
+
+	/**
+	 * Converts a Punycode string representing a domain name to Unicode. Only the
+	 * Punycoded parts of the domain name will be converted, i.e. it doesn't
+	 * matter if you call it on a string that has already been converted to
+	 * Unicode.
+	 * @memberOf punycode
+	 * @param {String} domain The Punycode domain name to convert to Unicode.
+	 * @returns {String} The Unicode representation of the given Punycode
+	 * string.
+	 */
+	function toUnicode(domain) {
+		return mapDomain(domain, function(string) {
+			return regexPunycode.test(string)
+				? decode(string.slice(4).toLowerCase())
+				: string;
+		});
+	}
+
+	/**
+	 * Converts a Unicode string representing a domain name to Punycode. Only the
+	 * non-ASCII parts of the domain name will be converted, i.e. it doesn't
+	 * matter if you call it with a domain that's already in ASCII.
+	 * @memberOf punycode
+	 * @param {String} domain The domain name to convert, as a Unicode string.
+	 * @returns {String} The Punycode representation of the given domain name.
+	 */
+	function toASCII(domain) {
+		return mapDomain(domain, function(string) {
+			return regexNonASCII.test(string)
+				? 'xn--' + encode(string)
+				: string;
+		});
+	}
+
+	/*--------------------------------------------------------------------------*/
+
+	/** Define the public API */
+	punycode = {
+		/**
+		 * A string representing the current Punycode.js version number.
+		 * @memberOf punycode
+		 * @type String
+		 */
+		'version': '1.2.4',
+		/**
+		 * An object of methods to convert from JavaScript's internal character
+		 * representation (UCS-2) to Unicode code points, and back.
+		 * @see <http://mathiasbynens.be/notes/javascript-encoding>
+		 * @memberOf punycode
+		 * @type Object
+		 */
+		'ucs2': {
+			'decode': ucs2decode,
+			'encode': ucs2encode
+		},
+		'decode': decode,
+		'encode': encode,
+		'toASCII': toASCII,
+		'toUnicode': toUnicode
+	};
+
+	/** Expose `punycode` */
+	// Some AMD build optimizers, like r.js, check for specific condition patterns
+	// like the following:
+	if (
+		typeof define == 'function' &&
+		typeof define.amd == 'object' &&
+		define.amd
+	) {
+		define('punycode', function() {
+			return punycode;
+		});
+	} else if (freeExports && !freeExports.nodeType) {
+		if (freeModule) { // in Node.js or RingoJS v0.8.0+
+			freeModule.exports = punycode;
+		} else { // in Narwhal or RingoJS v0.7.0-
+			for (key in punycode) {
+				punycode.hasOwnProperty(key) && (freeExports[key] = punycode[key]);
+			}
+		}
+	} else { // in Rhino or a web browser
+		root.punycode = punycode;
+	}
+
+}(this));
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+
+},{}],6:[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+'use strict';
+
+// If obj.hasOwnProperty has been overridden, then calling
+// obj.hasOwnProperty(prop) will break.
+// See: https://github.com/joyent/node/issues/1707
+function hasOwnProperty(obj, prop) {
+  return Object.prototype.hasOwnProperty.call(obj, prop);
+}
+
+module.exports = function(qs, sep, eq, options) {
+  sep = sep || '&';
+  eq = eq || '=';
+  var obj = {};
+
+  if (typeof qs !== 'string' || qs.length === 0) {
+    return obj;
+  }
+
+  var regexp = /\+/g;
+  qs = qs.split(sep);
+
+  var maxKeys = 1000;
+  if (options && typeof options.maxKeys === 'number') {
+    maxKeys = options.maxKeys;
+  }
+
+  var len = qs.length;
+  // maxKeys <= 0 means that we should not limit keys count
+  if (maxKeys > 0 && len > maxKeys) {
+    len = maxKeys;
+  }
+
+  for (var i = 0; i < len; ++i) {
+    var x = qs[i].replace(regexp, '%20'),
+        idx = x.indexOf(eq),
+        kstr, vstr, k, v;
+
+    if (idx >= 0) {
+      kstr = x.substr(0, idx);
+      vstr = x.substr(idx + 1);
+    } else {
+      kstr = x;
+      vstr = '';
+    }
+
+    k = decodeURIComponent(kstr);
+    v = decodeURIComponent(vstr);
+
+    if (!hasOwnProperty(obj, k)) {
+      obj[k] = v;
+    } else if (isArray(obj[k])) {
+      obj[k].push(v);
+    } else {
+      obj[k] = [obj[k], v];
+    }
+  }
+
+  return obj;
+};
+
+var isArray = Array.isArray || function (xs) {
+  return Object.prototype.toString.call(xs) === '[object Array]';
+};
+
+},{}],7:[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+'use strict';
+
+var stringifyPrimitive = function(v) {
+  switch (typeof v) {
+    case 'string':
+      return v;
+
+    case 'boolean':
+      return v ? 'true' : 'false';
+
+    case 'number':
+      return isFinite(v) ? v : '';
+
+    default:
+      return '';
+  }
+};
+
+module.exports = function(obj, sep, eq, name) {
+  sep = sep || '&';
+  eq = eq || '=';
+  if (obj === null) {
+    obj = undefined;
+  }
+
+  if (typeof obj === 'object') {
+    return map(objectKeys(obj), function(k) {
+      var ks = encodeURIComponent(stringifyPrimitive(k)) + eq;
+      if (isArray(obj[k])) {
+        return map(obj[k], function(v) {
+          return ks + encodeURIComponent(stringifyPrimitive(v));
+        }).join(sep);
+      } else {
+        return ks + encodeURIComponent(stringifyPrimitive(obj[k]));
+      }
+    }).join(sep);
+
+  }
+
+  if (!name) return '';
+  return encodeURIComponent(stringifyPrimitive(name)) + eq +
+         encodeURIComponent(stringifyPrimitive(obj));
+};
+
+var isArray = Array.isArray || function (xs) {
+  return Object.prototype.toString.call(xs) === '[object Array]';
+};
+
+function map (xs, f) {
+  if (xs.map) return xs.map(f);
+  var res = [];
+  for (var i = 0; i < xs.length; i++) {
+    res.push(f(xs[i], i));
+  }
+  return res;
+}
+
+var objectKeys = Object.keys || function (obj) {
+  var res = [];
+  for (var key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) res.push(key);
+  }
+  return res;
+};
+
+},{}],8:[function(require,module,exports){
+'use strict';
+
+exports.decode = exports.parse = require('./decode');
+exports.encode = exports.stringify = require('./encode');
+
+},{"./decode":6,"./encode":7}],9:[function(require,module,exports){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+var punycode = require('punycode');
+
+exports.parse = urlParse;
+exports.resolve = urlResolve;
+exports.resolveObject = urlResolveObject;
+exports.format = urlFormat;
+
+exports.Url = Url;
+
+function Url() {
+  this.protocol = null;
+  this.slashes = null;
+  this.auth = null;
+  this.host = null;
+  this.port = null;
+  this.hostname = null;
+  this.hash = null;
+  this.search = null;
+  this.query = null;
+  this.pathname = null;
+  this.path = null;
+  this.href = null;
+}
+
+// Reference: RFC 3986, RFC 1808, RFC 2396
+
+// define these here so at least they only have to be
+// compiled once on the first module load.
+var protocolPattern = /^([a-z0-9.+-]+:)/i,
+    portPattern = /:[0-9]*$/,
+
+    // RFC 2396: characters reserved for delimiting URLs.
+    // We actually just auto-escape these.
+    delims = ['<', '>', '"', '`', ' ', '\r', '\n', '\t'],
+
+    // RFC 2396: characters not allowed for various reasons.
+    unwise = ['{', '}', '|', '\\', '^', '`'].concat(delims),
+
+    // Allowed by RFCs, but cause of XSS attacks.  Always escape these.
+    autoEscape = ['\''].concat(unwise),
+    // Characters that are never ever allowed in a hostname.
+    // Note that any invalid chars are also handled, but these
+    // are the ones that are *expected* to be seen, so we fast-path
+    // them.
+    nonHostChars = ['%', '/', '?', ';', '#'].concat(autoEscape),
+    hostEndingChars = ['/', '?', '#'],
+    hostnameMaxLen = 255,
+    hostnamePartPattern = /^[a-z0-9A-Z_-]{0,63}$/,
+    hostnamePartStart = /^([a-z0-9A-Z_-]{0,63})(.*)$/,
+    // protocols that can allow "unsafe" and "unwise" chars.
+    unsafeProtocol = {
+      'javascript': true,
+      'javascript:': true
+    },
+    // protocols that never have a hostname.
+    hostlessProtocol = {
+      'javascript': true,
+      'javascript:': true
+    },
+    // protocols that always contain a // bit.
+    slashedProtocol = {
+      'http': true,
+      'https': true,
+      'ftp': true,
+      'gopher': true,
+      'file': true,
+      'http:': true,
+      'https:': true,
+      'ftp:': true,
+      'gopher:': true,
+      'file:': true
+    },
+    querystring = require('querystring');
+
+function urlParse(url, parseQueryString, slashesDenoteHost) {
+  if (url && isObject(url) && url instanceof Url) return url;
+
+  var u = new Url;
+  u.parse(url, parseQueryString, slashesDenoteHost);
+  return u;
+}
+
+Url.prototype.parse = function(url, parseQueryString, slashesDenoteHost) {
+  if (!isString(url)) {
+    throw new TypeError("Parameter 'url' must be a string, not " + typeof url);
+  }
+
+  var rest = url;
+
+  // trim before proceeding.
+  // This is to support parse stuff like "  http://foo.com  \n"
+  rest = rest.trim();
+
+  var proto = protocolPattern.exec(rest);
+  if (proto) {
+    proto = proto[0];
+    var lowerProto = proto.toLowerCase();
+    this.protocol = lowerProto;
+    rest = rest.substr(proto.length);
+  }
+
+  // figure out if it's got a host
+  // user@server is *always* interpreted as a hostname, and url
+  // resolution will treat //foo/bar as host=foo,path=bar because that's
+  // how the browser resolves relative URLs.
+  if (slashesDenoteHost || proto || rest.match(/^\/\/[^@\/]+@[^@\/]+/)) {
+    var slashes = rest.substr(0, 2) === '//';
+    if (slashes && !(proto && hostlessProtocol[proto])) {
+      rest = rest.substr(2);
+      this.slashes = true;
+    }
+  }
+
+  if (!hostlessProtocol[proto] &&
+      (slashes || (proto && !slashedProtocol[proto]))) {
+
+    // there's a hostname.
+    // the first instance of /, ?, ;, or # ends the host.
+    //
+    // If there is an @ in the hostname, then non-host chars *are* allowed
+    // to the left of the last @ sign, unless some host-ending character
+    // comes *before* the @-sign.
+    // URLs are obnoxious.
+    //
+    // ex:
+    // http://a@b@c/ => user:a@b host:c
+    // http://a@b?@c => user:a host:c path:/?@c
+
+    // v0.12 TODO(isaacs): This is not quite how Chrome does things.
+    // Review our test case against browsers more comprehensively.
+
+    // find the first instance of any hostEndingChars
+    var hostEnd = -1;
+    for (var i = 0; i < hostEndingChars.length; i++) {
+      var hec = rest.indexOf(hostEndingChars[i]);
+      if (hec !== -1 && (hostEnd === -1 || hec < hostEnd))
+        hostEnd = hec;
+    }
+
+    // at this point, either we have an explicit point where the
+    // auth portion cannot go past, or the last @ char is the decider.
+    var auth, atSign;
+    if (hostEnd === -1) {
+      // atSign can be anywhere.
+      atSign = rest.lastIndexOf('@');
+    } else {
+      // atSign must be in auth portion.
+      // http://a@b/c@d => host:b auth:a path:/c@d
+      atSign = rest.lastIndexOf('@', hostEnd);
+    }
+
+    // Now we have a portion which is definitely the auth.
+    // Pull that off.
+    if (atSign !== -1) {
+      auth = rest.slice(0, atSign);
+      rest = rest.slice(atSign + 1);
+      this.auth = decodeURIComponent(auth);
+    }
+
+    // the host is the remaining to the left of the first non-host char
+    hostEnd = -1;
+    for (var i = 0; i < nonHostChars.length; i++) {
+      var hec = rest.indexOf(nonHostChars[i]);
+      if (hec !== -1 && (hostEnd === -1 || hec < hostEnd))
+        hostEnd = hec;
+    }
+    // if we still have not hit it, then the entire thing is a host.
+    if (hostEnd === -1)
+      hostEnd = rest.length;
+
+    this.host = rest.slice(0, hostEnd);
+    rest = rest.slice(hostEnd);
+
+    // pull out port.
+    this.parseHost();
+
+    // we've indicated that there is a hostname,
+    // so even if it's empty, it has to be present.
+    this.hostname = this.hostname || '';
+
+    // if hostname begins with [ and ends with ]
+    // assume that it's an IPv6 address.
+    var ipv6Hostname = this.hostname[0] === '[' &&
+        this.hostname[this.hostname.length - 1] === ']';
+
+    // validate a little.
+    if (!ipv6Hostname) {
+      var hostparts = this.hostname.split(/\./);
+      for (var i = 0, l = hostparts.length; i < l; i++) {
+        var part = hostparts[i];
+        if (!part) continue;
+        if (!part.match(hostnamePartPattern)) {
+          var newpart = '';
+          for (var j = 0, k = part.length; j < k; j++) {
+            if (part.charCodeAt(j) > 127) {
+              // we replace non-ASCII char with a temporary placeholder
+              // we need this to make sure size of hostname is not
+              // broken by replacing non-ASCII by nothing
+              newpart += 'x';
+            } else {
+              newpart += part[j];
+            }
+          }
+          // we test again with ASCII char only
+          if (!newpart.match(hostnamePartPattern)) {
+            var validParts = hostparts.slice(0, i);
+            var notHost = hostparts.slice(i + 1);
+            var bit = part.match(hostnamePartStart);
+            if (bit) {
+              validParts.push(bit[1]);
+              notHost.unshift(bit[2]);
+            }
+            if (notHost.length) {
+              rest = '/' + notHost.join('.') + rest;
+            }
+            this.hostname = validParts.join('.');
+            break;
+          }
+        }
+      }
+    }
+
+    if (this.hostname.length > hostnameMaxLen) {
+      this.hostname = '';
+    } else {
+      // hostnames are always lower case.
+      this.hostname = this.hostname.toLowerCase();
+    }
+
+    if (!ipv6Hostname) {
+      // IDNA Support: Returns a puny coded representation of "domain".
+      // It only converts the part of the domain name that
+      // has non ASCII characters. I.e. it dosent matter if
+      // you call it with a domain that already is in ASCII.
+      var domainArray = this.hostname.split('.');
+      var newOut = [];
+      for (var i = 0; i < domainArray.length; ++i) {
+        var s = domainArray[i];
+        newOut.push(s.match(/[^A-Za-z0-9_-]/) ?
+            'xn--' + punycode.encode(s) : s);
+      }
+      this.hostname = newOut.join('.');
+    }
+
+    var p = this.port ? ':' + this.port : '';
+    var h = this.hostname || '';
+    this.host = h + p;
+    this.href += this.host;
+
+    // strip [ and ] from the hostname
+    // the host field still retains them, though
+    if (ipv6Hostname) {
+      this.hostname = this.hostname.substr(1, this.hostname.length - 2);
+      if (rest[0] !== '/') {
+        rest = '/' + rest;
+      }
+    }
+  }
+
+  // now rest is set to the post-host stuff.
+  // chop off any delim chars.
+  if (!unsafeProtocol[lowerProto]) {
+
+    // First, make 100% sure that any "autoEscape" chars get
+    // escaped, even if encodeURIComponent doesn't think they
+    // need to be.
+    for (var i = 0, l = autoEscape.length; i < l; i++) {
+      var ae = autoEscape[i];
+      var esc = encodeURIComponent(ae);
+      if (esc === ae) {
+        esc = escape(ae);
+      }
+      rest = rest.split(ae).join(esc);
+    }
+  }
+
+
+  // chop off from the tail first.
+  var hash = rest.indexOf('#');
+  if (hash !== -1) {
+    // got a fragment string.
+    this.hash = rest.substr(hash);
+    rest = rest.slice(0, hash);
+  }
+  var qm = rest.indexOf('?');
+  if (qm !== -1) {
+    this.search = rest.substr(qm);
+    this.query = rest.substr(qm + 1);
+    if (parseQueryString) {
+      this.query = querystring.parse(this.query);
+    }
+    rest = rest.slice(0, qm);
+  } else if (parseQueryString) {
+    // no query string, but parseQueryString still requested
+    this.search = '';
+    this.query = {};
+  }
+  if (rest) this.pathname = rest;
+  if (slashedProtocol[lowerProto] &&
+      this.hostname && !this.pathname) {
+    this.pathname = '/';
+  }
+
+  //to support http.request
+  if (this.pathname || this.search) {
+    var p = this.pathname || '';
+    var s = this.search || '';
+    this.path = p + s;
+  }
+
+  // finally, reconstruct the href based on what has been validated.
+  this.href = this.format();
+  return this;
+};
+
+// format a parsed object into a url string
+function urlFormat(obj) {
+  // ensure it's an object, and not a string url.
+  // If it's an obj, this is a no-op.
+  // this way, you can call url_format() on strings
+  // to clean up potentially wonky urls.
+  if (isString(obj)) obj = urlParse(obj);
+  if (!(obj instanceof Url)) return Url.prototype.format.call(obj);
+  return obj.format();
+}
+
+Url.prototype.format = function() {
+  var auth = this.auth || '';
+  if (auth) {
+    auth = encodeURIComponent(auth);
+    auth = auth.replace(/%3A/i, ':');
+    auth += '@';
+  }
+
+  var protocol = this.protocol || '',
+      pathname = this.pathname || '',
+      hash = this.hash || '',
+      host = false,
+      query = '';
+
+  if (this.host) {
+    host = auth + this.host;
+  } else if (this.hostname) {
+    host = auth + (this.hostname.indexOf(':') === -1 ?
+        this.hostname :
+        '[' + this.hostname + ']');
+    if (this.port) {
+      host += ':' + this.port;
+    }
+  }
+
+  if (this.query &&
+      isObject(this.query) &&
+      Object.keys(this.query).length) {
+    query = querystring.stringify(this.query);
+  }
+
+  var search = this.search || (query && ('?' + query)) || '';
+
+  if (protocol && protocol.substr(-1) !== ':') protocol += ':';
+
+  // only the slashedProtocols get the //.  Not mailto:, xmpp:, etc.
+  // unless they had them to begin with.
+  if (this.slashes ||
+      (!protocol || slashedProtocol[protocol]) && host !== false) {
+    host = '//' + (host || '');
+    if (pathname && pathname.charAt(0) !== '/') pathname = '/' + pathname;
+  } else if (!host) {
+    host = '';
+  }
+
+  if (hash && hash.charAt(0) !== '#') hash = '#' + hash;
+  if (search && search.charAt(0) !== '?') search = '?' + search;
+
+  pathname = pathname.replace(/[?#]/g, function(match) {
+    return encodeURIComponent(match);
+  });
+  search = search.replace('#', '%23');
+
+  return protocol + host + pathname + search + hash;
+};
+
+function urlResolve(source, relative) {
+  return urlParse(source, false, true).resolve(relative);
+}
+
+Url.prototype.resolve = function(relative) {
+  return this.resolveObject(urlParse(relative, false, true)).format();
+};
+
+function urlResolveObject(source, relative) {
+  if (!source) return relative;
+  return urlParse(source, false, true).resolveObject(relative);
+}
+
+Url.prototype.resolveObject = function(relative) {
+  if (isString(relative)) {
+    var rel = new Url();
+    rel.parse(relative, false, true);
+    relative = rel;
+  }
+
+  var result = new Url();
+  Object.keys(this).forEach(function(k) {
+    result[k] = this[k];
+  }, this);
+
+  // hash is always overridden, no matter what.
+  // even href="" will remove it.
+  result.hash = relative.hash;
+
+  // if the relative url is empty, then there's nothing left to do here.
+  if (relative.href === '') {
+    result.href = result.format();
+    return result;
+  }
+
+  // hrefs like //foo/bar always cut to the protocol.
+  if (relative.slashes && !relative.protocol) {
+    // take everything except the protocol from relative
+    Object.keys(relative).forEach(function(k) {
+      if (k !== 'protocol')
+        result[k] = relative[k];
+    });
+
+    //urlParse appends trailing / to urls like http://www.example.com
+    if (slashedProtocol[result.protocol] &&
+        result.hostname && !result.pathname) {
+      result.path = result.pathname = '/';
+    }
+
+    result.href = result.format();
+    return result;
+  }
+
+  if (relative.protocol && relative.protocol !== result.protocol) {
+    // if it's a known url protocol, then changing
+    // the protocol does weird things
+    // first, if it's not file:, then we MUST have a host,
+    // and if there was a path
+    // to begin with, then we MUST have a path.
+    // if it is file:, then the host is dropped,
+    // because that's known to be hostless.
+    // anything else is assumed to be absolute.
+    if (!slashedProtocol[relative.protocol]) {
+      Object.keys(relative).forEach(function(k) {
+        result[k] = relative[k];
+      });
+      result.href = result.format();
+      return result;
+    }
+
+    result.protocol = relative.protocol;
+    if (!relative.host && !hostlessProtocol[relative.protocol]) {
+      var relPath = (relative.pathname || '').split('/');
+      while (relPath.length && !(relative.host = relPath.shift()));
+      if (!relative.host) relative.host = '';
+      if (!relative.hostname) relative.hostname = '';
+      if (relPath[0] !== '') relPath.unshift('');
+      if (relPath.length < 2) relPath.unshift('');
+      result.pathname = relPath.join('/');
+    } else {
+      result.pathname = relative.pathname;
+    }
+    result.search = relative.search;
+    result.query = relative.query;
+    result.host = relative.host || '';
+    result.auth = relative.auth;
+    result.hostname = relative.hostname || relative.host;
+    result.port = relative.port;
+    // to support http.request
+    if (result.pathname || result.search) {
+      var p = result.pathname || '';
+      var s = result.search || '';
+      result.path = p + s;
+    }
+    result.slashes = result.slashes || relative.slashes;
+    result.href = result.format();
+    return result;
+  }
+
+  var isSourceAbs = (result.pathname && result.pathname.charAt(0) === '/'),
+      isRelAbs = (
+          relative.host ||
+          relative.pathname && relative.pathname.charAt(0) === '/'
+      ),
+      mustEndAbs = (isRelAbs || isSourceAbs ||
+                    (result.host && relative.pathname)),
+      removeAllDots = mustEndAbs,
+      srcPath = result.pathname && result.pathname.split('/') || [],
+      relPath = relative.pathname && relative.pathname.split('/') || [],
+      psychotic = result.protocol && !slashedProtocol[result.protocol];
+
+  // if the url is a non-slashed url, then relative
+  // links like ../.. should be able
+  // to crawl up to the hostname, as well.  This is strange.
+  // result.protocol has already been set by now.
+  // Later on, put the first path part into the host field.
+  if (psychotic) {
+    result.hostname = '';
+    result.port = null;
+    if (result.host) {
+      if (srcPath[0] === '') srcPath[0] = result.host;
+      else srcPath.unshift(result.host);
+    }
+    result.host = '';
+    if (relative.protocol) {
+      relative.hostname = null;
+      relative.port = null;
+      if (relative.host) {
+        if (relPath[0] === '') relPath[0] = relative.host;
+        else relPath.unshift(relative.host);
+      }
+      relative.host = null;
+    }
+    mustEndAbs = mustEndAbs && (relPath[0] === '' || srcPath[0] === '');
+  }
+
+  if (isRelAbs) {
+    // it's absolute.
+    result.host = (relative.host || relative.host === '') ?
+                  relative.host : result.host;
+    result.hostname = (relative.hostname || relative.hostname === '') ?
+                      relative.hostname : result.hostname;
+    result.search = relative.search;
+    result.query = relative.query;
+    srcPath = relPath;
+    // fall through to the dot-handling below.
+  } else if (relPath.length) {
+    // it's relative
+    // throw away the existing file, and take the new path instead.
+    if (!srcPath) srcPath = [];
+    srcPath.pop();
+    srcPath = srcPath.concat(relPath);
+    result.search = relative.search;
+    result.query = relative.query;
+  } else if (!isNullOrUndefined(relative.search)) {
+    // just pull out the search.
+    // like href='?foo'.
+    // Put this after the other two cases because it simplifies the booleans
+    if (psychotic) {
+      result.hostname = result.host = srcPath.shift();
+      //occationaly the auth can get stuck only in host
+      //this especialy happens in cases like
+      //url.resolveObject('mailto:local1@domain1', 'local2@domain2')
+      var authInHost = result.host && result.host.indexOf('@') > 0 ?
+                       result.host.split('@') : false;
+      if (authInHost) {
+        result.auth = authInHost.shift();
+        result.host = result.hostname = authInHost.shift();
+      }
+    }
+    result.search = relative.search;
+    result.query = relative.query;
+    //to support http.request
+    if (!isNull(result.pathname) || !isNull(result.search)) {
+      result.path = (result.pathname ? result.pathname : '') +
+                    (result.search ? result.search : '');
+    }
+    result.href = result.format();
+    return result;
+  }
+
+  if (!srcPath.length) {
+    // no path at all.  easy.
+    // we've already handled the other stuff above.
+    result.pathname = null;
+    //to support http.request
+    if (result.search) {
+      result.path = '/' + result.search;
+    } else {
+      result.path = null;
+    }
+    result.href = result.format();
+    return result;
+  }
+
+  // if a url ENDs in . or .., then it must get a trailing slash.
+  // however, if it ends in anything else non-slashy,
+  // then it must NOT get a trailing slash.
+  var last = srcPath.slice(-1)[0];
+  var hasTrailingSlash = (
+      (result.host || relative.host) && (last === '.' || last === '..') ||
+      last === '');
+
+  // strip single dots, resolve double dots to parent dir
+  // if the path tries to go above the root, `up` ends up > 0
+  var up = 0;
+  for (var i = srcPath.length; i >= 0; i--) {
+    last = srcPath[i];
+    if (last == '.') {
+      srcPath.splice(i, 1);
+    } else if (last === '..') {
+      srcPath.splice(i, 1);
+      up++;
+    } else if (up) {
+      srcPath.splice(i, 1);
+      up--;
+    }
+  }
+
+  // if the path is allowed to go above the root, restore leading ..s
+  if (!mustEndAbs && !removeAllDots) {
+    for (; up--; up) {
+      srcPath.unshift('..');
+    }
+  }
+
+  if (mustEndAbs && srcPath[0] !== '' &&
+      (!srcPath[0] || srcPath[0].charAt(0) !== '/')) {
+    srcPath.unshift('');
+  }
+
+  if (hasTrailingSlash && (srcPath.join('/').substr(-1) !== '/')) {
+    srcPath.push('');
+  }
+
+  var isAbsolute = srcPath[0] === '' ||
+      (srcPath[0] && srcPath[0].charAt(0) === '/');
+
+  // put the host back
+  if (psychotic) {
+    result.hostname = result.host = isAbsolute ? '' :
+                                    srcPath.length ? srcPath.shift() : '';
+    //occationaly the auth can get stuck only in host
+    //this especialy happens in cases like
+    //url.resolveObject('mailto:local1@domain1', 'local2@domain2')
+    var authInHost = result.host && result.host.indexOf('@') > 0 ?
+                     result.host.split('@') : false;
+    if (authInHost) {
+      result.auth = authInHost.shift();
+      result.host = result.hostname = authInHost.shift();
+    }
+  }
+
+  mustEndAbs = mustEndAbs || (result.host && srcPath.length);
+
+  if (mustEndAbs && !isAbsolute) {
+    srcPath.unshift('');
+  }
+
+  if (!srcPath.length) {
+    result.pathname = null;
+    result.path = null;
+  } else {
+    result.pathname = srcPath.join('/');
+  }
+
+  //to support request.http
+  if (!isNull(result.pathname) || !isNull(result.search)) {
+    result.path = (result.pathname ? result.pathname : '') +
+                  (result.search ? result.search : '');
+  }
+  result.auth = relative.auth || result.auth;
+  result.slashes = result.slashes || relative.slashes;
+  result.href = result.format();
+  return result;
+};
+
+Url.prototype.parseHost = function() {
+  var host = this.host;
+  var port = portPattern.exec(host);
+  if (port) {
+    port = port[0];
+    if (port !== ':') {
+      this.port = port.substr(1);
+    }
+    host = host.substr(0, host.length - port.length);
+  }
+  if (host) this.hostname = host;
+};
+
+function isString(arg) {
+  return typeof arg === "string";
+}
+
+function isObject(arg) {
+  return typeof arg === 'object' && arg !== null;
+}
+
+function isNull(arg) {
+  return arg === null;
+}
+function isNullOrUndefined(arg) {
+  return  arg == null;
+}
+
+},{"punycode":5,"querystring":8}],10:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1453,15 +2879,20 @@ EventEmitter.prototype._events = undefined;
  * Return a list of assigned event listeners.
  *
  * @param {String} event The events that should be listed.
- * @returns {Array}
+ * @param {Boolean} exists We only need to know if there are listeners.
+ * @returns {Array|Boolean}
  * @api public
  */
-EventEmitter.prototype.listeners = function listeners(event) {
-  if (!this._events || !this._events[event]) return [];
-  if (this._events[event].fn) return [this._events[event].fn];
+EventEmitter.prototype.listeners = function listeners(event, exists) {
+  var prefix = '~'+ event
+    , available = this._events && this._events[prefix];
 
-  for (var i = 0, l = this._events[event].length, ee = new Array(l); i < l; i++) {
-    ee[i] = this._events[event][i].fn;
+  if (exists) return !!available;
+  if (!available) return [];
+  if (this._events[prefix].fn) return [this._events[prefix].fn];
+
+  for (var i = 0, l = this._events[prefix].length, ee = new Array(l); i < l; i++) {
+    ee[i] = this._events[prefix][i].fn;
   }
 
   return ee;
@@ -1475,15 +2906,17 @@ EventEmitter.prototype.listeners = function listeners(event) {
  * @api public
  */
 EventEmitter.prototype.emit = function emit(event, a1, a2, a3, a4, a5) {
-  if (!this._events || !this._events[event]) return false;
+  var prefix = '~'+ event;
 
-  var listeners = this._events[event]
+  if (!this._events || !this._events[prefix]) return false;
+
+  var listeners = this._events[prefix]
     , len = arguments.length
     , args
     , i;
 
   if ('function' === typeof listeners.fn) {
-    if (listeners.once) this.removeListener(event, listeners.fn, true);
+    if (listeners.once) this.removeListener(event, listeners.fn, undefined, true);
 
     switch (len) {
       case 1: return listeners.fn.call(listeners.context), true;
@@ -1504,7 +2937,7 @@ EventEmitter.prototype.emit = function emit(event, a1, a2, a3, a4, a5) {
       , j;
 
     for (i = 0; i < length; i++) {
-      if (listeners[i].once) this.removeListener(event, listeners[i].fn, true);
+      if (listeners[i].once) this.removeListener(event, listeners[i].fn, undefined, true);
 
       switch (len) {
         case 1: listeners[i].fn.call(listeners[i].context); break;
@@ -1532,14 +2965,15 @@ EventEmitter.prototype.emit = function emit(event, a1, a2, a3, a4, a5) {
  * @api public
  */
 EventEmitter.prototype.on = function on(event, fn, context) {
-  var listener = new EE(fn, context || this);
+  var listener = new EE(fn, context || this)
+    , prefix = '~'+ event;
 
   if (!this._events) this._events = {};
-  if (!this._events[event]) this._events[event] = listener;
+  if (!this._events[prefix]) this._events[prefix] = listener;
   else {
-    if (!this._events[event].fn) this._events[event].push(listener);
-    else this._events[event] = [
-      this._events[event], listener
+    if (!this._events[prefix].fn) this._events[prefix].push(listener);
+    else this._events[prefix] = [
+      this._events[prefix], listener
     ];
   }
 
@@ -1555,14 +2989,15 @@ EventEmitter.prototype.on = function on(event, fn, context) {
  * @api public
  */
 EventEmitter.prototype.once = function once(event, fn, context) {
-  var listener = new EE(fn, context || this, true);
+  var listener = new EE(fn, context || this, true)
+    , prefix = '~'+ event;
 
   if (!this._events) this._events = {};
-  if (!this._events[event]) this._events[event] = listener;
+  if (!this._events[prefix]) this._events[prefix] = listener;
   else {
-    if (!this._events[event].fn) this._events[event].push(listener);
-    else this._events[event] = [
-      this._events[event], listener
+    if (!this._events[prefix].fn) this._events[prefix].push(listener);
+    else this._events[prefix] = [
+      this._events[prefix], listener
     ];
   }
 
@@ -1574,22 +3009,36 @@ EventEmitter.prototype.once = function once(event, fn, context) {
  *
  * @param {String} event The event we want to remove.
  * @param {Function} fn The listener that we need to find.
+ * @param {Mixed} context Only remove listeners matching this context.
  * @param {Boolean} once Only remove once listeners.
  * @api public
  */
-EventEmitter.prototype.removeListener = function removeListener(event, fn, once) {
-  if (!this._events || !this._events[event]) return this;
+EventEmitter.prototype.removeListener = function removeListener(event, fn, context, once) {
+  var prefix = '~'+ event;
 
-  var listeners = this._events[event]
+  if (!this._events || !this._events[prefix]) return this;
+
+  var listeners = this._events[prefix]
     , events = [];
 
   if (fn) {
-    if (listeners.fn && (listeners.fn !== fn || (once && !listeners.once))) {
-      events.push(listeners);
-    }
-    if (!listeners.fn) for (var i = 0, length = listeners.length; i < length; i++) {
-      if (listeners[i].fn !== fn || (once && !listeners[i].once)) {
-        events.push(listeners[i]);
+    if (listeners.fn) {
+      if (
+           listeners.fn !== fn
+        || (once && !listeners.once)
+        || (context && listeners.context !== context)
+      ) {
+        events.push(listeners);
+      }
+    } else {
+      for (var i = 0, length = listeners.length; i < length; i++) {
+        if (
+             listeners[i].fn !== fn
+          || (once && !listeners[i].once)
+          || (context && listeners[i].context !== context)
+        ) {
+          events.push(listeners[i]);
+        }
       }
     }
   }
@@ -1598,9 +3047,9 @@ EventEmitter.prototype.removeListener = function removeListener(event, fn, once)
   // Reset the array, or remove it completely if we have no more listeners.
   //
   if (events.length) {
-    this._events[event] = events.length === 1 ? events[0] : events;
+    this._events[prefix] = events.length === 1 ? events[0] : events;
   } else {
-    delete this._events[event];
+    delete this._events[prefix];
   }
 
   return this;
@@ -1615,7 +3064,7 @@ EventEmitter.prototype.removeListener = function removeListener(event, fn, once)
 EventEmitter.prototype.removeAllListeners = function removeAllListeners(event) {
   if (!this._events) return this;
 
-  if (event) delete this._events[event];
+  if (event) delete this._events['~'+ event];
   else this._events = {};
 
   return this;
@@ -1637,16 +3086,9 @@ EventEmitter.prototype.setMaxListeners = function setMaxListeners() {
 //
 // Expose the module.
 //
-EventEmitter.EventEmitter = EventEmitter;
-EventEmitter.EventEmitter2 = EventEmitter;
-EventEmitter.EventEmitter3 = EventEmitter;
-
-//
-// Expose the module.
-//
 module.exports = EventEmitter;
 
-},{}],5:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 'use strict';
 
 function ToObject(val) {
@@ -1674,3309 +3116,1141 @@ module.exports = Object.assign || function (target, source) {
 	return to;
 };
 
-},{}],6:[function(require,module,exports){
-var PIXI = require('pixi.js'),
-    spine = require('./SpineRuntime');
-
-/* Esoteric Software SPINE wrapper for pixi.js */
-
-spine.Bone.yDown = true;
-
-/**
- * A class that enables the you to import and run your spine animations in pixi.
- * The Spine animation data needs to be loaded using either the Loader or a SpineLoader before it can be used by this class
- * See example 12 (http://www.goodboydigital.com/pixijs/examples/12/) to see a working example and check out the source
+},{}],12:[function(require,module,exports){
+(function (process){
+/*!
+ * async
+ * https://github.com/caolan/async
  *
- * ```js
- * var spineAnimation = new PIXI.Spine(spineData);
- * ```
- *
- * @class
- * @extends Container
- * @memberof PIXI.spine
- * @param spineData {object} The spine data loaded from a spine atlas.
+ * Copyright 2010-2014 Caolan McMahon
+ * Released under the MIT license
  */
-function Spine(spineData)
-{
-    PIXI.Container.call(this);
+/*jshint onevar: false, indent:4 */
+/*global setImmediate: false, setTimeout: false, console: false */
+(function () {
 
-    if (!spineData)
-    {
-        throw new Error('The spineData param is required.');
+    var async = {};
+
+    // global on the server, window in the browser
+    var root, previous_async;
+
+    root = this;
+    if (root != null) {
+      previous_async = root.async;
     }
 
-    /**
-     * The spineData object
-     *
-     * @member {object}
-     */
-    this.spineData = spineData;
+    async.noConflict = function () {
+        root.async = previous_async;
+        return async;
+    };
 
-    /**
-     * A spine Skeleton object
-     *
-     * @member {object}
-     */
-    this.skeleton = new spine.Skeleton(spineData);
-    this.skeleton.updateWorldTransform();
-
-    /**
-     * A spine AnimationStateData object created from the spine data passed in the constructor
-     *
-     * @member {object}
-     */
-    this.stateData = new spine.AnimationStateData(spineData);
-
-    /**
-     * A spine AnimationState object created from the spine AnimationStateData object
-     *
-     * @member {object}
-     */
-    this.state = new spine.AnimationState(this.stateData);
-
-    /**
-     * An array of containers
-     *
-     * @member {Container[]}
-     */
-    this.slotContainers = [];
-
-    for (var i = 0, n = this.skeleton.slots.length; i < n; i++)
-    {
-        var slot = this.skeleton.slots[i];
-        var attachment = slot.attachment;
-        var slotContainer = new PIXI.Container();
-        this.slotContainers.push(slotContainer);
-        this.addChild(slotContainer);
-
-        if (attachment instanceof spine.RegionAttachment)
-        {
-            var spriteName = attachment.rendererObject.name;
-            var sprite = this.createSprite(slot, attachment);
-            slot.currentSprite = sprite;
-            slot.currentSpriteName = spriteName;
-            slotContainer.addChild(sprite);
-        }
-        else if (attachment instanceof spine.MeshAttachment)
-        {
-            var mesh = this.createMesh(slot, attachment);
-            slot.currentMesh = mesh;
-            slot.currentMeshName = attachment.name;
-            slotContainer.addChild(mesh);
-        }
-        else
-        {
-            continue;
-        }
-
-    }
-
-    /**
-     * Should the Spine object update its transforms
-     *
-     * @member {boolean}
-     */
-    this.autoUpdate = true;
-}
-
-Spine.prototype = Object.create(PIXI.Container.prototype);
-Spine.prototype.constructor = Spine;
-module.exports = Spine;
-
-Object.defineProperties(Spine.prototype, {
-    /**
-     * If this flag is set to true, the spine animation will be autoupdated every time
-     * the object id drawn. The down side of this approach is that the delta time is
-     * automatically calculated and you could miss out on cool effects like slow motion,
-     * pause, skip ahead and the sorts. Most of these effects can be achieved even with
-     * autoupdate enabled but are harder to achieve.
-     *
-     * @member {boolean}
-     * @memberof Spine#
-     * @default true
-     */
-    autoUpdate: {
-        get: function ()
-        {
-            return (this.updateTransform === Spine.prototype.autoUpdateTransform);
-        },
-
-        set: function (value)
-        {
-            this.updateTransform = value ? Spine.prototype.autoUpdateTransform : PIXI.Container.prototype.updateTransform;
+    function only_once(fn) {
+        var called = false;
+        return function() {
+            if (called) throw new Error("Callback was already called.");
+            called = true;
+            fn.apply(root, arguments);
         }
     }
-});
 
-/**
- * Update the spine skeleton and its animations by delta time (dt)
- *
- * @param dt {number} Delta time. Time by which the animation should be updated
- */
-Spine.prototype.update = function (dt)
-{
-    this.state.update(dt);
-    this.state.apply(this.skeleton);
-    this.skeleton.updateWorldTransform();
+    //// cross-browser compatiblity functions ////
 
-    var drawOrder = this.skeleton.drawOrder;
-    var slots = this.skeleton.slots;
+    var _toString = Object.prototype.toString;
 
-    for (var i = 0, n = drawOrder.length; i < n; i++)
-    {
-        this.children[i] = this.slotContainers[drawOrder[i]];
+    var _isArray = Array.isArray || function (obj) {
+        return _toString.call(obj) === '[object Array]';
+    };
+
+    var _each = function (arr, iterator) {
+        if (arr.forEach) {
+            return arr.forEach(iterator);
+        }
+        for (var i = 0; i < arr.length; i += 1) {
+            iterator(arr[i], i, arr);
+        }
+    };
+
+    var _map = function (arr, iterator) {
+        if (arr.map) {
+            return arr.map(iterator);
+        }
+        var results = [];
+        _each(arr, function (x, i, a) {
+            results.push(iterator(x, i, a));
+        });
+        return results;
+    };
+
+    var _reduce = function (arr, iterator, memo) {
+        if (arr.reduce) {
+            return arr.reduce(iterator, memo);
+        }
+        _each(arr, function (x, i, a) {
+            memo = iterator(memo, x, i, a);
+        });
+        return memo;
+    };
+
+    var _keys = function (obj) {
+        if (Object.keys) {
+            return Object.keys(obj);
+        }
+        var keys = [];
+        for (var k in obj) {
+            if (obj.hasOwnProperty(k)) {
+                keys.push(k);
+            }
+        }
+        return keys;
+    };
+
+    //// exported async module functions ////
+
+    //// nextTick implementation with browser-compatible fallback ////
+    if (typeof process === 'undefined' || !(process.nextTick)) {
+        if (typeof setImmediate === 'function') {
+            async.nextTick = function (fn) {
+                // not a direct alias for IE10 compatibility
+                setImmediate(fn);
+            };
+            async.setImmediate = async.nextTick;
+        }
+        else {
+            async.nextTick = function (fn) {
+                setTimeout(fn, 0);
+            };
+            async.setImmediate = async.nextTick;
+        }
+    }
+    else {
+        async.nextTick = process.nextTick;
+        if (typeof setImmediate !== 'undefined') {
+            async.setImmediate = function (fn) {
+              // not a direct alias for IE10 compatibility
+              setImmediate(fn);
+            };
+        }
+        else {
+            async.setImmediate = async.nextTick;
+        }
     }
 
-    for (i = 0, n = slots.length; i < n; i++)
-    {
-        var slot = slots[i];
-        var attachment = slot.attachment;
-        var slotContainer = this.slotContainers[i];
-
-        if (!attachment)
-        {
-            slotContainer.visible = false;
-            continue;
+    async.each = function (arr, iterator, callback) {
+        callback = callback || function () {};
+        if (!arr.length) {
+            return callback();
         }
+        var completed = 0;
+        _each(arr, function (x) {
+            iterator(x, only_once(done) );
+        });
+        function done(err) {
+          if (err) {
+              callback(err);
+              callback = function () {};
+          }
+          else {
+              completed += 1;
+              if (completed >= arr.length) {
+                  callback();
+              }
+          }
+        }
+    };
+    async.forEach = async.each;
 
-        var type = attachment.type;
-        if (type === spine.AttachmentType.region)
-        {
-            if (attachment.rendererObject)
-            {
-                if (!slot.currentSpriteName || slot.currentSpriteName !== attachment.rendererObject.name)
-                {
-                    var spriteName = attachment.rendererObject.name;
-                    if (slot.currentSprite !== undefined)
-                    {
-                        slot.currentSprite.visible = false;
+    async.eachSeries = function (arr, iterator, callback) {
+        callback = callback || function () {};
+        if (!arr.length) {
+            return callback();
+        }
+        var completed = 0;
+        var iterate = function () {
+            iterator(arr[completed], function (err) {
+                if (err) {
+                    callback(err);
+                    callback = function () {};
+                }
+                else {
+                    completed += 1;
+                    if (completed >= arr.length) {
+                        callback();
                     }
-                    slot.sprites = slot.sprites || {};
-                    if (slot.sprites[spriteName] !== undefined)
-                    {
-                        slot.sprites[spriteName].visible = true;
+                    else {
+                        iterate();
                     }
-                    else
-                    {
-                        var sprite = this.createSprite(slot, attachment);
-                        slotContainer.addChild(sprite);
-                    }
-                    slot.currentSprite = slot.sprites[spriteName];
-                    slot.currentSpriteName = spriteName;
                 }
+            });
+        };
+        iterate();
+    };
+    async.forEachSeries = async.eachSeries;
+
+    async.eachLimit = function (arr, limit, iterator, callback) {
+        var fn = _eachLimit(limit);
+        fn.apply(null, [arr, iterator, callback]);
+    };
+    async.forEachLimit = async.eachLimit;
+
+    var _eachLimit = function (limit) {
+
+        return function (arr, iterator, callback) {
+            callback = callback || function () {};
+            if (!arr.length || limit <= 0) {
+                return callback();
             }
+            var completed = 0;
+            var started = 0;
+            var running = 0;
 
-            var bone = slot.bone;
-
-            slotContainer.position.x = bone.worldX + attachment.x * bone.m00 + attachment.y * bone.m01;
-            slotContainer.position.y = bone.worldY + attachment.x * bone.m10 + attachment.y * bone.m11;
-            slotContainer.scale.x = bone.worldScaleX;
-            slotContainer.scale.y = bone.worldScaleY;
-
-            slotContainer.rotation = -(slot.bone.worldRotation * spine.degRad);
-
-            slot.currentSprite.tint = PIXI.utils.rgb2hex([slot.r,slot.g,slot.b]);
-        }
-        else if (type === spine.AttachmentType.skinnedmesh)
-        {
-            if (!slot.currentMeshName || slot.currentMeshName !== attachment.name)
-            {
-                var meshName = attachment.name;
-                if (slot.currentMesh !== undefined)
-                {
-                    slot.currentMesh.visible = false;
+            (function replenish () {
+                if (completed >= arr.length) {
+                    return callback();
                 }
 
-                slot.meshes = slot.meshes || {};
-
-                if (slot.meshes[meshName] !== undefined)
-                {
-                    slot.meshes[meshName].visible = true;
-                }
-                else
-                {
-                    var mesh = this.createMesh(slot, attachment);
-                    slotContainer.addChild(mesh);
-                }
-
-                slot.currentMesh = slot.meshes[meshName];
-                slot.currentMeshName = meshName;
-            }
-
-            attachment.computeWorldVertices(slot.bone.skeleton.x, slot.bone.skeleton.y, slot, slot.currentMesh.vertices);
-
-        }
-        else
-        {
-            slotContainer.visible = false;
-            continue;
-        }
-        slotContainer.visible = true;
-
-        slotContainer.alpha = slot.a;
-    }
-};
-
-/**
- * When autoupdate is set to yes this function is used as pixi's updateTransform function
- *
- * @private
- */
-Spine.prototype.autoUpdateTransform = function ()
-{
-    this.lastTime = this.lastTime || Date.now();
-    var timeDelta = (Date.now() - this.lastTime) * 0.001;
-    this.lastTime = Date.now();
-
-    this.update(timeDelta);
-
-    PIXI.Container.prototype.updateTransform.call(this);
-};
-
-/**
- * Create a new sprite to be used with spine.RegionAttachment
- *
- * @param slot {spine.Slot} The slot to which the attachment is parented
- * @param attachment {spine.RegionAttachment} The attachment that the sprite will represent
- * @private
- */
-Spine.prototype.createSprite = function (slot, attachment)
-{
-    var descriptor = attachment.rendererObject;
-    var baseTexture = descriptor.page.rendererObject;
-    var spriteRect = new PIXI.math.Rectangle(descriptor.x,
-                                        descriptor.y,
-                                        descriptor.rotate ? descriptor.height : descriptor.width,
-                                        descriptor.rotate ? descriptor.width : descriptor.height);
-    var spriteTexture = new PIXI.Texture(baseTexture, spriteRect);
-    var sprite = new PIXI.Sprite(spriteTexture);
-
-    var baseRotation = descriptor.rotate ? Math.PI * 0.5 : 0.0;
-    sprite.scale.x = descriptor.width / descriptor.originalWidth * attachment.scaleX;
-    sprite.scale.y = descriptor.height / descriptor.originalHeight * attachment.scaleY;
-    sprite.rotation = baseRotation - (attachment.rotation * spine.degRad);
-    sprite.anchor.x = sprite.anchor.y = 0.5;
-    sprite.alpha = attachment.a;
-
-    slot.sprites = slot.sprites || {};
-    slot.sprites[descriptor.name] = sprite;
-    return sprite;
-};
-
-/**
- * Creates a Strip from the spine data
- * @param slot {spine.Slot} The slot to which the attachment is parented
- * @param attachment {spine.RegionAttachment} The attachment that the sprite will represent
- * @private
- */
-Spine.prototype.createMesh = function (slot, attachment)
-{
-    var descriptor = attachment.rendererObject;
-    var baseTexture = descriptor.page.rendererObject;
-    var texture = new PIXI.Texture(baseTexture);
-
-    var strip = new PIXI.Strip(texture);
-    strip.drawMode = PIXI.Strip.DRAW_MODES.TRIANGLES;
-    strip.canvasPadding = 1.5;
-
-    strip.vertices = new Float32Array(attachment.uvs.length);
-    strip.uvs = attachment.uvs;
-    strip.indices = attachment.triangles;
-    strip.alpha = attachment.a;
-
-    slot.meshes = slot.meshes || {};
-    slot.meshes[attachment.name] = strip;
-
-    return strip;
-};
-
-},{"./SpineRuntime":7,"pixi.js":"pixi.js"}],7:[function(require,module,exports){
-/******************************************************************************
- * Spine Runtimes Software License
- * Version 2.1
- *
- * Copyright (c) 2013, Esoteric Software
- * All rights reserved.
- *
- * You are granted a perpetual, non-exclusive, non-sublicensable and
- * non-transferable license to install, execute and perform the Spine Runtimes
- * Software (the "Software") solely for internal use. Without the written
- * permission of Esoteric Software (typically granted by licensing Spine), you
- * may not (a) modify, translate, adapt or otherwise create derivative works,
- * improvements of the Software or develop new applications using the Software
- * or (b) remove, delete, alter or obscure any trademarks or any copyright,
- * trademark, patent or other intellectual property or proprietary rights
- * notices on or in the Software, including any copy thereof. Redistributions
- * in binary or source form must include this license and terms.
- *
- * THIS SOFTWARE IS PROVIDED BY ESOTERIC SOFTWARE "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
- * EVENT SHALL ESOTERIC SOFTARE BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
- * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *****************************************************************************/
-var PIXI = require('pixi.js');
-
-
-var spine = module.exports = {
-    radDeg: 180 / Math.PI,
-    degRad: Math.PI / 180,
-    temp: [],
-    Float32Array: (typeof(Float32Array) === 'undefined') ? Array : Float32Array,
-    Uint16Array: (typeof(Uint16Array) === 'undefined') ? Array : Uint16Array
-};
-
-spine.BoneData = function (name, parent)
-{
-    this.name = name;
-    this.parent = parent;
-};
-spine.BoneData.prototype = {
-    length: 0,
-    x: 0, y: 0,
-    rotation: 0,
-    scaleX: 1, scaleY: 1,
-    inheritScale: true,
-    inheritRotation: true,
-    flipX: false, flipY: false
-};
-
-spine.SlotData = function (name, boneData)
-{
-    this.name = name;
-    this.boneData = boneData;
-};
-spine.SlotData.prototype = {
-    r: 1, g: 1, b: 1, a: 1,
-    attachmentName: null,
-    additiveBlending: false
-};
-
-spine.IkConstraintData = function (name)
-{
-    this.name = name;
-    this.bones = [];
-};
-spine.IkConstraintData.prototype = {
-    target: null,
-    bendDirection: 1,
-    mix: 1
-};
-
-spine.Bone = function (boneData, skeleton, parent)
-{
-    this.data = boneData;
-    this.skeleton = skeleton;
-    this.parent = parent;
-    this.setToSetupPose();
-};
-spine.Bone.yDown = false;
-spine.Bone.prototype = {
-    x: 0, y: 0,
-    rotation: 0, rotationIK: 0,
-    scaleX: 1, scaleY: 1,
-    flipX: false, flipY: false,
-    m00: 0, m01: 0, worldX: 0, // a b x
-    m10: 0, m11: 0, worldY: 0, // c d y
-    worldRotation: 0,
-    worldScaleX: 1, worldScaleY: 1,
-    worldFlipX: false, worldFlipY: false,
-    updateWorldTransform: function ()
-    {
-        var parent = this.parent;
-        if (parent)
-        {
-            this.worldX = this.x * parent.m00 + this.y * parent.m01 + parent.worldX;
-            this.worldY = this.x * parent.m10 + this.y * parent.m11 + parent.worldY;
-            if (this.data.inheritScale)
-            {
-                this.worldScaleX = parent.worldScaleX * this.scaleX;
-                this.worldScaleY = parent.worldScaleY * this.scaleY;
-            } else {
-                this.worldScaleX = this.scaleX;
-                this.worldScaleY = this.scaleY;
-            }
-            this.worldRotation = this.data.inheritRotation ? (parent.worldRotation + this.rotationIK) : this.rotationIK;
-            this.worldFlipX = parent.worldFlipX != this.flipX;
-            this.worldFlipY = parent.worldFlipY != this.flipY;
-        } else {
-            var skeletonFlipX = this.skeleton.flipX, skeletonFlipY = this.skeleton.flipY;
-            this.worldX = skeletonFlipX ? -this.x : this.x;
-            this.worldY = (skeletonFlipY != spine.Bone.yDown) ? -this.y : this.y;
-            this.worldScaleX = this.scaleX;
-            this.worldScaleY = this.scaleY;
-            this.worldRotation = this.rotationIK;
-            this.worldFlipX = skeletonFlipX != this.flipX;
-            this.worldFlipY = skeletonFlipY != this.flipY;
-        }
-        var radians = this.worldRotation * spine.degRad;
-        var cos = Math.cos(radians);
-        var sin = Math.sin(radians);
-        if (this.worldFlipX)
-        {
-            this.m00 = -cos * this.worldScaleX;
-            this.m01 = sin * this.worldScaleY;
-        } else {
-            this.m00 = cos * this.worldScaleX;
-            this.m01 = -sin * this.worldScaleY;
-        }
-        if (this.worldFlipY != spine.Bone.yDown)
-        {
-            this.m10 = -sin * this.worldScaleX;
-            this.m11 = -cos * this.worldScaleY;
-        } else {
-            this.m10 = sin * this.worldScaleX;
-            this.m11 = cos * this.worldScaleY;
-        }
-    },
-    setToSetupPose: function ()
-    {
-        var data = this.data;
-        this.x = data.x;
-        this.y = data.y;
-        this.rotation = data.rotation;
-        this.rotationIK = this.rotation;
-        this.scaleX = data.scaleX;
-        this.scaleY = data.scaleY;
-        this.flipX = data.flipX;
-        this.flipY = data.flipY;
-    },
-    worldToLocal: function (world)
-    {
-        var dx = world[0] - this.worldX, dy = world[1] - this.worldY;
-        var m00 = this.m00, m10 = this.m10, m01 = this.m01, m11 = this.m11;
-        if (this.worldFlipX != (this.worldFlipY != spine.Bone.yDown))
-        {
-            m00 = -m00;
-            m11 = -m11;
-        }
-        var invDet = 1 / (m00 * m11 - m01 * m10);
-        world[0] = dx * m00 * invDet - dy * m01 * invDet;
-        world[1] = dy * m11 * invDet - dx * m10 * invDet;
-    },
-    localToWorld: function (local)
-    {
-        var localX = local[0], localY = local[1];
-        local[0] = localX * this.m00 + localY * this.m01 + this.worldX;
-        local[1] = localX * this.m10 + localY * this.m11 + this.worldY;
-    }
-};
-
-spine.Slot = function (slotData, bone)
-{
-    this.data = slotData;
-    this.bone = bone;
-    this.setToSetupPose();
-};
-spine.Slot.prototype = {
-    r: 1, g: 1, b: 1, a: 1,
-    _attachmentTime: 0,
-    attachment: null,
-    attachmentVertices: [],
-    setAttachment: function (attachment)
-    {
-        this.attachment = attachment;
-        this._attachmentTime = this.bone.skeleton.time;
-        this.attachmentVertices.length = 0;
-    },
-    setAttachmentTime: function (time)
-    {
-        this._attachmentTime = this.bone.skeleton.time - time;
-    },
-    getAttachmentTime: function ()
-    {
-        return this.bone.skeleton.time - this._attachmentTime;
-    },
-    setToSetupPose: function ()
-    {
-        var data = this.data;
-        this.r = data.r;
-        this.g = data.g;
-        this.b = data.b;
-        this.a = data.a;
-
-        var slotDatas = this.bone.skeleton.data.slots;
-        for (var i = 0, n = slotDatas.length; i < n; i++)
-        {
-            if (slotDatas[i] == data)
-            {
-                this.setAttachment(!data.attachmentName ? null : this.bone.skeleton.getAttachmentBySlotIndex(i, data.attachmentName));
-                break;
-            }
-        }
-    }
-};
-
-spine.IkConstraint = function (data, skeleton)
-{
-    this.data = data;
-    this.mix = data.mix;
-    this.bendDirection = data.bendDirection;
-
-    this.bones = [];
-    for (var i = 0, n = data.bones.length; i < n; i++)
-        this.bones.push(skeleton.findBone(data.bones[i].name));
-    this.target = skeleton.findBone(data.target.name);
-};
-spine.IkConstraint.prototype = {
-    apply: function ()
-    {
-        var target = this.target;
-        var bones = this.bones;
-        switch (bones.length)
-        {
-        case 1:
-            spine.IkConstraint.apply1(bones[0], target.worldX, target.worldY, this.mix);
-            break;
-        case 2:
-            spine.IkConstraint.apply2(bones[0], bones[1], target.worldX, target.worldY, this.bendDirection, this.mix);
-            break;
-        }
-    }
-};
-/** Adjusts the bone rotation so the tip is as close to the target position as possible. The target is specified in the world
- * coordinate system. */
-spine.IkConstraint.apply1 = function (bone, targetX, targetY, alpha)
-{
-    var parentRotation = (!bone.data.inheritRotation || !bone.parent) ? 0 : bone.parent.worldRotation;
-    var rotation = bone.rotation;
-    var rotationIK = Math.atan2(targetY - bone.worldY, targetX - bone.worldX) * spine.radDeg - parentRotation;
-    bone.rotationIK = rotation + (rotationIK - rotation) * alpha;
-};
-/** Adjusts the parent and child bone rotations so the tip of the child is as close to the target position as possible. The
- * target is specified in the world coordinate system.
- * @param child Any descendant bone of the parent. */
-spine.IkConstraint.apply2 = function (parent, child, targetX, targetY, bendDirection, alpha)
-{
-    var childRotation = child.rotation, parentRotation = parent.rotation;
-    if (!alpha)
-    {
-        child.rotationIK = childRotation;
-        parent.rotationIK = parentRotation;
-        return;
-    }
-    var positionX, positionY, tempPosition = spine.temp;
-    var parentParent = parent.parent;
-    if (parentParent)
-    {
-        tempPosition[0] = targetX;
-        tempPosition[1] = targetY;
-        parentParent.worldToLocal(tempPosition);
-        targetX = (tempPosition[0] - parent.x) * parentParent.worldScaleX;
-        targetY = (tempPosition[1] - parent.y) * parentParent.worldScaleY;
-    } else {
-        targetX -= parent.x;
-        targetY -= parent.y;
-    }
-    if (child.parent == parent)
-    {
-        positionX = child.x;
-        positionY = child.y;
-    } else {
-        tempPosition[0] = child.x;
-        tempPosition[1] = child.y;
-        child.parent.localToWorld(tempPosition);
-        parent.worldToLocal(tempPosition);
-        positionX = tempPosition[0];
-        positionY = tempPosition[1];
-    }
-    var childX = positionX * parent.worldScaleX, childY = positionY * parent.worldScaleY;
-    var offset = Math.atan2(childY, childX);
-    var len1 = Math.sqrt(childX * childX + childY * childY), len2 = child.data.length * child.worldScaleX;
-    // Based on code by Ryan Juckett with permission: Copyright (c) 2008-2009 Ryan Juckett, http://www.ryanjuckett.com/
-    var cosDenom = 2 * len1 * len2;
-    if (cosDenom < 0.0001)
-    {
-        child.rotationIK = childRotation + (Math.atan2(targetY, targetX) * spine.radDeg - parentRotation - childRotation) * alpha;
-        return;
-    }
-    var cos = (targetX * targetX + targetY * targetY - len1 * len1 - len2 * len2) / cosDenom;
-    if (cos < -1)
-        cos = -1;
-    else if (cos > 1)
-        cos = 1;
-    var childAngle = Math.acos(cos) * bendDirection;
-    var adjacent = len1 + len2 * cos, opposite = len2 * Math.sin(childAngle);
-    var parentAngle = Math.atan2(targetY * adjacent - targetX * opposite, targetX * adjacent + targetY * opposite);
-    var rotation = (parentAngle - offset) * spine.radDeg - parentRotation;
-    if (rotation > 180)
-        rotation -= 360;
-    else if (rotation < -180) //
-        rotation += 360;
-    parent.rotationIK = parentRotation + rotation * alpha;
-    rotation = (childAngle + offset) * spine.radDeg - childRotation;
-    if (rotation > 180)
-        rotation -= 360;
-    else if (rotation < -180) //
-        rotation += 360;
-    child.rotationIK = childRotation + (rotation + parent.worldRotation - child.parent.worldRotation) * alpha;
-};
-
-spine.Skin = function (name)
-{
-    this.name = name;
-    this.attachments = {};
-};
-spine.Skin.prototype = {
-    addAttachment: function (slotIndex, name, attachment)
-    {
-        this.attachments[slotIndex + ":" + name] = attachment;
-    },
-    getAttachment: function (slotIndex, name)
-    {
-        return this.attachments[slotIndex + ":" + name];
-    },
-    _attachAll: function (skeleton, oldSkin)
-    {
-        for (var key in oldSkin.attachments)
-        {
-            var colon = key.indexOf(":");
-            var slotIndex = parseInt(key.substring(0, colon));
-            var name = key.substring(colon + 1);
-            var slot = skeleton.slots[slotIndex];
-            if (slot.attachment && slot.attachment.name == name)
-            {
-                var attachment = this.getAttachment(slotIndex, name);
-                if (attachment) slot.setAttachment(attachment);
-            }
-        }
-    }
-};
-
-spine.Animation = function (name, timelines, duration)
-{
-    this.name = name;
-    this.timelines = timelines;
-    this.duration = duration;
-};
-spine.Animation.prototype = {
-    apply: function (skeleton, lastTime, time, loop, events)
-    {
-        if (loop && this.duration != 0)
-        {
-            time %= this.duration;
-            lastTime %= this.duration;
-        }
-        var timelines = this.timelines;
-        for (var i = 0, n = timelines.length; i < n; i++)
-            timelines[i].apply(skeleton, lastTime, time, events, 1);
-    },
-    mix: function (skeleton, lastTime, time, loop, events, alpha)
-    {
-        if (loop && this.duration != 0)
-        {
-            time %= this.duration;
-            lastTime %= this.duration;
-        }
-        var timelines = this.timelines;
-        for (var i = 0, n = timelines.length; i < n; i++)
-            timelines[i].apply(skeleton, lastTime, time, events, alpha);
-    }
-};
-spine.Animation.binarySearch = function (values, target, step)
-{
-    var low = 0;
-    var high = Math.floor(values.length / step) - 2;
-    if (!high) return step;
-    var current = high >>> 1;
-    while (true)
-    {
-        if (values[(current + 1) * step] <= target)
-            low = current + 1;
-        else
-            high = current;
-        if (low == high) return (low + 1) * step;
-        current = (low + high) >>> 1;
-    }
-};
-spine.Animation.binarySearch1 = function (values, target)
-{
-    var low = 0;
-    var high = values.length - 2;
-    if (!high) return 1;
-    var current = high >>> 1;
-    while (true)
-    {
-        if (values[current + 1] <= target)
-            low = current + 1;
-        else
-            high = current;
-        if (low == high) return low + 1;
-        current = (low + high) >>> 1;
-    }
-};
-spine.Animation.linearSearch = function (values, target, step)
-{
-    for (var i = 0, last = values.length - step; i <= last; i += step)
-        if (values[i] > target) return i;
-    return -1;
-};
-
-spine.Curves = function (frameCount)
-{
-    this.curves = []; // type, x, y, ...
-    //this.curves.length = (frameCount - 1) * 19/*BEZIER_SIZE*/;
-};
-spine.Curves.prototype = {
-    setLinear: function (frameIndex)
-    {
-        this.curves[frameIndex * 19/*BEZIER_SIZE*/] = 0/*LINEAR*/;
-    },
-    setStepped: function (frameIndex)
-    {
-        this.curves[frameIndex * 19/*BEZIER_SIZE*/] = 1/*STEPPED*/;
-    },
-    /** Sets the control handle positions for an interpolation bezier curve used to transition from this keyframe to the next.
-     * cx1 and cx2 are from 0 to 1, representing the percent of time between the two keyframes. cy1 and cy2 are the percent of
-     * the difference between the keyframe's values. */
-    setCurve: function (frameIndex, cx1, cy1, cx2, cy2)
-    {
-        var subdiv1 = 1 / 10/*BEZIER_SEGMENTS*/, subdiv2 = subdiv1 * subdiv1, subdiv3 = subdiv2 * subdiv1;
-        var pre1 = 3 * subdiv1, pre2 = 3 * subdiv2, pre4 = 6 * subdiv2, pre5 = 6 * subdiv3;
-        var tmp1x = -cx1 * 2 + cx2, tmp1y = -cy1 * 2 + cy2, tmp2x = (cx1 - cx2) * 3 + 1, tmp2y = (cy1 - cy2) * 3 + 1;
-        var dfx = cx1 * pre1 + tmp1x * pre2 + tmp2x * subdiv3, dfy = cy1 * pre1 + tmp1y * pre2 + tmp2y * subdiv3;
-        var ddfx = tmp1x * pre4 + tmp2x * pre5, ddfy = tmp1y * pre4 + tmp2y * pre5;
-        var dddfx = tmp2x * pre5, dddfy = tmp2y * pre5;
-
-        var i = frameIndex * 19/*BEZIER_SIZE*/;
-        var curves = this.curves;
-        curves[i++] = 2/*BEZIER*/;
-
-        var x = dfx, y = dfy;
-        for (var n = i + 19/*BEZIER_SIZE*/ - 1; i < n; i += 2)
-        {
-            curves[i] = x;
-            curves[i + 1] = y;
-            dfx += ddfx;
-            dfy += ddfy;
-            ddfx += dddfx;
-            ddfy += dddfy;
-            x += dfx;
-            y += dfy;
-        }
-    },
-    getCurvePercent: function (frameIndex, percent)
-    {
-        percent = percent < 0 ? 0 : (percent > 1 ? 1 : percent);
-        var curves = this.curves;
-        var i = frameIndex * 19/*BEZIER_SIZE*/;
-        var type = curves[i];
-        if (type === 0/*LINEAR*/) return percent;
-        if (type == 1/*STEPPED*/) return 0;
-        i++;
-        var x = 0;
-        for (var start = i, n = i + 19/*BEZIER_SIZE*/ - 1; i < n; i += 2)
-        {
-            x = curves[i];
-            if (x >= percent)
-            {
-                var prevX, prevY;
-                if (i == start)
-                {
-                    prevX = 0;
-                    prevY = 0;
-                } else {
-                    prevX = curves[i - 2];
-                    prevY = curves[i - 1];
-                }
-                return prevY + (curves[i + 1] - prevY) * (percent - prevX) / (x - prevX);
-            }
-        }
-        var y = curves[i - 1];
-        return y + (1 - y) * (percent - x) / (1 - x); // Last point is 1,1.
-    }
-};
-
-spine.RotateTimeline = function (frameCount)
-{
-    this.curves = new spine.Curves(frameCount);
-    this.frames = []; // time, angle, ...
-    this.frames.length = frameCount * 2;
-};
-spine.RotateTimeline.prototype = {
-    boneIndex: 0,
-    getFrameCount: function ()
-    {
-        return this.frames.length / 2;
-    },
-    setFrame: function (frameIndex, time, angle)
-    {
-        frameIndex *= 2;
-        this.frames[frameIndex] = time;
-        this.frames[frameIndex + 1] = angle;
-    },
-    apply: function (skeleton, lastTime, time, firedEvents, alpha)
-    {
-        var frames = this.frames;
-        if (time < frames[0]) return; // Time is before first frame.
-
-        var bone = skeleton.bones[this.boneIndex];
-
-        if (time >= frames[frames.length - 2])
-        { // Time is after last frame.
-            var amount = bone.data.rotation + frames[frames.length - 1] - bone.rotation;
-            while (amount > 180)
-                amount -= 360;
-            while (amount < -180)
-                amount += 360;
-            bone.rotation += amount * alpha;
-            return;
-        }
-
-        // Interpolate between the previous frame and the current frame.
-        var frameIndex = spine.Animation.binarySearch(frames, time, 2);
-        var prevFrameValue = frames[frameIndex - 1];
-        var frameTime = frames[frameIndex];
-        var percent = 1 - (time - frameTime) / (frames[frameIndex - 2/*PREV_FRAME_TIME*/] - frameTime);
-        percent = this.curves.getCurvePercent(frameIndex / 2 - 1, percent);
-
-        var amount = frames[frameIndex + 1/*FRAME_VALUE*/] - prevFrameValue;
-        while (amount > 180)
-            amount -= 360;
-        while (amount < -180)
-            amount += 360;
-        amount = bone.data.rotation + (prevFrameValue + amount * percent) - bone.rotation;
-        while (amount > 180)
-            amount -= 360;
-        while (amount < -180)
-            amount += 360;
-        bone.rotation += amount * alpha;
-    }
-};
-
-spine.TranslateTimeline = function (frameCount)
-{
-    this.curves = new spine.Curves(frameCount);
-    this.frames = []; // time, x, y, ...
-    this.frames.length = frameCount * 3;
-};
-spine.TranslateTimeline.prototype = {
-    boneIndex: 0,
-    getFrameCount: function ()
-    {
-        return this.frames.length / 3;
-    },
-    setFrame: function (frameIndex, time, x, y)
-    {
-        frameIndex *= 3;
-        this.frames[frameIndex] = time;
-        this.frames[frameIndex + 1] = x;
-        this.frames[frameIndex + 2] = y;
-    },
-    apply: function (skeleton, lastTime, time, firedEvents, alpha)
-    {
-        var frames = this.frames;
-        if (time < frames[0]) return; // Time is before first frame.
-
-        var bone = skeleton.bones[this.boneIndex];
-
-        if (time >= frames[frames.length - 3])
-        { // Time is after last frame.
-            bone.x += (bone.data.x + frames[frames.length - 2] - bone.x) * alpha;
-            bone.y += (bone.data.y + frames[frames.length - 1] - bone.y) * alpha;
-            return;
-        }
-
-        // Interpolate between the previous frame and the current frame.
-        var frameIndex = spine.Animation.binarySearch(frames, time, 3);
-        var prevFrameX = frames[frameIndex - 2];
-        var prevFrameY = frames[frameIndex - 1];
-        var frameTime = frames[frameIndex];
-        var percent = 1 - (time - frameTime) / (frames[frameIndex + -3/*PREV_FRAME_TIME*/] - frameTime);
-        percent = this.curves.getCurvePercent(frameIndex / 3 - 1, percent);
-
-        bone.x += (bone.data.x + prevFrameX + (frames[frameIndex + 1/*FRAME_X*/] - prevFrameX) * percent - bone.x) * alpha;
-        bone.y += (bone.data.y + prevFrameY + (frames[frameIndex + 2/*FRAME_Y*/] - prevFrameY) * percent - bone.y) * alpha;
-    }
-};
-
-spine.ScaleTimeline = function (frameCount)
-{
-    this.curves = new spine.Curves(frameCount);
-    this.frames = []; // time, x, y, ...
-    this.frames.length = frameCount * 3;
-};
-spine.ScaleTimeline.prototype = {
-    boneIndex: 0,
-    getFrameCount: function ()
-    {
-        return this.frames.length / 3;
-    },
-    setFrame: function (frameIndex, time, x, y)
-    {
-        frameIndex *= 3;
-        this.frames[frameIndex] = time;
-        this.frames[frameIndex + 1] = x;
-        this.frames[frameIndex + 2] = y;
-    },
-    apply: function (skeleton, lastTime, time, firedEvents, alpha)
-    {
-        var frames = this.frames;
-        if (time < frames[0]) return; // Time is before first frame.
-
-        var bone = skeleton.bones[this.boneIndex];
-
-        if (time >= frames[frames.length - 3])
-        { // Time is after last frame.
-            bone.scaleX += (bone.data.scaleX * frames[frames.length - 2] - bone.scaleX) * alpha;
-            bone.scaleY += (bone.data.scaleY * frames[frames.length - 1] - bone.scaleY) * alpha;
-            return;
-        }
-
-        // Interpolate between the previous frame and the current frame.
-        var frameIndex = spine.Animation.binarySearch(frames, time, 3);
-        var prevFrameX = frames[frameIndex - 2];
-        var prevFrameY = frames[frameIndex - 1];
-        var frameTime = frames[frameIndex];
-        var percent = 1 - (time - frameTime) / (frames[frameIndex + -3/*PREV_FRAME_TIME*/] - frameTime);
-        percent = this.curves.getCurvePercent(frameIndex / 3 - 1, percent);
-
-        bone.scaleX += (bone.data.scaleX * (prevFrameX + (frames[frameIndex + 1/*FRAME_X*/] - prevFrameX) * percent) - bone.scaleX) * alpha;
-        bone.scaleY += (bone.data.scaleY * (prevFrameY + (frames[frameIndex + 2/*FRAME_Y*/] - prevFrameY) * percent) - bone.scaleY) * alpha;
-    }
-};
-
-spine.ColorTimeline = function (frameCount)
-{
-    this.curves = new spine.Curves(frameCount);
-    this.frames = []; // time, r, g, b, a, ...
-    this.frames.length = frameCount * 5;
-};
-spine.ColorTimeline.prototype = {
-    slotIndex: 0,
-    getFrameCount: function ()
-    {
-        return this.frames.length / 5;
-    },
-    setFrame: function (frameIndex, time, r, g, b, a)
-    {
-        frameIndex *= 5;
-        this.frames[frameIndex] = time;
-        this.frames[frameIndex + 1] = r;
-        this.frames[frameIndex + 2] = g;
-        this.frames[frameIndex + 3] = b;
-        this.frames[frameIndex + 4] = a;
-    },
-    apply: function (skeleton, lastTime, time, firedEvents, alpha)
-    {
-        var frames = this.frames;
-        if (time < frames[0]) return; // Time is before first frame.
-
-        var r, g, b, a;
-        if (time >= frames[frames.length - 5])
-        {
-            // Time is after last frame.
-            var i = frames.length - 1;
-            r = frames[i - 3];
-            g = frames[i - 2];
-            b = frames[i - 1];
-            a = frames[i];
-        } else {
-            // Interpolate between the previous frame and the current frame.
-            var frameIndex = spine.Animation.binarySearch(frames, time, 5);
-            var prevFrameR = frames[frameIndex - 4];
-            var prevFrameG = frames[frameIndex - 3];
-            var prevFrameB = frames[frameIndex - 2];
-            var prevFrameA = frames[frameIndex - 1];
-            var frameTime = frames[frameIndex];
-            var percent = 1 - (time - frameTime) / (frames[frameIndex - 5/*PREV_FRAME_TIME*/] - frameTime);
-            percent = this.curves.getCurvePercent(frameIndex / 5 - 1, percent);
-
-            r = prevFrameR + (frames[frameIndex + 1/*FRAME_R*/] - prevFrameR) * percent;
-            g = prevFrameG + (frames[frameIndex + 2/*FRAME_G*/] - prevFrameG) * percent;
-            b = prevFrameB + (frames[frameIndex + 3/*FRAME_B*/] - prevFrameB) * percent;
-            a = prevFrameA + (frames[frameIndex + 4/*FRAME_A*/] - prevFrameA) * percent;
-        }
-        var slot = skeleton.slots[this.slotIndex];
-        if (alpha < 1)
-        {
-            slot.r += (r - slot.r) * alpha;
-            slot.g += (g - slot.g) * alpha;
-            slot.b += (b - slot.b) * alpha;
-            slot.a += (a - slot.a) * alpha;
-        } else {
-            slot.r = r;
-            slot.g = g;
-            slot.b = b;
-            slot.a = a;
-        }
-    }
-};
-
-spine.AttachmentTimeline = function (frameCount)
-{
-    this.curves = new spine.Curves(frameCount);
-    this.frames = []; // time, ...
-    this.frames.length = frameCount;
-    this.attachmentNames = [];
-    this.attachmentNames.length = frameCount;
-};
-spine.AttachmentTimeline.prototype = {
-    slotIndex: 0,
-    getFrameCount: function ()
-    {
-        return this.frames.length;
-    },
-    setFrame: function (frameIndex, time, attachmentName)
-    {
-        this.frames[frameIndex] = time;
-        this.attachmentNames[frameIndex] = attachmentName;
-    },
-    apply: function (skeleton, lastTime, time, firedEvents, alpha)
-    {
-        var frames = this.frames;
-        if (time < frames[0])
-        {
-            if (lastTime > time) this.apply(skeleton, lastTime, Number.MAX_VALUE, null, 0);
-            return;
-        } else if (lastTime > time) //
-            lastTime = -1;
-
-        var frameIndex = time >= frames[frames.length - 1] ? frames.length - 1 : spine.Animation.binarySearch1(frames, time) - 1;
-        if (frames[frameIndex] < lastTime) return;
-
-        var attachmentName = this.attachmentNames[frameIndex];
-        skeleton.slots[this.slotIndex].setAttachment(
-            !attachmentName ? null : skeleton.getAttachmentBySlotIndex(this.slotIndex, attachmentName));
-    }
-};
-
-spine.EventTimeline = function (frameCount)
-{
-    this.frames = []; // time, ...
-    this.frames.length = frameCount;
-    this.events = [];
-    this.events.length = frameCount;
-};
-spine.EventTimeline.prototype = {
-    getFrameCount: function ()
-    {
-        return this.frames.length;
-    },
-    setFrame: function (frameIndex, time, event)
-    {
-        this.frames[frameIndex] = time;
-        this.events[frameIndex] = event;
-    },
-    /** Fires events for frames > lastTime and <= time. */
-    apply: function (skeleton, lastTime, time, firedEvents, alpha)
-    {
-        if (!firedEvents) return;
-
-        var frames = this.frames;
-        var frameCount = frames.length;
-
-        if (lastTime > time)
-        { // Fire events after last time for looped animations.
-            this.apply(skeleton, lastTime, Number.MAX_VALUE, firedEvents, alpha);
-            lastTime = -1;
-        } else if (lastTime >= frames[frameCount - 1]) // Last time is after last frame.
-            return;
-        if (time < frames[0]) return; // Time is before first frame.
-
-        var frameIndex;
-        if (lastTime < frames[0])
-            frameIndex = 0;
-        else
-        {
-            frameIndex = spine.Animation.binarySearch1(frames, lastTime);
-            var frame = frames[frameIndex];
-            while (frameIndex > 0)
-            { // Fire multiple events with the same frame.
-                if (frames[frameIndex - 1] != frame) break;
-                frameIndex--;
-            }
-        }
-        var events = this.events;
-        for (; frameIndex < frameCount && time >= frames[frameIndex]; frameIndex++)
-            firedEvents.push(events[frameIndex]);
-    }
-};
-
-spine.DrawOrderTimeline = function (frameCount)
-{
-    this.frames = []; // time, ...
-    this.frames.length = frameCount;
-    this.drawOrders = [];
-    this.drawOrders.length = frameCount;
-};
-spine.DrawOrderTimeline.prototype = {
-    getFrameCount: function ()
-    {
-        return this.frames.length;
-    },
-    setFrame: function (frameIndex, time, drawOrder)
-    {
-        this.frames[frameIndex] = time;
-        this.drawOrders[frameIndex] = drawOrder;
-    },
-    apply: function (skeleton, lastTime, time, firedEvents, alpha)
-    {
-        var frames = this.frames;
-        if (time < frames[0]) return; // Time is before first frame.
-
-        var frameIndex;
-        if (time >= frames[frames.length - 1]) // Time is after last frame.
-            frameIndex = frames.length - 1;
-        else
-            frameIndex = spine.Animation.binarySearch1(frames, time) - 1;
-
-        var drawOrder = skeleton.drawOrder;
-        var slots = skeleton.slots;
-        var drawOrderToSetupIndex = this.drawOrders[frameIndex];
-        if (drawOrderToSetupIndex)
-        {
-            for (var i = 0, n = drawOrderToSetupIndex.length; i < n; i++)
-            {
-                drawOrder[i] = drawOrderToSetupIndex[i];
-            }
-        }
-
-    }
-};
-
-spine.FfdTimeline = function (frameCount)
-{
-    this.curves = new spine.Curves(frameCount);
-    this.frames = [];
-    this.frames.length = frameCount;
-    this.frameVertices = [];
-    this.frameVertices.length = frameCount;
-};
-spine.FfdTimeline.prototype = {
-    slotIndex: 0,
-    attachment: 0,
-    getFrameCount: function ()
-    {
-        return this.frames.length;
-    },
-    setFrame: function (frameIndex, time, vertices)
-    {
-        this.frames[frameIndex] = time;
-        this.frameVertices[frameIndex] = vertices;
-    },
-    apply: function (skeleton, lastTime, time, firedEvents, alpha)
-    {
-        var slot = skeleton.slots[this.slotIndex];
-        if (slot.attachment != this.attachment) return;
-
-        var frames = this.frames;
-        if (time < frames[0]) return; // Time is before first frame.
-
-        var frameVertices = this.frameVertices;
-        var vertexCount = frameVertices[0].length;
-
-        var vertices = slot.attachmentVertices;
-        if (vertices.length != vertexCount) alpha = 1;
-        vertices.length = vertexCount;
-
-        if (time >= frames[frames.length - 1])
-        { // Time is after last frame.
-            var lastVertices = frameVertices[frames.length - 1];
-            if (alpha < 1)
-            {
-                for (var i = 0; i < vertexCount; i++)
-                    vertices[i] += (lastVertices[i] - vertices[i]) * alpha;
-            } else {
-                for (var i = 0; i < vertexCount; i++)
-                    vertices[i] = lastVertices[i];
-            }
-            return;
-        }
-
-        // Interpolate between the previous frame and the current frame.
-        var frameIndex = spine.Animation.binarySearch1(frames, time);
-        var frameTime = frames[frameIndex];
-        var percent = 1 - (time - frameTime) / (frames[frameIndex - 1] - frameTime);
-        percent = this.curves.getCurvePercent(frameIndex - 1, percent < 0 ? 0 : (percent > 1 ? 1 : percent));
-
-        var prevVertices = frameVertices[frameIndex - 1];
-        var nextVertices = frameVertices[frameIndex];
-
-        if (alpha < 1)
-        {
-            for (var i = 0; i < vertexCount; i++)
-            {
-                var prev = prevVertices[i];
-                vertices[i] += (prev + (nextVertices[i] - prev) * percent - vertices[i]) * alpha;
-            }
-        } else {
-            for (var i = 0; i < vertexCount; i++)
-            {
-                var prev = prevVertices[i];
-                vertices[i] = prev + (nextVertices[i] - prev) * percent;
-            }
-        }
-    }
-};
-
-spine.IkConstraintTimeline = function (frameCount)
-{
-    this.curves = new spine.Curves(frameCount);
-    this.frames = []; // time, mix, bendDirection, ...
-    this.frames.length = frameCount * 3;
-};
-spine.IkConstraintTimeline.prototype = {
-    ikConstraintIndex: 0,
-    getFrameCount: function ()
-    {
-        return this.frames.length / 3;
-    },
-    setFrame: function (frameIndex, time, mix, bendDirection)
-    {
-        frameIndex *= 3;
-        this.frames[frameIndex] = time;
-        this.frames[frameIndex + 1] = mix;
-        this.frames[frameIndex + 2] = bendDirection;
-    },
-    apply: function (skeleton, lastTime, time, firedEvents, alpha)
-    {
-        var frames = this.frames;
-        if (time < frames[0]) return; // Time is before first frame.
-
-        var ikConstraint = skeleton.ikConstraints[this.ikConstraintIndex];
-
-        if (time >= frames[frames.length - 3])
-        { // Time is after last frame.
-            ikConstraint.mix += (frames[frames.length - 2] - ikConstraint.mix) * alpha;
-            ikConstraint.bendDirection = frames[frames.length - 1];
-            return;
-        }
-
-        // Interpolate between the previous frame and the current frame.
-        var frameIndex = spine.Animation.binarySearch(frames, time, 3);
-        var prevFrameMix = frames[frameIndex + -2/*PREV_FRAME_MIX*/];
-        var frameTime = frames[frameIndex];
-        var percent = 1 - (time - frameTime) / (frames[frameIndex + -3/*PREV_FRAME_TIME*/] - frameTime);
-        percent = this.curves.getCurvePercent(frameIndex / 3 - 1, percent);
-
-        var mix = prevFrameMix + (frames[frameIndex + 1/*FRAME_MIX*/] - prevFrameMix) * percent;
-        ikConstraint.mix += (mix - ikConstraint.mix) * alpha;
-        ikConstraint.bendDirection = frames[frameIndex + -1/*PREV_FRAME_BEND_DIRECTION*/];
-    }
-};
-
-spine.FlipXTimeline = function (frameCount)
-{
-    this.curves = new spine.Curves(frameCount);
-    this.frames = []; // time, flip, ...
-    this.frames.length = frameCount * 2;
-};
-spine.FlipXTimeline.prototype = {
-    boneIndex: 0,
-    getFrameCount: function ()
-    {
-        return this.frames.length / 2;
-    },
-    setFrame: function (frameIndex, time, flip)
-    {
-        frameIndex *= 2;
-        this.frames[frameIndex] = time;
-        this.frames[frameIndex + 1] = flip ? 1 : 0;
-    },
-    apply: function (skeleton, lastTime, time, firedEvents, alpha)
-    {
-        var frames = this.frames;
-        if (time < frames[0])
-        {
-            if (lastTime > time) this.apply(skeleton, lastTime, Number.MAX_VALUE, null, 0);
-            return;
-        } else if (lastTime > time) //
-            lastTime = -1;
-        var frameIndex = (time >= frames[frames.length - 2] ? frames.length : spine.Animation.binarySearch(frames, time, 2)) - 2;
-        if (frames[frameIndex] < lastTime) return;
-        skeleton.bones[this.boneIndex].flipX = frames[frameIndex + 1] != 0;
-    }
-};
-
-spine.FlipYTimeline = function (frameCount)
-{
-    this.curves = new spine.Curves(frameCount);
-    this.frames = []; // time, flip, ...
-    this.frames.length = frameCount * 2;
-};
-spine.FlipYTimeline.prototype = {
-    boneIndex: 0,
-    getFrameCount: function ()
-    {
-        return this.frames.length / 2;
-    },
-    setFrame: function (frameIndex, time, flip)
-    {
-        frameIndex *= 2;
-        this.frames[frameIndex] = time;
-        this.frames[frameIndex + 1] = flip ? 1 : 0;
-    },
-    apply: function (skeleton, lastTime, time, firedEvents, alpha)
-    {
-        var frames = this.frames;
-        if (time < frames[0])
-        {
-            if (lastTime > time) this.apply(skeleton, lastTime, Number.MAX_VALUE, null, 0);
-            return;
-        } else if (lastTime > time) //
-            lastTime = -1;
-        var frameIndex = (time >= frames[frames.length - 2] ? frames.length : spine.Animation.binarySearch(frames, time, 2)) - 2;
-        if (frames[frameIndex] < lastTime) return;
-        skeleton.bones[this.boneIndex].flipY = frames[frameIndex + 1] != 0;
-    }
-};
-
-spine.SkeletonData = function ()
-{
-    this.bones = [];
-    this.slots = [];
-    this.skins = [];
-    this.events = [];
-    this.animations = [];
-    this.ikConstraints = [];
-};
-spine.SkeletonData.prototype = {
-    name: null,
-    defaultSkin: null,
-    width: 0, height: 0,
-    version: null, hash: null,
-    /** @return May be null. */
-    findBone: function (boneName)
-    {
-        var bones = this.bones;
-        for (var i = 0, n = bones.length; i < n; i++)
-            if (bones[i].name == boneName) return bones[i];
-        return null;
-    },
-    /** @return -1 if the bone was not found. */
-    findBoneIndex: function (boneName)
-    {
-        var bones = this.bones;
-        for (var i = 0, n = bones.length; i < n; i++)
-            if (bones[i].name == boneName) return i;
-        return -1;
-    },
-    /** @return May be null. */
-    findSlot: function (slotName)
-    {
-        var slots = this.slots;
-        for (var i = 0, n = slots.length; i < n; i++)
-        {
-            if (slots[i].name == slotName) return slot[i];
-        }
-        return null;
-    },
-    /** @return -1 if the bone was not found. */
-    findSlotIndex: function (slotName)
-    {
-        var slots = this.slots;
-        for (var i = 0, n = slots.length; i < n; i++)
-            if (slots[i].name == slotName) return i;
-        return -1;
-    },
-    /** @return May be null. */
-    findSkin: function (skinName)
-    {
-        var skins = this.skins;
-        for (var i = 0, n = skins.length; i < n; i++)
-            if (skins[i].name == skinName) return skins[i];
-        return null;
-    },
-    /** @return May be null. */
-    findEvent: function (eventName)
-    {
-        var events = this.events;
-        for (var i = 0, n = events.length; i < n; i++)
-            if (events[i].name == eventName) return events[i];
-        return null;
-    },
-    /** @return May be null. */
-    findAnimation: function (animationName)
-    {
-        var animations = this.animations;
-        for (var i = 0, n = animations.length; i < n; i++)
-            if (animations[i].name == animationName) return animations[i];
-        return null;
-    },
-    /** @return May be null. */
-    findIkConstraint: function (ikConstraintName)
-    {
-        var ikConstraints = this.ikConstraints;
-        for (var i = 0, n = ikConstraints.length; i < n; i++)
-            if (ikConstraints[i].name == ikConstraintName) return ikConstraints[i];
-        return null;
-    }
-};
-
-spine.Skeleton = function (skeletonData)
-{
-    this.data = skeletonData;
-
-    this.bones = [];
-    for (var i = 0, n = skeletonData.bones.length; i < n; i++)
-    {
-        var boneData = skeletonData.bones[i];
-        var parent = !boneData.parent ? null : this.bones[skeletonData.bones.indexOf(boneData.parent)];
-        this.bones.push(new spine.Bone(boneData, this, parent));
-    }
-
-    this.slots = [];
-    this.drawOrder = [];
-    for (var i = 0, n = skeletonData.slots.length; i < n; i++)
-    {
-        var slotData = skeletonData.slots[i];
-        var bone = this.bones[skeletonData.bones.indexOf(slotData.boneData)];
-        var slot = new spine.Slot(slotData, bone);
-        this.slots.push(slot);
-        this.drawOrder.push(i);
-    }
-
-    this.ikConstraints = [];
-    for (var i = 0, n = skeletonData.ikConstraints.length; i < n; i++)
-        this.ikConstraints.push(new spine.IkConstraint(skeletonData.ikConstraints[i], this));
-
-    this.boneCache = [];
-    this.updateCache();
-};
-spine.Skeleton.prototype = {
-    x: 0, y: 0,
-    skin: null,
-    r: 1, g: 1, b: 1, a: 1,
-    time: 0,
-    flipX: false, flipY: false,
-    /** Caches information about bones and IK constraints. Must be called if bones or IK constraints are added or removed. */
-    updateCache: function ()
-    {
-        var ikConstraints = this.ikConstraints;
-        var ikConstraintsCount = ikConstraints.length;
-
-        var arrayCount = ikConstraintsCount + 1;
-        var boneCache = this.boneCache;
-        if (boneCache.length > arrayCount) boneCache.length = arrayCount;
-        for (var i = 0, n = boneCache.length; i < n; i++)
-            boneCache[i].length = 0;
-        while (boneCache.length < arrayCount)
-            boneCache[boneCache.length] = [];
-
-        var nonIkBones = boneCache[0];
-        var bones = this.bones;
-
-        outer:
-        for (var i = 0, n = bones.length; i < n; i++)
-        {
-            var bone = bones[i];
-            var current = bone;
-            do {
-                for (var ii = 0; ii < ikConstraintsCount; ii++)
-                {
-                    var ikConstraint = ikConstraints[ii];
-                    var parent = ikConstraint.bones[0];
-                    var child= ikConstraint.bones[ikConstraint.bones.length - 1];
-                    while (true)
-                    {
-                        if (current == child)
-                        {
-                            boneCache[ii].push(bone);
-                            boneCache[ii + 1].push(bone);
-                            continue outer;
+                while (running < limit && started < arr.length) {
+                    started += 1;
+                    running += 1;
+                    iterator(arr[started - 1], function (err) {
+                        if (err) {
+                            callback(err);
+                            callback = function () {};
                         }
-                        if (child == parent) break;
-                        child = child.parent;
-                    }
-                }
-                current = current.parent;
-            } while (current);
-            nonIkBones[nonIkBones.length] = bone;
-        }
-    },
-    /** Updates the world transform for each bone. */
-    updateWorldTransform: function ()
-    {
-        var bones = this.bones;
-        for (var i = 0, n = bones.length; i < n; i++)
-        {
-            var bone = bones[i];
-            bone.rotationIK = bone.rotation;
-        }
-        var i = 0, last = this.boneCache.length - 1;
-        while (true)
-        {
-            var cacheBones = this.boneCache[i];
-            for (var ii = 0, nn = cacheBones.length; ii < nn; ii++)
-                cacheBones[ii].updateWorldTransform();
-            if (i == last) break;
-            this.ikConstraints[i].apply();
-            i++;
-        }
-    },
-    /** Sets the bones and slots to their setup pose values. */
-    setToSetupPose: function ()
-    {
-        this.setBonesToSetupPose();
-        this.setSlotsToSetupPose();
-    },
-    setBonesToSetupPose: function ()
-    {
-        var bones = this.bones;
-        for (var i = 0, n = bones.length; i < n; i++)
-            bones[i].setToSetupPose();
-
-        var ikConstraints = this.ikConstraints;
-        for (var i = 0, n = ikConstraints.length; i < n; i++)
-        {
-            var ikConstraint = ikConstraints[i];
-            ikConstraint.bendDirection = ikConstraint.data.bendDirection;
-            ikConstraint.mix = ikConstraint.data.mix;
-        }
-    },
-    setSlotsToSetupPose: function ()
-    {
-        var slots = this.slots;
-        for (var i = 0, n = slots.length; i < n; i++)
-        {
-            slots[i].setToSetupPose(i);
-        }
-
-        this.resetDrawOrder();
-    },
-    /** @return May return null. */
-    getRootBone: function ()
-    {
-        return this.bones.length ? this.bones[0] : null;
-    },
-    /** @return May be null. */
-    findBone: function (boneName)
-    {
-        var bones = this.bones;
-        for (var i = 0, n = bones.length; i < n; i++)
-            if (bones[i].data.name == boneName) return bones[i];
-        return null;
-    },
-    /** @return -1 if the bone was not found. */
-    findBoneIndex: function (boneName)
-    {
-        var bones = this.bones;
-        for (var i = 0, n = bones.length; i < n; i++)
-            if (bones[i].data.name == boneName) return i;
-        return -1;
-    },
-    /** @return May be null. */
-    findSlot: function (slotName)
-    {
-        var slots = this.slots;
-        for (var i = 0, n = slots.length; i < n; i++)
-            if (slots[i].data.name == slotName) return slots[i];
-        return null;
-    },
-    /** @return -1 if the bone was not found. */
-    findSlotIndex: function (slotName)
-    {
-        var slots = this.slots;
-        for (var i = 0, n = slots.length; i < n; i++)
-            if (slots[i].data.name == slotName) return i;
-        return -1;
-    },
-    setSkinByName: function (skinName)
-    {
-        var skin = this.data.findSkin(skinName);
-        if (!skin) throw "Skin not found: " + skinName;
-        this.setSkin(skin);
-    },
-    /** Sets the skin used to look up attachments before looking in the {@link SkeletonData#getDefaultSkin() default skin}.
-     * Attachments from the new skin are attached if the corresponding attachment from the old skin was attached. If there was
-     * no old skin, each slot's setup mode attachment is attached from the new skin.
-     * @param newSkin May be null. */
-    setSkin: function (newSkin)
-    {
-        if (newSkin)
-        {
-            if (this.skin)
-                newSkin._attachAll(this, this.skin);
-            else
-            {
-                var slots = this.slots;
-                for (var i = 0, n = slots.length; i < n; i++)
-                {
-                    var slot = slots[i];
-                    var name = slot.data.attachmentName;
-                    if (name)
-                    {
-                        var attachment = newSkin.getAttachment(i, name);
-                        if (attachment) slot.setAttachment(attachment);
-                    }
-                }
-            }
-        }
-        this.skin = newSkin;
-    },
-    /** @return May be null. */
-    getAttachmentBySlotName: function (slotName, attachmentName)
-    {
-        return this.getAttachmentBySlotIndex(this.data.findSlotIndex(slotName), attachmentName);
-    },
-    /** @return May be null. */
-    getAttachmentBySlotIndex: function (slotIndex, attachmentName)
-    {
-        if (this.skin)
-        {
-            var attachment = this.skin.getAttachment(slotIndex, attachmentName);
-            if (attachment) return attachment;
-        }
-        if (this.data.defaultSkin) return this.data.defaultSkin.getAttachment(slotIndex, attachmentName);
-        return null;
-    },
-    /** @param attachmentName May be null. */
-    setAttachment: function (slotName, attachmentName)
-    {
-        var slots = this.slots;
-        for (var i = 0, n = slots.length; i < n; i++)
-        {
-            var slot = slots[i];
-            if (slot.data.name == slotName)
-            {
-                var attachment = null;
-                if (attachmentName)
-                {
-                    attachment = this.getAttachmentBySlotIndex(i, attachmentName);
-                    if (!attachment) throw "Attachment not found: " + attachmentName + ", for slot: " + slotName;
-                }
-                slot.setAttachment(attachment);
-                return;
-            }
-        }
-        throw "Slot not found: " + slotName;
-    },
-    /** @return May be null. */
-    findIkConstraint: function (ikConstraintName)
-    {
-        var ikConstraints = this.ikConstraints;
-        for (var i = 0, n = ikConstraints.length; i < n; i++)
-            if (ikConstraints[i].data.name == ikConstraintName) return ikConstraints[i];
-        return null;
-    },
-    update: function (delta)
-    {
-        this.time += delta;
-    },
-    resetDrawOrder: function () {
-        for (var i = 0, n = this.drawOrder.length; i < n; i++)
-        {
-            this.drawOrder[i] = i;
-        }
-    }
-};
-
-spine.EventData = function (name)
-{
-    this.name = name;
-};
-spine.EventData.prototype = {
-    intValue: 0,
-    floatValue: 0,
-    stringValue: null
-};
-
-spine.Event = function (data)
-{
-    this.data = data;
-};
-spine.Event.prototype = {
-    intValue: 0,
-    floatValue: 0,
-    stringValue: null
-};
-
-spine.AttachmentType = {
-    region: 0,
-    boundingbox: 1,
-    mesh: 2,
-    skinnedmesh: 3
-};
-
-spine.RegionAttachment = function (name)
-{
-    this.name = name;
-    this.offset = [];
-    this.offset.length = 8;
-    this.uvs = [];
-    this.uvs.length = 8;
-};
-spine.RegionAttachment.prototype = {
-    type: spine.AttachmentType.region,
-    x: 0, y: 0,
-    rotation: 0,
-    scaleX: 1, scaleY: 1,
-    width: 0, height: 0,
-    r: 1, g: 1, b: 1, a: 1,
-    path: null,
-    rendererObject: null,
-    regionOffsetX: 0, regionOffsetY: 0,
-    regionWidth: 0, regionHeight: 0,
-    regionOriginalWidth: 0, regionOriginalHeight: 0,
-    setUVs: function (u, v, u2, v2, rotate)
-    {
-        var uvs = this.uvs;
-        if (rotate)
-        {
-            uvs[2/*X2*/] = u;
-            uvs[3/*Y2*/] = v2;
-            uvs[4/*X3*/] = u;
-            uvs[5/*Y3*/] = v;
-            uvs[6/*X4*/] = u2;
-            uvs[7/*Y4*/] = v;
-            uvs[0/*X1*/] = u2;
-            uvs[1/*Y1*/] = v2;
-        } else {
-            uvs[0/*X1*/] = u;
-            uvs[1/*Y1*/] = v2;
-            uvs[2/*X2*/] = u;
-            uvs[3/*Y2*/] = v;
-            uvs[4/*X3*/] = u2;
-            uvs[5/*Y3*/] = v;
-            uvs[6/*X4*/] = u2;
-            uvs[7/*Y4*/] = v2;
-        }
-    },
-    updateOffset: function ()
-    {
-        var regionScaleX = this.width / this.regionOriginalWidth * this.scaleX;
-        var regionScaleY = this.height / this.regionOriginalHeight * this.scaleY;
-        var localX = -this.width / 2 * this.scaleX + this.regionOffsetX * regionScaleX;
-        var localY = -this.height / 2 * this.scaleY + this.regionOffsetY * regionScaleY;
-        var localX2 = localX + this.regionWidth * regionScaleX;
-        var localY2 = localY + this.regionHeight * regionScaleY;
-        var radians = this.rotation * spine.degRad;
-        var cos = Math.cos(radians);
-        var sin = Math.sin(radians);
-        var localXCos = localX * cos + this.x;
-        var localXSin = localX * sin;
-        var localYCos = localY * cos + this.y;
-        var localYSin = localY * sin;
-        var localX2Cos = localX2 * cos + this.x;
-        var localX2Sin = localX2 * sin;
-        var localY2Cos = localY2 * cos + this.y;
-        var localY2Sin = localY2 * sin;
-        var offset = this.offset;
-        offset[0/*X1*/] = localXCos - localYSin;
-        offset[1/*Y1*/] = localYCos + localXSin;
-        offset[2/*X2*/] = localXCos - localY2Sin;
-        offset[3/*Y2*/] = localY2Cos + localXSin;
-        offset[4/*X3*/] = localX2Cos - localY2Sin;
-        offset[5/*Y3*/] = localY2Cos + localX2Sin;
-        offset[6/*X4*/] = localX2Cos - localYSin;
-        offset[7/*Y4*/] = localYCos + localX2Sin;
-    },
-    computeVertices: function (x, y, bone, vertices)
-    {
-        x += bone.worldX;
-        y += bone.worldY;
-        var m00 = bone.m00, m01 = bone.m01, m10 = bone.m10, m11 = bone.m11;
-        var offset = this.offset;
-        vertices[0/*X1*/] = offset[0/*X1*/] * m00 + offset[1/*Y1*/] * m01 + x;
-        vertices[1/*Y1*/] = offset[0/*X1*/] * m10 + offset[1/*Y1*/] * m11 + y;
-        vertices[2/*X2*/] = offset[2/*X2*/] * m00 + offset[3/*Y2*/] * m01 + x;
-        vertices[3/*Y2*/] = offset[2/*X2*/] * m10 + offset[3/*Y2*/] * m11 + y;
-        vertices[4/*X3*/] = offset[4/*X3*/] * m00 + offset[5/*X3*/] * m01 + x;
-        vertices[5/*X3*/] = offset[4/*X3*/] * m10 + offset[5/*X3*/] * m11 + y;
-        vertices[6/*X4*/] = offset[6/*X4*/] * m00 + offset[7/*Y4*/] * m01 + x;
-        vertices[7/*Y4*/] = offset[6/*X4*/] * m10 + offset[7/*Y4*/] * m11 + y;
-    }
-};
-
-spine.MeshAttachment = function (name)
-{
-    this.name = name;
-};
-spine.MeshAttachment.prototype = {
-    type: spine.AttachmentType.mesh,
-    vertices: null,
-    uvs: null,
-    regionUVs: null,
-    triangles: null,
-    hullLength: 0,
-    r: 1, g: 1, b: 1, a: 1,
-    path: null,
-    rendererObject: null,
-    regionU: 0, regionV: 0, regionU2: 0, regionV2: 0, regionRotate: false,
-    regionOffsetX: 0, regionOffsetY: 0,
-    regionWidth: 0, regionHeight: 0,
-    regionOriginalWidth: 0, regionOriginalHeight: 0,
-    edges: null,
-    width: 0, height: 0,
-    updateUVs: function ()
-    {
-        var width = this.regionU2 - this.regionU, height = this.regionV2 - this.regionV;
-        var n = this.regionUVs.length;
-        if (!this.uvs || this.uvs.length != n)
-        {
-            this.uvs = new spine.Float32Array(n);
-        }
-        if (this.regionRotate)
-        {
-            for (var i = 0; i < n; i += 2)
-            {
-                this.uvs[i] = this.regionU + this.regionUVs[i + 1] * width;
-                this.uvs[i + 1] = this.regionV + height - this.regionUVs[i] * height;
-            }
-        } else {
-            for (var i = 0; i < n; i += 2)
-            {
-                this.uvs[i] = this.regionU + this.regionUVs[i] * width;
-                this.uvs[i + 1] = this.regionV + this.regionUVs[i + 1] * height;
-            }
-        }
-    },
-    computeWorldVertices: function (x, y, slot, worldVertices)
-    {
-        var bone = slot.bone;
-        x += bone.worldX;
-        y += bone.worldY;
-        var m00 = bone.m00, m01 = bone.m01, m10 = bone.m10, m11 = bone.m11;
-        var vertices = this.vertices;
-        var verticesCount = vertices.length;
-        if (slot.attachmentVertices.length == verticesCount) vertices = slot.attachmentVertices;
-        for (var i = 0; i < verticesCount; i += 2)
-        {
-            var vx = vertices[i];
-            var vy = vertices[i + 1];
-            worldVertices[i] = vx * m00 + vy * m01 + x;
-            worldVertices[i + 1] = vx * m10 + vy * m11 + y;
-        }
-    }
-};
-
-spine.SkinnedMeshAttachment = function (name)
-{
-    this.name = name;
-};
-spine.SkinnedMeshAttachment.prototype = {
-    type: spine.AttachmentType.skinnedmesh,
-    bones: null,
-    weights: null,
-    uvs: null,
-    regionUVs: null,
-    triangles: null,
-    hullLength: 0,
-    r: 1, g: 1, b: 1, a: 1,
-    path: null,
-    rendererObject: null,
-    regionU: 0, regionV: 0, regionU2: 0, regionV2: 0, regionRotate: false,
-    regionOffsetX: 0, regionOffsetY: 0,
-    regionWidth: 0, regionHeight: 0,
-    regionOriginalWidth: 0, regionOriginalHeight: 0,
-    edges: null,
-    width: 0, height: 0,
-    updateUVs: function (u, v, u2, v2, rotate)
-    {
-        var width = this.regionU2 - this.regionU, height = this.regionV2 - this.regionV;
-        var n = this.regionUVs.length;
-        if (!this.uvs || this.uvs.length != n)
-        {
-            this.uvs = new spine.Float32Array(n);
-        }
-        if (this.regionRotate)
-        {
-            for (var i = 0; i < n; i += 2)
-            {
-                this.uvs[i] = this.regionU + this.regionUVs[i + 1] * width;
-                this.uvs[i + 1] = this.regionV + height - this.regionUVs[i] * height;
-            }
-        } else {
-            for (var i = 0; i < n; i += 2)
-            {
-                this.uvs[i] = this.regionU + this.regionUVs[i] * width;
-                this.uvs[i + 1] = this.regionV + this.regionUVs[i + 1] * height;
-            }
-        }
-    },
-    computeWorldVertices: function (x, y, slot, worldVertices)
-    {
-        var skeletonBones = slot.bone.skeleton.bones;
-        var weights = this.weights;
-        var bones = this.bones;
-
-        var w = 0, v = 0, b = 0, f = 0, n = bones.length, nn;
-        var wx, wy, bone, vx, vy, weight;
-        if (!slot.attachmentVertices.length)
-        {
-            for (; v < n; w += 2)
-            {
-                wx = 0;
-                wy = 0;
-                nn = bones[v++] + v;
-                for (; v < nn; v++, b += 3)
-                {
-                    bone = skeletonBones[bones[v]];
-                    vx = weights[b];
-                    vy = weights[b + 1];
-                    weight = weights[b + 2];
-                    wx += (vx * bone.m00 + vy * bone.m01 + bone.worldX) * weight;
-                    wy += (vx * bone.m10 + vy * bone.m11 + bone.worldY) * weight;
-                }
-                worldVertices[w] = wx + x;
-                worldVertices[w + 1] = wy + y;
-            }
-        } else {
-            var ffd = slot.attachmentVertices;
-            for (; v < n; w += 2)
-            {
-                wx = 0;
-                wy = 0;
-                nn = bones[v++] + v;
-                for (; v < nn; v++, b += 3, f += 2)
-                {
-                    bone = skeletonBones[bones[v]];
-                    vx = weights[b] + ffd[f];
-                    vy = weights[b + 1] + ffd[f + 1];
-                    weight = weights[b + 2];
-                    wx += (vx * bone.m00 + vy * bone.m01 + bone.worldX) * weight;
-                    wy += (vx * bone.m10 + vy * bone.m11 + bone.worldY) * weight;
-                }
-                worldVertices[w] = wx + x;
-                worldVertices[w + 1] = wy + y;
-            }
-        }
-    }
-};
-
-spine.BoundingBoxAttachment = function (name)
-{
-    this.name = name;
-    this.vertices = [];
-};
-spine.BoundingBoxAttachment.prototype = {
-    type: spine.AttachmentType.boundingbox,
-    computeWorldVertices: function (x, y, bone, worldVertices)
-    {
-        x += bone.worldX;
-        y += bone.worldY;
-        var m00 = bone.m00, m01 = bone.m01, m10 = bone.m10, m11 = bone.m11;
-        var vertices = this.vertices;
-        for (var i = 0, n = vertices.length; i < n; i += 2)
-        {
-            var px = vertices[i];
-            var py = vertices[i + 1];
-            worldVertices[i] = px * m00 + py * m01 + x;
-            worldVertices[i + 1] = px * m10 + py * m11 + y;
-        }
-    }
-};
-
-spine.AnimationStateData = function (skeletonData)
-{
-    this.skeletonData = skeletonData;
-    this.animationToMixTime = {};
-};
-spine.AnimationStateData.prototype = {
-    defaultMix: 0,
-    setMixByName: function (fromName, toName, duration)
-    {
-        var from = this.skeletonData.findAnimation(fromName);
-        if (!from) throw "Animation not found: " + fromName;
-        var to = this.skeletonData.findAnimation(toName);
-        if (!to) throw "Animation not found: " + toName;
-        this.setMix(from, to, duration);
-    },
-    setMix: function (from, to, duration)
-    {
-        this.animationToMixTime[from.name + ":" + to.name] = duration;
-    },
-    getMix: function (from, to)
-    {
-        var key = from.name + ":" + to.name;
-        return this.animationToMixTime.hasOwnProperty(key) ? this.animationToMixTime[key] : this.defaultMix;
-    }
-};
-
-spine.TrackEntry = function ()
-{};
-spine.TrackEntry.prototype = {
-    next: null, previous: null,
-    animation: null,
-    loop: false,
-    delay: 0, time: 0, lastTime: -1, endTime: 0,
-    timeScale: 1,
-    mixTime: 0, mixDuration: 0, mix: 1,
-    onStart: null, onEnd: null, onComplete: null, onEvent: null
-};
-
-spine.AnimationState = function (stateData)
-{
-    this.data = stateData;
-    this.tracks = [];
-    this.events = [];
-};
-spine.AnimationState.prototype = {
-    onStart: null,
-    onEnd: null,
-    onComplete: null,
-    onEvent: null,
-    timeScale: 1,
-    update: function (delta)
-    {
-        delta *= this.timeScale;
-        for (var i = 0; i < this.tracks.length; i++)
-        {
-            var current = this.tracks[i];
-            if (!current) continue;
-
-            current.time += delta * current.timeScale;
-            if (current.previous)
-            {
-                var previousDelta = delta * current.previous.timeScale;
-                current.previous.time += previousDelta;
-                current.mixTime += previousDelta;
-            }
-
-            var next = current.next;
-            if (next)
-            {
-                next.time = current.lastTime - next.delay;
-                if (next.time >= 0) this.setCurrent(i, next);
-            } else {
-                // End non-looping animation when it reaches its end time and there is no next entry.
-                if (!current.loop && current.lastTime >= current.endTime) this.clearTrack(i);
-            }
-        }
-    },
-    apply: function (skeleton)
-    {
-        skeleton.resetDrawOrder();
-
-        for (var i = 0; i < this.tracks.length; i++)
-        {
-            var current = this.tracks[i];
-            if (!current) continue;
-
-            this.events.length = 0;
-
-            var time = current.time;
-            var lastTime = current.lastTime;
-            var endTime = current.endTime;
-            var loop = current.loop;
-            if (!loop && time > endTime) time = endTime;
-
-            var previous = current.previous;
-            if (!previous)
-            {
-                if (current.mix == 1)
-                    current.animation.apply(skeleton, current.lastTime, time, loop, this.events);
-                else
-                    current.animation.mix(skeleton, current.lastTime, time, loop, this.events, current.mix);
-            } else {
-                var previousTime = previous.time;
-                if (!previous.loop && previousTime > previous.endTime) previousTime = previous.endTime;
-                previous.animation.apply(skeleton, previousTime, previousTime, previous.loop, null);
-
-                var alpha = current.mixTime / current.mixDuration * current.mix;
-                if (alpha >= 1)
-                {
-                    alpha = 1;
-                    current.previous = null;
-                }
-                current.animation.mix(skeleton, current.lastTime, time, loop, this.events, alpha);
-            }
-
-            for (var ii = 0, nn = this.events.length; ii < nn; ii++)
-            {
-                var event = this.events[ii];
-                if (current.onEvent) current.onEvent(i, event);
-                if (this.onEvent) this.onEvent(i, event);
-            }
-
-            // Check if completed the animation or a loop iteration.
-            if (loop ? (lastTime % endTime > time % endTime) : (lastTime < endTime && time >= endTime))
-            {
-                var count = Math.floor(time / endTime);
-                if (current.onComplete) current.onComplete(i, count);
-                if (this.onComplete) this.onComplete(i, count);
-            }
-
-            current.lastTime = current.time;
-        }
-    },
-    clearTracks: function ()
-    {
-        for (var i = 0, n = this.tracks.length; i < n; i++)
-            this.clearTrack(i);
-        this.tracks.length = 0;
-    },
-    clearTrack: function (trackIndex)
-    {
-        if (trackIndex >= this.tracks.length) return;
-        var current = this.tracks[trackIndex];
-        if (!current) return;
-
-        if (current.onEnd) current.onEnd(trackIndex);
-        if (this.onEnd) this.onEnd(trackIndex);
-
-        this.tracks[trackIndex] = null;
-    },
-    _expandToIndex: function (index)
-    {
-        if (index < this.tracks.length) return this.tracks[index];
-        while (index >= this.tracks.length)
-            this.tracks.push(null);
-        return null;
-    },
-    setCurrent: function (index, entry)
-    {
-        var current = this._expandToIndex(index);
-        if (current)
-        {
-            var previous = current.previous;
-            current.previous = null;
-
-            if (current.onEnd) current.onEnd(index);
-            if (this.onEnd) this.onEnd(index);
-
-            entry.mixDuration = this.data.getMix(current.animation, entry.animation);
-            if (entry.mixDuration > 0)
-            {
-                entry.mixTime = 0;
-                // If a mix is in progress, mix from the closest animation.
-                if (previous && current.mixTime / current.mixDuration < 0.5)
-                    entry.previous = previous;
-                else
-                    entry.previous = current;
-            }
-        }
-
-        this.tracks[index] = entry;
-
-        if (entry.onStart) entry.onStart(index);
-        if (this.onStart) this.onStart(index);
-    },
-    setAnimationByName: function (trackIndex, animationName, loop)
-    {
-        var animation = this.data.skeletonData.findAnimation(animationName);
-        if (!animation) throw "Animation not found: " + animationName;
-        return this.setAnimation(trackIndex, animation, loop);
-    },
-    /** Set the current animation. Any queued animations are cleared. */
-    setAnimation: function (trackIndex, animation, loop)
-    {
-        var entry = new spine.TrackEntry();
-        entry.animation = animation;
-        entry.loop = loop;
-        entry.endTime = animation.duration;
-        this.setCurrent(trackIndex, entry);
-        return entry;
-    },
-    addAnimationByName: function (trackIndex, animationName, loop, delay)
-    {
-        var animation = this.data.skeletonData.findAnimation(animationName);
-        if (!animation) throw "Animation not found: " + animationName;
-        return this.addAnimation(trackIndex, animation, loop, delay);
-    },
-    /** Adds an animation to be played delay seconds after the current or last queued animation.
-     * @param delay May be <= 0 to use duration of previous animation minus any mix duration plus the negative delay. */
-    addAnimation: function (trackIndex, animation, loop, delay)
-    {
-        var entry = new spine.TrackEntry();
-        entry.animation = animation;
-        entry.loop = loop;
-        entry.endTime = animation.duration;
-
-        var last = this._expandToIndex(trackIndex);
-        if (last)
-        {
-            while (last.next)
-                last = last.next;
-            last.next = entry;
-        } else
-            this.tracks[trackIndex] = entry;
-
-        if (delay <= 0)
-        {
-            if (last)
-                delay += last.endTime - this.data.getMix(last.animation, animation);
-            else
-                delay = 0;
-        }
-        entry.delay = delay;
-
-        return entry;
-    },
-    /** May be null. */
-    getCurrent: function (trackIndex)
-    {
-        if (trackIndex >= this.tracks.length) return null;
-        return this.tracks[trackIndex];
-    }
-};
-
-spine.SkeletonJsonParser = function (attachmentLoader)
-{
-    this.attachmentLoader = attachmentLoader;
-};
-spine.SkeletonJsonParser.prototype = {
-    scale: 1,
-    readSkeletonData: function (root, name)
-    {
-        var skeletonData = new spine.SkeletonData();
-        skeletonData.name = name;
-
-        // Skeleton.
-        var skeletonMap = root["skeleton"];
-        if (skeletonMap)
-        {
-            skeletonData.hash = skeletonMap["hash"];
-            skeletonData.version = skeletonMap["spine"];
-            skeletonData.width = skeletonMap["width"] || 0;
-            skeletonData.height = skeletonMap["height"] || 0;
-        }
-
-        // Bones.
-        var bones = root["bones"];
-        for (var i = 0, n = bones.length; i < n; i++)
-        {
-            var boneMap = bones[i];
-            var parent = null;
-            if (boneMap["parent"])
-            {
-                parent = skeletonData.findBone(boneMap["parent"]);
-                if (!parent) throw "Parent bone not found: " + boneMap["parent"];
-            }
-            var boneData = new spine.BoneData(boneMap["name"], parent);
-            boneData.length = (boneMap["length"] || 0) * this.scale;
-            boneData.x = (boneMap["x"] || 0) * this.scale;
-            boneData.y = (boneMap["y"] || 0) * this.scale;
-            boneData.rotation = (boneMap["rotation"] || 0);
-            boneData.scaleX = boneMap.hasOwnProperty("scaleX") ? boneMap["scaleX"] : 1;
-            boneData.scaleY = boneMap.hasOwnProperty("scaleY") ? boneMap["scaleY"] : 1;
-            boneData.inheritScale = boneMap.hasOwnProperty("inheritScale") ? boneMap["inheritScale"] : true;
-            boneData.inheritRotation = boneMap.hasOwnProperty("inheritRotation") ? boneMap["inheritRotation"] : true;
-            skeletonData.bones.push(boneData);
-        }
-
-        // IK constraints.
-        var ik = root["ik"];
-        if (ik)
-        {
-            for (var i = 0, n = ik.length; i < n; i++)
-            {
-                var ikMap = ik[i];
-                var ikConstraintData = new spine.IkConstraintData(ikMap["name"]);
-
-                var bones = ikMap["bones"];
-                for (var ii = 0, nn = bones.length; ii < nn; ii++)
-                {
-                    var bone = skeletonData.findBone(bones[ii]);
-                    if (!bone) throw "IK bone not found: " + bones[ii];
-                    ikConstraintData.bones.push(bone);
-                }
-
-                ikConstraintData.target = skeletonData.findBone(ikMap["target"]);
-                if (!ikConstraintData.target) throw "Target bone not found: " + ikMap["target"];
-
-                ikConstraintData.bendDirection = (!ikMap.hasOwnProperty("bendPositive") || ikMap["bendPositive"]) ? 1 : -1;
-                ikConstraintData.mix = ikMap.hasOwnProperty("mix") ? ikMap["mix"] : 1;
-
-                skeletonData.ikConstraints.push(ikConstraintData);
-            }
-        }
-
-        // Slots.
-        var slots = root["slots"];
-        for (var i = 0, n = slots.length; i < n; i++)
-        {
-            var slotMap = slots[i];
-            var boneData = skeletonData.findBone(slotMap["bone"]);
-            if (!boneData) throw "Slot bone not found: " + slotMap["bone"];
-            var slotData = new spine.SlotData(slotMap["name"], boneData);
-
-            var color = slotMap["color"];
-            if (color)
-            {
-                slotData.r = this.toColor(color, 0);
-                slotData.g = this.toColor(color, 1);
-                slotData.b = this.toColor(color, 2);
-                slotData.a = this.toColor(color, 3);
-            }
-
-            slotData.attachmentName = slotMap["attachment"];
-            slotData.additiveBlending = slotMap["additive"] && slotMap["additive"] == "true";
-
-            skeletonData.slots.push(slotData);
-        }
-
-        // Skins.
-        var skins = root["skins"];
-        for (var skinName in skins)
-        {
-            if (!skins.hasOwnProperty(skinName)) continue;
-            var skinMap = skins[skinName];
-            var skin = new spine.Skin(skinName);
-            for (var slotName in skinMap)
-            {
-                if (!skinMap.hasOwnProperty(slotName)) continue;
-                var slotIndex = skeletonData.findSlotIndex(slotName);
-                var slotEntry = skinMap[slotName];
-                for (var attachmentName in slotEntry)
-                {
-                    if (!slotEntry.hasOwnProperty(attachmentName)) continue;
-                    var attachment = this.readAttachment(skin, attachmentName, slotEntry[attachmentName]);
-                    if (attachment) skin.addAttachment(slotIndex, attachmentName, attachment);
-                }
-            }
-            skeletonData.skins.push(skin);
-            if (skin.name == "default") skeletonData.defaultSkin = skin;
-        }
-
-        // Events.
-        var events = root["events"];
-        for (var eventName in events)
-        {
-            if (!events.hasOwnProperty(eventName)) continue;
-            var eventMap = events[eventName];
-            var eventData = new spine.EventData(eventName);
-            eventData.intValue = eventMap["int"] || 0;
-            eventData.floatValue = eventMap["float"] || 0;
-            eventData.stringValue = eventMap["string"] || null;
-            skeletonData.events.push(eventData);
-        }
-
-        // Animations.
-        var animations = root["animations"];
-        for (var animationName in animations)
-        {
-            if (!animations.hasOwnProperty(animationName)) continue;
-            this.readAnimation(animationName, animations[animationName], skeletonData);
-        }
-
-        return skeletonData;
-    },
-    readAttachment: function (skin, name, map)
-    {
-        name = map["name"] || name;
-
-        var type = spine.AttachmentType[map["type"] || "region"];
-        var path = map["path"] || name;
-
-        var scale = this.scale;
-        if (type == spine.AttachmentType.region)
-        {
-            var region = this.attachmentLoader.newRegionAttachment(skin, name, path);
-            if (!region) return null;
-            region.path = path;
-            region.x = (map["x"] || 0) * scale;
-            region.y = (map["y"] || 0) * scale;
-            region.scaleX = map.hasOwnProperty("scaleX") ? map["scaleX"] : 1;
-            region.scaleY = map.hasOwnProperty("scaleY") ? map["scaleY"] : 1;
-            region.rotation = map["rotation"] || 0;
-            region.width = (map["width"] || 0) * scale;
-            region.height = (map["height"] || 0) * scale;
-
-            var color = map["color"];
-            if (color)
-            {
-                region.r = this.toColor(color, 0);
-                region.g = this.toColor(color, 1);
-                region.b = this.toColor(color, 2);
-                region.a = this.toColor(color, 3);
-            }
-
-            region.updateOffset();
-            return region;
-        } else if (type == spine.AttachmentType.mesh)
-        {
-            var mesh = this.attachmentLoader.newMeshAttachment(skin, name, path);
-            if (!mesh) return null;
-            mesh.path = path;
-            mesh.vertices = this.getFloatArray(map, "vertices", scale);
-            mesh.triangles = this.getIntArray(map, "triangles");
-            mesh.regionUVs = this.getFloatArray(map, "uvs", 1);
-            mesh.updateUVs();
-
-            color = map["color"];
-            if (color)
-            {
-                mesh.r = this.toColor(color, 0);
-                mesh.g = this.toColor(color, 1);
-                mesh.b = this.toColor(color, 2);
-                mesh.a = this.toColor(color, 3);
-            }
-
-            mesh.hullLength = (map["hull"] || 0) * 2;
-            if (map["edges"]) mesh.edges = this.getIntArray(map, "edges");
-            mesh.width = (map["width"] || 0) * scale;
-            mesh.height = (map["height"] || 0) * scale;
-            return mesh;
-        } else if (type == spine.AttachmentType.skinnedmesh)
-        {
-            var mesh = this.attachmentLoader.newSkinnedMeshAttachment(skin, name, path);
-            if (!mesh) return null;
-            mesh.path = path;
-
-            var uvs = this.getFloatArray(map, "uvs", 1);
-            var vertices = this.getFloatArray(map, "vertices", 1);
-            var weights = [];
-            var bones = [];
-            for (var i = 0, n = vertices.length; i < n; )
-            {
-                var boneCount = vertices[i++] | 0;
-                bones[bones.length] = boneCount;
-                for (var nn = i + boneCount * 4; i < nn; )
-                {
-                    bones[bones.length] = vertices[i];
-                    weights[weights.length] = vertices[i + 1] * scale;
-                    weights[weights.length] = vertices[i + 2] * scale;
-                    weights[weights.length] = vertices[i + 3];
-                    i += 4;
-                }
-            }
-            mesh.bones = bones;
-            mesh.weights = weights;
-            mesh.triangles = this.getIntArray(map, "triangles");
-            mesh.regionUVs = uvs;
-            mesh.updateUVs();
-
-            color = map["color"];
-            if (color)
-            {
-                mesh.r = this.toColor(color, 0);
-                mesh.g = this.toColor(color, 1);
-                mesh.b = this.toColor(color, 2);
-                mesh.a = this.toColor(color, 3);
-            }
-
-            mesh.hullLength = (map["hull"] || 0) * 2;
-            if (map["edges"]) mesh.edges = this.getIntArray(map, "edges");
-            mesh.width = (map["width"] || 0) * scale;
-            mesh.height = (map["height"] || 0) * scale;
-            return mesh;
-        } else if (type == spine.AttachmentType.boundingbox)
-        {
-            var attachment = this.attachmentLoader.newBoundingBoxAttachment(skin, name);
-            var vertices = map["vertices"];
-            for (var i = 0, n = vertices.length; i < n; i++)
-                attachment.vertices.push(vertices[i] * scale);
-            return attachment;
-        }
-        throw "Unknown attachment type: " + type;
-    },
-    readAnimation: function (name, map, skeletonData)
-    {
-        var timelines = [];
-        var duration = 0;
-
-        var slots = map["slots"];
-        for (var slotName in slots)
-        {
-            if (!slots.hasOwnProperty(slotName)) continue;
-            var slotMap = slots[slotName];
-            var slotIndex = skeletonData.findSlotIndex(slotName);
-
-            for (var timelineName in slotMap)
-            {
-                if (!slotMap.hasOwnProperty(timelineName)) continue;
-                var values = slotMap[timelineName];
-                if (timelineName == "color")
-                {
-                    var timeline = new spine.ColorTimeline(values.length);
-                    timeline.slotIndex = slotIndex;
-
-                    var frameIndex = 0;
-                    for (var i = 0, n = values.length; i < n; i++)
-                    {
-                        var valueMap = values[i];
-                        var color = valueMap["color"];
-                        var r = this.toColor(color, 0);
-                        var g = this.toColor(color, 1);
-                        var b = this.toColor(color, 2);
-                        var a = this.toColor(color, 3);
-                        timeline.setFrame(frameIndex, valueMap["time"], r, g, b, a);
-                        this.readCurve(timeline, frameIndex, valueMap);
-                        frameIndex++;
-                    }
-                    timelines.push(timeline);
-                    duration = Math.max(duration, timeline.frames[timeline.getFrameCount() * 5 - 5]);
-
-                } else if (timelineName == "attachment")
-                {
-                    var timeline = new spine.AttachmentTimeline(values.length);
-                    timeline.slotIndex = slotIndex;
-
-                    var frameIndex = 0;
-                    for (var i = 0, n = values.length; i < n; i++)
-                    {
-                        var valueMap = values[i];
-                        timeline.setFrame(frameIndex++, valueMap["time"], valueMap["name"]);
-                    }
-                    timelines.push(timeline);
-                    duration = Math.max(duration, timeline.frames[timeline.getFrameCount() - 1]);
-
-                } else
-                    throw "Invalid timeline type for a slot: " + timelineName + " (" + slotName + ")";
-            }
-        }
-
-        var bones = map["bones"];
-        for (var boneName in bones)
-        {
-            if (!bones.hasOwnProperty(boneName)) continue;
-            var boneIndex = skeletonData.findBoneIndex(boneName);
-            if (boneIndex == -1) throw "Bone not found: " + boneName;
-            var boneMap = bones[boneName];
-
-            for (var timelineName in boneMap)
-            {
-                if (!boneMap.hasOwnProperty(timelineName)) continue;
-                var values = boneMap[timelineName];
-                if (timelineName == "rotate")
-                {
-                    var timeline = new spine.RotateTimeline(values.length);
-                    timeline.boneIndex = boneIndex;
-
-                    var frameIndex = 0;
-                    for (var i = 0, n = values.length; i < n; i++)
-                    {
-                        var valueMap = values[i];
-                        timeline.setFrame(frameIndex, valueMap["time"], valueMap["angle"]);
-                        this.readCurve(timeline, frameIndex, valueMap);
-                        frameIndex++;
-                    }
-                    timelines.push(timeline);
-                    duration = Math.max(duration, timeline.frames[timeline.getFrameCount() * 2 - 2]);
-
-                } else if (timelineName == "translate" || timelineName == "scale")
-                {
-                    var timeline;
-                    var timelineScale = 1;
-                    if (timelineName == "scale")
-                        timeline = new spine.ScaleTimeline(values.length);
-                    else
-                    {
-                        timeline = new spine.TranslateTimeline(values.length);
-                        timelineScale = this.scale;
-                    }
-                    timeline.boneIndex = boneIndex;
-
-                    var frameIndex = 0;
-                    for (var i = 0, n = values.length; i < n; i++)
-                    {
-                        var valueMap = values[i];
-                        var x = (valueMap["x"] || 0) * timelineScale;
-                        var y = (valueMap["y"] || 0) * timelineScale;
-                        timeline.setFrame(frameIndex, valueMap["time"], x, y);
-                        this.readCurve(timeline, frameIndex, valueMap);
-                        frameIndex++;
-                    }
-                    timelines.push(timeline);
-                    duration = Math.max(duration, timeline.frames[timeline.getFrameCount() * 3 - 3]);
-
-                } else if (timelineName == "flipX" || timelineName == "flipY")
-                {
-                    var x = timelineName == "flipX";
-                    var timeline = x ? new spine.FlipXTimeline(values.length) : new spine.FlipYTimeline(values.length);
-                    timeline.boneIndex = boneIndex;
-
-                    var field = x ? "x" : "y";
-                    var frameIndex = 0;
-                    for (var i = 0, n = values.length; i < n; i++)
-                    {
-                        var valueMap = values[i];
-                        timeline.setFrame(frameIndex, valueMap["time"], valueMap[field] || false);
-                        frameIndex++;
-                    }
-                    timelines.push(timeline);
-                    duration = Math.max(duration, timeline.frames[timeline.getFrameCount() * 2 - 2]);
-                } else
-                    throw "Invalid timeline type for a bone: " + timelineName + " (" + boneName + ")";
-            }
-        }
-
-        var ikMap = map["ik"];
-        for (var ikConstraintName in ikMap)
-        {
-            if (!ikMap.hasOwnProperty(ikConstraintName)) continue;
-            var ikConstraint = skeletonData.findIkConstraint(ikConstraintName);
-            var values = ikMap[ikConstraintName];
-            var timeline = new spine.IkConstraintTimeline(values.length);
-            timeline.ikConstraintIndex = skeletonData.ikConstraints.indexOf(ikConstraint);
-            var frameIndex = 0;
-            for (var i = 0, n = values.length; i < n; i++)
-            {
-                var valueMap = values[i];
-                var mix = valueMap.hasOwnProperty("mix") ? valueMap["mix"] : 1;
-                var bendDirection = (!valueMap.hasOwnProperty("bendPositive") || valueMap["bendPositive"]) ? 1 : -1;
-                timeline.setFrame(frameIndex, valueMap["time"], mix, bendDirection);
-                this.readCurve(timeline, frameIndex, valueMap);
-                frameIndex++;
-            }
-            timelines.push(timeline);
-            duration = Math.max(duration, timeline.frames[timeline.frameCount * 3 - 3]);
-        }
-
-        var ffd = map["ffd"];
-        for (var skinName in ffd)
-        {
-            var skin = skeletonData.findSkin(skinName);
-            var slotMap = ffd[skinName];
-            for (slotName in slotMap)
-            {
-                var slotIndex = skeletonData.findSlotIndex(slotName);
-                var meshMap = slotMap[slotName];
-                for (var meshName in meshMap)
-                {
-                    var values = meshMap[meshName];
-                    var timeline = new spine.FfdTimeline(values.length);
-                    var attachment = skin.getAttachment(slotIndex, meshName);
-                    if (!attachment) throw "FFD attachment not found: " + meshName;
-                    timeline.slotIndex = slotIndex;
-                    timeline.attachment = attachment;
-
-                    var isMesh = attachment.type == spine.AttachmentType.mesh;
-                    var vertexCount;
-                    if (isMesh)
-                        vertexCount = attachment.vertices.length;
-                    else
-                        vertexCount = attachment.weights.length / 3 * 2;
-
-                    var frameIndex = 0;
-                    for (var i = 0, n = values.length; i < n; i++)
-                    {
-                        var valueMap = values[i];
-                        var vertices;
-                        if (!valueMap["vertices"])
-                        {
-                            if (isMesh)
-                                vertices = attachment.vertices;
-                            else
-                            {
-                                vertices = [];
-                                vertices.length = vertexCount;
+                        else {
+                            completed += 1;
+                            running -= 1;
+                            if (completed >= arr.length) {
+                                callback();
                             }
-                        } else {
-                            var verticesValue = valueMap["vertices"];
-                            var vertices = [];
-                            vertices.length = vertexCount;
-                            var start = valueMap["offset"] || 0;
-                            var nn = verticesValue.length;
-                            if (this.scale == 1)
-                            {
-                                for (var ii = 0; ii < nn; ii++)
-                                    vertices[ii + start] = verticesValue[ii];
-                            } else {
-                                for (var ii = 0; ii < nn; ii++)
-                                    vertices[ii + start] = verticesValue[ii] * this.scale;
-                            }
-                            if (isMesh)
-                            {
-                                var meshVertices = attachment.vertices;
-                                for (var ii = 0, nn = vertices.length; ii < nn; ii++)
-                                    vertices[ii] += meshVertices[ii];
+                            else {
+                                replenish();
                             }
                         }
-
-                        timeline.setFrame(frameIndex, valueMap["time"], vertices);
-                        this.readCurve(timeline, frameIndex, valueMap);
-                        frameIndex++;
-                    }
-                    timelines[timelines.length] = timeline;
-                    duration = Math.max(duration, timeline.frames[timeline.frameCount - 1]);
+                    });
                 }
-            }
-        }
+            })();
+        };
+    };
 
-        var drawOrderValues = map["drawOrder"];
-        if (!drawOrderValues) drawOrderValues = map["draworder"];
-        if (drawOrderValues)
-        {
-            var timeline = new spine.DrawOrderTimeline(drawOrderValues.length);
-            var slotCount = skeletonData.slots.length;
-            var frameIndex = 0;
-            for (var i = 0, n = drawOrderValues.length; i < n; i++)
-            {
-                var drawOrderMap = drawOrderValues[i];
-                var drawOrder = null;
-                if (drawOrderMap["offsets"])
-                {
-                    drawOrder = [];
-                    drawOrder.length = slotCount;
-                    for (var ii = slotCount - 1; ii >= 0; ii--)
-                        drawOrder[ii] = -1;
-                    var offsets = drawOrderMap["offsets"];
-                    var unchanged = [];
-                    unchanged.length = slotCount - offsets.length;
-                    var originalIndex = 0, unchangedIndex = 0;
-                    for (var ii = 0, nn = offsets.length; ii < nn; ii++)
-                    {
-                        var offsetMap = offsets[ii];
-                        var slotIndex = skeletonData.findSlotIndex(offsetMap["slot"]);
-                        if (slotIndex == -1) throw "Slot not found: " + offsetMap["slot"];
-                        // Collect unchanged items.
-                        while (originalIndex != slotIndex)
-                            unchanged[unchangedIndex++] = originalIndex++;
-                        // Set changed items.
-                        drawOrder[originalIndex + offsetMap["offset"]] = originalIndex++;
-                    }
-                    // Collect remaining unchanged items.
-                    while (originalIndex < slotCount)
-                        unchanged[unchangedIndex++] = originalIndex++;
-                    // Fill in unchanged items.
-                    for (var ii = slotCount - 1; ii >= 0; ii--)
-                        if (drawOrder[ii] == -1) drawOrder[ii] = unchanged[--unchangedIndex];
-                }
-                timeline.setFrame(frameIndex++, drawOrderMap["time"], drawOrder);
-            }
-            timelines.push(timeline);
-            duration = Math.max(duration, timeline.frames[timeline.getFrameCount() - 1]);
-        }
 
-        var events = map["events"];
-        if (events)
-        {
-            var timeline = new spine.EventTimeline(events.length);
-            var frameIndex = 0;
-            for (var i = 0, n = events.length; i < n; i++)
-            {
-                var eventMap = events[i];
-                var eventData = skeletonData.findEvent(eventMap["name"]);
-                if (!eventData) throw "Event not found: " + eventMap["name"];
-                var event = new spine.Event(eventData);
-                event.intValue = eventMap.hasOwnProperty("int") ? eventMap["int"] : eventData.intValue;
-                event.floatValue = eventMap.hasOwnProperty("float") ? eventMap["float"] : eventData.floatValue;
-                event.stringValue = eventMap.hasOwnProperty("string") ? eventMap["string"] : eventData.stringValue;
-                timeline.setFrame(frameIndex++, eventMap["time"], event);
-            }
-            timelines.push(timeline);
-            duration = Math.max(duration, timeline.frames[timeline.getFrameCount() - 1]);
-        }
+    var doParallel = function (fn) {
+        return function () {
+            var args = Array.prototype.slice.call(arguments);
+            return fn.apply(null, [async.each].concat(args));
+        };
+    };
+    var doParallelLimit = function(limit, fn) {
+        return function () {
+            var args = Array.prototype.slice.call(arguments);
+            return fn.apply(null, [_eachLimit(limit)].concat(args));
+        };
+    };
+    var doSeries = function (fn) {
+        return function () {
+            var args = Array.prototype.slice.call(arguments);
+            return fn.apply(null, [async.eachSeries].concat(args));
+        };
+    };
 
-        skeletonData.animations.push(new spine.Animation(name, timelines, duration));
-    },
-    readCurve: function (timeline, frameIndex, valueMap)
-    {
-        var curve = valueMap["curve"];
-        if (!curve)
-            timeline.curves.setLinear(frameIndex);
-        else if (curve == "stepped")
-            timeline.curves.setStepped(frameIndex);
-        else if (curve instanceof Array)
-            timeline.curves.setCurve(frameIndex, curve[0], curve[1], curve[2], curve[3]);
-    },
-    toColor: function (hexString, colorIndex)
-    {
-        if (hexString.length != 8) throw "Color hexidecimal length must be 8, recieved: " + hexString;
-        return parseInt(hexString.substring(colorIndex * 2, (colorIndex * 2) + 2), 16) / 255;
-    },
-    getFloatArray: function (map, name, scale)
-    {
-        var list = map[name];
-        var values = new spine.Float32Array(list.length);
-        var i = 0, n = list.length;
-        if (scale == 1)
-        {
-            for (; i < n; i++)
-                values[i] = list[i];
+
+    var _asyncMap = function (eachfn, arr, iterator, callback) {
+        arr = _map(arr, function (x, i) {
+            return {index: i, value: x};
+        });
+        if (!callback) {
+            eachfn(arr, function (x, callback) {
+                iterator(x.value, function (err) {
+                    callback(err);
+                });
+            });
         } else {
-            for (; i < n; i++)
-                values[i] = list[i] * scale;
+            var results = [];
+            eachfn(arr, function (x, callback) {
+                iterator(x.value, function (err, v) {
+                    results[x.index] = v;
+                    callback(err);
+                });
+            }, function (err) {
+                callback(err, results);
+            });
         }
-        return values;
-    },
-    getIntArray: function (map, name)
-    {
-        var list = map[name];
-        var values = new spine.Uint16Array(list.length);
-        for (var i = 0, n = list.length; i < n; i++)
-            values[i] = list[i] | 0;
-        return values;
-    }
-};
+    };
+    async.map = doParallel(_asyncMap);
+    async.mapSeries = doSeries(_asyncMap);
+    async.mapLimit = function (arr, limit, iterator, callback) {
+        return _mapLimit(limit)(arr, iterator, callback);
+    };
 
-spine.Atlas = function (atlasText, baseUrl, crossOrigin)
-{
-    if (baseUrl && baseUrl.indexOf('/') !== baseUrl.length)
-    {
-        baseUrl += '/';
-    }
+    var _mapLimit = function(limit) {
+        return doParallelLimit(limit, _asyncMap);
+    };
 
-    this.pages = [];
-    this.regions = [];
+    // reduce only has a series version, as doing reduce in parallel won't
+    // work in many situations.
+    async.reduce = function (arr, memo, iterator, callback) {
+        async.eachSeries(arr, function (x, callback) {
+            iterator(memo, x, function (err, v) {
+                memo = v;
+                callback(err);
+            });
+        }, function (err) {
+            callback(err, memo);
+        });
+    };
+    // inject alias
+    async.inject = async.reduce;
+    // foldl alias
+    async.foldl = async.reduce;
 
-    this.texturesLoading = 0;
+    async.reduceRight = function (arr, memo, iterator, callback) {
+        var reversed = _map(arr, function (x) {
+            return x;
+        }).reverse();
+        async.reduce(reversed, memo, iterator, callback);
+    };
+    // foldr alias
+    async.foldr = async.reduceRight;
 
-    var self = this;
+    var _filter = function (eachfn, arr, iterator, callback) {
+        var results = [];
+        arr = _map(arr, function (x, i) {
+            return {index: i, value: x};
+        });
+        eachfn(arr, function (x, callback) {
+            iterator(x.value, function (v) {
+                if (v) {
+                    results.push(x);
+                }
+                callback();
+            });
+        }, function (err) {
+            callback(_map(results.sort(function (a, b) {
+                return a.index - b.index;
+            }), function (x) {
+                return x.value;
+            }));
+        });
+    };
+    async.filter = doParallel(_filter);
+    async.filterSeries = doSeries(_filter);
+    // select alias
+    async.select = async.filter;
+    async.selectSeries = async.filterSeries;
 
-    var reader = new spine.AtlasReader(atlasText);
-    var tuple = [];
-    tuple.length = 4;
-    var page = null;
-    while (true)
-    {
-        var line = reader.readLine();
-        if (line === null) break;
-        line = reader.trim(line);
-        if (!line.length)
-            page = null;
-        else if (!page)
-        {
-            page = new spine.AtlasPage();
-            page.name = line;
+    var _reject = function (eachfn, arr, iterator, callback) {
+        var results = [];
+        arr = _map(arr, function (x, i) {
+            return {index: i, value: x};
+        });
+        eachfn(arr, function (x, callback) {
+            iterator(x.value, function (v) {
+                if (!v) {
+                    results.push(x);
+                }
+                callback();
+            });
+        }, function (err) {
+            callback(_map(results.sort(function (a, b) {
+                return a.index - b.index;
+            }), function (x) {
+                return x.value;
+            }));
+        });
+    };
+    async.reject = doParallel(_reject);
+    async.rejectSeries = doSeries(_reject);
 
-            if (reader.readTuple(tuple) == 2)
-            { // size is only optional for an atlas packed with an old TexturePacker.
-                page.width = parseInt(tuple[0]);
-                page.height = parseInt(tuple[1]);
-                reader.readTuple(tuple);
+    var _detect = function (eachfn, arr, iterator, main_callback) {
+        eachfn(arr, function (x, callback) {
+            iterator(x, function (result) {
+                if (result) {
+                    main_callback(x);
+                    main_callback = function () {};
+                }
+                else {
+                    callback();
+                }
+            });
+        }, function (err) {
+            main_callback();
+        });
+    };
+    async.detect = doParallel(_detect);
+    async.detectSeries = doSeries(_detect);
+
+    async.some = function (arr, iterator, main_callback) {
+        async.each(arr, function (x, callback) {
+            iterator(x, function (v) {
+                if (v) {
+                    main_callback(true);
+                    main_callback = function () {};
+                }
+                callback();
+            });
+        }, function (err) {
+            main_callback(false);
+        });
+    };
+    // any alias
+    async.any = async.some;
+
+    async.every = function (arr, iterator, main_callback) {
+        async.each(arr, function (x, callback) {
+            iterator(x, function (v) {
+                if (!v) {
+                    main_callback(false);
+                    main_callback = function () {};
+                }
+                callback();
+            });
+        }, function (err) {
+            main_callback(true);
+        });
+    };
+    // all alias
+    async.all = async.every;
+
+    async.sortBy = function (arr, iterator, callback) {
+        async.map(arr, function (x, callback) {
+            iterator(x, function (err, criteria) {
+                if (err) {
+                    callback(err);
+                }
+                else {
+                    callback(null, {value: x, criteria: criteria});
+                }
+            });
+        }, function (err, results) {
+            if (err) {
+                return callback(err);
             }
-            page.format = spine.Atlas.Format[tuple[0]];
-
-            reader.readTuple(tuple);
-            page.minFilter = spine.Atlas.TextureFilter[tuple[0]];
-            page.magFilter = spine.Atlas.TextureFilter[tuple[1]];
-
-            var direction = reader.readValue();
-            page.uWrap = spine.Atlas.TextureWrap.clampToEdge;
-            page.vWrap = spine.Atlas.TextureWrap.clampToEdge;
-            if (direction == "x")
-                page.uWrap = spine.Atlas.TextureWrap.repeat;
-            else if (direction == "y")
-                page.vWrap = spine.Atlas.TextureWrap.repeat;
-            else if (direction == "xy")
-                page.uWrap = page.vWrap = spine.Atlas.TextureWrap.repeat;
-
-            page.rendererObject = PIXI.BaseTexture.fromImage(baseUrl + line, crossOrigin);
-
-            this.pages.push(page);
-
-        } else {
-            var region = new spine.AtlasRegion();
-            region.name = line;
-            region.page = page;
-
-            region.rotate = reader.readValue() == "true";
-
-            reader.readTuple(tuple);
-            var x = parseInt(tuple[0]);
-            var y = parseInt(tuple[1]);
-
-            reader.readTuple(tuple);
-            var width = parseInt(tuple[0]);
-            var height = parseInt(tuple[1]);
-
-            region.u = x / page.width;
-            region.v = y / page.height;
-            if (region.rotate)
-            {
-                region.u2 = (x + height) / page.width;
-                region.v2 = (y + width) / page.height;
-            } else {
-                region.u2 = (x + width) / page.width;
-                region.v2 = (y + height) / page.height;
+            else {
+                var fn = function (left, right) {
+                    var a = left.criteria, b = right.criteria;
+                    return a < b ? -1 : a > b ? 1 : 0;
+                };
+                callback(null, _map(results.sort(fn), function (x) {
+                    return x.value;
+                }));
             }
-            region.x = x;
-            region.y = y;
-            region.width = Math.abs(width);
-            region.height = Math.abs(height);
+        });
+    };
 
-            if (reader.readTuple(tuple) == 4)
-            { // split is optional
-                region.splits = [parseInt(tuple[0]), parseInt(tuple[1]), parseInt(tuple[2]), parseInt(tuple[3])];
+    async.auto = function (tasks, callback) {
+        callback = callback || function () {};
+        var keys = _keys(tasks);
+        var remainingTasks = keys.length
+        if (!remainingTasks) {
+            return callback();
+        }
 
-                if (reader.readTuple(tuple) == 4)
-                { // pad is optional, but only present with splits
-                    region.pads = [parseInt(tuple[0]), parseInt(tuple[1]), parseInt(tuple[2]), parseInt(tuple[3])];
+        var results = {};
 
-                    reader.readTuple(tuple);
+        var listeners = [];
+        var addListener = function (fn) {
+            listeners.unshift(fn);
+        };
+        var removeListener = function (fn) {
+            for (var i = 0; i < listeners.length; i += 1) {
+                if (listeners[i] === fn) {
+                    listeners.splice(i, 1);
+                    return;
                 }
             }
+        };
+        var taskComplete = function () {
+            remainingTasks--
+            _each(listeners.slice(0), function (fn) {
+                fn();
+            });
+        };
 
-            region.originalWidth = parseInt(tuple[0]);
-            region.originalHeight = parseInt(tuple[1]);
+        addListener(function () {
+            if (!remainingTasks) {
+                var theCallback = callback;
+                // prevent final callback from calling itself if it errors
+                callback = function () {};
 
-            reader.readTuple(tuple);
-            region.offsetX = parseInt(tuple[0]);
-            region.offsetY = parseInt(tuple[1]);
+                theCallback(null, results);
+            }
+        });
 
-            region.index = parseInt(reader.readValue());
+        _each(keys, function (k) {
+            var task = _isArray(tasks[k]) ? tasks[k]: [tasks[k]];
+            var taskCallback = function (err) {
+                var args = Array.prototype.slice.call(arguments, 1);
+                if (args.length <= 1) {
+                    args = args[0];
+                }
+                if (err) {
+                    var safeResults = {};
+                    _each(_keys(results), function(rkey) {
+                        safeResults[rkey] = results[rkey];
+                    });
+                    safeResults[k] = args;
+                    callback(err, safeResults);
+                    // stop subsequent errors hitting callback multiple times
+                    callback = function () {};
+                }
+                else {
+                    results[k] = args;
+                    async.setImmediate(taskComplete);
+                }
+            };
+            var requires = task.slice(0, Math.abs(task.length - 1)) || [];
+            var ready = function () {
+                return _reduce(requires, function (a, x) {
+                    return (a && results.hasOwnProperty(x));
+                }, true) && !results.hasOwnProperty(k);
+            };
+            if (ready()) {
+                task[task.length - 1](taskCallback, results);
+            }
+            else {
+                var listener = function () {
+                    if (ready()) {
+                        removeListener(listener);
+                        task[task.length - 1](taskCallback, results);
+                    }
+                };
+                addListener(listener);
+            }
+        });
+    };
 
-            this.regions.push(region);
+    async.retry = function(times, task, callback) {
+        var DEFAULT_TIMES = 5;
+        var attempts = [];
+        // Use defaults if times not passed
+        if (typeof times === 'function') {
+            callback = task;
+            task = times;
+            times = DEFAULT_TIMES;
         }
-    }
-};
-spine.Atlas.prototype = {
-    findRegion: function (name)
-    {
-        var regions = this.regions;
-        for (var i = 0, n = regions.length; i < n; i++)
-            if (regions[i].name == name) return regions[i];
-        return null;
-    },
-    dispose: function ()
-    {
-        var pages = this.pages;
-        for (var i = 0, n = pages.length; i < n; i++)
-            pages[i].rendererObject.destroy(true);
-    },
-    updateUVs: function (page)
-    {
-        var regions = this.regions;
-        for (var i = 0, n = regions.length; i < n; i++)
-        {
-            var region = regions[i];
-            if (region.page != page) continue;
-            region.u = region.x / page.width;
-            region.v = region.y / page.height;
-            if (region.rotate)
-            {
-                region.u2 = (region.x + region.height) / page.width;
-                region.v2 = (region.y + region.width) / page.height;
+        // Make sure times is a number
+        times = parseInt(times, 10) || DEFAULT_TIMES;
+        var wrappedTask = function(wrappedCallback, wrappedResults) {
+            var retryAttempt = function(task, finalAttempt) {
+                return function(seriesCallback) {
+                    task(function(err, result){
+                        seriesCallback(!err || finalAttempt, {err: err, result: result});
+                    }, wrappedResults);
+                };
+            };
+            while (times) {
+                attempts.push(retryAttempt(task, !(times-=1)));
+            }
+            async.series(attempts, function(done, data){
+                data = data[data.length - 1];
+                (wrappedCallback || callback)(data.err, data.result);
+            });
+        }
+        // If a callback is passed, run this as a controll flow
+        return callback ? wrappedTask() : wrappedTask
+    };
+
+    async.waterfall = function (tasks, callback) {
+        callback = callback || function () {};
+        if (!_isArray(tasks)) {
+          var err = new Error('First argument to waterfall must be an array of functions');
+          return callback(err);
+        }
+        if (!tasks.length) {
+            return callback();
+        }
+        var wrapIterator = function (iterator) {
+            return function (err) {
+                if (err) {
+                    callback.apply(null, arguments);
+                    callback = function () {};
+                }
+                else {
+                    var args = Array.prototype.slice.call(arguments, 1);
+                    var next = iterator.next();
+                    if (next) {
+                        args.push(wrapIterator(next));
+                    }
+                    else {
+                        args.push(callback);
+                    }
+                    async.setImmediate(function () {
+                        iterator.apply(null, args);
+                    });
+                }
+            };
+        };
+        wrapIterator(async.iterator(tasks))();
+    };
+
+    var _parallel = function(eachfn, tasks, callback) {
+        callback = callback || function () {};
+        if (_isArray(tasks)) {
+            eachfn.map(tasks, function (fn, callback) {
+                if (fn) {
+                    fn(function (err) {
+                        var args = Array.prototype.slice.call(arguments, 1);
+                        if (args.length <= 1) {
+                            args = args[0];
+                        }
+                        callback.call(null, err, args);
+                    });
+                }
+            }, callback);
+        }
+        else {
+            var results = {};
+            eachfn.each(_keys(tasks), function (k, callback) {
+                tasks[k](function (err) {
+                    var args = Array.prototype.slice.call(arguments, 1);
+                    if (args.length <= 1) {
+                        args = args[0];
+                    }
+                    results[k] = args;
+                    callback(err);
+                });
+            }, function (err) {
+                callback(err, results);
+            });
+        }
+    };
+
+    async.parallel = function (tasks, callback) {
+        _parallel({ map: async.map, each: async.each }, tasks, callback);
+    };
+
+    async.parallelLimit = function(tasks, limit, callback) {
+        _parallel({ map: _mapLimit(limit), each: _eachLimit(limit) }, tasks, callback);
+    };
+
+    async.series = function (tasks, callback) {
+        callback = callback || function () {};
+        if (_isArray(tasks)) {
+            async.mapSeries(tasks, function (fn, callback) {
+                if (fn) {
+                    fn(function (err) {
+                        var args = Array.prototype.slice.call(arguments, 1);
+                        if (args.length <= 1) {
+                            args = args[0];
+                        }
+                        callback.call(null, err, args);
+                    });
+                }
+            }, callback);
+        }
+        else {
+            var results = {};
+            async.eachSeries(_keys(tasks), function (k, callback) {
+                tasks[k](function (err) {
+                    var args = Array.prototype.slice.call(arguments, 1);
+                    if (args.length <= 1) {
+                        args = args[0];
+                    }
+                    results[k] = args;
+                    callback(err);
+                });
+            }, function (err) {
+                callback(err, results);
+            });
+        }
+    };
+
+    async.iterator = function (tasks) {
+        var makeCallback = function (index) {
+            var fn = function () {
+                if (tasks.length) {
+                    tasks[index].apply(null, arguments);
+                }
+                return fn.next();
+            };
+            fn.next = function () {
+                return (index < tasks.length - 1) ? makeCallback(index + 1): null;
+            };
+            return fn;
+        };
+        return makeCallback(0);
+    };
+
+    async.apply = function (fn) {
+        var args = Array.prototype.slice.call(arguments, 1);
+        return function () {
+            return fn.apply(
+                null, args.concat(Array.prototype.slice.call(arguments))
+            );
+        };
+    };
+
+    var _concat = function (eachfn, arr, fn, callback) {
+        var r = [];
+        eachfn(arr, function (x, cb) {
+            fn(x, function (err, y) {
+                r = r.concat(y || []);
+                cb(err);
+            });
+        }, function (err) {
+            callback(err, r);
+        });
+    };
+    async.concat = doParallel(_concat);
+    async.concatSeries = doSeries(_concat);
+
+    async.whilst = function (test, iterator, callback) {
+        if (test()) {
+            iterator(function (err) {
+                if (err) {
+                    return callback(err);
+                }
+                async.whilst(test, iterator, callback);
+            });
+        }
+        else {
+            callback();
+        }
+    };
+
+    async.doWhilst = function (iterator, test, callback) {
+        iterator(function (err) {
+            if (err) {
+                return callback(err);
+            }
+            var args = Array.prototype.slice.call(arguments, 1);
+            if (test.apply(null, args)) {
+                async.doWhilst(iterator, test, callback);
+            }
+            else {
+                callback();
+            }
+        });
+    };
+
+    async.until = function (test, iterator, callback) {
+        if (!test()) {
+            iterator(function (err) {
+                if (err) {
+                    return callback(err);
+                }
+                async.until(test, iterator, callback);
+            });
+        }
+        else {
+            callback();
+        }
+    };
+
+    async.doUntil = function (iterator, test, callback) {
+        iterator(function (err) {
+            if (err) {
+                return callback(err);
+            }
+            var args = Array.prototype.slice.call(arguments, 1);
+            if (!test.apply(null, args)) {
+                async.doUntil(iterator, test, callback);
+            }
+            else {
+                callback();
+            }
+        });
+    };
+
+    async.queue = function (worker, concurrency) {
+        if (concurrency === undefined) {
+            concurrency = 1;
+        }
+        function _insert(q, data, pos, callback) {
+          if (!q.started){
+            q.started = true;
+          }
+          if (!_isArray(data)) {
+              data = [data];
+          }
+          if(data.length == 0) {
+             // call drain immediately if there are no tasks
+             return async.setImmediate(function() {
+                 if (q.drain) {
+                     q.drain();
+                 }
+             });
+          }
+          _each(data, function(task) {
+              var item = {
+                  data: task,
+                  callback: typeof callback === 'function' ? callback : null
+              };
+
+              if (pos) {
+                q.tasks.unshift(item);
+              } else {
+                q.tasks.push(item);
+              }
+
+              if (q.saturated && q.tasks.length === q.concurrency) {
+                  q.saturated();
+              }
+              async.setImmediate(q.process);
+          });
+        }
+
+        var workers = 0;
+        var q = {
+            tasks: [],
+            concurrency: concurrency,
+            saturated: null,
+            empty: null,
+            drain: null,
+            started: false,
+            paused: false,
+            push: function (data, callback) {
+              _insert(q, data, false, callback);
+            },
+            kill: function () {
+              q.drain = null;
+              q.tasks = [];
+            },
+            unshift: function (data, callback) {
+              _insert(q, data, true, callback);
+            },
+            process: function () {
+                if (!q.paused && workers < q.concurrency && q.tasks.length) {
+                    var task = q.tasks.shift();
+                    if (q.empty && q.tasks.length === 0) {
+                        q.empty();
+                    }
+                    workers += 1;
+                    var next = function () {
+                        workers -= 1;
+                        if (task.callback) {
+                            task.callback.apply(task, arguments);
+                        }
+                        if (q.drain && q.tasks.length + workers === 0) {
+                            q.drain();
+                        }
+                        q.process();
+                    };
+                    var cb = only_once(next);
+                    worker(task.data, cb);
+                }
+            },
+            length: function () {
+                return q.tasks.length;
+            },
+            running: function () {
+                return workers;
+            },
+            idle: function() {
+                return q.tasks.length + workers === 0;
+            },
+            pause: function () {
+                if (q.paused === true) { return; }
+                q.paused = true;
+                q.process();
+            },
+            resume: function () {
+                if (q.paused === false) { return; }
+                q.paused = false;
+                q.process();
+            }
+        };
+        return q;
+    };
+    
+    async.priorityQueue = function (worker, concurrency) {
+        
+        function _compareTasks(a, b){
+          return a.priority - b.priority;
+        };
+        
+        function _binarySearch(sequence, item, compare) {
+          var beg = -1,
+              end = sequence.length - 1;
+          while (beg < end) {
+            var mid = beg + ((end - beg + 1) >>> 1);
+            if (compare(item, sequence[mid]) >= 0) {
+              beg = mid;
             } else {
-                region.u2 = (region.x + region.width) / page.width;
-                region.v2 = (region.y + region.height) / page.height;
+              end = mid - 1;
             }
+          }
+          return beg;
         }
-    }
-};
+        
+        function _insert(q, data, priority, callback) {
+          if (!q.started){
+            q.started = true;
+          }
+          if (!_isArray(data)) {
+              data = [data];
+          }
+          if(data.length == 0) {
+             // call drain immediately if there are no tasks
+             return async.setImmediate(function() {
+                 if (q.drain) {
+                     q.drain();
+                 }
+             });
+          }
+          _each(data, function(task) {
+              var item = {
+                  data: task,
+                  priority: priority,
+                  callback: typeof callback === 'function' ? callback : null
+              };
+              
+              q.tasks.splice(_binarySearch(q.tasks, item, _compareTasks) + 1, 0, item);
 
-spine.Atlas.Format = {
-    alpha: 0,
-    intensity: 1,
-    luminanceAlpha: 2,
-    rgb565: 3,
-    rgba4444: 4,
-    rgb888: 5,
-    rgba8888: 6
-};
-
-spine.Atlas.TextureFilter = {
-    nearest: 0,
-    linear: 1,
-    mipMap: 2,
-    mipMapNearestNearest: 3,
-    mipMapLinearNearest: 4,
-    mipMapNearestLinear: 5,
-    mipMapLinearLinear: 6
-};
-
-spine.Atlas.TextureWrap = {
-    mirroredRepeat: 0,
-    clampToEdge: 1,
-    repeat: 2
-};
-
-spine.AtlasPage = function ()
-{};
-spine.AtlasPage.prototype = {
-    name: null,
-    format: null,
-    minFilter: null,
-    magFilter: null,
-    uWrap: null,
-    vWrap: null,
-    rendererObject: null,
-    width: 0,
-    height: 0
-};
-
-spine.AtlasRegion = function ()
-{};
-spine.AtlasRegion.prototype = {
-    page: null,
-    name: null,
-    x: 0, y: 0,
-    width: 0, height: 0,
-    u: 0, v: 0, u2: 0, v2: 0,
-    offsetX: 0, offsetY: 0,
-    originalWidth: 0, originalHeight: 0,
-    index: 0,
-    rotate: false,
-    splits: null,
-    pads: null
-};
-
-spine.AtlasReader = function (text)
-{
-    this.lines = text.split(/\r\n|\r|\n/);
-};
-spine.AtlasReader.prototype = {
-    index: 0,
-    trim: function (value)
-    {
-        return value.replace(/^\s+|\s+$/g, "");
-    },
-    readLine: function ()
-    {
-        if (this.index >= this.lines.length) return null;
-        return this.lines[this.index++];
-    },
-    readValue: function ()
-    {
-        var line = this.readLine();
-        var colon = line.indexOf(":");
-        if (colon == -1) throw "Invalid line: " + line;
-        return this.trim(line.substring(colon + 1));
-    },
-    /** Returns the number of tuple values read (1, 2 or 4). */
-    readTuple: function (tuple)
-    {
-        var line = this.readLine();
-        var colon = line.indexOf(":");
-        if (colon == -1) throw "Invalid line: " + line;
-        var i = 0, lastMatch = colon + 1;
-        for (; i < 3; i++)
-        {
-            var comma = line.indexOf(",", lastMatch);
-            if (comma == -1) break;
-            tuple[i] = this.trim(line.substr(lastMatch, comma - lastMatch));
-            lastMatch = comma + 1;
+              if (q.saturated && q.tasks.length === q.concurrency) {
+                  q.saturated();
+              }
+              async.setImmediate(q.process);
+          });
         }
-        tuple[i] = this.trim(line.substring(lastMatch));
-        return i + 1;
-    }
-};
+        
+        // Start with a normal queue
+        var q = async.queue(worker, concurrency);
+        
+        // Override push to accept second parameter representing priority
+        q.push = function (data, priority, callback) {
+          _insert(q, data, priority, callback);
+        };
+        
+        // Remove unshift function
+        delete q.unshift;
 
-spine.AtlasAttachmentParser = function (atlas)
-{
-    this.atlas = atlas;
-};
-spine.AtlasAttachmentParser.prototype = {
-    newRegionAttachment: function (skin, name, path)
-    {
-        var region = this.atlas.findRegion(path);
-        if (!region) throw "Region not found in atlas: " + path + " (region attachment: " + name + ")";
-        var attachment = new spine.RegionAttachment(name);
-        attachment.rendererObject = region;
-        attachment.setUVs(region.u, region.v, region.u2, region.v2, region.rotate);
-        attachment.regionOffsetX = region.offsetX;
-        attachment.regionOffsetY = region.offsetY;
-        attachment.regionWidth = region.width;
-        attachment.regionHeight = region.height;
-        attachment.regionOriginalWidth = region.originalWidth;
-        attachment.regionOriginalHeight = region.originalHeight;
-        return attachment;
-    },
-    newMeshAttachment: function (skin, name, path)
-    {
-        var region = this.atlas.findRegion(path);
-        if (!region) throw "Region not found in atlas: " + path + " (mesh attachment: " + name + ")";
-        var attachment = new spine.MeshAttachment(name);
-        attachment.rendererObject = region;
-        attachment.regionU = region.u;
-        attachment.regionV = region.v;
-        attachment.regionU2 = region.u2;
-        attachment.regionV2 = region.v2;
-        attachment.regionRotate = region.rotate;
-        attachment.regionOffsetX = region.offsetX;
-        attachment.regionOffsetY = region.offsetY;
-        attachment.regionWidth = region.width;
-        attachment.regionHeight = region.height;
-        attachment.regionOriginalWidth = region.originalWidth;
-        attachment.regionOriginalHeight = region.originalHeight;
-        return attachment;
-    },
-    newSkinnedMeshAttachment: function (skin, name, path)
-    {
-        var region = this.atlas.findRegion(path);
-        if (!region) throw "Region not found in atlas: " + path + " (skinned mesh attachment: " + name + ")";
-        var attachment = new spine.SkinnedMeshAttachment(name);
-        attachment.rendererObject = region;
-        attachment.regionU = region.u;
-        attachment.regionV = region.v;
-        attachment.regionU2 = region.u2;
-        attachment.regionV2 = region.v2;
-        attachment.regionRotate = region.rotate;
-        attachment.regionOffsetX = region.offsetX;
-        attachment.regionOffsetY = region.offsetY;
-        attachment.regionWidth = region.width;
-        attachment.regionHeight = region.height;
-        attachment.regionOriginalWidth = region.originalWidth;
-        attachment.regionOriginalHeight = region.originalHeight;
-        return attachment;
-    },
-    newBoundingBoxAttachment: function (skin, name)
-    {
-        return new spine.BoundingBoxAttachment(name);
-    }
-};
+        return q;
+    };
 
-spine.SkeletonBounds = function ()
-{
-    this.polygonPool = [];
-    this.polygons = [];
-    this.boundingBoxes = [];
-};
-spine.SkeletonBounds.prototype = {
-    minX: 0, minY: 0, maxX: 0, maxY: 0,
-    update: function (skeleton, updateAabb)
-    {
-        var slots = skeleton.slots;
-        var slotCount = slots.length;
-        var x = skeleton.x, y = skeleton.y;
-        var boundingBoxes = this.boundingBoxes;
-        var polygonPool = this.polygonPool;
-        var polygons = this.polygons;
+    async.cargo = function (worker, payload) {
+        var working     = false,
+            tasks       = [];
 
-        boundingBoxes.length = 0;
-        for (var i = 0, n = polygons.length; i < n; i++)
-            polygonPool.push(polygons[i]);
-        polygons.length = 0;
+        var cargo = {
+            tasks: tasks,
+            payload: payload,
+            saturated: null,
+            empty: null,
+            drain: null,
+            drained: true,
+            push: function (data, callback) {
+                if (!_isArray(data)) {
+                    data = [data];
+                }
+                _each(data, function(task) {
+                    tasks.push({
+                        data: task,
+                        callback: typeof callback === 'function' ? callback : null
+                    });
+                    cargo.drained = false;
+                    if (cargo.saturated && tasks.length === payload) {
+                        cargo.saturated();
+                    }
+                });
+                async.setImmediate(cargo.process);
+            },
+            process: function process() {
+                if (working) return;
+                if (tasks.length === 0) {
+                    if(cargo.drain && !cargo.drained) cargo.drain();
+                    cargo.drained = true;
+                    return;
+                }
 
-        for (var i = 0; i < slotCount; i++)
-        {
-            var slot = slots[i];
-            var boundingBox = slot.attachment;
-            if (boundingBox.type != spine.AttachmentType.boundingbox) continue;
-            boundingBoxes.push(boundingBox);
+                var ts = typeof payload === 'number'
+                            ? tasks.splice(0, payload)
+                            : tasks.splice(0, tasks.length);
 
-            var poolCount = polygonPool.length, polygon;
-            if (poolCount > 0)
-            {
-                polygon = polygonPool[poolCount - 1];
-                polygonPool.splice(poolCount - 1, 1);
-            } else
-                polygon = [];
-            polygons.push(polygon);
+                var ds = _map(ts, function (task) {
+                    return task.data;
+                });
 
-            polygon.length = boundingBox.vertices.length;
-            boundingBox.computeWorldVertices(x, y, slot.bone, polygon);
-        }
+                if(cargo.empty) cargo.empty();
+                working = true;
+                worker(ds, function () {
+                    working = false;
 
-        if (updateAabb) this.aabbCompute();
-    },
-    aabbCompute: function ()
-    {
-        var polygons = this.polygons;
-        var minX = Number.MAX_VALUE, minY = Number.MAX_VALUE, maxX = Number.MIN_VALUE, maxY = Number.MIN_VALUE;
-        for (var i = 0, n = polygons.length; i < n; i++)
-        {
-            var vertices = polygons[i];
-            for (var ii = 0, nn = vertices.length; ii < nn; ii += 2)
-            {
-                var x = vertices[ii];
-                var y = vertices[ii + 1];
-                minX = Math.min(minX, x);
-                minY = Math.min(minY, y);
-                maxX = Math.max(maxX, x);
-                maxY = Math.max(maxY, y);
+                    var args = arguments;
+                    _each(ts, function (data) {
+                        if (data.callback) {
+                            data.callback.apply(null, args);
+                        }
+                    });
+
+                    process();
+                });
+            },
+            length: function () {
+                return tasks.length;
+            },
+            running: function () {
+                return working;
             }
-        }
-        this.minX = minX;
-        this.minY = minY;
-        this.maxX = maxX;
-        this.maxY = maxY;
-    },
-    /** Returns true if the axis aligned bounding box contains the point. */
-    aabbContainsPoint: function (x, y)
-    {
-        return x >= this.minX && x <= this.maxX && y >= this.minY && y <= this.maxY;
-    },
-    /** Returns true if the axis aligned bounding box intersects the line segment. */
-    aabbIntersectsSegment: function (x1, y1, x2, y2)
-    {
-        var minX = this.minX, minY = this.minY, maxX = this.maxX, maxY = this.maxY;
-        if ((x1 <= minX && x2 <= minX) || (y1 <= minY && y2 <= minY) || (x1 >= maxX && x2 >= maxX) || (y1 >= maxY && y2 >= maxY))
-            return false;
-        var m = (y2 - y1) / (x2 - x1);
-        var y = m * (minX - x1) + y1;
-        if (y > minY && y < maxY) return true;
-        y = m * (maxX - x1) + y1;
-        if (y > minY && y < maxY) return true;
-        var x = (minY - y1) / m + x1;
-        if (x > minX && x < maxX) return true;
-        x = (maxY - y1) / m + x1;
-        if (x > minX && x < maxX) return true;
-        return false;
-    },
-    /** Returns true if the axis aligned bounding box intersects the axis aligned bounding box of the specified bounds. */
-    aabbIntersectsSkeleton: function (bounds)
-    {
-        return this.minX < bounds.maxX && this.maxX > bounds.minX && this.minY < bounds.maxY && this.maxY > bounds.minY;
-    },
-    /** Returns the first bounding box attachment that contains the point, or null. When doing many checks, it is usually more
-     * efficient to only call this method if {@link #aabbContainsPoint(float, float)} returns true. */
-    containsPoint: function (x, y)
-    {
-        var polygons = this.polygons;
-        for (var i = 0, n = polygons.length; i < n; i++)
-            if (this.polygonContainsPoint(polygons[i], x, y)) return this.boundingBoxes[i];
-        return null;
-    },
-    /** Returns the first bounding box attachment that contains the line segment, or null. When doing many checks, it is usually
-     * more efficient to only call this method if {@link #aabbIntersectsSegment(float, float, float, float)} returns true. */
-    intersectsSegment: function (x1, y1, x2, y2)
-    {
-        var polygons = this.polygons;
-        for (var i = 0, n = polygons.length; i < n; i++)
-            if (polygons[i].intersectsSegment(x1, y1, x2, y2)) return this.boundingBoxes[i];
-        return null;
-    },
-    /** Returns true if the polygon contains the point. */
-    polygonContainsPoint: function (polygon, x, y)
-    {
-        var nn = polygon.length;
-        var prevIndex = nn - 2;
-        var inside = false;
-        for (var ii = 0; ii < nn; ii += 2)
-        {
-            var vertexY = polygon[ii + 1];
-            var prevY = polygon[prevIndex + 1];
-            if ((vertexY < y && prevY >= y) || (prevY < y && vertexY >= y))
-            {
-                var vertexX = polygon[ii];
-                if (vertexX + (y - vertexY) / (prevY - vertexY) * (polygon[prevIndex] - vertexX) < x) inside = !inside;
+        };
+        return cargo;
+    };
+
+    var _console_fn = function (name) {
+        return function (fn) {
+            var args = Array.prototype.slice.call(arguments, 1);
+            fn.apply(null, args.concat([function (err) {
+                var args = Array.prototype.slice.call(arguments, 1);
+                if (typeof console !== 'undefined') {
+                    if (err) {
+                        if (console.error) {
+                            console.error(err);
+                        }
+                    }
+                    else if (console[name]) {
+                        _each(args, function (x) {
+                            console[name](x);
+                        });
+                    }
+                }
+            }]));
+        };
+    };
+    async.log = _console_fn('log');
+    async.dir = _console_fn('dir');
+    /*async.info = _console_fn('info');
+    async.warn = _console_fn('warn');
+    async.error = _console_fn('error');*/
+
+    async.memoize = function (fn, hasher) {
+        var memo = {};
+        var queues = {};
+        hasher = hasher || function (x) {
+            return x;
+        };
+        var memoized = function () {
+            var args = Array.prototype.slice.call(arguments);
+            var callback = args.pop();
+            var key = hasher.apply(null, args);
+            if (key in memo) {
+                async.nextTick(function () {
+                    callback.apply(null, memo[key]);
+                });
             }
-            prevIndex = ii;
-        }
-        return inside;
-    },
-    /** Returns true if the polygon contains the line segment. */
-    polygonIntersectsSegment: function (polygon, x1, y1, x2, y2)
-    {
-        var nn = polygon.length;
-        var width12 = x1 - x2, height12 = y1 - y2;
-        var det1 = x1 * y2 - y1 * x2;
-        var x3 = polygon[nn - 2], y3 = polygon[nn - 1];
-        for (var ii = 0; ii < nn; ii += 2)
-        {
-            var x4 = polygon[ii], y4 = polygon[ii + 1];
-            var det2 = x3 * y4 - y3 * x4;
-            var width34 = x3 - x4, height34 = y3 - y4;
-            var det3 = width12 * height34 - height12 * width34;
-            var x = (det1 * width34 - width12 * det2) / det3;
-            if (((x >= x3 && x <= x4) || (x >= x4 && x <= x3)) && ((x >= x1 && x <= x2) || (x >= x2 && x <= x1)))
-            {
-                var y = (det1 * height34 - height12 * det2) / det3;
-                if (((y >= y3 && y <= y4) || (y >= y4 && y <= y3)) && ((y >= y1 && y <= y2) || (y >= y2 && y <= y1))) return true;
+            else if (key in queues) {
+                queues[key].push(callback);
             }
-            x3 = x4;
-            y3 = y4;
+            else {
+                queues[key] = [callback];
+                fn.apply(null, args.concat([function () {
+                    memo[key] = arguments;
+                    var q = queues[key];
+                    delete queues[key];
+                    for (var i = 0, l = q.length; i < l; i++) {
+                      q[i].apply(null, arguments);
+                    }
+                }]));
+            }
+        };
+        memoized.memo = memo;
+        memoized.unmemoized = fn;
+        return memoized;
+    };
+
+    async.unmemoize = function (fn) {
+      return function () {
+        return (fn.unmemoized || fn).apply(null, arguments);
+      };
+    };
+
+    async.times = function (count, iterator, callback) {
+        var counter = [];
+        for (var i = 0; i < count; i++) {
+            counter.push(i);
         }
-        return false;
-    },
-    getPolygon: function (attachment)
-    {
-        var index = this.boundingBoxes.indexOf(attachment);
-        return index == -1 ? null : this.polygons[index];
-    },
-    getWidth: function ()
-    {
-        return this.maxX - this.minX;
-    },
-    getHeight: function ()
-    {
-        return this.maxY - this.minY;
+        return async.map(counter, iterator, callback);
+    };
+
+    async.timesSeries = function (count, iterator, callback) {
+        var counter = [];
+        for (var i = 0; i < count; i++) {
+            counter.push(i);
+        }
+        return async.mapSeries(counter, iterator, callback);
+    };
+
+    async.seq = function (/* functions... */) {
+        var fns = arguments;
+        return function () {
+            var that = this;
+            var args = Array.prototype.slice.call(arguments);
+            var callback = args.pop();
+            async.reduce(fns, args, function (newargs, fn, cb) {
+                fn.apply(that, newargs.concat([function () {
+                    var err = arguments[0];
+                    var nextargs = Array.prototype.slice.call(arguments, 1);
+                    cb(err, nextargs);
+                }]))
+            },
+            function (err, results) {
+                callback.apply(that, [err].concat(results));
+            });
+        };
+    };
+
+    async.compose = function (/* functions... */) {
+      return async.seq.apply(null, Array.prototype.reverse.call(arguments));
+    };
+
+    var _applyEach = function (eachfn, fns /*args...*/) {
+        var go = function () {
+            var that = this;
+            var args = Array.prototype.slice.call(arguments);
+            var callback = args.pop();
+            return eachfn(fns, function (fn, cb) {
+                fn.apply(that, args.concat([cb]));
+            },
+            callback);
+        };
+        if (arguments.length > 2) {
+            var args = Array.prototype.slice.call(arguments, 2);
+            return go.apply(this, args);
+        }
+        else {
+            return go;
+        }
+    };
+    async.applyEach = doParallel(_applyEach);
+    async.applyEachSeries = doSeries(_applyEach);
+
+    async.forever = function (fn, callback) {
+        function next(err) {
+            if (err) {
+                if (callback) {
+                    return callback(err);
+                }
+                throw err;
+            }
+            fn(next);
+        }
+        next();
+    };
+
+    // Node.js
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = async;
     }
-};
+    // AMD / RequireJS
+    else if (typeof define !== 'undefined' && define.amd) {
+        define([], function () {
+            return async;
+        });
+    }
+    // included directly via <script> tag
+    else {
+        root.async = async;
+    }
 
-},{"pixi.js":"pixi.js"}],8:[function(require,module,exports){
-/**
- * @namespace PIXI.spine
- */
-module.exports = {
-    Spine:          require('./Spine'),
-    SpineRuntime:   require('./SpineRuntime')
-};
+}());
 
-},{"./Spine":6,"./SpineRuntime":7}],9:[function(require,module,exports){
-var async = require('async'),
-    Resource = require('./Resource'),
-    EventEmitter = require('eventemitter3').EventEmitter;
+}).call(this,require('_process'))
+
+},{"_process":4}],13:[function(require,module,exports){
+arguments[4][10][0].apply(exports,arguments)
+},{"dup":10}],14:[function(require,module,exports){
+var async       = require('async'),
+    urlParser   = require('url'),
+    Resource    = require('./Resource'),
+    EventEmitter = require('eventemitter3');
 
 /**
  * Manages the state and loading of multiple resources to load.
@@ -5211,10 +4485,8 @@ Loader.prototype.add = Loader.prototype.enqueue = function (name, url, options, 
         throw new Error('Resource with name "' + name + '" already exists.');
     }
 
-    // add base url if this isn't a data url
-    if (url.indexOf('data:') !== 0) {
-        url = this.baseUrl + url;
-    }
+    // add base url if this isn't an absolute url
+    url = this._handleBaseUrl(url);
 
     // create the store the resource
     this.resources[name] = new Resource(name, url, options);
@@ -5237,6 +4509,27 @@ Loader.prototype.add = Loader.prototype.enqueue = function (name, url, options, 
     }
 
     return this;
+};
+
+Loader.prototype._handleBaseUrl = function (url) {
+    var parsedUrl = urlParser.parse(url);
+
+    // absolute url, just use it as is.
+    if (parsedUrl.protocol || parsedUrl.pathname.indexOf('//') === 0) {
+        return url;
+    }
+
+    // if baseUrl doesn't end in slash and url doesn't start with slash, then add a slash inbetween
+    if (
+        this.baseUrl.length &&
+        this.baseUrl.lastIndexOf('/') !== this.baseUrl.length - 1 &&
+        url.lastIndexOf('/') !== url.length - 1
+    ) {
+        return this.baseUrl + '/' + url;
+    }
+    else {
+        return this.baseUrl + url;
+    }
 };
 
 
@@ -5274,14 +4567,25 @@ Loader.prototype.after = Loader.prototype.use = function (fn) {
  * @return {Loader}
  */
 Loader.prototype.reset = function () {
+    // this.baseUrl = baseUrl || '';
+
+    this.progress = 0;
+
+    this.loading = false;
+
+    this._progressChunk = 0;
+
+    // this._beforeMiddleware.length = 0;
+    // this._afterMiddleware.length = 0;
+
     this._buffer.length = 0;
+
+    this._numToLoad = 0;
 
     this._queue.kill();
     this._queue.started = false;
 
-    this.progress = 0;
-    this._progressChunk = 0;
-    this.loading = false;
+    this.resources = {};
 };
 
 /**
@@ -5397,8 +4701,8 @@ Loader.LOAD_TYPE = Resource.LOAD_TYPE;
 Loader.XHR_READY_STATE = Resource.XHR_READY_STATE;
 Loader.XHR_RESPONSE_TYPE = Resource.XHR_RESPONSE_TYPE;
 
-},{"./Resource":10,"async":1,"eventemitter3":4}],10:[function(require,module,exports){
-var EventEmitter = require('eventemitter3').EventEmitter,
+},{"./Resource":15,"async":12,"eventemitter3":13,"url":9}],15:[function(require,module,exports){
+var EventEmitter = require('eventemitter3'),
     // tests is CORS is supported in XHR, if not we need to use XDR
     useXdr = !!(window.XDomainRequest && !('withCredentials' in (new XMLHttpRequest())));
 
@@ -5483,6 +4787,46 @@ function Resource(name, url, options) {
      * @member {XMLHttpRequest}
      */
     this.xhr = null;
+
+    /**
+     * Describes if this resource was loaded as json. Only valid after the resource
+     * has completely loaded.
+     *
+     * @member {boolean}
+     */
+    this.isJson = false;
+
+    /**
+     * Describes if this resource was loaded as xml. Only valid after the resource
+     * has completely loaded.
+     *
+     * @member {boolean}
+     */
+    this.isXml = false;
+
+    /**
+     * Describes if this resource was loaded as an image tag. Only valid after the resource
+     * has completely loaded.
+     *
+     * @member {boolean}
+     */
+    this.isImage = false;
+
+    /**
+     * Describes if this resource was loaded as an audio tag. Only valid after the resource
+     * has completely loaded.
+     *
+     * @member {boolean}
+     */
+    this.isAudio = false;
+
+    /**
+     * Describes if this resource was loaded as a video tag. Only valid after the resource
+     * has completely loaded.
+     *
+     * @member {boolean}
+     */
+    this.isVideo = false;
 
     /**
      * The `dequeue` method that will be used a storage place for the async queue dequeue method
@@ -5645,6 +4989,8 @@ Resource.prototype._loadImage = function () {
 
     this.data.src = this.url;
 
+    this.isImage = true;
+
     this.data.addEventListener('error', this._boundOnError, false);
     this.data.addEventListener('load', this._boundComplete, false);
     this.data.addEventListener('progress', this._boundOnProgress, false);
@@ -5666,6 +5012,8 @@ Resource.prototype._loadElement = function (type) {
     else {
         this.data.appendChild(this._createSource(type, this.url));
     }
+
+    this['is' + type[0].toUpperCase() + type.substring(1)] = true;
 
     this.data.addEventListener('error', this._boundOnError, false);
     this.data.addEventListener('load', this._boundComplete, false);
@@ -5714,6 +5062,11 @@ Resource.prototype._loadXhr = function () {
  * @private
  */
 Resource.prototype._loadXdr = function () {
+    // if unset, determine the value
+    if (typeof this.xhrType !== 'string') {
+        this.xhrType = this._determineXhrType();
+    }
+
     var xdr = this.xhr = new XDomainRequest();
 
     // XDomainRequest has a few quirks. Occasionally it will abort requests
@@ -5760,7 +5113,7 @@ Resource.prototype._createSource = function (type, url, mime) {
 /**
  * Called if a load errors out.
  *
- * @param error {Error} The error that happened.
+ * @param event {Event} The error event from the element that emits it.
  * @private
  */
 Resource.prototype._onError = function (event) {
@@ -5776,7 +5129,7 @@ Resource.prototype._onError = function (event) {
  * @private
  */
 Resource.prototype._onProgress =  function (event) {
-    if (event.lengthComputable) {
+    if (event && event.lengthComputable) {
         this.emit('progress', this, event.loaded / event.total);
     }
 };
@@ -5787,10 +5140,10 @@ Resource.prototype._onProgress =  function (event) {
  * @param event {XMLHttpRequestErrorEvent|Event}
  * @private
  */
-Resource.prototype._xhrOnError = function (event) {
+Resource.prototype._xhrOnError = function () {
     this.error = new Error(
-        reqType(event.target) + ' Request failed. ' +
-        'Status: ' + event.target.status + ', text: "' + event.target.statusText + '"'
+        reqType(this.xhr) + ' Request failed. ' +
+        'Status: ' + this.xhr.status + ', text: "' + this.xhr.statusText + '"'
     );
 
     this.complete();
@@ -5802,8 +5155,8 @@ Resource.prototype._xhrOnError = function (event) {
  * @param event {XMLHttpRequestAbortEvent}
  * @private
  */
-Resource.prototype._xhrOnAbort = function (event) {
-    this.error = new Error(reqType(event.target) + ' Request was aborted by the user.');
+Resource.prototype._xhrOnAbort = function () {
+    this.error = new Error(reqType(this.xhr) + ' Request was aborted by the user.');
     this.complete();
 };
 
@@ -5813,8 +5166,8 @@ Resource.prototype._xhrOnAbort = function (event) {
  * @param event {Event}
  * @private
  */
-Resource.prototype._xdrOnTimeout = function (event) {
-    this.error = new Error(reqType(event.target) + ' Request timed out.');
+Resource.prototype._xdrOnTimeout = function () {
+    this.error = new Error(reqType(this.xhr) + ' Request timed out.');
     this.complete();
 };
 
@@ -5824,10 +5177,11 @@ Resource.prototype._xdrOnTimeout = function (event) {
  * @param event {XMLHttpRequestLoadEvent|Event}
  * @private
  */
-Resource.prototype._xhrOnLoad = function (event) {
-    var xhr = event.target;
+Resource.prototype._xhrOnLoad = function () {
+    var xhr = this.xhr,
+        status = xhr.status !== undefined ? xhr.status : 200; //XDR has no `.status`, assume 200.
 
-    if (xhr.status === 200) {
+    if (status === 200 || status === 204) {
         // if text, just return it
         if (this.xhrType === Resource.XHR_RESPONSE_TYPE.TEXT) {
             this.data = xhr.responseText;
@@ -5836,6 +5190,7 @@ Resource.prototype._xhrOnLoad = function (event) {
         else if (this.xhrType === Resource.XHR_RESPONSE_TYPE.JSON) {
             try {
                 this.data = JSON.parse(xhr.responseText);
+                this.isJson = true;
             } catch(e) {
                 this.error = new Error('Error trying to parse loaded json:', e);
             }
@@ -5852,13 +5207,14 @@ Resource.prototype._xhrOnLoad = function (event) {
                     div.innerHTML = xhr.responseText;
                     this.data = div;
                 }
+                this.isXml = true;
             } catch (e) {
                 this.error = new Error('Error trying to parse loaded xml:', e);
             }
         }
         // other types just return the response
         else {
-            this.data = xhr.response;
+            this.data = xhr.response || xhr.responseText;
         }
     }
     else {
@@ -5910,59 +5266,13 @@ Resource.prototype._determineCrossOrigin = function () {
 Resource.prototype._determineXhrType = function () {
     var ext = this.url.substr(this.url.lastIndexOf('.') + 1);
 
-    switch(ext) {
-        // xml
-        case 'xhtml':
-        case 'html':
-        case 'htm':
-        case 'xml':
-        case 'tmx':
-        case 'tsx':
-        case 'svg':
-            return Resource.XHR_RESPONSE_TYPE.DOCUMENT;
-
-        // images
-        case 'gif':
-        case 'png':
-        case 'bmp':
-        case 'jpg':
-        case 'jpeg':
-        case 'tif':
-        case 'tiff':
-        case 'webp':
-            return Resource.XHR_RESPONSE_TYPE.BLOB;
-
-        // json
-        case 'json':
-            return Resource.XHR_RESPONSE_TYPE.JSON;
-
-        // text
-        case 'text':
-        case 'txt':
-            /* falls through */
-        default:
-            return Resource.XHR_RESPONSE_TYPE.TEXT;
-    }
+    return Resource._xhrTypeMap[ext] || Resource.XHR_RESPONSE_TYPE.TEXT;
 };
 
 Resource.prototype._determineLoadType = function () {
     var ext = this.url.substr(this.url.lastIndexOf('.') + 1);
 
-    switch(ext) {
-        // images
-        case 'gif':
-        case 'png':
-        case 'bmp':
-        case 'jpg':
-        case 'jpeg':
-        case 'tif':
-        case 'tiff':
-        case 'webp':
-            return Resource.LOAD_TYPE.IMAGE;
-
-        default:
-            return Resource.LOAD_TYPE.XHR;
-    }
+    return Resource._loadTypeMap[ext] || Resource.LOAD_TYPE.XHR;
 };
 
 /**
@@ -6055,7 +5365,80 @@ Resource.XHR_RESPONSE_TYPE = {
     TEXT:       'text'
 };
 
-},{"eventemitter3":4}],11:[function(require,module,exports){
+Resource._loadTypeMap = {
+    'gif':      Resource.LOAD_TYPE.IMAGE,
+    'png':      Resource.LOAD_TYPE.IMAGE,
+    'bmp':      Resource.LOAD_TYPE.IMAGE,
+    'jpg':      Resource.LOAD_TYPE.IMAGE,
+    'jpeg':     Resource.LOAD_TYPE.IMAGE,
+    'tif':      Resource.LOAD_TYPE.IMAGE,
+    'tiff':     Resource.LOAD_TYPE.IMAGE,
+    'webp':     Resource.LOAD_TYPE.IMAGE
+};
+
+Resource._xhrTypeMap = {
+    // xml
+    'xhtml':    Resource.XHR_RESPONSE_TYPE.DOCUMENT,
+    'html':     Resource.XHR_RESPONSE_TYPE.DOCUMENT,
+    'htm':      Resource.XHR_RESPONSE_TYPE.DOCUMENT,
+    'xml':      Resource.XHR_RESPONSE_TYPE.DOCUMENT,
+    'tmx':      Resource.XHR_RESPONSE_TYPE.DOCUMENT,
+    'tsx':      Resource.XHR_RESPONSE_TYPE.DOCUMENT,
+    'svg':      Resource.XHR_RESPONSE_TYPE.DOCUMENT,
+
+    // images
+    'gif':      Resource.XHR_RESPONSE_TYPE.BLOB,
+    'png':      Resource.XHR_RESPONSE_TYPE.BLOB,
+    'bmp':      Resource.XHR_RESPONSE_TYPE.BLOB,
+    'jpg':      Resource.XHR_RESPONSE_TYPE.BLOB,
+    'jpeg':     Resource.XHR_RESPONSE_TYPE.BLOB,
+    'tif':      Resource.XHR_RESPONSE_TYPE.BLOB,
+    'tiff':     Resource.XHR_RESPONSE_TYPE.BLOB,
+    'webp':     Resource.XHR_RESPONSE_TYPE.BLOB,
+
+    // json
+    'json':     Resource.XHR_RESPONSE_TYPE.JSON,
+
+    // text
+    'text':     Resource.XHR_RESPONSE_TYPE.TEXT,
+    'txt':      Resource.XHR_RESPONSE_TYPE.TEXT
+};
+
+/**
+ * Sets the load type to be used for a specific extension.
+ *
+ * @static
+ * @param extname {string} The extension to set the type for, e.g. "png" or "fnt"
+ * @param loadType {Resource.LOAD_TYPE} The load type to set it to.
+ */
+Resource.setExtensionLoadType = function (extname, loadType) {
+    setExtMap(Resource._loadTypeMap, extname, loadType);
+};
+
+/**
+ * Sets the load type to be used for a specific extension.
+ *
+ * @static
+ * @param extname {string} The extension to set the type for, e.g. "png" or "fnt"
+ * @param xhrType {Resource.XHR_RESPONSE_TYPE} The xhr type to set it to.
+ */
+Resource.setExtensionXhrType = function (extname, xhrType) {
+    setExtMap(Resource._xhrTypeMap, extname, xhrType);
+};
+
+function setExtMap(map, extname, val) {
+    if (extname && extname.indexOf('.') === 0) {
+        extname = extname.substring(1);
+    }
+
+    if (!extname) {
+        return;
+    }
+
+    map[extname] = val;
+}
+
+},{"eventemitter3":13}],16:[function(require,module,exports){
 module.exports = {
 
     // private property
@@ -6121,7 +5504,7 @@ module.exports = {
     }
 };
 
-},{}],12:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 module.exports = require('./Loader');
 
 module.exports.Resource = require('./Resource');
@@ -6135,7 +5518,7 @@ module.exports.middleware = {
     }
 };
 
-},{"./Loader":9,"./Resource":10,"./middlewares/caching/memory":13,"./middlewares/parsing/blob":14}],13:[function(require,module,exports){
+},{"./Loader":14,"./Resource":15,"./middlewares/caching/memory":18,"./middlewares/parsing/blob":19}],18:[function(require,module,exports){
 // a simple in-memory cache for resources
 var cache = {};
 
@@ -6157,7 +5540,7 @@ module.exports = function () {
     };
 };
 
-},{}],14:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 var Resource = require('../../Resource'),
     b64 = require('../../b64');
 
@@ -6182,7 +5565,14 @@ module.exports = function () {
                     resource.data = new Image();
                     resource.data.src = 'data:' + type + ';base64,' + b64.encodeBinary(resource.xhr.responseText);
 
-                    next();
+                    resource.isImage = true;
+
+                    // wait until the image loads and then callback
+                    resource.data.onload = function () {
+                        resource.data.onload = null;
+
+                        next();
+                    };
                 }
             }
             // if content type says this is an image, then we should transform the blob into an Image object
@@ -6192,6 +5582,8 @@ module.exports = function () {
                 resource.blob = resource.data;
                 resource.data = new Image();
                 resource.data.src = src;
+
+                resource.isImage = true;
 
                 // cleanup the no longer used blob after the image loads
                 resource.data.onload = function () {
@@ -6208,10 +5600,10 @@ module.exports = function () {
     };
 };
 
-},{"../../Resource":10,"../../b64":11}],15:[function(require,module,exports){
+},{"../../Resource":15,"../../b64":16}],20:[function(require,module,exports){
 module.exports={
   "name": "pixi.js",
-  "version": "3.0.0-rc4",
+  "version": "3.0.2",
   "description": "Pixi.js is a fast lightweight 2D library that works across all devices.",
   "author": "Mat Groves",
   "contributors": [
@@ -6227,46 +5619,42 @@ module.exports={
     "url": "https://github.com/GoodBoyDigital/pixi.js.git"
   },
   "scripts": {
-    "test": "gulp test",
+    "test": "gulp && testem ci",
     "docs": "jsdoc -c ./gulp/util/jsdoc.conf.json -R README.md"
   },
   "dependencies": {
     "async": "^0.9.0",
-    "brfs": "^1.2.0",
-    "eventemitter3": "^0.1.6",
+    "brfs": "^1.4.0",
+    "eventemitter3": "^1.0.1",
     "object-assign": "^2.0.0",
-    "pixi-spine": "^1.0.1",
-    "resource-loader": "^1.3.2"
+    "resource-loader": "^1.5.2"
   },
   "devDependencies": {
-    "browserify": "^8.0.2",
-    "chai": "^1.10.0",
-    "del": "^1.1.0",
-    "gulp": "^3.8.10",
-    "gulp-cached": "^1.0.1",
+    "browserify": "^9.0.8",
+    "chai": "^2.2.0",
+    "del": "^1.1.1",
+    "gulp": "^3.8.11",
+    "gulp-cached": "^1.0.4",
     "gulp-concat": "^2.5.2",
-    "gulp-debug": "^2.0.0",
-    "gulp-jshint": "^1.9.0",
+    "gulp-debug": "^2.0.1",
+    "gulp-jshint": "^1.10.0",
     "gulp-mirror": "^0.4.0",
-    "gulp-plumber": "^0.6.6",
-    "gulp-rename": "^1.2.0",
-    "gulp-sourcemaps": "^1.5.0",
-    "gulp-uglify": "^1.0.2",
-    "gulp-util": "^3.0.1",
+    "gulp-plumber": "^1.0.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-sourcemaps": "^1.5.2",
+    "gulp-uglify": "^1.2.0",
+    "gulp-util": "^3.0.4",
     "ink-docstrap": "git+https://github.com/Pilatch/docstrap.git",
-    "jsdoc": "^3.3.0-alpha13",
+    "jsdoc": "^3.3.0-beta3",
     "jshint-summary": "^0.4.0",
-    "karma": "^0.12.28",
-    "karma-firefox-launcher": "^0.1.0",
-    "karma-mocha": "^0.1.10",
-    "karma-spec-reporter": "^0.0.16",
-    "minimist": "^1.1.0",
-    "mocha": "^2.1.0",
-    "require-dir": "^0.1.0",
+    "minimist": "^1.1.1",
+    "mocha": "^2.2.4",
+    "require-dir": "^0.3.0",
     "run-sequence": "^1.0.2",
+    "testem": "^0.8.2",
     "vinyl-buffer": "^1.0.0",
-    "vinyl-source-stream": "^1.0.0",
-    "watchify": "^2.2.1"
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^3.1.2"
   },
   "browserify": {
     "transform": [
@@ -6275,7 +5663,7 @@ module.exports={
   }
 }
 
-},{}],16:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 /**
  * Constant values used in pixi
  *
@@ -6311,6 +5699,15 @@ module.exports = {
      * @static
      */
     DEG_TO_RAD: Math.PI / 180,
+
+    /**
+     * Target frames per millisecond.
+     *
+     * @static
+     * @constant
+     * @property {number} TARGET_FPMS=0.06
+     */
+    TARGET_FPMS: 0.06,
 
     /**
      * Constant to identify the Renderer Type.
@@ -6456,10 +5853,12 @@ module.exports = {
         RREC: 4
     },
 
+    // TODO: maybe change to SPRITE.BATCH_SIZE: 2000
+    // TODO: maybe add PARTICLE.BATCH_SIZE: 15000
     SPRITE_BATCH_SIZE: 2000 //nice balance between mobile and desktop machines
 };
 
-},{"../../package.json":15}],17:[function(require,module,exports){
+},{"../../package.json":20}],22:[function(require,module,exports){
 var math = require('../math'),
     DisplayObject = require('./DisplayObject'),
     RenderTexture = require('../textures/RenderTexture'),
@@ -6884,7 +6283,7 @@ Container.prototype.getLocalBounds = function ()
 
     this._currentBounds = null;
 
-    return this.getBounds();
+    return this.getBounds( math.Matrix.IDENTITY );
 };
 
 /**
@@ -7011,13 +6410,13 @@ Container.prototype.renderCanvas = function (renderer)
 
 /**
  * Destroys the container
- * @param destroyChildren {boolean} if set to true, all the children will have their destroy method called as well
+ * @param [destroyChildren=false] {boolean} if set to true, all the children will have their destroy method called as well
  */
 Container.prototype.destroy = function (destroyChildren)
 {
     DisplayObject.prototype.destroy.call(this);
 
-    if(destroyChildren)
+    if (destroyChildren)
     {
         for (var i = 0, j = this.children.length; i < j; ++i)
         {
@@ -7030,10 +6429,10 @@ Container.prototype.destroy = function (destroyChildren)
     this.children = null;
 };
 
-},{"../math":26,"../textures/RenderTexture":64,"./DisplayObject":18}],18:[function(require,module,exports){
+},{"../math":31,"../textures/RenderTexture":69,"./DisplayObject":23}],23:[function(require,module,exports){
 var math = require('../math'),
     RenderTexture = require('../textures/RenderTexture'),
-    EventEmitter = require('eventemitter3').EventEmitter,
+    EventEmitter = require('eventemitter3'),
     CONST = require('../const'),
     _tempMatrix = new math.Matrix();
 
@@ -7487,17 +6886,17 @@ DisplayObject.prototype.destroy = function ()
     this.scale = null;
     this.pivot = null;
 
+    this.parent = null;
+
     this._bounds = null;
     this._currentBounds = null;
     this._mask = null;
 
     this.worldTransform = null;
     this.filterArea = null;
-
-    this.listeners = null;
 };
 
-},{"../const":16,"../math":26,"../textures/RenderTexture":64,"eventemitter3":4}],19:[function(require,module,exports){
+},{"../const":21,"../math":31,"../textures/RenderTexture":69,"eventemitter3":10}],24:[function(require,module,exports){
 var Container = require('../display/Container'),
     Sprite = require('../sprites/Sprite'),
     Texture = require('../textures/Texture'),
@@ -7634,6 +7033,8 @@ function Graphics()
      */
     this.glDirty = false;
 
+    this.boundsDirty = true;
+
     /**
      * Used to detect if the cached sprite object needs to be updated.
      *
@@ -7666,6 +7067,7 @@ Object.defineProperties(Graphics.prototype, {
 
 /**
  * Creates a new Graphics object with the same values as this one.
+ * Note that the only the properties of the object are cloned, not its transform (position,scale,etc)
  *
  * @return {Graphics}
  */
@@ -7688,7 +7090,7 @@ Graphics.prototype.clone = function ()
     // copy graphics data
     for (var i = 0; i < this.graphicsData.length; ++i)
     {
-        clone.graphicsData.push(this.graphicsData.clone());
+        clone.graphicsData.push(this.graphicsData[i].clone());
     }
 
     clone.currentPath = clone.graphicsData[clone.graphicsData.length - 1];
@@ -7810,7 +7212,7 @@ Graphics.prototype.quadraticCurveTo = function (cpX, cpY, toX, toY)
                      ya + ( ((cpY + ( (toY - cpY) * j )) - ya) * j ) );
     }
 
-    this.dirty = true;
+    this.dirty = this.boundsDirty = true;
 
     return this;
 };
@@ -7868,7 +7270,7 @@ Graphics.prototype.bezierCurveTo = function (cpX, cpY, cpX2, cpY2, toX, toY)
                      dt3 * fromY + 3 * dt2 * j * cpY + 3 * dt * t2 * cpY2 + t3 * toY);
     }
 
-    this.dirty = true;
+    this.dirty = this.boundsDirty = true;
 
     return this;
 };
@@ -7936,7 +7338,7 @@ Graphics.prototype.arcTo = function (x1, y1, x2, y2, radius)
         this.arc(cx + x1, cy + y1, radius, startAngle, endAngle, b1 * a2 > b2 * a1);
     }
 
-    this.dirty = true;
+    this.dirty = this.boundsDirty = true;
 
     return this;
 };
@@ -7981,13 +7383,28 @@ Graphics.prototype.arc = function(cx, cy, radius, startAngle, endAngle, anticloc
     var startX = cx + Math.cos(startAngle) * radius;
     var startY = cy + Math.sin(startAngle) * radius;
 
-    if (anticlockwise && this.filling)
+    if (this.currentPath)
     {
-        this.moveTo(cx, cy);
+        if (anticlockwise && this.filling)
+        {
+            this.currentPath.shape.points.push(cx, cy);
+        }
+        else
+        {
+            this.currentPath.shape.points.push(startX, startY);
+        }
     }
     else
     {
-        this.moveTo(startX, startY);
+        if (anticlockwise && this.filling)
+        {
+
+            this.moveTo(cx, cy);
+        }
+        else
+        {
+            this.moveTo(startX, startY);
+        }
     }
 
     var points = this.currentPath.shape.points;
@@ -8016,7 +7433,7 @@ Graphics.prototype.arc = function(cx, cy, radius, startAngle, endAngle, anticloc
                     ( (cTheta * -s) + (sTheta * c) ) * radius + cy);
     }
 
-    this.dirty = true;
+    this.dirty = this.boundsDirty = true;
 
     return this;
 };
@@ -8322,13 +7739,13 @@ Graphics.prototype.getBounds = function (matrix)
             return math.Rectangle.EMPTY;
         }
 
-        if (this.dirty)
+        if (this.boundsDirty)
         {
             this.updateLocalBounds();
 
             this.glDirty = true;
             this.cachedSpriteDirty = true;
-            this.dirty = false;
+            this.boundsDirty = false;
         }
 
         var bounds = this._localBounds;
@@ -8634,12 +8051,34 @@ Graphics.prototype.drawShape = function (shape)
         this.currentPath = data;
     }
 
-    this.dirty = true;
+    this.dirty = this.boundsDirty = true;
 
     return data;
 };
 
-},{"../const":16,"../display/Container":17,"../math":26,"../renderers/canvas/utils/CanvasBuffer":38,"../renderers/canvas/utils/CanvasGraphics":39,"../sprites/Sprite":60,"../textures/Texture":65,"./GraphicsData":20}],20:[function(require,module,exports){
+Graphics.prototype.destroy = function () {
+    Container.prototype.destroy.apply(this, arguments);
+
+    // destroy each of the GraphicsData objects
+    for (var i = 0; i < this.graphicsData.length; ++i) {
+        this.graphicsData[i].destroy();
+    }
+
+    // for each webgl data entry, destroy the WebGLGraphicsData
+    for (var id in this._webgl) {
+        for (var j = 0; j < this._webgl[id].data.length; ++j) {
+            this._webgl[id].data[j].destroy();
+        }
+    }
+
+    this.graphicsData = null;
+
+    this.currentPath = null;
+    this._webgl = null;
+    this._localBounds = null;
+};
+
+},{"../const":21,"../display/Container":22,"../math":31,"../renderers/canvas/utils/CanvasBuffer":43,"../renderers/canvas/utils/CanvasGraphics":44,"../sprites/Sprite":65,"../textures/Texture":70,"./GraphicsData":25}],25:[function(require,module,exports){
 /**
  * A GraphicsData object.
  *
@@ -8725,7 +8164,11 @@ GraphicsData.prototype.clone = function ()
     );
 };
 
-},{}],21:[function(require,module,exports){
+GraphicsData.prototype.destroy = function () {
+    this.shape = null;
+};
+
+},{}],26:[function(require,module,exports){
 var utils = require('../../utils'),
     math = require('../../math'),
     CONST = require('../../const'),
@@ -8775,6 +8218,10 @@ GraphicsRenderer.prototype.onContextChange = function()
  */
 GraphicsRenderer.prototype.destroy = function () {
     ObjectRenderer.prototype.destroy.call(this);
+
+    for (var i = 0; i < this.graphicsDataPool.length; ++i) {
+        this.graphicsDataPool[i].destroy();
+    }
 
     this.graphicsDataPool = null;
 };
@@ -8879,7 +8326,7 @@ GraphicsRenderer.prototype.updateGraphics = function(graphics)
     {
         graphics.clearDirty = false;
 
-        // lop through and return all the webGLDatas to the object pool so than can be reused later on
+        // loop through and return all the webGLDatas to the object pool so than can be reused later on
         for (i = 0; i < webGL.data.length; i++)
         {
             var graphicsData = webGL.data[i];
@@ -9619,7 +9066,7 @@ GraphicsRenderer.prototype.buildPoly = function (graphicsData, webGLData)
     return true;
 };
 
-},{"../../const":16,"../../math":26,"../../renderers/webgl/WebGLRenderer":42,"../../renderers/webgl/utils/ObjectRenderer":56,"../../utils":69,"./WebGLGraphicsData":22}],22:[function(require,module,exports){
+},{"../../const":21,"../../math":31,"../../renderers/webgl/WebGLRenderer":47,"../../renderers/webgl/utils/ObjectRenderer":61,"../../utils":74,"./WebGLGraphicsData":27}],27:[function(require,module,exports){
 /**
  * An object containing WebGL specific properties to be used by the WebGL renderer
  *
@@ -9684,6 +9131,9 @@ function WebGLGraphicsData(gl) {
      * @member {boolean}
      */
     this.dirty = true;
+
+    this.glPoints = null;
+    this.glIndices = null;
 }
 
 WebGLGraphicsData.prototype.constructor = WebGLGraphicsData;
@@ -9717,7 +9167,23 @@ WebGLGraphicsData.prototype.upload = function () {
     this.dirty = false;
 };
 
-},{}],23:[function(require,module,exports){
+WebGLGraphicsData.prototype.destroy = function () {
+    this.gl = null;
+    this.color = null;
+    this.points = null;
+    this.indices = null;
+
+    this.gl.deleteBuffer(this.buffer);
+    this.gl.deleteBuffer(this.indexBuffer);
+
+    this.buffer = null;
+    this.indexBuffer = null;
+
+    this.glPoints = null;
+    this.glIndices = null;
+};
+
+},{}],28:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI core library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -9807,7 +9273,7 @@ var core = module.exports = Object.assign(require('./const'), require('./math'),
     }
 });
 
-},{"./const":16,"./display/Container":17,"./display/DisplayObject":18,"./graphics/Graphics":19,"./graphics/GraphicsData":20,"./graphics/webgl/GraphicsRenderer":21,"./math":26,"./particles/ParticleContainer":32,"./particles/webgl/ParticleRenderer":34,"./renderers/canvas/CanvasRenderer":37,"./renderers/canvas/utils/CanvasBuffer":38,"./renderers/canvas/utils/CanvasGraphics":39,"./renderers/webgl/WebGLRenderer":42,"./renderers/webgl/filters/AbstractFilter":43,"./renderers/webgl/managers/ShaderManager":49,"./renderers/webgl/shaders/Shader":54,"./renderers/webgl/utils/ObjectRenderer":56,"./renderers/webgl/utils/RenderTarget":58,"./sprites/Sprite":60,"./sprites/webgl/SpriteRenderer":61,"./text/Text":62,"./textures/BaseTexture":63,"./textures/RenderTexture":64,"./textures/Texture":65,"./textures/TextureUvs":66,"./textures/VideoBaseTexture":67,"./utils":69}],24:[function(require,module,exports){
+},{"./const":21,"./display/Container":22,"./display/DisplayObject":23,"./graphics/Graphics":24,"./graphics/GraphicsData":25,"./graphics/webgl/GraphicsRenderer":26,"./math":31,"./particles/ParticleContainer":37,"./particles/webgl/ParticleRenderer":39,"./renderers/canvas/CanvasRenderer":42,"./renderers/canvas/utils/CanvasBuffer":43,"./renderers/canvas/utils/CanvasGraphics":44,"./renderers/webgl/WebGLRenderer":47,"./renderers/webgl/filters/AbstractFilter":48,"./renderers/webgl/managers/ShaderManager":54,"./renderers/webgl/shaders/Shader":59,"./renderers/webgl/utils/ObjectRenderer":61,"./renderers/webgl/utils/RenderTarget":63,"./sprites/Sprite":65,"./sprites/webgl/SpriteRenderer":66,"./text/Text":67,"./textures/BaseTexture":68,"./textures/RenderTexture":69,"./textures/Texture":70,"./textures/TextureUvs":71,"./textures/VideoBaseTexture":72,"./utils":74}],29:[function(require,module,exports){
 var Point = require('./Point');
 
 /**
@@ -10167,7 +9633,7 @@ Matrix.IDENTITY = new Matrix();
  */
 Matrix.TEMP_MATRIX = new Matrix();
 
-},{"./Point":25}],25:[function(require,module,exports){
+},{"./Point":30}],30:[function(require,module,exports){
 /**
  * The Point object represents a location in a two-dimensional coordinate system, where x represents
  * the horizontal axis and y represents the vertical axis.
@@ -10237,7 +9703,7 @@ Point.prototype.set = function (x, y)
     this.y = y || ( (y !== 0) ? this.x : 0 ) ;
 };
 
-},{}],26:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 module.exports = {
     Point:      require('./Point'),
     Matrix:     require('./Matrix'),
@@ -10249,7 +9715,7 @@ module.exports = {
     RoundedRectangle: require('./shapes/RoundedRectangle')
 };
 
-},{"./Matrix":24,"./Point":25,"./shapes/Circle":27,"./shapes/Ellipse":28,"./shapes/Polygon":29,"./shapes/Rectangle":30,"./shapes/RoundedRectangle":31}],27:[function(require,module,exports){
+},{"./Matrix":29,"./Point":30,"./shapes/Circle":32,"./shapes/Ellipse":33,"./shapes/Polygon":34,"./shapes/Rectangle":35,"./shapes/RoundedRectangle":36}],32:[function(require,module,exports){
 var Rectangle = require('./Rectangle'),
     CONST = require('../../const');
 
@@ -10337,7 +9803,7 @@ Circle.prototype.getBounds = function ()
     return new Rectangle(this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2);
 };
 
-},{"../../const":16,"./Rectangle":30}],28:[function(require,module,exports){
+},{"../../const":21,"./Rectangle":35}],33:[function(require,module,exports){
 var Rectangle = require('./Rectangle'),
     CONST = require('../../const');
 
@@ -10432,7 +9898,7 @@ Ellipse.prototype.getBounds = function ()
     return new Rectangle(this.x - this.width, this.y - this.height, this.width, this.height);
 };
 
-},{"../../const":16,"./Rectangle":30}],29:[function(require,module,exports){
+},{"../../const":21,"./Rectangle":35}],34:[function(require,module,exports){
 var Point = require('../Point'),
     CONST = require('../../const');
 
@@ -10535,7 +10001,7 @@ Polygon.prototype.contains = function (x, y)
     return inside;
 };
 
-},{"../../const":16,"../Point":25}],30:[function(require,module,exports){
+},{"../../const":21,"../Point":30}],35:[function(require,module,exports){
 var CONST = require('../../const');
 
 /**
@@ -10629,7 +10095,7 @@ Rectangle.prototype.contains = function (x, y)
     return false;
 };
 
-},{"../../const":16}],31:[function(require,module,exports){
+},{"../../const":21}],36:[function(require,module,exports){
 var CONST = require('../../const');
 
 /**
@@ -10721,8 +10187,9 @@ RoundedRectangle.prototype.contains = function (x, y)
     return false;
 };
 
-},{"../../const":16}],32:[function(require,module,exports){
-var Container = require('../display/Container');
+},{"../../const":21}],37:[function(require,module,exports){
+var Container = require('../display/Container'),
+    CONST = require('../const');
 
 /**
  * The ParticleContainer class is a really fast version of the Container built solely for speed,
@@ -10792,6 +10259,22 @@ function ParticleContainer(size, properties)
      */
     this.interactiveChildren = false;
 
+    /**
+     * The blend mode to be applied to the sprite. Apply a value of blendModes.NORMAL to reset the blend mode.
+     *
+     * @member {number}
+     * @default CONST.BLEND_MODES.NORMAL;
+     */
+    this.blendMode = CONST.BLEND_MODES.NORMAL;
+
+    /**
+     * Used for canvas renderering. If true then the elements will be positioned at the nearest pixel. This provides a nice speed boost.
+     *
+     * @member {boolean}
+     * @default true;
+     */
+    this.roundPixels = true;
+
     this.setProperties(properties);
 }
 
@@ -10822,6 +10305,7 @@ ParticleContainer.prototype.setProperties = function(properties)
  */
 ParticleContainer.prototype.updateTransform = function ()
 {
+
     // TODO don't need to!
     this.displayObjectUpdateTransform();
     //  PIXI.Container.prototype.updateTransform.call( this );
@@ -10914,6 +10398,12 @@ ParticleContainer.prototype.renderCanvas = function (renderer)
     var transform = this.worldTransform;
     var isRotated = true;
 
+    var positionX = 0;
+    var positionY = 0;
+
+    var finalWidth = 0;
+    var finalHeight = 0;
+
     context.globalAlpha = this.worldAlpha;
 
     this.displayObjectUpdateTransform();
@@ -10948,17 +10438,12 @@ ParticleContainer.prototype.renderCanvas = function (renderer)
                 isRotated = false;
             }
 
-            context.drawImage(
-                child.texture.baseTexture.source,
-                frame.x,
-                frame.y,
-                frame.width,
-                frame.height,
-                ((child.anchor.x) * (-frame.width * child.scale.x) + child.position.x  + 0.5) | 0,
-                ((child.anchor.y) * (-frame.height * child.scale.y) + child.position.y  + 0.5) | 0,
-                frame.width * child.scale.x,
-                frame.height * child.scale.y
-            );
+            positionX = ((child.anchor.x) * (-frame.width * child.scale.x) + child.position.x  + 0.5);
+            positionY = ((child.anchor.y) * (-frame.height * child.scale.y) + child.position.y  + 0.5);
+
+            finalWidth = frame.width * child.scale.x;
+            finalHeight = frame.height * child.scale.y;
+
         }
         else
         {
@@ -10994,22 +10479,46 @@ ParticleContainer.prototype.renderCanvas = function (renderer)
                 );
             }
 
-            context.drawImage(
-                child.texture.baseTexture.source,
-                frame.x,
-                frame.y,
-                frame.width,
-                frame.height,
-                ((child.anchor.x) * (-frame.width) + 0.5) | 0,
-                ((child.anchor.y) * (-frame.height) + 0.5) | 0,
-                frame.width,
-                frame.height
-            );
+            positionX = ((child.anchor.x) * (-frame.width) + 0.5);
+            positionY = ((child.anchor.y) * (-frame.height) + 0.5);
+
+            finalWidth = frame.width;
+            finalHeight = frame.height;
         }
+
+        context.drawImage(
+            child.texture.baseTexture.source,
+            frame.x,
+            frame.y,
+            frame.width,
+            frame.height,
+            positionX,
+            positionY,
+            finalWidth,
+            finalHeight
+        );
     }
 };
 
-},{"../display/Container":17}],33:[function(require,module,exports){
+/**
+ * Destroys the container
+ *
+ * @param [destroyChildren=false] {boolean} if set to true, all the children will have their destroy method called as well
+ */
+ParticleContainer.prototype.destroy = function () {
+    Container.prototype.destroy.apply(this, arguments);
+
+    if (this._buffers) {
+        for (var i = 0; i < this._buffers.length; ++i) {
+            this._buffers.destroy();
+        }
+    }
+
+    this._properties = null;
+    this._buffers = null;
+};
+
+},{"../const":21,"../display/Container":22}],38:[function(require,module,exports){
 
 /**
  * @author Mat Groves
@@ -11059,14 +10568,14 @@ function ParticleBuffer(gl, properties, size)
     this.size = size;
 
     /**
-     * 
+     *
      *
      * @member {Array}
      */
     this.dynamicProperties = [];
 
     /**
-     * 
+     *
      *
      * @member {Array}
      */
@@ -11213,10 +10722,16 @@ ParticleBuffer.prototype.bind = function ()
  */
 ParticleBuffer.prototype.destroy = function ()
 {
-    //TODO implement this :) to busy making the fun bits..
+    this.dynamicProperties = null;
+    this.dynamicData = null;
+    this.gl.deleteBuffer(this.dynamicBuffer);
+
+    this.staticProperties = null;
+    this.staticData = null;
+    this.gl.deleteBuffer(this.staticBuffer);
 };
 
-},{}],34:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
     WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
     ParticleShader = require('./ParticleShader'),
@@ -11245,7 +10760,6 @@ function ParticleRenderer(renderer)
 {
     ObjectRenderer.call(this, renderer);
 
-
     /**
      * The number of images in the Particle before it flushes.
      *
@@ -11254,7 +10768,6 @@ function ParticleRenderer(renderer)
     this.size = 15000;//CONST.SPRITE_BATCH_SIZE; // 2000 is a nice balance between mobile / desktop
 
     var numIndices = this.size * 6;
-
 
     /**
      * Holds the indices
@@ -11280,11 +10793,11 @@ function ParticleRenderer(renderer)
      */
     this.shader = null;
 
+    this.indexBuffer = null;
+
+    this.properties = null;
+
     this.tempMatrix = new math.Matrix();
-
-
-
-
 }
 
 ParticleRenderer.prototype = Object.create(ObjectRenderer.prototype);
@@ -11314,49 +10827,48 @@ ParticleRenderer.prototype.onContextChange = function ()
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW);
 
-
     this.properties = [
-    //verticesData
-    {
-        attribute:this.shader.attributes.aVertexPosition,
-        dynamic:false,
-        size:2,
-        uploadFunction:this.uploadVertices,
-        offset:0
-    },
-    // positionData
-    {
-        attribute:this.shader.attributes.aPositionCoord,
-        dynamic:true,
-        size:2,
-        uploadFunction:this.uploadPosition,
-        offset:0
-    },
-    // rotationData
-    {
-        attribute:this.shader.attributes.aRotation,
-        dynamic:false,
-        size:1,
-        uploadFunction:this.uploadRotation,
-        offset:0
-    },
-    //u vsData
-    {
-        attribute:this.shader.attributes.aTextureCoord,
-        dynamic:false,
-        size:2,
-        uploadFunction:this.uploadUvs,
-        offset:0
-    },
-    // alphaData
-    {
-        attribute:this.shader.attributes.aColor,
-        dynamic:false,
-        size:1,
-        uploadFunction:this.uploadAlpha,
-        offset:0
-    }];
-
+        // verticesData
+        {
+            attribute:this.shader.attributes.aVertexPosition,
+            dynamic:false,
+            size:2,
+            uploadFunction:this.uploadVertices,
+            offset:0
+        },
+        // positionData
+        {
+            attribute:this.shader.attributes.aPositionCoord,
+            dynamic:true,
+            size:2,
+            uploadFunction:this.uploadPosition,
+            offset:0
+        },
+        // rotationData
+        {
+            attribute:this.shader.attributes.aRotation,
+            dynamic:false,
+            size:1,
+            uploadFunction:this.uploadRotation,
+            offset:0
+        },
+        // uvsData
+        {
+            attribute:this.shader.attributes.aTextureCoord,
+            dynamic:false,
+            size:2,
+            uploadFunction:this.uploadUvs,
+            offset:0
+        },
+        // alphaData
+        {
+            attribute:this.shader.attributes.aColor,
+            dynamic:false,
+            size:1,
+            uploadFunction:this.uploadAlpha,
+            offset:0
+        }
+    ];
 };
 
 /**
@@ -11408,12 +10920,15 @@ ParticleRenderer.prototype.render = function ( container )
 
 
     // if the uvs have not updated then no point rendering just yet!
-    //this.renderer.blendModeManager.setBlendMode(sprite.blendMode);
+    this.renderer.blendModeManager.setBlendMode(container.blendMode);
+
     var gl = this.renderer.gl;
 
     var m =  container.worldTransform.copy( this.tempMatrix );
     m.prepend( this.renderer.currentRenderTarget.projectionMatrix );
     gl.uniformMatrix3fv(this.shader.uniforms.projectionMatrix._location, false, m.toArray(true));
+    gl.uniform1f(this.shader.uniforms.uAlpha._location, container.worldAlpha);
+
 
     // if this variable is true then we will upload the static contents as well as the dynamic contens
     var uploadStatic = container._updateStatic;
@@ -11423,7 +10938,12 @@ ParticleRenderer.prototype.render = function ( container )
 
     if (!baseTexture._glTextures[gl.id])
     {
-        this.renderer.updateTexture(baseTexture);
+        // if the texture has not updated then lets not upload any static properties
+        if(!this.renderer.updateTexture(baseTexture))
+        {
+            return;
+        }
+
         if(!this.properties[0].dynamic || !this.properties[3].dynamic)
         {
             uploadStatic = true;
@@ -11694,13 +11214,19 @@ ParticleRenderer.prototype.uploadAlpha = function (children,startIndex, amount, 
  */
 ParticleRenderer.prototype.destroy = function ()
 {
+    if (this.renderer.gl) {
+        this.renderer.gl.deleteBuffer(this.indexBuffer);
+    }
+
+    ObjectRenderer.prototype.destroy.apply(this, arguments);
 
     this.shader.destroy();
 
-    //TODO implement this!
+    this.indices = null;
+    this.tempMatrix = null;
 };
 
-},{"../../math":26,"../../renderers/webgl/WebGLRenderer":42,"../../renderers/webgl/utils/ObjectRenderer":56,"./ParticleBuffer":33,"./ParticleShader":35}],35:[function(require,module,exports){
+},{"../../math":31,"../../renderers/webgl/WebGLRenderer":47,"../../renderers/webgl/utils/ObjectRenderer":61,"./ParticleBuffer":38,"./ParticleShader":40}],40:[function(require,module,exports){
 var TextureShader = require('../../renderers/webgl/shaders/TextureShader');
 
 /**
@@ -11749,13 +11275,16 @@ function ParticleShader(shaderManager)
             'varying float vColor;',
 
             'uniform sampler2D uSampler;',
+            'uniform float uAlpha;',
 
             'void main(void){',
-            '   gl_FragColor = texture2D(uSampler, vTextureCoord) * vColor ;',
+            '   gl_FragColor = texture2D(uSampler, vTextureCoord) * vColor * uAlpha ;',
             '}'
         ].join('\n'),
         // custom uniforms
-        null,
+        {
+            uAlpha:  { type: '1f', value: 1 }
+        },
         // custom attributes
         {
             aPositionCoord: 0,
@@ -11773,11 +11302,11 @@ ParticleShader.prototype.constructor = ParticleShader;
 
 module.exports = ParticleShader;
 
-},{"../../renderers/webgl/shaders/TextureShader":55}],36:[function(require,module,exports){
+},{"../../renderers/webgl/shaders/TextureShader":60}],41:[function(require,module,exports){
 var utils = require('../utils'),
     math = require('../math'),
     CONST = require('../const'),
-    EventEmitter = require('eventemitter3').EventEmitter;
+    EventEmitter = require('eventemitter3');
 
 /**
  * The CanvasRenderer draws the scene and all its content onto a 2d canvas. This renderer should be used for browsers that do not support webGL.
@@ -12015,7 +11544,7 @@ SystemRenderer.prototype.destroy = function (removeView) {
     this._backgroundColorString = null;
 };
 
-},{"../const":16,"../math":26,"../utils":69,"eventemitter3":4}],37:[function(require,module,exports){
+},{"../const":21,"../math":31,"../utils":74,"eventemitter3":10}],42:[function(require,module,exports){
 var SystemRenderer = require('../SystemRenderer'),
     CanvasMaskManager = require('./utils/CanvasMaskManager'),
     utils = require('../../utils'),
@@ -12285,7 +11814,7 @@ CanvasRenderer.prototype._mapBlendModes = function ()
     }
 };
 
-},{"../../const":16,"../../math":26,"../../utils":69,"../SystemRenderer":36,"./utils/CanvasMaskManager":40}],38:[function(require,module,exports){
+},{"../../const":21,"../../math":31,"../../utils":74,"../SystemRenderer":41,"./utils/CanvasMaskManager":45}],43:[function(require,module,exports){
 /**
  * Creates a Canvas element of the given size.
  *
@@ -12385,7 +11914,7 @@ CanvasBuffer.prototype.destroy = function ()
     this.canvas = null;
 };
 
-},{}],39:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 var CONST = require('../../../const');
 
 /**
@@ -12736,7 +12265,7 @@ CanvasGraphics.updateGraphicsTint = function (graphics)
 };
 
 
-},{"../../../const":16}],40:[function(require,module,exports){
+},{"../../../const":21}],45:[function(require,module,exports){
 var CanvasGraphics = require('./CanvasGraphics');
 
 /**
@@ -12796,7 +12325,7 @@ CanvasMaskManager.prototype.popMask = function (renderer)
     renderer.context.restore();
 };
 
-},{"./CanvasGraphics":39}],41:[function(require,module,exports){
+},{"./CanvasGraphics":44}],46:[function(require,module,exports){
 var utils = require('../../../utils');
 
 /**
@@ -13028,7 +12557,7 @@ CanvasTinter.canUseMultiply = utils.canUseNewCanvasBlendModes();
  */
 CanvasTinter.tintMethod = CanvasTinter.canUseMultiply ? CanvasTinter.tintWithMultiply :  CanvasTinter.tintWithPerPixel;
 
-},{"../../../utils":69}],42:[function(require,module,exports){
+},{"../../../utils":74}],47:[function(require,module,exports){
 var SystemRenderer = require('../SystemRenderer'),
     ShaderManager = require('./managers/ShaderManager'),
     MaskManager = require('./managers/MaskManager'),
@@ -13252,6 +12781,8 @@ WebGLRenderer.prototype.render = function (object)
         return;
     }
 
+    this.drawCount = 0;
+
     this._lastObjectRendered = object;
 
     if(this._useFXAA)
@@ -13366,6 +12897,8 @@ WebGLRenderer.prototype.setRenderTarget = function (renderTarget)
 WebGLRenderer.prototype.resize = function (width, height)
 {
     SystemRenderer.prototype.resize.call(this, width, height);
+
+    this.gl.viewport(0, 0, this.width, this.height);
 
     this.filterManager.resize(width, height);
     this.renderTarget.resize(width, height);
@@ -13552,7 +13085,7 @@ WebGLRenderer.prototype._mapBlendModes = function ()
     }
 };
 
-},{"../../const":16,"../../utils":69,"../SystemRenderer":36,"./filters/FXAAFilter":44,"./managers/BlendModeManager":46,"./managers/FilterManager":47,"./managers/MaskManager":48,"./managers/ShaderManager":49,"./managers/StencilManager":50,"./utils/ObjectRenderer":56,"./utils/RenderTarget":58}],43:[function(require,module,exports){
+},{"../../const":21,"../../utils":74,"../SystemRenderer":41,"./filters/FXAAFilter":49,"./managers/BlendModeManager":51,"./managers/FilterManager":52,"./managers/MaskManager":53,"./managers/ShaderManager":54,"./managers/StencilManager":55,"./utils/ObjectRenderer":61,"./utils/RenderTarget":63}],48:[function(require,module,exports){
 var DefaultShader = require('../shaders/TextureShader');
 
 /**
@@ -13671,7 +13204,7 @@ AbstractFilter.prototype.apply = function (frameBuffer)
 };
 */
 
-},{"../shaders/TextureShader":55}],44:[function(require,module,exports){
+},{"../shaders/TextureShader":60}],49:[function(require,module,exports){
 var AbstractFilter = require('./AbstractFilter');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -13719,7 +13252,7 @@ FXAAFilter.prototype.applyFilter = function (renderer, input, output)
     filterManager.applyFilter(shader, input, output);
 };
 
-},{"./AbstractFilter":43}],45:[function(require,module,exports){
+},{"./AbstractFilter":48}],50:[function(require,module,exports){
 var AbstractFilter = require('./AbstractFilter'),
     math =  require('../../../math');
 
@@ -13816,7 +13349,7 @@ Object.defineProperties(SpriteMaskFilter.prototype, {
     }
 });
 
-},{"../../../math":26,"./AbstractFilter":43}],46:[function(require,module,exports){
+},{"../../../math":31,"./AbstractFilter":48}],51:[function(require,module,exports){
 var WebGLManager = require('./WebGLManager');
 
 /**
@@ -13859,7 +13392,7 @@ BlendModeManager.prototype.setBlendMode = function (blendMode)
     return true;
 };
 
-},{"./WebGLManager":51}],47:[function(require,module,exports){
+},{"./WebGLManager":56}],52:[function(require,module,exports){
 var WebGLManager = require('./WebGLManager'),
     RenderTarget = require('../utils/RenderTarget'),
     CONST = require('../../../const'),
@@ -13934,7 +13467,9 @@ FilterManager.prototype.setFilterStack = function ( filterStack )
 FilterManager.prototype.pushFilter = function (target, filters)
 {
     // get the bounds of the object..
-    var bounds = target.filterArea || target.getBounds();
+    // TODO replace clone with a copy to save object creation
+    var bounds = target.filterArea ? target.filterArea.clone() : target.getBounds();
+    
     //bounds = bounds.clone();
 
     // round off the rectangle to get a nice smoooooooth filter :)
@@ -14293,7 +13828,7 @@ FilterManager.prototype.destroy = function ()
     this.texturePool = null;
 };
 
-},{"../../../const":16,"../../../math":26,"../utils/Quad":57,"../utils/RenderTarget":58,"./WebGLManager":51}],48:[function(require,module,exports){
+},{"../../../const":21,"../../../math":31,"../utils/Quad":62,"../utils/RenderTarget":63,"./WebGLManager":56}],53:[function(require,module,exports){
 var WebGLManager = require('./WebGLManager'),
     AlphaMaskFilter = require('../filters/SpriteMaskFilter');
 
@@ -14407,7 +13942,7 @@ MaskManager.prototype.popStencilMask = function (target, maskData)
 };
 
 
-},{"../filters/SpriteMaskFilter":45,"./WebGLManager":51}],49:[function(require,module,exports){
+},{"../filters/SpriteMaskFilter":50,"./WebGLManager":56}],54:[function(require,module,exports){
 var WebGLManager = require('./WebGLManager'),
     TextureShader = require('../shaders/TextureShader'),
     ComplexPrimitiveShader = require('../shaders/ComplexPrimitiveShader'),
@@ -14477,6 +14012,18 @@ module.exports = ShaderManager;
 ShaderManager.prototype.onContextChange = function ()
 {
     this.initPlugins();
+
+    var gl = this.renderer.gl;
+
+    // get the maximum number of attribute correctly as this tends to vary
+    this.maxAttibs = gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
+
+    this.attribState = [];
+
+    for (var i = 0; i < this.maxAttibs; i++)
+    {
+        this.attribState[i] = false;
+    }
 
     // TODO - Why are these not plugins? We can't decouple primitives unless they are....
     this.defaultShader = new TextureShader(this);
@@ -14562,7 +14109,7 @@ ShaderManager.prototype.destroy = function ()
     this.tempAttribState = null;
 };
 
-},{"../../../utils":69,"../shaders/ComplexPrimitiveShader":52,"../shaders/PrimitiveShader":53,"../shaders/TextureShader":55,"./WebGLManager":51}],50:[function(require,module,exports){
+},{"../../../utils":74,"../shaders/ComplexPrimitiveShader":57,"../shaders/PrimitiveShader":58,"../shaders/TextureShader":60,"./WebGLManager":56}],55:[function(require,module,exports){
 var WebGLManager = require('./WebGLManager'),
     utils = require('../../../utils');
 
@@ -14906,7 +14453,7 @@ WebGLMaskManager.prototype.popMask = function (maskData)
 };
 
 
-},{"../../../utils":69,"./WebGLManager":51}],51:[function(require,module,exports){
+},{"../../../utils":74,"./WebGLManager":56}],56:[function(require,module,exports){
 /**
  * @class
  * @memberof PIXI
@@ -14947,7 +14494,7 @@ WebGLManager.prototype.destroy = function ()
     this.renderer = null;
 };
 
-},{}],52:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 var Shader = require('./Shader');
 
 /**
@@ -15007,7 +14554,7 @@ ComplexPrimitiveShader.prototype = Object.create(Shader.prototype);
 ComplexPrimitiveShader.prototype.constructor = ComplexPrimitiveShader;
 module.exports = ComplexPrimitiveShader;
 
-},{"./Shader":54}],53:[function(require,module,exports){
+},{"./Shader":59}],58:[function(require,module,exports){
 var Shader = require('./Shader');
 
 /**
@@ -15068,7 +14615,7 @@ PrimitiveShader.prototype = Object.create(Shader.prototype);
 PrimitiveShader.prototype.constructor = PrimitiveShader;
 module.exports = PrimitiveShader;
 
-},{"./Shader":54}],54:[function(require,module,exports){
+},{"./Shader":59}],59:[function(require,module,exports){
 /*global console */
 var utils = require('../../../utils');
 
@@ -15617,7 +15164,7 @@ Shader.prototype._glCompile = function (type, src)
     return shader;
 };
 
-},{"../../../utils":69}],55:[function(require,module,exports){
+},{"../../../utils":74}],60:[function(require,module,exports){
 var Shader = require('./Shader');
 
 /**
@@ -15714,7 +15261,7 @@ TextureShader.defaultFragmentSrc = [
     '}'
 ].join('\n');
 
-},{"./Shader":54}],56:[function(require,module,exports){
+},{"./Shader":59}],61:[function(require,module,exports){
 var WebGLManager = require('../managers/WebGLManager');
 
 /**
@@ -15771,7 +15318,7 @@ ObjectRenderer.prototype.render = function (object) // jshint unused:false
     // render the object
 };
 
-},{"../managers/WebGLManager":51}],57:[function(require,module,exports){
+},{"../managers/WebGLManager":56}],62:[function(require,module,exports){
 /**
  * Helper class to create a quad
  * @class
@@ -15917,7 +15464,7 @@ module.exports = Quad;
 
 
 
-},{}],58:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 var math = require('../../../math'),
     utils = require('../../../utils'),
     CONST = require('../../../const'),
@@ -16223,7 +15770,7 @@ RenderTarget.prototype.destroy = function()
     this.texture = null;
 };
 
-},{"../../../const":16,"../../../math":26,"../../../utils":69,"./StencilMaskStack":59}],59:[function(require,module,exports){
+},{"../../../const":21,"../../../math":31,"../../../utils":74,"./StencilMaskStack":64}],64:[function(require,module,exports){
 /**
  * Generic Mask Stack data structure
  * @class
@@ -16257,7 +15804,7 @@ function StencilMaskStack()
 StencilMaskStack.prototype.constructor = StencilMaskStack;
 module.exports = StencilMaskStack;
 
-},{}],60:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 var math = require('../math'),
     Texture = require('../textures/Texture'),
     Container = require('../display/Container'),
@@ -16740,8 +16287,8 @@ Sprite.prototype._renderCanvas = function (renderer)
                 0,
                 width * resolution * renderer.resolution,
                 height * resolution * renderer.resolution,
-                dx / resolution,
-                dy / resolution,
+                dx,
+                dy,
                 width * renderer.resolution,
                 height * renderer.resolution
             );
@@ -16754,8 +16301,8 @@ Sprite.prototype._renderCanvas = function (renderer)
                 texture.crop.y * resolution,
                 width * resolution * renderer.resolution,
                 height * resolution * renderer.resolution,
-                dx / resolution,
-                dy / resolution,
+                dx,
+                dy,
                 width * renderer.resolution,
                 height * renderer.resolution
             );
@@ -16766,8 +16313,8 @@ Sprite.prototype._renderCanvas = function (renderer)
 /**
  * Destroys this sprite and optionally its texture
  *
- * @param destroyTexture {boolean} Should it destroy the current texture of the sprite as well
- * @param destroyBaseTexture {boolean} Should it destroy the base texture of the sprite as well
+ * @param [destroyTexture=false] {boolean} Should it destroy the current texture of the sprite as well
+ * @param [destroyBaseTexture=false] {boolean} Should it destroy the base texture of the sprite as well
  */
 Sprite.prototype.destroy = function (destroyTexture, destroyBaseTexture)
 {
@@ -16802,7 +16349,7 @@ Sprite.fromFrame = function (frameId)
 
     if (!texture)
     {
-        throw new Error('The frameId "' + frameId + '" does not exist in the texture cache ' + this);
+        throw new Error('The frameId "' + frameId + '" does not exist in the texture cache');
     }
 
     return new Sprite(texture);
@@ -16821,7 +16368,7 @@ Sprite.fromImage = function (imageId, crossorigin, scaleMode)
     return new Sprite(Texture.fromImage(imageId, crossorigin, scaleMode));
 };
 
-},{"../const":16,"../display/Container":17,"../math":26,"../renderers/canvas/utils/CanvasTinter":41,"../textures/Texture":65,"../utils":69}],61:[function(require,module,exports){
+},{"../const":21,"../display/Container":22,"../math":31,"../renderers/canvas/utils/CanvasTinter":46,"../textures/Texture":70,"../utils":74}],66:[function(require,module,exports){
 var ObjectRenderer = require('../../renderers/webgl/utils/ObjectRenderer'),
     WebGLRenderer = require('../../renderers/webgl/WebGLRenderer'),
     CONST = require('../../const');
@@ -17338,7 +16885,7 @@ SpriteRenderer.prototype.destroy = function ()
     this.shader = null;
 };
 
-},{"../../const":16,"../../renderers/webgl/WebGLRenderer":42,"../../renderers/webgl/utils/ObjectRenderer":56}],62:[function(require,module,exports){
+},{"../../const":21,"../../renderers/webgl/WebGLRenderer":47,"../../renderers/webgl/utils/ObjectRenderer":61}],67:[function(require,module,exports){
 var Sprite = require('../sprites/Sprite'),
     Texture = require('../textures/Texture'),
     math = require('../math'),
@@ -17418,7 +16965,6 @@ function Text(text, style, resolution)
     var texture = Texture.fromCanvas(this.canvas);
     texture.trim = new math.Rectangle();
     Sprite.call(this, texture);
-
 
     this.text = text;
     this.style = style;
@@ -17714,7 +17260,7 @@ Text.prototype.updateTexture = function ()
     this._width = this.canvas.width / this.resolution;
     this._height = this.canvas.height / this.resolution;
 
-    texture.update();
+    texture.baseTexture.emit('update',  texture.baseTexture);
 
     this.dirty = false;
 };
@@ -17923,7 +17469,7 @@ Text.prototype.getBounds = function (matrix)
 /**
  * Destroys this text object.
  *
- * @param destroyBaseTexture {boolean} whether to destroy the base texture as well
+ * @param [destroyBaseTexture=true] {boolean} whether to destroy the base texture as well
  */
 Text.prototype.destroy = function (destroyBaseTexture)
 {
@@ -17931,13 +17477,15 @@ Text.prototype.destroy = function (destroyBaseTexture)
     this.context = null;
     this.canvas = null;
 
+    this._style = null;
+
     this._texture.destroy(destroyBaseTexture === undefined ? true : destroyBaseTexture);
 };
 
-},{"../const":16,"../math":26,"../sprites/Sprite":60,"../textures/Texture":65}],63:[function(require,module,exports){
+},{"../const":21,"../math":31,"../sprites/Sprite":65,"../textures/Texture":70}],68:[function(require,module,exports){
 var utils = require('../utils'),
     CONST = require('../const'),
-    EventEmitter = require('eventemitter3').EventEmitter;
+    EventEmitter = require('eventemitter3');
 
 /**
  * A texture stores the information that represents an image. All textures have a base texture.
@@ -18101,12 +17649,20 @@ BaseTexture.prototype.constructor = BaseTexture;
 module.exports = BaseTexture;
 
 /**
- * Updates the texture on all the webgl renderers.
+ * Updates the texture on all the webgl renderers, this also assumes the src has changed.
  *
  * @fires update
  */
 BaseTexture.prototype.update = function ()
 {
+    this.realWidth = this.source.naturalWidth || this.source.width;
+    this.realHeight = this.source.naturalHeight || this.source.height;
+
+    this.width = this.realWidth / this.resolution;
+    this.height = this.realHeight / this.resolution;
+
+    this.isPowerOfTwo = utils.isPowerOfTwo(this.realWidth, this.realHeight);
+
     this.emit('update', this);
 };
 
@@ -18233,16 +17789,6 @@ BaseTexture.prototype.loadSource = function (source)
 BaseTexture.prototype._sourceLoaded = function ()
 {
     this.hasLoaded = true;
-
-    this.realWidth = this.source.naturalWidth || this.source.width;
-    this.realHeight = this.source.naturalHeight || this.source.height;
-
-    this.width = this.realWidth / this.resolution;
-    this.height = this.realHeight / this.resolution;
-
-
-    this.isPowerOfTwo = utils.isPowerOfTwo(this.width, this.height);
-
     this.update();
 };
 
@@ -18283,6 +17829,8 @@ BaseTexture.prototype.destroy = function ()
 BaseTexture.prototype.dispose = function ()
 {
     this.emit('dispose', this);
+
+    this._glTextures.length = 0;
 };
 
 /**
@@ -18367,7 +17915,7 @@ BaseTexture.fromCanvas = function (canvas, scaleMode)
     return baseTexture;
 };
 
-},{"../const":16,"../utils":69,"eventemitter3":4}],64:[function(require,module,exports){
+},{"../const":21,"../utils":74,"eventemitter3":10}],69:[function(require,module,exports){
 var BaseTexture = require('./BaseTexture'),
     Texture = require('./Texture'),
     RenderTarget = require('../renderers/webgl/utils/RenderTarget'),
@@ -18626,7 +18174,9 @@ RenderTexture.prototype.renderWebGL = function (displayObject, matrix, clear, up
 
     this.textureBuffer.transform = matrix;
 
-
+    //TODO not a fan that this is here... it will move!
+    this.textureBuffer.activate();
+    
     // setWorld Alpha to ensure that the object is renderer at full opacity
     displayObject.worldAlpha = displayObject.alpha;
 
@@ -18797,11 +18347,70 @@ RenderTexture.prototype.getCanvas = function ()
     }
 };
 
-},{"../const":16,"../math":26,"../renderers/canvas/utils/CanvasBuffer":38,"../renderers/webgl/managers/FilterManager":47,"../renderers/webgl/utils/RenderTarget":58,"./BaseTexture":63,"./Texture":65}],65:[function(require,module,exports){
+/**
+ * Will return a one-dimensional array containing the pixel data of the entire texture in RGBA order, with integer values between 0 and 255 (included).
+ *
+ * @return {Uint8ClampedArray}
+ */
+RenderTexture.prototype.getPixels = function ()
+{
+    var width, height;
+
+    if (this.renderer.type === CONST.RENDERER_TYPE.WEBGL)
+    {
+        var gl = this.renderer.gl;
+        width = this.textureBuffer.size.width;
+        height = this.textureBuffer.size.height;
+
+        var webGLPixels = new Uint8Array(4 * width * height);
+
+        gl.bindFramebuffer(gl.FRAMEBUFFER, this.textureBuffer.frameBuffer);
+        gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, webGLPixels);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+
+        return webGLPixels;
+    }
+    else
+    {
+        width = this.textureBuffer.canvas.width;
+        height = this.textureBuffer.canvas.height;
+
+        return this.textureBuffer.canvas.getContext('2d').getImageData(0, 0, width, height).data;
+    }
+};
+
+/**
+ * Will return a one-dimensional array containing the pixel data of a pixel within the texture in RGBA order, with integer values between 0 and 255 (included).
+ *
+ * @param x {number} The x coordinate of the pixel to retrieve.
+ * @param y {number} The y coordinate of the pixel to retrieve.
+ * @return {Uint8ClampedArray}
+ */
+RenderTexture.prototype.getPixel = function (x, y)
+{
+    if (this.renderer.type === CONST.RENDERER_TYPE.WEBGL)
+    {
+        var gl = this.renderer.gl;
+
+        var webGLPixels = new Uint8Array(4);
+
+        gl.bindFramebuffer(gl.FRAMEBUFFER, this.textureBuffer.frameBuffer);
+        gl.readPixels(x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, webGLPixels);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+
+        return webGLPixels;
+    }
+    else
+    {
+        return this.textureBuffer.canvas.getContext('2d').getImageData(x, y, 1, 1).data;
+    }
+};
+
+},{"../const":21,"../math":31,"../renderers/canvas/utils/CanvasBuffer":43,"../renderers/webgl/managers/FilterManager":52,"../renderers/webgl/utils/RenderTarget":63,"./BaseTexture":68,"./Texture":70}],70:[function(require,module,exports){
 var BaseTexture = require('./BaseTexture'),
     VideoBaseTexture = require('./VideoBaseTexture'),
     TextureUvs = require('./TextureUvs'),
-    EventEmitter = require('eventemitter3').EventEmitter,
+    EventEmitter = require('eventemitter3'),
     math = require('../math'),
     utils = require('../utils');
 
@@ -18928,6 +18537,9 @@ function Texture(baseTexture, frame, crop, trim, rotate)
         if (this.noFrame)
         {
             frame = new math.Rectangle(0, 0, baseTexture.width, baseTexture.height);
+
+            // if there is no frame we should monitor for any base texture changes..
+            baseTexture.on('update', this.onBaseTextureUpdated, this);
         }
         this.frame = frame;
     }
@@ -18994,8 +18606,6 @@ Object.defineProperties(Texture.prototype, {
 Texture.prototype.update = function ()
 {
     this.baseTexture.update();
-
-
 };
 
 /**
@@ -19018,6 +18628,14 @@ Texture.prototype.onBaseTextureLoaded = function (baseTexture)
     this.emit( 'update', this );
 };
 
+Texture.prototype.onBaseTextureUpdated = function (baseTexture)
+{
+    this._frame.width = baseTexture.width;
+    this._frame.height = baseTexture.height;
+
+    this.emit( 'update', this );
+};
+
 /**
  * Destroys this texture
  *
@@ -19025,10 +18643,23 @@ Texture.prototype.onBaseTextureLoaded = function (baseTexture)
  */
 Texture.prototype.destroy = function (destroyBase)
 {
-    if (destroyBase)
+    if (this.baseTexture)
     {
-        this.baseTexture.destroy();
+        if (destroyBase)
+        {
+            this.baseTexture.destroy();
+        }
+
+        this.baseTexture.off('update', this.onBaseTextureUpdated);
+        this.baseTexture.off('loaded', this.onBaseTextureLoaded);
+
+        this.baseTexture = null;
     }
+
+    this._frame = null;
+    this._uvs = null;
+    this.trim = null;
+    this.crop = null;
 
     this.valid = false;
 };
@@ -19171,9 +18802,9 @@ Texture.removeTextureFromCache = function (id)
     return texture;
 };
 
-Texture.emptyTexture = new Texture(new BaseTexture());
+Texture.EMPTY = new Texture(new BaseTexture());
 
-},{"../math":26,"../utils":69,"./BaseTexture":63,"./TextureUvs":66,"./VideoBaseTexture":67,"eventemitter3":4}],66:[function(require,module,exports){
+},{"../math":31,"../utils":74,"./BaseTexture":68,"./TextureUvs":71,"./VideoBaseTexture":72,"eventemitter3":10}],71:[function(require,module,exports){
 
 /**
  * A standard object to store the Uvs of a texture
@@ -19186,14 +18817,14 @@ function TextureUvs()
     this.x0 = 0;
     this.y0 = 0;
 
-    this.x1 = 0;
+    this.x1 = 1;
     this.y1 = 0;
 
-    this.x2 = 0;
-    this.y2 = 0;
+    this.x2 = 1;
+    this.y2 = 1;
 
     this.x3 = 0;
-    this.y3 = 0;
+    this.y3 = 1;
 }
 
 module.exports = TextureUvs;
@@ -19241,7 +18872,7 @@ TextureUvs.prototype.set = function (frame, baseFrame, rotate)
     }
 };
 
-},{}],67:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 var BaseTexture = require('./BaseTexture'),
     utils = require('../utils');
 
@@ -19388,10 +19019,7 @@ VideoBaseTexture.prototype.destroy = function ()
 {
     if (this.source && this.source._pixiId)
     {
-        utils.BaseTextureCache[ this.source._pixiId ] = null;
         delete utils.BaseTextureCache[ this.source._pixiId ];
-
-        this.source._pixiId = null;
         delete this.source._pixiId;
     }
 
@@ -19477,7 +19105,7 @@ function createSource(path, type)
     return source;
 }
 
-},{"../utils":69,"./BaseTexture":63}],68:[function(require,module,exports){
+},{"../utils":74,"./BaseTexture":68}],73:[function(require,module,exports){
 //TODO: Have Graphics use https://github.com/mattdesl/shape2d
 // and https://github.com/mattdesl/shape2d-triangulate instead of custom code.
 
@@ -19649,7 +19277,7 @@ PolyK._convex = function (ax, ay, bx, by, cx, cy, sign)
     return ((ay-by)*(cx-bx) + (bx-ax)*(cy-by) >= 0) === sign;
 };
 
-},{}],69:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 var CONST = require('../const');
 
 /**
@@ -19661,7 +19289,7 @@ var utils = module.exports = {
 
     pluginTarget:   require('./pluginTarget'),
     PolyK:          require('./PolyK'),
-
+    async:          require('async'),
 
     /**
      * Gets the next uuid
@@ -19880,7 +19508,7 @@ var utils = module.exports = {
     BaseTextureCache: {}
 };
 
-},{"../const":16,"./PolyK":68,"./pluginTarget":70}],70:[function(require,module,exports){
+},{"../const":21,"./PolyK":73,"./pluginTarget":75,"async":2}],75:[function(require,module,exports){
 /**
  * Mixins functionality to make an object have "plugins".
  *
@@ -19950,11 +19578,12 @@ module.exports = {
     }
 };
 
-},{}],71:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 /*global console */
-var core   = require('./core'),
-    mesh   = require('./mesh'),
-    extras = require('./extras');
+var core = require('./core'),
+    mesh = require('./mesh'),
+    extras = require('./extras'),
+    utils = require('./core/utils');
 
 /**
  * @class
@@ -19962,8 +19591,7 @@ var core   = require('./core'),
  * @see {@link PIXI.ParticleContainer}
  * @throws {ReferenceError} SpriteBatch does not exist any more, please use the new ParticleContainer instead.
  */
-core.SpriteBatch = function ()
-{
+core.SpriteBatch = function() {
     throw new ReferenceError('SpriteBatch does not exist any more, please use the new ParticleContainer instead.');
 };
 
@@ -19971,10 +19599,10 @@ core.SpriteBatch = function ()
  * @class
  * @name PIXI.AssetLoader
  * @see {@link PIXI.loaders.Loader}
- * @throws {ReferenceError} The loader system was overhauled in pixi v3, please see the new PIXI.Loader class.
+ * @throws {ReferenceError} The loader system was overhauled in pixi v3, please see the new PIXI.loaders.Loader class.
  */
-core.AssetLoader = function () {
-    throw new ReferenceError('The loader system was overhauled in pixi v3, please see the new PIXI.Loader class.');
+core.AssetLoader = function() {
+    throw new ReferenceError('The loader system was overhauled in pixi v3, please see the new PIXI.loaders.Loader class.');
 };
 
 Object.defineProperties(core, {
@@ -19986,8 +19614,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0
      */
     Stage: {
-        get: function ()
-        {
+        get: function() {
             console.warn('You do not need to use a PIXI Stage any more, you can simply render any container.');
             return core.Container;
         }
@@ -20000,8 +19627,7 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0
      */
     DisplayObjectContainer: {
-        get: function ()
-        {
+        get: function() {
             console.warn('DisplayObjectContainer has been shortened to Container, please use Container from now on.');
             return core.Container;
         }
@@ -20014,13 +19640,109 @@ Object.defineProperties(core, {
      * @deprecated since version 3.0
      */
     Strip: {
-        get: function ()
-        {
-            console.warn('The Strip class has been renamed to Mesh, please use Mesh from now on.');
+        get: function() {
+            console.warn('The Strip class has been renamed to Mesh and moved to mesh.Mesh, please use mesh.Mesh from now on.');
             return mesh.Mesh;
         }
-    }
+    },
 
+    /**
+     * @class
+     * @name PIXI.Rope
+     * @see {@link PIXI.mesh.Rope}
+     * @deprecated since version 3.0
+     */
+    Rope: {
+        get: function() {
+            console.warn('The Rope class has been moved to mesh.Rope, please use mesh.Rope from now on.');
+            return mesh.Rope;
+        }
+    },
+
+    /**
+     * @class
+     * @name PIXI.MovieClip
+     * @see {@link PIXI.MovieClip}
+     * @deprecated since version 3.0
+     */
+    MovieClip: {
+        get: function() {
+            console.warn('The MovieClip class has been moved to extras.MovieClip, please use extras.MovieClip from now on.');
+            return extras.MovieClip;
+        }
+    },
+    /**
+     * @class
+     * @name PIXI.TilingSprite
+     * @see {@link PIXI.TilingSprite}
+     * @deprecated since version 3.0
+     */
+    TilingSprite: {
+        get: function() {
+            console.warn('The TilingSprite class has been moved to extras.TilingSprite, please use extras.TilingSprite from now on.');
+            return extras.TilingSprite;
+        }
+    },
+    /**
+     * @class
+     * @name PIXI.BitmapText
+     * @see {@link PIXI.extras.BitmapText}
+     * @deprecated since version 3.0
+     */
+    BitmapText: {
+        get: function() {
+            console.warn('The BitmapText class has been moved to extras.BitmapText, please use extras.BitmapText from now on.');
+            return extras.BitmapText;
+        }
+    },
+    /**
+     * @class
+     * @name PIXI.blendModes
+     * @see {@link PIXI.BLEND_MODES}
+     * @deprecated since version 3.0
+     */
+    blendModes: {
+        get: function() {
+            console.warn('The blendModes has been moved to BLEND_MODES, please use BLEND_MODES from now on.');
+            return core.BLEND_MODES;
+        }
+    },
+    /**
+     * @class
+     * @name PIXI.scaleModes
+     * @see {@link PIXI.SCALE_MODES}
+     * @deprecated since version 3.0
+     */
+    scaleModes: {
+        get: function() {
+            console.warn('The scaleModes has been moved to SCALE_MODES, please use SCALE_MODES from now on.');
+            return core.SCALE_MODES;
+        }
+    },
+    /**
+     * @class
+     * @name PIXI.BaseTextureCache
+     * @see {@link PIXI.utils.BaseTextureCache}
+     * @deprecated since version 3.0
+     */
+    BaseTextureCache: {
+        get: function () {
+            console.warn('The BaseTextureCache class has been moved to utils.BaseTextureCache, please use utils.BaseTextureCache from now on.');
+            return utils.BaseTextureCache;
+        }
+    },
+    /**
+     * @class
+     * @name PIXI.TextureCache
+     * @see {@link PIXI.utils.TextureCache}
+     * @deprecated since version 3.0
+     */
+    TextureCache: {
+        get: function () {
+            console.warn('The TextureCache class has been moved to utils.TextureCache, please use utils.TextureCache from now on.');
+            return utils.TextureCache;
+        }
+    }
 });
 
 /**
@@ -20029,8 +19751,7 @@ Object.defineProperties(core, {
  * @see {@link PIXI.Sprite#texture}
  * @deprecated since version 3.0
  */
-core.Sprite.prototype.setTexture = function (texture)
-{
+core.Sprite.prototype.setTexture = function(texture) {
     this.texture = texture;
     console.warn('setTexture is now deprecated, please use the texture property, e.g : sprite.texture = texture;');
 };
@@ -20041,8 +19762,7 @@ core.Sprite.prototype.setTexture = function (texture)
  * @see {@link PIXI.BitmapText#text}
  * @deprecated since version 3.0
  */
-extras.BitmapText.prototype.setText = function (text)
-{
+extras.BitmapText.prototype.setText = function(text) {
     this.text = text;
     console.warn('setText is now deprecated, please use the text property, e.g : myBitmapText.text = \'my text\';');
 };
@@ -20053,13 +19773,34 @@ extras.BitmapText.prototype.setText = function (text)
  * @see {@link PIXI.Text#text}
  * @deprecated since version 3.0
  */
-core.Text.prototype.setText = function (text)
-{
+core.Text.prototype.setText = function(text) {
     this.text = text;
     console.warn('setText is now deprecated, please use the text property, e.g : myText.text = \'my text\';');
 };
 
-},{"./core":23,"./extras":79,"./mesh":120}],72:[function(require,module,exports){
+/**
+ * @method
+ * @name PIXI.Text#setStyle
+ * @see {@link PIXI.Text#style}
+ * @deprecated since version 3.0
+ */
+core.Text.prototype.setStyle = function(style) {
+    this.style = style;
+    console.warn('setStyle is now deprecated, please use the style property, e.g : myText.style = style;');
+};
+
+/**
+ * @method
+ * @name PIXI.Texture#setFrame
+ * @see {@link PIXI.Texture#setFrame}
+ * @deprecated since version 3.0
+ */
+core.Texture.prototype.setFrame = function(frame) {
+    this.frame = frame;
+    console.warn('setFrame is now deprecated, please use the frame property, e.g : myTexture.frame = frame;');
+};
+
+},{"./core":28,"./core/utils":74,"./extras":83,"./mesh":124}],77:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -20093,6 +19834,8 @@ var core = require('../core');
 function BitmapText(text, style)
 {
     core.Container.call(this);
+
+    style = style || {};
 
     /**
      * The width of the overall text, different from fontSize,
@@ -20206,7 +19949,7 @@ Object.defineProperties(BitmapText.prototype, {
         },
         set: function (value)
         {
-            this._font.align = value;
+            this._font.align = value || 'left';
 
             this.dirty = true;
         }
@@ -20225,6 +19968,10 @@ Object.defineProperties(BitmapText.prototype, {
         },
         set: function (value)
         {
+            if (!value) {
+                return;
+            }
+
             if (typeof value === 'string') {
                 value = value.split(' ');
 
@@ -20253,8 +20000,12 @@ Object.defineProperties(BitmapText.prototype, {
         },
         set: function (value)
         {
+            value = value.toString() || ' ';
+            if (this._text === value)
+            {
+                return;
+            }
             this._text = value;
-
             this.dirty = true;
         }
     }
@@ -20407,9 +20158,9 @@ BitmapText.prototype.updateTransform = function ()
 
 BitmapText.fonts = {};
 
-},{"../core":23}],73:[function(require,module,exports){
+},{"../core":28}],78:[function(require,module,exports){
 var core    = require('../core'),
-    Ticker  = require('./Ticker');
+    ticker  = require('../ticker');
 
 /**
  * A MovieClip is a simple way to display an animation depicted by a list of textures.
@@ -20437,9 +20188,7 @@ function MovieClip(textures)
     core.Sprite.call(this, textures[0]);
 
     /**
-     * The array of textures that make up the animation
-     *
-     * @member {Texture[]}
+     * @private
      */
     this._textures = textures;
 
@@ -20468,13 +20217,12 @@ function MovieClip(textures)
     this.onComplete = null;
 
     /**
-     * The MovieClips current frame index (this may not have to be a whole number)
+     * Elapsed time since animation has been started, used internally to display current texture
      *
      * @member {number}
-     * @default 0
-     * @readonly
+     * @private
      */
-    this.currentFrame = 0;
+    this._currentTime = 0;
 
     /**
      * Indicates if the MovieClip is currently playing
@@ -20510,7 +20258,7 @@ Object.defineProperties(MovieClip.prototype, {
     /**
      * The array of textures used for this MovieClip
      *
-     * @member
+     * @member {Texture[]}
      * @memberof MovieClip#
      *
      */
@@ -20523,7 +20271,20 @@ Object.defineProperties(MovieClip.prototype, {
         {
             this._textures = value;
 
-            this.texture = this._textures[Math.floor(this.currentFrame) % this._textures.length];
+            this.texture = this._textures[Math.floor(this._currentTime) % this._textures.length];
+        }
+    },
+
+    /**
+    * The MovieClips current frame index
+    *
+    * @member {number}
+    * @readonly
+    */
+    currentFrame: {
+        get: function ()
+        {
+            return Math.floor(this._currentTime) % this._textures.length;
         }
     }
 
@@ -20541,7 +20302,7 @@ MovieClip.prototype.stop = function ()
     }
 
     this.playing = false;
-    Ticker.off('tick', this.update);
+    ticker.shared.remove(this.update, this);
 };
 
 /**
@@ -20556,7 +20317,7 @@ MovieClip.prototype.play = function ()
     }
 
     this.playing = true;
-    Ticker.on('tick', this.update, this);
+    ticker.shared.add(this.update, this);
 };
 
 /**
@@ -20568,10 +20329,10 @@ MovieClip.prototype.gotoAndStop = function (frameNumber)
 {
     this.stop();
 
-    this.currentFrame = frameNumber;
+    this._currentTime = frameNumber;
 
-    var round = Math.floor(this.currentFrame);
-    this.texture = this._textures[round % this._textures.length];
+    var round = Math.floor(this._currentTime);
+    this._texture = this._textures[round % this._textures.length];
 };
 
 /**
@@ -20581,7 +20342,7 @@ MovieClip.prototype.gotoAndStop = function (frameNumber)
  */
 MovieClip.prototype.gotoAndPlay = function (frameNumber)
 {
-    this.currentFrame = frameNumber;
+    this._currentTime = frameNumber;
     this.play();
 };
 
@@ -20592,16 +20353,16 @@ MovieClip.prototype.gotoAndPlay = function (frameNumber)
 MovieClip.prototype.update = function (deltaTime)
 {
 
-    this.currentFrame += this.animationSpeed * deltaTime;
+    this._currentTime += this.animationSpeed * deltaTime;
 
-    var floor = Math.floor(this.currentFrame);
+    var floor = Math.floor(this._currentTime);
 
     if (floor < 0)
     {
         if (this.loop)
         {
-            this.currentFrame += this._textures.length;
-            this.texture = this._textures[this.currentFrame];
+            this._currentTime += this._textures.length;
+            this._texture = this._textures[this._currentTime];
         }
         else
         {
@@ -20615,7 +20376,7 @@ MovieClip.prototype.update = function (deltaTime)
     }
     else if (this.loop || floor < this._textures.length)
     {
-        this.texture = this._textures[floor % this._textures.length];
+        this._texture = this._textures[floor % this._textures.length];
     }
     else if (floor >= this._textures.length)
     {
@@ -20674,130 +20435,10 @@ MovieClip.fromImages = function (images)
     return new MovieClip(textures);
 };
 
-},{"../core":23,"./Ticker":74}],74:[function(require,module,exports){
-var EventEmitter = require('eventemitter3').EventEmitter;
-
-/**
- * A Ticker class that runs an update loop that other objects listen to
- *
- * @class
- * @memberof PIXI.extras
- */
-var Ticker = function()
-{
-    EventEmitter.call(this);
-
-    this.updateBind = this.update.bind(this);
-
-    /**
-     * Whether or not this ticker runs
-     *
-     * @member {boolean}
-     */
-    this.active = false;
-
-    /**
-     * The deltaTime
-     *
-     * @member {number}
-     */
-    this.deltaTime = 1;
-
-    /**
-     * The time between two frames
-     *
-     * @member {number}
-     */
-    this.timeElapsed = 0;
-
-    /**
-     * The time at the last frame
-     *
-     * @member {number}
-     */
-    this.lastTime = 0;
-
-    /**
-     * The speed
-     *
-     * @member {number}
-     */
-    this.speed = 1;
-
-    // auto start ticking!
-    this.start();
-};
-
-Ticker.prototype = Object.create(EventEmitter.prototype);
-Ticker.prototype.constructor = Ticker;
-
-/**
- * Starts the ticker, automatically called by the constructor
- *
- */
-Ticker.prototype.start = function()
-{
-    if(this.active)
-    {
-        return;
-    }
-
-    this.active = true;
-    requestAnimationFrame(this.updateBind);
-};
-
-/**
- * Stops the ticker
- *
- */
-Ticker.prototype.stop = function()
-{
-    if(!this.active)
-    {
-        return;
-    }
-
-    this.active = false;
-};
-
-/**
- * The update loop, fires the 'tick' event
- *
- */
-Ticker.prototype.update = function()
-{
-    if(this.active)
-    {
-        requestAnimationFrame(this.updateBind);
-
-        var currentTime = new Date().getTime();
-        var timeElapsed = currentTime - this.lastTime;
-
-        // cap the time!
-        if(timeElapsed > 100)
-        {
-            timeElapsed = 100;
-        }
-
-        this.deltaTime = (timeElapsed * 0.06);
-
-        this.deltaTime *= this.speed;
-
-        this.emit('tick', this.deltaTime);
-
-        this.lastTime = currentTime;
-    }
-
-};
-
-module.exports = new Ticker();
-
-},{"eventemitter3":4}],75:[function(require,module,exports){
+},{"../core":28,"../ticker":131}],79:[function(require,module,exports){
 var core = require('../core'),
     // a sprite use dfor rendering textures..
-    tempSprite = new core.Sprite(),
-    tempPoint = new core.Point(),
-    tempMatrix = new core.Matrix();
+    tempPoint = new core.Point();
 
 /**
  * A tiling sprite is a fast way of rendering a tiling image
@@ -20846,31 +20487,6 @@ function TilingSprite(texture, width, height)
      */
     this._height = height || 100;
 
-     /**
-     * A point that represents the scale of the texture object
-     *
-     * @member {Point}
-     * @private
-     */
-    this._tileScaleOffset = new core.math.Point(1,1);
-
-
-    /**
-     *
-     *
-     * @member {boolean}
-     * @private
-     */
-    this._tilingTexture = null;
-
-    /**
-     *
-     *
-     * @member {boolean}
-     * @private
-     */
-    this._refreshTexture = false;
-
     /**
      * An internal WebGL UV cache.
      *
@@ -20878,6 +20494,64 @@ function TilingSprite(texture, width, height)
      * @private
      */
     this._uvs = new core.TextureUvs();
+
+    this._canvasPattern = null;
+
+    //TODO move..
+    this.shader = new core.AbstractFilter(
+
+      [
+        'precision lowp float;',
+        'attribute vec2 aVertexPosition;',
+        'attribute vec2 aTextureCoord;',
+        'attribute vec4 aColor;',
+
+        'uniform mat3 projectionMatrix;',
+        
+        'uniform vec4 uFrame;',
+        'uniform vec4 uTransform;',
+
+        'varying vec2 vTextureCoord;',
+        'varying vec4 vColor;',
+
+        'void main(void){',
+        '   gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);',
+
+        '   vec2 coord = aTextureCoord;',
+        '   coord -= uTransform.xy;',
+        '   coord /= uTransform.zw;',
+        '   coord /= uFrame.zw;',
+        '   vTextureCoord = coord;',
+
+        '   vColor = vec4(aColor.rgb * aColor.a, aColor.a);',
+        '}'
+      ].join('\n'),
+      [
+        'precision lowp float;',
+
+        'varying vec2 vTextureCoord;',
+        'varying vec4 vColor;',
+
+        'uniform sampler2D uSampler;',
+        'uniform vec4 uFrame;',
+                
+        'void main(void){',
+
+        '   vec2 coord = fract(vTextureCoord);',
+        '   coord *= uFrame.zw;',
+        '   coord += uFrame.xy;',
+
+        '   gl_FragColor =  texture2D(uSampler, coord) * vColor ;',
+        '}'
+      ].join('\n'),
+
+            // set the uniforms
+            {
+                uFrame: { type: '4fv', value: [0,0,1,1] },
+
+                uTransform: { type: '4fv', value: [0,0,1,1] }
+            }
+      );
 }
 
 TilingSprite.prototype = Object.create(core.Sprite.prototype);
@@ -20935,53 +20609,36 @@ TilingSprite.prototype._onTextureUpdate = function ()
  */
 TilingSprite.prototype._renderWebGL = function (renderer)
 {
-    if (!this._tilingTexture || this._refreshTexture)
-    {
-        this.generateTilingTexture(renderer, this.texture, true);
-    }
-
     // tweak our texture temporarily..
-    var texture = this._tilingTexture;
+    var texture = this._texture;
 
-    if(!texture)
+    if(!texture || !texture._uvs)
     {
         return;
     }
 
+    var tempUvs = texture._uvs,
+        tempWidth = texture._frame.width,
+        tempHeight = texture._frame.height,
+        tw = texture.baseTexture.width,
+        th = texture.baseTexture.height;
 
-    var uvs = this._uvs;
-
-    this.tilePosition.x %= texture.baseTexture.width / this._tileScaleOffset.x;
-    this.tilePosition.y %= texture.baseTexture.height / this._tileScaleOffset.y;
-
-    var offsetX =  this.tilePosition.x/(texture.baseTexture.width / this._tileScaleOffset.x);
-    var offsetY =  this.tilePosition.y/(texture.baseTexture.height / this._tileScaleOffset.y);
-
-    var scaleX =  (this._width / texture.baseTexture.width) * this._tileScaleOffset.x;
-    var scaleY =  (this._height / texture.baseTexture.height) * this._tileScaleOffset.y;
-
-    scaleX /= this.tileScale.x;
-    scaleY /= this.tileScale.y;
-
-    uvs.x0 = 0 - offsetX;
-    uvs.y0 = 0 - offsetY;
-
-    uvs.x1 = (1 * scaleX) - offsetX;
-    uvs.y1 = 0 - offsetY;
-
-    uvs.x2 = (1 * scaleX) - offsetX;
-    uvs.y2 = (1 * scaleY) - offsetY;
-
-    uvs.x3 = 0 - offsetX;
-    uvs.y3 = (1 * scaleY) - offsetY;
-
-    var tempUvs = texture._uvs;
-    var tempWidth = texture._frame.width;
-    var tempHeight = texture._frame.height;
-
-    texture._uvs = uvs;
+    texture._uvs = this._uvs;
     texture._frame.width = this.width;
     texture._frame.height = this.height;
+
+    //PADDING
+    
+    // apply padding to stop gaps in the tile when numbers are not rounded
+    this.shader.uniforms.uFrame.value[0] = tempUvs.x0 + (0.5 / tw); // the 0.5 is padding
+    this.shader.uniforms.uFrame.value[1] = tempUvs.y0 + (0.5 / th); // the 0.5 is padding
+    this.shader.uniforms.uFrame.value[2] = tempUvs.x1 - tempUvs.x0 + (-1 / tw); // the -1 is padding offset
+    this.shader.uniforms.uFrame.value[3] = tempUvs.y2 - tempUvs.y0 + (-1 / th); // the -1 is padding offset
+
+    this.shader.uniforms.uTransform.value[0] = (this.tilePosition.x % tw) / this._width;
+    this.shader.uniforms.uTransform.value[1] = (this.tilePosition.y % th) / this._height;
+    this.shader.uniforms.uTransform.value[2] = ( tw / this._width ) * this.tileScale.x;
+    this.shader.uniforms.uTransform.value[3] = ( th / this._height ) * this.tileScale.y;
 
     renderer.setObjectRenderer(renderer.plugins.sprite);
     renderer.plugins.sprite.render(this);
@@ -20989,7 +20646,6 @@ TilingSprite.prototype._renderWebGL = function (renderer)
     texture._uvs = tempUvs;
     texture._frame.width = tempWidth;
     texture._frame.height = tempHeight;
-
 };
 
 /**
@@ -21000,34 +20656,45 @@ TilingSprite.prototype._renderWebGL = function (renderer)
  */
 TilingSprite.prototype._renderCanvas = function (renderer)
 {
-    var context = renderer.context;
+    var texture = this._texture;
 
-    context.globalAlpha = this.worldAlpha;
-
-    var transform = this.worldTransform;
-
-    var resolution = renderer.resolution;
-
-    context.setTransform(transform.a * resolution,
-                         transform.b * resolution,
-                         transform.c * resolution,
-                         transform.d * resolution,
-                         transform.tx * resolution,
-                         transform.ty * resolution);
-
-    if (!this.__tilePattern ||  this._refreshTexture)
+    if (!texture.baseTexture.hasLoaded)
     {
-        this.generateTilingTexture(false);
-
-        if (this._tilingTexture)
-        {
-            this.__tilePattern = context.createPattern(this._tilingTexture.baseTexture.source, 'repeat');
-        }
-        else
-        {
-            return;
-        }
+      return;
     }
+
+    var context = renderer.context,
+        transform = this.worldTransform,
+        resolution = renderer.resolution,
+        baseTexture = texture.baseTexture,
+        modX = this.tilePosition.x % baseTexture.width,
+        modY = this.tilePosition.y % baseTexture.height;
+
+    // create a nice shiny pattern!
+    // TODO this needs to be refreshed if texture changes..
+    if(!this._canvasPattern)
+    {
+        // cut an object from a spritesheet..
+        var tempCanvas = new core.CanvasBuffer(texture._frame.width, texture._frame.height);
+        tempCanvas.context.drawImage(baseTexture.source, -texture._frame.x,-texture._frame.y);
+        this._canvasPattern = tempCanvas.context.createPattern( tempCanvas.canvas, 'repeat' );
+    }
+
+    // set context state..
+    context.globalAlpha = this.worldAlpha;
+    context.setTransform(transform.a * resolution,
+                       transform.b * resolution,
+                       transform.c * resolution,
+                       transform.d * resolution,
+                       transform.tx * resolution,
+                       transform.ty * resolution);
+
+    // TODO - this should be rolled into the setTransform above..
+    context.scale(this.tileScale.x,this.tileScale.y);
+
+    
+    context.translate(modX + (this.anchor.x * -this._width ), 
+                      modY + (this.anchor.y * -this._height));
 
     // check blend mode
     if (this.blendMode !== renderer.currentBlendMode)
@@ -21036,25 +20703,17 @@ TilingSprite.prototype._renderCanvas = function (renderer)
         context.globalCompositeOperation = renderer.blendModes[renderer.currentBlendMode];
     }
 
-    var tilePosition = this.tilePosition;
-    var tileScale = this.tileScale;
+    // fill the pattern!
+    context.fillStyle = this._canvasPattern;
+    context.fillRect(-modX,
+                     -modY,
+                     this._width / this.tileScale.x,
+                     this._height / this.tileScale.y);
 
-    tilePosition.x %= this._tilingTexture.baseTexture.width;
-    tilePosition.y %= this._tilingTexture.baseTexture.height;
 
-    // offset - make sure to account for the anchor point..
-    context.scale(tileScale.x,tileScale.y);
-    context.translate(tilePosition.x + (this.anchor.x * -this._width), tilePosition.y + (this.anchor.y * -this._height));
-
-    context.fillStyle = this.__tilePattern;
-
-    context.fillRect(-tilePosition.x,
-                    -tilePosition.y,
-                    this._width / tileScale.x,
-                    this._height / tileScale.y);
-
-    context.translate(-tilePosition.x + (this.anchor.x * this._width), -tilePosition.y + (this.anchor.y * this._height));
-    context.scale(1 / tileScale.x, 1 / tileScale.y);
+    //TODO - pretty sure this can be deleted...
+    //context.translate(-this.tilePosition.x + (this.anchor.x * this._width), -this.tilePosition.y + (this.anchor.y * this._height));
+    //context.scale(1 / this.tileScale.x, 1 / this.tileScale.y);
 };
 
 
@@ -21135,90 +20794,6 @@ TilingSprite.prototype.getBounds = function ()
 };
 
 /**
- * When the texture is updated, this event will fire to update the scale and frame
- *
- * @param event
- * @private
- */
-TilingSprite.prototype.onTextureUpdate = function ()
-{
-   // overriding the sprite version of this!
-};
-
-/**
- * Creates the tiling texture
- * @param renderer {CanvasRenderer|WebGLRenderer} a reference to the current renderer
- * @param texture {Texture} The texture to use to generate the tiling texture
- * @param forcePowerOfTwo {boolean} Whether we want to force the texture to be a power of two
- */
-TilingSprite.prototype.generateTilingTexture = function (renderer, texture, forcePowerOfTwo)
-{
-    if (!this.texture.baseTexture.hasLoaded)
-    {
-        return;
-    }
-
-    texture = this.originalTexture || this._texture;
-    var frame = texture._frame;
-    var targetWidth, targetHeight;
-
-    //  Check that the frame is the same size as the base texture.
-    var isFrame = frame.width !== texture.baseTexture.width || frame.height !== texture.baseTexture.height;
-
-    if ((forcePowerOfTwo && !texture.baseTexture.isPowerOfTwo) || isFrame)
-    {
-        targetWidth = core.utils.getNextPowerOfTwo(frame.width);
-        targetHeight = core.utils.getNextPowerOfTwo(frame.height);
-        tempSprite.texture = texture;
-
-        //TODO not create a new one each time you refresh
-        var renderTexture = new core.RenderTexture(renderer, targetWidth, targetHeight, texture.baseTexture.scaleMode, texture.baseTexture.resolution);
-
-        var cachedRenderTarget = renderer.currentRenderTarget;
-
-        var m = tempMatrix;
-        m.a =  (targetWidth + 1) / (frame.width);
-        m.d =   (targetHeight + 1) / (frame.height);
-
-        tempSprite.worldTransform.tx = 0.5;
-        tempSprite.worldTransform.ty = 0.5;
-
-        renderer.currentRenderer.flush();
-
-        renderTexture.render( tempSprite, m, true, false );
-
-        renderer.setRenderTarget(cachedRenderTarget);
-
-
-        this._tileScaleOffset.x = targetWidth / frame.width;
-        this._tileScaleOffset.y = targetHeight / frame.height;
-
-        this._tilingTexture = renderTexture;
-    }
-    else
-    {
-        if (this._tilingTexture && this._tilingTexture.isTiling)
-        {
-            // destroy the tiling texture!
-            // TODO could store this somewhere?
-            this._tilingTexture.destroy(true);
-        }
-
-        this._tileScaleOffset.x = 1;
-        this._tileScaleOffset.y = 1;
-        this._tilingTexture = texture;
-
-    }
-
-
-    this._refreshTexture = false;
-
-    this.originalTexture = this.texture;
-    this._texture = this._tilingTexture;
-
-};
-
-/**
  * Checks if a point is inside this tiling sprite
  * @param point {Point} the point to check
  */
@@ -21254,9 +20829,6 @@ TilingSprite.prototype.destroy = function () {
     this.tileScale = null;
     this._tileScaleOffset = null;
     this.tilePosition = null;
-
-    this._tilingTexture.destroy(true);
-    this._tilingTexture = null;
 
     this._uvs = null;
 };
@@ -21300,7 +20872,7 @@ TilingSprite.fromImage = function (imageId, width, height, crossorigin, scaleMod
     return new TilingSprite(core.Texture.fromImage(imageId, crossorigin, scaleMode),width,height);
 };
 
-},{"../core":23}],76:[function(require,module,exports){
+},{"../core":28}],80:[function(require,module,exports){
 var core = require('../core'),
     DisplayObject = core.DisplayObject,
     _tempMatrix = new core.Matrix();
@@ -21311,6 +20883,7 @@ DisplayObject.prototype._originalRenderCanvas = null;
 
 DisplayObject.prototype._originalUpdateTransform = null;
 DisplayObject.prototype._originalHitTest = null;
+DisplayObject.prototype._originalDestroy = null;
 DisplayObject.prototype._cachedSprite = null;
 
 Object.defineProperties(DisplayObject.prototype, {
@@ -21330,14 +20903,14 @@ Object.defineProperties(DisplayObject.prototype, {
         },
         set: function (value)
         {
-            if(this._cacheAsBitmap === value)
+            if (this._cacheAsBitmap === value)
             {
                 return;
             }
 
             this._cacheAsBitmap = value;
 
-            if(value)
+            if (value)
             {
                 this._originalRenderWebGL = this.renderWebGL;
                 this._originalRenderCanvas = this.renderCanvas;
@@ -21345,18 +20918,19 @@ Object.defineProperties(DisplayObject.prototype, {
                 this._originalUpdateTransform = this.updateTransform;
                 this._originalGetBounds = this.getBounds;
 
+                this._originalDestroy = this.destroy;
 
                 this._originalContainesPoint = this.containsPoint;
 
                 this.renderWebGL = this._renderCachedWebGL;
                 this.renderCanvas = this._renderCachedCanvas;
 
-
+                this.destroy = this._cacheAsBitmapDestroy;
 
             }
             else
             {
-                if(this._cachedSprite)
+                if (this._cachedSprite)
                 {
                     this._destroyCachedDisplayObject();
                 }
@@ -21364,6 +20938,8 @@ Object.defineProperties(DisplayObject.prototype, {
                 this.renderWebGL = this._originalRenderWebGL;
                 this.renderCanvas = this._originalRenderCanvas;
                 this.getBounds = this._originalGetBounds;
+
+                this.destroy = this._originalDestroy;
 
                 this.updateTransform = this._originalUpdateTransform;
                 this.containsPoint = this._originalContainsPoint;
@@ -21377,7 +20953,7 @@ Object.defineProperties(DisplayObject.prototype, {
 * @param renderer {WebGLRenderer} the WebGL renderer
 * @private
 */
-DisplayObject.prototype._renderCachedWebGL = function(renderer)
+DisplayObject.prototype._renderCachedWebGL = function (renderer)
 {
     this._initCachedDisplayObject( renderer );
 
@@ -21393,13 +20969,12 @@ DisplayObject.prototype._renderCachedWebGL = function(renderer)
 * @param renderer {WebGLRenderer} the WebGL renderer
 * @private
 */
-DisplayObject.prototype._initCachedDisplayObject = function( renderer )
+DisplayObject.prototype._initCachedDisplayObject = function (renderer)
 {
     if(this._cachedSprite)
     {
         return;
     }
-
 
     // first we flush anything left in the renderer (otherwise it would get rendered to the cached texture)
     renderer.currentRenderer.flush();
@@ -21440,7 +21015,7 @@ DisplayObject.prototype._initCachedDisplayObject = function( renderer )
     // set all properties to there original so we can render to a texture
     this.renderWebGL = this._originalRenderWebGL;
 
-    renderTexture.render(this, m, true);
+    renderTexture.render(this, m, true, true);
 
     // now restore the state be setting the new properties
     renderer.setRenderTarget(cachedRenderTarget);
@@ -21470,7 +21045,7 @@ DisplayObject.prototype._initCachedDisplayObject = function( renderer )
 * @param renderer {CanvasRenderer} the Canvas renderer
 * @private
 */
-DisplayObject.prototype._renderCachedCanvas = function(renderer)
+DisplayObject.prototype._renderCachedCanvas = function (renderer)
 {
     this._initCachedDisplayObjectCanvas( renderer );
 
@@ -21486,7 +21061,7 @@ DisplayObject.prototype._renderCachedCanvas = function(renderer)
 * @param renderer {CanvasRenderer} the Canvas renderer
 * @private
 */
-DisplayObject.prototype._initCachedDisplayObjectCanvas = function( renderer )
+DisplayObject.prototype._initCachedDisplayObjectCanvas = function (renderer)
 {
     if(this._cachedSprite)
     {
@@ -21535,7 +21110,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function( renderer )
 *
 * @private
 */
-DisplayObject.prototype._getCachedBounds = function()
+DisplayObject.prototype._getCachedBounds = function ()
 {
     this._cachedSprite._currentBounds = null;
 
@@ -21547,13 +21122,19 @@ DisplayObject.prototype._getCachedBounds = function()
 *
 * @private
 */
-DisplayObject.prototype._destroyCachedDisplayObject = function()
+DisplayObject.prototype._destroyCachedDisplayObject = function ()
 {
     this._cachedSprite._texture.destroy();
     this._cachedSprite = null;
 };
 
-},{"../core":23}],77:[function(require,module,exports){
+DisplayObject.prototype._cacheAsBitmapDestroy = function ()
+{
+    this.cacheAsBitmap = false;
+    this._originalDestroy();
+};
+
+},{"../core":28}],81:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -21581,7 +21162,7 @@ core.Container.prototype.getChildByName = function (name)
     return null;
 };
 
-},{"../core":23}],78:[function(require,module,exports){
+},{"../core":28}],82:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -21610,7 +21191,7 @@ core.DisplayObject.prototype.getGlobalPosition = function (point)
     return point;
 };
 
-},{"../core":23}],79:[function(require,module,exports){
+},{"../core":28}],83:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI extras library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -21626,13 +21207,12 @@ require('./getGlobalPosition');
  * @namespace PIXI.extras
  */
 module.exports = {
-    Ticker:         require('./Ticker'),
     MovieClip:      require('./MovieClip'),
     TilingSprite:   require('./TilingSprite'),
-    BitmapText:     require('./BitmapText'),
+    BitmapText:     require('./BitmapText')
 };
 
-},{"./BitmapText":72,"./MovieClip":73,"./Ticker":74,"./TilingSprite":75,"./cacheAsBitmap":76,"./getChildByName":77,"./getGlobalPosition":78}],80:[function(require,module,exports){
+},{"./BitmapText":77,"./MovieClip":78,"./TilingSprite":79,"./cacheAsBitmap":80,"./getChildByName":81,"./getGlobalPosition":82}],84:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -21689,7 +21269,7 @@ Object.defineProperties(AsciiFilter.prototype, {
     }
 });
 
-},{"../../core":23}],81:[function(require,module,exports){
+},{"../../core":28}],85:[function(require,module,exports){
 var core = require('../../core'),
     BlurXFilter = require('../blur/BlurXFilter'),
     BlurYFilter = require('../blur/BlurYFilter');
@@ -21790,10 +21370,154 @@ Object.defineProperties(BloomFilter.prototype, {
     }
 });
 
-},{"../../core":23,"../blur/BlurXFilter":83,"../blur/BlurYFilter":84}],82:[function(require,module,exports){
+},{"../../core":28,"../blur/BlurXFilter":88,"../blur/BlurYFilter":89}],86:[function(require,module,exports){
+var core = require('../../core');
+
+
+/**
+ * The BlurDirFilter applies a Gaussian blur toward a direction to an object.
+ *
+ * @class
+ * @param {number} dirX
+ * @param {number} dirY
+ * @extends AbstractFilter
+ * @memberof PIXI.filters
+ */
+function BlurDirFilter(dirX, dirY)
+{
+    core.AbstractFilter.call(this,
+        // vertex shader
+        "attribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\nattribute vec4 aColor;\n\nuniform float strength;\nuniform float dirX;\nuniform float dirY;\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\nvarying vec2 vBlurTexCoords[3];\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3((aVertexPosition), 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n\n    vBlurTexCoords[0] = aTextureCoord + vec2( (0.004 * strength) * dirX, (0.004 * strength) * dirY );\n    vBlurTexCoords[1] = aTextureCoord + vec2( (0.008 * strength) * dirX, (0.008 * strength) * dirY );\n    vBlurTexCoords[2] = aTextureCoord + vec2( (0.012 * strength) * dirX, (0.012 * strength) * dirY );\n\n    vColor = vec4(aColor.rgb * aColor.a, aColor.a);\n}\n",
+        // fragment shader
+        "precision lowp float;\n\nvarying vec2 vTextureCoord;\nvarying vec2 vBlurTexCoords[3];\nvarying vec4 vColor;\n\nuniform sampler2D uSampler;\n\nvoid main(void)\n{\n    gl_FragColor = vec4(0.0);\n\n    gl_FragColor += texture2D(uSampler, vTextureCoord     ) * 0.3989422804014327;\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 0]) * 0.2419707245191454;\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 1]) * 0.05399096651318985;\n    gl_FragColor += texture2D(uSampler, vBlurTexCoords[ 2]) * 0.004431848411938341;\n}\n",
+        // set the uniforms
+        {
+            strength: { type: '1f', value: 1 },
+            dirX: { type: '1f', value: dirX || 0 },
+            dirY: { type: '1f', value: dirY || 0 }
+        }
+    );
+
+    this.defaultFilter = new core.AbstractFilter();
+
+    /**
+     * Sets the number of passes for blur. More passes means higher quaility bluring.
+     *
+     * @member {number}
+     * @memberof BlurDirFilter#
+     * @default 1
+     */
+    this.passes = 1;
+
+    /**
+     * Sets the X direction of the blur
+     *
+     * @member {number}
+     * @memberof BlurDirFilter#
+     * @default 0
+     */
+    this.dirX = dirX || 0;
+
+    /**
+     * Sets the Y direction of the blur
+     *
+     * @member {number}
+     * @memberof BlurDirFilter#
+     * @default 0
+     */
+    this.dirY = dirY || 0;
+
+    this.strength = 4;
+}
+
+BlurDirFilter.prototype = Object.create(core.AbstractFilter.prototype);
+BlurDirFilter.prototype.constructor = BlurDirFilter;
+module.exports = BlurDirFilter;
+
+BlurDirFilter.prototype.applyFilter = function (renderer, input, output, clear) {
+
+    var shader = this.getShader(renderer);
+
+    this.uniforms.strength.value = this.strength / 4 / this.passes * (input.frame.width / input.size.width);
+
+    if (this.passes === 1) {
+        renderer.filterManager.applyFilter(shader, input, output, clear);
+    } else {
+        var renderTarget = renderer.filterManager.getRenderTarget(true);
+
+        renderer.filterManager.applyFilter(shader, input, renderTarget, clear);
+
+        for(var i = 0; i < this.passes-2; i++)
+        {
+            //this.uniforms.strength.value = this.strength / 4 / (this.passes+(i*2)) * (input.frame.width / input.size.width);
+            renderer.filterManager.applyFilter(shader, renderTarget, renderTarget, clear);
+        }
+
+        renderer.filterManager.applyFilter(shader, renderTarget, output, clear);
+
+        renderer.filterManager.returnRenderTarget(renderTarget);
+    }
+};
+
+
+Object.defineProperties(BlurDirFilter.prototype, {
+    /**
+     * Sets the strength of both the blur.
+     *
+     * @member {number}
+     * @memberof BlurDirFilter#
+     * @default 2
+     */
+    blur: {
+        get: function ()
+        {
+            return this.strength;
+        },
+        set: function (value)
+        {
+            this.padding = value * 0.5;
+            this.strength = value;
+        }
+    },
+    /**
+     * Sets the X direction of the blur.
+     *
+     * @member {number}
+     * @memberof BlurYFilter#
+     * @default 0
+     */
+    dirX: {
+        get: function ()
+        {
+            return this.dirX;
+        },
+        set: function (value)
+        {
+            this.uniforms.dirX.value = value;
+        }
+    },
+    /**
+     * Sets the Y direction of the blur.
+     *
+     * @member {number}
+     * @memberof BlurDirFilter#
+     * @default 0
+     */
+    dirY: {
+        get: function ()
+        {
+            return this.dirY;
+        },
+        set: function (value)
+        {
+            this.uniforms.dirY.value = value;
+        }
+    }
+});
+
+},{"../../core":28}],87:[function(require,module,exports){
 var core = require('../../core'),
-    BlurXFilter = require('./BlurXFilter'),
-    BlurYFilter = require('./BlurYFilter');
+    BlurDirFilter = require('./BlurDirFilter');
 
 /**
  * The BlurFilter applies a Gaussian blur to an object.
@@ -21806,9 +21530,19 @@ var core = require('../../core'),
 function BlurFilter()
 {
     core.AbstractFilter.call(this);
+    this.defaultFilter = new core.AbstractFilter();
 
-    this.blurXFilter = new BlurXFilter();
-    this.blurYFilter = new BlurYFilter();
+    this.blurFilters = [
+        new BlurDirFilter( 1, 0),
+        new BlurDirFilter(-1, 0),
+        new BlurDirFilter( 0, 1),
+        new BlurDirFilter( 0,-1),
+        new BlurDirFilter( 0.7, 0.7),
+        new BlurDirFilter(-0.7, 0.7),
+        new BlurDirFilter( 0.7,-0.7),
+        new BlurDirFilter(-0.7,-0.7)
+    ];
+
 }
 
 BlurFilter.prototype = Object.create(core.AbstractFilter.prototype);
@@ -21819,11 +21553,13 @@ BlurFilter.prototype.applyFilter = function (renderer, input, output)
 {
     var renderTarget = renderer.filterManager.getRenderTarget(true);
 
-    this.blurXFilter.applyFilter(renderer, input, renderTarget);
-    this.blurYFilter.applyFilter(renderer, renderTarget, output);
+    for (var e = 0; e < this.blurFilters.length; e++) {
+        this.blurFilters[e].applyFilter(renderer, input, renderTarget);
+    }
+
+    this.defaultFilter.applyFilter(renderer, renderTarget, output);
 
     renderer.filterManager.returnRenderTarget(renderTarget);
-
 
 };
 
@@ -21838,12 +21574,14 @@ Object.defineProperties(BlurFilter.prototype, {
     blur: {
         get: function ()
         {
-            return this.blurXFilter.blur;
+            return this.blurFilters[0].blur;
         },
         set: function (value)
         {
             this.padding = value * 0.5;
-            this.blurXFilter.blur = this.blurYFilter.blur = value;
+            for (var i = 0; i < this.blurFilters.length; i++) {
+                this.blurFilters[i].blur = value;
+            }
         }
     },
 
@@ -21857,11 +21595,13 @@ Object.defineProperties(BlurFilter.prototype, {
     passes: {
         get: function ()
         {
-            return  this.blurXFilter.passes;
+            return this.blurFilters[0].passes;
         },
         set: function (value)
         {
-            this.blurXFilter.passes = this.blurYFilter.passes = value;
+            for (var i = 0; i < this.blurFilters.length; i++) {
+                this.blurFilters[i].passes = value;
+            }
         }
     },
 
@@ -21875,11 +21615,18 @@ Object.defineProperties(BlurFilter.prototype, {
     blurX: {
         get: function ()
         {
-            return this.blurXFilter.blur;
+            return this.blurFilters[0].blur;
         },
         set: function (value)
         {
-            this.blurXFilter.blur = value;
+            this.blurFilters[0].blur = value;
+            this.blurFilters[1].blur = value;
+
+            this.blurFilters[4].blur = value * this.blurFilters[2].blur;
+            this.blurFilters[5].blur = value * this.blurFilters[2].blur;
+
+            this.blurFilters[6].blur = value * this.blurFilters[3].blur;
+            this.blurFilters[7].blur = value * this.blurFilters[3].blur;
         }
     },
 
@@ -21897,12 +21644,19 @@ Object.defineProperties(BlurFilter.prototype, {
         },
         set: function (value)
         {
-            this.blurYFilter.blur = value;
+            this.blurFilters[2].blur = value;
+            this.blurFilters[3].blur = value;
+
+            this.blurFilters[4].blur = value * this.blurFilters[0].blur;
+            this.blurFilters[5].blur = value * this.blurFilters[0].blur;
+
+            this.blurFilters[6].blur = value * this.blurFilters[1].blur;
+            this.blurFilters[7].blur = value * this.blurFilters[1].blur;
         }
     }
 });
 
-},{"../../core":23,"./BlurXFilter":83,"./BlurYFilter":84}],83:[function(require,module,exports){
+},{"../../core":28,"./BlurDirFilter":86}],88:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -21993,10 +21747,10 @@ Object.defineProperties(BlurXFilter.prototype, {
             this.padding = value * 0.5;
             this.strength = value;
         }
-    },
+    }
 });
 
-},{"../../core":23}],84:[function(require,module,exports){
+},{"../../core":28}],89:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -22079,10 +21833,10 @@ Object.defineProperties(BlurYFilter.prototype, {
             this.padding = value * 0.5;
             this.strength = value;
         }
-    },
+    }
 });
 
-},{"../../core":23}],85:[function(require,module,exports){
+},{"../../core":28}],90:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -22100,7 +21854,11 @@ function SmartBlurFilter()
         // vertex shader
         null,
         // fragment shader
-        "precision mediump float;\n\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nconst vec2 delta = vec2(1.0/10.0, 0.0);\n\nfloat random(vec3 scale, float seed)\n{\n    return fract(sin(dot(gl_FragCoord.xyz + seed, scale)) * 43758.5453 + seed);\n}\n\nvoid main(void)\n{\n    vec4 color = vec4(0.0);\n    float total = 0.0;\n\n    float offset = random(vec3(12.9898, 78.233, 151.7182), 0.0);\n\n    for (float t = -30.0; t <= 30.0; t++)\n    {\n        float percent = (t + offset - 0.5) / 30.0;\n        float weight = 1.0 - abs(percent);\n        vec4 sample = texture2D(uSampler, vTextureCoord + delta * percent);\n        sample.rgb *= sample.a;\n        color += sample * weight;\n        total += weight;\n    }\n\n    gl_FragColor = color / total;\n    gl_FragColor.rgb /= gl_FragColor.a + 0.00001;\n}\n"
+        "precision mediump float;\n\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform vec2 delta;\n\nfloat random(vec3 scale, float seed)\n{\n    return fract(sin(dot(gl_FragCoord.xyz + seed, scale)) * 43758.5453 + seed);\n}\n\nvoid main(void)\n{\n    vec4 color = vec4(0.0);\n    float total = 0.0;\n\n    float offset = random(vec3(12.9898, 78.233, 151.7182), 0.0);\n\n    for (float t = -30.0; t <= 30.0; t++)\n    {\n        float percent = (t + offset - 0.5) / 30.0;\n        float weight = 1.0 - abs(percent);\n        vec4 sample = texture2D(uSampler, vTextureCoord + delta * percent);\n        sample.rgb *= sample.a;\n        color += sample * weight;\n        total += weight;\n    }\n\n    gl_FragColor = color / total;\n    gl_FragColor.rgb /= gl_FragColor.a + 0.00001;\n}\n",
+        // uniforms
+        {
+          delta: { type: 'v2', value: { x: 0.1, y: 0.0 } }
+        }
     );
 }
 
@@ -22108,7 +21866,7 @@ SmartBlurFilter.prototype = Object.create(core.AbstractFilter.prototype);
 SmartBlurFilter.prototype.constructor = SmartBlurFilter;
 module.exports = SmartBlurFilter;
 
-},{"../../core":23}],86:[function(require,module,exports){
+},{"../../core":28}],91:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -22141,7 +21899,7 @@ function ColorMatrixFilter()
                                     0, 1, 0, 0, 0,
                                     0, 0, 1, 0, 0,
                                     0, 0, 0, 1, 0,
-                                    0, 0, 0, 0, 1] },
+                                    0, 0, 0, 0, 1] }
         }
     );
 }
@@ -22667,7 +22425,7 @@ Object.defineProperties(ColorMatrixFilter.prototype, {
     }
 });
 
-},{"../../core":23}],87:[function(require,module,exports){
+},{"../../core":28}],92:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -22716,7 +22474,7 @@ Object.defineProperties(ColorStepFilter.prototype, {
     }
 });
 
-},{"../../core":23}],88:[function(require,module,exports){
+},{"../../core":28}],93:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -22807,7 +22565,7 @@ Object.defineProperties(ConvolutionFilter.prototype, {
     }
 });
 
-},{"../../core":23}],89:[function(require,module,exports){
+},{"../../core":28}],94:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -22833,7 +22591,7 @@ CrossHatchFilter.prototype = Object.create(core.AbstractFilter.prototype);
 CrossHatchFilter.prototype.constructor = CrossHatchFilter;
 module.exports = CrossHatchFilter;
 
-},{"../../core":23}],90:[function(require,module,exports){
+},{"../../core":28}],95:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -22846,7 +22604,7 @@ var core = require('../../core');
  * @class
  * @extends AbstractFilter
  * @namespace PIXI
- * @param texture {Texture} The texture used for the displacement map * must be power of 2 texture at the moment
+ * @param sprite {Sprite} the sprite used for the displacement map. (make sure its added to the scene!)
  */
 function DisplacementFilter(sprite)
 {
@@ -22914,7 +22672,7 @@ Object.defineProperties(DisplacementFilter.prototype, {
     }
 });
 
-},{"../../core":23}],91:[function(require,module,exports){
+},{"../../core":28}],96:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -22986,7 +22744,7 @@ Object.defineProperties(DotScreenFilter.prototype, {
     }
 });
 
-},{"../../core":23}],92:[function(require,module,exports){
+},{"../../core":28}],97:[function(require,module,exports){
 var core = require('../../core');
 
 // @see https://github.com/substack/brfs/issues/25
@@ -23074,10 +22832,10 @@ Object.defineProperties(BlurYTintFilter.prototype, {
             this.padding = value * 0.5;
             this.strength = value;
         }
-    },
+    }
 });
 
-},{"../../core":23}],93:[function(require,module,exports){
+},{"../../core":28}],98:[function(require,module,exports){
 var core = require('../../core'),
     BlurXFilter = require('../blur/BlurXFilter'),
     BlurYTintFilter = require('./BlurYTintFilter');
@@ -23246,7 +23004,7 @@ Object.defineProperties(DropShadowFilter.prototype, {
     }
 });
 
-},{"../../core":23,"../blur/BlurXFilter":83,"./BlurYTintFilter":92}],94:[function(require,module,exports){
+},{"../../core":28,"../blur/BlurXFilter":88,"./BlurYTintFilter":97}],99:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23295,7 +23053,7 @@ Object.defineProperties(GrayFilter.prototype, {
     }
 });
 
-},{"../../core":23}],95:[function(require,module,exports){
+},{"../../core":28}],100:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI filters library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -23317,6 +23075,7 @@ module.exports = {
     BlurFilter:         require('./blur/BlurFilter'),
     BlurXFilter:        require('./blur/BlurXFilter'),
     BlurYFilter:        require('./blur/BlurYFilter'),
+    BlurDirFilter:      require('./blur/BlurDirFilter'),
     ColorMatrixFilter:  require('./color/ColorMatrixFilter'),
     ColorStepFilter:    require('./color/ColorStepFilter'),
     ConvolutionFilter:  require('./convolution/ConvolutionFilter'),
@@ -23339,7 +23098,7 @@ module.exports = {
     TwistFilter:        require('./twist/TwistFilter')
 };
 
-},{"../core/renderers/webgl/filters/AbstractFilter":43,"../core/renderers/webgl/filters/FXAAFilter":44,"../core/renderers/webgl/filters/SpriteMaskFilter":45,"./ascii/AsciiFilter":80,"./bloom/BloomFilter":81,"./blur/BlurFilter":82,"./blur/BlurXFilter":83,"./blur/BlurYFilter":84,"./blur/SmartBlurFilter":85,"./color/ColorMatrixFilter":86,"./color/ColorStepFilter":87,"./convolution/ConvolutionFilter":88,"./crosshatch/CrossHatchFilter":89,"./displacement/DisplacementFilter":90,"./dot/DotScreenFilter":91,"./dropshadow/DropShadowFilter":93,"./gray/GrayFilter":94,"./invert/InvertFilter":96,"./noise/NoiseFilter":97,"./normal/NormalMapFilter":98,"./pixelate/PixelateFilter":99,"./rgb/RGBSplitFilter":100,"./sepia/SepiaFilter":101,"./shockwave/ShockwaveFilter":102,"./tiltshift/TiltShiftFilter":104,"./tiltshift/TiltShiftXFilter":105,"./tiltshift/TiltShiftYFilter":106,"./twist/TwistFilter":107}],96:[function(require,module,exports){
+},{"../core/renderers/webgl/filters/AbstractFilter":48,"../core/renderers/webgl/filters/FXAAFilter":49,"../core/renderers/webgl/filters/SpriteMaskFilter":50,"./ascii/AsciiFilter":84,"./bloom/BloomFilter":85,"./blur/BlurDirFilter":86,"./blur/BlurFilter":87,"./blur/BlurXFilter":88,"./blur/BlurYFilter":89,"./blur/SmartBlurFilter":90,"./color/ColorMatrixFilter":91,"./color/ColorStepFilter":92,"./convolution/ConvolutionFilter":93,"./crosshatch/CrossHatchFilter":94,"./displacement/DisplacementFilter":95,"./dot/DotScreenFilter":96,"./dropshadow/DropShadowFilter":98,"./gray/GrayFilter":99,"./invert/InvertFilter":101,"./noise/NoiseFilter":102,"./normal/NormalMapFilter":103,"./pixelate/PixelateFilter":104,"./rgb/RGBSplitFilter":105,"./sepia/SepiaFilter":106,"./shockwave/ShockwaveFilter":107,"./tiltshift/TiltShiftFilter":109,"./tiltshift/TiltShiftXFilter":110,"./tiltshift/TiltShiftYFilter":111,"./twist/TwistFilter":112}],101:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23389,7 +23148,7 @@ Object.defineProperties(InvertFilter.prototype, {
     }
 });
 
-},{"../../core":23}],97:[function(require,module,exports){
+},{"../../core":28}],102:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23444,7 +23203,7 @@ Object.defineProperties(NoiseFilter.prototype, {
     }
 });
 
-},{"../../core":23}],98:[function(require,module,exports){
+},{"../../core":28}],103:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23557,7 +23316,7 @@ Object.defineProperties(NormalMapFilter.prototype, {
     }
 });
 
-},{"../../core":23}],99:[function(require,module,exports){
+},{"../../core":28}],104:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23608,7 +23367,7 @@ Object.defineProperties(PixelateFilter.prototype, {
     }
 });
 
-},{"../../core":23}],100:[function(require,module,exports){
+},{"../../core":28}],105:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23694,7 +23453,7 @@ Object.defineProperties(RGBSplitFilter.prototype, {
     }
 });
 
-},{"../../core":23}],101:[function(require,module,exports){
+},{"../../core":28}],106:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23744,7 +23503,7 @@ Object.defineProperties(SepiaFilter.prototype, {
     }
 });
 
-},{"../../core":23}],102:[function(require,module,exports){
+},{"../../core":28}],107:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23832,7 +23591,7 @@ Object.defineProperties(ShockwaveFilter.prototype, {
     }
 });
 
-},{"../../core":23}],103:[function(require,module,exports){
+},{"../../core":28}],108:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -23957,7 +23716,7 @@ Object.defineProperties(TiltShiftAxisFilter.prototype, {
     }
 });
 
-},{"../../core":23}],104:[function(require,module,exports){
+},{"../../core":28}],109:[function(require,module,exports){
 var core = require('../../core'),
     TiltShiftXFilter = require('./TiltShiftXFilter'),
     TiltShiftYFilter = require('./TiltShiftYFilter');
@@ -24067,7 +23826,7 @@ Object.defineProperties(TiltShiftFilter.prototype, {
     }
 });
 
-},{"../../core":23,"./TiltShiftXFilter":105,"./TiltShiftYFilter":106}],105:[function(require,module,exports){
+},{"../../core":28,"./TiltShiftXFilter":110,"./TiltShiftYFilter":111}],110:[function(require,module,exports){
 var TiltShiftAxisFilter = require('./TiltShiftAxisFilter');
 
 /**
@@ -24105,7 +23864,7 @@ TiltShiftXFilter.prototype.updateDelta = function ()
     this.uniforms.delta.value.y = dy / d;
 };
 
-},{"./TiltShiftAxisFilter":103}],106:[function(require,module,exports){
+},{"./TiltShiftAxisFilter":108}],111:[function(require,module,exports){
 var TiltShiftAxisFilter = require('./TiltShiftAxisFilter');
 
 /**
@@ -24143,7 +23902,7 @@ TiltShiftYFilter.prototype.updateDelta = function ()
     this.uniforms.delta.value.y = dx / d;
 };
 
-},{"./TiltShiftAxisFilter":103}],107:[function(require,module,exports){
+},{"./TiltShiftAxisFilter":108}],112:[function(require,module,exports){
 var core = require('../../core');
 // @see https://github.com/substack/brfs/issues/25
 
@@ -24228,7 +23987,7 @@ Object.defineProperties(TwistFilter.prototype, {
     }
 });
 
-},{"../../core":23}],108:[function(require,module,exports){
+},{"../../core":28}],113:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -24291,7 +24050,7 @@ InteractionData.prototype.getLocalPosition = function (displayObject, point, glo
     return point;
 };
 
-},{"../core":23}],109:[function(require,module,exports){
+},{"../core":28}],114:[function(require,module,exports){
 var core = require('../core'),
     InteractionData = require('./InteractionData');
 
@@ -24356,7 +24115,10 @@ function InteractionManager(renderer, options)
         stopped: false,
         target: null,
         type: null,
-        data: this.mouse
+        data: this.mouse,
+        stopPropagation:function(){
+            this.stopped = true;
+        }
     };
 
     /**
@@ -24381,14 +24143,6 @@ function InteractionManager(renderer, options)
      * @private
      */
     this.eventsAdded = false;
-
-    /**
-     * The ID of the requestAnimationFrame call, so we can clear it in destroy.
-     *
-     * @member {number}
-     * @private
-     */
-    this.requestId = 0;
 
     //this will make it so that you don't have to call bind all the time
 
@@ -24460,17 +24214,7 @@ function InteractionManager(renderer, options)
      */
     this.resolution = 1;
 
-    /**
-     * The update method bound to our context.
-     *
-     * @member {function}
-     * @private
-     */
-    this.updateBound = this.update.bind(this);
-
     this.setTargetElement(this.renderer.view, this.renderer.resolution);
-
-    this.update();
 }
 
 InteractionManager.prototype.constructor = InteractionManager;
@@ -24507,13 +24251,15 @@ InteractionManager.prototype.addEvents = function ()
         return;
     }
 
+    core.ticker.shared.add(this.update, this);
+
     if (window.navigator.msPointerEnabled)
     {
         this.interactionDOMElement.style['-ms-content-zooming'] = 'none';
         this.interactionDOMElement.style['-ms-touch-action'] = 'none';
     }
 
-    this.interactionDOMElement.addEventListener('mousemove',    this.onMouseMove, true);
+    window.document.addEventListener('mousemove',    this.onMouseMove, true);
     this.interactionDOMElement.addEventListener('mousedown',    this.onMouseDown, true);
     this.interactionDOMElement.addEventListener('mouseout',     this.onMouseOut, true);
 
@@ -24537,13 +24283,15 @@ InteractionManager.prototype.removeEvents = function ()
         return;
     }
 
+    core.ticker.shared.remove(this.update);
+
     if (window.navigator.msPointerEnabled)
     {
         this.interactionDOMElement.style['-ms-content-zooming'] = '';
         this.interactionDOMElement.style['-ms-touch-action'] = '';
     }
 
-    this.interactionDOMElement.removeEventListener('mousemove', this.onMouseMove, true);
+    window.document.removeEventListener('mousemove', this.onMouseMove, true);
     this.interactionDOMElement.removeEventListener('mousedown', this.onMouseDown, true);
     this.interactionDOMElement.removeEventListener('mouseout',  this.onMouseOut, true);
 
@@ -24559,15 +24307,24 @@ InteractionManager.prototype.removeEvents = function ()
 };
 
 /**
- * updates the state of interactive objects
+ * Updates the state of interactive objects.
+ * Invoked by a throttled ticker update from
+ * {@link PIXI.ticker.shared}.
  *
- * @private
+ * @param deltaTime {number}
  */
-InteractionManager.prototype.update = function ()
+InteractionManager.prototype.update = function (deltaTime)
 {
-    this.requestId = requestAnimationFrame(this.updateBound);
+    this._deltaTime += deltaTime;
 
-    if( this.throttleUpdate() || !this.interactionDOMElement)
+    if (this._deltaTime < this.interactionFrequency)
+    {
+        return;
+    }
+
+    this._deltaTime = 0;
+
+    if (!this.interactionDOMElement)
     {
         return;
     }
@@ -24581,7 +24338,7 @@ InteractionManager.prototype.update = function ()
 
     this.cursor = 'inherit';
 
-    this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered , this.processMouseOverOut.bind(this) , true );
+    this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered, this.processMouseOverOut, true );
 
     if (this.currentCursorStyle !== this.cursor)
     {
@@ -24613,29 +24370,6 @@ InteractionManager.prototype.dispatchEvent = function ( displayObject, eventStri
             displayObject[eventString]( eventData );
         }
     }
-};
-
-/**
- * Ensures the interaction checks don't happen too often by delaying the update loop
- *
- * @private
- */
-InteractionManager.prototype.throttleUpdate = function ()
-{
-    // frequency of 30fps??
-    var now = Date.now();
-    var diff = now - this.last;
-
-    diff = (diff * this.interactionFrequency ) / 1000;
-
-    if (diff < 1)
-    {
-        return true;
-    }
-
-    this.last = now;
-
-    return false;
 };
 
 /**
@@ -24735,6 +24469,9 @@ InteractionManager.prototype.onMouseDown = function (event)
     this.eventData.data = this.mouse;
     this.eventData.stopped = false;
 
+    // Update internal mouse reference
+    this.mapPositionToPoint( this.mouse.global, event.clientX, event.clientY);
+
     if (this.autoPreventDefault)
     {
         this.mouse.originalEvent.preventDefault();
@@ -24776,6 +24513,9 @@ InteractionManager.prototype.onMouseUp = function (event)
     this.mouse.originalEvent = event;
     this.eventData.data = this.mouse;
     this.eventData.stopped = false;
+
+    // Update internal mouse reference
+    this.mapPositionToPoint( this.mouse.global, event.clientX, event.clientY);
 
     this.processInteractive(this.mouse.global, this.renderer._lastObjectRendered, this.processMouseUp, true );
 };
@@ -24868,6 +24608,9 @@ InteractionManager.prototype.onMouseOut = function (event)
 {
     this.mouse.originalEvent = event;
     this.eventData.stopped = false;
+
+    // Update internal mouse reference
+    this.mapPositionToPoint( this.mouse.global, event.clientX, event.clientY);
 
     this.interactionDOMElement.style.cursor = 'inherit';
 
@@ -25147,16 +24890,12 @@ InteractionManager.prototype.destroy = function () {
     this.processTouchMove = null;
 
     this._tempPoint = null;
-
-    cancelAnimationFrame(this.requestId);
-
-    this.updateBound = null;
 };
 
 core.WebGLRenderer.registerPlugin('interaction', InteractionManager);
 core.CanvasRenderer.registerPlugin('interaction', InteractionManager);
 
-},{"../core":23,"./InteractionData":108,"./interactiveTarget":111}],110:[function(require,module,exports){
+},{"../core":28,"./InteractionData":113,"./interactiveTarget":116}],115:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI interactions library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -25173,7 +24912,7 @@ module.exports = {
     interactiveTarget: require('./interactiveTarget')
 };
 
-},{"./InteractionData":108,"./InteractionManager":109,"./interactiveTarget":111}],111:[function(require,module,exports){
+},{"./InteractionData":113,"./InteractionManager":114,"./interactiveTarget":116}],116:[function(require,module,exports){
 /**
  * Default property values of interactive objects
  * used by {@link PIXI.interaction.InteractionManager}.
@@ -25221,26 +24960,73 @@ module.exports = {
     _touchDown: false
 };
 
-},{}],112:[function(require,module,exports){
+},{}],117:[function(require,module,exports){
 var Resource = require('resource-loader').Resource,
     core = require('../core'),
+    utils = require('../core/utils'),
     extras = require('../extras'),
     path = require('path');
+
+
+function parse(resource, texture) {
+    var data = {};
+    var info = resource.data.getElementsByTagName('info')[0];
+    var common = resource.data.getElementsByTagName('common')[0];
+
+    data.font = info.getAttribute('face');
+    data.size = parseInt(info.getAttribute('size'), 10);
+    data.lineHeight = parseInt(common.getAttribute('lineHeight'), 10);
+    data.chars = {};
+
+    //parse letters
+    var letters = resource.data.getElementsByTagName('char');
+
+    for (var i = 0; i < letters.length; i++)
+    {
+        var charCode = parseInt(letters[i].getAttribute('id'), 10);
+
+        var textureRect = new core.math.Rectangle(
+            parseInt(letters[i].getAttribute('x'), 10) + texture.frame.x,
+            parseInt(letters[i].getAttribute('y'), 10) + texture.frame.y,
+            parseInt(letters[i].getAttribute('width'), 10),
+            parseInt(letters[i].getAttribute('height'), 10)
+        );
+
+        data.chars[charCode] = {
+            xOffset: parseInt(letters[i].getAttribute('xoffset'), 10),
+            yOffset: parseInt(letters[i].getAttribute('yoffset'), 10),
+            xAdvance: parseInt(letters[i].getAttribute('xadvance'), 10),
+            kerning: {},
+            texture: new core.Texture(texture.baseTexture, textureRect)
+
+        };
+    }
+
+    //parse kernings
+    var kernings = resource.data.getElementsByTagName('kerning');
+    for (i = 0; i < kernings.length; i++)
+    {
+        var first = parseInt(kernings[i].getAttribute('first'), 10);
+        var second = parseInt(kernings[i].getAttribute('second'), 10);
+        var amount = parseInt(kernings[i].getAttribute('amount'), 10);
+
+        data.chars[second].kerning[first] = amount;
+    }
+
+    resource.bitmapFont = data;
+
+    // I'm leaving this as a temporary fix so we can test the bitmap fonts in v3
+    // but it's very likely to change
+    extras.BitmapText.fonts[data.font] = data;
+}
+
 
 module.exports = function ()
 {
     return function (resource, next)
     {
-        // skip if no data
-        if (!resource.data)
-        {
-            return next();
-        }
-
-        var name = resource.data.nodeName && resource.data.nodeName.toLowerCase();
-
-        // skip if not xml data
-        if (!name || (name !== '#document' && name !== 'div'))
+        // skip if no data or not xml data
+        if (!resource.data || !resource.isXml)
         {
             return next();
         }
@@ -25275,73 +25061,27 @@ module.exports = function ()
         if (xmlUrl && xmlUrl.charAt(xmlUrl.length - 1) !== '/') {
             xmlUrl += '/';
         }
-
         var textureUrl = xmlUrl + resource.data.getElementsByTagName('page')[0].getAttribute('file');
-        var loadOptions = {
-            crossOrigin: resource.crossOrigin,
-            loadType: Resource.LOAD_TYPE.IMAGE
-        };
-
-        // load the texture for the font
-        this.add(resource.name + '_image', textureUrl, loadOptions, function (res)
-        {
-            var data = {};
-            var info = resource.data.getElementsByTagName('info')[0];
-            var common = resource.data.getElementsByTagName('common')[0];
-
-            data.font = info.getAttribute('face');
-            data.size = parseInt(info.getAttribute('size'), 10);
-            data.lineHeight = parseInt(common.getAttribute('lineHeight'), 10);
-            data.chars = {};
-
-            //parse letters
-            var letters = resource.data.getElementsByTagName('char');
-
-            for (var i = 0; i < letters.length; i++)
-            {
-                var charCode = parseInt(letters[i].getAttribute('id'), 10);
-
-                var textureRect = new core.math.Rectangle(
-                    parseInt(letters[i].getAttribute('x'), 10),
-                    parseInt(letters[i].getAttribute('y'), 10),
-                    parseInt(letters[i].getAttribute('width'), 10),
-                    parseInt(letters[i].getAttribute('height'), 10)
-                );
-
-                data.chars[charCode] = {
-                    xOffset: parseInt(letters[i].getAttribute('xoffset'), 10),
-                    yOffset: parseInt(letters[i].getAttribute('yoffset'), 10),
-                    xAdvance: parseInt(letters[i].getAttribute('xadvance'), 10),
-                    kerning: {},
-                    texture: core.utils.TextureCache[charCode] = new core.Texture(res.texture.baseTexture, textureRect)
-
-                };
-            }
-
-            //parse kernings
-            var kernings = resource.data.getElementsByTagName('kerning');
-            for (i = 0; i < kernings.length; i++)
-            {
-                var first = parseInt(kernings[i].getAttribute('first'), 10);
-                var second = parseInt(kernings[i].getAttribute('second'), 10);
-                var amount = parseInt(kernings[i].getAttribute('amount'), 10);
-
-                data.chars[second].kerning[first] = amount;
-
-            }
-
-            resource.bitmapFont = data;
-
-            // I'm leaving this as a temporary fix so we can test the bitmap fonts in v3
-            // but it's very likely to change
-            extras.BitmapText.fonts[data.font] = data;
-
+        if (utils.TextureCache[textureUrl]) {
+            //reuse existing texture
+            parse(resource, utils.TextureCache[textureUrl]);
             next();
-        });
+        }
+        else {
+            var loadOptions = {
+                crossOrigin: resource.crossOrigin,
+                loadType: Resource.LOAD_TYPE.IMAGE
+            };
+            // load the texture for the font
+            this.add(resource.name + '_image', textureUrl, loadOptions, function (res) {
+                parse(resource, res.texture);
+                next();
+            });
+        }
     };
 };
 
-},{"../core":23,"../extras":79,"path":2,"resource-loader":12}],113:[function(require,module,exports){
+},{"../core":28,"../core/utils":74,"../extras":83,"path":3,"resource-loader":17}],118:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI loaders library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -25357,16 +25097,15 @@ module.exports = {
 
     // parsers
     bitmapFontParser:   require('./bitmapFontParser'),
-    spineAtlasParser:   require('./spineAtlasParser'),
     spritesheetParser:  require('./spritesheetParser'),
-    textureParser:      require('./textureParser')
+    textureParser:      require('./textureParser'),
+    Resource:           require('resource-loader').Resource
 };
 
-},{"./bitmapFontParser":112,"./loader":114,"./spineAtlasParser":115,"./spritesheetParser":116,"./textureParser":117}],114:[function(require,module,exports){
+},{"./bitmapFontParser":117,"./loader":119,"./spritesheetParser":120,"./textureParser":121,"resource-loader":17}],119:[function(require,module,exports){
 var ResourceLoader = require('resource-loader'),
     textureParser = require('./textureParser'),
     spritesheetParser = require('./spritesheetParser'),
-    spineAtlasParser = require('./spineAtlasParser'),
     bitmapFontParser = require('./bitmapFontParser');
 
 /**
@@ -25374,9 +25113,11 @@ var ResourceLoader = require('resource-loader'),
  * The new loader, extends Resource Loader by Chad Engler : https://github.com/englercj/resource-loader
  *
  * ```js
- * var loader = new PIXI.loader();
+ * var loader = PIXI.loader; // pixi exposes a premade instance for you to use.
+ * //or
+ * var loader = new PIXI.loaders.Loader(); // you can also create your own if you want
  *
- * loader.add('spineboy',"data/spineboy.json");
+ * loader.add('bunny',"data/bunny.png");
  *
  * loader.once('complete',onAssetsLoaded);
  *
@@ -25393,20 +25134,9 @@ function Loader(baseUrl, concurrency)
 {
     ResourceLoader.call(this, baseUrl, concurrency);
 
-    // parse any blob into more usable objects (e.g. Image)
-    this.use(ResourceLoader.middleware.parsing.blob());
-
-    // parse any Image objects into textures
-    this.use(textureParser());
-
-    // parse any spritesheet data into multiple textures
-    this.use(spritesheetParser());
-
-    // parse any spine data into a spine object
-    this.use(spineAtlasParser());
-
-    // parse any spritesheet data into multiple textures
-    this.use(bitmapFontParser());
+    for (var i = 0; i < Loader._pixiMiddleware.length; ++i) {
+        this.use(Loader._pixiMiddleware[i]());
+    }
 }
 
 Loader.prototype = Object.create(ResourceLoader.prototype);
@@ -25414,64 +25144,27 @@ Loader.prototype.constructor = Loader;
 
 module.exports = Loader;
 
-},{"./bitmapFontParser":112,"./spineAtlasParser":115,"./spritesheetParser":116,"./textureParser":117,"resource-loader":12}],115:[function(require,module,exports){
-var Resource = require('resource-loader').Resource,
-    async = require('async'),
-    spine = require('pixi-spine');
+Loader._pixiMiddleware = [
+    // parse any blob into more usable objects (e.g. Image)
+    ResourceLoader.middleware.parsing.blob,
+    // parse any Image objects into textures
+    textureParser,
+    // parse any spritesheet data into multiple textures
+    spritesheetParser,
+    // parse any spritesheet data into multiple textures
+    bitmapFontParser
+];
 
-module.exports = function ()
-{
-    return function (resource, next)
-    {
-        // skip if no data
-        if (!resource.data || !resource.data.bones)
-        {
-            return next();
-        }
-
-        /**
-         * use a bit of hackery to load the atlas file, here we assume that the .json, .atlas and .png files
-         * that correspond to the spine file are in the same base URL and that the .json and .atlas files
-         * have the same name
-         */
-        var atlasPath = resource.url.substr(0, resource.url.lastIndexOf('.')) + '.atlas';
-        var atlasOptions = {
-            crossOrigin: resource.crossOrigin,
-            xhrType: Resource.XHR_RESPONSE_TYPE.TEXT
-        };
-        var baseUrl = resource.url.substr(0, resource.url.lastIndexOf('/') + 1);
-
-
-        this.add(resource.name + '_atlas', atlasPath, atlasOptions, function (res)
-        {
-            // create a spine atlas using the loaded text
-            var spineAtlas = new spine.SpineRuntime.Atlas(this.xhr.responseText, baseUrl, res.crossOrigin);
-
-            // spine animation
-            var spineJsonParser = new spine.SpineRuntime.SkeletonJsonParser(new spine.SpineRuntime.AtlasAttachmentParser(spineAtlas));
-            var skeletonData = spineJsonParser.readSkeletonData(resource.data);
-
-            resource.spineData = skeletonData;
-            resource.spineAtlas = spineAtlas;
-
-            // Go through each spineAtlas.pages and wait for page.rendererObject (a baseTexture) to
-            // load. Once all loaded, then call the next function.
-            async.each(spineAtlas.pages, function (page, done)
-            {
-                if (page.rendererObject.hasLoaded)
-                {
-                    done();
-                }
-                else
-                {
-                    page.rendererObject.once('loaded', done);
-                }
-            }, next);
-        });
-    };
+Loader.addPixiMiddleware = function (fn) {
+    Loader._pixiMiddleware.push(fn);
 };
 
-},{"async":1,"pixi-spine":8,"resource-loader":12}],116:[function(require,module,exports){
+// Add custom extentions
+var Resource = ResourceLoader.Resource;
+
+Resource.setExtensionXhrType('fnt', Resource.XHR_RESPONSE_TYPE.DOCUMENT);
+
+},{"./bitmapFontParser":117,"./spritesheetParser":120,"./textureParser":121,"resource-loader":17}],120:[function(require,module,exports){
 var Resource = require('resource-loader').Resource,
     path = require('path'),
     core = require('../core');
@@ -25480,8 +25173,8 @@ module.exports = function ()
 {
     return function (resource, next)
     {
-        // skip if no data
-        if (!resource.data || !resource.data.frames)
+        // skip if no data, its not json, or it isn't spritesheet data
+        if (!resource.data || !resource.isJson || !resource.data.frames)
         {
             return next();
         }
@@ -25544,7 +25237,7 @@ module.exports = function ()
 
                     resource.textures[i] = new core.Texture(res.texture.baseTexture, size, size.clone(), trim, frames[i].rotated);
 
-                    // lets also add the frame to pixi's global cache for fromFrame and fromImage fucntions
+                    // lets also add the frame to pixi's global cache for fromFrame and fromImage functions
                     core.utils.TextureCache[i] = resource.textures[i];
                 }
             }
@@ -25554,7 +25247,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":23,"path":2,"resource-loader":12}],117:[function(require,module,exports){
+},{"../core":28,"path":3,"resource-loader":17}],121:[function(require,module,exports){
 var core = require('../core');
 
 module.exports = function ()
@@ -25562,7 +25255,7 @@ module.exports = function ()
     return function (resource, next)
     {
         // create a new texture if the data is an Image object
-        if (resource.data && resource.data.nodeName && resource.data.nodeName.toLowerCase() === 'img')
+        if (resource.data && resource.isImage)
         {
             resource.texture = new core.Texture(new core.BaseTexture(resource.data, null, core.utils.getResolutionOfUrl(resource.url)));
             // lets also add the frame to pixi's global cache for fromFrame and fromImage fucntions
@@ -25573,7 +25266,7 @@ module.exports = function ()
     };
 };
 
-},{"../core":23}],118:[function(require,module,exports){
+},{"../core":28}],122:[function(require,module,exports){
 var core = require('../core');
 
 /**
@@ -25964,7 +25657,7 @@ Mesh.DRAW_MODES = {
     TRIANGLES: 1
 };
 
-},{"../core":23}],119:[function(require,module,exports){
+},{"../core":28}],123:[function(require,module,exports){
 var Mesh = require('./Mesh');
 
 /**
@@ -26158,7 +25851,7 @@ Rope.prototype.updateTransform = function ()
     this.containerUpdateTransform();
 };
 
-},{"./Mesh":118}],120:[function(require,module,exports){
+},{"./Mesh":122}],124:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI extras library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -26176,7 +25869,7 @@ module.exports = {
     MeshShader:     require('./webgl/MeshShader')
 };
 
-},{"./Mesh":118,"./Rope":119,"./webgl/MeshRenderer":121,"./webgl/MeshShader":122}],121:[function(require,module,exports){
+},{"./Mesh":122,"./Rope":123,"./webgl/MeshRenderer":125,"./webgl/MeshShader":126}],125:[function(require,module,exports){
 var ObjectRenderer = require('../../core/renderers/webgl/utils/ObjectRenderer'),
     WebGLRenderer = require('../../core/renderers/webgl/WebGLRenderer');
 
@@ -26386,7 +26079,7 @@ MeshRenderer.prototype.destroy = function ()
 {
 };
 
-},{"../../core/renderers/webgl/WebGLRenderer":42,"../../core/renderers/webgl/utils/ObjectRenderer":56}],122:[function(require,module,exports){
+},{"../../core/renderers/webgl/WebGLRenderer":47,"../../core/renderers/webgl/utils/ObjectRenderer":61}],126:[function(require,module,exports){
 var core = require('../../core');
 
 /**
@@ -26447,7 +26140,7 @@ module.exports = StripShader;
 
 core.ShaderManager.registerPlugin('meshShader', StripShader);
 
-},{"../../core":23}],123:[function(require,module,exports){
+},{"../../core":28}],127:[function(require,module,exports){
 // References:
 // https://github.com/sindresorhus/object-assign
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
@@ -26457,11 +26150,11 @@ if (!Object.assign)
     Object.assign = require('object-assign');
 }
 
-},{"object-assign":5}],124:[function(require,module,exports){
+},{"object-assign":11}],128:[function(require,module,exports){
 require('./Object.assign');
 require('./requestAnimationFrame');
 
-},{"./Object.assign":123,"./requestAnimationFrame":125}],125:[function(require,module,exports){
+},{"./Object.assign":127,"./requestAnimationFrame":129}],129:[function(require,module,exports){
 (function (global){
 // References:
 // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
@@ -26519,7 +26212,7 @@ if (!global.requestAnimationFrame) {
 
         return setTimeout(function () {
             lastTime = Date.now();
-            callback(global.performance.now());
+            callback(performance.now());
         }, delay);
     };
 }
@@ -26532,27 +26225,417 @@ if (!global.cancelAnimationFrame) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],"pixi.js":[function(require,module,exports){
-// run the polyfills
-require('./polyfill');
+},{}],130:[function(require,module,exports){
+var core = require('../core'),
+    EventEmitter = require('eventemitter3'),
+    // Internal event used by composed emitter
+    TICK = 'tick';
 
-var core = module.exports = require('./core');
+/**
+ * A Ticker class that runs an update loop that other objects listen to.
+ * This class is composed around an EventEmitter object to add listeners
+ * meant for execution on the next requested animation frame.
+ * Animation frames are requested only when necessary,
+ * e.g. When the ticker is started and the emitter has listeners.
+ *
+ * @class
+ * @memberof PIXI.ticker
+ */
+function Ticker()
+{
+    var _this = this;
+    /**
+     * Internal tick method bound to ticker instance.
+     * This is because in early 2015, Function.bind
+     * is still 60% slower in high performance scenarios.
+     * Also separating frame requests from update method
+     * so listeners may be called at any time and with
+     * any animation API, just invoke ticker.update(time).
+     *
+     * @private
+     */
+    this._tick = function _tick(time) {
 
-// add core plugins.
-core.extras         = require('./extras');
-core.filters        = require('./filters');
-core.interaction    = require('./interaction');
-core.loaders        = require('./loaders');
-core.mesh           = require('./mesh');
-core.spine          = require('pixi-spine');
+        _this._requestId = null;
 
-// export a premade loader instance
-core.loader = new core.loaders.Loader();
+        if (_this.started)
+        {
+            // Invoke listeners now
+            _this.update(time);
+            // Listener side effects may have modified ticker state.
+            if (_this.started && _this._requestId === null && _this._emitter.listeners(TICK, true))
+            {
+                _this._requestId = requestAnimationFrame(_this._tick);
+            }
+        }
+    };
+    /**
+     * Internal emitter used to fire 'tick' event
+     * @private
+     */
+    this._emitter = new EventEmitter();
+    /**
+     * Internal current frame request ID
+     * @private
+     */
+    this._requestId = null;
+    /**
+     * Internal value managed by minFPS property setter and getter.
+     * This is the maximum allowed milliseconds between updates.
+     * @private
+     */
+    this._maxElapsedMS = 100;
 
-// mixin the deprecation features.
-Object.assign(core, require('./deprecation'));
+    /**
+     * Whether or not this ticker should invoke the method
+     * {@link PIXI.ticker.Ticker#start} automatically
+     * when a listener is added.
+     *
+     * @member {boolean}
+     * @default false
+     */
+    this.autoStart = false;
 
-},{"./core":23,"./deprecation":71,"./extras":79,"./filters":95,"./interaction":110,"./loaders":113,"./mesh":120,"./polyfill":124,"pixi-spine":8}]},{},["pixi.js"])("pixi.js")
+    /**
+     * Scalar time value from last frame to this frame.
+     * This value is capped by setting {@link PIXI.ticker.Ticker#minFPS}
+     * and is scaled with {@link PIXI.ticker.Ticker#speed}.
+     * **Note:** The cap may be exceeded by scaling.
+     *
+     * @member {number}
+     * @default 1
+     */
+    this.deltaTime = 1;
+
+    /**
+     * Time elapsed in milliseconds from last frame to this frame.
+     * Opposed to what the scalar {@link PIXI.ticker.Ticker#deltaTime}
+     * is based, this value is neither capped nor scaled.
+     * If the platform supports DOMHighResTimeStamp,
+     * this value will have a precision of 1 µs.
+     *
+     * @member {DOMHighResTimeStamp|number}
+     * @default 1 / TARGET_FPMS
+     */
+    this.elapsedMS = 1 / core.TARGET_FPMS; // default to target frame time
+
+    /**
+     * The last time {@link PIXI.ticker.Ticker#update} was invoked.
+     * This value is also reset internally outside of invoking
+     * update, but only when a new animation frame is requested.
+     * If the platform supports DOMHighResTimeStamp,
+     * this value will have a precision of 1 µs.
+     *
+     * @member {DOMHighResTimeStamp|number}
+     * @default 0
+     */
+    this.lastTime = 0;
+
+    /**
+     * Factor of current {@link PIXI.ticker.Ticker#deltaTime}.
+     * @example
+     *     // Scales ticker.deltaTime to what would be
+     *     // the equivalent of approximately 120 FPS
+     *     ticker.speed = 2;
+     *
+     * @member {number}
+     * @default 1
+     */
+    this.speed = 1;
+
+    /**
+     * Whether or not this ticker has been started.
+     * `true` if {@link PIXI.ticker.Ticker#start} has been called.
+     * `false` if {@link PIXI.ticker.Ticker#stop} has been called.
+     * While `false`, this value may change to `true` in the
+     * event of {@link PIXI.ticker.Ticker#autoStart} being `true`
+     * and a listener is added.
+     *
+     * @member {boolean}
+     * @default false
+     */
+    this.started = false;
+}
+
+Object.defineProperties(Ticker.prototype, {
+    /**
+     * The frames per second at which this ticker is running.
+     * The default is approximately 60 in most modern browsers.
+     * **Note:** This does not factor in the value of
+     * {@link PIXI.ticker.Ticker#speed}, which is specific
+     * to scaling {@link PIXI.ticker.Ticker#deltaTime}.
+     *
+     * @member
+     * @memberof PIXI.ticker.Ticker#
+     * @readonly
+     */
+    FPS: {
+        get: function()
+        {
+            return 1000 / this.elapsedMS;
+        }
+    },
+
+    /**
+     * Manages the maximum amount of milliseconds allowed to
+     * elapse between invoking {@link PIXI.ticker.Ticker#update}.
+     * This value is used to cap {@link PIXI.ticker.Ticker#deltaTime},
+     * but does not effect the measured value of {@link PIXI.ticker.Ticker#FPS}.
+     * When setting this property it is clamped to a value between
+     * `0` and `PIXI.TARGET_FPMS * 1000`.
+     *
+     * @member
+     * @memberof PIXI.ticker.Ticker#
+     * @default 10
+     */
+    minFPS: {
+        get: function()
+        {
+            return 1000 / this._maxElapsedMS;
+        },
+        set: function(fps)
+        {
+            // Clamp: 0 to TARGET_FPMS
+            var minFPMS = Math.min(Math.max(0, fps) / 1000, core.TARGET_FPMS);
+            this._maxElapsedMS = 1 / minFPMS;
+        }
+    }
+});
+
+/**
+ * Conditionally requests a new animation frame.
+ * If a frame has not already been requested, and if the internal
+ * emitter has listeners, a new frame is requested.
+ *
+ * @private
+ */
+Ticker.prototype._requestIfNeeded = function _requestIfNeeded()
+{
+    if (this._requestId === null && this._emitter.listeners(TICK, true))
+    {
+        // ensure callbacks get correct delta
+        this.lastTime = performance.now();
+        this._requestId = requestAnimationFrame(this._tick);
+    }
+};
+
+/**
+ * Conditionally cancels a pending animation frame.
+ *
+ * @private
+ */
+Ticker.prototype._cancelIfNeeded = function _cancelIfNeeded()
+{
+    if (this._requestId !== null)
+    {
+        cancelAnimationFrame(this._requestId);
+        this._requestId = null;
+    }
+};
+
+/**
+ * Conditionally requests a new animation frame.
+ * If the ticker has been started it checks if a frame has not already
+ * been requested, and if the internal emitter has listeners. If these
+ * conditions are met, a new frame is requested. If the ticker has not
+ * been started, but autoStart is `true`, then the ticker starts now,
+ * and continues with the previous conditions to request a new frame.
+ *
+ * @private
+ */
+Ticker.prototype._startIfPossible = function _startIfPossible()
+{
+    if (this.started)
+    {
+        this._requestIfNeeded();
+    }
+    else if (this.autoStart)
+    {
+        this.start();
+    }
+};
+
+/**
+ * Calls {@link module:eventemitter3.EventEmitter#on} internally for the
+ * internal 'tick' event. It checks if the emitter has listeners,
+ * and if so it requests a new animation frame at this point.
+ *
+ * @param fn {Function} The listener function to be added for updates
+ * @param [context] {Function} The listener context
+ * @returns {PIXI.ticker.Ticker} this
+ */
+Ticker.prototype.add = function add(fn, context)
+{
+    this._emitter.on(TICK, fn, context);
+
+    this._startIfPossible();
+
+    return this;
+};
+
+/**
+ * Calls {@link module:eventemitter3.EventEmitter#once} internally for the
+ * internal 'tick' event. It checks if the emitter has listeners,
+ * and if so it requests a new animation frame at this point.
+ *
+ * @param fn {Function} The listener function to be added for one update
+ * @param [context] {Function} The listener context
+ * @returns {PIXI.ticker.Ticker} this
+ */
+Ticker.prototype.addOnce = function addOnce(fn, context)
+{
+    this._emitter.once(TICK, fn, context);
+
+    this._startIfPossible();
+
+    return this;
+};
+
+/**
+ * Calls {@link module:eventemitter3.EventEmitter#off} internally for 'tick' event.
+ * It checks if the emitter has listeners for 'tick' event.
+ * If it does, then it cancels the animation frame.
+ *
+ * @param [fn] {Function} The listener function to be removed
+ * @param [context] {Function} The listener context to be removed
+ * @returns {PIXI.ticker.Ticker} this
+ */
+Ticker.prototype.remove = function remove(fn, context)
+{
+    this._emitter.off(TICK, fn, context);
+
+    if (!this._emitter.listeners(TICK, true))
+    {
+        this._cancelIfNeeded();
+    }
+
+    return this;
+};
+
+/**
+ * Starts the ticker. If the ticker has listeners
+ * a new animation frame is requested at this point.
+ */
+Ticker.prototype.start = function start()
+{
+    if (!this.started)
+    {
+        this.started = true;
+        this._requestIfNeeded();
+    }
+};
+
+/**
+ * Stops the ticker. If the ticker has requested
+ * an animation frame it is canceled at this point.
+ */
+Ticker.prototype.stop = function stop()
+{
+    if (this.started)
+    {
+        this.started = false;
+        this._cancelIfNeeded();
+    }
+};
+
+/**
+ * Triggers an update. An update entails setting the
+ * current {@link PIXI.ticker.Ticker#elapsedMS},
+ * the current {@link PIXI.ticker.Ticker#deltaTime},
+ * invoking all listeners with current deltaTime,
+ * and then finally setting {@link PIXI.ticker.Ticker#lastTime}
+ * with the value of currentTime that was provided.
+ * This method will be called automatically by animation
+ * frame callbacks if the ticker instance has been started
+ * and listeners are added.
+ *
+ * @param [currentTime=performance.now()] {DOMHighResTimeStamp|number} the current time of execution
+ */
+Ticker.prototype.update = function update(currentTime)
+{
+    var elapsedMS;
+
+    // Allow calling update directly with default currentTime.
+    currentTime = currentTime || performance.now();
+    // Save uncapped elapsedMS for measurement
+    elapsedMS = this.elapsedMS = currentTime - this.lastTime;
+
+    // cap the milliseconds elapsed used for deltaTime
+    if (elapsedMS > this._maxElapsedMS)
+    {
+        elapsedMS = this._maxElapsedMS;
+    }
+
+    this.deltaTime = elapsedMS * core.TARGET_FPMS * this.speed;
+
+    // Invoke listeners added to internal emitter
+    this._emitter.emit(TICK, this.deltaTime);
+
+    this.lastTime = currentTime;
+};
+
+module.exports = Ticker;
+
+},{"../core":28,"eventemitter3":10}],131:[function(require,module,exports){
+/**
+ * @file        Main export of the PIXI extras library
+ * @author      Mat Groves <mat@goodboydigital.com>
+ * @copyright   2013-2015 GoodBoyDigital
+ * @license     {@link https://github.com/GoodBoyDigital/pixi.js/blob/master/LICENSE|MIT License}
+ */
+var Ticker = require('./Ticker');
+
+/**
+ * The shared ticker instance used by {@link PIXI.extras.MovieClip}.
+ * and by {@link PIXI.interaction.InteractionManager}.
+ * The property {@link PIXI.ticker.Ticker#autoStart} is set to `true`
+ * for this instance. Please follow the examples for usage, including
+ * how to opt-out of auto-starting the shared ticker.
+ *
+ * @example
+ *     var ticker = PIXI.ticker.shared;
+ *     // Set this to prevent starting this ticker when listeners are added.
+ *     // By default this is true only for the PIXI.ticker.shared instance.
+ *     ticker.autoStart = false;
+ *     // FYI, call this to ensure the ticker is stopped. It should be stopped
+ *     // if you have not attempted to render anything yet.
+ *     ticker.stop();
+ *     // Call this when you are ready for a running shared ticker.
+ *     ticker.start();
+ *
+ * @example
+ *     // You may use the shared ticker to render...
+ *     var renderer = PIXI.autoDetectRenderer(800, 600);
+ *     var stage = new PIXI.Container();
+ *     var interactionManager = PIXI.interaction.InteractionManager(renderer);
+ *     document.body.appendChild(renderer.view);
+ *     ticker.add(function (time) {
+ *         renderer.render(stage);
+ *     });
+ *
+ * @example
+ *     // Or you can just update it manually.
+ *     ticker.autoStart = false;
+ *     ticker.stop();
+ *     function animate(time) {
+ *         ticker.update(time);
+ *         renderer.render(stage);
+ *         requestAnimationFrame(animate);
+ *     }
+ *     animate(performance.now());
+ *
+ * @type {PIXI.ticker.Ticker}
+ * @memberof PIXI.ticker
+ */
+var shared = new Ticker();
+shared.autoStart = true;
+
+module.exports = {
+    shared: shared,
+    Ticker: Ticker
+};
+
+},{"./Ticker":130}]},{},[1])(1)
 });
 
 

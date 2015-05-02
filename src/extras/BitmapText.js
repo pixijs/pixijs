@@ -32,6 +32,8 @@ function BitmapText(text, style)
 {
     core.Container.call(this);
 
+    style = style || {};
+
     /**
      * The width of the overall text, different from fontSize,
      * which is defined in the style object
@@ -144,7 +146,7 @@ Object.defineProperties(BitmapText.prototype, {
         },
         set: function (value)
         {
-            this._font.align = value;
+            this._font.align = value || 'left';
 
             this.dirty = true;
         }
@@ -163,6 +165,10 @@ Object.defineProperties(BitmapText.prototype, {
         },
         set: function (value)
         {
+            if (!value) {
+                return;
+            }
+
             if (typeof value === 'string') {
                 value = value.split(' ');
 
@@ -191,8 +197,12 @@ Object.defineProperties(BitmapText.prototype, {
         },
         set: function (value)
         {
+            value = value.toString() || ' ';
+            if (this._text === value)
+            {
+                return;
+            }
             this._text = value;
-
             this.dirty = true;
         }
     }

@@ -10,7 +10,7 @@ var fs = require('fs');
  * @class
  * @extends AbstractFilter
  * @namespace PIXI
- * @param texture {Texture} The texture used for the displacement map * must be power of 2 texture at the moment
+ * @param sprite {Sprite} the sprite used for the displacement map. (make sure its added to the scene!)
  */
 function DisplacementFilter(sprite)
 {

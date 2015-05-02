@@ -1,6 +1,6 @@
 var utils = require('../utils'),
     CONST = require('../const'),
-    EventEmitter = require('eventemitter3').EventEmitter;
+    EventEmitter = require('eventemitter3');
 
 /**
  * A texture stores the information that represents an image. All textures have a base texture.
@@ -164,12 +164,20 @@ BaseTexture.prototype.constructor = BaseTexture;
 module.exports = BaseTexture;
 
 /**
- * Updates the texture on all the webgl renderers.
+ * Updates the texture on all the webgl renderers, this also assumes the src has changed.
  *
  * @fires update
  */
 BaseTexture.prototype.update = function ()
 {
+    this.realWidth = this.source.naturalWidth || this.source.width;
+    this.realHeight = this.source.naturalHeight || this.source.height;
+
+    this.width = this.realWidth / this.resolution;
+    this.height = this.realHeight / this.resolution;
+
+    this.isPowerOfTwo = utils.isPowerOfTwo(this.realWidth, this.realHeight);
+
     this.emit('update', this);
 };
 
@@ -296,16 +304,6 @@ BaseTexture.prototype.loadSource = function (source)
 BaseTexture.prototype._sourceLoaded = function ()
 {
     this.hasLoaded = true;
-
-    this.realWidth = this.source.naturalWidth || this.source.width;
-    this.realHeight = this.source.naturalHeight || this.source.height;
-
-    this.width = this.realWidth / this.resolution;
-    this.height = this.realHeight / this.resolution;
-
-
-    this.isPowerOfTwo = utils.isPowerOfTwo(this.width, this.height);
-
     this.update();
 };
 
@@ -346,6 +344,8 @@ BaseTexture.prototype.destroy = function ()
 BaseTexture.prototype.dispose = function ()
 {
     this.emit('dispose', this);
+
+    this._glTextures.length = 0;
 };
 
 /**

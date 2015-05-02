@@ -68,6 +68,18 @@ ShaderManager.prototype.onContextChange = function ()
 {
     this.initPlugins();
 
+    var gl = this.renderer.gl;
+
+    // get the maximum number of attribute correctly as this tends to vary
+    this.maxAttibs = gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
+
+    this.attribState = [];
+
+    for (var i = 0; i < this.maxAttibs; i++)
+    {
+        this.attribState[i] = false;
+    }
+
     // TODO - Why are these not plugins? We can't decouple primitives unless they are....
     this.defaultShader = new TextureShader(this);
     this.primitiveShader = new PrimitiveShader(this);

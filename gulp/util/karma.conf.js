@@ -5,14 +5,13 @@ module.exports = function(config) {
         // base path, that will be used to resolve files and exclude
         basePath: path.join(__dirname, '..', '..'),
 
-        frameworks: ['mocha'],
+        frameworks: ['browserify', 'mocha', 'chai'],
 
         // list of files / patterns to load in the browser
         files: [
-            'node_modules/chai/chai.js',
             'bin/pixi.js',
             'test/lib/**/*.js',
-            'test/unit/**/*.js',
+            'test/unit/{bin,src}/**/*.js',
             // 'test/functional/**/*.js',
             {
                 pattern: 'test/**/*.png',
@@ -71,6 +70,18 @@ module.exports = function(config) {
         reportSlowerThan: 500,
 
         preprocessors : {
+            'test/unit/{bin,src}/**/*.js': ['browserify']
+        },
+
+        // browserify configuration
+        browserify: {
+            debug: true,
+            transform: ['brfs'],
+            configure: function(bundle) {
+                bundle.on('prebundle', function() {
+                    bundle.external('pixi.js');
+                });
+            }
         }
     });
 };

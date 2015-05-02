@@ -144,10 +144,7 @@ VideoBaseTexture.prototype.destroy = function ()
 {
     if (this.source && this.source._pixiId)
     {
-        utils.BaseTextureCache[ this.source._pixiId ] = null;
         delete utils.BaseTextureCache[ this.source._pixiId ];
-
-        this.source._pixiId = null;
         delete this.source._pixiId;
     }
 

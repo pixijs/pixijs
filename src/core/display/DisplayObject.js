@@ -1,6 +1,6 @@
 var math = require('../math'),
     RenderTexture = require('../textures/RenderTexture'),
-    EventEmitter = require('eventemitter3').EventEmitter,
+    EventEmitter = require('eventemitter3'),
     CONST = require('../const'),
     _tempMatrix = new math.Matrix();
 
@@ -270,8 +270,6 @@ Object.defineProperties(DisplayObject.prototype, {
  * Updates the object transform for rendering
  *
  * TODO - Optimization pass!
- *
- * @private
  */
 DisplayObject.prototype.updateTransform = function ()
 {
@@ -454,12 +452,12 @@ DisplayObject.prototype.destroy = function ()
     this.scale = null;
     this.pivot = null;
 
+    this.parent = null;
+
     this._bounds = null;
     this._currentBounds = null;
     this._mask = null;
 
     this.worldTransform = null;
     this.filterArea = null;
-
-    this.listeners = null;
 };

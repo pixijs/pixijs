@@ -35,6 +35,15 @@ module.exports = {
     DEG_TO_RAD: Math.PI / 180,
 
     /**
+     * Target frames per millisecond.
+     *
+     * @static
+     * @constant
+     * @property {number} TARGET_FPMS=0.06
+     */
+    TARGET_FPMS: 0.06,
+
+    /**
      * Constant to identify the Renderer Type.
      *
      * @static
@@ -178,5 +187,7 @@ module.exports = {
         RREC: 4
     },
 
+    // TODO: maybe change to SPRITE.BATCH_SIZE: 2000
+    // TODO: maybe add PARTICLE.BATCH_SIZE: 15000
     SPRITE_BATCH_SIZE: 2000 //nice balance between mobile and desktop machines
 };

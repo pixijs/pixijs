@@ -19,6 +19,7 @@ module.exports = {
     BlurFilter:         require('./blur/BlurFilter'),
     BlurXFilter:        require('./blur/BlurXFilter'),
     BlurYFilter:        require('./blur/BlurYFilter'),
+    BlurDirFilter:      require('./blur/BlurDirFilter'),
     ColorMatrixFilter:  require('./color/ColorMatrixFilter'),
     ColorStepFilter:    require('./color/ColorStepFilter'),
     ConvolutionFilter:  require('./convolution/ConvolutionFilter'),

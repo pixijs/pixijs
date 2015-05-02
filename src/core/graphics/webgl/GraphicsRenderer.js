@@ -48,6 +48,10 @@ GraphicsRenderer.prototype.onContextChange = function()
 GraphicsRenderer.prototype.destroy = function () {
     ObjectRenderer.prototype.destroy.call(this);
 
+    for (var i = 0; i < this.graphicsDataPool.length; ++i) {
+        this.graphicsDataPool[i].destroy();
+    }
+
     this.graphicsDataPool = null;
 };
 
@@ -151,7 +155,7 @@ GraphicsRenderer.prototype.updateGraphics = function(graphics)
     {
         graphics.clearDirty = false;
 
-        // lop through and return all the webGLDatas to the object pool so than can be reused later on
+        // loop through and return all the webGLDatas to the object pool so than can be reused later on
         for (i = 0; i < webGL.data.length; i++)
         {
             var graphicsData = webGL.data[i];
