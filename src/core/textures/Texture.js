@@ -1,7 +1,7 @@
 var BaseTexture = require('./BaseTexture'),
     VideoBaseTexture = require('./VideoBaseTexture'),
     TextureUvs = require('./TextureUvs'),
-    EventEmitter = require('eventemitter3').EventEmitter,
+    EventEmitter = require('eventemitter3'),
     math = require('../math'),
     utils = require('../utils');
 
@@ -128,6 +128,9 @@ function Texture(baseTexture, frame, crop, trim, rotate)
         if (this.noFrame)
         {
             frame = new math.Rectangle(0, 0, baseTexture.width, baseTexture.height);
+
+            // if there is no frame we should monitor for any base texture changes..
+            baseTexture.on('update', this.onBaseTextureUpdated, this);
         }
         this.frame = frame;
     }
@@ -194,8 +197,6 @@ Object.defineProperties(Texture.prototype, {
 Texture.prototype.update = function ()
 {
     this.baseTexture.update();
-
-
 };
 
 /**
@@ -218,6 +219,14 @@ Texture.prototype.onBaseTextureLoaded = function (baseTexture)
     this.emit( 'update', this );
 };
 
+Texture.prototype.onBaseTextureUpdated = function (baseTexture)
+{
+    this._frame.width = baseTexture.width;
+    this._frame.height = baseTexture.height;
+
+    this.emit( 'update', this );
+};
+
 /**
  * Destroys this texture
  *
@@ -225,10 +234,23 @@ Texture.prototype.onBaseTextureLoaded = function (baseTexture)
  */
 Texture.prototype.destroy = function (destroyBase)
 {
-    if (destroyBase)
+    if (this.baseTexture)
     {
-        this.baseTexture.destroy();
+        if (destroyBase)
+        {
+            this.baseTexture.destroy();
+        }
+
+        this.baseTexture.off('update', this.onBaseTextureUpdated);
+        this.baseTexture.off('loaded', this.onBaseTextureLoaded);
+
+        this.baseTexture = null;
     }
+
+    this._frame = null;
+    this._uvs = null;
+    this.trim = null;
+    this.crop = null;
 
     this.valid = false;
 };
@@ -371,4 +393,4 @@ Texture.removeTextureFromCache = function (id)
     return texture;
 };
 
-Texture.emptyTexture = new Texture(new BaseTexture());
+Texture.EMPTY = new Texture(new BaseTexture());

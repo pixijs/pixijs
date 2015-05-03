@@ -29,7 +29,6 @@ function AbstractFilter(vertexSrc, fragmentSrc, uniforms)
     /**
      * The uniforms as an object
      * @member {object}
-     * @private
      */
     this.uniforms = uniforms || {};
 

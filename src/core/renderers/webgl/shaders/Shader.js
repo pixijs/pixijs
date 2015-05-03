@@ -430,6 +430,9 @@ Shader.prototype.syncUniform = function (uniform)
             if (!texture)
             {
                 this.initSampler2D(uniform);
+
+                // set the textur to the newly created one..
+                texture = uniform.value.baseTexture._glTextures[gl.id];
             }
 
             // bind the texture

@@ -134,6 +134,8 @@ function Graphics()
      */
     this.glDirty = false;
 
+    this.boundsDirty = true;
+
     /**
      * Used to detect if the cached sprite object needs to be updated.
      *
@@ -311,7 +313,7 @@ Graphics.prototype.quadraticCurveTo = function (cpX, cpY, toX, toY)
                      ya + ( ((cpY + ( (toY - cpY) * j )) - ya) * j ) );
     }
 
-    this.dirty = true;
+    this.dirty = this.boundsDirty = true;
 
     return this;
 };
@@ -369,7 +371,7 @@ Graphics.prototype.bezierCurveTo = function (cpX, cpY, cpX2, cpY2, toX, toY)
                      dt3 * fromY + 3 * dt2 * j * cpY + 3 * dt * t2 * cpY2 + t3 * toY);
     }
 
-    this.dirty = true;
+    this.dirty = this.boundsDirty = true;
 
     return this;
 };
@@ -397,7 +399,6 @@ Graphics.prototype.arcTo = function (x1, y1, x2, y2, radius)
     }
     else
     {
-        consol.log("currentPAt?")
         this.moveTo(x1, y1);
     }
 
@@ -438,7 +439,7 @@ Graphics.prototype.arcTo = function (x1, y1, x2, y2, radius)
         this.arc(cx + x1, cy + y1, radius, startAngle, endAngle, b1 * a2 > b2 * a1);
     }
 
-    this.dirty = true;
+    this.dirty = this.boundsDirty = true;
 
     return this;
 };
@@ -533,7 +534,7 @@ Graphics.prototype.arc = function(cx, cy, radius, startAngle, endAngle, anticloc
                     ( (cTheta * -s) + (sTheta * c) ) * radius + cy);
     }
 
-    this.dirty = true;
+    this.dirty = this.boundsDirty = true;
 
     return this;
 };
@@ -839,13 +840,13 @@ Graphics.prototype.getBounds = function (matrix)
             return math.Rectangle.EMPTY;
         }
 
-        if (this.dirty)
+        if (this.boundsDirty)
         {
             this.updateLocalBounds();
 
             this.glDirty = true;
             this.cachedSpriteDirty = true;
-            this.dirty = false;
+            this.boundsDirty = false;
         }
 
         var bounds = this._localBounds;
@@ -1151,7 +1152,29 @@ Graphics.prototype.drawShape = function (shape)
         this.currentPath = data;
     }
 
-    this.dirty = true;
+    this.dirty = this.boundsDirty = true;
 
     return data;
+};
+
+Graphics.prototype.destroy = function () {
+    Container.prototype.destroy.apply(this, arguments);
+
+    // destroy each of the GraphicsData objects
+    for (var i = 0; i < this.graphicsData.length; ++i) {
+        this.graphicsData[i].destroy();
+    }
+
+    // for each webgl data entry, destroy the WebGLGraphicsData
+    for (var id in this._webgl) {
+        for (var j = 0; j < this._webgl[id].data.length; ++j) {
+            this._webgl[id].data[j].destroy();
+        }
+    }
+
+    this.graphicsData = null;
+
+    this.currentPath = null;
+    this._webgl = null;
+    this._localBounds = null;
 };

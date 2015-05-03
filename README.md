@@ -1,7 +1,11 @@
 Pixi Renderer
 =============
 
-![pixi.js logo](http://www.goodboydigital.com/pixijs/logo_small.png)
+![pixi.js logo](http://www.goodboydigital.com/pixijs/pixi_v3_github-pad.png)
+
+
+
+
 
 [<img src="http://www.pixijs.com/wp-content/uploads/2013/05/headerPanel_projects-898x342.jpg">](http://www.pixijs.com/projects)
 
@@ -18,14 +22,13 @@ any breakthroughs will be posted up there too!
 
 [![Inline docs](http://inch-ci.org/github/GoodBoyDigital/pixi.js.svg?branch=dev)](http://inch-ci.org/github/GoodBoyDigital/pixi.js)
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/GoodBoyDigital/pixi.js/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-
 ### Demos ###
 
 - [WebGL Filters!](<http://www.goodboydigital.com/pixijs/examples/15/indexAll.html>)
 
 - [Run pixie run](<http://www.goodboydigital.com/runpixierun/>)
 
-- [Fight for Everyone](<http://www.theleisuresociety.co.uk/fightforeveryone>)
+- [Fight for Everyone](<http://www.goodboydigital.com/casestudies/fightforeveryone/>)
 
 - [Flash vs HTML](<http://flashvhtml.com>)
 
@@ -52,7 +55,7 @@ last 2 examples and allowing us to share the source code :)
 
 ### Docs ###
 
-[Documentation can be found here](<http://www.goodboydigital.com/pixijs/docs/>)
+[Documentation can be found here](<http://pixijs.github.io/docs/>)
 
 ### Resources ###
 

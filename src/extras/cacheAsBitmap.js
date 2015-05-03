@@ -8,6 +8,7 @@ DisplayObject.prototype._originalRenderCanvas = null;
 
 DisplayObject.prototype._originalUpdateTransform = null;
 DisplayObject.prototype._originalHitTest = null;
+DisplayObject.prototype._originalDestroy = null;
 DisplayObject.prototype._cachedSprite = null;
 
 Object.defineProperties(DisplayObject.prototype, {
@@ -27,14 +28,14 @@ Object.defineProperties(DisplayObject.prototype, {
         },
         set: function (value)
         {
-            if(this._cacheAsBitmap === value)
+            if (this._cacheAsBitmap === value)
             {
                 return;
             }
 
             this._cacheAsBitmap = value;
 
-            if(value)
+            if (value)
             {
                 this._originalRenderWebGL = this.renderWebGL;
                 this._originalRenderCanvas = this.renderCanvas;
@@ -42,18 +43,19 @@ Object.defineProperties(DisplayObject.prototype, {
                 this._originalUpdateTransform = this.updateTransform;
                 this._originalGetBounds = this.getBounds;
 
+                this._originalDestroy = this.destroy;
 
                 this._originalContainesPoint = this.containsPoint;
 
                 this.renderWebGL = this._renderCachedWebGL;
                 this.renderCanvas = this._renderCachedCanvas;
 
-
+                this.destroy = this._cacheAsBitmapDestroy;
 
             }
             else
             {
-                if(this._cachedSprite)
+                if (this._cachedSprite)
                 {
                     this._destroyCachedDisplayObject();
                 }
@@ -61,6 +63,8 @@ Object.defineProperties(DisplayObject.prototype, {
                 this.renderWebGL = this._originalRenderWebGL;
                 this.renderCanvas = this._originalRenderCanvas;
                 this.getBounds = this._originalGetBounds;
+
+                this.destroy = this._originalDestroy;
 
                 this.updateTransform = this._originalUpdateTransform;
                 this.containsPoint = this._originalContainsPoint;
@@ -74,7 +78,7 @@ Object.defineProperties(DisplayObject.prototype, {
 * @param renderer {WebGLRenderer} the WebGL renderer
 * @private
 */
-DisplayObject.prototype._renderCachedWebGL = function(renderer)
+DisplayObject.prototype._renderCachedWebGL = function (renderer)
 {
     this._initCachedDisplayObject( renderer );
 
@@ -90,7 +94,7 @@ DisplayObject.prototype._renderCachedWebGL = function(renderer)
 * @param renderer {WebGLRenderer} the WebGL renderer
 * @private
 */
-DisplayObject.prototype._initCachedDisplayObject = function( renderer )
+DisplayObject.prototype._initCachedDisplayObject = function (renderer)
 {
     if(this._cachedSprite)
     {
@@ -166,7 +170,7 @@ DisplayObject.prototype._initCachedDisplayObject = function( renderer )
 * @param renderer {CanvasRenderer} the Canvas renderer
 * @private
 */
-DisplayObject.prototype._renderCachedCanvas = function(renderer)
+DisplayObject.prototype._renderCachedCanvas = function (renderer)
 {
     this._initCachedDisplayObjectCanvas( renderer );
 
@@ -182,7 +186,7 @@ DisplayObject.prototype._renderCachedCanvas = function(renderer)
 * @param renderer {CanvasRenderer} the Canvas renderer
 * @private
 */
-DisplayObject.prototype._initCachedDisplayObjectCanvas = function( renderer )
+DisplayObject.prototype._initCachedDisplayObjectCanvas = function (renderer)
 {
     if(this._cachedSprite)
     {
@@ -231,7 +235,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function( renderer )
 *
 * @private
 */
-DisplayObject.prototype._getCachedBounds = function()
+DisplayObject.prototype._getCachedBounds = function ()
 {
     this._cachedSprite._currentBounds = null;
 
@@ -243,8 +247,14 @@ DisplayObject.prototype._getCachedBounds = function()
 *
 * @private
 */
-DisplayObject.prototype._destroyCachedDisplayObject = function()
+DisplayObject.prototype._destroyCachedDisplayObject = function ()
 {
     this._cachedSprite._texture.destroy();
     this._cachedSprite = null;
+};
+
+DisplayObject.prototype._cacheAsBitmapDestroy = function ()
+{
+    this.cacheAsBitmap = false;
+    this._originalDestroy();
 };

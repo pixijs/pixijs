@@ -1,6 +1,8 @@
 var core = require('../core'),
     // a sprite use dfor rendering textures..
-    tempPoint = new core.Point();
+    tempSprite = new core.Sprite(),
+    tempPoint = new core.Point(),
+    tempMatrix = new core.Matrix();
 
 /**
  * A tiling sprite is a fast way of rendering a tiling image
@@ -49,6 +51,31 @@ function TilingSprite(texture, width, height)
      */
     this._height = height || 100;
 
+     /**
+     * A point that represents the scale of the texture object
+     *
+     * @member {Point}
+     * @private
+     */
+    this._tileScaleOffset = new core.math.Point(1,1);
+
+
+    /**
+     *
+     *
+     * @member {boolean}
+     * @private
+     */
+    this._tilingTexture = null;
+
+    /**
+     *
+     *
+     * @member {boolean}
+     * @private
+     */
+    this._refreshTexture = false;
+
     /**
      * An internal WebGL UV cache.
      *
@@ -56,64 +83,6 @@ function TilingSprite(texture, width, height)
      * @private
      */
     this._uvs = new core.TextureUvs();
-
-    this._canvasPattern = null;
-
-    //TODO move..
-    this.shader = new core.AbstractFilter(
-
-      [
-        'precision lowp float;',
-        'attribute vec2 aVertexPosition;',
-        'attribute vec2 aTextureCoord;',
-        'attribute vec4 aColor;',
-
-        'uniform mat3 projectionMatrix;',
-        
-        'uniform vec4 uFrame;',
-        'uniform vec4 uTransform;',
-
-        'varying vec2 vTextureCoord;',
-        'varying vec4 vColor;',
-
-        'void main(void){',
-        '   gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);',
-
-        '   vec2 coord = aTextureCoord;',
-        '   coord -= uTransform.xy;',
-        '   coord /= uTransform.zw;',
-        '   coord /= uFrame.zw;',
-        '   vTextureCoord = coord;',
-
-        '   vColor = vec4(aColor.rgb * aColor.a, aColor.a);',
-        '}'
-      ].join('\n'),
-      [
-        'precision lowp float;',
-
-        'varying vec2 vTextureCoord;',
-        'varying vec4 vColor;',
-
-        'uniform sampler2D uSampler;',
-        'uniform vec4 uFrame;',
-                
-        'void main(void){',
-
-        '   vec2 coord = fract(vTextureCoord);',
-        '   coord *= uFrame.zw;',
-        '   coord += uFrame.xy;',
-
-        '   gl_FragColor =  texture2D(uSampler, coord) * vColor ;',
-        '}'
-      ].join('\n'),
-
-            // set the uniforms
-            {
-                uFrame: { type: '4fv', value: [0,0,1,1] },
-
-                uTransform: { type: '4fv', value: [0,0,1,1] }
-            }
-      );
 }
 
 TilingSprite.prototype = Object.create(core.Sprite.prototype);
@@ -171,36 +140,53 @@ TilingSprite.prototype._onTextureUpdate = function ()
  */
 TilingSprite.prototype._renderWebGL = function (renderer)
 {
-    // tweak our texture temporarily..
-    var texture = this._texture;
+    if (!this._tilingTexture || this._refreshTexture)
+    {
+        this.generateTilingTexture(renderer, this.texture, true);
+    }
 
-    if(!texture || !texture._uvs)
+    // tweak our texture temporarily..
+    var texture = this._tilingTexture;
+
+    if(!texture)
     {
         return;
     }
 
-    var tempUvs = texture._uvs,
-        tempWidth = texture._frame.width,
-        tempHeight = texture._frame.height,
-        tw = texture.baseTexture.width,
-        th = texture.baseTexture.height;
 
-    texture._uvs = this._uvs;
+    var uvs = this._uvs;
+
+    this.tilePosition.x %= texture.baseTexture.width / this._tileScaleOffset.x;
+    this.tilePosition.y %= texture.baseTexture.height / this._tileScaleOffset.y;
+
+    var offsetX =  this.tilePosition.x/(texture.baseTexture.width / this._tileScaleOffset.x);
+    var offsetY =  this.tilePosition.y/(texture.baseTexture.height / this._tileScaleOffset.y);
+
+    var scaleX =  (this._width / texture.baseTexture.width) * this._tileScaleOffset.x;
+    var scaleY =  (this._height / texture.baseTexture.height) * this._tileScaleOffset.y;
+
+    scaleX /= this.tileScale.x;
+    scaleY /= this.tileScale.y;
+
+    uvs.x0 = 0 - offsetX;
+    uvs.y0 = 0 - offsetY;
+
+    uvs.x1 = (1 * scaleX) - offsetX;
+    uvs.y1 = 0 - offsetY;
+
+    uvs.x2 = (1 * scaleX) - offsetX;
+    uvs.y2 = (1 * scaleY) - offsetY;
+
+    uvs.x3 = 0 - offsetX;
+    uvs.y3 = (1 * scaleY) - offsetY;
+
+    var tempUvs = texture._uvs;
+    var tempWidth = texture._frame.width;
+    var tempHeight = texture._frame.height;
+
+    texture._uvs = uvs;
     texture._frame.width = this.width;
     texture._frame.height = this.height;
-
-    //PADDING
-    
-    // apply padding to stop gaps in the tile when numbers are not rounded
-    this.shader.uniforms.uFrame.value[0] = tempUvs.x0 + (0.5 / tw); // the 0.5 is padding
-    this.shader.uniforms.uFrame.value[1] = tempUvs.y0 + (0.5 / th); // the 0.5 is padding
-    this.shader.uniforms.uFrame.value[2] = tempUvs.x1 - tempUvs.x0 + (-1 / tw); // the -1 is padding offset
-    this.shader.uniforms.uFrame.value[3] = tempUvs.y2 - tempUvs.y0 + (-1 / th); // the -1 is padding offset
-
-    this.shader.uniforms.uTransform.value[0] = (this.tilePosition.x % tw) / this._width;
-    this.shader.uniforms.uTransform.value[1] = (this.tilePosition.y % th) / this._height;
-    this.shader.uniforms.uTransform.value[2] = ( tw / this._width ) * this.tileScale.x;
-    this.shader.uniforms.uTransform.value[3] = ( th / this._height ) * this.tileScale.y;
 
     renderer.setObjectRenderer(renderer.plugins.sprite);
     renderer.plugins.sprite.render(this);
@@ -208,6 +194,7 @@ TilingSprite.prototype._renderWebGL = function (renderer)
     texture._uvs = tempUvs;
     texture._frame.width = tempWidth;
     texture._frame.height = tempHeight;
+
 };
 
 /**
@@ -218,45 +205,34 @@ TilingSprite.prototype._renderWebGL = function (renderer)
  */
 TilingSprite.prototype._renderCanvas = function (renderer)
 {
-    var texture = this._texture;
+    var context = renderer.context;
 
-    if (!texture.baseTexture.hasLoaded)
-    {
-      return;
-    }
-
-    var context = renderer.context,
-        transform = this.worldTransform,
-        resolution = renderer.resolution,
-        baseTexture = texture.baseTexture,
-        modX = this.tilePosition.x % baseTexture.width,
-        modY = this.tilePosition.y % baseTexture.height;
-
-    // create a nice shiny pattern!
-    // TODO this needs to be refreshed if texture changes..
-    if(!this._canvasPattern)
-    {
-        // cut an object from a spritesheet..
-        var tempCanvas = new core.CanvasBuffer(texture._frame.width, texture._frame.height);
-        tempCanvas.context.drawImage(baseTexture.source, -texture._frame.x,-texture._frame.y);
-        this._canvasPattern = tempCanvas.context.createPattern( tempCanvas.canvas, 'repeat' );
-    }
-
-    // set context state..
     context.globalAlpha = this.worldAlpha;
+
+    var transform = this.worldTransform;
+
+    var resolution = renderer.resolution;
+
     context.setTransform(transform.a * resolution,
-                       transform.b * resolution,
-                       transform.c * resolution,
-                       transform.d * resolution,
-                       transform.tx * resolution,
-                       transform.ty * resolution);
+                         transform.b * resolution,
+                         transform.c * resolution,
+                         transform.d * resolution,
+                         transform.tx * resolution,
+                         transform.ty * resolution);
 
-    // TODO - this should be rolled into the setTransform above..
-    context.scale(this.tileScale.x,this.tileScale.y);
+    if (!this.__tilePattern ||  this._refreshTexture)
+    {
+        this.generateTilingTexture(false);
 
-    
-    context.translate(modX + (this.anchor.x * -this._width ), 
-                      modY + (this.anchor.y * -this._height));
+        if (this._tilingTexture)
+        {
+            this.__tilePattern = context.createPattern(this._tilingTexture.baseTexture.source, 'repeat');
+        }
+        else
+        {
+            return;
+        }
+    }
 
     // check blend mode
     if (this.blendMode !== renderer.currentBlendMode)
@@ -265,17 +241,25 @@ TilingSprite.prototype._renderCanvas = function (renderer)
         context.globalCompositeOperation = renderer.blendModes[renderer.currentBlendMode];
     }
 
-    // fill the pattern!
-    context.fillStyle = this._canvasPattern;
-    context.fillRect(-modX,
-                     -modY,
-                     this._width / this.tileScale.x,
-                     this._height / this.tileScale.y);
+    var tilePosition = this.tilePosition;
+    var tileScale = this.tileScale;
 
+    tilePosition.x %= this._tilingTexture.baseTexture.width;
+    tilePosition.y %= this._tilingTexture.baseTexture.height;
 
-    //TODO - pretty sure this can be deleted...
-    //context.translate(-this.tilePosition.x + (this.anchor.x * this._width), -this.tilePosition.y + (this.anchor.y * this._height));
-    //context.scale(1 / this.tileScale.x, 1 / this.tileScale.y);
+    // offset - make sure to account for the anchor point..
+    context.scale(tileScale.x,tileScale.y);
+    context.translate(tilePosition.x + (this.anchor.x * -this._width), tilePosition.y + (this.anchor.y * -this._height));
+
+    context.fillStyle = this.__tilePattern;
+
+    context.fillRect(-tilePosition.x,
+                    -tilePosition.y,
+                    this._width / tileScale.x,
+                    this._height / tileScale.y);
+
+    context.translate(-tilePosition.x + (this.anchor.x * this._width), -tilePosition.y + (this.anchor.y * this._height));
+    context.scale(1 / tileScale.x, 1 / tileScale.y);
 };
 
 
@@ -356,6 +340,90 @@ TilingSprite.prototype.getBounds = function ()
 };
 
 /**
+ * When the texture is updated, this event will fire to update the scale and frame
+ *
+ * @param event
+ * @private
+ */
+TilingSprite.prototype.onTextureUpdate = function ()
+{
+   // overriding the sprite version of this!
+};
+
+/**
+ * Creates the tiling texture
+ * @param renderer {CanvasRenderer|WebGLRenderer} a reference to the current renderer
+ * @param texture {Texture} The texture to use to generate the tiling texture
+ * @param forcePowerOfTwo {boolean} Whether we want to force the texture to be a power of two
+ */
+TilingSprite.prototype.generateTilingTexture = function (renderer, texture, forcePowerOfTwo)
+{
+    if (!this.texture.baseTexture.hasLoaded)
+    {
+        return;
+    }
+
+    texture = this.originalTexture || this._texture;
+    var frame = texture._frame;
+    var targetWidth, targetHeight;
+
+    //  Check that the frame is the same size as the base texture.
+    var isFrame = frame.width !== texture.baseTexture.width || frame.height !== texture.baseTexture.height;
+
+    if ((forcePowerOfTwo && !texture.baseTexture.isPowerOfTwo) || isFrame)
+    {
+        targetWidth = core.utils.getNextPowerOfTwo(frame.width);
+        targetHeight = core.utils.getNextPowerOfTwo(frame.height);
+        tempSprite.texture = texture;
+
+        //TODO not create a new one each time you refresh
+        var renderTexture = new core.RenderTexture(renderer, targetWidth, targetHeight, texture.baseTexture.scaleMode, texture.baseTexture.resolution);
+
+        var cachedRenderTarget = renderer.currentRenderTarget;
+
+        var m = tempMatrix;
+        m.a =  (targetWidth + 1) / (frame.width);
+        m.d =   (targetHeight + 1) / (frame.height);
+
+       // tempSprite.worldTransform.tx = 0.5;
+       // tempSprite.worldTransform.ty = 0.5;
+
+        renderer.currentRenderer.flush();
+
+        renderTexture.render( tempSprite, m, true, false );
+
+        renderer.setRenderTarget(cachedRenderTarget);
+
+
+        this._tileScaleOffset.x = targetWidth / frame.width;
+        this._tileScaleOffset.y = targetHeight / frame.height;
+
+        this._tilingTexture = renderTexture;
+    }
+    else
+    {
+        if (this._tilingTexture && this._tilingTexture.isTiling)
+        {
+            // destroy the tiling texture!
+            // TODO could store this somewhere?
+            this._tilingTexture.destroy(true);
+        }
+
+        this._tileScaleOffset.x = 1;
+        this._tileScaleOffset.y = 1;
+        this._tilingTexture = texture;
+
+    }
+
+
+    this._refreshTexture = false;
+
+    this.originalTexture = this.texture;
+    this._texture = this._tilingTexture;
+
+};
+
+/**
  * Checks if a point is inside this tiling sprite
  * @param point {Point} the point to check
  */
@@ -391,6 +459,9 @@ TilingSprite.prototype.destroy = function () {
     this.tileScale = null;
     this._tileScaleOffset = null;
     this.tilePosition = null;
+
+    this._tilingTexture.destroy(true);
+    this._tilingTexture = null;
 
     this._uvs = null;
 };

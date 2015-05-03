@@ -221,6 +221,8 @@ WebGLRenderer.prototype.render = function (object)
         return;
     }
 
+    this.drawCount = 0;
+
     this._lastObjectRendered = object;
 
     if(this._useFXAA)
@@ -342,6 +344,7 @@ WebGLRenderer.prototype.resize = function (width, height)
     if(this.currentRenderTarget === this.renderTarget)
     {
         this.renderTarget.activate();
+        this.gl.viewport(0, 0, this.width, this.height);
     }
 };
 

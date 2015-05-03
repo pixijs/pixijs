@@ -479,8 +479,8 @@ Sprite.prototype._renderCanvas = function (renderer)
                 0,
                 width * resolution * renderer.resolution,
                 height * resolution * renderer.resolution,
-                dx / resolution,
-                dy / resolution,
+                dx,
+                dy,
                 width * renderer.resolution,
                 height * renderer.resolution
             );
@@ -493,8 +493,8 @@ Sprite.prototype._renderCanvas = function (renderer)
                 texture.crop.y * resolution,
                 width * resolution * renderer.resolution,
                 height * resolution * renderer.resolution,
-                dx / resolution,
-                dy / resolution,
+                dx,
+                dy,
                 width * renderer.resolution,
                 height * renderer.resolution
             );
@@ -505,8 +505,8 @@ Sprite.prototype._renderCanvas = function (renderer)
 /**
  * Destroys this sprite and optionally its texture
  *
- * @param destroyTexture {boolean} Should it destroy the current texture of the sprite as well
- * @param destroyBaseTexture {boolean} Should it destroy the base texture of the sprite as well
+ * @param [destroyTexture=false] {boolean} Should it destroy the current texture of the sprite as well
+ * @param [destroyBaseTexture=false] {boolean} Should it destroy the base texture of the sprite as well
  */
 Sprite.prototype.destroy = function (destroyTexture, destroyBaseTexture)
 {
@@ -541,7 +541,7 @@ Sprite.fromFrame = function (frameId)
 
     if (!texture)
     {
-        throw new Error('The frameId "' + frameId + '" does not exist in the texture cache ' + this);
+        throw new Error('The frameId "' + frameId + '" does not exist in the texture cache');
     }
 
     return new Sprite(texture);

@@ -53,8 +53,8 @@ InteractionData.prototype.getLocalPosition = function (displayObject, point, glo
 
     point = point || new core.math.Point();
 
-    point.x = a11 * id * global.x + -a01 * id * global.y + (a12 * a01 - a02 * a11) * id;
-    point.y = a00 * id * global.y + -a10 * id * global.x + (-a12 * a00 + a02 * a10) * id;
+    point.x = a11 * id * global.x + -a01 * id * global.x + (a12 * a01 - a02 * a11) * id;
+    point.y = a00 * id * global.y + -a10 * id * global.y + (-a12 * a00 + a02 * a10) * id;
 
     // set the mouse coords...
     return point;

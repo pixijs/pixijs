@@ -26,7 +26,6 @@ function ParticleRenderer(renderer)
 {
     ObjectRenderer.call(this, renderer);
 
-
     /**
      * The number of images in the Particle before it flushes.
      *
@@ -35,7 +34,6 @@ function ParticleRenderer(renderer)
     this.size = 15000;//CONST.SPRITE_BATCH_SIZE; // 2000 is a nice balance between mobile / desktop
 
     var numIndices = this.size * 6;
-
 
     /**
      * Holds the indices
@@ -61,11 +59,11 @@ function ParticleRenderer(renderer)
      */
     this.shader = null;
 
+    this.indexBuffer = null;
+
+    this.properties = null;
+
     this.tempMatrix = new math.Matrix();
-
-
-
-
 }
 
 ParticleRenderer.prototype = Object.create(ObjectRenderer.prototype);
@@ -95,49 +93,48 @@ ParticleRenderer.prototype.onContextChange = function ()
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW);
 
-
     this.properties = [
-    //verticesData
-    {
-        attribute:this.shader.attributes.aVertexPosition,
-        dynamic:false,
-        size:2,
-        uploadFunction:this.uploadVertices,
-        offset:0
-    },
-    // positionData
-    {
-        attribute:this.shader.attributes.aPositionCoord,
-        dynamic:true,
-        size:2,
-        uploadFunction:this.uploadPosition,
-        offset:0
-    },
-    // rotationData
-    {
-        attribute:this.shader.attributes.aRotation,
-        dynamic:false,
-        size:1,
-        uploadFunction:this.uploadRotation,
-        offset:0
-    },
-    //u vsData
-    {
-        attribute:this.shader.attributes.aTextureCoord,
-        dynamic:false,
-        size:2,
-        uploadFunction:this.uploadUvs,
-        offset:0
-    },
-    // alphaData
-    {
-        attribute:this.shader.attributes.aColor,
-        dynamic:false,
-        size:1,
-        uploadFunction:this.uploadAlpha,
-        offset:0
-    }];
-
+        // verticesData
+        {
+            attribute:this.shader.attributes.aVertexPosition,
+            dynamic:false,
+            size:2,
+            uploadFunction:this.uploadVertices,
+            offset:0
+        },
+        // positionData
+        {
+            attribute:this.shader.attributes.aPositionCoord,
+            dynamic:true,
+            size:2,
+            uploadFunction:this.uploadPosition,
+            offset:0
+        },
+        // rotationData
+        {
+            attribute:this.shader.attributes.aRotation,
+            dynamic:false,
+            size:1,
+            uploadFunction:this.uploadRotation,
+            offset:0
+        },
+        // uvsData
+        {
+            attribute:this.shader.attributes.aTextureCoord,
+            dynamic:false,
+            size:2,
+            uploadFunction:this.uploadUvs,
+            offset:0
+        },
+        // alphaData
+        {
+            attribute:this.shader.attributes.aColor,
+            dynamic:false,
+            size:1,
+            uploadFunction:this.uploadAlpha,
+            offset:0
+        }
+    ];
 };
 
 /**
@@ -189,12 +186,15 @@ ParticleRenderer.prototype.render = function ( container )
 
 
     // if the uvs have not updated then no point rendering just yet!
-    //this.renderer.blendModeManager.setBlendMode(sprite.blendMode);
+    this.renderer.blendModeManager.setBlendMode(container.blendMode);
+
     var gl = this.renderer.gl;
 
     var m =  container.worldTransform.copy( this.tempMatrix );
     m.prepend( this.renderer.currentRenderTarget.projectionMatrix );
     gl.uniformMatrix3fv(this.shader.uniforms.projectionMatrix._location, false, m.toArray(true));
+    gl.uniform1f(this.shader.uniforms.uAlpha._location, container.worldAlpha);
+
 
     // if this variable is true then we will upload the static contents as well as the dynamic contens
     var uploadStatic = container._updateStatic;
@@ -204,7 +204,12 @@ ParticleRenderer.prototype.render = function ( container )
 
     if (!baseTexture._glTextures[gl.id])
     {
-        this.renderer.updateTexture(baseTexture);
+        // if the texture has not updated then lets not upload any static properties
+        if(!this.renderer.updateTexture(baseTexture))
+        {
+            return;
+        }
+
         if(!this.properties[0].dynamic || !this.properties[3].dynamic)
         {
             uploadStatic = true;
@@ -475,8 +480,14 @@ ParticleRenderer.prototype.uploadAlpha = function (children,startIndex, amount, 
  */
 ParticleRenderer.prototype.destroy = function ()
 {
+    if (this.renderer.gl) {
+        this.renderer.gl.deleteBuffer(this.indexBuffer);
+    }
+
+    ObjectRenderer.prototype.destroy.apply(this, arguments);
 
     this.shader.destroy();
 
-    //TODO implement this!
+    this.indices = null;
+    this.tempMatrix = null;
 };

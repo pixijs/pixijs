@@ -6,8 +6,8 @@ module.exports = function ()
 {
     return function (resource, next)
     {
-        // skip if no data
-        if (!resource.data || !resource.data.frames)
+        // skip if no data, its not json, or it isn't spritesheet data
+        if (!resource.data || !resource.isJson || !resource.data.frames)
         {
             return next();
         }
@@ -70,7 +70,7 @@ module.exports = function ()
 
                     resource.textures[i] = new core.Texture(res.texture.baseTexture, size, size.clone(), trim, frames[i].rotated);
 
-                    // lets also add the frame to pixi's global cache for fromFrame and fromImage fucntions
+                    // lets also add the frame to pixi's global cache for fromFrame and fromImage functions
                     core.utils.TextureCache[i] = resource.textures[i];
                 }
             }

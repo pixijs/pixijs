@@ -78,7 +78,6 @@ function Text(text, style, resolution)
     texture.trim = new math.Rectangle();
     Sprite.call(this, texture);
 
-
     this.text = text;
     this.style = style;
 }
@@ -373,7 +372,7 @@ Text.prototype.updateTexture = function ()
     this._width = this.canvas.width / this.resolution;
     this._height = this.canvas.height / this.resolution;
 
-    texture.update();
+    texture.baseTexture.emit('update',  texture.baseTexture);
 
     this.dirty = false;
 };
@@ -582,13 +581,15 @@ Text.prototype.getBounds = function (matrix)
 /**
  * Destroys this text object.
  *
- * @param destroyBaseTexture {boolean} whether to destroy the base texture as well
+ * @param [destroyBaseTexture=true] {boolean} whether to destroy the base texture as well
  */
 Text.prototype.destroy = function (destroyBaseTexture)
 {
     // make sure to reset the the context and canvas.. dont want this hanging around in memory!
     this.context = null;
     this.canvas = null;
+
+    this._style = null;
 
     this._texture.destroy(destroyBaseTexture === undefined ? true : destroyBaseTexture);
 };

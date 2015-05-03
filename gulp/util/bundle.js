@@ -46,10 +46,8 @@ function createBundler(args) {
         exclude = (argv.exclude || []).concat(argv.e || []);
 
     for (var i = 0; i < exclude.length; ++i) {
-        bundle.ignore('./' + exclude[i]);
+        bundle.ignore(require.resolve('../../src/' + exclude[i]));
     }
-
-    bundle.require(paths.jsEntry, { expose: 'pixi.js' });
 
     return bundle;
 }

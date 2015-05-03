@@ -46,13 +46,16 @@ function ParticleShader(shaderManager)
             'varying float vColor;',
 
             'uniform sampler2D uSampler;',
+            'uniform float uAlpha;',
 
             'void main(void){',
-            '   gl_FragColor = texture2D(uSampler, vTextureCoord) * vColor ;',
+            '   gl_FragColor = texture2D(uSampler, vTextureCoord) * vColor * uAlpha ;',
             '}'
         ].join('\n'),
         // custom uniforms
-        null,
+        {
+            uAlpha:  { type: '1f', value: 1 }
+        },
         // custom attributes
         {
             aPositionCoord: 0,
