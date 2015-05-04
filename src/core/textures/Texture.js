@@ -241,8 +241,8 @@ Texture.prototype.destroy = function (destroyBase)
             this.baseTexture.destroy();
         }
 
-        this.baseTexture.off('update', this.onBaseTextureUpdated);
-        this.baseTexture.off('loaded', this.onBaseTextureLoaded);
+        this.baseTexture.off('update', this.onBaseTextureUpdated, this);
+        this.baseTexture.off('loaded', this.onBaseTextureLoaded, this);
 
         this.baseTexture = null;
     }
