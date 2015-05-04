@@ -370,7 +370,7 @@ InteractionManager.prototype.processInteractive = function (point, displayObject
             else
             {
                 // now we know we can miss it all!
-                this.processInteractive(point, children[i], func, false, false );
+                this.processInteractive(point, children[i], func, true, false );
             }
         }
 
