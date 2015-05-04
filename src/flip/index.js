@@ -212,6 +212,7 @@ core.Sprite.prototype._renderWebGL3d = function(renderer)
     renderer.plugins.sprite3d.render(this);
 };
 
+
 core.Text.prototype._renderWebGL3d = function(renderer)
 {
     if (this.dirty)

@@ -11,6 +11,8 @@ core.loaders        = require('./loaders');
 core.mesh           = require('./mesh');
 core.ticker         = require('./ticker');
 
+core.flip         = require('./flip');
+
 // export a premade loader instance
 core.loader = new core.loaders.Loader();
 

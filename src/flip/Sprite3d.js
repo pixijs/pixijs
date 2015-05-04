@@ -1,7 +1,7 @@
 var core = require('../core'),
     glMat = require('gl-matrix'),
-    math3d = require('./math');
-
+    math3d = require('./math'),
+    tempPoint = new core.Point();
 /**
  * The Sprite object is the base for all textured objects that are rendered to the screen
  *
@@ -56,6 +56,40 @@ Sprite3d.prototype.updateTransform3d = function()
 Sprite3d.prototype.renderWebGL = function(renderer)
 {
     this.renderWebGL3d( renderer );
+};
+
+
+Sprite3d.prototype.containsPoint = function( point )
+{
+    var ray = math3d.getRayFromScreen(point, renderer);
+    window.ray2 = ray;
+ //   console.log(ray);
+    var contactPoint = math3d.get2DContactPoint(ray, this); // return 2d coords//
+//    console.log(contactPoint);
+
+    if(!contactPoint)
+    {
+        return false;
+    }
+
+    this.worldTransform.applyInverse(contactPoint,  tempPoint);
+
+    var width = this._texture._frame.width;
+    var height = this._texture._frame.height;
+    var x1 = -width * this.anchor.x;
+    var y1;
+
+    if ( tempPoint.x > x1 && tempPoint.x < x1 + width )
+    {
+        y1 = -height * this.anchor.y;
+
+        if ( tempPoint.y > y1 && tempPoint.y < y1 + height )
+        {
+            return true;
+        }
+    }
+
+    return false;
 };
 
 
