@@ -33,7 +33,7 @@ WebGLManager.prototype.onContextChange = function ()
  */
 WebGLManager.prototype.destroy = function ()
 {
-    this.renderer.off('context', this.onContextChange);
+    this.renderer.off('context', this.onContextChange, this);
 
     this.renderer = null;
 };

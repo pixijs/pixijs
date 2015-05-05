@@ -24,7 +24,7 @@
     "brfs": "^1.4.0",
     "eventemitter3": "^1.0.1",
     "object-assign": "^2.0.0",
-    "resource-loader": "^1.5.2"
+    "resource-loader": "^1.5.3"
   },
   "devDependencies": {
     "browserify": "^9.0.8",
