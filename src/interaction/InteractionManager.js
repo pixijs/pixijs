@@ -646,6 +646,10 @@ InteractionManager.prototype.processTouchStart = function ( displayObject, hit )
     if(hit)
     {
         displayObject._touchDown = true;
+        
+        // save touch position for tap detection
+        displayObject._touchDownPoint.copy(this.eventData.data.global);
+        
         this.dispatchEvent( displayObject, 'touchstart', this.eventData );
     }
 };
@@ -701,7 +705,13 @@ InteractionManager.prototype.processTouchEnd = function ( displayObject, hit )
         if( displayObject._touchDown )
         {
             displayObject._touchDown = false;
-            this.dispatchEvent( displayObject, 'tap', this.eventData );
+            
+            // calculate the distance since the tap
+            var tapDistance = displayObject._touchDownPoint.distance(this.eventData.data.global);
+                        
+            if (tapDistance < displayObject.tapThreshold) {
+                this.dispatchEvent( displayObject, 'tap', this.eventData );
+            }
         }
     }
     else

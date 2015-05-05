@@ -1,3 +1,5 @@
+var core = require('../core');
+
 /**
  * Default property values of interactive objects
  * used by {@link PIXI.interaction.InteractionManager}.
@@ -29,7 +31,12 @@ module.exports = {
     /**
      * @todo Needs docs.
      */
-    defaultCursor: 'pointer',
+    defaultCursor: 'pointer',    
+    
+    /**
+     * The threshold in px used to check if a tap occured on the interactive object.
+     */
+    tapThreshold: 8,
 
     // some internal checks..
 
@@ -42,5 +49,11 @@ module.exports = {
      * @todo Needs docs.
      * @private
      */
-    _touchDown: false
+    _touchDown: false,
+    
+    /**
+     * Used to track the global start position of a touchdown event on this target.
+     * @private
+     */
+    _touchDownPoint: new core.Point()
 };
