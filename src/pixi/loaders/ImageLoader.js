@@ -82,7 +82,8 @@ PIXI.ImageLoader.prototype.loadFramedSpriteSheet = function(frameWidth, frameHei
     {
         var scope = this;
         textureName = textureName || scope.texture.baseTexture.imageUrl;
-        this.texture.baseTexture.addEventListener('loaded', function (e) {
+        this.texture.baseTexture.addEventListener('loaded', function () {
+            var texture;
             var cols = Math.floor(scope.texture.width / frameWidth);
             var rows = Math.floor(scope.texture.height / frameHeight);
 
@@ -90,7 +91,7 @@ PIXI.ImageLoader.prototype.loadFramedSpriteSheet = function(frameWidth, frameHei
             for (var y = 0; y < rows; y++) {
                 for (var x = 0; x < cols; x++, i++) {
                     if (!PIXI.TextureCache[textureName + '-' + i]) {
-                        var texture = new PIXI.Texture(scope.texture, {
+                        texture = new PIXI.Texture(scope.texture, {
                             x: x * frameWidth,
                             y: y * frameHeight,
                             width: frameWidth,
@@ -99,7 +100,7 @@ PIXI.ImageLoader.prototype.loadFramedSpriteSheet = function(frameWidth, frameHei
                         PIXI.TextureCache[textureName + '-' + i] = texture;
                     }
                     else {
-                        var texture = PIXI.TextureCache[textureName + '-' + i];
+                        texture = PIXI.TextureCache[textureName + '-' + i];
                     }
                     scope.frames.push(texture);
                 }
@@ -113,6 +114,7 @@ PIXI.ImageLoader.prototype.loadFramedSpriteSheet = function(frameWidth, frameHei
 
         textureName = textureName || this.texture.baseTexture.imageUrl;
 
+        var texture;
         var cols = Math.floor(this.texture.width / frameWidth);
         var rows = Math.floor(this.texture.height / frameHeight);
 
@@ -120,7 +122,7 @@ PIXI.ImageLoader.prototype.loadFramedSpriteSheet = function(frameWidth, frameHei
         for (var y = 0; y < rows; y++) {
             for (var x = 0; x < cols; x++, i++) {
                 if (!PIXI.TextureCache[textureName + '-' + i]) {
-                    var texture = new PIXI.Texture(this.texture, {
+                    texture = new PIXI.Texture(this.texture, {
                         x: x * frameWidth,
                         y: y * frameHeight,
                         width: frameWidth,
@@ -129,7 +131,7 @@ PIXI.ImageLoader.prototype.loadFramedSpriteSheet = function(frameWidth, frameHei
                     PIXI.TextureCache[textureName + '-' + i] = texture;
                 }
                 else {
-                    var texture = PIXI.TextureCache[textureName + '-' + i];
+                    texture = PIXI.TextureCache[textureName + '-' + i];
                 }
 
                 this.frames.push(texture);
