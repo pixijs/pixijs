@@ -12,7 +12,11 @@ var path        = require('path'),
     handleErrors = require('../util/handleErrors');
 
 // TODO - Concat license header to dev/prod build files.
-function rebundle() {
+function rebundle(devBundle) {
+    if (devBundle) {
+        gutil.log('Starting dev rebundle...');
+    }
+
     var debug, min;
 
     debug = sourcemaps.init({loadMaps: true});
@@ -25,15 +29,20 @@ function rebundle() {
         .pipe(sourcemaps.write('./', {sourceRoot: './', addComment: false}))
         .pipe(gulp.dest(paths.out));
 
-    return this.bundle()
+    var stream = this.bundle()
         .on('error', handleErrors.handler)
         .pipe(handleErrors())
         .pipe(source('pixi.js'))
-        .pipe(buffer())
-        .pipe(mirror(
-            debug,
-            min
-        ));
+        .pipe(buffer());
+
+    if (devBundle) {
+        return stream.pipe(debug).once('end', function () {
+            gutil.log('Dev rebundle complete.');
+        });
+    }
+    else {
+        return stream.pipe(mirror(debug, min));
+    }
 }
 
 function createBundler(args) {
@@ -56,7 +65,7 @@ function watch(onUpdate) {
     var bundler = watchify(createBundler(watchify.args));
 
     bundler.on('update', function () {
-        var bundle = rebundle.call(this);
+        var bundle = rebundle.call(this, true);
 
         if (onUpdate) {
             bundle.on('end', onUpdate);
