@@ -98,6 +98,8 @@ MeshRenderer.prototype.render = function (mesh)
         gl.bufferSubData(gl.ARRAY_BUFFER, 0, mesh.vertices);
         gl.vertexAttribPointer(shader.attributes.aVertexPosition, 2, gl.FLOAT, false, 0, 0);
 
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh._indexBuffer);
+        gl.bufferSubData(gl.ELEMENT_ARRAY_BUFFER,0, mesh.indices);
 
         // update the uvs
         gl.bindBuffer(gl.ARRAY_BUFFER, mesh._uvBuffer);
