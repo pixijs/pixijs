@@ -47,6 +47,12 @@ function Rope(texture, points)
      */
     this.indices = new Uint16Array(points.length * 2);
 
+    /*
+     * @member {TextureUvs} Current texture uvs
+     * @private
+     */
+    this._textureUvs = null;
+
     this.refresh();
 }
 
