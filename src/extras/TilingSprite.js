@@ -192,10 +192,10 @@ TilingSprite.prototype._renderWebGL = function (renderer)
     //PADDING
 
     // apply padding to stop gaps in the tile when numbers are not rounded
-    this.shader.uniforms.uFrame.value[0] = tempUvs.x0 + (0.5 / tw); // the 0.5 is padding
-    this.shader.uniforms.uFrame.value[1] = tempUvs.y0 + (0.5 / th); // the 0.5 is padding
-    this.shader.uniforms.uFrame.value[2] = tempUvs.x1 - tempUvs.x0 + (-1 / tw); // the -1 is padding offset
-    this.shader.uniforms.uFrame.value[3] = tempUvs.y2 - tempUvs.y0 + (-1 / th); // the -1 is padding offset
+    this.shader.uniforms.uFrame.value[0] = tempUvs.x0;
+    this.shader.uniforms.uFrame.value[1] = tempUvs.y0;
+    this.shader.uniforms.uFrame.value[2] = tempUvs.x1 - tempUvs.x0;
+    this.shader.uniforms.uFrame.value[3] = tempUvs.y2 - tempUvs.y0;
 
     this.shader.uniforms.uTransform.value[0] = (this.tilePosition.x % tw) / this._width;
     this.shader.uniforms.uTransform.value[1] = (this.tilePosition.y % th) / this._height;
