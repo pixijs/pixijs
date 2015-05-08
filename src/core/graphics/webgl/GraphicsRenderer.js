@@ -91,6 +91,8 @@ GraphicsRenderer.prototype.render = function(graphics)
 
             renderer.stencilManager.pushStencil(graphics, webGLData, renderer);
 
+            gl.uniform1f(renderer.shaderManager.complexPrimitiveShader.uniforms.alpha._location, graphics.worldAlpha * webGLData.alpha);
+
             // render quad..
             gl.drawElements(gl.TRIANGLE_FAN, 4, gl.UNSIGNED_SHORT, ( webGLData.indices.length - 4 ) * 2 );
 
