@@ -69,7 +69,7 @@ function TilingSprite(texture, width, height)
         'attribute vec4 aColor;',
 
         'uniform mat3 projectionMatrix;',
-        
+
         'uniform vec4 uFrame;',
         'uniform vec4 uTransform;',
 
@@ -96,7 +96,7 @@ function TilingSprite(texture, width, height)
 
         'uniform sampler2D uSampler;',
         'uniform vec4 uFrame;',
-                
+
         'void main(void){',
 
         '   vec2 coord = fract(vTextureCoord);',
@@ -190,7 +190,7 @@ TilingSprite.prototype._renderWebGL = function (renderer)
     texture._frame.height = this.height;
 
     //PADDING
-    
+
     // apply padding to stop gaps in the tile when numbers are not rounded
     this.shader.uniforms.uFrame.value[0] = tempUvs.x0 + (0.5 / tw); // the 0.5 is padding
     this.shader.uniforms.uFrame.value[1] = tempUvs.y0 + (0.5 / th); // the 0.5 is padding
@@ -254,8 +254,8 @@ TilingSprite.prototype._renderCanvas = function (renderer)
     // TODO - this should be rolled into the setTransform above..
     context.scale(this.tileScale.x,this.tileScale.y);
 
-    
-    context.translate(modX + (this.anchor.x * -this._width ), 
+
+    context.translate(modX + (this.anchor.x * -this._width ),
                       modY + (this.anchor.y * -this._height));
 
     // check blend mode
