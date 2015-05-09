@@ -8270,6 +8270,8 @@ GraphicsRenderer.prototype.render = function(graphics)
 
             renderer.stencilManager.pushStencil(graphics, webGLData, renderer);
 
+            gl.uniform1f(renderer.shaderManager.complexPrimitiveShader.uniforms.alpha._location, graphics.worldAlpha * webGLData.alpha);
+
             // render quad..
             gl.drawElements(gl.TRIANGLE_FAN, 4, gl.UNSIGNED_SHORT, ( webGLData.indices.length - 4 ) * 2 );
 
@@ -12332,6 +12334,8 @@ CanvasMaskManager.prototype.popMask = function (renderer)
 {
     renderer.context.restore();
 };
+
+CanvasMaskManager.prototype.destroy = function () {};
 
 },{"./CanvasGraphics":44}],46:[function(require,module,exports){
 var utils = require('../../../utils');
@@ -16898,6 +16902,7 @@ SpriteRenderer.prototype.destroy = function ()
 var Sprite = require('../sprites/Sprite'),
     Texture = require('../textures/Texture'),
     math = require('../math'),
+    utils = require('../utils'),
     CONST = require('../const');
 
 /**
@@ -16927,7 +16932,8 @@ var Sprite = require('../sprites/Sprite'),
  * @param [style.dropShadowColor='#000000'] {string} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
  * @param [style.dropShadowAngle=Math.PI/4] {number} Set a angle of the drop shadow
  * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
- * @param [style.padding=0] {number} Occasionally some fonts are cropped. Adding some padding will prevent this from happening
+ * @param [style.padding=0] {number} Occasionally some fonts are cropped on top or bottom. Adding some padding will
+ *      prevent this from happening by adding padding to the top and bottom of text height.
  * @param [style.textBaseline='alphabetic'] {string} The baseline of the text that is rendered.
  * @param [style.lineJoin='miter'] {string} The lineJoin property sets the type of corner created, it can resolve
  *      spiked text issues. Default is 'miter' (creates a sharp corner).
@@ -17040,18 +17046,19 @@ Object.defineProperties(Text.prototype, {
      *
      * @param [style] {object} The style parameters
      * @param [style.font='bold 20pt Arial'] {string} The style and size of the font
-     * @param [style.fill='black'] {object} A canvas fillstyle that will be used on the text eg 'red', '#00FF00'
+     * @param [style.fill='black'] {string|number} A canvas fillstyle that will be used on the text eg 'red', '#00FF00'
      * @param [style.align='left'] {string} Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
-     * @param [style.stroke='black'] {string} A canvas fillstyle that will be used on the text stroke eg 'blue', '#FCFF00'
+     * @param [style.stroke='black'] {string|number} A canvas fillstyle that will be used on the text stroke eg 'blue', '#FCFF00'
      * @param [style.strokeThickness=0] {number} A number that represents the thickness of the stroke. Default is 0 (no stroke)
      * @param [style.wordWrap=false] {boolean} Indicates if word wrap should be used
      * @param [style.wordWrapWidth=100] {number} The width at which text will wrap
      * @param [style.lineHeight] {number} The line height, a number that represents the vertical space that a letter uses
      * @param [style.dropShadow=false] {boolean} Set a drop shadow for the text
-     * @param [style.dropShadowColor='#000000'] {string} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
+     * @param [style.dropShadowColor='#000000'] {string|number} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
      * @param [style.dropShadowAngle=Math.PI/6] {number} Set a angle of the drop shadow
      * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
-     * @param [style.padding=0] {number} Occasionally some fonts are cropped. Adding some padding will prevent this from happening
+     * @param [style.padding=0] {number} Occasionally some fonts are cropped on top or bottom. Adding some padding will
+     *      prevent this from happening by adding padding to the top and bottom of text height.
      * @param [style.textBaseline='alphabetic'] {string} The baseline of the text that is rendered.
      * @param [style.lineJoin='miter'] {string} The lineJoin property sets the type of corner created, it can resolve
      *      spiked text issues. Default is 'miter' (creates a sharp corner).
@@ -17067,6 +17074,19 @@ Object.defineProperties(Text.prototype, {
         set: function (style)
         {
             style = style || {};
+
+            if (typeof style.fill === 'number') {
+                style.fill = utils.hex2string(style.fill);
+            }
+
+            if (typeof style.stroke === 'number') {
+                style.stroke = utils.hex2string(style.stroke);
+            }
+
+            if (typeof style.dropShadowColor === 'number') {
+                style.dropShadowColor = utils.hex2string(style.dropShadowColor);
+            }
+
             style.font = style.font || 'bold 20pt Arial';
             style.fill = style.fill || 'black';
             style.align = style.align || 'left';
@@ -17491,7 +17511,7 @@ Text.prototype.destroy = function (destroyBaseTexture)
     this._texture.destroy(destroyBaseTexture === undefined ? true : destroyBaseTexture);
 };
 
-},{"../const":21,"../math":31,"../sprites/Sprite":65,"../textures/Texture":70}],68:[function(require,module,exports){
+},{"../const":21,"../math":31,"../sprites/Sprite":65,"../textures/Texture":70,"../utils":74}],68:[function(require,module,exports){
 var utils = require('../utils'),
     CONST = require('../const'),
     EventEmitter = require('eventemitter3');
@@ -20537,7 +20557,7 @@ function TilingSprite(texture, width, height)
         'attribute vec4 aColor;',
 
         'uniform mat3 projectionMatrix;',
-        
+
         'uniform vec4 uFrame;',
         'uniform vec4 uTransform;',
 
@@ -20564,7 +20584,7 @@ function TilingSprite(texture, width, height)
 
         'uniform sampler2D uSampler;',
         'uniform vec4 uFrame;',
-                
+
         'void main(void){',
 
         '   vec2 coord = fract(vTextureCoord);',
@@ -20658,15 +20678,15 @@ TilingSprite.prototype._renderWebGL = function (renderer)
     texture._frame.height = this.height;
 
     //PADDING
-    
-    // apply padding to stop gaps in the tile when numbers are not rounded
-    this.shader.uniforms.uFrame.value[0] = tempUvs.x0 + (0.5 / tw); // the 0.5 is padding
-    this.shader.uniforms.uFrame.value[1] = tempUvs.y0 + (0.5 / th); // the 0.5 is padding
-    this.shader.uniforms.uFrame.value[2] = tempUvs.x1 - tempUvs.x0 + (-1 / tw); // the -1 is padding offset
-    this.shader.uniforms.uFrame.value[3] = tempUvs.y2 - tempUvs.y0 + (-1 / th); // the -1 is padding offset
 
-    this.shader.uniforms.uTransform.value[0] = (this.tilePosition.x % tw) / this._width;
-    this.shader.uniforms.uTransform.value[1] = (this.tilePosition.y % th) / this._height;
+    // apply padding to stop gaps in the tile when numbers are not rounded
+    this.shader.uniforms.uFrame.value[0] = tempUvs.x0;
+    this.shader.uniforms.uFrame.value[1] = tempUvs.y0;
+    this.shader.uniforms.uFrame.value[2] = tempUvs.x1 - tempUvs.x0;
+    this.shader.uniforms.uFrame.value[3] = tempUvs.y2 - tempUvs.y0;
+
+    this.shader.uniforms.uTransform.value[0] = (this.tilePosition.x % tempWidth) / this._width;
+    this.shader.uniforms.uTransform.value[1] = (this.tilePosition.y % tempHeight) / this._height;
     this.shader.uniforms.uTransform.value[2] = ( tw / this._width ) * this.tileScale.x;
     this.shader.uniforms.uTransform.value[3] = ( th / this._height ) * this.tileScale.y;
 
@@ -20697,8 +20717,8 @@ TilingSprite.prototype._renderCanvas = function (renderer)
         transform = this.worldTransform,
         resolution = renderer.resolution,
         baseTexture = texture.baseTexture,
-        modX = this.tilePosition.x % baseTexture.width,
-        modY = this.tilePosition.y % baseTexture.height;
+        modX = this.tilePosition.x % texture._frame.width,
+        modY = this.tilePosition.y % texture._frame.height;
 
     // create a nice shiny pattern!
     // TODO this needs to be refreshed if texture changes..
@@ -20722,8 +20742,8 @@ TilingSprite.prototype._renderCanvas = function (renderer)
     // TODO - this should be rolled into the setTransform above..
     context.scale(this.tileScale.x,this.tileScale.y);
 
-    
-    context.translate(modX + (this.anchor.x * -this._width ), 
+
+    context.translate(modX + (this.anchor.x * -this._width ),
                       modY + (this.anchor.y * -this._height));
 
     // check blend mode
@@ -25444,8 +25464,8 @@ Mesh.prototype._renderCanvasTriangles = function (context)
 Mesh.prototype._renderCanvasDrawTriangle = function (context, vertices, uvs, index0, index1, index2)
 {
     var textureSource = this.texture.baseTexture.source;
-    var textureWidth = this.texture.width;
-    var textureHeight = this.texture.height;
+    var textureWidth = this.texture.baseTexture.width;
+    var textureHeight = this.texture.baseTexture.height;
 
     var x0 = vertices[index0], x1 = vertices[index1], x2 = vertices[index2];
     var y0 = vertices[index0 + 1], y1 = vertices[index1 + 1], y2 = vertices[index2 + 1];
@@ -25647,6 +25667,7 @@ Mesh.DRAW_MODES = {
 
 },{"../core":28}],123:[function(require,module,exports){
 var Mesh = require('./Mesh');
+var core = require('../core');
 
 /**
  * The rope allows you to draw a texture across several points and them manipulate these points
@@ -25694,6 +25715,12 @@ function Rope(texture, points)
      */
     this.indices = new Uint16Array(points.length * 2);
 
+    /*
+     * @member {TextureUvs} Current texture uvs
+     * @private
+     */
+    this._textureUvs = null;
+
     this.refresh();
 }
 
@@ -25721,12 +25748,14 @@ Rope.prototype.refresh = function ()
     var indices = this.indices;
     var colors = this.colors;
 
-    // this.count -= 0.2;
+    var textureUvs = this._getTextureUvs();
+    var offset = new core.math.Point(textureUvs.x0, textureUvs.y0);
+    var factor = new core.math.Point(textureUvs.x2 - textureUvs.x0, textureUvs.y2 - textureUvs.y0);
 
-    uvs[0] = 0;
-    uvs[1] = 0;
-    uvs[2] = 0;
-    uvs[3] = 1;
+    uvs[0] = 0 + offset.x;
+    uvs[1] = 0 + offset.y;
+    uvs[2] = 0 + offset.x;
+    uvs[3] = 1 * factor.y + offset.y;
 
     colors[0] = 1;
     colors[1] = 1;
@@ -25744,22 +25773,11 @@ Rope.prototype.refresh = function ()
         // time to do some smart drawing!
         amount = i / (total-1);
 
-        if (i%2)
-        {
-            uvs[index] = amount;
-            uvs[index+1] = 0;
+        uvs[index] = amount * factor.x + offset.x;
+        uvs[index+1] = 0 + offset.y;
 
-            uvs[index+2] = amount;
-            uvs[index+3] = 1;
-        }
-        else
-        {
-            uvs[index] = amount;
-            uvs[index+1] = 0;
-
-            uvs[index+2] = amount;
-            uvs[index+3] = 1;
-        }
+        uvs[index+2] = amount * factor.x + offset.x;
+        uvs[index+3] = 1 * factor.y + offset.y;
 
         index = i * 2;
         colors[index] = 1;
@@ -25769,6 +25787,34 @@ Rope.prototype.refresh = function ()
         indices[index] = index;
         indices[index + 1] = index + 1;
     }
+};
+
+/*
+ * Returns texture UVs
+ *
+ * @private
+ */
+
+Rope.prototype._getTextureUvs = function()
+{
+    if(!this._textureUvs)
+    {
+        this._textureUvs = new core.TextureUvs();
+        this._textureUvs.set(this.texture.crop, this.texture.baseTexture, this.texture.rotate);
+    }
+    return this._textureUvs;
+};
+
+/*
+ * Clear texture UVs when new texture is set
+ *
+ * @private
+ */
+
+Rope.prototype.onTextureUpdate = function ()
+{
+    this._textureUvs = null;
+    Mesh.prototype.onTextureUpdate.call(this);
 };
 
 /*
@@ -25839,7 +25885,7 @@ Rope.prototype.updateTransform = function ()
     this.containerUpdateTransform();
 };
 
-},{"./Mesh":122}],124:[function(require,module,exports){
+},{"../core":28,"./Mesh":122}],124:[function(require,module,exports){
 /**
  * @file        Main export of the PIXI extras library
  * @author      Mat Groves <mat@goodboydigital.com>
@@ -25958,6 +26004,8 @@ MeshRenderer.prototype.render = function (mesh)
         gl.bufferSubData(gl.ARRAY_BUFFER, 0, mesh.vertices);
         gl.vertexAttribPointer(shader.attributes.aVertexPosition, 2, gl.FLOAT, false, 0, 0);
 
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh._indexBuffer);
+        gl.bufferSubData(gl.ELEMENT_ARRAY_BUFFER,0, mesh.indices);
 
         // update the uvs
         gl.bindBuffer(gl.ARRAY_BUFFER, mesh._uvBuffer);
