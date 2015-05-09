@@ -31,7 +31,8 @@ var Sprite = require('../sprites/Sprite'),
  * @param [style.dropShadowColor='#000000'] {string} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
  * @param [style.dropShadowAngle=Math.PI/4] {number} Set a angle of the drop shadow
  * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
- * @param [style.padding=0] {number} Occasionally some fonts are cropped. Adding some padding will prevent this from happening
+ * @param [style.padding=0] {number} Occasionally some fonts are cropped on top or bottom. Adding some padding will
+ *      prevent this from happening by adding padding to the top and bottom of text height.
  * @param [style.textBaseline='alphabetic'] {string} The baseline of the text that is rendered.
  * @param [style.lineJoin='miter'] {string} The lineJoin property sets the type of corner created, it can resolve
  *      spiked text issues. Default is 'miter' (creates a sharp corner).
@@ -155,7 +156,8 @@ Object.defineProperties(Text.prototype, {
      * @param [style.dropShadowColor='#000000'] {string|number} A fill style to be used on the dropshadow e.g 'red', '#00FF00'
      * @param [style.dropShadowAngle=Math.PI/6] {number} Set a angle of the drop shadow
      * @param [style.dropShadowDistance=5] {number} Set a distance of the drop shadow
-     * @param [style.padding=0] {number} Occasionally some fonts are cropped. Adding some padding will prevent this from happening
+     * @param [style.padding=0] {number} Occasionally some fonts are cropped on top or bottom. Adding some padding will
+     *      prevent this from happening by adding padding to the top and bottom of text height.
      * @param [style.textBaseline='alphabetic'] {string} The baseline of the text that is rendered.
      * @param [style.lineJoin='miter'] {string} The lineJoin property sets the type of corner created, it can resolve
      *      spiked text issues. Default is 'miter' (creates a sharp corner).
