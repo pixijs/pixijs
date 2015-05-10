@@ -12,7 +12,7 @@ var fs = require('fs');
  * black and white halftone dots like an old printer.
  *
  * @class
- * @extends AbstractFilter
+ * @extends PIXI.AbstractFilter
  * @memberof PIXI.filters
  */
 function DotScreenFilter()

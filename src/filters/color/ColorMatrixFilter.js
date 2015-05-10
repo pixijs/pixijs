@@ -14,7 +14,7 @@ var fs = require('fs');
  * ```
  * @author Clément Chenebault <clement@goodboydigital.com>
  * @class
- * @extends AbstractFilter
+ * @extends PIXI.AbstractFilter
  * @memberof PIXI.filters
  */
 function ColorMatrixFilter()

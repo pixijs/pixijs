@@ -7,7 +7,7 @@ var fs = require('fs');
  * The BlurYTintFilter applies a vertical Gaussian blur to an object.
  *
  * @class
- * @extends AbstractFilter
+ * @extends PIXI.AbstractFilter
  * @memberof PIXI.filters
  */
 function BlurYTintFilter()

@@ -10,7 +10,7 @@ var fs = require('fs');
  * See http://docs.gimp.org/en/plug-in-convmatrix.html for more info.
  *
  * @class
- * @extends AbstractFilter
+ * @extends PIXI.AbstractFilter
  * @memberof PIXI.filters
  * @param matrix {number[]} An array of values used for matrix transformation. Specified as a 9 point Array.
  * @param width {number} Width of the object you are transforming

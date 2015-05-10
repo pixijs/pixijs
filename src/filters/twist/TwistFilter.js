@@ -6,7 +6,7 @@ var fs = require('fs');
  * This filter applies a twist effect making display objects appear twisted in the given direction.
  *
  * @class
- * @extends AbstractFilter
+ * @extends PIXI.AbstractFilter
  * @memberof PIXI.filters
  */
 function TwistFilter()

@@ -6,7 +6,7 @@ var fs = require('fs');
  * This inverts your Display Objects colors.
  *
  * @class
- * @extends AbstractFilter
+ * @extends PIXI.AbstractFilter
  * @memberof PIXI.filters
  */
 function InvertFilter()

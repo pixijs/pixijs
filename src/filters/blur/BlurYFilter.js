@@ -6,7 +6,7 @@ var fs = require('fs');
  * The BlurYFilter applies a horizontal Gaussian blur to an object.
  *
  * @class
- * @extends AbstractFilter
+ * @extends PIXI.AbstractFilter
  * @memberof PIXI.filters
  */
 function BlurYFilter()

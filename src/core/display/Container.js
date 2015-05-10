@@ -12,7 +12,7 @@ var math = require('../math'),
  * container.addChild(sprite);
  * ```
  * @class
- * @extends DisplayObject
+ * @extends PIXI.DisplayObject
  * @memberof PIXI
  */
 function Container()

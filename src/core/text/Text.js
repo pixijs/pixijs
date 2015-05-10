@@ -15,7 +15,7 @@ var Sprite = require('../sprites/Sprite'),
  * ```
  *
  * @class
- * @extends Sprite
+ * @extends PIXI.Sprite
  * @memberof PIXI
  * @param text {string} The copy that you would like the text to display
  * @param [style] {object} The style parameters

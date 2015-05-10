@@ -18,7 +18,7 @@ var SystemRenderer = require('../SystemRenderer'),
  *
  * @class
  * @memberof PIXI
- * @extends SystemRenderer
+ * @extends PIXI.SystemRenderer
  * @param [width=0] {number} the width of the canvas view
  * @param [height=0] {number} the height of the canvas view
  * @param [options] {object} The optional renderer parameters

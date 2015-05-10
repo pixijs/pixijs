@@ -6,7 +6,7 @@ var core = require('../core'),
  * A tiling sprite is a fast way of rendering a tiling image
  *
  * @class
- * @extends Sprite
+ * @extends PIXI.Sprite
  * @memberof PIXI.extras
  * @param texture {Texture} the texture of the tiling sprite
  * @param width {number}  the width of the tiling sprite

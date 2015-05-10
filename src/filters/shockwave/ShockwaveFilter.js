@@ -8,7 +8,7 @@ var fs = require('fs');
  * with a new set of RGBA color and alpha values. It's pretty powerful!
  *
  * @class
- * @extends AbstractFilter
+ * @extends PIXI.AbstractFilter
  * @memberof PIXI.filters
  */
 function ShockwaveFilter()

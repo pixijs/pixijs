@@ -6,7 +6,7 @@ var fs = require('fs');
  * This applies a sepia effect to your Display Objects.
  *
  * @class
- * @extends AbstractFilter
+ * @extends PIXI.AbstractFilter
  * @memberof PIXI.filters
  */
 function SepiaFilter()

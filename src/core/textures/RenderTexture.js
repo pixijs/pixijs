@@ -40,7 +40,7 @@ var BaseTexture = require('./BaseTexture'),
  * ```
  *
  * @class
- * @extends Texture
+ * @extends PIXI.Texture
  * @memberof PIXI
  * @param renderer {CanvasRenderer|WebGLRenderer} The renderer used for this RenderTexture
  * @param [width=100] {number} The width of the render texture
