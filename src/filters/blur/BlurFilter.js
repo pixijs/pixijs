@@ -30,8 +30,6 @@ BlurFilter.prototype.applyFilter = function (renderer, input, output)
     this.blurYFilter.applyFilter(renderer, renderTarget, output);
 
     renderer.filterManager.returnRenderTarget(renderTarget);
-
-
 };
 
 Object.defineProperties(BlurFilter.prototype, {
@@ -49,7 +47,7 @@ Object.defineProperties(BlurFilter.prototype, {
         },
         set: function (value)
         {
-            this.padding = value * 0.5;
+            this.padding = Math.abs(value) * 0.5;
             this.blurXFilter.blur = this.blurYFilter.blur = value;
         }
     },
