@@ -6,7 +6,7 @@ var CONST = require('../../../const');
  * @class
  * @memberof PIXI
  */
-var CanvasGraphics = module.exports = {};
+var CanvasGraphics ={};
 
 /*
  * Renders a Graphics object to a canvas.

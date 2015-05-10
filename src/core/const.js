@@ -1,9 +1,9 @@
 /**
  * Constant values used in pixi
- *
+ * @class
  * @memberof PIXI
  */
-module.exports = {
+var CONST = {
     /**
      * String of the current PIXI version
      *
@@ -191,3 +191,5 @@ module.exports = {
     // TODO: maybe add PARTICLE.BATCH_SIZE: 15000
     SPRITE_BATCH_SIZE: 2000 //nice balance between mobile and desktop machines
 };
+
+module.exports = CONST;
