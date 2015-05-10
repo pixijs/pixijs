@@ -195,7 +195,7 @@ Object.defineProperties(DisplayObject.prototype, {
      * Indicates if the sprite is globally visible.
      *
      * @member {boolean}
-     * @memberof DisplayObject#
+     * @memberof PIXI.DisplayObject.prototype
      * @readonly
      */
     worldVisible: {
@@ -222,7 +222,8 @@ Object.defineProperties(DisplayObject.prototype, {
      * To remove a mask, set this property to null.
      *
      * @member {Graphics}
-     * @memberof DisplayObject#
+     * @property {Graphics}
+     * @memberof PIXI.DisplayObject.prototype
      */
     mask: {
         get: function ()
@@ -251,7 +252,7 @@ Object.defineProperties(DisplayObject.prototype, {
      * To remove filters simply set this property to 'null'
      *
      * @member {Filter[]}
-     * @memberof DisplayObject#
+     * @memberof PIXI.DisplayObject.prototype
      */
     filters: {
         get: function ()

@@ -102,8 +102,8 @@ Object.defineProperties(Sprite.prototype, {
     /**
      * The width of the sprite, setting this will actually modify the scale to achieve the value set
      *
-     * @member
-     * @memberof Sprite#
+     * @member {number}
+     * @memberof PIXI.Sprite.prototype
      */
     width: {
         get: function ()
@@ -120,8 +120,8 @@ Object.defineProperties(Sprite.prototype, {
     /**
      * The height of the sprite, setting this will actually modify the scale to achieve the value set
      *
-     * @member
-     * @memberof Sprite#
+     * @member {number}
+     * @memberof PIXI.Sprite.prototype
      */
     height: {
         get: function ()
@@ -136,10 +136,10 @@ Object.defineProperties(Sprite.prototype, {
     },
 
     /**
-     * The height of the sprite, setting this will actually modify the scale to achieve the value set
+     * The texture that the sprite is using
      *
-     * @member
-     * @memberof Sprite#
+     * @member {Texture}
+     * @memberof PIXI.Sprite.prototype
      */
     texture: {
         get: function ()
