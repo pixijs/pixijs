@@ -13,7 +13,7 @@
  *      );
  */
 
-module.exports = {
+interactiveTarget = {
     /**
      * @todo Needs docs.
      */
@@ -44,3 +44,5 @@ module.exports = {
      */
     _touchDown: false
 };
+
+module.exports = interactiveTarget
