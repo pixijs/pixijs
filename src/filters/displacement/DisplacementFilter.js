@@ -9,7 +9,7 @@ var fs = require('fs');
  *
  * @class
  * @extends PIXI.AbstractFilter
- * @namespace PIXI
+ * @memberof PIXI.filters
  * @param sprite {Sprite} the sprite used for the displacement map. (make sure its added to the scene!)
  */
 function DisplacementFilter(sprite)
