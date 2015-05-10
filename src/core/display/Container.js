@@ -38,7 +38,7 @@ Object.defineProperties(Container.prototype, {
      * The width of the Container, setting this will actually modify the scale to achieve the value set
      *
      * @member {number}
-     * @memberof PIXI.Container.prototype
+     * @memberof PIXI.Container#
      */
     width: {
         get: function ()
@@ -68,7 +68,7 @@ Object.defineProperties(Container.prototype, {
      * The height of the Container, setting this will actually modify the scale to achieve the value set
      *
      * @member {number}
-     * @memberof PIXI.Container.prototype
+     * @memberof PIXI.Container#
      */
     height: {
         get: function ()
