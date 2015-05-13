@@ -176,7 +176,7 @@ WebGLRenderer.prototype._createContext = function () {
     this.glContextId = WebGLRenderer.glContextId++;
     gl.id = this.glContextId;
     gl.renderer = this;
-}
+};
 
 /**
  * Creates the WebGL context
