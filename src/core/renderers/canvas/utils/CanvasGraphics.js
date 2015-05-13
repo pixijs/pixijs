@@ -7,6 +7,7 @@ var CONST = require('../../../const');
  * @memberof PIXI
  */
 var CanvasGraphics ={};
+module.exports = CanvasGraphics;
 
 /*
  * Renders a Graphics object to a canvas.
@@ -299,7 +300,7 @@ CanvasGraphics.renderGraphicsMask = function (graphics, context)
  *
  * @private
  * @param graphics {Graphics} the graphics that will have its tint updated
- * 
+ *
  */
 CanvasGraphics.updateGraphicsTint = function (graphics)
 {
@@ -347,4 +348,3 @@ CanvasGraphics.updateGraphicsTint = function (graphics)
 
     }
 };
-
