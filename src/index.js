@@ -9,7 +9,6 @@ core.filters        = require('./filters');
 core.interaction    = require('./interaction');
 core.loaders        = require('./loaders');
 core.mesh           = require('./mesh');
-core.ticker         = require('./ticker');
 
 // export a premade loader instance
 core.loader = new core.loaders.Loader();

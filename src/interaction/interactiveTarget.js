@@ -9,7 +9,7 @@
  *
  *      Object.assign(
  *          MyObject.prototype,
- *          PIXI.interaction.interactiveTarget)
+ *          PIXI.interaction.interactiveTarget
  *      );
  */
 var interactiveTarget = {
