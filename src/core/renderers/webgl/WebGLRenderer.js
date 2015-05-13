@@ -140,7 +140,8 @@ function WebGLRenderer(width, height, options)
 
     this.initPlugins();
 
-     // initialize the context so it is ready for the managers.
+    // initialize the context so it is ready for the managers.
+    this._createContext();
     this._initContext();
 
     // map some webGL blend modes..
@@ -162,12 +163,7 @@ utils.pluginTarget.mixin(WebGLRenderer);
 
 WebGLRenderer.glContextId = 0;
 
-/**
- * Creates the WebGL context
- * @private
- */
-WebGLRenderer.prototype._initContext = function ()
-{
+WebGLRenderer.prototype._createContext = function () {
     var gl = this.view.getContext('webgl', this._contextOptions) || this.view.getContext('experimental-webgl', this._contextOptions);
     this.gl = gl;
 
@@ -180,13 +176,22 @@ WebGLRenderer.prototype._initContext = function ()
     this.glContextId = WebGLRenderer.glContextId++;
     gl.id = this.glContextId;
     gl.renderer = this;
+}
+
+/**
+ * Creates the WebGL context
+ * @private
+ */
+WebGLRenderer.prototype._initContext = function ()
+{
+    var gl = this.gl;
 
     // set up the default pixi settings..
     gl.disable(gl.DEPTH_TEST);
     gl.disable(gl.CULL_FACE);
     gl.enable(gl.BLEND);
 
-    this.renderTarget = new RenderTarget(this.gl, this.width, this.height, null, this.resolution, true);
+    this.renderTarget = new RenderTarget(gl, this.width, this.height, null, this.resolution, true);
 
     this.setRenderTarget(this.renderTarget);
 
@@ -197,7 +202,7 @@ WebGLRenderer.prototype._initContext = function ()
 
     if(!this._useFXAA)
     {
-        this._useFXAA = ( this._contextOptions.antialias && ! gl.getContextAttributes().antialias );
+        this._useFXAA = (this._contextOptions.antialias && ! gl.getContextAttributes().antialias);
     }
 
 
