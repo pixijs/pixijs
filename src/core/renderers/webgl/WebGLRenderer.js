@@ -168,7 +168,7 @@ WebGLRenderer.glContextId = 0;
  */
 WebGLRenderer.prototype._initContext = function ()
 {
-    var gl = this.view.getContext('webgl', this._contextOptions) || this.view.getContext('experimental-webgl', this._contextOptions);
+    var gl = this.gl || this.view.getContext('webgl', this._contextOptions) || this.view.getContext('experimental-webgl', this._contextOptions);
     this.gl = gl;
 
     if (!gl)
