@@ -3,9 +3,10 @@ var utils = require('../../../utils');
 /**
  * Utility methods for Sprite/Texture tinting.
  * @static
+ * @class
  * @memberof PIXI
  */
-var CanvasTinter = module.exports = {};
+var CanvasTinter = {};
 
 /**
  * Basically this method just needs a sprite and a color and tints the sprite with the given color.

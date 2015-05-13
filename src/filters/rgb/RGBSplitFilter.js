@@ -6,8 +6,8 @@ var fs = require('fs');
  * An RGB Split Filter.
  *
  * @class
- * @extends AbstractFilter
- * @namespace PIXI
+ * @extends PIXI.AbstractFilter
+ * @memberof PIXI.filters
  */
 function RGBSplitFilter()
 {

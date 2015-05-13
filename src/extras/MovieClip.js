@@ -18,7 +18,7 @@ var core    = require('../core'),
  * ```
  *
  * @class
- * @extends Sprite
+ * @extends PIXI.Sprite
  * @memberof PIXI.extras
  * @param textures {Texture[]} an array of {Texture} objects that make up the animation
  */
@@ -82,8 +82,8 @@ Object.defineProperties(MovieClip.prototype, {
      * totalFrames is the total number of frames in the MovieClip. This is the same as number of textures
      * assigned to the MovieClip.
      *
-     * @member
-     * @memberof MovieClip#
+     * @member {number}
+     * @memberof PIXI.MovieClip#
      * @default 0
      * @readonly
      */
@@ -97,8 +97,8 @@ Object.defineProperties(MovieClip.prototype, {
     /**
      * The array of textures used for this MovieClip
      *
-     * @member {Texture[]}
-     * @memberof MovieClip#
+     * @member {PIXI.Texture[]}
+     * @memberof PIXI.MovieClip#
      *
      */
     textures: {
@@ -118,7 +118,8 @@ Object.defineProperties(MovieClip.prototype, {
     * The MovieClips current frame index
     *
     * @member {number}
-    * @readonly
+    * @memberof PIXI.MovieClip#
+    * @readonly 
     */
     currentFrame: {
         get: function ()

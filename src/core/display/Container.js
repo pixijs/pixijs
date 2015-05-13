@@ -12,7 +12,7 @@ var math = require('../math'),
  * container.addChild(sprite);
  * ```
  * @class
- * @extends DisplayObject
+ * @extends PIXI.DisplayObject
  * @memberof PIXI
  */
 function Container()
@@ -38,7 +38,7 @@ Object.defineProperties(Container.prototype, {
      * The width of the Container, setting this will actually modify the scale to achieve the value set
      *
      * @member {number}
-     * @memberof Container#
+     * @memberof PIXI.Container#
      */
     width: {
         get: function ()
@@ -68,7 +68,7 @@ Object.defineProperties(Container.prototype, {
      * The height of the Container, setting this will actually modify the scale to achieve the value set
      *
      * @member {number}
-     * @memberof Container#
+     * @memberof PIXI.Container#
      */
     height: {
         get: function ()

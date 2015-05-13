@@ -6,7 +6,7 @@ var fs = require('fs');
  * A Smart Blur Filter.
  *
  * @class
- * @extends AbstractFilter
+ * @extends PIXI.AbstractFilter
  * @memberof PIXI.filters
  */
 function SmartBlurFilter()

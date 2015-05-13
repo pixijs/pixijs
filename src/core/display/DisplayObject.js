@@ -9,6 +9,7 @@ var math = require('../math'),
  * This is an abstract class and should not be used on its own rather it should be extended.
  *
  * @class
+ * @extends EventEmitter
  * @memberof PIXI
  */
 function DisplayObject()
@@ -195,7 +196,7 @@ Object.defineProperties(DisplayObject.prototype, {
      * Indicates if the sprite is globally visible.
      *
      * @member {boolean}
-     * @memberof DisplayObject#
+     * @memberof PIXI.DisplayObject#
      * @readonly
      */
     worldVisible: {
@@ -222,7 +223,8 @@ Object.defineProperties(DisplayObject.prototype, {
      * To remove a mask, set this property to null.
      *
      * @member {Graphics}
-     * @memberof DisplayObject#
+     * @property {Graphics}
+     * @memberof PIXI.DisplayObject#
      */
     mask: {
         get: function ()
@@ -251,7 +253,7 @@ Object.defineProperties(DisplayObject.prototype, {
      * To remove filters simply set this property to 'null'
      *
      * @member {Filter[]}
-     * @memberof DisplayObject#
+     * @memberof PIXI.DisplayObject#
      */
     filters: {
         get: function ()

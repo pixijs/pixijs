@@ -12,8 +12,7 @@
  *          PIXI.interaction.interactiveTarget)
  *      );
  */
-
-module.exports = {
+var interactiveTarget = {
     /**
      * @todo Needs docs.
      */
@@ -44,3 +43,5 @@ module.exports = {
      */
     _touchDown: false
 };
+
+module.exports = interactiveTarget;
