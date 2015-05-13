@@ -8,7 +8,6 @@ var utils = module.exports = {
     _saidHello: false,
 
     pluginTarget:   require('./pluginTarget'),
-    PolyK:          require('./PolyK'),
     async:          require('async'),
 
     /**
