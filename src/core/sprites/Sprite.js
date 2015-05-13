@@ -490,12 +490,12 @@ Sprite.prototype._renderCanvas = function (renderer)
         {
             renderer.context.drawImage(
                 texture.baseTexture.source,
-                texture.crop.x * resolution,
-                texture.crop.y * resolution,
+                texture.crop.x * resolution * renderer.resolution,
+                texture.crop.y * resolution * renderer.resolution,
                 width * resolution * renderer.resolution,
                 height * resolution * renderer.resolution,
-                dx,
-                dy,
+                dx * renderer.resolution,
+                dy * renderer.resolution,
                 width * renderer.resolution,
                 height * renderer.resolution
             );
