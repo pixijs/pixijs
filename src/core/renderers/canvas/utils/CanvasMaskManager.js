@@ -56,3 +56,5 @@ CanvasMaskManager.prototype.popMask = function (renderer)
 {
     renderer.context.restore();
 };
+
+CanvasMaskManager.prototype.destroy = function () {};

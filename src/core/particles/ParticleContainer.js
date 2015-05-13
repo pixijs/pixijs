@@ -22,7 +22,7 @@ var Container = require('../display/Container'),
  * And here you have a hundred sprites that will be renderer at the speed of light.
  *
  * @class
- * @extends Container
+ * @extends PIXI.Container
  * @memberof PIXI
  *
  * @param [size=15000] {number} The number of images in the SpriteBatch before it flushes.

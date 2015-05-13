@@ -6,7 +6,7 @@ var fs = require('fs');
  * This lowers the color depth of your image by the given amount, producing an image with a smaller palette.
  *
  * @class
- * @extends AbstractFilter
+ * @extends PIXI.AbstractFilter
  * @memberof PIXI.filters
  */
 function ColorStepFilter()

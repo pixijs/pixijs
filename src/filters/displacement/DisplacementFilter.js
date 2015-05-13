@@ -8,8 +8,8 @@ var fs = require('fs');
  * Currently the r property of the texture is used to offset the x and the g property of the texture is used to offset the y.
  *
  * @class
- * @extends AbstractFilter
- * @namespace PIXI
+ * @extends PIXI.AbstractFilter
+ * @memberof PIXI.filters
  * @param sprite {Sprite} the sprite used for the displacement map. (make sure its added to the scene!)
  */
 function DisplacementFilter(sprite)

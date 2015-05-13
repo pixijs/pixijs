@@ -8,7 +8,7 @@ var fs = require('fs');
  * The SpriteMaskFilter class
  *
  * @class
- * @extends AbstractFilter
+ * @extends PIXI.AbstractFilter
  * @memberof PIXI
  * @param sprite {Sprite} the target sprite
  */

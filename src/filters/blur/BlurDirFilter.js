@@ -7,7 +7,7 @@ var fs = require('fs');
  * @class
  * @param {number} dirX
  * @param {number} dirY
- * @extends AbstractFilter
+ * @extends PIXI.AbstractFilter
  * @memberof PIXI.filters
  */
 function BlurDirFilter(dirX, dirY)

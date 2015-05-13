@@ -11,7 +11,7 @@ var core = require('../../core'),
  * A TiltShift Filter. Manages the pass of both a TiltShiftXFilter and TiltShiftYFilter.
  *
  * @class
- * @extends AbstractFilter
+ * @extends PIXI.AbstractFilter
  * @memberof PIXI.filters
  */
 function TiltShiftFilter()

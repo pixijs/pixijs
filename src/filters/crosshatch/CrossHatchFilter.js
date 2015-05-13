@@ -6,7 +6,7 @@ var fs = require('fs');
  * A Cross Hatch effect filter.
  *
  * @class
- * @extends AbstractFilter
+ * @extends PIXI.AbstractFilter
  * @memberof PIXI.filters
  */
 function CrossHatchFilter()

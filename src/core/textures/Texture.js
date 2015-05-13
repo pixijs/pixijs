@@ -138,6 +138,14 @@ function Texture(baseTexture, frame, crop, trim, rotate)
     {
         baseTexture.once('loaded', this.onBaseTextureLoaded, this);
     }
+
+    /**
+     * Fired when the texture is updated. This happens if the frame or the baseTexture is updated.
+     *
+     * @event update
+     * @memberof PIXI.Texture#
+     * @protected
+     */
 }
 
 Texture.prototype = Object.create(EventEmitter.prototype);

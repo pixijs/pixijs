@@ -16,7 +16,7 @@ var core = require('../core');
  * http://www.bmglyph.com/ for mac.
  *
  * @class
- * @extends Container
+ * @extends PIXI.Container
  * @memberof PIXI.extras
  * @param text {string} The copy that you would like the text to display
  * @param style {object} The style parameters

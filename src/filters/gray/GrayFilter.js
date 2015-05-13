@@ -6,7 +6,7 @@ var fs = require('fs');
  * This greyscales the palette of your Display Objects.
  *
  * @class
- * @extends AbstractFilter
+ * @extends PIXI.AbstractFilter
  * @memberof PIXI.filters
  */
 function GrayFilter()

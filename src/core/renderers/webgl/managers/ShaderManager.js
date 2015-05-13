@@ -7,7 +7,7 @@ var WebGLManager = require('./WebGLManager'),
 /**
  * @class
  * @memberof PIXI
- * @extends WebGLManager
+ * @extends PIXI.WebGLManager
  * @param renderer {WebGLRenderer} The renderer this manager works for.
  */
 function ShaderManager(renderer)

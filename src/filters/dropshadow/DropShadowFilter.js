@@ -7,7 +7,7 @@ var core = require('../../core'),
  * The strength of the blur can be set for x- and y-axis separately.
  *
  * @class
- * @extends AbstractFilter
+ * @extends PIXI.AbstractFilter
  * @memberof PIXI.filters
  */
 function DropShadowFilter()

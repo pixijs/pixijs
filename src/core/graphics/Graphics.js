@@ -13,7 +13,7 @@ var Container = require('../display/Container'),
  * rectangles to the display, and to color and fill them.
  *
  * @class
- * @extends Container
+ * @extends PIXI.Container
  * @memberof PIXI
  */
 function Graphics()

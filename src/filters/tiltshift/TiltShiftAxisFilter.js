@@ -11,7 +11,7 @@ var fs = require('fs');
  * A TiltShiftAxisFilter.
  *
  * @class
- * @extends AbstractFilter
+ * @extends PIXI.AbstractFilter
  * @memberof PIXI.filters
  */
 function TiltShiftAxisFilter()

@@ -1,4 +1,4 @@
-var core = require('../core'),
+var CONST = require('../const'),
     EventEmitter = require('eventemitter3'),
     // Internal event used by composed emitter
     TICK = 'tick';
@@ -89,7 +89,7 @@ function Ticker()
      * @member {DOMHighResTimeStamp|number}
      * @default 1 / TARGET_FPMS
      */
-    this.elapsedMS = 1 / core.TARGET_FPMS; // default to target frame time
+    this.elapsedMS = 1 / CONST.TARGET_FPMS; // default to target frame time
 
     /**
      * The last time {@link PIXI.ticker.Ticker#update} was invoked.
@@ -168,7 +168,7 @@ Object.defineProperties(Ticker.prototype, {
         set: function(fps)
         {
             // Clamp: 0 to TARGET_FPMS
-            var minFPMS = Math.min(Math.max(0, fps) / 1000, core.TARGET_FPMS);
+            var minFPMS = Math.min(Math.max(0, fps) / 1000, CONST.TARGET_FPMS);
             this._maxElapsedMS = 1 / minFPMS;
         }
     }
@@ -338,7 +338,7 @@ Ticker.prototype.update = function update(currentTime)
         elapsedMS = this._maxElapsedMS;
     }
 
-    this.deltaTime = elapsedMS * core.TARGET_FPMS * this.speed;
+    this.deltaTime = elapsedMS * CONST.TARGET_FPMS * this.speed;
 
     // Invoke listeners added to internal emitter
     this._emitter.emit(TICK, this.deltaTime);

@@ -2,7 +2,7 @@ var TextureShader = require('../../renderers/webgl/shaders/TextureShader');
 
 /**
  * @class
- * @extends TextureShader
+ * @extends PIXI.TextureShader
  * @memberof PIXI
  * @param shaderManager {ShaderManager} The webgl shader manager this shader works for.
  */
