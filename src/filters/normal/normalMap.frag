@@ -1,7 +1,7 @@
 precision mediump float;
 
 varying vec2 vTextureCoord;
-varying float vColor;
+varying vec4 vColor;
 
 uniform sampler2D displacementMap;
 uniform sampler2D uSampler;
