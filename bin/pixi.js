@@ -6278,7 +6278,7 @@ module.exports = function () {
 },{"../../Resource":16,"../../b64":17}],21:[function(require,module,exports){
 module.exports={
   "name": "pixi.js",
-  "version": "3.0.4",
+  "version": "3.0.5",
   "description": "Pixi.js is a fast lightweight 2D library that works across all devices.",
   "author": "Mat Groves",
   "contributors": [
@@ -12603,7 +12603,8 @@ var CONST = require('../../../const');
  * @class
  * @memberof PIXI
  */
-var CanvasGraphics ={};
+var CanvasGraphics = {};
+module.exports = CanvasGraphics;
 
 /*
  * Renders a Graphics object to a canvas.
@@ -13018,6 +13019,7 @@ var utils = require('../../../utils');
  * @memberof PIXI
  */
 var CanvasTinter = {};
+module.exports = CanvasTinter;
 
 /**
  * Basically this method just needs a sprite and a color and tints the sprite with the given color.
@@ -16889,8 +16891,6 @@ Sprite.prototype._renderCanvas = function (renderer)
             width,
             height;
 
-        var resolution = texture.baseTexture.resolution / renderer.resolution;
-
         renderer.context.globalAlpha = this.worldAlpha;
 
         // If smoothingEnabled is supported and we need to change the smoothing property for this texture
@@ -16961,6 +16961,8 @@ Sprite.prototype._renderCanvas = function (renderer)
 
         }
 
+        var resolution = texture.baseTexture.resolution;
+
         if (this.tint !== 0xFFFFFF)
         {
             if (this.cachedTint !== this.tint)
@@ -16975,10 +16977,10 @@ Sprite.prototype._renderCanvas = function (renderer)
                 this.tintedTexture,
                 0,
                 0,
-                width * resolution * renderer.resolution,
-                height * resolution * renderer.resolution,
-                dx,
-                dy,
+                width * resolution,
+                height * resolution,
+                dx * renderer.resolution,
+                dy * renderer.resolution,
                 width * renderer.resolution,
                 height * renderer.resolution
             );
@@ -16989,10 +16991,10 @@ Sprite.prototype._renderCanvas = function (renderer)
                 texture.baseTexture.source,
                 texture.crop.x * resolution,
                 texture.crop.y * resolution,
-                width * resolution * renderer.resolution,
-                height * resolution * renderer.resolution,
-                dx,
-                dy,
+                width * resolution,
+                height * resolution,
+                dx  * renderer.resolution,
+                dy  * renderer.resolution,
                 width * renderer.resolution,
                 height * renderer.resolution
             );
@@ -26431,7 +26433,8 @@ module.exports = {
 
 },{"./Mesh":122,"./Rope":123,"./webgl/MeshRenderer":125,"./webgl/MeshShader":126}],125:[function(require,module,exports){
 var ObjectRenderer = require('../../core/renderers/webgl/utils/ObjectRenderer'),
-    WebGLRenderer = require('../../core/renderers/webgl/WebGLRenderer');
+    WebGLRenderer = require('../../core/renderers/webgl/WebGLRenderer'),
+    Mesh = require('../Mesh');
 
 /**
  * @author Mat Groves
@@ -26511,8 +26514,7 @@ MeshRenderer.prototype.render = function (mesh)
         texture = mesh.texture.baseTexture,
         shader = renderer.shaderManager.plugins.meshShader;
 
-//    var drawMode = mesh.drawMode === Strip.DRAW_MODES.TRIANGLE_STRIP ? gl.TRIANGLE_STRIP : gl.TRIANGLES;
-    var drawMode =  gl.TRIANGLE_STRIP;
+    var drawMode = mesh.drawMode === Mesh.DRAW_MODES.TRIANGLE_STRIP ? gl.TRIANGLE_STRIP : gl.TRIANGLES;
 
     renderer.blendModeManager.setBlendMode(mesh.blendMode);
 
@@ -26530,8 +26532,6 @@ MeshRenderer.prototype.render = function (mesh)
         gl.bufferSubData(gl.ARRAY_BUFFER, 0, mesh.vertices);
         gl.vertexAttribPointer(shader.attributes.aVertexPosition, 2, gl.FLOAT, false, 0, 0);
 
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh._indexBuffer);
-        gl.bufferSubData(gl.ELEMENT_ARRAY_BUFFER,0, mesh.indices);
 
         // update the uvs
         gl.bindBuffer(gl.ARRAY_BUFFER, mesh._uvBuffer);
@@ -26549,6 +26549,7 @@ MeshRenderer.prototype.render = function (mesh)
             // bind the current texture
             gl.bindTexture(gl.TEXTURE_2D, texture._glTextures[gl.id]);
         }
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh._indexBuffer);
     }
     else
     {
@@ -26597,7 +26598,8 @@ MeshRenderer.prototype._initWebGL = function (mesh)
     mesh._vertexBuffer = gl.createBuffer();
     mesh._indexBuffer = gl.createBuffer();
     mesh._uvBuffer = gl.createBuffer();
-    mesh._colorBuffer = gl.createBuffer();
+
+
 
     gl.bindBuffer(gl.ARRAY_BUFFER, mesh._vertexBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, mesh.vertices, gl.DYNAMIC_DRAW);
@@ -26605,8 +26607,11 @@ MeshRenderer.prototype._initWebGL = function (mesh)
     gl.bindBuffer(gl.ARRAY_BUFFER, mesh._uvBuffer);
     gl.bufferData(gl.ARRAY_BUFFER,  mesh.uvs, gl.STATIC_DRAW);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, mesh._colorBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, mesh.colors, gl.STATIC_DRAW);
+    if(mesh.colors){
+        mesh._colorBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, mesh._colorBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, mesh.colors, gl.STATIC_DRAW);
+    }
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh._indexBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, mesh.indices, gl.STATIC_DRAW);
@@ -26641,7 +26646,7 @@ MeshRenderer.prototype.destroy = function ()
 {
 };
 
-},{"../../core/renderers/webgl/WebGLRenderer":48,"../../core/renderers/webgl/utils/ObjectRenderer":62}],126:[function(require,module,exports){
+},{"../../core/renderers/webgl/WebGLRenderer":48,"../../core/renderers/webgl/utils/ObjectRenderer":62,"../Mesh":122}],126:[function(require,module,exports){
 var core = require('../../core');
 
 /**
