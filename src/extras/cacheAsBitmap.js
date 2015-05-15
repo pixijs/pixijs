@@ -45,7 +45,7 @@ Object.defineProperties(DisplayObject.prototype, {
 
                 this._originalDestroy = this.destroy;
 
-                this._originalContainesPoint = this.containsPoint;
+                this._originalContainsPoint = this.containsPoint;
 
                 this.renderWebGL = this._renderCachedWebGL;
                 this.renderCanvas = this._renderCachedCanvas;
