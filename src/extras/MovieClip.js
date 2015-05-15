@@ -201,8 +201,7 @@ MovieClip.prototype.update = function (deltaTime)
     {
         if (this.loop)
         {
-            this._currentTime += this._textures.length;
-            this._texture = this._textures[this._currentTime];
+            this._texture = this._textures[this._textures.length - 1 + floor % this._textures.length];
         }
         else
         {
