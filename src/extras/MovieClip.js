@@ -1,5 +1,4 @@
-var core    = require('../core'),
-    ticker  = require('../ticker');
+var core = require('../core');
 
 /**
  * A MovieClip is a simple way to display an animation depicted by a list of textures.
@@ -119,7 +118,7 @@ Object.defineProperties(MovieClip.prototype, {
     *
     * @member {number}
     * @memberof PIXI.MovieClip#
-    * @readonly 
+    * @readonly
     */
     currentFrame: {
         get: function ()
@@ -142,7 +141,7 @@ MovieClip.prototype.stop = function ()
     }
 
     this.playing = false;
-    ticker.shared.remove(this.update, this);
+    core.ticker.shared.remove(this.update, this);
 };
 
 /**
@@ -157,7 +156,7 @@ MovieClip.prototype.play = function ()
     }
 
     this.playing = true;
-    ticker.shared.add(this.update, this);
+    core.ticker.shared.add(this.update, this);
 };
 
 /**
