@@ -19,64 +19,40 @@ If you want to keep up to date with the latest pixi.js news then feel free to fo
 and we will keep you posted! You can also check back on [our site](http://www.goodboydigital.com/blog)
 as any breakthroughs will be posted up there too!
 
-<div style="float:left; width:50%; box-sizing: border-box; padding: 10px">
-    <h3 id="demos">Demos</h3>
+### Demos ###
 
-    <ul>
-        <li>[WebGL Filters!](http://www.goodboydigital.com/pixijs/examples/15/indexAll.html)</li>
-        <li>[Run pixie run](http://www.goodboydigital.com/runpixierun)</li>
-        <li>[Fight for Everyone](http://www.goodboydigital.com/casestudies/fightforeveryone)</li>
-        <li>[Flash vs HTML](http://flashvhtml.com)</li>
-        <li>[Bunny Demo](http://www.goodboydigital.com/pixijs/bunnymark)</li>
-        <li>[Storm Brewing](http://www.goodboydigital.com/pixijs/storm)</li>
-        <li>[Filters Demo](http://www.goodboydigital.com/pixijs/examples/15/indexAll.html)</li>
-        <li>[Render Texture Demo](http://www.goodboydigital.com/pixijs/examples/11)</li>
-        <li>[Primitives Demo](http://www.goodboydigital.com/pixijs/examples/13)</li>
-        <li>[Masking Demo](http://www.goodboydigital.com/pixijs/examples/14)</li>
-        <li>[Interaction Demo](http://www.goodboydigital.com/pixijs/examples/6)</li>
-        <li>[photonstorm's Balls Demo](http://gametest.mobi/pixi/balls)</li>
-        <li>[photonstorm's Morph Demo](http://gametest.mobi/pixi/morph)</li>
-    </ul>
+- [WebGL Filters!](http://www.goodboydigital.com/pixijs/examples/15/indexAll.html)
+- [Run pixie run](http://www.goodboydigital.com/runpixierun)
+- [Fight for Everyone](http://www.goodboydigital.com/casestudies/fightforeveryone)
+- [Flash vs HTML](http://flashvhtml.com)
+- [Bunny Demo](http://www.goodboydigital.com/pixijs/bunnymark)
+- [Storm Brewing](http://www.goodboydigital.com/pixijs/storm)
+- [Filters Demo](http://www.goodboydigital.com/pixijs/examples/15/indexAll.html)
+- [Render Texture Demo](http://www.goodboydigital.com/pixijs/examples/11)
+- [Primitives Demo](http://www.goodboydigital.com/pixijs/examples/13)
+- [Masking Demo](http://www.goodboydigital.com/pixijs/examples/14)
+- [Interaction Demo](http://www.goodboydigital.com/pixijs/examples/6)
+- [photonstorm's Balls Demo](http://gametest.mobi/pixi/balls)
+- [photonstorm's Morph Demo](http://gametest.mobi/pixi/morph)
 
-    <p>
-        Thanks to [@photonstorm](https://twitter.com/photonstorm) for providing
-        those last 2 examples and allowing us to share the source code :)
-    </p>
-</div>
+Thanks to [@photonstorm](https://twitter.com/photonstorm) for providing
+those last 2 examples and allowing us to share the source code :)
 
-<div style="float:left; width:50%; box-sizing: border-box; padding: 10px">
-    <h3 id="">Resources</h3>
+### Resources ###
 
-    <ul>
-        <li>
-            API Documentation is [here](http://pixijs.github.io/docs).
-        </li>
-        <li>
-            Feature Examples are [here](https://pixijs.github.io/examples).
-        </li>
-        <li>
-            The Pixi.js Forum is [here](http://www.html5gamedevs.com/forum/15-pixijs).
-        </li>
-        <li>
-            Other misc tutorials and resources are [on the Wiki](https://github.com/GoodBoyDigital/pixi.js/wiki/Resources).
-        </li>
-    </ul>
+- API Documentation is [here](http://pixijs.github.io/docs).
+- Feature Examples are [here](https://pixijs.github.io/examples).
+- The Pixi.js Forum is [here](http://www.html5gamedevs.com/forum/15-pixijs).
+- Other misc tutorials and resources are [on the Wiki](https://github.com/GoodBoyDigital/pixi.js/wiki/Resources).
 
-    <h3 id="">Contribute</h3>
+### Contribute ###
 
-    <p>
-        Want to be part of the pixi.js project? Great! All are welcome! We will get there quicker
-        together :) Whether you find a bug, have a great feature request or you fancy owning a task
-        from the road map above feel free to get in touch.
-    </p>
+Want to be part of the pixi.js project? Great! All are welcome! We will get there quicker
+together :) Whether you find a bug, have a great feature request or you fancy owning a task
+from the road map above feel free to get in touch.
 
-    <p>
-        Make sure to read the [Contributing Guide](https://github.com/GoodBoyDigital/pixi.js/blob/master/CONTRIBUTING.md)
-        before submitting changes.
-    </p>
-</div>
-
-<br style="clear:both;" />
+Make sure to read the [Contributing Guide](https://github.com/GoodBoyDigital/pixi.js/blob/master/CONTRIBUTING.md)
+before submitting changes.
 
 ## How to build ##
 
