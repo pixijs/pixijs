@@ -20,6 +20,8 @@ var core = require('../core');
  */
 function Rope(texture, points)
 {
+    Mesh.call(this, texture);
+
     /*
      * @member {Array} An array of points that determine the rope
      */
@@ -45,8 +47,16 @@ function Rope(texture, points)
      */
     this.indices = new Uint16Array(points.length * 2);
 
-    // call base ctor (which will set texture and cause refresh to be called)
-    Mesh.call(this, texture);
+    /**
+     * Tracker for if the rope is ready to be drawn. Needed because Mesh ctor can
+     * call _onTextureUpdated which could call refresh too early.
+     *
+     * @member {boolean}
+     * @private
+     */
+     this._ready = true;
+
+     this.refresh();
 }
 
 
@@ -126,7 +136,10 @@ Rope.prototype._onTextureUpdate = function ()
 {
     Mesh.prototype._onTextureUpdate.call(this);
 
-    this.refresh();
+    // wait for the Rope ctor to finish before calling refresh
+    if (this._ready) {
+        this.refresh();
+    }
 };
 
 /**
