@@ -19,8 +19,9 @@ function Mesh(texture, vertices, uvs, indices, drawMode)
      * The texture of the Mesh
      *
      * @member {Texture}
+     * @private
      */
-    this.texture = texture;
+    this._texture = null;
 
     /**
      * The Uvs of the Mesh
@@ -76,12 +77,52 @@ function Mesh(texture, vertices, uvs, indices, drawMode)
      * @member {number}
      */
     this.drawMode = drawMode || Mesh.DRAW_MODES.TRIANGLE_MESH;
+
+    // run texture setter;
+    this.texture = texture;
 }
 
 // constructor
 Mesh.prototype = Object.create(core.Container.prototype);
 Mesh.prototype.constructor = Mesh;
 module.exports = Mesh;
+
+Object.defineProperties(Mesh.prototype, {
+    /**
+     * The texture that the sprite is using
+     *
+     * @member {PIXI.Texture}
+     * @memberof PIXI.mesh.Mesh#
+     */
+    texture: {
+        get: function ()
+        {
+            return  this._texture;
+        },
+        set: function (value)
+        {
+            if (this._texture === value)
+            {
+                return;
+            }
+
+            this._texture = value;
+
+            if (value)
+            {
+                // wait for the texture to load
+                if (value.baseTexture.hasLoaded)
+                {
+                    this._onTextureUpdate();
+                }
+                else
+                {
+                    value.once('update', this._onTextureUpdate, this);
+                }
+            }
+        }
+    }
+});
 
 /**
  * Renders the object using the WebGL renderer
@@ -312,8 +353,7 @@ Mesh.prototype.setTexture = function (texture)
  * @param event
  * @private
  */
-
-Mesh.prototype.onTextureUpdate = function ()
+Mesh.prototype._onTextureUpdate = function ()
 {
     this.updateFrame = true;
 };

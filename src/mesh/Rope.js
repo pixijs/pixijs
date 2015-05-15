@@ -47,12 +47,6 @@ function Rope(texture, points)
      */
     this.indices = new Uint16Array(points.length * 2);
 
-    /*
-     * @member {TextureUvs} Current texture uvs
-     * @private
-     */
-    this._textureUvs = null;
-
     this.refresh();
 }
 
@@ -70,7 +64,8 @@ Rope.prototype.refresh = function ()
 {
     var points = this.points;
 
-    if (points.length < 1)
+    // if too little points, or texture hasn't got UVs set yet just move on.
+    if (points.length < 1 || !this.texture._uvs)
     {
         return;
     }
@@ -80,7 +75,7 @@ Rope.prototype.refresh = function ()
     var indices = this.indices;
     var colors = this.colors;
 
-    var textureUvs = this._getTextureUvs();
+    var textureUvs = this.texture._uvs;
     var offset = new core.math.Point(textureUvs.x0, textureUvs.y0);
     var factor = new core.math.Point(textureUvs.x2 - textureUvs.x0, textureUvs.y2 - textureUvs.y0);
 
@@ -119,37 +114,23 @@ Rope.prototype.refresh = function ()
         indices[index] = index;
         indices[index + 1] = index + 1;
     }
+
+    this.dirty = true;
 };
 
-/*
- * Returns texture UVs
- *
- * @private
- */
-
-Rope.prototype._getTextureUvs = function()
-{
-    if(!this._textureUvs)
-    {
-        this._textureUvs = new core.TextureUvs();
-        this._textureUvs.set(this.texture.crop, this.texture.baseTexture, this.texture.rotate);
-    }
-    return this._textureUvs;
-};
-
-/*
+/**
  * Clear texture UVs when new texture is set
  *
  * @private
  */
-
-Rope.prototype.onTextureUpdate = function ()
+Rope.prototype._onTextureUpdate = function ()
 {
-    this._textureUvs = null;
-    Mesh.prototype.onTextureUpdate.call(this);
+    Mesh.prototype._onTextureUpdate.call(this);
+
+    this.refresh();
 };
 
-/*
+/**
  * Updates the object transform for rendering
  *
  * @private
