@@ -65,7 +65,7 @@ Rope.prototype.refresh = function ()
     var points = this.points;
 
     // if too little points, or texture hasn't got UVs set yet just move on.
-    if (points.length < 1 || !this.texture._uvs)
+    if (points.length < 1 || !this._texture._uvs)
     {
         return;
     }
@@ -75,7 +75,7 @@ Rope.prototype.refresh = function ()
     var indices = this.indices;
     var colors = this.colors;
 
-    var textureUvs = this.texture._uvs;
+    var textureUvs = this._texture._uvs;
     var offset = new core.math.Point(textureUvs.x0, textureUvs.y0);
     var factor = new core.math.Point(textureUvs.x2 - textureUvs.x0, textureUvs.y2 - textureUvs.y0);
 
@@ -180,7 +180,7 @@ Rope.prototype.updateTransform = function ()
         }
 
         perpLength = Math.sqrt(perpX * perpX + perpY * perpY);
-        num = this.texture.height / 2; //(20 + Math.abs(Math.sin((i + this.count) * 0.3) * 50) )* ratio;
+        num = this._texture.height / 2; //(20 + Math.abs(Math.sin((i + this.count) * 0.3) * 50) )* ratio;
         perpX /= perpLength;
         perpY /= perpLength;
 

@@ -77,7 +77,7 @@ MeshRenderer.prototype.render = function (mesh)
 
     var renderer = this.renderer,
         gl = renderer.gl,
-        texture = mesh.texture.baseTexture,
+        texture = mesh._texture.baseTexture,
         shader = renderer.shaderManager.plugins.meshShader;
 
     var drawMode = mesh.drawMode === Mesh.DRAW_MODES.TRIANGLE_MESH ? gl.TRIANGLE_STRIP : gl.TRIANGLES;

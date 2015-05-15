@@ -227,9 +227,9 @@ Mesh.prototype._renderCanvasTriangles = function (context)
  */
 Mesh.prototype._renderCanvasDrawTriangle = function (context, vertices, uvs, index0, index1, index2)
 {
-    var textureSource = this.texture.baseTexture.source;
-    var textureWidth = this.texture.baseTexture.width;
-    var textureHeight = this.texture.baseTexture.height;
+    var textureSource = this._texture.baseTexture.source;
+    var textureWidth = this._texture.baseTexture.width;
+    var textureHeight = this._texture.baseTexture.height;
 
     var x0 = vertices[index0], x1 = vertices[index1], x2 = vertices[index2];
     var y0 = vertices[index0 + 1], y1 = vertices[index1 + 1], y2 = vertices[index2 + 1];
