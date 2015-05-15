@@ -21536,8 +21536,6 @@ DisplayObject.prototype._renderCachedWebGL = function (renderer)
 {
     this._initCachedDisplayObject( renderer );
 
-    this._cachedSprite.worldAlpha = this.worldAlpha;
-
     renderer.setObjectRenderer(renderer.plugins.sprite);
     renderer.plugins.sprite.render( this._cachedSprite );
 };
@@ -26032,9 +26030,9 @@ Mesh.prototype._renderCanvasTriangles = function (context)
  */
 Mesh.prototype._renderCanvasDrawTriangle = function (context, vertices, uvs, index0, index1, index2)
 {
-    var textureSource = this.texture.baseTexture.source;
-    var textureWidth = this.texture.baseTexture.width;
-    var textureHeight = this.texture.baseTexture.height;
+    var textureSource = this._texture.baseTexture.source;
+    var textureWidth = this._texture.baseTexture.width;
+    var textureHeight = this._texture.baseTexture.height;
 
     var x0 = vertices[index0], x1 = vertices[index1], x2 = vertices[index2];
     var y0 = vertices[index0 + 1], y1 = vertices[index1 + 1], y2 = vertices[index2 + 1];
@@ -26256,8 +26254,6 @@ var core = require('../core');
  */
 function Rope(texture, points)
 {
-    Mesh.call(this, texture);
-
     /*
      * @member {Array} An array of points that determine the rope
      */
@@ -26283,7 +26279,8 @@ function Rope(texture, points)
      */
     this.indices = new Uint16Array(points.length * 2);
 
-    this.refresh();
+    // call base ctor (which will set texture and cause refresh to be called)
+    Mesh.call(this, texture);
 }
 
 
@@ -26301,7 +26298,7 @@ Rope.prototype.refresh = function ()
     var points = this.points;
 
     // if too little points, or texture hasn't got UVs set yet just move on.
-    if (points.length < 1 || !this.texture._uvs)
+    if (points.length < 1 || !this._texture._uvs)
     {
         return;
     }
@@ -26311,7 +26308,7 @@ Rope.prototype.refresh = function ()
     var indices = this.indices;
     var colors = this.colors;
 
-    var textureUvs = this.texture._uvs;
+    var textureUvs = this._texture._uvs;
     var offset = new core.math.Point(textureUvs.x0, textureUvs.y0);
     var factor = new core.math.Point(textureUvs.x2 - textureUvs.x0, textureUvs.y2 - textureUvs.y0);
 
@@ -26416,7 +26413,7 @@ Rope.prototype.updateTransform = function ()
         }
 
         perpLength = Math.sqrt(perpX * perpX + perpY * perpY);
-        num = this.texture.height / 2; //(20 + Math.abs(Math.sin((i + this.count) * 0.3) * 50) )* ratio;
+        num = this._texture.height / 2; //(20 + Math.abs(Math.sin((i + this.count) * 0.3) * 50) )* ratio;
         perpX /= perpLength;
         perpY /= perpLength;
 
@@ -26532,7 +26529,7 @@ MeshRenderer.prototype.render = function (mesh)
 
     var renderer = this.renderer,
         gl = renderer.gl,
-        texture = mesh.texture.baseTexture,
+        texture = mesh._texture.baseTexture,
         shader = renderer.shaderManager.plugins.meshShader;
 
     var drawMode = mesh.drawMode === Mesh.DRAW_MODES.TRIANGLE_MESH ? gl.TRIANGLE_STRIP : gl.TRIANGLES;
