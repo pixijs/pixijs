@@ -190,7 +190,7 @@ Object.defineProperties(Texture.prototype, {
                 this.crop = frame;
             }
 
-             if (this.valid)
+            if (this.valid)
             {
                 this._updateUvs();
             }
@@ -224,7 +224,7 @@ Texture.prototype.onBaseTextureLoaded = function (baseTexture)
         this.frame = this._frame;
     }
 
-    this.emit( 'update', this );
+    this.emit('update', this);
 };
 
 Texture.prototype.onBaseTextureUpdated = function (baseTexture)
@@ -232,7 +232,7 @@ Texture.prototype.onBaseTextureUpdated = function (baseTexture)
     this._frame.width = baseTexture.width;
     this._frame.height = baseTexture.height;
 
-    this.emit( 'update', this );
+    this.emit('update', this);
 };
 
 /**
